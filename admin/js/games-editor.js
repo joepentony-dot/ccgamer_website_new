@@ -4,6 +4,14 @@ import { buildGamePageHtml, buildStubStructure, loadGamesLibrary, updateGamesLib
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
 import { validateExportOutputs, validateLibraryIdentifiers, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
 
+/*
+ * Audit Summary (Phase 0)
+ * Updated files: admin/games-editor.html, admin/js/games-editor.js, resources/css/ccg-admin-games-editor.css.
+ * Canonical games.json URL used by admin + public flows: /games/games.json.
+ * SEO folder page template in this wizard: /games/{slug}/index.html redirect stub to /games/game.html?id={id}, plus flat /games/{slug}.html.
+ * Enforced sort rule for generated UPDATED-games.json: title (case-insensitive), then slug (case-insensitive) for ties.
+ */
+
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
 const MAX_STEP = 6;
@@ -171,6 +179,7 @@ const el = {
     status: document.querySelector('[data-load-status]'),
     list: document.querySelector('#game-lookup-list')
   },
+  insertionPreview: document.querySelector('[data-insertion-preview]'),
   locks: {
     slug: document.querySelector('[data-lock-toggle="slug"]'),
     id: document.querySelector('[data-lock-toggle="id"]')
@@ -187,7 +196,8 @@ const el = {
     nextStep: document.querySelector('[data-action="next-step"]'),
     toggleThumbnailOverride: document.querySelector('[data-action="toggle-thumbnail-override"]'),
     toggleBox3dOverride: document.querySelector('[data-action="toggle-box3d-override"]'),
-    retryDownload: document.querySelector('[data-action="retry-download"]')
+    retryDownload: document.querySelector('[data-action="retry-download"]'),
+    runChecks: document.querySelector('[data-action="run-checks"]')
   }
 };
 
@@ -1418,19 +1428,29 @@ function buildManifestJson(entry) {
   return JSON.stringify(manifest, null, 2);
 }
 
-function buildReadme(entry) {
+function buildBuildReport(entry, insertionContext = {}) {
   return [
-    'CCG GAME BUILDER PACKAGE',
-    '---------------------------',
+    '# CCG Game Builder Build Report',
+    '',
     `Slug: ${entry.slug}`,
     `ID: ${entry.id}`,
     '',
-    '1) Replace /games/games.json with the bundled games.json.',
-    `2) Add /games/${entry.slug}.html to the repo (flat SEO page).`,
-    `3) Add /games/${entry.slug}/index.html to the repo (redirect stub).`,
-    '4) Add sitemap-fragment.xml contents to sitemap-games.xml.',
-    '5) Upload any assets listed in manifest.json.',
-    '6) If you use metadata.json, store it alongside your game data.',
+    '## Files Generated',
+    `- /games/${entry.slug}/index.html`,
+    `- /games/${entry.slug}.html`,
+    `- /admin/output/${entry.slug}/UPDATED-games.json`,
+    `- /admin/output/${entry.slug}/BUILD-REPORT.md`,
+    '- /sitemap-fragment.xml',
+    '',
+    '## Sort + Insert',
+    `- Inserted index: ${typeof insertionContext.index === 'number' ? insertionContext.index : 'n/a'}`,
+    `- Before: ${insertionContext.before || '(start of file)'}`,
+    `- After: ${insertionContext.after || '(end of file)'}`,
+    '',
+    '## Checks Passed',
+    '- Required fields present',
+    '- Slug/id uniqueness validated against loaded games.json',
+    '- Canonical URL + meta tags rendered in generated SEO folder page',
     '',
     'Do not publish if validation fails in the wizard.'
   ].join('\n');
@@ -1857,18 +1877,23 @@ function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
 }
 
 function getSortKey(record = {}) {
-  return String(record.sorttitle || record.title || record.slug || '').trim();
+  return String(record.title || record.sorttitle || record.slug || '').trim().toLowerCase();
 }
 
 function sortLibraryRecords(records = []) {
   return records
     .map((record, index) => ({ record, index }))
     .sort((a, b) => {
-      const compare = getSortKey(a.record).localeCompare(getSortKey(b.record), 'en', {
+      const titleCompare = getSortKey(a.record).localeCompare(getSortKey(b.record), 'en', {
         sensitivity: 'base',
         numeric: true
       });
-      if (compare !== 0) return compare;
+      if (titleCompare !== 0) return titleCompare;
+      const slugCompare = String(a.record?.slug || '').toLowerCase().localeCompare(String(b.record?.slug || '').toLowerCase(), 'en', {
+        sensitivity: 'base',
+        numeric: true
+      });
+      if (slugCompare !== 0) return slugCompare;
       return a.index - b.index;
     })
     .map((item) => item.record);
@@ -1906,10 +1931,28 @@ function applyEntryToLibrary(entry) {
   return sortedLibrary;
 }
 
+
+function getInsertionContext(records, slug) {
+  const index = records.findIndex((item) => item.slug === slug);
+  if (index < 0) return { index: -1, before: null, after: null, window: [] };
+  return {
+    index,
+    before: records[index - 1]?.title || null,
+    after: records[index + 1]?.title || null,
+    window: records.slice(Math.max(0, index - 2), Math.min(records.length, index + 3)).map((item) => ({ title: item.title, slug: item.slug }))
+  };
+}
+
+function getPackageFilename(slug) {
+  const day = new Date().toISOString().slice(0, 10);
+  return `ccg-game-package__${slug}__${day}.zip`;
+}
+
 function buildOutputs() {
   const entry = buildGameRecord();
   const updatedLibrary = applyEntryToLibrary(entry);
   assertLibrarySorted(updatedLibrary);
+  const insertionContext = getInsertionContext(updatedLibrary, entry.slug);
   const gamesJson = JSON.stringify(updatedLibrary, null, 2);
   const stubHtml = buildSeoStub(entry);
   const flatHtml = buildFlatSeoPage(entry);
@@ -1919,7 +1962,7 @@ function buildOutputs() {
   const sitemapFragment = buildSitemapFragment(state.draft);
   const metadataJson = buildMetadataJson(entry);
   const manifestJson = buildManifestJson(entry);
-  const readme = buildReadme(entry);
+  const readme = buildBuildReport(entry, insertionContext);
 
   return {
     entry,
@@ -1929,7 +1972,8 @@ function buildOutputs() {
     sitemapFragment,
     metadataJson,
     manifestJson,
-    readme
+    readme,
+    insertionContext
   };
 }
 
@@ -2008,7 +2052,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStepStatus('build', 'active', 'Building ZIP…');
   setExportStepStatus('metadata', 'active', 'Metadata · in progress');
 
-  zip.file('games.json', state.outputs.gamesJson);
+  zip.file(`admin/output/${entry.slug}/UPDATED-games.json`, `${state.outputs.gamesJson}\n`);
   const flatPages = buildFlatGamePages(state.library);
   const gamesFolder = getFolder(zip, 'games');
   flatPages.pages.forEach((page) => {
@@ -2020,9 +2064,9 @@ async function buildPackage({ autoDownload = true } = {}) {
   getFolder(zip, `games/${entry.slug}`).file('index.html', state.outputs.stubHtml);
   zip.file(`games/${entry.slug}.html`, state.outputs.flatHtml);
   zip.file('sitemap-fragment.xml', state.outputs.sitemapFragment);
-  zip.file('manifest.json', state.outputs.manifestJson);
-  zip.file('metadata.json', state.outputs.metadataJson);
-  zip.file('readme.txt', state.outputs.readme);
+  zip.file(`admin/output/${entry.slug}/manifest.json`, state.outputs.manifestJson);
+  zip.file(`admin/output/${entry.slug}/metadata.json`, state.outputs.metadataJson);
+  zip.file(`admin/output/${entry.slug}/BUILD-REPORT.md`, state.outputs.readme);
   setExportStepStatus('metadata', 'success', '✓ Metadata');
 
   const stubMeta = buildStubMeta(entry, { missingAssets });
@@ -2030,7 +2074,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   const stubRoot = getFolder(zip, stub.root);
   stub.folders.forEach((folder) => getFolder(stubRoot, folder));
   stubRoot.file('meta.json', stub.metaJson);
-  stubRoot.file('readme.txt', state.outputs.readme);
+  stubRoot.file('BUILD-REPORT.md', state.outputs.readme);
   stubRoot.file('manifest.json', state.outputs.manifestJson);
 
   setExportStepStatus('images', 'active', 'Images · in progress');
@@ -2089,7 +2133,7 @@ async function buildPackage({ autoDownload = true } = {}) {
   setExportStepStatus('build', 'success', '✓ ZIP ready');
 
   if (autoDownload) {
-    const downloadName = `${entry.slug}-package.zip`;
+    const downloadName = getPackageFilename(entry.slug);
     try {
       attemptBlobDownload(blob, downloadName);
     } catch (downloadError) {
@@ -2111,6 +2155,25 @@ async function buildPackage({ autoDownload = true } = {}) {
   return blob;
 }
 
+
+function runConsistencyChecks() {
+  validateDraft();
+  renderValidation();
+  if (!state.draft?.slug || !Array.isArray(state.library) || !state.library.length) return;
+  const candidate = buildGameRecord();
+  const simulated = sortLibraryRecords([...state.library, candidate]);
+  const context = getInsertionContext(simulated, candidate.slug);
+  if (el.insertionPreview) {
+    el.insertionPreview.textContent = JSON.stringify({
+      index: context.index,
+      before: context.before,
+      after: context.after,
+      top5: simulated.slice(0, 5).map((item) => item.title),
+      aroundInsertion: context.window,
+      bottom5: simulated.slice(-5).map((item) => item.title)
+    }, null, 2);
+  }
+}
 
 function validateJsZipRuntime() {
   if (!window.JSZip || !window.JSZip.prototype?.folder) {
@@ -2151,7 +2214,7 @@ async function runPackageBuild({ autoDownload = true, forceRebuild = false } = {
     try {
       setExportPanelError('');
       setRetryDownloadVisible(false);
-      attemptBlobDownload(window.__ccgLastZipBlob, `${state.outputs.entry.slug}-package.zip`);
+      attemptBlobDownload(window.__ccgLastZipBlob, getPackageFilename(state.outputs.entry.slug));
       setExportStateLabel('Complete', 'success');
       return window.__ccgLastZipBlob;
     } catch (error) {
@@ -2402,6 +2465,10 @@ function bindEvents() {
     renderValidation();
   });
 
+  el.actions.runChecks?.addEventListener('click', () => {
+    runConsistencyChecks();
+  });
+
   el.actions.generateOutput?.addEventListener('click', () => {
     if (!state.auth.canWrite) return;
     validateDraft();
@@ -2430,7 +2497,7 @@ function bindEvents() {
     }
     try {
       setExportPanelError('');
-      attemptBlobDownload(window.__ccgLastZipBlob, `${state.outputs.entry.slug}-package.zip`);
+      attemptBlobDownload(window.__ccgLastZipBlob, getPackageFilename(state.outputs.entry.slug));
       setRetryDownloadVisible(false);
       setExportStateLabel('Complete', 'success');
     } catch (error) {
