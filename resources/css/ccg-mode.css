@@ -733,7 +733,7 @@ html[data-ccg-mode="amiga"] .ccg-card {
     .ccg-mode-hint {
         font-size: 0.68rem;
         letter-spacing: 0.12em;
-        bottom: calc(100% + 4px);
+        bottom: calc(100% - 2px);
     }
 }
 
@@ -752,6 +752,7 @@ html[data-ccg-mode="amiga"] .ccg-card {
     .ccg-mode-hint {
         font-size: 0.82rem;
         margin-bottom: 10px;
+        padding-top: 4px;
         opacity: 0.55;
         letter-spacing: 0.18em;
         text-shadow:
