@@ -3,8 +3,7 @@ import {
   login,
   redirectWithGuard,
   restoreSession,
-  sendPasswordReset,
-  waitForAuthReady
+  sendPasswordReset
 } from './auth.js?v=admin-stable-20260207';
 import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
@@ -98,19 +97,44 @@ function setLoading(isLoading) {
   if (loginButton) loginButton.textContent = isLoading ? 'Signing in…' : 'Sign in';
 }
 
+function showLoginForm() {
+  setLoading(false);
+}
+
+function showReasonMessage() {
+  const reason = new URLSearchParams(window.location.search).get('reason');
+  if (!reason) return;
+
+  if (reason === 'forbidden' || reason === 'unauthorised' || reason === 'unauthorized') {
+    setMessage('You are signed in but not authorised for admin access.', 'error');
+    return;
+  }
+
+  if (reason === 'expired') {
+    setMessage('Your session expired. Please sign in again.', 'info');
+    return;
+  }
+
+  if (reason === 'signed_out') {
+    setMessage('You have been signed out.', 'info');
+  }
+}
+
 async function redirectIfSessionExists() {
   try {
-    await waitForAuthReady();
     const session = await restoreSession();
-    if (session?.user?.id) {
-      log('Existing session detected. Redirecting.');
-      redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'already_authenticated');
-    } else {
-      log('No existing session found.');
+    if (session) {
+      console.info('[CCG-LOGIN] Session restored, redirecting');
+      setMessage('Session detected. Redirecting to dashboard…', 'info');
+      window.location.replace('/admin/dashboard.html');
+      return;
     }
+
+    showLoginForm();
   } catch (e) {
-    error('Session restore failed', e);
+    error('Session handoff failed', e);
     setMessage(e?.message || 'Unable to check session state.', 'error');
+    showLoginForm();
   }
 }
 
@@ -138,8 +162,6 @@ async function handleLogin(evt) {
       log('Signed in. Fetching role…', user.id);
       await fetchUserRole({ userId: user.id, force: true });
     }
-
-    await waitForAuthReady();
 
     setMessage('Login successful. Redirecting to dashboard…', 'success');
     redirectWithGuard(AUTH_CONFIG.defaultRedirectAfterLogin, 'signed_in');
@@ -207,6 +229,7 @@ if (resetButton) {
   resetButton.addEventListener('click', handleReset);
 }
 
-// Always init nav + session redirect check
+// Always init nav + login message/session redirect checks
 initAdminNav({ pageLabel: 'Login', active: 'dashboard' });
+showReasonMessage();
 redirectIfSessionExists();

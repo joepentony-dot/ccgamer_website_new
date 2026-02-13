@@ -27,7 +27,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
         <a href="/admin/games-editor.html" data-nav="editor">Editor</a>
         <a href="/admin/publish.html" data-nav="publish">Publish</a>
         <a href="/admin/help.html" data-nav="help">Help</a>
-        <a href="#" data-nav="logout" data-admin-logout-link>Logout</a>
+        <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
       </nav>
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>
     </div>
@@ -39,20 +39,6 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
 
   const sessionNode = shell.querySelector('[data-admin-session]');
 
-  async function handleLogout(event) {
-    event.preventDefault();
-    sessionNode.textContent = 'Signing out…';
-    try {
-      await logout();
-    } catch (error) {
-      console.warn('[CCG-AUTH] logout failed, forcing redirect', error);
-    } finally {
-      redirectWithGuard(AUTH_CONFIG.postLogoutRedirect, 'signed_out');
-    }
-  }
-
-  const logoutLink = shell.querySelector('[data-admin-logout-link]');
-  logoutLink?.addEventListener('click', handleLogout);
 
   try {
     await waitForAuthReady();

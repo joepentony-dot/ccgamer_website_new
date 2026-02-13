@@ -27,10 +27,25 @@ const err = (...a) => console.error(LOG, ...a);
 const BUILD_SUFFIX = ADMIN_BUILD_ID ? `?v=${ADMIN_BUILD_ID}` : '';
 const OFFLINE_MESSAGE = 'Auth system offline. Please refresh or contact support.';
 
-const REDIRECT_GUARD_KEY = 'ccg_auth_redirect_guard';
-const REDIRECT_GUARD_WINDOW_MS = 1500;
-const REDIRECT_LOOP_MESSAGE =
-  'Auth loop detected. Session not stabilising. Open console and refresh after sign-in.';
+export const AUTH_STATE = {
+  NO_SESSION: 'no_session',
+  AUTHENTICATING: 'authenticating',
+  AUTHENTICATED: 'authenticated',
+  AUTHENTICATED_LIMITED: 'authenticated_limited',
+  UNAUTHORISED: 'unauthorised'
+};
+
+export function resolveAuthState(session, profile) {
+  if (!session) return AUTH_STATE.NO_SESSION;
+  if (!profile) return AUTH_STATE.AUTHENTICATING;
+
+  if (profile.role === 'admin') return AUTH_STATE.AUTHENTICATED;
+  if (profile.role === undefined || profile.role === null) {
+    return AUTH_STATE.AUTHENTICATED_LIMITED;
+  }
+
+  return AUTH_STATE.UNAUTHORISED;
+}
 
 console.log('[CCG-AUTH] auth.js loaded');
 console.log(
@@ -53,6 +68,7 @@ window.CCG_AUTH_READY = false;
 window.CCG_AUTH_LOGGED_IN = false;
 window.CCG_AUTH_ROLE = 'none';
 window.CCG_AUTH_ERROR = null;
+window.__ccgSession = window.__ccgSession || null;
 
 let _supabase = null;
 let _lastContext = null;
@@ -65,6 +81,7 @@ let _authBarrierContext = null;
 let _authHydrationPromise = null;
 let _authHydrationResolve = null;
 let _authHydrationReady = false;
+let _bootstrapAuthPromise = null;
 
 function markAuthHydrated(session) {
   if (_authHydrationReady) return;
@@ -91,6 +108,18 @@ function waitForAuthHydration(timeoutMs) {
   ]);
 }
 
+function syncGlobalAuthState(context = null, error = null) {
+  const resolvedContext = context || _lastContext || _authBarrierContext || null;
+  const resolvedSession = resolvedContext?.session || _authBarrierSession || null;
+
+  window.__ccgAuthState = {
+    session: resolvedSession,
+    context: resolvedContext,
+    error: error || resolvedContext?.error || null
+  };
+  window.__ccgSession = resolvedSession;
+}
+
 function dispatchAuthReady(context) {
   try {
     window.dispatchEvent(
@@ -107,6 +136,7 @@ function dispatchAuthReady(context) {
   } catch (_) {
     // no-op
   }
+  syncGlobalAuthState(context, context?.error || null);
 }
 
 function applyWindowAuthState(context) {
@@ -142,13 +172,15 @@ function buildContextFromSession(session, error = null) {
   const user = session?.user || null;
   const isAuthenticated = Boolean(user?.id);
   const cachedRole = readCachedRole();
-  const role = isAuthenticated
-    ? cachedRole || deriveRoleFromUser(user) || 'member'
-    : 'none';
+  const role = isAuthenticated ? cachedRole || deriveRoleFromUser(user) || null : 'none';
+  const profile = isAuthenticated ? { role } : null;
+  const authState = resolveAuthState(session || null, profile);
 
   return {
     isAuthenticated,
     role,
+    profile,
+    authState,
     user,
     session: session || null,
     error
@@ -165,21 +197,6 @@ function applySupabaseConfigToWindow() {
   if (AUTH_CONFIG?.storageKey && !window.CCG_SUPABASE_STORAGE_KEY) {
     window.CCG_SUPABASE_STORAGE_KEY = AUTH_CONFIG.storageKey;
   }
-}
-
-function renderAuthLoopBanner(message = REDIRECT_LOOP_MESSAGE) {
-  const host = document.querySelector('[data-admin-shell]') || document.body;
-  if (!host) return;
-
-  if (document.querySelector('[data-auth-loop-banner]')) return;
-
-  const banner = document.createElement('div');
-  banner.className = 'admin-auth-loop-banner';
-  banner.dataset.authLoopBanner = 'true';
-  banner.setAttribute('role', 'alert');
-  banner.textContent = message;
-
-  host.prepend(banner);
 }
 
 function renderAuthFatalBanner(message = OFFLINE_MESSAGE) {
@@ -242,23 +259,6 @@ function bindGlobalAuthErrorTrap() {
 
 bindGlobalAuthErrorTrap();
 
-function shouldBlockRedirect() {
-  try {
-    const now = Date.now();
-    const last = Number(sessionStorage.getItem(REDIRECT_GUARD_KEY) || 0);
-    if (last && now - last < REDIRECT_GUARD_WINDOW_MS) {
-      renderAuthLoopBanner();
-      warn('Redirect suppressed to avoid auth loop.');
-      return true;
-    }
-    sessionStorage.setItem(REDIRECT_GUARD_KEY, String(now));
-    return false;
-  } catch (error) {
-    warn('Redirect guard unavailable.', error);
-    return false;
-  }
-}
-
 function buildRedirectUrl(path, reason) {
   const url = new URL(path, window.location.origin);
   if (reason) {
@@ -269,9 +269,6 @@ function buildRedirectUrl(path, reason) {
 
 export function redirectWithGuard(path, reason) {
   const url = buildRedirectUrl(path, reason);
-  if (shouldBlockRedirect()) {
-    return false;
-  }
   window.location.replace(url);
   return true;
 }
@@ -428,6 +425,31 @@ export async function waitForAuthReady() {
   return _authBarrierPromise;
 }
 
+
+export async function bootstrapAuth() {
+  if (_bootstrapAuthPromise) return _bootstrapAuthPromise;
+
+  _bootstrapAuthPromise = (async () => {
+    try {
+      await waitForAuthReady();
+      const context = _lastContext || _authBarrierContext || buildContextFromSession(_authBarrierSession || null, null);
+      syncGlobalAuthState(context, null);
+      return window.__ccgAuthState;
+    } catch (error) {
+      const context = buildContextFromSession(null, error);
+      syncGlobalAuthState(context, error);
+      return window.__ccgAuthState;
+    }
+  })();
+
+  return _bootstrapAuthPromise;
+}
+
+export const authReady = (async () => {
+  await bootstrapAuth();
+  return window.__ccgAuthState;
+})();
+
 export async function getAuthContext() {
   await waitForAuthReady();
   try {
@@ -442,13 +464,11 @@ export async function getAuthContext() {
 }
 
 export async function restoreSession() {
-  await waitForAuthReady();
-  if (_authBarrierReady) return _authBarrierSession;
-
   const supabase = await ensureSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw new Error(error.message || 'Unable to restore session.');
-  return data?.session || null;
+  window.__ccgSession = data?.session || null;
+  return window.__ccgSession;
 }
 
 export async function refreshSessionIfNeeded() {
@@ -544,11 +564,14 @@ export async function logout() {
   if (error) throw new Error(error.message || 'Logout failed.');
 
   _lastContext = null;
+  _authBarrierSession = null;
+  window.__ccgSession = null;
 
   const context = buildContextFromSession(null, null);
   applyWindowAuthState(context);
   dispatchAuthReady(context);
 
+  window.location.replace('/admin/login.html');
   return true;
 }
 
@@ -558,6 +581,25 @@ export function requireAuthOrThrow(message = 'You must be signed in to do that.'
 
 export async function getSupabaseClient() {
   return ensureSupabaseClient();
+}
+
+function bindLogoutButtons() {
+  document.querySelectorAll('[data-logout]').forEach((button) => {
+    if (button.dataset.logoutBound === 'true') return;
+    button.dataset.logoutBound = 'true';
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      logout().catch((error) => {
+        err('Logout failed.', error);
+      });
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', bindLogoutButtons, { once: true });
+} else {
+  bindLogoutButtons();
 }
 
 export function getAuthDiagnostics() {
