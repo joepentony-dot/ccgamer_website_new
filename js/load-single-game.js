@@ -2262,23 +2262,6 @@ function buildSuggestedGames(game, limit = 10) {
    RELATED GAMES (SG-E5)
 ============================================================ */
 
-function getDeterministicSeed(value) {
-    const raw = String(value || "ccg");
-    let hash = 0;
-    for (let index = 0; index < raw.length; index += 1) {
-        hash = ((hash << 5) - hash) + raw.charCodeAt(index);
-        hash |= 0;
-    }
-    return Math.abs(hash) || 1;
-}
-
-function deterministicScore(candidate, seed) {
-    const key = String(candidate?.id || candidate?.slug || candidate?.title || "");
-    const base = getDeterministicSeed(key);
-    const mixed = (base ^ seed) >>> 0;
-    return mixed / 4294967295;
-}
-
 function buildRelatedMatches(game, limit = 12) {
     const candidates = CCG_SINGLE_ALL_GAMES.filter(candidate => candidate && candidate.id !== game?.id);
     const used = new Set();
@@ -2286,8 +2269,6 @@ function buildRelatedMatches(game, limit = 12) {
 
     const currentPublisher = normaliseTokenValue(resolveCreditValue(game, "publisher"));
     const currentGenre = resolvePrimaryGenre(game);
-    const currentPlatform = normaliseTokenValue(game?.system || "");
-    const seed = getDeterministicSeed(game?.id || game?.slug || game?.title || "ccg");
 
     const addGroup = (reason, filter) => {
         if (matches.length >= limit) return;
@@ -2312,33 +2293,10 @@ function buildRelatedMatches(game, limit = 12) {
         addGroup("genre", candidate => resolvePrimaryGenre(candidate) === currentGenre);
     }
 
-    if (matches.length < limit && currentPlatform) {
-        addGroup("platform", candidate => normaliseTokenValue(candidate?.system || "") === currentPlatform);
-    }
-
-    if (matches.length < limit) {
-        candidates
-            .filter(candidate => !used.has(candidate.id))
-            .sort((a, b) => {
-                const diff = deterministicScore(a, seed) - deterministicScore(b, seed);
-                if (diff !== 0) return diff;
-                return compareCandidatesByScore(a, b);
-            })
-            .forEach(candidate => {
-                if (matches.length >= limit) return;
-                used.add(candidate.id);
-                matches.push({
-                    game: candidate,
-                    reason: "other"
-                });
-            });
-    }
-
     return {
         items: matches.slice(0, limit),
         publisher: resolveCreditValue(game, "publisher"),
-        genre: resolvePrimaryGenre(game),
-        hasGenreFallback: matches.some(item => item.reason === "genre")
+        genre: resolvePrimaryGenre(game)
     };
 }
 
@@ -2347,15 +2305,15 @@ function resolveRelatedCopy(game, result) {
     const genreLabel = result.genre
         ? result.genre.replace(/\b\w/g, char => char.toUpperCase())
         : "";
-    const suffix = result.hasGenreFallback && genreLabel
-        ? ` in ${genreLabel}`
+    const fallbackText = genreLabel
+        ? ` • fallback by ${genreLabel}`
         : "";
 
     return {
         kicker: "RELATED BY PUBLISHER + GENRE",
         title: publisher
-            ? `More from ${publisher} & Similar Titles${suffix}`
-            : `More from this Publisher & Similar Titles${suffix}`
+            ? `More from ${publisher} & Similar Titles${fallbackText}`
+            : `More from this Publisher & Similar Titles${fallbackText}`
     };
 }
 
@@ -2388,15 +2346,13 @@ function renderRelatedCardMeta(relGame, reason, currentPublisher) {
         meta.appendChild(publisherTag);
     }
 
-    if (reason === "publisher" || reason === "genre") {
-        const reasonTag = document.createElement("span");
-        reasonTag.className = "related-card__tag related-card__tag--reason";
-        reasonTag.textContent = reason === "publisher" ? "Same Publisher" : "Same Genre";
-        reasonTag.title = reason === "publisher"
-            ? "Matched by exact publisher"
-            : "Matched by genre fallback";
-        meta.appendChild(reasonTag);
-    }
+    const reasonTag = document.createElement("span");
+    reasonTag.className = "related-card__tag related-card__tag--reason";
+    reasonTag.textContent = reason === "publisher" ? "Same Publisher" : "Same Genre";
+    reasonTag.title = reason === "publisher"
+        ? "Matched by exact publisher"
+        : "Matched by genre fallback";
+    meta.appendChild(reasonTag);
 
     return meta;
 }
@@ -2404,24 +2360,16 @@ function renderRelatedCardMeta(relGame, reason, currentPublisher) {
 function resolveRelatedStep(scrollEl) {
     const firstCard = scrollEl.querySelector(".related-card");
     if (!firstCard) return Math.max(220, scrollEl.clientWidth * 0.8);
-
-    const cards = scrollEl.querySelectorAll(".related-card");
-    if (cards.length > 1) {
-        const firstRect = cards[0].getBoundingClientRect();
-        const secondRect = cards[1].getBoundingClientRect();
-        const delta = Math.round(secondRect.left - firstRect.left);
-        if (delta > 0) return delta;
-    }
-
-    const track = scrollEl.querySelector(".related-carousel__track") || scrollEl;
-    const styles = window.getComputedStyle(track);
+    const styles = window.getComputedStyle(scrollEl);
     const gap = parseFloat(styles.columnGap || styles.gap || "0") || 0;
     return Math.round(firstCard.getBoundingClientRect().width + gap);
 }
 
 function alignScrollToCard(scrollEl, direction) {
     const step = resolveRelatedStep(scrollEl);
-    scrollEl.scrollBy({ left: direction * step, behavior: "smooth" });
+    const maxScroll = Math.max(0, scrollEl.scrollWidth - scrollEl.clientWidth);
+    const next = Math.max(0, Math.min(maxScroll, Math.round((scrollEl.scrollLeft + (direction * step)) / step) * step));
+    scrollEl.scrollTo({ left: next, behavior: "smooth" });
 }
 
 function getRelatedCarouselParts() {
