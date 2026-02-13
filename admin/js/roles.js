@@ -1,5 +1,5 @@
-import { AUTH_CONFIG } from './config.js?v=admin-stable-20260207';
-import { getSupabaseClient } from './auth.js?v=admin-stable-20260207';
+import { AUTH_CONFIG } from './config.js';
+import { getSupabaseClient } from './auth.js';
 
 function getCachedRole(userId) {
   try {

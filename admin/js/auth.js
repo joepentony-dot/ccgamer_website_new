@@ -17,7 +17,7 @@
    ============================================================ */
 
 import { ADMIN_BUILD_ID } from './build.js';
-import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js?v=20260207-01';
+import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
 
 const LOG = '[CCG-AUTH]';
 const log = (...a) => console.log(LOG, ...a);
@@ -51,10 +51,10 @@ console.log('[CCG-AUTH] auth.js loaded');
 console.log(
   '[CCG-AUTH] Supabase detected:',
   Boolean(
-    window?.ccgSupabaseClient ||
-      window?.CCG_SUPABASE_CLIENT ||
-      window?.__ccgSupabaseClient ||
-      window?.supabaseClient
+    window.ccgSupabaseClient ||
+      window.CCG_SUPABASE_CLIENT ||
+      window.__ccgSupabaseClient ||
+      window.supabaseClient
   )
 );
 
@@ -356,8 +356,9 @@ async function computeAuthContext({ force = false } = {}) {
     throw new Error(error.message || 'Unable to read Supabase session.');
   }
 
-  // FIX: parenthesise to avoid mixing ?? with || (SyntaxError in JS)
-  const session = _authBarrierSession ?? (data?.session || null);
+  const session = _authBarrierSession !== null && _authBarrierSession !== undefined
+    ? _authBarrierSession
+    : (data?.session || null);
   const context = buildContextFromSession(session, null);
 
   _lastContext = context;
@@ -386,8 +387,9 @@ export async function waitForAuthReady() {
         warn('Auth hydration timed out. Continuing with session snapshot.');
       }
 
-      // FIX: parenthesise to avoid mixing ?? with || (SyntaxError in JS)
-      _authBarrierSession = _authBarrierSession ?? (data?.session || null);
+      _authBarrierSession = _authBarrierSession !== null && _authBarrierSession !== undefined
+        ? _authBarrierSession
+        : (data?.session || null);
       _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
       log('session restored');
 

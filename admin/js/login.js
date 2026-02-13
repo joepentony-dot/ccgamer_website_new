@@ -1,4 +1,4 @@
-import { login, sendPasswordReset } from './auth.js?v=20260207-01';
+import { login, sendPasswordReset } from './auth.js';
 
 const LOG = '[CCG-LOGIN]';
 const log = (...a) => console.log(LOG, ...a);

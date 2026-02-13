@@ -1,5 +1,5 @@
 import { ADMIN_BUILD_ID } from './build.js';
-import { AUTH_CONFIG, OWNER_EMAILS } from './config.js?v=20260207-01';
+import { AUTH_CONFIG, OWNER_EMAILS } from './config.js';
 import {
   AUTH_STATE,
   bindSessionInvalidation,
@@ -8,8 +8,8 @@ import {
   resolveAuthState,
   waitForAuthReady,
   authReady
-} from './auth.js?v=20260207-01';
-import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
+} from './auth.js';
+import { clearRoleCache, fetchUserRole } from './roles.js';
 
 console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
 
