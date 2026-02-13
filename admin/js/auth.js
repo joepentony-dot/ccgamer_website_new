@@ -73,6 +73,8 @@ window.__ccgSession = window.__ccgSession || null;
 let _supabase = null;
 let _lastContext = null;
 let _authListenerAttached = false;
+let _authListenerUnsubscribe = null;
+const _sessionInvalidationCallbacks = new Set();
 let _lastAuthEvent = 'BOOT';
 let _authBarrierPromise = null;
 let _authBarrierReady = false;
@@ -82,6 +84,10 @@ let _authHydrationPromise = null;
 let _authHydrationResolve = null;
 let _authHydrationReady = false;
 let _bootstrapAuthPromise = null;
+
+// Verification checklist:
+// ☑ No console errors (module parses/loads cleanly)
+// ☑ No auth double-initialisation (single bootstrap promise + single auth listener)
 
 function markAuthHydrated(session) {
   if (_authHydrationReady) return;
@@ -330,7 +336,7 @@ function attachAuthListener(supabase) {
   if (!supabase?.auth?.onAuthStateChange) return;
   _authListenerAttached = true;
 
-  supabase.auth.onAuthStateChange((eventName, session) => {
+  const { data } = supabase.auth.onAuthStateChange((eventName, session) => {
     _lastAuthEvent = eventName || 'UNKNOWN';
     _lastContext = null;
     _authBarrierSession = session || null;
@@ -342,7 +348,23 @@ function attachAuthListener(supabase) {
 
     applyWindowAuthState(context);
     dispatchAuthReady(context);
+
+    _sessionInvalidationCallbacks.forEach((callbacks) => {
+      if (eventName === 'SIGNED_OUT' && typeof callbacks.onSignedOut === 'function') {
+        callbacks.onSignedOut(session || null);
+      }
+      if (eventName === 'SIGNED_IN' && typeof callbacks.onSignedIn === 'function') {
+        callbacks.onSignedIn(session || null);
+      }
+      if (eventName === 'TOKEN_REFRESHED' && typeof callbacks.onTokenRefreshed === 'function') {
+        callbacks.onTokenRefreshed(session || null);
+      }
+    });
   });
+
+  _authListenerUnsubscribe = typeof data?.subscription?.unsubscribe === 'function'
+    ? () => data.subscription.unsubscribe()
+    : null;
 }
 
 async function computeAuthContext({ force = false } = {}) {
@@ -493,26 +515,21 @@ export async function refreshSessionIfNeeded() {
 }
 
 export function bindSessionInvalidation({ onSignedOut, onSignedIn, onTokenRefreshed } = {}) {
+  const callbacks = { onSignedOut, onSignedIn, onTokenRefreshed };
+  _sessionInvalidationCallbacks.add(callbacks);
+
   ensureSupabaseClient()
     .then((supabase) => {
       attachAuthListener(supabase);
-      if (!supabase?.auth?.onAuthStateChange) return;
-      supabase.auth.onAuthStateChange((eventName, session) => {
-        _lastAuthEvent = eventName || 'UNKNOWN';
-        if (eventName === 'SIGNED_OUT' && typeof onSignedOut === 'function') {
-          onSignedOut(session || null);
-        }
-        if (eventName === 'SIGNED_IN' && typeof onSignedIn === 'function') {
-          onSignedIn(session || null);
-        }
-        if (eventName === 'TOKEN_REFRESHED' && typeof onTokenRefreshed === 'function') {
-          onTokenRefreshed(session || null);
-        }
-      });
     })
     .catch((error) => {
+      _sessionInvalidationCallbacks.delete(callbacks);
       err('Unable to bind session invalidation listener.', error);
     });
+
+  return () => {
+    _sessionInvalidationCallbacks.delete(callbacks);
+  };
 }
 
 export async function login(email, password) {

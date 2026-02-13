@@ -34,29 +34,6 @@
   let active = false;
   let disarmed = false;
 
-  const isDebugEnabled = () => {
-    try {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('debugkeys') === '1' || window.localStorage.getItem('ccgDebugKeys') === '1';
-    } catch (_error) {
-      return false;
-    }
-  };
-
-  const logOnce = (() => {
-    const logged = new Set();
-    return (key, message, level = 'info') => {
-      if (!isDebugEnabled()) return;
-      if (logged.has(key)) return;
-      logged.add(key);
-      if (level === 'warn') {
-        console.warn(message);
-        return;
-      }
-      console.info(message);
-    };
-  })();
-
   const isAllowedContext = () => {
     if (window.ccgIsAdminContext && window.ccgIsAdminContext()) return false;
     const body = document.body;
@@ -66,24 +43,16 @@
   };
 
   const stopAdminInputHandlers = (event) => {
-    const pathname = window.location?.pathname || '';
-    if (
-      pathname.includes('/admin/games-editor.html')
-      && window.ccgIsGameEditorIdentityTarget
-      && window.ccgIsGameEditorIdentityTarget(event.target)
-    ) {
-      return;
+    if (window.ccgIsEditableTarget && window.ccgIsEditableTarget(event.target)) {
+      event.stopPropagation();
     }
-
-    if (window.ccgIsEditableTarget && window.ccgIsEditableTarget(event.target)) return;
-    logOnce('ccg-firewall-block', '[CCG] Input firewall intercepted non-editable key event.', 'warn');
   };
 
   const enable = () => {
     if (disarmed || active) return;
     if (!isAllowedContext()) return;
     eventTypes.forEach((eventType) => {
-      document.addEventListener(eventType, stopAdminInputHandlers);
+      document.addEventListener(eventType, stopAdminInputHandlers, true);
     });
     active = true;
     console.info('[CCG] Input firewall enabled');
@@ -92,7 +61,7 @@
   const disable = () => {
     if (!active) return;
     eventTypes.forEach((eventType) => {
-      document.removeEventListener(eventType, stopAdminInputHandlers);
+      document.removeEventListener(eventType, stopAdminInputHandlers, true);
     });
     active = false;
     disarmed = true;
