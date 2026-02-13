@@ -2305,15 +2305,17 @@ function resolveRelatedCopy(game, result) {
     const genreLabel = result.genre
         ? result.genre.replace(/\b\w/g, char => char.toUpperCase())
         : "";
-    const fallbackText = genreLabel
-        ? ` • fallback by ${genreLabel}`
+    const hasGenreMatches = Array.isArray(result?.items)
+        && result.items.some(item => item?.reason === "genre");
+    const genreQualifier = hasGenreMatches && genreLabel
+        ? ` — or other ${genreLabel} titles`
         : "";
 
     return {
         kicker: "RELATED BY PUBLISHER + GENRE",
         title: publisher
-            ? `More from ${publisher} & Similar Titles${fallbackText}`
-            : `More from this Publisher & Similar Titles${fallbackText}`
+            ? `More from ${publisher} & Similar Titles${genreQualifier}`
+            : `More from this Publisher & Similar Titles${genreQualifier}`
     };
 }
 
