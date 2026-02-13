@@ -122,10 +122,10 @@ async function redirectIfSessionExists() {
     await waitForAuthReady();
     const session = await restoreSession();
     if (session?.user?.id) {
-      console.info('[CCG-LOGIN] Session detected, handing off to dashboard');
-      setMessage('Session detected. Redirecting to dashboard…', 'info');
-      window.location.replace('/admin/dashboard.html');
-      return;
+      console.info('[CCG-LOGIN] Session exists; deferring to guard');
+      setMessage('Session detected. Verifying access…', 'info');
+    } else {
+      log('No existing session found.');
     }
     log('No existing session found.');
   } catch (e) {
@@ -229,5 +229,4 @@ if (resetButton) {
 
 // Always init nav + login message/session redirect checks
 initAdminNav({ pageLabel: 'Login', active: 'dashboard' });
-showReasonMessage();
 redirectIfSessionExists();
