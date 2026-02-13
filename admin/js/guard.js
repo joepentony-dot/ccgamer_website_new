@@ -12,6 +12,8 @@ import { clearRoleCache, fetchUserRole } from './roles.js?v=20260207-01';
 
 console.info('[CCG-AUTH] guard.js loaded', ADMIN_BUILD_ID);
 
+const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
+
 function redirect(path, reason) {
   const url = new URL(path, window.location.origin);
   if (reason) url.searchParams.set('reason', reason);
@@ -45,6 +47,10 @@ function renderAuthStatus(state) {
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
+  if (IS_LOGIN_PAGE) {
+    return null;
+  }
+
   await waitForAuthReady();
 
   const context = await getAuthContext();
@@ -113,6 +119,10 @@ export async function ensureRole(allowedRoles = []) {
 }
 
 export async function startAccessMonitor({ onSessionInvalidated } = {}) {
+  if (IS_LOGIN_PAGE) {
+    return;
+  }
+
   await waitForAuthReady();
 
   bindSessionInvalidation({

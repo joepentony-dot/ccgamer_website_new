@@ -98,6 +98,25 @@ function setLoading(isLoading) {
   if (loginButton) loginButton.textContent = isLoading ? 'Signing in…' : 'Sign in';
 }
 
+function showReasonMessage() {
+  const reason = new URLSearchParams(window.location.search).get('reason');
+  if (!reason) return;
+
+  if (reason === 'forbidden' || reason === 'unauthorised' || reason === 'unauthorized') {
+    setMessage('You are signed in but not authorised for admin access.', 'error');
+    return;
+  }
+
+  if (reason === 'expired') {
+    setMessage('Your session expired. Please sign in again.', 'info');
+    return;
+  }
+
+  if (reason === 'signed_out') {
+    setMessage('You have been signed out.', 'info');
+  }
+}
+
 async function redirectIfSessionExists() {
   try {
     await waitForAuthReady();
@@ -108,6 +127,7 @@ async function redirectIfSessionExists() {
     } else {
       log('No existing session found.');
     }
+    log('No existing session found.');
   } catch (e) {
     error('Session restore failed', e);
     setMessage(e?.message || 'Unable to check session state.', 'error');
@@ -207,6 +227,6 @@ if (resetButton) {
   resetButton.addEventListener('click', handleReset);
 }
 
-// Always init nav + session redirect check
+// Always init nav + login message/session redirect checks
 initAdminNav({ pageLabel: 'Login', active: 'dashboard' });
 redirectIfSessionExists();
