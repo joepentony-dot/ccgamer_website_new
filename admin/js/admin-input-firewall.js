@@ -19,6 +19,17 @@
     };
   }
 
+  function isGameEditorIdentityTarget(target) {
+    if (!target || !(target instanceof HTMLElement)) return false;
+
+    if (target.closest('[data-field="title"]')) return true;
+    if (target.closest('[data-field="slug"]')) return true;
+    if (target.closest('[data-field="id"]')) return true;
+    if (target.closest('[data-lock-toggle]')) return true;
+
+    return false;
+  }
+
   const eventTypes = ['keydown', 'keypress', 'keyup'];
   let active = false;
   let disarmed = false;
@@ -55,6 +66,11 @@
   };
 
   const stopAdminInputHandlers = (event) => {
+    const pathname = window.location?.pathname || '';
+    if (pathname.includes('/admin/games-editor.html') && isGameEditorIdentityTarget(event.target)) {
+      return;
+    }
+
     if (window.ccgIsEditableTarget && window.ccgIsEditableTarget(event.target)) return;
     logOnce('ccg-firewall-block', '[CCG] Input firewall intercepted non-editable key event.', 'warn');
   };
