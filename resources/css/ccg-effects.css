@@ -400,7 +400,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 
 /* ============================================================
    LOGO CLICK FEEDBACK — SPEECH BUBBLE
-   • Positioned absolutely to avoid layout shifts
+   • Anchored in a fixed safe-area host for mobile readability
    • Neon/CRT styling using existing palette
 ============================================================ */
 
@@ -408,10 +408,21 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     overflow: visible;
 }
 
+.ccg-toast-host {
+    --ccg-toast-top: 16px;
+    --ccg-toast-right: 16px;
+    position: fixed;
+    top: calc(var(--ccg-toast-top, 16px) + env(safe-area-inset-top, 0px));
+    right: calc(var(--ccg-toast-right, 16px) + env(safe-area-inset-right, 0px));
+    width: min(92vw, 420px);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 99999;
+}
+
 .ccg-logo-bubble {
-    position: absolute;
-    top: 50%;
-    left: calc(100% + clamp(8px, 1.6vw, 16px));
+    position: relative;
+    margin-left: auto;
     padding: 6px 12px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -432,10 +443,10 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     text-wrap: balance;
 
     opacity: 0;
-    transform: translateY(calc(-50% - 8px)) scale(0.95);
+    transform: translateY(-8px) scale(0.95);
     transition: opacity 180ms ease, transform 200ms ease, box-shadow 200ms ease;
-    pointer-events: none;
-    z-index: 3;
+    pointer-events: auto;
+    z-index: 1;
 
     box-shadow:
         0 10px 22px rgba(0,0,0,0.65),
@@ -443,27 +454,12 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 }
 
 .ccg-logo-bubble::after {
-    content: "";
-    position: absolute;
-    left: 18px;
-    bottom: -6px;
-    width: 12px;
-    height: 12px;
-    background:
-        linear-gradient(
-            135deg,
-            rgba(var(--accent-rgb), 0.28),
-            rgba(255,255,255,0.08)
-        );
-    border-left: 1px solid rgba(255,255,255,0.2);
-    border-bottom: 1px solid rgba(255,255,255,0.2);
-    transform: rotate(45deg);
-    box-shadow: -2px 2px 6px rgba(0,0,0,0.35);
+    content: none;
 }
 
 .ccg-logo-bubble.is-visible {
     opacity: 1;
-    transform: translateY(-50%) scale(1);
+    transform: translateY(0) scale(1);
     animation: ccgLogoBubblePop 220ms ease-out, ccgLogoBubblePulse 1600ms ease-in-out 240ms;
 }
 
@@ -500,17 +496,24 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 @keyframes ccgLogoBubblePop {
     0% {
         opacity: 0;
-        transform: translateY(calc(-50% - 8px)) scale(0.92);
+        transform: translateY(-8px) scale(0.92);
         box-shadow:
             0 6px 16px rgba(0,0,0,0.55),
             0 0 6px rgba(var(--accent-rgb), 0.18);
     }
     100% {
         opacity: 1;
-        transform: translateY(-50%) scale(1);
+        transform: translateY(0) scale(1);
         box-shadow:
             0 10px 22px rgba(0,0,0,0.65),
             0 0 16px rgba(var(--accent-rgb), 0.32);
+    }
+}
+
+@media (max-width: 640px) {
+    .ccg-toast-host {
+        --ccg-toast-top: 22px;
+        --ccg-toast-right: 12px;
     }
 }
 
