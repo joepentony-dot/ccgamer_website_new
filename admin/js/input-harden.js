@@ -15,10 +15,29 @@
     };
   }
 
+  if (!window.ccgIsGameEditorIdentityTarget) {
+    window.ccgIsGameEditorIdentityTarget = function ccgIsGameEditorIdentityTarget(target) {
+      if (!target || !(target instanceof HTMLElement)) return false;
+      if (target.closest('[data-field="title"]')) return true;
+      if (target.closest('[data-field="slug"]')) return true;
+      if (target.closest('[data-field="id"]')) return true;
+      if (target.closest('[data-lock-toggle]')) return true;
+      return false;
+    };
+  }
+
   const isPrintableKey = (event) => {
     if (!event) return false;
     if (event.key === ' ' || event.code === 'Space' || event.keyCode === 32) return true;
     return typeof event.key === 'string' && event.key.length === 1;
+  };
+
+  const shouldBypassProtection = (event) => {
+    if (!event || !window.ccgIsAdminContext || !window.ccgIsAdminContext()) return false;
+    const pathname = window.location?.pathname || '';
+    if (!pathname.includes('/admin/games-editor.html')) return false;
+    if (!window.ccgIsGameEditorIdentityTarget || !window.ccgIsGameEditorIdentityTarget(event.target)) return false;
+    return true;
   };
 
   const isAdminEditableEvent = (event) => {
@@ -31,7 +50,7 @@
   if (!Event.prototype.__ccgAdminInputShield) {
     const originalPreventDefault = Event.prototype.preventDefault;
     Event.prototype.preventDefault = function patchedPreventDefault(...args) {
-      if (isAdminEditableEvent(this)) {
+      if (shouldBypassProtection(this) || isAdminEditableEvent(this)) {
         return;
       }
       return originalPreventDefault.apply(this, args);

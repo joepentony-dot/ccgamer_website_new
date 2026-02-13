@@ -19,15 +19,15 @@
     };
   }
 
-  function isGameEditorIdentityTarget(target) {
-    if (!target || !(target instanceof HTMLElement)) return false;
-
-    if (target.closest('[data-field="title"]')) return true;
-    if (target.closest('[data-field="slug"]')) return true;
-    if (target.closest('[data-field="id"]')) return true;
-    if (target.closest('[data-lock-toggle]')) return true;
-
-    return false;
+  if (!window.ccgIsGameEditorIdentityTarget) {
+    window.ccgIsGameEditorIdentityTarget = function ccgIsGameEditorIdentityTarget(target) {
+      if (!target || !(target instanceof HTMLElement)) return false;
+      if (target.closest('[data-field="title"]')) return true;
+      if (target.closest('[data-field="slug"]')) return true;
+      if (target.closest('[data-field="id"]')) return true;
+      if (target.closest('[data-lock-toggle]')) return true;
+      return false;
+    };
   }
 
   const eventTypes = ['keydown', 'keypress', 'keyup'];
@@ -38,7 +38,7 @@
     try {
       const params = new URLSearchParams(window.location.search);
       return params.get('debugkeys') === '1' || window.localStorage.getItem('ccgDebugKeys') === '1';
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   };
@@ -67,7 +67,11 @@
 
   const stopAdminInputHandlers = (event) => {
     const pathname = window.location?.pathname || '';
-    if (pathname.includes('/admin/games-editor.html') && isGameEditorIdentityTarget(event.target)) {
+    if (
+      pathname.includes('/admin/games-editor.html')
+      && window.ccgIsGameEditorIdentityTarget
+      && window.ccgIsGameEditorIdentityTarget(event.target)
+    ) {
       return;
     }
 

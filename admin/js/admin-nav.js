@@ -1,4 +1,4 @@
-import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
+import { getAuthContext, waitForAuthReady } from './auth.js';
 
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, (char) => ({

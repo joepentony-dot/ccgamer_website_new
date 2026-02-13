@@ -1,8 +1,8 @@
-import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
-import { getAuthContext, waitForAuthReady } from './auth.js?v=admin-stable-20260207';
-import { loadGamesLibrary, updateGamesLibrary } from './games-api.js?v=admin-stable-20260207';
-import { fetchUserRole } from './roles.js?v=admin-stable-20260207';
-import { validateExportOutputs, validateWizardDraft } from './validator.js?v=admin-stable-20260207';
+import { initAdminNav } from './admin-nav.js';
+import { getAuthContext, waitForAuthReady } from './auth.js';
+import { loadGamesLibrary, updateGamesLibrary } from './games-api.js';
+import { fetchUserRole } from './roles.js';
+import { validateExportOutputs, validateWizardDraft } from './validator.js';
 
 /* PHASE 0 AUDIT SUMMARY
 - Canonical games.json location: "/games/games.json"
@@ -206,9 +206,12 @@ const isEditableTarget = (target) => (window.ccgIsEditableTarget ? window.ccgIsE
   document.addEventListener(
     'keydown',
     (e) => {
-      if (window.ccgIsEditableTarget?.(e.target)) {
-        e.stopImmediatePropagation();
-      }
+      if (!window.ccgIsEditableTarget || !window.ccgIsEditableTarget(e.target)) return;
+      const isIdentityTarget = window.ccgIsGameEditorIdentityTarget
+        ? window.ccgIsGameEditorIdentityTarget(e.target)
+        : false;
+      if (isIdentityTarget) return;
+      e.stopPropagation();
     },
     true
   );
