@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Supporter Perks Admin | CCG</title>
   <link rel="stylesheet" href="/resources/css/ccg-master.css" />
@@ -19,6 +20,7 @@
 
   <script src="/js/ccg-supabase-config.js"></script>
   <script src="/js/ccg-supabase-client.js"></script>
+  <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
   <script>
     (async function () {
       const status = document.getElementById('ccg-supporter-admin-status');

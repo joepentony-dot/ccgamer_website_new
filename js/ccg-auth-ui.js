@@ -2,11 +2,7 @@
   const BOUND_ATTR = 'dataLogoutBound';
 
   function getLogoutTargets() {
-    return Array.from(document.querySelectorAll('[data-logout], #logout, .logout, #ccg-auth-logout'));
-  }
-
-  function getReturnTo() {
-    return window.location.pathname + window.location.search + window.location.hash;
+    return Array.from(document.querySelectorAll('[data-logout]'));
   }
 
   async function getSupabaseClient() {
@@ -29,16 +25,7 @@
     }
 
     await supabase.auth.signOut();
-
-    // Admin logout -> admin login
-    if (window.location.pathname.startsWith('/admin/')) {
-      window.location.replace('/admin/login.html?reason=signed_out');
-      return;
-    }
-
-    // Public pages: stay on the same page, but refresh so header updates cleanly.
-    // (If you prefer redirect to /auth/login.html, swap this behaviour.)
-    window.location.replace(getReturnTo());
+    window.location.replace('/auth/login.html?reason=signed_out');
   }
 
   function bindLogout() {
