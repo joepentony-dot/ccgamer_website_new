@@ -400,7 +400,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 
 /* ============================================================
    LOGO CLICK FEEDBACK — SPEECH BUBBLE
-   • Rendered in fixed toast host for safe-area visibility
+   • Anchored in a fixed safe-area host for mobile readability
    • Neon/CRT styling using existing palette
 ============================================================ */
 
@@ -429,11 +429,21 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     z-index: 99999;
 }
 
+.ccg-toast-host {
+    --ccg-toast-top: 16px;
+    --ccg-toast-right: 16px;
+    position: fixed;
+    top: calc(var(--ccg-toast-top, 16px) + env(safe-area-inset-top, 0px));
+    right: calc(var(--ccg-toast-right, 16px) + env(safe-area-inset-right, 0px));
+    width: min(92vw, 420px);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 99999;
+}
+
 .ccg-logo-bubble {
     position: relative;
     margin-left: auto;
-    width: 100%;
-    box-sizing: border-box;
     padding: 6px 12px;
     border-radius: 999px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -456,8 +466,8 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     opacity: 0;
     transform: translateY(-8px) scale(0.95);
     transition: opacity 180ms ease, transform 200ms ease, box-shadow 200ms ease;
-    pointer-events: none;
-    z-index: 3;
+    pointer-events: auto;
+    z-index: 1;
 
     box-shadow:
         0 10px 22px rgba(0,0,0,0.65),
@@ -465,17 +475,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 }
 
 .ccg-logo-bubble::after {
-    display: none;
-}
-
-@media (max-width: 767px) {
-    .ccg-toast-host {
-        --ccg-toast-top: 102px;
-    }
-}
-
-.ccg-toast {
-    pointer-events: auto;
+    content: none;
 }
 
 .ccg-logo-bubble.is-visible {
@@ -528,6 +528,13 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
         box-shadow:
             0 10px 22px rgba(0,0,0,0.65),
             0 0 16px rgba(var(--accent-rgb), 0.32);
+    }
+}
+
+@media (max-width: 640px) {
+    .ccg-toast-host {
+        --ccg-toast-top: 22px;
+        --ccg-toast-right: 12px;
     }
 }
 
