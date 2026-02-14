@@ -242,7 +242,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     right: auto;
     bottom: auto;
     padding: 0;
-    pointer-events: auto;
+    pointer-events: none;
     opacity: 1;
 }
 
@@ -257,7 +257,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    pointer-events: auto;
+    pointer-events: none;
     animation: none;
 }
 
