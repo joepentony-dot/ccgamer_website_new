@@ -1257,10 +1257,11 @@ if (IS_ADMIN_PATH) {
         if (!logos.length) return;
 
         logos.forEach(logo => {
-            if (logo.dataset.ccgLogoEasterEgg === "true") return;
-            logo.dataset.ccgLogoEasterEgg = "true";
-
             const brandLink = logo.closest(".ccg-brand");
+            const activationTarget = brandLink || logo;
+            if (!activationTarget || activationTarget.dataset.ccgLogoEasterEgg === "true") return;
+            activationTarget.dataset.ccgLogoEasterEgg = "true";
+
             if (brandLink && brandLink.tagName === "A") {
                 brandLink.removeAttribute("href");
                 brandLink.removeAttribute("target");
@@ -1272,7 +1273,7 @@ if (IS_ADMIN_PATH) {
                 }
             }
 
-            logo.addEventListener("click", event => {
+            activationTarget.addEventListener("click", event => {
                 if (event) {
                     if (
                         event.target &&
