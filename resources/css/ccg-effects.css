@@ -439,7 +439,7 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     line-height: 1.2;
     white-space: normal;
     text-transform: none;
-    max-width: min(320px, calc(100vw - 32px));
+    max-width: min(420px, 92vw);
     text-wrap: balance;
 
     opacity: 0;
