@@ -406,6 +406,27 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
 
 .ccg-brand {
     overflow: visible;
+    pointer-events: auto;
+    position: relative;
+    z-index: 5;
+}
+
+.ccg-brand__logo {
+    pointer-events: auto;
+    position: relative;
+    z-index: 6;
+}
+
+.ccg-toast-host {
+    --ccg-toast-top: 14px;
+    --ccg-toast-right: 14px;
+    position: fixed;
+    top: calc(var(--ccg-toast-top, 14px) + env(safe-area-inset-top, 0px));
+    right: calc(var(--ccg-toast-right, 14px) + env(safe-area-inset-right, 0px));
+    width: min(92vw, 420px);
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 99999;
 }
 
 .ccg-toast-host {
