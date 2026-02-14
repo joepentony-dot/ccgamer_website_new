@@ -1198,20 +1198,14 @@ if (IS_ADMIN_PATH) {
         setTimeout(() => logo.classList.remove(flashClass), 420);
     }
 
-    function ensureLogoToastHost() {
-        let host = document.getElementById("ccg-toast-host");
-        if (host) return host;
-
-        host = document.createElement("div");
-        host.id = "ccg-toast-host";
-        host.className = "ccg-toast-host";
-        document.body.appendChild(host);
-        return host;
-    }
-
     function ensureLogoBubble() {
-        const host = ensureLogoToastHost();
-        if (!host) return null;
+        let host = document.getElementById("ccg-toast-host");
+        if (!host) {
+            host = document.createElement("div");
+            host.id = "ccg-toast-host";
+            host.className = "ccg-toast-host";
+            document.body.appendChild(host);
+        }
 
         let bubble = host.querySelector(".ccg-logo-bubble");
         if (!bubble) {
@@ -1225,7 +1219,7 @@ if (IS_ADMIN_PATH) {
         return bubble;
     }
 
-    function showLogoBubble(_logo, message, { swapText = false } = {}) {
+    function showLogoBubble(message, { swapText = false } = {}) {
         const bubble = ensureLogoBubble();
         if (!bubble) return;
 
@@ -1296,14 +1290,14 @@ if (IS_ADMIN_PATH) {
 
                 if (logoClickState.count === 1) {
                     flashLogo(logo, "ccg-logo-flash--neon");
-                    showLogoBubble(logo, "Dont Click Me Again");
+                    showLogoBubble("Dont Click Me Again");
                     scheduleLogoReset();
                     return;
                 }
 
                 if (logoClickState.count === 2) {
                     flashLogo(logo, "ccg-logo-flash--red");
-                    showLogoBubble(logo, "DEFINITELY Dont Click Me Again", { swapText: true });
+                    showLogoBubble("DEFINITELY Dont Click Me Again", { swapText: true });
                     scheduleLogoReset();
                     return;
                 }
