@@ -2946,7 +2946,7 @@ body.ccg-is-mobile .home-hero__bg {
 }
 
 .ccg-secret-modal__content {
-    width: min(680px, 96vw);
+    width: min(680px, 92vw);
     max-height: 88vh;
     overflow: visible;
     padding: 28px;

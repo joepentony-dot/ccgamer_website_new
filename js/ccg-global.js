@@ -1198,24 +1198,35 @@ if (IS_ADMIN_PATH) {
         setTimeout(() => logo.classList.remove(flashClass), 420);
     }
 
-    function ensureLogoBubble(logo) {
-        const brand = logo.closest(".ccg-brand");
-        if (!brand) return null;
+    function ensureLogoToastHost() {
+        let host = document.getElementById("ccg-toast-host");
+        if (host) return host;
 
-        let bubble = brand.querySelector(".ccg-logo-bubble");
+        host = document.createElement("div");
+        host.id = "ccg-toast-host";
+        host.className = "ccg-toast-host";
+        document.body.appendChild(host);
+        return host;
+    }
+
+    function ensureLogoBubble() {
+        const host = ensureLogoToastHost();
+        if (!host) return null;
+
+        let bubble = host.querySelector(".ccg-logo-bubble");
         if (!bubble) {
             bubble = document.createElement("div");
             bubble.className = "ccg-logo-bubble";
             bubble.setAttribute("role", "status");
             bubble.setAttribute("aria-live", "polite");
             bubble.innerHTML = "<span class=\"ccg-logo-bubble__text\"></span>";
-            brand.appendChild(bubble);
+            host.appendChild(bubble);
         }
         return bubble;
     }
 
-    function showLogoBubble(logo, message, { swapText = false } = {}) {
-        const bubble = ensureLogoBubble(logo);
+    function showLogoBubble(_logo, message, { swapText = false } = {}) {
+        const bubble = ensureLogoBubble();
         if (!bubble) return;
 
         const textEl = bubble.querySelector(".ccg-logo-bubble__text");
@@ -1252,10 +1263,11 @@ if (IS_ADMIN_PATH) {
         if (!logos.length) return;
 
         logos.forEach(logo => {
-            if (logo.dataset.ccgLogoEasterEgg === "true") return;
-            logo.dataset.ccgLogoEasterEgg = "true";
-
             const brandLink = logo.closest(".ccg-brand");
+            const activationTarget = brandLink || logo;
+            if (!activationTarget || activationTarget.dataset.ccgLogoEasterEgg === "true") return;
+            activationTarget.dataset.ccgLogoEasterEgg = "true";
+
             if (brandLink && brandLink.tagName === "A") {
                 brandLink.removeAttribute("href");
                 brandLink.removeAttribute("target");
@@ -1267,7 +1279,7 @@ if (IS_ADMIN_PATH) {
                 }
             }
 
-            logo.addEventListener("click", event => {
+            activationTarget.addEventListener("click", event => {
                 if (event) {
                     if (
                         event.target &&
