@@ -740,7 +740,7 @@ li {
 .ccg-header {
     position: sticky;
     top: 0;
-    z-index: 9999;
+    z-index: 100000;
 
     width: 100%;
     max-width: 100%;
@@ -2937,7 +2937,7 @@ body.ccg-is-mobile .home-hero__bg {
     align-items: center;
     justify-content: center;
     background: rgba(3, 8, 14, 0.8);
-    z-index: 9999;
+    z-index: 100000;
     padding: 24px;
 }
 
@@ -2946,10 +2946,12 @@ body.ccg-is-mobile .home-hero__bg {
 }
 
 .ccg-secret-modal__content {
-    width: min(680px, 96vw);
+    width: min(680px, 92vw);
     max-height: 88vh;
     overflow: visible;
     padding: 28px;
+    position: relative;
+    z-index: 1;
     border-radius: 20px;
     background: linear-gradient(135deg, rgba(12, 18, 30, 0.95), rgba(7, 10, 18, 0.95));
     border: 1px solid rgba(124, 252, 255, 0.3);
@@ -2957,6 +2959,14 @@ body.ccg-is-mobile .home-hero__bg {
     color: #d7f7ff;
     font-family: "C64 Pro Mono", "Roboto Mono", monospace;
     text-transform: uppercase;
+}
+
+.ccg-secret-modal.is-open .ccg-secret-modal__content {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
 }
 
 .ccg-secret-modal__content h2 {
