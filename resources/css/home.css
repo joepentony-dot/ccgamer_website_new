@@ -3133,13 +3133,6 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
         font-size: 0.78rem;
         letter-spacing: 0.08em;
     }
-
-    .home-bottom-cta__actions .home-cta-btn--collections {
-        font-size: 0.82rem;
-        letter-spacing: 0.06em;
-        padding-inline: 10px;
-        min-height: 48px;
-    }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
