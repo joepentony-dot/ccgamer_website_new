@@ -1079,14 +1079,25 @@ function wait(delayMs) {
 
 function renderSystemOptions() {
   if (!el.systemSelect) return;
-  const options = state.schema.systems.length ? state.schema.systems : ['C64'];
-  el.systemSelect.querySelectorAll('option:not([value=""])').forEach((option) => option.remove());
-  options.forEach((system) => {
-    const option = document.createElement('option');
-    option.value = system;
-    option.textContent = system;
-    el.systemSelect.appendChild(option);
+
+  const currentValue = String(state.draft?.system || el.systemSelect.value || '');
+  const systems = Array.from(
+    new Set(
+      (Array.isArray(state.library) ? state.library : [])
+        .map((game) => String(game?.system || '').trim())
+        .filter(Boolean)
+    )
+  ).sort((a, b) => a.localeCompare(b));
+
+  el.systemSelect.innerHTML = '';
+  el.systemSelect.appendChild(new Option('Select system', '', true, false));
+  systems.forEach((system) => {
+    el.systemSelect.appendChild(new Option(system, system, false, false));
   });
+
+  if (currentValue && systems.includes(currentValue)) {
+    el.systemSelect.value = currentValue;
+  }
 }
 
 function renderGenres() {
