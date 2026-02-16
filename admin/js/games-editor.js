@@ -701,6 +701,21 @@ function syncIdentityFields({ force = false } = {}) {
   }
 }
 
+function bindIdentityAutoSync() {
+  if (state.identityWiringBound) return;
+  const titleInput = findIdentityInput('title');
+  if (!titleInput) return;
+
+  titleInput.addEventListener('input', () => {
+    state.draft.title = titleInput.value;
+    syncIdentityFields();
+    updateIdentityDomFromDraft();
+    state.dirty = true;
+  });
+
+  state.identityWiringBound = true;
+}
+
 function getIdentityMismatchError() {
   const identity = generateIdentityFromTitle(state.draft?.title);
   const slug = String(state.draft?.slug || '').trim();
@@ -2354,42 +2369,10 @@ function handleFieldInput(event) {
 }
 
 function bindIdentityWiring() {
-  if (state.identityWiringBound) return;
-  state.identityWiringBound = true;
-
-  const titleInput = findIdentityInput('title');
   const slugInput = findIdentityInput('slug');
   const idInput = findIdentityInput('id');
   const slugLockToggle = el.locks.slug || document.querySelector('[data-lock-toggle="slug"]');
   const idLockToggle = el.locks.id || document.querySelector('[data-lock-toggle="id"]');
-
-  if (titleInput) {
-    const onTitleChange = () => {
-      state.draft.title = titleInput.value;
-      syncIdentityFields();
-      console.info('[CCG-IDENTITY] title changed', {
-        title: state.draft.title,
-        slug: state.draft.slug,
-        id: state.draft.id,
-        slugLocked: state.slugLocked,
-        idLocked: state.idLocked
-      });
-      normalizeDraft();
-      updateIdentityDomFromDraft();
-      updatePreviewFields();
-      state.validation.ran = false;
-      updateStatusIndicators();
-      evaluateStepStatus();
-      markDirty(true);
-      scheduleAutoSave();
-    };
-
-    titleInput.addEventListener('input', onTitleChange);
-    titleInput.addEventListener('change', onTitleChange);
-    titleInput.addEventListener('paste', () => {
-      window.setTimeout(onTitleChange, 0);
-    });
-  }
 
   if (slugLockToggle) {
     slugLockToggle.addEventListener('change', (event) => {
@@ -2838,6 +2821,7 @@ async function boot() {
   updateProgress();
   showDraftBanner();
   bindEvents();
+  bindIdentityAutoSync();
   bindIdentityWiring();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
   window.ccgRegenerateGameStubs = downloadFlatPageZip;
