@@ -48,6 +48,19 @@ export async function listComments(gameSlug, limit = 50) {
   return { data: data ?? [], error };
 }
 
+export async function listLatestComments(limit = 25) {
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 25, 100));
+
+  const { data, error } = await supabase
+    .from('latest_comments_public')
+    .select('id, profile_id, game_slug, content, created_at, display_name')
+    .order('created_at', { ascending: false })
+    .limit(safeLimit);
+
+  if (error) cLog('listLatestComments error', error);
+  return { data: data ?? [], error };
+}
+
 export async function addComment(profileId, gameSlug, content) {
   const payload = {
     profile_id: profileId,
@@ -124,6 +137,20 @@ export async function getRatingStats(gameSlug) {
   return { count, avg: Math.round(avg * 10) / 10 };
 }
 
+export async function listTopRated(limit = 25) {
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 25, 100));
+
+  const { data, error } = await supabase
+    .from('game_rating_stats')
+    .select('game_slug, avg_rating, rating_count')
+    .order('avg_rating', { ascending: false })
+    .order('rating_count', { ascending: false })
+    .limit(safeLimit);
+
+  if (error) cLog('listTopRated error', error);
+  return { data: data ?? [], error };
+}
+
 export async function listActivity(limit = 50) {
   const { data, error } = await supabase
     .from('community_activity')
@@ -149,8 +176,21 @@ export async function logActivity(type, gameSlug = null, meta = {}) {
 }
 
 export async function getAdminSummary() {
-  const { data, error } = await supabase.from('admin_summary').select('*').single();
+  const { data, error } = await supabase.rpc('get_admin_summary');
 
   if (error) cLog('getAdminSummary error', error);
-  return { data, error };
+
+  const row = Array.isArray(data) ? data[0] : data;
+  return { data: row ?? null, error };
+}
+
+export async function unsubscribeByToken(token) {
+  const normalizedToken = String(token || '').trim();
+  const { data, error } = await supabase.rpc('unsubscribe_by_token', {
+    p_token: normalizedToken
+  });
+
+  if (error) cLog('unsubscribeByToken error', error);
+  const row = Array.isArray(data) ? data[0] : data;
+  return { data: row ?? null, error };
 }
