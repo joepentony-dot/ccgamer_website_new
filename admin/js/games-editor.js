@@ -492,25 +492,42 @@ function setReadOnly(isReadOnly) {
 }
 
 function applyAuthContext(context, error) {
-  const isAuthenticated = Boolean(context?.isAuthenticated);
-  const role = context?.role || 'none';
-  let canWrite = isAuthenticated && ALLOWED_WRITE_ROLES.includes(role);
+  const authState = String(context?.state || '').toLowerCase();
+  const isAuthenticated = Boolean(
+    context?.user?.id
+    || context?.session?.user?.id
+    || context?.isAuthenticated
+    || authState === 'authenticated'
+    || authState === 'authenticated_limited'
+    || authState === 'authenticating'
+  );
+
+  const email = String(
+    context?.profile?.email
+    || context?.email
+    || context?.user?.email
+    || context?.session?.user?.email
+    || ''
+  ).toLowerCase();
+
+  const isOwner = email === SITE_OWNER_EMAIL;
+  const role = (isOwner ? 'admin' : (context?.role || context?.profile?.role || 'none'));
+  let canWrite = Boolean(context?.canWrite);
+
+  if (!canWrite && isAuthenticated) {
+    canWrite = ALLOWED_WRITE_ROLES.includes(String(role).toLowerCase());
+  }
+  if (isOwner) {
+    canWrite = true;
+  }
 
   state.auth.ready = true;
   state.auth.context = context || null;
   state.auth.canWrite = canWrite;
+  state.auth.role = role;
 
-  if (el.email) el.email.textContent = context?.user?.email || 'guest';
+  if (el.email) el.email.textContent = email || 'guest';
   if (el.role) el.role.textContent = role;
-
-  const email = String(context?.email || context?.user?.email || '').toLowerCase();
-  if (isAuthenticated && email === SITE_OWNER_EMAIL) {
-    state.auth.canWrite = true;
-    state.auth.role = 'admin';
-    canWrite = true;
-    setModeIndicator('Mode: New');
-    setRuntimeState('Admin access enabled', 'ok');
-  }
 
   if (error) {
     console.error('[CCG-GAME-BUILDER] auth error', error);
@@ -534,7 +551,13 @@ function applyAuthContext(context, error) {
     return;
   }
 
-  setRuntimeState('Ready');
+  if (isOwner) {
+    setModeIndicator('Mode: New');
+    setRuntimeState('Admin access enabled', 'ok');
+  } else {
+    setRuntimeState('Ready');
+  }
+
   setReadOnly(false);
   updateStatusIndicators();
 }
@@ -2951,3 +2974,13 @@ boot().catch((error) => {
   setRuntimeState('Boot failed', 'error');
   setErrorIndicator(`Library: failed to load (${message})`);
 });
+
+// Dev verification checklist:
+// - [ ] No console errors on load.
+// - [ ] Library loads games.json.
+// - [ ] System dropdown shows C64/AMIGA.
+// - [ ] Title -> slug/id auto-sync works.
+// - [ ] Generate Output and Build Package enable when valid.
+// - [ ] Owner email gets write access even without user_roles row.
+// - [ ] Export ZIP produces UPDATED-games.json, games/{slug}/index.html stub, games/{slug}.html flat page, and sitemap fragment.
+
