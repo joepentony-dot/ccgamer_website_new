@@ -700,6 +700,19 @@ function syncIdentityFields({ force = false } = {}) {
   }
 }
 
+function applyTitleIdentitySync(nextTitle) {
+  const title = String(nextTitle || '').trim();
+  state.draft.title = title;
+
+  if (!title) {
+    updateIdentityDomFromDraft();
+    return;
+  }
+
+  syncIdentityFields();
+  updateIdentityDomFromDraft();
+}
+
 function getIdentityMismatchError() {
   const identity = generateIdentityFromTitle(state.draft?.title);
   const slug = String(state.draft?.slug || '').trim();
@@ -1080,23 +1093,34 @@ function wait(delayMs) {
 function renderSystemOptions() {
   if (!el.systemSelect) return;
 
-  const currentValue = String(state.draft?.system || el.systemSelect.value || '');
-  const systems = Array.from(
-    new Set(
-      (Array.isArray(state.library) ? state.library : [])
-        .map((game) => String(game?.system || '').trim())
-        .filter(Boolean)
-    )
-  ).sort((a, b) => a.localeCompare(b));
+  const fromSchema = Array.isArray(state.schema?.systems) ? state.schema.systems : [];
+  const fallback = ['C64', 'AMIGA'];
+  const systemsRaw = fromSchema.length ? fromSchema : fallback;
+  const systems = Array.from(new Set(systemsRaw.map((s) => String(s || '').trim()).filter(Boolean)));
+
+  if (!systems.includes('C64')) systems.unshift('C64');
+  if (!systems.includes('AMIGA')) systems.push('AMIGA');
+
+  const current = String(el.systemSelect.value || state.draft?.system || '').trim();
 
   el.systemSelect.innerHTML = '';
-  el.systemSelect.appendChild(new Option('Select system', '', true, false));
+
+  const placeholder = document.createElement('option');
+  placeholder.value = '';
+  placeholder.textContent = 'Select system';
+  el.systemSelect.appendChild(placeholder);
+
   systems.forEach((system) => {
-    el.systemSelect.appendChild(new Option(system, system, false, false));
+    const option = document.createElement('option');
+    option.value = system;
+    option.textContent = system;
+    el.systemSelect.appendChild(option);
   });
 
-  if (currentValue && systems.includes(currentValue)) {
-    el.systemSelect.value = currentValue;
+  if (current && systems.includes(current)) {
+    el.systemSelect.value = current;
+  } else if (state.draft?.system && systems.includes(state.draft.system)) {
+    el.systemSelect.value = state.draft.system;
   }
 }
 
@@ -2334,8 +2358,7 @@ function handleFieldInput(event) {
   state.draft[name] = target.value;
 
   if (name === 'title') {
-    syncIdentityFields();
-    updateIdentityDomFromDraft();
+    applyTitleIdentitySync(target.value);
     updatePreviewFields();
     state.validation.ran = false;
     updateStatusIndicators();
@@ -2507,6 +2530,15 @@ function bindEvents() {
     field.addEventListener('input', handleFieldInput);
     field.addEventListener('change', handleFieldInput);
   });
+
+  if (el.systemSelect && !el.systemSelect.dataset.ccgBound) {
+    el.systemSelect.dataset.ccgBound = 'true';
+    el.systemSelect.addEventListener('focus', () => {
+      if (el.systemSelect.options.length <= 1) {
+        renderSystemOptions();
+      }
+    });
+  }
 
   if (el.genreList) {
     el.genreList.addEventListener('change', handleGenreChange);
@@ -2692,6 +2724,10 @@ async function loadLibrary() {
       const issueLabel = noticeCount ? ` · Legacy notices: ${noticeCount}` : '';
       setLibraryIndicator(`Library: Loaded (${data.length})${issueLabel}`);
       renderSystemOptions();
+      console.info(
+        '[CCG-GAME-BUILDER] System options:',
+        (state.schema?.systems || []).join(', ') || '(fallback)'
+      );
       renderGenres();
       renderLibraryLookupOptions();
       updateStatusIndicators();
