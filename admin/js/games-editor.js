@@ -68,8 +68,7 @@ const state = {
     ready: false,
     context: null,
     canWrite: false
-  },
-  identityWiringBound: false
+  }
 };
 
 const el = {
@@ -699,21 +698,6 @@ function syncIdentityFields({ force = false } = {}) {
     state.draft.id = identity.id;
     console.info('[CCG-IDENTITY] id synced', { id: state.draft.id, source: 'title' });
   }
-}
-
-function bindIdentityAutoSync() {
-  if (state.identityWiringBound) return;
-  const titleInput = findIdentityInput('title');
-  if (!titleInput) return;
-
-  titleInput.addEventListener('input', () => {
-    state.draft.title = titleInput.value;
-    syncIdentityFields();
-    updateIdentityDomFromDraft();
-    state.dirty = true;
-  });
-
-  state.identityWiringBound = true;
 }
 
 function getIdentityMismatchError() {
@@ -2340,14 +2324,6 @@ function handleFieldInput(event) {
 
   if (name === 'title') {
     syncIdentityFields();
-    console.info('[CCG-IDENTITY] title changed', {
-      title: state.draft.title,
-      slug: state.draft.slug,
-      id: state.draft.id,
-      slugLocked: state.slugLocked,
-      idLocked: state.idLocked
-    });
-    normalizeDraft();
     updateIdentityDomFromDraft();
     updatePreviewFields();
     state.validation.ran = false;
@@ -2516,7 +2492,7 @@ function goToStep(nextStep) {
 
 function bindEvents() {
   el.fields.forEach((field) => {
-    if (['title', 'slug', 'id'].includes(field.dataset.field || '')) return;
+    if (['slug', 'id'].includes(field.dataset.field || '')) return;
     field.addEventListener('input', handleFieldInput);
     field.addEventListener('change', handleFieldInput);
   });
@@ -2821,7 +2797,6 @@ async function boot() {
   updateProgress();
   showDraftBanner();
   bindEvents();
-  bindIdentityAutoSync();
   bindIdentityWiring();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
   window.ccgRegenerateGameStubs = downloadFlatPageZip;
