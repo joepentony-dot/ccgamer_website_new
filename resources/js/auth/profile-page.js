@@ -1,87 +1,93 @@
-import { byId, setMessage } from './ui-helpers.js';
-import { getCurrentUser, logoutUser } from './auth-core.js';
+const DEBUG = new URLSearchParams(window.location.search).has('debug');
 
-async function getClient() {
-  await window.ccgSupabase.waitForAuth();
-  return window.ccgSupabase.getClient();
+function log(...args) {
+  if (DEBUG) console.log('[profile]', ...args);
 }
 
-function requireAuth() {
-  window.location.replace('/auth/login.html?returnTo=' + encodeURIComponent('/community/profile.html'));
-}
-
-function formatDate(value) {
-  if (!value) return '—';
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return '—';
-  return d.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-async function loadProfile() {
-  const message = byId('profileMessage');
-  const userRes = await getCurrentUser();
-  const user = userRes?.data?.user;
-
-  if (!user) {
-    requireAuth();
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!window.supabase) {
+    console.error('Supabase client not found');
     return;
   }
 
-  if (!user.email_confirmed_at) {
-    setMessage(message, 'Please confirm your email before using profile preferences.', 'error');
-    byId('prefsForm').hidden = true;
+  const messageBox = document.getElementById('profileMessage');
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+  if (userError || !user) {
+    window.location.href = '/auth/login.html';
     return;
   }
 
-  const supabase = await getClient();
-  const { data, error } = await supabase
+  log('User authenticated', user.id);
+
+  const { data: profile, error } = await supabase
     .from('profiles')
-    .select('display_name,avatar_url,created_at,newsletter_opt_in,notify_new_games_opt_in,notify_platform_c64,notify_platform_amiga')
+    .select('*')
     .eq('id', user.id)
-    .maybeSingle();
+    .single();
 
-  if (error) {
-    setMessage(message, 'Could not load profile settings right now.', 'error');
+  if (error || !profile) {
+    messageBox.textContent = 'Could not load profile settings right now.';
+    messageBox.classList.add('auth-error');
+    log('Profile load error', error);
     return;
   }
 
-  byId('displayName').textContent = data?.display_name || user.user_metadata?.username || user.email.split('@')[0];
-  byId('emailValue').textContent = user.email || '—';
-  byId('joinDate').textContent = formatDate(data?.created_at || user.created_at);
+  document.getElementById('displayName').textContent =
+    profile.display_name || '—';
+  document.getElementById('emailValue').textContent =
+    profile.email || user.email || '—';
+  document.getElementById('joinDate').textContent =
+    new Date(profile.joined_at).toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
 
-  const avatar = byId('profileAvatar');
-  avatar.src = data?.avatar_url || '/favicon.ico';
+  document.getElementById('newsletterOptIn').checked =
+    !!profile.newsletter_monthly;
+  document.getElementById('notifyNewGames').checked =
+    !!profile.notify_new_games;
+  document.getElementById('notifyC64').checked =
+    !!profile.notify_c64;
+  document.getElementById('notifyAmiga').checked =
+    !!profile.notify_amiga;
 
-  byId('newsletterOptIn').checked = Boolean(data?.newsletter_opt_in);
-  byId('notifyNewGames').checked = Boolean(data?.notify_new_games_opt_in);
-  byId('notifyC64').checked = data?.notify_platform_c64 !== false;
-  byId('notifyAmiga').checked = data?.notify_platform_amiga !== false;
+  const form = document.getElementById('prefsForm');
 
-  byId('prefsForm').addEventListener('submit', async (event) => {
-    event.preventDefault();
-    setMessage(message, 'Saving preferences...', 'info');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    messageBox.textContent = '';
 
-    const payload = {
-      display_name: byId('displayName').textContent,
-      newsletter_opt_in: byId('newsletterOptIn').checked,
-      notify_new_games_opt_in: byId('notifyNewGames').checked,
-      notify_platform_c64: byId('notifyC64').checked,
-      notify_platform_amiga: byId('notifyAmiga').checked
+    const updates = {
+      newsletter_monthly: document.getElementById('newsletterOptIn').checked,
+      notify_new_games: document.getElementById('notifyNewGames').checked,
+      notify_c64: document.getElementById('notifyC64').checked,
+      notify_amiga: document.getElementById('notifyAmiga').checked
     };
 
-    const { error: updateError } = await supabase.from('profiles').update(payload).eq('id', user.id);
+    const { error: updateError } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', user.id);
+
     if (updateError) {
-      setMessage(message, 'Unable to save preferences.', 'error');
+      messageBox.textContent = 'Could not save preferences.';
+      messageBox.classList.add('auth-error');
+      log('Update error', updateError);
       return;
     }
 
-    setMessage(message, 'Preferences saved.', 'success');
+    messageBox.textContent = 'Preferences saved.';
+    messageBox.classList.remove('auth-error');
+    messageBox.classList.add('auth-success');
+    log('Preferences updated');
   });
 
-  byId('logoutBtn').addEventListener('click', async () => {
-    await logoutUser();
-    window.location.replace('/');
+  const logoutBtn = document.getElementById('logoutBtn');
+  logoutBtn.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
   });
-}
-
-loadProfile();
+});
