@@ -527,6 +527,8 @@ if (IS_ADMIN_PATH) {
         inputBuffer: "",
         konamiIndex: 0,
         activeEgg: null,
+        openedAt: 0,
+        ignoreBackdropMs: 420,
     };
 
     const konamiSequence = [
@@ -1121,7 +1123,12 @@ if (IS_ADMIN_PATH) {
         document.body.appendChild(modal);
         secretState.modal = modal;
         modal.addEventListener("click", event => {
-            if (event.target === modal) closeSecretModal();
+            if (event.target !== modal) return;
+            const now = Date.now();
+            if (secretState.openedAt && (now - secretState.openedAt) < (secretState.ignoreBackdropMs || 420)) {
+                return;
+            }
+            closeSecretModal();
         });
 
         modal.querySelectorAll("[data-ccg-secret-code]").forEach(item => {
@@ -1137,9 +1144,13 @@ if (IS_ADMIN_PATH) {
 
     function openSecretModal() {
         const modal = buildSecretModal();
-        modal.classList.add("is-open");
-        modal.setAttribute("aria-hidden", "false");
-        document.body.classList.add("ccg-secret-modal-open");
+        secretState.openedAt = Date.now();
+        requestAnimationFrame(() => {
+            if (!modal) return;
+            modal.classList.add("is-open");
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("ccg-secret-modal-open");
+        });
     }
 
     function closeSecretModal() {

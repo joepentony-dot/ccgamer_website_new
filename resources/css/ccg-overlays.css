@@ -404,6 +404,110 @@ html.ccg-perf-paused .ccg-bg-crt-overlay {
     }
 }
 
+
+/* ============================================================
+LOGO BUBBLE — MOBILE SAFE POSITION + Z-INDEX
+============================================================ */
+
+#ccg-toast-host.ccg-toast-host {
+position: fixed;
+top: calc(env(safe-area-inset-top, 0px) + var(--ccg-header-height, 64px) + 10px);
+left: 50%;
+transform: translateX(-50%);
+z-index: 10055;
+pointer-events: none;
+width: min(92vw, 420px);
+display: flex;
+justify-content: center;
+}
+
+.ccg-logo-bubble {
+pointer-events: none;
+width: 100%;
+max-width: 420px;
+opacity: 0;
+transform: translateY(-10px) scale(0.98);
+transition: opacity 180ms ease, transform 220ms ease;
+border-radius: 14px;
+padding: 10px 14px;
+border: 1px solid rgba(90, 248, 255, 0.42);
+background: linear-gradient(145deg, rgba(7, 17, 37, 0.92), rgba(23, 10, 45, 0.9));
+box-shadow:
+0 12px 32px rgba(0, 0, 0, 0.45),
+0 0 0 1px rgba(130, 84, 255, 0.24) inset,
+0 0 16px rgba(90, 248, 255, 0.22);
+}
+
+.ccg-logo-bubble.is-visible {
+opacity: 1;
+transform: translateY(0) scale(1);
+}
+
+.ccg-logo-bubble__text {
+display: block;
+font-size: clamp(0.82rem, 2.8vw, 0.95rem);
+font-weight: 700;
+line-height: 1.35;
+letter-spacing: 0.02em;
+text-align: center;
+color: #d7f7ff;
+text-shadow: 0 0 8px rgba(56, 225, 255, 0.3);
+}
+
+.ccg-logo-bubble--swap {
+filter: saturate(1.1) brightness(1.06);
+}
+
+@media (min-width: 901px) {
+#ccg-toast-host.ccg-toast-host {
+top: max(14px, env(safe-area-inset-top, 0px));
+left: auto;
+right: 14px;
+transform: none;
+width: min(360px, calc(100vw - 28px));
+justify-content: flex-end;
+}
+
+.ccg-logo-bubble__text {
+text-align: left;
+}
+}
+
+/* ============================================================
+SECRET MODAL OVERLAY BASE — SAFE AREA + STACKING HARDENING
+============================================================ */
+
+.ccg-secret-modal {
+position: fixed;
+inset: 0;
+z-index: 10065;
+display: none;
+align-items: flex-start;
+justify-content: center;
+padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+padding-right: 12px;
+padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+padding-left: 12px;
+background: rgba(2, 6, 14, 0.72);
+backdrop-filter: blur(3px);
+-webkit-backdrop-filter: blur(3px);
+}
+
+.ccg-secret-modal.is-open {
+display: flex;
+}
+
+.ccg-secret-modal__content {
+width: min(100%, 640px);
+margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+.ccg-secret-modal {
+align-items: flex-start;
+}
+}
+
 /* ============================================================
 SECRET MODAL — MOBILE SCROLL FIX
 Ensures Easter Egg menu is scrollable on small screens
