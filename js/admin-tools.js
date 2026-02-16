@@ -12,6 +12,23 @@
 (function () {
     "use strict";
 
+    const wizardShellPresent = Boolean(
+        document.querySelector('[data-admin-shell]') ||
+        document.querySelector('main[data-admin-shell]') ||
+        document.querySelector('.omega-admin-shell')
+    );
+    const wizardMetaContext = document.querySelector('meta[name="ccg-context"][content="admin"]');
+    const wizardTitlePresent = (document.title || '').includes('CCG Game Builder');
+    const legacyForm = document.getElementById('adminGameForm');
+    const legacyStatus = document.getElementById('adminStatus');
+
+    if (wizardShellPresent || (wizardMetaContext && wizardTitlePresent) || !legacyForm) {
+        console.info('[CCG-ADMIN-TOOLS] Disabled on this page (owned by Game Builder or missing legacy DOM).');
+        return;
+    }
+
+    void legacyStatus;
+
     function CCG_isTypingTarget(e) {
         const el = e.target;
         if (!el) return false;
