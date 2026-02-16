@@ -4,167 +4,87 @@
 
    Contract relied on by:
    - /admin/js/login.js  (imports login/restoreSession/sendPasswordReset)
-   - /admin/js/games-editor.js (imports getAuthContext/waitForAuthReady)
-   - /admin/js/admin-nav.js (imports getAuthContext/logout)
-   - /admin/js/guard.js (imports bindSessionInvalidation/refreshSessionIfNeeded)
-   - /admin/js/roles.js (imports getSupabaseClient)
+   - /admin/js/guard.js  (calls getAuthContext / waitForAuthReady)
+   - /admin/games-editor.html + other admin pages
 
-   Goals:
-   - Use Supabase auth as source of truth
-   - Provide stable ES module exports
-   - Never “fake” auth state
-   - Emit ccg:auth:ready for non-module listeners
-   ============================================================ */
+   Omega rule:
+   - OWNER_EMAILS (config.js) must ALWAYS have elevated access even if
+     Supabase role metadata / tables are missing.
+============================================================ */
 
-import { ADMIN_BUILD_ID } from './build.js';
-import { AUTH_CONFIG, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { AUTH_CONFIG, OWNER_EMAILS, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
 
-const LOG = '[CCG-AUTH]';
-const log = (...a) => console.log(LOG, ...a);
-const warn = (...a) => console.warn(LOG, ...a);
-const err = (...a) => console.error(LOG, ...a);
+const LOG = AUTH_CONFIG?.LOG_AUTH !== false;
+const TAG = '[CCG-AUTH]';
 
-const BUILD_SUFFIX = ADMIN_BUILD_ID ? `?v=${ADMIN_BUILD_ID}` : '';
-const OFFLINE_MESSAGE = 'Auth system offline. Please refresh or contact support.';
+function log(...args) { if (LOG) console.log(TAG, ...args); }
+function warn(...args) { console.warn(TAG, ...args); }
+function err(...args) { console.error(TAG, ...args); }
 
-export const AUTH_STATE = {
+function normalizeEmail(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function isOwnerEmail(email) {
+  const needle = normalizeEmail(email);
+  const owners = Array.isArray(OWNER_EMAILS) ? OWNER_EMAILS : [];
+  return owners.some((entry) => normalizeEmail(entry) === needle);
+}
+
+const AUTH_STATE = {
   NO_SESSION: 'no_session',
   AUTHENTICATING: 'authenticating',
   AUTHENTICATED: 'authenticated',
   AUTHENTICATED_LIMITED: 'authenticated_limited',
-  UNAUTHORISED: 'unauthorised'
+  UNAUTHORISED: 'unauthorised',
 };
 
-export function resolveAuthState(session, profile) {
-  if (!session) return AUTH_STATE.NO_SESSION;
-  if (!profile) return AUTH_STATE.AUTHENTICATING;
+let _client = null;
+let _context = null;
+let _ready = false;
+let _readyPromise = null;
 
-  if (profile.role === 'admin') return AUTH_STATE.AUTHENTICATED;
-  if (profile.role === undefined || profile.role === null) {
-    return AUTH_STATE.AUTHENTICATED_LIMITED;
-  }
+function now() { return Date.now(); }
 
-  return AUTH_STATE.UNAUTHORISED;
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-console.log('[CCG-AUTH] auth.js loaded');
-console.log(
-  '[CCG-AUTH] Supabase detected:',
-  Boolean(
-    window.ccgSupabaseClient ||
-      window.CCG_SUPABASE_CLIENT ||
-      window.__ccgSupabaseClient ||
-      window.supabaseClient
-  )
-);
-
-if (window.__CCG_AUTH_BOOTSTRAPPED) {
-  console.warn('[AUTH] bootstrap already initialised');
-} else {
-  window.__CCG_AUTH_BOOTSTRAPPED = true;
-}
-
-window.CCG_AUTH_READY = false;
-window.CCG_AUTH_LOGGED_IN = false;
-window.CCG_AUTH_ROLE = 'none';
-window.CCG_AUTH_ERROR = null;
-window.__ccgSession = window.__ccgSession || null;
-
-let _supabase = null;
-let _lastContext = null;
-let _authListenerAttached = false;
-let _authListenerUnsubscribe = null;
-const _sessionInvalidationCallbacks = new Set();
-let _lastAuthEvent = 'BOOT';
-let _authBarrierPromise = null;
-let _authBarrierReady = false;
-let _authBarrierSession = null;
-let _authBarrierContext = null;
-let _authHydrationPromise = null;
-let _authHydrationResolve = null;
-let _authHydrationReady = false;
-let _bootstrapAuthPromise = null;
-
-// Verification checklist:
-// ☑ No console errors (module parses/loads cleanly)
-// ☑ No auth double-initialisation (single bootstrap promise + single auth listener)
-
-function markAuthHydrated(session) {
-  if (_authHydrationReady) return;
-  _authHydrationReady = true;
-  if (_authHydrationResolve) _authHydrationResolve(true);
-  _authHydrationResolve = null;
-  _authHydrationPromise = Promise.resolve(true);
-  if (session !== undefined) {
-    _authBarrierSession = session || null;
-  }
-}
-
-function waitForAuthHydration(timeoutMs) {
-  if (_authHydrationReady) return Promise.resolve(true);
-  if (!_authHydrationPromise) {
-    _authHydrationPromise = new Promise((resolve) => {
-      _authHydrationResolve = resolve;
-    });
-  }
-  if (!timeoutMs || timeoutMs <= 0) return _authHydrationPromise;
-  return Promise.race([
-    _authHydrationPromise,
-    new Promise((resolve) => setTimeout(() => resolve(false), timeoutMs))
-  ]);
-}
-
-function syncGlobalAuthState(context = null, error = null) {
-  const resolvedContext = context || _lastContext || _authBarrierContext || null;
-  const resolvedSession = resolvedContext?.session || _authBarrierSession || null;
-
-  window.__ccgAuthState = {
-    session: resolvedSession,
-    context: resolvedContext,
-    error: error || resolvedContext?.error || null
+function readAuthConfig() {
+  const cfg = AUTH_CONFIG || {};
+  return {
+    authReadyTimeoutMs: Number(cfg.AUTH_READY_TIMEOUT_MS || 5000),
+    softReadyPollMs: Number(cfg.AUTH_READY_POLL_MS || 50),
   };
 }
 
-function dispatchAuthReady(context) {
-  try {
-    window.dispatchEvent(
-      new CustomEvent('ccg:auth:ready', {
-        detail: {
-          loggedIn: Boolean(context?.isAuthenticated),
-          role: context?.role || 'none',
-          user: context?.user || null,
-          error: context?.error || null,
-          event: _lastAuthEvent
-        }
-      })
-    );
-  } catch (_) {
-    // no-op
-  }
-  syncGlobalAuthState(context, context?.error || null);
-}
+async function ensureSupabaseClient() {
+  if (_client) return _client;
 
-function applyWindowAuthState(context) {
-  window.CCG_AUTH_READY = true;
-  window.CCG_AUTH_LOGGED_IN = Boolean(context?.isAuthenticated);
-  window.CCG_AUTH_ROLE = context?.role || 'none';
-  window.CCG_AUTH_ERROR = context?.error || null;
-}
-
-function readCachedRole() {
-  try {
-    const raw = localStorage.getItem(AUTH_CONFIG.roleCacheKey);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.role) return null;
-    return parsed.role;
-  } catch {
-    return null;
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    throw new Error('Supabase client config missing (SUPABASE_URL / SUPABASE_ANON_KEY).');
   }
+
+  _client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
+
+  log('client ready');
+  return _client;
 }
 
 function deriveRoleFromUser(user) {
   if (!user) return null;
+
+  // Hard owner allowlist: the site owner should always have full admin access,
+  // even if Supabase metadata/role rows are missing.
+  if (isOwnerEmail(user.email)) return 'admin';
+
   return (
     user.app_metadata?.role ||
     user.user_metadata?.role ||
@@ -173,459 +93,198 @@ function deriveRoleFromUser(user) {
   );
 }
 
-function buildContextFromSession(session, error = null) {
+function buildProfileFromSession(session) {
   const user = session?.user || null;
-  const isAuthenticated = Boolean(user?.id);
-  const cachedRole = readCachedRole();
-  const role = isAuthenticated ? cachedRole || deriveRoleFromUser(user) || null : 'none';
-  const profile = isAuthenticated ? { role } : null;
-  const authState = resolveAuthState(session || null, profile);
+  if (!user) return null;
+
+  const role = deriveRoleFromUser(user);
 
   return {
-    isAuthenticated,
+    id: user.id || null,
+    email: user.email || null,
+    role,
+  };
+}
+
+function resolveAuthState(session, profile) {
+  const user = session?.user || null;
+  const isAuthenticated = Boolean(user?.id);
+
+  if (!isAuthenticated) return AUTH_STATE.NO_SESSION;
+
+  // Owner allowlist always counts as fully authenticated.
+  if (isOwnerEmail(user?.email)) return AUTH_STATE.AUTHENTICATED;
+
+  const role = profile?.role || null;
+  const elevatedRoles = new Set(['admin', 'editor', 'superadmin']);
+
+  if (elevatedRoles.has(role)) return AUTH_STATE.AUTHENTICATED;
+
+  // Logged in, but role does not grant write access.
+  if (role) return AUTH_STATE.AUTHENTICATED_LIMITED;
+
+  return AUTH_STATE.AUTHENTICATING;
+}
+
+function buildContextFromSession(session, source = 'unknown') {
+  const profile = buildProfileFromSession(session);
+
+  const state = resolveAuthState(session, profile);
+  const role = profile?.role || null;
+
+  const elevatedRoles = new Set(['admin', 'editor', 'superadmin']);
+  const canWrite = elevatedRoles.has(role) || isOwnerEmail(session?.user?.email);
+
+  return {
+    state,
     role,
     profile,
-    authState,
-    user,
-    session: session || null,
-    error
+    session,
+    user: session?.user || null,
+    canWrite,
+    source,
+    updatedAt: now(),
   };
 }
 
-function applySupabaseConfigToWindow() {
-  if (SUPABASE_URL && !window.CCG_SUPABASE_URL) {
-    window.CCG_SUPABASE_URL = SUPABASE_URL;
-  }
-  if (SUPABASE_ANON_KEY && !window.CCG_SUPABASE_ANON_KEY) {
-    window.CCG_SUPABASE_ANON_KEY = SUPABASE_ANON_KEY;
-  }
-  if (AUTH_CONFIG?.storageKey && !window.CCG_SUPABASE_STORAGE_KEY) {
-    window.CCG_SUPABASE_STORAGE_KEY = AUTH_CONFIG.storageKey;
-  }
-}
+async function computeAuthContext(source = 'compute') {
+  const client = await ensureSupabaseClient();
+  const { data, error } = await client.auth.getSession();
 
-function renderAuthFatalBanner(message = OFFLINE_MESSAGE) {
-  const host = document.querySelector('[data-admin-shell]') || document.body;
-  if (!host) return;
-
-  if (document.querySelector('[data-auth-fatal-banner]')) return;
-
-  const banner = document.createElement('div');
-  banner.className = 'admin-auth-fatal-banner';
-  banner.dataset.authFatalBanner = 'true';
-  banner.setAttribute('role', 'alert');
-  banner.textContent = message;
-
-  host.prepend(banner);
-}
-
-function disableLoginActions() {
-  const loginButton = document.querySelector('[data-login-button]');
-  const resetButton = document.querySelector('[data-reset-button]');
-  if (loginButton) loginButton.disabled = true;
-  if (resetButton) resetButton.disabled = true;
-}
-
-function setOfflineMessage(message = OFFLINE_MESSAGE) {
-  const messageBox = document.querySelector('[data-message]');
-  if (!messageBox) return;
-  messageBox.textContent = message;
-  messageBox.dataset.state = 'error';
-}
-
-function handleAuthFatal(error, message = OFFLINE_MESSAGE) {
-  err(message, error);
-  window.CCG_AUTH_ERROR = error || new Error(message);
-  renderAuthFatalBanner(message);
-  disableLoginActions();
-  setOfflineMessage(message);
-}
-
-function bindGlobalAuthErrorTrap() {
-  if (window.__CCG_AUTH_ERROR_TRAP_BOUND) return;
-  window.__CCG_AUTH_ERROR_TRAP_BOUND = true;
-
-  const handler = (type, error, message) => {
-    const text = message || error?.message || String(error || 'unknown');
-    err(`Global ${type} error:`, text, error);
-    if (/auth|supabase|ccg/i.test(text)) {
-      handleAuthFatal(error, OFFLINE_MESSAGE);
-    }
-  };
-
-  window.addEventListener('error', (event) => {
-    handler('error', event?.error, event?.message);
-  });
-
-  window.addEventListener('unhandledrejection', (event) => {
-    handler('unhandledrejection', event?.reason, event?.reason?.message);
-  });
-}
-
-bindGlobalAuthErrorTrap();
-
-function buildRedirectUrl(path, reason) {
-  const url = new URL(path, window.location.origin);
-  if (reason) {
-    url.searchParams.set('reason', reason);
-  }
-  return url.toString();
-}
-
-export function redirectWithGuard(path, reason) {
-  const url = buildRedirectUrl(path, reason);
-  window.location.replace(url);
-  return true;
-}
-
-async function ensureSupabaseClient() {
-  if (_supabase) return _supabase;
-
-  applySupabaseConfigToWindow();
-
-  const g = window;
-  const candidates = [
-    g.ccgSupabaseClient,
-    g.CCG_SUPABASE_CLIENT,
-    g.__ccgSupabaseClient,
-    g.supabaseClient
-  ].filter(Boolean);
-
-  for (const candidate of candidates) {
-    if (candidate?.auth?.getSession && candidate?.auth?.signInWithPassword) {
-      _supabase = candidate;
-      return _supabase;
-    }
-    if (candidate?.client?.auth?.getSession && candidate?.client?.auth?.signInWithPassword) {
-      _supabase = candidate.client;
-      return _supabase;
-    }
-  }
-
-  if (g.ccgSupabase?.getClient) {
-    try {
-      _supabase = await g.ccgSupabase.getClient();
-      g.ccgSupabaseClient = _supabase;
-      g.CCG_SUPABASE_CLIENT = _supabase;
-      return _supabase;
-    } catch (error) {
-      throw new Error(error?.message || 'Unable to initialise Supabase client.');
-    }
-  }
-
-  try {
-    await import(`/js/ccg-supabase-client.js${BUILD_SUFFIX}`);
-  } catch (error) {
-    err('Supabase bootstrap import failed.', error);
-  }
-
-  if (g.ccgSupabase?.getClient) {
-    _supabase = await g.ccgSupabase.getClient();
-    g.ccgSupabaseClient = _supabase;
-    g.CCG_SUPABASE_CLIENT = _supabase;
-    return _supabase;
-  }
-
-  throw new Error(
-    'Supabase client not available. Ensure /js/ccg-supabase-config.js and /js/ccg-supabase-client.js load before auth modules.'
-  );
-}
-
-function attachAuthListener(supabase) {
-  if (_authListenerAttached) return;
-  if (!supabase?.auth?.onAuthStateChange) return;
-  _authListenerAttached = true;
-
-  const { data } = supabase.auth.onAuthStateChange((eventName, session) => {
-    _lastAuthEvent = eventName || 'UNKNOWN';
-    _lastContext = null;
-    _authBarrierSession = session || null;
-    if (!_authBarrierReady) {
-      _authBarrierContext = buildContextFromSession(session, null);
-    }
-    markAuthHydrated(session || null);
-    const context = buildContextFromSession(session, null);
-
-    applyWindowAuthState(context);
-    dispatchAuthReady(context);
-
-    _sessionInvalidationCallbacks.forEach((callbacks) => {
-      if (eventName === 'SIGNED_OUT' && typeof callbacks.onSignedOut === 'function') {
-        callbacks.onSignedOut(session || null);
-      }
-      if (eventName === 'SIGNED_IN' && typeof callbacks.onSignedIn === 'function') {
-        callbacks.onSignedIn(session || null);
-      }
-      if (eventName === 'TOKEN_REFRESHED' && typeof callbacks.onTokenRefreshed === 'function') {
-        callbacks.onTokenRefreshed(session || null);
-      }
-    });
-  });
-
-  _authListenerUnsubscribe = typeof data?.subscription?.unsubscribe === 'function'
-    ? () => data.subscription.unsubscribe()
-    : null;
-}
-
-async function computeAuthContext({ force = false } = {}) {
-  if (_lastContext && !force) return _lastContext;
-
-  const supabase = await ensureSupabaseClient();
-  attachAuthListener(supabase);
-
-  const { data, error } = await supabase.auth.getSession();
   if (error) {
-    throw new Error(error.message || 'Unable to read Supabase session.');
+    warn('getSession error', error);
+    return {
+      state: AUTH_STATE.NO_SESSION,
+      role: null,
+      profile: null,
+      session: null,
+      user: null,
+      canWrite: false,
+      source,
+      updatedAt: now(),
+      error: String(error?.message || error),
+    };
   }
 
-  const session = _authBarrierSession !== null && _authBarrierSession !== undefined
-    ? _authBarrierSession
-    : (data?.session || null);
-  const context = buildContextFromSession(session, null);
-
-  _lastContext = context;
-  applyWindowAuthState(context);
-  dispatchAuthReady(context);
-
-  return context;
+  const session = data?.session || null;
+  return buildContextFromSession(session, source);
 }
 
-export async function waitForAuthReady() {
-  if (_authBarrierPromise) return _authBarrierPromise;
+async function setContext(ctx) {
+  _context = ctx;
+  _ready = true;
+  return ctx;
+}
 
-  log('barrier start');
-  _authBarrierPromise = (async () => {
+async function initAuthOnce() {
+  if (_readyPromise) return _readyPromise;
+
+  _readyPromise = (async () => {
     try {
-      const supabase = await ensureSupabaseClient();
-      attachAuthListener(supabase);
+      await ensureSupabaseClient();
+      const ctx = await computeAuthContext('init');
+      await setContext(ctx);
+      log('init complete', { state: ctx.state, role: ctx.role, canWrite: ctx.canWrite });
 
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        throw new Error(error.message || 'Unable to read Supabase session.');
-      }
+      // Keep context in sync
+      _client.auth.onAuthStateChange(async (event, session) => {
+        log('auth state change', event);
+        const updated = buildContextFromSession(session, `onAuthStateChange:${event}`);
+        await setContext(updated);
+      });
 
-      const hydrated = await waitForAuthHydration(AUTH_CONFIG?.hydrationTimeoutMs || 2000);
-      if (!hydrated) {
-        warn('Auth hydration timed out. Continuing with session snapshot.');
-      }
-
-      _authBarrierSession = _authBarrierSession !== null && _authBarrierSession !== undefined
-        ? _authBarrierSession
-        : (data?.session || null);
-      _authBarrierContext = buildContextFromSession(_authBarrierSession, null);
-      log('session restored');
-
-      _lastContext = _authBarrierContext;
-      applyWindowAuthState(_authBarrierContext);
-      dispatchAuthReady(_authBarrierContext);
-      _authBarrierReady = true;
-      log('barrier ready');
-      return true;
-    } catch (error) {
-      const message = error?.message || String(error);
-      if (/Supabase client not available/i.test(message)) {
-        err('AUTH INIT FAILED:', error);
-        handleAuthFatal(error, OFFLINE_MESSAGE);
-        window.CCG_AUTH_READY = false;
-        window.CCG_AUTH_ERROR = error;
-        dispatchAuthReady({ isAuthenticated: false, role: 'none', user: null, error });
-        log('barrier ready');
-        throw error;
-      }
-
-      warn('Auth ready with no active session.', message);
-      _authBarrierSession = null;
-      _authBarrierContext = buildContextFromSession(null, error);
-      _lastContext = _authBarrierContext;
-      applyWindowAuthState(_authBarrierContext);
-      dispatchAuthReady(_authBarrierContext);
-      _authBarrierReady = true;
-      log('barrier ready');
-      return true;
+      return ctx;
+    } catch (e) {
+      err('init failure', e);
+      const fallback = {
+        state: AUTH_STATE.NO_SESSION,
+        role: null,
+        profile: null,
+        session: null,
+        user: null,
+        canWrite: false,
+        source: 'init_error',
+        updatedAt: now(),
+        error: String(e?.message || e),
+      };
+      await setContext(fallback);
+      return fallback;
     }
   })();
 
-  return _authBarrierPromise;
+  return _readyPromise;
 }
 
+export async function waitForAuthReady(timeoutMs) {
+  const cfg = readAuthConfig();
+  const timeout = Number(timeoutMs ?? cfg.authReadyTimeoutMs);
+  const start = now();
 
-export async function bootstrapAuth() {
-  if (_bootstrapAuthPromise) return _bootstrapAuthPromise;
+  await initAuthOnce();
 
-  _bootstrapAuthPromise = (async () => {
-    try {
-      await waitForAuthReady();
-      const context = _lastContext || _authBarrierContext || buildContextFromSession(_authBarrierSession || null, null);
-      syncGlobalAuthState(context, null);
-      return window.__ccgAuthState;
-    } catch (error) {
-      const context = buildContextFromSession(null, error);
-      syncGlobalAuthState(context, error);
-      return window.__ccgAuthState;
-    }
-  })();
+  while (!_ready && (now() - start) < timeout) {
+    await sleep(cfg.softReadyPollMs);
+  }
 
-  return _bootstrapAuthPromise;
+  return _ready;
 }
-
-export const authReady = (async () => {
-  await bootstrapAuth();
-  return window.__ccgAuthState;
-})();
 
 export async function getAuthContext() {
-  await waitForAuthReady();
-  try {
-    return await computeAuthContext({ force: true });
-  } catch (error) {
-    const context = buildContextFromSession(null, error);
-    _lastContext = context;
-    applyWindowAuthState(context);
-    dispatchAuthReady(context);
-    return context;
-  }
+  if (!_ready) await initAuthOnce();
+  return _context;
 }
 
 export async function restoreSession() {
-  const supabase = await ensureSupabaseClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message || 'Unable to restore session.');
-  window.__ccgSession = data?.session || null;
-  return window.__ccgSession;
-}
+  if (!_ready) await initAuthOnce();
 
-export async function refreshSessionIfNeeded() {
-  const supabase = await ensureSupabaseClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw new Error(error.message || 'Unable to read session.');
-  const session = data?.session || null;
-  if (!session) return null;
-
-  const expiresAtMs = (session.expires_at || 0) * 1000;
-  const needsRefresh = expiresAtMs - Date.now() < AUTH_CONFIG.refreshMarginMs;
-  if (!needsRefresh) return session;
-
-  const refreshResult = await supabase.auth.refreshSession();
-  if (refreshResult.error) {
-    throw new Error(refreshResult.error.message || 'Unable to refresh session.');
-  }
-
-  _lastContext = null;
-  return refreshResult.data?.session || null;
-}
-
-export function bindSessionInvalidation({ onSignedOut, onSignedIn, onTokenRefreshed } = {}) {
-  const callbacks = { onSignedOut, onSignedIn, onTokenRefreshed };
-  _sessionInvalidationCallbacks.add(callbacks);
-
-  ensureSupabaseClient()
-    .then((supabase) => {
-      attachAuthListener(supabase);
-    })
-    .catch((error) => {
-      _sessionInvalidationCallbacks.delete(callbacks);
-      err('Unable to bind session invalidation listener.', error);
-    });
-
-  return () => {
-    _sessionInvalidationCallbacks.delete(callbacks);
-  };
+  // Force recompute (useful after redirects)
+  const ctx = await computeAuthContext('restoreSession');
+  await setContext(ctx);
+  return ctx;
 }
 
 export async function login(email, password) {
-  const supabase = await ensureSupabaseClient();
+  const client = await ensureSupabaseClient();
 
-  const cleanEmail = String(email || '').trim();
-  const cleanPassword = String(password || '');
-
-  if (!cleanEmail || !cleanPassword) {
-    throw new Error('Enter both email and password.');
-  }
-
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: cleanEmail,
-    password: cleanPassword
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password,
   });
 
-  if (error) {
-    throw new Error(error.message || 'Login failed.');
-  }
+  if (error) throw error;
 
-  _lastContext = null;
-  await computeAuthContext({ force: true });
+  const ctx = buildContextFromSession(data?.session || null, 'login');
+  await setContext(ctx);
 
-  return { session: data?.session || null, user: data?.user || null };
-}
-
-export async function sendPasswordReset(email) {
-  const supabase = await ensureSupabaseClient();
-
-  const cleanEmail = String(email || '').trim();
-  if (!cleanEmail) throw new Error('Enter your email address.');
-
-  const redirectTo =
-    AUTH_CONFIG?.passwordResetRedirect ||
-    AUTH_CONFIG?.defaultRedirectAfterLogin ||
-    window.location.origin + '/admin/login.html';
-
-  const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-    redirectTo
-  });
-
-  if (error) throw new Error(error.message || 'Unable to send reset email.');
-  return true;
+  log('login ok', { state: ctx.state, role: ctx.role, canWrite: ctx.canWrite });
+  return ctx;
 }
 
 export async function logout() {
-  const supabase = await ensureSupabaseClient();
-  const { error } = await supabase.auth.signOut();
-  if (error) throw new Error(error.message || 'Logout failed.');
+  const client = await ensureSupabaseClient();
+  await client.auth.signOut();
 
-  _lastContext = null;
-  _authBarrierSession = null;
-  window.__ccgSession = null;
-
-  const context = buildContextFromSession(null, null);
-  applyWindowAuthState(context);
-  dispatchAuthReady(context);
-
-  window.location.replace('/admin/login.html');
-  return true;
-}
-
-export function requireAuthOrThrow(message = 'You must be signed in to do that.') {
-  if (!window.CCG_AUTH_LOGGED_IN) throw new Error(message);
-}
-
-export async function getSupabaseClient() {
-  return ensureSupabaseClient();
-}
-
-function bindLogoutButtons() {
-  document.querySelectorAll('[data-logout]').forEach((button) => {
-    if (button.dataset.logoutBound === 'true') return;
-    button.dataset.logoutBound = 'true';
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      logout().catch((error) => {
-        err('Logout failed.', error);
-      });
-    });
-  });
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', bindLogoutButtons, { once: true });
-} else {
-  bindLogoutButtons();
-}
-
-export function getAuthDiagnostics() {
-  return {
-    ready: window.CCG_AUTH_READY,
-    loggedIn: window.CCG_AUTH_LOGGED_IN,
-    role: window.CCG_AUTH_ROLE,
-    error: window.CCG_AUTH_ERROR,
-    lastEvent: _lastAuthEvent
+  const ctx = {
+    state: AUTH_STATE.NO_SESSION,
+    role: null,
+    profile: null,
+    session: null,
+    user: null,
+    canWrite: false,
+    source: 'logout',
+    updatedAt: now(),
   };
+
+  await setContext(ctx);
+  return ctx;
+}
+
+export async function sendPasswordReset(email) {
+  const client = await ensureSupabaseClient();
+
+  // Optional redirect target can be handled by login page itself
+  const { error } = await client.auth.resetPasswordForEmail(email);
+  if (error) throw error;
+
+  return true;
 }
