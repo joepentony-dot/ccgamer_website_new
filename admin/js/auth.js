@@ -215,6 +215,11 @@ async function initAuthOnce() {
   return _readyPromise;
 }
 
+
+export async function getSupabaseClient() {
+  return ensureSupabaseClient();
+}
+
 export async function waitForAuthReady(timeoutMs) {
   const cfg = readAuthConfig();
   const timeout = Number(timeoutMs ?? cfg.authReadyTimeoutMs);
