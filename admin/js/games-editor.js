@@ -1105,6 +1105,16 @@ function wait(delayMs) {
   });
 }
 
+function whenDomReady() {
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    document.addEventListener('DOMContentLoaded', resolve, { once: true });
+  });
+}
+
 function renderSystemOptions() {
   if (!el.systemSelect) return;
 
@@ -2789,11 +2799,9 @@ async function initAuth() {
       }
     }
 
-    applyAuthContext(context, context?.error || null);
     return context;
   } catch (error) {
-    applyAuthContext(null, error);
-    return null;
+    return { isAuthenticated: false, role: 'none', error };
   }
 }
 
@@ -2827,8 +2835,8 @@ async function downloadFlatPageZip() {
 }
 
 async function boot() {
+  await whenDomReady();
   setRuntimeState('Booting', 'info');
-  await initAdminNav({ pageLabel: 'CCG Game Builder', active: 'editor' });
 
   setExportVersionLabels();
   resetExportSteps();
@@ -2849,14 +2857,15 @@ async function boot() {
     setErrorIndicator(message);
   }
 
-  setReadOnly(true);
-  await loadLibrary();
-
+  // PHASE A — immediate wiring (no network/auth awaits)
   state.slugLocked = false;
   state.idLocked = false;
   if (el.locks.slug) el.locks.slug.checked = false;
   if (el.locks.id) el.locks.id.checked = false;
 
+  renderSystemOptions();
+  bindEvents();
+  bindIdentityWiring();
   loadDraft();
   normalizeDraft();
   updateFormFromDraft();
@@ -2864,13 +2873,29 @@ async function boot() {
   evaluateStepStatus();
   updateProgress();
   showDraftBanner();
-  bindEvents();
-  bindIdentityWiring();
   window.CCGGameBuilder = { loadGameById, loadGameBySlug, downloadFlatPageZip };
   window.ccgRegenerateGameStubs = downloadFlatPageZip;
   window.downloadFlatPageZip = downloadFlatPageZip;
 
+  // PHASE B — async enhancers (non-blocking)
+  initAdminNav({ pageLabel: 'CCG Game Builder', active: 'editor' }).catch((error) => {
+    console.warn('[CCG-GAME-BUILDER] admin nav init failed', error);
+  });
+
+  const libraryPromise = loadLibrary().then(() => {
+    renderSystemOptions();
+    return true;
+  });
+
+  const authPromise = initAuth().then((context) => {
+    applyAuthContext(context, context?.error || null);
+    return context;
+  });
+
   const params = new URLSearchParams(window.location.search);
+  setRuntimeState('Library ready · auth pending', 'info');
+  await libraryPromise;
+
   if (params.has('slug')) {
     loadGameBySlug(params.get('slug'));
   } else if (params.has('id')) {
@@ -2879,8 +2904,7 @@ async function boot() {
     loadGameBySlug(state.editing.slug);
   }
 
-  setRuntimeState('Library ready · auth pending', 'info');
-  await initAuth();
+  await authPromise;
 }
 
 boot().catch((error) => {
