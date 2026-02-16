@@ -2805,6 +2805,45 @@ async function initAuth() {
   }
 }
 
+function refreshBootDomRefs() {
+  el.email = document.querySelector('[data-editor-email]');
+  el.role = document.querySelector('[data-editor-role]');
+  el.runtime = document.querySelector('[data-runtime-state]');
+  el.draftIndicator = document.querySelector('[data-draft-indicator]');
+  el.libraryIndicator = document.querySelector('[data-library-indicator]');
+  el.modeIndicator = document.querySelector('[data-mode-indicator]');
+  el.validationIndicator = document.querySelector('[data-validation-indicator]');
+  el.exportIndicator = document.querySelector('[data-export-indicator]');
+  el.errorIndicator = document.querySelector('[data-error-indicator]');
+  el.readonlyBadge = document.querySelector('[data-readonly-badge]');
+  el.fields = Array.from(document.querySelectorAll('[data-field]'));
+  el.steps = Array.from(document.querySelectorAll('[data-step]'));
+  el.stepperButtons = Array.from(document.querySelectorAll('[data-step-jump]'));
+  el.exportModalClose = Array.from(document.querySelectorAll('[data-export-modal-close]'));
+  el.systemSelect = document.querySelector('[data-system-select]');
+  el.genreList = document.querySelector('[data-genre-list]');
+  el.genreSearch = document.querySelector('[data-genre-search]');
+  el.ratingRange = document.querySelector('[data-rating-range]');
+  el.ratingOutput = document.querySelector('[data-rating-output]');
+  el.load.form = document.querySelector('[data-load-form]');
+  el.load.input = document.querySelector('[data-load-input]');
+  el.load.button = document.querySelector('[data-action="load-game"]');
+  el.load.status = document.querySelector('[data-load-status]');
+  el.load.list = document.querySelector('#game-lookup-list');
+  el.locks.slug = document.querySelector('[data-lock-toggle="slug"]');
+  el.locks.id = document.querySelector('[data-lock-toggle="id"]');
+
+  Object.keys(el.actions).forEach((key) => {
+    if (key === 'clearDraft') {
+      el.actions.clearDraft = document.querySelectorAll('[data-action="clear-draft"]');
+      return;
+    }
+
+    const actionName = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+    el.actions[key] = document.querySelector(`[data-action="${actionName}"]`);
+  });
+}
+
 // Compatibility export hook (legacy admin expects this symbol).
 // NOTE: games-editor.js is an ES module, so this must exist in-module (not on window) to avoid ReferenceError at boot.
 async function downloadFlatPageZip() {
@@ -2836,6 +2875,7 @@ async function downloadFlatPageZip() {
 
 async function boot() {
   await whenDomReady();
+  refreshBootDomRefs();
   setRuntimeState('Booting', 'info');
 
   setExportVersionLabels();
@@ -2884,6 +2924,14 @@ async function boot() {
 
   const libraryPromise = loadLibrary().then(() => {
     renderSystemOptions();
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('slug')) {
+      loadGameBySlug(params.get('slug'));
+    } else if (params.has('id')) {
+      loadGameById(params.get('id'));
+    } else if (state.mode === 'edit' && state.editing?.slug) {
+      loadGameBySlug(state.editing.slug);
+    }
     return true;
   });
 
@@ -2892,19 +2940,9 @@ async function boot() {
     return context;
   });
 
-  const params = new URLSearchParams(window.location.search);
   setRuntimeState('Library ready · auth pending', 'info');
-  await libraryPromise;
-
-  if (params.has('slug')) {
-    loadGameBySlug(params.get('slug'));
-  } else if (params.has('id')) {
-    loadGameById(params.get('id'));
-  } else if (state.mode === 'edit' && state.editing?.slug) {
-    loadGameBySlug(state.editing.slug);
-  }
-
-  await authPromise;
+  libraryPromise.catch(() => {});
+  authPromise.catch(() => {});
 }
 
 boot().catch((error) => {
