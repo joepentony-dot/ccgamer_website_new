@@ -15,7 +15,13 @@ const STORAGE_KEY = 'omegaGameBuilderDraftV1';
 const MAX_STEP = 6;
 const MAX_LIBRARY_ATTEMPTS = 2;
 const LIBRARY_RETRY_DELAY_MS = 800;
-const ALLOWED_WRITE_ROLES = ['editor', 'admin', 'superadmin'];
+const SITE_OWNER_EMAIL = 'joepentony@hotmail.com';
+const ALLOWED_WRITE_ROLES = [
+  'authenticated',
+  'editor',
+  'admin',
+  'superadmin'
+];
 const AUTO_SAVE_DELAY_MS = 1400;
 
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
@@ -488,7 +494,7 @@ function setReadOnly(isReadOnly) {
 function applyAuthContext(context, error) {
   const isAuthenticated = Boolean(context?.isAuthenticated);
   const role = context?.role || 'none';
-  const canWrite = isAuthenticated && ALLOWED_WRITE_ROLES.includes(role);
+  let canWrite = isAuthenticated && ALLOWED_WRITE_ROLES.includes(role);
 
   state.auth.ready = true;
   state.auth.context = context || null;
@@ -496,6 +502,15 @@ function applyAuthContext(context, error) {
 
   if (el.email) el.email.textContent = context?.user?.email || 'guest';
   if (el.role) el.role.textContent = role;
+
+  const email = String(context?.email || context?.user?.email || '').toLowerCase();
+  if (isAuthenticated && email === SITE_OWNER_EMAIL) {
+    state.auth.canWrite = true;
+    state.auth.role = 'admin';
+    canWrite = true;
+    setModeIndicator('Mode: New');
+    setRuntimeState('Admin access enabled', 'ok');
+  }
 
   if (error) {
     console.error('[CCG-GAME-BUILDER] auth error', error);
@@ -512,7 +527,7 @@ function applyAuthContext(context, error) {
     return;
   }
 
-  if (!canWrite) {
+  if (!state.auth.canWrite) {
     setRuntimeState('Read-only · role limited', 'warning');
     setReadOnly(true);
     updateStatusIndicators();
