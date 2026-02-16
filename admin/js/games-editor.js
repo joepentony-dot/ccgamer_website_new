@@ -2630,17 +2630,23 @@ function bindEvents() {
     runConsistencyChecks();
   });
 
-  el.actions.generateOutput?.addEventListener('click', () => {
+  el.actions.generateOutput?.addEventListener('click', async () => {
     if (!state.auth.canWrite) return;
     validateDraft();
     renderValidation();
     if (hasBlockingValidationIssues()) return;
-    state.outputs = await buildOutputs();
-    window.__ccgLastZipBlob = null;
-    setRetryDownloadVisible(false);
-    renderOutputs();
-    setDownloadBundleEnabled(!state.export.disabled);
-    updateStatusIndicators();
+    try {
+      state.outputs = await buildOutputs();
+      window.__ccgLastZipBlob = null;
+      setRetryDownloadVisible(false);
+      renderOutputs();
+      setDownloadBundleEnabled(!state.export.disabled);
+      updateStatusIndicators();
+    } catch (error) {
+      console.error('[CCG-GAME-BUILDER] generateOutput failed', error);
+      setErrorIndicator(error.message || 'Output generation failed.');
+      setRuntimeState('Output generation failed', 'error');
+    }
   });
 
   el.actions.downloadBundle?.addEventListener('click', async () => {
