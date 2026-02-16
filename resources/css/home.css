@@ -2883,20 +2883,9 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     transition: filter 240ms ease;
 }
 
-/* Default: desktop view shows full text */
+/* Keep a single, consistent "Collections" label on all viewport sizes. */
 .home-collections .collections-short {
     display: none;
-}
-
-/* Show short label on narrow screens */
-@media only screen and (max-width: 768px) {
-    .home-collections .collections-full {
-        display: none;
-    }
-
-    .home-collections .collections-short {
-        display: inline;
-    }
 }
 
 /* DESKTOP HOVER — ENERGY LIFT (SAFE) */
@@ -3095,15 +3084,13 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     }
 
     .home-cta-btn--collections {
-        line-height: 1.1;
-    }
-
-    .home-cta-btn--collections .home-cta-btn__line {
-        display: block;
-    }
-
-    .home-cta-btn--collections .home-cta-btn__line--top::after {
-        content: "-";
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        padding-inline: 12px;
+        line-height: 1.15;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .home-visitor-callout__headline {
@@ -3140,6 +3127,11 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
 
     .home-discovery-strip__link:last-child {
         grid-column: 1 / -1;
+    }
+
+    .home-discovery-strip__link.home-collections {
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
     }
 }
 
