@@ -1,37 +1,52 @@
 import { byId, setMessage } from './ui-helpers.js';
-
-async function unsubscribeByToken(token) {
-  const endpoint = 'https://sytcvxthkqyjvzbfljeb.functions.supabase.co/unsubscribe-by-token';
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token })
-  });
-  return res.json();
-}
+import { unsubscribeByToken } from '../community/community-api.js';
 
 const message = byId('unsubMessage');
 const button = byId('unsubBtn');
-const token = new URLSearchParams(window.location.search).get('t') || '';
 
-if (!token) {
-  setMessage(message, 'Missing unsubscribe token.', 'error');
-  button.disabled = true;
-} else {
+function getTokenFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('token') || params.get('t') || '';
+}
+
+function lockButton() {
+  if (button) button.disabled = true;
+}
+
+function unlockButton() {
+  if (button) button.disabled = false;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const token = getTokenFromUrl();
+
+  if (!token) {
+    setMessage(message, 'Missing unsubscribe token.', 'error');
+    lockButton();
+    return;
+  }
+
   button.addEventListener('click', async () => {
     setMessage(message, 'Processing unsubscribe...', 'info');
-    button.disabled = true;
+    lockButton();
+
     try {
-      const result = await unsubscribeByToken(token);
-      if (result?.success) {
-        setMessage(message, 'You have been unsubscribed from newsletter and new game notifications.', 'success');
+      const { data, error } = await unsubscribeByToken(token);
+      if (error) {
+        setMessage(message, 'Unable to process unsubscribe right now.', 'error');
+        unlockButton();
+        return;
+      }
+
+      if (data?.success) {
+        setMessage(message, 'You have been unsubscribed from CCG emails.', 'success');
       } else {
-        setMessage(message, 'Invalid or expired unsubscribe token.', 'error');
-        button.disabled = false;
+        setMessage(message, data?.message || 'Invalid or expired unsubscribe token.', 'error');
+        unlockButton();
       }
     } catch (_error) {
       setMessage(message, 'Unable to process unsubscribe right now.', 'error');
-      button.disabled = false;
+      unlockButton();
     }
   });
-}
+});
