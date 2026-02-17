@@ -44,56 +44,6 @@ function profileDefaults(user) {
   };
 }
 
-function removeLegacyPreferenceControls() {
-  ['newsletterOptIn', 'notifyC64', 'notifyAmiga'].forEach((id) => {
-    const input = document.getElementById(id);
-    const label = input?.closest('label');
-    if (label) label.remove();
-  });
-
-  const subtitle = document.querySelector('.auth-subtitle');
-  if (subtitle) {
-    subtitle.textContent = 'Manage account preferences and security.';
-  }
-}
-
-function ensureProfileSections() {
-  const card = document.querySelector('.auth-card');
-  if (!card) return;
-
-  let activitySection = document.getElementById('activitySummarySection');
-  if (!activitySection) {
-    activitySection = document.createElement('section');
-    activitySection.id = 'activitySummarySection';
-    activitySection.className = 'profile-subsection';
-    activitySection.innerHTML = [
-      '<h2 class="profile-subsection__title">Activity Summary</h2>',
-      '<p class="profile-subsection__item">Games rated: —</p>',
-      '<p class="profile-subsection__item">Comments made: —</p>'
-    ].join('');
-  }
-
-  let favouritesSection = document.getElementById('favouriteGamesSection');
-  if (!favouritesSection) {
-    favouritesSection = document.createElement('section');
-    favouritesSection.id = 'favouriteGamesSection';
-    favouritesSection.className = 'profile-subsection';
-    favouritesSection.innerHTML = [
-      '<h2 class="profile-subsection__title">Favourite Games</h2>',
-      '<ul id="favouriteGamesList" class="profile-favourites-list"></ul>'
-    ].join('');
-  }
-
-  const actions = card.querySelector('.profile-actions');
-  if (actions) {
-    card.insertBefore(activitySection, actions);
-    card.insertBefore(favouritesSection, actions);
-  } else {
-    card.appendChild(activitySection);
-    card.appendChild(favouritesSection);
-  }
-}
-
 async function fetchProfile(supabaseClient, userId) {
   return supabaseClient
     .from('profiles')
@@ -144,9 +94,7 @@ function renderProfile(user, profile) {
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
 
   const notifyNewGames = document.getElementById('notifyNewGames');
-  if (notifyNewGames) {
-    notifyNewGames.checked = Boolean(profile.notify_new_games);
-  }
+  if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
 }
 
 async function fetchGameTitleIndex() {
@@ -167,28 +115,45 @@ async function fetchGameTitleIndex() {
   }
 }
 
-function renderFavouritesList(slugs, titleIndex) {
+function renderFavouritesList({ favourites, titleIndex, onRemove }) {
   const list = document.getElementById('favouriteGamesList');
   if (!list) return;
 
   list.innerHTML = '';
 
-  if (!Array.isArray(slugs) || !slugs.length) {
+  if (!Array.isArray(favourites) || favourites.length === 0) {
     const empty = document.createElement('li');
     empty.textContent = 'No favourite games yet.';
     list.appendChild(empty);
     return;
   }
 
-  slugs.forEach((slug) => {
+  favourites.forEach((entry) => {
+    const slug = String(entry?.game_slug || '').trim();
+    if (!slug) return;
+
     const item = document.createElement('li');
-    item.textContent = titleIndex.get(slug) || slug;
+
+    const link = document.createElement('a');
+    link.href = `/games/${slug}/`;
+    link.textContent = titleIndex.get(slug) || slug;
+
+    const spacer = document.createTextNode(' — ');
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'auth-btn';
+    removeButton.textContent = 'Remove';
+    removeButton.addEventListener('click', () => onRemove(slug, removeButton));
+
+    item.appendChild(link);
+    item.appendChild(spacer);
+    item.appendChild(removeButton);
     list.appendChild(item);
   });
 }
 
-async function loadFavourites({ supabaseClient, userId }) {
-  // Foundation: only read private favourites for the signed-in user.
+async function fetchFavourites(supabaseClient, userId) {
   const { data, error } = await supabaseClient
     .from('profile_favourites')
     .select('game_slug, created_at')
@@ -198,69 +163,51 @@ async function loadFavourites({ supabaseClient, userId }) {
   if (error) {
     const missingTableCodes = new Set(['42P01', 'PGRST205']);
     if (missingTableCodes.has(String(error.code || ''))) {
-      renderFavouritesList([], new Map());
-      return;
+      return [];
     }
-    console.error('[profile] Failed to load favourites', error, { userId });
-    renderFavouritesList([], new Map());
-    return;
+    throw error;
   }
 
-  const slugs = (Array.isArray(data) ? data : [])
-    .map((row) => String(row?.game_slug || '').trim())
-    .filter(Boolean);
-
-  const titleIndex = await fetchGameTitleIndex();
-  renderFavouritesList(slugs, titleIndex);
+  return Array.isArray(data) ? data : [];
 }
 
 async function savePreferences({ supabaseClient, user, messageBox }) {
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
 
-  const updates = {
-    notify_new_games: notifyNewGames
-  };
-
-  const { error } = await supabaseClient
+  const updates = { notify_new_games: notifyNewGames };
+  const { error: updateError } = await supabaseClient
     .from('profiles')
     .update(updates)
     .eq('id', user.id);
 
-  if (error) {
-    console.error('[profile] Update error', error, { userId: user.id, updates });
+  if (updateError) {
+    console.error('[profile] Failed to save preferences', updateError, { userId: user.id, updates });
     setMessage(messageBox, 'Could not save preferences. Please try again.', 'error');
-    return;
+    return false;
   }
 
   const { profile: refreshedProfile, error: refreshError } = await ensureProfileRow(supabaseClient, user);
   if (refreshError || !refreshedProfile) {
     console.error('[profile] Re-fetch after save failed', refreshError, { userId: user.id });
     setMessage(messageBox, 'Preferences saved, but refresh failed. Reload to verify.', 'success');
-    return;
+    return true;
   }
 
   renderProfile(user, refreshedProfile);
-  await loadFavourites({ supabaseClient, userId: user.id });
-
-  // Future activity summary counts (ratings/comments) will be loaded here when those systems are stabilized.
   setMessage(messageBox, 'Preferences saved.', 'success');
+  return true;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   const messageBox = document.getElementById('profileMessage');
   const prefsForm = document.getElementById('prefsForm');
 
-  removeLegacyPreferenceControls();
-  ensureProfileSections();
-
   try {
     const supabaseClient = await getSupabaseClient();
     const { data: authData, error: userError } = await supabaseClient.auth.getUser();
     const user = authData?.user || null;
 
-    if (userError) {
-      console.error('[profile] getUser failed', userError);
-    }
+    if (userError) console.error('[profile] getUser failed', userError);
 
     if (!user) {
       window.location.href = '/auth/login.html';
@@ -274,15 +221,51 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
+    const titleIndex = await fetchGameTitleIndex();
+
+    const refreshFavourites = async () => {
+      try {
+        const favourites = await fetchFavourites(supabaseClient, user.id);
+        renderFavouritesList({
+          favourites,
+          titleIndex,
+          onRemove: async (slug, buttonEl) => {
+            buttonEl.disabled = true;
+            const { error: removeError } = await supabaseClient
+              .from('profile_favourites')
+              .delete()
+              .eq('profile_id', user.id)
+              .eq('game_slug', slug);
+
+            if (removeError) {
+              console.error('[profile] Failed to remove favourite', removeError, { userId: user.id, slug });
+              setMessage(messageBox, 'Could not remove favourite right now.', 'error');
+              buttonEl.disabled = false;
+              return;
+            }
+
+            setMessage(messageBox, 'Favourite removed.', 'success');
+            await refreshFavourites();
+          }
+        });
+      } catch (error) {
+        console.error('[profile] Failed to load favourites', error, { userId: user.id });
+        renderFavouritesList({ favourites: [], titleIndex, onRemove: () => {} });
+      }
+    };
+
     renderProfile(user, profile);
-    await loadFavourites({ supabaseClient, userId: user.id });
+    await refreshFavourites();
     log('Profile loaded', { userId: user.id });
 
     if (prefsForm) {
       prefsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         setMessage(messageBox, '');
-        await savePreferences({ supabaseClient, user, messageBox });
+        const saved = await savePreferences({ supabaseClient, user, messageBox });
+        if (saved) {
+          await refreshFavourites();
+        }
       });
     }
   } catch (error) {

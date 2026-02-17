@@ -1196,7 +1196,7 @@ function setFavouriteButtonState(button, { isFavourite = false, disabled = false
     button.setAttribute("aria-pressed", isFavourite ? "true" : "false");
     button.classList.toggle("is-active", isFavourite);
     if (label) {
-        label.textContent = isFavourite ? "Remove favourite" : "Add to favourites";
+        label.textContent = isFavourite ? "Remove from favourites" : "Add to favourites";
     }
 }
 
@@ -1234,6 +1234,9 @@ async function toggleFavouriteState({ supabase, profileId, gameSlug, isFavourite
         .insert({ profile_id: profileId, game_slug: gameSlug });
 
     if (error) {
+        if (String(error.code || "") === "23505") {
+            return true;
+        }
         console.error("[CCG FAVOURITES] Failed to add favourite", error, { profileId, gameSlug });
         return false;
     }

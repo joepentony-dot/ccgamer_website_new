@@ -11,7 +11,7 @@
   <main class="auth-shell">
     <section class="auth-card">
       <h1>My Private Profile</h1>
-      <p class="auth-subtitle">Manage notifications, newsletter choices, and account security.</p>
+      <p class="auth-subtitle">Manage account preferences and security.</p>
 
       <div id="profileMessage" class="auth-message" aria-live="polite"></div>
 
@@ -24,12 +24,14 @@
       </div>
 
       <form id="prefsForm" class="pref-grid">
-        <label><input type="checkbox" id="newsletterOptIn" /> Monthly newsletter</label>
         <label><input type="checkbox" id="notifyNewGames" /> New game notifications</label>
-        <label><input type="checkbox" id="notifyC64" /> C64 notifications</label>
-        <label><input type="checkbox" id="notifyAmiga" /> Amiga notifications</label>
         <button type="submit" class="auth-btn">Save preferences</button>
       </form>
+
+      <section id="favouriteGamesSection" class="profile-subsection">
+        <h2 class="profile-subsection__title">Favourite Games</h2>
+        <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
+      </section>
 
       <div class="profile-actions">
         <a class="auth-btn" href="/auth/forgot.html">Reset password</a>
