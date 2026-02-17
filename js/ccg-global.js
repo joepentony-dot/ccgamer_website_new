@@ -1264,39 +1264,46 @@ if (IS_ADMIN_PATH) {
     }
 
     function setupLogoEasterEgg() {
-        const logos = document.querySelectorAll(".ccg-header .ccg-brand__logo");
-        if (!logos.length) return;
+        /* ==================================================
+           EASTER EGG CLICK LOGIC (LOGO ONLY)
+           --------------------------------------------------
+           Bind directly to .ccg-brand so only logo clicks can
+           increment the Easter Egg counter.
+        ================================================== */
+        const brandTargets = document.querySelectorAll(".ccg-brand");
+        if (!brandTargets.length) return;
 
-        logos.forEach(logo => {
-            const brandLink = logo.closest(".ccg-brand");
-            const activationTarget = brandLink || logo;
-            if (!activationTarget || activationTarget.dataset.ccgLogoEasterEgg === "true") return;
-            activationTarget.dataset.ccgLogoEasterEgg = "true";
+        brandTargets.forEach(brandTarget => {
+            if (brandTarget.dataset.ccgLogoEasterEgg === "true") return;
+            brandTarget.dataset.ccgLogoEasterEgg = "true";
 
-            if (brandLink && brandLink.tagName === "A") {
-                brandLink.removeAttribute("href");
-                brandLink.removeAttribute("target");
-                brandLink.removeAttribute("rel");
-                brandLink.setAttribute("role", "button");
-                brandLink.setAttribute("tabindex", "0");
-                if (!brandLink.getAttribute("aria-label")) {
-                    brandLink.setAttribute("aria-label", "Cheeky Commodore Gamer logo");
+            const logo = brandTarget.querySelector(".ccg-brand__logo");
+            if (!logo) return;
+
+            if (brandTarget.tagName === "A") {
+                brandTarget.removeAttribute("href");
+                brandTarget.removeAttribute("target");
+                brandTarget.removeAttribute("rel");
+                brandTarget.setAttribute("role", "button");
+                brandTarget.setAttribute("tabindex", "0");
+                if (!brandTarget.getAttribute("aria-label")) {
+                    brandTarget.setAttribute("aria-label", "Cheeky Commodore Gamer logo");
                 }
             }
 
-            activationTarget.addEventListener("click", event => {
-                if (event) {
-                    if (
-                        event.target &&
-                        event.target.closest &&
-                        event.target.closest("input, textarea, [contenteditable]")
-                    ) {
-                        return;
-                    }
-                    event.preventDefault();
-                    event.stopPropagation();
-                    event.stopImmediatePropagation();
+            brandTarget.addEventListener("click", e => {
+                if (!e || e.currentTarget !== brandTarget) return;
+                if (!brandTarget.contains(e.target)) return;
+                if (
+                    e.target &&
+                    e.target.closest &&
+                    e.target.closest("input, textarea, [contenteditable]")
+                ) {
+                    return;
                 }
+
+                e.preventDefault();
+                e.stopPropagation();
 
                 logoClickState.count += 1;
 
