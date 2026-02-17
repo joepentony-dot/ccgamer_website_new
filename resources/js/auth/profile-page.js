@@ -4,6 +4,17 @@ function log(...args) {
   if (DEBUG) console.log('[profile]', ...args);
 }
 
+function formatJoinDate(rawValue) {
+  if (!rawValue) return '—';
+  const parsed = new Date(rawValue);
+  if (Number.isNaN(parsed.getTime())) return '—';
+  return parsed.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!window.supabase) {
     console.error('Supabase client not found');
@@ -25,12 +36,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (error || !profile) {
     messageBox.textContent = 'Could not load profile settings right now.';
     messageBox.classList.add('auth-error');
-    log('Profile load error', error);
+    console.error('[profile] Profile load error', error || 'Missing profile row', { userId: user.id });
     return;
   }
 
@@ -39,32 +50,38 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('emailValue').textContent =
     profile.email || user.email || '—';
   document.getElementById('joinDate').textContent =
-    new Date(profile.joined_at).toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    formatJoinDate(profile.created_at || profile.joined_at);
 
   document.getElementById('newsletterOptIn').checked =
-    !!profile.newsletter_monthly;
+    Boolean(profile.newsletter_monthly ?? profile.newsletter_opt_in);
   document.getElementById('notifyNewGames').checked =
-    !!profile.notify_new_games;
+    Boolean(profile.notify_new_games ?? profile.notify_new_games_opt_in);
   document.getElementById('notifyC64').checked =
-    !!profile.notify_c64;
+    Boolean(profile.notify_c64 ?? profile.notify_platform_c64);
   document.getElementById('notifyAmiga').checked =
-    !!profile.notify_amiga;
+    Boolean(profile.notify_amiga ?? profile.notify_platform_amiga);
 
   const form = document.getElementById('prefsForm');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     messageBox.textContent = '';
+    messageBox.classList.remove('auth-error', 'auth-success');
+
+    const newsletter = document.getElementById('newsletterOptIn').checked;
+    const notifyNewGames = document.getElementById('notifyNewGames').checked;
+    const notifyC64 = document.getElementById('notifyC64').checked;
+    const notifyAmiga = document.getElementById('notifyAmiga').checked;
 
     const updates = {
-      newsletter_monthly: document.getElementById('newsletterOptIn').checked,
-      notify_new_games: document.getElementById('notifyNewGames').checked,
-      notify_c64: document.getElementById('notifyC64').checked,
-      notify_amiga: document.getElementById('notifyAmiga').checked
+      newsletter_monthly: newsletter,
+      notify_new_games: notifyNewGames,
+      notify_c64: notifyC64,
+      notify_amiga: notifyAmiga,
+      newsletter_opt_in: newsletter,
+      notify_new_games_opt_in: notifyNewGames,
+      notify_platform_c64: notifyC64,
+      notify_platform_amiga: notifyAmiga
     };
 
     const { error: updateError } = await supabase
@@ -75,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (updateError) {
       messageBox.textContent = 'Could not save preferences.';
       messageBox.classList.add('auth-error');
-      log('Update error', updateError);
+      console.error('[profile] Update error', updateError, { userId: user.id, updates });
       return;
     }
 
