@@ -458,6 +458,14 @@
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="download-bundle" disabled>Download bundle</button>
         <button class="ccg-btn ccg-btn--ghost" type="button" data-action="retry-download" hidden>Click to download again</button>
       </div>
+      <div class="admin-info-card">
+        <label>
+          <input type="checkbox" data-release-game-now />
+          Release game now (notify users)
+        </label>
+        <p class="field-hint">If enabled, this will notify users who opted in to new game alerts. You can release the game later if disabled.</p>
+        <p class="field-hint" data-release-status hidden></p>
+      </div>
       <section class="export-checklist" aria-label="Package preview checklist">
         <h3>Package Preview Checklist</h3>
         <ul class="package-checklist">

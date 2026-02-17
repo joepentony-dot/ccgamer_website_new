@@ -1,5 +1,5 @@
 import { initAdminNav } from './admin-nav.js';
-import { getAuthContext, waitForAuthReady } from './auth.js';
+import { getAuthContext, getSupabaseClient, waitForAuthReady } from './auth.js';
 import { loadGamesLibrary, updateGamesLibrary } from './games-api.js';
 import { fetchUserRole } from './roles.js';
 import { validateExportOutputs, validateWizardDraft } from './validator.js';
@@ -115,6 +115,8 @@ const el = {
   exportModalClose: Array.from(document.querySelectorAll('[data-export-modal-close]')),
   readonlyBadge: document.querySelector('[data-readonly-badge]'),
   exportNote: document.querySelector('[data-export-note]'),
+  releaseGameNow: document.querySelector('[data-release-game-now]'),
+  releaseStatus: document.querySelector('[data-release-status]'),
   draftBanner: document.querySelector('[data-draft-banner]'),
   stepCounter: document.querySelector('[data-step-counter]'),
   steps: Array.from(document.querySelectorAll('[data-step]')),
@@ -456,6 +458,49 @@ function setDownloadButtonState(isBuilding) {
   }
   button.setAttribute('aria-busy', String(isBuilding));
   button.textContent = isBuilding ? 'Building ZIP…' : button.dataset.label;
+}
+
+function setReleaseStatusMessage(message = '', kind = 'info') {
+  if (!el.releaseStatus) return;
+  if (!message) {
+    el.releaseStatus.hidden = true;
+    el.releaseStatus.textContent = '';
+    el.releaseStatus.dataset.state = '';
+    return;
+  }
+  el.releaseStatus.hidden = false;
+  el.releaseStatus.textContent = message;
+  el.releaseStatus.dataset.state = kind;
+}
+
+// CCG: mark_game_released RPC (non-blocking)
+async function markGameReleasedNonBlocking(gameSlug) {
+  const releaseWarning = 'Game added, but release notification failed. You can release it from admin later.';
+  if (!gameSlug) {
+    console.error('[CCG ADMIN] Release RPC failed', new Error('Missing game slug'));
+    setReleaseStatusMessage(releaseWarning, 'warning');
+    return;
+  }
+
+  try {
+    const supabase = await getSupabaseClient();
+    if (!supabase || typeof supabase.rpc !== 'function') {
+      console.error('[CCG ADMIN] Release RPC failed', new Error('Supabase client unavailable'));
+      setReleaseStatusMessage(releaseWarning, 'warning');
+      return;
+    }
+    const { error } = await supabase.rpc('mark_game_released', { slug: gameSlug });
+    if (error) {
+      console.error('[CCG ADMIN] Release RPC failed', error);
+      setReleaseStatusMessage(releaseWarning, 'warning');
+      return;
+    }
+    console.log('[CCG ADMIN] Game marked released', gameSlug);
+    setReleaseStatusMessage('Game released — notifications will be sent to opted-in users.', 'success');
+  } catch (error) {
+    console.error('[CCG ADMIN] Release RPC failed', error);
+    setReleaseStatusMessage(releaseWarning, 'warning');
+  }
 }
 
 function openExportModal(message, stack) {
@@ -2203,6 +2248,7 @@ async function addAssetToZip({ zip, descriptor, missingAssets }) {
 }
 
 async function buildPackage({ autoDownload = true } = {}) {
+  setReleaseStatusMessage('');
   if (!state.outputs) {
     state.outputs = await buildOutputs();
     window.__ccgLastZipBlob = null;
@@ -2315,6 +2361,13 @@ async function buildPackage({ autoDownload = true } = {}) {
     downloadBtn.classList.remove('is-disabled');
   }
   if (!el.exportError?.textContent) setExportStateLabel('Complete', 'success');
+
+  // CCG: Release game now toggle
+  const shouldReleaseNow = Boolean(el.releaseGameNow?.checked);
+  if (shouldReleaseNow) {
+    await markGameReleasedNonBlocking(entry.slug);
+  }
+
   return blob;
 }
 
@@ -2983,4 +3036,3 @@ boot().catch((error) => {
 // - [ ] Generate Output and Build Package enable when valid.
 // - [ ] Owner email gets write access even without user_roles row.
 // - [ ] Export ZIP produces UPDATED-games.json, games/{slug}/index.html stub, games/{slug}.html flat page, and sitemap fragment.
-
