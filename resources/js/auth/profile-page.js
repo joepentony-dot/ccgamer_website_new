@@ -1,6 +1,19 @@
 import { getSupabaseClient } from './supabase-client.js';
 
-const DEBUG = new URLSearchParams(window.location.search).has('debug');
+const DEBUG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
+const TOP_PICKS_LIMIT = 10;
+
+export function deriveTopPickSlugs(rows) {
+  return new Set(
+    (Array.isArray(rows) ? rows : [])
+      .map((row) => String(row?.game_slug || '').trim())
+      .filter(Boolean)
+  );
+}
+
+export function canAddTopPick(currentCount, limit = TOP_PICKS_LIMIT) {
+  return Number(currentCount) < limit;
+}
 
 function log(...args) {
   if (DEBUG) console.log('[profile]', ...args);
@@ -189,13 +202,17 @@ function bindShareFavouritesButton({ user, profile, messageBox }) {
   });
 }
 
-function renderFavouritesList({ favourites, gameIndex, onRemove }) {
+function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTopPickToggle }) {
   const list = document.getElementById('favouriteGamesList');
+  const topPicksHeading = document.getElementById('topPicksHeading');
   if (!list) return;
 
   list.innerHTML = '';
 
-  if (!Array.isArray(favourites) || favourites.length === 0) {
+  const hasFavourites = Array.isArray(favourites) && favourites.length > 0;
+  if (topPicksHeading) topPicksHeading.hidden = !hasFavourites;
+
+  if (!hasFavourites) {
     const empty = document.createElement('li');
     empty.className = 'profile-favourites-list__empty';
     empty.textContent = 'No favourite games yet.';
@@ -207,10 +224,11 @@ function renderFavouritesList({ favourites, gameIndex, onRemove }) {
     const slug = String(entry?.game_slug || '').trim();
     if (!slug) return;
 
+    const isTopPick = topPicks.has(slug);
     const gameMeta = gameIndex.get(slug) || {};
 
     const item = document.createElement('li');
-    item.className = 'profile-favourite-card';
+    item.className = `profile-favourite-card${isTopPick ? ' profile-favourite-card--top-pick' : ''}`;
 
     const thumb = document.createElement('img');
     thumb.className = 'profile-favourite-card__thumb';
@@ -221,10 +239,22 @@ function renderFavouritesList({ favourites, gameIndex, onRemove }) {
     const content = document.createElement('div');
     content.className = 'profile-favourite-card__content';
 
+    const titleWrap = document.createElement('div');
+    titleWrap.className = 'profile-favourite-card__title-wrap';
+
+    if (isTopPick) {
+      const star = document.createElement('span');
+      star.className = 'profile-favourite-card__star';
+      star.setAttribute('aria-label', 'Top Pick');
+      star.textContent = '★';
+      titleWrap.appendChild(star);
+    }
+
     const link = document.createElement('a');
     link.className = 'profile-favourite-card__title';
     link.href = `/games/${slug}/`;
     link.textContent = gameMeta.title || slug;
+    titleWrap.appendChild(link);
 
     const metaValues = [gameMeta.system, gameMeta.year].filter(Boolean);
     if (metaValues.length) {
@@ -237,18 +267,30 @@ function renderFavouritesList({ favourites, gameIndex, onRemove }) {
     const actions = document.createElement('div');
     actions.className = 'profile-favourite-card__actions';
 
+    const topPickLabel = document.createElement('label');
+    topPickLabel.className = 'profile-favourite-card__top-pick-toggle';
+
+    const topPickCheckbox = document.createElement('input');
+    topPickCheckbox.type = 'checkbox';
+    topPickCheckbox.checked = isTopPick;
+    topPickCheckbox.setAttribute('aria-label', `Mark ${gameMeta.title || slug} as Top Pick`);
+    topPickCheckbox.addEventListener('change', () => onTopPickToggle(slug, topPickCheckbox));
+
+    const topPickText = document.createElement('span');
+    topPickText.textContent = 'Top Pick';
+
+    topPickLabel.append(topPickCheckbox, topPickText);
+
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.className = 'auth-btn profile-favourite-card__remove';
     removeButton.textContent = 'Remove';
     removeButton.addEventListener('click', () => onRemove(slug, removeButton));
 
-    content.prepend(link);
-    actions.appendChild(removeButton);
+    content.prepend(titleWrap);
+    actions.append(topPickLabel, removeButton);
 
-    item.appendChild(thumb);
-    item.appendChild(content);
-    item.appendChild(actions);
+    item.append(thumb, content, actions);
 
     list.appendChild(item);
   });
@@ -257,6 +299,24 @@ function renderFavouritesList({ favourites, gameIndex, onRemove }) {
 async function fetchFavourites(supabaseClient, userId) {
   const { data, error } = await supabaseClient
     .from('profile_favourites')
+    .select('game_slug, created_at')
+    .eq('profile_id', userId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    const missingTableCodes = new Set(['42P01', 'PGRST205']);
+    if (missingTableCodes.has(String(error.code || ''))) {
+      return [];
+    }
+    throw error;
+  }
+
+  return Array.isArray(data) ? data : [];
+}
+
+async function fetchTopPicks(supabaseClient, userId) {
+  const { data, error } = await supabaseClient
+    .from('profile_top_picks')
     .select('game_slug, created_at')
     .eq('profile_id', userId)
     .order('created_at', { ascending: true });
@@ -299,6 +359,7 @@ async function savePreferences({ supabaseClient, user, messageBox }) {
   return true;
 }
 
+if (typeof document !== 'undefined') {
 document.addEventListener('DOMContentLoaded', async () => {
   const messageBox = document.getElementById('profileMessage');
   const prefsForm = document.getElementById('prefsForm');
@@ -325,36 +386,124 @@ document.addEventListener('DOMContentLoaded', async () => {
     bindShareFavouritesButton({ user, profile, messageBox });
 
     const gameIndex = await fetchGameIndex();
+    const state = {
+      favourites: [],
+      topPicks: new Set()
+    };
+
+    const renderCurrentFavourites = () => {
+      renderFavouritesList({
+        favourites: state.favourites,
+        topPicks: state.topPicks,
+        gameIndex,
+        onRemove: handleRemoveFavourite,
+        onTopPickToggle: handleTopPickToggle
+      });
+    };
 
     const refreshFavourites = async () => {
       try {
-        const favourites = await fetchFavourites(supabaseClient, user.id);
-        renderFavouritesList({
-          favourites,
-          gameIndex,
-          onRemove: async (slug, buttonEl) => {
-            buttonEl.disabled = true;
-            const { error: removeError } = await supabaseClient
-              .from('profile_favourites')
-              .delete()
-              .eq('profile_id', user.id)
-              .eq('game_slug', slug);
+        const [favourites, topPicksRows] = await Promise.all([
+          fetchFavourites(supabaseClient, user.id),
+          fetchTopPicks(supabaseClient, user.id)
+        ]);
 
-            if (removeError) {
-              console.error('[profile] Failed to remove favourite', removeError, { userId: user.id, slug });
-              setMessage(messageBox, 'Could not remove favourite right now.', 'error');
-              buttonEl.disabled = false;
-              return;
-            }
-
-            setMessage(messageBox, 'Favourite removed.', 'success');
-            await refreshFavourites();
-          }
+        state.favourites = favourites;
+        const favouriteSlugSet = new Set(favourites.map((entry) => String(entry?.game_slug || '').trim()).filter(Boolean));
+        state.topPicks = deriveTopPickSlugs(topPicksRows);
+        state.topPicks.forEach((slug) => {
+          if (!favouriteSlugSet.has(slug)) state.topPicks.delete(slug);
         });
+
+        renderCurrentFavourites();
       } catch (error) {
         console.error('[profile] Failed to load favourites', error, { userId: user.id });
-        renderFavouritesList({ favourites: [], gameIndex, onRemove: () => {} });
+        renderFavouritesList({ favourites: [], topPicks: new Set(), gameIndex, onRemove: () => {}, onTopPickToggle: () => {} });
       }
+    };
+
+    const handleTopPickToggle = async (slug, checkboxEl) => {
+      const isChecked = Boolean(checkboxEl.checked);
+      const wasTopPick = state.topPicks.has(slug);
+
+      if (isChecked && !wasTopPick && !canAddTopPick(state.topPicks.size)) {
+        checkboxEl.checked = false;
+        setMessage(messageBox, `You can only choose up to ${TOP_PICKS_LIMIT} Top Picks.`, 'error');
+        return;
+      }
+
+      if (isChecked === wasTopPick) return;
+
+      checkboxEl.disabled = true;
+      if (isChecked) {
+        state.topPicks.add(slug);
+      } else {
+        state.topPicks.delete(slug);
+      }
+      renderCurrentFavourites();
+
+      if (isChecked) {
+        const { error: insertError } = await supabaseClient
+          .from('profile_top_picks')
+          .insert({ profile_id: user.id, game_slug: slug });
+
+        if (insertError) {
+          console.error('[profile] Failed to save top pick', insertError, { userId: user.id, slug });
+          state.topPicks.delete(slug);
+          renderCurrentFavourites();
+          setMessage(messageBox, 'Could not save Top Pick right now.', 'error');
+          return;
+        }
+
+        setMessage(messageBox, 'Top Pick added.', 'success');
+        return;
+      }
+
+      const { error: deleteError } = await supabaseClient
+        .from('profile_top_picks')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('game_slug', slug);
+
+      if (deleteError) {
+        console.error('[profile] Failed to remove top pick', deleteError, { userId: user.id, slug });
+        state.topPicks.add(slug);
+        renderCurrentFavourites();
+        setMessage(messageBox, 'Could not remove Top Pick right now.', 'error');
+        return;
+      }
+
+      setMessage(messageBox, 'Top Pick removed.', 'success');
+    };
+
+    const handleRemoveFavourite = async (slug, buttonEl) => {
+      buttonEl.disabled = true;
+      const { error: removeError } = await supabaseClient
+        .from('profile_favourites')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('game_slug', slug);
+
+      if (removeError) {
+        console.error('[profile] Failed to remove favourite', removeError, { userId: user.id, slug });
+        setMessage(messageBox, 'Could not remove favourite right now.', 'error');
+        buttonEl.disabled = false;
+        return;
+      }
+
+      const { error: removeTopPickError } = await supabaseClient
+        .from('profile_top_picks')
+        .delete()
+        .eq('profile_id', user.id)
+        .eq('game_slug', slug);
+
+      if (removeTopPickError) {
+        console.error('[profile] Failed to remove linked top pick after favourite delete', removeTopPickError, { userId: user.id, slug });
+      }
+
+      state.topPicks.delete(slug);
+      setMessage(messageBox, 'Favourite removed.', 'success');
+      await refreshFavourites();
     };
 
     renderProfile(user, profile);
@@ -376,3 +525,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     setMessage(messageBox, 'Could not load profile settings right now.', 'error');
   }
 });
+}
