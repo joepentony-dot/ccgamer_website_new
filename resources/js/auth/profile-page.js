@@ -40,15 +40,58 @@ function profileDefaults(user) {
       || user.user_metadata?.full_name
       || user.email?.split('@')[0]
       || 'Member',
-    newsletter_monthly: false,
-    notify_new_games: false,
-    notify_c64: false,
-    notify_amiga: false,
-    newsletter_opt_in: false,
-    notify_new_games_opt_in: false,
-    notify_platform_c64: false,
-    notify_platform_amiga: false
+    notify_new_games: false
   };
+}
+
+function removeLegacyPreferenceControls() {
+  ['newsletterOptIn', 'notifyC64', 'notifyAmiga'].forEach((id) => {
+    const input = document.getElementById(id);
+    const label = input?.closest('label');
+    if (label) label.remove();
+  });
+
+  const subtitle = document.querySelector('.auth-subtitle');
+  if (subtitle) {
+    subtitle.textContent = 'Manage account preferences and security.';
+  }
+}
+
+function ensureProfileSections() {
+  const card = document.querySelector('.auth-card');
+  if (!card) return;
+
+  let activitySection = document.getElementById('activitySummarySection');
+  if (!activitySection) {
+    activitySection = document.createElement('section');
+    activitySection.id = 'activitySummarySection';
+    activitySection.className = 'profile-subsection';
+    activitySection.innerHTML = [
+      '<h2 class="profile-subsection__title">Activity Summary</h2>',
+      '<p class="profile-subsection__item">Games rated: —</p>',
+      '<p class="profile-subsection__item">Comments made: —</p>'
+    ].join('');
+  }
+
+  let favouritesSection = document.getElementById('favouriteGamesSection');
+  if (!favouritesSection) {
+    favouritesSection = document.createElement('section');
+    favouritesSection.id = 'favouriteGamesSection';
+    favouritesSection.className = 'profile-subsection';
+    favouritesSection.innerHTML = [
+      '<h2 class="profile-subsection__title">Favourite Games</h2>',
+      '<ul id="favouriteGamesList" class="profile-favourites-list"></ul>'
+    ].join('');
+  }
+
+  const actions = card.querySelector('.profile-actions');
+  if (actions) {
+    card.insertBefore(activitySection, actions);
+    card.insertBefore(favouritesSection, actions);
+  } else {
+    card.appendChild(activitySection);
+    card.appendChild(favouritesSection);
+  }
 }
 
 async function fetchProfile(supabaseClient, userId) {
@@ -100,49 +143,91 @@ function renderProfile(user, profile) {
   if (emailValueEl) emailValueEl.textContent = profile.email || user.email || '—';
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
 
-  const newsletterOptIn = document.getElementById('newsletterOptIn');
   const notifyNewGames = document.getElementById('notifyNewGames');
-  const notifyC64 = document.getElementById('notifyC64');
-  const notifyAmiga = document.getElementById('notifyAmiga');
-
-  if (newsletterOptIn) {
-    newsletterOptIn.checked = Boolean(profile.newsletter_monthly ?? profile.newsletter_opt_in);
-  }
   if (notifyNewGames) {
-    notifyNewGames.checked = Boolean(profile.notify_new_games ?? profile.notify_new_games_opt_in);
-  }
-  if (notifyC64) {
-    notifyC64.checked = Boolean(profile.notify_c64 ?? profile.notify_platform_c64);
-  }
-  if (notifyAmiga) {
-    notifyAmiga.checked = Boolean(profile.notify_amiga ?? profile.notify_platform_amiga);
+    notifyNewGames.checked = Boolean(profile.notify_new_games);
   }
 }
 
+async function fetchGameTitleIndex() {
+  try {
+    const response = await fetch('/games/games.json', { cache: 'no-store' });
+    if (!response.ok) return new Map();
+    const games = await response.json();
+    const index = new Map();
+    (Array.isArray(games) ? games : []).forEach((game) => {
+      const slug = String(game?.slug || '').trim();
+      if (!slug) return;
+      index.set(slug, String(game?.title || slug));
+    });
+    return index;
+  } catch (error) {
+    console.error('[profile] Failed to load game title index', error);
+    return new Map();
+  }
+}
+
+function renderFavouritesList(slugs, titleIndex) {
+  const list = document.getElementById('favouriteGamesList');
+  if (!list) return;
+
+  list.innerHTML = '';
+
+  if (!Array.isArray(slugs) || !slugs.length) {
+    const empty = document.createElement('li');
+    empty.textContent = 'No favourite games yet.';
+    list.appendChild(empty);
+    return;
+  }
+
+  slugs.forEach((slug) => {
+    const item = document.createElement('li');
+    item.textContent = titleIndex.get(slug) || slug;
+    list.appendChild(item);
+  });
+}
+
+async function loadFavourites({ supabaseClient, userId }) {
+  // Foundation: only read private favourites for the signed-in user.
+  const { data, error } = await supabaseClient
+    .from('profile_favourites')
+    .select('game_slug, created_at')
+    .eq('profile_id', userId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    const missingTableCodes = new Set(['42P01', 'PGRST205']);
+    if (missingTableCodes.has(String(error.code || ''))) {
+      renderFavouritesList([], new Map());
+      return;
+    }
+    console.error('[profile] Failed to load favourites', error, { userId });
+    renderFavouritesList([], new Map());
+    return;
+  }
+
+  const slugs = (Array.isArray(data) ? data : [])
+    .map((row) => String(row?.game_slug || '').trim())
+    .filter(Boolean);
+
+  const titleIndex = await fetchGameTitleIndex();
+  renderFavouritesList(slugs, titleIndex);
+}
+
 async function savePreferences({ supabaseClient, user, messageBox }) {
-  const newsletter = Boolean(document.getElementById('newsletterOptIn')?.checked);
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
-  const notifyC64 = Boolean(document.getElementById('notifyC64')?.checked);
-  const notifyAmiga = Boolean(document.getElementById('notifyAmiga')?.checked);
 
   const updates = {
-    newsletter_monthly: newsletter,
-    notify_new_games: notifyNewGames,
-    notify_c64: notifyC64,
-    notify_amiga: notifyAmiga,
-    newsletter_opt_in: newsletter,
-    notify_new_games_opt_in: notifyNewGames,
-    notify_platform_c64: notifyC64,
-    notify_platform_amiga: notifyAmiga
+    notify_new_games: notifyNewGames
   };
 
-  const { error: updateError } = await supabaseClient
+  const { error } = await supabaseClient
     .from('profiles')
     .update(updates)
     .eq('id', user.id);
 
-  if (updateError) {
-    console.error('[profile] Update error', updateError, { userId: user.id, updates });
+  if (error) {
+    console.error('[profile] Update error', error, { userId: user.id, updates });
     setMessage(messageBox, 'Could not save preferences. Please try again.', 'error');
     return;
   }
@@ -155,12 +240,18 @@ async function savePreferences({ supabaseClient, user, messageBox }) {
   }
 
   renderProfile(user, refreshedProfile);
+  await loadFavourites({ supabaseClient, userId: user.id });
+
+  // Future activity summary counts (ratings/comments) will be loaded here when those systems are stabilized.
   setMessage(messageBox, 'Preferences saved.', 'success');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
   const messageBox = document.getElementById('profileMessage');
   const prefsForm = document.getElementById('prefsForm');
+
+  removeLegacyPreferenceControls();
+  ensureProfileSections();
 
   try {
     const supabaseClient = await getSupabaseClient();
@@ -184,6 +275,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     renderProfile(user, profile);
+    await loadFavourites({ supabaseClient, userId: user.id });
     log('Profile loaded', { userId: user.id });
 
     if (prefsForm) {

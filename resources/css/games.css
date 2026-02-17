@@ -2921,3 +2921,11 @@ button,
 .game-cta {
     border-radius: 0 !important;
 }
+
+[data-ccg-favourite-btn].is-active {
+  border-color: rgba(255, 215, 0, 0.7);
+}
+
+[data-ccg-favourite-btn].is-busy {
+  opacity: 0.75;
+}
