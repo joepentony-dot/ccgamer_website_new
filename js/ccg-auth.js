@@ -140,12 +140,6 @@
     button.addEventListener('click', async function (event) {
       event.preventDefault();
 
-      // DEBUG: keep this until logout click/stacking verification is complete.
-      console.debug('[CCG Auth] Logout button click detected', {
-        id: button.id || null,
-        className: button.className || null
-      });
-
       if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.logout === 'function') {
         await window.ccgCommunityAuth.logout();
       } else {

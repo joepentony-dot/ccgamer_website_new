@@ -1264,15 +1264,27 @@ if (IS_ADMIN_PATH) {
     }
 
     function setupLogoEasterEgg() {
-        const logos = document.querySelectorAll(".ccg-header .ccg-brand__logo, .ccg-header .ccg-logo");
+        const logos = document.querySelectorAll(".ccg-header .ccg-brand__logo");
         if (!logos.length) return;
 
         logos.forEach(logo => {
-            // Bind only on the logo element itself so nearby header/hero clicks cannot trigger the egg.
-            if (logo.dataset.ccgLogoEasterEgg === "true") return;
-            logo.dataset.ccgLogoEasterEgg = "true";
+            const brandLink = logo.closest(".ccg-brand");
+            const activationTarget = brandLink || logo;
+            if (!activationTarget || activationTarget.dataset.ccgLogoEasterEgg === "true") return;
+            activationTarget.dataset.ccgLogoEasterEgg = "true";
 
-            logo.addEventListener("click", event => {
+            if (brandLink && brandLink.tagName === "A") {
+                brandLink.removeAttribute("href");
+                brandLink.removeAttribute("target");
+                brandLink.removeAttribute("rel");
+                brandLink.setAttribute("role", "button");
+                brandLink.setAttribute("tabindex", "0");
+                if (!brandLink.getAttribute("aria-label")) {
+                    brandLink.setAttribute("aria-label", "Cheeky Commodore Gamer logo");
+                }
+            }
+
+            activationTarget.addEventListener("click", event => {
                 if (event) {
                     if (
                         event.target &&
@@ -1281,13 +1293,10 @@ if (IS_ADMIN_PATH) {
                     ) {
                         return;
                     }
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
                 }
-
-                // DEBUG: keep this until click-behaviour verification is complete.
-                console.debug("[CCG Easter Egg] Logo click detected", {
-                    className: logo.className,
-                    pointerType: event?.pointerType || "mouse"
-                });
 
                 logoClickState.count += 1;
 
