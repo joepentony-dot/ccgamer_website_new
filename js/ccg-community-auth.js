@@ -328,7 +328,7 @@
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, avatar_url, role, created_at')
+      .select('id, username, avatar_url, role, created_at, display_name, bio')
       .eq('id', userId)
       .maybeSingle();
 
