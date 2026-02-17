@@ -56,3 +56,25 @@
 .unsub-wrap {
   margin-top: 16px;
 }
+
+.profile-subsection {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.profile-subsection__title {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}
+
+.profile-subsection__item {
+  margin: 6px 0;
+}
+
+.profile-favourites-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}

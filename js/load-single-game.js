@@ -29,6 +29,8 @@ let CCG_SCROLL_PROGRESS_READY = false;
 let CCG_BACK_TO_TOP_READY = false;
 let CCG_QUICK_ACTIONS_READY = false;
 let CCG_RELATED_OBSERVER = null;
+let CCG_FAVOURITES_INIT = false;
+let CCG_FAVOURITES_LOADING = false;
 const CCG_BOX3D_PATH_CACHE = new Map();
 const CCG_BOX3D_SLUG_CACHE = new Map();
 const CCG_RENDER_GATE = {
@@ -970,6 +972,7 @@ function renderGame(game) {
     }
     renderGameRating(game);
     renderHeroBadges(game);
+    void renderFavouriteAction(game);
     void renderHeroBox3d(game);
 
     /* DESCRIPTION */
@@ -1150,6 +1153,170 @@ function renderGame(game) {
             }
         }));
     }
+}
+
+async function getFavouriteSupabaseClient() {
+    if (!(window.ccgSupabase && typeof window.ccgSupabase.getClient === "function")) {
+        return null;
+    }
+    try {
+        return await window.ccgSupabase.getClient();
+    } catch (error) {
+        console.error("[CCG FAVOURITES] Supabase client unavailable", error);
+        return null;
+    }
+}
+
+function resolveCurrentGameSlug(game) {
+    const explicit = String(game?.slug || "").trim();
+    if (explicit) return explicit;
+    return normalizeSlugKey(game?.id) || normalizeSlugKey(getSlugFromPath()) || "";
+}
+
+function ensureFavouriteButton() {
+    const row = document.querySelector(".game-hero__title-row");
+    if (!row) return null;
+
+    let button = row.querySelector("[data-ccg-favourite-btn]");
+    if (button) return button;
+
+    button = document.createElement("button");
+    button.type = "button";
+    button.className = "ccg-btn ccg-btn--share";
+    button.setAttribute("data-ccg-favourite-btn", "true");
+    button.innerHTML = '<span class="ccg-btn__icon" aria-hidden="true">⭐</span><span class="ccg-btn__label">Add to favourites</span>';
+    row.appendChild(button);
+    return button;
+}
+
+function setFavouriteButtonState(button, { isFavourite = false, disabled = false } = {}) {
+    if (!button) return;
+    const label = button.querySelector(".ccg-btn__label");
+    button.disabled = disabled;
+    button.setAttribute("aria-pressed", isFavourite ? "true" : "false");
+    button.classList.toggle("is-active", isFavourite);
+    if (label) {
+        label.textContent = isFavourite ? "Remove favourite" : "Add to favourites";
+    }
+}
+
+async function fetchFavouriteState(supabase, profileId, gameSlug) {
+    const { data, error } = await supabase
+        .from("profile_favourites")
+        .select("id")
+        .eq("profile_id", profileId)
+        .eq("game_slug", gameSlug)
+        .maybeSingle();
+
+    if (error) {
+        console.error("[CCG FAVOURITES] Failed to read favourite state", error, { profileId, gameSlug });
+        return false;
+    }
+    return Boolean(data?.id);
+}
+
+async function toggleFavouriteState({ supabase, profileId, gameSlug, isFavourite }) {
+    if (isFavourite) {
+        const { error } = await supabase
+            .from("profile_favourites")
+            .delete()
+            .eq("profile_id", profileId)
+            .eq("game_slug", gameSlug);
+        if (error) {
+            console.error("[CCG FAVOURITES] Failed to remove favourite", error, { profileId, gameSlug });
+            return false;
+        }
+        return true;
+    }
+
+    const { error } = await supabase
+        .from("profile_favourites")
+        .insert({ profile_id: profileId, game_slug: gameSlug });
+
+    if (error) {
+        console.error("[CCG FAVOURITES] Failed to add favourite", error, { profileId, gameSlug });
+        return false;
+    }
+    return true;
+}
+
+async function renderFavouriteAction(game) {
+    const button = ensureFavouriteButton();
+    if (!button) return;
+
+    const gameSlug = resolveCurrentGameSlug(game);
+    if (!gameSlug) {
+        button.hidden = true;
+        return;
+    }
+    button.hidden = false;
+    button.dataset.gameSlug = gameSlug;
+
+    const supabase = await getFavouriteSupabaseClient();
+    if (!supabase) {
+        setFavouriteButtonState(button, { isFavourite: false, disabled: false });
+        return;
+    }
+
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+    if (authError) {
+        console.error("[CCG FAVOURITES] Unable to resolve user", authError);
+    }
+    const user = authData?.user || null;
+
+    if (!user) {
+        setFavouriteButtonState(button, { isFavourite: false, disabled: false });
+    } else {
+        const isFavourite = await fetchFavouriteState(supabase, user.id, gameSlug);
+        setFavouriteButtonState(button, { isFavourite, disabled: false });
+    }
+
+    if (CCG_FAVOURITES_INIT) return;
+
+    // Foundation favourite action: private per-user toggle, no public counters yet.
+    button.addEventListener("click", async () => {
+        if (CCG_FAVOURITES_LOADING) return;
+
+        const targetSlug = String(button.dataset.gameSlug || "").trim();
+        if (!targetSlug) return;
+
+        const client = await getFavouriteSupabaseClient();
+        if (!client) return;
+
+        const { data, error } = await client.auth.getUser();
+        if (error) {
+            console.error("[CCG FAVOURITES] Unable to resolve user before toggle", error);
+            return;
+        }
+
+        const currentUser = data?.user || null;
+        if (!currentUser) {
+            const target = new URL("/auth/login.html", window.location.origin);
+            target.searchParams.set("returnTo", window.location.pathname + window.location.search + window.location.hash);
+            window.location.href = target.pathname + target.search;
+            return;
+        }
+
+        CCG_FAVOURITES_LOADING = true;
+        button.classList.add("is-busy");
+
+        const currentlyFavourite = button.getAttribute("aria-pressed") === "true";
+        const success = await toggleFavouriteState({
+            supabase: client,
+            profileId: currentUser.id,
+            gameSlug: targetSlug,
+            isFavourite: currentlyFavourite
+        });
+
+        if (success) {
+            setFavouriteButtonState(button, { isFavourite: !currentlyFavourite, disabled: false });
+        }
+
+        button.classList.remove("is-busy");
+        CCG_FAVOURITES_LOADING = false;
+    });
+
+    CCG_FAVOURITES_INIT = true;
 }
 
 function renderGameRating(game) {
