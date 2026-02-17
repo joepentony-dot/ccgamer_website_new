@@ -2,6 +2,14 @@
   max-width: 760px;
 }
 
+.profile-back-home {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  margin-bottom: 12px;
+  text-decoration: none;
+}
+
 .profile-list {
   display: grid;
   gap: 12px;
