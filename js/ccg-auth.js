@@ -12,13 +12,36 @@
     return localStorage.getItem('ccg_username') || localStorage.getItem('ccg-user') || '';
   }
 
+  function isEmailLike(value) {
+    const text = String(value || '').trim();
+    if (!text) return false;
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text);
+  }
+
+  function readSafeValue(value) {
+    const text = String(value || '').trim();
+    if (!text) return '';
+    if (isEmailLike(text)) return '';
+    return text;
+  }
+
   function getDisplayName(profile, user) {
-    if (profile && profile.display_name) return String(profile.display_name);
-    if (profile && profile.username) return String(profile.username);
-    if (user && user.user_metadata && user.user_metadata.display_name) return String(user.user_metadata.display_name);
-    if (user && user.user_metadata && user.user_metadata.username) return String(user.user_metadata.username);
-    if (user && user.email) return String(user.email);
-    return readStoredUsername();
+    const profileDisplayName = readSafeValue(profile && profile.display_name);
+    if (profileDisplayName) return profileDisplayName;
+
+    const profileUsername = readSafeValue(profile && profile.username);
+    if (profileUsername) return profileUsername;
+
+    const metadataName = readSafeValue(user && user.user_metadata && (user.user_metadata.name || user.user_metadata.full_name || user.user_metadata.display_name));
+    if (metadataName) return metadataName;
+
+    const metadataUsername = readSafeValue(user && user.user_metadata && user.user_metadata.username);
+    if (metadataUsername) return metadataUsername;
+
+    const storedUsername = readSafeValue(readStoredUsername());
+    if (storedUsername) return storedUsername;
+
+    return '@member';
   }
 
   function setGlobalAuth(user, profile, session) {
@@ -147,9 +170,9 @@
     const auth = window.CCG_AUTH || { loggedIn: false, username: '' };
 
     if (auth.loggedIn) {
-      const username = auth.username || 'member';
+      const username = auth.username || '@member';
       slot.innerHTML = '' +
-        '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">@' + username + '</a>' +
+        '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">' + username + '</a>' +
         '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout" data-logout>Logout</button>';
       bindLogout(slot.querySelector('#ccg-auth-logout'));
       return;

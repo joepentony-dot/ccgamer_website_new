@@ -2,6 +2,7 @@ import { getSupabaseClient } from './supabase-client.js';
 
 const DEBUG = typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug');
 const TOP_PICKS_LIMIT = 10;
+const CANONICAL_SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 
 export function deriveTopPickSlugs(rows) {
   return new Set(
@@ -51,7 +52,7 @@ function profileDefaults(user) {
     display_name:
       user.user_metadata?.display_name
       || user.user_metadata?.full_name
-      || user.email?.split('@')[0]
+      || user.user_metadata?.name
       || 'Member',
     notify_new_games: false
   };
@@ -103,11 +104,39 @@ function renderProfile(user, profile) {
   const joinDateEl = document.getElementById('joinDate');
 
   if (displayNameEl) displayNameEl.textContent = profile.display_name || '—';
-  if (emailValueEl) emailValueEl.textContent = profile.email || user.email || '—';
+  if (emailValueEl) emailValueEl.textContent = 'Hidden for privacy';
   if (joinDateEl) joinDateEl.textContent = formatJoinDate(profile.created_at || profile.joined_at || user.created_at);
 
   const notifyNewGames = document.getElementById('notifyNewGames');
   if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
+}
+
+function normalizeSlugCandidate(candidate) {
+  const raw = String(candidate || '').trim().toLowerCase();
+  if (!raw) return '';
+  return raw
+    .replace(/_/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]+/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function resolveFavouriteSlug(entry) {
+  const slugFromRow = normalizeSlugCandidate(entry?.game_slug);
+  if (slugFromRow) return slugFromRow;
+
+  const slugFromGame = normalizeSlugCandidate(entry?.game?.slug);
+  if (slugFromGame) return slugFromGame;
+
+  const idFromGame = normalizeSlugCandidate(entry?.game?.id);
+  if (idFromGame) return idFromGame;
+
+  return normalizeSlugCandidate(entry?.game_id);
+}
+
+function buildCanonicalGameUrl(slug) {
+  return `${CANONICAL_SITE_ORIGIN}/games/${slug}/`;
 }
 
 function resolveSingleGameThumbBasePath() {
@@ -167,42 +196,22 @@ async function fetchGameIndex() {
   }
 }
 
-async function maybeWarnMissingPublicRoute(displayName) {
-  const route = `/community/user/${encodeURIComponent(displayName)}/favourites`;
-
-  try {
-    const response = await fetch(route, { method: 'HEAD', cache: 'no-store' });
-    if (response.status === 404) {
-      console.warn(`[profile] Public favourites route not implemented yet for ${route}. Implement this endpoint/page for public sharing.`);
-    }
-  } catch (error) {
-    console.warn('[profile] Could not verify public favourites route availability. Implement a public route for shared favourites.', error);
+async function copyShareLink(url) {
+  if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+    await navigator.clipboard.writeText(url);
+    return;
   }
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = url;
+  document.body.appendChild(input);
+  input.select();
+  document.execCommand('copy');
+  input.remove();
 }
 
-function bindShareFavouritesButton({ user, profile, messageBox }) {
-  const shareButton = document.getElementById('shareFavouritesBtn');
-  if (!shareButton || shareButton.dataset.bound === 'true') return;
-
-  shareButton.dataset.bound = 'true';
-  shareButton.addEventListener('click', async () => {
-    const displayName = String(profile?.display_name || user?.email || 'member').trim();
-    const publicLink = `https://cheekycommodoregamer.co.uk/community/user/${encodeURIComponent(displayName)}/favourites`;
-
-    try {
-      await navigator.clipboard.writeText(publicLink);
-      setMessage(messageBox, 'Public favourites link copied to clipboard.', 'success');
-      await maybeWarnMissingPublicRoute(displayName);
-    } catch (error) {
-      console.error('[profile] Failed to copy favourites link', error);
-      setMessage(messageBox, 'Could not copy link. Please copy it manually from browser console.', 'error');
-      console.log('[profile] Share link:', publicLink);
-      await maybeWarnMissingPublicRoute(displayName);
-    }
-  });
-}
-
-function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTopPickToggle }) {
+function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTopPickToggle, onShare }) {
   const list = document.getElementById('favouriteGamesList');
   const topPicksHeading = document.getElementById('topPicksHeading');
   if (!list) return;
@@ -221,7 +230,7 @@ function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTop
   }
 
   favourites.forEach((entry) => {
-    const slug = String(entry?.game_slug || '').trim();
+    const slug = resolveFavouriteSlug(entry);
     if (!slug) return;
 
     const isTopPick = topPicks.has(slug);
@@ -281,6 +290,12 @@ function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTop
 
     topPickLabel.append(topPickCheckbox, topPickText);
 
+    const shareButton = document.createElement('button');
+    shareButton.type = 'button';
+    shareButton.className = 'auth-btn profile-favourite-card__share';
+    shareButton.textContent = 'Share';
+    shareButton.addEventListener('click', () => onShare(slug));
+
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.className = 'auth-btn profile-favourite-card__remove';
@@ -288,7 +303,7 @@ function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTop
     removeButton.addEventListener('click', () => onRemove(slug, removeButton));
 
     content.prepend(titleWrap);
-    actions.append(topPickLabel, removeButton);
+    actions.append(topPickLabel, shareButton, removeButton);
 
     item.append(thumb, content, actions);
 
@@ -299,7 +314,7 @@ function renderFavouritesList({ favourites, topPicks, gameIndex, onRemove, onTop
 async function fetchFavourites(supabaseClient, userId) {
   const { data, error } = await supabaseClient
     .from('profile_favourites')
-    .select('game_slug, created_at')
+    .select('*')
     .eq('profile_id', userId)
     .order('created_at', { ascending: true });
 
@@ -383,8 +398,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    bindShareFavouritesButton({ user, profile, messageBox });
-
     const gameIndex = await fetchGameIndex();
     const state = {
       favourites: [],
@@ -397,7 +410,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         topPicks: state.topPicks,
         gameIndex,
         onRemove: handleRemoveFavourite,
-        onTopPickToggle: handleTopPickToggle
+        onTopPickToggle: handleTopPickToggle,
+        onShare: handleShareFavourite
       });
     };
 
@@ -409,7 +423,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ]);
 
         state.favourites = favourites;
-        const favouriteSlugSet = new Set(favourites.map((entry) => String(entry?.game_slug || '').trim()).filter(Boolean));
+        const favouriteSlugSet = new Set(favourites.map((entry) => resolveFavouriteSlug(entry)).filter(Boolean));
         state.topPicks = deriveTopPickSlugs(topPicksRows);
         state.topPicks.forEach((slug) => {
           if (!favouriteSlugSet.has(slug)) state.topPicks.delete(slug);
@@ -418,7 +432,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderCurrentFavourites();
       } catch (error) {
         console.error('[profile] Failed to load favourites', error, { userId: user.id });
-        renderFavouritesList({ favourites: [], topPicks: new Set(), gameIndex, onRemove: () => {}, onTopPickToggle: () => {} });
+        renderFavouritesList({ favourites: [], topPicks: new Set(), gameIndex, onRemove: () => {}, onTopPickToggle: () => {}, onShare: () => {} });
+      }
+    };
+
+    const handleShareFavourite = async (slug) => {
+      const canonicalUrl = buildCanonicalGameUrl(slug);
+      try {
+        await copyShareLink(canonicalUrl);
+        setMessage(messageBox, 'Link copied.', 'success');
+      } catch (error) {
+        console.error('[profile] Failed to copy game link', error, { canonicalUrl });
+        setMessage(messageBox, 'Could not copy link right now.', 'error');
       }
     };
 

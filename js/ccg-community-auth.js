@@ -155,6 +155,27 @@
     return ('player-' + Math.random().toString(36).slice(2, 8)).slice(0, 24);
   }
 
+  function safeProfileSeed(user) {
+    if (!user) return '';
+    const metadata = user.user_metadata || {};
+    const candidates = [
+      metadata.username,
+      metadata.display_name,
+      metadata.full_name,
+      metadata.name,
+      user.id ? user.id.slice(0, 8) : ''
+    ];
+
+    for (const candidate of candidates) {
+      const text = String(candidate || '').trim();
+      if (!text) continue;
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) continue;
+      return text;
+    }
+
+    return 'member';
+  }
+
   function toggleView(view) {
     document.querySelectorAll('[data-ccg-auth-view]').forEach((panel) => {
       panel.hidden = panel.getAttribute('data-ccg-auth-view') !== view;
@@ -347,7 +368,7 @@
 
     const fallbackUsername = sanitizeUsername(
       user.user_metadata && user.user_metadata.username,
-      user.email ? user.email.split('@')[0] : user.id.slice(0, 8)
+      safeProfileSeed(user)
     );
 
     const payload = {
