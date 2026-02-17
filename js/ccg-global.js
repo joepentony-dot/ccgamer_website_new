@@ -1292,7 +1292,7 @@ if (IS_ADMIN_PATH) {
             }
 
             brandTarget.addEventListener("pointerdown", e => {
-                if (!e?.target?.closest || !e.target.closest(".ccg-brand")) return;
+                if (!e?.target?.closest || !e.target.closest(".ccg-brand__logo")) return;
                 if (!e || e.currentTarget !== brandTarget) return;
                 if (!brandTarget.contains(e.target)) return;
                 if (
