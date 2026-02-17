@@ -3089,6 +3089,8 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
         padding-inline: 12px;
         line-height: 1.15;
         white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .home-visitor-callout__headline {
@@ -3130,16 +3132,6 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
     .home-discovery-strip__link.home-collections {
         font-size: 0.78rem;
         letter-spacing: 0.08em;
-    }
-
-    .home-bottom-cta__actions .home-cta-btn--collections {
-        font-size: calc(0.78rem - 1px);
-        letter-spacing: 0.04em;
-        padding: 0.6rem 0.5rem;
-        min-height: 48px;
-        white-space: nowrap;
-        overflow: visible;
-        text-overflow: clip;
     }
 }
 
