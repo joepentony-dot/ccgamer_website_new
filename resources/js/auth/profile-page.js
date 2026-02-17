@@ -21,11 +21,69 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  if (window.supabase && typeof window.supabase.from === 'function') {
+    return window.supabase;
+  }
+
+  throw new Error('Supabase client not available');
+}
+
+async function fetchProfile(supabaseClient, userId) {
+  return supabaseClient
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle();
+}
+
+async function ensureProfileRow(supabaseClient, user) {
+  const firstRead = await fetchProfile(supabaseClient, user.id);
+
+  if (firstRead.error) {
+    console.error('[profile] Profile read failed', firstRead.error, { userId: user.id });
+    return { profile: null, error: firstRead.error };
+  }
+
+  if (firstRead.data) {
+    return { profile: firstRead.data, error: null };
+  }
+
+  const insertPayload = profileDefaults(user);
+  const insertResult = await supabaseClient
+    .from('profiles')
+    .upsert(insertPayload, { onConflict: 'id' });
+
+  if (insertResult.error) {
+    console.error('[profile] Profile auto-create failed', insertResult.error, { userId: user.id, insertPayload });
+    return { profile: null, error: insertResult.error };
+  }
+
+  const secondRead = await fetchProfile(supabaseClient, user.id);
+  if (secondRead.error || !secondRead.data) {
+    console.error('[profile] Profile re-read failed after create', secondRead.error || 'Missing row', { userId: user.id });
+    return { profile: null, error: secondRead.error || new Error('Profile row still missing after create') };
+  }
+
+  return { profile: secondRead.data, error: null };
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
   const messageBox = document.getElementById('profileMessage');
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  let supabaseClient;
+  try {
+    supabaseClient = await getSupabaseClient();
+  } catch (error) {
+    console.error('[profile] Supabase client init failed', error);
+    setMessage(messageBox, 'Could not load profile settings right now.', 'error');
+    return;
+  }
+
+  const { data: authData, error: userError } = await supabaseClient.auth.getUser();
+  const user = authData?.user || null;
 
   if (userError || !user) {
+    if (userError) console.error('[profile] getUser failed', userError);
     window.location.href = '/auth/login.html';
     return;
   }
@@ -62,7 +120,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     Boolean(profile.notify_amiga ?? profile.notify_platform_amiga);
 
   const form = document.getElementById('prefsForm');
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     messageBox.textContent = '';
@@ -84,7 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       notify_platform_amiga: notifyAmiga
     };
 
-    const { error: updateError } = await supabase
+    const updateResult = await supabaseClient
       .from('profiles')
       .update(updates)
       .eq('id', user.id);
@@ -96,15 +153,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    messageBox.textContent = 'Preferences saved.';
-    messageBox.classList.remove('auth-error');
-    messageBox.classList.add('auth-success');
-    log('Preferences updated');
-  });
+    const reread = await fetchProfile(supabaseClient, user.id);
+    if (reread.error || !reread.data) {
+      console.error('[profile] Re-read after save failed', reread.error || 'Missing row', { userId: user.id });
+      setMessage(messageBox, 'Preferences saved.', 'success');
+      return;
+    }
 
-  const logoutBtn = document.getElementById('logoutBtn');
-  logoutBtn.addEventListener('click', async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/';
+    renderProfile(user, reread.data);
+    setMessage(messageBox, 'Preferences saved.', 'success');
+    log('Preferences updated');
   });
 });
