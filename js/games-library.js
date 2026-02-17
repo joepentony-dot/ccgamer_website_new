@@ -139,8 +139,13 @@ function buildGamesIndex(games) {
     setEmptyState(!games.length);
     updateCounts(games.length);
 
-    // After a rebuild (search), re-apply state if it still exists
-    restoreAccordionState({ silent: true, validatePresence: true });
+    if (CCG_ACTIVE_QUERY && games.length) {
+        expandAccordionsForSearchResults();
+        clearAccordionState();
+    } else {
+        // After a rebuild (search), re-apply state if it still exists
+        restoreAccordionState({ silent: true, validatePresence: true });
+    }
 }
 
 /* ============================================================
@@ -513,6 +518,11 @@ function clearAccordionState() {
  * @param {{silent?: boolean, validatePresence?: boolean}} opts
  */
 function restoreAccordionState(opts = {}) {
+    if (CCG_ACTIVE_QUERY) {
+        setSpineActive(null);
+        return;
+    }
+
     const letter = sessionStorage.getItem(ACCORDION_STATE_KEY);
     if (!letter) {
         setSpineActive(null);
@@ -530,6 +540,17 @@ function restoreAccordionState(opts = {}) {
     }
 
     toggleAccordion(letter, { silent: !!opts.silent });
+}
+
+function expandAccordionsForSearchResults() {
+    const sections = document.querySelectorAll(".games-accordion__section");
+    if (!sections.length) return;
+
+    sections.forEach(section => {
+        updateSectionState(section, true);
+    });
+
+    setSpineActive(null);
 }
 
 /* ============================================================
@@ -789,7 +810,9 @@ function updateYearRangeLabel(labelEl) {
 function normalizeSearchText(text) {
     return String(text || "")
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/[’']/g, "")
+        .replace(/[-_]+/g, " ")
+        .replace(/[^a-z0-9\s]+/g, " ")
         .replace(/\s+/g, " ")
         .trim();
 }
@@ -803,45 +826,42 @@ function getSearchQueryData(query) {
 
 function getGameSearchData(game) {
     if (!game || typeof game !== "object") {
-        return { normalizedTitle: "", tokens: [], condensedTitle: "", initials: "" };
+        return { combined: "", condensedCombined: "", tokenSet: new Set() };
     }
     if (CCG_SEARCH_CACHE.has(game)) {
         return CCG_SEARCH_CACHE.get(game);
     }
 
-    const title = String(game.sorttitle || game.title || "");
-    const normalizedTitle = normalizeSearchText(title);
-    const tokens = normalizedTitle ? normalizedTitle.split(" ") : [];
-    const condensedTitle = tokens.join("");
-    const initials = tokens.map(token => token[0]).join("");
-    const data = { normalizedTitle, tokens, condensedTitle, initials };
+    const searchFields = [
+        String(game.title || ""),
+        String(game.sorttitle || ""),
+        String(game.id || ""),
+        String(game.slug || "")
+    ].map(normalizeSearchText).filter(Boolean);
+
+    const combined = searchFields.join(" ");
+    const combinedTokens = combined ? combined.split(" ") : [];
+    const condensedCombined = combinedTokens.join("");
+    const tokenSet = new Set(combinedTokens);
+    const data = { combined, condensedCombined, tokenSet };
     CCG_SEARCH_CACHE.set(game, data);
     return data;
 }
 
 function matchesSearchQuery(game, queryData) {
     if (!queryData.normalized) return true;
-    const { tokens, condensedTitle, initials } = getGameSearchData(game);
+    const { combined, condensedCombined, tokenSet } = getGameSearchData(game);
     const condensedQuery = queryData.condensed;
 
-    if (condensedQuery && condensedTitle.includes(condensedQuery)) {
+    if (queryData.normalized && combined.includes(queryData.normalized)) {
         return true;
     }
 
-    if (condensedQuery && initials.startsWith(condensedQuery)) {
+    if (condensedQuery && condensedCombined.includes(condensedQuery)) {
         return true;
     }
 
-    if (queryData.tokens.length > 1 && initials.startsWith(queryData.tokens[0])) {
-        const remainingTokens = queryData.tokens.slice(1);
-        if (remainingTokens.every(token => tokens.some(titleToken => titleToken.startsWith(token)))) {
-            return true;
-        }
-    }
-
-    return queryData.tokens.every(token =>
-        tokens.some(titleToken => titleToken.startsWith(token))
-    );
+    return queryData.tokens.every(token => Array.from(tokenSet).some(fieldToken => fieldToken.includes(token)));
 }
 
 function parseGameYear(year) {
