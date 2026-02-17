@@ -146,16 +146,3 @@ begin
     using (id = auth.uid())
     with check (id = auth.uid());
 end $$;
-
-
-do $$
-begin
-  if not exists (
-    select 1 from pg_policies
-    where schemaname = 'public' and tablename = 'profiles' and policyname = 'profiles_owner_insert'
-  ) then
-    create policy profiles_owner_insert on public.profiles
-      for insert to authenticated
-      with check (id = auth.uid());
-  end if;
-end $$;
