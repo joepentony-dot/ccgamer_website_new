@@ -97,7 +97,41 @@ function renderProfile(user, profile) {
   if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
 }
 
-async function fetchGameTitleIndex() {
+function resolveSingleGameThumbBasePath() {
+  let pathname = window.location.pathname || '';
+  const repoMarker = '/ccgamer_website_new/';
+  if (pathname.includes(repoMarker)) {
+    pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
+  }
+
+  const isTrailingSlashPath = pathname.endsWith('/') || pathname.endsWith('index.html');
+  pathname = pathname.replace(/^\/+|\/+$/g, '');
+  const segments = pathname ? pathname.split('/') : [];
+  const isPrettyGamePath = segments[0] === 'games'
+    && segments.length >= 2
+    && !segments[1].includes('.html');
+  const isDirectoryPath = isTrailingSlashPath || isPrettyGamePath;
+  const depth = Math.max(segments.length - (isDirectoryPath ? 0 : 1), 0);
+  const prefix = '../'.repeat(depth || 1);
+
+  return `${prefix}resources/images/thumbnails/all/`;
+}
+
+function resolveGameThumb(raw, slug = '') {
+  const basePath = resolveSingleGameThumbBasePath();
+  let filename = `${slug || '1942'}.jpg`;
+
+  if (raw) {
+    filename = String(raw).trim().replace(/^\/+/, '');
+    filename = filename.replace('resources/images/thumbnails/all/', '')
+      .replace('resources/images/thumbnails/', '')
+      .replace('resources/images/', '');
+  }
+
+  return `${basePath}${filename}`;
+}
+
+async function fetchGameIndex() {
   try {
     const response = await fetch('/games/games.json', { cache: 'no-store' });
     if (!response.ok) return new Map();
@@ -106,16 +140,56 @@ async function fetchGameTitleIndex() {
     (Array.isArray(games) ? games : []).forEach((game) => {
       const slug = String(game?.slug || '').trim();
       if (!slug) return;
-      index.set(slug, String(game?.title || slug));
+      index.set(slug, {
+        title: String(game?.title || slug),
+        system: String(game?.system || game?.platform || '').trim(),
+        year: String(game?.year || game?.release_year || '').trim(),
+        thumbnail: String(game?.thumbnail || game?.thumb || game?.cover || '').trim()
+      });
     });
     return index;
   } catch (error) {
-    console.error('[profile] Failed to load game title index', error);
+    console.error('[profile] Failed to load game index', error);
     return new Map();
   }
 }
 
-function renderFavouritesList({ favourites, titleIndex, onRemove }) {
+async function maybeWarnMissingPublicRoute(displayName) {
+  const route = `/community/user/${encodeURIComponent(displayName)}/favourites`;
+
+  try {
+    const response = await fetch(route, { method: 'HEAD', cache: 'no-store' });
+    if (response.status === 404) {
+      console.warn(`[profile] Public favourites route not implemented yet for ${route}. Implement this endpoint/page for public sharing.`);
+    }
+  } catch (error) {
+    console.warn('[profile] Could not verify public favourites route availability. Implement a public route for shared favourites.', error);
+  }
+}
+
+function bindShareFavouritesButton({ user, profile, messageBox }) {
+  const shareButton = document.getElementById('shareFavouritesBtn');
+  if (!shareButton || shareButton.dataset.bound === 'true') return;
+
+  shareButton.dataset.bound = 'true';
+  shareButton.addEventListener('click', async () => {
+    const displayName = String(profile?.display_name || user?.email || 'member').trim();
+    const publicLink = `https://cheekycommodoregamer.co.uk/community/user/${encodeURIComponent(displayName)}/favourites`;
+
+    try {
+      await navigator.clipboard.writeText(publicLink);
+      setMessage(messageBox, 'Public favourites link copied to clipboard.', 'success');
+      await maybeWarnMissingPublicRoute(displayName);
+    } catch (error) {
+      console.error('[profile] Failed to copy favourites link', error);
+      setMessage(messageBox, 'Could not copy link. Please copy it manually from browser console.', 'error');
+      console.log('[profile] Share link:', publicLink);
+      await maybeWarnMissingPublicRoute(displayName);
+    }
+  });
+}
+
+function renderFavouritesList({ favourites, gameIndex, onRemove }) {
   const list = document.getElementById('favouriteGamesList');
   if (!list) return;
 
@@ -123,6 +197,7 @@ function renderFavouritesList({ favourites, titleIndex, onRemove }) {
 
   if (!Array.isArray(favourites) || favourites.length === 0) {
     const empty = document.createElement('li');
+    empty.className = 'profile-favourites-list__empty';
     empty.textContent = 'No favourite games yet.';
     list.appendChild(empty);
     return;
@@ -132,23 +207,49 @@ function renderFavouritesList({ favourites, titleIndex, onRemove }) {
     const slug = String(entry?.game_slug || '').trim();
     if (!slug) return;
 
+    const gameMeta = gameIndex.get(slug) || {};
+
     const item = document.createElement('li');
+    item.className = 'profile-favourite-card';
+
+    const thumb = document.createElement('img');
+    thumb.className = 'profile-favourite-card__thumb';
+    thumb.src = resolveGameThumb(gameMeta.thumbnail, slug);
+    thumb.alt = `${gameMeta.title || slug} thumbnail`;
+    thumb.loading = 'lazy';
+
+    const content = document.createElement('div');
+    content.className = 'profile-favourite-card__content';
 
     const link = document.createElement('a');
+    link.className = 'profile-favourite-card__title';
     link.href = `/games/${slug}/`;
-    link.textContent = titleIndex.get(slug) || slug;
+    link.textContent = gameMeta.title || slug;
 
-    const spacer = document.createTextNode(' — ');
+    const metaValues = [gameMeta.system, gameMeta.year].filter(Boolean);
+    if (metaValues.length) {
+      const meta = document.createElement('p');
+      meta.className = 'profile-favourite-card__meta';
+      meta.textContent = metaValues.join(' • ');
+      content.appendChild(meta);
+    }
+
+    const actions = document.createElement('div');
+    actions.className = 'profile-favourite-card__actions';
 
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
-    removeButton.className = 'auth-btn';
+    removeButton.className = 'auth-btn profile-favourite-card__remove';
     removeButton.textContent = 'Remove';
     removeButton.addEventListener('click', () => onRemove(slug, removeButton));
 
-    item.appendChild(link);
-    item.appendChild(spacer);
-    item.appendChild(removeButton);
+    content.prepend(link);
+    actions.appendChild(removeButton);
+
+    item.appendChild(thumb);
+    item.appendChild(content);
+    item.appendChild(actions);
+
     list.appendChild(item);
   });
 }
@@ -221,14 +322,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const titleIndex = await fetchGameTitleIndex();
+    bindShareFavouritesButton({ user, profile, messageBox });
+
+    const gameIndex = await fetchGameIndex();
 
     const refreshFavourites = async () => {
       try {
         const favourites = await fetchFavourites(supabaseClient, user.id);
         renderFavouritesList({
           favourites,
-          titleIndex,
+          gameIndex,
           onRemove: async (slug, buttonEl) => {
             buttonEl.disabled = true;
             const { error: removeError } = await supabaseClient
@@ -250,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
       } catch (error) {
         console.error('[profile] Failed to load favourites', error, { userId: user.id });
-        renderFavouritesList({ favourites: [], titleIndex, onRemove: () => {} });
+        renderFavouritesList({ favourites: [], gameIndex, onRemove: () => {} });
       }
     };
 

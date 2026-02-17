@@ -13,9 +13,11 @@
   }
 
   function getDisplayName(profile, user) {
+    if (profile && profile.display_name) return String(profile.display_name);
     if (profile && profile.username) return String(profile.username);
+    if (user && user.user_metadata && user.user_metadata.display_name) return String(user.user_metadata.display_name);
     if (user && user.user_metadata && user.user_metadata.username) return String(user.user_metadata.username);
-    if (user && user.email) return String(user.email).split('@')[0];
+    if (user && user.email) return String(user.email);
     return readStoredUsername();
   }
 
