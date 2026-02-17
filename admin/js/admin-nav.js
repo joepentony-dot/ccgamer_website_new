@@ -52,13 +52,14 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   try {
     await waitForAuthReady();
     const context = await getAuthContext();
-    if (!context?.isAuthenticated || !context?.user) {
+    if (!context?.session?.user) {
       sessionNode.innerHTML = 'Session: guest';
       return;
     }
 
     const role = context.role || 'unknown';
-    sessionNode.textContent = `${context.user.email || 'unknown'} · role ${role}`;
+    const email = context?.session?.user?.email || context?.user?.email || 'unknown';
+    sessionNode.textContent = `${email} · role ${role}`;
   } catch {
     sessionNode.textContent = 'Session status unavailable.';
   }

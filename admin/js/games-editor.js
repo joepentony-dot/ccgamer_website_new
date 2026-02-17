@@ -24,6 +24,16 @@ const ALLOWED_WRITE_ROLES = [
 ];
 const AUTO_SAVE_DELAY_MS = 1400;
 
+const BUILDER_PHASE = Object.freeze({
+  BOOT: 'BOOT',
+  AUTH_READY: 'AUTH_READY',
+  LIBRARY_READY: 'LIBRARY_READY',
+  DRAFT_READY: 'DRAFT_READY',
+  VALID: 'VALID',
+  EXPORT_READY: 'EXPORT_READY'
+});
+
+
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
 
@@ -74,7 +84,8 @@ const state = {
     ready: false,
     context: null,
     canWrite: false
-  }
+  },
+  phase: BUILDER_PHASE.BOOT
 };
 
 const el = {
@@ -229,6 +240,12 @@ function setRuntimeState(message, kind = 'ready') {
   if (!el.runtime) return;
   el.runtime.textContent = `State: ${message}`;
   el.runtime.dataset.state = kind;
+}
+
+function setBuilderPhase(phase, message, kind = 'ready') {
+  state.phase = phase;
+  console.info('[CCG-GAME-BUILDER]', `phase=${phase}`, message || '');
+  setRuntimeState(`${phase}${message ? ` · ${message}` : ''}`, kind);
 }
 
 function setErrorIndicator(message) {
@@ -576,21 +593,21 @@ function applyAuthContext(context, error) {
 
   if (error) {
     console.error('[CCG-GAME-BUILDER] auth error', error);
-    setRuntimeState('Auth error · read-only', 'error');
+    setBuilderPhase(BUILDER_PHASE.BOOT, 'Auth error · read-only', 'error');
     setReadOnly(true);
     updateStatusIndicators();
     return;
   }
 
   if (!isAuthenticated) {
-    setRuntimeState('Guest · read-only', 'info');
+    setBuilderPhase(BUILDER_PHASE.AUTH_READY, 'Guest · read-only', 'info');
     setReadOnly(true);
     updateStatusIndicators();
     return;
   }
 
   if (!state.auth.canWrite) {
-    setRuntimeState('Read-only · role limited', 'warning');
+    setBuilderPhase(BUILDER_PHASE.AUTH_READY, 'Read-only · role limited', 'warning');
     setReadOnly(true);
     updateStatusIndicators();
     return;
@@ -598,9 +615,9 @@ function applyAuthContext(context, error) {
 
   if (isOwner) {
     setModeIndicator('Mode: New');
-    setRuntimeState('Admin access enabled', 'ok');
+    setBuilderPhase(BUILDER_PHASE.AUTH_READY, 'Admin access enabled', 'ok');
   } else {
-    setRuntimeState('Ready');
+    setBuilderPhase(BUILDER_PHASE.AUTH_READY, 'Ready');
   }
 
   setReadOnly(false);
@@ -1126,6 +1143,7 @@ function clearDraft() {
   localStorage.removeItem(STORAGE_KEY);
   state.draftRestored = false;
   showDraftBanner();
+  setBuilderPhase(BUILDER_PHASE.DRAFT_READY, 'Draft initialized');
   setDraftIndicator('Draft: cleared');
 }
 
@@ -1511,6 +1529,9 @@ function renderValidation() {
   renderFieldErrors(fieldErrors || {});
 
   const exportBlocked = hasBlockingValidationIssues();
+  if (state.validation.ran && !state.validation.errors.length) {
+    setBuilderPhase(BUILDER_PHASE.VALID, 'Validation passed');
+  }
   if (el.actions.generateOutput) {
     el.actions.generateOutput.disabled = exportBlocked || !state.auth.canWrite || state.export.disabled;
   }
@@ -2789,6 +2810,7 @@ function bindEvents() {
     setRetryDownloadVisible(false);
     renderOutputs();
     setDownloadBundleEnabled(!state.export.disabled);
+    if (!state.export.disabled) setBuilderPhase(BUILDER_PHASE.EXPORT_READY, 'Package ready');
     goToStep(6);
     await runPackageBuild();
   });
@@ -2838,6 +2860,7 @@ async function loadLibrary() {
       renderGenres();
       renderLibraryLookupOptions();
       updateStatusIndicators();
+      setBuilderPhase(BUILDER_PHASE.LIBRARY_READY, `Loaded ${data.length} game(s)`);
       return;
     } catch (error) {
       lastError = error;
@@ -2942,6 +2965,7 @@ async function downloadFlatPageZip() {
     setRetryDownloadVisible(false);
     renderOutputs();
     setDownloadBundleEnabled(!state.export.disabled);
+    if (!state.export.disabled) setBuilderPhase(BUILDER_PHASE.EXPORT_READY, 'Package ready');
     updateStatusIndicators();
   }
 
@@ -2952,7 +2976,7 @@ async function downloadFlatPageZip() {
 async function boot() {
   await whenDomReady();
   refreshBootDomRefs();
-  setRuntimeState('Booting', 'info');
+  setBuilderPhase(BUILDER_PHASE.BOOT, 'Booting', 'info');
 
   setExportVersionLabels();
   resetExportSteps();
@@ -3016,7 +3040,7 @@ async function boot() {
     return context;
   });
 
-  setRuntimeState('Library ready · auth pending', 'info');
+  setBuilderPhase(BUILDER_PHASE.BOOT, 'Library pending · auth pending', 'info');
   libraryPromise.catch(() => {});
   authPromise.catch(() => {});
 }
@@ -3024,7 +3048,7 @@ async function boot() {
 boot().catch((error) => {
   console.error('[CCG-GAME-BUILDER] boot failure', error);
   const message = error instanceof Error ? error.message : 'Unknown error';
-  setRuntimeState('Boot failed', 'error');
+  setBuilderPhase(BUILDER_PHASE.BOOT, 'Boot failed', 'error');
   setErrorIndicator(`Library: failed to load (${message})`);
 });
 

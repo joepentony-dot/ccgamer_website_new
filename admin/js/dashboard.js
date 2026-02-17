@@ -1,6 +1,6 @@
-import { fetchGamesJson } from './games-api.js?v=admin-stable-20260207';
-import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
-import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
+import { fetchGamesJson } from './games-api.js';
+import { ensureRole, startAccessMonitor } from './guard.js';
+import { initAdminNav } from './admin-nav.js';
 
 const emailField = document.querySelector('[data-admin-email]');
 const roleField = document.querySelector('[data-admin-role]');
