@@ -466,22 +466,12 @@ html.ccg-hud-dock-ready .ccg-hud-dock {
     opacity: 0;
     transform: translateY(-8px) scale(0.95);
     transition: opacity 180ms ease, transform 200ms ease, box-shadow 200ms ease;
-    /* Bubble is informational only; never intercept clicks meant for logout/nav/buttons. */
-    pointer-events: none;
+    pointer-events: auto;
     z-index: 1;
 
     box-shadow:
         0 10px 22px rgba(0,0,0,0.65),
         0 0 16px rgba(var(--accent-rgb), 0.32);
-}
-
-/* Ensure core header controls remain clickable across desktop/mobile layering states. */
-.ccg-header .ccg-brand__logo,
-.ccg-header .ccg-logo,
-.ccg-header .ccg-auth-slot,
-.ccg-header .ccg-auth-slot .ccg-btn,
-.ccg-header .ccg-auth-slot [data-logout] {
-    pointer-events: auto;
 }
 
 .ccg-logo-bubble::after {
