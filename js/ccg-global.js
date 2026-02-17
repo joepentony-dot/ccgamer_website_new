@@ -1291,7 +1291,7 @@ if (IS_ADMIN_PATH) {
                 }
             }
 
-            brandTarget.addEventListener("click", e => {
+            brandTarget.addEventListener("pointerdown", e => {
                 if (!e?.target?.closest || !e.target.closest(".ccg-brand")) return;
                 if (!e || e.currentTarget !== brandTarget) return;
                 if (!brandTarget.contains(e.target)) return;
@@ -1304,7 +1304,7 @@ if (IS_ADMIN_PATH) {
                 }
 
                 e.preventDefault();
-                e.stopPropagation();
+                e.stopImmediatePropagation();
 
                 logoClickState.count += 1;
 
@@ -1329,7 +1329,7 @@ if (IS_ADMIN_PATH) {
                     openSecretModal();
                     resetLogoClickState();
                 }
-            });
+            }, { capture: true });
         });
     }
 
