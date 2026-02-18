@@ -1874,6 +1874,8 @@ function wireManualModal(button) {
             manualModal.setAttribute("aria-hidden", "false");
             document.documentElement.classList.add("ccg-manual-modal-open");
             document.body.classList.add("ccg-manual-modal-open");
+            // Force layout resolution so fixed modal recentres correctly
+            manualContent.getBoundingClientRect();
             if (!manualContent.hasAttribute("tabindex")) {
                 manualContent.setAttribute("tabindex", "-1");
             }
