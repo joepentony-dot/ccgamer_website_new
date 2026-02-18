@@ -43,13 +43,6 @@ const el = {
   downloadButton: document.querySelector('[data-action="download"]')
 };
 
-const titleInput = document.querySelector('[data-field="title"]');
-const slugInput = document.querySelector('[data-field="slug"]');
-const idInput = document.querySelector('[data-field="id"]');
-
-let slugManuallyEdited = false;
-let idManuallyEdited = false;
-
 init();
 
 async function init() {
@@ -59,24 +52,19 @@ async function init() {
 }
 
 function bindEvents() {
-  titleInput?.addEventListener('input', handleTitleChange);
-
-  slugInput?.addEventListener('input', () => {
-    slugManuallyEdited = true;
-    state.draft.slug = slugInput.value;
-  });
-
-  idInput?.addEventListener('input', () => {
-    idManuallyEdited = true;
-    state.draft.id = idInput.value;
-  });
-
   el.fields.forEach((field) => {
-    if (field === titleInput || field === slugInput || field === idInput) {
-      return;
-    }
     field.addEventListener('input', () => {
       state.draft[field.dataset.field] = field.value;
+      if (field.dataset.field === 'title') {
+        if (!state.draft.slug.trim()) {
+          state.draft.slug = slugify(field.value);
+          setFieldValue('slug', state.draft.slug);
+        }
+        if (!state.draft.id.trim()) {
+          state.draft.id = slugify(field.value).replace(/-/g, '_');
+          setFieldValue('id', state.draft.id);
+        }
+      }
     });
   });
 
@@ -137,23 +125,6 @@ function bindEvents() {
       setDownloadStatus(`Download failed: ${error.message}`, true);
     }
   });
-}
-
-function handleTitleChange() {
-  const title = titleInput?.value || '';
-  state.draft.title = title;
-
-  if (!slugManuallyEdited && slugInput) {
-    const slug = toSlug(title);
-    slugInput.value = slug;
-    state.draft.slug = slug;
-  }
-
-  if (!idManuallyEdited && idInput) {
-    const id = toId(title);
-    idInput.value = id;
-    state.draft.id = id;
-  }
 }
 
 async function loadLibrary() {
@@ -409,6 +380,11 @@ function isValidUrl(value) {
   }
 }
 
+function setFieldValue(fieldName, value) {
+  const field = el.fields.find((item) => item.dataset.field === fieldName);
+  if (field) field.value = value;
+}
+
 function slugify(value) {
   return String(value || '')
     .toLowerCase()
@@ -416,14 +392,6 @@ function slugify(value) {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
-}
-
-function toSlug(value) {
-  return slugify(value);
-}
-
-function toId(value) {
-  return slugify(value).replace(/-/g, '_');
 }
 
 function cleanForHtml(value) {
