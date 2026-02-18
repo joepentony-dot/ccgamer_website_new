@@ -1,11 +1,42 @@
-.ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-game-card__thumb {
+.ccg-page--collection-single .ccg-game-card--retro-event {
     position: relative;
+    min-height: 220px;
 }
 
-.ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge {
     position: absolute;
     top: 10px;
     left: 10px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
+    left: auto;
+    right: 10px;
+    padding: 0.3rem 0.55rem;
+    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f9fbff;
+    background: linear-gradient(135deg, rgba(0, 160, 255, 0.92), rgba(41, 121, 255, 0.9));
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 6px;
+    box-shadow:
+        0 0 12px rgba(56, 189, 248, 0.65),
+        0 0 18px rgba(88, 150, 255, 0.35);
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
+}
+
+.ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
     padding: 0.3rem 0.55rem;
     font-size: clamp(0.55rem, 1.2vw, 0.7rem);
     font-weight: 700;
@@ -19,14 +50,17 @@
         0 0 12px rgba(255, 70, 150, 0.65),
         0 0 18px rgba(88, 150, 255, 0.35);
     text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
-    pointer-events: none;
-    z-index: 2;
 }
 
 @media (max-width: 680px) {
-    .ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
+    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge {
         top: 8px;
         left: 8px;
         padding: 0.25rem 0.45rem;
+    }
+
+    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
+        right: 8px;
+        left: auto;
     }
 }
