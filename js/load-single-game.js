@@ -1878,9 +1878,8 @@ function wireManualModal(button) {
             if (!manualContent.hasAttribute("tabindex")) {
                 manualContent.setAttribute("tabindex", "-1");
             }
-            requestAnimationFrame(() => {
-                manualContent.focus({ preventScroll: true });
-            });
+            // Move focus into the modal WITHOUT scrolling the page
+            manualContent.focus({ preventScroll: true });
         });
         button.dataset.manualBound = "true";
     }
