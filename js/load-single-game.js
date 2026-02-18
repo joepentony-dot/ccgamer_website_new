@@ -1825,9 +1825,20 @@ function wireManualModal(button) {
     const manualFrame = document.getElementById("gameManualEmbed");
     const manualClose = document.getElementById("manualModalClose");
     const manualContent = manualModal?.querySelector(".ccg-modal-content");
-    let lastFocusedElement = null;
 
     if (!manualModal || !manualFrame || !manualClose || !manualContent) return;
+
+    if (manualModal.parentElement !== document.body) {
+        document.body.appendChild(manualModal);
+    }
+
+    manualModal.style.position = "fixed";
+    manualModal.style.inset = "0";
+    manualModal.style.transform = "none";
+    manualModal.style.filter = "none";
+    manualModal.style.perspective = "none";
+    manualModal.style.contain = "none";
+    manualModal.style.willChange = "auto";
 
     const closeManualModal = () => {
         manualModal.classList.remove("open");
@@ -1835,29 +1846,6 @@ function wireManualModal(button) {
         document.documentElement.classList.remove("ccg-manual-modal-open");
         document.body.classList.remove("ccg-manual-modal-open");
         manualFrame.src = "";
-        if (lastFocusedElement instanceof HTMLElement) {
-            lastFocusedElement.focus({ preventScroll: true });
-        }
-    };
-
-    const trapManualModalFocus = (event) => {
-        if (event.key !== "Tab") return;
-        const focusable = manualModal.querySelectorAll(
-            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        );
-        if (!focusable.length) return;
-
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus({ preventScroll: true });
-            return;
-        }
-        if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus({ preventScroll: true });
-        }
     };
 
     if (button.dataset.manualBound !== "true") {
@@ -1866,20 +1854,11 @@ function wireManualModal(button) {
             if (!manualUrl) return;
             if (!manualUrl.includes(".pdf") && !manualUrl.includes("drive.google.com")) return;
             e.preventDefault();
-            lastFocusedElement = document.activeElement instanceof HTMLElement
-                ? document.activeElement
-                : button;
             manualFrame.src = manualUrl;
             manualModal.classList.add("open");
             manualModal.setAttribute("aria-hidden", "false");
             document.documentElement.classList.add("ccg-manual-modal-open");
             document.body.classList.add("ccg-manual-modal-open");
-            window.scrollTo(0, 0);
-            if (!manualContent.hasAttribute("tabindex")) {
-                manualContent.setAttribute("tabindex", "-1");
-            }
-            // Move focus into the modal WITHOUT scrolling the page
-            manualContent.focus({ preventScroll: true });
         });
         button.dataset.manualBound = "true";
     }
@@ -1896,9 +1875,7 @@ function wireManualModal(button) {
             if (event.key === "Escape") {
                 event.preventDefault();
                 closeManualModal();
-                return;
             }
-            trapManualModalFocus(event);
         });
         manualModal.dataset.manualBound = "true";
     }
