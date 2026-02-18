@@ -811,31 +811,24 @@ async function maybeSendNewGameNotifications(packageData) {
       testMode
     };
 
-    const { data, error } = await supabase.functions.invoke('notify_new_game', { body: payload });
+    const { data, error } = await supabase.functions.invoke('notify-new-game', { body: payload });
     if (error) throw new Error(error.message || 'Edge function request failed.');
 
-    const sentCount = Number(data?.sentCount || 0);
-    const total = Number(data?.recipientCount || sentCount);
-    const auditLogged = Boolean(data?.auditLogged);
+    const success = Boolean(data?.success);
+    const sentCount = Number(data?.sent || 0);
+    const failed = Number(data?.failed || 0);
 
-    if (testMode) {
-      if (!auditLogged) {
-        setDownloadStatus('Notifications sent. Audit logging unavailable.', true);
-        return;
-      }
-
-      setDownloadStatus('Test notification sent to you successfully.', false);
-      return;
+    if (!success) {
+      throw new Error(String(data?.error || 'Notification request failed.'));
     }
 
-    const failed = Number(data?.failedCount || 0);
-    if (!auditLogged) {
-      setDownloadStatus('Notifications sent. Audit logging unavailable.', true);
+    if (testMode) {
+      setDownloadStatus(`Test notification completed (${sentCount} sent, ${failed} failed).`, failed > 0);
       return;
     }
 
     if (failed > 0) {
-      setDownloadStatus(`New game notification sent to ${sentCount}/${total} members (${failed} failed).`, true);
+      setDownloadStatus(`New game notification sent to ${sentCount} members (${failed} failed).`, true);
       return;
     }
 
