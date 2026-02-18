@@ -208,6 +208,19 @@ https://www.mobygames.com/..."></textarea></label>
     </div>
   </div>
 
+  <div class="editor-modal" data-notify-confirm-modal hidden role="dialog" aria-modal="true" aria-labelledby="notify-confirm-title">
+    <div class="editor-modal__panel">
+      <h2 id="notify-confirm-title">Send new game notifications?</h2>
+      <p>This will email all members who opted in to new game notifications.</p>
+      <p>You can test this by sending the email only to yourself first.</p>
+      <div class="editor-modal__actions" style="justify-content: flex-start; flex-wrap: wrap;">
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-notify-confirm-test>Send test email</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-notify-confirm-live>Send to all members</button>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-notify-confirm-cancel>Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
