@@ -6,8 +6,6 @@ const state = {
   slugSet: new Set(),
   idSet: new Set(),
   packageData: null,
-  slugTouched: false,
-  idTouched: false,
   draft: {
     title: '',
     system: '',
@@ -45,7 +43,6 @@ const el = {
   downloadButton: document.querySelector('[data-action="download"]')
 };
 
-
 init();
 
 async function init() {
@@ -58,26 +55,14 @@ function bindEvents() {
   el.fields.forEach((field) => {
     field.addEventListener('input', () => {
       state.draft[field.dataset.field] = field.value;
-
-      if (field.dataset.field === 'slug') {
-        state.slugTouched = Boolean(field.value.trim());
-      }
-
-      if (field.dataset.field === 'id') {
-        state.idTouched = Boolean(field.value.trim());
-      }
-
       if (field.dataset.field === 'title') {
-        if (!state.slugTouched) {
-          const slug = slugify(field.value);
-          state.draft.slug = slug;
-          setFieldValue('slug', slug);
+        if (!state.draft.slug.trim()) {
+          state.draft.slug = slugify(field.value);
+          setFieldValue('slug', state.draft.slug);
         }
-
-        if (!state.idTouched) {
-          const id = slugify(field.value).replace(/-/g, '_');
-          state.draft.id = id;
-          setFieldValue('id', id);
+        if (!state.draft.id.trim()) {
+          state.draft.id = slugify(field.value).replace(/-/g, '_');
+          setFieldValue('id', state.draft.id);
         }
       }
     });
@@ -408,7 +393,6 @@ function slugify(value) {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
 }
-
 
 function cleanForHtml(value) {
   return escapeHtml(String(value || '').replace(/\s+/g, ' ').trim());
