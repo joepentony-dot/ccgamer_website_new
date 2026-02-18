@@ -8,6 +8,11 @@
     text-shadow: 0 2px 12px rgba(2, 6, 23, 0.85);
 }
 
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__title {
+    color: #eaf5ff;
+    text-shadow: 0 3px 16px rgba(2, 6, 23, 0.95);
+}
+
 .ccg-page--collection-single .ccg-game-card--retro-event {
     position: relative;
     min-height: 100%;
