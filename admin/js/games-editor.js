@@ -8,6 +8,8 @@ const EMPTY_DRAFT = {
   id: '',
   genres: [],
   description: '',
+  ccg_rating: 6,
+  ccg_rating_reason: '',
   videoId: '',
   collections: [],
   pdf: '',
@@ -54,6 +56,9 @@ const el = {
   step3Errors: document.querySelector('[data-errors-step3]'),
   previewEntry: document.querySelector('[data-preview-entry]'),
   previewSitemap: document.querySelector('[data-preview-sitemap]'),
+  previewRating: document.querySelector('[data-preview-rating]'),
+  previewRatingReason: document.querySelector('[data-preview-rating-reason]'),
+  previewNotifyLine: document.querySelector('[data-preview-notify-line]'),
   previewFileFlat: document.querySelector('[data-preview-file-flat]'),
   previewFileFolder: document.querySelector('[data-preview-file-folder]'),
   previewGamesJsonPath: document.querySelector('[data-preview-games-json-path]'),
@@ -198,7 +203,19 @@ function bindEvents() {
     try {
       const packageData = buildPackageData();
       await downloadZip(packageData);
-      setDownloadStatus('Download started successfully.', false);
+
+      if (!state.draft.notifyMembers) {
+        setDownloadStatus('Download started successfully.', false);
+        return;
+      }
+
+      const notifyResult = await sendNewGameNotifications(packageData);
+      if (notifyResult.ok) {
+        setDownloadStatus('New game added. Notifications sent to opted-in members.', false);
+      } else {
+        console.warn('[CCG GAME BUILDER] Notification workflow failed.', notifyResult.error);
+        setDownloadStatus('Game added, but notifications could not be sent.', true);
+      }
     } catch (error) {
       setDownloadStatus(`Download failed: ${error.message}`, true);
     }
@@ -361,6 +378,7 @@ function validateStep1() {
     ['slug', 'Slug is required.'],
     ['id', 'ID is required.'],
     ['description', 'Description is required.'],
+    ['ccg_rating', 'CCG Rating is required.'],
     ['videoId', 'Video ID is required.']
   ];
 
@@ -380,6 +398,12 @@ function validateStep1() {
   if (state.draft.year && (year < 1970 || year > 2100)) {
     errors.push('Year must be between 1970 and 2100.');
   }
+
+  const rating = Number(state.draft.ccg_rating);
+  if (!Number.isInteger(rating) || rating < 0 || rating > 10) {
+    errors.push('CCG Rating must be an integer between 0 and 10.');
+  }
+
 
   const slug = String(state.draft.slug || '').trim().toLowerCase();
   if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
@@ -463,7 +487,9 @@ function buildPackageData() {
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
-    description: state.draft.description.trim()
+    description: state.draft.description.trim(),
+    ccg_rating: Number(state.draft.ccg_rating),
+    ccg_rating_reason: state.draft.ccg_rating_reason.trim()
   };
 
   const credits = buildStructuredCredits();
@@ -738,6 +764,67 @@ async function downloadZip(packageData) {
   URL.revokeObjectURL(url);
 }
 
+
+async function sendNewGameNotifications(packageData) {
+  try {
+    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+      return { ok: false, error: new Error('Supabase client not available.') };
+    }
+
+    const supabase = await window.ccgSupabase.getClient();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+    if (userError) return { ok: false, error: userError };
+
+    const userId = userData?.user?.id;
+    if (!userId) return { ok: false, error: new Error('Authenticated admin session required.') };
+
+    const { data: actorProfile, error: actorProfileError } = await supabase
+      .from('profiles')
+      .select('id, role')
+      .eq('id', userId)
+      .maybeSingle();
+
+    if (actorProfileError) return { ok: false, error: actorProfileError };
+    if (!actorProfile || !['admin', 'superadmin'].includes(String(actorProfile.role || '').toLowerCase())) {
+      return { ok: false, error: new Error('Only authenticated admins can send notifications.') };
+    }
+
+    const { data: recipients, error: recipientsError } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('notify_new_games', true);
+
+    if (recipientsError) return { ok: false, error: recipientsError };
+
+    const descriptionSnippet = String(packageData.gameEntry.description || '').trim().slice(0, 180);
+    const rows = (Array.isArray(recipients) ? recipients : [])
+      .map((profile) => String(profile.id || '').trim())
+      .filter(Boolean)
+      .map((profileId) => ({
+        user_id: profileId,
+        type: 'new_game',
+        title: `New game added: ${packageData.gameEntry.title}`,
+        message: descriptionSnippet,
+        data: {
+          title: packageData.gameEntry.title,
+          system: packageData.gameEntry.system,
+          year: packageData.gameEntry.year,
+          slug: packageData.slug,
+          description_snippet: descriptionSnippet
+        }
+      }));
+
+    if (!rows.length) return { ok: true };
+
+    const { error: insertError } = await supabase.from('notifications').insert(rows);
+    if (insertError) return { ok: false, error: insertError };
+
+    return { ok: true };
+  } catch (error) {
+    return { ok: false, error };
+  }
+}
+
 function renderErrors(node, errors) {
   if (!node) return;
   if (!errors.length) {
@@ -891,6 +978,14 @@ function slugify(value) {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+}
+
+function normalizeRatingValue(value) {
+  const trimmed = String(value ?? '').trim();
+  if (!trimmed) return '';
+  const parsed = Number(trimmed);
+  if (!Number.isFinite(parsed)) return trimmed;
+  return String(Math.trunc(parsed));
 }
 
 function idify(value) {

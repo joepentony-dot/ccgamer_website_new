@@ -103,6 +103,12 @@
         </div>
         <label class="full">Description *<textarea rows="4" data-field="description" required></textarea></label>
         <label>Video ID *<input data-field="videoId" placeholder="YouTube ID" required /></label>
+        <label>CCG Rating *
+          <input data-field="ccg_rating" type="number" min="0" max="10" step="1" value="6" required />
+        </label>
+        <label class="full">Reason for rating (editorial note)
+          <textarea rows="3" data-field="ccg_rating_reason" placeholder="This appears on the game page as the editorial rationale behind the CCG rating."></textarea>
+        </label>
         <div>
           <label>Collections (optional)</label>
           <div class="chip-panel" data-collection-options></div>
@@ -158,6 +164,10 @@ https://www.mobygames.com/..."></textarea></label>
       </ul>
       <h3>Sitemap fragment</h3>
       <pre class="preview-box" data-preview-sitemap></pre>
+      <h3>Editorial rating preview</h3>
+      <p>CCG Rating: <strong data-preview-rating></strong></p>
+      <p>Reason: <span data-preview-rating-reason></span></p>
+      <p data-preview-notify-line hidden>Members with new game notifications enabled will be notified.</p>
       <ul class="error-list" data-errors-step3 hidden></ul>
       <div class="actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="back">Back</button>
@@ -193,6 +203,8 @@ https://www.mobygames.com/..."></textarea></label>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/games-editor.js?v=admin-stable-20260207"></script>
 </body>
 </html>
