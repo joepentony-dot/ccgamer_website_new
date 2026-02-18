@@ -12,6 +12,7 @@ import { validateExportOutputs, validateWizardDraft } from './validator.js';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const STORAGE_KEY = 'omegaGameBuilderDraftV1';
+const BUILD_HISTORY_KEY = 'omegaGameBuilderLastSuccessV1';
 const MAX_STEP = 6;
 const MAX_LIBRARY_ATTEMPTS = 2;
 const LIBRARY_RETRY_DELAY_MS = 800;
@@ -128,6 +129,7 @@ const el = {
   exportNote: document.querySelector('[data-export-note]'),
   releaseGameNow: document.querySelector('[data-release-game-now]'),
   releaseStatus: document.querySelector('[data-release-status]'),
+  releaseTarget: document.querySelector('[data-release-target]'),
   draftBanner: document.querySelector('[data-draft-banner]'),
   stepCounter: document.querySelector('[data-step-counter]'),
   steps: Array.from(document.querySelectorAll('[data-step]')),
@@ -368,15 +370,57 @@ function attemptBlobDownload(blob, filename) {
   if (!(blob instanceof Blob)) {
     throw new Error('Download failed: ZIP blob is missing. Build the package again.');
   }
+  if (typeof URL?.createObjectURL !== 'function') {
+    throw new Error('Download failed: browser does not support blob URLs.');
+  }
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.rel = 'noopener';
   document.body.appendChild(a);
-  a.click();
+  a.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
   a.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   return true;
+}
+
+function loadBuildHistory() {
+  const raw = localStorage.getItem(BUILD_HISTORY_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return {
+      slug: String(parsed.slug || '').trim(),
+      title: String(parsed.title || '').trim(),
+      timestamp: Number(parsed.timestamp) || 0
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveBuildHistory(entry) {
+  if (!entry?.slug) return;
+  localStorage.setItem(BUILD_HISTORY_KEY, JSON.stringify({
+    slug: String(entry.slug),
+    title: String(entry.title || ''),
+    timestamp: Date.now()
+  }));
+}
+
+function updatePublishTarget() {
+  if (!el.releaseTarget) return;
+  const lastBuild = loadBuildHistory();
+  const activeSlug = String(state.outputs?.entry?.slug || state.draft?.slug || lastBuild?.slug || '').trim();
+  const activeTitle = String(state.outputs?.entry?.title || state.draft?.title || lastBuild?.title || '').trim();
+  if (!activeSlug) {
+    el.releaseTarget.textContent = 'Publish target: none selected yet.';
+    return;
+  }
+  const label = activeTitle ? `${activeTitle} (${activeSlug})` : activeSlug;
+  el.releaseTarget.textContent = `Publish target: ${label}`;
 }
 
 function setRetryDownloadVisible(visible) {
@@ -425,7 +469,8 @@ function getBlockingValidationIssues() {
 }
 
 function hasBlockingValidationIssues() {
-  return getBlockingValidationIssues().length > 0 || (state.validation?.errors?.length || 0) > 0;
+  const preflight = runPreflightValidation();
+  return getBlockingValidationIssues().length > 0 || (state.validation?.errors?.length || 0) > 0 || !preflight.valid;
 }
 
 function addWarning(message) {
@@ -500,6 +545,7 @@ async function markGameReleasedNonBlocking(gameSlug) {
   }
 
   try {
+    setReleaseStatusMessage(`Publishing ${gameSlug}…`, 'info');
     const supabase = await getSupabaseClient();
     if (!supabase || typeof supabase.rpc !== 'function') {
       console.error('[CCG ADMIN] Release RPC failed', new Error('Supabase client unavailable'));
@@ -1482,11 +1528,13 @@ function focusField(fieldName) {
 
 function renderValidation() {
   const { errors, warnings, fieldErrors } = state.validation;
+  const preflight = runPreflightValidation();
+  const mergedErrors = preflight.valid ? errors : Array.from(new Set([...(errors || []), ...preflight.errors]));
   if (el.validation.status) {
     if (!state.validation.ran) {
       el.validation.status.textContent = 'Validation pending.';
     } else {
-      el.validation.status.textContent = errors.length
+      el.validation.status.textContent = mergedErrors.length
         ? 'Validation: FAIL — fix the following before export:'
         : 'Validation: PASS — ready to build.';
     }
@@ -1498,7 +1546,7 @@ function renderValidation() {
       message
     }));
     const fieldMessages = new Set(fieldErrorItems.map((item) => item.message));
-    const additionalErrors = errors.filter((error) => !fieldMessages.has(error));
+    const additionalErrors = mergedErrors.filter((error) => !fieldMessages.has(error));
     const items = [
       ...fieldErrorItems.map((item) => ({
         field: item.field,
@@ -1528,8 +1576,8 @@ function renderValidation() {
 
   renderFieldErrors(fieldErrors || {});
 
-  const exportBlocked = hasBlockingValidationIssues();
-  if (state.validation.ran && !state.validation.errors.length) {
+  const exportBlocked = hasBlockingValidationIssues() || !preflight.valid;
+  if (state.validation.ran && !mergedErrors.length && preflight.valid) {
     setBuilderPhase(BUILDER_PHASE.VALID, 'Validation passed');
   }
   if (el.actions.generateOutput) {
@@ -2099,7 +2147,7 @@ function buildSitemapFragment(draft, { fragmentOnly = false } = {}) {
 }
 
 function getSortKey(record = {}) {
-  return String(record.title || record.sorttitle || record.slug || '').trim().toLowerCase();
+  return String(record.sorttitle || record.title || record.slug || '').trim().toLowerCase();
 }
 
 function sortLibraryRecords(records = []) {
@@ -2162,6 +2210,19 @@ function applyEntryToLibrary(entry) {
   return sortedLibrary;
 }
 
+function getCandidateLibrary(entry) {
+  const updatedLibrary = [...state.library];
+  if (state.mode === 'edit' && state.editing) {
+    updatedLibrary[state.editing.index] = entry;
+  } else {
+    updatedLibrary.push(entry);
+  }
+  const sortedLibrary = sortLibraryRecords(updatedLibrary);
+  assertNoDuplicateIds(sortedLibrary);
+  assertLibrarySorted(sortedLibrary);
+  return sortedLibrary;
+}
+
 
 function getInsertionContext(records, slug) {
   const index = records.findIndex((item) => item.slug === slug);
@@ -2186,8 +2247,9 @@ async function buildOutputs() {
   }
 
   const entry = buildGameRecord();
-  const updatedLibrary = applyEntryToLibrary(entry);
+  const updatedLibrary = getCandidateLibrary(entry);
   assertLibrarySorted(updatedLibrary);
+  applyEntryToLibrary(entry);
   const insertionContext = getInsertionContext(updatedLibrary, entry.slug);
   const gamesJson = JSON.stringify(updatedLibrary, null, 2);
   const stubHtml = buildSeoStub(entry);
@@ -2219,6 +2281,41 @@ async function buildOutputs() {
     assetChecks,
     assetsToBundle: assetChecks.filter((item) => item.found)
   };
+}
+
+function runPreflightValidation() {
+  const result = validateDraft();
+  if (!result.valid) {
+    return { valid: false, errors: [...result.errors] };
+  }
+
+  const identityMismatchError = getIdentityMismatchError();
+  if (identityMismatchError) {
+    return { valid: false, errors: [identityMismatchError] };
+  }
+
+  try {
+    const entry = buildGameRecord();
+    const candidateLibrary = getCandidateLibrary(entry);
+    const candidateOutputs = {
+      entry,
+      gamesJson: JSON.stringify(candidateLibrary, null, 2),
+      stubHtml: buildSeoStub(entry),
+      flatHtml: buildFlatSeoPage(entry),
+      sitemapFragment: buildSitemapFragment(state.draft),
+      metadataJson: buildMetadataJson(entry),
+      manifestJson: buildManifestJson(entry),
+      readme: buildBuildReport(entry, getInsertionContext(candidateLibrary, entry.slug), {})
+    };
+    const exportValidation = validateExportOutputs(candidateOutputs);
+    if (!exportValidation.valid) {
+      return { valid: false, errors: exportValidation.errors };
+    }
+    return { valid: true, errors: [] };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown preflight error.';
+    return { valid: false, errors: [message] };
+  }
 }
 
 async function collectBundleableAssets(entry) {
@@ -2357,6 +2454,9 @@ async function buildPackage({ autoDownload = true } = {}) {
   renderExportChecklist(state.outputs);
 
   const blob = await zip.generateAsync({ type: 'blob' });
+  if (!(blob instanceof Blob)) {
+    throw new Error('ZIP generation failed: output blob was not created.');
+  }
   window.__ccgLastZipBlob = blob; // cache for manual + browser-safe download
   setRetryDownloadVisible(false);
   setExportStepStatus('complete', 'success', '✓ Complete');
@@ -2366,12 +2466,17 @@ async function buildPackage({ autoDownload = true } = {}) {
     const downloadName = getPackageFilename(entry.slug);
     try {
       attemptBlobDownload(blob, downloadName);
+      clearDraft();
+      saveBuildHistory(entry);
+      updatePublishTarget();
     } catch (downloadError) {
       setRetryDownloadVisible(true);
       const message = downloadError instanceof Error ? downloadError.message : 'Automatic download failed.';
-      setExportStateLabel('ZIP ready · manual download required', 'warning');
+      setExportStateLabel('ZIP ready but download failed', 'error');
       setExportPanelError(message);
+      setExportStepStatus('complete', 'error', '✖ Download failed');
       openExportModal(message, downloadError instanceof Error ? downloadError.stack : '');
+      throw new Error(message);
     }
   }
 
@@ -2627,11 +2732,26 @@ function evaluateStepStatus() {
     const fields = STEP_FIELDS[step] || [];
     status[step] = fields.every((field) => !fieldErrors[field]);
   });
+  if (status[5]) {
+    const preflight = runPreflightValidation();
+    if (!preflight.valid) {
+      status[5] = false;
+      state.validation.errors = Array.from(new Set([...(state.validation.errors || []), ...preflight.errors]));
+      state.validation.valid = false;
+    }
+  }
   state.stepStatus = status;
   updateProgress();
 }
 
 function canNavigateToStep(targetStep) {
+  if (targetStep === 6) {
+    const preflight = runPreflightValidation();
+    renderValidation();
+    if (!preflight.valid) {
+      return { ok: false, step: 5, reason: preflight.errors[0] || 'Complete validation before Step 6.' };
+    }
+  }
   if (targetStep <= 1) return true;
   for (let step = 1; step < targetStep; step += 1) {
     if (!state.stepStatus[step]) {
@@ -2696,7 +2816,7 @@ function bindEvents() {
       const target = Number(button.dataset.stepJump || 1);
       const result = canNavigateToStep(target);
       if (!result.ok) {
-        setErrorIndicator(`Complete required fields in Step ${result.step} before moving on.`);
+        setErrorIndicator(result.reason || `Complete required fields in Step ${result.step} before moving on.`);
         focusFirstInvalidField(result.step);
         return;
       }
@@ -2727,7 +2847,7 @@ function bindEvents() {
     const next = state.step + 1;
     const result = canNavigateToStep(next);
     if (!result.ok) {
-      setErrorIndicator(`Complete required fields in Step ${result.step} before moving on.`);
+      setErrorIndicator(result.reason || `Complete required fields in Step ${result.step} before moving on.`);
       focusFirstInvalidField(result.step);
       return;
     }
@@ -2787,6 +2907,9 @@ function bindEvents() {
     try {
       setExportPanelError('');
       attemptBlobDownload(window.__ccgLastZipBlob, getPackageFilename(state.outputs.entry.slug));
+      clearDraft();
+      saveBuildHistory(state.outputs.entry);
+      updatePublishTarget();
       setRetryDownloadVisible(false);
       setExportStateLabel('Complete', 'success');
     } catch (error) {
@@ -2915,6 +3038,7 @@ function refreshBootDomRefs() {
   el.exportIndicator = document.querySelector('[data-export-indicator]');
   el.errorIndicator = document.querySelector('[data-error-indicator]');
   el.readonlyBadge = document.querySelector('[data-readonly-badge]');
+  el.releaseTarget = document.querySelector('[data-release-target]');
   el.fields = Array.from(document.querySelectorAll('[data-field]'));
   el.steps = Array.from(document.querySelectorAll('[data-step]'));
   el.stepperButtons = Array.from(document.querySelectorAll('[data-step-jump]'));
@@ -3007,6 +3131,7 @@ async function boot() {
   bindEvents();
   bindIdentityWiring();
   loadDraft();
+  updatePublishTarget();
   normalizeDraft();
   updateFormFromDraft();
   updatePreviewFields();
