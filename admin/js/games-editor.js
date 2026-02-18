@@ -23,8 +23,7 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
-  jsonExportMode: 'full',
-  notifyMembers: false
+  jsonExportMode: 'full'
 };
 
 const state = {
@@ -94,15 +93,7 @@ function bindEvents() {
     }
 
     const fieldName = field.dataset.field;
-    if (field.type === 'checkbox') {
-      state.draft[fieldName] = Boolean(field.checked);
-      return;
-    }
-
-    const value = fieldName === 'ccg_rating' ? normalizeRatingValue(field.value) : field.value;
-    if (fieldName === 'ccg_rating') {
-      field.value = value;
-    }
+    const value = field.value;
     state.draft[fieldName] = value;
 
     if (fieldName === 'slug') {
@@ -293,9 +284,7 @@ function clearDraft() {
       field.checked = field.value === 'full';
       return;
     }
-    const key = field.dataset.field;
-    const value = state.draft[key];
-    field.value = value == null ? '' : String(value);
+    field.value = '';
   });
   markOptionChecked('genres', []);
   markOptionChecked('collections', []);
@@ -365,15 +354,6 @@ function renderStep() {
       state.packageData = packageData;
       el.previewEntry.textContent = packageData.gamesJsonOutput;
       el.previewSitemap.textContent = packageData.sitemap;
-      if (el.previewRating) {
-        el.previewRating.textContent = String(packageData.gameEntry.ccg_rating);
-      }
-      if (el.previewRatingReason) {
-        el.previewRatingReason.textContent = packageData.gameEntry.ccg_rating_reason || '(no reason provided)';
-      }
-      if (el.previewNotifyLine) {
-        el.previewNotifyLine.hidden = !state.draft.notifyMembers;
-      }
       el.previewFileFlat.textContent = `games/${state.draft.slug}.html`;
       el.previewFileFolder.textContent = `games/${state.draft.slug}/index.html`;
       if (el.previewGamesJsonPath) {
