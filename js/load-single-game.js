@@ -1035,6 +1035,7 @@ function renderGame(game) {
     const manualBtn = document.getElementById("gameManualBtn");
     const hasManual = !!manual;
     if (manualBtn) {
+        ensureActionButtonIcon(manualBtn, "/resources/images/icons/pdf.png", "PDF");
         if (hasManual) {
             manualBtn.href = manual;
             manualBtn.target = "_blank";
@@ -1052,6 +1053,7 @@ function renderGame(game) {
     const diskBtn = document.getElementById("gameDiskBtn");
     const hasDisk = !!disk;
     if (diskBtn) {
+        ensureActionButtonIcon(diskBtn, "/resources/images/icons/download.PNG", "Download");
         if (hasDisk) {
             diskBtn.href = disk;
             diskBtn.target = "_blank";
@@ -1791,13 +1793,72 @@ function updateDownloadsFallback(section, hasManual, hasDisk) {
     toggleGameEmptyMessage(section, "downloads", messages.join(" "));
 }
 
+function ensureActionButtonIcon(button, iconSrc, iconAlt) {
+    if (!button || !iconSrc) return;
+    if (button.dataset.ccgIconReady === "true") return;
+
+    const labelText = button.textContent.trim();
+    button.textContent = "";
+
+    const icon = document.createElement("span");
+    icon.className = "ccg-btn__icon";
+    icon.setAttribute("aria-hidden", "true");
+
+    const iconImage = document.createElement("img");
+    iconImage.src = iconSrc;
+    iconImage.alt = iconAlt;
+    iconImage.loading = "lazy";
+    icon.appendChild(iconImage);
+
+    const label = document.createElement("span");
+    label.className = "ccg-btn__label";
+    label.textContent = labelText;
+
+    button.appendChild(icon);
+    button.appendChild(label);
+    button.dataset.ccgIconReady = "true";
+}
+
 function wireManualModal(button) {
     if (!button) return;
     const manualModal = document.getElementById("manualModal");
     const manualFrame = document.getElementById("gameManualEmbed");
     const manualClose = document.getElementById("manualModalClose");
+    const manualContent = manualModal?.querySelector(".ccg-modal-content");
+    let lastFocusedElement = null;
 
-    if (!manualModal || !manualFrame || !manualClose) return;
+    if (!manualModal || !manualFrame || !manualClose || !manualContent) return;
+
+    const closeManualModal = () => {
+        manualModal.classList.remove("open");
+        manualModal.setAttribute("aria-hidden", "true");
+        document.documentElement.classList.remove("ccg-manual-modal-open");
+        document.body.classList.remove("ccg-manual-modal-open");
+        manualFrame.src = "";
+        if (lastFocusedElement instanceof HTMLElement) {
+            lastFocusedElement.focus({ preventScroll: true });
+        }
+    };
+
+    const trapManualModalFocus = (event) => {
+        if (event.key !== "Tab") return;
+        const focusable = manualModal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        );
+        if (!focusable.length) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus({ preventScroll: true });
+            return;
+        }
+        if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus({ preventScroll: true });
+        }
+    };
 
     if (button.dataset.manualBound !== "true") {
         button.addEventListener("click", e => {
@@ -1805,25 +1866,39 @@ function wireManualModal(button) {
             if (!manualUrl) return;
             if (!manualUrl.includes(".pdf") && !manualUrl.includes("drive.google.com")) return;
             e.preventDefault();
+            lastFocusedElement = document.activeElement instanceof HTMLElement
+                ? document.activeElement
+                : button;
             manualFrame.src = manualUrl;
             manualModal.classList.add("open");
             manualModal.setAttribute("aria-hidden", "false");
+            document.documentElement.classList.add("ccg-manual-modal-open");
+            document.body.classList.add("ccg-manual-modal-open");
+            if (!manualContent.hasAttribute("tabindex")) {
+                manualContent.setAttribute("tabindex", "-1");
+            }
+            requestAnimationFrame(() => {
+                manualContent.focus({ preventScroll: true });
+            });
         });
         button.dataset.manualBound = "true";
     }
 
     if (manualModal.dataset.manualBound !== "true") {
-        manualClose.addEventListener("click", () => {
-            manualModal.classList.remove("open");
-            manualModal.setAttribute("aria-hidden", "true");
-            manualFrame.src = "";
-        });
+        manualClose.addEventListener("click", closeManualModal);
 
         manualModal.addEventListener("click", e => {
             if (e.target !== manualModal) return;
-            manualModal.classList.remove("open");
-            manualModal.setAttribute("aria-hidden", "true");
-            manualFrame.src = "";
+            closeManualModal();
+        });
+
+        manualModal.addEventListener("keydown", (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeManualModal();
+                return;
+            }
+            trapManualModalFocus(event);
         });
         manualModal.dataset.manualBound = "true";
     }
