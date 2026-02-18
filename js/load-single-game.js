@@ -1871,8 +1871,6 @@ function closeManualModal() {
 
     modal.classList.remove("open", "active");
     modal.setAttribute("aria-hidden", "true");
-    document.documentElement.classList.remove("ccg-manual-modal-open");
-    document.body.classList.remove("ccg-manual-modal-open");
     if (frame) frame.src = "";
     if (button) button.setAttribute("aria-expanded", "false");
 }
@@ -1909,8 +1907,6 @@ function wireManualModal(button) {
 
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
-            document.documentElement.classList.add("ccg-manual-modal-open");
-            document.body.classList.add("ccg-manual-modal-open");
             button.setAttribute("aria-expanded", "true");
         });
         button.dataset.manualBound = "true";
