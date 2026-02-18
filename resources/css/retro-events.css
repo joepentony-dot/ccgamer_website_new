@@ -83,3 +83,25 @@
         padding: 0.25rem 0.45rem;
     }
 }
+
+/* =========================================================
+   Retro Events – Hero text brightness lift
+   Scoped override only (NO REGRESSION)
+========================================================= */
+
+[data-collection="Retro Events"] .ccg-genre-hero__title {
+    color: #e8fbff;
+    text-shadow:
+        0 0 6px rgba(0, 220, 255, 0.35),
+        0 0 14px rgba(0, 220, 255, 0.25);
+}
+
+[data-collection="Retro Events"] .ccg-genre-hero__tagline {
+    color: rgba(230, 250, 255, 0.92);
+    text-shadow: 0 0 8px rgba(0, 200, 240, 0.25);
+}
+
+[data-collection="Retro Events"] .ccg-genre-meta,
+[data-collection="Retro Events"] .ccg-genre-meta span {
+    color: rgba(220, 245, 255, 0.85);
+}
