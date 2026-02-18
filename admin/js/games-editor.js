@@ -17,6 +17,23 @@ const CANONICAL_GENRES = [
   'strategy'
 ];
 const CANONICAL_COLLECTIONS = ['banned', 'cartridge', 'licensed', 'top picks'];
+const EMPTY_DRAFT = {
+  title: '',
+  system: '',
+  year: '',
+  slug: '',
+  id: '',
+  genres: [],
+  description: '',
+  videoId: '',
+  collections: [],
+  pdf: '',
+  disk: '',
+  credits: '',
+  thumbnail: '',
+  box3d: '',
+  externalLinks: ''
+};
 
 const state = {
   step: 1,
@@ -26,23 +43,7 @@ const state = {
   packageData: null,
   slugTouched: false,
   idTouched: false,
-  draft: {
-    title: '',
-    system: '',
-    year: '',
-    slug: '',
-    id: '',
-    genres: [],
-    description: '',
-    videoId: '',
-    collections: [],
-    pdf: '',
-    disk: '',
-    credits: '',
-    thumbnail: '',
-    box3d: '',
-    externalLinks: ''
-  }
+  draft: { ...EMPTY_DRAFT }
 };
 
 const el = {
@@ -64,7 +65,11 @@ const el = {
   downloadStatus: document.querySelector('[data-download-status]'),
   nextButtons: Array.from(document.querySelectorAll('[data-action="next"]')),
   backButtons: Array.from(document.querySelectorAll('[data-action="back"]')),
-  downloadButton: document.querySelector('[data-action="download"]')
+  downloadButton: document.querySelector('[data-action="download"]'),
+  contentTypeSelect: document.querySelector('[data-content-type-select]'),
+  editorSwitchModal: document.querySelector('[data-editor-switch-modal]'),
+  editorSwitchCancel: document.querySelector('[data-editor-switch-cancel]'),
+  editorSwitchConfirm: document.querySelector('[data-editor-switch-confirm]')
 };
 
 init();
@@ -191,6 +196,48 @@ function bindEvents() {
       setDownloadStatus(`Download failed: ${error.message}`, true);
     }
   });
+
+  el.contentTypeSelect?.addEventListener('change', () => {
+    if (el.contentTypeSelect.value !== 'retro') return;
+    setEditorSwitchModal(true);
+  });
+
+  el.editorSwitchCancel?.addEventListener('click', () => {
+    setEditorSwitchModal(false);
+    if (el.contentTypeSelect) {
+      el.contentTypeSelect.value = 'game';
+    }
+  });
+
+  el.editorSwitchConfirm?.addEventListener('click', () => {
+    clearDraft();
+    window.location.href = '/admin/retro-events-editor.html';
+  });
+}
+
+function clearDraft() {
+  state.draft = { ...EMPTY_DRAFT };
+  state.slugTouched = false;
+  state.idTouched = false;
+  state.step = 1;
+  el.fields.forEach((field) => {
+    field.value = '';
+  });
+  const options = document.querySelectorAll('[data-option-type]');
+  options.forEach((option) => {
+    option.checked = false;
+  });
+  renderInlineStep1Errors();
+  renderErrors(el.step1Errors, []);
+  renderErrors(el.step2Errors, []);
+  renderErrors(el.step3Errors, []);
+  setDownloadStatus('');
+  renderStep();
+}
+
+function setEditorSwitchModal(visible) {
+  if (!el.editorSwitchModal) return;
+  el.editorSwitchModal.hidden = !visible;
 }
 
 async function loadLibrary() {

@@ -34,6 +34,14 @@
     .chip-item span { display: block; border: 1px solid rgba(148, 163, 184, 0.6); border-radius: 999px; padding: .3rem .65rem; text-align: center; background: rgba(7, 24, 47, 0.55); color: #cde8ff; font-weight: 500; transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease; }
     .chip-item input:checked + span { border-color: #3ba3ff; background: rgba(15, 51, 105, 0.65); box-shadow: 0 0 0.5rem rgba(59, 163, 255, 0.45); }
     .inline-error { color: #fecaca; font-size: .82rem; margin-top: .25rem; min-height: 1em; }
+    .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
+    .content-switcher label { font-weight: 700; min-width: 140px; }
+    .content-switcher select { max-width: 260px; }
+    .mode-pill { display: inline-flex; align-items: center; border: 1px solid rgba(134, 239, 172, .8); border-radius: 999px; padding: .2rem .6rem; font-size: .78rem; color: #86efac; }
+    .editor-modal[hidden] { display: none !important; }
+    .editor-modal { position: fixed; inset: 0; background: rgba(2, 6, 23, .75); display: grid; place-items: center; z-index: 999; padding: 1rem; }
+    .editor-modal__panel { max-width: 520px; width: 100%; background: #0a142d; border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; }
+    .editor-modal__actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: .9rem; }
     [hidden] { display: none !important; }
     @media (max-width: 800px) { .form-grid { grid-template-columns: 1fr; } .stepper { grid-template-columns: 1fr 1fr; } }
   </style>
@@ -41,6 +49,14 @@
 <body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
   <main class="builder-wrap">
     <section class="builder-card">
+      <div class="content-switcher">
+        <label for="content-type-select">Content Type</label>
+        <select id="content-type-select" data-content-type-select>
+          <option value="game">Game</option>
+          <option value="retro">Retro Event</option>
+        </select>
+        <span class="mode-pill" aria-label="Current mode">Current mode: Game Builder</span>
+      </div>
       <h1>CCG Game Builder</h1>
       <p>Simple 4-step wizard to add one game, create 2 SEO pages, and download one reliable package.</p>
       <p class="status" data-top-status>Loading existing games…</p>
@@ -137,6 +153,19 @@
       </div>
     </section>
   </main>
+
+  <div class="editor-modal" data-editor-switch-modal hidden role="dialog" aria-modal="true" aria-labelledby="editor-switch-title">
+    <div class="editor-modal__panel">
+      <h2 id="editor-switch-title">Switch to Retro Events editor?</h2>
+      <p>Retro Events are curated real-world videos and are managed separately from games.</p>
+      <p>You’ll leave the Game Builder and load the Retro Events editor.</p>
+      <p>Any unsaved draft will be discarded.</p>
+      <div class="editor-modal__actions">
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-editor-switch-cancel>Cancel</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-editor-switch-confirm>Yes, switch editor</button>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script type="module" src="/admin/js/games-editor.js?v=admin-stable-20260207"></script>
