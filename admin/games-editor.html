@@ -95,11 +95,11 @@
         <div class="full">
           <label>Add new category (optional escape hatch)</label>
           <p class="hint">Use only if you have added site-wide support for the new category.</p>
-          <div class="add-category-row">
+          <div class="add-category-row" hidden>
             <input data-new-category-input placeholder="new-category-name" />
             <button type="button" class="ccg-btn ccg-btn--ghost" data-new-category-button>Add category</button>
           </div>
-          <p class="inline-error" data-inline-error="new-category"></p>
+          <p class="inline-error" data-inline-error="new-category" hidden></p>
         </div>
         <label class="full">Description *<textarea rows="4" data-field="description" required></textarea></label>
         <label>Video ID *<input data-field="videoId" placeholder="YouTube ID" required /></label>
