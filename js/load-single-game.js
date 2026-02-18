@@ -1043,18 +1043,12 @@ function renderGame(game) {
             manualBtn.hidden = false;
             manualBtn.dataset.manualUrl = manual;
             manualBtn.setAttribute("aria-expanded", "false");
-            wireManualInlineViewer(manualBtn, downloadsSection);
+            wireManualModal(manualBtn);
         } else {
             manualBtn.hidden = true;
             manualBtn.dataset.manualUrl = "";
             manualBtn.setAttribute("aria-expanded", "false");
         }
-    }
-
-    const manualInline = downloadsSection?.nextElementSibling;
-    if (!hasManual && manualInline?.classList.contains("game-manual-inline")) {
-        manualInline.hidden = true;
-        manualInline.setAttribute("aria-hidden", "true");
     }
 
     const disk = resolveDiskUrl(game);
@@ -1827,75 +1821,64 @@ function ensureActionButtonIcon(button, iconSrc, iconAlt) {
     button.dataset.ccgIconReady = "true";
 }
 
-function wireManualInlineViewer(button, downloadsSection) {
-    if (!button || !downloadsSection) return;
+function ensureManualModalAtDocumentRoot(modal) {
+    if (!modal || !document.body) return false;
+    if (modal.parentElement === document.body) return true;
+    document.body.appendChild(modal);
+    return modal.parentElement === document.body;
+}
 
-    const ensureInlineViewer = () => {
-        let inline = downloadsSection.nextElementSibling;
-        if (!inline || !inline.classList.contains("game-manual-inline")) {
-            inline = document.createElement("section");
-            inline.className = "game-manual-inline";
-            inline.hidden = true;
-            inline.setAttribute("aria-hidden", "true");
+function closeManualModal() {
+    const modal = document.getElementById("manualModal");
+    const button = document.getElementById("gameManualBtn");
+    if (!modal) return;
+    modal.classList.remove("open", "active");
+    modal.setAttribute("aria-hidden", "true");
+    document.documentElement.classList.remove("ccg-manual-modal-open");
+    document.body.classList.remove("ccg-manual-modal-open");
+    if (button) button.setAttribute("aria-expanded", "false");
+}
 
-            const header = document.createElement("div");
-            header.className = "game-manual-inline__header";
+function wireManualModal(button) {
+    if (!button) return;
 
-            const title = document.createElement("h3");
-            title.className = "game-manual-inline__title";
-            title.textContent = "Manual Viewer";
+    const modal = document.getElementById("manualModal");
+    const frame = document.getElementById("gameManualEmbed");
+    const closeButton = document.getElementById("manualModalClose");
+    if (!modal || !frame || !closeButton) return;
 
-            const close = document.createElement("button");
-            close.type = "button";
-            close.className = "game-manual-inline__close";
-            close.textContent = "Close";
-            close.setAttribute("aria-label", "Close manual viewer");
+    ensureManualModalAtDocumentRoot(modal);
 
-            const frame = document.createElement("iframe");
-            frame.className = "game-manual-inline__frame";
-            frame.title = "Game manual";
-            frame.loading = "lazy";
-
-            close.addEventListener("click", () => {
-                inline.hidden = true;
-                inline.setAttribute("aria-hidden", "true");
-                button.setAttribute("aria-expanded", "false");
-            });
-
-            header.appendChild(title);
-            header.appendChild(close);
-            inline.appendChild(header);
-            inline.appendChild(frame);
-            downloadsSection.insertAdjacentElement("afterend", inline);
-        }
-
-        return inline;
-    };
-
-    const inline = ensureInlineViewer();
-    const frame = inline.querySelector(".game-manual-inline__frame");
-    if (!frame) return;
+    if (modal.dataset.manualCloseBound !== "true") {
+        closeButton.addEventListener("click", closeManualModal);
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) closeManualModal();
+        });
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Escape" && modal.classList.contains("open")) {
+                closeManualModal();
+            }
+        });
+        modal.dataset.manualCloseBound = "true";
+    }
 
     if (button.dataset.manualBound !== "true") {
         button.addEventListener("click", (event) => {
             const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
             if (!manualUrl) return;
 
+            if (!ensureManualModalAtDocumentRoot(modal)) return;
             event.preventDefault();
 
-            if (inline.hidden) {
-                if (String(frame.getAttribute("src") || "").trim() !== manualUrl) {
-                    frame.src = manualUrl;
-                }
-                inline.hidden = false;
-                inline.setAttribute("aria-hidden", "false");
-                button.setAttribute("aria-expanded", "true");
-                return;
+            if (String(frame.getAttribute("src") || "").trim() !== manualUrl) {
+                frame.src = manualUrl;
             }
 
-            inline.hidden = true;
-            inline.setAttribute("aria-hidden", "true");
-            button.setAttribute("aria-expanded", "false");
+            modal.classList.add("open", "active");
+            modal.setAttribute("aria-hidden", "false");
+            document.documentElement.classList.add("ccg-manual-modal-open");
+            document.body.classList.add("ccg-manual-modal-open");
+            button.setAttribute("aria-expanded", "true");
         });
         button.dataset.manualBound = "true";
     }

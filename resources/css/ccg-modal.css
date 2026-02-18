@@ -55,8 +55,11 @@
     transform: translate(-50%, -50%);
     gap: 10px;
     padding: 14px 16px 16px;
-    overflow: hidden;
-    box-shadow: 0 0 36px rgba(var(--accent-rgb), 0.32), 0 0 72px rgba(0,0,0,0.78);
+    overflow: auto;
+    box-shadow:
+        0 0 22px rgba(var(--accent-rgb), 0.42),
+        0 0 56px rgba(var(--accent-rgb), 0.34),
+        0 0 84px rgba(0,0,0,0.84);
 }
 
 /* Manual modal body must have real height */
@@ -64,6 +67,7 @@
 .ccg-modal--manual .ccg-modal__content {
     width: min(92vw, 980px);
     height: min(85vh, 820px);
+    min-height: min(70vh, 620px);
     max-height: 85vh;
     display: flex;
     flex-direction: column;
@@ -78,17 +82,13 @@
 
 .ccg-modal--doc.open .ccg-modal-content {
     box-shadow:
-        0 0 20px rgba(var(--accent-rgb), 0.22),
-        0 0 46px rgba(var(--accent-rgb), 0.2),
-        0 0 72px rgba(0,0,0,0.78);
+        0 0 26px rgba(var(--accent-rgb), 0.48),
+        0 0 64px rgba(var(--accent-rgb), 0.36),
+        0 0 88px rgba(0,0,0,0.86);
 }
 
 html.ccg-manual-modal-open,
 body.ccg-manual-modal-open {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100dvh;
     overflow: hidden;
     overscroll-behavior: none;
 }
@@ -110,6 +110,15 @@ body.ccg-manual-modal-open {
     position: fixed;
     inset: 0;
     overflow: hidden;
+    display: none;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(3px);
+    z-index: 10001;
+}
+
+.ccg-modal--doc.open,
+.ccg-modal--doc.active {
+    display: block;
 }
 
 /* ============================================================
@@ -147,6 +156,7 @@ body.ccg-manual-modal-open {
 
     .ccg-modal--doc .ccg-modal-content {
         width: calc(100vw - 18px);
+        min-height: min(68vh, 560px);
         height: min(85vh, 820px);
         max-height: calc(100vh - 18px);
         padding: 12px;
