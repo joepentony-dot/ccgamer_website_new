@@ -167,7 +167,6 @@ https://www.mobygames.com/..."></textarea></label>
       <h3>Editorial rating preview</h3>
       <p>CCG Rating: <strong data-preview-rating></strong></p>
       <p>Reason: <span data-preview-rating-reason></span></p>
-      <p data-preview-notify-line hidden>Members with new game notifications enabled will be notified.</p>
       <ul class="error-list" data-errors-step3 hidden></ul>
       <div class="actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="back">Back</button>
@@ -181,6 +180,13 @@ https://www.mobygames.com/..."></textarea></label>
         <label class="radio-option"><input type="radio" name="jsonExportMode" value="full" data-field="jsonExportMode" checked /> Export full games.json (recommended)</label>
         <label class="radio-option"><input type="radio" name="jsonExportMode" value="entry" data-field="jsonExportMode" /> Export new entry only</label>
       </div>
+      <label class="radio-option" style="margin: .85rem 0 .35rem; align-items: flex-start;">
+        <span style="display: inline-flex; align-items: flex-start; gap: .45rem;">
+          <input type="checkbox" data-field="notifyMembers" />
+          <span>Notify members about this new game</span>
+        </span>
+        <span class="hint">Only users who have opted in to new game notifications will be emailed.</span>
+      </label>
       <button type="button" class="ccg-btn ccg-btn--primary primary" data-action="download">⬇ Download Game Package</button>
       <p class="status" data-download-status></p>
       <div class="actions">

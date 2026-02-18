@@ -23,7 +23,8 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
-  jsonExportMode: 'full'
+  jsonExportMode: 'full',
+  notifyMembers: false
 };
 
 const state = {
@@ -58,7 +59,6 @@ const el = {
   previewSitemap: document.querySelector('[data-preview-sitemap]'),
   previewRating: document.querySelector('[data-preview-rating]'),
   previewRatingReason: document.querySelector('[data-preview-rating-reason]'),
-  previewNotifyLine: document.querySelector('[data-preview-notify-line]'),
   previewFileFlat: document.querySelector('[data-preview-file-flat]'),
   previewFileFolder: document.querySelector('[data-preview-file-folder]'),
   previewGamesJsonPath: document.querySelector('[data-preview-games-json-path]'),
@@ -89,6 +89,11 @@ function bindEvents() {
     if (isRadio) {
       if (!field.checked) return;
       state.draft[field.dataset.field] = field.value;
+      return;
+    }
+
+    if (field.type === 'checkbox') {
+      state.draft[field.dataset.field] = field.checked;
       return;
     }
 
@@ -203,19 +208,7 @@ function bindEvents() {
     try {
       const packageData = buildPackageData();
       await downloadZip(packageData);
-
-      if (!state.draft.notifyMembers) {
-        setDownloadStatus('Download started successfully.', false);
-        return;
-      }
-
-      const notifyResult = await sendNewGameNotifications(packageData);
-      if (notifyResult.ok) {
-        setDownloadStatus('New game added. Notifications sent to opted-in members.', false);
-      } else {
-        console.warn('[CCG GAME BUILDER] Notification workflow failed.', notifyResult.error);
-        setDownloadStatus('Game added, but notifications could not be sent.', true);
-      }
+      setDownloadStatus('Download started successfully.', false);
     } catch (error) {
       setDownloadStatus(`Download failed: ${error.message}`, true);
     }
@@ -282,6 +275,10 @@ function clearDraft() {
   el.fields.forEach((field) => {
     if (field.type === 'radio') {
       field.checked = field.value === 'full';
+      return;
+    }
+    if (field.type === 'checkbox') {
+      field.checked = false;
       return;
     }
     field.value = '';
@@ -720,6 +717,7 @@ function buildPackageData() {
   return {
     slug,
     id,
+    notifyMembers: Boolean(state.draft.notifyMembers),
     gameEntry,
     mergedGames,
     gamesJsonOutput,
@@ -764,66 +762,6 @@ async function downloadZip(packageData) {
   URL.revokeObjectURL(url);
 }
 
-
-async function sendNewGameNotifications(packageData) {
-  try {
-    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-      return { ok: false, error: new Error('Supabase client not available.') };
-    }
-
-    const supabase = await window.ccgSupabase.getClient();
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError) return { ok: false, error: userError };
-
-    const userId = userData?.user?.id;
-    if (!userId) return { ok: false, error: new Error('Authenticated admin session required.') };
-
-    const { data: actorProfile, error: actorProfileError } = await supabase
-      .from('profiles')
-      .select('id, role')
-      .eq('id', userId)
-      .maybeSingle();
-
-    if (actorProfileError) return { ok: false, error: actorProfileError };
-    if (!actorProfile || !['admin', 'superadmin'].includes(String(actorProfile.role || '').toLowerCase())) {
-      return { ok: false, error: new Error('Only authenticated admins can send notifications.') };
-    }
-
-    const { data: recipients, error: recipientsError } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('notify_new_games', true);
-
-    if (recipientsError) return { ok: false, error: recipientsError };
-
-    const descriptionSnippet = String(packageData.gameEntry.description || '').trim().slice(0, 180);
-    const rows = (Array.isArray(recipients) ? recipients : [])
-      .map((profile) => String(profile.id || '').trim())
-      .filter(Boolean)
-      .map((profileId) => ({
-        user_id: profileId,
-        type: 'new_game',
-        title: `New game added: ${packageData.gameEntry.title}`,
-        message: descriptionSnippet,
-        data: {
-          title: packageData.gameEntry.title,
-          system: packageData.gameEntry.system,
-          year: packageData.gameEntry.year,
-          slug: packageData.slug,
-          description_snippet: descriptionSnippet
-        }
-      }));
-
-    if (!rows.length) return { ok: true };
-
-    const { error: insertError } = await supabase.from('notifications').insert(rows);
-    if (insertError) return { ok: false, error: insertError };
-
-    return { ok: true };
-  } catch (error) {
-    return { ok: false, error };
-  }
-}
 
 function renderErrors(node, errors) {
   if (!node) return;
