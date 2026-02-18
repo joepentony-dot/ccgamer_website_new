@@ -18,19 +18,6 @@
     min-height: 100%;
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media {
-    display: block;
-    overflow: hidden;
-    border-bottom: 1px solid rgba(107, 174, 255, 0.35);
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-}
-
 .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__body {
     display: flex;
     flex-direction: column;
@@ -42,6 +29,26 @@
     font-family: "Roboto Condensed", "Roboto", sans-serif;
     font-size: clamp(0.96rem, 2vw, 1.08rem);
     line-height: 1.25;
+}
+
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 2;
+    pointer-events: none;
+    padding: 0.3rem 0.55rem;
+    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #f3f9ff;
+    background: linear-gradient(135deg, rgba(49, 129, 255, 0.95), rgba(27, 92, 217, 0.9));
+    border: 1px solid rgba(199, 226, 255, 0.65);
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(48, 118, 255, 0.5);
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 }
 
 .ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
@@ -64,6 +71,12 @@
 }
 
 @media (max-width: 680px) {
+    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
+        top: 8px;
+        right: 8px;
+        padding: 0.25rem 0.45rem;
+    }
+
     .ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
         top: 8px;
         left: 8px;
