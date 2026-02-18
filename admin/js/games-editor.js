@@ -2,6 +2,26 @@ import { getSession } from './auth.js';
 
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 
+const REQUIRED_GENRE_VALUES = [
+  'action adventure',
+  'adventure',
+  'arcade',
+  'casino games',
+  'fighting games',
+  'horror',
+  'miscellaneous',
+  'platform',
+  'puzzle',
+  'racing',
+  'role playing',
+  'quiz',
+  'shooting',
+  'sports',
+  'strategy'
+];
+
+const REQUIRED_COLLECTION_VALUES = ['cartridge', 'licensed', 'banned', 'top picks', 'retro events'];
+
 const EMPTY_DRAFT = {
   title: '',
   system: '',
@@ -95,11 +115,13 @@ function bindEvents() {
     if (isRadio) {
       if (!field.checked) return;
       state.draft[field.dataset.field] = field.value;
+      updateStep1UiState();
       return;
     }
 
     if (field.type === 'checkbox') {
       state.draft[field.dataset.field] = field.checked;
+      updateStep1UiState();
       return;
     }
 
@@ -109,27 +131,32 @@ function bindEvents() {
 
     if (fieldName === 'slug') {
       state.slugTouched = Boolean(value.trim());
+      updateStep1UiState();
       return;
     }
 
     if (fieldName === 'id') {
       state.idTouched = Boolean(value.trim());
+      updateStep1UiState();
       return;
     }
 
-    if (fieldName !== 'title') return;
+    if (fieldName === 'title') {
+      if (!state.slugTouched) {
+        setFieldValue('slug', slugify(value));
+      }
 
-    if (!state.slugTouched) {
-      const nextSlug = slugify(value);
-      state.draft.slug = nextSlug;
-      setFieldValue('slug', nextSlug);
+      if (!state.idTouched) {
+        setFieldValue('id', idify(value));
+      }
     }
 
-    if (!state.idTouched) {
-      const nextId = idify(value);
-      state.draft.id = nextId;
-      setFieldValue('id', nextId);
+    if (fieldName === 'ccg_rating') {
+      const normalized = normalizeRatingValue(value);
+      if (normalized !== value) setFieldValue('ccg_rating', normalized);
     }
+
+    updateStep1UiState();
   });
 
   document.addEventListener('change', (event) => {
@@ -149,7 +176,7 @@ function bindEvents() {
     }
 
     state.draft[target] = selected;
-    renderInlineStep1Errors();
+    updateStep1UiState();
   });
 
   el.newCategoryButton?.addEventListener('click', () => {
@@ -239,42 +266,13 @@ function bindEvents() {
     clearDraft();
     window.location.href = '/admin/retro-events-editor.html';
   });
+
+  updateStep1UiState();
 }
 
 function addNewCategoryEscapeHatch() {
-  if (!el.newCategoryInput) return;
-  const rawValue = el.newCategoryInput.value.trim();
-  if (!rawValue) {
-    setNewCategoryError('Enter a category value first.');
-    return;
-  }
-
-  const normalized = slugify(rawValue);
-  if (!normalized) {
-    setNewCategoryError('Category must include letters or numbers.');
-    return;
-  }
-
-  const warningMessage = `Add "${normalized}" as a new category? This requires site-wide support.`;
-  if (!window.confirm(warningMessage)) {
-    setNewCategoryError('New category was not added.');
-    return;
-  }
-
-  if (!state.genres.includes(normalized)) {
-    state.genres.push(normalized);
-    state.genres.sort();
-    renderOptionList(el.genreOptions, 'genres', state.genres);
-  }
-
-  if (!state.draft.genres.includes(normalized)) {
-    state.draft.genres.push(normalized);
-  }
-
-  markOptionChecked('genres', state.draft.genres);
-  el.newCategoryInput.value = '';
-  setNewCategoryError('');
-  renderInlineStep1Errors();
+  if (el.newCategoryInput) el.newCategoryInput.value = '';
+  setNewCategoryError('Custom categories are disabled. Use the supported genre list only.');
 }
 
 function clearDraft() {
@@ -299,6 +297,7 @@ function clearDraft() {
   setNewCategoryError('');
   renderInlineStep1Errors();
   renderErrors(el.step1Errors, []);
+  updateStep1UiState();
   renderErrors(el.step2Errors, []);
   renderErrors(el.step3Errors, []);
   setDownloadStatus('');
@@ -323,11 +322,11 @@ async function loadLibrary() {
     state.slugSet = new Set(state.library.map((game) => String(game.slug || '').toLowerCase()).filter(Boolean));
     state.idSet = new Set(state.library.map((game) => String(game.id || '').toLowerCase()).filter(Boolean));
 
-    state.genres = deriveUniqueValues(state.library, 'genres');
-    state.collections = deriveUniqueValues(state.library, 'collections');
+    state.genres = deriveAllowedValuesFromLibrary(state.library, 'genres', REQUIRED_GENRE_VALUES);
+    state.collections = deriveAllowedValuesFromLibrary(state.library, 'collections', REQUIRED_COLLECTION_VALUES);
 
-    renderOptionList(el.genreOptions, 'genres', state.genres, buildGenreLabels(state.genres));
-    renderOptionList(el.collectionOptions, 'collections', state.collections, buildCollectionLabels(state.collections));
+    renderOptionList(el.genreOptions, 'genres', state.genres);
+    renderOptionList(el.collectionOptions, 'collections', state.collections);
 
     el.topStatus.textContent = `Loaded ${state.library.length} existing games. Duplicate checks enabled.`;
     el.topStatus.className = 'status ok';
@@ -342,6 +341,8 @@ async function loadLibrary() {
     el.topStatus.textContent = `Warning: ${error.message}. You can continue, but duplicate checks and category hydration are unavailable.`;
     el.topStatus.className = 'status error';
   }
+
+  updateStep1UiState();
 }
 
 function renderStep() {
@@ -397,8 +398,8 @@ function validateStep1() {
     errors.push('System must be C64 or AMIGA.');
   }
 
-  if (state.draft.year && !/^\d{4}$/.test(state.draft.year)) {
-    errors.push('Year must be 4 digits.');
+  if (state.draft.year && !/^\d+$/.test(String(state.draft.year).trim())) {
+    errors.push('Year must be numeric.');
   }
 
   const year = Number(state.draft.year);
@@ -443,7 +444,7 @@ function validateStep1() {
     errors.push('PDF link must be a valid URL.');
   }
 
-  renderInlineStep1Errors();
+  renderInlineStep1Errors(errors);
   return errors;
 }
 
@@ -480,6 +481,7 @@ function buildPackageData() {
   const system = state.draft.system.trim();
   const year = Number(state.draft.year);
 
+  const credits = buildStructuredCredits();
   const gameEntry = {
     system,
     id,
@@ -488,19 +490,24 @@ function buildPackageData() {
     sorttitle: title,
     year,
     genres: [...state.draft.genres],
-    collections: [...state.draft.collections],
+    collections: [...state.draft.collections].filter((value) => value !== 'retro events'),
     videoid: state.draft.videoId.trim(),
-    thumbnail: state.draft.thumbnail.trim() || '',
+    thumbnail: normalizeThumbnailPath(state.draft.thumbnail, slug),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
     description: state.draft.description.trim(),
     ccg_rating: Number(state.draft.ccg_rating),
-    ccg_rating_reason: state.draft.ccg_rating_reason.trim()
+    ccg_rating_reason: state.draft.ccg_rating_reason.trim(),
+    credits,
+    _ccg_enforced: false,
+    _ccg_migrated: false
   };
 
-  const credits = buildStructuredCredits();
-  if (Object.keys(credits).length) gameEntry.credits = credits;
+  const schemaErrors = validateGameEntrySchema(gameEntry);
+  if (schemaErrors.length) {
+    throw new Error(schemaErrors.join(' | '));
+  }
 
   const publisherForSeo = credits.publisher?.[0] || 'Cheeky Commodore Gamer';
   const imagePath = gameEntry.thumbnail || 'resources/images/thumbnails/all/default.jpg';
@@ -922,7 +929,7 @@ function setDownloadStatus(message, isError = false) {
   el.downloadStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
-function renderInlineStep1Errors() {
+function renderInlineStep1Errors(step1Errors = []) {
   const hasGenres = Array.isArray(state.draft.genres) && state.draft.genres.length > 0;
   if (el.inlineGenreError) {
     el.inlineGenreError.textContent = hasGenres ? '' : 'Select at least one genre.';
@@ -930,7 +937,13 @@ function renderInlineStep1Errors() {
 
   const invalidCollections = state.draft.collections.filter((value) => !state.collections.includes(value));
   if (el.inlineCollectionError) {
-    el.inlineCollectionError.textContent = invalidCollections.length ? 'Collections include an invalid value.' : '';
+    if (invalidCollections.length) {
+      el.inlineCollectionError.textContent = 'Collections include an invalid value.';
+    } else if (step1Errors.includes('CCG Rating must be an integer between 0 and 10.')) {
+      el.inlineCollectionError.textContent = '';
+    } else {
+      el.inlineCollectionError.textContent = '';
+    }
   }
 }
 
@@ -961,49 +974,75 @@ function markOptionChecked(optionType, values) {
 }
 
 function setFieldValue(fieldName, value) {
+  state.draft[fieldName] = value;
   const field = document.querySelector(`[data-field="${fieldName}"]`);
   if (field && field.value !== value) {
     field.value = value;
   }
 }
 
-function deriveUniqueValues(library, key) {
-  const set = new Set();
+function deriveAllowedValuesFromLibrary(library, key, allowedValues) {
+  const normalizedAllowed = new Set(allowedValues);
+  const discovered = new Set();
+
   library.forEach((game) => {
     const values = Array.isArray(game[key]) ? game[key] : [];
     values.forEach((value) => {
-      const token = String(value || '').trim();
-      if (token) set.add(token);
+      const mapped = mapLegacyCategoryValue(value, key);
+      if (mapped && normalizedAllowed.has(mapped)) discovered.add(mapped);
     });
   });
-  return Array.from(set).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+
+  if (key === 'collections') discovered.add('retro events');
+
+  return allowedValues.filter((value) => discovered.has(value));
 }
 
-function buildGenreLabels(values) {
-  const map = {};
-  values.forEach((value) => {
-    if (value === 'action-adventure') map[value] = 'Action adventure';
-    else if (value === 'role-playing') map[value] = 'Role playing';
-    else if (value === 'fighting') map[value] = 'Fighting games';
-    else if (value === 'casino') map[value] = 'Casino games';
-    else map[value] = toReadableLabel(value);
-  });
-  return map;
-}
+function mapLegacyCategoryValue(value, key) {
+  const token = String(value || '').trim().toLowerCase();
+  if (!token) return '';
 
-function buildCollectionLabels(values) {
-  const map = {};
-  values.forEach((value) => {
-    if (value === 'bpjs') map[value] = 'Banned';
-    else if (value === 'top-picks') map[value] = 'Top picks';
-    else map[value] = toReadableLabel(value);
-  });
-  return map;
+  if (key === 'genres') {
+    const genreMap = {
+      'action adventure': 'action adventure',
+      'action-adventure': 'action adventure',
+      adventure: 'adventure',
+      arcade: 'arcade',
+      'casino games': 'casino games',
+      casino: 'casino games',
+      'fighting games': 'fighting games',
+      fighting: 'fighting games',
+      horror: 'horror',
+      miscellaneous: 'miscellaneous',
+      platform: 'platform',
+      puzzle: 'puzzle',
+      racing: 'racing',
+      'role playing': 'role playing',
+      'role-playing': 'role playing',
+      quiz: 'quiz',
+      shooting: 'shooting',
+      sports: 'sports',
+      strategy: 'strategy'
+    };
+    return genreMap[token] || '';
+  }
+
+  const collectionMap = {
+    cartridge: 'cartridge',
+    licensed: 'licensed',
+    banned: 'banned',
+    bpjs: 'banned',
+    'top picks': 'top picks',
+    'top-picks': 'top picks',
+    'retro events': 'retro events',
+    'retro-events': 'retro events'
+  };
+  return collectionMap[token] || '';
 }
 
 function toReadableLabel(value) {
   return String(value || '')
-    .split('-')
+    .split(' ')
     .map((token) => token.charAt(0).toUpperCase() + token.slice(1))
     .join(' ');
 }
@@ -1023,21 +1062,15 @@ function parseCommaList(value) {
 }
 
 function buildStructuredCredits() {
-  const credits = {};
-
-  const publisher = parseCommaList(state.draft.creditsPublisher);
-  const developer = parseCommaList(state.draft.creditsDeveloper);
-  const coder = parseCommaList(state.draft.creditsCoder);
-  const graphics = parseCommaList(state.draft.creditsGraphics);
-  const musician = parseCommaList(state.draft.creditsMusic);
-  const reReleaser = parseCommaList(state.draft.creditsReReleaser);
-
-  const schemaErrors = validateGameEntrySchema(gameEntry);
-  if (schemaErrors.length) {
-    throw new Error(schemaErrors.join(' | '));
-  }
-
-  return gameEntry;
+  return {
+    publisher: parseCommaList(state.draft.creditsPublisher),
+    developer: parseCommaList(state.draft.creditsDeveloper),
+    producer: '',
+    coder: parseCommaList(state.draft.creditsCoder),
+    graphics: parseCommaList(state.draft.creditsGraphics),
+    musician: parseCommaList(state.draft.creditsMusic),
+    re_releaser: parseCommaList(state.draft.creditsReReleaser)
+  };
 }
 
 function validateGameEntrySchema(gameEntry) {
@@ -1047,11 +1080,66 @@ function validateGameEntrySchema(gameEntry) {
     'videoid', 'thumbnail', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating',
     'ccg_rating_reason', 'credits', '_ccg_enforced', '_ccg_migrated'
   ];
-  const keys = Object.keys(gameEntry || {});
 
+  const keys = Object.keys(gameEntry || {});
   if (keys.length !== requiredOrder.length || requiredOrder.some((key, index) => keys[index] !== key)) {
     errors.push('Game object keys must match the hard-locked schema order exactly.');
   }
+
+  if (typeof gameEntry.system !== 'string' || !gameEntry.system.trim()) errors.push('system must be a non-empty string.');
+  if (typeof gameEntry.id !== 'string' || !/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(gameEntry.id)) errors.push('id must be snake_case.');
+  if (typeof gameEntry.slug !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(gameEntry.slug)) errors.push('slug must be kebab-case.');
+  if (typeof gameEntry.title !== 'string' || !gameEntry.title.trim()) errors.push('title must be a non-empty string.');
+  if (typeof gameEntry.sorttitle !== 'string') errors.push('sorttitle must be a string.');
+  if (!Number.isInteger(gameEntry.year)) errors.push('year must be an integer.');
+  if (!Array.isArray(gameEntry.genres)) errors.push('genres must be an array.');
+  if (!Array.isArray(gameEntry.collections)) errors.push('collections must be an array.');
+  if (gameEntry.collections.includes('retro events')) errors.push('retro events cannot be written to games.json output.');
+  if (typeof gameEntry.videoid !== 'string' || !gameEntry.videoid.trim()) errors.push('videoid must be a non-empty string.');
+  if (typeof gameEntry.thumbnail !== 'string' || !/^resources\/images\/thumbnails\/all\/.+\.(?:png|jpg|jpeg|webp|gif)$/i.test(gameEntry.thumbnail)) {
+    errors.push('thumbnail must be resources/images/thumbnails/all/<file>.<ext>.');
+  }
+  if (typeof gameEntry.pdf !== 'string') errors.push('pdf must be a string.');
+  if (!Array.isArray(gameEntry.disk)) errors.push('disk must be an array.');
+  if (!Array.isArray(gameEntry.lemon)) errors.push('lemon must be an array.');
+  if (typeof gameEntry.description !== 'string') errors.push('description must be a string.');
+  if (!Number.isInteger(gameEntry.ccg_rating) || gameEntry.ccg_rating < 0 || gameEntry.ccg_rating > 10) errors.push('ccg_rating must be an integer from 0 to 10.');
+  if (typeof gameEntry.ccg_rating_reason !== 'string') errors.push('ccg_rating_reason must be a string.');
+
+  const creditKeys = ['publisher', 'developer', 'producer', 'coder', 'graphics', 'musician', 're_releaser'];
+  if (!gameEntry.credits || typeof gameEntry.credits !== 'object' || Array.isArray(gameEntry.credits)) {
+    errors.push('credits must be an object.');
+  } else {
+    const keysPresent = Object.keys(gameEntry.credits);
+    if (keysPresent.length !== creditKeys.length || creditKeys.some((key, index) => keysPresent[index] !== key)) {
+      errors.push('credits keys must match the hard-locked schema order exactly.');
+    }
+  }
+
+  if (typeof gameEntry._ccg_enforced !== 'boolean') errors.push('_ccg_enforced must be boolean.');
+  if (typeof gameEntry._ccg_migrated !== 'boolean') errors.push('_ccg_migrated must be boolean.');
+
+  return errors;
+}
+
+function normalizeThumbnailPath(rawValue, slug) {
+  const value = String(rawValue || '').trim();
+  if (!value) return `resources/images/thumbnails/all/${slug}.png`;
+  return value.replace(/^\/+/, '');
+}
+
+function updateStep1UiState() {
+  const errors = validateStep1();
+  setStep1ContinueState(errors.length === 0);
+  renderErrors(el.step1Errors, state.step === 1 ? errors : []);
+}
+
+function setStep1ContinueState(enabled) {
+  const button = el.nextButtons[0];
+  if (!button) return;
+  button.disabled = !enabled;
+  button.setAttribute('aria-disabled', String(!enabled));
+}
 
 function slugify(value) {
   return String(value || '')
@@ -1059,7 +1147,8 @@ function slugify(value) {
     .trim()
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 function normalizeRatingValue(value) {
@@ -1072,6 +1161,16 @@ function normalizeRatingValue(value) {
 
 function idify(value) {
   return slugify(value).replace(/-/g, '_');
+}
+
+function isValidUrl(value) {
+  if (!value) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch (_error) {
+    return false;
+  }
 }
 
 function cleanForHtml(value) {
