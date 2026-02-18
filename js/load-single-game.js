@@ -1874,10 +1874,7 @@ function wireManualModal(button) {
             manualModal.setAttribute("aria-hidden", "false");
             document.documentElement.classList.add("ccg-manual-modal-open");
             document.body.classList.add("ccg-manual-modal-open");
-            // Remove focus from the trigger to stop browser auto-scroll
-            button.blur();
-            // Force layout so modal size is resolved
-            manualContent.getBoundingClientRect();
+            window.scrollTo(0, 0);
             if (!manualContent.hasAttribute("tabindex")) {
                 manualContent.setAttribute("tabindex", "-1");
             }
