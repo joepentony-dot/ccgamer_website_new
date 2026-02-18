@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/popeye-c64-popeye-donpriestley/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/popeye_piranha.jpg" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=popeye-c64-popeye-donpriestley";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=popeye-c64-popeye-donpriestley");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Popeye | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=popeye-c64-popeye-donpriestley">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>

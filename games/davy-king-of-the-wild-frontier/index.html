@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/davy-king-of-the-wild-frontier/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/davy_king_of_the_wild_frontier.jpg" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=davy-king-of-the-wild-frontier";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=davy-king-of-the-wild-frontier");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Davy: King Of The Wild Frontier | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=davy-king-of-the-wild-frontier">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>

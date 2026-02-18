@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/cave-of-the-word-wizard/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/cave_of_the_word_wizard_new.png" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=cave-of-the-word-wizard";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=cave-of-the-word-wizard");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Cave Of The Word Wizard | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=cave-of-the-word-wizard">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>

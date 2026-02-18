@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/turrican-2-the-final-fight/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/turrican_ii_the_final_fight.jpg" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=turrican-2-the-final-fight";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=turrican-2-the-final-fight");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Turrican II: The Final Fight | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=turrican-2-the-final-fight">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>

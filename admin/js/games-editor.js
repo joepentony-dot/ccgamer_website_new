@@ -687,68 +687,26 @@ function buildPackageData() {
     <meta name="twitter:description" content="${seoDescription}" />
     <meta name="twitter:image" content="${cleanForHtml(imageUrl)}" />
 
-    <meta http-equiv="refresh" content="2;url=/games/game.html?id=${encodeURIComponent(id)}" />
-
-    <link rel="icon" href="../../favicon.ico" />
-    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
-    <link rel="stylesheet" href="../../resources/css/games.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
-    <link rel="stylesheet" href="../../resources/css/ccg-mobile-lite.css" />
-    <script src="../../js/ccg-mobile-lite.js" defer></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
 
     <script>
-        setTimeout(function () {
-            try {
+        (function () {
+            if (typeof window !== "undefined") {
                 window.location.replace("/games/game.html?id=${escapeJs(id)}");
-            } catch (e) {
-                window.location.href = "/games/game.html?id=${escapeJs(id)}";
             }
-        }, 2000);
+        })();
     </script>
 </head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-<div class="ccg-bg" aria-hidden="true">
-    <div class="ccg-bg-starfield" aria-hidden="true"></div>
-    <div class="ccg-bg-grid" aria-hidden="true"></div>
-    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
-</div>
-
-<div class="ccg-page">
-    <main class="ccg-main">
-        <section class="game-hero">
-            <div class="game-hero__inner">
-                <div class="game-hero__media">
-                    <img src="${cleanForHtml(imageUrl)}" alt="${cleanForHtml(title)} thumbnail" loading="eager" />
-                </div>
-                <div class="game-hero__copy">
-                    <p class="ccg-kicker">Loading game</p>
-                    <h1>${cleanForHtml(title)}</h1>
-                    <p>${seoDescription}</p>
-                    <p>You are being redirected to the interactive game page.</p>
-                    <div class="game-cta-row">
-                        <a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${encodeURIComponent(id)}">Continue to game page</a>
-                        <a class="ccg-btn ccg-btn--ghost" href="/games/${cleanForHtml(slug)}.html">Open SEO page</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            Not affiliated with Commodore, Amiga or publishers.
-        </p>
-    </footer>
-</div>
-
-<script src="../../js/ccg-base.js" defer></script>
-</body>
+<body></body>
 </html>`;
 
   const mergedGames = mergeGamesJson(gameEntry, state.library);

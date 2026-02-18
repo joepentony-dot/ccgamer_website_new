@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/lotus-turbo-challenge-2/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/lotus_turbo_challenge_2.png" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=lotus-turbo-challenge-2";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=lotus-turbo-challenge-2");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Lotus Turbo Challenge 2 | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=lotus-turbo-challenge-2">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>

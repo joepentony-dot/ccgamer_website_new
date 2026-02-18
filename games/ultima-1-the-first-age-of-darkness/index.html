@@ -15,17 +15,24 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/ultima-1-the-first-age-of-darkness/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ultima_i_the_first_age_of_darkness.jpg" />
 
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
     <script>
-        setTimeout(function () {
-            window.location.href = "/games/game.html?id=ultima-1-the-first-age-of-darkness";
-        }, 250);
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=ultima-1-the-first-age-of-darkness");
+            }
+        })();
     </script>
 </head>
-<body>
-    <main>
-        <h1>Ultima I: The First Age Of Darkness | Cheeky Commodore Gamer</h1>
-        <p>Loading the interactive game page…</p>
-        <p><a href="/games/game.html?id=ultima-1-the-first-age-of-darkness">Continue to the interactive game page</a></p>
-    </main>
-</body>
+<body></body>
 </html>
