@@ -1171,6 +1171,43 @@ async function getFavouriteSupabaseClient() {
     }
 }
 
+let CCG_FAVOURITE_LOGIN_NOTICE_TIMER = null;
+
+function showFavouriteLoginNotice() {
+    let host = document.getElementById("ccg-toast-host");
+    if (!host) {
+        host = document.createElement("div");
+        host.id = "ccg-toast-host";
+        host.className = "ccg-toast-host";
+        document.body.appendChild(host);
+    }
+
+    let toast = host.querySelector(".ccg-favourite-login-toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.className = "ccg-logo-bubble ccg-favourite-login-toast";
+        toast.setAttribute("role", "status");
+        toast.setAttribute("aria-live", "polite");
+        toast.innerHTML = '<span class="ccg-logo-bubble__text"></span>';
+        host.appendChild(toast);
+    }
+
+    const textEl = toast.querySelector(".ccg-logo-bubble__text");
+    if (!textEl) return;
+
+    textEl.textContent = "Log in to save games to your favourites";
+    toast.classList.add("is-visible");
+
+    if (CCG_FAVOURITE_LOGIN_NOTICE_TIMER) {
+        clearTimeout(CCG_FAVOURITE_LOGIN_NOTICE_TIMER);
+    }
+
+    CCG_FAVOURITE_LOGIN_NOTICE_TIMER = setTimeout(() => {
+        toast.classList.remove("is-visible");
+        CCG_FAVOURITE_LOGIN_NOTICE_TIMER = null;
+    }, 2200);
+}
+
 function resolveCurrentGameSlug(game) {
     const explicit = String(game?.slug || "").trim();
     if (explicit) return explicit;
@@ -1298,9 +1335,7 @@ async function renderFavouriteAction(game) {
 
         const currentUser = data?.user || null;
         if (!currentUser) {
-            const target = new URL("/auth/login.html", window.location.origin);
-            target.searchParams.set("returnTo", window.location.pathname + window.location.search + window.location.hash);
-            window.location.href = target.pathname + target.search;
+            showFavouriteLoginNotice();
             return;
         }
 
