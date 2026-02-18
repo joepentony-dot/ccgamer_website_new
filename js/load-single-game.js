@@ -1843,19 +1843,10 @@ function wireManualModal(button) {
     };
 
     const closeManualModal = () => {
-        const { manualModal, manualFrame } = getManualModalParts();
-        if (!manualModal || !manualFrame) return;
+        const { manualModal } = getManualModalParts();
+        if (!manualModal) return;
         manualModal.classList.remove("open");
         manualModal.setAttribute("aria-hidden", "true");
-        manualFrame.src = "";
-    };
-
-    const positionManualModalContent = (manualContent) => {
-        if (!manualContent) return;
-        const viewportTop = window.scrollY + (window.innerHeight / 2);
-        const viewportLeft = window.scrollX + (window.innerWidth / 2);
-        manualContent.style.top = `${viewportTop}px`;
-        manualContent.style.left = `${viewportLeft}px`;
     };
 
     const initialParts = getManualModalParts();
@@ -1868,8 +1859,8 @@ function wireManualModal(button) {
             const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
             if (!manualUrl) return;
 
-            const { manualModal, manualContent, manualFrame } = getManualModalParts();
-            if (!manualModal || !manualContent || !manualFrame) {
+            const { manualModal, manualFrame } = getManualModalParts();
+            if (!manualModal || !manualFrame) {
                 warnManualFallback();
                 return;
             }
@@ -1879,20 +1870,10 @@ function wireManualModal(button) {
                     document.documentElement.appendChild(manualModal);
                 }
 
-                manualModal.style.position = "fixed";
-                manualModal.style.inset = "0";
-                manualModal.style.transform = "none";
-                manualModal.style.filter = "none";
-                manualModal.style.perspective = "none";
-                manualModal.style.contain = "none";
-                manualModal.style.willChange = "auto";
-
-                manualContent.style.overflowY = "auto";
-                manualContent.style.maxHeight = "calc(100vh - 24px)";
-                positionManualModalContent(manualContent);
-
-                manualFrame.src = "";
-                manualFrame.src = manualUrl;
+                const currentManualSrc = String(manualFrame.getAttribute("src") || "").trim();
+                if (currentManualSrc !== manualUrl) {
+                    manualFrame.src = manualUrl;
+                }
 
                 e.preventDefault();
 
@@ -1918,12 +1899,6 @@ function wireManualModal(button) {
                 event.preventDefault();
                 closeManualModal();
             }
-        });
-
-        window.addEventListener("resize", () => {
-            if (!initialParts.manualModal.classList.contains("open")) return;
-            const refreshedParts = getManualModalParts();
-            positionManualModalContent(refreshedParts.manualContent);
         });
 
         initialParts.manualModal.dataset.manualBound = "true";
