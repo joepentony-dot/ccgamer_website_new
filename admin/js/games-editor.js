@@ -445,13 +445,6 @@ function setDownloadStatus(message, isError) {
 
 function parseLines(value) {
   return String(value || '')
-    .split('\n')
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-function parseCommaList(value) {
-  return String(value || '')
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
