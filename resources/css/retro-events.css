@@ -32,33 +32,44 @@
 }
 
 /* ---------------------------------------------------------
-   Hero META pill (THIS is the fix)
+   Hero META pill (FINAL FIX – lifted above overlay)
 --------------------------------------------------------- */
 
-.ccg-page--collection-single .ccg-collection-hero .ccg-genre-meta {
+.ccg-page--collection-single
+.ccg-collection-hero
+.ccg-genre-meta {
+    position: relative;
+    z-index: 5;              /* Lift above hero overlay */
+    isolation: isolate;      /* Prevent overlay bleed */
+
     margin-top: 0.75rem;
     padding: 0.55rem 0.9rem;
 
     background: linear-gradient(
         180deg,
-        rgba(35, 135, 190, 0.45),
-        rgba(15, 80, 120, 0.55)
+        rgba(60, 170, 220, 0.85),
+        rgba(25, 110, 160, 0.85)
     );
 
-    border: 1px solid rgba(180, 235, 255, 0.45);
+    border: 1px solid rgba(200, 240, 255, 0.55);
     border-radius: 6px;
 
-    color: rgba(240, 252, 255, 0.95);
+    color: rgba(245, 255, 255, 0.98);
 
     box-shadow:
-        0 0 18px rgba(0, 160, 220, 0.35),
-        inset 0 0 14px rgba(255, 255, 255, 0.06);
+        0 0 22px rgba(0, 180, 240, 0.45),
+        inset 0 0 14px rgba(255, 255, 255, 0.08);
 
-    text-shadow: 0 0 6px rgba(0, 180, 240, 0.35);
+    text-shadow: none;       /* Remove dark hero shadow */
+    opacity: 1;
+    filter: none;
 }
 
-.ccg-page--collection-single .ccg-collection-hero .ccg-genre-meta span {
-    color: rgba(240, 252, 255, 0.95);
+.ccg-page--collection-single
+.ccg-collection-hero
+.ccg-genre-meta span {
+    color: rgba(245, 255, 255, 0.98);
+    text-shadow: none;
 }
 
 /* ---------------------------------------------------------
