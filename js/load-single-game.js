@@ -1868,11 +1868,12 @@ function closeManualModal() {
     const button = document.getElementById("gameManualBtn");
     if (!modal) return;
 
-    const y = Math.abs(parseInt(document.documentElement.style.top || "0", 10));
+    const y = parseInt(document.body.dataset.ccgScrollY || "0", 10);
 
-    document.documentElement.style.position = "";
-    document.documentElement.style.top = "";
-    document.documentElement.style.width = "";
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.width = "";
+    document.body.removeAttribute("data-ccg-scroll-y");
 
     window.scrollTo(0, y);
 
@@ -1920,9 +1921,10 @@ function wireManualModal(button) {
 
             const scrollY = window.scrollY;
 
-            document.documentElement.style.position = "fixed";
-            document.documentElement.style.top = `-${scrollY}px`;
-            document.documentElement.style.width = "100%";
+            document.body.style.position = "fixed";
+            document.body.style.top = `-${scrollY}px`;
+            document.body.style.width = "100%";
+            document.body.dataset.ccgScrollY = String(scrollY);
 
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
