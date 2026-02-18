@@ -21897,7 +21897,10 @@
       "https://www.lemon64.com/game/sas-combat-simulator"
     ],
     "description": "SAS Combat Simulator is a military-themed arcade action game released for the Commodore 64 in 1989. Developed by Vision Software and published by Codemasters as a budget title, it blends multiple gameplay styles inspired by retro classics like Commando, Ikari Warriors, and Green Beret",
+     "ccg_rating": 5,
+    "ccg_rating_reason": "Not the best 'Commando' type game out there. I'd prefer... well, Commando!",
     "credits": {
+	"credits": {
       "publisher": [
         "Codemasters"
       ],
