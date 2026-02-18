@@ -1866,21 +1866,14 @@ function ensureManualModalAtDocumentRoot(modal) {
 function closeManualModal() {
     const modal = document.getElementById("manualModal");
     const button = document.getElementById("gameManualBtn");
+    const frame = document.getElementById("gameManualEmbed");
     if (!modal) return;
-
-    const y = parseInt(document.body.dataset.ccgScrollY || "0", 10);
-
-    document.body.style.position = "";
-    document.body.style.top = "";
-    document.body.style.width = "";
-    document.body.removeAttribute("data-ccg-scroll-y");
-
-    window.scrollTo(0, y);
 
     modal.classList.remove("open", "active");
     modal.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("ccg-manual-modal-open");
     document.body.classList.remove("ccg-manual-modal-open");
+    if (frame) frame.src = "";
     if (button) button.setAttribute("aria-expanded", "false");
 }
 
@@ -1910,21 +1903,9 @@ function wireManualModal(button) {
     if (button.dataset.manualBound !== "true") {
         button.addEventListener("click", (event) => {
             const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
-            if (!manualUrl) return;
-
-            if (!ensureManualModalAtDocumentRoot(modal)) return;
             event.preventDefault();
-
-            if (String(frame.getAttribute("src") || "").trim() !== manualUrl) {
-                frame.src = manualUrl;
-            }
-
-            const scrollY = window.scrollY;
-
-            document.body.style.position = "fixed";
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.width = "100%";
-            document.body.dataset.ccgScrollY = String(scrollY);
+            ensureManualModalAtDocumentRoot(modal);
+            frame.src = manualUrl;
 
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
