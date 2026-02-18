@@ -6,6 +6,8 @@ const state = {
   slugSet: new Set(),
   idSet: new Set(),
   packageData: null,
+  slugTouched: false,
+  idTouched: false,
   draft: {
     title: '',
     system: '',
@@ -52,20 +54,37 @@ async function init() {
 }
 
 function bindEvents() {
-  el.fields.forEach((field) => {
-    field.addEventListener('input', () => {
-      state.draft[field.dataset.field] = field.value;
-      if (field.dataset.field === 'title') {
-        if (!state.draft.slug.trim()) {
-          state.draft.slug = slugify(field.value);
-          setFieldValue('slug', state.draft.slug);
-        }
-        if (!state.draft.id.trim()) {
-          state.draft.id = slugify(field.value).replace(/-/g, '_');
-          setFieldValue('id', state.draft.id);
-        }
-      }
-    });
+  document.addEventListener('input', (event) => {
+    const field = event.target.closest('[data-field]');
+    if (!field) return;
+
+    const fieldName = field.dataset.field;
+    state.draft[fieldName] = field.value;
+
+    if (fieldName === 'slug') {
+      state.slugTouched = Boolean(field.value.trim());
+      return;
+    }
+
+    if (fieldName === 'id') {
+      state.idTouched = Boolean(field.value.trim());
+      return;
+    }
+
+    if (fieldName !== 'title') return;
+
+    const titleValue = field.value;
+    if (!state.slugTouched) {
+      const nextSlug = slugify(titleValue);
+      state.draft.slug = nextSlug;
+      setFieldValue('slug', nextSlug);
+    }
+
+    if (!state.idTouched) {
+      const nextId = idify(titleValue);
+      state.draft.id = nextId;
+      setFieldValue('id', nextId);
+    }
   });
 
   el.jumpButtons.forEach((button) => {
@@ -381,7 +400,7 @@ function isValidUrl(value) {
 }
 
 function setFieldValue(fieldName, value) {
-  const field = el.fields.find((item) => item.dataset.field === fieldName);
+  const field = document.querySelector(`[data-field="${fieldName}"]`);
   if (field) field.value = value;
 }
 
@@ -392,6 +411,10 @@ function slugify(value) {
     .replace(/[^a-z0-9\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+}
+
+function idify(value) {
+  return slugify(value).replace(/-/g, '_');
 }
 
 function cleanForHtml(value) {
