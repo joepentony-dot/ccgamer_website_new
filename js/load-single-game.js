@@ -1832,6 +1832,15 @@ function closeManualModal() {
     const modal = document.getElementById("manualModal");
     const button = document.getElementById("gameManualBtn");
     if (!modal) return;
+
+    const y = Math.abs(parseInt(document.documentElement.style.top || "0", 10));
+
+    document.documentElement.style.position = "";
+    document.documentElement.style.top = "";
+    document.documentElement.style.width = "";
+
+    window.scrollTo(0, y);
+
     modal.classList.remove("open", "active");
     modal.setAttribute("aria-hidden", "true");
     document.documentElement.classList.remove("ccg-manual-modal-open");
@@ -1873,6 +1882,12 @@ function wireManualModal(button) {
             if (String(frame.getAttribute("src") || "").trim() !== manualUrl) {
                 frame.src = manualUrl;
             }
+
+            const scrollY = window.scrollY;
+
+            document.documentElement.style.position = "fixed";
+            document.documentElement.style.top = `-${scrollY}px`;
+            document.documentElement.style.width = "100%";
 
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
