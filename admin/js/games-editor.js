@@ -1,3 +1,5 @@
+import { getSession } from './auth.js';
+
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 
 const EMPTY_DRAFT = {
@@ -69,7 +71,11 @@ const el = {
   builderButtons: Array.from(document.querySelectorAll('[data-builder-select]')),
   editorSwitchModal: document.querySelector('[data-editor-switch-modal]'),
   editorSwitchCancel: document.querySelector('[data-editor-switch-cancel]'),
-  editorSwitchConfirm: document.querySelector('[data-editor-switch-confirm]')
+  editorSwitchConfirm: document.querySelector('[data-editor-switch-confirm]'),
+  notifyConfirmModal: document.querySelector('[data-notify-confirm-modal]'),
+  notifyConfirmTest: document.querySelector('[data-notify-confirm-test]'),
+  notifyConfirmLive: document.querySelector('[data-notify-confirm-live]'),
+  notifyConfirmCancel: document.querySelector('[data-notify-confirm-cancel]')
 };
 
 init();
@@ -209,6 +215,10 @@ function bindEvents() {
       const packageData = buildPackageData();
       await downloadZip(packageData);
       setDownloadStatus('Download started successfully.', false);
+
+      if (packageData.notifyMembers) {
+        await maybeSendNewGameNotifications(packageData);
+      }
     } catch (error) {
       setDownloadStatus(`Download failed: ${error.message}`, true);
     }
@@ -760,6 +770,126 @@ async function downloadZip(packageData) {
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
+}
+
+async function maybeSendNewGameNotifications(packageData) {
+  const validationError = validateNotificationRequest(packageData);
+  if (validationError) {
+    setDownloadStatus(`Download started, but notifications were not sent: ${validationError}`, true);
+    return;
+  }
+
+  const confirmAction = await confirmNotificationDispatch();
+  if (!confirmAction) {
+    setDownloadStatus('Download started. Notification send was cancelled by admin.', false);
+    return;
+  }
+
+  const testMode = confirmAction === 'test';
+  const adminEmail = await resolveAdminEmail();
+
+  if (testMode && !adminEmail) {
+    setDownloadStatus('Download started, but test email was not sent: admin session email not available.', true);
+    return;
+  }
+
+  try {
+    const supabase = await resolveSupabaseClient();
+    const payload = {
+      title: packageData.gameEntry.title,
+      slug: packageData.slug,
+      system: packageData.gameEntry.system,
+      year: packageData.gameEntry.year,
+      adminEmail: adminEmail || '',
+      testMode
+    };
+
+    const { data, error } = await supabase.functions.invoke('notify_new_game', { body: payload });
+    if (error) throw new Error(error.message || 'Edge function request failed.');
+
+    const sentCount = Number(data?.sentCount || 0);
+    const total = Number(data?.recipientCount || sentCount);
+    if (testMode) {
+      setDownloadStatus(`Download started. Test notification sent (${sentCount}/${total}).`, false);
+      return;
+    }
+
+    const failed = Number(data?.failedCount || 0);
+    if (failed > 0) {
+      setDownloadStatus(`Download started. Live notifications sent to ${sentCount}/${total} members (${failed} failed).`, true);
+      return;
+    }
+
+    setDownloadStatus(`Download started. Live notifications sent to ${sentCount} members.`, false);
+  } catch (error) {
+    setDownloadStatus(`Download started, but notification sending failed: ${error.message}`, true);
+  }
+}
+
+function validateNotificationRequest(packageData) {
+  if (!packageData?.notifyMembers) return 'notifyMembers is not enabled.';
+  if (!String(packageData?.slug || '').trim()) return 'slug is required.';
+  if (!String(packageData?.gameEntry?.title || '').trim()) return 'title is required.';
+  return '';
+}
+
+async function resolveAdminEmail() {
+  try {
+    const session = await getSession();
+    return String(session?.user?.email || '').trim();
+  } catch (_error) {
+    return '';
+  }
+}
+
+async function resolveSupabaseClient() {
+  if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+    return window.ccgSupabase.getClient();
+  }
+
+  throw new Error('Supabase client is unavailable in this page context.');
+}
+
+function setNotifyConfirmModal(visible) {
+  if (!el.notifyConfirmModal) return;
+  el.notifyConfirmModal.hidden = !visible;
+}
+
+function confirmNotificationDispatch() {
+  return new Promise((resolve) => {
+    if (!el.notifyConfirmModal) {
+      const proceed = window.confirm('Send notifications now? OK = send to all members, Cancel = skip notifications.');
+      resolve(proceed ? 'live' : null);
+      return;
+    }
+
+    const cleanup = () => {
+      el.notifyConfirmTest?.removeEventListener('click', onTest);
+      el.notifyConfirmLive?.removeEventListener('click', onLive);
+      el.notifyConfirmCancel?.removeEventListener('click', onCancel);
+      setNotifyConfirmModal(false);
+    };
+
+    const onTest = () => {
+      cleanup();
+      resolve('test');
+    };
+
+    const onLive = () => {
+      cleanup();
+      resolve('live');
+    };
+
+    const onCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+
+    el.notifyConfirmTest?.addEventListener('click', onTest);
+    el.notifyConfirmLive?.addEventListener('click', onLive);
+    el.notifyConfirmCancel?.addEventListener('click', onCancel);
+    setNotifyConfirmModal(true);
+  });
 }
 
 
