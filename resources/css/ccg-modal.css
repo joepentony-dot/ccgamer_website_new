@@ -87,12 +87,6 @@
         0 0 88px rgba(0,0,0,0.86);
 }
 
-html.ccg-manual-modal-open,
-body.ccg-manual-modal-open {
-    overflow: hidden;
-    overscroll-behavior: none;
-}
-
 .ccg-modal--doc .ccg-pdf-frame {
     box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
 }
