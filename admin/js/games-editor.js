@@ -952,24 +952,26 @@ function buildStructuredCredits() {
   const musician = parseCommaList(state.draft.creditsMusic);
   const reReleaser = parseCommaList(state.draft.creditsReReleaser);
 
-  if (publisher.length) credits.publisher = publisher;
-  if (developer.length) credits.developer = developer;
-  if (coder.length) credits.coder = coder;
-  if (graphics.length) credits.graphics = graphics;
-  if (musician.length) credits.musician = musician;
-  if (reReleaser.length) credits.re_releaser = reReleaser;
-
-  return credits;
-}
-
-function isValidUrl(value) {
-  try {
-    const url = new URL(value);
-    return ['http:', 'https:'].includes(url.protocol);
-  } catch {
-    return false;
+  const schemaErrors = validateGameEntrySchema(gameEntry);
+  if (schemaErrors.length) {
+    throw new Error(schemaErrors.join(' | '));
   }
+
+  return gameEntry;
 }
+
+function validateGameEntrySchema(gameEntry) {
+  const errors = [];
+  const requiredOrder = [
+    'system', 'id', 'slug', 'title', 'sorttitle', 'year', 'genres', 'collections',
+    'videoid', 'thumbnail', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating',
+    'ccg_rating_reason', 'credits', '_ccg_enforced', '_ccg_migrated'
+  ];
+  const keys = Object.keys(gameEntry || {});
+
+  if (keys.length !== requiredOrder.length || requiredOrder.some((key, index) => keys[index] !== key)) {
+    errors.push('Game object keys must match the hard-locked schema order exactly.');
+  }
 
 function slugify(value) {
   return String(value || '')
