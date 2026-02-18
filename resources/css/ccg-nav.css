@@ -434,3 +434,11 @@ nav#main-nav:hover,
        .ccg-mode-toggle__pill) {
     overflow: visible !important;
 }
+
+/* Idle-state fix: remove nav toggle ghost glass rectangle without changing layout/interaction. */
+button.ccg-nav-toggle.ccg-btn-ghost:not(:hover):not(:focus-visible):not(:active) {
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}

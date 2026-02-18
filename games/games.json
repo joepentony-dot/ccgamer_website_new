@@ -1,53 +1,6 @@
 [
   {
     "system": "C64",
-    "id": "1942",
-    "slug": "1942",
-    "title": "1942",
-    "sorttitle": "1942",
-    "year": 1986,
-    "genres": [
-      "arcade",
-      "shooting"
-    ],
-    "collections": [
-      "bpjs"
-    ],
-    "videoid": "oi-AwIG7MYg",
-    "thumbnail": "resources/images/thumbnails/all/1942.jpg",
-    "pdf": "https://drive.google.com/file/d/1RKNV9cipBNN1RC_sOgxIVL82mRZ1W7k7/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1R0abvgK_aPQIo3W6eZ6LFbnb6IxPm9Mg/view?usp=drive_link"
-    ],
-    "lemon": [
-      "https://www.lemon64.com/game/1942"
-    ],
-    "description": "Released for the Commodore 64 in 1986, 1942 is a vertically scrolling arcade shoot 'em up based on Capcom's World War II-themed arcade hit. you take the role of an elite fighter pilot battling waves of enemy aircraft and naval forces, taking off from and landing on an aircraft carrier between missions. The game is remembered on the C64 for its fast-paced action and faithful conversion of the arcade experience.",
-    "ccg_rating": 6,
-    "ccg_rating_reason": "",
-    "credits": {
-      "publisher": [
-        "Elite"
-      ],
-      "producer": "",
-      "coder": [
-        "Stephen Green"
-      ],
-      "graphics": [
-        "Stephen Green"
-      ],
-      "musician": [
-        "Mark Cooksey"
-      ],
-      "re_releaser": [],
-      "developer": ""
-    },
-    "developer": "",
-    "_ccg_enforced": false,
-    "_ccg_migrated": false
-  },
-  {
-    "system": "C64",
     "id": "20_tons",
     "slug": "20-tons",
     "title": "20 Tons",
@@ -129,6 +82,53 @@
       "re_releaser": [
         "Kixx"
       ],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
+    "id": "1942",
+    "slug": "1942",
+    "title": "1942",
+    "sorttitle": "1942",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "shooting"
+    ],
+    "collections": [
+      "bpjs"
+    ],
+    "videoid": "oi-AwIG7MYg",
+    "thumbnail": "resources/images/thumbnails/all/1942.jpg",
+    "pdf": "https://drive.google.com/file/d/1RKNV9cipBNN1RC_sOgxIVL82mRZ1W7k7/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1R0abvgK_aPQIo3W6eZ6LFbnb6IxPm9Mg/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/1942"
+    ],
+    "description": "Released for the Commodore 64 in 1986, 1942 is a vertically scrolling arcade shoot 'em up based on Capcom's World War II-themed arcade hit. you take the role of an elite fighter pilot battling waves of enemy aircraft and naval forces, taking off from and landing on an aircraft carrier between missions. The game is remembered on the C64 for its fast-paced action and faithful conversion of the arcade experience.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "",
+    "credits": {
+      "publisher": [
+        "Elite"
+      ],
+      "producer": "",
+      "coder": [
+        "Stephen Green"
+      ],
+      "graphics": [
+        "Stephen Green"
+      ],
+      "musician": [
+        "Mark Cooksey"
+      ],
+      "re_releaser": [],
       "developer": ""
     },
     "developer": "",
@@ -302,8 +302,8 @@
       "https://www.lemon64.com/game/action-service"
     ],
     "description": "Action Service is a Commodore 64 military-themed arcade strategy game released in 1989. you undergo training across a series of boot camp-style challenges that test reflexes and timing. The game blends action sequences with mission-based progression, reflecting Infogrames' experimental approach to arcade design.",
-    "ccg_rating": 9,
-    "ccg_rating_reason": "",
+    "ccg_rating": 3,
+    "ccg_rating_reason": "Certainly NOT the best game in the world thats for sure",
     "credits": {
       "publisher": [
         "Infogrames"
@@ -445,7 +445,7 @@
       "https://www.lemon64.com/game/airborne-ranger"
     ],
     "description": "Airborne Ranger is a Commodore 64 action-simulation game developed by MicroProse in 1987. you take on the role of a U.S. Army airborne ranger, planning and executing covert military missions behind enemy lines. Combining strategic planning with real-time action, the game stood out on the C64 for its tactical depth and realistic military theme.",
-    "ccg_rating": 10,
+    "ccg_rating": 9,
     "ccg_rating_reason": "A landmark release",
     "credits": {
       "publisher": [
@@ -21874,6 +21874,52 @@
     "developer": "",
     "_ccg_enforced": false,
     "_ccg_migrated": false
+  },
+  {
+  "system": "C64",
+  "id": "sas_combat_simulator",
+  "slug": "sas-combat-simulator",
+  "title": "SAS Combat Simulator",
+  "sorttitle": "SAS Combat Simulator",
+  "year": 1989,
+  "genres": [
+    "arcade",
+    "shooting"
+  ],
+  "collections": [],
+  "videoid": "WoSLgVvYm10",
+  "thumbnail": "resources/images/thumbnails/all/sas_combat_simulator.jpg",
+  "pdf": "https://drive.google.com/file/d/1TdSEpDT7iLDDxIrcDNQ9MIw-3quJuXyW/view?usp=drive_link",
+  "disk": [
+    "https://drive.google.com/file/d/1QKylUbcvJp2jwNRO5rdnlp4cGycsRDPs/view?usp=drive_link"
+  ],
+  "lemon": [
+    "https://www.lemon64.com/game/sas-combat-simulator"
+  ],
+  "description": "SAS Combat Simulator is a military-themed arcade action game released for the Commodore 64 in 1989. Developed by Vision Software and published by Codemasters as a budget title, it blends multiple gameplay styles inspired by classics such as Commando, Ikari Warriors, and Green Beret.",
+  "ccg_rating": 5,
+  "ccg_rating_reason": "Not the best Commando-style game out there. I'd still rather play Commando itself.",
+  "credits": {
+    "publisher": [
+      "Codemasters"
+    ],
+    "developer": [
+      "Vision Software"
+    ],
+    "coder": [
+      "Jamie Irvine",
+      "Peter Goldsmith"
+    ],
+    "graphics": [
+      "Jamie Irvine",
+      "Peter Goldsmith"
+    ],
+    "musician": [
+      "Steve Barrett"
+    ]
+  },
+  "_ccg_enforced": false,
+  "_ccg_migrated": false
   },
   {
     "system": "C64",

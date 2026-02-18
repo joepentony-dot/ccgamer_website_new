@@ -23,8 +23,7 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
-  jsonExportMode: 'full',
-  notifyMembers: false
+  jsonExportMode: 'full'
 };
 
 const state = {
@@ -94,15 +93,7 @@ function bindEvents() {
     }
 
     const fieldName = field.dataset.field;
-    if (field.type === 'checkbox') {
-      state.draft[fieldName] = Boolean(field.checked);
-      return;
-    }
-
-    const value = fieldName === 'ccg_rating' ? normalizeRatingValue(field.value) : field.value;
-    if (fieldName === 'ccg_rating') {
-      field.value = value;
-    }
+    const value = field.value;
     state.draft[fieldName] = value;
 
     if (fieldName === 'slug') {
@@ -293,9 +284,7 @@ function clearDraft() {
       field.checked = field.value === 'full';
       return;
     }
-    const key = field.dataset.field;
-    const value = state.draft[key];
-    field.value = value == null ? '' : String(value);
+    field.value = '';
   });
   markOptionChecked('genres', []);
   markOptionChecked('collections', []);
@@ -365,15 +354,6 @@ function renderStep() {
       state.packageData = packageData;
       el.previewEntry.textContent = packageData.gamesJsonOutput;
       el.previewSitemap.textContent = packageData.sitemap;
-      if (el.previewRating) {
-        el.previewRating.textContent = String(packageData.gameEntry.ccg_rating);
-      }
-      if (el.previewRatingReason) {
-        el.previewRatingReason.textContent = packageData.gameEntry.ccg_rating_reason || '(no reason provided)';
-      }
-      if (el.previewNotifyLine) {
-        el.previewNotifyLine.hidden = !state.draft.notifyMembers;
-      }
       el.previewFileFlat.textContent = `games/${state.draft.slug}.html`;
       el.previewFileFolder.textContent = `games/${state.draft.slug}/index.html`;
       if (el.previewGamesJsonPath) {
@@ -462,9 +442,6 @@ function validateStep1() {
 
 function validateStep2() {
   const errors = [];
-  if (!String(state.draft.thumbnail || '').trim().startsWith('resources/images/thumbnails/all/')) {
-    errors.push('Thumbnail must start with resources/images/thumbnails/all/.');
-  }
   parseLines(state.draft.disk).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid disk URL: ${url}`);
   });
@@ -496,9 +473,29 @@ function buildPackageData() {
   const system = state.draft.system.trim();
   const year = Number(state.draft.year);
 
-  const gameEntry = buildLockedGameEntry();
+  const gameEntry = {
+    system,
+    id,
+    slug,
+    title,
+    sorttitle: title,
+    year,
+    genres: [...state.draft.genres],
+    collections: [...state.draft.collections],
+    videoid: state.draft.videoId.trim(),
+    thumbnail: state.draft.thumbnail.trim() || '',
+    pdf: state.draft.pdf.trim() || '',
+    disk: parseLines(state.draft.disk),
+    lemon: parseLines(state.draft.externalLinks),
+    description: state.draft.description.trim(),
+    ccg_rating: Number(state.draft.ccg_rating),
+    ccg_rating_reason: state.draft.ccg_rating_reason.trim()
+  };
 
-  const publisherForSeo = gameEntry.credits.publisher?.[0] || 'Cheeky Commodore Gamer';
+  const credits = buildStructuredCredits();
+  if (Object.keys(credits).length) gameEntry.credits = credits;
+
+  const publisherForSeo = credits.publisher?.[0] || 'Cheeky Commodore Gamer';
   const imagePath = gameEntry.thumbnail || 'resources/images/thumbnails/all/default.jpg';
   const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
 
@@ -946,40 +943,14 @@ function parseCommaList(value) {
 }
 
 function buildStructuredCredits() {
-  return {
-    publisher: parseCommaList(state.draft.creditsPublisher),
-    developer: parseCommaList(state.draft.creditsDeveloper),
-    producer: '',
-    coder: parseCommaList(state.draft.creditsCoder),
-    graphics: parseCommaList(state.draft.creditsGraphics),
-    musician: parseCommaList(state.draft.creditsMusic),
-    re_releaser: parseCommaList(state.draft.creditsReReleaser)
-  };
-}
+  const credits = {};
 
-function buildLockedGameEntry() {
-  const thumbnail = String(state.draft.thumbnail || '').trim();
-  const gameEntry = {
-    system: String(state.draft.system || '').trim(),
-    id: String(state.draft.id || '').trim(),
-    slug: String(state.draft.slug || '').trim(),
-    title: String(state.draft.title || '').trim(),
-    sorttitle: String(state.draft.title || '').trim(),
-    year: Number(state.draft.year),
-    genres: Array.isArray(state.draft.genres) ? [...state.draft.genres] : [],
-    collections: Array.isArray(state.draft.collections) ? [...state.draft.collections] : [],
-    videoid: String(state.draft.videoId || '').trim(),
-    thumbnail,
-    pdf: String(state.draft.pdf || '').trim(),
-    disk: parseLines(state.draft.disk),
-    lemon: parseLines(state.draft.externalLinks),
-    description: String(state.draft.description || '').trim(),
-    ccg_rating: Number(state.draft.ccg_rating),
-    ccg_rating_reason: String(state.draft.ccg_rating_reason || '').trim(),
-    credits: buildStructuredCredits(),
-    _ccg_enforced: false,
-    _ccg_migrated: false
-  };
+  const publisher = parseCommaList(state.draft.creditsPublisher);
+  const developer = parseCommaList(state.draft.creditsDeveloper);
+  const coder = parseCommaList(state.draft.creditsCoder);
+  const graphics = parseCommaList(state.draft.creditsGraphics);
+  const musician = parseCommaList(state.draft.creditsMusic);
+  const reReleaser = parseCommaList(state.draft.creditsReReleaser);
 
   const schemaErrors = validateGameEntrySchema(gameEntry);
   if (schemaErrors.length) {
@@ -1001,91 +972,6 @@ function validateGameEntrySchema(gameEntry) {
   if (keys.length !== requiredOrder.length || requiredOrder.some((key, index) => keys[index] !== key)) {
     errors.push('Game object keys must match the hard-locked schema order exactly.');
   }
-
-  if (!/^(C64|AMIGA)$/.test(String(gameEntry.system || ''))) {
-    errors.push('system must be C64 or AMIGA.');
-  }
-  if (!/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(String(gameEntry.id || ''))) {
-    errors.push('id must be snake_case.');
-  }
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(gameEntry.slug || ''))) {
-    errors.push('slug must be kebab-case.');
-  }
-  if (!Number.isInteger(gameEntry.year)) {
-    errors.push('year must be an integer.');
-  }
-  if (!Array.isArray(gameEntry.genres)) {
-    errors.push('genres must be an array.');
-  }
-  if (!Array.isArray(gameEntry.collections)) {
-    errors.push('collections must be an array.');
-  }
-  if (!Array.isArray(gameEntry.disk)) {
-    errors.push('disk must be an array.');
-  }
-  if (!Array.isArray(gameEntry.lemon)) {
-    errors.push('lemon must be an array.');
-  }
-
-  const thumbnail = String(gameEntry.thumbnail || '');
-  if (!thumbnail.startsWith('resources/images/thumbnails/all/')) {
-    errors.push('thumbnail must start with resources/images/thumbnails/all/.');
-  }
-
-  if (!Number.isInteger(gameEntry.ccg_rating) || gameEntry.ccg_rating < 0 || gameEntry.ccg_rating > 10) {
-    errors.push('ccg_rating must be an integer between 0 and 10.');
-  }
-  if (typeof gameEntry.ccg_rating_reason !== 'string') {
-    errors.push('ccg_rating_reason must be a string.');
-  }
-
-  const expectedCreditsKeys = ['publisher', 'developer', 'producer', 'coder', 'graphics', 'musician', 're_releaser'];
-  const credits = gameEntry.credits;
-  if (!credits || typeof credits !== 'object' || Array.isArray(credits)) {
-    errors.push('credits must be a flat object.');
-  } else {
-    const creditKeys = Object.keys(credits);
-    if (creditKeys.length !== expectedCreditsKeys.length || expectedCreditsKeys.some((key, idx) => creditKeys[idx] !== key)) {
-      errors.push('credits keys must match the hard-locked schema exactly.');
-    }
-
-    if ('credits' in credits) {
-      errors.push('credits cannot contain nested credits object.');
-    }
-
-    ['publisher', 'developer', 'coder', 'graphics', 'musician', 're_releaser'].forEach((key) => {
-      if (!Array.isArray(credits[key])) {
-        errors.push(`credits.${key} must be an array.`);
-      }
-    });
-    if (typeof credits.producer !== 'string') {
-      errors.push('credits.producer must be a string.');
-    }
-  }
-
-  if (typeof gameEntry._ccg_enforced !== 'boolean' || typeof gameEntry._ccg_migrated !== 'boolean') {
-    errors.push('_ccg_enforced and _ccg_migrated must be booleans.');
-  }
-
-  try {
-    const serialized = JSON.stringify(gameEntry);
-    JSON.parse(serialized);
-  } catch (error) {
-    errors.push(`game entry JSON is invalid: ${error.message}`);
-  }
-
-  return errors;
-}
-
-
-function isValidUrl(value) {
-  try {
-    const url = new URL(value);
-    return ['http:', 'https:'].includes(url.protocol);
-  } catch {
-    return false;
-  }
-}
 
 function slugify(value) {
   return String(value || '')
