@@ -29,6 +29,11 @@ function ccgExtractKey(slug) {
 }
 
 function ccgRunCollectionLoader() {
+    if (document.body?.dataset?.collection === 'Retro Events') {
+        console.info('[CCG] Skipping legacy collection renderer for Retro Events');
+        return;
+    }
+
     const collectionName = document.body.dataset.collection;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
