@@ -105,3 +105,25 @@
 [data-collection="Retro Events"] .ccg-genre-meta span {
     color: rgba(220, 245, 255, 0.85);
 }
+
+/* =========================================================
+   Retro Events – Hero meta pill readability lift
+   (ONLY the small info block, no regression)
+========================================================= */
+
+[data-collection="Retro Events"] .ccg-genre-hero .ccg-genre-meta {
+    background: linear-gradient(
+        180deg,
+        rgba(20, 110, 160, 0.35),
+        rgba(10, 60, 95, 0.45)
+    );
+    border: 1px solid rgba(160, 220, 255, 0.35);
+    box-shadow:
+        0 0 14px rgba(0, 160, 220, 0.25),
+        inset 0 0 12px rgba(255, 255, 255, 0.04);
+}
+
+[data-collection="Retro Events"] .ccg-genre-hero .ccg-genre-meta span {
+    color: rgba(235, 250, 255, 0.95);
+    text-shadow: 0 0 6px rgba(0, 180, 240, 0.35);
+}
