@@ -28,7 +28,7 @@
     .status { margin-top: .5rem; font-weight: 700; }
     .status.error { color: #fda4af; }
     .status.ok { color: #86efac; }
-    .chip-panel { border: 1px solid rgba(107, 174, 255, 0.45); border-radius: 8px; padding: .5rem; max-height: 180px; overflow: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem; }
+    .chip-panel { border: 1px solid rgba(107, 174, 255, 0.45); border-radius: 8px; padding: .5rem; max-height: 220px; overflow: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: .5rem; }
     .chip-item { position: relative; }
     .chip-item input { position: absolute; opacity: 0; pointer-events: none; }
     .chip-item span { display: block; border: 1px solid rgba(148, 163, 184, 0.6); border-radius: 999px; padding: .3rem .65rem; text-align: center; background: rgba(7, 24, 47, 0.55); color: #cde8ff; font-weight: 500; transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease; }
@@ -36,12 +36,16 @@
     .inline-error { color: #fecaca; font-size: .82rem; margin-top: .25rem; min-height: 1em; }
     .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
     .content-switcher label { font-weight: 700; min-width: 140px; }
-    .content-switcher select { max-width: 260px; }
     .mode-pill { display: inline-flex; align-items: center; border: 1px solid rgba(134, 239, 172, .8); border-radius: 999px; padding: .2rem .6rem; font-size: .78rem; color: #86efac; }
     .editor-modal[hidden] { display: none !important; }
     .editor-modal { position: fixed; inset: 0; background: rgba(2, 6, 23, .75); display: grid; place-items: center; z-index: 999; padding: 1rem; }
     .editor-modal__panel { max-width: 520px; width: 100%; background: #0a142d; border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; }
     .editor-modal__actions { display: flex; justify-content: flex-end; gap: .65rem; margin-top: .9rem; }
+    .radio-group { display: grid; gap: .45rem; }
+    .radio-option { display: flex; align-items: center; gap: .45rem; font-weight: 500; }
+    .radio-option input { width: auto; }
+    .add-category-row { display: grid; grid-template-columns: 1fr auto; gap: .5rem; margin-top: .5rem; }
+    .add-category-row button { white-space: nowrap; }
     [hidden] { display: none !important; }
     @media (max-width: 800px) { .form-grid { grid-template-columns: 1fr; } .stepper { grid-template-columns: 1fr 1fr; } }
   </style>
@@ -58,7 +62,7 @@
         <span class="mode-pill" aria-label="Current mode">Current mode: Game Builder</span>
       </div>
       <h1>CCG Game Builder</h1>
-      <p>Simple 4-step wizard to add one game, create 2 SEO pages, and download one reliable package.</p>
+      <p>4-step wizard: add one game entry, build canonical SEO stubs, and download one deployment ZIP.</p>
       <p class="status" data-top-status>Loading existing games…</p>
     </section>
 
@@ -88,18 +92,32 @@
           <div class="chip-panel" data-genre-options></div>
           <p class="inline-error" data-inline-error="genres"></p>
         </div>
+        <div class="full">
+          <label>Add new category (optional escape hatch)</label>
+          <p class="hint">Use only if you have added site-wide support for the new category.</p>
+          <div class="add-category-row">
+            <input data-new-category-input placeholder="new-category-name" />
+            <button type="button" class="ccg-btn ccg-btn--ghost" data-new-category-button>Add category</button>
+          </div>
+          <p class="inline-error" data-inline-error="new-category"></p>
+        </div>
         <label class="full">Description *<textarea rows="4" data-field="description" required></textarea></label>
         <label>Video ID *<input data-field="videoId" placeholder="YouTube ID" required /></label>
+        <label>CCG Rating *
+          <input data-field="ccg_rating" type="number" min="0" max="10" step="1" value="6" required />
+        </label>
+        <label class="full">Reason for rating (editorial note)
+          <textarea rows="3" data-field="ccg_rating_reason" placeholder="This appears on the game page as the editorial rationale behind the CCG rating."></textarea>
+        </label>
         <div>
           <label>Collections (optional)</label>
           <div class="chip-panel" data-collection-options></div>
           <p class="inline-error" data-inline-error="collections"></p>
         </div>
         <label>PDF Link (optional)<input data-field="pdf" placeholder="https://..." /></label>
-        <label>Disk Links (optional, one per line)<textarea rows="3" data-field="disk"></textarea></label>
+        <label>Disk Links (optional, one URL per line)<textarea rows="3" data-field="disk"></textarea></label>
         <div class="full">
           <h3>Credits (optional)</h3>
-          <p class="hint">Structured credits improve consistency and can help richer game-page/SEO metadata.</p>
         </div>
         <label>Publisher<input data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
         <label>Developer<input data-field="creditsDeveloper" placeholder="Studio 1, Studio 2" /></label>
@@ -108,7 +126,7 @@
         <label>Music<input data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
         <label>Re-release / Compilation notes<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
-      <div class="hint">Validation here applies only to this new draft.</div>
+      <div class="hint">Slug and ID auto-sync from title until manually edited.</div>
       <ul class="error-list" data-errors-step1 hidden></ul>
       <div class="actions">
         <span></span>
@@ -123,9 +141,7 @@
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="resources/images/games/boxes-3d/mygame.webp" /></label>
         <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
 https://www.mobygames.com/..."></textarea></label>
-        <p class="hint full">Use authoritative references (Lemon64, MobyGames, Wikipedia, etc.) for better context and SEO.</p>
       </div>
-      <div class="hint">No asset fetching, no file checks. Missing assets never block export.</div>
       <ul class="error-list" data-errors-step2 hidden></ul>
       <div class="actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="back">Back</button>
@@ -135,17 +151,23 @@ https://www.mobygames.com/..."></textarea></label>
 
     <section class="builder-card" data-step="3" hidden>
       <h2>Step 3 — Preview</h2>
-      <p>This will add 1 new game and create 2 SEO pages.</p>
-      <h3>games.json entry (new object only)</h3>
+      <p>Preview is generated from the same package builder used by ZIP export.</p>
+      <h3>games.json output</h3>
       <pre class="preview-box" data-preview-entry></pre>
       <h3>Files that will be created</h3>
       <ul>
+        <li data-preview-games-json-path>games/games.json</li>
         <li data-preview-file-flat></li>
         <li data-preview-file-folder></li>
         <li>sitemap-fragment.xml</li>
+        <li>README.txt</li>
       </ul>
       <h3>Sitemap fragment</h3>
       <pre class="preview-box" data-preview-sitemap></pre>
+      <h3>Editorial rating preview</h3>
+      <p>CCG Rating: <strong data-preview-rating></strong></p>
+      <p>Reason: <span data-preview-rating-reason></span></p>
+      <p data-preview-notify-line hidden>Members with new game notifications enabled will be notified.</p>
       <ul class="error-list" data-errors-step3 hidden></ul>
       <div class="actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="back">Back</button>
@@ -155,7 +177,12 @@ https://www.mobygames.com/..."></textarea></label>
 
     <section class="builder-card" data-step="4" hidden>
       <h2>Step 4 — Download Package</h2>
-      <p>When you click below, the ZIP is generated and downloaded immediately.</p>
+      <div class="radio-group" role="group" aria-label="games.json export mode">
+        <label class="radio-option"><input type="radio" name="jsonExportMode" value="full" data-field="jsonExportMode" checked /> Export full games.json (recommended)</label>
+        <label class="radio-option"><input type="radio" name="jsonExportMode" value="entry" data-field="jsonExportMode" /> Export new entry only</label>
+      </div>
+      <label><input type="checkbox" data-field="notifyMembers" /> Notify members who opted in to new game alerts</label>
+      <p class="hint">Only members who enabled notifications in their profile will be notified.</p>
       <button type="button" class="ccg-btn ccg-btn--primary primary" data-action="download">⬇ Download Game Package</button>
       <p class="status" data-download-status></p>
       <div class="actions">
@@ -178,6 +205,8 @@ https://www.mobygames.com/..."></textarea></label>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/games-editor.js?v=admin-stable-20260207"></script>
 </body>
 </html>
