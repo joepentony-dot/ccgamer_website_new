@@ -1042,11 +1042,19 @@ function renderGame(game) {
             manualBtn.rel = "noopener";
             manualBtn.hidden = false;
             manualBtn.dataset.manualUrl = manual;
-            wireManualModal(manualBtn);
+            manualBtn.setAttribute("aria-expanded", "false");
+            wireManualInlineViewer(manualBtn, downloadsSection);
         } else {
             manualBtn.hidden = true;
             manualBtn.dataset.manualUrl = "";
+            manualBtn.setAttribute("aria-expanded", "false");
         }
+    }
+
+    const manualInline = downloadsSection?.nextElementSibling;
+    if (!hasManual && manualInline?.classList.contains("game-manual-inline")) {
+        manualInline.hidden = true;
+        manualInline.setAttribute("aria-hidden", "true");
     }
 
     const disk = resolveDiskUrl(game);
@@ -1819,89 +1827,77 @@ function ensureActionButtonIcon(button, iconSrc, iconAlt) {
     button.dataset.ccgIconReady = "true";
 }
 
-function wireManualModal(button) {
-    if (!button) return;
+function wireManualInlineViewer(button, downloadsSection) {
+    if (!button || !downloadsSection) return;
 
-    const getManualModalParts = () => {
-        const manualModal = document.getElementById("manualModal");
-        const manualContent = manualModal?.querySelector(".ccg-modal-content") || null;
-        const manualFrame = document.getElementById("gameManualEmbed");
-        const manualClose = document.getElementById("manualModalClose");
-        return {
-            manualModal,
-            manualContent,
-            manualFrame,
-            manualClose,
-            ready: !!(manualModal && manualContent && manualFrame && manualClose),
-        };
+    const ensureInlineViewer = () => {
+        let inline = downloadsSection.nextElementSibling;
+        if (!inline || !inline.classList.contains("game-manual-inline")) {
+            inline = document.createElement("section");
+            inline.className = "game-manual-inline";
+            inline.hidden = true;
+            inline.setAttribute("aria-hidden", "true");
+
+            const header = document.createElement("div");
+            header.className = "game-manual-inline__header";
+
+            const title = document.createElement("h3");
+            title.className = "game-manual-inline__title";
+            title.textContent = "Manual Viewer";
+
+            const close = document.createElement("button");
+            close.type = "button";
+            close.className = "game-manual-inline__close";
+            close.textContent = "Close";
+            close.setAttribute("aria-label", "Close manual viewer");
+
+            const frame = document.createElement("iframe");
+            frame.className = "game-manual-inline__frame";
+            frame.title = "Game manual";
+            frame.loading = "lazy";
+
+            close.addEventListener("click", () => {
+                inline.hidden = true;
+                inline.setAttribute("aria-hidden", "true");
+                button.setAttribute("aria-expanded", "false");
+            });
+
+            header.appendChild(title);
+            header.appendChild(close);
+            inline.appendChild(header);
+            inline.appendChild(frame);
+            downloadsSection.insertAdjacentElement("afterend", inline);
+        }
+
+        return inline;
     };
 
-    const warnManualFallback = () => {
-        if (button.dataset.manualWarned === "true") return;
-        console.warn("[CCG MANUAL] Modal unavailable, falling back to link.");
-        button.dataset.manualWarned = "true";
-    };
-
-    const closeManualModal = () => {
-        const { manualModal } = getManualModalParts();
-        if (!manualModal) return;
-        manualModal.classList.remove("open");
-        manualModal.setAttribute("aria-hidden", "true");
-    };
-
-    const initialParts = getManualModalParts();
-    if (initialParts.ready && initialParts.manualModal.parentElement !== document.documentElement) {
-        document.documentElement.appendChild(initialParts.manualModal);
-    }
+    const inline = ensureInlineViewer();
+    const frame = inline.querySelector(".game-manual-inline__frame");
+    if (!frame) return;
 
     if (button.dataset.manualBound !== "true") {
-        button.addEventListener("click", e => {
+        button.addEventListener("click", (event) => {
             const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
             if (!manualUrl) return;
 
-            const { manualModal, manualFrame } = getManualModalParts();
-            if (!manualModal || !manualFrame) {
-                warnManualFallback();
+            event.preventDefault();
+
+            if (inline.hidden) {
+                if (String(frame.getAttribute("src") || "").trim() !== manualUrl) {
+                    frame.src = manualUrl;
+                }
+                inline.hidden = false;
+                inline.setAttribute("aria-hidden", "false");
+                button.setAttribute("aria-expanded", "true");
                 return;
             }
 
-            try {
-                if (manualModal.parentElement !== document.documentElement) {
-                    document.documentElement.appendChild(manualModal);
-                }
-
-                const currentManualSrc = String(manualFrame.getAttribute("src") || "").trim();
-                if (currentManualSrc !== manualUrl) {
-                    manualFrame.src = manualUrl;
-                }
-
-                e.preventDefault();
-
-                manualModal.classList.add("open");
-                manualModal.setAttribute("aria-hidden", "false");
-            } catch (_error) {
-                warnManualFallback();
-            }
+            inline.hidden = true;
+            inline.setAttribute("aria-hidden", "true");
+            button.setAttribute("aria-expanded", "false");
         });
         button.dataset.manualBound = "true";
-    }
-
-    if (initialParts.ready && initialParts.manualModal.dataset.manualBound !== "true") {
-        initialParts.manualClose.addEventListener("click", closeManualModal);
-
-        initialParts.manualModal.addEventListener("click", e => {
-            if (e.target !== initialParts.manualModal) return;
-            closeManualModal();
-        });
-
-        initialParts.manualModal.addEventListener("keydown", (event) => {
-            if (event.key === "Escape") {
-                event.preventDefault();
-                closeManualModal();
-            }
-        });
-
-        initialParts.manualModal.dataset.manualBound = "true";
     }
 }
 
