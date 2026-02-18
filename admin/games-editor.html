@@ -81,7 +81,16 @@
         </div>
         <label>PDF Link (optional)<input data-field="pdf" placeholder="https://..." /></label>
         <label>Disk Links (optional, one per line)<textarea rows="3" data-field="disk"></textarea></label>
-        <label>Credits (optional, plain text)<textarea rows="3" data-field="credits"></textarea></label>
+        <div class="full">
+          <h3>Credits (optional)</h3>
+          <p class="hint">Structured credits improve consistency and can help richer game-page/SEO metadata.</p>
+        </div>
+        <label>Publisher<input data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
+        <label>Developer<input data-field="creditsDeveloper" placeholder="Studio 1, Studio 2" /></label>
+        <label>Programmer / Coder<input data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
+        <label>Graphics<input data-field="creditsGraphics" placeholder="Name 1, Name 2" /></label>
+        <label>Music<input data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
+        <label>Re-release / Budget label<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
       <div class="hint">Validation here applies only to this new draft.</div>
       <ul class="error-list" data-errors-step1 hidden></ul>
@@ -96,7 +105,9 @@
       <div class="form-grid">
         <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="resources/images/thumbnails/all/mygame.webp" /></label>
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="resources/images/games/boxes-3d/mygame.webp" /></label>
-        <label class="full">External Links (optional, one per line; URL format only)<textarea rows="4" data-field="externalLinks"></textarea></label>
+        <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
+https://www.mobygames.com/..."></textarea></label>
+        <p class="hint full">Use authoritative references (Lemon64, MobyGames, Wikipedia, etc.) for better context and SEO.</p>
       </div>
       <div class="hint">No asset fetching, no file checks. Missing assets never block export.</div>
       <ul class="error-list" data-errors-step2 hidden></ul>

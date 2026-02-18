@@ -38,7 +38,12 @@ const state = {
     collections: [],
     pdf: '',
     disk: '',
-    credits: '',
+    creditsPublisher: '',
+    creditsDeveloper: '',
+    creditsCoder: '',
+    creditsGraphics: '',
+    creditsMusic: '',
+    creditsReReleaser: '',
     thumbnail: '',
     box3d: '',
     externalLinks: ''
@@ -350,7 +355,7 @@ function buildPackageData() {
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
     description: state.draft.description.trim(),
-    credits: state.draft.credits.trim() || ''
+    credits: buildStructuredCredits()
   };
 
   const seoTitle = `${title} (${state.draft.year}) | CCG`;
@@ -440,9 +445,23 @@ function setDownloadStatus(message, isError) {
 
 function parseLines(value) {
   return String(value || '')
-    .split('\n')
+    .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function buildStructuredCredits() {
+  const credits = {
+    publisher: parseCommaList(state.draft.creditsPublisher),
+    developer: parseCommaList(state.draft.creditsDeveloper),
+    coder: parseCommaList(state.draft.creditsCoder),
+    graphics: parseCommaList(state.draft.creditsGraphics),
+    musician: parseCommaList(state.draft.creditsMusic),
+    re_releaser: parseCommaList(state.draft.creditsReReleaser),
+    producer: []
+  };
+
+  return credits;
 }
 
 function isValidUrl(value) {
