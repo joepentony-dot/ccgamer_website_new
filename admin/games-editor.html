@@ -28,6 +28,12 @@
     .status { margin-top: .5rem; font-weight: 700; }
     .status.error { color: #fda4af; }
     .status.ok { color: #86efac; }
+    .chip-panel { border: 1px solid rgba(107, 174, 255, 0.45); border-radius: 8px; padding: .5rem; max-height: 180px; overflow: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem; }
+    .chip-item { position: relative; }
+    .chip-item input { position: absolute; opacity: 0; pointer-events: none; }
+    .chip-item span { display: block; border: 1px solid rgba(148, 163, 184, 0.6); border-radius: 999px; padding: .3rem .65rem; text-align: center; background: rgba(7, 24, 47, 0.55); color: #cde8ff; font-weight: 500; transition: box-shadow .15s ease, border-color .15s ease, background-color .15s ease; }
+    .chip-item input:checked + span { border-color: #3ba3ff; background: rgba(15, 51, 105, 0.65); box-shadow: 0 0 0.5rem rgba(59, 163, 255, 0.45); }
+    .inline-error { color: #fecaca; font-size: .82rem; margin-top: .25rem; min-height: 1em; }
     [hidden] { display: none !important; }
     @media (max-width: 800px) { .form-grid { grid-template-columns: 1fr; } .stepper { grid-template-columns: 1fr 1fr; } }
   </style>
@@ -61,13 +67,30 @@
         <label>Year *<input data-field="year" inputmode="numeric" placeholder="1987" required /></label>
         <label>Slug *<input data-field="slug" required /></label>
         <label>ID *<input data-field="id" required /></label>
-        <label class="full">Genres * (comma separated)<input data-field="genres" placeholder="platform, action" required /></label>
+        <div class="full">
+          <label>Genres *</label>
+          <div class="chip-panel" data-genre-options></div>
+          <p class="inline-error" data-inline-error="genres"></p>
+        </div>
         <label class="full">Description *<textarea rows="4" data-field="description" required></textarea></label>
         <label>Video ID *<input data-field="videoId" placeholder="YouTube ID" required /></label>
-        <label>Collections (optional, comma separated)<input data-field="collections" /></label>
+        <div>
+          <label>Collections (optional)</label>
+          <div class="chip-panel" data-collection-options></div>
+          <p class="inline-error" data-inline-error="collections"></p>
+        </div>
         <label>PDF Link (optional)<input data-field="pdf" placeholder="https://..." /></label>
         <label>Disk Links (optional, one per line)<textarea rows="3" data-field="disk"></textarea></label>
-        <label>Credits (optional, plain text)<textarea rows="3" data-field="credits"></textarea></label>
+        <div class="full">
+          <h3>Credits (optional)</h3>
+          <p class="hint">Structured credits improve consistency and can help richer game-page/SEO metadata.</p>
+        </div>
+        <label>Publisher<input data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
+        <label>Developer<input data-field="creditsDeveloper" placeholder="Studio 1, Studio 2" /></label>
+        <label>Programmer / Coder<input data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
+        <label>Graphics<input data-field="creditsGraphics" placeholder="Name 1, Name 2" /></label>
+        <label>Music<input data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
+        <label>Re-release / Budget label<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
       <div class="hint">Validation here applies only to this new draft.</div>
       <ul class="error-list" data-errors-step1 hidden></ul>
@@ -82,7 +105,9 @@
       <div class="form-grid">
         <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="resources/images/thumbnails/all/mygame.webp" /></label>
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="resources/images/games/boxes-3d/mygame.webp" /></label>
-        <label class="full">External Links (optional, one per line; URL format only)<textarea rows="4" data-field="externalLinks"></textarea></label>
+        <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
+https://www.mobygames.com/..."></textarea></label>
+        <p class="hint full">Use authoritative references (Lemon64, MobyGames, Wikipedia, etc.) for better context and SEO.</p>
       </div>
       <div class="hint">No asset fetching, no file checks. Missing assets never block export.</div>
       <ul class="error-list" data-errors-step2 hidden></ul>

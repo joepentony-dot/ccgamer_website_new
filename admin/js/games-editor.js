@@ -1,4 +1,22 @@
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const CANONICAL_GENRES = [
+  'action adventure',
+  'adventure',
+  'arcade',
+  'casino games',
+  'fighting games',
+  'horror',
+  'miscellaneous',
+  'platform',
+  'puzzle',
+  'quiz',
+  'racing',
+  'role playing',
+  'shooting',
+  'sports',
+  'strategy'
+];
+const CANONICAL_COLLECTIONS = ['banned', 'cartridge', 'licensed', 'top picks'];
 
 const state = {
   step: 1,
@@ -14,13 +32,18 @@ const state = {
     year: '',
     slug: '',
     id: '',
-    genres: '',
+    genres: [],
     description: '',
     videoId: '',
-    collections: '',
+    collections: [],
     pdf: '',
     disk: '',
-    credits: '',
+    creditsPublisher: '',
+    creditsDeveloper: '',
+    creditsCoder: '',
+    creditsGraphics: '',
+    creditsMusic: '',
+    creditsReReleaser: '',
     thumbnail: '',
     box3d: '',
     externalLinks: ''
@@ -32,6 +55,10 @@ const el = {
   stepSections: Array.from(document.querySelectorAll('[data-step]')),
   jumpButtons: Array.from(document.querySelectorAll('[data-step-jump]')),
   fields: Array.from(document.querySelectorAll('[data-field]')),
+  genreOptions: document.querySelector('[data-genre-options]'),
+  collectionOptions: document.querySelector('[data-collection-options]'),
+  inlineGenreError: document.querySelector('[data-inline-error="genres"]'),
+  inlineCollectionError: document.querySelector('[data-inline-error="collections"]'),
   step1Errors: document.querySelector('[data-errors-step1]'),
   step2Errors: document.querySelector('[data-errors-step2]'),
   step3Errors: document.querySelector('[data-errors-step3]'),
@@ -48,6 +75,7 @@ const el = {
 init();
 
 async function init() {
+  renderCanonicalOptions();
   bindEvents();
   await loadLibrary();
   renderStep();
@@ -85,6 +113,30 @@ function bindEvents() {
       state.draft.id = nextId;
       setFieldValue('id', nextId);
     }
+  });
+
+  document.addEventListener('change', (event) => {
+    const option = event.target.closest('[data-option-type]');
+    if (!option) return;
+
+    const optionType = option.dataset.optionType;
+    const optionValue = option.dataset.optionValue;
+    const draftList = optionType === 'genres' ? state.draft.genres : state.draft.collections;
+
+    if (option.checked) {
+      if (!draftList.includes(optionValue)) {
+        draftList.push(optionValue);
+      }
+    } else {
+      const next = draftList.filter((value) => value !== optionValue);
+      if (optionType === 'genres') {
+        state.draft.genres = next;
+      } else {
+        state.draft.collections = next;
+      }
+    }
+
+    renderInlineStep1Errors();
   });
 
   el.jumpButtons.forEach((button) => {
@@ -201,7 +253,6 @@ function validateStep1() {
     ['year', 'Year is required.'],
     ['slug', 'Slug is required.'],
     ['id', 'ID is required.'],
-    ['genres', 'At least one genre is required.'],
     ['description', 'Description is required.'],
     ['videoId', 'Video ID is required.']
   ];
@@ -243,6 +294,22 @@ function validateStep1() {
     errors.push('PDF link must be a valid URL.');
   }
 
+  if (!Array.isArray(state.draft.genres) || !state.draft.genres.length) {
+    errors.push('At least one genre is required.');
+  }
+
+  const unknownGenres = state.draft.genres.filter((genre) => !CANONICAL_GENRES.includes(genre));
+  if (unknownGenres.length) {
+    errors.push(`Unknown genre value(s): ${unknownGenres.join(', ')}`);
+  }
+
+  const unknownCollections = state.draft.collections.filter((collection) => !CANONICAL_COLLECTIONS.includes(collection));
+  if (unknownCollections.length) {
+    errors.push(`Unknown collection value(s): ${unknownCollections.join(', ')}`);
+  }
+
+  renderInlineStep1Errors();
+
   return errors;
 }
 
@@ -280,15 +347,15 @@ function buildPackageData() {
     title,
     sorttitle: title,
     year: Number(state.draft.year),
-    genres: parseCsv(state.draft.genres),
-    collections: parseCsv(state.draft.collections),
+    genres: [...state.draft.genres],
+    collections: [...state.draft.collections],
     videoid: state.draft.videoId.trim(),
     thumbnail: state.draft.thumbnail.trim() || '',
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
     description: state.draft.description.trim(),
-    credits: state.draft.credits.trim() || ''
+    credits: buildStructuredCredits()
   };
 
   const seoTitle = `${title} (${state.draft.year}) | CCG`;
@@ -376,18 +443,32 @@ function setDownloadStatus(message, isError) {
   el.downloadStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
-function parseCsv(value) {
+function parseLines(value) {
+  return String(value || '')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function parseCommaList(value) {
   return String(value || '')
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
 }
 
-function parseLines(value) {
-  return String(value || '')
-    .split('\n')
-    .map((item) => item.trim())
-    .filter(Boolean);
+function buildStructuredCredits() {
+  const credits = {
+    publisher: parseCommaList(state.draft.creditsPublisher),
+    developer: parseCommaList(state.draft.creditsDeveloper),
+    coder: parseCommaList(state.draft.creditsCoder),
+    graphics: parseCommaList(state.draft.creditsGraphics),
+    musician: parseCommaList(state.draft.creditsMusic),
+    re_releaser: parseCommaList(state.draft.creditsReReleaser),
+    producer: []
+  };
+
+  return credits;
 }
 
 function isValidUrl(value) {
@@ -402,6 +483,33 @@ function isValidUrl(value) {
 function setFieldValue(fieldName, value) {
   const field = document.querySelector(`[data-field="${fieldName}"]`);
   if (field) field.value = value;
+}
+
+function renderCanonicalOptions() {
+  renderOptionList(el.genreOptions, 'genres', CANONICAL_GENRES);
+  renderOptionList(el.collectionOptions, 'collections', CANONICAL_COLLECTIONS);
+}
+
+function renderOptionList(container, optionType, values) {
+  if (!container) return;
+  container.innerHTML = values
+    .map((value) => {
+      const id = `${optionType}-${value.replaceAll(' ', '-')}`;
+      return `<label class="chip-item" for="${id}"><input type="checkbox" id="${id}" data-option-type="${optionType}" data-option-value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`;
+    })
+    .join('');
+}
+
+function renderInlineStep1Errors() {
+  const hasGenres = Array.isArray(state.draft.genres) && state.draft.genres.length > 0;
+  if (el.inlineGenreError) {
+    el.inlineGenreError.textContent = hasGenres ? '' : 'Select at least one genre.';
+  }
+
+  const unknownCollections = state.draft.collections.filter((value) => !CANONICAL_COLLECTIONS.includes(value));
+  if (el.inlineCollectionError) {
+    el.inlineCollectionError.textContent = unknownCollections.length ? 'Collections include an invalid value.' : '';
+  }
 }
 
 function slugify(value) {
