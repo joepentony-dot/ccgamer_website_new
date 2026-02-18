@@ -21876,49 +21876,50 @@
     "_ccg_migrated": false
   },
   {
-    "system": "C64",
-    "id": "sas_combat_simulator",
-    "slug": "sas-combat-simulator",
-    "title": "SAS Combat Simulator",
-    "sorttitle": "SAS Combat Simulator",
-    "year": 1989,
-    "genres": [
-      "arcade",
-      "shooting"
+  "system": "C64",
+  "id": "sas_combat_simulator",
+  "slug": "sas-combat-simulator",
+  "title": "SAS Combat Simulator",
+  "sorttitle": "SAS Combat Simulator",
+  "year": 1989,
+  "genres": [
+    "arcade",
+    "shooting"
+  ],
+  "collections": [],
+  "videoid": "WoSLgVvYm10",
+  "thumbnail": "resources/images/thumbnails/all/sas_combat_simulator.jpg",
+  "pdf": "https://drive.google.com/file/d/1TdSEpDT7iLDDxIrcDNQ9MIw-3quJuXyW/view?usp=drive_link",
+  "disk": [
+    "https://drive.google.com/file/d/1QKylUbcvJp2jwNRO5rdnlp4cGycsRDPs/view?usp=drive_link"
+  ],
+  "lemon": [
+    "https://www.lemon64.com/game/sas-combat-simulator"
+  ],
+  "description": "SAS Combat Simulator is a military-themed arcade action game released for the Commodore 64 in 1989. Developed by Vision Software and published by Codemasters as a budget title, it blends multiple gameplay styles inspired by classics such as Commando, Ikari Warriors, and Green Beret.",
+  "ccg_rating": 5,
+  "ccg_rating_reason": "Not the best Commando-style game out there. I'd still rather play Commando itself.",
+  "credits": {
+    "publisher": [
+      "Codemasters"
     ],
-    "collections": [],
-    "videoid": "WoSLgVvYm10",
-    "thumbnail": "sas_combat_simulator.jpg",
-    "pdf": "https://drive.google.com/file/d/1TdSEpDT7iLDDxIrcDNQ9MIw-3quJuXyW/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1QKylUbcvJp2jwNRO5rdnlp4cGycsRDPs/view?usp=drive_link"
+    "developer": [
+      "Vision Software"
     ],
-    "lemon": [
-      "https://www.lemon64.com/game/sas-combat-simulator"
+    "coder": [
+      "Jamie Irvine",
+      "Peter Goldsmith"
     ],
-    "description": "SAS Combat Simulator is a military-themed arcade action game released for the Commodore 64 in 1989. Developed by Vision Software and published by Codemasters as a budget title, it blends multiple gameplay styles inspired by retro classics like Commando, Ikari Warriors, and Green Beret",
-     "ccg_rating": 5,
-    "ccg_rating_reason": "Not the best 'Commando' type game out there. I'd prefer... well, Commando!",
-    "credits": {
-	"credits": {
-      "publisher": [
-        "Codemasters"
-      ],
-      "developer": [
-        "Vision Software"
-      ],
-      "coder": [
-        "Jamie Irvine",
-        "Peter Goldsmith"
-      ],
-      "graphics": [
-        "Jamie Irvine",
-        "Peter Goldsmith"
-      ],
-      "musician": [
-        "Steve Barrett"
-      ]
-    }
+    "graphics": [
+      "Jamie Irvine",
+      "Peter Goldsmith"
+    ],
+    "musician": [
+      "Steve Barrett"
+    ]
+  },
+  "_ccg_enforced": false,
+  "_ccg_migrated": false
   },
   {
     "system": "C64",
