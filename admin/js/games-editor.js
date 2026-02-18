@@ -809,18 +809,30 @@ async function maybeSendNewGameNotifications(packageData) {
 
     const sentCount = Number(data?.sentCount || 0);
     const total = Number(data?.recipientCount || sentCount);
+    const auditLogged = Boolean(data?.auditLogged);
+
     if (testMode) {
-      setDownloadStatus(`Download started. Test notification sent (${sentCount}/${total}).`, false);
+      if (!auditLogged) {
+        setDownloadStatus('Notifications sent. Audit logging unavailable.', true);
+        return;
+      }
+
+      setDownloadStatus('Test notification sent to you successfully.', false);
       return;
     }
 
     const failed = Number(data?.failedCount || 0);
-    if (failed > 0) {
-      setDownloadStatus(`Download started. Live notifications sent to ${sentCount}/${total} members (${failed} failed).`, true);
+    if (!auditLogged) {
+      setDownloadStatus('Notifications sent. Audit logging unavailable.', true);
       return;
     }
 
-    setDownloadStatus(`Download started. Live notifications sent to ${sentCount} members.`, false);
+    if (failed > 0) {
+      setDownloadStatus(`New game notification sent to ${sentCount}/${total} members (${failed} failed).`, true);
+      return;
+    }
+
+    setDownloadStatus(`New game notification sent to ${sentCount} members.`, false);
   } catch (error) {
     setDownloadStatus(`Download started, but notification sending failed: ${error.message}`, true);
   }

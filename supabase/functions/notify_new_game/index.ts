@@ -9,6 +9,11 @@ type NotifyPayload = {
   testMode?: boolean;
 };
 
+type TriggeredByContext = {
+  userId: string;
+  email: string;
+};
+
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
@@ -68,6 +73,37 @@ async function sendEmail(to: string, subject: string, text: string, html: string
   if (!response.ok) {
     throw new Error(`Resend failed: ${await response.text()}`);
   }
+}
+
+async function resolveTriggeredByContext(
+  req: Request,
+  supabase: ReturnType<typeof createClient>,
+  adminEmail: string
+): Promise<TriggeredByContext> {
+  const authHeader = req.headers.get('Authorization') || req.headers.get('authorization') || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  if (!token) {
+    return {
+      userId: '',
+      email: adminEmail
+    };
+  }
+
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error) {
+    console.error(`[${FUNCTION_NAME}] auth_context_failed`, {
+      error: error.message
+    });
+    return {
+      userId: '',
+      email: adminEmail
+    };
+  }
+
+  return {
+    userId: String(data.user?.id || '').trim(),
+    email: String(data.user?.email || adminEmail || '').trim()
+  };
 }
 
 Deno.serve(async (req) => {
@@ -145,12 +181,43 @@ Deno.serve(async (req) => {
     }
   }
 
+  const recipientCount = testMode ? 1 : recipients.length;
+  let auditLogged = false;
+
+  try {
+    const triggeredBy = await resolveTriggeredByContext(req, supabase, adminEmail);
+    const { error: auditError } = await supabase.from('notification_audit').insert({
+      event_type: 'new_game_notification',
+      game_title: title,
+      game_slug: slug,
+      system: system || 'Unknown',
+      year: Number.isFinite(year) && year > 0 ? year : null,
+      test_mode: testMode,
+      recipient_count: recipientCount,
+      triggered_by: triggeredBy.userId || null,
+      triggered_by_email: triggeredBy.email || null
+    });
+
+    if (auditError) {
+      throw auditError;
+    }
+
+    auditLogged = true;
+  } catch (error) {
+    console.error(`[${FUNCTION_NAME}] audit_insert_failed`, {
+      slug,
+      testMode,
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+
   const logEntry = {
     timestamp: new Date().toISOString(),
     slug,
     testMode,
-    recipientCount: recipients.length,
-    event: testMode ? 'TEST_NOTIFICATION_SENT' : 'LIVE_NOTIFICATION_SENT'
+    recipientCount,
+    event: testMode ? 'TEST_NOTIFICATION_SENT' : 'LIVE_NOTIFICATION_SENT',
+    auditLogged
   };
 
   console.log(`[${FUNCTION_NAME}] dispatch_result`, logEntry);
