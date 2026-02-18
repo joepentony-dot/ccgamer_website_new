@@ -1,45 +1,5 @@
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
-const CANONICAL_GENRES = [
-  'action-adventure',
-  'adventure',
-  'arcade',
-  'casino',
-  'fighting',
-  'horror',
-  'miscellaneous',
-  'platform',
-  'puzzle',
-  'racing',
-  'role-playing',
-  'quiz',
-  'shooting',
-  'sports',
-  'strategy'
-];
-const GENRE_LABELS = {
-  'action-adventure': 'Action adventure',
-  adventure: 'Adventure',
-  arcade: 'Arcade',
-  casino: 'Casino games',
-  fighting: 'Fighting games',
-  horror: 'Horror',
-  miscellaneous: 'Miscellaneous',
-  platform: 'Platform',
-  puzzle: 'Puzzle',
-  racing: 'Racing',
-  'role-playing': 'Role playing',
-  quiz: 'Quiz',
-  shooting: 'Shooting',
-  sports: 'Sports',
-  strategy: 'Strategy'
-};
-const CANONICAL_COLLECTIONS = ['cartridge', 'licensed', 'bpjs', 'top-picks'];
-const COLLECTION_LABELS = {
-  cartridge: 'Cartridge',
-  licensed: 'Licensed',
-  bpjs: 'Banned',
-  'top-picks': 'Top Picks'
-};
+
 const EMPTY_DRAFT = {
   title: '',
   system: '',
@@ -52,10 +12,16 @@ const EMPTY_DRAFT = {
   collections: [],
   pdf: '',
   disk: '',
-  credits: '',
+  creditsPublisher: '',
+  creditsDeveloper: '',
+  creditsCoder: '',
+  creditsGraphics: '',
+  creditsMusic: '',
+  creditsReReleaser: '',
   thumbnail: '',
   box3d: '',
-  externalLinks: ''
+  externalLinks: '',
+  jsonExportMode: 'full'
 };
 
 const state = {
@@ -63,31 +29,12 @@ const state = {
   library: [],
   slugSet: new Set(),
   idSet: new Set(),
+  genres: [],
+  collections: [],
   packageData: null,
   slugTouched: false,
   idTouched: false,
-  draft: {
-    title: '',
-    system: '',
-    year: '',
-    slug: '',
-    id: '',
-    genres: [],
-    description: '',
-    videoId: '',
-    collections: [],
-    pdf: '',
-    disk: '',
-    creditsPublisher: '',
-    creditsDeveloper: '',
-    creditsCoder: '',
-    creditsGraphics: '',
-    creditsMusic: '',
-    creditsReReleaser: '',
-    thumbnail: '',
-    box3d: '',
-    externalLinks: ''
-  }
+  draft: { ...EMPTY_DRAFT }
 };
 
 const el = {
@@ -99,6 +46,9 @@ const el = {
   collectionOptions: document.querySelector('[data-collection-options]'),
   inlineGenreError: document.querySelector('[data-inline-error="genres"]'),
   inlineCollectionError: document.querySelector('[data-inline-error="collections"]'),
+  inlineNewCategoryError: document.querySelector('[data-inline-error="new-category"]'),
+  newCategoryInput: document.querySelector('[data-new-category-input]'),
+  newCategoryButton: document.querySelector('[data-new-category-button]'),
   step1Errors: document.querySelector('[data-errors-step1]'),
   step2Errors: document.querySelector('[data-errors-step2]'),
   step3Errors: document.querySelector('[data-errors-step3]'),
@@ -106,6 +56,7 @@ const el = {
   previewSitemap: document.querySelector('[data-preview-sitemap]'),
   previewFileFlat: document.querySelector('[data-preview-file-flat]'),
   previewFileFolder: document.querySelector('[data-preview-file-folder]'),
+  previewGamesJsonPath: document.querySelector('[data-preview-games-json-path]'),
   downloadStatus: document.querySelector('[data-download-status]'),
   nextButtons: Array.from(document.querySelectorAll('[data-action="next"]')),
   backButtons: Array.from(document.querySelectorAll('[data-action="back"]')),
@@ -119,7 +70,6 @@ const el = {
 init();
 
 async function init() {
-  renderCanonicalOptions();
   bindEvents();
   await loadLibrary();
   renderStep();
@@ -130,30 +80,37 @@ function bindEvents() {
     const field = event.target.closest('[data-field]');
     if (!field) return;
 
+    const isRadio = field.type === 'radio';
+    if (isRadio) {
+      if (!field.checked) return;
+      state.draft[field.dataset.field] = field.value;
+      return;
+    }
+
     const fieldName = field.dataset.field;
-    state.draft[fieldName] = field.value;
+    const value = field.value;
+    state.draft[fieldName] = value;
 
     if (fieldName === 'slug') {
-      state.slugTouched = Boolean(field.value.trim());
+      state.slugTouched = Boolean(value.trim());
       return;
     }
 
     if (fieldName === 'id') {
-      state.idTouched = Boolean(field.value.trim());
+      state.idTouched = Boolean(value.trim());
       return;
     }
 
     if (fieldName !== 'title') return;
 
-    const titleValue = field.value;
     if (!state.slugTouched) {
-      const nextSlug = slugify(titleValue);
+      const nextSlug = slugify(value);
       state.draft.slug = nextSlug;
       setFieldValue('slug', nextSlug);
     }
 
     if (!state.idTouched) {
-      const nextId = idify(titleValue);
+      const nextId = idify(value);
       state.draft.id = nextId;
       setFieldValue('id', nextId);
     }
@@ -165,22 +122,28 @@ function bindEvents() {
 
     const optionType = option.dataset.optionType;
     const optionValue = option.dataset.optionValue;
-    const draftList = optionType === 'genres' ? state.draft.genres : state.draft.collections;
+    const target = optionType === 'genres' ? 'genres' : 'collections';
+    const selected = Array.isArray(state.draft[target]) ? [...state.draft[target]] : [];
 
     if (option.checked) {
-      if (!draftList.includes(optionValue)) {
-        draftList.push(optionValue);
-      }
+      if (!selected.includes(optionValue)) selected.push(optionValue);
     } else {
-      const next = draftList.filter((value) => value !== optionValue);
-      if (optionType === 'genres') {
-        state.draft.genres = next;
-      } else {
-        state.draft.collections = next;
-      }
+      const index = selected.indexOf(optionValue);
+      if (index !== -1) selected.splice(index, 1);
     }
 
+    state.draft[target] = selected;
     renderInlineStep1Errors();
+  });
+
+  el.newCategoryButton?.addEventListener('click', () => {
+    addNewCategoryEscapeHatch();
+  });
+
+  el.newCategoryInput?.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    addNewCategoryEscapeHatch();
   });
 
   el.jumpButtons.forEach((button) => {
@@ -258,18 +221,58 @@ function bindEvents() {
   });
 }
 
+function addNewCategoryEscapeHatch() {
+  if (!el.newCategoryInput) return;
+  const rawValue = el.newCategoryInput.value.trim();
+  if (!rawValue) {
+    setNewCategoryError('Enter a category value first.');
+    return;
+  }
+
+  const normalized = slugify(rawValue);
+  if (!normalized) {
+    setNewCategoryError('Category must include letters or numbers.');
+    return;
+  }
+
+  const warningMessage = `Add "${normalized}" as a new category? This requires site-wide support.`;
+  if (!window.confirm(warningMessage)) {
+    setNewCategoryError('New category was not added.');
+    return;
+  }
+
+  if (!state.genres.includes(normalized)) {
+    state.genres.push(normalized);
+    state.genres.sort();
+    renderOptionList(el.genreOptions, 'genres', state.genres);
+  }
+
+  if (!state.draft.genres.includes(normalized)) {
+    state.draft.genres.push(normalized);
+  }
+
+  markOptionChecked('genres', state.draft.genres);
+  el.newCategoryInput.value = '';
+  setNewCategoryError('');
+  renderInlineStep1Errors();
+}
+
 function clearDraft() {
   state.draft = { ...EMPTY_DRAFT };
   state.slugTouched = false;
   state.idTouched = false;
   state.step = 1;
   el.fields.forEach((field) => {
+    if (field.type === 'radio') {
+      field.checked = field.value === 'full';
+      return;
+    }
     field.value = '';
   });
-  const options = document.querySelectorAll('[data-option-type]');
-  options.forEach((option) => {
-    option.checked = false;
-  });
+  markOptionChecked('genres', []);
+  markOptionChecked('collections', []);
+  if (el.newCategoryInput) el.newCategoryInput.value = '';
+  setNewCategoryError('');
   renderInlineStep1Errors();
   renderErrors(el.step1Errors, []);
   renderErrors(el.step2Errors, []);
@@ -289,17 +292,30 @@ async function loadLibrary() {
     if (!response.ok) {
       throw new Error(`Could not load games.json (${response.status})`);
     }
+
     const data = await response.json();
     state.library = Array.isArray(data) ? data : [];
-    state.slugSet = new Set(state.library.map((g) => String(g.slug || '').toLowerCase()).filter(Boolean));
-    state.idSet = new Set(state.library.map((g) => String(g.id || '').toLowerCase()).filter(Boolean));
+
+    state.slugSet = new Set(state.library.map((game) => String(game.slug || '').toLowerCase()).filter(Boolean));
+    state.idSet = new Set(state.library.map((game) => String(game.id || '').toLowerCase()).filter(Boolean));
+
+    state.genres = deriveUniqueValues(state.library, 'genres');
+    state.collections = deriveUniqueValues(state.library, 'collections');
+
+    renderOptionList(el.genreOptions, 'genres', state.genres, buildGenreLabels(state.genres));
+    renderOptionList(el.collectionOptions, 'collections', state.collections, buildCollectionLabels(state.collections));
+
     el.topStatus.textContent = `Loaded ${state.library.length} existing games. Duplicate checks enabled.`;
     el.topStatus.className = 'status ok';
   } catch (error) {
     state.library = [];
     state.slugSet = new Set();
     state.idSet = new Set();
-    el.topStatus.textContent = `Warning: ${error.message}. You can continue, but duplicate checks are unavailable.`;
+    state.genres = [];
+    state.collections = [];
+    renderOptionList(el.genreOptions, 'genres', []);
+    renderOptionList(el.collectionOptions, 'collections', []);
+    el.topStatus.textContent = `Warning: ${error.message}. You can continue, but duplicate checks and category hydration are unavailable.`;
     el.topStatus.className = 'status error';
   }
 }
@@ -308,20 +324,26 @@ function renderStep() {
   el.stepSections.forEach((section) => {
     section.hidden = Number(section.dataset.step) !== state.step;
   });
+
   el.jumpButtons.forEach((button) => {
     button.dataset.active = Number(button.dataset.stepJump) === state.step ? 'true' : 'false';
   });
 
-  if (state.step === 3) {
+  if (state.step === 3 || state.step === 4) {
     const errors = validateStep3();
     renderErrors(el.step3Errors, errors);
     if (!errors.length) {
       const packageData = buildPackageData();
       state.packageData = packageData;
-      el.previewEntry.textContent = JSON.stringify(packageData.gameEntry, null, 2);
+      el.previewEntry.textContent = packageData.gamesJsonOutput;
       el.previewSitemap.textContent = packageData.sitemap;
-      el.previewFileFlat.textContent = `/games/${state.draft.slug}.html`;
-      el.previewFileFolder.textContent = `/games/${state.draft.slug}/index.html`;
+      el.previewFileFlat.textContent = `games/${state.draft.slug}.html`;
+      el.previewFileFolder.textContent = `games/${state.draft.slug}/index.html`;
+      if (el.previewGamesJsonPath) {
+        el.previewGamesJsonPath.textContent = state.draft.jsonExportMode === 'full'
+          ? 'games/games.json (full merged file)'
+          : 'games/games.json (new entry only array)';
+      }
     }
   }
 }
@@ -343,9 +365,7 @@ function validateStep1() {
   ];
 
   required.forEach(([key, message]) => {
-    if (!String(state.draft[key] || '').trim()) {
-      errors.push(message);
-    }
+    if (!String(state.draft[key] || '').trim()) errors.push(message);
   });
 
   if (state.draft.system && !['C64', 'AMIGA'].includes(state.draft.system)) {
@@ -356,56 +376,56 @@ function validateStep1() {
     errors.push('Year must be 4 digits.');
   }
 
-  const yearNumber = Number(state.draft.year);
-  if (state.draft.year && (yearNumber < 1970 || yearNumber > 2100)) {
+  const year = Number(state.draft.year);
+  if (state.draft.year && (year < 1970 || year > 2100)) {
     errors.push('Year must be between 1970 and 2100.');
   }
 
   const slug = String(state.draft.slug || '').trim().toLowerCase();
   if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    errors.push('Slug must be lowercase and use hyphens only.');
+    errors.push('Slug must be lowercase kebab-case.');
   }
 
   const id = String(state.draft.id || '').trim().toLowerCase();
-  if (id && state.idSet.has(id)) {
-    errors.push('ID already exists in games.json.');
+  if (id && !/^[a-z0-9]+(?:_[a-z0-9]+)*$/.test(id)) {
+    errors.push('ID must be lowercase snake_case.');
   }
 
-  if (slug && state.slugSet.has(slug)) {
-    errors.push('Slug already exists in games.json.');
+  if (slug && state.slugSet.has(slug)) errors.push('Slug already exists in games.json.');
+  if (id && state.idSet.has(id)) errors.push('ID already exists in games.json.');
+
+  if (!Array.isArray(state.draft.genres) || state.draft.genres.length === 0) {
+    errors.push('At least one genre is required.');
+  }
+
+  const invalidGenres = state.draft.genres.filter((value) => !state.genres.includes(value));
+  if (invalidGenres.length) {
+    errors.push(`Unknown genre value(s): ${invalidGenres.join(', ')}`);
+  }
+
+  const invalidCollections = state.draft.collections.filter((value) => !state.collections.includes(value));
+  if (invalidCollections.length) {
+    errors.push(`Unknown collection value(s): ${invalidCollections.join(', ')}`);
   }
 
   if (state.draft.pdf && !isValidUrl(state.draft.pdf)) {
     errors.push('PDF link must be a valid URL.');
   }
 
-  if (!Array.isArray(state.draft.genres) || !state.draft.genres.length) {
-    errors.push('At least one genre is required.');
-  }
-
-  const unknownGenres = state.draft.genres.filter((genre) => !CANONICAL_GENRES.includes(genre));
-  if (unknownGenres.length) {
-    errors.push(`Unknown genre value(s): ${unknownGenres.join(', ')}`);
-  }
-
-  const unknownCollections = state.draft.collections.filter((collection) => !CANONICAL_COLLECTIONS.includes(collection));
-  if (unknownCollections.length) {
-    errors.push(`Unknown collection value(s): ${unknownCollections.join(', ')}`);
-  }
-
   renderInlineStep1Errors();
-
   return errors;
 }
 
 function validateStep2() {
   const errors = [];
-  const links = parseLines(state.draft.externalLinks);
-  links.forEach((url) => {
-    if (!isValidUrl(url)) {
-      errors.push(`Invalid external link URL: ${url}`);
-    }
+  parseLines(state.draft.disk).forEach((url) => {
+    if (!isValidUrl(url)) errors.push(`Invalid disk URL: ${url}`);
   });
+
+  parseLines(state.draft.externalLinks).forEach((url) => {
+    if (!isValidUrl(url)) errors.push(`Invalid external link URL: ${url}`);
+  });
+
   return errors;
 }
 
@@ -424,14 +444,18 @@ function buildPackageData() {
   const id = state.draft.id.trim();
   const title = state.draft.title.trim();
   const gameUrl = `${SITE_ORIGIN}/games/game.html?id=${encodeURIComponent(id)}`;
+  const seoTitle = `${title} | Cheeky Commodore Gamer`;
+  const seoDescription = cleanForHtml(state.draft.description.trim() || `${title} on Commodore — screenshots, manual, downloads and video.`);
+  const system = state.draft.system.trim();
+  const year = Number(state.draft.year);
 
   const gameEntry = {
-    system: state.draft.system,
+    system,
     id,
     slug,
     title,
     sorttitle: title,
-    year: Number(state.draft.year),
+    year,
     genres: [...state.draft.genres],
     collections: [...state.draft.collections],
     videoid: state.draft.videoId.trim(),
@@ -443,53 +467,252 @@ function buildPackageData() {
   };
 
   const credits = buildStructuredCredits();
-  if (Object.keys(credits).length) {
-    gameEntry.credits = credits;
-  }
+  if (Object.keys(credits).length) gameEntry.credits = credits;
 
-  const seoTitle = `${title} (${state.draft.year}) | CCG`;
-  const seoDescription = cleanForHtml(state.draft.description.trim());
+  const publisherForSeo = credits.publisher?.[0] || 'Cheeky Commodore Gamer';
+  const imagePath = gameEntry.thumbnail || 'resources/images/thumbnails/all/default.jpg';
+  const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
 
-  const stubHtml = `<!DOCTYPE html>
+  const flatSeoStub = `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>${cleanForHtml(seoTitle)}</title>
-  <meta name="description" content="${seoDescription}" />
-  <link rel="canonical" href="${gameUrl}" />
-  <meta http-equiv="refresh" content="0; url=${gameUrl}" />
+    <meta charset="UTF-8" />
+
+    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <script>
+      (function () {
+        history.replaceState(null, "", "/games/${escapeJs(slug)}/");
+      })();
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>${cleanForHtml(seoTitle)}</title>
+    <meta name="description" content="${seoDescription}" />
+
+    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html" />
+
+    <meta property="og:title" content="${cleanForHtml(seoTitle)}" />
+    <meta property="og:description" content="${seoDescription}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html" />
+    <meta property="og:image" content="${cleanForHtml(imageUrl)}" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${cleanForHtml(seoTitle)}" />
+    <meta name="twitter:description" content="${seoDescription}" />
+    <meta name="twitter:image" content="${cleanForHtml(imageUrl)}" />
+
+    <link rel="icon" href="../favicon.ico" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
+    <link rel="stylesheet" href="../resources/css/games.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+    <script src="../js/ccg-mobile-lite.js" defer></script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "${cleanForHtml(title)}",
+        "description": "${seoDescription}",
+        "datePublished": "${String(year)}",
+        "gamePlatform": "${cleanForHtml(system)}",
+        "publisher": "${cleanForHtml(publisherForSeo)}",
+        "image": "${cleanForHtml(imageUrl)}",
+        "url": "${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html"
+    }
+    </script>
 </head>
-<body>
-  <p>Redirecting to <a href="${gameUrl}">${cleanForHtml(title)}</a>…</p>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+
+<div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
+</div>
+
+<div class="ccg-page">
+    <main class="ccg-main">
+
+        <section class="game-hero">
+            <div class="game-hero__inner">
+
+                <div class="game-hero__media">
+                    <img
+                        class="game-hero__thumb"
+                        src="../${cleanForHtml(imagePath).replace(/^\/+/, '')}"
+                        alt="${cleanForHtml(title)} cover"
+                        loading="lazy"
+                     width="460" height="215"  srcset="../${cleanForHtml(imagePath).replace(/^\/+/, '')} 460w" sizes="(max-width: 720px) 90vw, 460px" />
+                </div>
+
+                <div class="game-hero__content">
+                    <h1 class="game-hero__title">${cleanForHtml(title)}</h1>
+
+                    <div class="game-hero__meta">
+                        <span class="game-meta__item">${String(year)}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${cleanForHtml(system)}</span>
+                        <span class="game-meta__sep">•</span>
+                        <span class="game-meta__item">${cleanForHtml(publisherForSeo)}</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Overview</p>
+            <h2 class="game-section__title">Game Summary</h2>
+
+            <div class="game-description">
+                ${seoDescription}
+            </div>
+        </section>
+
+        <section class="game-section">
+            <p class="game-section__kicker">Explore</p>
+            <h2 class="game-section__title">More Details</h2>
+
+            <div class="game-downloads">
+                <a class="ccg-btn ccg-btn--primary"
+                   href="/games/game.html?id=${encodeURIComponent(id)}">
+                    View the full interactive game page
+                </a>
+
+                <a class="ccg-btn ccg-btn--ghost"
+                   href="/games/index.html">
+                    Browse all games
+                </a>
+            </div>
+        </section>
+
+
+
+        <section class="ccg-share" data-ccg-share>
+            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
+            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
+                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
+                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
+                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
+                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
+                <button type="button" data-ccg-share-copy>Copy link</button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="ccg-footer">
+        <p class="ccg-footer__text">
+            © <span data-ccg-year></span> Cheeky Commodore Gamer.
+            Not affiliated with Commodore, Amiga or publishers.
+        </p>
+    </footer>
+</div>
+
+<script src="../js/ccg-base.js" defer></script>
+
+<script src="../resources/js/ccg-share.js" defer></script>
+
 </body>
 </html>`;
 
-  const sitemap = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${SITE_ORIGIN}/games/${slug}.html</loc></url>
-  <url><loc>${SITE_ORIGIN}/games/${slug}/</loc></url>
+  const folderRedirect = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Redirecting…</title>
+
+    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            opacity: 0;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        (function () {
+            try {
+                window.location.replace("/games/game.html?id=${escapeJs(id)}");
+            } catch (e) {
+                window.location.href = "/games/game.html?id=${escapeJs(id)}";
+            }
+        })();
+    </script>
+</head>
+<body>
+</body>
+</html>`;
+
+  const mergedGames = mergeGamesJson(gameEntry, state.library);
+  const gamesJsonOutput = state.draft.jsonExportMode === 'full'
+    ? `${JSON.stringify(mergedGames, null, 2)}\n`
+    : `${JSON.stringify([gameEntry], null, 2)}\n`;
+
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_ORIGIN}/games/${slug}/</loc>
+  </url>
 </urlset>`;
 
   const readme = [
     'CCG Game Package',
     '================',
     '',
-    'This ZIP contains exactly:',
-    '- games.json (new entry only)',
+    'Copy files from this ZIP into the repo:',
+    '- games/games.json',
     `- games/${slug}.html`,
     `- games/${slug}/index.html`,
-    '- sitemap-fragment.xml',
+    '- sitemap-fragment.xml (optional)',
     '',
-    'How to use:',
-    '1) Copy the new game object from games.json into /games/games.json in the repo.',
-    `2) Add both SEO files to /games/${slug}.html and /games/${slug}/index.html.`,
-    '3) Merge sitemap-fragment.xml content into your sitemap workflow.',
-    '4) Commit and deploy.',
+    'games.json instructions:',
+    '- If you exported FULL games.json: replace /games/games.json in the repo with this file.',
+    '- If you exported ENTRY ONLY: copy the single object into /games/games.json manually in sort order.',
     '',
-    'Images are intentionally not included in this ZIP.'
+    'sitemap-fragment.xml:',
+    '- Optional helper containing the new /games/{slug}/ URL only.',
+    '- Merge it into your sitemap if you maintain one; otherwise safe to ignore.'
   ].join('\n');
 
-  return { slug, gameEntry, stubHtml, sitemap, readme };
+  return {
+    slug,
+    id,
+    gameEntry,
+    mergedGames,
+    gamesJsonOutput,
+    flatSeoStub,
+    folderRedirect,
+    sitemap,
+    readme
+  };
+}
+
+function mergeGamesJson(newEntry, library) {
+  const existing = Array.isArray(library) ? library.map((item) => ({ ...item })) : [];
+  existing.push(newEntry);
+
+  return existing.sort((a, b) => {
+    const left = String(a.sorttitle || a.title || a.slug || a.id || '').toLowerCase();
+    const right = String(b.sorttitle || b.title || b.slug || b.id || '').toLowerCase();
+    return left.localeCompare(right, 'en', { numeric: true, sensitivity: 'base' });
+  });
 }
 
 async function downloadZip(packageData) {
@@ -498,20 +721,20 @@ async function downloadZip(packageData) {
   }
 
   const zip = new window.JSZip();
-  zip.file('games.json', `${JSON.stringify([packageData.gameEntry], null, 2)}\n`);
-  zip.file(`games/${packageData.slug}.html`, `${packageData.stubHtml}\n`);
-  zip.file(`games/${packageData.slug}/index.html`, `${packageData.stubHtml}\n`);
+  zip.file('games/games.json', packageData.gamesJsonOutput);
+  zip.file(`games/${packageData.slug}.html`, `${packageData.flatSeoStub}\n`);
+  zip.file(`games/${packageData.slug}/index.html`, `${packageData.folderRedirect}\n`);
   zip.file('sitemap-fragment.xml', `${packageData.sitemap}\n`);
   zip.file('README.txt', `${packageData.readme}\n`);
 
   const blob = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${packageData.slug}-game-package.zip`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${packageData.slug}-game-package.zip`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
   URL.revokeObjectURL(url);
 }
 
@@ -526,19 +749,104 @@ function renderErrors(node, errors) {
   node.innerHTML = errors.map((error) => `<li>${escapeHtml(error)}</li>`).join('');
 }
 
-function setDownloadStatus(message, isError) {
+function setDownloadStatus(message, isError = false) {
   if (!el.downloadStatus) return;
   el.downloadStatus.textContent = message;
   el.downloadStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
+function renderInlineStep1Errors() {
+  const hasGenres = Array.isArray(state.draft.genres) && state.draft.genres.length > 0;
+  if (el.inlineGenreError) {
+    el.inlineGenreError.textContent = hasGenres ? '' : 'Select at least one genre.';
+  }
+
+  const invalidCollections = state.draft.collections.filter((value) => !state.collections.includes(value));
+  if (el.inlineCollectionError) {
+    el.inlineCollectionError.textContent = invalidCollections.length ? 'Collections include an invalid value.' : '';
+  }
+}
+
+function setNewCategoryError(message) {
+  if (!el.inlineNewCategoryError) return;
+  el.inlineNewCategoryError.textContent = message;
+}
+
+function renderOptionList(container, optionType, values, labels = {}) {
+  if (!container) return;
+  container.innerHTML = values
+    .map((value) => {
+      const id = `${optionType}-${value.replaceAll(' ', '-')}`;
+      const label = labels[value] || toReadableLabel(value);
+      return `<label class="chip-item" for="${id}"><input type="checkbox" id="${id}" data-option-type="${optionType}" data-option-value="${escapeHtml(value)}"><span>${escapeHtml(label)}</span></label>`;
+    })
+    .join('');
+
+  const selected = optionType === 'genres' ? state.draft.genres : state.draft.collections;
+  markOptionChecked(optionType, selected);
+}
+
+function markOptionChecked(optionType, values) {
+  const selected = new Set(Array.isArray(values) ? values : []);
+  document.querySelectorAll(`[data-option-type="${optionType}"]`).forEach((input) => {
+    input.checked = selected.has(input.dataset.optionValue);
+  });
+}
+
+function setFieldValue(fieldName, value) {
+  const field = document.querySelector(`[data-field="${fieldName}"]`);
+  if (field && field.value !== value) {
+    field.value = value;
+  }
+}
+
+function deriveUniqueValues(library, key) {
+  const set = new Set();
+  library.forEach((game) => {
+    const values = Array.isArray(game[key]) ? game[key] : [];
+    values.forEach((value) => {
+      const token = String(value || '').trim();
+      if (token) set.add(token);
+    });
+  });
+  return Array.from(set).sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' }));
+}
+
+function buildGenreLabels(values) {
+  const map = {};
+  values.forEach((value) => {
+    if (value === 'action-adventure') map[value] = 'Action adventure';
+    else if (value === 'role-playing') map[value] = 'Role playing';
+    else if (value === 'fighting') map[value] = 'Fighting games';
+    else if (value === 'casino') map[value] = 'Casino games';
+    else map[value] = toReadableLabel(value);
+  });
+  return map;
+}
+
+function buildCollectionLabels(values) {
+  const map = {};
+  values.forEach((value) => {
+    if (value === 'bpjs') map[value] = 'Banned';
+    else if (value === 'top-picks') map[value] = 'Top picks';
+    else map[value] = toReadableLabel(value);
+  });
+  return map;
+}
+
+function toReadableLabel(value) {
+  return String(value || '')
+    .split('-')
+    .map((token) => token.charAt(0).toUpperCase() + token.slice(1))
+    .join(' ');
+}
+
 function parseLines(value) {
   return String(value || '')
-    .split(',')
+    .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
 }
-
 
 function parseCommaList(value) {
   return String(value || '')
@@ -549,6 +857,7 @@ function parseCommaList(value) {
 
 function buildStructuredCredits() {
   const credits = {};
+
   const publisher = parseCommaList(state.draft.creditsPublisher);
   const developer = parseCommaList(state.draft.creditsDeveloper);
   const coder = parseCommaList(state.draft.creditsCoder);
@@ -575,40 +884,6 @@ function isValidUrl(value) {
   }
 }
 
-function setFieldValue(fieldName, value) {
-  const field = document.querySelector(`[data-field="${fieldName}"]`);
-  if (field) field.value = value;
-}
-
-function renderCanonicalOptions() {
-  renderOptionList(el.genreOptions, 'genres', CANONICAL_GENRES, GENRE_LABELS);
-  renderOptionList(el.collectionOptions, 'collections', CANONICAL_COLLECTIONS, COLLECTION_LABELS);
-}
-
-
-function renderOptionList(container, optionType, values, labels = {}) {
-  if (!container) return;
-  container.innerHTML = values
-    .map((value) => {
-      const id = `${optionType}-${value.replaceAll(' ', '-')}`;
-      const label = labels[value] || value;
-      return `<label class="chip-item" for="${id}"><input type="checkbox" id="${id}" data-option-type="${optionType}" data-option-value="${escapeHtml(value)}"><span>${escapeHtml(label)}</span></label>`;
-    })
-    .join('');
-}
-
-function renderInlineStep1Errors() {
-  const hasGenres = Array.isArray(state.draft.genres) && state.draft.genres.length > 0;
-  if (el.inlineGenreError) {
-    el.inlineGenreError.textContent = hasGenres ? '' : 'Select at least one genre.';
-  }
-
-  const unknownCollections = state.draft.collections.filter((value) => !CANONICAL_COLLECTIONS.includes(value));
-  if (el.inlineCollectionError) {
-    el.inlineCollectionError.textContent = unknownCollections.length ? 'Collections include an invalid value.' : '';
-  }
-}
-
 function slugify(value) {
   return String(value || '')
     .toLowerCase()
@@ -624,6 +899,10 @@ function idify(value) {
 
 function cleanForHtml(value) {
   return escapeHtml(String(value || '').replace(/\s+/g, ' ').trim());
+}
+
+function escapeJs(value) {
+  return String(value || '').replaceAll('\\', '\\\\').replaceAll('"', '\\"');
 }
 
 function escapeHtml(value) {
