@@ -1,9 +1,9 @@
 /* ============================================================
    RETRO EVENTS COLLECTION LOADER
    ------------------------------------------------------------
-   • Loads curated events from /data/retro-events.json
+   • Loads curated events from /games/collections/retro-events.json
    • Renders with existing collection card layout
-   • No thumbnail/asset handling
+   • Uses YouTube thumbnails and external video links only
 ============================================================ */
 
 function ccgEscapeHtml(value) {
@@ -15,53 +15,39 @@ function ccgEscapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function ccgSafeEventUrl(eventItem) {
-  const rawUrl = String(eventItem?.url || '').trim();
-  if (rawUrl) {
-    try {
-      const parsed = new URL(rawUrl, window.location.origin);
-      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-        return parsed.href;
-      }
-    } catch {
-      // Ignore invalid URL and fallback to youtubeId.
-    }
-  }
-
-  const youtubeId = String(eventItem?.youtubeId || '').trim();
-  return youtubeId ? `https://www.youtube.com/watch?v=${youtubeId}` : '#';
+function ccgVideoUrl(youtubeId) {
+  return `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}`;
 }
 
-function ccgBuildRetroEventCard(eventItem, index) {
+function ccgThumbUrl(youtubeId) {
+  return `https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`;
+}
+
+function ccgBuildRetroEventCard(eventItem) {
   const title = String(eventItem?.title || '').trim();
   if (!title) return '';
 
   const safeTitle = ccgEscapeHtml(title);
-  const videoUrl = ccgSafeEventUrl(eventItem);
+  const videoUrl = ccgVideoUrl(eventItem.youtubeId);
+  const thumbUrl = ccgThumbUrl(eventItem.youtubeId);
   const isMembersOnly = eventItem?.membersOnly === true;
   const membersOnlyAttr = isMembersOnly ? ' data-members-only="true"' : '';
   const membersOnlyBadge = isMembersOnly
     ? '<span class="ccg-collection-badge ccg-collection-badge--members" aria-hidden="true">Members Only</span>'
     : '';
 
-  const customBadge = String(eventItem?.badge || '').trim();
-  const customBadgeMarkup = customBadge
-    ? `<span class="ccg-collection-badge ccg-collection-badge--event">${ccgEscapeHtml(customBadge)}</span>`
-    : '';
-
-  const eventNumber = String(index + 1).padStart(2, '0');
-
   return `
     <div class="ccg-game-card genre-card ccg-game-card--retro-event"${membersOnlyAttr}>
       ${membersOnlyBadge}
-      ${customBadgeMarkup}
+      <a href="${videoUrl}" class="ccg-game-card__media ccg-game-card__media--retro" target="_blank" rel="noopener noreferrer" aria-label="Watch ${safeTitle} on YouTube">
+        <img src="${thumbUrl}" alt="${safeTitle}" loading="lazy" width="480" height="360" />
+      </a>
       <div class="ccg-game-card__body">
         <div class="game-title-wrapper">
           <h3 class="ccg-game-card__title">${safeTitle}</h3>
-          <div class="ccg-game-card__meta">Retro Events · Video ${eventNumber}</div>
         </div>
         <div class="ccg-game-card__actions">
-          <a href="${videoUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn" target="_blank" rel="noopener">Watch Video</a>
+          <a href="${videoUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn" target="_blank" rel="noopener noreferrer">Watch on YouTube</a>
         </div>
       </div>
     </div>
@@ -69,7 +55,7 @@ function ccgBuildRetroEventCard(eventItem, index) {
 }
 
 async function ccgLoadRetroEvents() {
-  const response = await fetch('/data/retro-events.json', { cache: 'no-store' });
+  const response = await fetch('/games/collections/retro-events.json', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Could not load retro-events.json (${response.status})`);
   }
@@ -84,13 +70,9 @@ async function ccgLoadRetroEvents() {
       id: String(eventItem?.id || '').trim(),
       title: String(eventItem?.title || '').trim(),
       youtubeId: String(eventItem?.youtubeId || '').trim(),
-      url: String(eventItem?.url || '').trim(),
-      membersOnly: eventItem?.membersOnly === true,
-      badge: String(eventItem?.badge || '').trim(),
-      order: Number.isFinite(Number(eventItem?.order)) ? Number(eventItem.order) : Number.MAX_SAFE_INTEGER
+      membersOnly: eventItem?.membersOnly === true
     }))
-    .filter((eventItem) => eventItem.id && eventItem.title && (eventItem.url || eventItem.youtubeId))
-    .sort((a, b) => a.order - b.order);
+    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.youtubeId);
 }
 
 async function ccgRunRetroEventsCollection() {

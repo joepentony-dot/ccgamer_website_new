@@ -1,66 +1,67 @@
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__overlay {
+    background: linear-gradient(180deg, rgba(1, 9, 24, 0.42) 0%, rgba(1, 9, 24, 0.72) 100%);
+}
+
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__title,
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__tagline,
+.ccg-page--collection-single .ccg-collection-hero .ccg-genre-meta {
+    text-shadow: 0 2px 12px rgba(2, 6, 23, 0.85);
+}
+
 .ccg-page--collection-single .ccg-game-card--retro-event {
     position: relative;
-    min-height: 220px;
+    min-height: 100%;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media {
+    display: block;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(107, 174, 255, 0.35);
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
 }
 
 .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__body {
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: .7rem;
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge {
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__title {
+    font-family: "Roboto Condensed", "Roboto", sans-serif;
+    font-size: clamp(0.96rem, 2vw, 1.08rem);
+    line-height: 1.25;
+}
+
+.ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
     position: absolute;
     top: 10px;
     left: 10px;
     z-index: 2;
     pointer-events: none;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
-    left: auto;
-    right: 10px;
     padding: 0.3rem 0.55rem;
     font-size: clamp(0.55rem, 1.2vw, 0.7rem);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: #f9fbff;
-    background: linear-gradient(135deg, rgba(0, 160, 255, 0.92), rgba(41, 121, 255, 0.9));
+    background: linear-gradient(135deg, rgba(255, 42, 109, 0.95), rgba(255, 72, 149, 0.88));
     border: 1px solid rgba(255, 255, 255, 0.55);
     border-radius: 6px;
-    box-shadow:
-        0 0 12px rgba(56, 189, 248, 0.65),
-        0 0 18px rgba(88, 150, 255, 0.35);
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
-}
-
-.ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
-    padding: 0.3rem 0.55rem;
-    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #f9fbff;
-    background: linear-gradient(135deg, rgba(255, 42, 109, 0.95), rgba(120, 68, 255, 0.9));
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    border-radius: 6px;
-    box-shadow:
-        0 0 12px rgba(255, 70, 150, 0.65),
-        0 0 18px rgba(88, 150, 255, 0.35);
+    box-shadow: 0 0 12px rgba(255, 70, 150, 0.65);
     text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
 }
 
 @media (max-width: 680px) {
-    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge {
+    .ccg-page--collection-single .ccg-game-card[data-members-only="true"] .ccg-collection-badge--members {
         top: 8px;
         left: 8px;
         padding: 0.25rem 0.45rem;
-    }
-
-    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-collection-badge--event {
-        right: 8px;
-        left: auto;
     }
 }

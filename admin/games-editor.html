@@ -50,11 +50,11 @@
   <main class="builder-wrap">
     <section class="builder-card">
       <div class="content-switcher">
-        <label for="content-type-select">Content Type</label>
-        <select id="content-type-select" data-content-type-select>
-          <option value="game">Game</option>
-          <option value="retro">Retro Event</option>
-        </select>
+        <label>Builder Selector</label>
+        <div class="editor-modal__actions">
+          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="game">Add Game</button>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="retro">Add Retro Event</button>
+        </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Game Builder</span>
       </div>
       <h1>CCG Game Builder</h1>
@@ -103,10 +103,10 @@
         </div>
         <label>Publisher<input data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
         <label>Developer<input data-field="creditsDeveloper" placeholder="Studio 1, Studio 2" /></label>
-        <label>Programmer / Coder<input data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
+        <label>Programmer(s)<input data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
         <label>Graphics<input data-field="creditsGraphics" placeholder="Name 1, Name 2" /></label>
         <label>Music<input data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
-        <label>Re-release / Budget label<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
+        <label>Re-release / Compilation notes<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
       <div class="hint">Validation here applies only to this new draft.</div>
       <ul class="error-list" data-errors-step1 hidden></ul>
@@ -168,12 +168,11 @@ https://www.mobygames.com/..."></textarea></label>
   <div class="editor-modal" data-editor-switch-modal hidden role="dialog" aria-modal="true" aria-labelledby="editor-switch-title">
     <div class="editor-modal__panel">
       <h2 id="editor-switch-title">Switch to Retro Events editor?</h2>
-      <p>Retro Events are curated real-world videos and are managed separately from games.</p>
-      <p>You’ll leave the Game Builder and load the Retro Events editor.</p>
-      <p>Any unsaved draft will be discarded.</p>
+      <p>This will leave the Game Builder and open the Retro Events editor.</p>
+      <p>Unsaved changes will be lost. Continue?</p>
       <div class="editor-modal__actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-editor-switch-cancel>Cancel</button>
-        <button type="button" class="ccg-btn ccg-btn--primary" data-editor-switch-confirm>Yes, switch editor</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-editor-switch-confirm>Load Retro Events Editor</button>
       </div>
     </div>
   </div>
