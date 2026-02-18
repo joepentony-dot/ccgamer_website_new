@@ -5,44 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="ccg-context" content="admin" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Retro Events Editor</title>
+  <title>Retro Events Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-1" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-1" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-2" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-2" rel="stylesheet" />
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
     .retro-card { background: rgba(10, 20, 45, 0.92); border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
     .retro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
     .retro-grid .full { grid-column: 1 / -1; }
     label { display: flex; flex-direction: column; gap: .3rem; font-weight: 600; }
-    input[type="text"], input[type="url"], input[type="number"] { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
-    .toggle-wrap { display: inline-flex; align-items: center; gap: .5rem; font-weight: 600; }
+    input[type="text"] { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
+    .toggle-wrap { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; }
+    .toggle-wrap input { accent-color: #ff2a6d; }
     .retro-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
-    .retro-actions .ccg-btn { min-width: 120px; }
     .retro-status { margin-top: .75rem; font-weight: 700; min-height: 1.2em; }
     .retro-status.error { color: #fda4af; }
     .retro-status.ok { color: #86efac; }
     .retro-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
-    .retro-item { display: grid; grid-template-columns: auto 1fr auto; gap: .75rem; align-items: center; border: 1px solid rgba(107, 174, 255, .5); border-radius: 10px; background: rgba(6, 18, 38, .95); padding: .65rem .75rem; cursor: move; }
-    .retro-item.dragging { opacity: .55; border-style: dashed; }
-    .retro-drag { font-size: 1.2rem; color: #8bc6ff; user-select: none; }
-    .retro-item-meta { display: flex; flex-direction: column; gap: .2rem; }
+    .retro-item { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; border: 1px solid rgba(107, 174, 255, .5); border-radius: 10px; background: rgba(6, 18, 38, .95); padding: .65rem .75rem; }
     .retro-item-title { font-weight: 700; }
     .retro-item-sub { font-size: .85rem; color: #9bc6f1; }
-    .retro-pill { display: inline-flex; align-items: center; font-size: .72rem; border: 1px solid rgba(255,255,255,.4); padding: .1rem .45rem; border-radius: 999px; margin-right: .35rem; }
-    .retro-pill.members { background: rgba(255, 42, 109, 0.2); border-color: rgba(255, 128, 170, .9); }
-    .retro-pill.badge { background: rgba(56, 189, 248, 0.2); border-color: rgba(125, 211, 252, .9); }
+    .retro-pill.members { display: inline-flex; align-items: center; font-size: .72rem; border: 1px solid rgba(255, 128, 170, .9); padding: .1rem .45rem; border-radius: 999px; background: rgba(255, 42, 109, 0.2); margin-left: .45rem; }
     .retro-item-buttons { display: flex; gap: .45rem; }
     .retro-help { color: #9bc6f1; font-size: .9rem; }
     .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
     .content-switcher label { font-weight: 700; min-width: 140px; }
-    .content-switcher select { max-width: 260px; }
     .mode-pill { display: inline-flex; align-items: center; border: 1px solid rgba(125, 211, 252, .8); border-radius: 999px; padding: .2rem .6rem; font-size: .78rem; color: #7dd3fc; }
-    .back-nav { margin-top: .8rem; }
+    .retro-preview { display: grid; gap: .75rem; }
+    .retro-preview-card { border: 1px solid rgba(107, 174, 255, .5); border-radius: 10px; background: rgba(6, 18, 38, .95); overflow: hidden; max-width: 430px; }
+    .retro-preview-card img { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; }
+    .retro-preview-body { padding: .75rem; display: grid; gap: .45rem; }
+    .retro-preview-title { font-weight: 700; line-height: 1.25; }
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
-      .retro-item { grid-template-columns: auto 1fr; }
-      .retro-item-buttons { grid-column: 1 / -1; justify-content: flex-end; }
+      .retro-item { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -50,52 +47,50 @@
   <main class="retro-editor">
     <section class="retro-card">
       <div class="content-switcher">
-        <label for="content-type-select">Content Type</label>
-        <select id="content-type-select" data-content-type-select>
-          <option value="game">Game</option>
-          <option value="retro" selected>Retro Event</option>
-        </select>
-        <span class="mode-pill" aria-label="Current mode">Current mode: Retro Events Editor</span>
+        <label>Builder Selector</label>
+        <div class="retro-actions">
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Add Game</button>
+          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Add Retro Event</button>
+        </div>
+        <span class="mode-pill" aria-label="Current mode">Current mode: Retro Events Builder</span>
       </div>
-      <h1>Retro Events Editor</h1>
-      <p>Standalone editor for <code>data/retro-events.json</code>. This does not read or update <code>games.json</code>.</p>
-      <p class="retro-help">Drag rows in the list to reorder. Use save to write a new <code>retro-events.json</code>.</p>
+      <h1>Retro Events Builder — Non-Game Video Collection</h1>
+      <p>Standalone editor for <code>games/collections/retro-events.json</code>. This does not read or update <code>games.json</code>.</p>
+      <p class="retro-help">Use Save to download an updated <code>retro-events.json</code> file.</p>
       <p class="retro-status" data-status></p>
-      <p class="back-nav"><a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html">Back to Game Builder</a></p>
     </section>
 
     <section class="retro-card">
-      <h2 data-form-heading>Add Event</h2>
+      <h2 data-form-heading>Add Retro Event</h2>
       <form data-form>
         <div class="retro-grid">
-          <label>ID (slug) *
-            <input type="text" data-field="id" placeholder="play-expo-blackpool-2025" required />
+          <label>SEO Title *
+            <input type="text" data-field="title" placeholder="Arcade Club Bury – Europe’s Largest Free-Play Arcade" required />
           </label>
-          <label>Title *
-            <input type="text" data-field="title" placeholder="Event title" required />
-          </label>
-          <label>YouTube ID *
+          <label>YouTube Video ID *
             <input type="text" data-field="youtubeId" placeholder="smVNHlm_jM0" required />
-          </label>
-          <label>Video URL *
-            <input type="url" data-field="url" placeholder="https://www.youtube.com/watch?v=..." required />
-          </label>
-          <label>Order
-            <input type="number" data-field="order" min="1" step="1" placeholder="Auto" />
-          </label>
-          <label>Badge (optional)
-            <input type="text" data-field="badge" placeholder="Play Expo / Members / etc." />
           </label>
           <label class="full toggle-wrap">
             <input type="checkbox" data-field="membersOnly" />
-            Members only
+            Members Only toggle (pink sash)
           </label>
         </div>
         <div class="retro-actions">
-          <button type="submit" class="ccg-btn ccg-btn--primary" data-action="save-event">Add Event</button>
+          <button type="submit" class="ccg-btn ccg-btn--primary" data-action="save-event">Save / Update</button>
           <button type="button" class="ccg-btn ccg-btn--ghost" data-action="reset-form">Clear</button>
         </div>
       </form>
+    </section>
+
+    <section class="retro-card retro-preview">
+      <h2>Preview card</h2>
+      <article class="retro-preview-card" data-preview-card>
+        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Retro event preview thumbnail" data-preview-thumb />
+        <div class="retro-preview-body">
+          <div class="retro-preview-title" data-preview-title>Retro Event Title</div>
+          <div><span class="retro-pill members" data-preview-members hidden>Members Only</span></div>
+        </div>
+      </article>
     </section>
 
     <section class="retro-card">
@@ -107,13 +102,6 @@
     </section>
   </main>
 
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-1"></script>
-  <script>
-    document.querySelector("[data-content-type-select]")?.addEventListener("change", (event) => {
-      if (event.target.value === "game") {
-        window.location.href = "/admin/games-editor.html";
-      }
-    });
-  </script>
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-2"></script>
 </body>
 </html>

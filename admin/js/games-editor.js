@@ -1,22 +1,45 @@
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const CANONICAL_GENRES = [
-  'action adventure',
+  'action-adventure',
   'adventure',
   'arcade',
-  'casino games',
-  'fighting games',
+  'casino',
+  'fighting',
   'horror',
   'miscellaneous',
   'platform',
   'puzzle',
-  'quiz',
   'racing',
-  'role playing',
+  'role-playing',
+  'quiz',
   'shooting',
   'sports',
   'strategy'
 ];
-const CANONICAL_COLLECTIONS = ['banned', 'cartridge', 'licensed', 'top picks'];
+const GENRE_LABELS = {
+  'action-adventure': 'Action adventure',
+  adventure: 'Adventure',
+  arcade: 'Arcade',
+  casino: 'Casino games',
+  fighting: 'Fighting games',
+  horror: 'Horror',
+  miscellaneous: 'Miscellaneous',
+  platform: 'Platform',
+  puzzle: 'Puzzle',
+  racing: 'Racing',
+  'role-playing': 'Role playing',
+  quiz: 'Quiz',
+  shooting: 'Shooting',
+  sports: 'Sports',
+  strategy: 'Strategy'
+};
+const CANONICAL_COLLECTIONS = ['cartridge', 'licensed', 'bpjs', 'top-picks'];
+const COLLECTION_LABELS = {
+  cartridge: 'Cartridge',
+  licensed: 'Licensed',
+  bpjs: 'Banned',
+  'top-picks': 'Top Picks'
+};
 const EMPTY_DRAFT = {
   title: '',
   system: '',
@@ -87,7 +110,7 @@ const el = {
   nextButtons: Array.from(document.querySelectorAll('[data-action="next"]')),
   backButtons: Array.from(document.querySelectorAll('[data-action="back"]')),
   downloadButton: document.querySelector('[data-action="download"]'),
-  contentTypeSelect: document.querySelector('[data-content-type-select]'),
+  builderButtons: Array.from(document.querySelectorAll('[data-builder-select]')),
   editorSwitchModal: document.querySelector('[data-editor-switch-modal]'),
   editorSwitchCancel: document.querySelector('[data-editor-switch-cancel]'),
   editorSwitchConfirm: document.querySelector('[data-editor-switch-confirm]')
@@ -218,16 +241,15 @@ function bindEvents() {
     }
   });
 
-  el.contentTypeSelect?.addEventListener('change', () => {
-    if (el.contentTypeSelect.value !== 'retro') return;
-    setEditorSwitchModal(true);
+  el.builderButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      if (button.dataset.builderSelect !== 'retro') return;
+      setEditorSwitchModal(true);
+    });
   });
 
   el.editorSwitchCancel?.addEventListener('click', () => {
     setEditorSwitchModal(false);
-    if (el.contentTypeSelect) {
-      el.contentTypeSelect.value = 'game';
-    }
   });
 
   el.editorSwitchConfirm?.addEventListener('click', () => {
@@ -417,9 +439,13 @@ function buildPackageData() {
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
-    description: state.draft.description.trim(),
-    credits: buildStructuredCredits()
+    description: state.draft.description.trim()
   };
+
+  const credits = buildStructuredCredits();
+  if (Object.keys(credits).length) {
+    gameEntry.credits = credits;
+  }
 
   const seoTitle = `${title} (${state.draft.year}) | CCG`;
   const seoDescription = cleanForHtml(state.draft.description.trim());
@@ -513,16 +539,29 @@ function parseLines(value) {
     .filter(Boolean);
 }
 
+
+function parseCommaList(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function buildStructuredCredits() {
-  const credits = {
-    publisher: parseCommaList(state.draft.creditsPublisher),
-    developer: parseCommaList(state.draft.creditsDeveloper),
-    coder: parseCommaList(state.draft.creditsCoder),
-    graphics: parseCommaList(state.draft.creditsGraphics),
-    musician: parseCommaList(state.draft.creditsMusic),
-    re_releaser: parseCommaList(state.draft.creditsReReleaser),
-    producer: []
-  };
+  const credits = {};
+  const publisher = parseCommaList(state.draft.creditsPublisher);
+  const developer = parseCommaList(state.draft.creditsDeveloper);
+  const coder = parseCommaList(state.draft.creditsCoder);
+  const graphics = parseCommaList(state.draft.creditsGraphics);
+  const musician = parseCommaList(state.draft.creditsMusic);
+  const reReleaser = parseCommaList(state.draft.creditsReReleaser);
+
+  if (publisher.length) credits.publisher = publisher;
+  if (developer.length) credits.developer = developer;
+  if (coder.length) credits.coder = coder;
+  if (graphics.length) credits.graphics = graphics;
+  if (musician.length) credits.musician = musician;
+  if (reReleaser.length) credits.re_releaser = reReleaser;
 
   return credits;
 }
@@ -542,16 +581,18 @@ function setFieldValue(fieldName, value) {
 }
 
 function renderCanonicalOptions() {
-  renderOptionList(el.genreOptions, 'genres', CANONICAL_GENRES);
-  renderOptionList(el.collectionOptions, 'collections', CANONICAL_COLLECTIONS);
+  renderOptionList(el.genreOptions, 'genres', CANONICAL_GENRES, GENRE_LABELS);
+  renderOptionList(el.collectionOptions, 'collections', CANONICAL_COLLECTIONS, COLLECTION_LABELS);
 }
 
-function renderOptionList(container, optionType, values) {
+
+function renderOptionList(container, optionType, values, labels = {}) {
   if (!container) return;
   container.innerHTML = values
     .map((value) => {
       const id = `${optionType}-${value.replaceAll(' ', '-')}`;
-      return `<label class="chip-item" for="${id}"><input type="checkbox" id="${id}" data-option-type="${optionType}" data-option-value="${escapeHtml(value)}"><span>${escapeHtml(value)}</span></label>`;
+      const label = labels[value] || value;
+      return `<label class="chip-item" for="${id}"><input type="checkbox" id="${id}" data-option-type="${optionType}" data-option-value="${escapeHtml(value)}"><span>${escapeHtml(label)}</span></label>`;
     })
     .join('');
 }
