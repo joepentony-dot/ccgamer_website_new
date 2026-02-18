@@ -1874,6 +1874,7 @@ function wireManualModal(button) {
             manualModal.setAttribute("aria-hidden", "false");
             document.documentElement.classList.add("ccg-manual-modal-open");
             document.body.classList.add("ccg-manual-modal-open");
+            window.scrollTo(0, 0);
             if (!manualContent.hasAttribute("tabindex")) {
                 manualContent.setAttribute("tabindex", "-1");
             }
