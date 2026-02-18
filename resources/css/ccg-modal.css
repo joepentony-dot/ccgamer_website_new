@@ -11,6 +11,9 @@
     justify-content: center;
     z-index: 9999;
     backdrop-filter: blur(3px);
+    padding: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .ccg-modal.active,
@@ -52,6 +55,8 @@
     max-width: min(1040px, 96vw);
     max-height: calc(100vh - 24px);
     padding: 14px 16px 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
     box-shadow: 0 0 36px rgba(var(--accent-rgb), 0.32), 0 0 72px rgba(0,0,0,0.78);
 }
 
@@ -60,6 +65,19 @@
     height: 78vh;
     border: none;
     background: #000;
+}
+
+.ccg-modal--doc.open .ccg-modal-content {
+    box-shadow:
+        0 0 20px rgba(var(--accent-rgb), 0.22),
+        0 0 46px rgba(var(--accent-rgb), 0.2),
+        0 0 72px rgba(0,0,0,0.78);
+}
+
+html.ccg-manual-modal-open,
+body.ccg-manual-modal-open {
+    overflow: hidden;
+    overscroll-behavior: none;
 }
 
 .ccg-modal--doc .ccg-pdf-frame {
@@ -106,6 +124,10 @@
         max-width: calc(100vw - 18px);
         max-height: calc(100vh - 18px);
         padding: 12px;
+    }
+
+    .ccg-modal {
+        padding: 8px;
     }
 
     .ccg-modal--doc .ccg-pdf-frame {

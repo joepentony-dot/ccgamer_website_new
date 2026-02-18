@@ -1791,6 +1791,26 @@ body[data-ccg-mode="amiga"] {
     outline: none;
 }
 
+.game-pill .ccg-btn__icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 1.1rem;
+}
+
+.game-pill .ccg-btn__icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.game-pill .ccg-btn__label {
+    line-height: 1;
+}
+
 /* ------------------------------------------------------------
    Single Game UX Enhancements
    ------------------------------------------------------------ */
