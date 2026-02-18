@@ -5,7 +5,9 @@
 
   const state = {
     initialized: false,
-    profilePromise: null
+    profilePromise: null,
+    profilePromiseUserId: '',
+    resolveRequestId: 0
   };
 
   function readStoredUsername() {
@@ -55,7 +57,7 @@
       username: username || ''
     };
 
-    if (username) {
+    if (username && username !== '@member') {
       try {
         localStorage.setItem('ccg_username', username);
       } catch (_error) {
@@ -63,14 +65,12 @@
       }
     }
 
-    const message = loggedIn ? '[CCG AUTH] Logged in as: ' + (username || user.id) : '[CCG AUTH] No session';
-    console.info(message);
-
     window.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: window.CCG_AUTH }));
     return window.CCG_AUTH;
   }
 
   async function resolveAuthState() {
+    const requestId = ++state.resolveRequestId;
     let user = null;
     let profile = null;
     let session = null;
@@ -93,14 +93,27 @@
       profile = window.ccgCommunityAuth.getProfile();
     }
 
-    if (!profile && user && window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfileReady === 'function') {
-      if (!state.profilePromise) {
-        state.profilePromise = window.ccgCommunityAuth.getProfileReady().catch(function () { return null; }).finally(function () {
-          state.profilePromise = null;
-        });
+    if (user && window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getProfileReady === 'function') {
+      const hasDisplayName = readSafeValue(profile && profile.display_name);
+      if (!hasDisplayName) {
+        if (!state.profilePromise || state.profilePromiseUserId !== user.id) {
+          state.profilePromiseUserId = user.id;
+          state.profilePromise = window.ccgCommunityAuth.getProfileReady().catch(function (error) {
+            console.warn('[CCG AUTH] Profile fetch failed; using fallback display name.', error);
+            return null;
+          }).finally(function () {
+            state.profilePromiseUserId = '';
+            state.profilePromise = null;
+          });
+        }
+        const resolvedProfile = await state.profilePromise;
+        if (resolvedProfile) {
+          profile = resolvedProfile;
+        }
       }
-      profile = await state.profilePromise;
     }
+
+    if (requestId !== state.resolveRequestId) return window.CCG_AUTH;
 
     return setGlobalAuth(user, profile, session);
   }
