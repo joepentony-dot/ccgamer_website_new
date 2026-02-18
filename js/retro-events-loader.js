@@ -50,7 +50,7 @@ function ccgBuildRetroEventCard(eventItem) {
   // Media block: only render if youtubeId exists (keeps layout safe)
   const mediaBlock = thumb
     ? `
-      <div class="ccg-game-card__media">
+      <div class="ccg-game-card__media ccg-game-card__thumb">
         <img
           src="${ccgEscapeHtml(thumb)}"
           alt="${safeTitle}"
