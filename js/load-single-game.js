@@ -1821,63 +1821,112 @@ function ensureActionButtonIcon(button, iconSrc, iconAlt) {
 
 function wireManualModal(button) {
     if (!button) return;
-    const manualModal = document.getElementById("manualModal");
-    const manualFrame = document.getElementById("gameManualEmbed");
-    const manualClose = document.getElementById("manualModalClose");
-    const manualContent = manualModal?.querySelector(".ccg-modal-content");
 
-    if (!manualModal || !manualFrame || !manualClose || !manualContent) return;
+    const getManualModalParts = () => {
+        const manualModal = document.getElementById("manualModal");
+        const manualContent = manualModal?.querySelector(".ccg-modal-content") || null;
+        const manualFrame = document.getElementById("gameManualEmbed");
+        const manualClose = document.getElementById("manualModalClose");
+        return {
+            manualModal,
+            manualContent,
+            manualFrame,
+            manualClose,
+            ready: !!(manualModal && manualContent && manualFrame && manualClose),
+        };
+    };
 
-    if (manualModal.parentElement !== document.body) {
-        document.body.appendChild(manualModal);
-    }
-
-    manualModal.style.position = "fixed";
-    manualModal.style.inset = "0";
-    manualModal.style.transform = "none";
-    manualModal.style.filter = "none";
-    manualModal.style.perspective = "none";
-    manualModal.style.contain = "none";
-    manualModal.style.willChange = "auto";
+    const warnManualFallback = () => {
+        if (button.dataset.manualWarned === "true") return;
+        console.warn("[CCG MANUAL] Modal unavailable, falling back to link.");
+        button.dataset.manualWarned = "true";
+    };
 
     const closeManualModal = () => {
+        const { manualModal, manualFrame } = getManualModalParts();
+        if (!manualModal || !manualFrame) return;
         manualModal.classList.remove("open");
         manualModal.setAttribute("aria-hidden", "true");
-        document.documentElement.classList.remove("ccg-manual-modal-open");
-        document.body.classList.remove("ccg-manual-modal-open");
         manualFrame.src = "";
     };
 
+    const positionManualModalContent = (manualContent) => {
+        if (!manualContent) return;
+        const viewportTop = window.scrollY + (window.innerHeight / 2);
+        const viewportLeft = window.scrollX + (window.innerWidth / 2);
+        manualContent.style.top = `${viewportTop}px`;
+        manualContent.style.left = `${viewportLeft}px`;
+    };
+
+    const initialParts = getManualModalParts();
+    if (initialParts.ready && initialParts.manualModal.parentElement !== document.documentElement) {
+        document.documentElement.appendChild(initialParts.manualModal);
+    }
+
     if (button.dataset.manualBound !== "true") {
         button.addEventListener("click", e => {
-            const manualUrl = String(button.dataset.manualUrl || "").trim();
+            const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
             if (!manualUrl) return;
-            if (!manualUrl.includes(".pdf") && !manualUrl.includes("drive.google.com")) return;
-            e.preventDefault();
-            manualFrame.src = manualUrl;
-            manualModal.classList.add("open");
-            manualModal.setAttribute("aria-hidden", "false");
-            document.documentElement.classList.add("ccg-manual-modal-open");
-            document.body.classList.add("ccg-manual-modal-open");
+
+            const { manualModal, manualContent, manualFrame } = getManualModalParts();
+            if (!manualModal || !manualContent || !manualFrame) {
+                warnManualFallback();
+                return;
+            }
+
+            try {
+                if (manualModal.parentElement !== document.documentElement) {
+                    document.documentElement.appendChild(manualModal);
+                }
+
+                manualModal.style.position = "fixed";
+                manualModal.style.inset = "0";
+                manualModal.style.transform = "none";
+                manualModal.style.filter = "none";
+                manualModal.style.perspective = "none";
+                manualModal.style.contain = "none";
+                manualModal.style.willChange = "auto";
+
+                manualContent.style.overflowY = "auto";
+                manualContent.style.maxHeight = "calc(100vh - 24px)";
+                positionManualModalContent(manualContent);
+
+                manualFrame.src = "";
+                manualFrame.src = manualUrl;
+
+                e.preventDefault();
+
+                manualModal.classList.add("open");
+                manualModal.setAttribute("aria-hidden", "false");
+            } catch (_error) {
+                warnManualFallback();
+            }
         });
         button.dataset.manualBound = "true";
     }
 
-    if (manualModal.dataset.manualBound !== "true") {
-        manualClose.addEventListener("click", closeManualModal);
+    if (initialParts.ready && initialParts.manualModal.dataset.manualBound !== "true") {
+        initialParts.manualClose.addEventListener("click", closeManualModal);
 
-        manualModal.addEventListener("click", e => {
-            if (e.target !== manualModal) return;
+        initialParts.manualModal.addEventListener("click", e => {
+            if (e.target !== initialParts.manualModal) return;
             closeManualModal();
         });
 
-        manualModal.addEventListener("keydown", (event) => {
+        initialParts.manualModal.addEventListener("keydown", (event) => {
             if (event.key === "Escape") {
                 event.preventDefault();
                 closeManualModal();
             }
         });
-        manualModal.dataset.manualBound = "true";
+
+        window.addEventListener("resize", () => {
+            if (!initialParts.manualModal.classList.contains("open")) return;
+            const refreshedParts = getManualModalParts();
+            positionManualModalContent(refreshedParts.manualContent);
+        });
+
+        initialParts.manualModal.dataset.manualBound = "true";
     }
 }
 
