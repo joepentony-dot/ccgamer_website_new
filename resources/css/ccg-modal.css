@@ -148,7 +148,20 @@
         font-size: 2.2rem;
     }
 
+    /* Mobile doc modal centring fix */
+    .ccg-modal--doc.open,
+    .ccg-modal--doc.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
     .ccg-modal--doc .ccg-modal-content {
+        position: relative;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin: auto;
         width: calc(100vw - 18px);
         min-height: min(68vh, 560px);
         height: min(85vh, 820px);
