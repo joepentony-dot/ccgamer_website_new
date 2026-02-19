@@ -144,6 +144,10 @@
         document.body.style.overflow = locked ? "hidden" : "";
     }
 
+    function setHangmanActive(active) {
+        document.body.classList.toggle("hangman-active", active);
+    }
+
     function shuffleArray(items) {
         const array = [...items];
         for (let i = array.length - 1; i > 0; i -= 1) {
@@ -455,6 +459,7 @@
         );
         state.wrongGuesses = 0;
         state.isOver = false;
+        setHangmanActive(true);
         setScrollLock(true);
 
         document.querySelectorAll(".hangman-key").forEach((btn) => {
@@ -494,6 +499,7 @@
     function stopQuizSession() {
         state.isOver = true;
         clearAdvanceTimer();
+        setHangmanActive(false);
         setFocusMode(false);
         setScrollLock(false);
         setFeedback("", "");
