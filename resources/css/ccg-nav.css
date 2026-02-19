@@ -50,6 +50,12 @@
     background-clip: padding-box;
 }
 
+:where(.ccg-nav-toggle,
+       .menu-pill,
+       .nav-pill) {
+    overflow: hidden; /* OMEGA containment fix: keep shimmer clipped to nav/menu controls */
+}
+
 :where(.ccg-nav__link,
        .ccg-nav__more-toggle,
        .ccg-nav-toggle,
