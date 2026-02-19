@@ -171,6 +171,7 @@
 
     @supports (height: 1dvh) {
         .ccg-modal--doc .ccg-modal-content {
+            top: 50dvh;
             min-height: min(68dvh, 560px);
             height: min(85dvh, 820px);
             max-height: 85dvh;
