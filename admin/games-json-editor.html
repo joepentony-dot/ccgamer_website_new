@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Games JSON Full Editor & Audit</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #1f2937;
+      --panel-alt: #0f172a;
+      --line: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --danger: #ef4444;
+      --warn: #f59e0b;
+      --ok: #22c55e;
+      --focus: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 0.75rem;
+      background: #0b1220;
+    }
+    .load-controls { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+    .dropzone {
+      border: 2px dashed var(--line);
+      border-radius: 12px;
+      padding: 0.8rem 1rem;
+      color: var(--muted);
+      transition: border-color .2s ease, color .2s ease, background .2s ease;
+      min-width: 280px;
+      text-align: center;
+    }
+    .dropzone.dragover {
+      border-color: var(--focus);
+      color: var(--text);
+      background: rgba(96,165,250,0.08);
+    }
+    .export-controls { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    button, select, input, textarea {
+      font: inherit;
+      color: var(--text);
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--focus); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    input:focus, select:focus, textarea:focus {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+      border-color: var(--focus);
+    }
+    .shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 0;
+    }
+    aside {
+      border-right: 1px solid var(--line);
+      background: #0b1220;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      min-height: 0;
+    }
+    .panel-head { padding: 0.75rem; border-bottom: 1px solid var(--line); }
+    .game-list { overflow: auto; min-height: 0; }
+    .game-item {
+      border-bottom: 1px solid #1e293b;
+      padding: 0.65rem 0.75rem;
+      cursor: pointer;
+      display: grid;
+      gap: 0.2rem;
+    }
+    .game-item:hover, .game-item.active { background: rgba(96,165,250,0.1); }
+    .game-meta { display: flex; justify-content: space-between; gap: 0.5rem; color: var(--muted); font-size: .82rem; }
+    main { padding: 1rem; overflow: auto; }
+    .empty-state { color: var(--muted); margin-top: 1rem; }
+    .editor { display: grid; gap: 1rem; max-width: 1100px; }
+    .section {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel-alt);
+      padding: 0.9rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .section h3 { margin: 0; font-size: 1rem; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.75rem;
+    }
+    .field { display: grid; gap: 0.3rem; }
+    .field label { font-size: 0.86rem; color: var(--muted); }
+    .field.empty input,
+    .field.empty textarea {
+      border-color: var(--warn);
+      box-shadow: 0 0 0 1px rgba(245,158,11,0.4) inset;
+    }
+    textarea { min-height: 84px; resize: vertical; }
+    .audit-pill { font-size: 0.8rem; color: var(--muted); }
+    .status-ok { color: var(--ok); }
+    .status-warn { color: var(--warn); }
+    .status-bad { color: var(--danger); }
+    .message { font-size: 0.86rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Games JSON Full Editor & Audit</strong> <span class="message">(offline, memory-only, no auto-save)</span></div>
+    <div class="load-controls">
+      <input id="fileInput" type="file" accept="application/json,.json" />
+      <div id="dropzone" class="dropzone">Drop games.json here</div>
+      <span id="fileInfo" class="message">No file loaded.</span>
+    </div>
+    <div class="export-controls">
+      <button id="downloadBtn" disabled>Download updated games.json</button>
+      <span id="exportMsg" class="message"></span>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside>
+      <div class="panel-head">
+        <input id="searchInput" type="search" placeholder="Search title / id / slug" style="width:100%;" disabled />
+      </div>
+      <div class="panel-head">
+        <select id="sortSelect" style="width:100%;" disabled>
+          <option value="input">Input order</option>
+          <option value="title">Title A→Z</option>
+          <option value="yearAsc">Year ↑</option>
+          <option value="yearDesc">Year ↓</option>
+          <option value="audit">Audit severity</option>
+        </select>
+      </div>
+      <div id="gameList" class="game-list"></div>
+    </aside>
+
+    <main>
+      <div id="editorRoot" class="empty-state">Load a games.json file to begin auditing and editing.</div>
+    </main>
+  </div>
+
+  <script>
+    const state = {
+      rawFileName: 'games.json',
+      games: null,
+      selectedIndex: -1
+    };
+
+    const CORE_FIELDS = ['system','id','slug','title','sorttitle','year','videoid','thumbnail','pdf','description','ccg_rating','ccg_rating_reason','_ccg_enforced','_ccg_migrated','developer'];
+    const ARRAY_FIELDS = ['genres','collections','disk','lemon'];
+    const CREDIT_FIELDS = ['publisher','producer','coder','graphics','musician','re_releaser','developer'];
+    const FIELD_TYPES = {
+      year: 'number',
+      ccg_rating: 'number',
+      _ccg_enforced: 'boolean',
+      _ccg_migrated: 'boolean'
+    };
+
+    const els = {
+      fileInput: document.getElementById('fileInput'),
+      dropzone: document.getElementById('dropzone'),
+      fileInfo: document.getElementById('fileInfo'),
+      downloadBtn: document.getElementById('downloadBtn'),
+      exportMsg: document.getElementById('exportMsg'),
+      searchInput: document.getElementById('searchInput'),
+      sortSelect: document.getElementById('sortSelect'),
+      gameList: document.getElementById('gameList'),
+      editorRoot: document.getElementById('editorRoot')
+    };
+
+    els.fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    ['dragenter','dragover'].forEach(ev => {
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropzone.classList.add('dragover');
+      });
+    });
+    ['dragleave','drop'].forEach(ev => {
+      els.dropzone.addEventListener(ev, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        els.dropzone.classList.remove('dragover');
+      });
+    });
+    els.dropzone.addEventListener('drop', (e) => {
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    els.searchInput.addEventListener('input', renderGameList);
+    els.sortSelect.addEventListener('change', renderGameList);
+    els.downloadBtn.addEventListener('click', onDownload);
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          if (!Array.isArray(parsed)) throw new Error('Root must be an array of game objects.');
+          state.games = parsed;
+          state.selectedIndex = parsed.length ? 0 : -1;
+          state.rawFileName = file.name || 'games.json';
+          els.fileInfo.textContent = `Loaded: ${file.name} (${parsed.length} games)`;
+          els.searchInput.disabled = false;
+          els.sortSelect.disabled = false;
+          els.downloadBtn.disabled = false;
+          els.exportMsg.textContent = '';
+          renderGameList();
+          renderEditor();
+        } catch (err) {
+          state.games = null;
+          state.selectedIndex = -1;
+          els.fileInfo.textContent = `Load error: ${err.message}`;
+          els.searchInput.disabled = true;
+          els.sortSelect.disabled = true;
+          els.downloadBtn.disabled = true;
+          els.gameList.innerHTML = '';
+          els.editorRoot.textContent = 'Load a valid games.json file to begin.';
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function auditGame(game) {
+      const issues = [];
+      if (!('pdf' in game) || game.pdf === '') issues.push('Missing manual/PDF');
+      if (!('ccg_rating' in game)) issues.push('Missing CCG rating');
+      if (!('ccg_rating_reason' in game) || game.ccg_rating_reason === '') issues.push('Missing rating reason');
+      if (!Array.isArray(game.disk) || game.disk.length === 0) issues.push('Missing download disk[]');
+      if (!('thumbnail' in game) || game.thumbnail === '') issues.push('Missing thumbnail');
+
+      const id = typeof game.id === 'string' ? game.id : '';
+      const expected3d = id ? [
+        `resources/images/3dboxes/all/${id}.png`,
+        `resources/images/3dboxes/all/${id}.jpg`,
+        `resources/images/3dboxes/all/${id}.jpeg`,
+        `resources/images/3dboxes/all/${id}.webp`
+      ] : [];
+      const hasExpectedPath = Object.values(game).some(v => typeof v === 'string' && expected3d.includes(v));
+      if (!hasExpectedPath) issues.push('3D box expected path missing');
+
+      return {
+        issues,
+        status: issues.length === 0 ? 'complete' : (issues.length >= 3 ? 'missing' : 'partial')
+      };
+    }
+
+    function statusIcon(status) {
+      if (status === 'complete') return '<span class="status-ok">✅</span>';
+      if (status === 'partial') return '<span class="status-warn">⚠️</span>';
+      return '<span class="status-bad">❌</span>';
+    }
+
+    function renderGameList() {
+      if (!state.games) return;
+      const query = els.searchInput.value.trim().toLowerCase();
+      const sort = els.sortSelect.value;
+      const mapped = state.games.map((game, index) => ({ index, game, audit: auditGame(game) }));
+      const filtered = mapped.filter(({game}) => {
+        if (!query) return true;
+        return ['title','id','slug','system'].some(k => String(game[k] || '').toLowerCase().includes(query));
+      });
+
+      filtered.sort((a,b) => {
+        if (sort === 'title') return String(a.game.title || '').localeCompare(String(b.game.title || ''));
+        if (sort === 'yearAsc') return Number(a.game.year || 0) - Number(b.game.year || 0);
+        if (sort === 'yearDesc') return Number(b.game.year || 0) - Number(a.game.year || 0);
+        if (sort === 'audit') {
+          const rank = { missing: 0, partial: 1, complete: 2 };
+          return rank[a.audit.status] - rank[b.audit.status];
+        }
+        return a.index - b.index;
+      });
+
+      els.gameList.innerHTML = filtered.map(({index, game, audit}) => `
+        <div class="game-item ${state.selectedIndex === index ? 'active' : ''}" data-idx="${index}">
+          <div>${statusIcon(audit.status)} ${escapeHtml(game.title || '(untitled)')}</div>
+          <div class="game-meta">
+            <span>${escapeHtml(game.system || '')} • ${escapeHtml(game.id || '')}</span>
+            <span class="audit-pill">${audit.issues.length} issue(s)</span>
+          </div>
+        </div>
+      `).join('');
+
+      els.gameList.querySelectorAll('.game-item').forEach(item => {
+        item.addEventListener('click', () => {
+          state.selectedIndex = Number(item.dataset.idx);
+          renderGameList();
+          renderEditor();
+        });
+      });
+    }
+
+    function renderEditor() {
+      if (!state.games || state.selectedIndex < 0 || !state.games[state.selectedIndex]) {
+        els.editorRoot.className = 'empty-state';
+        els.editorRoot.textContent = 'No game selected.';
+        return;
+      }
+
+      const game = state.games[state.selectedIndex];
+      const audit = auditGame(game);
+
+      els.editorRoot.className = 'editor';
+      els.editorRoot.innerHTML = `
+        <div class="section">
+          <h3>${escapeHtml(game.title || '(untitled)')}</h3>
+          <div class="message">${statusIcon(audit.status)} ${audit.issues.length ? escapeHtml(audit.issues.join(' • ')) : 'No audit issues detected.'}</div>
+        </div>
+        <div class="section" id="coreSection"><h3>Core Fields</h3><div class="grid" id="coreGrid"></div></div>
+        <div class="section" id="arraySection"><h3>Array Fields</h3><div class="grid" id="arrayGrid"></div></div>
+        <div class="section" id="creditsSection"><h3>Credits</h3><div class="grid" id="creditsGrid"></div></div>
+      `;
+
+      const coreGrid = document.getElementById('coreGrid');
+      CORE_FIELDS.forEach((field) => {
+        coreGrid.appendChild(buildField(game, field));
+      });
+
+      const arrayGrid = document.getElementById('arrayGrid');
+      ARRAY_FIELDS.forEach((field) => {
+        arrayGrid.appendChild(buildField(game, field, true));
+      });
+
+      const creditsGrid = document.getElementById('creditsGrid');
+      const creditsTarget = (typeof game.credits === 'object' && game.credits !== null) ? game.credits : {};
+      CREDIT_FIELDS.forEach((field) => {
+        const isArray = ['publisher','coder','graphics','musician','re_releaser'].includes(field);
+        creditsGrid.appendChild(buildField(creditsTarget, field, isArray, 'credits.', game, 'credits'));
+      });
+    }
+
+    function buildField(target, field, isArray = false, prefix = '', rootTarget = null, rootKey = '') {
+      const wrap = document.createElement('div');
+      wrap.className = 'field';
+      const label = document.createElement('label');
+      label.textContent = `${prefix}${field}`;
+      wrap.appendChild(label);
+
+      if (isArray) {
+        const area = document.createElement('textarea');
+        const arr = Array.isArray(target[field]) ? target[field] : [];
+        area.value = arr.join('\n');
+        area.placeholder = 'One item per line';
+        if (arr.length === 0) wrap.classList.add('empty');
+        area.addEventListener('input', () => {
+          const rows = area.value === '' ? [] : area.value.split(/\r?\n/);
+          if (rootTarget && rootKey && rootTarget[rootKey] === undefined) {
+            rootTarget[rootKey] = target;
+          }
+          target[field] = rows;
+          wrap.classList.toggle('empty', rows.length === 0);
+          updateAfterEdit();
+        });
+        wrap.appendChild(area);
+        return wrap;
+      }
+
+      const value = target[field];
+      const useTextarea = field === 'description' || (typeof value === 'string' && value.length > 120);
+      const declaredType = FIELD_TYPES[field];
+
+      if (declaredType === 'boolean') {
+        const select = document.createElement('select');
+        ['false', 'true'].forEach((v) => {
+          const opt = document.createElement('option');
+          opt.value = v;
+          opt.textContent = v;
+          select.appendChild(opt);
+        });
+        select.value = String(Boolean(value));
+        select.addEventListener('change', () => {
+          target[field] = select.value === 'true';
+          wrap.classList.remove('empty');
+          updateAfterEdit();
+        });
+        wrap.appendChild(select);
+        return wrap;
+      }
+
+      const input = useTextarea ? document.createElement('textarea') : document.createElement('input');
+      if (!useTextarea) input.type = (declaredType === 'number' || typeof value === 'number') ? 'number' : 'text';
+
+      input.value = value === undefined || value === null ? '' : String(value);
+      if (input.value === '') wrap.classList.add('empty');
+
+      input.addEventListener('input', () => {
+        const raw = input.value;
+        if (rootTarget && rootKey && rootTarget[rootKey] === undefined) {
+          rootTarget[rootKey] = target;
+        }
+        if (declaredType === 'number' || typeof value === 'number') {
+          target[field] = raw === '' ? '' : Number(raw);
+        } else {
+          target[field] = raw;
+        }
+        wrap.classList.toggle('empty', raw === '');
+        updateAfterEdit();
+      });
+
+      wrap.appendChild(input);
+      return wrap;
+    }
+
+    function updateAfterEdit() {
+      renderGameList();
+      const current = state.games[state.selectedIndex];
+      const audit = auditGame(current);
+      els.exportMsg.textContent = audit.issues.length ? `Current game: ${audit.issues.length} audit issue(s).` : 'Current game: no audit issues.';
+    }
+
+    function onDownload() {
+      if (!state.games) return;
+      const check = validateBeforeExport(state.games);
+      if (!check.ok) {
+        els.exportMsg.textContent = `Download blocked: ${check.error}`;
+        return;
+      }
+      const out = JSON.stringify(state.games, null, 2);
+      const blob = new Blob([out], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'games.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      els.exportMsg.textContent = 'Download ready: full games.json exported.';
+    }
+
+    function validateBeforeExport(games) {
+      if (!Array.isArray(games)) return { ok: false, error: 'Root is not an array.' };
+      for (let i = 0; i < games.length; i += 1) {
+        const game = games[i];
+        if (typeof game !== 'object' || game === null || Array.isArray(game)) {
+          return { ok: false, error: `Game at index ${i} is not an object.` };
+        }
+        for (const field of ARRAY_FIELDS) {
+          if (game[field] !== undefined && !Array.isArray(game[field])) {
+            return { ok: false, error: `Game ${i}: ${field} must be an array.` };
+          }
+        }
+        if (game.credits !== undefined) {
+          if (typeof game.credits !== 'object' || game.credits === null || Array.isArray(game.credits)) {
+            return { ok: false, error: `Game ${i}: credits must be an object.` };
+          }
+          const creditArrays = ['publisher','coder','graphics','musician','re_releaser'];
+          for (const field of creditArrays) {
+            if (game.credits[field] !== undefined && !Array.isArray(game.credits[field])) {
+              return { ok: false, error: `Game ${i}: credits.${field} must be an array.` };
+            }
+          }
+        }
+      }
+      try {
+        JSON.parse(JSON.stringify(games));
+      } catch {
+        return { ok: false, error: 'JSON serialization failed.' };
+      }
+      return { ok: true };
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
+</body>
+</html>
