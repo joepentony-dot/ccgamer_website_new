@@ -50,6 +50,22 @@
       background: rgba(96,165,250,0.08);
     }
     .export-controls { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .header-nav { margin-left: auto; }
+    .ccg-admin-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font: inherit;
+      color: var(--text);
+      background: #0b1220;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      transition: border-color .2s ease, background .2s ease;
+    }
+    .ccg-admin-button:hover { border-color: var(--focus); }
+    .ccg-admin-button--secondary { background: transparent; color: var(--muted); }
     button, select, input, textarea {
       font: inherit;
       color: var(--text);
@@ -79,6 +95,37 @@
       min-height: 0;
     }
     .panel-head { padding: 0.75rem; border-bottom: 1px solid var(--line); }
+    .filter-panel {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 0.75rem;
+    }
+    .filter-group {
+      display: grid;
+      gap: 0.45rem;
+    }
+    .filter-title {
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .filter-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.35rem 0.5rem;
+    }
+    .rating-options {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+    .filter-option input { margin: 0; }
     .game-list { overflow: auto; min-height: 0; }
     .game-item {
       border-bottom: 1px solid #1e293b;
@@ -132,6 +179,9 @@
     <div class="export-controls">
       <button id="downloadBtn" disabled>Download updated games.json</button>
       <span id="exportMsg" class="message"></span>
+      <div class="header-nav">
+        <a href="/admin/game-editor.html" class="ccg-admin-button ccg-admin-button--secondary">Back to Game Editor</a>
+      </div>
     </div>
   </header>
 
@@ -148,6 +198,35 @@
           <option value="yearDesc">Year ↓</option>
           <option value="audit">Audit severity</option>
         </select>
+      </div>
+      <div class="filter-panel">
+        <div class="filter-group">
+          <div class="filter-title">Missing-Data Filters</div>
+          <div class="filter-options">
+            <label class="filter-option"><input type="checkbox" id="filterMissingPdf" disabled /> Missing PDF / Manual</label>
+            <label class="filter-option"><input type="checkbox" id="filterMissingDownload" disabled /> Missing Download</label>
+            <label class="filter-option"><input type="checkbox" id="filterMissingThumbnail" disabled /> Missing Thumbnail</label>
+            <label class="filter-option"><input type="checkbox" id="filterMissing3d" disabled /> Missing 3D Box</label>
+            <label class="filter-option"><input type="checkbox" id="filterMissingRating" disabled /> Missing CCG Rating</label>
+            <label class="filter-option"><input type="checkbox" id="filterMissingRatingReason" disabled /> Missing Rating Reason</label>
+          </div>
+        </div>
+        <div class="filter-group">
+          <div class="filter-title">Rating</div>
+          <div class="filter-options rating-options">
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="10" disabled /> 10</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="9" disabled /> 9</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="8" disabled /> 8</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="7" disabled /> 7</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="6" disabled /> 6</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="5" disabled /> 5</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="4" disabled /> 4</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="3" disabled /> 3</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="2" disabled /> 2</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="1" disabled /> 1</label>
+            <label class="filter-option"><input type="checkbox" class="rating-filter" value="unrated" disabled /> Unrated</label>
+          </div>
+        </div>
       </div>
       <div id="gameList" class="game-list"></div>
     </aside>
@@ -182,6 +261,13 @@
       exportMsg: document.getElementById('exportMsg'),
       searchInput: document.getElementById('searchInput'),
       sortSelect: document.getElementById('sortSelect'),
+      filterMissingPdf: document.getElementById('filterMissingPdf'),
+      filterMissingDownload: document.getElementById('filterMissingDownload'),
+      filterMissingThumbnail: document.getElementById('filterMissingThumbnail'),
+      filterMissing3d: document.getElementById('filterMissing3d'),
+      filterMissingRating: document.getElementById('filterMissingRating'),
+      filterMissingRatingReason: document.getElementById('filterMissingRatingReason'),
+      ratingFilters: document.querySelectorAll('.rating-filter'),
       gameList: document.getElementById('gameList'),
       editorRoot: document.getElementById('editorRoot')
     };
@@ -212,6 +298,19 @@
 
     els.searchInput.addEventListener('input', renderGameList);
     els.sortSelect.addEventListener('change', renderGameList);
+    [
+      els.filterMissingPdf,
+      els.filterMissingDownload,
+      els.filterMissingThumbnail,
+      els.filterMissing3d,
+      els.filterMissingRating,
+      els.filterMissingRatingReason
+    ].forEach((input) => {
+      input.addEventListener('change', renderGameList);
+    });
+    els.ratingFilters.forEach((input) => {
+      input.addEventListener('change', renderGameList);
+    });
     els.downloadBtn.addEventListener('click', onDownload);
 
     function handleFile(file) {
@@ -226,6 +325,19 @@
           els.fileInfo.textContent = `Loaded: ${file.name} (${parsed.length} games)`;
           els.searchInput.disabled = false;
           els.sortSelect.disabled = false;
+          [
+            els.filterMissingPdf,
+            els.filterMissingDownload,
+            els.filterMissingThumbnail,
+            els.filterMissing3d,
+            els.filterMissingRating,
+            els.filterMissingRatingReason
+          ].forEach((input) => {
+            input.disabled = false;
+          });
+          els.ratingFilters.forEach((input) => {
+            input.disabled = false;
+          });
           els.downloadBtn.disabled = false;
           els.exportMsg.textContent = '';
           renderGameList();
@@ -236,6 +348,19 @@
           els.fileInfo.textContent = `Load error: ${err.message}`;
           els.searchInput.disabled = true;
           els.sortSelect.disabled = true;
+          [
+            els.filterMissingPdf,
+            els.filterMissingDownload,
+            els.filterMissingThumbnail,
+            els.filterMissing3d,
+            els.filterMissingRating,
+            els.filterMissingRatingReason
+          ].forEach((input) => {
+            input.disabled = true;
+          });
+          els.ratingFilters.forEach((input) => {
+            input.disabled = true;
+          });
           els.downloadBtn.disabled = true;
           els.gameList.innerHTML = '';
           els.editorRoot.textContent = 'Load a valid games.json file to begin.';
@@ -279,9 +404,38 @@
       const query = els.searchInput.value.trim().toLowerCase();
       const sort = els.sortSelect.value;
       const mapped = state.games.map((game, index) => ({ index, game, audit: auditGame(game) }));
+      const selectedMissingFilters = {
+        missingPdf: els.filterMissingPdf.checked,
+        missingDownload: els.filterMissingDownload.checked,
+        missingThumbnail: els.filterMissingThumbnail.checked,
+        missing3d: els.filterMissing3d.checked,
+        missingRating: els.filterMissingRating.checked,
+        missingRatingReason: els.filterMissingRatingReason.checked
+      };
+      const hasMissingFilter = Object.values(selectedMissingFilters).some(Boolean);
+      const selectedRatingFilters = new Set(
+        Array.from(els.ratingFilters)
+          .filter((input) => input.checked)
+          .map((input) => input.value)
+      );
+
       const filtered = mapped.filter(({game}) => {
-        if (!query) return true;
-        return ['title','id','slug','system'].some(k => String(game[k] || '').toLowerCase().includes(query));
+        const searchMatch = !query || ['title','id','slug','system'].some(k => String(game[k] || '').toLowerCase().includes(query));
+
+        const missingMatches = [];
+        if (selectedMissingFilters.missingPdf) missingMatches.push(!game.pdf);
+        if (selectedMissingFilters.missingDownload) missingMatches.push(!game.disk);
+        if (selectedMissingFilters.missingThumbnail) missingMatches.push(!game.thumbnail);
+        if (selectedMissingFilters.missing3d) missingMatches.push(!hasExpected3dPath(game));
+        if (selectedMissingFilters.missingRating) missingMatches.push(game.ccg_rating == null);
+        if (selectedMissingFilters.missingRatingReason) missingMatches.push(game.ccg_rating_reason === '');
+        const missingMatch = !hasMissingFilter || missingMatches.some(Boolean);
+
+        const ratingMatch = selectedRatingFilters.size === 0
+          || (game.ccg_rating == null && selectedRatingFilters.has('unrated'))
+          || selectedRatingFilters.has(String(game.ccg_rating));
+
+        return searchMatch && missingMatch && ratingMatch;
       });
 
       filtered.sort((a,b) => {
@@ -312,6 +466,18 @@
           renderEditor();
         });
       });
+    }
+
+    function hasExpected3dPath(game) {
+      const id = typeof game.id === 'string' ? game.id : '';
+      if (!id) return false;
+      const expected3d = [
+        `resources/images/3dboxes/all/${id}.png`,
+        `resources/images/3dboxes/all/${id}.jpg`,
+        `resources/images/3dboxes/all/${id}.jpeg`,
+        `resources/images/3dboxes/all/${id}.webp`
+      ];
+      return Object.values(game).some((v) => typeof v === 'string' && expected3d.includes(v));
     }
 
     function renderEditor() {
