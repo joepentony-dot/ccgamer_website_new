@@ -33,9 +33,9 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
       </div>
       <nav class="omega-admin-links" aria-label="CCG admin navigation">
         <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Editor</a>
-        <a href="/admin/publish.html" data-nav="publish">Publish</a>
-        <a href="/admin/help.html" data-nav="help">Help</a>
+        <a href="/admin/games-editor.html" data-nav="editor">Add / Edit Games</a>
+        <a href="/admin/games-json-editor.html" data-nav="audit">Audit &amp; Bulk Edit Games</a>
+        <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
         <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
       </nav>
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>
