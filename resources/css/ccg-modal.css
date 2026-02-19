@@ -156,6 +156,17 @@
         padding: 12px;
     }
 
+    @supports (height: 1dvh) {
+        .ccg-modal--doc .ccg-modal-content {
+            top: 50dvh;
+            min-height: min(68dvh, 560px);
+            height: min(85dvh, 820px);
+            max-height: 85dvh;
+            padding-top: calc(12px + env(safe-area-inset-top));
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        }
+    }
+
     .ccg-modal {
         padding: 8px;
     }
