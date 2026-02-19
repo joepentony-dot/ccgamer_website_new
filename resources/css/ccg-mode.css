@@ -332,10 +332,23 @@ html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-actions {
     overflow: clip;
 }
 
+@media (max-width: 960px) {
+    body[data-ccg-mode] .ccg-header-actions {
+        position: relative;
+        overflow: clip; /* Mobile header actions containment fix: prevent decorative plate escape near MENU */
+    }
+}
+
 @supports not (overflow: clip) {
     html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-inner,
     html[data-ccg-page="home"] body[data-ccg-mode] .ccg-header-actions {
         overflow: hidden;
+    }
+
+    @media (max-width: 960px) {
+        body[data-ccg-mode] .ccg-header-actions {
+            overflow: hidden; /* Mobile header actions containment fix fallback */
+        }
     }
 }
 
