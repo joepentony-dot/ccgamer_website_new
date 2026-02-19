@@ -14,7 +14,7 @@ const ALLOWED_ROLES = ['superadmin', 'admin', 'editor'];
 function disableLimitedActions() {
   document.querySelectorAll('.admin-tool-nav a').forEach((link) => {
     const href = String(link.getAttribute('href') || '');
-    if (href.includes('games-editor') || href.includes('publish')) {
+    if (href.includes('games-editor') || href.includes('games-json-editor')) {
       link.classList.add('is-disabled');
       link.setAttribute('aria-disabled', 'true');
       link.addEventListener('click', (event) => event.preventDefault());
