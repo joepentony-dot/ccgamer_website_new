@@ -809,8 +809,24 @@ async function maybeSendNewGameNotifications(packageData) {
   }
 
   try {
-    const sessionToken = await getAdminAccessToken();
-    if (!sessionToken) {
+    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
+      return;
+    }
+
+    const client = await window.ccgSupabase.getClient();
+    if (!client?.auth || typeof client.auth.getSession !== 'function') {
+      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
+      return;
+    }
+
+    const { data, error } = await client.auth.getSession();
+    if (error) {
+      throw new Error('Unable to resolve current Supabase session.');
+    }
+
+    const userId = String(data?.session?.user?.id || '').trim();
+    if (!userId) {
       setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
       return;
     }
@@ -819,6 +835,7 @@ async function maybeSendNewGameNotifications(packageData) {
     const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
     const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
     const payload = {
+      user_id: userId,
       game_name: packageData.gameEntry.title,
       game_slug: packageData.slug,
       mode: 'coming_soon'
@@ -831,21 +848,20 @@ async function maybeSendNewGameNotifications(packageData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionToken}`,
-        apikey: anonKey
+        'Authorization': `Bearer ${anonKey}`
       },
       body: JSON.stringify(payload)
     });
 
-    const data = await response.json().catch(() => ({}));
+    const responseData = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(String(data?.error || `Edge function request failed (${response.status}).`));
+      throw new Error(String(responseData?.error || `Edge function request failed (${response.status}).`));
     }
 
-    const success = Boolean(data?.success);
-    const configured = data?.configured !== false;
-    const sentCount = Number(data?.sent || 0);
-    const failed = Number(data?.failed || 0);
+    const success = Boolean(responseData?.success);
+    const configured = responseData?.configured !== false;
+    const sentCount = Number(responseData?.sent || 0);
+    const failed = Number(responseData?.failed || 0);
 
     if (!configured) {
       setDownloadStatus('Warning: Download started, but notifications were skipped because email provider is not configured.', false, true);
@@ -853,7 +869,7 @@ async function maybeSendNewGameNotifications(packageData) {
     }
 
     if (!success) {
-      throw new Error(String(data?.error || 'Notification request failed.'));
+      throw new Error(String(responseData?.error || 'Notification request failed.'));
     }
 
     if (packageData.sendTestEmail && !packageData.notifyMembers) {
