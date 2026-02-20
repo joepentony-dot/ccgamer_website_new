@@ -817,6 +817,7 @@ async function maybeSendNewGameNotifications(packageData) {
 
     const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
+    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
     const payload = {
       game_name: packageData.gameEntry.title,
       game_slug: packageData.slug,
@@ -830,7 +831,8 @@ async function maybeSendNewGameNotifications(packageData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${sessionToken}`
+        Authorization: `Bearer ${sessionToken}`,
+        apikey: anonKey
       },
       body: JSON.stringify(payload)
     });
@@ -912,6 +914,7 @@ function validateNotificationRequest(packageData) {
   if (!String(packageData?.slug || '').trim()) return 'slug is required.';
   if (!String(packageData?.gameEntry?.title || '').trim()) return 'title is required.';
   if (!String(window.CCG_SUPABASE_URL || '').trim()) return 'Supabase URL is missing.';
+  if (!String(window.CCG_SUPABASE_ANON_KEY || '').trim()) return 'Supabase anon key is missing.';
   return '';
 }
 
