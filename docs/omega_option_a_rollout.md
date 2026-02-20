@@ -12,12 +12,17 @@
   - `send-newsletter`
   - `send-new-game-notification`
   - `unsubscribe-by-token`
-- Admin publish flow includes optional manual trigger for new game notification.
+- Admin Games Editor export includes an optional “Notify members (Coming Soon)” checkbox that triggers the notification function after package export.
 
 ## Supabase secrets
 Set in project secrets:
 - `RESEND_API_KEY`
-- `EMAIL_FROM` (verified sender, e.g. `Cheeky Commodore Gamer <noreply@yourdomain>`)
+- `EMAIL_FROM` (verified sender, e.g. `Cheeky Commodore Gamer <noreply@yourdomain>` )
+- `SUPABASE_ANON_KEY` (for in-function requester verification when JWT verify is disabled)
+- `NEW_GAME_NOTIFY_HOMEPAGE_URL` (optional)
+- `NEW_GAME_NOTIFY_QUIZ_URL` (optional)
+- `NEW_GAME_NOTIFY_YOUTUBE_URL` (optional)
+- `NEW_GAME_NOTIFY_DISCORD_URL` (optional)
 - Existing required service secrets:
   - `SUPABASE_URL`
   - `SUPABASE_SERVICE_ROLE_KEY`
@@ -25,7 +30,7 @@ Set in project secrets:
 ## Deploy functions
 ```bash
 supabase functions deploy send-newsletter
-supabase functions deploy send-new-game-notification
+supabase functions deploy send-new-game-notification --no-verify-jwt
 supabase functions deploy unsubscribe-by-token
 ```
 
@@ -47,5 +52,8 @@ Recommended cron expression: `0 9 1 * *`.
 3. Forgot password flow sends reset link and password update succeeds.
 4. Profile page loads only for authenticated, email-confirmed user.
 5. Toggle newsletter/new-game prefs -> persisted in `profiles`.
-6. Trigger `send-new-game-notification` from admin publish page step 8 for a new game.
-7. Verify unsubscribe token link disables both `newsletter_opt_in` and `notify_new_games_opt_in`.
+6. Export a new game from `/admin/games-editor.html` with **Notify members (Coming Soon)** checked.
+7. Verify one plain-text Option A “Coming Soon” email is sent per opted-in member.
+8. Verify unchecked exports do not send anything.
+9. Verify function logs include summary counts (`sent`, `failed`, `recipients`).
+10. Verify unsubscribe token link disables both `newsletter_opt_in` and `notify_new_games_opt_in`.

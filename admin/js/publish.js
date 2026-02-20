@@ -2,7 +2,6 @@ import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-202602
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 
 const STORAGE_KEY = 'omegaPublishStepState';
-const EDGE_BASE = 'https://sytcvxthkqyjvzbfljeb.functions.supabase.co';
 
 function readState() {
   try {
@@ -33,30 +32,36 @@ function refreshWarnings(state) {
 
 async function notifyNewGameFromPrompt() {
   const status = document.getElementById('sendNewGameNotificationStatus');
-  const slug = window.prompt('Game slug (required):');
-  if (!slug) return;
-
-  const title = window.prompt('Game title (required):') || '';
-  const platform = window.prompt('Platform label (e.g. Commodore 64):') || '';
-  const url = window.prompt('Canonical URL path or full URL:') || '';
-  const summary = window.prompt('Short summary:') || '';
-
-  if (!title || !platform || !url) {
-    if (status) status.textContent = 'Missing required fields. Notification not sent.';
+  const gameName = window.prompt('Game name (required):') || '';
+  if (!gameName.trim()) {
+    if (status) status.textContent = 'Game name is required. Notification not sent.';
     return;
   }
 
-  if (status) status.textContent = 'Sending notification...';
+  if (status) status.textContent = 'Sending Coming Soon notification...';
+
   try {
-    const response = await fetch(`${EDGE_BASE}/send-new-game-notification`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug, title, platform, url, summary })
+    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+      throw new Error('Supabase client unavailable in publish page context.');
+    }
+
+    const supabase = window.ccgSupabase.getClient();
+    const { data, error } = await supabase.functions.invoke('send-new-game-notification', {
+      body: {
+        game_name: gameName.trim(),
+        mode: 'coming_soon',
+        export_id: `publish-${Date.now()}`
+      }
     });
 
-    const result = await response.json();
-    if (!response.ok) throw new Error(result?.error || 'Unknown edge function error');
-    if (status) status.textContent = `Notification job complete. Emails sent: ${result.sent ?? 0}`;
+    if (error) throw new Error(error.message || 'Unknown edge function error');
+    if (!data?.success) throw new Error(data?.error || 'Unknown edge function error');
+
+    const sent = Number(data?.sent || 0);
+    const failed = Number(data?.failed || 0);
+    if (status) status.textContent = failed > 0
+      ? `Coming Soon notification complete. Sent: ${sent}, failed: ${failed}.`
+      : `Coming Soon notification complete. Sent: ${sent}.`;
   } catch (error) {
     if (status) status.textContent = `Failed to send notification: ${error.message}`;
   }
