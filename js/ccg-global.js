@@ -1144,6 +1144,7 @@ if (IS_ADMIN_PATH) {
 
     function openSecretModal() {
         const modal = buildSecretModal();
+        if (modal.classList.contains("is-open")) return;
         secretState.openedAt = Date.now();
         requestAnimationFrame(() => {
             if (!modal) return;
@@ -1326,7 +1327,11 @@ if (IS_ADMIN_PATH) {
                     if (logoClickState.lastBubble) {
                         logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
                     }
-                    openSecretModal();
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            openSecretModal();
+                        });
+                    });
                     resetLogoClickState();
                 }
             }, { capture: true });
