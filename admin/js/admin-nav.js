@@ -33,8 +33,8 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
       </div>
       <nav class="omega-admin-links" aria-label="CCG admin navigation">
         <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Add / Edit Games</a>
-        <a href="/admin/games-json-editor.html" data-nav="audit">Audit &amp; Bulk Edit Games</a>
+        <a href="/admin/games-editor.html" data-nav="editor">Game Builder Wizard</a>
+        <a href="/admin/games-json-editor.html" data-nav="audit">Legacy Bulk Editor (do not use)</a>
         <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
         <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
       </nav>

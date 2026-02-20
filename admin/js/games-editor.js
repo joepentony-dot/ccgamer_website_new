@@ -63,6 +63,7 @@ const state = {
 
 const el = {
   topStatus: document.querySelector('[data-top-status]'),
+  fetchLibraryButton: document.querySelector('[data-action="fetch-library"]'),
   stepSections: Array.from(document.querySelectorAll('[data-step]')),
   jumpButtons: Array.from(document.querySelectorAll('[data-step-jump]')),
   fields: Array.from(document.querySelectorAll('[data-field]')),
@@ -216,6 +217,10 @@ function bindEvents() {
     });
   });
 
+  el.fetchLibraryButton?.addEventListener('click', async () => {
+    await loadLibrary(true);
+  });
+
   el.backButtons.forEach((button) => {
     button.addEventListener('click', () => {
       state.step = Math.max(1, state.step - 1);
@@ -304,9 +309,17 @@ function setEditorSwitchModal(visible) {
   el.editorSwitchModal.hidden = !visible;
 }
 
-async function loadLibrary() {
+async function loadLibrary(triggeredByUser = false) {
+  if (el.fetchLibraryButton) {
+    el.fetchLibraryButton.disabled = true;
+  }
+  if (triggeredByUser) {
+    el.topStatus.textContent = 'Fetching live games.json…';
+    el.topStatus.className = 'status';
+  }
+
   try {
-    const response = await fetch('/games/games.json', { cache: 'no-store' });
+    const response = await fetch('../games/games.json', { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Could not load games.json (${response.status})`);
     }
@@ -323,7 +336,7 @@ async function loadLibrary() {
     renderOptionList(el.genreOptions, 'genres', state.genres);
     renderOptionList(el.collectionOptions, 'collections', state.collections);
 
-    el.topStatus.textContent = `Loaded ${state.library.length} existing games. Duplicate checks enabled.`;
+    el.topStatus.textContent = `Loaded ${state.library.length} games. Duplicate checks enabled.`;
     el.topStatus.className = 'status ok';
   } catch (error) {
     state.library = [];
@@ -335,6 +348,10 @@ async function loadLibrary() {
     renderOptionList(el.collectionOptions, 'collections', []);
     el.topStatus.textContent = `Warning: ${error.message}. You can continue, but duplicate checks and category hydration are unavailable.`;
     el.topStatus.className = 'status error';
+  }
+
+  if (el.fetchLibraryButton) {
+    el.fetchLibraryButton.disabled = false;
   }
 
   updateStep1UiState();
@@ -792,10 +809,16 @@ async function maybeSendNewGameNotifications(packageData) {
   }
 
   try {
+    const sessionToken = await getAdminAccessToken();
+    if (!sessionToken) {
+      throw new Error('You must be signed in as admin to send notifications.');
+    }
+
     const functionUrl = `${String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '')}/functions/v1/send-new-game-notification`;
     const anonKey = window.CCG_SUPABASE_ANON_KEY;
     const payload = {
       game_name: packageData.gameEntry.title,
+      game_slug: packageData.slug,
       mode: 'coming_soon'
     };
     if (packageData.sendTestEmail) {
@@ -807,7 +830,7 @@ async function maybeSendNewGameNotifications(packageData) {
       headers: {
         'Content-Type': 'application/json',
         apikey: anonKey,
-        Authorization: `Bearer ${anonKey}`
+        Authorization: `Bearer ${sessionToken}`
       },
       body: JSON.stringify(payload)
     });
@@ -839,6 +862,19 @@ async function maybeSendNewGameNotifications(packageData) {
   } catch (error) {
     setDownloadStatus(`Warning: Download started, but notification sending failed: ${error.message}`, false, true);
   }
+}
+
+async function getAdminAccessToken() {
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+    return '';
+  }
+
+  const client = await window.ccgSupabase.getClient();
+  const { data, error } = await client.auth.getSession();
+  if (error) {
+    throw new Error(error.message || 'Unable to resolve your session token.');
+  }
+  return String(data?.session?.access_token || '').trim();
 }
 
 function validateNotificationRequest(packageData) {
