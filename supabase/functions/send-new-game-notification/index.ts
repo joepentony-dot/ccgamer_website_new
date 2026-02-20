@@ -10,7 +10,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': 'https://www.cheekycommodoregamer.co.uk',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'content-type, apikey'
+  // MUST include authorization when gateway JWT is ON
+  'Access-Control-Allow-Headers': 'content-type, apikey, authorization, x-client-info'
 };
 
 const JSON_HEADERS: Record<string, string> = {
@@ -86,6 +87,7 @@ Deno.serve(async (req: Request) => {
     );
   }
 
+  // ---- Service role client (role enforcement happens here)
   const serviceClient = createClient(supabaseUrl, serviceKey);
 
   const { data: roleRow, error: roleError } = await serviceClient
@@ -102,6 +104,8 @@ Deno.serve(async (req: Request) => {
   }
 
   // ---- SUCCESS (non-blocking notification stub)
+  // (Email provider integration can be added here later.
+  // Any failure must never throw.)
   return jsonResponse({
     success: true,
     game_name: payload.game_name,
