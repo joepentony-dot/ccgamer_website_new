@@ -132,10 +132,21 @@ async function sendEmail(
 // -------------------- Server --------------------------------
 
 Deno.serve(async (req: Request) => {
-  const requestId = crypto.randomUUID();
   const method = req.method;
   const origin = req.headers.get('origin') || '';
   const hasAuthorization = req.headers.has('authorization');
+
+  // ---- CORS preflight (ABSOLUTE FIRST EXIT)
+  if (method === 'OPTIONS') {
+    console.log('[send-new-game-notification]', {
+      event: 'options_preflight_ok',
+      origin
+    });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
+  }
+
+  // ---- POST requests only beyond this point
+  const requestId = crypto.randomUUID();
 
   console.log('[send-new-game-notification]', {
     event: 'request_start',
@@ -145,17 +156,7 @@ Deno.serve(async (req: Request) => {
     hasAuthorization
   });
 
-  // ---- CORS preflight (ABSOLUTE FIRST EXIT)
-  if (method === 'OPTIONS') {
-    console.log('[send-new-game-notification]', {
-      event: 'options_preflight_ok',
-      requestId
-    });
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
-  }
-
   try {
-    // ---- Method guard
     if (method !== 'POST') {
       return jsonResponse(
         { success: false, error: 'Method not allowed', request_id: requestId },
@@ -163,7 +164,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // ---- Environment (POST only)
+    // ---- Environment
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
@@ -171,6 +172,14 @@ Deno.serve(async (req: Request) => {
     const emailFrom = Deno.env.get('EMAIL_FROM') || '';
     const testEmailAddress =
       (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
+
+    console.log('[DEBUG ENV]', {
+      supabaseUrl,
+      anonKey_present: !!anonKey,
+      serviceKey_present: !!serviceKey,
+      resend_present: !!resendApiKey,
+      emailFrom_present: !!emailFrom
+    });
 
     if (!supabaseUrl || !anonKey || !serviceKey) {
       return jsonResponse(
