@@ -63,6 +63,9 @@
       </div>
       <h1>CCG Game Builder</h1>
       <p>4-step wizard: add one game entry, build canonical SEO stubs, and download one deployment ZIP.</p>
+      <p>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-library">Fetch live games.json</button>
+      </p>
       <p class="status" data-top-status>Loading existing games…</p>
     </section>
 
@@ -190,9 +193,9 @@ https://www.mobygames.com/..."></textarea></label>
       <label class="radio-option" style="margin: 0 0 .85rem; align-items: flex-start;">
         <span style="display: inline-flex; align-items: flex-start; gap: .45rem;">
           <input type="checkbox" data-field="sendTestEmail" />
-          <span>Send test email (admin only)</span>
+          <span>Send test email (admin only, sends to joepentony@hotmail.com only)</span>
         </span>
-        <span class="hint">Sends one Coming Soon test email to joepentony@hotmail.com only.</span>
+        <span class="hint">Runs independently: this sends one Coming Soon test email to joepentony@hotmail.com even if member notifications are off.</span>
       </label>
       <button type="button" class="ccg-btn ccg-btn--primary primary" data-action="download">⬇ Download Game Package</button>
       <p class="status" data-download-status></p>
