@@ -44,7 +44,8 @@ const EMPTY_DRAFT = {
   box3d: '',
   externalLinks: '',
   jsonExportMode: 'full',
-  notifyMembers: false
+  notifyMembers: false,
+  sendTestEmail: false
 };
 
 const state = {
@@ -237,8 +238,8 @@ function bindEvents() {
       await downloadZip(packageData);
       setDownloadStatus('Download started successfully.', false);
 
-      if (packageData.notifyMembers) {
-        await maybeSendNewGameNotifications(packageData);
+      if (packageData.notifyMembers || packageData.sendTestEmail) {
+        void maybeSendNewGameNotifications(packageData);
       }
     } catch (error) {
       setDownloadStatus(`Download failed: ${error.message}`, true);
@@ -738,6 +739,7 @@ function buildPackageData() {
     slug,
     id,
     notifyMembers: Boolean(state.draft.notifyMembers),
+    sendTestEmail: Boolean(state.draft.sendTestEmail),
     gameEntry,
     mergedGames,
     gamesJsonOutput,
@@ -785,20 +787,35 @@ async function downloadZip(packageData) {
 async function maybeSendNewGameNotifications(packageData) {
   const validationError = validateNotificationRequest(packageData);
   if (validationError) {
-    setDownloadStatus(`Download started, but notifications were not sent: ${validationError}`, true);
+    setDownloadStatus(`Warning: Download started, but notifications were not sent: ${validationError}`, false, true);
     return;
   }
 
   try {
-    const supabase = await resolveSupabaseClient();
+    const functionUrl = `${String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '')}/functions/v1/send-new-game-notification`;
+    const anonKey = window.CCG_SUPABASE_ANON_KEY;
     const payload = {
       game_name: packageData.gameEntry.title,
-      mode: 'coming_soon',
-      export_id: `${packageData.slug}-${Date.now()}`
+      mode: 'coming_soon'
     };
+    if (packageData.sendTestEmail) {
+      payload.test_email = true;
+    }
 
-    const { data, error } = await supabase.functions.invoke('send-new-game-notification', { body: payload });
-    if (error) throw new Error(error.message || 'Edge function request failed.');
+    const response = await fetch(functionUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: anonKey,
+        Authorization: `Bearer ${anonKey}`
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(String(data?.error || `Edge function request failed (${response.status}).`));
+    }
 
     const success = Boolean(data?.success);
     const sentCount = Number(data?.sent || 0);
@@ -808,30 +825,29 @@ async function maybeSendNewGameNotifications(packageData) {
       throw new Error(String(data?.error || 'Notification request failed.'));
     }
 
-    if (failed > 0) {
-      setDownloadStatus(`Coming Soon notification sent to ${sentCount} members (${failed} failed).`, true);
+    if (packageData.sendTestEmail && !packageData.notifyMembers) {
+      setDownloadStatus('Download started. Admin test email request sent successfully.', false);
       return;
     }
 
-    setDownloadStatus(`Coming Soon notification sent to ${sentCount} members.`, false);
+    if (failed > 0) {
+      setDownloadStatus(`Warning: Coming Soon notification sent to ${sentCount} recipients (${failed} failed).`, false, true);
+      return;
+    }
+
+    setDownloadStatus(`Coming Soon notification sent to ${sentCount} recipients.`, false);
   } catch (error) {
-    setDownloadStatus(`Download started, but notification sending failed: ${error.message}`, true);
+    setDownloadStatus(`Warning: Download started, but notification sending failed: ${error.message}`, false, true);
   }
 }
 
 function validateNotificationRequest(packageData) {
-  if (!packageData?.notifyMembers) return 'notifyMembers is not enabled.';
+  if (!packageData?.notifyMembers && !packageData?.sendTestEmail) return 'notification options are not enabled.';
   if (!String(packageData?.slug || '').trim()) return 'slug is required.';
   if (!String(packageData?.gameEntry?.title || '').trim()) return 'title is required.';
+  if (!String(window.CCG_SUPABASE_URL || '').trim()) return 'Supabase URL is missing.';
+  if (!String(window.CCG_SUPABASE_ANON_KEY || '').trim()) return 'Supabase anon key is missing.';
   return '';
-}
-
-async function resolveSupabaseClient() {
-  if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-    return window.ccgSupabase.getClient();
-  }
-
-  throw new Error('Supabase client is unavailable in this page context.');
 }
 
 function renderErrors(node, errors) {
@@ -845,9 +861,13 @@ function renderErrors(node, errors) {
   node.innerHTML = errors.map((error) => `<li>${escapeHtml(error)}</li>`).join('');
 }
 
-function setDownloadStatus(message, isError = false) {
+function setDownloadStatus(message, isError = false, isWarning = false) {
   if (!el.downloadStatus) return;
   el.downloadStatus.textContent = message;
+  if (isWarning) {
+    el.downloadStatus.className = 'status';
+    return;
+  }
   el.downloadStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
