@@ -814,8 +814,8 @@ async function maybeSendNewGameNotifications(packageData) {
       throw new Error('You must be signed in as admin to send notifications.');
     }
 
-    const functionUrl = `${String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '')}/functions/v1/send-new-game-notification`;
-    const anonKey = window.CCG_SUPABASE_ANON_KEY;
+    const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
+    const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
     const payload = {
       game_name: packageData.gameEntry.title,
       game_slug: packageData.slug,
@@ -829,7 +829,6 @@ async function maybeSendNewGameNotifications(packageData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: anonKey,
         Authorization: `Bearer ${sessionToken}`
       },
       body: JSON.stringify(payload)
@@ -866,7 +865,7 @@ async function maybeSendNewGameNotifications(packageData) {
 
 async function getAdminAccessToken() {
   if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-    return '';
+    throw new Error('Admin session client is unavailable. Sign in again and retry.');
   }
 
   const client = await window.ccgSupabase.getClient();
@@ -874,7 +873,17 @@ async function getAdminAccessToken() {
   if (error) {
     throw new Error(error.message || 'Unable to resolve your session token.');
   }
-  return String(data?.session?.access_token || '').trim();
+
+  if (!data?.session) {
+    throw new Error('Admin not signed in. Please sign in before sending notifications.');
+  }
+
+  const token = String(data?.session?.access_token || '').trim();
+  if (!token) {
+    throw new Error('Admin access token is missing. Please sign in again.');
+  }
+
+  return token;
 }
 
 function validateNotificationRequest(packageData) {
@@ -882,7 +891,6 @@ function validateNotificationRequest(packageData) {
   if (!String(packageData?.slug || '').trim()) return 'slug is required.';
   if (!String(packageData?.gameEntry?.title || '').trim()) return 'title is required.';
   if (!String(window.CCG_SUPABASE_URL || '').trim()) return 'Supabase URL is missing.';
-  if (!String(window.CCG_SUPABASE_ANON_KEY || '').trim()) return 'Supabase anon key is missing.';
   return '';
 }
 
