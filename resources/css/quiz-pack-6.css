@@ -430,19 +430,8 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
         font-size: 0.9rem;
     }
 
-    body.hangman-active {
-        height: 100dvh;
-        overflow: hidden;
-    }
-
     body.hangman-active .hangman-card {
         min-height: calc(100dvh - 140px);
-        box-sizing: border-box;
-    }
-
-    body.hangman-active .hangman-keyboard {
-        padding-top: calc(10px + var(--hangman-keyboard-safe-top) + env(safe-area-inset-top));
-        flex-shrink: 0;
     }
 
     .hangman-keyboard {
