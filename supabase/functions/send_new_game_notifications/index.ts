@@ -1,16 +1,29 @@
 // ============================================================
 // CCG — SEND NEW GAME NOTIFICATION (OPTION A: COMING SOON)
-// Edge Function (JWT verification disabled at deploy)
+// Supabase Edge Function
+// JWT verification disabled at deploy
+// CORS-enabled for browser calls
 // ============================================================
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// -------------------- CORS ---------------------------------
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+};
+
+// -------------------- Types --------------------------------
 
 type Payload = {
   game_name: string;
   mode: 'coming_soon';
 };
 
-// ---- Environment ------------------------------------------------------------
+// -------------------- Environment ---------------------------
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? '';
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
@@ -23,13 +36,7 @@ const DISCORD_URL = Deno.env.get('DISCORD_URL') ?? 'https://discord.gg/';
 const YOUTUBE_URL =
   Deno.env.get('YOUTUBE_URL') ?? 'https://www.youtube.com/@CheekyCommodoreGamer';
 
-// ---- Guards ----------------------------------------------------------------
-
-if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error('[send-new-game-notification] Missing Supabase env vars');
-}
-
-// ---- Helpers ---------------------------------------------------------------
+// -------------------- Helpers -------------------------------
 
 function escapeHtml(value: string): string {
   return value
@@ -51,7 +58,7 @@ Hi ${safeName},
 
 A new game is on its way to Cheeky Commodore Gamer:
 
-${gameName}
+${safeGame}
 
 It’s been created on the website and will be added very shortly.
 
@@ -77,15 +84,20 @@ Stay Retro 🕹️
   return { subject, text };
 }
 
-// ---- Server ----------------------------------------------------------------
+// -------------------- Server --------------------------------
 
 Deno.serve(async (req: Request) => {
+  // ---- CORS preflight (CRITICAL)
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
   try {
     // ---- Method guard
     if (req.method !== 'POST') {
       return new Response(
         JSON.stringify({ ok: false, error: 'POST required' }),
-        { status: 405, headers: { 'content-type': 'application/json' } }
+        { status: 405, headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
@@ -96,14 +108,14 @@ Deno.serve(async (req: Request) => {
     } catch {
       return new Response(
         JSON.stringify({ ok: false, error: 'Invalid JSON body' }),
-        { status: 400, headers: { 'content-type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
     if (!payload?.game_name || payload.mode !== 'coming_soon') {
       return new Response(
         JSON.stringify({ ok: false, error: 'Invalid payload' }),
-        { status: 400, headers: { 'content-type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
@@ -111,7 +123,7 @@ Deno.serve(async (req: Request) => {
     if (!gameName) {
       return new Response(
         JSON.stringify({ ok: false, error: 'Empty game_name' }),
-        { status: 400, headers: { 'content-type': 'application/json' } }
+        { status: 400, headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
@@ -131,7 +143,7 @@ Deno.serve(async (req: Request) => {
       console.error('[send-new-game-notification] Failed to load users', usersError);
       return new Response(
         JSON.stringify({ ok: false, error: 'Failed to load users' }),
-        { status: 500, headers: { 'content-type': 'application/json' } }
+        { status: 500, headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
@@ -142,11 +154,11 @@ Deno.serve(async (req: Request) => {
           notified: 0,
           message: 'No opted-in members'
         }),
-        { headers: { 'content-type': 'application/json' } }
+        { headers: { ...corsHeaders, 'content-type': 'application/json' } }
       );
     }
 
-    // ---- Queue notifications (non-blocking, export-safe)
+    // ---- Queue notifications (non-blocking)
     let queued = 0;
     let failed = 0;
 
@@ -166,18 +178,14 @@ Deno.serve(async (req: Request) => {
 
       if (insertError) {
         failed++;
-        console.error(
-          '[send-new-game-notification] Failed to queue email',
-          insertError,
-          { email }
-        );
+        console.error('[send-new-game-notification] Failed to queue email', insertError, { email });
         continue;
       }
 
       queued++;
     }
 
-    // ---- Final response (never block admin export)
+    // ---- Final response (export-safe)
     return new Response(
       JSON.stringify({
         ok: true,
@@ -185,13 +193,13 @@ Deno.serve(async (req: Request) => {
         queued,
         failed
       }),
-      { headers: { 'content-type': 'application/json' } }
+      { headers: { ...corsHeaders, 'content-type': 'application/json' } }
     );
   } catch (err) {
     console.error('[send-new-game-notification] Unhandled error', err);
     return new Response(
       JSON.stringify({ ok: false, error: 'Unhandled server error' }),
-      { status: 500, headers: { 'content-type': 'application/json' } }
+      { status: 500, headers: { ...corsHeaders, 'content-type': 'application/json' } }
     );
   }
 });
