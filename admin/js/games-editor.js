@@ -811,7 +811,8 @@ async function maybeSendNewGameNotifications(packageData) {
   try {
     const sessionToken = await getAdminAccessToken();
     if (!sessionToken) {
-      throw new Error('You must be signed in as admin to send notifications.');
+      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
+      return;
     }
 
     const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
@@ -870,26 +871,40 @@ async function maybeSendNewGameNotifications(packageData) {
 }
 
 async function getAdminAccessToken() {
-  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-    throw new Error('Admin session client is unavailable. Sign in again and retry.');
-  }
+  try {
+    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+      console.warn('[OMEGA-WIZARD] Admin auth client unavailable while preparing notification request.');
+      return null;
+    }
 
-  const client = await window.ccgSupabase.getClient();
-  const { data, error } = await client.auth.getSession();
-  if (error) {
-    throw new Error(error.message || 'Unable to resolve your session token.');
-  }
+    const client = await window.ccgSupabase.getClient();
+    if (!client?.auth || typeof client.auth.getSession !== 'function') {
+      console.warn('[OMEGA-WIZARD] Supabase auth session API unavailable while preparing notification request.');
+      return null;
+    }
 
-  if (!data?.session) {
-    throw new Error('Admin not signed in. Please sign in before sending notifications.');
-  }
+    const { data, error } = await client.auth.getSession();
+    if (error) {
+      console.warn('[OMEGA-WIZARD] Failed to resolve Supabase session for notification request.', error);
+      return null;
+    }
 
-  const token = String(data?.session?.access_token || '').trim();
-  if (!token) {
-    throw new Error('Admin access token is missing. Please sign in again.');
-  }
+    if (!data?.session) {
+      console.warn('[OMEGA-WIZARD] No active Supabase session found for notification request.');
+      return null;
+    }
 
-  return token;
+    const token = String(data?.session?.access_token || '').trim();
+    if (!token) {
+      console.warn('[OMEGA-WIZARD] Supabase session is missing access_token for notification request.');
+      return null;
+    }
+
+    return token;
+  } catch (error) {
+    console.warn('[OMEGA-WIZARD] Unable to prepare Supabase access token for notification request.', error);
+    return null;
+  }
 }
 
 function validateNotificationRequest(packageData) {
