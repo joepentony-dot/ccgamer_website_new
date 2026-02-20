@@ -848,7 +848,7 @@ async function maybeSendNewGameNotifications(packageData) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        apikey: anonKey
+        'Authorization': 'Bearer ' + anonKey
       },
       body: JSON.stringify(payload)
     });
