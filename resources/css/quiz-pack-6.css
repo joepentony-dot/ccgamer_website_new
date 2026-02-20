@@ -345,6 +345,11 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
 }
 
 @media (max-width: 768px) {
+    body.hangman-active {
+        min-height: 100dvh;
+        overflow-x: hidden;
+    }
+
     .ccg-page--quiz-pack .ccg-main {
         padding-top: 20px;
         padding-bottom: 0;
@@ -434,16 +439,40 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
         min-height: calc(100dvh - 140px);
     }
 
-    .hangman-keyboard {
+    body.hangman-active .hangman-game,
+    body.hangman-active .hangman-panel,
+    body.hangman-active .hangman-container,
+    body.hangman-active .hangman-card,
+    body.hangman-active .hangman-game-grid,
+    body.hangman-active .hangman-status-panel {
+        max-height: none;
+        overflow: visible;
+    }
+
+    body.hangman-active .hangman-keyboard {
         order: 3;
         margin-top: 6px;
         padding: 10px;
         background: rgba(6, 10, 9, 0.78);
         box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
-        grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
-        max-height: clamp(170px, 24vh, 210px);
-        overflow-y: auto;
-        align-content: center;
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+        max-height: none;
+        overflow: visible;
+        padding-top: calc(16px + env(safe-area-inset-top));
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+        min-height: 40dvh;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        align-content: flex-start;
+    }
+
+    body.hangman-active .hangman-keyboard .hangman-key {
+        flex: 1 1 clamp(28px, 8vw, 42px);
+        max-width: clamp(38px, 10vw, 48px);
     }
 
     .hangman-key {
