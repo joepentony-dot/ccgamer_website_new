@@ -12,6 +12,7 @@
     --hangman-neon-pink: var(--ccg-danger);
     --hangman-chalk: var(--text-light);
     --hangman-muted: var(--text-dim);
+    --hangman-keyboard-safe-top: 16px;
 }
 
 html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
