@@ -12,6 +12,7 @@
     --hangman-neon-pink: var(--ccg-danger);
     --hangman-chalk: var(--text-light);
     --hangman-muted: var(--text-dim);
+    --hangman-keyboard-safe-top: 16px;
 }
 
 html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
@@ -350,12 +351,11 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     }
 
     .hangman-card {
-        --hangman-keyboard-height: clamp(170px, 24vh, 210px);
         display: flex;
         flex-direction: column;
         gap: 12px;
         min-height: calc(100svh - 140px);
-        padding: 16px 14px calc(var(--hangman-keyboard-height) + 16px);
+        padding: 16px 14px;
         overflow: hidden;
     }
 
@@ -430,19 +430,31 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
         font-size: 0.9rem;
     }
 
+    body.hangman-active {
+        height: 100dvh;
+        overflow: hidden;
+    }
+
+    body.hangman-active .hangman-card {
+        min-height: calc(100dvh - 140px);
+        box-sizing: border-box;
+    }
+
+    body.hangman-active .hangman-keyboard {
+        padding-top: calc(10px + var(--hangman-keyboard-safe-top) + env(safe-area-inset-top));
+        flex-shrink: 0;
+    }
+
     .hangman-keyboard {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 999;
-        margin-top: 0;
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-        background: rgba(6, 10, 9, 0.98);
-        box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.6);
+        order: 3;
+        margin-top: 6px;
+        padding: 10px;
+        background: rgba(6, 10, 9, 0.78);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
         grid-template-columns: repeat(auto-fit, minmax(28px, 1fr));
-        height: var(--hangman-keyboard-height);
-        align-content: start;
+        max-height: clamp(170px, 24vh, 210px);
+        overflow-y: auto;
+        align-content: center;
     }
 
     .hangman-key {
@@ -452,14 +464,16 @@ html[data-ccg-page="quiz-pack-6"] body.quiz-focus .quiz-focus-overlay {
     }
 
     .hangman-actions {
+        order: 4;
         margin-top: 8px;
         gap: 10px;
+        opacity: 0.85;
     }
 }
 
 @media (max-width: 420px) {
     .hangman-card {
-        padding: 14px 12px calc(var(--hangman-keyboard-height) + 14px);
+        padding: 14px 12px;
     }
 
     .hangman-image-panel,
