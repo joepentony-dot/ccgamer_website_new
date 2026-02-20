@@ -57,7 +57,7 @@
         <label>Builder Selector</label>
         <div class="editor-modal__actions">
           <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="game">Add Game</button>
-          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="retro">Add Retro Event</button>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="retro">Retro Events Editor — Legacy (not used)</button>
         </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Game Builder</span>
       </div>
@@ -193,7 +193,7 @@ https://www.mobygames.com/..."></textarea></label>
       <label class="radio-option" style="margin: 0 0 .85rem; align-items: flex-start;">
         <span style="display: inline-flex; align-items: flex-start; gap: .45rem;">
           <input type="checkbox" data-field="sendTestEmail" />
-          <span>Send test email (admin only, sends to joepentony@hotmail.com only)</span>
+          <span>Send test email (admin only — sends to joepentony@hotmail.com)</span>
         </span>
         <span class="hint">Runs independently: this sends one Coming Soon test email to joepentony@hotmail.com even if member notifications are off.</span>
       </label>
@@ -208,12 +208,12 @@ https://www.mobygames.com/..."></textarea></label>
 
   <div class="editor-modal" data-editor-switch-modal hidden role="dialog" aria-modal="true" aria-labelledby="editor-switch-title">
     <div class="editor-modal__panel">
-      <h2 id="editor-switch-title">Switch to Retro Events editor?</h2>
-      <p>This will leave the Game Builder and open the Retro Events editor.</p>
+      <h2 id="editor-switch-title">Open legacy Retro Events editor?</h2>
+      <p>This will leave the primary Game Builder Wizard and open a legacy editor that is not used for game publishing.</p>
       <p>Unsaved changes will be lost. Continue?</p>
       <div class="editor-modal__actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-editor-switch-cancel>Cancel</button>
-        <button type="button" class="ccg-btn ccg-btn--primary" data-editor-switch-confirm>Load Retro Events Editor</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-editor-switch-confirm>Open Legacy Editor</button>
       </div>
     </div>
   </div>
