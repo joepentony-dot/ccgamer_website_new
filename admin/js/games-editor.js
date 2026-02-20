@@ -840,8 +840,14 @@ async function maybeSendNewGameNotifications(packageData) {
     }
 
     const success = Boolean(data?.success);
+    const configured = data?.configured !== false;
     const sentCount = Number(data?.sent || 0);
     const failed = Number(data?.failed || 0);
+
+    if (!configured) {
+      setDownloadStatus('Warning: Download started, but notifications were skipped because email provider is not configured.', false, true);
+      return;
+    }
 
     if (!success) {
       throw new Error(String(data?.error || 'Notification request failed.'));

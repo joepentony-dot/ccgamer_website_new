@@ -13,12 +13,6 @@ const JSON_HEADERS: Record<string, string> = {
 
 const ALLOWED_ROLES = new Set(['admin', 'superadmin', 'editor']);
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
-const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
-const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
-const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') || '';
-const EMAIL_FROM = Deno.env.get('EMAIL_FROM') || '';
-const TEST_EMAIL = (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
 
 type NotifyPayload = {
   mode?: string;
@@ -78,15 +72,15 @@ function buildEmailContent(displayName: string | null, gameName: string, gameSlu
   return { subject, text, html };
 }
 
-async function sendEmail(to: string, subject: string, text: string, html: string): Promise<void> {
+async function sendEmail(to: string, subject: string, text: string, html: string, resendApiKey: string, emailFrom: string): Promise<void> {
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
+      Authorization: `Bearer ${resendApiKey}`,
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      from: EMAIL_FROM,
+      from: emailFrom,
       to,
       subject,
       text,
@@ -101,33 +95,68 @@ async function sendEmail(to: string, subject: string, text: string, html: string
 }
 
 Deno.serve(async (req: Request) => {
+  const requestId = crypto.randomUUID();
+  const method = req.method;
+  const origin = req.headers.get('origin') || '';
+  const hasAuthorization = req.headers.has('authorization');
+
+  const logReturn = (status: number, event: string, extra: Record<string, unknown> = {}) => {
+    console.log('[send-new-game-notification]', {
+      event,
+      requestId,
+      method,
+      status,
+      ...extra
+    });
+  };
+
+  console.log('[send-new-game-notification]', {
+    event: 'request_start',
+    requestId,
+    method,
+    origin,
+    hasAuthorization
+  });
+
   try {
-    if (req.method === 'OPTIONS') {
+    if (method === 'OPTIONS') {
+      logReturn(204, 'options_preflight_ok');
       return new Response(null, {
         status: 204,
         headers: CORS_HEADERS
       });
     }
 
-    if (req.method !== 'POST') {
-      return jsonResponse({ success: false, error: 'Method not allowed' }, 405);
+    if (method !== 'POST') {
+      logReturn(405, 'method_not_allowed');
+      return jsonResponse({ success: false, error: 'Method not allowed', request_id: requestId }, 405);
     }
 
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
-      return jsonResponse({ success: false, error: 'Supabase environment is not configured.' }, 500);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const resendApiKey = Deno.env.get('RESEND_API_KEY') || '';
+    const emailFrom = Deno.env.get('EMAIL_FROM') || '';
+    const testEmailAddress = (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
+
+    if (!supabaseUrl || !supabaseAnonKey || !supabaseServiceRoleKey) {
+      logReturn(500, 'missing_supabase_env');
+      return jsonResponse({ success: false, error: 'Supabase environment is not configured.', request_id: requestId }, 500);
     }
 
     const authHeader = req.headers.get('authorization') || '';
     const bearerToken = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
     if (!bearerToken) {
-      return jsonResponse({ success: false, error: 'Missing bearer token.' }, 401);
+      logReturn(401, 'missing_bearer_token');
+      return jsonResponse({ success: false, error: 'Missing bearer token.', request_id: requestId }, 401);
     }
 
     let payload: NotifyPayload = {};
     try {
       payload = (await req.json()) as NotifyPayload;
     } catch {
-      return jsonResponse({ success: false, error: 'Invalid JSON body.' }, 400);
+      logReturn(400, 'invalid_json');
+      return jsonResponse({ success: false, error: 'Invalid JSON body.', request_id: requestId }, 400);
     }
 
     const mode = String(payload.mode || '').trim();
@@ -136,24 +165,27 @@ Deno.serve(async (req: Request) => {
     const testEmail = payload.test_email === true;
 
     if (mode !== 'coming_soon') {
-      return jsonResponse({ success: false, error: 'Invalid mode. Expected "coming_soon".' }, 400);
+      logReturn(400, 'invalid_mode', { mode });
+      return jsonResponse({ success: false, error: 'Invalid mode. Expected "coming_soon".', request_id: requestId }, 400);
     }
 
     if (!gameName) {
-      return jsonResponse({ success: false, error: 'game_name is required.' }, 400);
+      logReturn(400, 'missing_game_name');
+      return jsonResponse({ success: false, error: 'game_name is required.', request_id: requestId }, 400);
     }
 
-    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
     const {
       data: { user },
       error: userError
     } = await authClient.auth.getUser(bearerToken);
 
     if (userError || !user) {
-      return jsonResponse({ success: false, error: 'Unauthorized session token.' }, 401);
+      logReturn(401, 'unauthorized_session');
+      return jsonResponse({ success: false, error: 'Unauthorized session token.', request_id: requestId }, 401);
     }
 
-    const serviceClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const serviceClient = createClient(supabaseUrl, supabaseServiceRoleKey);
     const { data: roleRow, error: roleError } = await serviceClient
       .from('profiles')
       .select('role')
@@ -161,26 +193,31 @@ Deno.serve(async (req: Request) => {
       .maybeSingle<ProfileRoleRow>();
 
     if (roleError) {
-      return jsonResponse({ success: false, error: `Unable to validate role: ${roleError.message}` }, 500);
+      logReturn(500, 'role_lookup_failed');
+      return jsonResponse({ success: false, error: `Unable to validate role: ${roleError.message}`, request_id: requestId }, 500);
     }
 
     const role = String(roleRow?.role || '').trim().toLowerCase();
     if (!ALLOWED_ROLES.has(role)) {
-      return jsonResponse({ success: false, error: 'Forbidden: admin/editor role required.' }, 403);
+      logReturn(403, 'forbidden_role', { role });
+      return jsonResponse({ success: false, error: 'Forbidden: admin/editor role required.', request_id: requestId }, 403);
     }
 
-    if (!RESEND_API_KEY || !EMAIL_FROM) {
+    if (!resendApiKey || !emailFrom) {
+      logReturn(200, 'email_provider_not_configured');
       return jsonResponse({
-        success: true,
+        success: false,
+        configured: false,
         sent: 0,
         failed: 0,
-        warning: 'Email provider is not configured. No emails were sent.'
+        error: 'Email provider is not configured. No emails were sent.',
+        request_id: requestId
       });
     }
 
     let recipients: ProfileRecipient[] = [];
     if (testEmail) {
-      recipients = [{ email: TEST_EMAIL, display_name: user.email || 'admin' }];
+      recipients = [{ email: testEmailAddress, display_name: user.email || 'admin' }];
     } else {
       const { data, error } = await serviceClient
         .from('profiles')
@@ -189,7 +226,8 @@ Deno.serve(async (req: Request) => {
         .not('email', 'is', null);
 
       if (error) {
-        return jsonResponse({ success: false, error: `Failed to load recipients: ${error.message}` }, 500);
+        logReturn(500, 'recipient_lookup_failed');
+        return jsonResponse({ success: false, error: `Failed to load recipients: ${error.message}`, request_id: requestId }, 500);
       }
 
       recipients = ((data || []) as ProfileRecipient[]).filter((recipient) => {
@@ -210,7 +248,7 @@ Deno.serve(async (req: Request) => {
 
       const { subject, text, html } = buildEmailContent(recipient.display_name, gameName, gameSlug);
       try {
-        await sendEmail(to, subject, text, html);
+        await sendEmail(to, subject, text, html, resendApiKey, emailFrom);
         sent += 1;
       } catch (error) {
         failed += 1;
@@ -222,21 +260,33 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    logReturn(200, 'notification_send_completed', {
+      testEmail,
+      recipientCount: sendTargets.length,
+      sent,
+      failed
+    });
     return jsonResponse({
       success: true,
+      configured: true,
       mode,
       test_email: testEmail,
       sent,
       failed,
       recipient_count: sendTargets.length,
       game_name: gameName,
-      game_slug: gameSlug
+      game_slug: gameSlug,
+      request_id: requestId
     });
   } catch (error) {
+    logReturn(500, 'unexpected_error', {
+      error: error instanceof Error ? error.message : String(error)
+    });
     return jsonResponse(
       {
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
+        request_id: requestId
       },
       500
     );
