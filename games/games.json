@@ -11330,32 +11330,45 @@
     "_ccg_migrated": false
   },
   {
-  "system": "C64",
-  "id": "the_happiest_days_of_your_life",
-  "slug": "the-happiest-days-of-your-life",
-  "title": "The Happiest Days Of Your Life",
-  "sorttitle": "Happiest Days Of Your Life",
-  "year": 1986,
-  "genres": ["action-adventure"],
-  "collections": [],
-
-  "video": "https://www.patreon.com/posts/innocent-c64-hit-151170335",
-
-  "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
-  "pdf": "https://drive.google.com/file/d/1PJ6UBgjIcG8kM6DpOnXNTBRHwHLzGhmy/view?usp=drive_link",
-  "disk": [
-    "https://drive.google.com/file/d/1RIjhzn0qnDn6uRYzcxrPCY0ZE5M8f_Db/view?usp=drive_link"
-  ],
-  "lemon": [
-    "https://www.lemon64.com/game/happiest-days-of-your-life"
-  ],
-  "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64...",
-  "ccg_rating": 6,
-  "ccg_rating_reason": "Not exactly in the same realm of Skool Daze. An Everyones A Wally Clone at best",
-  "credits": {
-  "_ccg_enforced": false,
-  "_ccg_migrated": false
-}
+    "system": "C64",
+    "id": "the_happiest_days_of_your_life",
+    "slug": "the-happiest-days-of-your-life",
+    "title": "The Happiest Days Of Your Life",
+    "sorttitle": "Happiest Days Of Your Life",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ],
+    "collections": [],
+    "videoid": "ght7u1k_tqw",
+    "thumbnail": "resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
+    "pdf": "https://drive.google.com/file/d/1PJ6UBgjIcG8kM6DpOnXNTBRHwHLzGhmy/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1RIjhzn0qnDn6uRYzcxrPCY0ZE5M8f_Db/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/happiest-days-of-your-life"
+    ],
+    "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing the headmaster’s wallet, requiring them to explore a town/school to find the wallet and photographic evidence while dodging hazards",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "Not exactly in the same realm of Skool Daze. An Everyones A Wally Clone at best",
+    "credits": {
+      "publisher": [
+        "Firebird"
+      ],
+      "producer": "",
+      "coder": [],
+      "graphics": [
+        "Delvin J. Sorrell"
+      ],
+      "musician": [],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
   {
     "system": "C64",
     "id": "hawkeye",
