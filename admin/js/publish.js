@@ -46,15 +46,34 @@ async function notifyNewGameFromPrompt() {
     }
 
     const supabase = window.ccgSupabase.getClient();
-    const { data, error } = await supabase.functions.invoke('send-new-game-notification', {
-      body: {
+    const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
+    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+    if (!supabaseUrl || !anonKey) {
+      throw new Error('Supabase config unavailable in publish page context.');
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw new Error(sessionError.message || 'Unable to read auth session.');
+
+    const accessToken = sessionData?.session?.access_token || anonKey;
+    const response = await fetch(`${supabaseUrl}/functions/v1/send-new-game-notification`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: anonKey,
+        Authorization: `Bearer ${accessToken}`
+      },
+      body: JSON.stringify({
         game_name: gameName.trim(),
         mode: 'coming_soon',
         export_id: `publish-${Date.now()}`
-      }
+      })
     });
 
-    if (error) throw new Error(error.message || 'Unknown edge function error');
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data?.error || `Edge function request failed (${response.status}).`);
+    }
     if (!data?.success) throw new Error(data?.error || 'Unknown edge function error');
 
     const sent = Number(data?.sent || 0);
