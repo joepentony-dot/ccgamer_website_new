@@ -224,7 +224,7 @@ Deno.serve(async (req: Request) => {
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     const resendApiKey = Deno.env.get('RESEND_API_KEY') || '';
-    const emailFrom = Deno.env.get('EMAIL_FROM') || '';
+    const emailFrom = Deno.env.get('FROM_EMAIL') || '';
     const testEmailAddress =
       (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
 
