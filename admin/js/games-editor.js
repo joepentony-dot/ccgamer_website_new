@@ -834,11 +834,20 @@ async function maybeSendNewGameNotifications(packageData) {
     const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
     const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+    const absoluteThumbnailUrl = (() => {
+      const thumb = packageData.gameEntry.thumbnail || '';
+      if (!thumb) return '';
+      return thumb.startsWith('http')
+        ? thumb
+        : `${SITE_ORIGIN}/${thumb.replace(/^\/+/, '')}`;
+    })();
+
     const payload = {
       user_id: userId,
       game_name: packageData.gameEntry.title,
       game_slug: packageData.slug,
-      mode: 'coming_soon'
+      game_thumbnail: absoluteThumbnailUrl,
+      mode: packageData.notifyMembers ? 'coming_soon_members' : 'coming_soon'
     };
     if (packageData.sendTestEmail) {
       payload.test_email = true;
