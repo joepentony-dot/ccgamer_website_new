@@ -66,6 +66,19 @@ async function notifyNewGameFromPrompt() {
       throw new Error('Supabase auth client unavailable in publish page context.');
     }
 
+    const {
+      data: { session }
+    } = await supabase.auth.getSession();
+    const accessToken = session?.access_token;
+
+    if (!accessToken) {
+      if (status) {
+        status.textContent =
+          'Admin authentication expired or missing. Please sign in again before sending notification.';
+      }
+      return;
+    }
+
     // ------------------------------------------------------------
     // Build payload (TEST EMAIL ALWAYS OVERRIDES MEMBER NOTIFY)
     // ------------------------------------------------------------
@@ -93,7 +106,8 @@ async function notifyNewGameFromPrompt() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: anonKey
+          apikey: anonKey,
+          Authorization: `Bearer ${accessToken}`
         },
         body: JSON.stringify(payload)
       }
