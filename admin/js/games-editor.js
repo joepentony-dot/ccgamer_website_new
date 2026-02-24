@@ -836,15 +836,9 @@ async function maybeSendNewGameNotifications(packageData) {
       throw new Error('Unable to resolve current Supabase session.');
     }
 
-    const accessToken = String(data?.session?.access_token || '').trim();
-    if (!accessToken) {
-      setDownloadStatus('Warning: Download started, but notifications were skipped because admin auth is not ready. Sign in again and retry.', false, true);
-      return;
-    }
-
     const userId = String(data?.session?.user?.id || '').trim();
     if (!userId) {
-      setDownloadStatus('Warning: Download started, but notifications were skipped because admin auth is not ready. Sign in again and retry.', false, true);
+      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
       return;
     }
 
@@ -875,7 +869,7 @@ async function maybeSendNewGameNotifications(packageData) {
       headers: {
         'Content-Type': 'application/json',
         apikey: anonKey,
-        Authorization: 'Bearer ' + accessToken
+        Authorization: 'Bearer ' + anonKey
       },
       body: JSON.stringify(payload)
     });
