@@ -32,13 +32,22 @@ function refreshWarnings(state) {
 
 async function notifyNewGameFromPrompt() {
   const status = document.getElementById('sendNewGameNotificationStatus');
+
   const gameName = window.prompt('Game name (required):') || '';
   if (!gameName.trim()) {
     if (status) status.textContent = 'Game name is required. Notification not sent.';
     return;
   }
 
-  if (status) status.textContent = 'Sending Coming Soon notification...';
+  const notifyMembers = document.getElementById('notifyMembers')?.checked === true;
+  const sendTestEmail = document.getElementById('sendTestEmail')?.checked === true;
+
+  if (!notifyMembers && !sendTestEmail) {
+    if (status) status.textContent = 'Download complete. No notification selected.';
+    return;
+  }
+
+  if (status) status.textContent = 'Sending notification...';
 
   try {
     if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
@@ -48,6 +57,7 @@ async function notifyNewGameFromPrompt() {
     const supabase = window.ccgSupabase.getClient();
     const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+
     if (!supabaseUrl || !anonKey) {
       throw new Error('Supabase config unavailable in publish page context.');
     }
@@ -57,35 +67,70 @@ async function notifyNewGameFromPrompt() {
 
     const accessToken = sessionData?.session?.access_token;
     if (!accessToken) {
-      if (status) status.textContent = 'Auth required: no active admin session token found. Please sign in again, then retry.';
+      if (status) {
+        status.textContent =
+          'Auth required: no active admin session token found. Please sign in again, then retry.';
+      }
       return;
     }
 
-    const response = await fetch(`${supabaseUrl}/functions/v1/send-new-game-notification`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: anonKey,
-        Authorization: `Bearer ${accessToken}`
-      },
-      body: JSON.stringify({
+    // ------------------------------------------------------------
+    // Build payload (TEST EMAIL ALWAYS OVERRIDES MEMBER NOTIFY)
+    // ------------------------------------------------------------
+
+    let payload;
+
+    if (sendTestEmail) {
+      payload = {
         game_name: gameName.trim(),
         mode: 'coming_soon',
+        test_email: true,
         export_id: `publish-${Date.now()}`
-      })
-    });
+      };
+    } else if (notifyMembers) {
+      payload = {
+        game_name: gameName.trim(),
+        mode: 'coming_soon_members',
+        export_id: `publish-${Date.now()}`
+      };
+    }
+
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/send-new-game-notification`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: anonKey,
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(payload)
+      }
+    );
 
     const data = await response.json().catch(() => ({}));
+
     if (!response.ok) {
       throw new Error(data?.error || `Edge function request failed (${response.status}).`);
     }
-    if (!data?.success) throw new Error(data?.error || 'Unknown edge function error');
+
+    if (!data?.success) {
+      throw new Error(data?.error || 'Unknown edge function error.');
+    }
 
     const sent = Number(data?.sent || 0);
     const failed = Number(data?.failed || 0);
-    if (status) status.textContent = failed > 0
-      ? `Coming Soon notification complete. Sent: ${sent}, failed: ${failed}.`
-      : `Coming Soon notification complete. Sent: ${sent}.`;
+
+    if (sendTestEmail) {
+      if (status) status.textContent = 'Test email sent successfully to admin address.';
+    } else {
+      if (status) {
+        status.textContent =
+          failed > 0
+            ? `Coming Soon notification sent. Sent: ${sent}, failed: ${failed}.`
+            : `Coming Soon notification sent to ${sent} members.`;
+      }
+    }
   } catch (error) {
     if (status) status.textContent = `Failed to send notification: ${error.message}`;
   }
@@ -96,7 +141,7 @@ async function bootstrap() {
   if (!roleCheck) return;
 
   const state = readState();
-  document.querySelectorAll('[data-step-toggle]').forEach((toggle) => {
+  document.querySelectorAll('[data-step-toggle]').forEach(toggle => {
     const step = Number(toggle.dataset.stepToggle);
     toggle.checked = !!state[step];
     toggle.addEventListener('change', () => {
