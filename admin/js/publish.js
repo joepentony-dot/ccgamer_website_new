@@ -55,7 +55,12 @@ async function notifyNewGameFromPrompt() {
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     if (sessionError) throw new Error(sessionError.message || 'Unable to read auth session.');
 
-    const accessToken = sessionData?.session?.access_token || anonKey;
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) {
+      if (status) status.textContent = 'Auth required: no active admin session token found. Please sign in again, then retry.';
+      return;
+    }
+
     const response = await fetch(`${supabaseUrl}/functions/v1/send-new-game-notification`, {
       method: 'POST',
       headers: {
