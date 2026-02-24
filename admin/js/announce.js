@@ -90,46 +90,72 @@ async function bootstrap() {
   });
 
   $('announceSendBtn').addEventListener('click', async () => {
-    const slug = $('announceSendBtn').dataset.slug;
-    const game = bySlug.get(slug);
-    const type = $('announceType').value;
-    const test = $('announceTestEmail').checked;
+    const sendBtn = $('announceSendBtn');
+    const previousLabel = sendBtn.textContent;
+    sendBtn.disabled = true;
 
-    $('announceStatus').textContent = 'Sending…';
+    try {
+      const slug = sendBtn.dataset.slug;
+      const game = bySlug.get(slug);
+      const type = $('announceType').value;
+      const test = $('announceTestEmail').checked;
 
-    const supabase = window.ccgSupabase.getClient();
-    const { data } = await supabase.auth.getSession();
-    const token = data?.session?.access_token;
-    if (!token) {
-      $('announceStatus').textContent = 'Auth required.';
-      return;
-    }
-
-    const payload = {
-      mode: type,
-      game_name: game.title,
-      game_slug: game.slug,
-      game_thumbnail: game.thumbnail || '',
-      test_email: test === true
-    };
-
-    const r = await fetch(
-      `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: window.CCG_SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
+      if (!slug || !game) {
+        throw new Error('Please select a game before sending.');
       }
-    );
 
-    const j = await r.json();
-    $('announceStatus').textContent = j.success
-      ? `Sent: ${j.sent || 0}, failed: ${j.failed || 0}`
-      : `Failed: ${j.error}`;
+      $('announceStatus').textContent = 'Sending…';
+      sendBtn.textContent = 'Sending...';
+
+      const supabase = window.ccgSupabase?.getClient?.();
+      if (!supabase?.auth?.getSession) {
+        throw new Error('Supabase client unavailable. Please refresh and try again.');
+      }
+
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw new Error(sessionError.message || 'Unable to retrieve auth session.');
+      }
+
+      const token = data?.session?.access_token;
+      if (!token) {
+        throw new Error('Auth required. Please sign in again.');
+      }
+
+      const payload = {
+        mode: type,
+        game_name: game.title,
+        game_slug: game.slug,
+        game_thumbnail: game.thumbnail || '',
+        test_email: test === true
+      };
+
+      const r = await fetch(
+        `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: window.CCG_SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const j = await r.json();
+      if (!r.ok || !j.success) {
+        throw new Error(j.error || `Request failed (${r.status}).`);
+      }
+
+      $('announceStatus').textContent = `Sent: ${j.sent || 0}, failed: ${j.failed || 0}`;
+    } catch (err) {
+      $('announceStatus').textContent = `Failed: ${err?.message || 'Unknown error.'}`;
+      console.error('Announcement send failed:', err);
+    } finally {
+      sendBtn.textContent = previousLabel;
+      updateSendState();
+    }
   });
 }
 
