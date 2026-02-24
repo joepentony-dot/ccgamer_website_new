@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="/admin/js/input-harden.js?v=admin-stable-20260207"></script>
+  <script src="/admin/js/admin-input-firewall.js?v=admin-stable-20260207"></script>
+  <title>Game Announcements</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-stable-20260207" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div aria-hidden="true" class="ccg-bg-starfield"></div>
+    <div aria-hidden="true" class="ccg-bg-grid"></div>
+    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="admin-dashboard-wrap ccg-page--admin omega-admin-shell" data-admin-shell>
+    <header class="admin-dashboard-header">
+      <div>
+        <p class="admin-auth-kicker">CCG Admin Panel</p>
+        <h1>Game Announcements</h1>
+        <p>Notify members about games that are already live on the website.</p>
+      </div>
+    </header>
+
+    <section class="omega-status-panel" aria-labelledby="announce-game-selector-title">
+      <h2 id="announce-game-selector-title">Game Selector</h2>
+      <label for="announceSearchInput">Search games</label>
+      <input id="announceSearchInput" type="search" placeholder="Search games..." autocomplete="off" />
+      <label for="announceGameList">Available games</label>
+      <select id="announceGameList" size="10" aria-describedby="announce-game-list-help"></select>
+      <p id="announce-game-list-help">Only existing games from <code>/games/games.json</code> are shown. Value uses canonical slug.</p>
+    </section>
+
+    <section class="omega-status-panel" aria-labelledby="announce-options-title">
+      <h2 id="announce-options-title">Announcement Options</h2>
+      <label>
+        <input id="announceTestEmail" type="checkbox" />
+        Send test email (admin only)
+      </label>
+      <label>
+        <input id="announceNotifyMembers" type="checkbox" />
+        Notify members
+      </label>
+      <p>Test sends only to admin email. Notify members sends to all opted-in users.</p>
+    </section>
+
+    <section class="omega-status-panel" aria-labelledby="announce-preview-title">
+      <h2 id="announce-preview-title">Preview</h2>
+      <p><strong>Game title:</strong> <span id="announcePreviewTitle">Select a game to preview details.</span></p>
+      <p><strong>Subject:</strong> <span id="announcePreviewSubject">—</span></p>
+      <p><strong>Thumbnail:</strong></p>
+      <img id="announcePreviewThumbnail" src="" alt="Selected game thumbnail" hidden />
+      <p><strong>Link:</strong> <a id="announcePreviewLink" href="#">—</a></p>
+    </section>
+
+    <section class="omega-status-panel" aria-labelledby="announce-send-title">
+      <h2 id="announce-send-title">Action</h2>
+      <button id="announceSendBtn" class="ccg-btn ccg-btn--primary" type="button" disabled>Send Announcement</button>
+      <p id="announceStatus" data-state="info">Select one game and one announcement option.</p>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/announce.js?v=admin-stable-20260207"></script>
+  <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
+</body>
+</html>

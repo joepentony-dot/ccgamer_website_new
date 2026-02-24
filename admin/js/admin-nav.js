@@ -35,6 +35,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
         <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
         <a href="/admin/games-editor.html" data-nav="editor">Game Builder Wizard (Primary)</a>
         <a href="/admin/games-json-editor.html" data-nav="audit">Legacy Bulk Editor — Legacy (not used)</a>
+        <a href="/admin/announce.html" data-nav="announce">Game Announcements</a>
         <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
         <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
       </nav>
