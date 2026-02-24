@@ -45,6 +45,13 @@ type ProfileRecipient = {
 // -------------------- Constants ------------------------------
 
 const ALLOWED_ROLES = new Set(['admin', 'superadmin', 'editor']);
+const ALLOWED_ANNOUNCEMENT_MODES = new Set([
+  'featured_classic',
+  'spotlight_pick',
+  // Legacy compatibility (do not break existing callers)
+  'coming_soon',
+  'coming_soon_members'
+]);
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const ADMIN_COPY_EMAIL = 'joepentony@hotmail.com';
 const BANNER_IMAGE_URL =
@@ -70,7 +77,10 @@ function escapeHtml(value: string): string {
 }
 
 function normalizeGameSlug(rawSlug: string): string {
-  const slug = String(rawSlug || '').trim().replace(/^\/+|\/+$/g, '');
+  const slug = String(rawSlug || '')
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+    .replace(/\.html?$/i, '');
   return slug;
 }
 
@@ -78,7 +88,7 @@ function buildGameUrl(gameSlug: string): string {
   if (!gameSlug) {
     return `${SITE_URL}/games/`;
   }
-  return `${SITE_URL}/games/${encodeURIComponent(gameSlug)}.html`;
+  return `${SITE_URL}/games/${encodeURIComponent(gameSlug)}/`;
 }
 
 function buildEmailContent(
@@ -285,11 +295,7 @@ Deno.serve(async (req: Request) => {
     const gameThumbnail = String(payload.game_thumbnail || '').trim();
     const testEmail = payload.test_email === true;
 
-    if (
-      (!testEmail && mode !== 'coming_soon_members') ||
-      (testEmail && mode !== 'coming_soon') ||
-      !gameName
-    ) {
+    if (!ALLOWED_ANNOUNCEMENT_MODES.has(mode) || !gameName) {
       return jsonResponse(
         {
           success: false,
