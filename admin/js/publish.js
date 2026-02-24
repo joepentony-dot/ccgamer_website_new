@@ -62,18 +62,8 @@ async function notifyNewGameFromPrompt() {
       throw new Error('Supabase config unavailable in publish page context.');
     }
 
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError) throw new Error(sessionError.message || 'Unable to read auth session.');
-
-    const accessToken = String(sessionData?.session?.access_token || '').trim();
-
-    // REQUIRED: Abort with clear admin-facing error, and DO NOT send fetch.
-    if (!accessToken) {
-      if (status) {
-        status.textContent =
-          'Auth required: your admin session has expired or is unavailable. Please sign in again, then retry.';
-      }
-      return;
+    if (!supabase?.auth) {
+      throw new Error('Supabase auth client unavailable in publish page context.');
     }
 
     // ------------------------------------------------------------
@@ -103,8 +93,7 @@ async function notifyNewGameFromPrompt() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          apikey: anonKey,
-          Authorization: `Bearer ${accessToken}`
+          apikey: anonKey
         },
         body: JSON.stringify(payload)
       }
