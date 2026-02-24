@@ -39,6 +39,21 @@ function setLoadedHint(text) {
   if (node) node.textContent = text || '';
 }
 
+function enforceAnnouncementMode() {
+  const test = $('announceTestEmail');
+  const members = $('announceNotifyMembers');
+  if (!test || !members) return;
+
+  if (test.checked && members.checked) {
+    members.checked = false;
+    return;
+  }
+
+  if (!test.checked && !members.checked) {
+    test.checked = true;
+  }
+}
+
 function updateSendState() {
   const btn = $('announceSendBtn');
   const selectedSlug = normalizeText(btn?.dataset?.selectedSlug);
@@ -144,18 +159,9 @@ async function sendAnnouncement(gamesBySlug) {
     return;
   }
 
+  enforceAnnouncementMode();
   const test = $('announceTestEmail')?.checked === true;
   const members = $('announceNotifyMembers')?.checked === true;
-
-  if (!test && !members) {
-    setStatus('Please select either test email or notify members.');
-    return;
-  }
-
-  // Mutually-exclusive enforcement: test wins
-  if (test && members) {
-    $('announceNotifyMembers').checked = false;
-  }
 
   const game = gamesBySlug.get(selectedSlug);
   if (!game) {
@@ -284,18 +290,21 @@ async function bootstrap() {
     renderResults(games, search.value || '');
   });
 
-  // Mutual exclusivity: test wins
+  if (testBox) testBox.checked = true;
+  if (memberBox) memberBox.checked = false;
+
   testBox?.addEventListener('change', () => {
-    if (testBox.checked && memberBox) memberBox.checked = false;
+    enforceAnnouncementMode();
     updateSendState();
   });
   memberBox?.addEventListener('change', () => {
-    if (memberBox.checked && testBox) testBox.checked = false;
+    enforceAnnouncementMode();
     updateSendState();
   });
 
   sendBtn?.addEventListener('click', () => sendAnnouncement(gamesBySlug));
 
+  enforceAnnouncementMode();
   updateSendState();
 }
 

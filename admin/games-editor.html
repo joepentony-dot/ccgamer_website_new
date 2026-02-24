@@ -183,20 +183,15 @@ https://www.mobygames.com/..."></textarea></label>
         <label class="radio-option"><input type="radio" name="jsonExportMode" value="full" data-field="jsonExportMode" checked /> Export full games.json (recommended)</label>
         <label class="radio-option"><input type="radio" name="jsonExportMode" value="entry" data-field="jsonExportMode" /> Export new entry only</label>
       </div>
-      <label class="radio-option" style="margin: .85rem 0 .35rem; align-items: flex-start;">
-        <span style="display: inline-flex; align-items: flex-start; gap: .45rem;">
-          <input type="checkbox" data-field="notifyMembers" />
-          <span>Notify members (Coming Soon)</span>
-        </span>
-        <span class="hint">Only users who have opted in to new game notifications will be emailed.</span>
+      <label class="radio-option">
+        <input type="checkbox" data-field="notifyMembers" />
+        <span>Notify members (retired in this step)</span>
       </label>
-      <label class="radio-option" style="margin: 0 0 .85rem; align-items: flex-start;">
-        <span style="display: inline-flex; align-items: flex-start; gap: .45rem;">
-          <input type="checkbox" data-field="sendTestEmail" />
-          <span>Send test email (admin only — sends to joepentony@hotmail.com)</span>
-        </span>
-        <span class="hint">Runs independently: this sends one Coming Soon test email to joepentony@hotmail.com even if member notifications are off.</span>
+      <label class="radio-option">
+        <input type="checkbox" data-field="sendTestEmail" />
+        <span>Send test email (retired in this step)</span>
       </label>
+      <p class="hint">Announcements are sent after deploy from <code>/admin/announce.html</code>.</p>
       <button type="button" class="ccg-btn ccg-btn--primary primary" data-action="download">⬇ Download Game Package</button>
       <p class="status" data-download-status></p>
       <div class="actions">
