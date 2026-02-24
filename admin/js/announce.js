@@ -9,6 +9,20 @@ function text(v) {
   return String(v || '').trim();
 }
 
+function normalizeAnnouncementMode(rawMode) {
+  const mode = text(rawMode);
+  if (mode === 'new_game_added') return 'coming_soon_members';
+  return mode;
+}
+
+function normalizeThumbnailPath(rawPath) {
+  const path = text(rawPath);
+  if (!path) return '';
+
+  if (/^https?:\/\//i.test(path)) return path;
+  return path.startsWith('/') ? path : `/${path}`;
+}
+
 function subjectFor(type, title) {
   if (!title) return '—';
   switch (type) {
@@ -34,6 +48,9 @@ async function bootstrap() {
 
   initAdminNav({ pageLabel: 'Game Announcements', active: 'announce' });
 
+  const sendBtn = $('announceSendBtn');
+  sendBtn.dataset.defaultLabel = text(sendBtn.textContent) || 'Send Announcement';
+
   const res = await fetch('/games/games.json', { cache: 'no-store' });
   const games = await res.json();
 
@@ -54,19 +71,20 @@ async function bootstrap() {
         b.textContent = `${g.title} (${g.year || '?'})`;
         b.onclick = () => {
           const announceThumb = $('announceThumb');
+          const normalizedThumbnail = normalizeThumbnailPath(g.thumbnail);
 
-          $('announceSendBtn').dataset.slug = g.slug;
+          sendBtn.dataset.slug = g.slug;
+          sendBtn.dataset.thumbnail = normalizedThumbnail;
           $('announceTitle').textContent = g.title;
           $('announceSlug').textContent = g.slug;
-          $('announceLink').href = `/games/${g.slug}.html`;
+          $('announceLink').href = `/games/${g.slug}/`;
           $('announceLink').hidden = false;
 
-          if (g.thumbnail) {
-            announceThumb.src = g.thumbnail.startsWith('/')
-              ? g.thumbnail
-              : `/${g.thumbnail}`;
+          if (normalizedThumbnail) {
+            announceThumb.src = normalizedThumbnail;
             announceThumb.hidden = false;
           } else {
+            announceThumb.removeAttribute('src');
             announceThumb.hidden = true;
           }
 
@@ -94,15 +112,17 @@ async function bootstrap() {
   });
 
   $('announceSendBtn').addEventListener('click', async () => {
-    const sendBtn = $('announceSendBtn');
-    const previousLabel = sendBtn.textContent;
+    const previousLabel = sendBtn.dataset.defaultLabel || 'Send Announcement';
     sendBtn.disabled = true;
 
     try {
-      const slug = sendBtn.dataset.slug;
+      const slug = text(sendBtn.dataset.slug);
       const game = bySlug.get(slug);
-      const type = $('announceType').value;
+      const mode = normalizeAnnouncementMode($('announceType').value);
       const test = $('announceTestEmail').checked;
+      const normalizedThumbnail = normalizeThumbnailPath(
+        sendBtn.dataset.thumbnail || game?.thumbnail
+      );
 
       if (!slug || !game) {
         throw new Error('Please select a game before sending.');
@@ -113,7 +133,7 @@ async function bootstrap() {
 
       const client = window.ccgSupabase?.getClient?.();
       if (!client?.auth?.getSession) {
-        throw new Error('Supabase client unavailable. Please refresh and try again.');
+        throw new Error('Admin authentication is unavailable. Please refresh and sign in again.');
       }
 
       const {
@@ -127,14 +147,14 @@ async function bootstrap() {
 
       const token = session?.access_token;
       if (!token) {
-        throw new Error('No active session. Please sign in again.');
+        throw new Error('No active admin session found. Please sign in again.');
       }
 
       const payload = {
-        mode: type,
+        mode,
         game_name: game.title,
         game_slug: game.slug,
-        game_thumbnail: game.thumbnail || '',
+        game_thumbnail: normalizedThumbnail,
         test_email: test === true
       };
 
@@ -162,6 +182,7 @@ async function bootstrap() {
       console.error('Announcement send failed:', err);
     } finally {
       sendBtn.textContent = previousLabel;
+      sendBtn.disabled = false;
       updateSendState();
     }
   });
