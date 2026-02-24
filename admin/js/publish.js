@@ -55,10 +55,33 @@ async function notifyNewGameFromPrompt() {
     }
 
     const supabase = await window.ccgSupabase.getClient();
+    const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
+    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+
+    if (!supabaseUrl || !anonKey) {
+      throw new Error('Supabase config unavailable in publish page context.');
+    }
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw new Error(sessionError.message || 'Unable to read auth session.');
+
+    const accessToken = String(sessionData?.session?.access_token || '').trim();
+
+    // REQUIRED: Abort with clear admin-facing error, and DO NOT send fetch.
+    if (!accessToken) {
+      if (status) {
+        status.textContent =
+          'Auth required: your admin session has expired or is unavailable. Please sign in again, then retry.';
+      }
+      return;
+    }
+
+    // ------------------------------------------------------------
+    // Build payload (TEST EMAIL ALWAYS OVERRIDES MEMBER NOTIFY)
+    // ------------------------------------------------------------
 
     let payload;
 
-    // TEST EMAIL ALWAYS OVERRIDES MEMBER NOTIFY
     if (sendTestEmail) {
       payload = {
         game_name: gameName.trim(),
@@ -66,7 +89,7 @@ async function notifyNewGameFromPrompt() {
         test_email: true,
         export_id: `publish-${Date.now()}`
       };
-    } else {
+    } else if (notifyMembers) {
       payload = {
         game_name: gameName.trim(),
         mode: 'coming_soon_members',
@@ -74,21 +97,31 @@ async function notifyNewGameFromPrompt() {
       };
     }
 
-    const { data, error } = await supabase.functions.invoke(
-      'send-new-game-notification',
-      { body: payload }
+    const response = await fetch(
+      `${supabaseUrl}/functions/v1/send-new-game-notification`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: anonKey,
+          Authorization: `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(payload)
+      }
     );
 
-    if (error) {
-      throw new Error(error.message || 'Edge function invocation failed.');
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(data?.error || `Edge function request failed (${response.status}).`);
     }
 
     if (!data?.success) {
       throw new Error(data?.error || 'Unknown edge function error.');
     }
 
-    const sent = Number(data.sent || 0);
-    const failed = Number(data.failed || 0);
+    const sent = Number(data?.sent || 0);
+    const failed = Number(data?.failed || 0);
 
     if (sendTestEmail) {
       if (status) status.textContent = 'Test email sent successfully to admin address.';
@@ -110,7 +143,7 @@ async function bootstrap() {
   if (!roleCheck) return;
 
   const state = readState();
-  document.querySelectorAll('[data-step-toggle]').forEach(toggle => {
+  document.querySelectorAll('[data-step-toggle]').forEach((toggle) => {
     const step = Number(toggle.dataset.stepToggle);
     toggle.checked = !!state[step];
     toggle.addEventListener('change', () => {
