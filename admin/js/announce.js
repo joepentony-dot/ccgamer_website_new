@@ -58,8 +58,14 @@ async function bootstrap() {
           $('announceSlug').textContent = g.slug;
           $('announceLink').href = `/games/${g.slug}.html`;
           $('announceLink').hidden = false;
-          $('announceThumb').src = g.thumbnail || '';
-          $('announceThumb').hidden = !g.thumbnail;
+          if (g.thumbnail) {
+            $('announceThumb').src = g.thumbnail.startsWith('/')
+              ? g.thumbnail
+              : `/${g.thumbnail}`;
+            $('announceThumb').hidden = false;
+          } else {
+            $('announceThumb').hidden = true;
+          }
           $('announceSubject').textContent =
             subjectFor($('announceType').value, g.title);
           updateSendState();
