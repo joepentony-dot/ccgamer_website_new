@@ -1,221 +1,249 @@
 import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 
-const state = {
-  games: [],
-  filteredGames: [],
-  selectedSlug: '',
-  selectedMode: ''
-};
+const SITE_ORIGIN = window.location.origin;
 
-function formatGameLabel(game) {
-  const title = String(game?.title || '').trim();
-  const year = String(game?.year || '').trim();
-  const system = String(game?.system || '').trim();
-  return `${title} (${year}) – ${system}`;
+function $(id) {
+  return document.getElementById(id);
 }
 
-function getSelectedGame() {
-  return state.games.find((game) => game.slug === state.selectedSlug) || null;
+function normalizeText(value) {
+  return String(value || '').trim();
 }
 
-function setStatus(message, status = 'info') {
-  const node = document.getElementById('announceStatus');
-  if (!node) return;
-  node.textContent = message;
-  node.dataset.state = status;
+function absolutifyUrl(maybeRelative) {
+  const raw = normalizeText(maybeRelative);
+  if (!raw) return '';
+  if (/^https?:\/\//i.test(raw)) return raw;
+  return `${SITE_ORIGIN}/${raw.replace(/^\/+/, '')}`;
 }
 
-function refreshSendButton() {
-  const sendBtn = document.getElementById('announceSendBtn');
-  if (!sendBtn) return;
-  sendBtn.disabled = !(state.selectedSlug && state.selectedMode);
+function buildLabel(game) {
+  const title = normalizeText(game?.title);
+  const year = normalizeText(game?.year);
+  const system = normalizeText(game?.system);
+  const bits = [];
+  if (title) bits.push(title);
+  if (year) bits.push(`(${year})`);
+  if (system) bits.push(`– ${system}`);
+  return bits.join(' ');
 }
 
-function renderPreview() {
-  const game = getSelectedGame();
-  const titleNode = document.getElementById('announcePreviewTitle');
-  const subjectNode = document.getElementById('announcePreviewSubject');
-  const thumbNode = document.getElementById('announcePreviewThumbnail');
-  const linkNode = document.getElementById('announcePreviewLink');
+function setStatus(text) {
+  const node = $('announceStatus');
+  if (node) node.textContent = text || '';
+}
 
-  if (!titleNode || !subjectNode || !thumbNode || !linkNode) return;
+function setLoadedHint(text) {
+  const node = $('announceLoadedHint');
+  if (node) node.textContent = text || '';
+}
 
-  if (!game) {
-    titleNode.textContent = 'Select a game to preview details.';
-    subjectNode.textContent = '—';
-    thumbNode.hidden = true;
-    thumbNode.removeAttribute('src');
-    linkNode.textContent = '—';
-    linkNode.setAttribute('href', '#');
-    refreshSendButton();
+function updateSendState() {
+  const btn = $('announceSendBtn');
+  const selectedSlug = normalizeText(btn?.dataset?.selectedSlug);
+  const test = $('announceTestEmail')?.checked === true;
+  const members = $('announceNotifyMembers')?.checked === true;
+  if (!btn) return;
+
+  btn.disabled = !selectedSlug || (!test && !members);
+}
+
+function setPreview(game) {
+  const title = normalizeText(game?.title);
+  const slug = normalizeText(game?.slug);
+  const thumb = absolutifyUrl(game?.thumbnail);
+
+  $('announceTitle').textContent = title || '—';
+  $('announceSlug').textContent = slug || '—';
+
+  const link = $('announceLink');
+  if (link && slug) {
+    link.href = `/games/${encodeURIComponent(slug)}.html`;
+    link.hidden = false;
+  } else if (link) {
+    link.hidden = true;
+    link.href = '#';
+  }
+
+  const subject = title ? `🆕 New Game Added: ${title}` : '—';
+  $('announceSubject').textContent = subject;
+
+  const img = $('announceThumb');
+  if (img && thumb) {
+    img.src = thumb;
+    img.alt = title ? `${title} thumbnail` : 'Game thumbnail';
+    img.hidden = false;
+  } else if (img) {
+    img.hidden = true;
+    img.removeAttribute('src');
+    img.alt = '';
+  }
+}
+
+function renderResults(games, query) {
+  const resultsNode = $('announceResults');
+  if (!resultsNode) return;
+
+  resultsNode.innerHTML = '';
+
+  const q = normalizeText(query).toLowerCase();
+  const filtered = games.filter(g => {
+    const title = normalizeText(g?.title).toLowerCase();
+    const slug = normalizeText(g?.slug).toLowerCase();
+    const system = normalizeText(g?.system).toLowerCase();
+    const year = normalizeText(g?.year).toLowerCase();
+    if (!q) return true;
+    return title.includes(q) || slug.includes(q) || system.includes(q) || year.includes(q);
+  });
+
+  if (!filtered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'ccg-admin-empty';
+    empty.textContent = 'No matches.';
+    resultsNode.appendChild(empty);
     return;
   }
 
-  const title = String(game.title || '').trim();
-  const year = String(game.year || '').trim();
-  const subject = `🆕 New Game Added: ${title} (${year})`;
-  const gameLink = `/games/${game.slug}.html`;
+  filtered.slice(0, 60).forEach(game => {
+    const slug = normalizeText(game?.slug);
+    const label = buildLabel(game);
 
-  titleNode.textContent = `${title} (${year})`;
-  subjectNode.textContent = subject;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'ccg-btn ccg-btn--ghost ccg-admin-result';
+    btn.textContent = label || slug || 'Untitled';
+    btn.dataset.slug = slug;
 
-  const thumbnail = String(game.thumbnail || '').trim();
-  if (thumbnail) {
-    thumbNode.src = `/${thumbnail.replace(/^\/+/, '')}`;
-    thumbNode.hidden = false;
-  } else {
-    thumbNode.hidden = true;
-    thumbNode.removeAttribute('src');
-  }
+    btn.addEventListener('click', () => {
+      const sendBtn = $('announceSendBtn');
+      if (sendBtn) sendBtn.dataset.selectedSlug = slug;
 
-  linkNode.textContent = gameLink;
-  linkNode.href = gameLink;
-
-  refreshSendButton();
-}
-
-function renderGameList(games) {
-  const listNode = document.getElementById('announceGameList');
-  if (!listNode) return;
-
-  listNode.innerHTML = '';
-
-  if (!games.length) {
-    const option = document.createElement('option');
-    option.value = '';
-    option.textContent = 'No games match your search.';
-    option.disabled = true;
-    listNode.append(option);
-    return;
-  }
-
-  for (const game of games) {
-    const option = document.createElement('option');
-    option.value = game.slug;
-    option.textContent = formatGameLabel(game);
-    if (game.slug === state.selectedSlug) option.selected = true;
-    listNode.append(option);
-  }
-}
-
-function updateFilteredGames(searchTerm = '') {
-  const query = String(searchTerm || '').trim().toLowerCase();
-  state.filteredGames = query
-    ? state.games.filter((game) => formatGameLabel(game).toLowerCase().includes(query) || game.slug.includes(query))
-    : [...state.games];
-
-  renderGameList(state.filteredGames);
-
-  if (!state.filteredGames.some((game) => game.slug === state.selectedSlug)) {
-    state.selectedSlug = '';
-  }
-
-  renderPreview();
-}
-
-function bindOptionToggles() {
-  const testBox = document.getElementById('announceTestEmail');
-  const membersBox = document.getElementById('announceNotifyMembers');
-
-  if (!testBox || !membersBox) return;
-
-  testBox.addEventListener('change', () => {
-    if (testBox.checked) {
-      membersBox.checked = false;
-      state.selectedMode = 'test';
-    } else if (!membersBox.checked) {
-      state.selectedMode = '';
-    }
-    refreshSendButton();
-  });
-
-  membersBox.addEventListener('change', () => {
-    if (membersBox.checked) {
-      testBox.checked = false;
-      state.selectedMode = 'members';
-    } else if (!testBox.checked) {
-      state.selectedMode = '';
-    }
-    refreshSendButton();
-  });
-}
-
-async function loadGames() {
-  const response = await fetch('/games/games.json', {
-    method: 'GET',
-    headers: { Accept: 'application/json' }
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to load games.json (${response.status}).`);
-  }
-
-  const payload = await response.json();
-  const games = Array.isArray(payload) ? payload : [];
-
-  state.games = games
-    .filter((game) => {
-      return String(game?.slug || '').trim() && String(game?.title || '').trim() && String(game?.year || '').trim() && String(game?.system || '').trim();
-    })
-    .map((game) => ({
-      slug: String(game.slug).trim(),
-      title: String(game.title).trim(),
-      year: String(game.year).trim(),
-      system: String(game.system).trim(),
-      thumbnail: String(game.thumbnail || '').trim()
-    }))
-    .sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }));
-
-  state.filteredGames = [...state.games];
-  renderGameList(state.filteredGames);
-}
-
-async function sendAnnouncement() {
-  const game = getSelectedGame();
-  if (!game || !state.selectedMode) {
-    setStatus('Select one game and one announcement option.', 'error');
-    return;
-  }
-
-  const isTest = state.selectedMode === 'test';
-  const sendBtn = document.getElementById('announceSendBtn');
-  if (sendBtn) sendBtn.disabled = true;
-
-  setStatus('Sending…', 'info');
-
-  try {
-    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
-    if (!anonKey) {
-      throw new Error('Supabase anon key is missing.');
-    }
-
-    const response = await fetch('/functions/v1/send-new-game-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: anonKey
-      },
-      body: JSON.stringify({
-        mode: 'new_game_added',
-        game_slug: game.slug,
-        test_email: isTest
-      })
+      setPreview(game);
+      setStatus('');
+      updateSendState();
     });
 
-    const data = await response.json().catch(() => ({}));
+    resultsNode.appendChild(btn);
+  });
+}
 
-    if (!response.ok) {
-      throw new Error(data?.error || `Request failed (${response.status}).`);
-    }
+async function assertLivePage(slug) {
+  const url = `/games/${encodeURIComponent(slug)}.html`;
+  const res = await fetch(url, { method: 'HEAD', cache: 'no-store' }).catch(() => null);
+  return Boolean(res && res.ok);
+}
 
-    const sent = Number(data?.sent || 0);
-    const failed = Number(data?.failed || 0);
-    setStatus(`Sent: ${sent}, Failed: ${failed}`, failed > 0 ? 'error' : 'success');
-  } catch (error) {
-    setStatus(`Failed to send announcement: ${error.message}`, 'error');
-  } finally {
-    refreshSendButton();
+async function sendAnnouncement(gamesBySlug) {
+  const sendBtn = $('announceSendBtn');
+  const selectedSlug = normalizeText(sendBtn?.dataset?.selectedSlug);
+  const status = $('announceStatus');
+
+  if (!selectedSlug) {
+    setStatus('Please select a game first.');
+    return;
+  }
+
+  const test = $('announceTestEmail')?.checked === true;
+  const members = $('announceNotifyMembers')?.checked === true;
+
+  if (!test && !members) {
+    setStatus('Please select either test email or notify members.');
+    return;
+  }
+
+  // Mutually-exclusive enforcement: test wins
+  if (test && members) {
+    $('announceNotifyMembers').checked = false;
+  }
+
+  const game = gamesBySlug.get(selectedSlug);
+  if (!game) {
+    setStatus('Selected game could not be resolved from games.json.');
+    return;
+  }
+
+  const gameName = normalizeText(game?.title);
+  const gameSlug = normalizeText(game?.slug);
+  const gameThumbnail = absolutifyUrl(game?.thumbnail);
+
+  if (!gameName || !gameSlug) {
+    setStatus('Selected game is missing required data (title/slug).');
+    return;
+  }
+
+  setStatus('Checking live page…');
+
+  const live = await assertLivePage(gameSlug);
+  if (!live) {
+    setStatus('That game page is not live yet. Upload/deploy first, then announce.');
+    return;
+  }
+
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+    setStatus('Supabase client unavailable in announce page context.');
+    return;
+  }
+
+  const supabase = await window.ccgSupabase.getClient();
+  const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
+  const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+  if (!supabaseUrl || !anonKey) {
+    setStatus('Supabase config unavailable in announce page context.');
+    return;
+  }
+
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) {
+    setStatus(`Failed to read auth session: ${sessionError.message || 'Unknown auth error'}`);
+    return;
+  }
+
+  const accessToken = normalizeText(sessionData?.session?.access_token);
+  if (!accessToken) {
+    setStatus('Auth required: please sign in again, then retry.');
+    return;
+  }
+
+  const payload = {
+    game_name: gameName,
+    game_slug: gameSlug,
+    game_thumbnail: gameThumbnail,
+    mode: test ? 'new_game_added' : 'new_game_added_members',
+    export_id: `announce-${Date.now()}`
+  };
+  if (test) payload.test_email = true;
+
+  setStatus(test ? 'Sending test email…' : 'Sending member announcement…');
+
+  const functionUrl = `${supabaseUrl}/functions/v1/send-new-game-notification`;
+  const response = await fetch(functionUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: anonKey,
+      Authorization: `Bearer ${accessToken}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    setStatus(`Failed: ${String(data?.error || `Edge function request failed (${response.status}).`)}`);
+    return;
+  }
+  if (!data?.success) {
+    setStatus(`Failed: ${String(data?.error || 'Unknown edge function error')}`);
+    return;
+  }
+
+  const sent = Number(data?.sent || 0);
+  const failed = Number(data?.failed || 0);
+
+  if (failed > 0) {
+    setStatus(`Announcement complete. Sent: ${sent}, failed: ${failed}.`);
+  } else {
+    setStatus(`Announcement complete. Sent: ${sent}.`);
   }
 }
 
@@ -223,35 +251,53 @@ async function bootstrap() {
   const roleCheck = await ensureRole(['superadmin', 'admin', 'editor']);
   if (!roleCheck) return;
 
+  const search = $('announceSearch');
+  const testBox = $('announceTestEmail');
+  const memberBox = $('announceNotifyMembers');
+  const sendBtn = $('announceSendBtn');
+
   initAdminNav({ pageLabel: 'Game Announcements', active: 'announce' });
-  startAccessMonitor();
 
-  const searchNode = document.getElementById('announceSearchInput');
-  const listNode = document.getElementById('announceGameList');
-  const sendBtn = document.getElementById('announceSendBtn');
+  setLoadedHint('Loading games.json…');
 
-  bindOptionToggles();
-
-  listNode?.addEventListener('change', () => {
-    state.selectedSlug = listNode.value;
-    renderPreview();
-  });
-
-  searchNode?.addEventListener('input', () => {
-    updateFilteredGames(searchNode.value);
-  });
-
-  sendBtn?.addEventListener('click', sendAnnouncement);
-
+  let games = [];
   try {
-    await loadGames();
-    updateFilteredGames('');
-    setStatus('Select one game and one announcement option.');
-  } catch (error) {
-    setStatus(error.message || 'Unable to load game list.', 'error');
+    const res = await fetch('/games/games.json', { cache: 'no-store' });
+    if (!res.ok) throw new Error(`games.json fetch failed (${res.status})`);
+    games = await res.json();
+    if (!Array.isArray(games)) throw new Error('games.json did not return an array.');
+  } catch (e) {
+    setLoadedHint(`Failed to load games.json: ${e.message}`);
+    return;
   }
 
-  refreshSendButton();
+  const gamesBySlug = new Map();
+  games.forEach(g => {
+    const slug = normalizeText(g?.slug);
+    if (slug) gamesBySlug.set(slug, g);
+  });
+
+  setLoadedHint(`Loaded ${gamesBySlug.size} games. Select one to announce.`);
+  renderResults(games, '');
+
+  search?.addEventListener('input', () => {
+    renderResults(games, search.value || '');
+  });
+
+  // Mutual exclusivity: test wins
+  testBox?.addEventListener('change', () => {
+    if (testBox.checked && memberBox) memberBox.checked = false;
+    updateSendState();
+  });
+  memberBox?.addEventListener('change', () => {
+    if (memberBox.checked && testBox) testBox.checked = false;
+    updateSendState();
+  });
+
+  sendBtn?.addEventListener('click', () => sendAnnouncement(gamesBySlug));
+
+  updateSendState();
 }
 
+startAccessMonitor();
 bootstrap();

@@ -4,74 +4,90 @@
   <meta charset="UTF-8" />
   <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="/admin/js/input-harden.js?v=admin-stable-20260207"></script>
-  <script src="/admin/js/admin-input-firewall.js?v=admin-stable-20260207"></script>
-  <title>Game Announcements</title>
+  <title>CCG Game Announcements</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
-  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
-  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
-  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="../resources/css/ccg-admin.css?v=admin-stable-20260207" rel="stylesheet" />
 </head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-  <div aria-hidden="true" class="ccg-bg">
-    <div aria-hidden="true" class="ccg-bg-starfield"></div>
-    <div aria-hidden="true" class="ccg-bg-grid"></div>
-    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
-  </div>
-
-  <main class="admin-dashboard-wrap ccg-page--admin omega-admin-shell" data-admin-shell>
-    <header class="admin-dashboard-header">
-      <div>
-        <p class="admin-auth-kicker">CCG Admin Panel</p>
-        <h1>Game Announcements</h1>
-        <p>Notify members about games that are already live on the website.</p>
-      </div>
+<body>
+  <main class="ccg-admin-wrap">
+    <header class="ccg-admin-hero">
+      <h1 class="ccg-admin-title">Game Announcements</h1>
+      <p class="ccg-admin-subtitle">
+        Notify members about games that are already live on the website (or send yourself a test first).
+      </p>
     </header>
 
-    <section class="omega-status-panel" aria-labelledby="announce-game-selector-title">
-      <h2 id="announce-game-selector-title">Game Selector</h2>
-      <label for="announceSearchInput">Search games</label>
-      <input id="announceSearchInput" type="search" placeholder="Search games..." autocomplete="off" />
-      <label for="announceGameList">Available games</label>
-      <select id="announceGameList" size="10" aria-describedby="announce-game-list-help"></select>
-      <p id="announce-game-list-help">Only existing games from <code>/games/games.json</code> are shown. Value uses canonical slug.</p>
+    <section class="ccg-admin-card">
+      <h2 class="ccg-admin-card__title">Select a live game from games.json</h2>
+
+      <div class="ccg-admin-row">
+        <label class="ccg-admin-label" for="announceSearch">
+          Search
+          <input id="announceSearch" class="ccg-input" type="text" placeholder="Type to search title / year / system..." autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="ccg-admin-row">
+        <div class="ccg-admin-list" role="listbox" aria-label="Game results" id="announceResults"></div>
+      </div>
+
+      <div class="ccg-admin-row">
+        <p class="ccg-admin-hint" id="announceLoadedHint">Loading games.json…</p>
+      </div>
     </section>
 
-    <section class="omega-status-panel" aria-labelledby="announce-options-title">
-      <h2 id="announce-options-title">Announcement Options</h2>
-      <label>
-        <input id="announceTestEmail" type="checkbox" />
-        Send test email (admin only)
-      </label>
-      <label>
-        <input id="announceNotifyMembers" type="checkbox" />
-        Notify members
-      </label>
-      <p>Test sends only to admin email. Notify members sends to all opted-in users.</p>
+    <section class="ccg-admin-card" aria-live="polite">
+      <h2 class="ccg-admin-card__title">Announcement options</h2>
+
+      <div class="ccg-admin-row">
+        <label class="ccg-admin-check">
+          <input type="checkbox" id="announceTestEmail" />
+          Send test email (admin only)
+        </label>
+        <label class="ccg-admin-check">
+          <input type="checkbox" id="announceNotifyMembers" />
+          Notify members (New Game Added)
+        </label>
+      </div>
+
+      <p class="ccg-admin-hint">
+        Test sends to your configured admin/test email only. Notify members sends to all opted-in users.
+      </p>
     </section>
 
-    <section class="omega-status-panel" aria-labelledby="announce-preview-title">
-      <h2 id="announce-preview-title">Preview</h2>
-      <p><strong>Game title:</strong> <span id="announcePreviewTitle">Select a game to preview details.</span></p>
-      <p><strong>Subject:</strong> <span id="announcePreviewSubject">—</span></p>
-      <p><strong>Thumbnail:</strong></p>
-      <img id="announcePreviewThumbnail" src="" alt="Selected game thumbnail" hidden />
-      <p><strong>Link:</strong> <a id="announcePreviewLink" href="#">—</a></p>
-    </section>
+    <section class="ccg-admin-card">
+      <h2 class="ccg-admin-card__title">Preview</h2>
 
-    <section class="omega-status-panel" aria-labelledby="announce-send-title">
-      <h2 id="announce-send-title">Action</h2>
-      <button id="announceSendBtn" class="ccg-btn ccg-btn--primary" type="button" disabled>Send Announcement</button>
-      <p id="announceStatus" data-state="info">Select one game and one announcement option.</p>
+      <div class="ccg-admin-row">
+        <div class="ccg-admin-preview">
+          <div class="ccg-admin-preview__media">
+            <img id="announceThumb" alt="" hidden />
+          </div>
+          <div class="ccg-admin-preview__meta">
+            <div><strong>Title:</strong> <span id="announceTitle">—</span></div>
+            <div><strong>Slug:</strong> <span id="announceSlug">—</span></div>
+            <div><strong>Link:</strong> <a id="announceLink" href="#" target="_blank" rel="noopener" hidden>Open live page</a></div>
+            <div><strong>Subject:</strong> <span id="announceSubject">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ccg-admin-row">
+        <button type="button" class="ccg-btn ccg-btn--primary" id="announceSendBtn" disabled>
+          Send Announcement
+        </button>
+      </div>
+
+      <div class="ccg-admin-row">
+        <div class="ccg-admin-status" id="announceStatus"></div>
+      </div>
     </section>
   </main>
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/announce.js?v=admin-stable-20260207"></script>
-  <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>
