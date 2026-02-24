@@ -35,11 +35,42 @@ function subjectFor(type, title) {
   }
 }
 
+let authReady = false;
+let authClient = null;
+
+function getSupabaseClient() {
+  return window.ccgSupabase?.getClient?.() || null;
+}
+
+async function waitForSupabaseClient() {
+  const existingClient = getSupabaseClient();
+  if (existingClient) return existingClient;
+
+  return new Promise(resolve => {
+    const check = () => {
+      const nextClient = getSupabaseClient();
+      if (nextClient) {
+        resolve(nextClient);
+        return;
+      }
+
+      window.requestAnimationFrame(check);
+    };
+
+    check();
+  });
+}
+
 function updateSendState() {
   const slug = text($('announceSendBtn')?.dataset?.slug);
   const test = $('announceTestEmail')?.checked;
   const members = $('announceNotifyMembers')?.checked;
-  $('announceSendBtn').disabled = !slug || (!test && !members);
+
+  if (!authReady) {
+    $('announceStatus').textContent = 'Waiting for admin authentication…';
+  }
+
+  $('announceSendBtn').disabled = !authReady || !slug || (!test && !members);
 }
 
 async function bootstrap() {
@@ -50,6 +81,42 @@ async function bootstrap() {
 
   const sendBtn = $('announceSendBtn');
   sendBtn.dataset.defaultLabel = text(sendBtn.textContent) || 'Send Announcement';
+  updateSendState();
+
+  authClient = await waitForSupabaseClient();
+
+  const {
+    data: { session } = {},
+    error: sessionError
+  } = await authClient.auth.getSession();
+
+  if (sessionError) {
+    $('announceStatus').textContent = `Unable to verify admin authentication: ${sessionError.message || 'Unknown error.'}`;
+  } else if (session?.access_token) {
+    authReady = true;
+    if ($('announceStatus').textContent === 'Waiting for admin authentication…') {
+      $('announceStatus').textContent = '';
+    }
+  } else {
+    $('announceStatus').textContent = 'No active admin session. Please sign in to continue.';
+  }
+
+  authClient.auth.onAuthStateChange((_event, nextSession) => {
+    authReady = Boolean(nextSession?.access_token);
+
+    if (!authReady) {
+      $('announceStatus').textContent = 'No active admin session. Please sign in to continue.';
+    } else if (
+      $('announceStatus').textContent === 'Waiting for admin authentication…' ||
+      $('announceStatus').textContent === 'No active admin session. Please sign in to continue.'
+    ) {
+      $('announceStatus').textContent = '';
+    }
+
+    updateSendState();
+  });
+
+  updateSendState();
 
   const res = await fetch('/games/games.json', { cache: 'no-store' });
   const games = await res.json();
@@ -131,10 +198,11 @@ async function bootstrap() {
       $('announceStatus').textContent = 'Sending…';
       sendBtn.textContent = 'Sending...';
 
-      const client = window.ccgSupabase?.getClient?.();
-      if (!client?.auth?.getSession) {
-        throw new Error('Admin authentication is unavailable. Please refresh and sign in again.');
+      if (!authReady) {
+        throw new Error('Waiting for admin authentication…');
       }
+
+      const client = authClient || getSupabaseClient();
 
       const {
         data: { session } = {},
@@ -146,6 +214,7 @@ async function bootstrap() {
       }
 
       const token = session?.access_token;
+      authReady = Boolean(token);
       if (!token) {
         throw new Error('No active admin session found. Please sign in again.');
       }
