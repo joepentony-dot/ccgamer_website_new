@@ -845,6 +845,14 @@ async function maybeSendNewGameNotifications(packageData) {
     const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
     const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
     const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
+    const gameName = String(packageData?.gameEntry?.title || state?.draft?.title || '').trim();
+    if (!gameName) {
+      setDownloadStatus('Game name is missing. Please ensure the game details are saved before notifying members.', true);
+      return;
+    }
+
+    const mode = packageData.notifyMembers ? 'coming_soon_members' : 'coming_soon';
+    const gameSlug = String(packageData?.slug || '').trim();
     const absoluteThumbnailUrl = (() => {
       const thumb = packageData.gameEntry.thumbnail || '';
       if (!thumb) return '';
@@ -853,24 +861,19 @@ async function maybeSendNewGameNotifications(packageData) {
         : `${SITE_ORIGIN}/${thumb.replace(/^\/+/, '')}`;
     })();
 
-    const payload = {
-      user_id: userId,
-      game_name: packageData.gameEntry.title,
-      game_slug: packageData.slug,
-      game_thumbnail: absoluteThumbnailUrl,
-      mode: packageData.notifyMembers ? 'coming_soon_members' : 'coming_soon'
-    };
-    if (packageData.sendTestEmail) {
-      payload.test_email = true;
-    }
-
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         apikey: anonKey
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        mode,
+        game_name: gameName,
+        game_slug: gameSlug || '',
+        game_thumbnail: absoluteThumbnailUrl || '',
+        test_email: packageData.sendTestEmail === true
+      })
     });
 
     const responseData = await response.json().catch(() => ({}));
