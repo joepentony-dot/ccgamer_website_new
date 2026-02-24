@@ -1172,40 +1172,48 @@ async function getFavouriteSupabaseClient() {
 }
 
 let CCG_FAVOURITE_LOGIN_NOTICE_TIMER = null;
+const FAVOURITE_DEFAULT_LABEL = "Add to favourites";
+const FAVOURITE_LOGIN_REQUIRED_LABEL = "🔒 Login to add favourites";
+const FAVOURITE_LOGIN_REQUIRED_SUBTEXT = "Create a free account to save games";
 
-function showFavouriteLoginNotice() {
-    let host = document.getElementById("ccg-toast-host");
-    if (!host) {
-        host = document.createElement("div");
-        host.id = "ccg-toast-host";
-        host.className = "ccg-toast-host";
-        document.body.appendChild(host);
+function setFavouriteLoginRequiredState(button, enabled) {
+    if (!button) return;
+
+    const label = button.querySelector(".ccg-btn__label");
+    let meta = button.querySelector(".ccg-btn__meta");
+
+    button.classList.toggle("ccg-btn--login-required", enabled);
+    button.dataset.loginRequired = enabled ? "true" : "false";
+
+    if (!label) return;
+
+    if (enabled) {
+        label.textContent = FAVOURITE_LOGIN_REQUIRED_LABEL;
+        button.setAttribute("aria-label", `${FAVOURITE_LOGIN_REQUIRED_LABEL}. Open join page.`);
+        if (!meta) {
+            meta = document.createElement("span");
+            meta.className = "ccg-btn__meta";
+            button.appendChild(meta);
+        }
+        meta.textContent = FAVOURITE_LOGIN_REQUIRED_SUBTEXT;
+    } else {
+        if (meta) meta.remove();
+        button.removeAttribute("aria-label");
+        label.textContent = FAVOURITE_DEFAULT_LABEL;
     }
+}
 
-    let toast = host.querySelector(".ccg-favourite-login-toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.className = "ccg-logo-bubble ccg-favourite-login-toast";
-        toast.setAttribute("role", "status");
-        toast.setAttribute("aria-live", "polite");
-        toast.innerHTML = '<span class="ccg-logo-bubble__text"></span>';
-        host.appendChild(toast);
-    }
-
-    const textEl = toast.querySelector(".ccg-logo-bubble__text");
-    if (!textEl) return;
-
-    textEl.textContent = "Log in to save games to your favourites";
-    toast.classList.add("is-visible");
+function showFavouriteLoginNotice(button) {
+    setFavouriteLoginRequiredState(button, true);
 
     if (CCG_FAVOURITE_LOGIN_NOTICE_TIMER) {
         clearTimeout(CCG_FAVOURITE_LOGIN_NOTICE_TIMER);
     }
 
     CCG_FAVOURITE_LOGIN_NOTICE_TIMER = setTimeout(() => {
-        toast.classList.remove("is-visible");
+        setFavouriteLoginRequiredState(button, false);
         CCG_FAVOURITE_LOGIN_NOTICE_TIMER = null;
-    }, 2200);
+    }, 3000);
 }
 
 function resolveCurrentGameSlug(game) {
@@ -1233,11 +1241,12 @@ function ensureFavouriteButton() {
 function setFavouriteButtonState(button, { isFavourite = false, disabled = false } = {}) {
     if (!button) return;
     const label = button.querySelector(".ccg-btn__label");
+    setFavouriteLoginRequiredState(button, false);
     button.disabled = disabled;
     button.setAttribute("aria-pressed", isFavourite ? "true" : "false");
     button.classList.toggle("is-active", isFavourite);
     if (label) {
-        label.textContent = isFavourite ? "Remove from favourites" : "Add to favourites";
+        label.textContent = isFavourite ? "Remove from favourites" : FAVOURITE_DEFAULT_LABEL;
     }
 }
 
@@ -1335,7 +1344,11 @@ async function renderFavouriteAction(game) {
 
         const currentUser = data?.user || null;
         if (!currentUser) {
-            showFavouriteLoginNotice();
+            if (button.dataset.loginRequired === "true") {
+                window.location.assign("/join.html");
+                return;
+            }
+            showFavouriteLoginNotice(button);
             return;
         }
 

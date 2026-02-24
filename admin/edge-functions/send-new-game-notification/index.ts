@@ -12,9 +12,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 // -------------------- CORS ----------------------------------
 
 const CORS_HEADERS: Record<string, string> = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://www.cheekycommodoregamer.co.uk',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'authorization, content-type'
+  'Access-Control-Allow-Headers': 'content-type, authorization, apikey, x-client-info'
 };
 
 const JSON_HEADERS: Record<string, string> = {
@@ -28,6 +28,7 @@ type NotifyPayload = {
   mode?: string;
   game_name?: string;
   game_slug?: string;
+  game_thumbnail?: string;
   test_email?: boolean;
 };
 
@@ -38,12 +39,17 @@ type ProfileRoleRow = {
 type ProfileRecipient = {
   email: string | null;
   display_name: string | null;
+  username: string | null;
 };
 
 // -------------------- Constants ------------------------------
 
 const ALLOWED_ROLES = new Set(['admin', 'superadmin', 'editor']);
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
+const ADMIN_COPY_EMAIL = 'joepentony@hotmail.com';
+const BANNER_IMAGE_URL =
+  'https://www.cheekycommodoregamer.co.uk/resources/images/email/ccg-email-banner.png';
+const BATCH_SIZE = 25;
 
 // -------------------- Helpers --------------------------------
 
@@ -63,37 +69,86 @@ function escapeHtml(value: string): string {
     .replaceAll("'", '&#39;');
 }
 
+function normalizeGameSlug(rawSlug: string): string {
+  const slug = String(rawSlug || '').trim().replace(/^\/+|\/+$/g, '');
+  return slug;
+}
+
+function buildGameUrl(gameSlug: string): string {
+  if (!gameSlug) {
+    return `${SITE_URL}/games/`;
+  }
+  return `${SITE_URL}/games/${encodeURIComponent(gameSlug)}.html`;
+}
+
 function buildEmailContent(
   displayName: string | null,
+  username: string | null,
   gameName: string,
-  gameSlug: string
+  gameSlug: string,
+  gameThumbnail: string
 ) {
-  const greetingName = String(displayName || '').trim() || 'there';
-  const gamePath = gameSlug
-    ? `/games/${encodeURIComponent(gameSlug)}/`
-    : '/games/';
-  const gameUrl = `${SITE_URL}${gamePath}`;
+  const greetingName =
+    String(displayName || '').trim() || String(username || '').trim() || 'there';
+  const gameUrl = buildGameUrl(gameSlug);
   const preferencesUrl = `${SITE_URL}/community/profile.html`;
 
-  const subject = `Coming Soon on CCG: ${gameName}`;
+  const subject = `Coming Soon on Cheeky Commodore Gamer: ${gameName}`;
+
+  const safeName = escapeHtml(greetingName);
+  const safeGameName = escapeHtml(gameName);
+  const safeGameUrl = escapeHtml(gameUrl);
+  const safePreferencesUrl = escapeHtml(preferencesUrl);
+  const safeThumbnailUrl = escapeHtml(gameThumbnail);
 
   const text = [
     `Hi ${greetingName},`,
     '',
-    `Coming Soon on Cheeky Commodore Gamer: ${gameName}`,
-    `View game page: ${gameUrl}`,
+    `${gameName} is coming soon to Cheeky Commodore Gamer.`,
+    `Take a look: ${gameUrl}`,
     '',
-    `Manage your email preferences: ${preferencesUrl}`
+    'You’re receiving this email because you enabled New Game Notifications in your Cheeky Commodore Gamer profile.',
+    `You can manage your preferences at ${preferencesUrl}`
   ].join('\n');
 
-  const html = [
-    `<p>Hi ${escapeHtml(greetingName)},</p>`,
-    `<p><strong>Coming Soon</strong> on Cheeky Commodore Gamer: <strong>${escapeHtml(
-      gameName
-    )}</strong>.</p>`,
-    `<p><a href="${gameUrl}">View game page</a></p>`,
-    `<p>Manage your email preferences <a href="${preferencesUrl}">here</a>.</p>`
-  ].join('');
+  const html = `
+    <div style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f7fb;padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border-radius:12px;overflow:hidden;">
+              <tr>
+                <td style="padding:0;">
+                  <img src="${escapeHtml(BANNER_IMAGE_URL)}" alt="Cheeky Commodore Gamer" width="640" style="display:block;width:100%;max-width:640px;height:auto;border:0;" />
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:24px;">
+                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Hi ${safeName},</p>
+                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">
+                    <strong>${safeGameName}</strong> is coming soon to Cheeky Commodore Gamer.
+                  </p>
+                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Tap the image below to check it out:</p>
+                  <p style="margin:0 0 20px;">
+                    <a href="${safeGameUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
+                      <img src="${safeThumbnailUrl}" alt="${safeGameName} thumbnail" width="592" style="display:block;width:100%;max-width:592px;height:auto;border:0;border-radius:8px;" />
+                    </a>
+                  </p>
+                  <p style="margin:0 0 24px;">
+                    <a href="${safeGameUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700;font-size:15px;">View game page</a>
+                  </p>
+                  <p style="margin:0;font-size:13px;line-height:1.6;color:#6b7280;">
+                    You’re receiving this email because you enabled New Game Notifications in your Cheeky Commodore Gamer profile.<br />
+                    You can manage your preferences at <a href="${safePreferencesUrl}" target="_blank" rel="noopener noreferrer">${safePreferencesUrl}</a>
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  `.trim();
 
   return { subject, text, html };
 }
@@ -169,7 +224,7 @@ Deno.serve(async (req: Request) => {
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     const resendApiKey = Deno.env.get('RESEND_API_KEY') || '';
-    const emailFrom = Deno.env.get('EMAIL_FROM') || '';
+    const emailFrom = Deno.env.get('FROM_EMAIL') || '';
     const testEmailAddress =
       (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
 
@@ -226,14 +281,41 @@ Deno.serve(async (req: Request) => {
 
     const mode = String(payload.mode || '').trim();
     const gameName = String(payload.game_name || '').trim();
-    const gameSlug = String(payload.game_slug || '').trim();
+    const gameSlug = normalizeGameSlug(String(payload.game_slug || ''));
+    const gameThumbnail = String(payload.game_thumbnail || '').trim();
     const testEmail = payload.test_email === true;
 
-    if (mode !== 'coming_soon' || !gameName) {
+    if (
+      (!testEmail && mode !== 'coming_soon_members') ||
+      (testEmail && mode !== 'coming_soon') ||
+      !gameName
+    ) {
       return jsonResponse(
         {
           success: false,
           error: 'Invalid payload',
+          request_id: requestId
+        },
+        400
+      );
+    }
+
+    if (!testEmail && !gameSlug) {
+      return jsonResponse(
+        {
+          success: false,
+          error: 'game_slug is required',
+          request_id: requestId
+        },
+        400
+      );
+    }
+
+    if (!testEmail && !gameThumbnail) {
+      return jsonResponse(
+        {
+          success: false,
+          error: 'game_thumbnail is required',
           request_id: requestId
         },
         400
@@ -295,39 +377,77 @@ Deno.serve(async (req: Request) => {
 
     if (testEmail) {
       recipients = [
-        { email: testEmailAddress, display_name: user.email || 'admin' }
+        { email: testEmailAddress, display_name: user.email || 'admin', username: null }
       ];
     } else {
       const { data } = await serviceClient
         .from('profiles')
-        .select('email,display_name')
+        .select('email,display_name,username')
         .eq('notify_new_games', true)
         .not('email', 'is', null);
 
       recipients = (data || []) as ProfileRecipient[];
+      recipients.push({
+        email: ADMIN_COPY_EMAIL,
+        display_name: 'Joe',
+        username: null
+      });
+    }
+
+    const uniqueRecipients: ProfileRecipient[] = [];
+    const seenEmails = new Set<string>();
+
+    for (const recipient of recipients) {
+      const normalizedEmail = String(recipient.email || '').trim().toLowerCase();
+      if (!normalizedEmail || seenEmails.has(normalizedEmail)) {
+        continue;
+      }
+      seenEmails.add(normalizedEmail);
+      uniqueRecipients.push({
+        ...recipient,
+        email: normalizedEmail
+      });
     }
 
     let sent = 0;
     let failed = 0;
 
-    for (const recipient of recipients.slice(0, testEmail ? 1 : undefined)) {
-      const to = String(recipient.email || '').trim();
-      if (!to) {
-        failed++;
-        continue;
-      }
+    for (let i = 0; i < uniqueRecipients.length; i += BATCH_SIZE) {
+      const batch = uniqueRecipients.slice(i, i + BATCH_SIZE);
 
-      const { subject, text, html } = buildEmailContent(
-        recipient.display_name,
-        gameName,
-        gameSlug
+      const results = await Promise.allSettled(
+        batch.map(async (recipient) => {
+          const to = String(recipient.email || '').trim();
+          if (!to) {
+            throw new Error('Missing recipient email');
+          }
+
+          const { subject, text, html } = buildEmailContent(
+            recipient.display_name,
+            recipient.username,
+            gameName,
+            gameSlug,
+            gameThumbnail
+          );
+
+          await sendEmail(to, subject, text, html, resendApiKey, emailFrom);
+          return to;
+        })
       );
 
-      try {
-        await sendEmail(to, subject, text, html, resendApiKey, emailFrom);
-        sent++;
-      } catch {
-        failed++;
+      for (const result of results) {
+        if (result.status === 'fulfilled') {
+          sent++;
+        } else {
+          failed++;
+          console.error('[send-new-game-notification] email_send_failed', {
+            requestId,
+            error:
+              result.reason instanceof Error
+                ? result.reason.message
+                : String(result.reason)
+          });
+        }
       }
     }
 
@@ -337,7 +457,7 @@ Deno.serve(async (req: Request) => {
       test_email: testEmail,
       sent,
       failed,
-      recipient_count: recipients.length,
+      recipient_count: uniqueRecipients.length,
       game_name: gameName,
       game_slug: gameSlug,
       request_id: requestId
