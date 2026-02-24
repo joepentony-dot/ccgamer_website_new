@@ -1,311 +1,130 @@
 import { ensureRole, startAccessMonitor } from './guard.js?v=admin-stable-20260207';
 import { initAdminNav } from './admin-nav.js?v=admin-stable-20260207';
 
-const SITE_ORIGIN = window.location.origin;
-
 function $(id) {
   return document.getElementById(id);
 }
 
-function normalizeText(value) {
-  return String(value || '').trim();
+function text(v) {
+  return String(v || '').trim();
 }
 
-function absolutifyUrl(maybeRelative) {
-  const raw = normalizeText(maybeRelative);
-  if (!raw) return '';
-  if (/^https?:\/\//i.test(raw)) return raw;
-  return `${SITE_ORIGIN}/${raw.replace(/^\/+/, '')}`;
-}
-
-function buildLabel(game) {
-  const title = normalizeText(game?.title);
-  const year = normalizeText(game?.year);
-  const system = normalizeText(game?.system);
-  const bits = [];
-  if (title) bits.push(title);
-  if (year) bits.push(`(${year})`);
-  if (system) bits.push(`– ${system}`);
-  return bits.join(' ');
-}
-
-function setStatus(text) {
-  const node = $('announceStatus');
-  if (node) node.textContent = text || '';
-}
-
-function setLoadedHint(text) {
-  const node = $('announceLoadedHint');
-  if (node) node.textContent = text || '';
-}
-
-function enforceAnnouncementMode() {
-  const test = $('announceTestEmail');
-  const members = $('announceNotifyMembers');
-  if (!test || !members) return;
-
-  if (test.checked && members.checked) {
-    members.checked = false;
-    return;
-  }
-
-  if (!test.checked && !members.checked) {
-    test.checked = true;
+function subjectFor(type, title) {
+  if (!title) return '—';
+  switch (type) {
+    case 'featured_classic':
+      return `⭐ Featured Classic: ${title}`;
+    case 'spotlight_pick':
+      return `🎯 Spotlight Pick: ${title}`;
+    default:
+      return `🆕 New Game Added: ${title}`;
   }
 }
 
 function updateSendState() {
-  const btn = $('announceSendBtn');
-  const selectedSlug = normalizeText(btn?.dataset?.selectedSlug);
-  const test = $('announceTestEmail')?.checked === true;
-  const members = $('announceNotifyMembers')?.checked === true;
-  if (!btn) return;
-
-  btn.disabled = !selectedSlug || (!test && !members);
-}
-
-function setPreview(game) {
-  const title = normalizeText(game?.title);
-  const slug = normalizeText(game?.slug);
-  const thumb = absolutifyUrl(game?.thumbnail);
-
-  $('announceTitle').textContent = title || '—';
-  $('announceSlug').textContent = slug || '—';
-
-  const link = $('announceLink');
-  if (link && slug) {
-    link.href = `/games/${encodeURIComponent(slug)}.html`;
-    link.hidden = false;
-  } else if (link) {
-    link.hidden = true;
-    link.href = '#';
-  }
-
-  const subject = title ? `🆕 New Game Added: ${title}` : '—';
-  $('announceSubject').textContent = subject;
-
-  const img = $('announceThumb');
-  if (img && thumb) {
-    img.src = thumb;
-    img.alt = title ? `${title} thumbnail` : 'Game thumbnail';
-    img.hidden = false;
-  } else if (img) {
-    img.hidden = true;
-    img.removeAttribute('src');
-    img.alt = '';
-  }
-}
-
-function renderResults(games, query) {
-  const resultsNode = $('announceResults');
-  if (!resultsNode) return;
-
-  resultsNode.innerHTML = '';
-
-  const q = normalizeText(query).toLowerCase();
-  const filtered = games.filter(g => {
-    const title = normalizeText(g?.title).toLowerCase();
-    const slug = normalizeText(g?.slug).toLowerCase();
-    const system = normalizeText(g?.system).toLowerCase();
-    const year = normalizeText(g?.year).toLowerCase();
-    if (!q) return true;
-    return title.includes(q) || slug.includes(q) || system.includes(q) || year.includes(q);
-  });
-
-  if (!filtered.length) {
-    const empty = document.createElement('div');
-    empty.className = 'ccg-admin-empty';
-    empty.textContent = 'No matches.';
-    resultsNode.appendChild(empty);
-    return;
-  }
-
-  filtered.slice(0, 60).forEach(game => {
-    const slug = normalizeText(game?.slug);
-    const label = buildLabel(game);
-
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'ccg-btn ccg-btn--ghost ccg-admin-result';
-    btn.textContent = label || slug || 'Untitled';
-    btn.dataset.slug = slug;
-
-    btn.addEventListener('click', () => {
-      const sendBtn = $('announceSendBtn');
-      if (sendBtn) sendBtn.dataset.selectedSlug = slug;
-
-      setPreview(game);
-      setStatus('');
-      updateSendState();
-    });
-
-    resultsNode.appendChild(btn);
-  });
-}
-
-async function assertLivePage(slug) {
-  const url = `/games/${encodeURIComponent(slug)}.html`;
-  const res = await fetch(url, { method: 'HEAD', cache: 'no-store' }).catch(() => null);
-  return Boolean(res && res.ok);
-}
-
-async function sendAnnouncement(gamesBySlug) {
-  const sendBtn = $('announceSendBtn');
-  const selectedSlug = normalizeText(sendBtn?.dataset?.selectedSlug);
-  const status = $('announceStatus');
-
-  if (!selectedSlug) {
-    setStatus('Please select a game first.');
-    return;
-  }
-
-  enforceAnnouncementMode();
-  const test = $('announceTestEmail')?.checked === true;
-  const members = $('announceNotifyMembers')?.checked === true;
-
-  const game = gamesBySlug.get(selectedSlug);
-  if (!game) {
-    setStatus('Selected game could not be resolved from games.json.');
-    return;
-  }
-
-  const gameName = normalizeText(game?.title);
-  const gameSlug = normalizeText(game?.slug);
-  const gameThumbnail = absolutifyUrl(game?.thumbnail);
-
-  if (!gameName || !gameSlug) {
-    setStatus('Selected game is missing required data (title/slug).');
-    return;
-  }
-
-  setStatus('Checking live page…');
-
-  const live = await assertLivePage(gameSlug);
-  if (!live) {
-    setStatus('That game page is not live yet. Upload/deploy first, then announce.');
-    return;
-  }
-
-  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-    setStatus('Supabase client unavailable in announce page context.');
-    return;
-  }
-
-  const supabase = await window.ccgSupabase.getClient();
-  const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
-  const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
-  if (!supabaseUrl || !anonKey) {
-    setStatus('Supabase config unavailable in announce page context.');
-    return;
-  }
-
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError) {
-    setStatus(`Failed to read auth session: ${sessionError.message || 'Unknown auth error'}`);
-    return;
-  }
-
-  const accessToken = normalizeText(sessionData?.session?.access_token);
-  if (!accessToken) {
-    setStatus('Auth required: please sign in again, then retry.');
-    return;
-  }
-
-  const payload = {
-    game_name: gameName,
-    game_slug: gameSlug,
-    game_thumbnail: gameThumbnail,
-    mode: test ? 'new_game_added' : 'new_game_added_members',
-    export_id: `announce-${Date.now()}`
-  };
-  if (test) payload.test_email = true;
-
-  setStatus(test ? 'Sending test email…' : 'Sending member announcement…');
-
-  const functionUrl = `${supabaseUrl}/functions/v1/send-new-game-notification`;
-  const response = await fetch(functionUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      apikey: anonKey,
-      Authorization: `Bearer ${accessToken}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    setStatus(`Failed: ${String(data?.error || `Edge function request failed (${response.status}).`)}`);
-    return;
-  }
-  if (!data?.success) {
-    setStatus(`Failed: ${String(data?.error || 'Unknown edge function error')}`);
-    return;
-  }
-
-  const sent = Number(data?.sent || 0);
-  const failed = Number(data?.failed || 0);
-
-  if (failed > 0) {
-    setStatus(`Announcement complete. Sent: ${sent}, failed: ${failed}.`);
-  } else {
-    setStatus(`Announcement complete. Sent: ${sent}.`);
-  }
+  const slug = text($('announceSendBtn')?.dataset?.slug);
+  const test = $('announceTestEmail')?.checked;
+  const members = $('announceNotifyMembers')?.checked;
+  $('announceSendBtn').disabled = !slug || (!test && !members);
 }
 
 async function bootstrap() {
-  const roleCheck = await ensureRole(['superadmin', 'admin', 'editor']);
-  if (!roleCheck) return;
-
-  const search = $('announceSearch');
-  const testBox = $('announceTestEmail');
-  const memberBox = $('announceNotifyMembers');
-  const sendBtn = $('announceSendBtn');
+  const ok = await ensureRole(['superadmin', 'admin', 'editor']);
+  if (!ok) return;
 
   initAdminNav({ pageLabel: 'Game Announcements', active: 'announce' });
 
-  setLoadedHint('Loading games.json…');
+  const res = await fetch('/games/games.json', { cache: 'no-store' });
+  const games = await res.json();
 
-  let games = [];
-  try {
-    const res = await fetch('/games/games.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error(`games.json fetch failed (${res.status})`);
-    games = await res.json();
-    if (!Array.isArray(games)) throw new Error('games.json did not return an array.');
-  } catch (e) {
-    setLoadedHint(`Failed to load games.json: ${e.message}`);
-    return;
-  }
+  const bySlug = new Map();
+  games.forEach(g => g.slug && bySlug.set(g.slug, g));
 
-  const gamesBySlug = new Map();
-  games.forEach(g => {
-    const slug = normalizeText(g?.slug);
-    if (slug) gamesBySlug.set(slug, g);
+  $('announceLoadedHint').textContent = `Loaded ${bySlug.size} games.`;
+
+  $('announceSearch').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    $('announceResults').innerHTML = '';
+    [...bySlug.values()]
+      .filter(g => g.title.toLowerCase().includes(q))
+      .slice(0, 50)
+      .forEach(g => {
+        const b = document.createElement('button');
+        b.className = 'ccg-btn ccg-btn--ghost';
+        b.textContent = `${g.title} (${g.year || '?'})`;
+        b.onclick = () => {
+          $('announceSendBtn').dataset.slug = g.slug;
+          $('announceTitle').textContent = g.title;
+          $('announceSlug').textContent = g.slug;
+          $('announceLink').href = `/games/${g.slug}.html`;
+          $('announceLink').hidden = false;
+          $('announceThumb').src = g.thumbnail || '';
+          $('announceThumb').hidden = !g.thumbnail;
+          $('announceSubject').textContent =
+            subjectFor($('announceType').value, g.title);
+          updateSendState();
+        };
+        $('announceResults').appendChild(b);
+      });
   });
 
-  setLoadedHint(`Loaded ${gamesBySlug.size} games. Select one to announce.`);
-  renderResults(games, '');
-
-  search?.addEventListener('input', () => {
-    renderResults(games, search.value || '');
+  $('announceType').addEventListener('change', () => {
+    $('announceSubject').textContent =
+      subjectFor($('announceType').value, $('announceTitle').textContent);
   });
 
-  if (testBox) testBox.checked = true;
-  if (memberBox) memberBox.checked = false;
-
-  testBox?.addEventListener('change', () => {
-    enforceAnnouncementMode();
+  $('announceTestEmail').addEventListener('change', () => {
+    if ($('announceTestEmail').checked) $('announceNotifyMembers').checked = false;
     updateSendState();
   });
-  memberBox?.addEventListener('change', () => {
-    enforceAnnouncementMode();
+
+  $('announceNotifyMembers').addEventListener('change', () => {
+    if ($('announceNotifyMembers').checked) $('announceTestEmail').checked = false;
     updateSendState();
   });
 
-  sendBtn?.addEventListener('click', () => sendAnnouncement(gamesBySlug));
+  $('announceSendBtn').addEventListener('click', async () => {
+    const slug = $('announceSendBtn').dataset.slug;
+    const game = bySlug.get(slug);
+    const type = $('announceType').value;
+    const test = $('announceTestEmail').checked;
 
-  enforceAnnouncementMode();
-  updateSendState();
+    $('announceStatus').textContent = 'Sending…';
+
+    const supabase = window.ccgSupabase.getClient();
+    const { data } = await supabase.auth.getSession();
+    const token = data?.session?.access_token;
+    if (!token) {
+      $('announceStatus').textContent = 'Auth required.';
+      return;
+    }
+
+    const payload = {
+      mode: type,
+      game_name: game.title,
+      game_slug: game.slug,
+      game_thumbnail: game.thumbnail || '',
+      test_email: test === true
+    };
+
+    const r = await fetch(
+      `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: window.CCG_SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const j = await r.json();
+    $('announceStatus').textContent = j.success
+      ? `Sent: ${j.sent || 0}, failed: ${j.failed || 0}`
+      : `Failed: ${j.error}`;
+  });
 }
 
 startAccessMonitor();

@@ -15,31 +15,40 @@
     <header class="ccg-admin-hero">
       <h1 class="ccg-admin-title">Game Announcements</h1>
       <p class="ccg-admin-subtitle">
-        Notify members about games that are already live on the website (or send yourself a test first).
+        Notify members about games that are already live on the website.
       </p>
     </header>
 
     <section class="ccg-admin-card">
-      <h2 class="ccg-admin-card__title">Select a live game from games.json</h2>
+      <h2 class="ccg-admin-card__title">Select a live game</h2>
 
       <div class="ccg-admin-row">
         <label class="ccg-admin-label" for="announceSearch">
           Search
-          <input id="announceSearch" class="ccg-input" type="text" placeholder="Type to search title / year / system..." autocomplete="off" />
+          <input id="announceSearch" class="ccg-input" type="text" placeholder="Search title, year, system…" autocomplete="off" />
         </label>
       </div>
 
       <div class="ccg-admin-row">
-        <div class="ccg-admin-list" role="listbox" aria-label="Game results" id="announceResults"></div>
+        <div class="ccg-admin-list" id="announceResults"></div>
       </div>
 
-      <div class="ccg-admin-row">
-        <p class="ccg-admin-hint" id="announceLoadedHint">Loading games.json…</p>
-      </div>
+      <p class="ccg-admin-hint" id="announceLoadedHint">Loading games.json…</p>
     </section>
 
-    <section class="ccg-admin-card" aria-live="polite">
+    <section class="ccg-admin-card">
       <h2 class="ccg-admin-card__title">Announcement options</h2>
+
+      <div class="ccg-admin-row">
+        <label class="ccg-admin-label">
+          Announcement type
+          <select id="announceType" class="ccg-select">
+            <option value="new_game_added">New Game Added</option>
+            <option value="featured_classic">Featured Classic</option>
+            <option value="spotlight_pick">Spotlight Pick</option>
+          </select>
+        </label>
+      </div>
 
       <div class="ccg-admin-row">
         <label class="ccg-admin-check">
@@ -48,41 +57,35 @@
         </label>
         <label class="ccg-admin-check">
           <input type="checkbox" id="announceNotifyMembers" />
-          Notify members (New Game Added)
+          Notify members
         </label>
       </div>
 
       <p class="ccg-admin-hint">
-        Select exactly one mode. Test sends to your configured admin/test email only; notify members sends to all opted-in users after deployment.
+        Test sends only to your admin email. Notify members sends to all opted-in users.
       </p>
     </section>
 
     <section class="ccg-admin-card">
       <h2 class="ccg-admin-card__title">Preview</h2>
 
-      <div class="ccg-admin-row">
-        <div class="ccg-admin-preview">
-          <div class="ccg-admin-preview__media">
-            <img id="announceThumb" alt="" hidden />
-          </div>
-          <div class="ccg-admin-preview__meta">
-            <div><strong>Title:</strong> <span id="announceTitle">—</span></div>
-            <div><strong>Slug:</strong> <span id="announceSlug">—</span></div>
-            <div><strong>Link:</strong> <a id="announceLink" href="#" target="_blank" rel="noopener" hidden>Open live page</a></div>
-            <div><strong>Subject:</strong> <span id="announceSubject">—</span></div>
-          </div>
+      <div class="ccg-admin-preview">
+        <img id="announceThumb" hidden />
+        <div class="ccg-admin-preview__meta">
+          <div><strong>Title:</strong> <span id="announceTitle">—</span></div>
+          <div><strong>Slug:</strong> <span id="announceSlug">—</span></div>
+          <div><strong>Link:</strong> <a id="announceLink" hidden target="_blank">Open page</a></div>
+          <div><strong>Subject:</strong> <span id="announceSubject">—</span></div>
         </div>
       </div>
 
       <div class="ccg-admin-row">
-        <button type="button" class="ccg-btn ccg-btn--primary" id="announceSendBtn" disabled>
+        <button id="announceSendBtn" class="ccg-btn ccg-btn--primary" disabled>
           Send Announcement
         </button>
       </div>
 
-      <div class="ccg-admin-row">
-        <div class="ccg-admin-status" id="announceStatus"></div>
-      </div>
+      <div class="ccg-admin-status" id="announceStatus"></div>
     </section>
   </main>
 
