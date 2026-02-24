@@ -864,12 +864,22 @@ async function maybeSendNewGameNotifications(packageData) {
       payload.test_email = true;
     }
 
+    const accessToken = await getAdminAccessToken();
+    if (!accessToken) {
+      setDownloadStatus(
+        'Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.',
+        false,
+        true
+      );
+      return;
+    }
+
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         apikey: anonKey,
-        Authorization: 'Bearer ' + anonKey
+        Authorization: 'Bearer ' + accessToken
       },
       body: JSON.stringify(payload)
     });
