@@ -58,14 +58,13 @@ async function bootstrap() {
           $('announceSlug').textContent = g.slug;
           $('announceLink').href = `/games/${g.slug}.html`;
           $('announceLink').hidden = false;
-          const announceThumb = $('announceThumb');
           if (g.thumbnail) {
-            announceThumb.src = g.thumbnail.startsWith('/')
+            $('announceThumb').src = g.thumbnail.startsWith('/')
               ? g.thumbnail
               : `/${g.thumbnail}`;
-            announceThumb.hidden = false;
+            $('announceThumb').hidden = false;
           } else {
-            announceThumb.hidden = true;
+            $('announceThumb').hidden = true;
           }
           $('announceSubject').textContent =
             subjectFor($('announceType').value, g.title);
