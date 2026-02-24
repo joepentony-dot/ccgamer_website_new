@@ -30,111 +30,13 @@ function refreshWarnings(state) {
   }
 }
 
-async function notifyNewGameFromPrompt() {
+function showAnnouncementGuidance() {
   const status = document.getElementById('sendNewGameNotificationStatus');
-  const currentGame = window.currentGame;
-  const editorState = window.editorState;
-  const game = window.game;
-  const gameName = String(currentGame?.title || editorState?.title || game?.title || '').trim();
-
-  if (!gameName) {
-    if (status) {
-      status.textContent =
-        'Game name is missing. Please ensure the game details are saved before notifying members.';
-    }
-    return;
-  }
-
-  const notifyMembers = document.getElementById('notifyMembers')?.checked === true;
-  const sendTestEmail = document.getElementById('sendTestEmail')?.checked === true;
-
-  if (!notifyMembers && !sendTestEmail) {
-    if (status) status.textContent = 'Download complete. No notification selected.';
-    return;
-  }
-
-  if (status) status.textContent = 'Sending notification...';
-
-  try {
-    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-      throw new Error('Supabase client unavailable in publish page context.');
-    }
-
-    const supabase = await window.ccgSupabase.getClient();
-    const supabaseUrl = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
-    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
-
-    if (!supabaseUrl || !anonKey) {
-      throw new Error('Supabase config unavailable in publish page context.');
-    }
-
-    if (!supabase?.auth) {
-      throw new Error('Supabase auth client unavailable in publish page context.');
-    }
-
-    const {
-      data: { session }
-    } = await supabase.auth.getSession();
-    const accessToken = session?.access_token;
-
-    if (!accessToken) {
-      if (status) {
-        status.textContent =
-          'Admin authentication expired or missing. Please sign in again before sending notification.';
-      }
-      return;
-    }
-
-    const gameSlug = String(currentGame?.slug || editorState?.slug || game?.slug || '').trim();
-    const gameThumbnail = String(currentGame?.thumbnail || editorState?.thumbnail || game?.thumbnail || '').trim();
-    const mode = notifyMembers ? 'coming_soon_members' : 'coming_soon';
-
-    const response = await fetch(
-      `${supabaseUrl}/functions/v1/send-new-game-notification`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          apikey: anonKey,
-          Authorization: `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-          mode,
-          game_name: gameName,
-          game_slug: gameSlug || '',
-          game_thumbnail: gameThumbnail || '',
-          test_email: sendTestEmail === true
-        })
-      }
-    );
-
-    const data = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(data?.error || `Edge function request failed (${response.status}).`);
-    }
-
-    if (!data?.success) {
-      throw new Error(data?.error || 'Unknown edge function error.');
-    }
-
-    const sent = Number(data?.sent || 0);
-    const failed = Number(data?.failed || 0);
-
-    if (sendTestEmail) {
-      if (status) status.textContent = 'Test email sent successfully to admin address.';
-    } else {
-      if (status) {
-        status.textContent =
-          failed > 0
-            ? `Coming Soon notification sent. Sent: ${sent}, failed: ${failed}.`
-            : `Coming Soon notification sent to ${sent} members.`;
-      }
-    }
-  } catch (error) {
-    if (status) status.textContent = `Failed to send notification: ${error.message}`;
-  }
+  if (!status) return;
+  status.textContent =
+    'Coming Soon notifications are retired. After deployment, send announcements from /admin/announce.html.';
 }
+
 
 async function bootstrap() {
   const roleCheck = await ensureRole(['superadmin', 'admin', 'editor']);
@@ -152,7 +54,8 @@ async function bootstrap() {
   });
 
   const notifyBtn = document.getElementById('sendNewGameNotificationBtn');
-  notifyBtn?.addEventListener('click', notifyNewGameFromPrompt);
+  notifyBtn?.addEventListener('click', showAnnouncementGuidance);
+  showAnnouncementGuidance();
 
   refreshWarnings(state);
 }

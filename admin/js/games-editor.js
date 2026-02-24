@@ -255,7 +255,7 @@ function bindEvents() {
       setDownloadStatus('Download started successfully.', false);
 
       if (packageData.notifyMembers || packageData.sendTestEmail) {
-        void maybeSendNewGameNotifications(packageData);
+        setDownloadStatus('Download started. Coming Soon notifications are retired. Send announcements after deploy from /admin/announce.html.', false, true);
       }
     } catch (error) {
       setDownloadStatus(`Download failed: ${error.message}`, true);
@@ -812,113 +812,15 @@ async function downloadZip(packageData) {
   URL.revokeObjectURL(url);
 }
 
-async function maybeSendNewGameNotifications(packageData) {
-  const validationError = validateNotificationRequest(packageData);
-  if (validationError) {
-    setDownloadStatus(`Warning: Download started, but notifications were not sent: ${validationError}`, false, true);
-    return;
-  }
-
-  try {
-    if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
-      return;
-    }
-
-    const client = await window.ccgSupabase.getClient();
-    if (!client?.auth || typeof client.auth.getSession !== 'function') {
-      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
-      return;
-    }
-
-    const { data, error } = await client.auth.getSession();
-    if (error) {
-      throw new Error('Unable to resolve current Supabase session.');
-    }
-
-    const userId = String(data?.session?.user?.id || '').trim();
-    if (!userId) {
-      setDownloadStatus('Warning: Download started, but notifications were not sent because admin auth is not ready. Sign in again and retry.', false, true);
-      return;
-    }
-
-    const functionBase = String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '');
-    const functionUrl = `${functionBase}/functions/v1/send-new-game-notification`;
-    const anonKey = String(window.CCG_SUPABASE_ANON_KEY || '').trim();
-    const gameName = String(packageData?.gameEntry?.title || state?.draft?.title || '').trim();
-    if (!gameName) {
-      setDownloadStatus('Game name is missing. Please ensure the game details are saved before notifying members.', true);
-      return;
-    }
-
-    const mode = packageData.notifyMembers ? 'coming_soon_members' : 'coming_soon';
-    const gameSlug = String(packageData?.slug || '').trim();
-    const absoluteThumbnailUrl = (() => {
-      const thumb = packageData.gameEntry.thumbnail || '';
-      if (!thumb) return '';
-      return thumb.startsWith('http')
-        ? thumb
-        : `${SITE_ORIGIN}/${thumb.replace(/^\/+/, '')}`;
-    })();
-
-    const response = await fetch(functionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        apikey: anonKey
-      },
-      body: JSON.stringify({
-        mode,
-        game_name: gameName,
-        game_slug: gameSlug || '',
-        game_thumbnail: absoluteThumbnailUrl || '',
-        test_email: packageData.sendTestEmail === true
-      })
-    });
-
-    const responseData = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(String(responseData?.error || `Edge function request failed (${response.status}).`));
-    }
-
-    const success = Boolean(responseData?.success);
-    const configured = responseData?.configured !== false;
-    const sentCount = Number(responseData?.sent || 0);
-    const failed = Number(responseData?.failed || 0);
-
-    if (!configured) {
-      setDownloadStatus('Warning: Download started, but notifications were skipped because email provider is not configured.', false, true);
-      return;
-    }
-
-    if (!success) {
-      throw new Error(String(responseData?.error || 'Notification request failed.'));
-    }
-
-    if (packageData.sendTestEmail && !packageData.notifyMembers) {
-      setDownloadStatus('Download started. Admin test email request sent successfully.', false);
-      return;
-    }
-
-    if (failed > 0) {
-      setDownloadStatus(`Warning: Coming Soon notification sent to ${sentCount} recipients (${failed} failed).`, false, true);
-      return;
-    }
-
-    setDownloadStatus(`Coming Soon notification sent to ${sentCount} recipients.`, false);
-  } catch (error) {
-    setDownloadStatus(`Warning: Download started, but notification sending failed: ${error.message}`, false, true);
-  }
+function maybeSendNewGameNotifications(packageData) {
+  if (!packageData?.notifyMembers && !packageData?.sendTestEmail) return;
+  setDownloadStatus(
+    'Coming Soon notifications are retired. Export completed; after deploy, send announcements from /admin/announce.html.',
+    false,
+    true
+  );
 }
 
-function validateNotificationRequest(packageData) {
-  if (!packageData?.notifyMembers && !packageData?.sendTestEmail) return 'notification options are not enabled.';
-  if (!String(packageData?.slug || '').trim()) return 'slug is required.';
-  if (!String(packageData?.gameEntry?.title || '').trim()) return 'title is required.';
-  if (!String(window.CCG_SUPABASE_URL || '').trim()) return 'Supabase URL is missing.';
-  if (!String(window.CCG_SUPABASE_ANON_KEY || '').trim()) return 'Supabase anon key is missing.';
-  return '';
-}
 
 function renderErrors(node, errors) {
   if (!node) return;
