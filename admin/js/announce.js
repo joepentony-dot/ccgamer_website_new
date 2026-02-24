@@ -53,19 +53,23 @@ async function bootstrap() {
         b.className = 'ccg-btn ccg-btn--ghost';
         b.textContent = `${g.title} (${g.year || '?'})`;
         b.onclick = () => {
+          const announceThumb = $('announceThumb');
+
           $('announceSendBtn').dataset.slug = g.slug;
           $('announceTitle').textContent = g.title;
           $('announceSlug').textContent = g.slug;
           $('announceLink').href = `/games/${g.slug}.html`;
           $('announceLink').hidden = false;
+
           if (g.thumbnail) {
-            $('announceThumb').src = g.thumbnail.startsWith('/')
+            announceThumb.src = g.thumbnail.startsWith('/')
               ? g.thumbnail
               : `/${g.thumbnail}`;
-            $('announceThumb').hidden = false;
+            announceThumb.hidden = false;
           } else {
-            $('announceThumb').hidden = true;
+            announceThumb.hidden = true;
           }
+
           $('announceSubject').textContent =
             subjectFor($('announceType').value, g.title);
           updateSendState();
@@ -107,19 +111,23 @@ async function bootstrap() {
       $('announceStatus').textContent = 'Sending…';
       sendBtn.textContent = 'Sending...';
 
-      const supabase = window.ccgSupabase?.getClient?.();
-      if (!supabase?.auth?.getSession) {
+      const client = window.ccgSupabase?.getClient?.();
+      if (!client?.auth?.getSession) {
         throw new Error('Supabase client unavailable. Please refresh and try again.');
       }
 
-      const { data, error: sessionError } = await supabase.auth.getSession();
+      const {
+        data: { session } = {},
+        error: sessionError
+      } = await client.auth.getSession();
+
       if (sessionError) {
         throw new Error(sessionError.message || 'Unable to retrieve auth session.');
       }
 
-      const token = data?.session?.access_token;
+      const token = session?.access_token;
       if (!token) {
-        throw new Error('Auth required. Please sign in again.');
+        throw new Error('No active session. Please sign in again.');
       }
 
       const payload = {
