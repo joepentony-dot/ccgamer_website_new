@@ -32,10 +32,16 @@ function refreshWarnings(state) {
 
 async function notifyNewGameFromPrompt() {
   const status = document.getElementById('sendNewGameNotificationStatus');
+  const currentGame = window.currentGame;
+  const editorState = window.editorState;
+  const game = window.game;
+  const gameName = String(currentGame?.title || editorState?.title || game?.title || '').trim();
 
-  const gameName = window.prompt('Game name (required):') || '';
-  if (!gameName.trim()) {
-    if (status) status.textContent = 'Game name is required. Notification not sent.';
+  if (!gameName) {
+    if (status) {
+      status.textContent =
+        'Game name is missing. Please ensure the game details are saved before notifying members.';
+    }
     return;
   }
 
@@ -79,26 +85,9 @@ async function notifyNewGameFromPrompt() {
       return;
     }
 
-    // ------------------------------------------------------------
-    // Build payload (TEST EMAIL ALWAYS OVERRIDES MEMBER NOTIFY)
-    // ------------------------------------------------------------
-
-    let payload;
-
-    if (sendTestEmail) {
-      payload = {
-        game_name: gameName.trim(),
-        mode: 'coming_soon',
-        test_email: true,
-        export_id: `publish-${Date.now()}`
-      };
-    } else if (notifyMembers) {
-      payload = {
-        game_name: gameName.trim(),
-        mode: 'coming_soon_members',
-        export_id: `publish-${Date.now()}`
-      };
-    }
+    const gameSlug = String(currentGame?.slug || editorState?.slug || game?.slug || '').trim();
+    const gameThumbnail = String(currentGame?.thumbnail || editorState?.thumbnail || game?.thumbnail || '').trim();
+    const mode = notifyMembers ? 'coming_soon_members' : 'coming_soon';
 
     const response = await fetch(
       `${supabaseUrl}/functions/v1/send-new-game-notification`,
@@ -109,7 +98,13 @@ async function notifyNewGameFromPrompt() {
           apikey: anonKey,
           Authorization: `Bearer ${accessToken}`
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          mode,
+          game_name: gameName,
+          game_slug: gameSlug || '',
+          game_thumbnail: gameThumbnail || '',
+          test_email: sendTestEmail === true
+        })
       }
     );
 
