@@ -233,6 +233,9 @@
         min-height: 42px !important;
         display: inline-flex !important;
         align-items: center !important;
+        position: relative;
+        z-index: 5;
+        pointer-events: auto;
     }
 
     .ccg-header .ccg-mode-hint,
