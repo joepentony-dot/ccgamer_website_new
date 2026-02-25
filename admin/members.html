@@ -6,40 +6,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CCG Admin | Members</title>
   <meta name="robots" content="noindex,nofollow" />
+
   <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="./css/members.css?v=admin-stable-20260227" rel="stylesheet" />
 </head>
+
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="omega-admin-shell" data-admin-shell>
+
     <header class="members-header">
       <h1>Members Directory</h1>
       <p>Phase 2: admin moderation controls for soft bans.</p>
       <p class="admin-status" data-member-status>Checking admin session…</p>
     </header>
 
-    <section class="members-controls" aria-label="Members filtering">
+    <section class="members-controls">
       <label>
         Search
         <input type="search" id="membersSearch" placeholder="email or username" />
       </label>
+
       <label>
         Role
         <select id="membersRoleFilter">
           <option value="">All roles</option>
           <option value="user">user</option>
           <option value="editor">editor</option>
-          <option value="mod">mod</option>
           <option value="admin">admin</option>
           <option value="superadmin">superadmin</option>
         </select>
       </label>
-      <button type="button" id="membersRefresh">Refresh</button>
+
+      <label>
+        Ban state
+        <select id="membersBannedFilter">
+          <option value="">All</option>
+          <option value="false">Active</option>
+          <option value="true">Banned</option>
+        </select>
+      </label>
+
+      <button id="membersRefresh">Refresh</button>
     </section>
 
-    <section class="members-table-wrap" aria-label="Current members list">
-      <table class="members-table" id="membersTable">
+    <section class="members-table-wrap">
+      <table class="members-table">
         <thead>
           <tr>
             <th>Email</th>
@@ -47,21 +60,18 @@
             <th>Signup date</th>
             <th>Last sign in</th>
             <th>Role</th>
-            <th>Soft ban controls</th>
+            <th>Preferences</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="membersTableBody"></tbody>
       </table>
-      <p class="admin-inline-status" id="membersInlineStatus"></p>
     </section>
+
   </main>
 
-<<<<<<< HEAD
-  <!-- FIX: load the actual members module that exists in your Phase 1/2 implementation -->
-  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260225"></script>
-=======
-  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260227"></script>
->>>>>>> 2adef741a623b97df161c9df7cc075212f7fc32c
+  <script type="module" src="/admin/js/members.js?v=admin-stable-20260227"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>
