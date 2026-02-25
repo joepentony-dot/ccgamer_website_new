@@ -54,8 +54,8 @@
         </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Retro Events Builder</span>
       </div>
-      <h1>Retro Events Builder — Non-Game Video Collection</h1>
-      <p>Standalone editor for <code>games/collections/retro-events.json</code>. This does not read or update <code>games.json</code>.</p>
+      <h1>Non-Game Video Builder (Retro Events + Amiga Demo Music)</h1>
+      <p>Standalone editor for <code>games/collections/retro-events.json</code> with multiple non-game video types. This does not read or update <code>games.json</code>.</p>
       <p class="retro-help">Use Save to download an updated <code>retro-events.json</code> file.</p>
       <p class="retro-status" data-status></p>
     </section>
@@ -64,6 +64,12 @@
       <h2 data-form-heading>Add Retro Event</h2>
       <form data-form>
         <div class="retro-grid">
+          <label>Content Type *
+            <select data-field="type" required>
+              <option value="retro_event">Retro Event</option>
+              <option value="amiga_demo_music">Amiga Demo Music</option>
+            </select>
+          </label>
           <label>SEO Title *
             <input type="text" data-field="title" placeholder="Arcade Club Bury – Europe’s Largest Free-Play Arcade" required />
           </label>

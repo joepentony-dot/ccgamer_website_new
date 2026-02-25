@@ -20,6 +20,7 @@ const el = {
 };
 
 const fields = {
+  type: document.querySelector('[data-field="type"]'),
   title: document.querySelector('[data-field="title"]'),
   youtubeId: document.querySelector('[data-field="youtubeId"]'),
   membersOnly: document.querySelector('[data-field="membersOnly"]')
@@ -65,7 +66,7 @@ async function loadEvents() {
     }
     const data = await response.json();
     state.events = sanitizeEvents(data);
-    setStatus(`Loaded ${state.events.length} retro events.`, false);
+    setStatus(`Loaded ${state.events.length} non-game videos.`, false);
   } catch (error) {
     state.events = [];
     setStatus(error.message, true);
@@ -75,24 +76,30 @@ async function loadEvents() {
 function sanitizeEvents(data) {
   if (!Array.isArray(data)) return [];
   return data
-    .map((event) => ({
-      id: String(event?.id || '').trim(),
-      title: String(event?.title || '').trim(),
-      youtubeId: String(event?.youtubeId || '').trim(),
-      membersOnly: event?.membersOnly === true
-    }))
-    .filter((event) => event.id && event.title && event.youtubeId);
+    .map((event) => {
+      const type = event?.type === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
+      return {
+        id: String(event?.id || '').trim(),
+        type,
+        title: String(event?.title || '').trim(),
+        youtubeId: String(event?.youtubeId || '').trim(),
+        membersOnly: event?.membersOnly === true
+      };
+    })
+    .filter((event) => event.id && event.type && event.title && event.youtubeId);
 }
 
 function onSaveEvent(event) {
   event.preventDefault();
 
+  const type = getSelectedType();
   const title = fields.title.value.trim();
   const youtubeId = fields.youtubeId.value.trim();
   const membersOnly = fields.membersOnly.checked;
-  const id = `retro-events-${slugify(title)}`;
+  const prefix = type === 'amiga_demo_music' ? 'amiga-demo-music-' : 'retro-events-';
+  const id = `${prefix}${slugify(title)}`;
 
-  const next = { id, title, youtubeId, membersOnly };
+  const next = { id, type, title, youtubeId, membersOnly };
   const validationErrors = validateEvent(next);
   if (validationErrors.length) {
     setStatus(validationErrors.join(' '), true);
@@ -103,11 +110,11 @@ function onSaveEvent(event) {
     const idx = state.events.findIndex((item) => item.id === state.editingId);
     if (idx >= 0) {
       state.events[idx] = next;
-      setStatus(`Updated retro event "${next.title}".`, false);
+      setStatus(`Updated ${getTypeLabel(next.type).toLowerCase()} "${next.title}".`, false);
     }
   } else {
     state.events.push(next);
-    setStatus(`Added retro event "${next.title}".`, false);
+    setStatus(`Added ${getTypeLabel(next.type).toLowerCase()} "${next.title}".`, false);
   }
 
   resetForm();
@@ -116,6 +123,9 @@ function onSaveEvent(event) {
 
 function validateEvent(next) {
   const errors = [];
+  if (next.type !== 'retro_event' && next.type !== 'amiga_demo_music') {
+    errors.push('Content Type is invalid.');
+  }
   if (!next.title) errors.push('SEO Title is required.');
   if (!next.youtubeId) errors.push('YouTube Video ID is required.');
   if (!/^[A-Za-z0-9_-]{6,20}$/.test(next.youtubeId)) {
@@ -133,6 +143,9 @@ function validateEvent(next) {
 function renderPreview() {
   const title = fields.title.value.trim() || 'Retro Event Title';
   const youtubeId = fields.youtubeId.value.trim() || 'dQw4w9WgXcQ';
+  if (!state.editingId) {
+    updateFormHeading();
+  }
   if (el.previewTitle) el.previewTitle.textContent = title;
   if (el.previewThumb) el.previewThumb.src = `https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`;
   if (el.previewMembers) {
@@ -151,10 +164,12 @@ function renderEvents() {
   state.events.forEach((eventItem) => {
     const item = document.createElement('li');
     item.className = 'retro-item';
+    const typeLabel = getTypeLabel(eventItem.type);
 
     item.innerHTML = `
       <div>
         <span class="retro-item-title">${escapeHtml(eventItem.title)}</span>
+        <span class="mode-pill">${escapeHtml(typeLabel)}</span>
         ${eventItem.membersOnly ? '<span class="retro-pill members">Members Only</span>' : ''}
         <div class="retro-item-sub">${escapeHtml(eventItem.id)} · ${escapeHtml(eventItem.youtubeId)}</div>
       </div>
@@ -176,11 +191,12 @@ function startEdit(id) {
   if (!eventItem) return;
 
   state.editingId = id;
+  fields.type.value = eventItem.type;
   fields.title.value = eventItem.title;
   fields.youtubeId.value = eventItem.youtubeId;
   fields.membersOnly.checked = eventItem.membersOnly;
 
-  el.formHeading.textContent = `Edit Retro Event: ${eventItem.title}`;
+  el.formHeading.textContent = `Edit ${getTypeLabel(eventItem.type)}: ${eventItem.title}`;
   el.saveEvent.textContent = 'Save / Update';
   renderPreview();
 }
@@ -194,7 +210,7 @@ function deleteEvent(id) {
     resetForm();
   }
   renderEvents();
-  setStatus(`Deleted retro event "${eventItem.title}".`, false);
+  setStatus(`Deleted ${getTypeLabel(eventItem.type).toLowerCase()} "${eventItem.title}".`, false);
 }
 
 async function saveJsonFile() {
@@ -231,10 +247,24 @@ async function saveJsonFile() {
 function resetForm() {
   state.editingId = null;
   el.form?.reset();
+  fields.type.value = 'retro_event';
   fields.membersOnly.checked = false;
-  el.formHeading.textContent = 'Add Retro Event';
+  updateFormHeading();
   el.saveEvent.textContent = 'Save / Update';
   renderPreview();
+}
+
+function getSelectedType() {
+  return fields.type?.value === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
+}
+
+function getTypeLabel(type) {
+  return type === 'amiga_demo_music' ? 'Amiga Demo Music' : 'Retro Event';
+}
+
+function updateFormHeading() {
+  const type = getSelectedType();
+  el.formHeading.textContent = `Add ${getTypeLabel(type)}`;
 }
 
 function slugify(value) {
