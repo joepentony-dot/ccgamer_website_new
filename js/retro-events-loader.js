@@ -91,33 +91,30 @@ async function ccgLoadRetroEvents() {
     throw new Error('retro-events.json must be an array.');
   }
 
-  const validEntries = data
-    .map((eventItem) => ({
-      id: String(eventItem?.id || '').trim(),
-      title: String(eventItem?.title || '').trim(),
-      url: String(eventItem?.url || '').trim(),
-      youtubeId: String(eventItem?.youtubeId || '').trim(),
-      membersOnly: eventItem?.membersOnly === true,
-      badge: String(eventItem?.badge || '').trim(),
-      type: String(eventItem?.type || '').trim().toLowerCase()
-    }))
+  return data
+    .map((eventItem, index) => {
+      const rawType = String(eventItem?.type || '').trim().toLowerCase();
+      const type = rawType === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
+      const orderValue = Number(eventItem?.order);
+
+      return {
+        id: String(eventItem?.id || '').trim(),
+        title: String(eventItem?.title || '').trim(),
+        url: String(eventItem?.url || '').trim(),
+        youtubeId: String(eventItem?.youtubeId || '').trim(),
+        membersOnly: eventItem?.membersOnly === true,
+        badge: String(eventItem?.badge || '').trim(),
+        order: Number.isFinite(orderValue) ? orderValue : Number.POSITIVE_INFINITY,
+        index,
+        type
+      };
+    })
     // youtubeId is optional (but strongly recommended). Keep entries even if blank.
-    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url);
-
-  const retroEvents = [];
-  const amigaDemoMusic = [];
-
-  validEntries.forEach((eventItem) => {
-    if (eventItem.type === 'amiga_demo_music') {
-      amigaDemoMusic.push(eventItem);
-      return;
-    }
-
-    // Backward compatibility: missing/unknown type defaults to retro_event.
-    retroEvents.push(eventItem);
-  });
-
-  return { retroEvents, amigaDemoMusic };
+    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url)
+    .sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return a.index - b.index;
+    });
 }
 
 function ccgRenderCards(gridEl, items) {
@@ -125,28 +122,37 @@ function ccgRenderCards(gridEl, items) {
   gridEl.innerHTML = items.map(ccgBuildRetroEventCard).join('');
 }
 
-async function ccgRunRetroEventsCollection() {
-  const grid = document.getElementById('genreGamesGrid');
-  const countEl = document.getElementById('genreGamesCount');
-  const amigaSection = document.getElementById('amigaDemoMusicSection');
-  const amigaGrid = document.getElementById('amigaDemoMusicGrid');
+function setAmigaSectionVisible(visible) {
+  const amigaSections = document.querySelectorAll('[data-amiga-demo-music-section]');
+  amigaSections.forEach((section) => {
+    section.hidden = !visible;
+  });
+}
 
-  if (!grid) {
+async function ccgRunRetroEventsCollection() {
+  const gridRetro = document.getElementById('genreGamesGrid');
+  const countEl = document.getElementById('genreGamesCount');
+  const gridAmiga = document.getElementById('amigaDemoMusicGrid');
+  const amigaSections = document.querySelectorAll('[data-amiga-demo-music-section]');
+
+  if (!gridRetro) {
     console.warn('[CCG RETRO EVENTS] Missing grid container');
     return;
   }
 
   try {
-    const { retroEvents, amigaDemoMusic } = await ccgLoadRetroEvents();
+    const events = await ccgLoadRetroEvents();
+    const retroEvents = events.filter((eventItem) => eventItem.type !== 'amiga_demo_music');
+    const amigaDemo = events.filter((eventItem) => eventItem.type === 'amiga_demo_music');
 
     if (countEl) {
       countEl.textContent = String(retroEvents.length);
     }
 
     if (retroEvents.length > 0) {
-      ccgRenderCards(grid, retroEvents);
+      ccgRenderCards(gridRetro, retroEvents);
     } else {
-      grid.innerHTML = `
+      gridRetro.innerHTML = `
         <div class="ccg-genre-empty">
           <h3>No collection entries yet</h3>
           <p>We&apos;re refreshing this set — check back soon or browse every game.</p>
@@ -158,29 +164,33 @@ async function ccgRunRetroEventsCollection() {
       `;
     }
 
-    if (amigaSection && amigaGrid) {
-      if (amigaDemoMusic.length > 0) {
-        ccgRenderCards(amigaGrid, amigaDemoMusic);
-        amigaSection.hidden = false;
-      } else {
-        amigaSection.hidden = true;
+    if (amigaDemo.length > 0 && gridAmiga) {
+      ccgRenderCards(gridAmiga, amigaDemo);
+      amigaSections.forEach((section) => {
+        section.hidden = false;
+      });
+    } else {
+      if (gridAmiga) {
+        gridAmiga.innerHTML = '';
       }
+      setAmigaSectionVisible(false);
     }
   } catch (error) {
     console.error('[CCG RETRO EVENTS]', error);
     if (countEl) {
       countEl.textContent = '0';
     }
-    grid.innerHTML = `
+    gridRetro.innerHTML = `
       <div class="ccg-genre-empty">
         <h3>Unable to load Retro Events</h3>
         <p>Please try again later.</p>
       </div>
     `;
 
-    if (amigaSection) {
-      amigaSection.hidden = true;
+    if (gridAmiga) {
+      gridAmiga.innerHTML = '';
     }
+    setAmigaSectionVisible(false);
   }
 }
 
