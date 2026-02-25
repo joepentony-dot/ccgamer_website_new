@@ -1584,6 +1584,7 @@ function ensureBox3dLightboxModal() {
         <div class="game-box3d-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Cassette box artwork viewer">
             <button class="game-box3d-lightbox__close" type="button" aria-label="Close cassette artwork viewer" data-box3d-close>✕</button>
             <div class="game-box3d-lightbox__viewport">
+                <p class="game-box3d-lightbox__hint" aria-hidden="true">Ctrl + wheel to zoom</p>
                 <img class="game-box3d-lightbox__img" alt="" draggable="false">
             </div>
         </div>
@@ -1599,6 +1600,7 @@ function ensureBox3dLightboxModal() {
     modal.addEventListener("wheel", (event) => {
         if (!modal.classList.contains("is-open")) return;
         event.preventDefault();
+        if (!event.ctrlKey) return;
         const delta = event.deltaY < 0 ? 0.12 : -0.12;
         setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM + delta);
     }, { passive: false });
@@ -1675,6 +1677,24 @@ function openBox3dLightboxFromImage(sourceImage) {
         CCG_BOX3D_LIGHTBOX_KEY_HANDLER = (event) => {
             if (event.key === "Escape") {
                 closeBox3dLightbox();
+                return;
+            }
+
+            if (event.key === "+" || event.key === "=") {
+                event.preventDefault();
+                setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM + 0.12);
+                return;
+            }
+
+            if (event.key === "-") {
+                event.preventDefault();
+                setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM - 0.12);
+                return;
+            }
+
+            if (event.key === "0") {
+                event.preventDefault();
+                setBox3dLightboxZoom(1);
             }
         };
         document.addEventListener("keydown", CCG_BOX3D_LIGHTBOX_KEY_HANDLER);
