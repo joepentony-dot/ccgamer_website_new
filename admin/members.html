@@ -9,13 +9,13 @@
   <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
-  <link href="./css/members.css?v=admin-stable-20260225" rel="stylesheet" />
+  <link href="./css/members.css?v=admin-stable-20260226" rel="stylesheet" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="omega-admin-shell" data-admin-shell>
     <header class="members-header">
-      <h1>Members &amp; Moderation</h1>
-      <p>Admin-only members list, communication controls, and moderation timeline.</p>
+      <h1>Members Directory</h1>
+      <p>Phase 1: read-only admin member visibility.</p>
       <p class="admin-status" data-member-status>Checking admin session…</p>
     </header>
 
@@ -35,14 +35,6 @@
           <option value="superadmin">superadmin</option>
         </select>
       </label>
-      <label>
-        Ban state
-        <select id="membersBannedFilter">
-          <option value="">All</option>
-          <option value="false">Active only</option>
-          <option value="true">Banned only</option>
-        </select>
-      </label>
       <button type="button" id="membersRefresh">Refresh</button>
     </section>
 
@@ -52,54 +44,18 @@
           <tr>
             <th>Email</th>
             <th>Username</th>
-            <th>Role</th>
-            <th>Joined</th>
+            <th>Signup date</th>
             <th>Last sign in</th>
-            <th>Preferences</th>
-            <th>Ban</th>
-            <th>Actions</th>
+            <th>Role</th>
           </tr>
         </thead>
         <tbody id="membersTableBody"></tbody>
       </table>
-    </section>
-
-    <section class="members-comms" aria-label="Admin communication tool">
-      <h2>Send Admin Message</h2>
-      <form id="messageForm">
-        <label>
-          Message type
-          <select id="messageType" required>
-            <option value="game_notification">Game notification</option>
-            <option value="newsletter">Newsletter</option>
-            <option value="admin_contact">Admin contact</option>
-          </select>
-        </label>
-        <label>
-          Subject
-          <input type="text" id="messageSubject" required maxlength="140" />
-        </label>
-        <label>
-          Body
-          <textarea id="messageBody" rows="5" required></textarea>
-        </label>
-        <label class="checkbox-row">
-          <input type="checkbox" id="messageOptInOnly" checked />
-          Respect opt-in preferences
-        </label>
-        <button type="submit">Send</button>
-      </form>
-      <p id="messageResult" class="admin-inline-status"></p>
-    </section>
-
-    <section class="members-timeline" aria-label="Admin activity timeline">
-      <h2>Activity timeline</h2>
-      <button type="button" id="timelineRefresh">Refresh timeline</button>
-      <ul id="timelineList"></ul>
+      <p class="admin-inline-status" id="membersInlineStatus"></p>
     </section>
   </main>
 
-  <script type="module" src="/admin/js/members.js?v=admin-stable-20260225"></script>
+  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260226"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>
