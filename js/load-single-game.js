@@ -1002,8 +1002,17 @@ function renderGame(game) {
     const videoActions = videoSection ? videoSection.querySelector(".game-video__actions") : null;
     const videoBtn = document.getElementById("gameVideoBtn");
     const hasVideo = !!vid;
+    const isDriveVideoGame = game.id === "the_happiest_days_of_your_life";
 
-    if (hasVideo) {
+    if (isDriveVideoGame) {
+        if (videoEmbed) {
+            videoEmbed.src = "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/preview";
+            videoEmbed.hidden = false;
+        }
+        if (videoBtn) videoBtn.hidden = true;
+        if (videoActions) videoActions.hidden = false;
+        toggleGameEmptyMessage(videoSection, "video", "");
+    } else if (hasVideo) {
         if (videoEmbed) {
             videoEmbed.src = `https://www.youtube-nocookie.com/embed/${vid}`;
             videoEmbed.hidden = false;
