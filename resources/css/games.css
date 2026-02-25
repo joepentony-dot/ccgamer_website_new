@@ -1118,7 +1118,8 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
     box-shadow:
         inset 0 0 18px rgba(var(--game-box3d-glow-rgb), 0.12),
         0 0 24px rgba(var(--game-box3d-glow-rgb), 0.18);
-    transition: filter 220ms ease, box-shadow 220ms ease;
+    transition: transform 220ms ease, filter 220ms ease, box-shadow 220ms ease;
+    transform-origin: center center;
     position: relative;
     z-index: 1;
 }
@@ -1136,9 +1137,24 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .game-hero__box3d--interactive:hover,
-    .game-hero__box3d--interactive:focus-visible {
-        transform: perspective(900px) rotateY(-4deg) rotateX(1.5deg) scale(1.05);
+    .ccg-page--single-game .game-hero__box3d:hover .game-hero__box3d-img,
+    .ccg-page--single-game .game-hero__box3d:focus-within .game-hero__box3d-img {
+        transform: scale(1.05);
+    }
+
+    .ccg-page--single-game .game-hero__box3d:hover {
+        cursor: zoom-in;
+    }
+}
+
+@media (hover: none), (pointer: coarse) {
+    .ccg-page--single-game .game-hero__box3d,
+    .ccg-page--single-game .game-hero__box3d:hover,
+    .ccg-page--single-game .game-hero__box3d:focus-within,
+    .ccg-page--single-game .game-hero__box3d:hover .game-hero__box3d-img,
+    .ccg-page--single-game .game-hero__box3d:focus-within .game-hero__box3d-img {
+        transform: none;
+        cursor: default;
     }
 }
 
