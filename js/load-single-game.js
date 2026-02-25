@@ -31,9 +31,6 @@ let CCG_QUICK_ACTIONS_READY = false;
 let CCG_RELATED_OBSERVER = null;
 let CCG_FAVOURITES_INIT = false;
 let CCG_FAVOURITES_LOADING = false;
-let CCG_BOX3D_LIGHTBOX_KEY_HANDLER = null;
-let CCG_BOX3D_LIGHTBOX_TOUCH = null;
-let CCG_BOX3D_LIGHTBOX_ZOOM = 1;
 const CCG_BOX3D_PATH_CACHE = new Map();
 const CCG_BOX3D_SLUG_CACHE = new Map();
 const CCG_RENDER_GATE = {
@@ -1561,167 +1558,10 @@ function clearHeroBox3d(hero) {
             img.removeAttribute("src");
             img.removeAttribute("alt");
         }
-        existing.classList.remove("game-hero__box3d--interactive");
-        existing.removeAttribute("role");
-        existing.removeAttribute("tabindex");
-        existing.removeAttribute("aria-label");
         existing.hidden = true;
     }
     hero.classList.remove("game-hero--has-box3d");
     delete hero.dataset.box3dSlug;
-}
-
-function ensureBox3dLightboxModal() {
-    let modal = document.getElementById("gameBox3dLightbox");
-    if (modal) return modal;
-
-    modal = document.createElement("div");
-    modal.id = "gameBox3dLightbox";
-    modal.className = "game-box3d-lightbox";
-    modal.setAttribute("aria-hidden", "true");
-    modal.innerHTML = `
-        <div class="game-box3d-lightbox__backdrop" data-box3d-close></div>
-        <div class="game-box3d-lightbox__dialog" role="dialog" aria-modal="true" aria-label="Cassette box artwork viewer">
-            <button class="game-box3d-lightbox__close" type="button" aria-label="Close cassette artwork viewer" data-box3d-close>✕</button>
-            <div class="game-box3d-lightbox__viewport">
-                <p class="game-box3d-lightbox__hint" aria-hidden="true">Ctrl + wheel to zoom</p>
-                <img class="game-box3d-lightbox__img" alt="" draggable="false">
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    modal.addEventListener("click", (event) => {
-        if (event.target.closest("[data-box3d-close]")) {
-            closeBox3dLightbox();
-        }
-    });
-
-    modal.addEventListener("wheel", (event) => {
-        if (!modal.classList.contains("is-open")) return;
-        event.preventDefault();
-        if (!event.ctrlKey) return;
-        const delta = event.deltaY < 0 ? 0.12 : -0.12;
-        setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM + delta);
-    }, { passive: false });
-
-    modal.addEventListener("touchstart", (event) => {
-        if (!modal.classList.contains("is-open")) return;
-        if (!event.touches || event.touches.length !== 2) return;
-        const [touchA, touchB] = event.touches;
-        CCG_BOX3D_LIGHTBOX_TOUCH = {
-            distance: Math.hypot(touchA.clientX - touchB.clientX, touchA.clientY - touchB.clientY),
-            zoom: CCG_BOX3D_LIGHTBOX_ZOOM
-        };
-    }, { passive: true });
-
-    modal.addEventListener("touchmove", (event) => {
-        if (!modal.classList.contains("is-open")) return;
-        if (!event.touches || event.touches.length !== 2 || !CCG_BOX3D_LIGHTBOX_TOUCH) return;
-        const [touchA, touchB] = event.touches;
-        const distance = Math.hypot(touchA.clientX - touchB.clientX, touchA.clientY - touchB.clientY);
-        if (!distance || !CCG_BOX3D_LIGHTBOX_TOUCH.distance) return;
-        event.preventDefault();
-        const pinchRatio = distance / CCG_BOX3D_LIGHTBOX_TOUCH.distance;
-        setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_TOUCH.zoom * pinchRatio);
-    }, { passive: false });
-
-    modal.addEventListener("touchend", () => {
-        if (!modal.classList.contains("is-open")) return;
-        CCG_BOX3D_LIGHTBOX_TOUCH = null;
-    }, { passive: true });
-
-    return modal;
-}
-
-function setBox3dLightboxZoom(nextZoom) {
-    const modal = document.getElementById("gameBox3dLightbox");
-    if (!modal) return;
-    const image = modal.querySelector(".game-box3d-lightbox__img");
-    if (!image) return;
-    const clamped = Math.max(1, Math.min(4, Number(nextZoom) || 1));
-    CCG_BOX3D_LIGHTBOX_ZOOM = clamped;
-    image.style.transform = `scale(${clamped.toFixed(3)})`;
-    modal.dataset.zoom = clamped.toFixed(2);
-}
-
-function closeBox3dLightbox() {
-    const modal = document.getElementById("gameBox3dLightbox");
-    if (!modal || !modal.classList.contains("is-open")) return;
-    modal.classList.remove("is-open");
-    modal.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("game-box3d-lightbox-open");
-    setBox3dLightboxZoom(1);
-    CCG_BOX3D_LIGHTBOX_TOUCH = null;
-    if (CCG_BOX3D_LIGHTBOX_KEY_HANDLER) {
-        document.removeEventListener("keydown", CCG_BOX3D_LIGHTBOX_KEY_HANDLER);
-        CCG_BOX3D_LIGHTBOX_KEY_HANDLER = null;
-    }
-}
-
-function openBox3dLightboxFromImage(sourceImage) {
-    if (!sourceImage) return;
-    const modal = ensureBox3dLightboxModal();
-    const modalImage = modal.querySelector(".game-box3d-lightbox__img");
-    if (!modalImage) return;
-
-    modalImage.src = sourceImage.currentSrc || sourceImage.src;
-    modalImage.alt = sourceImage.alt || "Cassette box artwork";
-    setBox3dLightboxZoom(1);
-
-    modal.classList.add("is-open");
-    modal.setAttribute("aria-hidden", "false");
-    document.body.classList.add("game-box3d-lightbox-open");
-
-    if (!CCG_BOX3D_LIGHTBOX_KEY_HANDLER) {
-        CCG_BOX3D_LIGHTBOX_KEY_HANDLER = (event) => {
-            if (event.key === "Escape") {
-                closeBox3dLightbox();
-                return;
-            }
-
-            if (event.key === "+" || event.key === "=") {
-                event.preventDefault();
-                setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM + 0.12);
-                return;
-            }
-
-            if (event.key === "-") {
-                event.preventDefault();
-                setBox3dLightboxZoom(CCG_BOX3D_LIGHTBOX_ZOOM - 0.12);
-                return;
-            }
-
-            if (event.key === "0") {
-                event.preventDefault();
-                setBox3dLightboxZoom(1);
-            }
-        };
-        document.addEventListener("keydown", CCG_BOX3D_LIGHTBOX_KEY_HANDLER);
-    }
-}
-
-function bindHeroBox3dInteractivity(box, img) {
-    if (!box || !img) return;
-    box.classList.add("game-hero__box3d--interactive");
-    box.setAttribute("role", "button");
-    box.setAttribute("tabindex", "0");
-    box.setAttribute("aria-label", "Open cassette box artwork in viewer");
-
-    if (box.dataset.lightboxBound === "true") return;
-
-    box.addEventListener("click", (event) => {
-        if (typeof event.button === "number" && event.button !== 0) return;
-        openBox3dLightboxFromImage(img);
-    });
-
-    box.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        openBox3dLightboxFromImage(img);
-    });
-
-    box.dataset.lightboxBound = "true";
 }
 
 async function renderHeroBox3d(game) {
@@ -1764,7 +1604,6 @@ async function renderHeroBox3d(game) {
         img.src = path;
         img.alt = `${game?.title || "Game"} 3D box art`;
     }
-    bindHeroBox3dInteractivity(box, img);
     box.hidden = false;
     hero.classList.add("game-hero--has-box3d");
 }
