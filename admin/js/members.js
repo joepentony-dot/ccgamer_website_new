@@ -4,6 +4,9 @@ import { initAdminNav } from './admin-nav.js';
 
 const ALLOWED_ROLES = ['superadmin', 'admin', 'editor'];
 
+// Phase 2 compatibility: Phase 3 features not deployed yet
+const PHASE3_ENABLED = false;
+
 const statusNode = document.querySelector('[data-member-status]');
 const searchInput = document.getElementById('membersSearch');
 const roleFilter = document.getElementById('membersRoleFilter');
@@ -46,17 +49,23 @@ function memberActionsMarkup(member) {
   const userId = member.user_id;
   const banLabel = member.banned ? 'Unban' : 'Soft ban';
 
+  // Phase 2: role/hard-ban are Phase 3 only, keep visible but disabled
+  const disabledAttr = PHASE3_ENABLED ? '' : ' disabled';
+  const disabledTitle = PHASE3_ENABLED ? '' : ' title="Phase 3 feature (not enabled yet)"';
+
   return `
     <div class="member-actions" data-user-id="${escapeHtml(userId)}">
       <label>
         Role
-        <select data-action="role">
-          ${['user', 'editor', 'mod', 'admin', 'superadmin'].map((role) => `<option value="${role}" ${member.role === role ? 'selected' : ''}>${role}</option>`).join('')}
+        <select data-action="role"${disabledAttr}${disabledTitle}>
+          ${['user', 'editor', 'mod', 'admin', 'superadmin']
+            .map((role) => `<option value="${role}" ${member.role === role ? 'selected' : ''}>${role}</option>`)
+            .join('')}
         </select>
       </label>
-      <button type="button" data-action="save-role">Save role</button>
+      <button type="button" data-action="save-role"${disabledAttr}${disabledTitle}>Save role</button>
       <button type="button" data-action="soft-ban">${banLabel}</button>
-      <button type="button" data-action="hard-ban">Hard ban</button>
+      <button type="button" data-action="hard-ban"${disabledAttr}${disabledTitle}>Hard ban</button>
     </div>
   `;
 }
@@ -75,6 +84,7 @@ async function loadMembers() {
 
   if (error) {
     setStatus(`Failed to load members: ${error.message}`, true);
+    bodyNode.innerHTML = '';
     return;
   }
 
@@ -103,6 +113,11 @@ async function loadMembers() {
 }
 
 async function loadTimeline() {
+  if (!PHASE3_ENABLED) {
+    timelineList.innerHTML = '<li>Timeline is a Phase 3 feature (coming next).</li>';
+    return;
+  }
+
   const supabase = await getSupabaseClient();
   const { data, error } = await supabase.rpc('admin_list_activity', {
     p_search: null,
@@ -137,6 +152,11 @@ async function onTableClick(event) {
   const supabase = await getSupabaseClient();
 
   if (action === 'save-role') {
+    if (!PHASE3_ENABLED) {
+      setStatus('Role changes are a Phase 3 feature (not enabled yet).', true);
+      return;
+    }
+
     const roleSelect = wrapper.querySelector('select[data-action="role"]');
     const role = roleSelect ? roleSelect.value : 'user';
 
@@ -154,18 +174,25 @@ async function onTableClick(event) {
     const shouldBan = button.textContent.toLowerCase().includes('soft ban');
     const reason = shouldBan ? window.prompt('Ban reason (required for audit):', 'Admin moderation') : '';
 
-    const { error } = await supabase.rpc('admin_set_member_ban', {
+    // Phase 2 correct RPC name (matches your DB): admin_set_member_soft_ban
+    const { error } = await supabase.rpc('admin_set_member_soft_ban', {
       p_user_id: userId,
       p_banned: shouldBan,
       p_reason: reason || null
     });
 
     setStatus(error ? `Ban update failed: ${error.message}` : 'Ban status updated.', Boolean(error));
-    await Promise.all([loadMembers(), loadTimeline()]);
+    // Timeline is Phase 3; keep refresh lightweight
+    await loadMembers();
     return;
   }
 
   if (action === 'hard-ban') {
+    if (!PHASE3_ENABLED) {
+      setStatus('Hard ban is a Phase 3 feature (not enabled yet).', true);
+      return;
+    }
+
     const reason = window.prompt('Hard ban reason (required):', 'Severe policy breach');
     if (!reason) return;
 
@@ -202,7 +229,9 @@ async function onSendMessage(event) {
 
   messageResult.textContent = `Sent to ${data.sent} member(s).`;
   messageResult.style.color = '#8fd7ff';
-  await loadTimeline();
+
+  // Timeline is Phase 3; don’t call it until enabled
+  await loadMembers();
 }
 
 async function bootstrap() {
