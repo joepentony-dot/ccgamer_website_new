@@ -52,6 +52,25 @@
   cursor: pointer;
 }
 
+.ban-cell {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 220px;
+}
+
+.ban-cell label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.ban-state[data-banned='true'] {
+  color: #ff8b8b;
+}
+
+.ban-state[data-banned='false'] {
+  color: #8dffbe;
+}
+
 .checkbox-row {
   display: flex;
   align-items: center;
