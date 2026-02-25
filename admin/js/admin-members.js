@@ -9,10 +9,12 @@ const tableBody = document.getElementById('membersTableBody');
 const inlineStatus = document.getElementById('membersInlineStatus');
 const searchInput = document.getElementById('membersSearch');
 const roleFilter = document.getElementById('membersRoleFilter');
+const bannedFilter = document.getElementById('membersBannedFilter');
 const refreshButton = document.getElementById('membersRefresh');
 
 let membersCache = [];
 let loading = false;
+let supportsBannedFilter = true;
 
 function setStatus(message, state = 'info') {
   if (!statusNode) return;
@@ -40,6 +42,28 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function parseBannedFilter() {
+  const value = String(bannedFilter?.value || '').trim();
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  return null;
+}
+
+function normalizeMemberRow(row) {
+  const signupDate = row.signup_date ?? row.created_at ?? null;
+  const lastSignIn = row.last_sign_in ?? row.last_sign_in_at ?? null;
+
+  return {
+    ...row,
+    user_id: row.user_id || row.id || null,
+    signup_date: signupDate,
+    last_sign_in: lastSignIn,
+    banned: row.banned === true,
+    ban_reason: row.ban_reason || null,
+    banned_at: row.banned_at || null
+  };
 }
 
 function getBanControlMarkup(row) {
@@ -96,28 +120,20 @@ function renderRows(rows = []) {
   });
 }
 
-async function hydrateBanState(rows) {
-  const supabase = await getSupabaseClient();
-  const userIds = rows.map((row) => row.user_id).filter(Boolean);
-  if (!userIds.length) return rows;
+async function fetchMembers(supabase, params) {
+  const primaryResponse = await supabase.rpc('admin_list_members', params);
+  if (!primaryResponse.error) return primaryResponse;
 
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, banned, ban_reason, banned_at')
-    .in('id', userIds);
+  const errorMessage = String(primaryResponse.error.message || '');
+  const mayNotSupportBanned = params.p_banned !== undefined
+    && /p_banned|function .* does not exist|unexpected parameter/i.test(errorMessage);
 
-  if (error || !Array.isArray(data)) return rows;
+  if (!mayNotSupportBanned) return primaryResponse;
 
-  const banById = new Map(data.map((item) => [item.id, item]));
-  return rows.map((row) => {
-    const banState = banById.get(row.user_id);
-    return {
-      ...row,
-      banned: banState?.banned === true,
-      ban_reason: banState?.ban_reason || null,
-      banned_at: banState?.banned_at || null
-    };
-  });
+  supportsBannedFilter = false;
+  const fallbackParams = { ...params };
+  delete fallbackParams.p_banned;
+  return supabase.rpc('admin_list_members', fallbackParams);
 }
 
 async function loadMembers() {
@@ -125,48 +141,69 @@ async function loadMembers() {
   loading = true;
   setInlineStatus('Loading members…');
 
-  const supabase = await getSupabaseClient();
-  const searchValue = String(searchInput?.value || '').trim();
-  const roleValue = String(roleFilter?.value || '').trim();
+  try {
+    const supabase = await getSupabaseClient();
+    const searchValue = String(searchInput?.value || '').trim();
+    const roleValue = String(roleFilter?.value || '').trim();
+    const bannedValue = parseBannedFilter();
 
-  const { data, error } = await supabase.rpc('admin_list_members_phase1', {
-    p_search: searchValue || null,
-    p_role: roleValue || null,
-    p_limit: 200,
-    p_offset: 0
-  });
+    const rpcParams = {
+      p_search: searchValue || null,
+      p_role: roleValue || null,
+      p_limit: 200,
+      p_offset: 0
+    };
 
-  if (error) {
+    if (supportsBannedFilter) {
+      rpcParams.p_banned = bannedValue;
+    }
+
+    const { data, error } = await fetchMembers(supabase, rpcParams);
+
+    if (error) {
+      membersCache = [];
+      renderRows([]);
+      setInlineStatus(`Unable to load members: ${error.message}`, 'error');
+      return;
+    }
+
+    membersCache = Array.isArray(data) ? data.map(normalizeMemberRow) : [];
+    renderRows(membersCache);
+
+    const filterSuffix = !supportsBannedFilter && bannedValue !== null
+      ? ' (ban filter unavailable for current RPC version)'
+      : '';
+    setInlineStatus(`Loaded ${membersCache.length} members.${filterSuffix}`, 'success');
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error || 'Unknown error');
     membersCache = [];
     renderRows([]);
-    setInlineStatus('Unable to load members.', 'error');
+    setInlineStatus(`Unable to load members: ${message}`, 'error');
+  } finally {
     loading = false;
-    return;
   }
-
-  const baseRows = Array.isArray(data) ? data : [];
-  membersCache = await hydrateBanState(baseRows);
-  renderRows(membersCache);
-  setInlineStatus(`Loaded ${membersCache.length} members.`, 'success');
-  loading = false;
 }
 
 async function toggleBan(userId, shouldBan, reason) {
-  const supabase = await getSupabaseClient();
+  try {
+    const supabase = await getSupabaseClient();
+    const { error } = await supabase.rpc('admin_set_member_soft_ban', {
+      p_user_id: userId,
+      p_banned: shouldBan,
+      p_reason: shouldBan ? (reason || null) : null
+    });
 
-  const { error } = await supabase.rpc('admin_set_member_soft_ban', {
-    p_user_id: userId,
-    p_banned: shouldBan,
-    p_reason: shouldBan ? (reason || null) : null
-  });
+    if (error) {
+      setInlineStatus(`Unable to update ban status: ${error.message}`, 'error');
+      return;
+    }
 
-  if (error) {
-    setInlineStatus('Unable to update ban status.', 'error');
-    return;
+    setInlineStatus(shouldBan ? 'User soft-banned.' : 'User unbanned.', 'success');
+    await loadMembers();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error || 'Unknown error');
+    setInlineStatus(`Unable to update ban status: ${message}`, 'error');
   }
-
-  setInlineStatus(shouldBan ? 'User soft-banned.' : 'User unbanned.', 'success');
-  await loadMembers();
 }
 
 async function bootstrap() {
@@ -182,24 +219,22 @@ async function bootstrap() {
 }
 
 refreshButton?.addEventListener('click', () => {
-  loadMembers().catch(() => {
-    setInlineStatus('Unable to load members.', 'error');
-  });
+  loadMembers();
 });
 
 searchInput?.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     event.preventDefault();
-    loadMembers().catch(() => {
-      setInlineStatus('Unable to load members.', 'error');
-    });
+    loadMembers();
   }
 });
 
 roleFilter?.addEventListener('change', () => {
-  loadMembers().catch(() => {
-    setInlineStatus('Unable to load members.', 'error');
-  });
+  loadMembers();
+});
+
+bannedFilter?.addEventListener('change', () => {
+  loadMembers();
 });
 
 tableBody?.addEventListener('click', (event) => {
@@ -217,12 +252,11 @@ tableBody?.addEventListener('click', (event) => {
   const currentlyBanned = currentRecord?.banned === true;
   const reason = reasonInput instanceof HTMLInputElement ? reasonInput.value.trim() : '';
 
-  toggleBan(userId, !currentlyBanned, reason).catch(() => {
-    setInlineStatus('Unable to update ban status.', 'error');
-  });
+  toggleBan(userId, !currentlyBanned, reason);
 });
 
 initAdminNav({ pageLabel: 'Members', active: 'members' });
-bootstrap().catch(() => {
-  setStatus('Unable to validate admin session.', 'error');
+bootstrap().catch((error) => {
+  const message = error instanceof Error ? error.message : 'Unable to validate admin session.';
+  setStatus(message, 'error');
 });

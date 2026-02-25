@@ -20,6 +20,7 @@
       <h1>Members Directory</h1>
       <p>Phase 2: admin moderation controls for soft bans.</p>
       <p class="admin-status" data-member-status>Checking admin session…</p>
+      <p class="admin-status" id="membersInlineStatus" data-state="info"></p>
     </header>
 
     <section class="members-controls">
@@ -60,9 +61,7 @@
             <th>Signup date</th>
             <th>Last sign in</th>
             <th>Role</th>
-            <th>Preferences</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Soft ban controls</th>
           </tr>
         </thead>
         <tbody id="membersTableBody"></tbody>
@@ -71,7 +70,7 @@
 
   </main>
 
-  <script type="module" src="/admin/js/members.js?v=admin-stable-20260227"></script>
+  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260227"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>
