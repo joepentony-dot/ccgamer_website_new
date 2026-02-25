@@ -1,0 +1,76 @@
+.members-header {
+  margin: 2rem 0 1rem;
+}
+
+.admin-status {
+  color: #8fd7ff;
+}
+
+.members-controls,
+.members-comms form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.members-controls input,
+.members-controls select,
+.members-comms input,
+.members-comms select,
+.members-comms textarea {
+  width: 100%;
+}
+
+.members-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+
+.members-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(6, 24, 43, 0.8);
+}
+
+.members-table th,
+.members-table td {
+  border: 1px solid rgba(143, 215, 255, 0.3);
+  padding: 0.5rem;
+  vertical-align: top;
+  text-align: left;
+}
+
+.members-table td small {
+  opacity: 0.85;
+}
+
+.members-table button,
+.members-controls button,
+.members-comms button,
+.members-timeline button {
+  cursor: pointer;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.members-timeline ul {
+  list-style: none;
+  margin: 1rem 0 2rem;
+  padding: 0;
+}
+
+.members-timeline li {
+  border-left: 2px solid rgba(143, 215, 255, 0.35);
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: rgba(6, 24, 43, 0.6);
+}
+
+.admin-inline-status {
+  min-height: 1.2rem;
+}
