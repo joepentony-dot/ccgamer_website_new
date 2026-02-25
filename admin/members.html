@@ -18,7 +18,7 @@
 
     <header class="members-header">
       <h1>Members Directory</h1>
-      <p>Phase 2: admin moderation controls for soft bans.</p>
+      <p>Phase 3: role controls, Moderator badge wiring, and moderation safety rails.</p>
       <p class="admin-status" data-member-status>Checking admin session…</p>
       <p class="admin-status" id="membersInlineStatus" data-state="info"></p>
     </header>
@@ -34,7 +34,7 @@
         <select id="membersRoleFilter">
           <option value="">All roles</option>
           <option value="user">user</option>
-          <option value="editor">editor</option>
+          <option value="editor">Moderator</option>
           <option value="admin">admin</option>
           <option value="superadmin">superadmin</option>
         </select>
@@ -61,6 +61,8 @@
             <th>Signup date</th>
             <th>Last sign in</th>
             <th>Role</th>
+            <th>Badges</th>
+            <th>Role controls</th>
             <th>Soft ban controls</th>
           </tr>
         </thead>
@@ -70,7 +72,7 @@
 
   </main>
 
-  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260227"></script>
+  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260301"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>

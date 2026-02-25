@@ -15,6 +15,8 @@ const refreshButton = document.getElementById('membersRefresh');
 let membersCache = [];
 let loading = false;
 let supportsBannedFilter = true;
+let actorRole = 'admin';
+let actorUserId = null;
 
 function setStatus(message, state = 'info') {
   if (!statusNode) return;
@@ -51,19 +53,62 @@ function parseBannedFilter() {
   return null;
 }
 
-function normalizeMemberRow(row) {
-  const signupDate = row.signup_date ?? row.created_at ?? null;
-  const lastSignIn = row.last_sign_in ?? row.last_sign_in_at ?? null;
+function roleLabel(role) {
+  const normalized = String(role || 'user').toLowerCase();
+  if (normalized === 'editor') return 'Moderator';
+  return normalized || 'user';
+}
 
+function normalizeMemberRow(row) {
   return {
     ...row,
     user_id: row.user_id || row.id || null,
-    signup_date: signupDate,
-    last_sign_in: lastSignIn,
+    signup_date: row.signup_date ?? row.created_at ?? null,
+    last_sign_in: row.last_sign_in ?? row.last_sign_in_at ?? null,
     banned: row.banned === true,
-    ban_reason: row.ban_reason || null,
-    banned_at: row.banned_at || null
+    is_moderator_badge: row.is_moderator_badge === true
   };
+}
+
+function buildRoleOptions() {
+  const options = [
+    { value: 'user', label: 'user' },
+    { value: 'editor', label: 'Moderator' },
+    { value: 'admin', label: 'admin' }
+  ];
+
+  if (actorRole === 'superadmin') {
+    options.push({ value: 'superadmin', label: 'superadmin' });
+  }
+
+  return options
+    .map((option) => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+    .join('');
+}
+
+function getRoleControlMarkup(row) {
+  const role = String(row.role || 'user').toLowerCase();
+  const isSelf = actorUserId && row.user_id === actorUserId;
+  const targetIsSuperadmin = role === 'superadmin';
+  const cannotManage = isSelf || (actorRole !== 'superadmin' && targetIsSuperadmin);
+
+  if (cannotManage) {
+    return `<span>${isSelf ? 'Current account' : 'Only superadmin can edit this role.'}</span>`;
+  }
+
+  return `
+    <div class="role-cell" data-role-user-id="${escapeHtml(row.user_id)}">
+      <label>
+        <span>Set role</span>
+        <select class="role-select">${buildRoleOptions()}</select>
+      </label>
+      <button type="button" class="role-apply-btn">Apply</button>
+    </div>
+  `;
+}
+
+function getBadgeMarkup(row) {
+  return row.is_moderator_badge ? 'Moderator' : '—';
 }
 
 function getBanControlMarkup(row) {
@@ -91,7 +136,7 @@ function renderRows(rows = []) {
 
   if (!rows.length) {
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td colspan="6">No members found.</td>';
+    tr.innerHTML = '<td colspan="8">No members found.</td>';
     tableBody.appendChild(tr);
     return;
   }
@@ -103,7 +148,8 @@ function renderRows(rows = []) {
       row.username || '—',
       formatDate(row.signup_date),
       formatDate(row.last_sign_in),
-      row.role || 'user'
+      roleLabel(row.role),
+      getBadgeMarkup(row)
     ];
 
     cells.forEach((value) => {
@@ -112,11 +158,20 @@ function renderRows(rows = []) {
       tr.appendChild(td);
     });
 
+    const roleControlCell = document.createElement('td');
+    roleControlCell.innerHTML = getRoleControlMarkup(row);
+    tr.appendChild(roleControlCell);
+
     const controlCell = document.createElement('td');
     controlCell.innerHTML = getBanControlMarkup(row);
     tr.appendChild(controlCell);
 
     tableBody.appendChild(tr);
+
+    const roleSelect = tr.querySelector('.role-select');
+    if (roleSelect instanceof HTMLSelectElement) {
+      roleSelect.value = String(row.role || 'user').toLowerCase();
+    }
   });
 }
 
@@ -184,6 +239,60 @@ async function loadMembers() {
   }
 }
 
+async function sendRoleChangeNotification(supabase, row, newRole) {
+  const payload = {
+    target_user_id: row.user_id,
+    previous_role: String(row.role || 'user').toLowerCase(),
+    new_role: String(newRole || 'user').toLowerCase()
+  };
+
+  try {
+    const { error } = await supabase.functions.invoke('send-role-change-notification', {
+      body: payload
+    });
+
+    if (error) {
+      console.warn('[admin-members] role notification failed silently', error);
+    }
+  } catch (error) {
+    console.warn('[admin-members] role notification failed silently', error);
+  }
+}
+
+async function applyRoleChange(userId, nextRole) {
+  const member = membersCache.find((item) => item.user_id === userId);
+  if (!member) return;
+
+  const previousRole = String(member.role || 'user').toLowerCase();
+  const normalizedNextRole = String(nextRole || '').toLowerCase();
+
+  if (!normalizedNextRole || normalizedNextRole === previousRole) {
+    setInlineStatus('No role change needed.', 'info');
+    return;
+  }
+
+  try {
+    const supabase = await getSupabaseClient();
+
+    const { error } = await supabase.rpc('admin_set_member_role', {
+      p_user_id: userId,
+      p_role: normalizedNextRole
+    });
+
+    if (error) {
+      setInlineStatus(`Unable to update role: ${error.message}`, 'error');
+      return;
+    }
+
+    await sendRoleChangeNotification(supabase, member, normalizedNextRole);
+    setInlineStatus(`Role updated to ${roleLabel(normalizedNextRole)}.`, 'success');
+    await loadMembers();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error || 'Unknown error');
+    setInlineStatus(`Unable to update role: ${message}`, 'error');
+  }
+}
+
 async function toggleBan(userId, shouldBan, reason) {
   try {
     const supabase = await getSupabaseClient();
@@ -212,7 +321,13 @@ async function bootstrap() {
   const access = await ensureRole(ALLOWED_ROLES);
   if (!access) return;
 
-  setStatus(`Signed in as ${access.role}`, 'success');
+  actorRole = String(access.role || 'admin').toLowerCase();
+
+  const supabase = await getSupabaseClient();
+  const { data: authData } = await supabase.auth.getUser();
+  actorUserId = authData?.user?.id || null;
+
+  setStatus(`Signed in as ${roleLabel(access.role)}`, 'success');
   startAccessMonitor();
 
   await loadMembers();
@@ -238,10 +353,28 @@ bannedFilter?.addEventListener('change', () => {
 });
 
 tableBody?.addEventListener('click', (event) => {
-  const button = event.target instanceof HTMLElement ? event.target.closest('.ban-toggle-btn') : null;
-  if (!button) return;
+  const target = event.target instanceof HTMLElement ? event.target : null;
+  if (!target) return;
 
-  const cell = button.closest('[data-ban-user-id]');
+  const roleButton = target.closest('.role-apply-btn');
+  if (roleButton instanceof HTMLElement) {
+    const roleCell = roleButton.closest('[data-role-user-id]');
+    if (!(roleCell instanceof HTMLElement)) return;
+
+    const userId = String(roleCell.dataset.roleUserId || '').trim();
+    if (!userId) return;
+
+    const roleSelect = roleCell.querySelector('.role-select');
+    if (!(roleSelect instanceof HTMLSelectElement)) return;
+
+    applyRoleChange(userId, roleSelect.value);
+    return;
+  }
+
+  const banButton = target.closest('.ban-toggle-btn');
+  if (!banButton) return;
+
+  const cell = banButton.closest('[data-ban-user-id]');
   if (!(cell instanceof HTMLElement)) return;
 
   const userId = String(cell.dataset.banUserId || '').trim();
