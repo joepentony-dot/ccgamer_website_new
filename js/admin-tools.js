@@ -70,6 +70,11 @@
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/20-tons/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png" />
 
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="20 Tons | Cheeky Commodore Gamer" />
+    <meta name="twitter:description" content="20 Tons on Commodore — screenshots, manual, downloads and video." />
+    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png" />
+
     <link rel="icon" href="../favicon.ico" />
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -150,7 +155,7 @@
 
             <div class="game-downloads">
                 <a class="ccg-btn ccg-btn--primary"
-                   href="/games/20-tons/">
+                   href="/games/game.html?id=20_tons">
                     View the full interactive game page
                 </a>
 
@@ -765,7 +770,7 @@
         const doc = parser.parseFromString(templateHtml, "text/html");
         const titleText = `${game.title} | Cheeky Commodore Gamer`;
         const descriptionText = getGameDescription(game);
-        const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}.html`;
+        const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}/`;
         const ogImageUrl = getAbsoluteUrl(game.thumbnail);
         const relativeThumb = getRelativeThumbnail(game.thumbnail);
         const mode = game.system === "AMIGA" ? "amiga" : "c64";
@@ -789,6 +794,46 @@
 
         const ogImage = doc.querySelector('meta[property="og:image"]');
         if (ogImage) ogImage.setAttribute("content", ogImageUrl);
+
+        const twitterCard = doc.querySelector('meta[name="twitter:card"]');
+        if (twitterCard) {
+            twitterCard.setAttribute("content", "summary_large_image");
+        } else {
+            const meta = doc.createElement("meta");
+            meta.setAttribute("name", "twitter:card");
+            meta.setAttribute("content", "summary_large_image");
+            doc.head.appendChild(meta);
+        }
+
+        const twitterTitle = doc.querySelector('meta[name="twitter:title"]');
+        if (twitterTitle) {
+            twitterTitle.setAttribute("content", titleText);
+        } else {
+            const meta = doc.createElement("meta");
+            meta.setAttribute("name", "twitter:title");
+            meta.setAttribute("content", titleText);
+            doc.head.appendChild(meta);
+        }
+
+        const twitterDescription = doc.querySelector('meta[name="twitter:description"]');
+        if (twitterDescription) {
+            twitterDescription.setAttribute("content", descriptionText);
+        } else {
+            const meta = doc.createElement("meta");
+            meta.setAttribute("name", "twitter:description");
+            meta.setAttribute("content", descriptionText);
+            doc.head.appendChild(meta);
+        }
+
+        const twitterImage = doc.querySelector('meta[name="twitter:image"]');
+        if (twitterImage) {
+            twitterImage.setAttribute("content", ogImageUrl);
+        } else {
+            const meta = doc.createElement("meta");
+            meta.setAttribute("name", "twitter:image");
+            meta.setAttribute("content", ogImageUrl);
+            doc.head.appendChild(meta);
+        }
 
         const replaceScript = Array.from(doc.querySelectorAll("script")).find(script =>
             script.textContent.includes("history.replaceState")
@@ -847,10 +892,7 @@
 
         const viewLink = doc.querySelector('.game-downloads a[href*="game.html"]');
         if (viewLink) {
-            const resolvedSlug = (game.slug === "smash-t-5" || game.slug === "smash-t-v")
-                ? "smash-tv"
-                : (game.slug || game.id);
-            viewLink.setAttribute("href", `/games/${resolvedSlug}/`);
+            viewLink.setAttribute("href", `/games/game.html?id=${game.id}`);
         }
 
         if (doc.body) {
@@ -859,6 +901,47 @@
         }
 
         return `<!DOCTYPE html>\n${doc.documentElement.outerHTML}`;
+    }
+
+    function buildSeoIndexStubHtml(game) {
+        const titleText = `${game.title} | Cheeky Commodore Gamer`;
+        const descriptionText = getGameDescription(game);
+        const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}/`;
+        const ogImageUrl = getAbsoluteUrl(game.thumbnail);
+
+        return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>${titleText}</title>
+    <meta name="description" content="${descriptionText}" />
+
+    <link rel="canonical" href="${canonicalUrl}" />
+
+    <meta property="og:title" content="${titleText}" />
+    <meta property="og:description" content="${descriptionText}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${ogImageUrl}" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${titleText}" />
+    <meta name="twitter:description" content="${descriptionText}" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+
+    <script>
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("/games/game.html?id=${game.id}");
+            }
+        })();
+    </script>
+</head>
+<body></body>
+</html>
+`;
     }
 
     function renderAddedPreview() {
@@ -1105,7 +1188,9 @@
 
             gamesWithSlugs.forEach(game => {
                 const stubHtml = buildSeoStubHtml(templateHtml, game);
+                const indexStubHtml = buildSeoIndexStubHtml(game);
                 zip.file(`games/${game.slug}.html`, stubHtml);
+                zip.file(`games/${game.slug}/index.html`, indexStubHtml);
             });
 
             const blob = await zip.generateAsync({ type: "blob" });
