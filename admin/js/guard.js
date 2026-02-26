@@ -31,29 +31,27 @@ function isOwner(email) {
 }
 
 function renderAuthStatus(state) {
-  const statusNode = document.querySelector('[data-admin-status]');
-  if (!statusNode) return;
+  const statusNodes = document.querySelectorAll('[data-admin-status], [data-member-status]');
+  if (!statusNodes.length) return;
+
+  let text = 'Please sign in to continue.';
+  let status = 'info';
 
   if (state === AUTH_STATE.AUTHENTICATED) {
-    statusNode.textContent = 'Signed in';
-    statusNode.dataset.state = 'success';
-    return;
+    text = 'Signed in';
+    status = 'success';
+  } else if (state === AUTH_STATE.AUTHENTICATED_LIMITED) {
+    text = 'Signed in (limited role)';
+    status = 'warning';
+  } else if (state === AUTH_STATE.AUTHENTICATING) {
+    text = 'Restoring session…';
+    status = 'info';
   }
 
-  if (state === AUTH_STATE.AUTHENTICATED_LIMITED) {
-    statusNode.textContent = 'Signed in (limited role)';
-    statusNode.dataset.state = 'warning';
-    return;
-  }
-
-  if (state === AUTH_STATE.AUTHENTICATING) {
-    statusNode.textContent = 'Restoring session…';
-    statusNode.dataset.state = 'info';
-    return;
-  }
-
-  statusNode.textContent = 'Please sign in to continue.';
-  statusNode.dataset.state = 'info';
+  statusNodes.forEach((statusNode) => {
+    statusNode.textContent = text;
+    statusNode.dataset.state = status;
+  });
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
