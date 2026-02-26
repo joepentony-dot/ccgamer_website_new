@@ -1,4 +1,6 @@
 // admin/js/admin-members.js
+// Phase 3 — Members Directory
+// Auth-safe, RPC-safe, non-coder copy/paste version
 
 import { ensureRole } from './guard.js';
 
@@ -12,6 +14,9 @@ const ROLE_LABELS = {
 let supabase = null;
 let hasInitialised = false;
 
+/**
+ * Safely retrieve the global Supabase client
+ */
 function getSupabaseClient() {
   if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
     return null;
@@ -19,7 +24,10 @@ function getSupabaseClient() {
   return window.ccgSupabase.getClient();
 }
 
-function setStatus(message, state = 'info') {
+/**
+ * Status helpers (prevents silent failures)
+ */
+function setInlineStatus(message, state = 'info') {
   const el = document.getElementById('membersInlineStatus');
   if (!el) return;
   el.textContent = message || '';
@@ -33,6 +41,10 @@ function setMemberStatus(message, state = 'info') {
   el.dataset.state = state;
 }
 
+/**
+ * Initialise admin members page
+ * Safe whether auth fired before or after page load
+ */
 async function initAdminMembers() {
   if (hasInitialised) return;
   hasInitialised = true;
@@ -45,45 +57,61 @@ async function initAdminMembers() {
     supabase = getSupabaseClient();
     if (!supabase) {
       setMemberStatus('Admin authentication unavailable.', 'error');
-      setStatus('Could not find Supabase client. Please refresh and sign in again.', 'error');
+      setInlineStatus('Supabase client not available. Please refresh and sign in again.', 'error');
       return;
     }
 
     setMemberStatus('Signed in', 'success');
     await loadMembers();
-  } catch (error) {
-    console.error('[admin-members] init failed', error);
+  } catch (err) {
+    console.error('[admin-members] init failed', err);
     setMemberStatus('Unable to verify admin session.', 'error');
-    setStatus(error?.message || 'Unable to load members directory.', 'error');
+    setInlineStatus(err?.message || 'Failed to initialise members directory.', 'error');
   }
 }
 
+/**
+ * Load members from Supabase
+ * IMPORTANT: parameters MUST be supplied to match SQL signature
+ */
 async function loadMembers() {
   if (!supabase) {
-    setStatus('Supabase client is not ready yet.', 'error');
+    setInlineStatus('Supabase client not ready.', 'error');
     return;
   }
 
-  setStatus('Loading members…', 'info');
+  setInlineStatus('Loading members…', 'info');
 
-  const { data, error } = await supabase.rpc('admin_list_members');
+  const { data, error } = await supabase.rpc('admin_list_members', {
+    p_banned: null,
+    p_limit: 100,
+    p_offset: 0,
+    p_role: null,
+    p_search: null
+  });
 
   if (error) {
     console.error('[admin-members] admin_list_members failed', error);
-    setStatus(`Failed to load members: ${error.message}`, 'error');
+    setInlineStatus(`Failed to load members: ${error.message}`, 'error');
     renderMembers([]);
     return;
   }
 
   const members = Array.isArray(data) ? data : [];
   renderMembers(members);
-  setStatus(`Loaded ${members.length} member${members.length === 1 ? '' : 's'}.`, 'success');
+  setInlineStatus(
+    `Loaded ${members.length} member${members.length === 1 ? '' : 's'}.`,
+    'success'
+  );
 }
 
+/**
+ * Render members table
+ */
 function renderMembers(members) {
   const tbody = document.getElementById('membersTableBody');
   if (!tbody) {
-    setStatus('Members table body not found on page.', 'error');
+    setInlineStatus('Members table body not found on page.', 'error');
     return;
   }
 
@@ -111,35 +139,40 @@ function renderMembers(members) {
           : ''
         }
       </td>
-      <td>
-        ${renderRoleControls(member)}
-      </td>
-      <td>
-        ${renderBanControls(member)}
-      </td>
+      <td>${renderRoleControls(member)}</td>
+      <td>${renderBanControls(member)}</td>
     `;
 
     tbody.appendChild(tr);
   });
 }
 
+/**
+ * Role controls
+ */
 function renderRoleControls(member) {
   if (member.role === 'superadmin') {
     return '<em>Protected</em>';
   }
 
-  const optionsMarkup = Object.entries(ROLE_LABELS)
-    .map(([key, label]) => `<option value="${key}" ${member.role === key ? 'selected' : ''}>${label}</option>`)
+  const options = Object.entries(ROLE_LABELS)
+    .map(
+      ([key, label]) =>
+        `<option value="${key}" ${member.role === key ? 'selected' : ''}>${label}</option>`
+    )
     .join('');
 
   return `
-    <select data-user-id="${member.user_id}" aria-label="Role for ${escapeHtml(member.email || member.user_id)}">
-      ${optionsMarkup}
+    <select data-user-id="${member.user_id}" aria-label="Role for ${escapeHtml(member.email)}">
+      ${options}
     </select>
     <button class="save-role" type="button">Save</button>
   `;
 }
 
+/**
+ * Soft ban display (read-only for now)
+ */
 function renderBanControls(member) {
   if (member.role === 'superadmin') {
     return '<em>Protected</em>';
@@ -150,13 +183,17 @@ function renderBanControls(member) {
     : '<span>Active</span>';
 }
 
+/**
+ * Handle role save clicks
+ */
 document.addEventListener('click', async (e) => {
   const target = e.target;
-  if (!(target instanceof Element) || !target.classList.contains('save-role')) return;
+  if (!(target instanceof Element)) return;
+  if (!target.classList.contains('save-role')) return;
 
   const select = target.previousElementSibling;
   if (!(select instanceof HTMLSelectElement)) {
-    setStatus('Unable to find role selector for this row.', 'error');
+    setInlineStatus('Could not find role selector.', 'error');
     return;
   }
 
@@ -164,51 +201,63 @@ document.addEventListener('click', async (e) => {
   const role = select.value;
 
   if (!userId || !role) {
-    setStatus('Missing member details for role update.', 'error');
+    setInlineStatus('Missing member details for role update.', 'error');
     return;
   }
 
   await updateRole(userId, role);
 });
 
+/**
+ * Update member role
+ */
 async function updateRole(userId, role) {
   if (!supabase) {
-    setStatus('Supabase client is not ready yet.', 'error');
+    setInlineStatus('Supabase client not ready.', 'error');
     return;
   }
 
-  setStatus('Saving role…', 'info');
+  setInlineStatus('Saving role…', 'info');
 
   const { error } = await supabase.rpc('admin_set_member_role', {
     p_user_id: userId,
-    p_role: role
+    p_new_role: role
   });
 
   if (error) {
     console.error('[admin-members] admin_set_member_role failed', error);
     alert(`Failed to update role: ${error.message}`);
-    setStatus(`Role update failed: ${error.message}`, 'error');
+    setInlineStatus(`Role update failed: ${error.message}`, 'error');
     return;
   }
 
-  const { error: notifyError } = await supabase.functions.invoke('send-new-game-notification', {
-    body: {
-      message_type: 'role_promotion',
-      user_id: userId,
-      role
+  const { error: notifyError } = await supabase.functions.invoke(
+    'send-new-game-notification',
+    {
+      body: {
+        message_type: 'role_promotion',
+        user_id: userId,
+        role
+      }
     }
-  });
+  );
 
   if (notifyError) {
     console.warn('[admin-members] role email notification failed', notifyError);
-    setStatus('Role updated, but the notification email could not be sent.', 'warning');
+    setInlineStatus(
+      'Role updated, but notification email could not be sent.',
+      'warning'
+    );
   } else {
-    setStatus('Role updated successfully.', 'success');
+    setInlineStatus('Role updated successfully.', 'success');
   }
 
   await loadMembers();
 }
 
+/**
+ * Helpers
+ */
 function formatDate(date) {
   return date ? new Date(date).toLocaleString() : '';
 }
@@ -223,6 +272,9 @@ function escapeHtml(value) {
   }[char]));
 }
 
+/**
+ * Auth-ready handling (both early & late)
+ */
 if (window.ccgSupabase?.isReady === true) {
   initAdminMembers();
 } else {
