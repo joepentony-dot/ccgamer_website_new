@@ -11,14 +11,13 @@ function text(v) {
 
 function normalizeAnnouncementMode(rawMode) {
   const mode = text(rawMode);
-  if (mode === 'new_game_added') return 'coming_soon_members';
+  if (mode === 'new_game_added') return 'members';
   return mode;
 }
 
 function normalizeThumbnailPath(rawPath) {
   const path = text(rawPath);
   if (!path) return '';
-
   if (/^https?:\/\//i.test(path)) return path;
   return path.startsWith('/') ? path : `/${path}`;
 }
@@ -53,10 +52,8 @@ async function waitForSupabaseClient() {
         resolve(nextClient);
         return;
       }
-
       window.requestAnimationFrame(check);
     };
-
     check();
   });
 }
@@ -85,38 +82,13 @@ async function bootstrap() {
 
   authClient = await waitForSupabaseClient();
 
-  const {
-    data: { session } = {},
-    error: sessionError
-  } = await authClient.auth.getSession();
-
-  if (sessionError) {
-    $('announceStatus').textContent = `Unable to verify admin authentication: ${sessionError.message || 'Unknown error.'}`;
-  } else if (session?.access_token) {
-    authReady = true;
-    if ($('announceStatus').textContent === 'Waiting for admin authentication…') {
-      $('announceStatus').textContent = '';
-    }
-  } else {
-    $('announceStatus').textContent = 'No active admin session. Please sign in to continue.';
-  }
+  const { data: { session } = {} } = await authClient.auth.getSession();
+  authReady = Boolean(session?.access_token);
 
   authClient.auth.onAuthStateChange((_event, nextSession) => {
     authReady = Boolean(nextSession?.access_token);
-
-    if (!authReady) {
-      $('announceStatus').textContent = 'No active admin session. Please sign in to continue.';
-    } else if (
-      $('announceStatus').textContent === 'Waiting for admin authentication…' ||
-      $('announceStatus').textContent === 'No active admin session. Please sign in to continue.'
-    ) {
-      $('announceStatus').textContent = '';
-    }
-
     updateSendState();
   });
-
-  updateSendState();
 
   const res = await fetch('/games/games.json', { cache: 'no-store' });
   const games = await res.json();
@@ -126,58 +98,6 @@ async function bootstrap() {
 
   $('announceLoadedHint').textContent = `Loaded ${bySlug.size} games.`;
 
-  $('announceSearch').addEventListener('input', e => {
-    const q = e.target.value.toLowerCase();
-    $('announceResults').innerHTML = '';
-    [...bySlug.values()]
-      .filter(g => g.title.toLowerCase().includes(q))
-      .slice(0, 50)
-      .forEach(g => {
-        const b = document.createElement('button');
-        b.className = 'ccg-btn ccg-btn--ghost';
-        b.textContent = `${g.title} (${g.year || '?'})`;
-        b.onclick = () => {
-          const announceThumb = $('announceThumb');
-          const normalizedThumbnail = normalizeThumbnailPath(g.thumbnail);
-
-          sendBtn.dataset.slug = g.slug;
-          sendBtn.dataset.thumbnail = normalizedThumbnail;
-          $('announceTitle').textContent = g.title;
-          $('announceSlug').textContent = g.slug;
-          $('announceLink').href = `/games/${g.slug}/`;
-          $('announceLink').hidden = false;
-
-          if (normalizedThumbnail) {
-            announceThumb.src = normalizedThumbnail;
-            announceThumb.hidden = false;
-          } else {
-            announceThumb.removeAttribute('src');
-            announceThumb.hidden = true;
-          }
-
-          $('announceSubject').textContent =
-            subjectFor($('announceType').value, g.title);
-          updateSendState();
-        };
-        $('announceResults').appendChild(b);
-      });
-  });
-
-  $('announceType').addEventListener('change', () => {
-    $('announceSubject').textContent =
-      subjectFor($('announceType').value, $('announceTitle').textContent);
-  });
-
-  $('announceTestEmail').addEventListener('change', () => {
-    if ($('announceTestEmail').checked) $('announceNotifyMembers').checked = false;
-    updateSendState();
-  });
-
-  $('announceNotifyMembers').addEventListener('change', () => {
-    if ($('announceNotifyMembers').checked) $('announceTestEmail').checked = false;
-    updateSendState();
-  });
-
   $('announceSendBtn').addEventListener('click', async () => {
     const previousLabel = sendBtn.dataset.defaultLabel || 'Send Announcement';
     sendBtn.disabled = true;
@@ -185,46 +105,24 @@ async function bootstrap() {
     try {
       const slug = text(sendBtn.dataset.slug);
       const game = bySlug.get(slug);
-      const mode = normalizeAnnouncementMode($('announceType').value);
       const test = $('announceTestEmail').checked;
-      const normalizedThumbnail = normalizeThumbnailPath(
-        sendBtn.dataset.thumbnail || game?.thumbnail
-      );
 
       if (!slug || !game) {
         throw new Error('Please select a game before sending.');
       }
 
-      $('announceStatus').textContent = 'Sending…';
-      sendBtn.textContent = 'Sending...';
-
-      if (!authReady) {
-        throw new Error('Waiting for admin authentication…');
-      }
-
-      const client = authClient || getSupabaseClient();
-
-      const {
-        data: { session } = {},
-        error: sessionError
-      } = await client.auth.getSession();
-
-      if (sessionError) {
-        throw new Error(sessionError.message || 'Unable to retrieve auth session.');
-      }
-
+      const { data: { session } = {} } = await authClient.auth.getSession();
       const token = session?.access_token;
-      authReady = Boolean(token);
       if (!token) {
-        throw new Error('No active admin session found. Please sign in again.');
+        throw new Error('No active admin session. Please sign in again.');
       }
 
       const payload = {
-        mode,
+        mode: test ? 'test' : 'members',
         game_name: game.title,
         game_slug: game.slug,
-        game_thumbnail: normalizedThumbnail,
-        test_email: test === true
+        game_thumbnail: normalizeThumbnailPath(game.thumbnail),
+        test_email: test
       };
 
       const r = await fetch(
@@ -233,7 +131,6 @@ async function bootstrap() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            apikey: window.CCG_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify(payload)
