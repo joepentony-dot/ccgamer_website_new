@@ -1917,6 +1917,21 @@ function closeManualModal() {
     if (button) button.setAttribute("aria-expanded", "false");
 }
 
+function scrollManualIntoComfortZone(container) {
+    if (!container || !window.matchMedia("(max-width: 767px)").matches) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const containerTop = window.scrollY + containerRect.top;
+    const viewportOffset = window.innerHeight * 0.2;
+    const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+    const targetScrollTop = Math.max(0, Math.min(maxScrollTop, containerTop - viewportOffset));
+
+    window.scrollTo({
+        top: targetScrollTop,
+        behavior: "smooth"
+    });
+}
+
 function wireManualModal(button) {
     if (!button) return;
 
@@ -1953,7 +1968,7 @@ function wireManualModal(button) {
 
             if (window.matchMedia("(max-width: 767px)").matches) {
                 window.requestAnimationFrame(() => {
-                    modal.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+                    scrollManualIntoComfortZone(modal);
                 });
             }
         });
