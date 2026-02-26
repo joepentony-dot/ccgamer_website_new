@@ -14,6 +14,30 @@ const ROLE_LABELS = {
 let supabase = null;
 let hasInitialised = false;
 
+async function waitForSupabaseReady(timeoutMs = 10000) {
+  if (window.ccgSupabase?.isReady === true) return true;
+
+  await new Promise((resolve) => {
+    let settled = false;
+
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    const onReady = () => finish();
+    window.addEventListener('ccg-auth-ready', onReady, { once: true });
+
+    window.setTimeout(() => {
+      window.removeEventListener('ccg-auth-ready', onReady);
+      finish();
+    }, timeoutMs);
+  });
+
+  return window.ccgSupabase?.isReady === true;
+}
+
 /**
  * Safely retrieve the global Supabase client
  */
@@ -51,6 +75,12 @@ async function initAdminMembers() {
 
   try {
     setMemberStatus('Checking admin session…', 'info');
+
+    const authReady = await waitForSupabaseReady();
+    if (!authReady) {
+      setMemberStatus('Admin auth is still starting…', 'warning');
+      setInlineStatus('Supabase auth did not report ready yet; continuing with fallback checks.', 'warning');
+    }
 
     await ensureRole(['admin', 'superadmin']);
 
@@ -279,4 +309,7 @@ if (window.ccgSupabase?.isReady === true) {
   initAdminMembers();
 } else {
   window.addEventListener('ccg-auth-ready', initAdminMembers, { once: true });
+  window.setTimeout(() => {
+    initAdminMembers();
+  }, 1200);
 }
