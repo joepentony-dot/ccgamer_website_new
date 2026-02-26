@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Simcity on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sim_city.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/simcity.html -> /games/simcity/ -->
+    <meta http-equiv="refresh" content="0; url=/games/simcity/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/simcity/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/simcity/" + suffix);
       })();
     </script>
 

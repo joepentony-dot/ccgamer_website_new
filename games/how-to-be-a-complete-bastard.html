@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="How To Be A Complete Bastard on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/how_to_be_a_complete_bastard.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/how-to-be-a-complete-bastard.html -> /games/how-to-be-a-complete-bastard/ -->
+    <meta http-equiv="refresh" content="0; url=/games/how-to-be-a-complete-bastard/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/how-to-be-a-complete-bastard/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/how-to-be-a-complete-bastard/" + suffix);
       })();
     </script>
 

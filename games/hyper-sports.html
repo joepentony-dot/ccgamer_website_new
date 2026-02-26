@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Hyper Sports on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/hyper_sports.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/hyper-sports.html -> /games/hyper-sports/ -->
+    <meta http-equiv="refresh" content="0; url=/games/hyper-sports/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/hyper-sports/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/hyper-sports/" + suffix);
       })();
     </script>
 

@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/marias-christmas-box/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/marias-christmas-box.html -> /games/marias-christmas-box/ -->
+    <meta http-equiv="refresh" content="0; url=/games/marias-christmas-box/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/marias-christmas-box/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/marias-christmas-box/" + suffix);
       })();
     </script>
 

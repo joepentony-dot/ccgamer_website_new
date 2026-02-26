@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Nodes Of Yesod on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/nodes_of_yesod.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/nodes-of-yesod.html -> /games/nodes-of-yesod/ -->
+    <meta http-equiv="refresh" content="0; url=/games/nodes-of-yesod/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/nodes-of-yesod/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/nodes-of-yesod/" + suffix);
       })();
     </script>
 

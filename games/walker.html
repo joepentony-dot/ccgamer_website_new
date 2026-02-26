@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Walker on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/Walker.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/walker.html -> /games/walker/ -->
+    <meta http-equiv="refresh" content="0; url=/games/walker/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/walker/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/walker/" + suffix);
       })();
     </script>
 

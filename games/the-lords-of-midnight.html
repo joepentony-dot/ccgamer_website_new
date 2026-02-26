@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The Lords Of Midnight on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/lords_of_midnight.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-lords-of-midnight.html -> /games/the-lords-of-midnight/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-lords-of-midnight/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-lords-of-midnight/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-lords-of-midnight/" + suffix);
       })();
     </script>
 

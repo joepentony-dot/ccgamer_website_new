@@ -591,10 +591,12 @@ function buildPackageData() {
 <head>
     <meta charset="UTF-8" />
 
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/${escapeJs(slug)}.html -> /games/${escapeJs(slug)}/ -->
+    <meta http-equiv="refresh" content="0; url=/games/${escapeJs(slug)}/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/${escapeJs(slug)}/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/${escapeJs(slug)}/" + suffix);
       })();
     </script>
 
@@ -603,12 +605,12 @@ function buildPackageData() {
     <title>${cleanForHtml(seoTitle)}</title>
     <meta name="description" content="${seoDescription}" />
 
-    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html" />
+    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
 
     <meta property="og:title" content="${cleanForHtml(seoTitle)}" />
     <meta property="og:description" content="${seoDescription}" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html" />
+    <meta property="og:url" content="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
     <meta property="og:image" content="${cleanForHtml(imageUrl)}" />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -641,7 +643,7 @@ function buildPackageData() {
         "gamePlatform": "${cleanForHtml(system)}",
         "publisher": "${cleanForHtml(publisherForSeo)}",
         "image": "${cleanForHtml(imageUrl)}",
-        "url": "${SITE_ORIGIN}/games/${cleanForHtml(slug)}.html"
+        "url": "${SITE_ORIGIN}/games/${cleanForHtml(slug)}/"
     }
     </script>
 </head>

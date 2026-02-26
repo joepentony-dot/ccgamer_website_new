@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The Way Of The Exploding Fist on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/kung_fu_the_way_of_the_exploding_fist_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-way-of-the-exploding-fist.html -> /games/the-way-of-the-exploding-fist/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-way-of-the-exploding-fist/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-way-of-the-exploding-fist/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-way-of-the-exploding-fist/" + suffix);
       })();
     </script>
 

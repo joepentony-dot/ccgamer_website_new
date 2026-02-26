@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Released on the Commodore 64 in 1985 by Ocean, Hunchback II: Quasimodo’s Revenge expands on the original with new levels, mechanics, and refined controls. The C64 version maintains the tough platforming focus while adding variety and depth, making it a popular follow-up among fans.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/hunchback_2.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/hunchback-2-quasimodos-revenge.html -> /games/hunchback-2-quasimodos-revenge/ -->
+    <meta http-equiv="refresh" content="0; url=/games/hunchback-2-quasimodos-revenge/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/hunchback-2-quasimodos-revenge/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/hunchback-2-quasimodos-revenge/" + suffix);
       })();
     </script>
 

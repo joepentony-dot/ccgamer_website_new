@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Frankie Goes To Hollywood on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/frankie_goes_to_hollywood.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/frankie-goes-to-hollywood.html -> /games/frankie-goes-to-hollywood/ -->
+    <meta http-equiv="refresh" content="0; url=/games/frankie-goes-to-hollywood/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/frankie-goes-to-hollywood/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/frankie-goes-to-hollywood/" + suffix);
       })();
     </script>
 

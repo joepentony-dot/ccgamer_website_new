@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Rolling Thunder on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/rolling_thunder.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/rolling-thunder.html -> /games/rolling-thunder/ -->
+    <meta http-equiv="refresh" content="0; url=/games/rolling-thunder/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/rolling-thunder/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/rolling-thunder/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Gary Lineker&amp;#x27;s Superstar Soccer is a Commodore 64 football game combining arcade-style play with team-based tactics. Fast matches and simple controls define its accessible approach.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gary_lineker_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/gary-linekers-superstar-soccer.html -> /games/gary-linekers-superstar-soccer/ -->
+    <meta http-equiv="refresh" content="0; url=/games/gary-linekers-superstar-soccer/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/gary-linekers-superstar-soccer/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/gary-linekers-superstar-soccer/" + suffix);
       })();
     </script>
 

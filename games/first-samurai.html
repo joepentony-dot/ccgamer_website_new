@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="First Samurai on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/first_samurai.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/first-samurai.html -> /games/first-samurai/ -->
+    <meta http-equiv="refresh" content="0; url=/games/first-samurai/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/first-samurai/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/first-samurai/" + suffix);
       })();
     </script>
 

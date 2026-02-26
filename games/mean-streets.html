@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Mean Streets on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/mean_streets.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mean-streets.html -> /games/mean-streets/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mean-streets/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mean-streets/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mean-streets/" + suffix);
       })();
     </script>
 

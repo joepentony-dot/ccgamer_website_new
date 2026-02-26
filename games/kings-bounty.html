@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="King’s Bounty is a Commodore 64 role-playing and strategy game released in 1990 by New World Computing, combining exploration, army management, and turn-based combat. The C64 version offers a deep, open-ended experience that rewards planning, resource management, and tactical decision-making.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/king_s_bounty.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/kings-bounty.html -> /games/kings-bounty/ -->
+    <meta http-equiv="refresh" content="0; url=/games/kings-bounty/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/kings-bounty/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/kings-bounty/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Below The Root on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/Below_the_Root.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/below-the-root.html -> /games/below-the-root/ -->
+    <meta http-equiv="refresh" content="0; url=/games/below-the-root/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/below-the-root/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/below-the-root/" + suffix);
       })();
     </script>
 

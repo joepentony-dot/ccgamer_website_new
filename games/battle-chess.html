@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Battle Chess on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/battle_chess.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/battle-chess.html -> /games/battle-chess/ -->
+    <meta http-equiv="refresh" content="0; url=/games/battle-chess/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/battle-chess/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/battle-chess/" + suffix);
       })();
     </script>
 

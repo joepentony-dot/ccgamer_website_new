@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bc-2-grogs-revenge.html -> /games/bc-2-grogs-revenge/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bc-2-grogs-revenge/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bc-2-grogs-revenge/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bc-2-grogs-revenge/" + suffix);
       })();
     </script>
 

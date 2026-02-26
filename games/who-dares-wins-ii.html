@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/who-dares-wins-ii.html -> /games/who-dares-wins-ii/ -->
+    <meta http-equiv="refresh" content="0; url=/games/who-dares-wins-ii/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/who-dares-wins-ii/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/who-dares-wins-ii/" + suffix);
       })();
     </script>
 

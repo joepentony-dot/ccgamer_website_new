@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Indiana Jones And The Fate Of Atlantis on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/indiana_jones_and_the_fate_of_atlantis.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/indiana-jones-and-the-fate-of-atlantis.html -> /games/indiana-jones-and-the-fate-of-atlantis/ -->
+    <meta http-equiv="refresh" content="0; url=/games/indiana-jones-and-the-fate-of-atlantis/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/indiana-jones-and-the-fate-of-atlantis/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/indiana-jones-and-the-fate-of-atlantis/" + suffix);
       })();
     </script>
 

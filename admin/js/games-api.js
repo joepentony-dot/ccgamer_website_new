@@ -9,10 +9,12 @@ const GAME_PAGE_TEMPLATE = `<!DOCTYPE html>
 <head>
     <meta charset="UTF-8" />
 
-    <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/{{slug}}.html -> /games/{{slug}}/ -->
+    <meta http-equiv="refresh" content="0; url=/games/{{slug}}/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/{{slug}}/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/{{slug}}/" + suffix);
       })();
     </script>
 

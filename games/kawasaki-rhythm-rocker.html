@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Kawasaki Rhythm Rocker on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/kawasaki_rhythm_rocker_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/kawasaki-rhythm-rocker.html -> /games/kawasaki-rhythm-rocker/ -->
+    <meta http-equiv="refresh" content="0; url=/games/kawasaki-rhythm-rocker/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/kawasaki-rhythm-rocker/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/kawasaki-rhythm-rocker/" + suffix);
       })();
     </script>
 

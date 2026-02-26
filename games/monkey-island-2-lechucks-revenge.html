@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Monkey Island 2 LeChuck’s Revenge is an Amiga adventure released in 1992 by US Gold, adapting the acclaimed point-and-click sequel for home computers. The Amiga version delivers rich storytelling, intricate puzzles, and polished audiovisual presentation.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/monkey_island_2.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/monkey-island-2-lechucks-revenge.html -> /games/monkey-island-2-lechucks-revenge/ -->
+    <meta http-equiv="refresh" content="0; url=/games/monkey-island-2-lechucks-revenge/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/monkey-island-2-lechucks-revenge/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/monkey-island-2-lechucks-revenge/" + suffix);
       })();
     </script>
 

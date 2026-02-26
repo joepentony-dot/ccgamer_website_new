@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Southern Belle (Hewson 1986) is a classic Commodore 64 train simulator where you master the powerful King Arthur class steam locomotive on the famous 51-mile London Victoria to Brighton line. Take on the roles of fireman—shovelling coal and managing water—and driver—controlling throttle, brakes, and signals—for a highly realistic journey with authentic 1980s gameplay.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/southern-belle.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/southern-belle.html -> /games/southern-belle/ -->
+    <meta http-equiv="refresh" content="0; url=/games/southern-belle/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/southern-belle/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/southern-belle/" + suffix);
       })();
     </script>
 

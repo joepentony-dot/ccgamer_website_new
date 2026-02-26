@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The Willow Pattern Adventure on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/willow_pattern_adventure_the.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-willow-pattern-adventure.html -> /games/the-willow-pattern-adventure/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-willow-pattern-adventure/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-willow-pattern-adventure/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-willow-pattern-adventure/" + suffix);
       })();
     </script>
 

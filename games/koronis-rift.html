@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Koronis Rift on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/koronis_rift.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/koronis-rift.html -> /games/koronis-rift/ -->
+    <meta http-equiv="refresh" content="0; url=/games/koronis-rift/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/koronis-rift/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/koronis-rift/" + suffix);
       })();
     </script>
 

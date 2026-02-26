@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/ultima-i-the-first-age-of-darkness.html -> /games/ultima-i-the-first-age-of-darkness/ -->
+    <meta http-equiv="refresh" content="0; url=/games/ultima-i-the-first-age-of-darkness/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/ultima-i-the-first-age-of-darkness/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/ultima-i-the-first-age-of-darkness/" + suffix);
       })();
     </script>
 

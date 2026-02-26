@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="V: The Computer Game on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/v_the_computer_game.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/v-the-computer-game.html -> /games/v-the-computer-game/ -->
+    <meta http-equiv="refresh" content="0; url=/games/v-the-computer-game/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/v-the-computer-game/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/v-the-computer-game/" + suffix);
       })();
     </script>
 

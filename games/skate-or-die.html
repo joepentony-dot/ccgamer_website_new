@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Skate Or Die on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/skate_or_die.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/skate-or-die.html -> /games/skate-or-die/ -->
+    <meta http-equiv="refresh" content="0; url=/games/skate-or-die/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/skate-or-die/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/skate-or-die/" + suffix);
       })();
     </script>
 

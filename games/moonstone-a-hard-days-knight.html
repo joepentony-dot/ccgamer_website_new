@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Moonstone: A Hard Days Knight on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/moonstone_a_hard_days_knight.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/moonstone-a-hard-days-knight.html -> /games/moonstone-a-hard-days-knight/ -->
+    <meta http-equiv="refresh" content="0; url=/games/moonstone-a-hard-days-knight/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/moonstone-a-hard-days-knight/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/moonstone-a-hard-days-knight/" + suffix);
       })();
     </script>
 

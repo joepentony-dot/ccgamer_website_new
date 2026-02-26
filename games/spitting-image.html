@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Spitting Image on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spitting_image_the_computer_game_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/spitting-image.html -> /games/spitting-image/ -->
+    <meta http-equiv="refresh" content="0; url=/games/spitting-image/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/spitting-image/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/spitting-image/" + suffix);
       })();
     </script>
 

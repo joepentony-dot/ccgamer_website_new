@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Iridis Alpha on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/iridis_alpha.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/iridis-alpha.html -> /games/iridis-alpha/ -->
+    <meta http-equiv="refresh" content="0; url=/games/iridis-alpha/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/iridis-alpha/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/iridis-alpha/" + suffix);
       })();
     </script>
 

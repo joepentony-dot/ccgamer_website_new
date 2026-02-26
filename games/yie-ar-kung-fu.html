@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Yie Ar Kung-Fu on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/yie_ar_kung_fu_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/yie-ar-kung-fu.html -> /games/yie-ar-kung-fu/ -->
+    <meta http-equiv="refresh" content="0; url=/games/yie-ar-kung-fu/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/yie-ar-kung-fu/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/yie-ar-kung-fu/" + suffix);
       })();
     </script>
 

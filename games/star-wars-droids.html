@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Star Wars: Droids on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/star_wars_droids_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/star-wars-droids.html -> /games/star-wars-droids/ -->
+    <meta http-equiv="refresh" content="0; url=/games/star-wars-droids/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/star-wars-droids/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/star-wars-droids/" + suffix);
       })();
     </script>
 

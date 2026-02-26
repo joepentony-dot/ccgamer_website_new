@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Attack Of The Mutant Camels on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/attack_of_the_mutant_camels.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/attack-of-the-mutant-camels.html -> /games/attack-of-the-mutant-camels/ -->
+    <meta http-equiv="refresh" content="0; url=/games/attack-of-the-mutant-camels/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/attack-of-the-mutant-camels/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/attack-of-the-mutant-camels/" + suffix);
       })();
     </script>
 

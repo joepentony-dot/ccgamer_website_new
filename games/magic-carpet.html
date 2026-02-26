@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Magic Carpet on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/magic_carpet_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/magic-carpet.html -> /games/magic-carpet/ -->
+    <meta http-equiv="refresh" content="0; url=/games/magic-carpet/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/magic-carpet/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/magic-carpet/" + suffix);
       })();
     </script>
 

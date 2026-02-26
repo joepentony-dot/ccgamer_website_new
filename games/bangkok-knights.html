@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Bangkok Knights on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bangkok_knights_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bangkok-knights.html -> /games/bangkok-knights/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bangkok-knights/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bangkok-knights/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bangkok-knights/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Super Trolley on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/super_trolley.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/super-trolley.html -> /games/super-trolley/ -->
+    <meta http-equiv="refresh" content="0; url=/games/super-trolley/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/super-trolley/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/super-trolley/" + suffix);
       })();
     </script>
 

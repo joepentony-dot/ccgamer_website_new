@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Fire Ant on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/fire_ant_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/fire-ant.html -> /games/fire-ant/ -->
+    <meta http-equiv="refresh" content="0; url=/games/fire-ant/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/fire-ant/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/fire-ant/" + suffix);
       })();
     </script>
 

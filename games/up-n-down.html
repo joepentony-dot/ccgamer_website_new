@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Up&amp;#x27;N Down on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/up_n_down.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/up-n-down.html -> /games/up-n-down/ -->
+    <meta http-equiv="refresh" content="0; url=/games/up-n-down/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/up-n-down/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/up-n-down/" + suffix);
       })();
     </script>
 

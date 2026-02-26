@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Tau Ceti on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tau_ceti.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/tau-ceti.html -> /games/tau-ceti/ -->
+    <meta http-equiv="refresh" content="0; url=/games/tau-ceti/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/tau-ceti/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/tau-ceti/" + suffix);
       })();
     </script>
 

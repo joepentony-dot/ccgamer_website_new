@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Beach-Head II on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/beach_head_ii_the_dictator_strikes_back.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/beach-head-2.html -> /games/beach-head-2/ -->
+    <meta http-equiv="refresh" content="0; url=/games/beach-head-2/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/beach-head-2/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/beach-head-2/" + suffix);
       })();
     </script>
 

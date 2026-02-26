@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="B.C. Bill is a Commodore 64 arcade game released by Imagine in 1984. Set in a prehistoric world, you guide a caveman through obstacle-filled levels while collecting items and avoiding hazards. The game is remembered for its simple mechanics and cartoon-style presentation.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bc_bill.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bc-bill.html -> /games/bc-bill/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bc-bill/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bc-bill/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bc-bill/" + suffix);
       })();
     </script>
 

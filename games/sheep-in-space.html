@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Sheep In Space on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/sheep_in_space.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/sheep-in-space.html -> /games/sheep-in-space/ -->
+    <meta http-equiv="refresh" content="0; url=/games/sheep-in-space/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/sheep-in-space/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/sheep-in-space/" + suffix);
       })();
     </script>
 

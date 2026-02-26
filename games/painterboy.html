@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Painterboy on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/PAINTERBOY_NEW.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/painterboy.html -> /games/painterboy/ -->
+    <meta http-equiv="refresh" content="0; url=/games/painterboy/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/painterboy/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/painterboy/" + suffix);
       })();
     </script>
 

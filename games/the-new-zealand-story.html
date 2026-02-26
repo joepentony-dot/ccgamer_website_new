@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The New Zealand Story on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/new_zealand_story_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-new-zealand-story.html -> /games/the-new-zealand-story/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-new-zealand-story/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-new-zealand-story/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-new-zealand-story/" + suffix);
       })();
     </script>
 

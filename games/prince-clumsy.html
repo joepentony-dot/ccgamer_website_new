@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Prince Clumsy on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/prince_clumsy_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/prince-clumsy.html -> /games/prince-clumsy/ -->
+    <meta http-equiv="refresh" content="0; url=/games/prince-clumsy/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/prince-clumsy/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/prince-clumsy/" + suffix);
       })();
     </script>
 

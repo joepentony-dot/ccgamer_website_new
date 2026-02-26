@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Psycho Hopper on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/psycho_hopper.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/psycho-hopper.html -> /games/psycho-hopper/ -->
+    <meta http-equiv="refresh" content="0; url=/games/psycho-hopper/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/psycho-hopper/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/psycho-hopper/" + suffix);
       })();
     </script>
 

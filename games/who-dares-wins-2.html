@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Who Dares Wins II on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/who_dares_wins_ii.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/who-dares-wins-2.html -> /games/who-dares-wins-2/ -->
+    <meta http-equiv="refresh" content="0; url=/games/who-dares-wins-2/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/who-dares-wins-2/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/who-dares-wins-2/" + suffix);
       })();
     </script>
 

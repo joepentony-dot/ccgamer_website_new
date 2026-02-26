@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Action Service on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/action_service_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/action-service.html -> /games/action-service/ -->
+    <meta http-equiv="refresh" content="0; url=/games/action-service/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/action-service/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/action-service/" + suffix);
       })();
     </script>
 

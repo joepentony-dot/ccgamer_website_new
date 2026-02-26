@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="S.W.I.V. is a 1991 Commodore 64 vertically scrolling shooter from Storm that delivers intense single- or two-player action, packed with heavy firepower, constant enemy pressure, and a strong emphasis on reflex-driven combat.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/swiv.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/swiv.html -> /games/swiv/ -->
+    <meta http-equiv="refresh" content="0; url=/games/swiv/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/swiv/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/swiv/" + suffix);
       })();
     </script>
 

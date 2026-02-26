@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="By Fair Means Or Foul on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/by_fair_means_or_foul.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/by-fair-means-or-foul.html -> /games/by-fair-means-or-foul/ -->
+    <meta http-equiv="refresh" content="0; url=/games/by-fair-means-or-foul/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/by-fair-means-or-foul/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/by-fair-means-or-foul/" + suffix);
       })();
     </script>
 

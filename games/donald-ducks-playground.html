@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Donald Duck&amp;#x27;s Playground is a Commodore 64 educational quiz-adventure game aimed at younger you, combining mini-games with basic money management and problem-solving tasks.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/donald_duck_s_playground_usa.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/donald-ducks-playground.html -> /games/donald-ducks-playground/ -->
+    <meta http-equiv="refresh" content="0; url=/games/donald-ducks-playground/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/donald-ducks-playground/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/donald-ducks-playground/" + suffix);
       })();
     </script>
 

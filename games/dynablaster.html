@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Dynablaster on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/dyna_blaster.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/dynablaster.html -> /games/dynablaster/ -->
+    <meta http-equiv="refresh" content="0; url=/games/dynablaster/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/dynablaster/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/dynablaster/" + suffix);
       })();
     </script>
 

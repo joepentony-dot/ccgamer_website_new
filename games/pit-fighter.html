@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Pit-Fighter on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/pit_fighter_the_ultimate_competition_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/pit-fighter.html -> /games/pit-fighter/ -->
+    <meta http-equiv="refresh" content="0; url=/games/pit-fighter/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/pit-fighter/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/pit-fighter/" + suffix);
       })();
     </script>
 

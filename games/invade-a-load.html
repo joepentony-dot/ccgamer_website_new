@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Invade-A-Load on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/invade_a_load.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/invade-a-load.html -> /games/invade-a-load/ -->
+    <meta http-equiv="refresh" content="0; url=/games/invade-a-load/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/invade-a-load/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/invade-a-load/" + suffix);
       })();
     </script>
 

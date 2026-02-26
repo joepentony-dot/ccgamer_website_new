@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="International Basketball on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_basketball.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/international-basketball.html -> /games/international-basketball/ -->
+    <meta http-equiv="refresh" content="0; url=/games/international-basketball/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/international-basketball/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/international-basketball/" + suffix);
       })();
     </script>
 

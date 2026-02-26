@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Robinson&amp;#x27;s Requiem is a 1994 Amiga adventure role-playing game from Silmarils that emphasises survival mechanics, realism, and player decision-making in a hostile alien environment.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/robinsons_requiem.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/robinsons-requiem.html -> /games/robinsons-requiem/ -->
+    <meta http-equiv="refresh" content="0; url=/games/robinsons-requiem/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/robinsons-requiem/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/robinsons-requiem/" + suffix);
       })();
     </script>
 

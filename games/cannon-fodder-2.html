@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Cannon Fodder 2 on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/cannon_fodder_2.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/cannon-fodder-2.html -> /games/cannon-fodder-2/ -->
+    <meta http-equiv="refresh" content="0; url=/games/cannon-fodder-2/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/cannon-fodder-2/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/cannon-fodder-2/" + suffix);
       })();
     </script>
 

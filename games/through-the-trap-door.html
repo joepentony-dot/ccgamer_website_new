@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Through The Trap Door on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/through_the_trapdoor.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/through-the-trap-door.html -> /games/through-the-trap-door/ -->
+    <meta http-equiv="refresh" content="0; url=/games/through-the-trap-door/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/through-the-trap-door/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/through-the-trap-door/" + suffix);
       })();
     </script>
 

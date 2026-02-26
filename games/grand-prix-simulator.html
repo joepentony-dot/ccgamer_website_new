@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Grand Prix Simulator on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/grand_prix_simulator.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/grand-prix-simulator.html -> /games/grand-prix-simulator/ -->
+    <meta http-equiv="refresh" content="0; url=/games/grand-prix-simulator/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/grand-prix-simulator/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/grand-prix-simulator/" + suffix);
       })();
     </script>
 

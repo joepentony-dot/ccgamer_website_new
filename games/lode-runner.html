@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Lode Runner on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/loder_runner.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/lode-runner.html -> /games/lode-runner/ -->
+    <meta http-equiv="refresh" content="0; url=/games/lode-runner/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/lode-runner/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/lode-runner/" + suffix);
       })();
     </script>
 

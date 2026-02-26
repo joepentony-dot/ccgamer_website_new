@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Batman: The Movie on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/batman_the_movie.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/batman-the-movie.html -> /games/batman-the-movie/ -->
+    <meta http-equiv="refresh" content="0; url=/games/batman-the-movie/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/batman-the-movie/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/batman-the-movie/" + suffix);
       })();
     </script>
 

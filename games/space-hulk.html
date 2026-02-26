@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Space Hulk on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/space_hulk.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/space-hulk.html -> /games/space-hulk/ -->
+    <meta http-equiv="refresh" content="0; url=/games/space-hulk/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/space-hulk/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/space-hulk/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Daley Thompson&amp;#x27;s Decathlon is a Commodore 64 sports game based on Olympic events, using joystick-waggling mechanics to simulate athletic performance. Timing and endurance are essential to success.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/daley_thompson_s_decathlon.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/daley-thompsons-decathlon.html -> /games/daley-thompsons-decathlon/ -->
+    <meta http-equiv="refresh" content="0; url=/games/daley-thompsons-decathlon/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/daley-thompsons-decathlon/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/daley-thompsons-decathlon/" + suffix);
       })();
     </script>
 

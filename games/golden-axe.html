@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Golden Axe on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/golden_axe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/golden-axe.html -> /games/golden-axe/ -->
+    <meta http-equiv="refresh" content="0; url=/games/golden-axe/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/golden-axe/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/golden-axe/" + suffix);
       })();
     </script>
 

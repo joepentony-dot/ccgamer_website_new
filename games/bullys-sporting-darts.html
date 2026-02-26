@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="This darts simulation focuses on accuracy and competitive play, offering multiple game modes and realistic scoring. Straightforward controls and clean presentation make it one of the stronger C64 darts games.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bully_s_sporting_darts.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bullys-sporting-darts.html -> /games/bullys-sporting-darts/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bullys-sporting-darts/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bullys-sporting-darts/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bullys-sporting-darts/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Hollywood Or Bust on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/hollywood_or_bust_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/hollywood-or-bust.html -> /games/hollywood-or-bust/ -->
+    <meta http-equiv="refresh" content="0; url=/games/hollywood-or-bust/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/hollywood-or-bust/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/hollywood-or-bust/" + suffix);
       })();
     </script>
 
