@@ -12,7 +12,7 @@ const ROLE_LABELS = {
 let supabase = null;
 
 /**
- * Safely retrieve the global Supabase client
+ * Get the global Supabase client safely
  */
 function getSupabaseClient() {
   if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
@@ -22,14 +22,13 @@ function getSupabaseClient() {
 }
 
 /**
- * Initialise members admin once auth is ready
+ * Init once auth is ready
  */
 async function initAdminMembers() {
   await ensureRole(['admin', 'superadmin']);
 
   supabase = getSupabaseClient();
   if (!supabase) {
-    console.error('[admin-members] Supabase client not available after auth-ready');
     showError('Admin authentication unavailable. Please refresh and sign in again.');
     return;
   }
@@ -38,7 +37,7 @@ async function initAdminMembers() {
 }
 
 /**
- * Load members list
+ * Load members via RPC
  */
 async function loadMembers() {
   const { data, error } = await supabase.rpc('admin_list_members');
@@ -49,14 +48,16 @@ async function loadMembers() {
     return;
   }
 
-  renderMembers(data);
+  renderMembers(data || []);
 }
 
 /**
  * Render members table
  */
 function renderMembers(members) {
-  const tbody = document.querySelector('#members-table tbody');
+  const tbody = document.getElementById('membersTableBody');
+  if (!tbody) return;
+
   tbody.innerHTML = '';
 
   members.forEach(member => {
@@ -67,27 +68,58 @@ function renderMembers(members) {
       <td>${member.username || ''}</td>
       <td>${formatDate(member.signup_date)}</td>
       <td>${formatDate(member.last_sign_in)}</td>
+      <td>${ROLE_LABELS[member.role] || member.role}</td>
       <td>
-        <select data-user-id="${member.user_id}">
-          ${Object.entries(ROLE_LABELS).map(([key, label]) =>
-            `<option value="${key}" ${member.role === key ? 'selected' : ''}>${label}</option>`
-          ).join('')}
-        </select>
-        <button class="save-role">Save</button>
+        ${member.is_moderator_badge
+          ? '<span class="badge badge-moderator">Moderator</span>'
+          : ''
+        }
       </td>
-      <td>${renderBanControls(member)}</td>
+      <td>
+        ${renderRoleControls(member)}
+      </td>
+      <td>
+        ${renderBanControls(member)}
+      </td>
     `;
-
-    tr.querySelector('.save-role').addEventListener('click', () =>
-      updateRole(member.user_id, tr.querySelector('select').value)
-    );
 
     tbody.appendChild(tr);
   });
 }
 
 /**
- * Update user role
+ * Role select + save
+ */
+function renderRoleControls(member) {
+  if (member.role === 'superadmin') {
+    return '<em>Protected</em>';
+  }
+
+  return `
+    <select data-user-id="${member.user_id}">
+      ${Object.entries(ROLE_LABELS).map(([key, label]) =>
+        `<option value="${key}" ${member.role === key ? 'selected' : ''}>${label}</option>`
+      ).join('')}
+    </select>
+    <button class="save-role">Save</button>
+  `;
+}
+
+/**
+ * Attach role handlers after render
+ */
+document.addEventListener('click', async (e) => {
+  if (!e.target.classList.contains('save-role')) return;
+
+  const select = e.target.previousElementSibling;
+  const userId = select.dataset.userId;
+  const role = select.value;
+
+  await updateRole(userId, role);
+});
+
+/**
+ * Update role RPC
  */
 async function updateRole(userId, role) {
   const { error } = await supabase.rpc('admin_set_member_role', {
@@ -100,7 +132,6 @@ async function updateRole(userId, role) {
     return;
   }
 
-  // Trigger notification email
   await supabase.functions.invoke('send-admin-message', {
     body: {
       message_type: 'role_promotion',
@@ -109,16 +140,22 @@ async function updateRole(userId, role) {
     }
   });
 
-  alert('Role updated successfully');
   loadMembers();
 }
 
+/**
+ * Utils
+ */
 function formatDate(date) {
   return date ? new Date(date).toLocaleString() : '';
 }
 
 function showError(msg) {
-  document.querySelector('#members-error').textContent = msg;
+  const el = document.getElementById('membersInlineStatus');
+  if (el) {
+    el.textContent = msg;
+    el.dataset.state = 'error';
+  }
 }
 
 /**
