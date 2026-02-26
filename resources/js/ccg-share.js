@@ -13,6 +13,7 @@
     const facebookLink = root.querySelector("[data-ccg-share-facebook]");
     const copyBtn = root.querySelector("[data-ccg-share-copy]");
 
+    // Canonical host for share URLs (your golden standard).
     const CANONICAL_DOMAIN = "https://www.cheekycommodoregamer.co.uk";
     const GAME_PATH_PREFIX = "/games/";
 
@@ -44,19 +45,21 @@
         return docTitle.trim();
     }
 
-    function getSlugFromPathname(pathname) {
-        let cleanedPath = String(pathname || "");
-        cleanedPath = cleanedPath.replace(/\/index\.html$/i, "/");
-        cleanedPath = cleanedPath.replace(/\.html$/i, "");
-        if (!cleanedPath.startsWith(GAME_PATH_PREFIX)) return "";
-
-        let slug = cleanedPath.slice(GAME_PATH_PREFIX.length);
-        slug = slug.replace(/\/+$/g, "");
-        if (!slug || slug === "game") return "";
-        return slug;
+    function getMetaContent(selector) {
+        const el = document.querySelector(selector);
+        return el ? el.getAttribute("content") || "" : "";
     }
 
-    function decodeSlug(value) {
+    function getShareDescription() {
+        return (
+            getMetaContent("#game-meta-description") ||
+            getMetaContent("meta[name='description']") ||
+            getMetaContent("meta[property='og:description']") ||
+            ""
+        );
+    }
+
+    function decodeValue(value) {
         try {
             return decodeURIComponent(value);
         } catch (error) {
@@ -70,17 +73,40 @@
             .replace(/^[^a-z0-9]+/i, "");
     }
 
-    function cleanSlug(value) {
+    function normaliseSlugCandidate(value) {
+        // Key future-proofing:
+        // - allow underscore IDs and normalise them to hyphen slugs
+        // - strip common noise
+        // - enforce final allowed charset (hyphens only after normalisation)
         let slug = stripLeadingNoise(value);
-        slug = decodeSlug(slug).trim();
+        slug = decodeValue(slug).trim();
+
         slug = slug.replace(/^games\//i, "");
         slug = slug.replace(/^\/games\//i, "");
+        slug = slug.replace(/\/index\.html$/i, "/");
         slug = slug.replace(/\.html$/i, "");
         slug = slug.replace(/\/+$/g, "");
         slug = slug.replace(/^[^a-z0-9]+/i, "");
+
+        // Normalise underscores to hyphens (games.json IDs → share slugs)
+        slug = slug.replace(/_/g, "-");
+
         if (!slug) return "";
         if (!/^[a-z0-9-]+$/i.test(slug)) return "";
-        return slug;
+
+        return slug.toLowerCase();
+    }
+
+    function getSlugFromPathname(pathname) {
+        let cleanedPath = String(pathname || "");
+        cleanedPath = cleanedPath.replace(/\/index\.html$/i, "/");
+        cleanedPath = cleanedPath.replace(/\.html$/i, "");
+        if (!cleanedPath.startsWith(GAME_PATH_PREFIX)) return "";
+
+        let slug = cleanedPath.slice(GAME_PATH_PREFIX.length);
+        slug = slug.replace(/\/+$/g, "");
+        if (!slug || slug === "game") return "";
+        return normaliseSlugCandidate(slug);
     }
 
     function getSlugFromUrl(rawValue) {
@@ -96,24 +122,26 @@
 
         if (parsedUrl) {
             const pathSlug = getSlugFromPathname(parsedUrl.pathname || "");
-            if (pathSlug) return cleanSlug(pathSlug);
+            if (pathSlug) return pathSlug;
 
-            if (parsedUrl.pathname && parsedUrl.pathname.endsWith("game.html")) {
-                const slugParam = cleanSlug(parsedUrl.searchParams.get("slug"));
+            // Handle /games/game.html?id=... or ?slug=...
+            if (parsedUrl.pathname && /\/games\/game\.html$/i.test(parsedUrl.pathname)) {
+                const slugParam = normaliseSlugCandidate(parsedUrl.searchParams.get("slug"));
                 if (slugParam) return slugParam;
 
-                const idParam = cleanSlug(parsedUrl.searchParams.get("id"));
+                // id param is underscore-based; normaliseSlugCandidate converts to hyphen slug.
+                const idParam = normaliseSlugCandidate(parsedUrl.searchParams.get("id"));
                 if (idParam) return idParam;
             }
 
-            return cleanSlug(parsedUrl.pathname || "");
+            return normaliseSlugCandidate(parsedUrl.pathname || "");
         }
 
-        return cleanSlug(candidate);
+        return normaliseSlugCandidate(candidate);
     }
 
     function getCanonicalGameUrl(slug) {
-        const safeSlug = cleanSlug(slug);
+        const safeSlug = normaliseSlugCandidate(slug);
         if (!safeSlug) return "";
         return `${CANONICAL_DOMAIN}${GAME_PATH_PREFIX}${safeSlug}/`;
     }
@@ -123,70 +151,84 @@
         if (!url.startsWith(`${CANONICAL_DOMAIN}${GAME_PATH_PREFIX}`)) return false;
         if (!url.endsWith("/")) return false;
         if (url.includes(".html") || url.includes("game.html") || url.includes("?")) return false;
+
+        // Block the generic /games/ index from being treated as a game share URL.
+        const afterPrefix = url.slice((`${CANONICAL_DOMAIN}${GAME_PATH_PREFIX}`).length);
+        if (!afterPrefix || afterPrefix === "/") return false;
+
         return true;
     }
 
     function resolveShareUrl() {
+        // 1) Prefer <link rel="canonical"> (should be /games/{slug}/).
         const canonicalLink = document.querySelector("link[rel='canonical']");
         const canonicalHref = canonicalLink ? canonicalLink.getAttribute("href") : "";
         if (canonicalHref) {
             try {
-                return new URL(canonicalHref, window.location.origin).toString();
+                const abs = new URL(canonicalHref, CANONICAL_DOMAIN).toString();
+                if (isValidCanonicalUrl(abs)) return abs;
             } catch (error) {
-                // Fall through to slug resolution.
+                // Fall through
             }
         }
-        let slug = canonicalHref ? getSlugFromUrl(canonicalHref) : "";
 
-        if (!slug) {
-            const ogUrl = document.querySelector("meta[property='og:url']");
-            const ogHref = ogUrl ? ogUrl.getAttribute("content") : "";
-            slug = ogHref ? getSlugFromUrl(ogHref) : "";
+        // 2) Next prefer og:url
+        const ogUrl = document.querySelector("meta[property='og:url']");
+        const ogHref = ogUrl ? ogUrl.getAttribute("content") : "";
+        if (ogHref) {
+            try {
+                const abs = new URL(ogHref, CANONICAL_DOMAIN).toString();
+                if (isValidCanonicalUrl(abs)) return abs;
+            } catch (error) {
+                // Fall through
+            }
         }
 
-        if (!slug) {
+        // 3) If we’re on /games/game.html, derive slug from query params (slug or id)
+        try {
             const params = new URLSearchParams(window.location.search || "");
-            slug = cleanSlug(params.get("slug"));
+            const slugParam = normaliseSlugCandidate(params.get("slug"));
+            if (slugParam) {
+                const url = getCanonicalGameUrl(slugParam);
+                if (isValidCanonicalUrl(url)) return url;
+            }
+
+            const idParam = normaliseSlugCandidate(params.get("id")); // underscore → hyphen handled
+            if (idParam) {
+                const url = getCanonicalGameUrl(idParam);
+                if (isValidCanonicalUrl(url)) return url;
+            }
+        } catch (error) {
+            // ignore
         }
 
-        if (!slug) {
-            slug = getSlugFromPathname(window.location.pathname || "");
+        // 4) Derive from pathname if already on /games/{slug}/
+        const fromPath = getSlugFromPathname(window.location.pathname || "");
+        if (fromPath) {
+            const url = getCanonicalGameUrl(fromPath);
+            if (isValidCanonicalUrl(url)) return url;
         }
 
-        if (!slug) {
-            const params = new URLSearchParams(window.location.search || "");
-            slug = cleanSlug(params.get("id"));
+        // 5) Last resort: try parsing current href
+        const fromHref = getSlugFromUrl(window.location.href);
+        if (fromHref) {
+            const url = getCanonicalGameUrl(fromHref);
+            if (isValidCanonicalUrl(url)) return url;
         }
 
-        if (!slug) {
-            slug = getSlugFromUrl(window.location.href);
-        }
-
-        const canonicalUrl = getCanonicalGameUrl(slug);
-        if (isValidCanonicalUrl(canonicalUrl)) return canonicalUrl;
+        // If we can’t resolve, share the current URL (better than nothing).
         return window.location.href;
     }
 
     const shareUrl = resolveShareUrl();
     const title = document.title || "Cheeky Commodore Gamer";
     const gameTitle = getGameTitle();
-
-    function getMetaContent(selector) {
-        const el = document.querySelector(selector);
-        return el ? el.getAttribute("content") || "" : "";
-    }
-
-    function getShareDescription() {
-        return (
-            getMetaContent("#game-meta-description") ||
-            getMetaContent("meta[name='description']") ||
-            getMetaContent("meta[property='og:description']") ||
-            ""
-        );
-    }
-
     const description = getShareDescription();
-    const shareText = description || (gameTitle ? `Discover ${gameTitle} on Cheeky Commodore Gamer.` : "Discover this game on Cheeky Commodore Gamer.");
+    const shareText =
+        description ||
+        (gameTitle
+            ? `Discover ${gameTitle} on Cheeky Commodore Gamer.`
+            : "Discover this game on Cheeky Commodore Gamer.");
 
     function copyWithFallback(text) {
         const textarea = document.createElement("textarea");
@@ -232,12 +274,15 @@
     function copyShareUrl() {
         if (!shareUrl) return;
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                setStatus("Link copied!");
-            }).catch(() => {
-                copyWithFallback(shareUrl);
-                setStatus("Link copied!");
-            });
+            navigator.clipboard
+                .writeText(shareUrl)
+                .then(() => {
+                    setStatus("Link copied!");
+                })
+                .catch(() => {
+                    copyWithFallback(shareUrl);
+                    setStatus("Link copied!");
+                });
         } else {
             copyWithFallback(shareUrl);
             setStatus("Link copied!");
@@ -279,6 +324,11 @@
 
     if (copyBtn) {
         copyBtn.addEventListener("click", copyShareUrl);
+    }
+
+    // If there’s a fallback panel, ensure it is visible when Web Share isn't available.
+    if (fallback && !navigator.share) {
+        fallback.hidden = false;
     }
 
     updateFallbackLinks();
