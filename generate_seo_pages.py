@@ -99,6 +99,7 @@ def seo_template(
 <html lang=\"en\">
 <head>
     <meta charset=\"UTF-8\" />
+    <meta http-equiv=\"refresh\" content=\"0; url={safe_interactive_href}\" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
     <script>
