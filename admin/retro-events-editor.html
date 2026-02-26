@@ -7,15 +7,16 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Retro Events Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-2" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-2" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-3" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-3" rel="stylesheet" />
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
     .retro-card { background: rgba(10, 20, 45, 0.92); border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
     .retro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
     .retro-grid .full { grid-column: 1 / -1; }
     label { display: flex; flex-direction: column; gap: .3rem; font-weight: 600; }
-    input[type="text"] { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
+    input[type="text"], textarea, select { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
+    textarea { min-height: 84px; resize: vertical; }
     .toggle-wrap { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; }
     .toggle-wrap input { accent-color: #ff2a6d; }
     .retro-actions { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: 1rem; }
@@ -37,6 +38,8 @@
     .retro-preview-card img { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; }
     .retro-preview-body { padding: .75rem; display: grid; gap: .45rem; }
     .retro-preview-title { font-weight: 700; line-height: 1.25; }
+    .seo-fields[hidden] { display: none; }
+    .seo-hint { font-size: .82rem; color: #9bc6f1; margin: 0; }
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
       .retro-item { grid-template-columns: 1fr; }
@@ -50,12 +53,12 @@
         <label>Builder Selector</label>
         <div class="retro-actions">
           <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Add Game</button>
-          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Add Retro Event</button>
+          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Non-Game Video</button>
         </div>
-        <span class="mode-pill" aria-label="Current mode">Current mode: Retro Events Builder</span>
+        <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
       <h1>Non-Game Video Builder (Retro Events + Amiga Demo Music)</h1>
-      <p>Standalone editor for <code>games/collections/retro-events.json</code> with multiple non-game video types. This does not read or update <code>games.json</code>.</p>
+      <p>This editor manages non-game video content in one canonical file: <code>/data/retro-events.json</code>. Public pages and SEO generation read from the same data.</p>
       <p class="retro-help">Use Save to download an updated <code>retro-events.json</code> file.</p>
       <p class="retro-status" data-status></p>
     </section>
@@ -70,7 +73,7 @@
               <option value="amiga_demo_music">Amiga Demo Music</option>
             </select>
           </label>
-          <label>SEO Title *
+          <label>Title *
             <input type="text" data-field="title" placeholder="Arcade Club Bury – Europe’s Largest Free-Play Arcade" required />
           </label>
           <label>YouTube Video ID *
@@ -80,6 +83,17 @@
             <input type="checkbox" data-field="membersOnly" />
             Members Only toggle (pink sash)
           </label>
+          <div class="full seo-fields" data-seo-fields hidden>
+            <div class="retro-grid">
+              <label>SEO Title
+                <input type="text" data-field="seoTitle" placeholder="Optional override for future /music/amiga-demo-music/ pages" />
+              </label>
+              <label class="full">SEO Description
+                <textarea data-field="seoDescription" placeholder="Optional short description used when generating dedicated music pages."></textarea>
+              </label>
+            </div>
+            <p class="seo-hint">SEO fields are optional and auto-filled if left blank.</p>
+          </div>
         </div>
         <div class="retro-actions">
           <button type="submit" class="ccg-btn ccg-btn--primary" data-action="save-event">Save / Update</button>
@@ -108,6 +122,6 @@
     </section>
   </main>
 
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-2"></script>
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-3"></script>
 </body>
 </html>
