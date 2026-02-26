@@ -1,6 +1,6 @@
 // admin/js/admin-members.js
 // Phase 3 — Members Directory
-// Omega-safe: does NOT modify shared auth. Uses ensureRole() gating and global client only.
+// Omega-safe: does NOT touch shared auth. Uses ensureRole() + global client only.
 
 import { ensureRole } from './guard.js';
 
@@ -41,13 +41,23 @@ function formatDate(date) {
   return date ? new Date(date).toLocaleString() : '';
 }
 
-function getGlobalSupabaseClient() {
-  // Project standard
+/**
+ * IMPORTANT: In your project, window.ccgSupabase.getClient() may be async (returns a Promise).
+ * This helper normalises it so we always end up with a real Supabase client instance.
+ */
+async function getGlobalSupabaseClient() {
   if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-    return window.ccgSupabase.getClient();
+    const maybeClient = window.ccgSupabase.getClient();
+    // If it's a Promise, await it.
+    if (maybeClient && typeof maybeClient.then === 'function') {
+      return await maybeClient;
+    }
+    return maybeClient;
   }
-  // Fallback only (should not be needed, but prevents undefined.rpc crashes)
+
+  // Fallback only (keeps us from crashing)
   if (window.CCG_SUPABASE_CLIENT) return window.CCG_SUPABASE_CLIENT;
+
   return null;
 }
 
@@ -56,19 +66,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     setMemberStatus('Checking admin session…', 'info');
     setInlineStatus('Verifying permissions…', 'info');
 
-    // This is the same gating pattern that works on your other admin pages.
+    // Same gating pattern as other admin pages
     await ensureRole(['admin', 'superadmin']);
 
-    supabase = getGlobalSupabaseClient();
+    supabase = await getGlobalSupabaseClient();
+
     if (!supabase) {
       setMemberStatus('Admin authentication unavailable.', 'error');
       setInlineStatus('Supabase client not ready. Please refresh and sign in again.', 'error');
       return;
     }
 
+    // Defensive: confirm we really got the right object
+    if (typeof supabase.rpc !== 'function') {
+      console.error('[admin-members] getClient() did not return a Supabase client:', supabase);
+      setMemberStatus('Unable to verify admin session.', 'error');
+      setInlineStatus('Supabase client loaded, but RPC is unavailable (client mismatch).', 'error');
+      return;
+    }
+
     setMemberStatus('Signed in', 'success');
-    await loadMembers();
     wireControls();
+    await loadMembers();
   } catch (err) {
     console.error('[admin-members] init failed', err);
     setMemberStatus('Unable to verify admin session.', 'error');
@@ -78,22 +97,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function wireControls() {
   const refreshBtn = document.getElementById('membersRefresh');
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', () => loadMembers());
-  }
+  if (refreshBtn) refreshBtn.addEventListener('click', () => loadMembers());
 
   const search = document.getElementById('membersSearch');
   const roleFilter = document.getElementById('membersRoleFilter');
   const bannedFilter = document.getElementById('membersBannedFilter');
 
-  // Light-touch: refresh on change (no fancy debounce to keep it predictable)
   [search, roleFilter, bannedFilter].forEach((el) => {
     if (!el) return;
     el.addEventListener('input', () => loadMembers());
     el.addEventListener('change', () => loadMembers());
   });
 
-  // Delegate role save clicks
   document.addEventListener('click', async (e) => {
     const btn = e.target;
     if (!(btn instanceof Element)) return;
@@ -126,6 +141,11 @@ async function loadMembers() {
     return;
   }
 
+  if (typeof supabase.rpc !== 'function') {
+    setInlineStatus('Supabase RPC is unavailable (client mismatch).', 'error');
+    return;
+  }
+
   setInlineStatus('Loading members…', 'info');
 
   const search = document.getElementById('membersSearch');
@@ -140,7 +160,6 @@ async function loadMembers() {
   if (bannedVal === 'true') p_banned = true;
   if (bannedVal === 'false') p_banned = false;
 
-  // IMPORTANT: your function signature is NOT zero-arg.
   const { data, error } = await supabase.rpc('admin_list_members', {
     p_banned,
     p_limit: 100,
@@ -188,15 +207,9 @@ function renderMembers(members) {
       <td>${escapeHtml(formatDate(m.signup_date))}</td>
       <td>${escapeHtml(formatDate(m.last_sign_in))}</td>
       <td>${escapeHtml(roleLabel)}</td>
-      <td>
-        ${m.is_moderator_badge ? '<span class="badge badge-moderator">Moderator</span>' : ''}
-      </td>
-      <td>
-        ${isProtected ? '<em>Protected</em>' : renderRoleControls(m)}
-      </td>
-      <td>
-        ${isProtected ? '<em>Protected</em>' : renderBanState(m)}
-      </td>
+      <td>${m.is_moderator_badge ? '<span class="badge badge-moderator">Moderator</span>' : ''}</td>
+      <td>${isProtected ? '<em>Protected</em>' : renderRoleControls(m)}</td>
+      <td>${isProtected ? '<em>Protected</em>' : renderBanState(m)}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -219,21 +232,19 @@ function renderRoleControls(member) {
 }
 
 function renderBanState(member) {
-  // UI-only for now (your SQL has admin_set_member_soft_ban, but you said “outline not implement” earlier)
   return member.banned
     ? '<span class="badge badge-warning">Banned</span>'
     : '<span>Active</span>';
 }
 
 async function updateRole(userId, role) {
-  if (!supabase) {
-    setInlineStatus('Supabase client not ready.', 'error');
+  if (!supabase || typeof supabase.rpc !== 'function') {
+    setInlineStatus('Supabase RPC is unavailable (client mismatch).', 'error');
     return;
   }
 
   setInlineStatus('Saving role…', 'info');
 
-  // Your DB has admin_set_member_role(p_user_id uuid, p_new_role text)
   const { error } = await supabase.rpc('admin_set_member_role', {
     p_user_id: userId,
     p_new_role: role
