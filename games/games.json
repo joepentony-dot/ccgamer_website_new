@@ -23438,6 +23438,46 @@
   },
   {
     "system": "C64",
+    "id": "southern_belle",
+    "slug": "southern-belle",
+    "title": "Southern Belle",
+    "sorttitle": "Southern Belle",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ],
+    "collections": [],
+    "videoid": "RMUUUGXmsmQ",
+    "thumbnail": "resources/images/thumbnails/all/southern-belle.jpg",
+    "pdf": "https://drive.google.com/file/d/1inbCPTqCabJ-V_hxRf15HMmsI7TebN7Y/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1P2YRqAsyT4eA2pozpCsTThNjBCdHpf22/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/southern-belle"
+    ],
+    "description": "Southern Belle (Hewson 1986) is a classic Commodore 64 train simulator where you master the powerful King Arthur class steam locomotive on the famous 51-mile London Victoria to Brighton line. Take on the roles of fireman—shovelling coal and managing water—and driver—controlling throttle, brakes, and signals—for a highly realistic journey with authentic 1980s gameplay.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "Would have been a higher score, only for the slow speed! Decent for it's time though",
+    "credits": {
+      "publisher": [
+        "Hewson"
+      ],
+      "developer": [],
+      "producer": "",
+      "coder": [
+        "Mike Male",
+        "R. Hillyer"
+      ],
+      "graphics": [],
+      "musician": [],
+      "re_releaser": []
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "space_harrier",
     "slug": "space-harrier",
     "title": "Space Harrier",
