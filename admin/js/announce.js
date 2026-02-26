@@ -42,26 +42,21 @@ function getSupabaseClient() {
 }
 
 async function waitForSupabaseClient() {
-  const existingClient = getSupabaseClient();
-  if (existingClient) return existingClient;
+  const existing = getSupabaseClient();
+  if (existing) return existing;
 
   return new Promise(resolve => {
-    const check = () => {
-      const nextClient = getSupabaseClient();
-      if (nextClient) {
-        resolve(nextClient);
-        return;
-      }
-      window.requestAnimationFrame(check);
+    const tick = () => {
+      const c = getSupabaseClient();
+      if (c) return resolve(c);
+      requestAnimationFrame(tick);
     };
-    check();
+    tick();
   });
 }
 
 function setStatus(msg = '') {
-  if ($('announceStatus')) {
-    $('announceStatus').textContent = msg;
-  }
+  $('announceStatus').textContent = msg;
 }
 
 function updateSendState() {
@@ -69,7 +64,8 @@ function updateSendState() {
   const test = $('announceTestEmail')?.checked;
   const members = $('announceNotifyMembers')?.checked;
 
-  $('announceSendBtn').disabled = !authReady || !slug || (!test && !members);
+  $('announceSendBtn').disabled =
+    !authReady || !slug || (!test && !members);
 }
 
 async function bootstrap() {
@@ -87,16 +83,15 @@ async function bootstrap() {
 
   const { data: { session } = {} } = await authClient.auth.getSession();
   authReady = Boolean(session?.access_token);
+  if (authReady) setStatus('');
 
-  if (authReady) {
-    setStatus('');
-  }
-
-  authClient.auth.onAuthStateChange((_event, nextSession) => {
-    authReady = Boolean(nextSession?.access_token);
+  authClient.auth.onAuthStateChange((_e, s) => {
+    authReady = Boolean(s?.access_token);
     setStatus(authReady ? '' : 'Waiting for admin authentication…');
     updateSendState();
   });
+
+  // ---------------- LOAD GAMES ----------------
 
   const res = await fetch('/games/games.json', { cache: 'no-store' });
   const games = await res.json();
@@ -106,24 +101,80 @@ async function bootstrap() {
 
   $('announceLoadedHint').textContent = `Loaded ${bySlug.size} games.`;
 
-  $('announceSendBtn').addEventListener('click', async () => {
-    const previousLabel = sendBtn.dataset.defaultLabel || 'Send Announcement';
+  // ---------------- SEARCH ----------------
+
+  $('announceSearch').addEventListener('input', e => {
+    const q = e.target.value.toLowerCase();
+    $('announceResults').innerHTML = '';
+
+    [...bySlug.values()]
+      .filter(g => g.title.toLowerCase().includes(q))
+      .slice(0, 50)
+      .forEach(g => {
+        const b = document.createElement('button');
+        b.className = 'ccg-btn ccg-btn--ghost';
+        b.textContent = `${g.title} (${g.year || '?'})`;
+
+        b.onclick = () => {
+          const thumb = normalizeThumbnailPath(g.thumbnail);
+
+          sendBtn.dataset.slug = g.slug;
+          sendBtn.dataset.thumbnail = thumb;
+
+          $('announceTitle').textContent = g.title;
+          $('announceSlug').textContent = g.slug;
+          $('announceLink').href = `/games/${g.slug}/`;
+          $('announceLink').hidden = false;
+
+          $('announceSubject').textContent =
+            subjectFor($('announceType').value, g.title);
+
+          if (thumb) {
+            $('announceThumb').src = thumb;
+            $('announceThumb').hidden = false;
+          } else {
+            $('announceThumb').hidden = true;
+          }
+
+          updateSendState();
+        };
+
+        $('announceResults').appendChild(b);
+      });
+  });
+
+  $('announceType').addEventListener('change', () => {
+    $('announceSubject').textContent =
+      subjectFor($('announceType').value, $('announceTitle').textContent);
+  });
+
+  $('announceTestEmail').addEventListener('change', () => {
+    if ($('announceTestEmail').checked) $('announceNotifyMembers').checked = false;
+    updateSendState();
+  });
+
+  $('announceNotifyMembers').addEventListener('change', () => {
+    if ($('announceNotifyMembers').checked) $('announceTestEmail').checked = false;
+    updateSendState();
+  });
+
+  // ---------------- SEND ----------------
+
+  sendBtn.addEventListener('click', async () => {
+    const prev = sendBtn.dataset.defaultLabel;
     sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
 
     try {
-      const slug = text(sendBtn.dataset.slug);
+      const slug = sendBtn.dataset.slug;
       const game = bySlug.get(slug);
       const test = $('announceTestEmail').checked;
 
-      if (!slug || !game) {
-        throw new Error('Please select a game before sending.');
-      }
+      if (!game) throw new Error('Please select a game.');
 
       const { data: { session } = {} } = await authClient.auth.getSession();
       const token = session?.access_token;
-      if (!token) {
-        throw new Error('No active admin session. Please sign in again.');
-      }
+      if (!token) throw new Error('Admin session expired.');
 
       const payload = {
         mode: test ? 'test' : 'members',
@@ -132,9 +183,6 @@ async function bootstrap() {
         game_thumbnail: normalizeThumbnailPath(game.thumbnail),
         test_email: test
       };
-
-      setStatus('Sending…');
-      sendBtn.textContent = 'Sending…';
 
       const r = await fetch(
         `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
@@ -150,15 +198,15 @@ async function bootstrap() {
 
       const j = await r.json();
       if (!r.ok || !j.success) {
-        throw new Error(j.error || `Request failed (${r.status}).`);
+        throw new Error(j.error || `Request failed (${r.status})`);
       }
 
       setStatus(`Sent: ${j.sent || 0}, failed: ${j.failed || 0}`);
     } catch (err) {
-      setStatus(`Failed: ${err?.message || 'Unknown error.'}`);
-      console.error('Announcement send failed:', err);
+      setStatus(`Failed: ${err.message}`);
+      console.error(err);
     } finally {
-      sendBtn.textContent = previousLabel;
+      sendBtn.textContent = prev;
       sendBtn.disabled = false;
       updateSendState();
     }
