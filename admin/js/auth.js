@@ -1,5 +1,7 @@
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-import { AUTH_CONFIG, OWNER_EMAILS, SUPABASE_ANON_KEY, SUPABASE_URL } from './config.js';
+// admin/js/auth.js
+// Phase 3 — Global Auth Consumer (NO local Supabase client creation)
+
+import { AUTH_CONFIG, OWNER_EMAILS } from './config.js';
 
 const TAG = '[CCG-AUTH]';
 const ELEVATED_ROLES = new Set(['superadmin', 'admin', 'editor']);
@@ -12,7 +14,6 @@ export const AUTH_STATE = Object.freeze({
   UNAUTHORISED: 'unauthorised'
 });
 
-let client = null;
 let context = null;
 let ready = false;
 let authSubscription = null;
@@ -52,7 +53,9 @@ function buildContext(session, source = 'unknown') {
   const user = session?.user || null;
   const role = deriveRole(user);
   const state = resolveAuthState(session, { role });
-  const canWrite = Boolean(user?.id) && (isOwnerEmail(user?.email) || ELEVATED_ROLES.has(String(role || '').toLowerCase()));
+  const canWrite =
+    Boolean(user?.id) &&
+    (isOwnerEmail(user?.email) || ELEVATED_ROLES.has(String(role || '').toLowerCase()));
 
   return {
     source,
@@ -69,34 +72,27 @@ function buildContext(session, source = 'unknown') {
   };
 }
 
-async function ensureClient() {
-  if (client) return client;
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    throw new Error('Supabase config missing (SUPABASE_URL/SUPABASE_ANON_KEY).');
+async function getClient() {
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+    throw new Error('Global Supabase client not available');
   }
-
-  client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  });
-
-  window.CCG_SUPABASE_CLIENT = client;
-  return client;
+  return window.ccgSupabase.getClient();
 }
 
 function publish(nextContext) {
   context = nextContext;
   ready = true;
   listeners.forEach((cb) => {
-    try { cb(context); } catch (error) { console.warn(TAG, 'listener failed', error); }
+    try {
+      cb(context);
+    } catch (error) {
+      console.warn(TAG, 'listener failed', error);
+    }
   });
 }
 
 async function refreshContext(source = 'refresh') {
-  const supabase = await ensureClient();
+  const supabase = await getClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
 
@@ -106,19 +102,25 @@ async function refreshContext(source = 'refresh') {
 }
 
 export const authReady = (async () => {
-  const supabase = await ensureClient();
+  const supabase = await getClient();
   const initial = await refreshContext('init');
 
   if (!authSubscription) {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
       const next = buildContext(session || null, `onAuthStateChange:${event}`);
       publish(next);
+
       if (event === 'SIGNED_OUT' || !next.session?.user) {
         invalidationListeners.forEach((cb) => {
-          try { cb(); } catch (error) { console.warn(TAG, 'invalidation callback failed', error); }
+          try {
+            cb();
+          } catch (error) {
+            console.warn(TAG, 'invalidation callback failed', error);
+          }
         });
       }
     });
+
     authSubscription = data?.subscription || null;
   }
 
@@ -126,16 +128,8 @@ export const authReady = (async () => {
   return initial;
 })();
 
-export async function initAuth() {
-  return authReady;
-}
-
-export async function waitForAuthReady(timeoutMs = 8000) {
-  const timeout = Number(timeoutMs) || 8000;
-  await Promise.race([
-    authReady,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Auth ready timeout.')), timeout))
-  ]);
+export async function waitForAuthReady() {
+  await authReady;
   return true;
 }
 
@@ -144,22 +138,30 @@ export async function getAuthContext() {
   return context;
 }
 
-export async function getSession() {
-  const ctx = await getAuthContext();
-  return ctx?.session || null;
-}
+export async function refreshSessionIfNeeded() {
+  const supabase = await getClient();
+  const { data, error } = await supabase.auth.getSession();
+  if (error) throw error;
 
-export async function getRole() {
-  const ctx = await getAuthContext();
-  return String(ctx?.role || '').toLowerCase() || 'guest';
-}
+  const session = data?.session || null;
+  if (!session) {
+    publish(buildContext(null, 'refresh:none'));
+    return null;
+  }
 
-export async function requireRole(minRole = 'authenticated') {
-  const ctx = await getAuthContext();
-  const role = String(ctx?.role || '').toLowerCase();
-  if (!ctx?.isAuthenticated) return false;
-  if (minRole === 'authenticated') return true;
-  return role === String(minRole).toLowerCase() || (minRole === 'admin' && role === 'superadmin');
+  const expiresAt = Number(session.expires_at || 0) * 1000;
+  const margin = Number(AUTH_CONFIG?.refreshMarginMs || 60000);
+
+  if (expiresAt && Date.now() >= expiresAt - margin) {
+    const refreshed = await supabase.auth.refreshSession();
+    if (refreshed.error) throw refreshed.error;
+    const next = buildContext(refreshed.data?.session || null, 'refresh:rotated');
+    publish(next);
+    return next.session;
+  }
+
+  publish(buildContext(session, 'refresh:ok'));
+  return session;
 }
 
 export function onAuthStateChange(cb) {
@@ -173,62 +175,4 @@ export function bindSessionInvalidation({ onSignedOut } = {}) {
   if (typeof onSignedOut !== 'function') return () => {};
   invalidationListeners.add(onSignedOut);
   return () => invalidationListeners.delete(onSignedOut);
-}
-
-export async function refreshSessionIfNeeded() {
-  const supabase = await ensureClient();
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
-  const session = data?.session || null;
-  if (!session) {
-    publish(buildContext(null, 'refresh:none'));
-    return null;
-  }
-
-  const expiresAt = Number(session.expires_at || 0) * 1000;
-  const margin = Number(AUTH_CONFIG?.refreshMarginMs || 60_000);
-  if (expiresAt && Date.now() >= expiresAt - margin) {
-    const refreshed = await supabase.auth.refreshSession();
-    if (refreshed.error) throw refreshed.error;
-    const next = buildContext(refreshed.data?.session || null, 'refresh:rotated');
-    publish(next);
-    return next.session;
-  }
-
-  publish(buildContext(session, 'refresh:ok'));
-  return session;
-}
-
-export async function getSupabaseClient() {
-  return ensureClient();
-}
-
-export async function restoreSession() {
-  return refreshContext('restoreSession');
-}
-
-export async function login(email, password) {
-  const supabase = await ensureClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw error;
-  const next = buildContext(data?.session || null, 'login');
-  publish(next);
-  return next;
-}
-
-export async function logout() {
-  const supabase = await ensureClient();
-  await supabase.auth.signOut();
-  const next = buildContext(null, 'logout');
-  publish(next);
-  return next;
-}
-
-export async function sendPasswordReset(email) {
-  const supabase = await ensureClient();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: AUTH_CONFIG?.passwordResetRedirect
-  });
-  if (error) throw error;
-  return true;
 }
