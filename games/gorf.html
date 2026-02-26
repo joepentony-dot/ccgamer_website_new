@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Gorf on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gorf.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/gorf.html -> /games/gorf/ -->
+    <meta http-equiv="refresh" content="0; url=/games/gorf/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/gorf/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/gorf/" + suffix);
       })();
     </script>
 

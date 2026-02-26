@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Bruce Lee on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bruce_lee.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bruce-lee.html -> /games/bruce-lee/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bruce-lee/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bruce-lee/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bruce-lee/" + suffix);
       })();
     </script>
 

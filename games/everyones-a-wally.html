@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Everyone&amp;#x27;s a Wally is a Commodore 64 action-adventure game featuring multiple characters and time-based objectives across a shared world.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/everyone_s_a_wally.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/everyones-a-wally.html -> /games/everyones-a-wally/ -->
+    <meta http-equiv="refresh" content="0; url=/games/everyones-a-wally/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/everyones-a-wally/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/everyones-a-wally/" + suffix);
       })();
     </script>
 

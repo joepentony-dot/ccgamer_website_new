@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Miner 2049er on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/miner_2049_er.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/miner-2049er.html -> /games/miner-2049er/ -->
+    <meta http-equiv="refresh" content="0; url=/games/miner-2049er/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/miner-2049er/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/miner-2049er/" + suffix);
       })();
     </script>
 

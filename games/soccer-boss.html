@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Soccer Boss on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/soccer_boss_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/soccer-boss.html -> /games/soccer-boss/ -->
+    <meta http-equiv="refresh" content="0; url=/games/soccer-boss/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/soccer-boss/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/soccer-boss/" + suffix);
       })();
     </script>
 

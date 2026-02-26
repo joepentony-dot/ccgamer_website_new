@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Simon The Sorcerer on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/simon_the_sorcerer.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/simon-the-sorcerer.html -> /games/simon-the-sorcerer/ -->
+    <meta http-equiv="refresh" content="0; url=/games/simon-the-sorcerer/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/simon-the-sorcerer/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/simon-the-sorcerer/" + suffix);
       })();
     </script>
 

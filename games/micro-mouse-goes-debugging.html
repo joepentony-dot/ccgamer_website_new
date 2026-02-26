@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Micro Mouse Goes Debugging on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/micro_mouse_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/micro-mouse-goes-debugging.html -> /games/micro-mouse-goes-debugging/ -->
+    <meta http-equiv="refresh" content="0; url=/games/micro-mouse-goes-debugging/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/micro-mouse-goes-debugging/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/micro-mouse-goes-debugging/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Stairways on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/stairways_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/stairways.html -> /games/stairways/ -->
+    <meta http-equiv="refresh" content="0; url=/games/stairways/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/stairways/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/stairways/" + suffix);
       })();
     </script>
 

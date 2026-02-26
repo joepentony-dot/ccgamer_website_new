@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Crazy Comets on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/crazy_comets.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/crazy-comets.html -> /games/crazy-comets/ -->
+    <meta http-equiv="refresh" content="0; url=/games/crazy-comets/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/crazy-comets/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/crazy-comets/" + suffix);
       })();
     </script>
 

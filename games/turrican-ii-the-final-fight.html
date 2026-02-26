@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/turrican-ii-the-final-fight.html -> /games/turrican-ii-the-final-fight/ -->
+    <meta http-equiv="refresh" content="0; url=/games/turrican-ii-the-final-fight/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/turrican-ii-the-final-fight/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/turrican-ii-the-final-fight/" + suffix);
       })();
     </script>
 

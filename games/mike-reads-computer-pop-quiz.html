@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/mike-reads-computer-pop-quiz/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mike-reads-computer-pop-quiz.html -> /games/mike-reads-computer-pop-quiz/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mike-reads-computer-pop-quiz/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mike-reads-computer-pop-quiz/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mike-reads-computer-pop-quiz/" + suffix);
       })();
     </script>
 

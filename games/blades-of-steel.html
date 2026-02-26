@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Blades Of Steel on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/blades_of_steel_c64_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/blades-of-steel.html -> /games/blades-of-steel/ -->
+    <meta http-equiv="refresh" content="0; url=/games/blades-of-steel/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/blades-of-steel/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/blades-of-steel/" + suffix);
       })();
     </script>
 

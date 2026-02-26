@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Tour De France on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tour_de_france_usa.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/tour-de-france.html -> /games/tour-de-france/ -->
+    <meta http-equiv="refresh" content="0; url=/games/tour-de-france/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/tour-de-france/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/tour-de-france/" + suffix);
       })();
     </script>
 

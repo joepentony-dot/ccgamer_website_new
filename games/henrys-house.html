@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Henry’s House is a Commodore 64 platform game released in 1984 by English Software, featuring single-screen levels focused on precise movement, timing, and route planning. The C64 version is known for its charming presentation, clever level layouts, and the constant pressure created by roaming enemies and environmental hazards.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/henry_s_house.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/henrys-house.html -> /games/henrys-house/ -->
+    <meta http-equiv="refresh" content="0; url=/games/henrys-house/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/henrys-house/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/henrys-house/" + suffix);
       })();
     </script>
 

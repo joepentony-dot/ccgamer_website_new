@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Released on the Commodore 64 in 1987 by Mindscape, Into The Eagle’s Nest is an arcade-style action game inspired by World War II infiltration missions, tasking you with sneaking through a heavily guarded fortress to rescue prisoners. The C64 version blends shooting, exploration, and stealth elements, standing out for its tense pacing and methodical approach rather than constant run-and-gun action.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/into_the_eagle_s_nest.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/into-the-eagles-nest.html -> /games/into-the-eagles-nest/ -->
+    <meta http-equiv="refresh" content="0; url=/games/into-the-eagles-nest/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/into-the-eagles-nest/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/into-the-eagles-nest/" + suffix);
       })();
     </script>
 

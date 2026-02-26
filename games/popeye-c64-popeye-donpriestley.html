@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Popeye on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/popeye_piranha.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/popeye-c64-popeye-donpriestley.html -> /games/popeye-c64-popeye-donpriestley/ -->
+    <meta http-equiv="refresh" content="0; url=/games/popeye-c64-popeye-donpriestley/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/popeye-c64-popeye-donpriestley/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/popeye-c64-popeye-donpriestley/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Road Runner on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/road_runner_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/road-runner.html -> /games/road-runner/ -->
+    <meta http-equiv="refresh" content="0; url=/games/road-runner/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/road-runner/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/road-runner/" + suffix);
       })();
     </script>
 

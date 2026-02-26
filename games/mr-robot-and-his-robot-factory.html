@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Mr Robot And His Robot Factory on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/mr_robot_and_his_robot_factory.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mr-robot-and-his-robot-factory.html -> /games/mr-robot-and-his-robot-factory/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mr-robot-and-his-robot-factory/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mr-robot-and-his-robot-factory/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mr-robot-and-his-robot-factory/" + suffix);
       })();
     </script>
 

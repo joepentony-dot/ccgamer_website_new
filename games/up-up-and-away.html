@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Up Up And Away on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/up_up_and_away.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/up-up-and-away.html -> /games/up-up-and-away/ -->
+    <meta http-equiv="refresh" content="0; url=/games/up-up-and-away/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/up-up-and-away/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/up-up-and-away/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="James Pond: Underwater Agent on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/james_pond_underwater_agent.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/james-pond-underwater-agent.html -> /games/james-pond-underwater-agent/ -->
+    <meta http-equiv="refresh" content="0; url=/games/james-pond-underwater-agent/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/james-pond-underwater-agent/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/james-pond-underwater-agent/" + suffix);
       })();
     </script>
 

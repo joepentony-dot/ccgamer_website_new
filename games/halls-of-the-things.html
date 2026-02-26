@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Halls Of The Things on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/halls_of_the_things_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/halls-of-the-things.html -> /games/halls-of-the-things/ -->
+    <meta http-equiv="refresh" content="0; url=/games/halls-of-the-things/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/halls-of-the-things/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/halls-of-the-things/" + suffix);
       })();
     </script>
 

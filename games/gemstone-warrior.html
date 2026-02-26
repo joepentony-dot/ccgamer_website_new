@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Gemstone Warrior on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gemstone_warrior.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/gemstone-warrior.html -> /games/gemstone-warrior/ -->
+    <meta http-equiv="refresh" content="0; url=/games/gemstone-warrior/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/gemstone-warrior/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/gemstone-warrior/" + suffix);
       })();
     </script>
 

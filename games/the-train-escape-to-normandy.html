@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The Train: Escape To Normandy on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/train_the_escape_to_normandy.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-train-escape-to-normandy.html -> /games/the-train-escape-to-normandy/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-train-escape-to-normandy/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-train-escape-to-normandy/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-train-escape-to-normandy/" + suffix);
       })();
     </script>
 

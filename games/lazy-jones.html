@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Lazy Jones on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/lazy_jones.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/lazy-jones.html -> /games/lazy-jones/ -->
+    <meta http-equiv="refresh" content="0; url=/games/lazy-jones/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/lazy-jones/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/lazy-jones/" + suffix);
       })();
     </script>
 

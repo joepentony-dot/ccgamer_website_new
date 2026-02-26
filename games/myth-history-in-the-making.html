@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Myth: History In The Making on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/myth.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/myth-history-in-the-making.html -> /games/myth-history-in-the-making/ -->
+    <meta http-equiv="refresh" content="0; url=/games/myth-history-in-the-making/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/myth-history-in-the-making/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/myth-history-in-the-making/" + suffix);
       })();
     </script>
 

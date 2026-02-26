@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Terror Of The Deep on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/terror_of_the_deep.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/terror-of-the-deep.html -> /games/terror-of-the-deep/ -->
+    <meta http-equiv="refresh" content="0; url=/games/terror-of-the-deep/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/terror-of-the-deep/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/terror-of-the-deep/" + suffix);
       })();
     </script>
 

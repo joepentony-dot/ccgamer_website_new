@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Barbarian II: The Dungeon Of Drax on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/barbarian_2_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/barbarian-2-the-dungeon-of-drax.html -> /games/barbarian-2-the-dungeon-of-drax/ -->
+    <meta http-equiv="refresh" content="0; url=/games/barbarian-2-the-dungeon-of-drax/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/barbarian-2-the-dungeon-of-drax/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/barbarian-2-the-dungeon-of-drax/" + suffix);
       })();
     </script>
 

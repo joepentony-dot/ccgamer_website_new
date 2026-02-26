@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Spy Hunter on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spy_hunter.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/spy-hunter.html -> /games/spy-hunter/ -->
+    <meta http-equiv="refresh" content="0; url=/games/spy-hunter/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/spy-hunter/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/spy-hunter/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Ghosts &amp;#x27;N Goblins on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ghosts_n_goblins.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/ghosts-n-goblins.html -> /games/ghosts-n-goblins/ -->
+    <meta http-equiv="refresh" content="0; url=/games/ghosts-n-goblins/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/ghosts-n-goblins/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/ghosts-n-goblins/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Spartacus: The Swordslayer on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/spartacus_the_swordslayer_europe.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/spartacus-the-swordslayer.html -> /games/spartacus-the-swordslayer/ -->
+    <meta http-equiv="refresh" content="0; url=/games/spartacus-the-swordslayer/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/spartacus-the-swordslayer/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/spartacus-the-swordslayer/" + suffix);
       })();
     </script>
 

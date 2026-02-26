@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/the-dolphins-rune/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-dolphins-rune.html -> /games/the-dolphins-rune/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-dolphins-rune/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-dolphins-rune/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-dolphins-rune/" + suffix);
       })();
     </script>
 

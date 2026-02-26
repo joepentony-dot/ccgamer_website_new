@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Water Polo on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/water_polo.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/water-polo.html -> /games/water-polo/ -->
+    <meta http-equiv="refresh" content="0; url=/games/water-polo/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/water-polo/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/water-polo/" + suffix);
       })();
     </script>
 

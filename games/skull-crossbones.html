@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Skull &amp;amp; Crossbones on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/skull_and_crossbones.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/skull-crossbones.html -> /games/skull-crossbones/ -->
+    <meta http-equiv="refresh" content="0; url=/games/skull-crossbones/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/skull-crossbones/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/skull-crossbones/" + suffix);
       })();
     </script>
 

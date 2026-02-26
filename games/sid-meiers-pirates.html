@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/sid-meiers-pirates/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/sid-meiers-pirates.html -> /games/sid-meiers-pirates/ -->
+    <meta http-equiv="refresh" content="0; url=/games/sid-meiers-pirates/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/sid-meiers-pirates/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/sid-meiers-pirates/" + suffix);
       })();
     </script>
 

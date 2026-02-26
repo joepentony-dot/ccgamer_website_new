@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Dan Dare II is a Commodore 64 arcade shooter based on the classic comic series. you battle through enemy-filled levels using a variety of weapons, with fast scrolling and high difficulty.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/dan_dare_ii_mekon_s_revenge.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/dan-dare-2-mekons-revenge.html -> /games/dan-dare-2-mekons-revenge/ -->
+    <meta http-equiv="refresh" content="0; url=/games/dan-dare-2-mekons-revenge/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/dan-dare-2-mekons-revenge/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/dan-dare-2-mekons-revenge/" + suffix);
       })();
     </script>
 

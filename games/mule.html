@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="M.U.L.E. is a Commodore 64 strategy game released in 1983 by Ariolasoft, combining economic simulation, resource management, and competitive multiplayer. The C64 version became legendary for its balance, accessibility, and depth, supporting both cooperative and adversarial play across repeated sessions.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/mule.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mule.html -> /games/mule/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mule/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mule/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mule/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Shao-Lin&amp;#x27;s Road is a 1986 Commodore 64 arcade fighting game from The Edge that focuses on martial arts combat, timing, and crowd-control battles against waves of opponents.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/shao_lins_road_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/shao-lins-road.html -> /games/shao-lins-road/ -->
+    <meta http-equiv="refresh" content="0; url=/games/shao-lins-road/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/shao-lins-road/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/shao-lins-road/" + suffix);
       })();
     </script>
 

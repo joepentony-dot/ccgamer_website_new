@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/smash-tv/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/smash-tv.html -> /games/smash-tv/ -->
+    <meta http-equiv="refresh" content="0; url=/games/smash-tv/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/smash-tv/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/smash-tv/" + suffix);
       })();
     </script>
 

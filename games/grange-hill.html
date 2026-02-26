@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Grange Hill on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/grange_hill.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/grange-hill.html -> /games/grange-hill/ -->
+    <meta http-equiv="refresh" content="0; url=/games/grange-hill/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/grange-hill/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/grange-hill/" + suffix);
       })();
     </script>
 

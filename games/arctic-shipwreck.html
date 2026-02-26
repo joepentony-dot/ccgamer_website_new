@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Arctic Shipwreck on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/arctic_shipwreck_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/arctic-shipwreck.html -> /games/arctic-shipwreck/ -->
+    <meta http-equiv="refresh" content="0; url=/games/arctic-shipwreck/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/arctic-shipwreck/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/arctic-shipwreck/" + suffix);
       })();
     </script>
 

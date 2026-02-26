@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Time Tunnel on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/time_tunnel.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/time-tunnel.html -> /games/time-tunnel/ -->
+    <meta http-equiv="refresh" content="0; url=/games/time-tunnel/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/time-tunnel/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/time-tunnel/" + suffix);
       })();
     </script>
 

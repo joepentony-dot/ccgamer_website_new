@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Airborne Ranger on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/airborne_ranger.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/airborne-ranger.html -> /games/airborne-ranger/ -->
+    <meta http-equiv="refresh" content="0; url=/games/airborne-ranger/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/airborne-ranger/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/airborne-ranger/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Robocop 3 on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/robocop_3.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/robocop-3.html -> /games/robocop-3/ -->
+    <meta http-equiv="refresh" content="0; url=/games/robocop-3/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/robocop-3/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/robocop-3/" + suffix);
       })();
     </script>
 

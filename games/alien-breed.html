@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Alien Breed on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/alien_breed.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/alien-breed.html -> /games/alien-breed/ -->
+    <meta http-equiv="refresh" content="0; url=/games/alien-breed/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/alien-breed/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/alien-breed/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Dancing Monster on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/dancing_monster_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/dancing-monster.html -> /games/dancing-monster/ -->
+    <meta http-equiv="refresh" content="0; url=/games/dancing-monster/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/dancing-monster/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/dancing-monster/" + suffix);
       })();
     </script>
 

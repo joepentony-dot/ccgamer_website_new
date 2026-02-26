@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Galactic Gardener on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/galactic_gardener_nerw.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/galactic-gardener.html -> /games/galactic-gardener/ -->
+    <meta http-equiv="refresh" content="0; url=/games/galactic-gardener/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/galactic-gardener/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/galactic-gardener/" + suffix);
       })();
     </script>
 

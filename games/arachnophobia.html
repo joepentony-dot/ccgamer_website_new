@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Arachnophobia on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/arachnophobia.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/arachnophobia.html -> /games/arachnophobia/ -->
+    <meta http-equiv="refresh" content="0; url=/games/arachnophobia/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/arachnophobia/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/arachnophobia/" + suffix);
       })();
     </script>
 

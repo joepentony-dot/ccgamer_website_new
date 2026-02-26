@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="River Raid on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/river_raid.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/river-raid.html -> /games/river-raid/ -->
+    <meta http-equiv="refresh" content="0; url=/games/river-raid/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/river-raid/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/river-raid/" + suffix);
       })();
     </script>
 

@@ -3,6 +3,6 @@
 /games/seo/* /games/seo/:splat 200
 /games/index.html /games/index.html 200
 /games/game.html /games/game.html 200
-/games/:slug.html /games/game.html?slug=:slug 301!
+/games/:slug.html /games/:slug/ 301!
 /games/:slug/ /games/game.html?slug=:slug 200!
 /games/* /games/game.html 200!

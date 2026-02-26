@@ -50,10 +50,12 @@
 <head>
     <meta charset="UTF-8" />
 
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/20-tons.html -> /games/20-tons/ -->
+    <meta http-equiv="refresh" content="0; url=/games/20-tons/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/20-tons/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/20-tons/" + suffix);
       })();
     </script>
 
@@ -796,7 +798,7 @@
         if (replaceScript) {
             replaceScript.textContent = `
       (function () {
-        history.replaceState(null, "", "/games/${game.slug}/");
+        window.location.replace(`/games/${game.slug}/`);
       })();
     `.trim();
         }

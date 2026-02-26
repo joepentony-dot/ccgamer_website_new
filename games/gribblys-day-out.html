@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Gribbly&amp;#x27;s Day Out is a Commodore 64 single-screen arcade platform game released in 1985 by Hewson. Set inside a flooded cavern, you guide Gribbly through one large continuous maze, managing air supply while avoiding creatures and navigating tricky jumps. It is remembered for its distinctive atmosphere and demanding precision.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/gribbly_s_special_day_out.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/gribblys-day-out.html -> /games/gribblys-day-out/ -->
+    <meta http-equiv="refresh" content="0; url=/games/gribblys-day-out/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/gribblys-day-out/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/gribblys-day-out/" + suffix);
       })();
     </script>
 

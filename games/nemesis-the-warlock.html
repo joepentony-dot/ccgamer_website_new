@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Nemesis The Warlock on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/nemesis_the_warlock.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/nemesis-the-warlock.html -> /games/nemesis-the-warlock/ -->
+    <meta http-equiv="refresh" content="0; url=/games/nemesis-the-warlock/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/nemesis-the-warlock/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/nemesis-the-warlock/" + suffix);
       })();
     </script>
 

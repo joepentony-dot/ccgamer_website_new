@@ -17,9 +17,12 @@
 <meta charset="UTF-8" />
 
     <!-- Flat SEO stub for GitHub Pages: show /games/eye-of-the-beholder-2-the-legend-of-darkmoon/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/eye-of-the-beholder-2-the-legend-of-darkmoon.html -> /games/eye-of-the-beholder-2-the-legend-of-darkmoon/ -->
+    <meta http-equiv="refresh" content="0; url=/games/eye-of-the-beholder-2-the-legend-of-darkmoon/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/eye-of-the-beholder-2-the-legend-of-darkmoon/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/eye-of-the-beholder-2-the-legend-of-darkmoon/" + suffix);
       })();
     </script>
 

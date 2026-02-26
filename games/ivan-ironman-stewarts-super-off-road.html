@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Released for the Commodore 64 in 1990 by Virgin Mastertronic, Ivan Ironman Stewart’s Super Off Road is an overhead racing game based on the arcade hit, featuring tight tracks, vehicle upgrades, and competitive AI. The C64 version captures the essence of short, frantic races while adding a strategic layer through cash-earned performance improvements.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/ivan_ironman_stewart_s_super_off_road.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/ivan-ironman-stewarts-super-off-road.html -> /games/ivan-ironman-stewarts-super-off-road/ -->
+    <meta http-equiv="refresh" content="0; url=/games/ivan-ironman-stewarts-super-off-road/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/ivan-ironman-stewarts-super-off-road/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/ivan-ironman-stewarts-super-off-road/" + suffix);
       })();
     </script>
 

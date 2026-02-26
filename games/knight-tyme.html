@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Knight Tyme on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/knightmare.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/knight-tyme.html -> /games/knight-tyme/ -->
+    <meta http-equiv="refresh" content="0; url=/games/knight-tyme/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/knight-tyme/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/knight-tyme/" + suffix);
       })();
     </script>
 

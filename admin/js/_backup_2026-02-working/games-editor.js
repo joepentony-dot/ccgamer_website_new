@@ -1395,10 +1395,12 @@ function buildFlatSeoPage(entry) {
 <head>
     <meta charset="UTF-8" />
 
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/${escapeAttribute(slug)}.html -> /games/${escapeAttribute(slug)}/ -->
+    <meta http-equiv="refresh" content="0; url=/games/${escapeAttribute(slug)}/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/${escapeAttribute(slug)}/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/${escapeAttribute(slug)}/" + suffix);
       })();
     </script>
 

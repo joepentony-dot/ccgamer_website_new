@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Pitfall II: Lost Caverns on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/pitfall_ii.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/pitfall-2-lost-caverns.html -> /games/pitfall-2-lost-caverns/ -->
+    <meta http-equiv="refresh" content="0; url=/games/pitfall-2-lost-caverns/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/pitfall-2-lost-caverns/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/pitfall-2-lost-caverns/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Finders Keepers on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/finders_keepers.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/finders-keepers.html -> /games/finders-keepers/ -->
+    <meta http-equiv="refresh" content="0; url=/games/finders-keepers/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/finders-keepers/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/finders-keepers/" + suffix);
       })();
     </script>
 

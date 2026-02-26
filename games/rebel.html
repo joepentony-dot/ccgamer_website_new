@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Rebel on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/rebel.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/rebel.html -> /games/rebel/ -->
+    <meta http-equiv="refresh" content="0; url=/games/rebel/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/rebel/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/rebel/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Big Trouble In Little China on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/big_trouble_in_little_china.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/big-trouble-in-little-china.html -> /games/big-trouble-in-little-china/ -->
+    <meta http-equiv="refresh" content="0; url=/games/big-trouble-in-little-china/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/big-trouble-in-little-china/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/big-trouble-in-little-china/" + suffix);
       })();
     </script>
 

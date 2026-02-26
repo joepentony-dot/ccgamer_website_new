@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Le Mans on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/le_mans.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/le-mans.html -> /games/le-mans/ -->
+    <meta http-equiv="refresh" content="0; url=/games/le-mans/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/le-mans/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/le-mans/" + suffix);
       })();
     </script>
 

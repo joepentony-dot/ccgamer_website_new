@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="The Faces Of Haarne on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/faces_of_haarne_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/the-faces-of-haarne.html -> /games/the-faces-of-haarne/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-faces-of-haarne/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/the-faces-of-haarne/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-faces-of-haarne/" + suffix);
       })();
     </script>
 

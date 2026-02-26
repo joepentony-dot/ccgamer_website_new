@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Friday The 13th on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/friday_the_13th.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/friday-the-13th.html -> /games/friday-the-13th/ -->
+    <meta http-equiv="refresh" content="0; url=/games/friday-the-13th/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/friday-the-13th/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/friday-the-13th/" + suffix);
       })();
     </script>
 

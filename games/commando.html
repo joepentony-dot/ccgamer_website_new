@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Commando on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/commando.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/commando.html -> /games/commando/ -->
+    <meta http-equiv="refresh" content="0; url=/games/commando/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/commando/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/commando/" + suffix);
       })();
     </script>
 

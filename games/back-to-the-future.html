@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Back To The Future on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/back_to_the_future.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/back-to-the-future.html -> /games/back-to-the-future/ -->
+    <meta http-equiv="refresh" content="0; url=/games/back-to-the-future/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/back-to-the-future/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/back-to-the-future/" + suffix);
       })();
     </script>
 

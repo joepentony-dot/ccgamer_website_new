@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Wizard Of Wor on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/wizard_of_wor.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/wizard-of-wor.html -> /games/wizard-of-wor/ -->
+    <meta http-equiv="refresh" content="0; url=/games/wizard-of-wor/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/wizard-of-wor/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/wizard-of-wor/" + suffix);
       })();
     </script>
 

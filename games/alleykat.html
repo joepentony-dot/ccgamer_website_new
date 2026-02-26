@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Alleykat on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/alleykat.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/alleykat.html -> /games/alleykat/ -->
+    <meta http-equiv="refresh" content="0; url=/games/alleykat/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/alleykat/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/alleykat/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Cops &amp;#x27;N&amp;#x27; Robbers on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/cops_n_robbers_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/cops-n-robbers.html -> /games/cops-n-robbers/ -->
+    <meta http-equiv="refresh" content="0; url=/games/cops-n-robbers/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/cops-n-robbers/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/cops-n-robbers/" + suffix);
       })();
     </script>
 

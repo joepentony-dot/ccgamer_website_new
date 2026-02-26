@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="International Soccer on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/international-soccer.html -> /games/international-soccer/ -->
+    <meta http-equiv="refresh" content="0; url=/games/international-soccer/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/international-soccer/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/international-soccer/" + suffix);
       })();
     </script>
 

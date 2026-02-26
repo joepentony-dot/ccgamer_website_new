@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Red Heat on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/red_heat.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/red-heat.html -> /games/red-heat/ -->
+    <meta http-equiv="refresh" content="0; url=/games/red-heat/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/red-heat/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/red-heat/" + suffix);
       })();
     </script>
 

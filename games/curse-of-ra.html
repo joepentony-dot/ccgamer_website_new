@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Curse Of Ra on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/curse_of_ra.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/curse-of-ra.html -> /games/curse-of-ra/ -->
+    <meta http-equiv="refresh" content="0; url=/games/curse-of-ra/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/curse-of-ra/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/curse-of-ra/" + suffix);
       })();
     </script>
 

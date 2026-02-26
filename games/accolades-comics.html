@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Accolade&amp;#x27;s Comics is a narrative-driven adventure game for the Commodore 64 released in 1987. you guide a young boy who becomes immersed in a comic-book story starring secret agent Steve Keene. The game blends interactive storytelling with puzzle-solving and is remembered for its comic-style presentation.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/accolade_comics.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/accolades-comics.html -> /games/accolades-comics/ -->
+    <meta http-equiv="refresh" content="0; url=/games/accolades-comics/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/accolades-comics/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/accolades-comics/" + suffix);
       })();
     </script>
 

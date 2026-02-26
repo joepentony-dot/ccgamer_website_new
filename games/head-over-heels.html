@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Head Over Heels on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/head_over_heels.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/head-over-heels.html -> /games/head-over-heels/ -->
+    <meta http-equiv="refresh" content="0; url=/games/head-over-heels/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/head-over-heels/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/head-over-heels/" + suffix);
       })();
     </script>
 

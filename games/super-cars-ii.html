@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/super-cars-ii.html -> /games/super-cars-ii/ -->
+    <meta http-equiv="refresh" content="0; url=/games/super-cars-ii/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/super-cars-ii/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/super-cars-ii/" + suffix);
       })();
     </script>
 

@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Bozo&amp;#x27;s Night Out follows a drunk navigating city streets filled with hazards, enemies, and timed obstacles. Quick reactions and route planning are essential as the difficulty steadily increases.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/bozos_night_out.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/bozos-night-out.html -> /games/bozos-night-out/ -->
+    <meta http-equiv="refresh" content="0; url=/games/bozos-night-out/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/bozos-night-out/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/bozos-night-out/" + suffix);
       })();
     </script>
 

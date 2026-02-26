@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Times Of Lore on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/times_of_lore.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/times-of-lore.html -> /games/times-of-lore/ -->
+    <meta http-equiv="refresh" content="0; url=/games/times-of-lore/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/times-of-lore/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/times-of-lore/" + suffix);
       })();
     </script>
 

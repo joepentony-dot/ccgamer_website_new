@@ -14,11 +14,14 @@
     <meta name="twitter:description" content="The Adventures of Robin Hood on the Commodore Amiga challenges players to restore Robin">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/the_adventures_of_robin_hood.png">
 <meta charset="UTF-8">
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
-    <script>(function () {
-        history.replaceState(null, "", "/games/the-adventures-of-robin-hood/");
-      })();</script>
+    <!-- Canonical route enforcement: redirect /games/the-adventures-of-robin-hood.html -> /games/the-adventures-of-robin-hood/ -->
+    <meta http-equiv="refresh" content="0; url=/games/the-adventures-of-robin-hood/">
+    <script>
+      (function () {
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/the-adventures-of-robin-hood/" + suffix);
+      })();
+    </script>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 

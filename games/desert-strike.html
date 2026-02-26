@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Desert Strike on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/desert_strike_return_to_the_gulf.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/desert-strike.html -> /games/desert-strike/ -->
+    <meta http-equiv="refresh" content="0; url=/games/desert-strike/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/desert-strike/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/desert-strike/" + suffix);
       })();
     </script>
 

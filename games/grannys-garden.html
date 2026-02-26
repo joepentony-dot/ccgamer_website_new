@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Granny&amp;#x27;s Garden is a Commodore 64 educational adventure and puzzle game released in 1987 by Satchel Software. Designed for schools, it mixes logic puzzles, riddles, and simple navigation with fairy-tale presentation, focusing on problem-solving and memory rather than reflex-based gameplay.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/grannys_garden.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/grannys-garden.html -> /games/grannys-garden/ -->
+    <meta http-equiv="refresh" content="0; url=/games/grannys-garden/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/grannys-garden/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/grannys-garden/" + suffix);
       })();
     </script>
 

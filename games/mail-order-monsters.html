@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Mail Order Monsters on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/mail_order_monsters.jpg">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mail-order-monsters.html -> /games/mail-order-monsters/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mail-order-monsters/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mail-order-monsters/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mail-order-monsters/" + suffix);
       })();
     </script>
 

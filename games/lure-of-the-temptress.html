@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Lure Of The Temptress on Commodore — screenshots, manual, downloads and video.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/lure_of_the_temptress.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/lure-of-the-temptress.html -> /games/lure-of-the-temptress/ -->
+    <meta http-equiv="refresh" content="0; url=/games/lure-of-the-temptress/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/lure-of-the-temptress/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/lure-of-the-temptress/" + suffix);
       })();
     </script>
 

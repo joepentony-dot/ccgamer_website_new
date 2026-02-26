@@ -15,11 +15,12 @@
     <meta name="twitter:description" content="Released on the Commodore 64 in 1987 by Reaktor Software, Mountie Mick’s Death Ride is a fast-paced arcade platformer built around constant forward motion and precise timing. The C64 version challenges you to stay ahead of hazards while reacting quickly to changing terrain, delivering short, intense bursts of action.">
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/mountie_mick_new.png">
 <meta charset="UTF-8" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{slug}/ without server rewrites -->
+    <!-- Canonical route enforcement: redirect /games/mountie-micks-death-ride.html -> /games/mountie-micks-death-ride/ -->
+    <meta http-equiv="refresh" content="0; url=/games/mountie-micks-death-ride/">
     <script>
       (function () {
-        history.replaceState(null, "", "/games/mountie-micks-death-ride/");
+        var suffix = window.location.search + window.location.hash;
+        window.location.replace("/games/mountie-micks-death-ride/" + suffix);
       })();
     </script>
 
