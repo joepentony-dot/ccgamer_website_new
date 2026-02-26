@@ -140,12 +140,17 @@
     <section class="builder-card" data-step="2" hidden>
       <h2>Step 2 — Paths & Links</h2>
       <div class="form-grid">
-        <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="resources/images/thumbnails/all/mygame.webp" /></label>
-        <label>3D Box Path (string only)<input data-field="box3d" placeholder="resources/images/games/boxes-3d/mygame.webp" /></label>
+        <label class="full radio-option">
+          <input type="checkbox" data-field="filenameOnlyMode" checked />
+          <span>Use filename-only mode (recommended)</span>
+        </label>
+        <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="southern-belle.jpg or resources/images/thumbnails/all/southern-belle.jpg" /></label>
+        <label>3D Box Path (string only)<input data-field="box3d" placeholder="southern-belle or resources/images/games/boxes-3d/southern-belle.webp" /></label>
         <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
 https://www.mobygames.com/..."></textarea></label>
       </div>
       <ul class="error-list" data-errors-step2 hidden></ul>
+      <ul class="hint" data-warnings-step2 hidden></ul>
       <div class="actions">
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="back">Back</button>
         <button type="button" class="ccg-btn ccg-btn--primary primary" data-action="next">Continue to Preview</button>
@@ -162,10 +167,10 @@ https://www.mobygames.com/..."></textarea></label>
         <li data-preview-games-json-path>games/games.json</li>
         <li data-preview-file-flat></li>
         <li data-preview-file-folder></li>
-        <li>sitemap-fragment.xml</li>
+        <li>sitemap-games.xml</li>
         <li>README.txt</li>
       </ul>
-      <h3>Sitemap fragment</h3>
+      <h3>Sitemap (full games sitemap)</h3>
       <pre class="preview-box" data-preview-sitemap></pre>
       <h3>Editorial rating preview</h3>
       <p>CCG Rating: <strong data-preview-rating></strong></p>

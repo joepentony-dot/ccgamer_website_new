@@ -1,4 +1,7 @@
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+const FILENAME_ONLY_STORAGE_KEY = 'ccg-games-editor-filename-only-mode';
+const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
+const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
 
 const REQUIRED_GENRE_VALUES = [
   'action adventure',
@@ -43,6 +46,7 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
+  filenameOnlyMode: true,
   jsonExportMode: 'full',
   notifyMembers: false,
   sendTestEmail: false
@@ -76,6 +80,7 @@ const el = {
   newCategoryButton: document.querySelector('[data-new-category-button]'),
   step1Errors: document.querySelector('[data-errors-step1]'),
   step2Errors: document.querySelector('[data-errors-step2]'),
+  step2Warnings: document.querySelector('[data-warnings-step2]'),
   step3Errors: document.querySelector('[data-errors-step3]'),
   previewEntry: document.querySelector('[data-preview-entry]'),
   previewSitemap: document.querySelector('[data-preview-sitemap]'),
@@ -97,6 +102,7 @@ const el = {
 init();
 
 async function init() {
+  hydrateFilenameOnlyModePreference();
   bindEvents();
   await loadLibrary();
   renderStep();
@@ -117,6 +123,10 @@ function bindEvents() {
 
     if (field.type === 'checkbox') {
       state.draft[field.dataset.field] = field.checked;
+      if (field.dataset.field === 'filenameOnlyMode') {
+        window.localStorage.setItem(FILENAME_ONLY_STORAGE_KEY, String(field.checked));
+        renderWarnings(el.step2Warnings, validateStep2Warnings());
+      }
       updateStep1UiState();
       return;
     }
@@ -297,7 +307,13 @@ function clearDraft() {
       return;
     }
     if (field.type === 'checkbox') {
-      field.checked = false;
+      if (field.dataset.field === 'filenameOnlyMode') {
+        field.checked = true;
+        state.draft.filenameOnlyMode = true;
+        window.localStorage.setItem(FILENAME_ONLY_STORAGE_KEY, 'true');
+      } else {
+        field.checked = false;
+      }
       return;
     }
     field.value = '';
@@ -310,6 +326,7 @@ function clearDraft() {
   renderErrors(el.step1Errors, []);
   updateStep1UiState();
   renderErrors(el.step2Errors, []);
+  renderWarnings(el.step2Warnings, []);
   renderErrors(el.step3Errors, []);
   setDownloadStatus('');
   renderStep();
@@ -376,6 +393,10 @@ function renderStep() {
   el.jumpButtons.forEach((button) => {
     button.dataset.active = Number(button.dataset.stepJump) === state.step ? 'true' : 'false';
   });
+
+  if (state.step === 2) {
+    renderWarnings(el.step2Warnings, validateStep2Warnings());
+  }
 
   if (state.step === 3 || state.step === 4) {
     const errors = validateStep3();
@@ -484,6 +505,32 @@ function validateStep2() {
   return errors;
 }
 
+function validateStep2Warnings() {
+  const warnings = [];
+  const thumbnailRaw = String(state.draft.thumbnail || '').trim();
+  const box3dRaw = String(state.draft.box3d || '').trim();
+
+  if (state.draft.filenameOnlyMode) {
+    if (thumbnailRaw && !isLikelyFullPath(thumbnailRaw) && !/\.(?:png|jpe?g)$/i.test(thumbnailRaw)) {
+      warnings.push('Thumbnail filename should include .png, .jpg, or .jpeg in filename-only mode.');
+    }
+
+    if (box3dRaw && !isLikelyFullPath(box3dRaw) && /\.[a-z0-9]+$/i.test(box3dRaw) && !/\.webp$/i.test(box3dRaw)) {
+      warnings.push('3D box filename uses a non-.webp extension; .webp is recommended in filename-only mode.');
+    }
+  } else {
+    if (thumbnailRaw && !/\.(?:png|jpe?g|webp|gif)$/i.test(thumbnailRaw)) {
+      warnings.push('Thumbnail path appears to be missing an extension.');
+    }
+
+    if (box3dRaw && /\.[a-z0-9]+$/i.test(box3dRaw) && !/\.webp$/i.test(box3dRaw)) {
+      warnings.push('3D box path uses a non-.webp extension.');
+    }
+  }
+
+  return warnings;
+}
+
 function validateStep3() {
   const errors = [];
   try {
@@ -515,6 +562,7 @@ function buildPackageData() {
     genres: [...state.draft.genres],
     collections: [...state.draft.collections].filter((value) => value !== 'retro events'),
     videoid: state.draft.videoId.trim(),
+    // Filename-only logic: keep full-path storage in output while allowing shorthand input in the editor UI.
     thumbnail: normalizeThumbnailPath(state.draft.thumbnail, slug),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
@@ -526,6 +574,8 @@ function buildPackageData() {
     _ccg_enforced: false,
     _ccg_migrated: false
   };
+
+  const normalizedBox3dPath = normalizeBox3dPath(state.draft.box3d, slug);
 
   const schemaErrors = validateGameEntrySchema(gameEntry);
   if (schemaErrors.length) {
@@ -737,12 +787,8 @@ function buildPackageData() {
     ? `${JSON.stringify(mergedGames, null, 2)}\n`
     : `${JSON.stringify([gameEntry], null, 2)}\n`;
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>${SITE_ORIGIN}/games/${slug}/</loc>
-  </url>
-</urlset>`;
+  // Sitemap logic replacement: always build a complete sitemap-games.xml from games.json data.
+  const sitemap = buildFullGamesSitemap(mergedGames);
 
   const readme = [
     'CCG Game Package',
@@ -752,15 +798,15 @@ function buildPackageData() {
     '- games/games.json',
     `- games/${slug}.html`,
     `- games/${slug}/index.html`,
-    '- sitemap-fragment.xml (optional)',
+    '- sitemap-games.xml',
     '',
     'games.json instructions:',
     '- If you exported FULL games.json: replace /games/games.json in the repo with this file.',
     '- If you exported ENTRY ONLY: copy the single object into /games/games.json manually in sort order.',
     '',
-    'sitemap-fragment.xml:',
-    '- Optional helper containing the new /games/{slug}/ URL only.',
-    '- Merge it into your sitemap if you maintain one; otherwise safe to ignore.'
+    'sitemap-games.xml:',
+    '- Full upload-ready sitemap generated directly from games.json.',
+    '- Upload as-is with no post-processing required.'
   ].join('\n');
 
   return {
@@ -774,7 +820,8 @@ function buildPackageData() {
     flatSeoStub,
     folderRedirect,
     sitemap,
-    readme
+    readme,
+    normalizedBox3dPath
   };
 }
 
@@ -798,7 +845,7 @@ async function downloadZip(packageData) {
   zip.file('games/games.json', packageData.gamesJsonOutput);
   zip.file(`games/${packageData.slug}.html`, `${packageData.flatSeoStub}\n`);
   zip.file(`games/${packageData.slug}/index.html`, `${packageData.folderRedirect}\n`);
-  zip.file('sitemap-fragment.xml', `${packageData.sitemap}\n`);
+  zip.file('sitemap-games.xml', `${packageData.sitemap}\n`);
   zip.file('README.txt', `${packageData.readme}\n`);
 
   const blob = await zip.generateAsync({ type: 'blob' });
@@ -831,6 +878,17 @@ function renderErrors(node, errors) {
   }
   node.hidden = false;
   node.innerHTML = errors.map((error) => `<li>${escapeHtml(error)}</li>`).join('');
+}
+
+function renderWarnings(node, warnings) {
+  if (!node) return;
+  if (!warnings.length) {
+    node.hidden = true;
+    node.innerHTML = '';
+    return;
+  }
+  node.hidden = false;
+  node.innerHTML = warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join('');
 }
 
 function setDownloadStatus(message, isError = false, isWarning = false) {
@@ -1038,8 +1096,65 @@ function validateGameEntrySchema(gameEntry) {
 
 function normalizeThumbnailPath(rawValue, slug) {
   const value = String(rawValue || '').trim();
-  if (!value) return `resources/images/thumbnails/all/${slug}.png`;
+  if (!value) return `${THUMBNAIL_BASE_PATH}${slug}.png`;
+
+  if (state.draft.filenameOnlyMode && !isLikelyFullPath(value)) {
+    const filename = value.replace(/^\/+/, '');
+    return `${THUMBNAIL_BASE_PATH}${filename}`;
+  }
+
   return value.replace(/^\/+/, '');
+}
+
+function normalizeBox3dPath(rawValue, slug) {
+  const value = String(rawValue || '').trim();
+  if (!value) return `${BOX3D_BASE_PATH}${slug}.webp`;
+
+  if (state.draft.filenameOnlyMode && !isLikelyFullPath(value)) {
+    const filename = /\.webp$/i.test(value) ? value : `${value}.webp`;
+    return `${BOX3D_BASE_PATH}${filename.replace(/^\/+/, '')}`;
+  }
+
+  return value.replace(/^\/+/, '');
+}
+
+function isLikelyFullPath(value) {
+  const token = String(value || '').trim();
+  return /^https?:\/\//i.test(token) || token.startsWith('/') || token.includes('/');
+}
+
+function hydrateFilenameOnlyModePreference() {
+  const saved = window.localStorage.getItem(FILENAME_ONLY_STORAGE_KEY);
+  if (saved === 'true' || saved === 'false') {
+    state.draft.filenameOnlyMode = saved === 'true';
+  }
+
+  const toggle = document.querySelector('[data-field="filenameOnlyMode"]');
+  if (toggle) toggle.checked = Boolean(state.draft.filenameOnlyMode);
+}
+
+function buildFullGamesSitemap(games) {
+  const todayIso = new Date().toISOString().split('T')[0];
+  const urlLines = (Array.isArray(games) ? games : []).map((game) => {
+    const slug = String(game?.slug || '').trim();
+    if (!slug) return '';
+
+    const updated = String(game?.updated || '').trim();
+    const parsedUpdated = updated ? new Date(updated) : null;
+    const lastmod = parsedUpdated && !Number.isNaN(parsedUpdated.getTime())
+      ? parsedUpdated.toISOString().split('T')[0]
+      : todayIso;
+
+    return `  <url>
+    <loc>${escapeXml(`${SITE_ORIGIN}/games/${slug}/`)}</loc>
+    <lastmod>${escapeXml(lastmod)}</lastmod>
+  </url>`;
+  }).filter(Boolean);
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urlLines.join('\n')}
+</urlset>`;
 }
 
 function updateStep1UiState() {
@@ -1093,6 +1208,15 @@ function cleanForHtml(value) {
 
 function escapeJs(value) {
   return String(value || '').replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+}
+
+function escapeXml(value) {
+  return String(value || '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&apos;');
 }
 
 function escapeHtml(value) {
