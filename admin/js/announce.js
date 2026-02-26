@@ -190,6 +190,7 @@ async function bootstrap() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+			apikey: window.CCG_SUPABASE_ANON_KEY,
             Authorization: `Bearer ${token}`
           },
           body: JSON.stringify(payload)
