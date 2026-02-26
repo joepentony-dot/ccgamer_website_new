@@ -523,7 +523,7 @@
         const imageUrl = game.thumbnail ? `${SITE_BASE_URL}/${game.thumbnail}` : `${SITE_BASE_URL}/resources/images/ccgamer-logo.png`;
         const publisher = getPublisher(game) || "Unknown Publisher";
         const year = game.year ? String(game.year) : "Unknown";
-        const redirectTarget = `/games/game.html?id=${slug}`;
+        const redirectTarget = `/games/${slug}/`;
 
         return `<!DOCTYPE html>
 <html lang="en">
@@ -590,10 +590,9 @@ ${JSON.stringify({
 
     const buildSeoStubHtml = (game) => {
         const slug = game.slug || generateSlug(game.title || "game");
-        const derivedId = deriveIdFromSlug(slug);
         const title = game.title || "Untitled Game";
         const description = game.description || `${title} on ${game.system || "C64"}.`;
-        const canonicalUrl = `${SITE_BASE_URL}/games/${slug}.html`;
+        const canonicalUrl = `${SITE_BASE_URL}/games/${slug}/`;
         const imageUrl = game.thumbnail ? `${SITE_BASE_URL}/${game.thumbnail}` : `${SITE_BASE_URL}/resources/images/ccgamer-logo.png`;
         const publisher = getPublisher(game) || "Unknown";
         const year = game.year ? String(game.year) : "Unknown";
@@ -694,7 +693,7 @@ ${JSON.stringify({
                 <p class="game-section__kicker">Explore</p>
                 <h2 class="game-section__title">More Details</h2>
                 <div class="game-downloads">
-                    <a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${derivedId || generateId(title)}">View the full interactive game page</a>
+                    <a class="ccg-btn ccg-btn--primary" href="/games/${slug}/">View the full interactive game page</a>
                     <a class="ccg-btn ccg-btn--ghost" href="/games/index.html">Browse all games</a>
                 </div>
             </section>

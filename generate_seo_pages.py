@@ -99,18 +99,6 @@ def seo_template(
 <html lang=\"en\">
 <head>
     <meta charset=\"UTF-8\" />
-    <meta http-equiv=\"refresh\" content=\"0; url={safe_interactive_href}\" />
-
-    <!-- Flat SEO stub for GitHub Pages: show /games/{{slug}}/ without server rewrites -->
-    <script>
-      (function () {{
-        var target = \"{safe_interactive_href}\";
-        if (target) {{
-          window.location.replace(target);
-        }}
-      }})();
-    </script>
-
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
 
     <title>{safe_title} | Cheeky Commodore Gamer</title>
@@ -312,7 +300,7 @@ def main() -> int:
             thumb_src_rel=f"../{thumb_rel}",
             thumb_alt=f"{title} cover",
             mode=mode,
-            interactive_href=f"/games/game.html?id={game_id}",
+            interactive_href=f"/games/{slug}/",
             browse_href="/games/index.html",
         )
 
