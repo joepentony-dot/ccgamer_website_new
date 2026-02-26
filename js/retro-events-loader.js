@@ -1,10 +1,10 @@
 /* ============================================================
    RETRO EVENTS COLLECTION LOADER
    ------------------------------------------------------------
-   • Loads curated events from /games/collections/retro-events.json
+   • Loads curated events from /data/retro-events.json
    • Renders with existing collection card layout
-   • Uses direct external links from dataset
-   • Restores YouTube thumbnails via youtubeId
+   • Uses youtubeId to derive watch URLs and thumbnails
+   • Supports retro_event + amiga_demo_music types
 ============================================================ */
 
 function ccgEscapeHtml(value) {
@@ -47,7 +47,6 @@ function ccgBuildRetroEventCard(eventItem) {
     ? `<span class="ccg-collection-badge ccg-collection-badge--event" aria-label="${ccgEscapeHtml(badgeText)}">${ccgEscapeHtml(badgeText)}</span>`
     : '';
 
-  // Media block: only render if youtubeId exists (keeps layout safe)
   const mediaBlock = thumb
     ? `
       <div class="ccg-game-card__media ccg-game-card__thumb">
@@ -81,7 +80,7 @@ function ccgBuildRetroEventCard(eventItem) {
 }
 
 async function ccgLoadRetroEvents() {
-  const response = await fetch('/games/collections/retro-events.json', { cache: 'no-store' });
+  const response = await fetch('/data/retro-events.json', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Could not load retro-events.json (${response.status})`);
   }
@@ -96,20 +95,24 @@ async function ccgLoadRetroEvents() {
       const rawType = String(eventItem?.type || '').trim().toLowerCase();
       const type = rawType === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
       const orderValue = Number(eventItem?.order);
+      const youtubeId = String(eventItem?.youtubeId || '').trim();
 
       return {
         id: String(eventItem?.id || '').trim(),
+        type,
         title: String(eventItem?.title || '').trim(),
-        url: String(eventItem?.url || '').trim(),
-        youtubeId: String(eventItem?.youtubeId || '').trim(),
+        youtubeId,
+        url: String(eventItem?.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : ''),
         membersOnly: eventItem?.membersOnly === true,
         badge: String(eventItem?.badge || '').trim(),
+        seo: {
+          title: String(eventItem?.seo?.title || '').trim(),
+          description: String(eventItem?.seo?.description || '').trim()
+        },
         order: Number.isFinite(orderValue) ? orderValue : Number.POSITIVE_INFINITY,
-        index,
-        type
+        index
       };
     })
-    // youtubeId is optional (but strongly recommended). Keep entries even if blank.
     .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url)
     .sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
@@ -133,7 +136,6 @@ async function ccgRunRetroEventsCollection() {
   const gridRetro = document.getElementById('genreGamesGrid');
   const countEl = document.getElementById('genreGamesCount');
   const gridAmiga = document.getElementById('amigaDemoMusicGrid');
-  const amigaSections = document.querySelectorAll('[data-amiga-demo-music-section]');
 
   if (!gridRetro) {
     console.warn('[CCG RETRO EVENTS] Missing grid container');
@@ -142,7 +144,7 @@ async function ccgRunRetroEventsCollection() {
 
   try {
     const events = await ccgLoadRetroEvents();
-    const retroEvents = events.filter((eventItem) => eventItem.type !== 'amiga_demo_music');
+    const retroEvents = events.filter((eventItem) => eventItem.type === 'retro_event');
     const amigaDemo = events.filter((eventItem) => eventItem.type === 'amiga_demo_music');
 
     if (countEl) {
@@ -166,9 +168,7 @@ async function ccgRunRetroEventsCollection() {
 
     if (amigaDemo.length > 0 && gridAmiga) {
       ccgRenderCards(gridAmiga, amigaDemo);
-      amigaSections.forEach((section) => {
-        section.hidden = false;
-      });
+      setAmigaSectionVisible(true);
     } else {
       if (gridAmiga) {
         gridAmiga.innerHTML = '';
