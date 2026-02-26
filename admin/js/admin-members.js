@@ -9,14 +9,39 @@ const ROLE_LABELS = {
   superadmin: 'Superadmin'
 };
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await ensureRole(['admin', 'superadmin']);
-  loadMembers();
-});
+let supabase = null;
 
+/**
+ * Safely retrieve the global Supabase client
+ */
+function getSupabaseClient() {
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+    return null;
+  }
+  return window.ccgSupabase.getClient();
+}
+
+/**
+ * Initialise members admin once auth is ready
+ */
+async function initAdminMembers() {
+  await ensureRole(['admin', 'superadmin']);
+
+  supabase = getSupabaseClient();
+  if (!supabase) {
+    console.error('[admin-members] Supabase client not available after auth-ready');
+    showError('Admin authentication unavailable. Please refresh and sign in again.');
+    return;
+  }
+
+  loadMembers();
+}
+
+/**
+ * Load members list
+ */
 async function loadMembers() {
-  const { data, error } = await window.ccgSupabase
-    .rpc('admin_list_members');
+  const { data, error } = await supabase.rpc('admin_list_members');
 
   if (error) {
     console.error(error);
@@ -27,6 +52,9 @@ async function loadMembers() {
   renderMembers(data);
 }
 
+/**
+ * Render members table
+ */
 function renderMembers(members) {
   const tbody = document.querySelector('#members-table tbody');
   tbody.innerHTML = '';
@@ -58,20 +86,22 @@ function renderMembers(members) {
   });
 }
 
+/**
+ * Update user role
+ */
 async function updateRole(userId, role) {
-  const { error } = await window.ccgSupabase
-    .rpc('admin_set_member_role', {
-      p_user_id: userId,
-      p_role: role
-    });
+  const { error } = await supabase.rpc('admin_set_member_role', {
+    p_user_id: userId,
+    p_role: role
+  });
 
   if (error) {
     alert('Failed to update role: ' + error.message);
     return;
   }
 
-  // Trigger email
-  await window.ccgSupabase.functions.invoke('send-admin-message', {
+  // Trigger notification email
+  await supabase.functions.invoke('send-admin-message', {
     body: {
       message_type: 'role_promotion',
       user_id: userId,
@@ -90,3 +120,8 @@ function formatDate(date) {
 function showError(msg) {
   document.querySelector('#members-error').textContent = msg;
 }
+
+/**
+ * Wait for global auth readiness
+ */
+window.addEventListener('ccg-auth-ready', initAdminMembers, { once: true });
