@@ -1,5 +1,5 @@
 // admin/js/auth.js
-// Phase 3 — Global Auth Consumer (NO local Supabase client creation)
+// Phase 3 — Global Auth Consumer (single Supabase client)
 
 import { AUTH_CONFIG, OWNER_EMAILS } from './config.js';
 
@@ -72,7 +72,11 @@ function buildContext(session, source = 'unknown') {
   };
 }
 
-async function getClient() {
+/* ============================================================
+   🔑 SINGLE GLOBAL SUPABASE CLIENT ACCESS
+   (Compatibility export for roles.js, admin pages, etc.)
+   ============================================================ */
+export function getSupabaseClient() {
   if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
     throw new Error('Global Supabase client not available');
   }
@@ -92,7 +96,7 @@ function publish(nextContext) {
 }
 
 async function refreshContext(source = 'refresh') {
-  const supabase = await getClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
 
@@ -102,7 +106,7 @@ async function refreshContext(source = 'refresh') {
 }
 
 export const authReady = (async () => {
-  const supabase = await getClient();
+  const supabase = getSupabaseClient();
   const initial = await refreshContext('init');
 
   if (!authSubscription) {
@@ -112,11 +116,7 @@ export const authReady = (async () => {
 
       if (event === 'SIGNED_OUT' || !next.session?.user) {
         invalidationListeners.forEach((cb) => {
-          try {
-            cb();
-          } catch (error) {
-            console.warn(TAG, 'invalidation callback failed', error);
-          }
+          try { cb(); } catch (error) { console.warn(TAG, 'invalidation callback failed', error); }
         });
       }
     });
@@ -139,7 +139,7 @@ export async function getAuthContext() {
 }
 
 export async function refreshSessionIfNeeded() {
-  const supabase = await getClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
 
