@@ -36,14 +36,35 @@
         (function () {
             try {
                 if (typeof URLSearchParams === 'undefined') return;
+
                 var canonical = document.getElementById('game-canonical');
                 if (!canonical) return;
+
+                var ogUrl = document.getElementById('game-og-url');
+
                 var params = new URLSearchParams(window.location.search || '');
                 var id = params.get('id');
                 if (!id) return;
-                var slug = String(id).trim();
-                if (!slug || !/^[a-z0-9-]+$/i.test(slug)) return;
-                canonical.setAttribute('href', '/games/' + slug + '/');
+
+                // IDs in games.json are underscore-based (e.g. southern_belle).
+                // Share/SEO slugs are hyphen-based (e.g. southern-belle).
+                var raw = String(id).trim();
+                if (!raw) return;
+
+                // Convert underscore IDs to directory slugs.
+                var slug = raw.replace(/_/g, '-').toLowerCase();
+
+                // Slug should now be safe for /games/{slug}/
+                if (!/^[a-z0-9-]+$/.test(slug)) return;
+
+                var path = '/games/' + slug + '/';
+                canonical.setAttribute('href', path);
+
+                // Also set og:url for share scripts / previews inside apps.
+                if (ogUrl) {
+                    var origin = window.location.origin || '';
+                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                }
             } catch (e) {}
         })();
     </script>
@@ -101,6 +122,7 @@
     <!-- HEADER (LOCKED PARITY) -->
             <!-- HEADER -->
         
+
 
 <header class="ccg-header" data-ccg-header>
     <div class="ccg-header-inner">
