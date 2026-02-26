@@ -83,6 +83,10 @@ export function getSupabaseClient() {
   return window.ccgSupabase.getClient();
 }
 
+export async function getSupabaseClient() {
+  return getClient();
+}
+
 function publish(nextContext) {
   context = nextContext;
   ready = true;
