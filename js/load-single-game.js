@@ -371,6 +371,9 @@ const LEGACY_SLUG_MAP = {
 };
 
 const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
+const CCG_SINGLE_HYDRATION = {
+    started: false,
+};
 
 /* ============================================================
    INIT
@@ -378,7 +381,10 @@ const LEGACY_COMPARE_MAP = buildLegacyCompareMap(LEGACY_SLUG_MAP);
 
 lockSingleGameRender();
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function hydrateSingleGamePage() {
+    if (CCG_SINGLE_HYDRATION.started) return;
+    CCG_SINGLE_HYDRATION.started = true;
+
     lockSingleGameRender();
 
     ensureDirectNavLinks();
@@ -506,7 +512,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     finalizeRenderOnce();
-});
+}
+
+function queueSingleGameHydration() {
+    if (CCG_SINGLE_HYDRATION.started) return;
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", hydrateSingleGamePage, { once: true });
+        window.addEventListener("load", hydrateSingleGamePage, { once: true });
+        return;
+    }
+
+    void hydrateSingleGamePage();
+}
+
+queueSingleGameHydration();
 
 /* ============================================================
    RESOLVERS (LOCKED)
