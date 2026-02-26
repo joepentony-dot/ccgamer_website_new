@@ -1950,6 +1950,12 @@ function wireManualModal(button) {
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
             button.setAttribute("aria-expanded", "true");
+
+            if (window.matchMedia("(max-width: 767px)").matches) {
+                window.requestAnimationFrame(() => {
+                    modal.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+                });
+            }
         });
         button.dataset.manualBound = "true";
     }
