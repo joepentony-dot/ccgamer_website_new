@@ -162,3 +162,11 @@ function showError(msg) {
  * Wait for global auth readiness
  */
 window.addEventListener('ccg-auth-ready', initAdminMembers, { once: true });
+
+// If auth is already ready, init immediately.
+// Otherwise, wait for the event.
+if (window.ccgSupabase?.isReady === true) {
+  initAdminMembers();
+} else {
+  window.addEventListener('ccg-auth-ready', initAdminMembers, { once: true });
+}
