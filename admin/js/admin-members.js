@@ -2,7 +2,8 @@
 // Phase 3 — Members Directory
 // Auth-safe, RPC-safe, non-coder copy/paste version
 
-import { ensureRole } from './guard.js';
+import { AUTH_CONFIG } from './config.js';
+import { fetchUserRole } from './roles.js';
 
 const ROLE_LABELS = {
   user: 'User',
@@ -11,11 +12,31 @@ const ROLE_LABELS = {
   superadmin: 'Superadmin'
 };
 
+const ALLOWED_ROLES = new Set(['admin', 'superadmin']);
+
 let supabase = null;
 let hasInitialised = false;
 
+function delay(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 async function waitForSupabaseReady(timeoutMs = 10000) {
   if (window.ccgSupabase?.isReady === true) return true;
+
+  if (window.ccgSupabase && typeof window.ccgSupabase.waitForAuth === 'function') {
+    try {
+      await Promise.race([
+        window.ccgSupabase.waitForAuth(),
+        delay(timeoutMs).then(() => {
+          throw new Error('timed_out');
+        })
+      ]);
+      return true;
+    } catch (_error) {
+      // Continue with event-based fallback below.
+    }
+  }
 
   await new Promise((resolve) => {
     let settled = false;
@@ -28,14 +49,16 @@ async function waitForSupabaseReady(timeoutMs = 10000) {
 
     const onReady = () => finish();
     window.addEventListener('ccg-auth-ready', onReady, { once: true });
+    window.addEventListener('ccg:auth-ready', onReady, { once: true });
 
     window.setTimeout(() => {
       window.removeEventListener('ccg-auth-ready', onReady);
+      window.removeEventListener('ccg:auth-ready', onReady);
       finish();
     }, timeoutMs);
   });
 
-  return window.ccgSupabase?.isReady === true;
+  return Boolean(window.ccgSupabase?.getClient);
 }
 
 /**
@@ -65,6 +88,36 @@ function setMemberStatus(message, state = 'info') {
   el.dataset.state = state;
 }
 
+function normalizeRole(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+async function resolveCurrentRole(user) {
+  const metadataRole = normalizeRole(user?.app_metadata?.role || user?.user_metadata?.role || user?.role);
+  if (metadataRole) return metadataRole;
+
+  if (user?.id) {
+    try {
+      const tableRole = normalizeRole(await fetchUserRole({ userId: user.id, force: true }));
+      if (tableRole) return tableRole;
+    } catch (error) {
+      console.warn('[admin-members] role lookup failed', error);
+      setInlineStatus('Role lookup did not return a role for this account.', 'warning');
+    }
+  }
+
+  return '';
+}
+
+function redirectToLogin(reason) {
+  const loginPath = AUTH_CONFIG?.loginPage || '/admin/login.html';
+  const url = new URL(loginPath, window.location.origin);
+  if (reason) {
+    url.searchParams.set('reason', reason);
+  }
+  window.location.replace(url.toString());
+}
+
 /**
  * Initialise admin members page
  * Safe whether auth fired before or after page load
@@ -75,23 +128,46 @@ async function initAdminMembers() {
 
   try {
     setMemberStatus('Checking admin session…', 'info');
+    setInlineStatus('Waiting for auth readiness…', 'info');
 
-    const authReady = await waitForSupabaseReady();
+    const authReady = await waitForSupabaseReady(12000);
     if (!authReady) {
       setMemberStatus('Admin auth is still starting…', 'warning');
-      setInlineStatus('Supabase auth did not report ready yet; continuing with fallback checks.', 'warning');
+      setInlineStatus('Supabase auth readiness timed out. Please refresh this page.', 'warning');
+      return;
     }
 
-    await ensureRole(['admin', 'superadmin']);
-
-    supabase = getSupabaseClient();
+    supabase = await getSupabaseClient();
     if (!supabase) {
       setMemberStatus('Admin authentication unavailable.', 'error');
       setInlineStatus('Supabase client not available. Please refresh and sign in again.', 'error');
       return;
     }
 
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) {
+      throw sessionError;
+    }
+
+    const session = sessionData?.session || null;
+    const user = session?.user || null;
+    if (!user?.id) {
+      setMemberStatus('Please sign in to continue.', 'error');
+      setInlineStatus('No active admin session was found.', 'error');
+      redirectToLogin('signed_out');
+      return;
+    }
+
+    const role = await resolveCurrentRole(user);
+    if (!ALLOWED_ROLES.has(role)) {
+      setMemberStatus('Access denied for this role.', 'error');
+      setInlineStatus('Your account is missing admin permissions.', 'error');
+      redirectToLogin('role');
+      return;
+    }
+
     setMemberStatus('Signed in', 'success');
+    setInlineStatus('Loading members…', 'info');
     await loadMembers();
   } catch (err) {
     console.error('[admin-members] init failed', err);
@@ -309,6 +385,7 @@ if (window.ccgSupabase?.isReady === true) {
   initAdminMembers();
 } else {
   window.addEventListener('ccg-auth-ready', initAdminMembers, { once: true });
+  window.addEventListener('ccg:auth-ready', initAdminMembers, { once: true });
   window.setTimeout(() => {
     initAdminMembers();
   }, 1200);

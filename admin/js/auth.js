@@ -76,15 +76,12 @@ function buildContext(session, source = 'unknown') {
    🔑 SINGLE GLOBAL SUPABASE CLIENT ACCESS
    (Compatibility export for roles.js, admin pages, etc.)
    ============================================================ */
-export function getSupabaseClient() {
+export async function getSupabaseClient() {
   if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
     throw new Error('Global Supabase client not available');
   }
-  return window.ccgSupabase.getClient();
-}
 
-export async function getSupabaseClient() {
-  return getClient();
+  return window.ccgSupabase.getClient();
 }
 
 function publish(nextContext) {
@@ -100,7 +97,7 @@ function publish(nextContext) {
 }
 
 async function refreshContext(source = 'refresh') {
-  const supabase = getSupabaseClient();
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
 
@@ -110,7 +107,7 @@ async function refreshContext(source = 'refresh') {
 }
 
 export const authReady = (async () => {
-  const supabase = getSupabaseClient();
+  const supabase = await getSupabaseClient();
   const initial = await refreshContext('init');
 
   if (!authSubscription) {
@@ -120,7 +117,11 @@ export const authReady = (async () => {
 
       if (event === 'SIGNED_OUT' || !next.session?.user) {
         invalidationListeners.forEach((cb) => {
-          try { cb(); } catch (error) { console.warn(TAG, 'invalidation callback failed', error); }
+          try {
+            cb();
+          } catch (error) {
+            console.warn(TAG, 'invalidation callback failed', error);
+          }
         });
       }
     });
@@ -133,6 +134,19 @@ export const authReady = (async () => {
 })();
 
 export async function waitForAuthReady() {
+  if (window.ccgSupabase?.isReady === true) {
+    return true;
+  }
+
+  if (window.ccgSupabase && typeof window.ccgSupabase.waitForAuth === 'function') {
+    try {
+      await window.ccgSupabase.waitForAuth();
+      return true;
+    } catch (_error) {
+      // Fall through to authReady/context bootstrap below.
+    }
+  }
+
   await authReady;
   return true;
 }
@@ -143,7 +157,7 @@ export async function getAuthContext() {
 }
 
 export async function refreshSessionIfNeeded() {
-  const supabase = getSupabaseClient();
+  const supabase = await getSupabaseClient();
   const { data, error } = await supabase.auth.getSession();
   if (error) throw error;
 
