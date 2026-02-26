@@ -765,7 +765,7 @@
         const doc = parser.parseFromString(templateHtml, "text/html");
         const titleText = `${game.title} | Cheeky Commodore Gamer`;
         const descriptionText = getGameDescription(game);
-        const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}.html`;
+        const canonicalUrl = `${SITE_BASE_URL}/games/${game.slug}/`;
         const ogImageUrl = getAbsoluteUrl(game.thumbnail);
         const relativeThumb = getRelativeThumbnail(game.thumbnail);
         const mode = game.system === "AMIGA" ? "amiga" : "c64";
@@ -845,7 +845,7 @@
         const descriptionEl = doc.querySelector(".game-description");
         if (descriptionEl) descriptionEl.textContent = descriptionText;
 
-        const viewLink = doc.querySelector('.game-downloads a[href*="game.html"]');
+        const viewLink = doc.querySelector('.game-downloads a.ccg-btn--primary');
         if (viewLink) {
             const resolvedSlug = (game.slug === "smash-t-5" || game.slug === "smash-t-v")
                 ? "smash-tv"
