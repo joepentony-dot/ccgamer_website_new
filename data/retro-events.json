@@ -1,139 +1,184 @@
 [
   {
     "id": "arcade-club-bury",
+    "type": "retro_event",
     "title": "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit",
     "youtubeId": "6PmRNlqIdFY",
-    "url": "https://www.youtube.com/watch?v=6PmRNlqIdFY",
-    "membersOnly": false,
-    "order": 1
+    "membersOnly": false
   },
   {
     "id": "guru-meditation-amiga",
+    "type": "retro_event",
     "title": "Guru Meditation – Commodore Amiga Error That Became a Legend",
     "youtubeId": "qody-Yqd19o",
-    "url": "https://www.youtube.com/watch?v=qody-Yqd19o",
-    "membersOnly": false,
-    "order": 2
+    "membersOnly": false
   },
   {
     "id": "commodore-64-memories-1982",
+    "type": "retro_event",
     "title": "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey",
     "youtubeId": "PDomaOW-1-c",
-    "url": "https://www.youtube.com/watch?v=PDomaOW-1-c",
-    "membersOnly": true,
-    "badge": "Members",
-    "order": 3
+    "membersOnly": true
   },
   {
     "id": "north-west-computer-museum-leigh",
+    "type": "retro_event",
     "title": "North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group",
     "youtubeId": "QwJKwDVd2h8",
-    "url": "https://www.youtube.com/watch?v=QwJKwDVd2h8",
-    "membersOnly": false,
-    "order": 4
+    "membersOnly": false
   },
   {
     "id": "play-expo-blackpool-2025",
+    "type": "retro_event",
     "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle",
     "youtubeId": "smVNHlm_jM0",
-    "url": "https://www.youtube.com/watch?v=smVNHlm_jM0",
-    "membersOnly": false,
-    "badge": "Play Expo",
-    "order": 5
+    "membersOnly": false
   },
   {
     "id": "play-expo-blackpool-romero-highlights",
+    "type": "retro_event",
     "title": "Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights",
     "youtubeId": "_KRx_UxPWTM",
-    "url": "https://www.youtube.com/watch?v=_KRx_UxPWTM",
-    "membersOnly": false,
-    "badge": "Play Expo",
-    "order": 6
+    "membersOnly": false
   },
   {
     "id": "play-expo-blackpool-legendary-guests",
+    "type": "retro_event",
     "title": "Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests",
     "youtubeId": "C7_aTXHJ4iI",
-    "url": "https://www.youtube.com/watch?v=C7_aTXHJ4iI",
-    "membersOnly": false,
-    "badge": "Play Expo",
-    "order": 7
+    "membersOnly": false
   },
   {
     "id": "play-expo-blackpool-romero-rare-consoles",
+    "type": "retro_event",
     "title": "Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold",
     "youtubeId": "Z6iXT4iPqs8",
-    "url": "https://www.youtube.com/watch?v=Z6iXT4iPqs8",
-    "membersOnly": false,
-    "badge": "Play Expo",
-    "order": 8
+    "membersOnly": false
   },
   {
     "id": "play-expo-blackpool-cutting-room-floor",
+    "type": "retro_event",
     "title": "Play Expo Blackpool – Cutting Room Floor Bonus Retro Gaming Footage",
     "youtubeId": "n_ZymsSyDAg",
-    "url": "https://www.youtube.com/watch?v=n_ZymsSyDAg",
-    "membersOnly": true,
-    "badge": "Members",
-    "order": 9
+    "membersOnly": true
   },
   {
     "id": "retro-games-day-family-gaming",
+    "type": "retro_event",
     "title": "Retro Games Day – Gaming with Family from Amiga to PlayStation 5",
     "youtubeId": "uLAK4KLYkEA",
-    "url": "https://www.youtube.com/watch?v=uLAK4KLYkEA",
-    "membersOnly": true,
-    "badge": "Members",
-    "order": 10
+    "membersOnly": true
   },
   {
     "id": "top-15-commodore-64-games",
+    "type": "retro_event",
     "title": "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play",
     "youtubeId": "6IYw6wRW3-0",
-    "url": "https://www.youtube.com/watch?v=6IYw6wRW3-0",
-    "membersOnly": false,
-    "order": 11
+    "membersOnly": false
   },
   {
     "id": "sid-chip-story",
+    "type": "retro_event",
     "title": "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution",
     "youtubeId": "rRKBcyiWO2I",
-    "url": "https://www.youtube.com/watch?v=rRKBcyiWO2I",
-    "membersOnly": false,
-    "order": 12
+    "membersOnly": false
   },
   {
     "id": "video-game-market-leeds-2024",
+    "type": "retro_event",
     "title": "Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds",
     "youtubeId": "sAU3CPCCpvE",
-    "url": "https://www.youtube.com/watch?v=sAU3CPCCpvE",
-    "membersOnly": false,
-    "order": 13
+    "membersOnly": false
   },
   {
     "id": "x-copy-amiga-history",
+    "type": "retro_event",
     "title": "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993)",
     "youtubeId": "2OG2tPx5gnU",
-    "url": "https://www.youtube.com/watch?v=2OG2tPx5gnU",
-    "membersOnly": false,
-    "order": 14
+    "membersOnly": false
   },
   {
     "id": "yorkshire-amiga-group-meetup",
+    "type": "retro_event",
     "title": "Yorkshire Amiga Group – North West Retro Computing Meetup",
     "youtubeId": "SiMgKvZeXws",
-    "url": "https://www.youtube.com/watch?v=SiMgKvZeXws",
-    "membersOnly": true,
-    "badge": "Members",
-    "order": 15
+    "membersOnly": true
   },
   {
     "id": "zx-spectrum-memories-hodgy",
+    "type": "retro_event",
     "title": "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy",
     "youtubeId": "1S-gaWInghY",
-    "url": "https://www.youtube.com/watch?v=1S-gaWInghY",
-    "membersOnly": true,
-    "badge": "Members",
-    "order": 16
+    "membersOnly": true
+  },
+  {
+    "id": "amiga-demo-music-state-of-the-art-1992-commodore-amiga-demo-scene",
+    "type": "amiga_demo_music",
+    "title": "State of the Art (1992) – Commodore Amiga Demo Scene",
+    "youtubeId": "USTUwD_eH2c",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-02",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 02",
+    "youtubeId": "FZFH-LjJA9A",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-03",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 03",
+    "youtubeId": "GCA3bzDopD0",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-04",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 04",
+    "youtubeId": "4lf0PoX4ppk",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-05",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 05",
+    "youtubeId": "6DjP8iVOYUI",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-06",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 06",
+    "youtubeId": "vODFmmYOWQs",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-07",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 07",
+    "youtubeId": "CNUCOvjxd3o",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-08",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 08",
+    "youtubeId": "rng9n0SNeDg",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-09",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 09",
+    "youtubeId": "HMESDOVj5UM",
+    "membersOnly": false
+  },
+  {
+    "id": "amiga-demo-music-track-10",
+    "type": "amiga_demo_music",
+    "title": "Amiga Demo Music – Track 10",
+    "youtubeId": "7z-yzAKP94I",
+    "membersOnly": false
   }
 ]
