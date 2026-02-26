@@ -58,14 +58,16 @@ async function waitForSupabaseClient() {
   });
 }
 
+function setStatus(msg = '') {
+  if ($('announceStatus')) {
+    $('announceStatus').textContent = msg;
+  }
+}
+
 function updateSendState() {
   const slug = text($('announceSendBtn')?.dataset?.slug);
   const test = $('announceTestEmail')?.checked;
   const members = $('announceNotifyMembers')?.checked;
-
-  if (!authReady) {
-    $('announceStatus').textContent = 'Waiting for admin authentication…';
-  }
 
   $('announceSendBtn').disabled = !authReady || !slug || (!test && !members);
 }
@@ -78,15 +80,21 @@ async function bootstrap() {
 
   const sendBtn = $('announceSendBtn');
   sendBtn.dataset.defaultLabel = text(sendBtn.textContent) || 'Send Announcement';
-  updateSendState();
+
+  setStatus('Waiting for admin authentication…');
 
   authClient = await waitForSupabaseClient();
 
   const { data: { session } = {} } = await authClient.auth.getSession();
   authReady = Boolean(session?.access_token);
 
+  if (authReady) {
+    setStatus('');
+  }
+
   authClient.auth.onAuthStateChange((_event, nextSession) => {
     authReady = Boolean(nextSession?.access_token);
+    setStatus(authReady ? '' : 'Waiting for admin authentication…');
     updateSendState();
   });
 
@@ -125,6 +133,9 @@ async function bootstrap() {
         test_email: test
       };
 
+      setStatus('Sending…');
+      sendBtn.textContent = 'Sending…';
+
       const r = await fetch(
         `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
         {
@@ -142,9 +153,9 @@ async function bootstrap() {
         throw new Error(j.error || `Request failed (${r.status}).`);
       }
 
-      $('announceStatus').textContent = `Sent: ${j.sent || 0}, failed: ${j.failed || 0}`;
+      setStatus(`Sent: ${j.sent || 0}, failed: ${j.failed || 0}`);
     } catch (err) {
-      $('announceStatus').textContent = `Failed: ${err?.message || 'Unknown error.'}`;
+      setStatus(`Failed: ${err?.message || 'Unknown error.'}`);
       console.error('Announcement send failed:', err);
     } finally {
       sendBtn.textContent = previousLabel;
@@ -152,6 +163,8 @@ async function bootstrap() {
       updateSendState();
     }
   });
+
+  updateSendState();
 }
 
 startAccessMonitor();
