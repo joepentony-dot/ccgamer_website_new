@@ -25,7 +25,9 @@ function normalizeRole(role) {
 
 function isOwner(email) {
   const target = String(email || '').toLowerCase();
-  return (OWNER_EMAILS || []).some((entry) => String(entry || '').toLowerCase() === target);
+  return (OWNER_EMAILS || []).some(
+    (entry) => String(entry || '').toLowerCase() === target
+  );
 }
 
 function renderAuthStatus(state) {
@@ -54,6 +56,10 @@ function renderAuthStatus(state) {
   statusNode.dataset.state = 'info';
 }
 
+/**
+ * Ensure user is authenticated.
+ * IMPORTANT: This function must only be called AFTER global auth is ready.
+ */
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
   if (IS_LOGIN_PAGE) return null;
 
@@ -61,7 +67,11 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
   await authReady;
 
   const context = await getAuthContext();
-  const authState = resolveAuthState(context?.session || null, context?.profile || null);
+  const authState = resolveAuthState(
+    context?.session || null,
+    context?.profile || null
+  );
+
   renderAuthStatus(authState);
 
   if (!context?.session?.user) {
@@ -73,6 +83,9 @@ export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage }
   return context.session;
 }
 
+/**
+ * Ensure user has one of the allowed roles.
+ */
 export async function ensureRole(allowedRoles = []) {
   if (IS_LOGIN_PAGE) return null;
 
@@ -80,7 +93,9 @@ export async function ensureRole(allowedRoles = []) {
   if (!session) return null;
 
   const context = await getAuthContext();
-  const email = String(context?.user?.email || session?.user?.email || '').toLowerCase();
+  const email = String(
+    context?.user?.email || session?.user?.email || ''
+  ).toLowerCase();
 
   if (isOwner(email)) {
     return { session, role: 'superadmin' };
@@ -90,7 +105,9 @@ export async function ensureRole(allowedRoles = []) {
 
   if (!role && context?.user?.id) {
     try {
-      role = normalizeRole(await fetchUserRole({ userId: context.user.id, force: true }));
+      role = normalizeRole(
+        await fetchUserRole({ userId: context.user.id, force: true })
+      );
     } catch (error) {
       console.warn(TAG, 'role lookup failed', error);
     }
@@ -109,6 +126,10 @@ export async function ensureRole(allowedRoles = []) {
   return { session, role };
 }
 
+/**
+ * Start session invalidation & refresh monitor.
+ * Call explicitly from pages that need it.
+ */
 export async function startAccessMonitor({ onSessionInvalidated } = {}) {
   if (IS_LOGIN_PAGE) return;
 
@@ -117,7 +138,9 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
   bindSessionInvalidation({
     onSignedOut: () => {
       clearRoleCache();
-      if (typeof onSessionInvalidated === 'function') onSessionInvalidated();
+      if (typeof onSessionInvalidated === 'function') {
+        onSessionInvalidated();
+      }
       redirect(AUTH_CONFIG.loginPage, 'signed_out');
     }
   });
@@ -135,11 +158,4 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
       redirect(AUTH_CONFIG.loginPage, 'expired');
     }
   }, Number(AUTH_CONFIG.sessionCheckIntervalMs || 30000));
-}
-
-if (!IS_LOGIN_PAGE) {
-  ensureAuthenticated().catch((error) => {
-    console.error(TAG, 'bootstrap check failed', error);
-    redirect(AUTH_CONFIG.loginPage, 'auth_error');
-  });
 }
