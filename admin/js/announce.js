@@ -158,7 +158,7 @@ async function bootstrap() {
     updateSendState();
   });
 
-  // ---------------- SEND (FIXED) ----------------
+  // ---------------- SEND (CORRECT & SAFE) ----------------
 
   sendBtn.addEventListener('click', async () => {
     const prev = sendBtn.dataset.defaultLabel;
