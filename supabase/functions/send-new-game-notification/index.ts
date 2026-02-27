@@ -1,28 +1,15 @@
-// ============================================================
-// CCG — SEND NEW GAME NOTIFICATION (OPTION A: COMING SOON)
-// Supabase Edge Function (Wizard-first)
-// - Unbreakable CORS preflight
-// - Bearer auth + role enforcement
-// - Admin-only test email
-// - ZIP-first / non-blocking behaviour
-// ============================================================
-
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-
-// -------------------- CORS ----------------------------------
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': 'https://www.cheekycommodoregamer.co.uk',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'content-type, authorization, apikey, x-client-info'
+  'Access-Control-Allow-Headers': 'authorization, content-type, apikey, x-client-info'
 };
 
 const JSON_HEADERS: Record<string, string> = {
   ...CORS_HEADERS,
   'Content-Type': 'application/json'
 };
-
-// -------------------- Types ---------------------------------
 
 type NotifyPayload = {
   mode?: string;
@@ -42,23 +29,20 @@ type ProfileRecipient = {
   username: string | null;
 };
 
-// -------------------- Constants ------------------------------
-
 const ALLOWED_ROLES = new Set(['admin', 'superadmin', 'editor']);
 const ALLOWED_ANNOUNCEMENT_MODES = new Set([
+  'new_game_added',
   'featured_classic',
   'spotlight_pick',
-  // Legacy compatibility (do not break existing callers)
+  // Legacy compatibility from older callers
   'coming_soon',
   'coming_soon_members'
 ]);
+
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const ADMIN_COPY_EMAIL = 'joepentony@hotmail.com';
-const BANNER_IMAGE_URL =
-  'https://www.cheekycommodoregamer.co.uk/resources/images/email/ccg-email-banner.png';
+const BANNER_IMAGE_URL = `${SITE_URL}/resources/images/email/ccg-email-banner.png`;
 const BATCH_SIZE = 25;
-
-// -------------------- Helpers --------------------------------
 
 function jsonResponse(payload: Record<string, unknown>, status = 200): Response {
   return new Response(JSON.stringify(payload), {
@@ -76,53 +60,90 @@ function escapeHtml(value: string): string {
     .replaceAll("'", '&#39;');
 }
 
+function toMode(rawMode: string): string {
+  const mode = String(rawMode || '').trim();
+  if (mode === 'coming_soon' || mode === 'coming_soon_members') return 'new_game_added';
+  return mode;
+}
+
 function normalizeGameSlug(rawSlug: string): string {
-  const slug = String(rawSlug || '')
+  return String(rawSlug || '')
     .trim()
     .replace(/^\/+|\/+$/g, '')
     .replace(/\.html?$/i, '');
-  return slug;
 }
 
-function buildGameUrl(gameSlug: string): string {
-  if (!gameSlug) {
-    return `${SITE_URL}/games/`;
+function normalizeThumbnail(rawThumbnail: string): string {
+  const thumbnail = String(rawThumbnail || '').trim();
+  if (!thumbnail) return '';
+  if (/^https?:\/\//i.test(thumbnail)) return thumbnail;
+  return `${SITE_URL}${thumbnail.startsWith('/') ? thumbnail : `/${thumbnail}`}`;
+}
+
+function gameUrlFromSlug(slug: string): string {
+  const normalized = normalizeGameSlug(slug);
+  if (!normalized) return `${SITE_URL}/games/`;
+  return `${SITE_URL}/games/${encodeURIComponent(normalized)}/`;
+}
+
+function subjectForMode(mode: string, gameName: string): string {
+  switch (toMode(mode)) {
+    case 'featured_classic':
+      return `Featured Classic on Cheeky Commodore Gamer: ${gameName}`;
+    case 'spotlight_pick':
+      return `Spotlight Pick on Cheeky Commodore Gamer: ${gameName}`;
+    default:
+      return `New Game Added on Cheeky Commodore Gamer: ${gameName}`;
   }
-  return `${SITE_URL}/games/${encodeURIComponent(gameSlug)}/`;
+}
+
+function bodyLineForMode(mode: string, gameName: string): string {
+  switch (toMode(mode)) {
+    case 'featured_classic':
+      return `${gameName} is now featured as a classic pick on Cheeky Commodore Gamer.`;
+    case 'spotlight_pick':
+      return `${gameName} is now highlighted as a spotlight pick on Cheeky Commodore Gamer.`;
+    default:
+      return `${gameName} is now live on Cheeky Commodore Gamer.`;
+  }
 }
 
 function buildEmailContent(
-  displayName: string | null,
-  username: string | null,
+  recipient: ProfileRecipient,
+  mode: string,
   gameName: string,
   gameSlug: string,
   gameThumbnail: string
-) {
+): { subject: string; text: string; html: string } {
   const greetingName =
-    String(displayName || '').trim() || String(username || '').trim() || 'there';
-  const gameUrl = buildGameUrl(gameSlug);
+    String(recipient.display_name || '').trim() ||
+    String(recipient.username || '').trim() ||
+    'there';
+
+  const gameUrl = gameUrlFromSlug(gameSlug);
   const preferencesUrl = `${SITE_URL}/community/profile.html`;
+  const subject = subjectForMode(mode, gameName);
+  const introLine = bodyLineForMode(mode, gameName);
 
-  const subject = `Coming Soon on Cheeky Commodore Gamer: ${gameName}`;
-
-  const safeName = escapeHtml(greetingName);
+  const safeGreetingName = escapeHtml(greetingName);
   const safeGameName = escapeHtml(gameName);
+  const safeIntroLine = escapeHtml(introLine);
   const safeGameUrl = escapeHtml(gameUrl);
   const safePreferencesUrl = escapeHtml(preferencesUrl);
-  const safeThumbnailUrl = escapeHtml(gameThumbnail);
+  const safeGameThumbnail = escapeHtml(gameThumbnail);
 
   const text = [
     `Hi ${greetingName},`,
     '',
-    `${gameName} is coming soon to Cheeky Commodore Gamer.`,
+    introLine,
     `Take a look: ${gameUrl}`,
     '',
-    'You’re receiving this email because you enabled New Game Notifications in your Cheeky Commodore Gamer profile.',
+    'You are receiving this email because you enabled New Game Notifications in your CCG profile.',
     `You can manage your preferences at ${preferencesUrl}`
   ].join('\n');
 
   const html = `
-    <div style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">
+    <div style="margin:0;padding:0;background:#f5f7fb;font-family:Arial,Helvetica,sans-serif;color:#111827;">
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f5f7fb;padding:24px 12px;">
         <tr>
           <td align="center">
@@ -134,21 +155,21 @@ function buildEmailContent(
               </tr>
               <tr>
                 <td style="padding:24px;">
-                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Hi ${safeName},</p>
-                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">
-                    <strong>${safeGameName}</strong> is coming soon to Cheeky Commodore Gamer.
+                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Hi ${safeGreetingName},</p>
+                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">${safeIntroLine}</p>
+                  <p style="margin:0 0 20px;font-size:16px;line-height:1.5;">
+                    <a href="${safeGameUrl}" target="_blank" rel="noopener noreferrer" style="color:#1d4ed8;text-decoration:none;font-weight:700;">${safeGameName}</a>
                   </p>
-                  <p style="margin:0 0 16px;font-size:16px;line-height:1.5;">Tap the image below to check it out:</p>
                   <p style="margin:0 0 20px;">
                     <a href="${safeGameUrl}" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">
-                      <img src="${safeThumbnailUrl}" alt="${safeGameName} thumbnail" width="592" style="display:block;width:100%;max-width:592px;height:auto;border:0;border-radius:8px;" />
+                      <img src="${safeGameThumbnail}" alt="${safeGameName} thumbnail" width="592" style="display:block;width:100%;max-width:592px;height:auto;border:0;border-radius:8px;" />
                     </a>
                   </p>
                   <p style="margin:0 0 24px;">
                     <a href="${safeGameUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:12px 18px;border-radius:8px;font-weight:700;font-size:15px;">View game page</a>
                   </p>
                   <p style="margin:0;font-size:13px;line-height:1.6;color:#6b7280;">
-                    You’re receiving this email because you enabled New Game Notifications in your Cheeky Commodore Gamer profile.<br />
+                    You are receiving this email because you enabled New Game Notifications in your CCG profile.<br />
                     You can manage your preferences at <a href="${safePreferencesUrl}" target="_blank" rel="noopener noreferrer">${safePreferencesUrl}</a>
                   </p>
                 </td>
@@ -158,16 +179,16 @@ function buildEmailContent(
         </tr>
       </table>
     </div>
-  `.trim();
+  `;
 
   return { subject, text, html };
 }
 
 async function sendEmail(
-  to: string,
+  recipient: string,
   subject: string,
-  text: string,
-  html: string,
+  textBody: string,
+  htmlBody: string,
   resendApiKey: string,
   emailFrom: string
 ): Promise<void> {
@@ -179,208 +200,97 @@ async function sendEmail(
     },
     body: JSON.stringify({
       from: emailFrom,
-      to,
+      to: recipient,
       subject,
-      text,
-      html
+      text: textBody,
+      html: htmlBody
     })
   });
 
   if (!response.ok) {
-    const responseText = await response.text().catch(() => '');
-    throw new Error(
-      `Email provider failed (${response.status}): ${responseText}`
-    );
+    const errorText = await response.text();
+    throw new Error(`Resend error (${response.status}): ${errorText}`);
   }
 }
 
-// -------------------- Server --------------------------------
-
-Deno.serve(async (req: Request) => {
-  const method = req.method;
-  const origin = req.headers.get('origin') || '';
-  const hasAuthorization = req.headers.has('authorization');
-
-  // ---- CORS preflight (ABSOLUTE FIRST EXIT)
-  if (method === 'OPTIONS') {
-    console.log('[send-new-game-notification]', {
-      event: 'options_preflight_ok',
-      origin
-    });
-    return new Response(null, { status: 204, headers: CORS_HEADERS });
+Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { status: 200, headers: CORS_HEADERS });
   }
 
-  // ---- POST requests only beyond this point
   const requestId = crypto.randomUUID();
 
-  console.log('[send-new-game-notification]', {
-    event: 'request_start',
-    requestId,
-    method,
-    origin,
-    hasAuthorization
-  });
-
   try {
-    if (method !== 'POST') {
-      return jsonResponse(
-        { success: false, error: 'Method not allowed', request_id: requestId },
-        405
-      );
+    if (req.method !== 'POST') {
+      return jsonResponse({ success: false, error: 'Method not allowed', request_id: requestId }, 405);
     }
 
-    // ---- Environment
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || '';
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
     const resendApiKey = Deno.env.get('RESEND_API_KEY') || '';
-    const emailFrom = Deno.env.get('FROM_EMAIL') || '';
-    const testEmailAddress =
-      (Deno.env.get('TEST_EMAIL') || 'joepentony@hotmail.com').trim();
+    const emailFrom = Deno.env.get('RESEND_FROM_EMAIL') || '';
 
-    console.log('[DEBUG ENV]', {
-      supabaseUrl,
-      anonKey_present: !!anonKey,
-      serviceKey_present: !!serviceKey,
-      resend_present: !!resendApiKey,
-      emailFrom_present: !!emailFrom
-    });
-
-    if (!supabaseUrl || !anonKey || !serviceKey) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Supabase environment not configured',
-          request_id: requestId
-        },
-        500
-      );
+    if (!supabaseUrl || !anonKey || !serviceRoleKey) {
+      return jsonResponse({ success: false, error: 'Supabase environment not configured', request_id: requestId }, 500);
     }
 
-    // ---- Auth header
     const authHeader = req.headers.get('authorization') || '';
     const bearerToken = authHeader.startsWith('Bearer ')
       ? authHeader.slice(7).trim()
       : '';
 
     if (!bearerToken) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Missing bearer token',
-          request_id: requestId
-        },
-        401
-      );
+      return jsonResponse({ success: false, error: 'Missing bearer token', request_id: requestId }, 401);
     }
 
-    // ---- Parse payload
     let payload: NotifyPayload;
     try {
       payload = (await req.json()) as NotifyPayload;
     } catch {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Invalid JSON body',
-          request_id: requestId
-        },
-        400
-      );
+      return jsonResponse({ success: false, error: 'Invalid JSON body', request_id: requestId }, 400);
     }
 
-    const mode = String(payload.mode || '').trim();
+    const mode = toMode(payload.mode || '');
     const gameName = String(payload.game_name || '').trim();
-    const gameSlug = normalizeGameSlug(String(payload.game_slug || ''));
-    const gameThumbnail = String(payload.game_thumbnail || '').trim();
+    const gameSlug = normalizeGameSlug(payload.game_slug || '');
+    const gameThumbnail = normalizeThumbnail(payload.game_thumbnail || '');
     const testEmail = payload.test_email === true;
 
     if (!ALLOWED_ANNOUNCEMENT_MODES.has(mode) || !gameName) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Invalid payload',
-          request_id: requestId
-        },
-        400
-      );
+      return jsonResponse({ success: false, error: 'Invalid payload', request_id: requestId }, 400);
     }
 
     if (!testEmail && !gameSlug) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'game_slug is required',
-          request_id: requestId
-        },
-        400
-      );
+      return jsonResponse({ success: false, error: 'game_slug is required', request_id: requestId }, 400);
     }
 
-    if (!testEmail && !gameThumbnail) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'game_thumbnail is required',
-          request_id: requestId
-        },
-        400
-      );
+    if (!gameThumbnail) {
+      return jsonResponse({ success: false, error: 'game_thumbnail is required', request_id: requestId }, 400);
     }
 
-    // ---- Auth validation
-    const authClient = createClient(
-      supabaseUrl,
-      anonKey,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${bearerToken}`
-          }
-        },
-        auth: {
-          persistSession: false
-        }
-      }
-    );
-
+    const authClient = createClient(supabaseUrl, anonKey);
     const {
       data: { user },
-      error: authError
-    } = await authClient.auth.getUser();
+      error: userError
+    } = await authClient.auth.getUser(bearerToken);
 
-    if (authError || !user) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Unauthorized session',
-          request_id: requestId
-        },
-        401
-      );
+    if (userError || !user) {
+      return jsonResponse({ success: false, error: 'Unauthorized session', request_id: requestId }, 401);
     }
 
-    // ---- Role enforcement
-    const serviceClient = createClient(supabaseUrl, serviceKey);
+    const serviceClient = createClient(supabaseUrl, serviceRoleKey);
     const { data: roleRow } = await serviceClient
       .from('profiles')
       .select('role')
       .eq('id', user.id)
       .maybeSingle<ProfileRoleRow>();
 
-    const role = String(roleRow?.role || '').toLowerCase();
+    const role = String(roleRow?.role || '').trim().toLowerCase();
     if (!ALLOWED_ROLES.has(role)) {
-      return jsonResponse(
-        {
-          success: false,
-          error: 'Forbidden: admin/editor role required',
-          request_id: requestId
-        },
-        403
-      );
+      return jsonResponse({ success: false, error: 'Forbidden: admin/editor role required', request_id: requestId }, 403);
     }
 
-    // ---- Provider not configured (non-blocking)
     if (!resendApiKey || !emailFrom) {
       return jsonResponse({
         success: false,
@@ -392,80 +302,61 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // ---- Resolve recipients
     let recipients: ProfileRecipient[] = [];
-
     if (testEmail) {
-      recipients = [
-        { email: testEmailAddress, display_name: user.email || 'admin', username: null }
-      ];
+      recipients = [{
+        email: String(user.email || ADMIN_COPY_EMAIL).trim().toLowerCase(),
+        display_name: user.email || 'admin',
+        username: null
+      }];
     } else {
-      const { data } = await serviceClient
+      const { data, error } = await serviceClient
         .from('profiles')
         .select('email,display_name,username')
         .eq('notify_new_games', true)
         .not('email', 'is', null);
 
+      if (error) {
+        return jsonResponse({ success: false, error: error.message, request_id: requestId }, 500);
+      }
+
       recipients = (data || []) as ProfileRecipient[];
-      recipients.push({
-        email: ADMIN_COPY_EMAIL,
-        display_name: 'Joe',
-        username: null
-      });
+      recipients.push({ email: ADMIN_COPY_EMAIL, display_name: 'Joe', username: null });
     }
 
     const uniqueRecipients: ProfileRecipient[] = [];
     const seenEmails = new Set<string>();
 
     for (const recipient of recipients) {
-      const normalizedEmail = String(recipient.email || '').trim().toLowerCase();
-      if (!normalizedEmail || seenEmails.has(normalizedEmail)) {
-        continue;
-      }
-      seenEmails.add(normalizedEmail);
-      uniqueRecipients.push({
-        ...recipient,
-        email: normalizedEmail
-      });
+      const email = String(recipient.email || '').trim().toLowerCase();
+      if (!email || seenEmails.has(email)) continue;
+      seenEmails.add(email);
+      uniqueRecipients.push({ ...recipient, email });
     }
 
     let sent = 0;
     let failed = 0;
 
-    for (let i = 0; i < uniqueRecipients.length; i += BATCH_SIZE) {
-      const batch = uniqueRecipients.slice(i, i + BATCH_SIZE);
-
+    for (let index = 0; index < uniqueRecipients.length; index += BATCH_SIZE) {
+      const batch = uniqueRecipients.slice(index, index + BATCH_SIZE);
       const results = await Promise.allSettled(
         batch.map(async (recipient) => {
           const to = String(recipient.email || '').trim();
-          if (!to) {
-            throw new Error('Missing recipient email');
-          }
+          if (!to) throw new Error('Missing recipient email');
 
-          const { subject, text, html } = buildEmailContent(
-            recipient.display_name,
-            recipient.username,
-            gameName,
-            gameSlug,
-            gameThumbnail
-          );
-
+          const { subject, text, html } = buildEmailContent(recipient, mode, gameName, gameSlug, gameThumbnail);
           await sendEmail(to, subject, text, html, resendApiKey, emailFrom);
-          return to;
         })
       );
 
       for (const result of results) {
         if (result.status === 'fulfilled') {
-          sent++;
+          sent += 1;
         } else {
-          failed++;
+          failed += 1;
           console.error('[send-new-game-notification] email_send_failed', {
             requestId,
-            error:
-              result.reason instanceof Error
-                ? result.reason.message
-                : String(result.reason)
+            reason: result.reason instanceof Error ? result.reason.message : String(result.reason)
           });
         }
       }
@@ -474,6 +365,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({
       success: true,
       configured: true,
+      mode,
       test_email: testEmail,
       sent,
       failed,
@@ -487,8 +379,7 @@ Deno.serve(async (req: Request) => {
     return jsonResponse(
       {
         success: false,
-        error:
-          error instanceof Error ? error.message : 'Unexpected server error',
+        error: error instanceof Error ? error.message : 'Unexpected server error',
         request_id: requestId
       },
       500
