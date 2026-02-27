@@ -70,6 +70,7 @@ Deno.serve(async (req: Request) => {
 
   const authHeader = text(authHeaderRaw);
   const apikeyHeader = text(apikeyRaw);
+  const accessToken = authHeader.replace(/^Bearer\s+/i, "").trim();
 
   if (!authHeader.toLowerCase().startsWith("bearer ")) {
     return json(
@@ -94,7 +95,7 @@ Deno.serve(async (req: Request) => {
     global: { headers: { Authorization: authHeader } },
   });
 
-  const { data, error: authErr } = await authClient.auth.getUser();
+  const { data, error: authErr } = await authClient.auth.getUser(accessToken);
 
   if (authErr || !data?.user) {
     return json(
