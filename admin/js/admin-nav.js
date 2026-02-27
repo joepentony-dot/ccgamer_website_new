@@ -119,7 +119,7 @@ function bindLogoutOnce() {
 
 export function initAdminNav({ pageLabel = "CCG Admin Panel", active = "" } = {}) {
   // If page already has its own shell/nav, do not inject.
-  const hasShell = !!document.querySelector("[data-admin-shell]");
+  const hasShell = !!document.querySelector("[data-admin-shell]") || !!document.querySelector(".ccg-admin-nav");
   if (!hasShell) {
     // Inject at top of body (safe, minimal)
     const { shell } = buildNavShell({ pageLabel, active });
@@ -135,4 +135,8 @@ export function initAdminNav({ pageLabel = "CCG Admin Panel", active = "" } = {}
 
 // Also auto-bind on pages that include this script
 // (does not inject unless initAdminNav is called)
-document.addEventListener("DOMContentLoaded", () => bindLogoutOnce());
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => bindLogoutOnce());
+} else {
+  bindLogoutOnce();
+}
