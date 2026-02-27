@@ -1,98 +1,138 @@
-import { getAuthContext, waitForAuthReady } from './auth.js';
+// ============================================================
+// CCG ADMIN NAV (LOCKED)
+// - Safe nav injection (only when page lacks its own shell)
+// - Robust logout binding (works for button + link variants)
+// - Uses window.ccgSupabase.getClient() (no extra auth-ui injection)
+// ============================================================
 
-function escapeHtml(value) {
-  return String(value || '').replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[char]));
+const DEFAULT_LINKS = [
+  { href: "/admin/dashboard.html", label: "Dashboard", key: "dashboard" },
+  { href: "/admin/games-editor.html", label: "Game Builder Wizard (Primary)", key: "games-editor" },
+  { href: "/admin/games-json-editor.html", label: "Legacy Bulk Editor — Legacy (not used)", key: "games-json-editor" },
+  { href: "/admin/announce.html", label: "Announcements", key: "announce" },
+  { href: "/admin/members.html", label: "Members", key: "members" },
+  { href: "/admin/help.html", label: "Help & Workflow", key: "help" }
+];
+
+function text(v) {
+  return String(v ?? "").trim();
 }
 
-async function hardLogout() {
-  try {
-    if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-      const supabase = window.ccgSupabase.getClient();
-      await supabase.auth.signOut();
-    }
-  } catch (e) {
-    console.warn('[admin-nav] signOut failed (continuing anyway)', e);
-  } finally {
-    // Always land on login page, and break any cached “still logged in” state
-    window.location.href = '/admin/login.html?logged_out=1';
-  }
+function getActiveKey(activeKey) {
+  const key = text(activeKey);
+  return key || "";
 }
 
-function bindLogout(root = document) {
-  const logoutTargets = root.querySelectorAll('[data-admin-logout], [data-admin-logout-link], [data-logout]');
-  logoutTargets.forEach((el) => {
-    el.addEventListener('click', (evt) => {
-      evt.preventDefault();
-      hardLogout();
-    });
+function markActiveLink(navEl, activeKey) {
+  const key = getActiveKey(activeKey);
+  if (!key) return;
+
+  const links = navEl.querySelectorAll("[data-nav]");
+  links.forEach((a) => {
+    const k = text(a.getAttribute("data-nav"));
+    if (k && k === key) a.classList.add("is-active");
+    else a.classList.remove("is-active");
   });
 }
 
-export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboard' } = {}) {
-  const host = document.querySelector('[data-admin-shell]') || document.body;
+function buildNavShell({ pageLabel = "CCG Admin Panel", active = "" } = {}) {
+  const shell = document.createElement("div");
+  shell.className = "omega-admin-shell";
+  shell.setAttribute("data-admin-shell", "");
 
-  const shell = document.createElement('div');
-  shell.className = 'omega-admin-shell';
+  const panel = document.createElement("nav");
+  panel.className = "ccg-admin-nav ccg-admin-panel";
+  panel.setAttribute("aria-label", "Admin navigation");
 
-  shell.innerHTML = `
-    <div class="omega-admin-bar">
-      <div class="omega-admin-brand">
-        <strong>CCG ADMIN PANEL</strong>
-        <span>${escapeHtml(pageLabel)}</span>
-      </div>
-      <nav class="omega-admin-links" aria-label="CCG admin navigation">
-        <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Game Builder Wizard (Primary)</a>
-        <a href="/admin/games-json-editor.html" data-nav="audit">Legacy Bulk Editor — Legacy (not used)</a>
-        <a href="/admin/announce.html" data-nav="announce">Announcements</a>
-        <a href="/admin/members.html" data-nav="members">Members</a>
-        <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
-        <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
-      </nav>
-      <div class="omega-admin-session" data-admin-session>Session: checking…</div>
+  // Primary row
+  DEFAULT_LINKS.forEach((item) => {
+    const a = document.createElement("a");
+    a.href = item.href;
+    a.textContent = item.label;
+    a.setAttribute("data-nav", item.key);
+    panel.appendChild(a);
+  });
+
+  // Logout
+  const logoutBtn = document.createElement("button");
+  logoutBtn.type = "button";
+  logoutBtn.textContent = "Logout";
+  logoutBtn.setAttribute("data-admin-logout", "");
+  panel.appendChild(logoutBtn);
+
+  const header = document.createElement("div");
+  header.className = "ccg-admin-panel__meta";
+  header.innerHTML = `
+    <div class="ccg-admin-panel__title">${pageLabel}</div>
+    <div class="ccg-admin-panel__user">
+      <span data-admin-email></span>
+      <span class="ccg-admin-panel__role" data-admin-role></span>
     </div>
   `;
 
-  host.prepend(shell);
+  shell.appendChild(panel);
+  shell.appendChild(header);
 
-  const activeLink = shell.querySelector(`[data-nav="${active}"]`);
-  if (activeLink) activeLink.classList.add('is-active');
+  markActiveLink(panel, active);
 
-  bindLogout(shell);
+  return { shell, panel };
+}
 
-  const sessionNode = shell.querySelector('[data-admin-session]');
+async function getSupabaseClient() {
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== "function") {
+    throw new Error("Supabase client bootstrap is unavailable on this page.");
+  }
+  return window.ccgSupabase.getClient();
+}
 
+async function doLogout() {
   try {
-    await waitForAuthReady();
-    const context = await getAuthContext();
-
-    if (!context?.session?.user) {
-      sessionNode.textContent = 'Session: guest';
-      return;
-    }
-
-    const role = context.role || 'unknown';
-    const email = context?.session?.user?.email || context?.user?.email || 'unknown';
-    sessionNode.textContent = `${email} · role ${role}`;
-  } catch {
-    sessionNode.textContent = 'Session status unavailable.';
+    const supabase = await getSupabaseClient();
+    await supabase.auth.signOut();
+  } catch (e) {
+    // fail-closed: still redirect even if signOut throws
+    console.warn("[admin-nav] signOut failed (continuing)", e);
+  } finally {
+    // hard redirect (clears any in-memory state)
+    location.href = "/admin/login.html";
   }
 }
 
-export function injectDeprecatedBanner(message = 'Legacy admin page') {
-  const existing = document.querySelector('.omega-deprecated-banner');
-  if (existing) return;
+function bindLogoutOnce() {
+  // Bind to every supported logout control.
+  const selectors = ["[data-admin-logout]", "[data-logout]", "[data-admin-logout-link]"];
+  const nodes = document.querySelectorAll(selectors.join(","));
+  nodes.forEach((node) => {
+    if (node.dataset && node.dataset.logoutBound === "1") return;
+    if (node.dataset) node.dataset.logoutBound = "1";
 
-  const banner = document.createElement('aside');
-  banner.className = 'omega-deprecated-banner';
-  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/games-editor.html">/admin/games-editor.html</a> for the guided game package workflow.`;
+    node.addEventListener("click", (e) => {
+      e.preventDefault();
+      doLogout();
+    });
+  });
 
-  const parent = document.querySelector('.ccg-page') || document.body;
-  parent.prepend(banner);
+  if (nodes.length) {
+    console.log("[CCG-AUTH-UI] logout bound");
+  }
 }
+
+export function initAdminNav({ pageLabel = "CCG Admin Panel", active = "" } = {}) {
+  // If page already has its own shell/nav, do not inject.
+  const hasShell = !!document.querySelector("[data-admin-shell]");
+  if (!hasShell) {
+    // Inject at top of body (safe, minimal)
+    const { shell } = buildNavShell({ pageLabel, active });
+    document.body.prepend(shell);
+  } else {
+    // Still mark active on existing nav if it has data-nav attributes.
+    const existingNav = document.querySelector(".ccg-admin-nav");
+    if (existingNav) markActiveLink(existingNav, active);
+  }
+
+  bindLogoutOnce();
+}
+
+// Also auto-bind on pages that include this script
+// (does not inject unless initAdminNav is called)
+document.addEventListener("DOMContentLoaded", () => bindLogoutOnce());
