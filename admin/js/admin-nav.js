@@ -1,80 +1,101 @@
-import { getAuthContext, waitForAuthReady } from './auth.js';
+// admin/js/admin-nav.js
+// ============================================================
+// CCG Admin Nav (LOCKED DOWN)
+// Fix: Logout always works (bind directly here)
+// ============================================================
 
-function escapeHtml(value) {
-  return String(value || '').replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[char]));
+function text(value) {
+  return String(value || '').trim();
 }
 
-
-function ensureSharedLogoutBinding() {
-  if (document.querySelector('script[data-ccg-auth-ui]')) return;
-  const script = document.createElement('script');
-  script.src = '/js/ccg-auth-ui.js';
-  script.defer = true;
-  script.dataset.ccgAuthUi = 'true';
-  document.head.appendChild(script);
+async function getSupabaseClient() {
+  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
+    throw new Error('Supabase client bootstrap is unavailable on this page.');
+  }
+  return window.ccgSupabase.getClient();
 }
 
-export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboard' } = {}) {
+function ensureLogoutBinding(shell) {
+  const logoutLink = shell.querySelector('[data-admin-logout-link], [data-logout]');
+  if (!logoutLink) return;
+
+  // Avoid double-binding
+  if (logoutLink.dataset.bound === 'true') return;
+  logoutLink.dataset.bound = 'true';
+
+  logoutLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    try {
+      const supabase = await getSupabaseClient();
+      await supabase.auth.signOut();
+    } catch (err) {
+      // Even if signOut fails, we still force the user back to login.
+      console.warn('[admin-nav] logout signOut failed', err);
+    }
+
+    // Hard redirect to ensure the admin pages can't keep using stale session state
+    window.location.href = '/admin/login.html';
+  });
+}
+
+export async function initAdminNav({ pageLabel = 'Admin', active = '' } = {}) {
+  // If already mounted, just update active + label.
+  const existing = document.querySelector('.omega-admin-shell');
+  if (existing) {
+    const activeLink = existing.querySelector(`[data-nav="${active}"]`);
+    if (activeLink) activeLink.classList.add('is-active');
+    const titleNode = existing.querySelector('[data-admin-title]');
+    if (titleNode) titleNode.textContent = pageLabel;
+    ensureLogoutBinding(existing);
+    return;
+  }
+
   const host = document.querySelector('[data-admin-shell]') || document.body;
+
   const shell = document.createElement('div');
   shell.className = 'omega-admin-shell';
 
   shell.innerHTML = `
-    <div class="omega-admin-bar">
-      <div class="omega-admin-brand">
-        <strong>CCG ADMIN PANEL</strong>
-        <span>${escapeHtml(pageLabel)}</span>
+    <div class="omega-admin-wrap">
+      <div class="omega-admin-header">
+        <div class="omega-admin-brand">
+          <div class="omega-admin-brand__title">CCG ADMIN PANEL</div>
+          <div class="omega-admin-brand__subtitle" data-admin-title>${pageLabel}</div>
+        </div>
+
+        <nav class="omega-admin-nav">
+          <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
+          <a href="/admin/games-editor.html" data-nav="builder">Game Builder Wizard (Primary)</a>
+          <a href="/admin/games-json-editor.html" data-nav="legacy">Legacy Bulk Editor — Legacy (not used)</a>
+          <a href="/admin/announce.html" data-nav="announce">Announcements</a>
+          <a href="/admin/members.html" data-nav="members">Members</a>
+          <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
+          <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
+        </nav>
+
+        <div class="omega-admin-session" data-admin-session>Session: checking…</div>
       </div>
-      <nav class="omega-admin-links" aria-label="CCG admin navigation">
-        <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Game Builder Wizard (Primary)</a>
-        <a href="/admin/games-json-editor.html" data-nav="audit">Legacy Bulk Editor — Legacy (not used)</a>
-        <a href="/admin/announce.html" data-nav="announce">Announcements</a>
-        <a href="/admin/members.html" data-nav="members">Members</a>
-        <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
-        <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
-      </nav>
-      <div class="omega-admin-session" data-admin-session>Session: checking…</div>
     </div>
   `;
 
   host.prepend(shell);
-  ensureSharedLogoutBinding();
+
   const activeLink = shell.querySelector(`[data-nav="${active}"]`);
   if (activeLink) activeLink.classList.add('is-active');
 
+  // Bind logout immediately
+  ensureLogoutBinding(shell);
+
+  // Session label (best-effort)
   const sessionNode = shell.querySelector('[data-admin-session]');
 
   try {
-    await waitForAuthReady();
-    const context = await getAuthContext();
-    if (!context?.session?.user) {
-      sessionNode.innerHTML = 'Session: guest';
-      return;
-    }
-
-    const role = context.role || 'unknown';
-    const email = context?.session?.user?.email || context?.user?.email || 'unknown';
-    sessionNode.textContent = `${email} · role ${role}`;
+    const supabase = await getSupabaseClient();
+    const { data } = await supabase.auth.getSession();
+    const email = text(data?.session?.user?.email);
+    sessionNode.textContent = email ? `${email} · role checking…` : 'Session: active';
   } catch {
-    sessionNode.textContent = 'Session status unavailable.';
+    sessionNode.textContent = 'Session: active';
   }
-}
-
-export function injectDeprecatedBanner(message = 'Legacy admin page') {
-  const existing = document.querySelector('.omega-deprecated-banner');
-  if (existing) return;
-
-  const banner = document.createElement('aside');
-  banner.className = 'omega-deprecated-banner';
-  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/games-editor.html">/admin/games-editor.html</a> for the guided game package workflow.`;
-
-  const parent = document.querySelector('.ccg-page') || document.body;
-  parent.prepend(banner);
 }
