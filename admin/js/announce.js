@@ -158,7 +158,7 @@ async function bootstrap() {
     updateSendState();
   });
 
-  // ---------------- SEND ----------------
+  // ---------------- SEND (FIXED) ----------------
 
   sendBtn.addEventListener('click', async () => {
     const prev = sendBtn.dataset.defaultLabel;
@@ -172,10 +172,6 @@ async function bootstrap() {
 
       if (!game) throw new Error('Please select a game.');
 
-      const { data: { session } = {} } = await authClient.auth.getSession();
-      const token = session?.access_token;
-      if (!token) throw new Error('Admin session expired.');
-
       const payload = {
         mode: test ? 'test' : 'members',
         game_name: game.title,
@@ -184,25 +180,17 @@ async function bootstrap() {
         test_email: test
       };
 
-      const r = await fetch(
-        `${window.CCG_SUPABASE_URL}/functions/v1/send-new-game-notification`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-			apikey: window.CCG_SUPABASE_ANON_KEY,
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify(payload)
-        }
+      const supabase = authClient || getSupabaseClient();
+
+      const { data, error } = await supabase.functions.invoke(
+        'send-new-game-notification',
+        { body: payload }
       );
 
-      const j = await r.json();
-      if (!r.ok || !j.success) {
-        throw new Error(j.error || `Request failed (${r.status})`);
-      }
+      if (error) throw new Error(error.message);
+      if (!data?.success) throw new Error(data?.error || 'Announcement failed');
 
-      setStatus(`Sent: ${j.sent || 0}, failed: ${j.failed || 0}`);
+      setStatus(`Sent: ${data.sent || 0}, failed: ${data.failed || 0}`);
     } catch (err) {
       setStatus(`Failed: ${err.message}`);
       console.error(err);
