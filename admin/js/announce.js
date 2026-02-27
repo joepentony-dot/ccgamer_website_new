@@ -206,19 +206,11 @@ async function bootstrap() {
     setStatus('Sending announcement…');
 
     try {
-      const {
-        data: { session } = {},
-        error: sessionError
-      } = await supabase.auth.getSession();
-
-      if (sessionError) {
-        throw new Error(sessionError.message || 'Unable to read admin session.');
-      }
+      const { data: { session } = {}, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error(sessionError.message);
 
       const token = text(session?.access_token);
-      if (!token) {
-        throw new Error('No active admin session. Please sign in again.');
-      }
+      if (!token) throw new Error('No active admin session.');
 
       const payload = {
         mode: normalizeAnnouncementMode($('announceType').value),
@@ -228,12 +220,15 @@ async function bootstrap() {
         test_email: wantsTest === true
       };
 
-      const endpoint = `${String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '')}/functions/v1/${FUNCTION_NAME}`;
+      const endpoint =
+        `${String(window.CCG_SUPABASE_URL || '').replace(/\/+$/, '')}/functions/v1/${FUNCTION_NAME}`;
+
       const result = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          apikey: supabase.supabaseKey
         },
         body: JSON.stringify(payload)
       });
@@ -243,12 +238,10 @@ async function bootstrap() {
         throw new Error(data?.error || `Edge function failed (${result.status}).`);
       }
 
-      const sent = Number(data.sent || 0);
-      const failed = Number(data.failed || 0);
-      setStatus(`Announcement sent. Sent: ${sent}, failed: ${failed}.`);
+      setStatus(`Announcement sent. Sent: ${Number(data.sent || 0)}, failed: ${Number(data.failed || 0)}.`);
     } catch (error) {
       console.error('[announce] send failed', error);
-      setStatus(`Failed: ${error instanceof Error ? error.message : String(error)}`, true);
+      setStatus(`Failed: ${error.message || error}`, true);
     } finally {
       sendBtn.textContent = previousLabel;
       updateSendState();
@@ -262,5 +255,5 @@ async function bootstrap() {
 startAccessMonitor();
 bootstrap().catch((error) => {
   console.error('[announce] bootstrap failed', error);
-  setStatus(error instanceof Error ? error.message : 'Failed to initialise announcements.', true);
+  setStatus(error.message || 'Failed to initialise announcements.', true);
 });
