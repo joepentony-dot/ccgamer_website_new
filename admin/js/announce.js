@@ -9,12 +9,6 @@ function text(v) {
   return String(v || '').trim();
 }
 
-function normalizeAnnouncementMode(rawMode) {
-  const mode = text(rawMode);
-  if (mode === 'new_game_added') return 'members';
-  return mode;
-}
-
 function normalizeThumbnailPath(rawPath) {
   const path = text(rawPath);
   if (!path) return '';
@@ -22,33 +16,20 @@ function normalizeThumbnailPath(rawPath) {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
-function subjectFor(type, title) {
-  if (!title) return '—';
-  switch (type) {
-    case 'featured_classic':
-      return `⭐ Featured Classic: ${title}`;
-    case 'spotlight_pick':
-      return `🎯 Spotlight Pick: ${title}`;
-    default:
-      return `🆕 New Game Added: ${title}`;
-  }
-}
-
-let authReady = false;
 let authClient = null;
+let authReady = false;
 
 function getSupabaseClient() {
   return window.ccgSupabase?.getClient?.() || null;
 }
 
 async function waitForSupabaseClient() {
-  const existing = getSupabaseClient();
-  if (existing) return existing;
-
+  const c = getSupabaseClient();
+  if (c) return c;
   return new Promise(resolve => {
     const tick = () => {
-      const c = getSupabaseClient();
-      if (c) return resolve(c);
+      const next = getSupabaseClient();
+      if (next) return resolve(next);
       requestAnimationFrame(tick);
     };
     tick();
@@ -59,40 +40,22 @@ function setStatus(msg = '') {
   $('announceStatus').textContent = msg;
 }
 
-function updateSendState() {
-  const slug = text($('announceSendBtn')?.dataset?.slug);
-  const test = $('announceTestEmail')?.checked;
-  const members = $('announceNotifyMembers')?.checked;
-
-  $('announceSendBtn').disabled =
-    !authReady || !slug || (!test && !members);
-}
-
 async function bootstrap() {
-  const ok = await ensureRole(['superadmin', 'admin', 'editor']);
+  const ok = await ensureRole(['admin', 'superadmin', 'editor']);
   if (!ok) return;
 
   initAdminNav({ pageLabel: 'Game Announcements', active: 'announce' });
-
-  const sendBtn = $('announceSendBtn');
-  sendBtn.dataset.defaultLabel = text(sendBtn.textContent) || 'Send Announcement';
-
-  setStatus('Waiting for admin authentication…');
 
   authClient = await waitForSupabaseClient();
 
   const { data: { session } = {} } = await authClient.auth.getSession();
   authReady = Boolean(session?.access_token);
-  if (authReady) setStatus('');
 
   authClient.auth.onAuthStateChange((_e, s) => {
     authReady = Boolean(s?.access_token);
-    setStatus(authReady ? '' : 'Waiting for admin authentication…');
-    updateSendState();
   });
 
-  // ---------------- LOAD GAMES ----------------
-
+  // Load games
   const res = await fetch('/games/games.json', { cache: 'no-store' });
   const games = await res.json();
 
@@ -101,107 +64,47 @@ async function bootstrap() {
 
   $('announceLoadedHint').textContent = `Loaded ${bySlug.size} games.`;
 
-  // ---------------- SEARCH ----------------
-
-  $('announceSearch').addEventListener('input', e => {
-    const q = e.target.value.toLowerCase();
-    $('announceResults').innerHTML = '';
-
-    [...bySlug.values()]
-      .filter(g => g.title.toLowerCase().includes(q))
-      .slice(0, 50)
-      .forEach(g => {
-        const b = document.createElement('button');
-        b.className = 'ccg-btn ccg-btn--ghost';
-        b.textContent = `${g.title} (${g.year || '?'})`;
-
-        b.onclick = () => {
-          const thumb = normalizeThumbnailPath(g.thumbnail);
-
-          sendBtn.dataset.slug = g.slug;
-          sendBtn.dataset.thumbnail = thumb;
-
-          $('announceTitle').textContent = g.title;
-          $('announceSlug').textContent = g.slug;
-          $('announceLink').href = `/games/${g.slug}/`;
-          $('announceLink').hidden = false;
-
-          $('announceSubject').textContent =
-            subjectFor($('announceType').value, g.title);
-
-          if (thumb) {
-            $('announceThumb').src = thumb;
-            $('announceThumb').hidden = false;
-          } else {
-            $('announceThumb').hidden = true;
-          }
-
-          updateSendState();
-        };
-
-        $('announceResults').appendChild(b);
-      });
-  });
-
-  $('announceType').addEventListener('change', () => {
-    $('announceSubject').textContent =
-      subjectFor($('announceType').value, $('announceTitle').textContent);
-  });
-
-  $('announceTestEmail').addEventListener('change', () => {
-    if ($('announceTestEmail').checked) $('announceNotifyMembers').checked = false;
-    updateSendState();
-  });
-
-  $('announceNotifyMembers').addEventListener('change', () => {
-    if ($('announceNotifyMembers').checked) $('announceTestEmail').checked = false;
-    updateSendState();
-  });
-
-  // ---------------- SEND (CORRECT & SAFE) ----------------
-
-  sendBtn.addEventListener('click', async () => {
-    const prev = sendBtn.dataset.defaultLabel;
-    sendBtn.disabled = true;
-    sendBtn.textContent = 'Sending…';
-
+  $('announceSendBtn').addEventListener('click', async () => {
     try {
-      const slug = sendBtn.dataset.slug;
-      const game = bySlug.get(slug);
-      const test = $('announceTestEmail').checked;
+      setStatus('Sending…');
 
-      if (!game) throw new Error('Please select a game.');
+      const { data: { session } } = await authClient.auth.getSession();
+      const token = session?.access_token;
+      if (!token) throw new Error('No admin session');
+
+      const slug = $('announceSendBtn').dataset.slug;
+      const game = bySlug.get(slug);
+      if (!game) throw new Error('Select a game');
 
       const payload = {
-        mode: test ? 'test' : 'members',
+        mode: $('announceTestEmail').checked ? 'test' : 'members',
         game_name: game.title,
         game_slug: game.slug,
         game_thumbnail: normalizeThumbnailPath(game.thumbnail),
-        test_email: test
+        test_email: $('announceTestEmail').checked
       };
 
-      const supabase = authClient || getSupabaseClient();
-
-      const { data, error } = await supabase.functions.invoke(
-        'send-new-game-notification',
-        { body: payload }
+      const r = await fetch(
+        'https://lcslgxpgmttaexsorxik.supabase.co/functions/v1/send-new-game-notification',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}` // ✅ ONLY ONE JWT
+          },
+          body: JSON.stringify(payload)
+        }
       );
 
-      if (error) throw new Error(error.message);
-      if (!data?.success) throw new Error(data?.error || 'Announcement failed');
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'Edge call failed');
 
-      setStatus(`Sent: ${data.sent || 0}, failed: ${data.failed || 0}`);
+      setStatus(`Sent: ${j.sent || 0}, failed: ${j.failed || 0}`);
     } catch (err) {
-      setStatus(`Failed: ${err.message}`);
       console.error(err);
-    } finally {
-      sendBtn.textContent = prev;
-      sendBtn.disabled = false;
-      updateSendState();
+      setStatus(`Failed: ${err.message}`);
     }
   });
-
-  updateSendState();
 }
 
 startAccessMonitor();
