@@ -10,34 +10,26 @@ function escapeHtml(value) {
   }[char]));
 }
 
-async function getSupabaseClientSafe() {
-  if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
-    return window.ccgSupabase.getClient();
+async function hardLogout() {
+  try {
+    if (window.ccgSupabase && typeof window.ccgSupabase.getClient === 'function') {
+      const supabase = window.ccgSupabase.getClient();
+      await supabase.auth.signOut();
+    }
+  } catch (e) {
+    console.warn('[admin-nav] signOut failed (continuing anyway)', e);
+  } finally {
+    // Always land on login page, and break any cached “still logged in” state
+    window.location.href = '/admin/login.html?logged_out=1';
   }
-  return null;
 }
 
 function bindLogout(root = document) {
-  const nodes = root.querySelectorAll('[data-admin-logout], [data-admin-logout-link], [data-logout]');
-  nodes.forEach((node) => {
-    if (node.dataset.ccgLogoutBound === '1') return;
-    node.dataset.ccgLogoutBound = '1';
-
-    node.addEventListener('click', async (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      try {
-        const supabase = await getSupabaseClientSafe();
-        if (supabase?.auth?.signOut) {
-          await supabase.auth.signOut();
-        }
-      } catch (err) {
-        console.warn('[admin-nav] logout signOut failed (continuing)', err);
-      } finally {
-        // Hard redirect regardless, so you *always* leave authed pages
-        window.location.href = '/admin/login.html';
-      }
+  const logoutTargets = root.querySelectorAll('[data-admin-logout], [data-admin-logout-link], [data-logout]');
+  logoutTargets.forEach((el) => {
+    el.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      hardLogout();
     });
   });
 }
@@ -61,7 +53,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
         <a href="/admin/announce.html" data-nav="announce">Announcements</a>
         <a href="/admin/members.html" data-nav="members">Members</a>
         <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
-        <a href="/admin/login.html" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
+        <a href="#" data-nav="logout" data-admin-logout-link data-logout>Logout</a>
       </nav>
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>
     </div>
@@ -79,6 +71,7 @@ export async function initAdminNav({ pageLabel = 'Dashboard', active = 'dashboar
   try {
     await waitForAuthReady();
     const context = await getAuthContext();
+
     if (!context?.session?.user) {
       sessionNode.textContent = 'Session: guest';
       return;
