@@ -3,6 +3,7 @@
 // Omega-safe: does NOT touch shared auth. Uses ensureRole() + global client only.
 
 import { ensureRole } from './guard.js';
+import { initAdminNav } from './admin-nav.js';
 
 const ROLE_LABELS = {
   user: 'User',
@@ -63,6 +64,8 @@ async function getGlobalSupabaseClient() {
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    initAdminNav({ active: 'members' });
+
     setMemberStatus('Checking admin session…', 'info');
     setInlineStatus('Verifying permissions…', 'info');
 
