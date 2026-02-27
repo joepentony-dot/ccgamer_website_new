@@ -14,7 +14,13 @@
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-  <main class="omega-admin-shell" data-admin-shell>
+  <main class="omega-admin-shell ccg-admin-panel" data-admin-shell>
+    <nav class="ccg-admin-nav" aria-label="Admin navigation">
+      <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
+      <a href="/admin/announce.html" data-nav="announce">Announcements</a>
+      <a href="/admin/members.html" data-nav="members">Members</a>
+      <button type="button" data-admin-logout>Logout</button>
+    </nav>
 
     <header class="members-header">
       <h1>Members Directory</h1>
@@ -74,6 +80,8 @@
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/admin-nav.js?v=admin-stable-20260207"></script>
   <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260301"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>

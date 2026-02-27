@@ -1,29 +1,25 @@
 // ============================================================
-// CCG Admin Nav — Omega Safe
-// Fixes:
-// - NEVER injects UI
-// - ONLY binds existing admin shell
-// - Restores menu, active state, logout
+// CCG ADMIN NAV — FINAL LOCKED VERSION
+// Rules:
+// - NEVER inject DOM
+// - ONLY bind existing elements
+// - Announcements must exist in HTML
 // ============================================================
 
 function text(v) {
   return String(v || '').trim();
 }
 
-async function getSupabaseClient() {
-  if (!window.ccgSupabase || typeof window.ccgSupabase.getClient !== 'function') {
-    throw new Error('Supabase client not available');
+async function getSupabase() {
+  if (!window.ccgSupabase?.getClient) {
+    throw new Error('Supabase client unavailable');
   }
   return window.ccgSupabase.getClient();
 }
 
-function bindLogout(root) {
-  const btn =
-    root.querySelector('[data-admin-logout]') ||
-    root.querySelector('.admin-logout') ||
-    root.querySelector('a[href*="logout"]');
-
-  if (!btn || btn.dataset.bound === 'true') return;
+async function bindLogout(root) {
+  const btn = root.querySelector('[data-admin-logout]');
+  if (!btn || btn.dataset.bound) return;
 
   btn.dataset.bound = 'true';
 
@@ -31,53 +27,41 @@ function bindLogout(root) {
     e.preventDefault();
 
     try {
-      const supabase = await getSupabaseClient();
+      const supabase = await getSupabase();
       await supabase.auth.signOut();
     } catch (err) {
       console.warn('[admin-nav] signOut failed', err);
     }
 
-    // Hard redirect — prevents stale auth state
-    window.location.href = '/admin/login.html';
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace('/admin/login.html');
   });
 }
 
-function setActiveNav(root, active) {
+function setActive(root, active) {
   if (!active) return;
-
   root.querySelectorAll('[data-nav]').forEach((el) => {
     el.classList.toggle('is-active', el.dataset.nav === active);
   });
 }
 
 async function populateSession(root) {
-  const node =
-    root.querySelector('[data-admin-session]') ||
-    root.querySelector('.admin-session');
-
+  const node = root.querySelector('[data-admin-session]');
   if (!node) return;
 
   try {
-    const supabase = await getSupabaseClient();
+    const supabase = await getSupabase();
     const { data } = await supabase.auth.getSession();
-    const email = text(data?.session?.user?.email);
-    node.textContent = email || 'Signed in';
+    node.textContent = data?.session?.user?.email || '';
   } catch {
-    node.textContent = 'Signed in';
+    node.textContent = '';
   }
 }
 
-// ------------------------------------------------------------
-
 export async function initAdminNav({ active = '' } = {}) {
-  // Find existing shell ONLY
-  const root =
-    document.querySelector('.ccg-admin-panel') ||
-    document.querySelector('.omega-admin-shell') ||
-    document;
-
-  // Bind features
+  const root = document.querySelector('.ccg-admin-panel') || document;
   bindLogout(root);
-  setActiveNav(root, active);
+  setActive(root, active);
   populateSession(root);
 }

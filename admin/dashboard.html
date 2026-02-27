@@ -23,6 +23,13 @@
   </div>
 
   <main class="admin-dashboard-wrap ccg-page--admin omega-admin-shell" data-admin-shell>
+    <nav class="ccg-admin-nav ccg-admin-panel" aria-label="Admin navigation">
+      <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
+      <a href="/admin/announce.html" data-nav="announce">Announcements</a>
+      <a href="/admin/members.html" data-nav="members">Members</a>
+      <button type="button" data-admin-logout>Logout</button>
+    </nav>
+
     <header class="admin-dashboard-header">
       <div>
         <p class="admin-auth-kicker">CCG Admin Panel</p>
@@ -74,6 +81,8 @@
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/admin-nav.js?v=admin-stable-20260207"></script>
   <script type="module" src="/admin/js/dashboard.js?v=admin-stable-20260207"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
