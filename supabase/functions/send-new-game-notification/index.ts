@@ -329,13 +329,27 @@ Deno.serve(async (req: Request) => {
     }
 
     // ---- Auth validation
-    const authClient = createClient(supabaseUrl, anonKey);
+    const authClient = createClient(
+      supabaseUrl,
+      anonKey,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${bearerToken}`
+          }
+        },
+        auth: {
+          persistSession: false
+        }
+      }
+    );
+
     const {
       data: { user },
-      error: userError
-    } = await authClient.auth.getUser(bearerToken);
+      error: authError
+    } = await authClient.auth.getUser();
 
-    if (userError || !user) {
+    if (authError || !user) {
       return jsonResponse(
         {
           success: false,
