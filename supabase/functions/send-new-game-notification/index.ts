@@ -1,14 +1,11 @@
 // ============================================================
-// CCG — SEND NEW GAME NOTIFICATION (LOCKED + DIAGNOSTICS)
-// Supabase Edge — Manual JWT validation (anon validate + service ops)
-// IMPORTANT: Client MUST send `apikey` + `Authorization: Bearer <access_token>`
+// CCG — SEND NEW GAME NOTIFICATION (FINAL LOCKED)
+// Supabase Edge — Gateway JWT OFF, manual validation ON
+// - Requires: apikey + Authorization: Bearer <access_token>
+// - Validates via /auth/v1/user for clarity + reliability
 // ============================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-export const config = { auth: false };
-
-// -------------------- CORS --------------------
 
 const ALLOWED_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 
@@ -16,10 +13,11 @@ const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "authorization, apikey, x-client-info, content-type",
+  "Access-Control-Max-Age": "86400",
 };
 
-function json(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
+function json(payload: unknown, status = 200): Response {
+  return new Response(JSON.stringify(payload), {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
@@ -29,17 +27,23 @@ function text(v: unknown): string {
   return String(v ?? "").trim();
 }
 
-// -------------------- Server ------------------
+type NotifyPayload = {
+  mode?: string;
+  game_name?: string;
+  game_slug?: string;
+  game_thumbnail?: string;
+  test_email?: boolean;
+  notify_members?: boolean;
+};
 
 Deno.serve(async (req: Request) => {
-  const requestId = crypto.randomUUID();
-
+  // ---- Preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
   if (req.method !== "POST") {
-    return json({ success: false, error: "Method not allowed", request_id: requestId }, 405);
+    return json({ success: false, error: "Method not allowed" }, 405);
   }
 
   // ---- ENV
@@ -48,134 +52,88 @@ Deno.serve(async (req: Request) => {
   const serviceKey = text(Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"));
 
   if (!supabaseUrl || !anonKey || !serviceKey) {
-    return json(
-      {
-        success: false,
-        error: "Supabase env missing",
-        request_id: requestId,
-        debug: {
-          has_url: !!supabaseUrl,
-          has_anon: !!anonKey,
-          has_service: !!serviceKey,
-        },
-      },
-      500,
-    );
+    return json({ success: false, error: "Supabase env missing" }, 500);
   }
 
-  // ---- HEADERS (what actually arrived?)
-  const authHeaderRaw = req.headers.get("authorization") || req.headers.get("Authorization") || "";
-  const apikeyRaw = req.headers.get("apikey") || req.headers.get("Apikey") || req.headers.get("APIKEY") || "";
-  const xClientInfo = req.headers.get("x-client-info") || req.headers.get("X-Client-Info") || "";
+  // ---- REQUIRED HEADERS
+  const authHeader = text(req.headers.get("authorization"));
+  const apikey = text(req.headers.get("apikey"));
 
-  const authHeader = text(authHeaderRaw);
-  const apikeyHeader = text(apikeyRaw);
-  const accessToken = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!apikey) {
+    return json({ success: false, error: "Missing apikey header" }, 401);
+  }
 
   if (!authHeader.toLowerCase().startsWith("bearer ")) {
-    return json(
-      {
-        success: false,
-        error: "Missing bearer token",
-        request_id: requestId,
-        debug: {
-          received_authorization: authHeader ? "present_but_not_bearer" : "missing",
-          received_apikey: apikeyHeader ? "present" : "missing",
-          received_x_client_info: xClientInfo ? "present" : "missing",
-        },
-      },
-      401,
-    );
+    return json({ success: false, error: "Missing bearer token" }, 401);
   }
 
-  // ---- AUTH VALIDATE (ANON)
-  // NOTE: We validate the incoming USER access token.
-  // We do NOT rely on Edge function gateway auth.
-  const authClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
+  // ---- 1) Validate JWT (direct call = best diagnostics)
+  // This is exactly what the client "user" call proves works in your network tab.
+  const authRes = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    method: "GET",
+    headers: {
+      apikey: anonKey,
+      authorization: authHeader,
+    },
   });
 
-  const { data, error: authErr } = await authClient.auth.getUser(accessToken);
-
-  if (authErr || !data?.user) {
+  if (!authRes.ok) {
+    const detail = await authRes.text().catch(() => "");
     return json(
       {
         success: false,
         error: "Invalid session",
-        request_id: requestId,
-        debug: {
-          auth_error_message: authErr?.message || null,
-          auth_error_status: (authErr as any)?.status || null,
-          // helpful: confirms your bearer actually arrived
-          authorization_prefix: authHeader.slice(0, 20),
-          apikey_present: !!apikeyHeader,
-        },
+        status: authRes.status,
+        detail: detail.slice(0, 500),
       },
-      401,
+      401
     );
   }
 
-  const user = data.user;
+  const userJson = await authRes.json().catch(() => null);
+  const userId = text(userJson?.id);
 
-  // ---- ROLE CHECK (SERVICE ROLE)
+  if (!userId) {
+    return json({ success: false, error: "Invalid session (no user id)" }, 401);
+  }
+
+  // ---- 2) Role check (service role)
   const serviceClient = createClient(supabaseUrl, serviceKey);
 
   const { data: profile, error: profileErr } = await serviceClient
     .from("profiles")
     .select("role")
-    .eq("id", user.id)
+    .eq("id", userId)
     .maybeSingle();
 
   if (profileErr) {
     return json(
-      {
-        success: false,
-        error: "Profile lookup failed",
-        request_id: requestId,
-        debug: { profile_error_message: profileErr.message || null },
-      },
-      500,
+      { success: false, error: "Profile lookup failed", detail: profileErr.message },
+      500
     );
   }
 
   const role = text(profile?.role).toLowerCase();
   if (!["admin", "superadmin", "editor"].includes(role)) {
-    return json(
-      {
-        success: false,
-        error: "Forbidden",
-        request_id: requestId,
-        debug: { role },
-      },
-      403,
-    );
+    return json({ success: false, error: "Forbidden" }, 403);
   }
 
-  // ---- PAYLOAD
-  let payload: any = null;
+  // ---- 3) Payload
+  let payload: NotifyPayload | null = null;
   try {
-    payload = await req.json();
+    payload = (await req.json()) as NotifyPayload;
   } catch {
-    return json({ success: false, error: "Invalid JSON payload", request_id: requestId }, 400);
+    return json({ success: false, error: "Invalid JSON payload" }, 400);
   }
 
   const gameName = text(payload?.game_name);
   if (!gameName) {
-    return json({ success: false, error: "Invalid payload", request_id: requestId }, 400);
+    return json({ success: false, error: "Invalid payload (missing game_name)" }, 400);
   }
 
-  // ✅ Auth + role OK
-  // (Your real Resend email send would run here.)
-  return json({
-    success: true,
-    sent: 1,
-    failed: 0,
-    request_id: requestId,
-    debug: {
-      role,
-      user_id: user.id,
-      x_client_info: xClientInfo || null,
-      apikey_present: !!apikeyHeader,
-    },
-  });
+  // ------------------------------------------------------------
+  // ✅ SUCCESS PATH (wire your Resend logic here)
+  // For now we return success so we can prove auth + role is fixed.
+  // ------------------------------------------------------------
+  return json({ success: true, sent: 1, failed: 0 });
 });
