@@ -1966,11 +1966,6 @@ function wireManualModal(button) {
             modal.setAttribute("aria-hidden", "false");
             button.setAttribute("aria-expanded", "true");
 
-            if (window.matchMedia("(max-width: 767px)").matches) {
-                window.requestAnimationFrame(() => {
-                    scrollManualIntoComfortZone(modal);
-                });
-            }
         });
         button.dataset.manualBound = "true";
     }
