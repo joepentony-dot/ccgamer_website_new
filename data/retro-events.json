@@ -44,6 +44,39 @@
     }
   },
   {
+    "id": "play-expo-blackpool-romero-highlights",
+    "type": "retro_event",
+    "title": "Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights",
+    "youtubeId": "_KRx_UxPWTM",
+    "membersOnly": false,
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights on Cheeky Commodore Gamer's Retro Events collection."
+    }
+  },
+  {
+    "id": "play-expo-blackpool-legendary-guests",
+    "type": "retro_event",
+    "title": "Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests",
+    "youtubeId": "C7_aTXHJ4iI",
+    "membersOnly": false,
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests on Cheeky Commodore Gamer's Retro Events collection."
+    }
+  },
+  {
+    "id": "play-expo-blackpool-romero-rare-consoles",
+    "type": "retro_event",
+    "title": "Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold",
+    "youtubeId": "Z6iXT4iPqs8",
+    "membersOnly": false,
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold on Cheeky Commodore Gamer's Retro Events collection."
+    }
+  },
+  {
     "id": "play-expo-blackpool-2025",
     "type": "retro_event",
     "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle",
@@ -55,42 +88,9 @@
     }
   },
   {
-    "id": "play-expo-blackpool-romero-highlights",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights",
-    "youtubeId": "_KRx_UxPWTM",
-    "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle – John Romero & Retro Gaming Weekend Highlights on Cheeky Commodore Gamer's Retro Events collection."
-    }
-  },
-  {
-    "id": "play-expo-blackpool-legendary-guests",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests",
-    "youtubeId": "C7_aTXHJ4iI",
-    "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle – Retro Gaming Highlights & Legendary Guests on Cheeky Commodore Gamer's Retro Events collection."
-    }
-  },
-  {
-    "id": "play-expo-blackpool-romero-rare-consoles",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold",
-    "youtubeId": "Z6iXT4iPqs8",
-    "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle – Romero, Rare Consoles & Retro Gaming Gold on Cheeky Commodore Gamer's Retro Events collection."
-    }
-  },
-  {
     "id": "play-expo-blackpool-cutting-room-floor",
     "type": "retro_event",
-    "title": "Play Expo Blackpool – Cutting Room Floor Bonus Retro Gaming Footage",
+    "title": "Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage",
     "youtubeId": "n_ZymsSyDAg",
     "membersOnly": true,
     "seo": {
@@ -183,7 +183,7 @@
     "membersOnly": false,
     "seo": {
       "title": "State of the Art (1992) – Commodore Amiga Demo Scene | Amiga Demo Music | Cheeky Commodore Gamer",
-      "description": "Watch State of the Art (1992) – Commodore Amiga Demo Scene on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "State of the Art Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -194,7 +194,7 @@
     "membersOnly": false,
     "seo": {
       "title": "9 Fingers Spaceballs",
-      "description": "Watch Amiga Demo Music – Track 02 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "9 Fingers Spaceballs Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -205,7 +205,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Experience The Trippy Sounds Of - Jesus On E's",
-      "description": "Watch Amiga Demo Music – Track 03 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Jesus On E's Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -216,7 +216,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Cryonics - Neverwhere",
-      "description": "Watch Amiga Demo Music – Track 04 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Cryonics - Neverwhere Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -227,7 +227,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Odyssey - Alzatraz",
-      "description": "Watch Amiga Demo Music – Track 05 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Odyssey - Alzatraz Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -238,7 +238,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Enigma - Phenomena",
-      "description": "Watch Amiga Demo Music – Track 06 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Enigma - Phenomena Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -249,7 +249,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Crionics - Hardwired",
-      "description": "Watch Amiga Demo Music – Track 07 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Crionics - Hardwired Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
@@ -260,7 +260,7 @@
     "membersOnly": false,
     "seo": {
       "title": "Sounds of Silents",
-      "description": "Watch Amiga Demo Music – Track 08 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "description": "Sounds of Silents Cheeky Commodore Gamer's Amiga Demo Music collection."
     }
   },
   {
