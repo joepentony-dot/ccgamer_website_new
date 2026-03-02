@@ -527,8 +527,6 @@ if (IS_ADMIN_PATH) {
         inputBuffer: "",
         konamiIndex: 0,
         activeEgg: null,
-        openedAt: 0,
-        ignoreBackdropMs: 420,
     };
 
     const konamiSequence = [
@@ -1122,14 +1120,11 @@ if (IS_ADMIN_PATH) {
 
         document.body.appendChild(modal);
         secretState.modal = modal;
-        modal.addEventListener("click", event => {
+        modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
-            const now = Date.now();
-            if (secretState.openedAt && (now - secretState.openedAt) < (secretState.ignoreBackdropMs || 420)) {
-                return;
-            }
+            if (!modal.dataset.ccgSecretModalLocked) return;
             closeSecretModal();
-        });
+        }, { passive: false });
 
         modal.querySelectorAll("[data-ccg-secret-code]").forEach(item => {
             item.addEventListener("click", () => {
@@ -1142,15 +1137,24 @@ if (IS_ADMIN_PATH) {
         return modal;
     }
 
-    function openSecretModal() {
+    function openSecretModal(openEvent) {
         const modal = buildSecretModal();
         if (modal.classList.contains("is-open")) return;
-        secretState.openedAt = Date.now();
+
+        if (openEvent?.preventDefault) openEvent.preventDefault();
+        if (openEvent?.stopPropagation) openEvent.stopPropagation();
+
+        delete modal.dataset.ccgSecretModalLocked;
+
         requestAnimationFrame(() => {
             if (!modal) return;
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
             document.body.classList.add("ccg-secret-modal-open");
+
+            requestAnimationFrame(() => {
+                modal.dataset.ccgSecretModalLocked = "true";
+            });
         });
     }
 
@@ -1158,6 +1162,7 @@ if (IS_ADMIN_PATH) {
         if (!secretState.modal) return;
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
+        delete secretState.modal.dataset.ccgSecretModalLocked;
         document.body.classList.remove("ccg-secret-modal-open");
         resetSecretInputState();
     }
@@ -1175,6 +1180,7 @@ if (IS_ADMIN_PATH) {
         resetTimer: null,
         bubbleTimer: null,
         lastBubble: null,
+        lastTapAt: 0,
     };
 
     function resetLogoClickState() {
@@ -1191,6 +1197,7 @@ if (IS_ADMIN_PATH) {
             logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
             logoClickState.lastBubble = null;
         }
+        logoClickState.lastTapAt = 0;
     }
 
     function scheduleLogoReset() {
@@ -1304,6 +1311,13 @@ if (IS_ADMIN_PATH) {
                     return;
                 }
 
+                const isTouchPointer = e.pointerType === "touch" || e.pointerType === "pen";
+                const now = Date.now();
+                if (isTouchPointer && logoClickState.lastTapAt && (now - logoClickState.lastTapAt) < 300) {
+                    return;
+                }
+                logoClickState.lastTapAt = now;
+
                 e.preventDefault();
                 e.stopImmediatePropagation();
 
@@ -1329,12 +1343,12 @@ if (IS_ADMIN_PATH) {
                     }
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
-                            openSecretModal();
+                            openSecretModal(e);
                         });
                     });
                     resetLogoClickState();
                 }
-            }, { capture: true });
+            }, { capture: true, passive: false });
         });
     }
 
