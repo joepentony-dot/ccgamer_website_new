@@ -115,6 +115,26 @@
     display: block;
 }
 
+#manualModal .ccg-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.85);
+}
+
+#manualModal .ccg-modal-content::before {
+    content: "Loading manual…";
+    display: block;
+    padding: 1rem;
+    color: #ccc;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+#manualModal .ccg-modal-content {
+    padding-top: 1.5rem;
+}
+
 /* ============================================================
    MODAL NAV ARROWS — PREMIUM
 ============================================================ */
