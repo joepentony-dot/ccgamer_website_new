@@ -6272,6 +6272,51 @@
     "_ccg_migrated": false
   },
   {
+    "system": "C64",
+    "id": "cybernoid",
+    "slug": "cybernoid",
+    "title": "Cybernoid",
+    "sorttitle": "Cybernoid",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ],
+    "collections": [],
+    "videoid": "hyq5mt67hU4",
+    "thumbnail": "resources/images/thumbnails/all/cybernoid.jpg",
+    "pdf": "https://drive.google.com/file/d/19t7Xn7j70gEMnTVZC_gBXFqvF2tq5XKp/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1Y1SfUl9-KNutCwS7KPwCxZJWXcXMdjsi/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/cybernoid"
+    ],
+    "description": "Cybernoid: The Fighting Machine is a 1988 Commodore 64 shoot ’em up by Hewson Consultants. Players battle pirates across flip-screen levels to recover stolen cargo, backed by a memorable SID soundtrack by Jeroen Tel that gives the game much of its identity.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "Stylish and atmospheric with great music, but the small number of levels and unforgiving enemy placement hold it back from being a real favourite.",
+    "credits": {
+      "publisher": [
+        "Hewson"
+      ],
+      "developer": [],
+      "producer": "",
+      "coder": [
+        "Nick Jones"
+      ],
+      "graphics": [
+        "Hugh Binns"
+      ],
+      "musician": [
+        "Jeroen Tel"
+      ],
+      "re_releaser": [
+        "Kixx"
+      ]
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
     "system": "AMIGA",
     "id": "d_generation",
     "slug": "d-generation",
