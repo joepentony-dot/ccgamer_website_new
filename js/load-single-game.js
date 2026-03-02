@@ -1965,6 +1965,7 @@ function wireManualModal(button) {
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
             button.setAttribute("aria-expanded", "true");
+            // Removed document scroll on manual modal open because modal is a fixed fullscreen overlay.
 
         });
         button.dataset.manualBound = "true";
