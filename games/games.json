@@ -7129,6 +7129,51 @@
   },
   {
     "system": "C64",
+    "id": "dino_eggs",
+    "slug": "dino-eggs",
+    "title": "Dino Eggs",
+    "sorttitle": "Dino Eggs",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ],
+    "collections": [
+      "top picks"
+    ],
+    "videoid": "a2F7GZdhZiQ",
+    "thumbnail": "resources/images/thumbnails/all/dino-eggs.jpg",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1RZ3cnXbZunxH5iGzJCvsHiffoieAQGZO/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/dino-eggs"
+    ],
+    "description": "Dino Eggs is a classic Commodore 64 platform puzzle game where Time Master Tim collects dinosaur eggs, avoids hazards like proto-snakes and spiders, and uses fire to keep Dino Mom at bay while returning eggs to the time warp for points.",
+    "ccg_rating": 9,
+    "ccg_rating_reason": "Dino Eggs delivers addictive platform-puzzle action on the Commodore 64 with clever hazard mechanics and replay value that still holds up today",
+    "credits": {
+      "publisher": [
+        "Micro Fun"
+      ],
+      "developer": [
+        "David H. Schroeder"
+      ],
+      "producer": "",
+      "coder": [
+        "Leonard Bertoni"
+      ],
+      "graphics": [],
+      "musician": [
+        "Leonard Bertoni"
+      ],
+      "re_releaser": []
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "dizzy",
     "slug": "dizzy",
     "title": "Dizzy",
