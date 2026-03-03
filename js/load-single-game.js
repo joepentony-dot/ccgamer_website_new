@@ -970,6 +970,38 @@ function ensureDirectNavLinks() {
    RENDER GAME
 ============================================================ */
 
+
+
+function renderAffiliateSection(game) {
+    const affiliateSection = document.getElementById("game-affiliate-section");
+    if (!affiliateSection) return;
+
+    const joystickGameIds = new Set([
+        "caveman_ugh_lympics",
+        "the_activision_decathlon",
+        "hunchback_at_the_olympics",
+        "hyper_sports",
+        "winter_games",
+        "world_games",
+        "summer_games",
+        "summer_games_2",
+        "track_field"
+    ]);
+
+    if (joystickGameIds.has(String(game.id || "").trim())) {
+        const affiliateLink = document.getElementById("gameAffiliateLink");
+        if (affiliateLink) {
+            affiliateLink.href = "https://www.amazon.co.uk/Retro-Games-The-C64-Joystick/dp/B07H25X279?linkCode=ll2&tag=cheekycommo0d-21&ref_=as_li_ss_tl";
+            affiliateLink.target = "_blank";
+            affiliateLink.rel = "nofollow sponsored noopener";
+        }
+        affiliateSection.hidden = false;
+        return;
+    }
+
+    affiliateSection.hidden = true;
+}
+
 function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
@@ -1109,6 +1141,7 @@ function renderGame(game) {
     }
 
     updateMediaPanelVisibility(mediaPanel);
+    renderAffiliateSection(game);
 
     /* SCREENSHOTS */
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
