@@ -603,6 +603,7 @@ function buildPackageData() {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>${cleanForHtml(seoTitle)}</title>
+    <script src="/js/analytics.js"></script>
     <meta name="description" content="${seoDescription}" />
 
     <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
@@ -747,6 +748,7 @@ function buildPackageData() {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${cleanForHtml(seoTitle)}</title>
+    <script src="/js/analytics.js"></script>
     <meta name="description" content="${seoDescription}" />
 
     <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
