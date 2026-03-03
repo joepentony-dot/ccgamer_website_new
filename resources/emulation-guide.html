@@ -1,21 +1,258 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="emulation-guide">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emulation Guide | Cheeky Commodore Gamer</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('ccg-mode');
+                if (!saved) return;
+                document.documentElement.setAttribute('data-ccg-mode', saved);
+                document.documentElement.setAttribute('data-mode', saved);
+                if (document.body) {
+                    document.body.setAttribute('data-ccg-mode', saved);
+                    document.body.setAttribute('data-mode', saved);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.body.setAttribute('data-ccg-mode', saved);
+                        document.body.setAttribute('data-mode', saved);
+                    }, { once: true });
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/resources/emulation-guide.html">
-    <meta http-equiv="refresh" content="1; url=../emulation.html">
-    <style>
-        body { font-family: Inter, system-ui, sans-serif; background: #0b0b12; color: #f7f7ff; display: grid; place-items: center; min-height: 100vh; margin: 0; }
-        .panel { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); padding: 1.5rem; border-radius: 12px; text-align: center; max-width: 480px; }
-        a { color: #70fff0; }
-    </style>
+
+    <title>Emulation Guide | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Printable-style emulation guide for Commodore 64 and Amiga: recommended emulators, quick steps, controller tips and common fixes." />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+    <link rel="preload" href="/resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/ccg-effects.css" /></noscript>
+    <link rel="stylesheet" href="/resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-cards.css" />
+    <link rel="preload" href="/resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/ccg-anim.css" /></noscript>
+    <link rel="stylesheet" href="/resources/css/ccg-overlays.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-modal.css" />
+    <link rel="stylesheet" href="/resources/css/info-pages.css" />
+
+    <!-- PAGE CSS -->
+    <link rel="stylesheet" href="/resources/css/emulation.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
 </head>
-<body>
-    <div class="panel">
-        <p><strong>Heads up!</strong> The emulation guide has moved.</p>
-        <p>Redirecting you to the new <a href="../emulation.html">Emulation Hub</a>…</p>
+
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
+
+    <!-- BACKGROUND LAYERS -->
+    <div class="ccg-bg" aria-hidden="true">
+        <div class="ccg-bg-starfield" aria-hidden="true"></div>
+        <div class="ccg-bg-grid" aria-hidden="true"></div>
+        <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
     </div>
+
+    <div class="ccg-page ccg-page--info ccg-page--emulation">
+
+        <main class="ccg-main" id="top">
+            <div class="ccg-info-shell emu-shell">
+
+                <section class="emu-hero-deck">
+                    <div class="emu-hero-grid">
+                        <div class="emu-marquee">
+                            <div class="emu-marquee__kicker">Printable / shareable reference</div>
+                            <h1 class="emu-marquee__title">Emulation Guide</h1>
+                            <p class="emu-marquee__text">
+                                A quick, practical setup sheet for Commodore 64 and Amiga emulation — emulator picks,
+                                short setup steps, controller notes, and the most common fixes.
+                            </p>
+
+                            <div class="emu-cta-row">
+                                <a class="ccg-btn ccg-btn--primary" href="/emulation.html">Back to Emulation Hub</a>
+                                <a class="ccg-btn ccg-btn--primary" href="#c64">C64</a>
+                                <a class="ccg-btn ccg-btn--primary" href="#amiga">Amiga</a>
+                                <a class="ccg-btn ccg-btn--primary" href="#legal">Legal</a>
+                            </div>
+                        </div>
+
+                        <div class="emu-burst-card">
+                            <h3 class="emu-burst-card__title">Fast reminders</h3>
+                            <ul class="emu-burst-list">
+                                <li>C64 joystick is usually Port 2.</li>
+                                <li>Save a “safe config” per system.</li>
+                                <li>Amiga often needs legitimate Kickstarts.</li>
+                                <li>Use the right machine model for the era.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="ccg-omega-divider" aria-hidden="true">
+                    <span class="ccg-omega-core"></span>
+                </div>
+
+                <section class="ccg-section ccg-emulation-section ccg-chapter" id="c64">
+                    <h2 class="ccg-section-title">🕹️ Commodore 64</h2>
+
+                    <div class="ccg-emulation-box ccg-info-panel">
+                        <p class="ccg-body-text">
+                            Recommended emulator: <strong>VICE</strong> (accuracy + features). Alternative: <strong>CCS64</strong> (lightweight).
+                        </p>
+
+                        <div class="emu-link-grid">
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://vice-emu.sourceforge.io/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">VICE</span>
+                                <span class="emu-link-card__meta">Accuracy-first, feature packed</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://www.ccs64.com/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">CCS64</span>
+                                <span class="emu-link-card__meta">Lightweight, quick booting</span>
+                            </a>
+                        </div>
+
+                        <details class="ccg-emulation-details" open>
+                            <summary class="ccg-emulation-summary">Quick-start (VICE)</summary>
+                            <ol class="ccg-emulation-steps">
+                                <li>Install VICE and launch <strong>x64</strong> (or the equivalent on your platform).</li>
+                                <li>Load media via <strong>File → Autostart disk/tape image</strong>.</li>
+                                <li>Set controls via <strong>Settings → Joystick settings</strong>.</li>
+                                <li>For display: enable <strong>Double Size</strong> / <strong>Fullscreen</strong>, then save settings.</li>
+                            </ol>
+                        </details>
+
+                        <details class="ccg-emulation-details">
+                            <summary class="ccg-emulation-summary">Controllers &amp; key mappings</summary>
+                            <ul class="ccg-emulation-list">
+                                <li>Most games assume <strong>Joystick Port 2</strong>. If input fails, swap ports.</li>
+                                <li>Keep a simple mapping profile per genre (platformer, shooter, adventure).</li>
+                            </ul>
+                        </details>
+
+                        <details class="ccg-emulation-details">
+                            <summary class="ccg-emulation-summary">Common issues (fast fixes)</summary>
+                            <ul class="ccg-emulation-list">
+                                <li><strong>Black screen / hangs:</strong> use Autostart rather than manual attach.</li>
+                                <li><strong>No sound:</strong> check audio output device + emulator audio enabled.</li>
+                                <li><strong>Too fast:</strong> disable warp/turbo and check refresh timing (PAL/NTSC).</li>
+                            </ul>
+                        </details>
+                    </div>
+                </section>
+
+                <div class="ccg-omega-divider" aria-hidden="true">
+                    <span class="ccg-omega-core"></span>
+                </div>
+
+                <section class="ccg-section ccg-emulation-section ccg-chapter" id="amiga">
+                    <h2 class="ccg-section-title">🖥️ Commodore Amiga</h2>
+
+                    <div class="ccg-emulation-box ccg-info-panel">
+                        <p class="ccg-body-text">
+                            Recommended emulators: <strong>FS-UAE</strong> (friendly) and <strong>WinUAE</strong> (deep control on Windows).
+                            Many setups require legitimate <strong>Kickstart ROMs</strong>.
+                        </p>
+
+                        <div class="emu-link-grid">
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://fs-uae.net/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">FS-UAE</span>
+                                <span class="emu-link-card__meta">Friendly launcher experience</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://www.winuae.net/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">WinUAE</span>
+                                <span class="emu-link-card__meta">Deep control on Windows</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://amiberry.com/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">Amiberry</span>
+                                <span class="emu-link-card__meta">ARM + Raspberry Pi favourite</span>
+                            </a>
+                            <a class="ccg-btn ccg-btn--primary emu-link-card" href="https://vamigaweb.github.io/" target="_blank" rel="noopener noreferrer">
+                                <span class="emu-link-card__title">vAmiga</span>
+                                <span class="emu-link-card__meta">macOS-focused experience</span>
+                            </a>
+                        </div>
+
+                        <details class="ccg-emulation-details" open>
+                            <summary class="ccg-emulation-summary">Quick-start (FS-UAE)</summary>
+                            <ol class="ccg-emulation-steps">
+                                <li>Install FS-UAE and the FS-UAE Launcher.</li>
+                                <li>Add your <strong>Kickstart</strong> ROMs in the launcher.</li>
+                                <li>Load a game (ADF / WHDLoad depending on your setup).</li>
+                                <li>Pick a sensible base model (A500 for many classics), then assign your controller.</li>
+                            </ol>
+                        </details>
+
+                        <details class="ccg-emulation-details">
+                            <summary class="ccg-emulation-summary">Model guidance</summary>
+                            <ul class="ccg-emulation-list">
+                                <li><strong>A500</strong>: most “classic” era titles.</li>
+                                <li><strong>A1200</strong>: later AGA titles and some WHDLoad setups.</li>
+                                <li><strong>Memory</strong>: start modest — overpowered configs can cause odd behaviour in older games.</li>
+                            </ul>
+                        </details>
+
+                        <details class="ccg-emulation-details">
+                            <summary class="ccg-emulation-summary">Common issues (fast fixes)</summary>
+                            <ul class="ccg-emulation-list">
+                                <li><strong>Kickstart missing:</strong> add the correct ROM for the model selected.</li>
+                                <li><strong>Disk swapping:</strong> use the emulator’s built-in disk manager and verify drive order.</li>
+                                <li><strong>Stutter:</strong> keep scaling simple; toggle vsync/fullscreen options.</li>
+                            </ul>
+                        </details>
+                    </div>
+                </section>
+
+                <div class="ccg-omega-divider" aria-hidden="true">
+                    <span class="ccg-omega-core"></span>
+                </div>
+
+                <section class="ccg-section ccg-emulation-section ccg-chapter" id="legal">
+                    <h2 class="ccg-section-title">Sources, legality &amp; sensible notes</h2>
+
+                    <div class="ccg-emulation-box ccg-info-panel">
+                        <p class="ccg-body-text">
+                            Emulators are generally legal — the tricky bit is usually the copyrighted content:
+                            game files (ROMs / disk images) and Amiga Kickstart ROMs.
+                        </p>
+
+                        <div class="emu-callout">
+                            <h3>Play smart, stay legal</h3>
+                            <ul class="ccg-emulation-list">
+                                <li>Use your <strong>own original media</strong> where possible, or legitimately purchased re-releases/collections.</li>
+                                <li>For Amiga: obtain Kickstarts through legitimate means (bundled solutions or your own dumps).</li>
+                                <li>If you’re unsure about the status of a download, treat it as <strong>not OK</strong> until you’ve verified it.</li>
+                            </ul>
+                            <a class="ccg-btn ccg-btn--secondary emu-inline-cta" href="/contact.html">Have a question? Reach out →</a>
+                        </div>
+
+                        <div class="ccg-emulation-backtotop">
+                            <a href="#top" class="ccg-btn ccg-btn--ghost ccg-emulation-backtotop__link">Back to top</a>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <div class="ccg-omega-divider" aria-hidden="true">
+            <span class="ccg-omega-core"></span>
+        </div>
+
+        <footer class="ccg-footer">
+            <div class="ccg-footer-inner">
+                <p class="ccg-footer-text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer-text ccg-footer-text--small">Not affiliated with Commodore, Amiga or any publishers.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script src="/js/ccg-global.js" defer></script>
+    <script src="/js/ccg-mode-engine.js" defer></script>
 </body>
 </html>
