@@ -521,6 +521,50 @@
   },
   {
     "system": "AMIGA",
+    "id": "aladdin",
+    "slug": "aladdin",
+    "title": "Aladdin",
+    "sorttitle": "Aladdin",
+    "year": 1994,
+    "genres": [
+      "platform"
+    ],
+    "collections": [
+      "licensed"
+    ],
+    "videoid": "qug68Ypv2Pg",
+    "thumbnail": "resources/images/thumbnails/all/aladdin.png",
+    "pdf": "https://drive.google.com/file/d/1rrnozhqSjQ9sgs-tZQSVJwTdBzPoBM-F/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1DWs364caak3j_YzcqfyTbQblucsGmEwA/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemonamiga.com/game/aladdin"
+    ],
+    "description": "Disney’s Aladdin (1994) on the Commodore Amiga is a colourful side-scrolling platformer by Virgin Interactive. Guide Aladdin through Agrabah and the Cave of Wonders, fighting guards with a scimitar and throwing apples while collecting gems and bonus tokens. Known for its fluid animation and film-inspired levels.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "Beautiful animation and solid platforming, but a little short and slightly too forgiving.",
+    "credits": {
+      "publisher": [
+        "Virgin Interactive"
+      ],
+      "developer": [],
+      "producer": "",
+      "coder": [],
+      "graphics": [
+        "Hugh Riley",
+        "Teoman Irmak"
+      ],
+      "musician": [
+        "Andrew Barnabas"
+      ],
+      "re_releaser": []
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "AMIGA",
     "id": "alcatraz",
     "slug": "alcatraz",
     "title": "Alcatraz",
