@@ -739,6 +739,13 @@ function buildPackageData() {
 
 <script src="../resources/js/ccg-share.js" defer></script>
 
+<!-- GOATCOUNTER — SAFE ANALYTICS -->
+<script
+  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
+  async
+  src="https://gc.zgo.at/count.js">
+</script>
+
 </body>
 </html>`;
 
@@ -783,7 +790,13 @@ function buildPackageData() {
         })();
     </script>
 </head>
-<body></body>
+<body>
+<script
+  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
+  async
+  src="https://gc.zgo.at/count.js">
+</script>
+</body>
 </html>`;
 
   const mergedGames = mergeGamesJson(gameEntry, state.library);
