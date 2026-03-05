@@ -129,6 +129,13 @@ const GAME_PAGE_TEMPLATE = `<!DOCTYPE html>
 </script>
 <script src="../js/ccg-base.js" defer></script>
 
+<!-- GOATCOUNTER — SAFE ANALYTICS -->
+<script
+  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
+  async
+  src="https://gc.zgo.at/count.js">
+</script>
+
 </body>
 </html>
 `;
