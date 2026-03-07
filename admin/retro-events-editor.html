@@ -58,8 +58,8 @@
         <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
       <h1>Non-Game Video Builder (Events + Demo Music)</h1>
-      <p>This editor manages non-game video content in one canonical file: <code>/data/retro-events.json</code>. Public pages and SEO generation read from the same data.</p>
-      <p class="retro-help">Use Save to download an updated <code>retro-events.json</code> file.</p>
+      <p>This editor manages non-game video content across <code>/data/retro-events.json</code> and <code>/data/amiga-demo-music.json</code>. Public pages and SEO generation read from the same data.</p>
+      <p class="retro-help">Use the save buttons to download updated JSON files for Retro Events and Amiga Demo Music.</p>
       <p class="retro-status" data-status></p>
     </section>
 
@@ -135,7 +135,8 @@
       <h2>Events</h2>
       <ul class="retro-list" data-event-list></ul>
       <div class="retro-actions">
-        <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-json">Save retro-events.json</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save retro-events.json</button>
+        <button type="button" class="ccg-btn ccg-btn--secondary" data-action="save-demo-json">Save amiga-demo-music.json</button>
       </div>
     </section>
   </main>

@@ -1,4 +1,5 @@
-const DATA_PATH = '/data/retro-events.json';
+const RETRO_EVENTS_DATA_PATH = '/data/retro-events.json';
+const AMIGA_DEMO_MUSIC_DATA_PATH = '/data/amiga-demo-music.json';
 
 const state = {
   events: [],
@@ -10,7 +11,8 @@ const el = {
   form: document.querySelector('[data-form]'),
   formHeading: document.querySelector('[data-form-heading]'),
   list: document.querySelector('[data-event-list]'),
-  saveJson: document.querySelector('[data-action="save-json"]'),
+  saveRetroJson: document.querySelector('[data-action="save-retro-json"]'),
+  saveDemoJson: document.querySelector('[data-action="save-demo-json"]'),
   resetForm: document.querySelector('[data-action="reset-form"]'),
   saveEvent: document.querySelector('[data-action="save-event"]'),
   builderButtons: Array.from(document.querySelectorAll('[data-builder-select]')),
@@ -47,7 +49,8 @@ async function init() {
 function bindEvents() {
   el.form?.addEventListener('submit', onSaveEvent);
   el.resetForm?.addEventListener('click', resetForm);
-  el.saveJson?.addEventListener('click', saveJsonFile);
+  el.saveRetroJson?.addEventListener('click', () => saveJsonFile('retro_event'));
+  el.saveDemoJson?.addEventListener('click', () => saveJsonFile('demo_music'));
 
   el.builderButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -74,13 +77,22 @@ function bindEvents() {
 
 async function loadEvents() {
   try {
-    const response = await fetch(DATA_PATH, { cache: 'no-store' });
-    if (!response.ok) {
-      throw new Error(`Failed to load retro-events.json (${response.status})`);
+    const [retroResponse, demoResponse] = await Promise.all([
+      fetch(RETRO_EVENTS_DATA_PATH, { cache: 'no-store' }),
+      fetch(AMIGA_DEMO_MUSIC_DATA_PATH, { cache: 'no-store' })
+    ]);
+
+    if (!retroResponse.ok) {
+      throw new Error(`Failed to load retro-events.json (${retroResponse.status})`);
     }
-    const data = await response.json();
-    state.events = sanitizeEvents(data);
-    setStatus(`Loaded ${state.events.length} non-game videos from ${DATA_PATH}.`, false);
+
+    if (!demoResponse.ok) {
+      throw new Error(`Failed to load amiga-demo-music.json (${demoResponse.status})`);
+    }
+
+    const [retroData, demoData] = await Promise.all([retroResponse.json(), demoResponse.json()]);
+    state.events = sanitizeEvents([...(Array.isArray(retroData) ? retroData : []), ...(Array.isArray(demoData) ? demoData : [])]);
+    setStatus(`Loaded ${state.events.length} non-game videos from ${RETRO_EVENTS_DATA_PATH} and ${AMIGA_DEMO_MUSIC_DATA_PATH}.`, false);
   } catch (error) {
     state.events = [];
     setStatus(error.message, true);
@@ -296,19 +308,26 @@ function deleteEvent(id) {
   setStatus(`Deleted ${getTypeLabel(eventItem.type).toLowerCase()} "${eventItem.title}".`, false);
 }
 
-async function saveJsonFile() {
-  const payload = JSON.stringify(state.events, null, 2);
+async function saveJsonFile(type) {
+  const isDemoMusic = type === 'demo_music';
+  const pathLabel = isDemoMusic ? AMIGA_DEMO_MUSIC_DATA_PATH : RETRO_EVENTS_DATA_PATH;
+  const fileName = isDemoMusic ? 'amiga-demo-music.json' : 'retro-events.json';
+  const payload = JSON.stringify(
+    state.events.filter((item) => (isDemoMusic ? item.type === 'demo_music' : item.type !== 'demo_music')),
+    null,
+    2
+  );
 
   if (typeof window.showSaveFilePicker === 'function') {
     try {
       const handle = await window.showSaveFilePicker({
-        suggestedName: 'retro-events.json',
+        suggestedName: fileName,
         types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }]
       });
       const writable = await handle.createWritable();
       await writable.write(payload + '\n');
       await writable.close();
-      setStatus('Saved retro-events.json using file picker.', false);
+      setStatus(`Saved ${fileName} using file picker.`, false);
       return;
     } catch (error) {
       setStatus(`File picker save cancelled or failed: ${error.message}`, true);
@@ -319,12 +338,12 @@ async function saveJsonFile() {
   const blob = new Blob([payload + '\n'], { type: 'application/json' });
   const anchor = document.createElement('a');
   anchor.href = URL.createObjectURL(blob);
-  anchor.download = 'retro-events.json';
+  anchor.download = fileName;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(anchor.href);
-  setStatus(`Downloaded retro-events.json. Replace ${DATA_PATH} with this file.`, false);
+  setStatus(`Downloaded ${fileName}. Replace ${pathLabel} with this file.`, false);
 }
 
 function resetForm() {
