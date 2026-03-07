@@ -12,22 +12,17 @@ const demoMusic = data.filter(item => item.type === "demo_music");
 
 demoMusic.forEach(item => {
 
-const media = item.youtube
-  ? `<iframe src="https://www.youtube.com/embed/${item.youtube}" title="${item.title}" allowfullscreen loading="lazy"></iframe>`
-  : `<audio controls src="/resources/audio/${item.audio}"></audio>`;
-
 const card = document.createElement("div");
 card.className = "ccg-card";
 
 card.innerHTML = `
-<img src="/resources/images/demo-music/${item.thumbnail}" alt="${item.title} Demo Music">
+<img src="/resources/images/demo-music/${item.thumbnail}" alt="${item.title}">
 <h3>${item.title}</h3>
-<p>Composer: ${item.composer}<br>
-Demo Group: ${item.group}<br>
-Year: ${item.year}</p>
-<div class="video-container">
-${media}
-</div>
+<p>${item.composer} – ${item.group} (${item.year})</p>
+
+<a href="https://youtu.be/${item.youtube}" target="_blank" class="watch-btn">
+Watch Video
+</a>
 `;
 
 container.appendChild(card);

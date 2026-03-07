@@ -536,3 +536,76 @@
     font-size: 0.95rem;
     color: var(--ccg-text-soft);
 }
+
+/* ============================================================
+   OMEGA UPGRADE BLOCKS
+   ============================================================ */
+
+.emu-route-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.emu-route-card {
+    padding: 12px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(0,0,0,0.68), rgba(0,0,0,0.86));
+    border: 1px solid rgba(255,255,255,0.14);
+}
+
+.emu-route-card h3 {
+    margin: 0 0 6px;
+    font-size: 0.92rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.emu-route-card p {
+    margin: 0;
+    color: var(--ccg-text-soft);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.emu-hardware-grid {
+    margin: 14px 0 10px;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+}
+
+.emu-hardware-card {
+    display: grid;
+    gap: 10px;
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.16);
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.14), rgba(var(--accent-rgb),0.04)),
+        linear-gradient(160deg, rgba(0,0,0,0.86), rgba(0,0,0,0.68));
+    box-shadow: 0 18px 32px rgba(0,0,0,0.62), inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+.emu-hardware-card h3 {
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.emu-hardware-lead,
+.emu-hardware-fit {
+    margin: 0;
+    color: var(--ccg-text-soft);
+    line-height: 1.6;
+}
+
+.emu-hardware-card .ccg-btn {
+    width: 100%;
+    text-transform: none;
+}
+
+.emu-discovery-end .ccg-info-panel {
+    background:
+        radial-gradient(circle at 20% 18%, rgba(var(--accent-rgb),0.22), transparent 45%),
+        linear-gradient(140deg, rgba(0,0,0,0.9), rgba(0,0,0,0.74));
+}
