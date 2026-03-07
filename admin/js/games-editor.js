@@ -21,7 +21,7 @@ const REQUIRED_GENRE_VALUES = [
   'strategy'
 ];
 
-const REQUIRED_COLLECTION_VALUES = ['cartridge', 'licensed', 'banned', 'top picks', 'retro events'];
+const REQUIRED_COLLECTION_VALUES = ['cartridge', 'licensed', 'banned', 'top picks', 'retro events', 'demo music'];
 
 const EMPTY_DRAFT = {
   title: '',
@@ -1024,7 +1024,10 @@ function mapLegacyCategoryValue(value, key) {
     'top picks': 'top picks',
     'top-picks': 'top picks',
     'retro events': 'retro events',
-    'retro-events': 'retro events'
+    'retro-events': 'retro events',
+    'demo music': 'demo music',
+    'demo-music': 'demo music',
+    'demo_music': 'demo music'
   };
   return collectionMap[token] || '';
 }

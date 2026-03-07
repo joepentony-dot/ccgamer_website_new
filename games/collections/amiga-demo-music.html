@@ -1,71 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" data-ccg-page="collection-single">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('ccg-mode');
+                if (!saved) return;
+                document.documentElement.setAttribute('data-ccg-mode', saved);
+                document.documentElement.setAttribute('data-mode', saved);
+                // Body may not exist yet during head execution, but set if available
+                if (document.body) {
+                    document.body.setAttribute('data-ccg-mode', saved);
+                    document.body.setAttribute('data-mode', saved);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.body.setAttribute('data-ccg-mode', saved);
+                        document.body.setAttribute('data-mode', saved);
+                    }, { once: true });
+                }
+            } catch (e) {}
+        })();
+    </script>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/amiga-demo-music.html">
 
-<title>Amiga Demo Music – Classic Demoscene Soundtracks</title>
+    <title>Amiga Demo Music – Legendary Demoscene Soundtracks | Cheeky Commodore Gamer</title>
 
-<meta name="description"
-content="Explore legendary Amiga demo scene music including classic MOD tracker tracks, iconic demo groups and composers that defined the golden age of the Amiga demoscene.">
+    <script src="/js/analytics.js"></script>
 
-<link rel="canonical"
-href="https://www.cheekycommodoregamer.co.uk/games/collections/amiga-demo-music.html">
+    <meta name="description"
+          content="Explore legendary Amiga demo scene music including iconic tracker modules and demoscene soundtracks." />
+    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/collections/amiga-demo-music.png" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicPlaylist",
+      "name": "Amiga Demo Music",
+      "description": "Classic tracker music from the Amiga demoscene",
+      "url": "https://www.cheekycommodoregamer.co.uk/games/collections/amiga-demo-music.html"
+    }
+    </script>
 
-<meta property="og:title" content="Amiga Demo Scene Music">
-<meta property="og:description"
-content="Classic music from the legendary Amiga demoscene — modules, demo groups and iconic composers.">
-<meta property="og:type" content="website">
-<meta property="og:url"
-content="https://www.cheekycommodoregamer.co.uk/games/collections/amiga-demo-music.html">
-<meta property="og:image"
-content="https://www.cheekycommodoregamer.co.uk/resources/images/collections/amiga-demo-music.png">
+    <link rel="icon" href="../../favicon.ico" />
 
-<link rel="stylesheet" href="/resources/css/main.css">
+    <!-- REQUIRED FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-<script type="application/ld+json">
-{
-"@context": "https://schema.org",
-"@type": "MusicRecording",
-"name": "Amiga Demo Music",
-"genre": "Demoscene",
-"datePublished": "1990",
-"recordingOf": "Amiga Demo Scene Music"
-}
-</script>
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+    <link rel="preload" href="../../resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-effects.css" /></noscript>
+    <link rel="stylesheet" href="../../resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-cards.css" />
+    <link rel="preload" href="../../resources/css/ccg-socials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-socials.css" /></noscript>
+    <link rel="preload" href="../../resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="../../resources/css/ccg-anim.css" /></noscript>
+    <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
 
+    
+
+    <!-- CARD + PAGE CSS -->
+    <link rel="stylesheet" href="../../resources/css/genre.css" />
+    <link rel="stylesheet" href="../../resources/css/retro-events.css" />
+
+    <!-- FOOTER CSS -->
+    <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="../../resources/css/ccg-mobile-lite.css">
+    <script src="../../js/ccg-mobile-lite.js" defer></script>
+
+    <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
 </head>
 
-<body>
+<body class="ccg-body"
+      data-ccg-mode="c64"
+      data-collection="Amiga Demo Music" data-mode="c64" id="top">
 
-<header>
+<!-- BACKGROUNDS -->
+<div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
+</div>
 
-<h1>Amiga Demo Music</h1>
+<div class="ccg-page ccg-page--collection-single">
 
-<p>
-The Amiga demoscene produced some of the most memorable computer music ever written.
-From early tracker modules to legendary demo productions, these soundtracks defined
-an era of creativity, technical brilliance and musical experimentation.
-</p>
+<!-- HEADER (LOCKED CANONICAL) -->
+        <!-- HEADER -->
+        
 
-<p>
-Explore the legendary <a href="/games/collections/amiga-demo-music.html">Amiga demo music collection</a>,
-then jump back to the wider <a href="/games/collections/retro-events.html">retro events collection</a>
-for expos, meetups and scene history videos.
-</p>
+<header class="ccg-header" data-ccg-header>
+    <div class="ccg-header-inner">
 
+        <a href="../../home.html" class="ccg-brand">
+            <img src="../../resources/images/ccgamer-logo.png"
+                 alt="Cheeky Commodore Gamer logo"
+                 class="ccg-brand__logo"
+                 loading="lazy" width="1500" height="1032" srcset="../../resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px">
+
+            <div class="ccg-brand__text">
+                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                <div class="ccg-brand__title">
+                    <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                    <span class="ccg-brand__neon-sub">GAMER</span>
+                </div>
+            </div>
+        </a>
+
+        <button class="ccg-nav-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                aria-controls="ccg-primary-nav"
+                data-ccg-nav-toggle>
+            <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="ccg-nav-toggle__label">Menu</span>
+        </button>
+
+        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+            <div class="ccg-nav__bar">
+                <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                    <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
+                    <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="../../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                </ul>
+                <div class="ccg-nav__more">
+                    <button class="ccg-nav__more-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="ccg-more-menu"
+                            data-ccg-more-toggle>
+                        More <span aria-hidden="true">▾</span>
+                    </button>
+                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                </div>
+            </div>
+            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="../../quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                <li><a href="../../emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li><a href="../../about.html" class="ccg-nav__link">About</a></li>
+                <li><a href="../../contact.html" class="ccg-nav__link">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="ccg-header-actions">
+
+            <div class="ccg-mode-hint">Try different modes</div>
+            <button class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle between C64 and Amiga modes"
+                    data-ccg-mode-toggle>
+                <span class="ccg-mode-toggle__pill">
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                    <span class="ccg-mode-toggle__thumb"></span>
+                </span>
+            </button>
+
+            <div class="ccg-header-socials" aria-label="Social links">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+        <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+        <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+            <div class="ccg-nav-drawer__header">
+                <span class="ccg-nav-drawer__title">Navigate</span>
+                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
+                    <span aria-hidden="true">✕</span>
+                </button>
+            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
+                <div class="ccg-nav-drawer__label">Primary</div>
+            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
+                <div class="ccg-nav-drawer__label">Explore more</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ccg-header-neon-strip"></div>
 </header>
 
-<section class="collection-container" id="demo-music-container">
 
-<!-- JS will populate demo music entries -->
 
-</section>
 
-<script src="/js/load-demo-music.js"></script>
+<main class="ccg-main">
 
+    <!-- HERO -->
+    <section class="ccg-genre-hero ccg-collection-hero">
+        <div class="ccg-genre-hero__bg">
+            <div class="ccg-genre-hero__overlay"></div>
+        </div>
+        <div class="ccg-genre-hero__inner">
+            <h1 class="ccg-genre-hero__title">Amiga Demo Music</h1>
+
+            <p class="ccg-genre-hero__tagline">
+                Legendary Demoscene Soundtracks
+            </p>
+
+            <div class="ccg-genre-meta">
+                <div class="ccg-genre-meta__left">
+                    Collection auto-populated from admin entries
+                </div>
+                <div class="ccg-genre-meta__right">
+                    <span>Classic Amiga scene soundtracks</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- INTRO -->
+    <section class="ccg-section ccg-section--intro">
+        <p class="ccg-section__intro">
+            The Amiga demoscene produced some of the most memorable computer music ever written. From early tracker modules to legendary demo productions, these soundtracks defined an era of creativity, technical brilliance and musical experimentation.
+        </p>
+        <p class="ccg-section__intro">
+            This collection celebrates iconic Amiga demo music, legendary composers, and the demo groups that pushed the machine’s sound hardware to its limits.
+        </p>
+        <p class="ccg-section__intro">
+            Looking for retro events and exhibitions? Explore the <a href="/games/collections/retro-events.html">Retro Events collection</a>.
+        </p>
+    </section>
+
+    <!-- GRID -->
+    <section class="ccg-genre-main">
+        <div id="demo-music-container" class="ccg-genre-grid"></div>
+    </section>
+
+    <!-- WAYFINDING -->
+    <section class="ccg-section ccg-genre-wayfinding">
+        <div class="game-hero__buttons">
+            <a href="index.html" class="ccg-btn ccg-btn--secondary">← Back to Collections</a>
+            <a href="../index.html" class="ccg-btn ccg-btn--secondary">Browse All Games</a>
+        </div>
+    </section>
+
+</main>
+
+<footer class="ccg-footer">
+    <p class="ccg-footer__text">
+        © <span data-ccg-year></span> Cheeky Commodore Gamer.
+        Not affiliated with Commodore, Amiga or publishers.
+    </p>
+</footer>
+
+</div>
+
+<script src="../../js/ccg-nav-core.js" defer></script>
+<script src="../../js/ccg-global.js" defer></script>
+<script src="../../js/ccg-mode-engine.js" defer></script>
+<script src="../../js/load-demo-music.js" defer></script>
+
+<!-- GOATCOUNTER — SAFE ANALYTICS -->
+<script
+  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
+  async
+  src="https://gc.zgo.at/count.js">
+</script>
+
+
+<script src="/js/ccg-nav.js" defer></script>
+<script src="/js/ccg-supabase-config.js" defer></script>
+<script src="/js/ccg-supabase-client.js" defer></script>
+<script src="/js/ccg-community-auth.js" defer></script>
+<script src="/js/ccg-auth.js" defer></script>
+<script src="/js/ccg-mode.js" defer></script>
 </body>
-
 </html>
