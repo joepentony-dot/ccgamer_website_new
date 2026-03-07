@@ -26,7 +26,13 @@ const fields = {
   youtubeId: document.querySelector('[data-field="youtubeId"]'),
   membersOnly: document.querySelector('[data-field="membersOnly"]'),
   seoTitle: document.querySelector('[data-field="seoTitle"]'),
-  seoDescription: document.querySelector('[data-field="seoDescription"]')
+  seoDescription: document.querySelector('[data-field="seoDescription"]'),
+  composer: document.querySelector('[data-field="composer"]'),
+  demo_group: document.querySelector('[data-field="demo_group"]'),
+  year: document.querySelector('[data-field="year"]'),
+  format: document.querySelector('[data-field="format"]'),
+  thumbnail: document.querySelector('[data-field="thumbnail"]'),
+  description: document.querySelector('[data-field="description"]')
 };
 
 init();
@@ -100,6 +106,13 @@ function sanitizeEvent(eventItem) {
     title,
     youtubeId,
     membersOnly: eventItem?.membersOnly === true,
+    composer: String(eventItem?.composer || '').trim(),
+    demo_group: String(eventItem?.demo_group || eventItem?.group || '').trim(),
+    year: String(eventItem?.year ?? '').trim(),
+    format: String(eventItem?.format || '').trim(),
+    youtube: String(eventItem?.youtube || '').trim(),
+    thumbnail: String(eventItem?.thumbnail || '').trim(),
+    description: String(eventItem?.description || '').trim(),
     seo: sanitizeSeo(eventItem?.seo, { title, type })
   };
 }
@@ -123,6 +136,12 @@ function onSaveEvent(event) {
   const membersOnly = fields.membersOnly.checked;
   const seoTitle = fields.seoTitle.value.trim();
   const seoDescription = fields.seoDescription.value.trim();
+  const composer = fields.composer.value.trim();
+  const demo_group = fields.demo_group.value.trim();
+  const year = fields.year.value.trim();
+  const format = fields.format.value.trim();
+  const thumbnail = fields.thumbnail.value.trim();
+  const description = fields.description.value.trim();
 
   const slugBase = slugify(title) || slugify(youtubeId);
   const prefix = getTypePrefix(type);
@@ -134,6 +153,13 @@ function onSaveEvent(event) {
     title,
     youtubeId,
     membersOnly,
+    composer,
+    demo_group,
+    year: year ? Number(year) || year : '',
+    format,
+    youtube: youtubeId,
+    thumbnail,
+    description,
     seo: {
       title: seoTitle || buildSeoTitle(title, type),
       description: seoDescription || buildSeoDescription(title, type)
@@ -164,7 +190,7 @@ function onSaveEvent(event) {
 function validateEvent(next) {
   const errors = [];
 
-  if (next.type !== 'retro_event' && next.type !== 'amiga_demo_music') {
+  if (next.type !== 'retro_event' && next.type !== 'demo_music') {
     errors.push('Content Type is invalid.');
   }
 
@@ -245,6 +271,12 @@ function startEdit(id) {
   fields.membersOnly.checked = eventItem.membersOnly;
   fields.seoTitle.value = String(eventItem?.seo?.title || '').trim();
   fields.seoDescription.value = String(eventItem?.seo?.description || '').trim();
+  fields.composer.value = String(eventItem?.composer || '').trim();
+  fields.demo_group.value = String(eventItem?.demo_group || '').trim();
+  fields.year.value = String(eventItem?.year ?? '').trim();
+  fields.format.value = String(eventItem?.format || '').trim();
+  fields.thumbnail.value = String(eventItem?.thumbnail || '').trim();
+  fields.description.value = String(eventItem?.description || '').trim();
 
   updateSeoVisibility();
   el.formHeading.textContent = `Edit ${getTypeLabel(eventItem.type)}: ${eventItem.title}`;
@@ -302,6 +334,12 @@ function resetForm() {
   fields.membersOnly.checked = false;
   fields.seoTitle.value = '';
   fields.seoDescription.value = '';
+  fields.composer.value = '';
+  fields.demo_group.value = '';
+  fields.year.value = '';
+  fields.format.value = '';
+  fields.thumbnail.value = '';
+  fields.description.value = '';
   updateSeoVisibility();
   updateFormHeading();
   el.saveEvent.textContent = 'Save / Update';
@@ -309,7 +347,7 @@ function resetForm() {
 }
 
 function normalizeType(type) {
-  return type === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
+  return (type === 'demo_music' || type === 'amiga_demo_music') ? 'demo_music' : 'retro_event';
 }
 
 function getSelectedType() {
@@ -317,11 +355,11 @@ function getSelectedType() {
 }
 
 function getTypePrefix(type) {
-  return type === 'amiga_demo_music' ? 'amiga-demo-music-' : 'retro-events-';
+  return type === 'demo_music' ? 'amiga-demo-music-' : 'retro-events-';
 }
 
 function getTypeLabel(type) {
-  return type === 'amiga_demo_music' ? 'Amiga Demo Music' : 'Retro Event';
+  return type === 'demo_music' ? 'Demo Music' : 'Event';
 }
 
 function updateFormHeading() {
@@ -331,12 +369,12 @@ function updateFormHeading() {
 
 function updateSeoVisibility() {
   if (!el.seoFieldsWrap) return;
-  el.seoFieldsWrap.hidden = getSelectedType() !== 'amiga_demo_music';
+  el.seoFieldsWrap.hidden = getSelectedType() !== 'demo_music';
 }
 
 function buildSeoTitle(title, type) {
   if (!title) return '';
-  if (type === 'amiga_demo_music') {
+  if (type === 'demo_music') {
     return `${title} | Amiga Demo Music | Cheeky Commodore Gamer`;
   }
   return `${title} | Retro Event | Cheeky Commodore Gamer`;
@@ -344,7 +382,7 @@ function buildSeoTitle(title, type) {
 
 function buildSeoDescription(title, type) {
   if (!title) return '';
-  if (type === 'amiga_demo_music') {
+  if (type === 'demo_music') {
     return `Watch ${title} on Cheeky Commodore Gamer's Amiga Demo Music collection.`;
   }
   return `Watch ${title} on Cheeky Commodore Gamer's Retro Events collection.`;

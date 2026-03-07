@@ -57,7 +57,7 @@
         </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
-      <h1>Non-Game Video Builder (Retro Events + Amiga Demo Music)</h1>
+      <h1>Non-Game Video Builder (Events + Demo Music)</h1>
       <p>This editor manages non-game video content in one canonical file: <code>/data/retro-events.json</code>. Public pages and SEO generation read from the same data.</p>
       <p class="retro-help">Use Save to download an updated <code>retro-events.json</code> file.</p>
       <p class="retro-status" data-status></p>
@@ -67,10 +67,10 @@
       <h2 data-form-heading>Add Retro Event</h2>
       <form data-form>
         <div class="retro-grid">
-          <label>Content Type *
+          <label>Category *
             <select data-field="type" required>
-              <option value="retro_event">Retro Event</option>
-              <option value="amiga_demo_music">Amiga Demo Music</option>
+              <option value="retro_event">Event</option>
+              <option value="demo_music">Demo Music</option>
             </select>
           </label>
           <label>Title *
@@ -78,6 +78,24 @@
           </label>
           <label>YouTube Video ID *
             <input type="text" data-field="youtubeId" placeholder="smVNHlm_jM0" required />
+          </label>
+          <label>Composer
+            <input type="text" data-field="composer" placeholder="Captain" />
+          </label>
+          <label>Demo Group
+            <input type="text" data-field="demo_group" placeholder="Spaceballs" />
+          </label>
+          <label>Year
+            <input type="text" data-field="year" placeholder="1991" />
+          </label>
+          <label>Format
+            <input type="text" data-field="format" placeholder="MOD" />
+          </label>
+          <label>Thumbnail
+            <input type="text" data-field="thumbnail" placeholder="space-debris.png" />
+          </label>
+          <label class="full">Description
+            <textarea data-field="description" placeholder="Optional summary for this demo track."></textarea>
           </label>
           <label class="full toggle-wrap">
             <input type="checkbox" data-field="membersOnly" />
