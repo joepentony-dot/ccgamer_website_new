@@ -4,7 +4,7 @@
    • Loads curated events from /data/retro-events.json
    • Renders with existing collection card layout
    • Uses youtubeId to derive watch URLs and thumbnails
-   • Supports retro_event + amiga_demo_music types
+   • Supports retro_event + demo_music types (demo_music excluded from this page)
 ============================================================ */
 
 function ccgEscapeHtml(value) {
@@ -93,7 +93,7 @@ async function ccgLoadRetroEvents() {
   return data
     .map((eventItem, index) => {
       const rawType = String(eventItem?.type || '').trim().toLowerCase();
-      const type = rawType === 'amiga_demo_music' ? 'amiga_demo_music' : 'retro_event';
+      const type = (rawType === 'demo_music' || rawType === 'amiga_demo_music') ? 'demo_music' : 'retro_event';
       const orderValue = Number(eventItem?.order);
       const youtubeId = String(eventItem?.youtubeId || '').trim();
 
@@ -125,17 +125,9 @@ function ccgRenderCards(gridEl, items) {
   gridEl.innerHTML = items.map(ccgBuildRetroEventCard).join('');
 }
 
-function setAmigaSectionVisible(visible) {
-  const amigaSections = document.querySelectorAll('[data-amiga-demo-music-section]');
-  amigaSections.forEach((section) => {
-    section.hidden = !visible;
-  });
-}
-
 async function ccgRunRetroEventsCollection() {
   const gridRetro = document.getElementById('genreGamesGrid');
   const countEl = document.getElementById('genreGamesCount');
-  const gridAmiga = document.getElementById('amigaDemoMusicGrid');
 
   if (!gridRetro) {
     console.warn('[CCG RETRO EVENTS] Missing grid container');
@@ -145,7 +137,6 @@ async function ccgRunRetroEventsCollection() {
   try {
     const events = await ccgLoadRetroEvents();
     const retroEvents = events.filter((eventItem) => eventItem.type === 'retro_event');
-    const amigaDemo = events.filter((eventItem) => eventItem.type === 'amiga_demo_music');
 
     if (countEl) {
       countEl.textContent = String(retroEvents.length);
@@ -166,15 +157,6 @@ async function ccgRunRetroEventsCollection() {
       `;
     }
 
-    if (amigaDemo.length > 0 && gridAmiga) {
-      ccgRenderCards(gridAmiga, amigaDemo);
-      setAmigaSectionVisible(true);
-    } else {
-      if (gridAmiga) {
-        gridAmiga.innerHTML = '';
-      }
-      setAmigaSectionVisible(false);
-    }
   } catch (error) {
     console.error('[CCG RETRO EVENTS]', error);
     if (countEl) {
@@ -187,10 +169,6 @@ async function ccgRunRetroEventsCollection() {
       </div>
     `;
 
-    if (gridAmiga) {
-      gridAmiga.innerHTML = '';
-    }
-    setAmigaSectionVisible(false);
   }
 }
 
