@@ -1,0 +1,42 @@
+{
+  "defaults": {
+    "enabled": true,
+    "heading": "Related Gear",
+    "disclosure": "As an Amazon Associate I earn from qualifying purchases."
+  },
+  "groups": {
+    "default": [
+      {
+        "title": "THEC64 Mini",
+        "url": "https://YOUR-AFFILIATE-LINK",
+        "image": "resources/images/affiliate/thec64-mini.jpg",
+        "alt": "THEC64 Mini",
+        "buttonText": "View on Amazon",
+        "description": "A compact modern way to enjoy classic Commodore gaming."
+      }
+    ],
+    "waggle-stick": [
+      {
+        "title": "USB Retro Joystick",
+        "url": "https://YOUR-AFFILIATE-LINK",
+        "image": "resources/images/affiliate/usb-joystick.jpg",
+        "alt": "USB Retro Joystick",
+        "buttonText": "View on Amazon",
+        "description": "Ideal for games that rely on rapid joystick movement."
+      }
+    ]
+  },
+  "gameOverrides": {
+    "decathlon": {
+      "group": "waggle-stick"
+    },
+    "daley-thompsons-decathlon": {
+      "group": "waggle-stick"
+    },
+    "hyper-sports": {
+      "group": "waggle-stick"
+    }
+  },
+  "genreGroups": {},
+  "collectionGroups": {}
+}

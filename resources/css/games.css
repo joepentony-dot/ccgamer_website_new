@@ -3062,3 +3062,101 @@ button,
 [data-ccg-favourite-btn].is-busy {
   opacity: 0.75;
 }
+
+/* ============================================================
+   AFFILIATE PRODUCTS — SINGLE GAME (CENTRALISED)
+   ============================================================ */
+
+.affiliate-products-section {
+    margin-top: clamp(20px, 3vw, 34px);
+}
+
+.affiliate-products-inner {
+    display: grid;
+    gap: 14px;
+}
+
+.affiliate-products-title {
+    margin: 0;
+}
+
+.affiliate-products-disclosure {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.affiliate-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: clamp(10px, 1.6vw, 16px);
+}
+
+.affiliate-product-card {
+    display: grid;
+    gap: 10px;
+    padding: clamp(12px, 1.8vw, 16px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb), 0.12), rgba(12, 20, 36, 0.6)),
+        rgba(12, 14, 24, 0.55);
+    transition: transform 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
+}
+
+.affiliate-product-card:hover,
+.affiliate-product-card:focus-within {
+    transform: translateY(-2px);
+    border-color: rgba(var(--accent-rgb), 0.45);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+}
+
+.affiliate-product-card__media {
+    aspect-ratio: 4 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.affiliate-product-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.affiliate-product-card__title {
+    margin: 0;
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.affiliate-product-card__description {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.affiliate-product-card__cta.ccg-btn {
+    justify-content: center;
+    margin-top: 2px;
+    text-align: center;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .affiliate-products-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 560px) {
+    .affiliate-products-grid {
+        grid-template-columns: 1fr;
+    }
+}
