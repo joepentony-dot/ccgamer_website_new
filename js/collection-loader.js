@@ -29,8 +29,8 @@ function ccgExtractKey(slug) {
 }
 
 function ccgRunCollectionLoader() {
-    if (document.body?.dataset?.collection === 'Retro Events') {
-        console.info('[CCG] Skipping legacy collection renderer for Retro Events');
+    if (document.body?.dataset?.collection === 'Retro Events' || document.body?.dataset?.collection === 'Retro Specials') {
+        console.info('[CCG] Skipping legacy collection renderer for curated retro video collections');
         return;
     }
 

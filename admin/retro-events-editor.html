@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="ccg-context" content="admin" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Retro Events Builder</title>
+  <title>Retro Video Collections Builder</title>
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css?v=retro-events-editor-3" rel="stylesheet" />
   <link href="../resources/css/ccg-admin.css?v=retro-events-editor-3" rel="stylesheet" />
@@ -57,9 +57,9 @@
         </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
-      <h1>Non-Game Video Builder (Events + Demo Music)</h1>
+      <h1>Non-Game Video Builder (Events + Specials + Demo Music)</h1>
       <p>This editor manages non-game video content across <code>/data/retro-events.json</code> and <code>/data/amiga-demo-music.json</code>. Public pages and SEO generation read from the same data.</p>
-      <p class="retro-help">Use the save buttons to download updated JSON files for Retro Events and Amiga Demo Music.</p>
+      <p class="retro-help">Use the save buttons to download updated JSON files for Retro Events/Specials and Amiga Demo Music.</p>
       <p class="retro-status" data-status></p>
     </section>
 
@@ -70,11 +70,12 @@
           <label>Category *
             <select data-field="type" required>
               <option value="retro_event">Event</option>
+              <option value="retro_special">Special</option>
               <option value="demo_music">Demo Music</option>
             </select>
           </label>
           <label>Title *
-            <input type="text" data-field="title" placeholder="Arcade Club Bury – Europe’s Largest Free-Play Arcade" required />
+            <input type="text" data-field="title" placeholder="The SID Chip – Commodore 64 Sound Interface Device Story" required />
           </label>
           <label>YouTube Video ID *
             <input type="text" data-field="youtubeId" placeholder="smVNHlm_jM0" required />
@@ -123,16 +124,16 @@
     <section class="retro-card retro-preview">
       <h2>Preview card</h2>
       <article class="retro-preview-card" data-preview-card>
-        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Retro event preview thumbnail" data-preview-thumb />
+        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Retro video preview thumbnail" data-preview-thumb />
         <div class="retro-preview-body">
-          <div class="retro-preview-title" data-preview-title>Retro Event Title</div>
+          <div class="retro-preview-title" data-preview-title>Retro Video Title</div>
           <div><span class="retro-pill members" data-preview-members hidden>Members Only</span></div>
         </div>
       </article>
     </section>
 
     <section class="retro-card">
-      <h2>Events</h2>
+      <h2>Events & Specials</h2>
       <ul class="retro-list" data-event-list></ul>
       <div class="retro-actions">
         <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save retro-events.json</button>
