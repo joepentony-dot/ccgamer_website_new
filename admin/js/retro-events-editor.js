@@ -202,7 +202,7 @@ function onSaveEvent(event) {
 function validateEvent(next) {
   const errors = [];
 
-  if (next.type !== 'retro_event' && next.type !== 'demo_music') {
+  if (next.type !== 'retro_event' && next.type !== 'retro_special' && next.type !== 'demo_music') {
     errors.push('Content Type is invalid.');
   }
 
@@ -224,7 +224,7 @@ function validateEvent(next) {
 }
 
 function renderPreview() {
-  const title = fields.title.value.trim() || 'Retro Event Title';
+  const title = fields.title.value.trim() || 'Retro Video Title';
   const youtubeId = fields.youtubeId.value.trim() || 'dQw4w9WgXcQ';
 
   if (!state.editingId) {
@@ -366,7 +366,9 @@ function resetForm() {
 }
 
 function normalizeType(type) {
-  return (type === 'demo_music' || type === 'amiga_demo_music') ? 'demo_music' : 'retro_event';
+  if (type === 'demo_music' || type === 'amiga_demo_music') return 'demo_music';
+  if (type === 'retro_special') return 'retro_special';
+  return 'retro_event';
 }
 
 function getSelectedType() {
@@ -374,11 +376,15 @@ function getSelectedType() {
 }
 
 function getTypePrefix(type) {
-  return type === 'demo_music' ? 'amiga-demo-music-' : 'retro-events-';
+  if (type === 'demo_music') return 'amiga-demo-music-';
+  if (type === 'retro_special') return 'retro-specials-';
+  return 'retro-events-';
 }
 
 function getTypeLabel(type) {
-  return type === 'demo_music' ? 'Demo Music' : 'Event';
+  if (type === 'demo_music') return 'Demo Music';
+  if (type === 'retro_special') return 'Special';
+  return 'Event';
 }
 
 function updateFormHeading() {
@@ -396,6 +402,9 @@ function buildSeoTitle(title, type) {
   if (type === 'demo_music') {
     return `${title} | Amiga Demo Music | Cheeky Commodore Gamer`;
   }
+  if (type === 'retro_special') {
+    return `${title} | Retro Special | Cheeky Commodore Gamer`;
+  }
   return `${title} | Retro Event | Cheeky Commodore Gamer`;
 }
 
@@ -403,6 +412,9 @@ function buildSeoDescription(title, type) {
   if (!title) return '';
   if (type === 'demo_music') {
     return `Watch ${title} on Cheeky Commodore Gamer's Amiga Demo Music collection.`;
+  }
+  if (type === 'retro_special') {
+    return `Watch ${title} on Cheeky Commodore Gamer's Retro Specials collection.`;
   }
   return `Watch ${title} on Cheeky Commodore Gamer's Retro Events collection.`;
 }
