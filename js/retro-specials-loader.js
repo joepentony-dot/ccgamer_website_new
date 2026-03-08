@@ -1,10 +1,10 @@
 /* ============================================================
-   RETRO EVENTS COLLECTION LOADER
+   RETRO SPECIALS COLLECTION LOADER
    ------------------------------------------------------------
-   • Loads curated events from /data/retro-events.json
+   • Loads curated specials from /data/retro-events.json
    • Renders with existing collection card layout
    • Uses youtubeId to derive watch URLs and thumbnails
-   • Supports retro_event + retro_special + demo_music types
+   • Supports retro_special + retro_event + demo_music types
 ============================================================ */
 
 function ccgEscapeHtml(value) {
@@ -23,7 +23,7 @@ function ccgGetYouTubeThumbUrl(youtubeId, variant) {
   return `https://img.youtube.com/vi/${encodeURIComponent(id)}/${file}`;
 }
 
-function ccgBuildRetroEventCard(eventItem) {
+function ccgBuildRetroSpecialCard(eventItem) {
   const title = String(eventItem?.title || '').trim();
   const videoUrl = String(eventItem?.url || '').trim();
   if (!title || !videoUrl) return '';
@@ -79,7 +79,7 @@ function ccgBuildRetroEventCard(eventItem) {
   `;
 }
 
-async function ccgLoadRetroEvents() {
+async function ccgLoadRetroSpecials() {
   const response = await fetch('/data/retro-events.json', { cache: 'no-store' });
   if (!response.ok) {
     throw new Error(`Could not load retro-events.json (${response.status})`);
@@ -124,28 +124,28 @@ async function ccgLoadRetroEvents() {
 
 function ccgRenderCards(gridEl, items) {
   if (!gridEl) return;
-  gridEl.innerHTML = items.map(ccgBuildRetroEventCard).join('');
+  gridEl.innerHTML = items.map(ccgBuildRetroSpecialCard).join('');
 }
 
-async function ccgRunRetroEventsCollection() {
+async function ccgRunRetroSpecialsCollection() {
   const gridRetro = document.getElementById('genreGamesGrid');
   const countEl = document.getElementById('genreGamesCount');
 
   if (!gridRetro) {
-    console.warn('[CCG RETRO EVENTS] Missing grid container');
+    console.warn('[CCG RETRO SPECIALS] Missing grid container');
     return;
   }
 
   try {
-    const events = await ccgLoadRetroEvents();
-    const retroEvents = events.filter((eventItem) => eventItem.type === 'retro_event');
+    const events = await ccgLoadRetroSpecials();
+    const retroSpecials = events.filter((eventItem) => eventItem.type === 'retro_special');
 
     if (countEl) {
-      countEl.textContent = String(retroEvents.length);
+      countEl.textContent = String(retroSpecials.length);
     }
 
-    if (retroEvents.length > 0) {
-      ccgRenderCards(gridRetro, retroEvents);
+    if (retroSpecials.length > 0) {
+      ccgRenderCards(gridRetro, retroSpecials);
     } else {
       gridRetro.innerHTML = `
         <div class="ccg-genre-empty">
@@ -160,13 +160,13 @@ async function ccgRunRetroEventsCollection() {
     }
 
   } catch (error) {
-    console.error('[CCG RETRO EVENTS]', error);
+    console.error('[CCG RETRO SPECIALS]', error);
     if (countEl) {
       countEl.textContent = '0';
     }
     gridRetro.innerHTML = `
       <div class="ccg-genre-empty">
-        <h3>Unable to load Retro Events</h3>
+        <h3>Unable to load Retro Specials</h3>
         <p>Please try again later.</p>
       </div>
     `;
@@ -175,7 +175,7 @@ async function ccgRunRetroEventsCollection() {
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', ccgRunRetroEventsCollection, { once: true });
+  document.addEventListener('DOMContentLoaded', ccgRunRetroSpecialsCollection, { once: true });
 } else {
-  ccgRunRetroEventsCollection();
+  ccgRunRetroSpecialsCollection();
 }
