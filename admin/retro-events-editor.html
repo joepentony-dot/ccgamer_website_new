@@ -7,15 +7,15 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Retro Video Collections Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-3" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-3" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-4" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-4" rel="stylesheet" />
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
     .retro-card { background: rgba(10, 20, 45, 0.92); border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
     .retro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
     .retro-grid .full { grid-column: 1 / -1; }
     label { display: flex; flex-direction: column; gap: .3rem; font-weight: 600; }
-    input[type="text"], textarea, select { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
+    input[type="text"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
     textarea { min-height: 84px; resize: vertical; }
     .toggle-wrap { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; }
     .toggle-wrap input { accent-color: #ff2a6d; }
@@ -28,7 +28,7 @@
     .retro-item-title { font-weight: 700; }
     .retro-item-sub { font-size: .85rem; color: #9bc6f1; }
     .retro-pill.members { display: inline-flex; align-items: center; font-size: .72rem; border: 1px solid rgba(255, 128, 170, .9); padding: .1rem .45rem; border-radius: 999px; background: rgba(255, 42, 109, 0.2); margin-left: .45rem; }
-    .retro-item-buttons { display: flex; gap: .45rem; }
+    .retro-item-buttons { display: flex; gap: .45rem; flex-wrap: wrap; }
     .retro-help { color: #9bc6f1; font-size: .9rem; }
     .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
     .content-switcher label { font-weight: 700; min-width: 140px; }
@@ -38,7 +38,6 @@
     .retro-preview-card img { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; }
     .retro-preview-body { padding: .75rem; display: grid; gap: .45rem; }
     .retro-preview-title { font-weight: 700; line-height: 1.25; }
-    .seo-fields[hidden] { display: none; }
     .seo-hint { font-size: .82rem; color: #9bc6f1; margin: 0; }
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
@@ -52,14 +51,14 @@
       <div class="content-switcher">
         <label>Builder Selector</label>
         <div class="retro-actions">
-          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Add Game</button>
-          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Non-Game Video</button>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Games</button>
+          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Amiga Demo Music / Events / Specials</button>
         </div>
         <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
-      <h1>Non-Game Video Builder (Events + Specials + Demo Music)</h1>
-      <p>This editor manages non-game video content across <code>/data/retro-events.json</code> and <code>/data/amiga-demo-music.json</code>. Public pages and SEO generation read from the same data.</p>
-      <p class="retro-help">Use the save buttons to download updated JSON files for Retro Events/Specials and Amiga Demo Music.</p>
+      <h1>Non-Game Video Builder</h1>
+      <p>This editor manages <code>/data/retro-events.json</code> (Retro Events + Retro Specials) and <code>/data/amiga-demo-music.json</code> (Amiga Demo Music) with a simplified YouTube-first workflow.</p>
+      <p class="retro-help">Use section filters, edit cards, adjust sort order, and export updated JSON files without touching the Games editor.</p>
       <p class="retro-status" data-status></p>
     </section>
 
@@ -67,51 +66,55 @@
       <h2 data-form-heading>Add Retro Event</h2>
       <form data-form>
         <div class="retro-grid">
-          <label>Category *
+          <label>Section *
             <select data-field="type" required>
-              <option value="retro_event">Event</option>
-              <option value="retro_special">Special</option>
-              <option value="demo_music">Demo Music</option>
+              <option value="retro_event">Retro Events</option>
+              <option value="retro_special">Retro Specials</option>
+              <option value="demo_music">Amiga Demo Music</option>
             </select>
           </label>
           <label>Title *
-            <input type="text" data-field="title" placeholder="The SID Chip – Commodore 64 Sound Interface Device Story" required />
+            <input type="text" data-field="title" placeholder="Arcade Club Bury, Greater Manchester" required />
+          </label>
+          <label>Slug (optional)
+            <input type="text" data-field="slug" placeholder="arcade-club-bury" />
+          </label>
+          <label>YouTube URL *
+            <input type="text" data-field="youtubeUrl" placeholder="https://www.youtube.com/watch?v=6PmRNlqIdFY" required />
           </label>
           <label>YouTube Video ID *
-            <input type="text" data-field="youtubeId" placeholder="smVNHlm_jM0" required />
+            <input type="text" data-field="youtubeId" placeholder="6PmRNlqIdFY" required />
           </label>
-          <label>Composer
-            <input type="text" data-field="composer" placeholder="Captain" />
+          <label>Published / Event Date
+            <input type="date" data-field="publishedDate" />
           </label>
-          <label>Demo Group
-            <input type="text" data-field="demo_group" placeholder="Spaceballs" />
+          <label>Sort Order
+            <input type="number" data-field="sortOrder" placeholder="10" />
           </label>
-          <label>Year
-            <input type="text" data-field="year" placeholder="1991" />
-          </label>
-          <label>Format
-            <input type="text" data-field="format" placeholder="MOD" />
-          </label>
-          <label>Thumbnail
-            <input type="text" data-field="thumbnail" placeholder="space-debris.png" />
+          <label class="full">Short Summary
+            <textarea data-field="summary" placeholder="One-line summary for cards and SEO snippets."></textarea>
           </label>
           <label class="full">Description
-            <textarea data-field="description" placeholder="Optional summary for this demo track."></textarea>
+            <textarea data-field="description" placeholder="Longer description used by section pages and future landing pages."></textarea>
+          </label>
+          <label class="full toggle-wrap">
+            <input type="checkbox" data-field="visible" checked />
+            Visible / Published
           </label>
           <label class="full toggle-wrap">
             <input type="checkbox" data-field="membersOnly" />
             Members Only toggle (pink sash)
           </label>
-          <div class="full seo-fields" data-seo-fields hidden>
+          <div class="full">
             <div class="retro-grid">
               <label>SEO Title
-                <input type="text" data-field="seoTitle" placeholder="Optional override for future /music/amiga-demo-music/ pages" />
+                <input type="text" data-field="seoTitle" placeholder="Optional override" />
               </label>
               <label class="full">SEO Description
-                <textarea data-field="seoDescription" placeholder="Optional short description used when generating dedicated music pages."></textarea>
+                <textarea data-field="seoDescription" placeholder="Optional override"></textarea>
               </label>
             </div>
-            <p class="seo-hint">SEO fields are optional and auto-filled if left blank.</p>
+            <p class="seo-hint">If left blank, SEO fields are generated from title and section type.</p>
           </div>
         </div>
         <div class="retro-actions">
@@ -133,7 +136,17 @@
     </section>
 
     <section class="retro-card">
-      <h2>Events & Specials</h2>
+      <h2>Manage Entries</h2>
+      <div class="retro-grid">
+        <label>Show section
+          <select data-filter="type">
+            <option value="all">All sections</option>
+            <option value="retro_event">Retro Events</option>
+            <option value="retro_special">Retro Specials</option>
+            <option value="demo_music">Amiga Demo Music</option>
+          </select>
+        </label>
+      </div>
       <ul class="retro-list" data-event-list></ul>
       <div class="retro-actions">
         <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save retro-events.json</button>
@@ -142,6 +155,6 @@
     </section>
   </main>
 
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-3"></script>
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-4"></script>
 </body>
 </html>

@@ -31,7 +31,7 @@ function ccgBuildRetroSpecialCard(eventItem) {
   const safeTitle = ccgEscapeHtml(title);
   const safeVideoUrl = ccgEscapeHtml(videoUrl);
 
-  const youtubeId = String(eventItem?.youtubeId || '').trim();
+  const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
   const thumb = ccgGetYouTubeThumbUrl(youtubeId, 'hqdefault.jpg');
   const thumbFallback = ccgGetYouTubeThumbUrl(youtubeId, 'mqdefault.jpg');
 
@@ -96,16 +96,17 @@ async function ccgLoadRetroSpecials() {
       let type = 'retro_event';
       if (rawType === 'demo_music' || rawType === 'amiga_demo_music') type = 'demo_music';
       if (rawType === 'retro_special') type = 'retro_special';
-      const orderValue = Number(eventItem?.order);
-      const youtubeId = String(eventItem?.youtubeId || '').trim();
+      const orderValue = Number(eventItem?.sort_order ?? eventItem?.order);
+      const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
 
       return {
         id: String(eventItem?.id || '').trim(),
         type,
         title: String(eventItem?.title || '').trim(),
         youtubeId,
-        url: String(eventItem?.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : ''),
+        url: String(eventItem?.youtube_url || eventItem?.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : ''),
         membersOnly: eventItem?.membersOnly === true,
+        visible: eventItem?.visible !== false && eventItem?.published !== false,
         badge: String(eventItem?.badge || '').trim(),
         seo: {
           title: String(eventItem?.seo?.title || '').trim(),
@@ -115,7 +116,7 @@ async function ccgLoadRetroSpecials() {
         index
       };
     })
-    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url)
+    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url && eventItem.visible)
     .sort((a, b) => {
       if (a.order !== b.order) return a.order - b.order;
       return a.index - b.index;
