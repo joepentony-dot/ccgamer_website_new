@@ -109,8 +109,14 @@ def seo_template(
     <meta property=\"og:title\" content=\"{safe_title} | Cheeky Commodore Gamer\" />
     <meta property=\"og:description\" content=\"{safe_description}\" />
     <meta property=\"og:type\" content=\"website\" />
+    <meta property=\"og:site_name\" content=\"Cheeky Commodore Gamer\" />
     <meta property=\"og:url\" content=\"{og_url}\" />
     <meta property=\"og:image\" content=\"{og_image}\" />
+
+    <meta name=\"twitter:card\" content=\"summary_large_image\" />
+    <meta name=\"twitter:title\" content=\"{safe_title} | Cheeky Commodore Gamer\" />
+    <meta name=\"twitter:description\" content=\"{safe_description}\" />
+    <meta name=\"twitter:image\" content=\"{og_image}\" />
 
     <link rel=\"icon\" href=\"../../favicon.ico\" />
 
@@ -302,6 +308,7 @@ def main() -> int:
             mode=mode,
             interactive_href=f"/games/{slug}/",
             browse_href="/games/index.html",
+            display_slug=slug,
         )
 
         page_file = root / "games" / slug / "index.html"

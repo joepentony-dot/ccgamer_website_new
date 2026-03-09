@@ -69,8 +69,14 @@
     <meta property="og:title" content="20 Tons | Cheeky Commodore Gamer" />
     <meta property="og:description" content="20 Tons on Commodore — screenshots, manual, downloads and video." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cheeky Commodore Gamer" />
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/20-tons/" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="20 Tons | Cheeky Commodore Gamer" />
+    <meta name="twitter:description" content="20 Tons on Commodore — screenshots, manual, downloads and video." />
+    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/20_tons_new.png" />
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -772,6 +778,16 @@
         const relativeThumb = getRelativeThumbnail(game.thumbnail);
         const mode = game.system === "AMIGA" ? "amiga" : "c64";
 
+        function ensureMeta(selector, attrs) {
+            let node = doc.querySelector(selector);
+            if (!node) {
+                node = doc.createElement("meta");
+                Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+                doc.head.appendChild(node);
+            }
+            return node;
+        }
+
         doc.title = titleText;
 
         const descriptionMeta = doc.querySelector('meta[name="description"]');
@@ -786,11 +802,29 @@
         const ogDescription = doc.querySelector('meta[property="og:description"]');
         if (ogDescription) ogDescription.setAttribute("content", descriptionText);
 
+        const ogType = ensureMeta('meta[property="og:type"]', { property: "og:type", content: "website" });
+        ogType.setAttribute("content", "website");
+
+        const ogSiteName = ensureMeta('meta[property="og:site_name"]', { property: "og:site_name", content: "Cheeky Commodore Gamer" });
+        ogSiteName.setAttribute("content", "Cheeky Commodore Gamer");
+
         const ogUrl = doc.querySelector('meta[property="og:url"]');
         if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
 
         const ogImage = doc.querySelector('meta[property="og:image"]');
         if (ogImage) ogImage.setAttribute("content", ogImageUrl);
+
+        const twitterCard = ensureMeta('meta[name="twitter:card"]', { name: "twitter:card", content: "summary_large_image" });
+        twitterCard.setAttribute("content", "summary_large_image");
+
+        const twitterTitle = ensureMeta('meta[name="twitter:title"]', { name: "twitter:title", content: titleText });
+        twitterTitle.setAttribute("content", titleText);
+
+        const twitterDescription = ensureMeta('meta[name="twitter:description"]', { name: "twitter:description", content: descriptionText });
+        twitterDescription.setAttribute("content", descriptionText);
+
+        const twitterImage = ensureMeta('meta[name="twitter:image"]', { name: "twitter:image", content: ogImageUrl });
+        twitterImage.setAttribute("content", ogImageUrl);
 
         const replaceScript = Array.from(doc.querySelectorAll("script")).find(script =>
             script.textContent.includes("history.replaceState")
