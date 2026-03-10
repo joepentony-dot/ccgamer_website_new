@@ -28,7 +28,8 @@ function getLastmod(filePath) {
 }
 
 function buildUrlEntry(loc, lastmod) {
-    return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+    const safeLoc = String(loc).replace(/&/g, '&amp;');
+    return `  <url>\n    <loc>${safeLoc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
 }
 
 function buildSitemap(urls) {
@@ -46,7 +47,8 @@ function buildSitemapIndex(entries) {
 }
 
 function buildSitemapIndexEntry(loc, lastmod) {
-    return `  <sitemap>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
+    const safeLoc = String(loc).replace(/&/g, '&amp;');
+    return `  <sitemap>\n    <loc>${safeLoc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
 }
 
 function getGameSlugs() {
@@ -94,7 +96,6 @@ function buildPagesSitemap() {
         { loc: `${SITE_ROOT}/contact.html`, file: path.join(repoRoot, "contact.html") },
         { loc: `${SITE_ROOT}/emulation.html`, file: path.join(repoRoot, "emulation.html") },
         { loc: `${SITE_ROOT}/games/`, file: path.join(repoRoot, "games", "index.html") },
-        { loc: `${SITE_ROOT}/games/index.html`, file: path.join(repoRoot, "games", "index.html") },
         { loc: `${SITE_ROOT}/games/collections/`, file: path.join(repoRoot, "games", "collections", "index.html") },
         { loc: `${SITE_ROOT}/games/collections/amiga-demo-music.html`, file: path.join(repoRoot, "games", "collections", "amiga-demo-music.html") },
         { loc: `${SITE_ROOT}/games/collections/retro-events.html`, file: path.join(repoRoot, "games", "collections", "retro-events.html") },
@@ -107,7 +108,11 @@ function buildPagesSitemap() {
     ];
 
     const retroPages = generateRetroPages();
-    const urls = [...pageEntries, ...retroPages.pageEntries].map((entry) => {
+    const uniqueEntries = [...pageEntries, ...retroPages.pageEntries].filter((entry, index, arr) => (
+        arr.findIndex((candidate) => candidate.loc === entry.loc) === index
+    ));
+
+    const urls = uniqueEntries.map((entry) => {
         const lastmod = getLastmod(entry.file);
         return buildUrlEntry(entry.loc, lastmod);
     });

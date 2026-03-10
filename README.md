@@ -73,6 +73,26 @@ node tools/seo/generate-sitemap.js --base-url https://example.com
 
 The CI workflow enforces that the sitemap files are kept up to date.
 
+## Retro JSON workflow (events, specials, demo music)
+
+Retro video editors remain JSON-first: update `data/retro-events.json` and/or `data/amiga-demo-music.json`, then regenerate static outputs.
+
+From repo root:
+
+```bash
+node scripts/generate-retro-pages.js
+node scripts/generate-sitemaps.js
+```
+
+This refreshes:
+
+- `/retro-specials/{slug}/index.html`
+- `/retro-events/{slug}/index.html`
+- `/amiga-demo-music/{slug}/index.html`
+- `/sitemap-pages.xml` and sitemap index files
+
+No API keys, backend services, or network calls are required for this generation step.
+
 ## Safety notes
 
 - The SEO tools:

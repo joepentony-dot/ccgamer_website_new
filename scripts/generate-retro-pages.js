@@ -119,19 +119,66 @@ function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canoni
   }, null, 4);
 }
 
+function buildBreadcrumbSchema({ collectionName, collectionAbsoluteUrl, canonicalUrl, title }) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: SITE_ROOT
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Collections',
+        item: `${SITE_ROOT}/games/collections/`
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: collectionName,
+        item: collectionAbsoluteUrl
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
+        name: title,
+        item: canonicalUrl
+      }
+    ]
+  }, null, 4);
+}
+
+function sortByOrder(items) {
+  return [...items].sort((a, b) => {
+    if (a.sortOrder !== b.sortOrder) return a.sortOrder - b.sortOrder;
+    if (a.order !== b.order) return a.order - b.order;
+    return a.index - b.index;
+  });
+}
+
+function toFiniteNumber(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
+}
+
 function buildRetroPageHtml(template, payload) {
   return template
     .replaceAll('__SEO_TITLE__', escapeHtml(payload.seoTitle))
     .replaceAll('__SEO_DESCRIPTION__', escapeHtml(payload.seoDescription))
     .replaceAll('__CANONICAL_URL__', escapeHtml(payload.canonicalUrl))
     .replaceAll('__THUMBNAIL_URL__', escapeHtml(payload.thumbnailUrl))
-    .replaceAll('__VIDEO_SCHEMA__', payload.videoSchema)
+    .replaceAll('__SCHEMA_BLOCKS__', payload.schemaBlocks)
     .replaceAll('__COLLECTION_URL__', escapeHtml(payload.collectionUrl))
     .replaceAll('__COLLECTION_NAME__', escapeHtml(payload.collectionName))
     .replaceAll('__VIDEO_TITLE__', escapeHtml(payload.title))
     .replaceAll('__VIDEO_SUMMARY__', escapeHtml(payload.summary))
     .replaceAll('__VIDEO_DESCRIPTION__', escapeHtml(payload.description))
-    .replaceAll('__YOUTUBE_ID__', escapeHtml(payload.youtubeId));
+    .replaceAll('__YOUTUBE_ID__', escapeHtml(payload.youtubeId))
+    .replaceAll('__RELATED_ITEMS__', payload.relatedItemsHtml);
 }
 
 function normaliseEntryType(rawType, fallbackType) {
@@ -154,17 +201,38 @@ function generateRetroPages() {
   const retroDataMtime = formatDate(fs.statSync(retroEventsPath).mtime);
   const demoDataMtime = formatDate(fs.statSync(amigaDemoMusicPath).mtime);
 
+  const normalisedEntries = collectRetroEntries().map((entry, index) => {
+    const type = normaliseEntryType(entry.type, entry.__fallbackType);
+    const slug = resolveSlug(entry);
+    const youtubeId = resolveYoutubeId(entry);
+    const visible = entry.visible !== false && entry.published !== false;
+    return {
+      ...entry,
+      type,
+      slug,
+      youtubeId,
+      visible,
+      sortOrder: toFiniteNumber(entry.sort_order),
+      order: toFiniteNumber(entry.order),
+      index
+    };
+  }).filter((entry) => {
+    const config = collectionConfig[entry.type];
+    return Boolean(config && entry.slug && entry.youtubeId && entry.visible);
+  });
+
+  const byType = {
+    retro_special: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro_special')),
+    retro_event: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro_event')),
+    demo_music: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'demo_music'))
+  };
+
   const pageEntries = [];
   const created = [];
 
-  for (const entry of collectRetroEntries()) {
-    const entryType = normaliseEntryType(entry.type, entry.__fallbackType);
-    const config = collectionConfig[entryType];
-    if (!config) continue;
-
-    const slug = resolveSlug(entry);
-    const youtubeId = resolveYoutubeId(entry);
-    if (!slug || !youtubeId || entry.visible === false || entry.published === false) continue;
+  for (const entry of normalisedEntries) {
+    const config = collectionConfig[entry.type];
+    const { slug, youtubeId } = entry;
 
     const sourceDate = entry.__fallbackType === 'demo_music' ? demoDataMtime : retroDataMtime;
     const title = String(entry.title || '').trim();
@@ -177,19 +245,47 @@ function generateRetroPages() {
     const canonicalUrl = `${SITE_ROOT}${canonicalPath}`;
     const thumbnailUrl = resolveThumbnail(entry, youtubeId);
     const uploadDate = resolveUploadDate(entry, sourceDate);
+    const hasEligibleVideoSchema = /^\d{4}-\d{2}-\d{2}$/.test(String(entry.published_date || entry.publishedDate || '').trim());
+    const breadcrumbSchema = buildBreadcrumbSchema({
+      collectionName: config.collectionName,
+      collectionAbsoluteUrl: `${SITE_ROOT}${config.collectionUrl}`,
+      canonicalUrl,
+      title
+    });
+
+    const schemaBlocks = [
+      `<script type="application/ld+json">\n${breadcrumbSchema}\n    </script>`
+    ];
+
+    if (hasEligibleVideoSchema) {
+      schemaBlocks.push(`<script type="application/ld+json">\n${buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId })}\n    </script>`);
+    }
+
+    const relatedItems = byType[entry.type]
+      .filter((item) => item.slug !== slug)
+      .slice(0, 6)
+      .map((item) => {
+        const itemTitle = escapeHtml(String(item.title || '').trim());
+        return `<li><a href="${config.routePrefix}/${escapeHtml(item.slug)}/">${itemTitle}</a></li>`;
+      });
+
+    const relatedItemsHtml = relatedItems.length
+      ? `<section class="retro-video-page__related">\n      <h2>Related ${escapeHtml(config.collectionName)} videos</h2>\n      <ul>\n        ${relatedItems.join('\n        ')}\n      </ul>\n    </section>`
+      : '';
 
     const html = buildRetroPageHtml(template, {
       seoTitle,
       seoDescription,
       canonicalUrl,
       thumbnailUrl,
-      videoSchema: buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId }),
+      schemaBlocks: schemaBlocks.join('\n\n    '),
       collectionUrl: config.collectionUrl,
       collectionName: config.collectionName,
       title,
       summary,
       description,
-      youtubeId
+      youtubeId,
+      relatedItemsHtml
     });
 
     const outputDir = path.join(config.outputDir, slug);
