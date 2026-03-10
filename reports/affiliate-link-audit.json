@@ -1,0 +1,61 @@
+{
+  "scanPatterns": [
+    "your-affiliate-link",
+    "YOUR-AFFILIATE-LINK",
+    "YOURAFFILIATETAG",
+    "View on Amazon",
+    "BUY ON AMAZON",
+    "RELATED GEAR",
+    "href=\"\"",
+    "amazon."
+  ],
+  "findings": [
+    {
+      "file": "resources/data/affiliate-products.json",
+      "type": "central-affiliate-data",
+      "buttonText": "View on Amazon",
+      "href": "https://YOUR-AFFILIATE-LINK",
+      "status": "placeholder",
+      "disclosureNearby": true,
+      "system": "centralized-json"
+    },
+    {
+      "file": "resources/data/affiliate-products.json",
+      "type": "central-affiliate-data",
+      "buttonText": "View on Amazon",
+      "href": "https://www.amazon.co.uk/Retro-Games-THEC64-mini-Edition/dp/B0FKLZ8YNY?tag=YOURAFFILIATETAG-21",
+      "status": "placeholder-tag",
+      "disclosureNearby": true,
+      "system": "centralized-json"
+    },
+    {
+      "file": "emulation.html",
+      "type": "hardcoded-page-cta",
+      "buttonText": "View THEC64 Mini Black Edition on Amazon",
+      "href": "valid-amazon-affiliate-url",
+      "status": "valid",
+      "disclosureNearby": true,
+      "system": "hardcoded"
+    },
+    {
+      "file": "emulation.html",
+      "type": "hardcoded-page-cta",
+      "buttonText": "View THEC64 Mini on Amazon",
+      "href": "valid-amazon-affiliate-url",
+      "status": "valid",
+      "disclosureNearby": true,
+      "system": "hardcoded"
+    },
+    {
+      "file": "emulation.html",
+      "type": "hardcoded-page-cta",
+      "buttonText": "View THEC64 on Amazon",
+      "href": "valid-amazon-affiliate-url",
+      "status": "valid",
+      "disclosureNearby": true,
+      "system": "hardcoded"
+    }
+  ],
+  "rootCause": "placeholder affiliate URLs in central affiliate-products.json consumed by affiliate-products.js",
+  "multipleSystemsDetected": true
+}
