@@ -28,6 +28,11 @@
 
     function hideSection(section) {
         if (!section) return;
+        const hardware = section.querySelector(".game-facts__hardware");
+        if (hardware) {
+            hardware.hidden = true;
+            return;
+        }
         section.hidden = true;
     }
 
@@ -35,6 +40,18 @@
         const root = (typeof window.ccgGetSiteRoot === "function") ? window.ccgGetSiteRoot() : "/";
         const rootPrefix = String(root || "/").endsWith("/") ? String(root || "/") : `${root}/`;
         return `${rootPrefix}${AFFILIATE_DATA_PATH}`;
+    }
+
+    function resolveAssetUrl(path) {
+        const source = toSafeString(path);
+        if (!source) return "";
+        if (/^(https?:)?\/\//i.test(source) || source.startsWith("data:")) {
+            return source;
+        }
+
+        const root = (typeof window.ccgGetSiteRoot === "function") ? window.ccgGetSiteRoot() : "/";
+        const rootPrefix = String(root || "/").endsWith("/") ? String(root || "/") : `${root}/`;
+        return `${rootPrefix}${source.replace(/^\/+/, "")}`;
     }
 
     function resolveSlug(section) {
@@ -89,6 +106,16 @@
         return overrides[slug] || overrides[slug.replace(/-/g, "_")] || null;
     }
 
+    function resolveSystemGroup(config, section) {
+        const systemGroups = config?.systemGroups && typeof config.systemGroups === "object" ? config.systemGroups : null;
+        if (!systemGroups) return "";
+
+        const system = toSafeString(section?.dataset?.gameSystem || document.body?.dataset?.gameSystem);
+        if (!system) return "";
+
+        return normaliseKey(systemGroups[system] || systemGroups[normaliseKey(system)]);
+    }
+
     function getProductsForGroup(config, groupKey) {
         if (!groupKey) return [];
         const groups = config?.groups && typeof config.groups === "object" ? config.groups : null;
@@ -130,6 +157,12 @@
             if (products.length) return { products, defaults };
         }
 
+        const systemGroup = resolveSystemGroup(config, section);
+        if (systemGroup) {
+            const products = getProductsForGroup(config, systemGroup);
+            if (products.length) return { products, defaults };
+        }
+
         const fallbackProducts = getProductsForGroup(config, "default");
         return { products: fallbackProducts, defaults };
     }
@@ -149,7 +182,7 @@
         if (imageSrc) {
             const image = document.createElement("img");
             image.className = "affiliate-product-card__image";
-            image.src = imageSrc;
+            image.src = resolveAssetUrl(imageSrc);
             image.alt = toSafeString(product?.alt) || title;
             image.loading = "lazy";
             image.decoding = "async";
@@ -218,13 +251,17 @@
             validProducts.slice(0, 8).forEach((card) => gridEl.appendChild(card));
 
             if (titleEl) {
-                titleEl.textContent = toSafeString(defaults?.heading) || "Related Gear";
+                titleEl.textContent = toSafeString(defaults?.heading) || "Play on Modern Hardware";
             }
 
             if (disclosureEl) {
                 disclosureEl.textContent = toSafeString(defaults?.disclosure) || "As an Amazon Associate I earn from qualifying purchases.";
             }
 
+            const hardware = section.querySelector(".game-facts__hardware");
+            if (hardware) {
+                hardware.hidden = false;
+            }
             section.hidden = false;
         } catch (_error) {
             hideSection(section);
@@ -236,4 +273,8 @@
     } else {
         initAffiliateProducts();
     }
+
+    window.addEventListener("ccg:game-loaded", function () {
+        initAffiliateProducts();
+    });
 })();

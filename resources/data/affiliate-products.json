@@ -24,6 +24,74 @@
         "buttonText": "View on Amazon",
         "description": "A striking black edition of THEC64 Mini with a matching classic-style joystick, HDMI output and a curated selection of modern C64 releases."
       }
+    ],
+    "c64-default": [
+      {
+        "title": "THE C64",
+        "url": "https://amzn.to/3OSyGpJ",
+        "image": "resources/images/affiliate/c64-maxi.png",
+        "alt": "THE C64",
+        "buttonText": "View on Amazon",
+        "description": "A full-size modern recreation of the Commodore 64 with HDMI output, built-in games and a working keyboard."
+      },
+      {
+        "title": "The C64 Micro Switch Joystick",
+        "url": "https://amzn.to/4ddq2fo",
+        "image": "resources/images/affiliate/joystick-black.png",
+        "alt": "The C64 Micro Switch Joystick",
+        "buttonText": "View on Amazon",
+        "description": "A modern classic-style joystick designed for THE C64 and compatible retro play."
+      },
+      {
+        "title": "The C64 Micro Switch Joystick - Clear",
+        "url": "https://amzn.to/4bcpwf2",
+        "image": "resources/images/affiliate/joystick-clear.png",
+        "alt": "The C64 Micro Switch Joystick - Clear",
+        "buttonText": "View on Amazon",
+        "description": "A transparent version of the modern Micro Switch Joystick for THE C64 and compatible setups."
+      },
+      {
+        "title": "The Gamepad",
+        "url": "https://amzn.to/4rrSoG5",
+        "image": "resources/images/affiliate/gamepad-black.png",
+        "alt": "The Gamepad",
+        "buttonText": "View on Amazon",
+        "description": "A USB gamepad compatible with THE C64 and A500 Mini for pad-friendly retro gaming."
+      }
+    ],
+    "amiga-default": [
+      {
+        "title": "The A500 Mini",
+        "url": "https://amzn.to/4s2VwcE",
+        "image": "resources/images/affiliate/a500-mini.png",
+        "alt": "The A500 Mini",
+        "buttonText": "View on Amazon",
+        "description": "A compact modern Amiga system with HDMI output, classic games and authentic styling."
+      },
+      {
+        "title": "The Gamepad",
+        "url": "https://amzn.to/4rrSoG5",
+        "image": "resources/images/affiliate/gamepad-black.png",
+        "alt": "The Gamepad",
+        "buttonText": "View on Amazon",
+        "description": "A USB gamepad compatible with THE C64 and A500 Mini for pad-friendly retro gaming."
+      },
+      {
+        "title": "The A500 Mini Joypad",
+        "url": "https://amzn.to/4bfW5c9",
+        "image": "resources/images/affiliate/gamepad-white.png",
+        "alt": "The A500 Mini Joypad",
+        "buttonText": "View on Amazon",
+        "description": "A white USB joypad styled to match the A500 Mini and compatible retro setups."
+      },
+      {
+        "title": "The Mouse",
+        "url": "https://amzn.to/3P9pRYv",
+        "image": "resources/images/affiliate/usb-mouse.png",
+        "alt": "The Mouse",
+        "buttonText": "View on Amazon",
+        "description": "A USB mouse suited to A500 Mini navigation, pointer-driven games and Workbench-style use."
+      }
     ]
   },
   "gameOverrides": {
@@ -38,5 +106,9 @@
     }
   },
   "genreGroups": {},
-  "collectionGroups": {}
+  "collectionGroups": {},
+  "systemGroups": {
+    "C64": "c64-default",
+    "AMIGA": "amiga-default"
+  }
 }

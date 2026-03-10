@@ -307,10 +307,26 @@
 
         <nav class="game-toc" data-game-toc hidden></nav>
 
-        <details class="game-facts" data-game-facts hidden>
-            <summary>Game Facts</summary>
-            <div class="game-facts__grid" data-game-facts-grid></div>
-        </details>
+        <section
+            class="game-facts game-section affiliate-products-section"
+            id="affiliate-products-section"
+            aria-label="Game facts and related hardware"
+            data-game-slug=""
+            hidden>
+            <div class="game-facts__inner affiliate-products-inner">
+                <div class="game-facts__header">
+                    <p class="game-section__kicker">Game Utility</p>
+                    <h2 class="game-section__title">At a Glance</h2>
+                </div>
+                <div class="game-facts__grid" data-game-facts-grid></div>
+
+                <div class="game-facts__hardware">
+                    <h3 class="game-facts__hardware-title affiliate-products-title">Play on Modern Hardware</h3>
+                    <p class="affiliate-products-disclosure"></p>
+                    <div class="affiliate-products-grid" id="affiliate-products-grid"></div>
+                </div>
+            </div>
+        </section>
 
         <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
 
@@ -348,21 +364,6 @@
             <div class="game-downloads__actions">
                 <a id="gameManualBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">View Manual / PDF</a>
                 <a id="gameDiskBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Download Disk / Tape</a>
-            </div>
-        </section>
-
-
-
-        <section
-            class="game-section affiliate-products-section"
-            id="affiliate-products-section"
-            aria-label="Affiliate recommendations"
-            data-game-slug=""
-            hidden>
-            <div class="affiliate-products-inner">
-                <h2 class="game-section__title affiliate-products-title">Related Gear</h2>
-                <p class="affiliate-products-disclosure"></p>
-                <div class="affiliate-products-grid" id="affiliate-products-grid"></div>
             </div>
         </section>
 
