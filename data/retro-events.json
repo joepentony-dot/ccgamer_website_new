@@ -1,5 +1,28 @@
 [
   {
+    "id": "50-essential-commodore-64-games",
+    "slug": "50-essential-commodore-64-games",
+    "type": "retro_special",
+    "title": "THE 50 ESSENTIAL COMMODORE 64 GAMES – Commodore 64 | Best C64 Games Ever",
+    "youtube_url": "https://www.youtube.com/watch?v=QHYAdbqWzoY",
+    "youtube_video_id": "QHYAdbqWzoY",
+    "youtubeId": "QHYAdbqWzoY",
+    "youtube": "QHYAdbqWzoY",
+    "url": "https://www.youtube.com/watch?v=QHYAdbqWzoY",
+    "thumbnail": "https://img.youtube.com/vi/QHYAdbqWzoY/hqdefault.jpg",
+    "membersOnly": false,
+    "visible": true,
+    "published": true,
+    "sort_order": 0,
+    "order": 0,
+    "summary": "A look back at fifty essential Commodore 64 games that helped define the machine, from arcade greats to home computer classics that still stand out today.",
+    "description": "Cheeky Commodore Gamer counts down fifty essential Commodore 64 games, celebrating the titles that helped shape one of the most beloved home computers of all time. Covering arcade action, adventure, racing, platformers and long-standing favourites from the C64 era, this retrospective highlights the games that remain most influential, memorable and worth revisiting today.",
+    "seo": {
+      "title": "50 Essential Commodore 64 Games – Best C64 Games Ever | Retro Special | Cheeky Commodore Gamer",
+      "description": "Explore 50 essential Commodore 64 games in this Retro Special from Cheeky Commodore Gamer, covering some of the most iconic and influential C64 classics ever released."
+    }
+  },
+  {
     "id": "arcade-club-bury",
     "type": "retro_special",
     "title": "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit",
@@ -8,7 +31,9 @@
     "seo": {
       "title": "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A visit to Arcade Club Bury, one of the UK’s biggest retro and arcade gaming venues.",
+    "description": "This Retro Special tours Arcade Club Bury in Greater Manchester and captures the scale of its free-play arcade floors. The video highlights the atmosphere, cabinet variety and why the venue is a must-visit stop for retro gaming fans."
   },
   {
     "id": "guru-meditation-amiga",
@@ -19,7 +44,9 @@
     "seo": {
       "title": "Guru Meditation – Commodore Amiga Error That Became a Legend | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Guru Meditation – Commodore Amiga Error That Became a Legend on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "An explainer on the Amiga’s famous Guru Meditation error and how it became part of retro lore.",
+    "description": "Cheeky Commodore Gamer looks at the Guru Meditation message and why it became such an iconic part of Amiga history. The feature covers its place in user memory and how a system error turned into a lasting cultural reference."
   },
   {
     "id": "commodore-64-memories-1982",
@@ -30,7 +57,9 @@
     "seo": {
       "title": "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A personal Commodore 64 nostalgia piece revisiting early 1980s home computer memories.",
+    "description": "This Retro Special shares a family-centred look back at Commodore 64 gaming from 1982 onward. It focuses on the games, moments and feelings that made the era memorable for long-time players."
   },
   {
     "id": "north-west-computer-museum-leigh",
@@ -41,7 +70,9 @@
     "seo": {
       "title": "North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "A retro event visit to the North West Computer Museum in Leigh with the Yorkshire Amiga Group.",
+    "description": "This Retro Events episode follows a trip to the North West Computer Museum and showcases real-world retro computing culture. It captures museum highlights, community spirit and the value of preserving classic hardware and software history."
   },
   {
     "id": "play-expo-blackpool-romero-highlights",
@@ -52,7 +83,9 @@
     "seo": {
       "title": "Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "Highlights from Play Expo Blackpool featuring John Romero and a packed retro gaming weekend.",
+    "description": "Recorded at Play Expo Blackpool, this event video covers key moments from the Norbreck Castle show floor and guest appearances. It provides a grounded look at the convention atmosphere and the broad appeal of modern retro events."
   },
   {
     "id": "play-expo-blackpool-legendary-guests",
@@ -63,7 +96,9 @@
     "seo": {
       "title": "Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "Coverage of Play Expo Blackpool with event highlights and notable retro gaming guests.",
+    "description": "This Retro Events entry revisits another Play Expo Blackpool weekend focused on classic gaming culture and live event energy. The video highlights the venue, standout moments and guest-driven interest around retro gaming."
   },
   {
     "id": "play-expo-blackpool-romero-rare-consoles",
@@ -74,7 +109,9 @@
     "seo": {
       "title": "Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "A Play Expo Blackpool event roundup featuring rare consoles and retro show-floor discoveries.",
+    "description": "Cheeky Commodore Gamer captures Play Expo Blackpool with footage centred on rare hardware, guests and crowd favourites. It is a practical snapshot of what attendees can expect from a major UK retro gaming expo."
   },
   {
     "id": "play-expo-blackpool-2025",
@@ -85,7 +122,9 @@
     "seo": {
       "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "A Retro Events look at Play Expo Blackpool 2025 and its latest retro gaming weekend highlights.",
+    "description": "This event video documents Play Expo Blackpool 2025 at the Norbreck Castle and follows the show experience from a fan perspective. It focuses on the games, displays and community atmosphere that define the weekend."
   },
   {
     "id": "play-expo-blackpool-cutting-room-floor",
@@ -96,7 +135,9 @@
     "seo": {
       "title": "Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "Bonus Play Expo footage collecting extra moments and behind-the-scenes event clips.",
+    "description": "This members-only Retro Events cut gathers additional Play Expo Blackpool footage that did not make the main feature. It offers extra context and atmosphere for viewers who enjoy full event coverage."
   },
   {
     "id": "retro-games-day-family-gaming",
@@ -107,7 +148,9 @@
     "seo": {
       "title": "Retro Games Day – Gaming with Family from Amiga to PlayStation 5 | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Retro Games Day – Gaming with Family from Amiga to PlayStation 5 on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A family retro gaming day spanning systems from the Amiga era through to modern consoles.",
+    "description": "This Retro Special follows a relaxed family gaming session that connects classic and modern play styles. It highlights how retro gaming traditions continue across generations through shared game time."
   },
   {
     "id": "top-15-commodore-64-games",
@@ -118,7 +161,9 @@
     "seo": {
       "title": "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A curated top-15 countdown of essential Commodore 64 games worth revisiting today.",
+    "description": "Cheeky Commodore Gamer runs through fifteen standout C64 games in a focused retrospective format. The selection celebrates titles that remain memorable for their gameplay, personality and long-term influence in the scene."
   },
   {
     "id": "sid-chip-story",
@@ -129,7 +174,9 @@
     "seo": {
       "title": "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A history feature on the Commodore 64 SID chip and its lasting role in 8-bit game music.",
+    "description": "This Retro Special explains why the SID chip became one of the defining sounds of home computer gaming. It explores the chip’s musical identity and why SID-driven tracks still matter to retro audiences today."
   },
   {
     "id": "video-game-market-leeds-2024",
@@ -140,7 +187,9 @@
     "seo": {
       "title": "Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "On-location coverage from the Video Game Market Leeds 2024 event at the Royal Armouries.",
+    "description": "This Retro Events episode follows a visit to the Leeds video game market and captures the experience of browsing retro stalls in person. It highlights event atmosphere, collector interest and the social side of retro gaming meetups."
   },
   {
     "id": "x-copy-amiga-history",
@@ -151,7 +200,9 @@
     "seo": {
       "title": "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A retrospective on X-Copy and its place in Commodore Amiga disk-copying history.",
+    "description": "Cheeky Commodore Gamer explores the story of X-Copy as an influential Amiga utility associated with late-1980s and early-1990s computing culture. The video frames the software within broader Amiga history and long-running community memory."
   },
   {
     "id": "yorkshire-amiga-group-meetup",
@@ -162,7 +213,9 @@
     "seo": {
       "title": "Yorkshire Amiga Group – North West Retro Computing Meetup | Retro Event | Cheeky Commodore Gamer",
       "description": "Watch Yorkshire Amiga Group – North West Retro Computing Meetup on Cheeky Commodore Gamer's Retro Events collection."
-    }
+    },
+    "summary": "A meetup-focused retro event featuring the Yorkshire Amiga Group and community enthusiasts.",
+    "description": "This members-only Retro Events video captures a North West retro computing meetup with the Yorkshire Amiga Group. It focuses on the people, conversations and shared enthusiasm that keep local retro communities active."
   },
   {
     "id": "zx-spectrum-memories-hodgy",
@@ -173,6 +226,8 @@
     "seo": {
       "title": "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "summary": "A nostalgic ZX Spectrum feature revisiting 8-bit memories with Hodgy.",
+    "description": "This Retro Special looks back at ZX Spectrum gaming memories in a conversational, personal format. It celebrates the games, era and community sentiment that continue to shape classic home computer fandom."
   }
 ]
