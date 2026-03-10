@@ -986,6 +986,11 @@ function renderAffiliateSection(game) {
         affiliateSection.dataset.gameId = gameId;
     }
 
+    const system = String(game?.system || "").trim();
+    if (system) {
+        affiliateSection.dataset.gameSystem = system;
+    }
+
     const genres = resolveGenres(game).map(item => String(item || "").trim()).filter(Boolean);
     if (genres.length) {
         affiliateSection.dataset.gameGenres = genres.join(",");
@@ -995,8 +1000,6 @@ function renderAffiliateSection(game) {
     if (collections.length) {
         affiliateSection.dataset.gameCollections = collections.join(",");
     }
-
-    affiliateSection.hidden = true;
 }
 
 function renderGame(game) {
@@ -1203,6 +1206,11 @@ function renderGame(game) {
         const gameId = String(game?.id || "").trim();
         if (gameId) {
             document.body.setAttribute("data-game-id", gameId);
+        }
+
+        const system = String(game?.system || "").trim();
+        if (system) {
+            document.body.setAttribute("data-game-system", system);
         }
 
         const genres = resolveGenres(game);
