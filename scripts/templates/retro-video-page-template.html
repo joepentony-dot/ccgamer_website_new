@@ -19,9 +19,7 @@
     <meta name="twitter:description" content="__SEO_DESCRIPTION__" />
     <meta name="twitter:image" content="__THUMBNAIL_URL__" />
 
-    <script type="application/ld+json">
-__VIDEO_SCHEMA__
-    </script>
+__SCHEMA_BLOCKS__
 
     <link rel="stylesheet" href="/resources/css/ccg-master.css" />
     <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
@@ -32,6 +30,9 @@ __VIDEO_SCHEMA__
       .retro-video-page__description { margin: 0 0 1.5rem; line-height: 1.65; }
       .retro-video-page__video { position: relative; padding-top: 56.25%; margin-bottom: 1.5rem; }
       .retro-video-page__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+      .retro-video-page__related h2 { margin-bottom: .75rem; }
+      .retro-video-page__related ul { margin: 0; padding-left: 1.2rem; }
+      .retro-video-page__related li { margin-bottom: .45rem; }
     </style>
 </head>
 <body class="ccg-body">
@@ -51,6 +52,7 @@ __VIDEO_SCHEMA__
     </div>
 
     <p class="retro-video-page__description">__VIDEO_DESCRIPTION__</p>
+    __RELATED_ITEMS__
 </main>
 </body>
 </html>
