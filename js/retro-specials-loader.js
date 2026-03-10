@@ -16,6 +16,15 @@ function ccgEscapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function ccgGetRetroPagePath(type, slug) {
+  const safeSlug = String(slug || '').trim();
+  if (!safeSlug) return '';
+  if (type === 'retro_special') return `/retro-specials/${encodeURIComponent(safeSlug)}/`;
+  if (type === 'retro_event') return `/retro-events/${encodeURIComponent(safeSlug)}/`;
+  if (type === 'demo_music') return `/amiga-demo-music/${encodeURIComponent(safeSlug)}/`;
+  return '';
+}
+
 function ccgGetYouTubeThumbUrl(youtubeId, variant) {
   const id = String(youtubeId || '').trim();
   if (!id) return '';
@@ -26,10 +35,11 @@ function ccgGetYouTubeThumbUrl(youtubeId, variant) {
 function ccgBuildRetroSpecialCard(eventItem) {
   const title = String(eventItem?.title || '').trim();
   const videoUrl = String(eventItem?.url || '').trim();
-  if (!title || !videoUrl) return '';
+  const pageUrl = String(eventItem?.pageUrl || '').trim();
+  if (!title || !(pageUrl || videoUrl)) return '';
 
   const safeTitle = ccgEscapeHtml(title);
-  const safeVideoUrl = ccgEscapeHtml(videoUrl);
+  const safeCardUrl = ccgEscapeHtml(pageUrl || videoUrl);
 
   const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
   const thumb = ccgGetYouTubeThumbUrl(youtubeId, 'hqdefault.jpg');
@@ -72,7 +82,7 @@ function ccgBuildRetroSpecialCard(eventItem) {
           <h3 class="ccg-game-card__title">${safeTitle}</h3>
         </div>
         <div class="ccg-game-card__actions">
-          <a href="${safeVideoUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn" target="_blank" rel="noopener noreferrer">WATCH VIDEO</a>
+          <a href="${safeCardUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn">WATCH VIDEO</a>
         </div>
       </div>
     </article>
@@ -98,6 +108,7 @@ async function ccgLoadRetroSpecials() {
       if (rawType === 'retro_special') type = 'retro_special';
       const orderValue = Number(eventItem?.sort_order ?? eventItem?.order);
       const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
+      const slug = String(eventItem?.slug || eventItem?.id || '').trim();
 
       return {
         id: String(eventItem?.id || '').trim(),
@@ -105,6 +116,7 @@ async function ccgLoadRetroSpecials() {
         title: String(eventItem?.title || '').trim(),
         youtubeId,
         url: String(eventItem?.youtube_url || eventItem?.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : ''),
+        pageUrl: ccgGetRetroPagePath(type, slug),
         membersOnly: eventItem?.membersOnly === true,
         visible: eventItem?.visible !== false && eventItem?.published !== false,
         badge: String(eventItem?.badge || '').trim(),
