@@ -66,6 +66,43 @@ function resolveImageUrl(game) {
     return `${SITE_ROOT}${relative}`;
 }
 
+function detectPlatform(game) {
+    const raw = String(game.system || game.platform || "").trim().toLowerCase();
+    if (raw === "c64" || raw.includes("commodore")) return "Commodore 64";
+    if (raw === "amiga" || raw.includes("amiga")) return "Amiga";
+    return "Commodore 64";
+}
+
+function detectSeoHooks(game) {
+    const hooks = ["Game Info"];
+    if (String(game.pdf || "").trim()) hooks.push("Manual");
+    if (String(game.videoid || game.videoId || "").trim()) hooks.push("Video");
+    if (String(game.ccg_rating_reason || "").trim().length >= 20) hooks.unshift("Review");
+    return hooks;
+}
+
+function joinHooks(hooks) {
+    if (hooks.length <= 1) return hooks[0] || "Game Info";
+    if (hooks.length === 2) return `${hooks[0]} & ${hooks[1]}`;
+    return `${hooks.slice(0, -1).join(", ")} & ${hooks[hooks.length - 1]}`;
+}
+
+function buildSeoDescription(game, title) {
+    const raw = stripHtml(game.description || game.desc || "");
+    const hooks = detectSeoHooks(game);
+    const platform = detectPlatform(game);
+
+    if (raw) {
+        return raw.length <= 155 ? raw : `${raw.slice(0, 152).trim()}...`;
+    }
+
+    const features = [];
+    if (hooks.includes("Manual")) features.push("manual access");
+    if (hooks.includes("Video")) features.push("gameplay video");
+    const featureText = features.length ? ` with ${joinHooks(features.map((f) => f[0].toUpperCase() + f.slice(1)))}` : "";
+    return `${title} on ${platform}${featureText} and full game information.`;
+}
+
 /* ---------------------------------------
    Validation (Only Fatal Fields)
 --------------------------------------- */
@@ -87,7 +124,9 @@ function validateGame(game, slug) {
 
 function buildHtml(game, slug, description, imageUrl, publisher, year) {
     const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
-    const title = `${normalizedTitle} | Cheeky Commodore Gamer`;
+    const platform = detectPlatform(game);
+    const hooks = detectSeoHooks(game);
+    const title = `${normalizedTitle} (${platform}) – ${joinHooks(hooks)}`;
     const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
     const redirectUrl = `${REDIRECT_TARGET}${encodeURIComponent(slug)}`;
 
@@ -196,11 +235,8 @@ function main() {
 
         /* Fallback-safe metadata */
 
-        const description = stripHtml(
-            game.description ||
-            game.desc ||
-            "Classic retro game featured on Cheeky Commodore Gamer."
-        );
+        const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
+        const description = buildSeoDescription(game, normalizedTitle);
 
         const imageUrl =
             resolveImageUrl(game) ||
