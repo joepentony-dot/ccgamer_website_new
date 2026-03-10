@@ -488,6 +488,13 @@ function validateStep1() {
     errors.push('PDF link must be a valid URL.');
   }
 
+  const seoTitle = buildSeoTitleFromDraft();
+  const seoDescription = buildSeoDescriptionFromDraft();
+  if (seoTitle.length > 68) errors.push('SEO title is too long (target: 68 chars max).');
+  if (seoTitle.length < 30) errors.push('SEO title is too short (target: 30+ chars).');
+  if (seoDescription.length > 170) errors.push('Meta description is too long (target: 170 chars max).');
+  if (seoDescription.length < 70) errors.push('Meta description is too short (target: 70+ chars).');
+
   renderInlineStep1Errors(errors);
   return errors;
 }
@@ -531,6 +538,46 @@ function validateStep2Warnings() {
   return warnings;
 }
 
+
+function buildSeoHooksFromDraft() {
+  const hooks = ['Game Info'];
+  if (String(state.draft.pdf || '').trim()) hooks.push('Manual');
+  if (String(state.draft.videoId || '').trim()) hooks.push('Video');
+  if (String(state.draft.ccg_rating_reason || '').trim().length >= 20) hooks.unshift('Review');
+  return hooks;
+}
+
+function joinSeoHooks(hooks) {
+  if (!hooks.length) return 'Game Info';
+  if (hooks.length === 1) return hooks[0];
+  if (hooks.length === 2) return `${hooks[0]} & ${hooks[1]}`;
+  return `${hooks.slice(0, -1).join(', ')} & ${hooks[hooks.length - 1]}`;
+}
+
+function normalizeSeoPlatformLabel(system) {
+  return String(system || '').trim().toUpperCase() === 'AMIGA' ? 'Amiga' : 'Commodore 64';
+}
+
+function buildSeoTitleFromDraft() {
+  const title = String(state.draft.title || '').trim();
+  const platform = normalizeSeoPlatformLabel(state.draft.system);
+  const hooks = joinSeoHooks(buildSeoHooksFromDraft());
+  return `${title} (${platform}) – ${hooks}`;
+}
+
+function buildSeoDescriptionFromDraft() {
+  const title = String(state.draft.title || '').trim();
+  const platform = normalizeSeoPlatformLabel(state.draft.system);
+  const existing = cleanForHtml(String(state.draft.description || '').trim());
+  if (existing) return existing;
+
+  const hooks = buildSeoHooksFromDraft();
+  const bits = [];
+  if (hooks.includes('Manual')) bits.push('manual access');
+  if (hooks.includes('Video')) bits.push('gameplay video');
+  const bitsPart = bits.length ? `, including ${bits.join(' and ')}` : '';
+  return `${title} on ${platform}${bitsPart}, plus full game information.`;
+}
 function validateStep3() {
   const errors = [];
   try {
@@ -546,8 +593,8 @@ function buildPackageData() {
   const id = state.draft.id.trim();
   const title = state.draft.title.trim();
   const gameUrl = `${SITE_ORIGIN}/games/game.html?id=${encodeURIComponent(id)}`;
-  const seoTitle = `${title} | Cheeky Commodore Gamer`;
-  const seoDescription = cleanForHtml(state.draft.description.trim() || `${title} on Commodore — screenshots, manual, downloads and video.`);
+  const seoTitle = buildSeoTitleFromDraft();
+  const seoDescription = buildSeoDescriptionFromDraft();
   const system = state.draft.system.trim();
   const year = Number(state.draft.year);
 
