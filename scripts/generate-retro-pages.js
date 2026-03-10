@@ -1,0 +1,217 @@
+#!/usr/bin/env node
+
+const fs = require('fs');
+const path = require('path');
+
+const SITE_ROOT = 'https://www.cheekycommodoregamer.co.uk';
+const repoRoot = path.resolve(__dirname, '..');
+
+const templatePath = path.join(repoRoot, 'scripts', 'templates', 'retro-video-page-template.html');
+const retroEventsPath = path.join(repoRoot, 'data', 'retro-events.json');
+const amigaDemoMusicPath = path.join(repoRoot, 'data', 'amiga-demo-music.json');
+
+const collectionConfig = {
+  retro_special: {
+    outputDir: path.join(repoRoot, 'retro-specials'),
+    routePrefix: '/retro-specials',
+    collectionName: 'Retro Specials',
+    collectionUrl: '/games/collections/retro-specials.html'
+  },
+  retro_event: {
+    outputDir: path.join(repoRoot, 'retro-events'),
+    routePrefix: '/retro-events',
+    collectionName: 'Retro Events',
+    collectionUrl: '/games/collections/retro-events.html'
+  },
+  demo_music: {
+    outputDir: path.join(repoRoot, 'amiga-demo-music'),
+    routePrefix: '/amiga-demo-music',
+    collectionName: 'Amiga Demo Music',
+    collectionUrl: '/games/collections/amiga-demo-music.html'
+  },
+  amiga_demo_music: {
+    outputDir: path.join(repoRoot, 'amiga-demo-music'),
+    routePrefix: '/amiga-demo-music',
+    collectionName: 'Amiga Demo Music',
+    collectionUrl: '/games/collections/amiga-demo-music.html'
+  }
+};
+
+function slugify(value) {
+  return String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function formatDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
+function readJsonArray(filePath) {
+  const raw = fs.readFileSync(filePath, 'utf8');
+  const data = JSON.parse(raw);
+  if (!Array.isArray(data)) {
+    throw new Error(`${path.basename(filePath)} must contain an array.`);
+  }
+  return data;
+}
+
+function resolveYoutubeId(entry) {
+  return String(entry.youtube_video_id || entry.youtubeId || entry.youtube || '').trim();
+}
+
+function resolveSlug(entry) {
+  return slugify(entry.slug || entry.id || entry.title);
+}
+
+function resolveSummary(entry) {
+  const summary = String(entry.summary || '').trim();
+  if (summary) return summary;
+  const description = String(entry.description || '').trim();
+  if (description) {
+    const firstSentence = description.split('. ')[0].trim();
+    return firstSentence.endsWith('.') ? firstSentence : `${firstSentence}.`;
+  }
+  return 'Watch this retro video from Cheeky Commodore Gamer.';
+}
+
+function resolveDescription(entry, summary) {
+  const description = String(entry.description || '').trim();
+  return description || summary;
+}
+
+function resolveThumbnail(entry, youtubeId) {
+  const raw = String(entry.thumbnail || '').trim();
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (youtubeId) return `https://img.youtube.com/vi/${encodeURIComponent(youtubeId)}/hqdefault.jpg`;
+  if (raw.startsWith('/')) return `${SITE_ROOT}${raw}`;
+  if (raw) return `${SITE_ROOT}/${raw}`;
+  return `${SITE_ROOT}/resources/images/collections/retro-specials.png`;
+}
+
+function resolveUploadDate(entry, fallbackDate) {
+  const candidate = String(entry.published_date || entry.publishedDate || entry.uploadDate || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return candidate;
+  return fallbackDate;
+}
+
+function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId }) {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: title,
+    description,
+    thumbnailUrl,
+    uploadDate,
+    embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    url: canonicalUrl
+  }, null, 4);
+}
+
+function buildRetroPageHtml(template, payload) {
+  return template
+    .replaceAll('__SEO_TITLE__', escapeHtml(payload.seoTitle))
+    .replaceAll('__SEO_DESCRIPTION__', escapeHtml(payload.seoDescription))
+    .replaceAll('__CANONICAL_URL__', escapeHtml(payload.canonicalUrl))
+    .replaceAll('__THUMBNAIL_URL__', escapeHtml(payload.thumbnailUrl))
+    .replaceAll('__VIDEO_SCHEMA__', payload.videoSchema)
+    .replaceAll('__COLLECTION_URL__', escapeHtml(payload.collectionUrl))
+    .replaceAll('__COLLECTION_NAME__', escapeHtml(payload.collectionName))
+    .replaceAll('__VIDEO_TITLE__', escapeHtml(payload.title))
+    .replaceAll('__VIDEO_SUMMARY__', escapeHtml(payload.summary))
+    .replaceAll('__VIDEO_DESCRIPTION__', escapeHtml(payload.description))
+    .replaceAll('__YOUTUBE_ID__', escapeHtml(payload.youtubeId));
+}
+
+function normaliseEntryType(rawType, fallbackType) {
+  const cleaned = String(rawType || '').trim().toLowerCase();
+  if (cleaned === 'retro_special') return 'retro_special';
+  if (cleaned === 'retro_event') return 'retro_event';
+  if (cleaned === 'demo_music' || cleaned === 'amiga_demo_music') return 'demo_music';
+  if (fallbackType === 'demo_music') return 'demo_music';
+  return 'retro_event';
+}
+
+function collectRetroEntries() {
+  const retroEvents = readJsonArray(retroEventsPath).map((entry) => ({ ...entry, __fallbackType: 'retro_event' }));
+  const demoTracks = readJsonArray(amigaDemoMusicPath).map((entry) => ({ ...entry, __fallbackType: 'demo_music' }));
+  return [...retroEvents, ...demoTracks];
+}
+
+function generateRetroPages() {
+  const template = fs.readFileSync(templatePath, 'utf8');
+  const retroDataMtime = formatDate(fs.statSync(retroEventsPath).mtime);
+  const demoDataMtime = formatDate(fs.statSync(amigaDemoMusicPath).mtime);
+
+  const pageEntries = [];
+  const created = [];
+
+  for (const entry of collectRetroEntries()) {
+    const entryType = normaliseEntryType(entry.type, entry.__fallbackType);
+    const config = collectionConfig[entryType];
+    if (!config) continue;
+
+    const slug = resolveSlug(entry);
+    const youtubeId = resolveYoutubeId(entry);
+    if (!slug || !youtubeId || entry.visible === false || entry.published === false) continue;
+
+    const sourceDate = entry.__fallbackType === 'demo_music' ? demoDataMtime : retroDataMtime;
+    const title = String(entry.title || '').trim();
+    const summary = resolveSummary(entry);
+    const description = resolveDescription(entry, summary);
+    const seoTitle = String(entry?.seo?.title || '').trim() || `${title} | ${config.collectionName} | Cheeky Commodore Gamer`;
+    const seoDescription = String(entry?.seo?.description || '').trim() || summary;
+
+    const canonicalPath = `${config.routePrefix}/${slug}/`;
+    const canonicalUrl = `${SITE_ROOT}${canonicalPath}`;
+    const thumbnailUrl = resolveThumbnail(entry, youtubeId);
+    const uploadDate = resolveUploadDate(entry, sourceDate);
+
+    const html = buildRetroPageHtml(template, {
+      seoTitle,
+      seoDescription,
+      canonicalUrl,
+      thumbnailUrl,
+      videoSchema: buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId }),
+      collectionUrl: config.collectionUrl,
+      collectionName: config.collectionName,
+      title,
+      summary,
+      description,
+      youtubeId
+    });
+
+    const outputDir = path.join(config.outputDir, slug);
+    fs.mkdirSync(outputDir, { recursive: true });
+    const outputFile = path.join(outputDir, 'index.html');
+    fs.writeFileSync(outputFile, html, 'utf8');
+
+    created.push(outputFile);
+    pageEntries.push({
+      loc: `${SITE_ROOT}${canonicalPath}`,
+      file: outputFile
+    });
+  }
+
+  return { pageEntries, created };
+}
+
+if (require.main === module) {
+  const result = generateRetroPages();
+  console.log(`Retro video pages generated: ${result.created.length}`);
+}
+
+module.exports = {
+  generateRetroPages
+};

@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { generateRetroPages } = require("./generate-retro-pages");
 
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 
@@ -105,7 +106,8 @@ function buildPagesSitemap() {
         { loc: `${SITE_ROOT}/complete-index.html`, file: path.join(repoRoot, "complete-index.html") }
     ];
 
-    const urls = pageEntries.map((entry) => {
+    const retroPages = generateRetroPages();
+    const urls = [...pageEntries, ...retroPages.pageEntries].map((entry) => {
         const lastmod = getLastmod(entry.file);
         return buildUrlEntry(entry.loc, lastmod);
     });
@@ -114,7 +116,8 @@ function buildPagesSitemap() {
     fs.writeFileSync(sitemapPagesPath, xml, "utf8");
 
     return {
-        urls: urls.length
+        urls: urls.length,
+        retroUrls: retroPages.pageEntries.length
     };
 }
 
@@ -137,7 +140,8 @@ function main() {
     console.log(`Game pages found: ${gameStats.count}`);
     console.log(`URLs written (games): ${gameStats.urls}`);
     console.log(`URLs written (pages): ${pageStats.urls}`);
-    console.log(`Sitemaps written:`);
+    console.log(`Retro video pages generated: ${pageStats.retroUrls}`);
+    console.log("Sitemaps written:");
     console.log(`- ${sitemapPath}`);
     console.log(`- ${sitemapGamesPath}`);
     console.log(`- ${sitemapPagesPath}`);
