@@ -59,7 +59,7 @@ function ccgBuildRetroEventCard(eventItem) {
 
   const mediaBlock = thumb
     ? `
-      <div class="ccg-game-card__media ccg-game-card__thumb">
+      <div class="ccg-card__image ccg-game-card__media ccg-game-card__thumb">
         <img
           src="${ccgEscapeHtml(thumb)}"
           alt="${safeTitle}"
@@ -73,13 +73,13 @@ function ccgBuildRetroEventCard(eventItem) {
     : '';
 
   return `
-    <article class="ccg-game-card genre-card ccg-game-card--retro-event"${membersOnlyAttr}>
+    <article class="ccg-card ccg-game-card genre-card ccg-game-card--retro-event"${membersOnlyAttr}>
       ${membersOnlyBadge}
       ${eventBadge}
       ${mediaBlock}
       <div class="ccg-game-card__body">
         <div class="game-title-wrapper">
-          <h3 class="ccg-game-card__title">${safeTitle}</h3>
+          <h3 class="ccg-card__title ccg-game-card__title">${safeTitle}</h3>
         </div>
         <div class="ccg-game-card__actions">
           <a href="${safeCardUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn">WATCH VIDEO</a>
@@ -167,7 +167,7 @@ async function ccgRunRetroEventsCollection() {
           <p>We&apos;re refreshing this set — check back soon or browse every game.</p>
           <div class="ccg-genre-empty__actions">
             <a class="ccg-btn ccg-btn--primary" href="../index.html">Browse All Games</a>
-            <a class="ccg-btn ccg-btn--secondary" href="../genres/index.html">Browse by Genre</a>
+            <a class="ccg-btn ccg-btn--ghost" href="../genres/index.html">Browse by Genre</a>
           </div>
         </div>
       `;
