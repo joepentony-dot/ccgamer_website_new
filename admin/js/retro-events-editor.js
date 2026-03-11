@@ -235,12 +235,20 @@ function validateEvent(next) {
   if (!['retro_event', 'retro_special', 'demo_music'].includes(next.type)) errors.push('Section is invalid.');
   if (!next.title) errors.push('Title is required.');
   if (!next.slug) errors.push('Slug is required.');
+  if (next.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(next.slug)) errors.push('Slug must be lowercase kebab-case.');
   if (!next.youtube_video_id) errors.push('YouTube video ID is required.');
   if (!/^[A-Za-z0-9_-]{6,20}$/.test(next.youtube_video_id)) errors.push('YouTube video ID format looks invalid.');
   if (!next.id.startsWith(getTypePrefix(next.type))) errors.push('Generated ID is invalid for the selected section.');
 
   const duplicateId = state.events.find((item) => item.id === next.id && item.id !== state.editingId);
   if (duplicateId) errors.push(`An entry with this ID already exists: "${next.id}".`);
+
+  const duplicateSlugInType = state.events.find((item) => (
+    item.type === next.type
+    && String(item.slug || '').trim().toLowerCase() === String(next.slug || '').trim().toLowerCase()
+    && item.id !== state.editingId
+  ));
+  if (duplicateSlugInType) errors.push(`Slug already exists in ${getTypeLabel(next.type)}: "${next.slug}".`);
 
   return errors;
 }
@@ -397,7 +405,7 @@ async function saveJsonFile(type) {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(anchor.href);
-  setStatus(`Downloaded ${fileName}. Replace ${pathLabel} with this file.`, false);
+  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-sitemaps.js`, false);
 }
 
 function toPersistedItem(item) {

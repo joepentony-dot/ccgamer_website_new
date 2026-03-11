@@ -142,6 +142,7 @@ function collectRetroEntries() {
 
 function buildHeadExtras({ seoTitle, seoDescription, canonicalUrl, thumbnailUrl, schemas }) {
   const tags = [
+    '<meta property="og:site_name" content="Cheeky Commodore Gamer" />',
     '<meta property="og:type" content="video.other" />',
     `<meta property="og:title" content="${escapeHtml(seoTitle)}" />`,
     `<meta property="og:description" content="${escapeHtml(seoDescription)}" />`,
@@ -217,12 +218,9 @@ function generateRetroPages() {
         collectionAbsoluteUrl: `${SITE_ROOT}${config.collectionUrl}`,
         canonicalUrl,
         title
-      })
+      }),
+      buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId: entry.youtubeId })
     ];
-
-    if (/^\d{4}-\d{2}-\d{2}$/.test(String(entry.published_date || entry.publishedDate || '').trim())) {
-      schemas.push(buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId: entry.youtubeId }));
-    }
 
     const relatedItems = byType[entry.type]
       .filter((item) => item.slug !== entry.slug)
@@ -256,7 +254,31 @@ function generateRetroPages() {
     const outputFile = path.join(outputDir, 'index.html');
     fs.writeFileSync(outputFile, html, 'utf8');
 
+    const flatOutputFile = path.join(config.outputDir, `${entry.slug}.html`);
+    const safeSlug = escapeHtml(entry.slug);
+    const flatRedirectHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(seoTitle)}</title>
+  <meta name="description" content="${escapeHtml(seoDescription)}" />
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
+  <meta http-equiv="refresh" content="0; url=${config.routePrefix}/${safeSlug}/" />
+  <script>
+    (function () {
+      var suffix = window.location.search + window.location.hash;
+      window.location.replace("${config.routePrefix}/${safeSlug}/" + suffix);
+    })();
+  </script>
+</head>
+<body></body>
+</html>
+`;
+    fs.writeFileSync(flatOutputFile, flatRedirectHtml, 'utf8');
+
     created.push(outputFile);
+    created.push(flatOutputFile);
     pageEntries.push({ loc: `${SITE_ROOT}${canonicalPath}`, file: outputFile });
   }
 
