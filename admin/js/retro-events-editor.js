@@ -405,7 +405,7 @@ async function saveJsonFile(type) {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(anchor.href);
-  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-sitemaps.js`, false);
+  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-sitemaps.js (this regenerates retro pages and sitemap files).`, false);
 }
 
 function toPersistedItem(item) {
