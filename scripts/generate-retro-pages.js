@@ -6,7 +6,8 @@ const path = require('path');
 const SITE_ROOT = 'https://www.cheekycommodoregamer.co.uk';
 const repoRoot = path.resolve(__dirname, '..');
 
-const templatePath = path.join(repoRoot, 'scripts', 'templates', 'retro-video-page-template.html');
+const baseTemplatePath = path.join(repoRoot, 'templates', 'base-omega.html');
+const contentTemplatePath = path.join(repoRoot, 'templates', 'retro-video-content.html');
 const retroEventsPath = path.join(repoRoot, 'data', 'retro-events.json');
 const amigaDemoMusicPath = path.join(repoRoot, 'data', 'amiga-demo-music.json');
 
@@ -124,30 +125,10 @@ function buildBreadcrumbSchema({ collectionName, collectionAbsoluteUrl, canonica
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: SITE_ROOT
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Collections',
-        item: `${SITE_ROOT}/games/collections/`
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: collectionName,
-        item: collectionAbsoluteUrl
-      },
-      {
-        '@type': 'ListItem',
-        position: 4,
-        name: title,
-        item: canonicalUrl
-      }
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ROOT },
+      { '@type': 'ListItem', position: 2, name: 'Collections', item: `${SITE_ROOT}/games/collections/` },
+      { '@type': 'ListItem', position: 3, name: collectionName, item: collectionAbsoluteUrl },
+      { '@type': 'ListItem', position: 4, name: title, item: canonicalUrl }
     ]
   }, null, 4);
 }
@@ -165,20 +146,33 @@ function toFiniteNumber(value) {
   return Number.isFinite(parsed) ? parsed : Number.POSITIVE_INFINITY;
 }
 
-function buildRetroPageHtml(template, payload) {
-  return template
-    .replaceAll('__SEO_TITLE__', escapeHtml(payload.seoTitle))
-    .replaceAll('__SEO_DESCRIPTION__', escapeHtml(payload.seoDescription))
-    .replaceAll('__CANONICAL_URL__', escapeHtml(payload.canonicalUrl))
-    .replaceAll('__THUMBNAIL_URL__', escapeHtml(payload.thumbnailUrl))
-    .replaceAll('__SCHEMA_BLOCKS__', payload.schemaBlocks)
-    .replaceAll('__COLLECTION_URL__', escapeHtml(payload.collectionUrl))
-    .replaceAll('__COLLECTION_NAME__', escapeHtml(payload.collectionName))
-    .replaceAll('__VIDEO_TITLE__', escapeHtml(payload.title))
-    .replaceAll('__VIDEO_SUMMARY__', escapeHtml(payload.summary))
-    .replaceAll('__VIDEO_DESCRIPTION__', escapeHtml(payload.description))
-    .replaceAll('__YOUTUBE_ID__', escapeHtml(payload.youtubeId))
-    .replaceAll('__RELATED_ITEMS__', payload.relatedItemsHtml);
+function renderTemplate(template, values) {
+  return template.replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, key) => (
+    Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : ''
+  ));
+}
+
+function buildContentHtml(contentTemplate, payload) {
+  return renderTemplate(contentTemplate, {
+    collectionUrl: escapeHtml(payload.collectionUrl),
+    collectionName: escapeHtml(payload.collectionName),
+    title: escapeHtml(payload.title),
+    youtubeId: escapeHtml(payload.youtubeId),
+    summary: escapeHtml(payload.summary),
+    description: escapeHtml(payload.description),
+    relatedItems: payload.relatedItemsHtml
+  });
+}
+
+function buildRetroPageHtml(baseTemplate, payload) {
+  return renderTemplate(baseTemplate, {
+    title: escapeHtml(payload.seoTitle),
+    description: escapeHtml(payload.seoDescription),
+    canonical: escapeHtml(payload.canonicalUrl),
+    thumbnail: escapeHtml(payload.thumbnailUrl),
+    schemaBlocks: payload.schemaBlocks,
+    content: payload.contentHtml
+  });
 }
 
 function normaliseEntryType(rawType, fallbackType) {
@@ -197,7 +191,8 @@ function collectRetroEntries() {
 }
 
 function generateRetroPages() {
-  const template = fs.readFileSync(templatePath, 'utf8');
+  const baseTemplate = fs.readFileSync(baseTemplatePath, 'utf8');
+  const contentTemplate = fs.readFileSync(contentTemplatePath, 'utf8');
   const retroDataMtime = formatDate(fs.statSync(retroEventsPath).mtime);
   const demoDataMtime = formatDate(fs.statSync(amigaDemoMusicPath).mtime);
 
@@ -270,22 +265,26 @@ function generateRetroPages() {
       });
 
     const relatedItemsHtml = relatedItems.length
-      ? `<section class="retro-video-page__related">\n      <h2>Related ${escapeHtml(config.collectionName)} videos</h2>\n      <ul>\n        ${relatedItems.join('\n        ')}\n      </ul>\n    </section>`
+      ? `<section class="retro-video-page__related">\n  <h2 class="game-subtitle">Related ${escapeHtml(config.collectionName)} videos</h2>\n  <ul>\n    ${relatedItems.join('\n    ')}\n  </ul>\n</section>`
       : '';
 
-    const html = buildRetroPageHtml(template, {
+    const contentHtml = buildContentHtml(contentTemplate, {
+      collectionUrl: config.collectionUrl,
+      collectionName: config.collectionName,
+      title,
+      youtubeId,
+      summary,
+      description,
+      relatedItemsHtml
+    });
+
+    const html = buildRetroPageHtml(baseTemplate, {
       seoTitle,
       seoDescription,
       canonicalUrl,
       thumbnailUrl,
-      schemaBlocks: schemaBlocks.join('\n\n    '),
-      collectionUrl: config.collectionUrl,
-      collectionName: config.collectionName,
-      title,
-      summary,
-      description,
-      youtubeId,
-      relatedItemsHtml
+      schemaBlocks: schemaBlocks.join('\n\n'),
+      contentHtml
     });
 
     const outputDir = path.join(config.outputDir, slug);

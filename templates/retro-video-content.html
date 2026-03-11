@@ -1,0 +1,22 @@
+<section class="retro-video-page video-hero">
+  <p class="retro-video-page__back">
+    <a class="ccg-btn ccg-btn--primary" href="{{collectionUrl}}">Back to {{collectionName}}</a>
+  </p>
+
+  <h1 class="game-hero__title retro-video-page__title">{{title}}</h1>
+
+  <div class="video-embed">
+    <iframe
+      src="https://www.youtube.com/embed/{{youtubeId}}"
+      title="{{title}}"
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen>
+    </iframe>
+  </div>
+
+  <p class="retro-video-page__summary">{{summary}}</p>
+  <p class="retro-video-page__description">{{description}}</p>
+
+{{relatedItems}}
+</section>
