@@ -294,6 +294,14 @@ export function validateGamesSchema(games) {
         errors.push(`Record ${index + 1} missing key: ${key}`);
       }
     });
+
+    if ('music' in game) {
+      if (!Array.isArray(game.music)) {
+        errors.push(`Record ${index + 1} music must be an array when provided.`);
+      } else if (game.music.some((track) => typeof track !== 'string' || !String(track).trim())) {
+        errors.push(`Record ${index + 1} music entries must be non-empty strings.`);
+      }
+    }
   });
 
   return { valid: errors.length === 0, errors };
