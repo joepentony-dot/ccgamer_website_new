@@ -250,12 +250,12 @@
             gridEl.textContent = "";
             validProducts.slice(0, 8).forEach((card) => gridEl.appendChild(card));
 
-            if (titleEl) {
-                titleEl.textContent = toSafeString(defaults?.heading) || "Play on Modern Hardware";
+            if (titleEl && !toSafeString(titleEl.textContent)) {
+                titleEl.textContent = toSafeString(defaults?.heading) || "Need New Commodore Peripherals?";
             }
 
-            if (disclosureEl) {
-                disclosureEl.textContent = toSafeString(defaults?.disclosure) || "As an Amazon Associate I earn from qualifying purchases.";
+            if (disclosureEl && !toSafeString(disclosureEl.textContent)) {
+                disclosureEl.textContent = toSafeString(defaults?.disclosure) || "Compatible hardware and controllers for modern retro setups.";
             }
 
             const hardware = section.querySelector(".game-facts__hardware");

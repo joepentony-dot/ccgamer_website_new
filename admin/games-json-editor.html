@@ -245,7 +245,7 @@
     };
 
     const CORE_FIELDS = ['system','id','slug','title','sorttitle','year','videoid','thumbnail','pdf','description','ccg_rating','ccg_rating_reason','_ccg_enforced','_ccg_migrated','developer'];
-    const ARRAY_FIELDS = ['genres','collections','disk','lemon'];
+    const ARRAY_FIELDS = ['genres','collections','music','disk','lemon'];
     const CREDIT_FIELDS = ['publisher','producer','coder','graphics','musician','re_releaser','developer'];
     const FIELD_TYPES = {
       year: 'number',
@@ -376,6 +376,7 @@
       if (!('ccg_rating' in game)) issues.push('Missing CCG rating');
       if (!('ccg_rating_reason' in game) || game.ccg_rating_reason === '') issues.push('Missing rating reason');
       if (!Array.isArray(game.disk) || game.disk.length === 0) issues.push('Missing download disk[]');
+      if (game.music && (!Array.isArray(game.music) || game.music.some((track) => !String(track || '').trim()))) issues.push('music[] contains invalid entries');
       if (!('thumbnail' in game) || game.thumbnail === '') issues.push('Missing thumbnail');
 
       const id = typeof game.id === 'string' ? game.id : '';
