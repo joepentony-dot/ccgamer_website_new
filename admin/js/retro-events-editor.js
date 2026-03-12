@@ -1,4 +1,5 @@
 const RETRO_EVENTS_DATA_PATH = '/data/retro-events.json';
+const RETRO_SPECIALS_DATA_PATH = '/data/retro-specials.json';
 const AMIGA_DEMO_MUSIC_DATA_PATH = '/data/amiga-demo-music.json';
 
 const state = {
@@ -12,6 +13,7 @@ const el = {
   formHeading: document.querySelector('[data-form-heading]'),
   list: document.querySelector('[data-event-list]'),
   saveRetroJson: document.querySelector('[data-action="save-retro-json"]'),
+  saveSpecialsJson: document.querySelector('[data-action="save-specials-json"]'),
   saveDemoJson: document.querySelector('[data-action="save-demo-json"]'),
   resetForm: document.querySelector('[data-action="reset-form"]'),
   saveEvent: document.querySelector('[data-action="save-event"]'),
@@ -51,6 +53,7 @@ function bindEvents() {
   el.form?.addEventListener('submit', onSaveEvent);
   el.resetForm?.addEventListener('click', resetForm);
   el.saveRetroJson?.addEventListener('click', () => saveJsonFile('retro_event'));
+  el.saveSpecialsJson?.addEventListener('click', () => saveJsonFile('retro_special'));
   el.saveDemoJson?.addEventListener('click', () => saveJsonFile('demo_music'));
   el.typeFilter?.addEventListener('change', renderEvents);
 
@@ -80,22 +83,25 @@ function bindEvents() {
 
 async function loadEvents() {
   try {
-    const [retroResponse, demoResponse] = await Promise.all([
+    const [retroResponse, specialsResponse, demoResponse] = await Promise.all([
       fetch(RETRO_EVENTS_DATA_PATH, { cache: 'no-store' }),
+      fetch(RETRO_SPECIALS_DATA_PATH, { cache: 'no-store' }),
       fetch(AMIGA_DEMO_MUSIC_DATA_PATH, { cache: 'no-store' })
     ]);
 
     if (!retroResponse.ok) throw new Error(`Failed to load retro-events.json (${retroResponse.status})`);
+    if (!specialsResponse.ok) throw new Error(`Failed to load retro-specials.json (${specialsResponse.status})`);
     if (!demoResponse.ok) throw new Error(`Failed to load amiga-demo-music.json (${demoResponse.status})`);
 
-    const [retroData, demoData] = await Promise.all([retroResponse.json(), demoResponse.json()]);
+    const [retroData, specialsData, demoData] = await Promise.all([retroResponse.json(), specialsResponse.json(), demoResponse.json()]);
 
     state.events = sanitizeEvents([
       ...(Array.isArray(retroData) ? retroData : []),
+      ...(Array.isArray(specialsData) ? specialsData : []),
       ...(Array.isArray(demoData) ? demoData : [])
     ]);
 
-    setStatus(`Loaded ${state.events.length} entries from ${RETRO_EVENTS_DATA_PATH} and ${AMIGA_DEMO_MUSIC_DATA_PATH}.`, false);
+    setStatus(`Loaded ${state.events.length} entries from ${RETRO_EVENTS_DATA_PATH}, ${RETRO_SPECIALS_DATA_PATH}, and ${AMIGA_DEMO_MUSIC_DATA_PATH}.`, false);
   } catch (error) {
     state.events = [];
     setStatus(error.message, true);
@@ -370,11 +376,26 @@ async function saveJsonFile(type) {
   normalizeSortOrders();
 
   const isDemoMusic = type === 'demo_music';
-  const pathLabel = isDemoMusic ? AMIGA_DEMO_MUSIC_DATA_PATH : RETRO_EVENTS_DATA_PATH;
-  const fileName = isDemoMusic ? 'amiga-demo-music.json' : 'retro-events.json';
+  const isRetroSpecial = type === 'retro_special';
+  const pathLabel = isDemoMusic
+    ? AMIGA_DEMO_MUSIC_DATA_PATH
+    : isRetroSpecial
+      ? RETRO_SPECIALS_DATA_PATH
+      : RETRO_EVENTS_DATA_PATH;
+  const fileName = isDemoMusic
+    ? 'amiga-demo-music.json'
+    : isRetroSpecial
+      ? 'retro-specials.json'
+      : 'retro-events.json';
 
   const payloadItems = state.events
-    .filter((item) => (isDemoMusic ? item.type === 'demo_music' : item.type !== 'demo_music'))
+    .filter((item) => (
+      isDemoMusic
+        ? item.type === 'demo_music'
+        : isRetroSpecial
+          ? item.type === 'retro_special'
+          : item.type === 'retro_event'
+    ))
     .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title))
     .map((item) => toPersistedItem(item));
 
@@ -405,7 +426,7 @@ async function saveJsonFile(type) {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(anchor.href);
-  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-sitemaps.js (this regenerates retro pages and sitemap files).`, false);
+  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-retro-pages.js && node scripts/generate-sitemaps.js.`, false);
 }
 
 function toPersistedItem(item) {

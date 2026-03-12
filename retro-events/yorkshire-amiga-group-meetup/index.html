@@ -71,7 +71,7 @@
     <link rel="stylesheet" href="/resources/css/games.css" />
     <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css" />
-    <style>.retro-video-page{max-width:980px;margin:0 auto;padding:2rem 1rem 3rem}.retro-video-page__back{margin:0 0 1.25rem}.retro-video-page__title{margin:0 0 1rem}.retro-video-page__summary{margin:0 0 1rem;line-height:1.6}.retro-video-page__video{position:relative;padding-top:56.25%;margin:0 0 1.5rem}.retro-video-page__video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.retro-video-page__description{margin:0 0 1.5rem;line-height:1.65}.retro-video-page__related h2{margin:0 0 .75rem}.retro-video-page__related ul{margin:0;padding-left:1.2rem}.retro-video-page__related li{margin-bottom:.45rem}</style>
+    <link rel="stylesheet" href="/resources/css/retro-video-pages.css" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
 <div class="ccg-bg" aria-hidden="true">
@@ -82,10 +82,14 @@
 
 <div class="ccg-page">
 <main class="ccg-main">
-<section class="retro-video-page">
+<section class="retro-video-page game-shell game-shell--detail">
   <p class="retro-video-page__back"><a class="ccg-btn ccg-btn--primary" href="/games/collections/retro-events.html">← Back to Retro Events</a></p>
-  <h1 class="game-hero__title retro-video-page__title">Yorkshire Amiga Group – North West Retro Computing Meetup</h1>
-  <p class="retro-video-page__summary">A meetup-focused retro event featuring the Yorkshire Amiga Group and community enthusiasts.</p>
+
+  <header class="retro-video-page__hero game-hero">
+    <h1 class="game-hero__title retro-video-page__title">Yorkshire Amiga Group – North West Retro Computing Meetup</h1>
+    <p class="retro-video-page__summary">A meetup-focused retro event featuring the Yorkshire Amiga Group and community enthusiasts.</p>
+  </header>
+
   <div class="retro-video-page__video">
     <iframe src="https://www.youtube.com/embed/SiMgKvZeXws"
       title="Yorkshire Amiga Group – North West Retro Computing Meetup"
@@ -93,7 +97,17 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowfullscreen></iframe>
   </div>
-  <p class="retro-video-page__description">This members-only Retro Events video captures a North West retro computing meetup with the Yorkshire Amiga Group. It focuses on the people, conversations and shared enthusiasm that keep local retro communities active.</p>
+
+  <section class="retro-video-page__meta" aria-label="Video metadata">
+    <h2 class="game-subtitle">Details</h2>
+    <ul class="retro-video-page__meta-list"><li><strong>Collection:</strong> <a href="/games/collections/retro-events.html">Retro Events</a></li><li><strong>Published:</strong> 2026-03-11</li><li><strong>Video source:</strong> <a href="https://www.youtube.com/watch?v=SiMgKvZeXws" rel="noopener" target="_blank">YouTube</a></li></ul>
+  </section>
+
+  <section class="retro-video-page__description-block">
+    <h2 class="game-subtitle">About this video</h2>
+    <p class="retro-video-page__description">This members-only Retro Events video captures a North West retro computing meetup with the Yorkshire Amiga Group. It focuses on the people, conversations and shared enthusiasm that keep local retro communities active.</p>
+  </section>
+
   <section class="retro-video-page__related">
   <h2 class="game-subtitle">Related Retro Events videos</h2>
   <ul>

@@ -10,6 +10,7 @@ const repoRoot = path.resolve(__dirname, '..');
 const baseTemplatePath = path.join(repoRoot, 'templates', 'base-omega.html');
 const retroContentTemplatePath = path.join(repoRoot, 'templates', 'retro-video-content.html');
 const retroEventsPath = path.join(repoRoot, 'data', 'retro-events.json');
+const retroSpecialsPath = path.join(repoRoot, 'data', 'retro-specials.json');
 const amigaDemoMusicPath = path.join(repoRoot, 'data', 'amiga-demo-music.json');
 
 const collectionConfig = {
@@ -52,6 +53,7 @@ function formatDate(date) {
 }
 
 function readJsonArray(filePath) {
+  if (!fs.existsSync(filePath)) return [];
   const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
   if (!Array.isArray(data)) throw new Error(`${path.basename(filePath)} must contain an array.`);
   return data;
@@ -136,8 +138,9 @@ function normaliseEntryType(rawType, fallbackType) {
 
 function collectRetroEntries() {
   const retroEvents = readJsonArray(retroEventsPath).map((entry) => ({ ...entry, __fallbackType: 'retro_event' }));
+  const retroSpecials = readJsonArray(retroSpecialsPath).map((entry) => ({ ...entry, __fallbackType: 'retro_special' }));
   const demoTracks = readJsonArray(amigaDemoMusicPath).map((entry) => ({ ...entry, __fallbackType: 'demo_music' }));
-  return [...retroEvents, ...demoTracks];
+  return [...retroEvents, ...retroSpecials, ...demoTracks];
 }
 
 function buildHeadExtras({ seoTitle, seoDescription, canonicalUrl, thumbnailUrl, schemas }) {
@@ -166,6 +169,7 @@ function buildContent(retroContentTemplate, payload) {
     video_summary: escapeHtml(payload.summary),
     youtube_id: escapeHtml(payload.youtubeId),
     video_description: escapeHtml(payload.description),
+    metadata_items: payload.metadataItemsHtml,
     related_items: payload.relatedItemsHtml
   });
 }
@@ -174,6 +178,7 @@ function generateRetroPages() {
   const baseTemplate = readTemplate(baseTemplatePath);
   const retroContentTemplate = readTemplate(retroContentTemplatePath);
   const retroDataMtime = formatDate(fs.statSync(retroEventsPath).mtime);
+  const retroSpecialsMtime = fs.existsSync(retroSpecialsPath) ? formatDate(fs.statSync(retroSpecialsPath).mtime) : retroDataMtime;
   const demoDataMtime = formatDate(fs.statSync(amigaDemoMusicPath).mtime);
 
   const normalisedEntries = collectRetroEntries().map((entry, index) => {
@@ -201,7 +206,11 @@ function generateRetroPages() {
 
   for (const entry of normalisedEntries) {
     const config = collectionConfig[entry.type];
-    const sourceDate = entry.__fallbackType === 'demo_music' ? demoDataMtime : retroDataMtime;
+    const sourceDate = entry.__fallbackType === 'demo_music'
+      ? demoDataMtime
+      : entry.__fallbackType === 'retro_special'
+        ? retroSpecialsMtime
+        : retroDataMtime;
     const title = String(entry.title || '').trim();
     const summary = resolveSummary(entry);
     const description = resolveDescription(entry, summary);
@@ -231,12 +240,18 @@ function generateRetroPages() {
       ? `<section class="retro-video-page__related">\n  <h2 class="game-subtitle">Related ${escapeHtml(config.collectionName)} videos</h2>\n  <ul>\n    ${relatedItems.join('\n    ')}\n  </ul>\n</section>`
       : '';
 
+    const metadataItemsHtml = [
+      `<li><strong>Collection:</strong> <a href="${escapeHtml(config.collectionUrl)}">${escapeHtml(config.collectionName)}</a></li>`,
+      `<li><strong>Published:</strong> ${escapeHtml(uploadDate)}</li>`,
+      `<li><strong>Video source:</strong> <a href="https://www.youtube.com/watch?v=${escapeHtml(entry.youtubeId)}" rel="noopener" target="_blank">YouTube</a></li>`
+    ].join('');
+
     const html = applyTemplate(baseTemplate, {
       title: escapeHtml(seoTitle),
       description: escapeHtml(seoDescription),
       canonical: escapeHtml(canonicalUrl),
       head_extra: buildHeadExtras({ seoTitle, seoDescription, canonicalUrl, thumbnailUrl, schemas }),
-      css_extra: '<style>.retro-video-page{max-width:980px;margin:0 auto;padding:2rem 1rem 3rem}.retro-video-page__back{margin:0 0 1.25rem}.retro-video-page__title{margin:0 0 1rem}.retro-video-page__summary{margin:0 0 1rem;line-height:1.6}.retro-video-page__video{position:relative;padding-top:56.25%;margin:0 0 1.5rem}.retro-video-page__video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}.retro-video-page__description{margin:0 0 1.5rem;line-height:1.65}.retro-video-page__related h2{margin:0 0 .75rem}.retro-video-page__related ul{margin:0;padding-left:1.2rem}.retro-video-page__related li{margin-bottom:.45rem}</style>',
+      css_extra: '<link rel="stylesheet" href="/resources/css/retro-video-pages.css" />',
       content: buildContent(retroContentTemplate, {
         collectionUrl: config.collectionUrl,
         collectionName: config.collectionName,
@@ -244,6 +259,7 @@ function generateRetroPages() {
         summary,
         description,
         youtubeId: entry.youtubeId,
+        metadataItemsHtml,
         relatedItemsHtml
       }),
       scripts_extra: ''

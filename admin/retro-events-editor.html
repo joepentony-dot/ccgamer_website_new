@@ -57,8 +57,8 @@
         <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
       </div>
       <h1>Non-Game Video Builder</h1>
-      <p>This editor manages <code>/data/retro-events.json</code> (Retro Events + Retro Specials) and <code>/data/amiga-demo-music.json</code> (Amiga Demo Music) with a simplified YouTube-first workflow.</p>
-      <p class="retro-help">Use section filters, edit cards, adjust sort order, and export updated JSON files without touching the Games editor. After replacing data files in the repo, run <code>node scripts/generate-sitemaps.js</code> to regenerate retro pages, flat compatibility routes and sitemap coverage.</p>
+      <p>This editor manages <code>/data/retro-events.json</code>, <code>/data/retro-specials.json</code>, and <code>/data/amiga-demo-music.json</code> with a simplified YouTube-first workflow.</p>
+      <p class="retro-help">Use section filters, edit cards, adjust sort order, and export updated JSON files without touching the Games editor. After replacing data files in the repo, run <code>node scripts/generate-retro-pages.js &amp;&amp; node scripts/generate-sitemaps.js</code> to regenerate retro pages, compatibility routes, and sitemap coverage.</p>
       <p class="retro-status" data-status></p>
     </section>
 
@@ -150,6 +150,7 @@
       <ul class="retro-list" data-event-list></ul>
       <div class="retro-actions">
         <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save retro-events.json</button>
+        <button type="button" class="ccg-btn ccg-btn--secondary" data-action="save-specials-json">Save retro-specials.json</button>
         <button type="button" class="ccg-btn ccg-btn--secondary" data-action="save-demo-json">Save amiga-demo-music.json</button>
       </div>
     </section>

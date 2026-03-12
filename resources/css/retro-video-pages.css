@@ -1,0 +1,57 @@
+.retro-video-page {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.retro-video-page__back {
+  margin: 0 0 1.25rem;
+}
+
+.retro-video-page__hero {
+  margin-bottom: 1rem;
+}
+
+.retro-video-page__title {
+  margin: 0 0 0.75rem;
+}
+
+.retro-video-page__summary,
+.retro-video-page__description {
+  line-height: 1.65;
+}
+
+.retro-video-page__video {
+  position: relative;
+  padding-top: 56.25%;
+  margin: 0 0 1.5rem;
+}
+
+.retro-video-page__video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.retro-video-page__meta,
+.retro-video-page__description-block,
+.retro-video-page__related {
+  margin-bottom: 1.5rem;
+}
+
+.retro-video-page__meta-list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.retro-video-page__meta-list li,
+.retro-video-page__related li {
+  margin-bottom: 0.45rem;
+}
+
+.retro-video-page__related ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
