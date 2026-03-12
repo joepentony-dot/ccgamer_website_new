@@ -1953,31 +1953,48 @@ function ensureManualModalAtDocumentRoot(modal) {
     return modal.parentElement === document.body;
 }
 
+function setDocumentScrollLock(locked) {
+    const body = document.body;
+    if (!body) return;
+
+    if (locked) {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+        body.dataset.modalScrollTop = String(scrollTop);
+        body.classList.add("modal-open");
+
+        if (window.CSS && window.CSS.supports && window.CSS.supports("(-webkit-touch-callout: none)")) {
+            body.style.top = `-${scrollTop}px`;
+        }
+        return;
+    }
+
+    const previousScrollTop = Number.parseInt(body.dataset.modalScrollTop || "0", 10) || 0;
+    body.classList.remove("modal-open");
+    body.style.top = "";
+    delete body.dataset.modalScrollTop;
+    window.scrollTo({ top: previousScrollTop, behavior: "auto" });
+}
+
 function closeManualModal() {
     const modal = document.getElementById("manualModal");
     const button = document.getElementById("gameManualBtn");
     const frame = document.getElementById("gameManualEmbed");
+    const status = document.getElementById("manualModalStatus");
     if (!modal) return;
 
     modal.classList.remove("open", "active");
     modal.setAttribute("aria-hidden", "true");
-    if (frame) frame.src = "";
+    setDocumentScrollLock(false);
+
+    if (frame) {
+        frame.src = "";
+        frame.removeAttribute("data-manual-loaded");
+    }
+    if (status) {
+        status.textContent = "Loading manual…";
+        status.hidden = false;
+    }
     if (button) button.setAttribute("aria-expanded", "false");
-}
-
-function scrollManualIntoComfortZone(container) {
-    if (!container || !window.matchMedia("(max-width: 767px)").matches) return;
-
-    const containerRect = container.getBoundingClientRect();
-    const containerTop = window.scrollY + containerRect.top;
-    const viewportOffset = window.innerHeight * 0.2;
-    const maxScrollTop = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    const targetScrollTop = Math.max(0, Math.min(maxScrollTop, containerTop - viewportOffset));
-
-    window.scrollTo({
-        top: targetScrollTop,
-        behavior: "smooth"
-    });
 }
 
 function wireManualModal(button) {
@@ -1986,9 +2003,24 @@ function wireManualModal(button) {
     const modal = document.getElementById("manualModal");
     const frame = document.getElementById("gameManualEmbed");
     const closeButton = document.getElementById("manualModalClose");
+    const status = document.getElementById("manualModalStatus");
     if (!modal || !frame || !closeButton) return;
 
     ensureManualModalAtDocumentRoot(modal);
+
+    if (frame.dataset.manualFrameBound !== "true") {
+        frame.addEventListener("load", () => {
+            if (!status) return;
+            status.hidden = true;
+            frame.dataset.manualLoaded = "true";
+        });
+        frame.addEventListener("error", () => {
+            if (!status) return;
+            status.hidden = false;
+            status.textContent = "Manual failed to load. Open in a new tab if this persists.";
+        });
+        frame.dataset.manualFrameBound = "true";
+    }
 
     if (modal.dataset.manualCloseBound !== "true") {
         closeButton.addEventListener("click", closeManualModal);
@@ -2006,15 +2038,24 @@ function wireManualModal(button) {
     if (button.dataset.manualBound !== "true") {
         button.addEventListener("click", (event) => {
             const manualUrl = String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
+            if (!manualUrl) return;
+
             event.preventDefault();
             ensureManualModalAtDocumentRoot(modal);
+
+            window.scrollTo({ top: 0, behavior: "auto" });
+            setDocumentScrollLock(true);
+
+            if (status) {
+                status.textContent = "Loading manual…";
+                status.hidden = false;
+            }
+            frame.removeAttribute("data-manual-loaded");
             frame.src = manualUrl;
 
             modal.classList.add("open", "active");
             modal.setAttribute("aria-hidden", "false");
             button.setAttribute("aria-expanded", "true");
-            // Removed document scroll on manual modal open because modal is a fixed fullscreen overlay.
-
         });
         button.dataset.manualBound = "true";
     }

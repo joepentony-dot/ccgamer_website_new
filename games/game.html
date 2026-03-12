@@ -414,8 +414,10 @@
 </div>
 
 <!-- MANUAL MODAL -->
-<div id="manualModal" class="ccg-modal ccg-modal--doc" aria-hidden="true">
-    <div class="ccg-modal-content">
+<div id="manualModal" class="ccg-modal ccg-modal--doc manual-overlay" aria-hidden="true">
+    <div class="ccg-modal-content manual-content" role="dialog" aria-modal="true" aria-labelledby="manualModalTitle">
+        <h2 id="manualModalTitle" class="visually-hidden">Game manual viewer</h2>
+        <p id="manualModalStatus" class="manual-loading" aria-live="polite">Loading manual…</p>
         <button id="manualModalClose" class="ccg-modal-close" type="button" aria-label="Close manual">&times;</button>
         <iframe id="gameManualEmbed" class="ccg-pdf-frame" title="Game manual" loading="lazy"></iframe>
     </div>
