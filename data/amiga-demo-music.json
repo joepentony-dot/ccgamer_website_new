@@ -6,7 +6,7 @@
     "youtubeId": "USTUwD_eH2c",
     "membersOnly": false,
     "seo": {
-      "title": "State of the Art (1992) – Commodore Amiga Demo Scene | Amiga Demo Music | Cheeky Commodore Gamer",
+      "title": "State of the Art (1992) \u2013 Commodore Amiga Demo Scene | Amiga Demo Music | Cheeky Commodore Gamer",
       "description": "State of the Art Cheeky Commodore Gamer's Amiga Demo Music collection."
     },
     "composer": "Unknown",
@@ -15,7 +15,9 @@
     "format": "MOD",
     "youtube": "USTUwD_eH2c",
     "thumbnail": "amiga-demo-music.png",
-    "description": "Classic Amiga demoscene music showcase."
+    "description": "Classic Amiga demoscene music showcase.",
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-state-of-the-art-1992-commodore-amiga-demo-scene"
   },
   {
     "id": "amiga-demo-music-track-02",
@@ -26,7 +28,10 @@
     "seo": {
       "title": "9 Fingers Spaceballs",
       "description": "9 Fingers Spaceballs Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-02",
+    "thumbnail": "https://img.youtube.com/vi/FZFH-LjJA9A/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-03",
@@ -37,7 +42,10 @@
     "seo": {
       "title": "Experience The Trippy Sounds Of - Jesus On E's",
       "description": "Jesus On E's Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-03",
+    "thumbnail": "https://img.youtube.com/vi/GCA3bzDopD0/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-04",
@@ -48,7 +56,10 @@
     "seo": {
       "title": "Cryonics - Neverwhere",
       "description": "Cryonics - Neverwhere Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-04",
+    "thumbnail": "https://img.youtube.com/vi/4lf0PoX4ppk/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-05",
@@ -59,7 +70,10 @@
     "seo": {
       "title": "Odyssey - Alzatraz",
       "description": "Odyssey - Alzatraz Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-05",
+    "thumbnail": "https://img.youtube.com/vi/6DjP8iVOYUI/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-06",
@@ -70,7 +84,10 @@
     "seo": {
       "title": "Enigma - Phenomena",
       "description": "Enigma - Phenomena Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-06",
+    "thumbnail": "https://img.youtube.com/vi/vODFmmYOWQs/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-07",
@@ -81,7 +98,10 @@
     "seo": {
       "title": "Crionics - Hardwired",
       "description": "Crionics - Hardwired Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-07",
+    "thumbnail": "https://img.youtube.com/vi/CNUCOvjxd3o/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-08",
@@ -92,7 +112,10 @@
     "seo": {
       "title": "Sounds of Silents",
       "description": "Sounds of Silents Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-08",
+    "thumbnail": "https://img.youtube.com/vi/rng9n0SNeDg/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-09",
@@ -102,8 +125,11 @@
     "membersOnly": false,
     "seo": {
       "title": "Desert Dream - Kefrens",
-      "description": "Watch Amiga Demo Music – Track 09 on Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+      "description": "Watch Amiga Demo Music \u2013 Track 09 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-09",
+    "thumbnail": "https://img.youtube.com/vi/HMESDOVj5UM/hqdefault.jpg"
   },
   {
     "id": "amiga-demo-music-track-10",
@@ -113,7 +139,10 @@
     "membersOnly": false,
     "seo": {
       "title": "Red Sector - Folow Me",
-      "description": "Watch Amiga Demo Music – Track 10 on Cheeky Commodore Gamer's Amiga Demo Music collection."
-    }
+      "description": "Watch Amiga Demo Music \u2013 Track 10 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+    },
+    "collection": "retro-specials",
+    "slug": "amiga-demo-music-track-10",
+    "thumbnail": "https://img.youtube.com/vi/7z-yzAKP94I/hqdefault.jpg"
   }
 ]
