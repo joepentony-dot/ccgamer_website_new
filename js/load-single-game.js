@@ -1002,6 +1002,36 @@ function renderAffiliateSection(game) {
     }
 }
 
+function initHardwareAccordion() {
+    const section = document.getElementById("affiliate-products-section");
+    if (!section) return;
+
+    const toggle = section.querySelector("[data-hardware-toggle]");
+    const panel = section.querySelector("[data-hardware-panel]");
+    if (!toggle || !panel) return;
+
+    if (section.dataset.hardwareAccordionBound === "true") return;
+
+    const setExpanded = (expanded) => {
+        toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+        panel.hidden = !expanded;
+        section.classList.toggle("is-hardware-open", expanded);
+
+        const label = toggle.querySelector("span");
+        if (label) {
+            label.textContent = expanded ? "Hide Hardware" : "Show Hardware";
+        }
+    };
+
+    setExpanded(false);
+    toggle.addEventListener("click", () => {
+        const expanded = toggle.getAttribute("aria-expanded") === "true";
+        setExpanded(!expanded);
+    });
+
+    section.dataset.hardwareAccordionBound = "true";
+}
+
 function renderGame(game) {
 
     const preloaded = isPreloadedSingleGame();
@@ -1045,8 +1075,6 @@ function renderGame(game) {
     renderVerdictPanel(game);
     moveSpotlightSection();
 
-    const mediaPanel = ensureMediaPanel();
-
     /* VIDEO */
     const vid = resolveVideoId(game);
     const videoSection = document.getElementById("game-video-section");
@@ -1087,8 +1115,12 @@ function renderGame(game) {
 
     if (videoSection) videoSection.hidden = false;
 
-    /* DOWNLOADS */
-    const downloadsSection = document.querySelector(".game-downloads");
+    /* PLAY / LISTEN / DOWNLOAD HUB */
+    const utilityHubSection = document.getElementById("game-utility-hub-section");
+    const manualCard = document.getElementById("game-manual-card");
+    const downloadCard = document.getElementById("game-download-card");
+    const readingCard = document.getElementById("game-reading-card");
+
     const rawManual = resolveManualUrl(game);
     const manual = (typeof rawManual === "string" && rawManual.trim())
         ? normaliseManualUrl(rawManual)
@@ -1111,6 +1143,9 @@ function renderGame(game) {
             manualBtn.setAttribute("aria-expanded", "false");
         }
     }
+    if (manualCard) {
+        manualCard.hidden = !hasManual;
+    }
 
     const disk = resolveDiskUrl(game);
     const diskBtn = document.getElementById("gameDiskBtn");
@@ -1126,18 +1161,33 @@ function renderGame(game) {
             diskBtn.hidden = true;
         }
     }
-
-    if (downloadsSection) {
-        downloadsSection.hidden = false;
-        updateDownloadsFallback(downloadsSection, hasManual, hasDisk);
+    if (downloadCard) {
+        downloadCard.hidden = !hasDisk;
     }
 
     const lemonLinks = resolveLemonLinks(game);
-    renderMediaLinksPanel(mediaPanel, lemonLinks, game);
+    const lemonLinksEl = document.getElementById("gameLemonLinks");
+    if (readingCard && lemonLinksEl) {
+        lemonLinksEl.innerHTML = "";
+        if (lemonLinks.length) {
+            const system = String(game?.system || "").trim().toUpperCase();
+            const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
 
-    const lemonBtn = document.getElementById("gameLemonBtn");
-    if (lemonBtn) {
-        lemonBtn.hidden = true;
+            Array.from(new Set(lemonLinks)).forEach((link, index, all) => {
+                const anchor = document.createElement("a");
+                anchor.className = "game-pill";
+                anchor.href = link;
+                anchor.target = "_blank";
+                anchor.rel = "noopener";
+                anchor.textContent = all.length > 1
+                    ? `${baseLabel} LINK ${index + 1}`
+                    : baseLabel;
+                lemonLinksEl.appendChild(anchor);
+            });
+            readingCard.hidden = false;
+        } else {
+            readingCard.hidden = true;
+        }
     }
 
     const musicSection = document.getElementById("game-music-section");
@@ -1183,8 +1233,13 @@ function renderGame(game) {
         }
     }
 
-    updateMediaPanelVisibility(mediaPanel);
+    const hasUtilityHub = !!(hasManual || hasDisk || lemonLinks.length || musicTracks.length);
+    if (utilityHubSection) {
+        utilityHubSection.hidden = !hasUtilityHub;
+    }
+
     renderAffiliateSection(game);
+    initHardwareAccordion();
 
     /* SCREENSHOTS */
     const shots = Array.isArray(game.screenshots) ? game.screenshots : [];
@@ -1223,11 +1278,10 @@ function renderGame(game) {
     const hasRelated = !!(relatedSection && !relatedSection.hidden);
     const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
 
-    renderFactsPanel(game);
     buildGameToc({
         overview: descriptionSection,
         video: videoSection,
-        downloads: downloadsSection,
+        downloads: utilityHubSection,
         music: musicSection,
         gallery: screenshotsSection,
         related: relatedSection
@@ -1720,113 +1774,6 @@ async function renderHeroBox3d(game) {
     hero.classList.add("game-hero--has-box3d");
 }
 
-function ensureMediaPanel() {
-    const main = document.querySelector(".ccg-main--single-game");
-    const videoSection = document.getElementById("game-video-section");
-    const downloadsSection = document.querySelector(".game-downloads");
-
-    if (!main || !videoSection || !downloadsSection) return null;
-
-    let mediaSection = document.getElementById("gameMediaSection");
-    if (!mediaSection) {
-        mediaSection = document.createElement("section");
-        mediaSection.id = "gameMediaSection";
-        mediaSection.className = "game-section game-media";
-        mediaSection.hidden = true;
-        mediaSection.innerHTML = `
-            <p class="game-section__kicker">Media Vault</p>
-            <h2 class="game-section__title">Media &amp; Resources</h2>
-            <div class="game-media__grid"></div>
-        `;
-
-        const mediaAnchor = document.querySelector("[data-game-media-anchor]");
-        const insertTarget = mediaAnchor || main;
-        const insertParent = insertTarget ? insertTarget.parentNode : null;
-        if (insertTarget && insertParent && insertParent.contains(insertTarget)) {
-            insertParent.insertBefore(mediaSection, insertTarget.nextSibling);
-        } else if (main) {
-            main.appendChild(mediaSection);
-        }
-    }
-
-    const grid = mediaSection.querySelector(".game-media__grid");
-    if (grid) {
-        if (!grid.contains(videoSection)) {
-            grid.appendChild(videoSection);
-        }
-        if (!grid.contains(downloadsSection)) {
-            grid.appendChild(downloadsSection);
-        }
-    }
-
-    videoSection.classList.add("game-media__item", "game-media__item--video");
-    downloadsSection.classList.add("game-media__item", "game-media__item--downloads");
-
-    let linksPanel = mediaSection.querySelector(".game-media__links");
-    if (!linksPanel) {
-        linksPanel = document.createElement("div");
-        linksPanel.className = "game-section game-media__item game-media__item--links game-media__links";
-        linksPanel.innerHTML = `
-            <p class="game-section__kicker">More Information</p>
-            <h3 class="game-section__title">Further Reading</h3>
-            <div class="game-media__links-list"></div>
-        `;
-        if (grid) {
-            grid.appendChild(linksPanel);
-        }
-    }
-
-    return {
-        section: mediaSection,
-        linksPanel
-    };
-}
-
-function renderMediaLinksPanel(mediaPanel, links, game) {
-    if (!mediaPanel || !mediaPanel.linksPanel) return;
-    const list = mediaPanel.linksPanel.querySelector(".game-media__links-list");
-    if (!list) return;
-
-    list.innerHTML = "";
-    const uniqueLinks = Array.from(new Set(links || []));
-
-    if (!uniqueLinks.length) {
-        mediaPanel.linksPanel.hidden = true;
-        return;
-    }
-
-    const system = String(game?.system || "").trim().toUpperCase();
-    const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
-
-    uniqueLinks.forEach((link, index) => {
-        const anchor = document.createElement("a");
-        anchor.className = "game-pill";
-        anchor.href = link;
-        anchor.target = "_blank";
-        anchor.rel = "noopener";
-        anchor.textContent = uniqueLinks.length > 1
-            ? `${baseLabel} LINK ${index + 1}`
-            : baseLabel;
-        list.appendChild(anchor);
-    });
-
-    mediaPanel.linksPanel.hidden = false;
-}
-
-function updateMediaPanelVisibility(mediaPanel) {
-    if (!mediaPanel || !mediaPanel.section) return;
-    const videoSection = document.getElementById("game-video-section");
-    const downloadsSection = document.querySelector(".game-downloads");
-    const linksPanel = mediaPanel.linksPanel;
-
-    const hasAnySection = !!(videoSection || downloadsSection || linksPanel);
-    if (!hasAnySection) return;
-
-    if (videoSection) videoSection.hidden = false;
-    if (downloadsSection) downloadsSection.hidden = false;
-    mediaPanel.section.hidden = false;
-}
-
 function renderCreditsPanel(game) {
     const entries = resolveCreditsEntries(game);
     const heroContent = document.querySelector(".game-hero__content");
@@ -2117,68 +2064,6 @@ function formatFactValue(value) {
 function resolveCreditValue(game, key) {
     const credits = (game?.credits && typeof game.credits === "object") ? game.credits : null;
     return formatFactValue(credits?.[key] || game?.[key]);
-}
-
-function renderFactsPanel(game) {
-    const factsPanel = document.querySelector("[data-game-facts]");
-    const grid = document.querySelector("[data-game-facts-grid]");
-    if (!factsPanel || !grid) return;
-
-    grid.innerHTML = "";
-
-    const system = formatFactValue(game?.system);
-    const year = formatFactValue(game?.year);
-    const developer = resolveCreditValue(game, "developer");
-    let publisher = resolveCreditValue(game, "publisher");
-    if (developer && publisher && normaliseCompareKey(developer) === normaliseCompareKey(publisher)) {
-        publisher = "";
-    }
-    const genres = formatFactValue(resolveGenres(game));
-    const collections = formatFactValue(resolveCollections(game));
-    const players = formatFactValue(game?.players || game?.player);
-
-    const facts = [
-        { label: "System", value: system },
-        { label: "Year", value: year },
-        { label: "Developer", value: developer },
-        { label: "Publisher", value: publisher },
-        { label: "Genre", value: genres },
-        { label: "Collection", value: collections },
-        { label: "Players", value: players }
-    ].filter(item => item.value);
-
-    facts.forEach(item => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "game-facts__item";
-        const label = document.createElement("span");
-        label.className = "game-facts__label";
-        label.textContent = item.label;
-        const value = document.createElement("span");
-        value.className = "game-facts__value";
-        value.textContent = item.value;
-        wrapper.appendChild(label);
-        wrapper.appendChild(value);
-        grid.appendChild(wrapper);
-    });
-
-    factsPanel.hidden = facts.length === 0;
-}
-
-
-function ensureSectionId(section, id) {
-    if (!section) return "";
-    if (!section.id) {
-        section.id = id;
-    }
-    return section.id;
-}
-
-function smoothScrollTo(target) {
-    if (!target) return;
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const offset = 90;
-    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
-    window.scrollTo({ top, behavior: prefersReduced ? "auto" : "smooth" });
 }
 
 function buildGameToc(sections) {

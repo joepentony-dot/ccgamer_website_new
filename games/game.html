@@ -308,27 +308,6 @@
 
         <nav class="game-toc" data-game-toc hidden></nav>
 
-        <section
-            class="game-facts game-section affiliate-products-section"
-            id="affiliate-products-section"
-            aria-label="Game facts and related hardware"
-            data-game-slug=""
-            hidden>
-            <div class="game-facts__inner affiliate-products-inner">
-                <div class="game-facts__header">
-                    <p class="game-section__kicker">Game Utility</p>
-                    <h2 class="game-section__title">At a Glance</h2>
-                </div>
-                <div class="game-facts__grid" data-game-facts-grid></div>
-
-                <div class="game-facts__hardware">
-                    <h3 class="game-facts__hardware-title affiliate-products-title">Play on Modern Hardware</h3>
-                    <p class="affiliate-products-disclosure"></p>
-                    <div class="affiliate-products-grid" id="affiliate-products-grid"></div>
-                </div>
-            </div>
-        </section>
-
         <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
 
         <!-- DESCRIPTION -->
@@ -357,21 +336,30 @@
             </div>
         </section>
 
-        <!-- DOWNLOADS / MANUALS -->
-        <section class="game-section game-downloads" hidden>
-            <p class="game-section__kicker">Ready to play</p>
-            <h2 class="game-section__title">Manuals &amp; Downloads</h2>
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
+            <p class="game-section__kicker">Ready to Play</p>
+            <h2 class="game-section__title">PLAY, LISTEN &amp; DOWNLOAD</h2>
 
-            <div class="game-downloads__actions">
-                <a id="gameManualBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">View Manual / PDF</a>
-                <a id="gameDiskBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Download Disk / Tape</a>
-            </div>
-        </section>
+            <div class="ccg-game-utility-hub__grid">
+                <article id="game-music-section" class="ccg-utility-card ccg-utility-card--music" hidden>
+                    <h3 class="ccg-utility-card__title">Game Music</h3>
+                    <div id="gameMusicTracks" class="ccg-game-music"></div>
+                </article>
 
-        <section id="game-music-section" class="game-section" hidden>
-            <div class="ccg-game-music">
-                <h2 class="ccg-music-title">🎵 Game Music</h2>
-                <div id="gameMusicTracks"></div>
+                <article id="game-manual-card" class="ccg-utility-card" hidden>
+                    <h3 class="ccg-utility-card__title">Manual</h3>
+                    <a id="gameManualBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">View Manual / PDF</a>
+                </article>
+
+                <article id="game-download-card" class="ccg-utility-card" hidden>
+                    <h3 class="ccg-utility-card__title">Download</h3>
+                    <a id="gameDiskBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Download Disk / Tape</a>
+                </article>
+
+                <article id="game-reading-card" class="ccg-utility-card" hidden>
+                    <h3 class="ccg-utility-card__title">Further Reading</h3>
+                    <div class="ccg-utility-card__actions" id="gameLemonLinks"></div>
+                </article>
             </div>
         </section>
 
@@ -394,6 +382,34 @@
                     <div id="relatedGamesTrack" class="related-carousel__track"></div>
                 </div>
                 <button class="related-carousel__nav related-carousel__nav--next" type="button" aria-label="Next related games">›</button>
+            </div>
+        </section>
+
+        <section
+            class="game-facts game-section affiliate-products-section"
+            id="affiliate-products-section"
+            aria-label="Compatible Commodore hardware"
+            data-game-slug=""
+            hidden>
+            <div class="game-facts__inner affiliate-products-inner">
+                <div class="ccg-hardware-accordion">
+                    <div class="ccg-hardware-accordion__header">
+                        <h2 class="game-facts__hardware-title affiliate-products-title">Need New Commodore Peripherals?</h2>
+                        <p class="affiliate-products-disclosure">Compatible hardware and controllers for modern retro setups.</p>
+                    </div>
+                    <button
+                        type="button"
+                        class="ccg-hardware-toggle"
+                        data-hardware-toggle
+                        aria-expanded="false"
+                        aria-controls="ccg-hardware-panel">
+                        <span>Show Hardware</span>
+                        <span class="ccg-hardware-toggle__icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="ccg-hardware-panel" class="ccg-hardware-panel game-facts__hardware" data-hardware-panel hidden>
+                        <div class="affiliate-products-grid" id="affiliate-products-grid"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
