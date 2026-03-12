@@ -214,8 +214,15 @@ function generateRetroPages() {
     const title = String(entry.title || '').trim();
     const summary = resolveSummary(entry);
     const description = resolveDescription(entry, summary);
-    const seoTitle = String(entry?.seo?.title || '').trim() || `${title} | ${config.collectionName} | Cheeky Commodore Gamer`;
-    const seoDescription = String(entry?.seo?.description || '').trim() || summary;
+    const isDemoMusic = entry.type === 'demo_music';
+    const defaultSeoTitle = isDemoMusic
+      ? `${title} – Amiga Demo Scene | Cheeky Commodore Gamer`
+      : `${title} | ${config.collectionName} | Cheeky Commodore Gamer`;
+    const defaultSeoDescription = isDemoMusic
+      ? `${description} This amiga demo scene feature explores commodore amiga demos, amiga demoscene music, retro computing demos, and the wider Cheeky Commodore Gamer archive.`
+      : summary;
+    const seoTitle = String(entry?.seo?.title || '').trim() || defaultSeoTitle;
+    const seoDescription = String(entry?.seo?.description || '').trim() || defaultSeoDescription;
     const canonicalPath = `${config.routePrefix}/${entry.slug}/`;
     const canonicalUrl = `${SITE_ROOT}${canonicalPath}`;
     const thumbnailUrl = resolveThumbnail(entry, entry.youtubeId);

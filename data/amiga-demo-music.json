@@ -1,148 +1,194 @@
 [
   {
-    "id": "amiga-demo-music-state-of-the-art-1992-commodore-amiga-demo-scene",
+    "id": "state-of-the-art",
     "type": "demo_music",
     "title": "State of the Art",
     "youtubeId": "USTUwD_eH2c",
     "membersOnly": false,
     "seo": {
-      "title": "State of the Art (1992) \u2013 Commodore Amiga Demo Scene | Amiga Demo Music | Cheeky Commodore Gamer",
-      "description": "State of the Art Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "State of the Art – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "State of the Art is a standout 1990 Amiga demoscene music showcase associated with Scene Group. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
     "composer": "Unknown",
     "demo_group": "Scene Group",
     "year": 1990,
     "format": "MOD",
     "youtube": "USTUwD_eH2c",
-    "thumbnail": "amiga-demo-music.png",
-    "description": "Classic Amiga demoscene music showcase.",
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-state-of-the-art-1992-commodore-amiga-demo-scene"
+    "thumbnail": "https://img.youtube.com/vi/USTUwD_eH2c/hqdefault.jpg",
+    "description": "State of the Art is a standout 1990 Amiga demoscene music showcase associated with Scene Group. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos.",
+    "collection": "amiga-demo-music",
+    "slug": "state-of-the-art",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting State of the Art."
   },
   {
-    "id": "amiga-demo-music-track-02",
+    "id": "9-fingers-spaceballs",
     "type": "demo_music",
     "title": "9 Fingers Spaceballs",
     "youtubeId": "FZFH-LjJA9A",
     "membersOnly": false,
     "seo": {
-      "title": "9 Fingers Spaceballs",
-      "description": "9 Fingers Spaceballs Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "9 Fingers Spaceballs – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "9 Fingers Spaceballs is a standout 1990 Amiga demoscene music showcase associated with Spaceballs. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-02",
-    "thumbnail": "https://img.youtube.com/vi/FZFH-LjJA9A/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "9-fingers-spaceballs",
+    "thumbnail": "https://img.youtube.com/vi/FZFH-LjJA9A/hqdefault.jpg",
+    "demo_group": "Spaceballs",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting 9 Fingers Spaceballs.",
+    "description": "9 Fingers Spaceballs is a standout 1990 Amiga demoscene music showcase associated with Spaceballs. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-03",
+    "id": "jesus-on-es",
     "type": "demo_music",
     "title": "Jesus On E's",
     "youtubeId": "GCA3bzDopD0",
     "membersOnly": false,
     "seo": {
-      "title": "Experience The Trippy Sounds Of - Jesus On E's",
-      "description": "Jesus On E's Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Jesus On E's – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Jesus On E's is a standout 1990 Amiga demoscene music showcase associated with Melon Dezign. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-03",
-    "thumbnail": "https://img.youtube.com/vi/GCA3bzDopD0/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "jesus-on-es",
+    "thumbnail": "https://img.youtube.com/vi/GCA3bzDopD0/hqdefault.jpg",
+    "demo_group": "Melon Dezign",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Jesus On E's.",
+    "description": "Jesus On E's is a standout 1990 Amiga demoscene music showcase associated with Melon Dezign. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-04",
+    "id": "cryonics-neverwhere",
     "type": "demo_music",
     "title": "Cryonics - Neverwhere",
     "youtubeId": "4lf0PoX4ppk",
     "membersOnly": false,
     "seo": {
-      "title": "Cryonics - Neverwhere",
-      "description": "Cryonics - Neverwhere Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Cryonics - Neverwhere – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Cryonics - Neverwhere is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-04",
-    "thumbnail": "https://img.youtube.com/vi/4lf0PoX4ppk/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "cryonics-neverwhere",
+    "thumbnail": "https://img.youtube.com/vi/4lf0PoX4ppk/hqdefault.jpg",
+    "demo_group": "Crionics",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Cryonics - Neverwhere.",
+    "description": "Cryonics - Neverwhere is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-05",
+    "id": "odyssey-alzatraz",
     "type": "demo_music",
     "title": "Odyssey - Alzatraz",
     "youtubeId": "6DjP8iVOYUI",
     "membersOnly": false,
     "seo": {
-      "title": "Odyssey - Alzatraz",
-      "description": "Odyssey - Alzatraz Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Odyssey - Alzatraz – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Odyssey - Alzatraz is a standout 1990 Amiga demoscene music showcase associated with Alcatraz. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-05",
-    "thumbnail": "https://img.youtube.com/vi/6DjP8iVOYUI/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "odyssey-alzatraz",
+    "thumbnail": "https://img.youtube.com/vi/6DjP8iVOYUI/hqdefault.jpg",
+    "demo_group": "Alcatraz",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Odyssey - Alzatraz.",
+    "description": "Odyssey - Alzatraz is a standout 1990 Amiga demoscene music showcase associated with Alcatraz. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-06",
+    "id": "enigma-phenomena",
     "type": "demo_music",
     "title": "Enigma - Phenomena",
     "youtubeId": "vODFmmYOWQs",
     "membersOnly": false,
     "seo": {
-      "title": "Enigma - Phenomena",
-      "description": "Enigma - Phenomena Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Enigma - Phenomena – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Enigma - Phenomena is a standout 1990 Amiga demoscene music showcase associated with Phenomena. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-06",
-    "thumbnail": "https://img.youtube.com/vi/vODFmmYOWQs/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "enigma-phenomena",
+    "thumbnail": "https://img.youtube.com/vi/vODFmmYOWQs/hqdefault.jpg",
+    "demo_group": "Phenomena",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Enigma - Phenomena.",
+    "description": "Enigma - Phenomena is a standout 1990 Amiga demoscene music showcase associated with Phenomena. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-07",
+    "id": "crionics-hardwired",
     "type": "demo_music",
     "title": "Crionics - Hardwired",
     "youtubeId": "CNUCOvjxd3o",
     "membersOnly": false,
     "seo": {
-      "title": "Crionics - Hardwired",
-      "description": "Crionics - Hardwired Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Crionics - Hardwired – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Crionics - Hardwired is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-07",
-    "thumbnail": "https://img.youtube.com/vi/CNUCOvjxd3o/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "crionics-hardwired",
+    "thumbnail": "https://img.youtube.com/vi/CNUCOvjxd3o/hqdefault.jpg",
+    "demo_group": "Crionics",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Crionics - Hardwired.",
+    "description": "Crionics - Hardwired is a standout 1990 Amiga demoscene music showcase associated with Crionics. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-08",
+    "id": "sounds-of-silents",
     "type": "demo_music",
     "title": "Sounds of Silents",
     "youtubeId": "rng9n0SNeDg",
     "membersOnly": false,
     "seo": {
-      "title": "Sounds of Silents",
-      "description": "Sounds of Silents Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Sounds of Silents – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Sounds of Silents is a standout 1990 Amiga demoscene music showcase associated with Silents. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-08",
-    "thumbnail": "https://img.youtube.com/vi/rng9n0SNeDg/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "sounds-of-silents",
+    "thumbnail": "https://img.youtube.com/vi/rng9n0SNeDg/hqdefault.jpg",
+    "demo_group": "Silents",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Sounds of Silents.",
+    "description": "Sounds of Silents is a standout 1990 Amiga demoscene music showcase associated with Silents. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-09",
+    "id": "desert-dream-kefrens",
     "type": "demo_music",
     "title": "Desert Dream - Kefrens",
     "youtubeId": "HMESDOVj5UM",
     "membersOnly": false,
     "seo": {
-      "title": "Desert Dream - Kefrens",
-      "description": "Watch Amiga Demo Music \u2013 Track 09 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Desert Dream - Kefrens – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Desert Dream - Kefrens is a standout 1990 Amiga demoscene music showcase associated with Kefrens. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-09",
-    "thumbnail": "https://img.youtube.com/vi/HMESDOVj5UM/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "desert-dream-kefrens",
+    "thumbnail": "https://img.youtube.com/vi/HMESDOVj5UM/hqdefault.jpg",
+    "demo_group": "Kefrens",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Desert Dream - Kefrens.",
+    "description": "Desert Dream - Kefrens is a standout 1990 Amiga demoscene music showcase associated with Kefrens. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   },
   {
-    "id": "amiga-demo-music-track-10",
+    "id": "red-sector-folow-me",
     "type": "demo_music",
     "title": "Red Sector - Folow Me",
     "youtubeId": "7z-yzAKP94I",
     "membersOnly": false,
     "seo": {
-      "title": "Red Sector - Folow Me",
-      "description": "Watch Amiga Demo Music \u2013 Track 10 on Cheeky Commodore Gamer's Amiga Demo Music collection."
+      "title": "Red Sector - Folow Me – Amiga Demo Scene | Cheeky Commodore Gamer",
+      "description": "Red Sector - Folow Me is a standout 1990 Amiga demoscene music showcase associated with Red Sector. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
     },
-    "collection": "retro-specials",
-    "slug": "amiga-demo-music-track-10",
-    "thumbnail": "https://img.youtube.com/vi/7z-yzAKP94I/hqdefault.jpg"
+    "collection": "amiga-demo-music",
+    "slug": "red-sector-folow-me",
+    "thumbnail": "https://img.youtube.com/vi/7z-yzAKP94I/hqdefault.jpg",
+    "demo_group": "Red Sector",
+    "year": 1990,
+    "composer": "Scene musicians",
+    "summary": "A classic Commodore Amiga demoscene music feature highlighting Red Sector - Folow Me.",
+    "description": "Red Sector - Folow Me is a standout 1990 Amiga demoscene music showcase associated with Red Sector. Watch this feature on Cheeky Commodore Gamer for amiga demo scene history, commodore amiga demos, and retro computing demos."
   }
 ]
