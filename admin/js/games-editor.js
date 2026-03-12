@@ -37,6 +37,7 @@ const EMPTY_DRAFT = {
   collections: [],
   pdf: '',
   disk: '',
+  music: '',
   creditsPublisher: '',
   creditsDeveloper: '',
   creditsCoder: '',
@@ -611,6 +612,7 @@ function buildPackageData() {
     videoid: state.draft.videoId.trim(),
     // Filename-only logic: keep full-path storage in output while allowing shorthand input in the editor UI.
     thumbnail: normalizeThumbnailPath(state.draft.thumbnail, slug),
+    music: parseCommaList(state.draft.music),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: parseLines(state.draft.externalLinks),
@@ -621,6 +623,10 @@ function buildPackageData() {
     _ccg_enforced: false,
     _ccg_migrated: false
   };
+
+  if (!Array.isArray(gameEntry.music) || gameEntry.music.length === 0) {
+    delete gameEntry.music;
+  }
 
   const normalizedBox3dPath = normalizeBox3dPath(state.draft.box3d, slug);
 
@@ -1116,12 +1122,13 @@ function validateGameEntrySchema(gameEntry) {
   const errors = [];
   const requiredOrder = [
     'system', 'id', 'slug', 'title', 'sorttitle', 'year', 'genres', 'collections',
-    'videoid', 'thumbnail', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating',
+    'videoid', 'thumbnail', 'music', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating',
     'ccg_rating_reason', 'credits', '_ccg_enforced', '_ccg_migrated'
   ];
 
   const keys = Object.keys(gameEntry || {});
-  if (keys.length !== requiredOrder.length || requiredOrder.some((key, index) => keys[index] !== key)) {
+  const expectedOrder = Array.isArray(gameEntry?.music) ? requiredOrder : requiredOrder.filter((key) => key !== 'music');
+  if (keys.length !== expectedOrder.length || expectedOrder.some((key, index) => keys[index] !== key)) {
     errors.push('Game object keys must match the hard-locked schema order exactly.');
   }
 
@@ -1137,6 +1144,13 @@ function validateGameEntrySchema(gameEntry) {
   if (typeof gameEntry.videoid !== 'string' || !gameEntry.videoid.trim()) errors.push('videoid must be a non-empty string.');
   if (typeof gameEntry.thumbnail !== 'string' || !/^resources\/images\/thumbnails\/all\/.+\.(?:png|jpg|jpeg|webp|gif)$/i.test(gameEntry.thumbnail)) {
     errors.push('thumbnail must be resources/images/thumbnails/all/<file>.<ext>.');
+  }
+  if ('music' in gameEntry) {
+    if (!Array.isArray(gameEntry.music)) {
+      errors.push('music must be an array when provided.');
+    } else if (gameEntry.music.some((track) => typeof track !== 'string' || !track.trim())) {
+      errors.push('music must contain non-empty filename strings.');
+    }
   }
   if (typeof gameEntry.pdf !== 'string') errors.push('pdf must be a string.');
   if (!Array.isArray(gameEntry.disk)) errors.push('disk must be an array.');

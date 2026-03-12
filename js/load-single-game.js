@@ -1140,6 +1140,49 @@ function renderGame(game) {
         lemonBtn.hidden = true;
     }
 
+    const musicSection = document.getElementById("game-music-section");
+    const musicTracksEl = document.getElementById("gameMusicTracks");
+    const musicTracks = Array.isArray(game.music)
+        ? game.music.map((track) => String(track || "").trim()).filter(Boolean)
+        : [];
+
+    if (musicSection && musicTracksEl) {
+        if (musicTracks.length) {
+            musicTracksEl.innerHTML = "";
+            musicTracks.forEach((trackName) => {
+                const trackWrap = document.createElement("div");
+                trackWrap.className = "ccg-music-track";
+
+                const label = document.createElement("span");
+                label.className = "ccg-music-track-name";
+                const readableName = trackName
+                    .replace(/\.[a-z0-9]+$/i, "")
+                    .replace(/[-_]+/g, " ")
+                    .trim();
+                label.textContent = readableName
+                    ? readableName.replace(/\b\w/g, (char) => char.toUpperCase())
+                    : "Main Theme";
+
+                const audio = document.createElement("audio");
+                audio.controls = true;
+                audio.preload = "none";
+
+                const source = document.createElement("source");
+                source.src = `/resources/audio/games/${encodeURIComponent(trackName)}`;
+                source.type = "audio/mpeg";
+
+                audio.appendChild(source);
+                trackWrap.appendChild(label);
+                trackWrap.appendChild(audio);
+                musicTracksEl.appendChild(trackWrap);
+            });
+            musicSection.hidden = false;
+        } else {
+            musicTracksEl.innerHTML = "";
+            musicSection.hidden = true;
+        }
+    }
+
     updateMediaPanelVisibility(mediaPanel);
     renderAffiliateSection(game);
 
@@ -1185,6 +1228,7 @@ function renderGame(game) {
         overview: descriptionSection,
         video: videoSection,
         downloads: downloadsSection,
+        music: musicSection,
         gallery: screenshotsSection,
         related: relatedSection
     });
@@ -2148,6 +2192,7 @@ function buildGameToc(sections) {
         { key: "overview", label: "Overview", element: sections.overview, id: "game-description-section" },
         { key: "video", label: "Video", element: sections.video, id: "game-video-section" },
         { key: "downloads", label: "Downloads", element: sections.downloads, id: "game-downloads-section" },
+        { key: "music", label: "Music", element: sections.music, id: "game-music-section" },
         { key: "gallery", label: "Gallery", element: sections.gallery, id: "game-screenshots-section" },
         { key: "related", label: "Related", element: sections.related, id: "game-related-section" }
     ];

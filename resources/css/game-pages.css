@@ -1,0 +1,30 @@
+.ccg-game-music{
+margin-top:40px;
+padding:20px;
+background:rgba(0,0,0,0.6);
+border:2px solid #00eaff;
+border-radius:10px;
+box-shadow:0 0 12px rgba(0,234,255,0.6);
+}
+
+.ccg-music-title{
+font-family:Orbitron, sans-serif;
+color:#00eaff;
+text-shadow:0 0 10px #00eaff;
+margin-bottom:15px;
+}
+
+.ccg-music-track{
+display:flex;
+flex-direction:column;
+margin-bottom:15px;
+}
+
+.ccg-music-track-name{
+color:#ffffff;
+margin-bottom:6px;
+}
+
+.ccg-game-music audio{
+filter:drop-shadow(0 0 4px #00eaff);
+}
