@@ -28721,48 +28721,53 @@
     "_ccg_migrated": false
   },
   {
-    "system": "C64",
-    "id": "x_out",
-    "slug": "x-out",
-    "title": "X-Out",
-    "sorttitle": "X-Out",
-    "year": 1990,
-    "genres": [
-      "shooting"
+  "system": "C64",
+  "id": "x_out",
+  "slug": "x-out",
+  "title": "X-Out",
+  "sorttitle": "X-Out",
+  "year": 1990,
+  "genres": [
+    "shooting"
+  ],
+  "collections": [],
+  "videoid": "ANDFibxD8n0",
+  "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
+
+  "music": [
+    "x-out.mp3"
+  ],
+
+  "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
+  "disk": [
+    "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
+  ],
+  "lemon": [
+    "https://www.lemonamiga.com/game/x-out"
+  ],
+  "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
+  "ccg_rating": 7,
+  "ccg_rating_reason": "",
+  "credits": {
+    "publisher": [
+      "Rainbow Arts"
     ],
-    "collections": [],
-    "videoid": "ANDFibxD8n0",
-    "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
-    "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
-    "disk": [
-      "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
+    "producer": "",
+    "coder": [
+      "Heiko Schröder"
     ],
-    "lemon": [
-      "https://www.lemonamiga.com/game/x-out"
+    "graphics": [
+      "Celal Kandemiroglu"
     ],
-    "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
-    "ccg_rating": 7,
-    "ccg_rating_reason": "",
-    "credits": {
-      "publisher": [
-        "Rainbow Arts"
-      ],
-      "producer": "",
-      "coder": [
-        "Heiko Schröder"
-      ],
-      "graphics": [
-        "Celal Kandemiroglu"
-      ],
-      "musician": [
-        "Chris Hülsbeck"
-      ],
-      "re_releaser": [],
-      "developer": ""
-    },
-    "developer": "",
-    "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "musician": [
+      "Chris Hülsbeck"
+    ],
+    "re_releaser": [],
+    "developer": ""
+  },
+  "developer": "",
+  "_ccg_enforced": false,
+  "_ccg_migrated": false
   },
   {
     "system": "AMIGA",
