@@ -1,7 +1,11 @@
-<section class="retro-video-page">
+<section class="retro-video-page game-shell game-shell--detail">
   <p class="retro-video-page__back"><a class="ccg-btn ccg-btn--primary" href="{{collection_url}}">← Back to {{collection_name}}</a></p>
-  <h1 class="game-hero__title retro-video-page__title">{{video_title}}</h1>
-  <p class="retro-video-page__summary">{{video_summary}}</p>
+
+  <header class="retro-video-page__hero game-hero">
+    <h1 class="game-hero__title retro-video-page__title">{{video_title}}</h1>
+    <p class="retro-video-page__summary">{{video_summary}}</p>
+  </header>
+
   <div class="retro-video-page__video">
     <iframe src="https://www.youtube.com/embed/{{youtube_id}}"
       title="{{video_title}}"
@@ -9,6 +13,16 @@
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowfullscreen></iframe>
   </div>
-  <p class="retro-video-page__description">{{video_description}}</p>
+
+  <section class="retro-video-page__meta" aria-label="Video metadata">
+    <h2 class="game-subtitle">Details</h2>
+    <ul class="retro-video-page__meta-list">{{metadata_items}}</ul>
+  </section>
+
+  <section class="retro-video-page__description-block">
+    <h2 class="game-subtitle">About this video</h2>
+    <p class="retro-video-page__description">{{video_description}}</p>
+  </section>
+
   {{related_items}}
 </section>
