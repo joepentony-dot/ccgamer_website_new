@@ -1278,23 +1278,32 @@ function renderGame(game) {
     const hasRelated = !!(relatedSection && !relatedSection.hidden);
     const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
 
-    buildGameToc({
-        overview: descriptionSection,
-        video: videoSection,
-        downloads: utilityHubSection,
-        music: musicSection,
-        gallery: screenshotsSection,
-        related: relatedSection
-    });
-    initSingleGameUX({
-        hasVideo,
-        hasManual,
-        hasDisk,
-        hasOverview,
-        hasScreenshots,
-        hasRelated,
-        hasRating
-    });
+    try {
+        buildGameToc({
+            overview: descriptionSection,
+            video: videoSection,
+            downloads: utilityHubSection,
+            music: musicSection,
+            gallery: screenshotsSection,
+            related: relatedSection
+        });
+    } catch (error) {
+        console.warn("[CCG SINGLE] TOC render skipped.", error);
+    }
+
+    try {
+        initSingleGameUX({
+            hasVideo,
+            hasManual,
+            hasDisk,
+            hasOverview,
+            hasScreenshots,
+            hasRelated,
+            hasRating
+        });
+    } catch (error) {
+        console.warn("[CCG SINGLE] Optional UX enhancements skipped.", error);
+    }
 
     if (typeof document !== "undefined" && document.body) {
         const slug = String(game?.slug || "").trim();
@@ -2059,6 +2068,29 @@ function formatFactValue(value) {
     }
     if (typeof value === "number") return String(value);
     return String(value || "").trim();
+}
+
+function ensureSectionId(section, fallbackId) {
+    if (!section || typeof section !== "object") return "";
+
+    const existingId = String(section.id || "").trim();
+    if (existingId) return existingId;
+
+    const id = String(fallbackId || "").trim();
+    if (!id) return "";
+
+    section.id = id;
+    return id;
+}
+
+function smoothScrollTo(target) {
+    if (!target || typeof target.scrollIntoView !== "function") return;
+
+    try {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+        target.scrollIntoView();
+    }
 }
 
 function resolveCreditValue(game, key) {
