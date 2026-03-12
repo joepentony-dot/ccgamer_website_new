@@ -1,9 +1,5 @@
 /* ============================================================
    AMIGA DEMO MUSIC COLLECTION LOADER
-   ------------------------------------------------------------
-   • Loads curated demo music from /data/amiga-demo-music.json
-   • Renders with existing Retro Events collection card layout
-   • Uses youtubeId to derive watch URLs and thumbnails
 ============================================================ */
 
 function ccgEscapeHtml(value) {
@@ -15,161 +11,89 @@ function ccgEscapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function ccgGetRetroPagePath(type, slug) {
-  const safeSlug = String(slug || '').trim();
-  if (!safeSlug) return '';
-  if (type === 'retro_special') return `/retro-specials/${encodeURIComponent(safeSlug)}/`;
-  if (type === 'retro_event') return `/retro-events/${encodeURIComponent(safeSlug)}/`;
-  if (type === 'demo_music') return `/amiga-demo-music/${encodeURIComponent(safeSlug)}/`;
-  return '';
-}
-
 function ccgGetYouTubeThumbUrl(youtubeId, variant) {
   const id = String(youtubeId || '').trim();
   if (!id) return '';
-  const file = variant || 'hqdefault.jpg';
-  return `https://img.youtube.com/vi/${encodeURIComponent(id)}/${file}`;
+  return `https://img.youtube.com/vi/${encodeURIComponent(id)}/${variant || 'hqdefault.jpg'}`;
 }
 
-function ccgBuildDemoMusicCard(eventItem) {
-  const title = String(eventItem?.title || '').trim();
-  const videoUrl = String(eventItem?.url || '').trim();
-  const pageUrl = String(eventItem?.pageUrl || '').trim();
-  if (!title || !(pageUrl || videoUrl)) return '';
+function ccgGetDetailPath(slug) {
+  const safeSlug = String(slug || '').trim();
+  return safeSlug ? `/amiga-demo-music/${encodeURIComponent(safeSlug)}/` : '';
+}
 
-  const safeTitle = ccgEscapeHtml(title);
-  const safeCardUrl = ccgEscapeHtml(pageUrl || videoUrl);
+function ccgBuildCard(item) {
+  const title = String(item?.title || '').trim();
+  const pageUrl = String(item?.pageUrl || '').trim();
+  const description = String(item?.summary || item?.description || '').trim();
+  const youtubeId = String(item?.youtubeId || '').trim();
 
-  const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
+  if (!title || !pageUrl) return '';
+
   const thumb = ccgGetYouTubeThumbUrl(youtubeId, 'hqdefault.jpg');
   const thumbFallback = ccgGetYouTubeThumbUrl(youtubeId, 'mqdefault.jpg');
 
-  const isMembersOnly = eventItem?.membersOnly === true;
-  const membersOnlyAttr = isMembersOnly ? ' data-members-only="true"' : '';
-  const membersOnlyBadge = isMembersOnly
-    ? '<span class="ccg-collection-badge ccg-collection-badge--members" aria-label="Members only">MEMBERS ONLY</span>'
-    : '';
-
-  const mediaBlock = thumb
-    ? `
-      <div class="ccg-game-card__media ccg-game-card__thumb">
-        <img
-          src="${ccgEscapeHtml(thumb)}"
-          alt="${safeTitle}"
-          loading="lazy"
-          decoding="async"
-          referrerpolicy="no-referrer"
-          onerror="this.onerror=null; this.src='${ccgEscapeHtml(thumbFallback)}';"
-        />
-      </div>
-    `
-    : '';
-
   return `
-    <article class="ccg-game-card genre-card ccg-game-card--retro-event"${membersOnlyAttr}>
-      ${membersOnlyBadge}
-      ${mediaBlock}
-      <div class="ccg-game-card__body">
-        <div class="game-title-wrapper">
-          <h3 class="ccg-game-card__title">${safeTitle}</h3>
+    <article class="ccg-game-card genre-card ccg-game-card--retro-event">
+      <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}">
+        <div class="ccg-game-card__media ccg-game-card__thumb">
+          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(title)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${ccgEscapeHtml(thumbFallback)}';" />
         </div>
-        <div class="ccg-game-card__actions">
-          <a href="${safeCardUrl}" class="ccg-btn ccg-btn--primary ccg-game-card__btn">WATCH VIDEO</a>
+        <div class="ccg-game-card__body">
+          <h3 class="ccg-game-card__title">${ccgEscapeHtml(title)}</h3>
+          <p class="ccg-game-card__desc">${ccgEscapeHtml(description)}</p>
         </div>
-      </div>
+      </a>
     </article>
   `;
 }
 
-async function ccgLoadDemoMusic() {
+async function ccgLoadItems() {
   const response = await fetch('/data/amiga-demo-music.json', { cache: 'no-store' });
-  if (!response.ok) {
-    throw new Error(`Could not load amiga-demo-music.json (${response.status})`);
-  }
+  if (!response.ok) throw new Error(`Could not load amiga-demo-music.json (${response.status})`);
 
   const data = await response.json();
-  if (!Array.isArray(data)) {
-    throw new Error('amiga-demo-music.json must be an array.');
-  }
+  if (!Array.isArray(data)) throw new Error('Collection data must be an array.');
 
   return data
-    .map((eventItem, index) => {
-      const orderValue = Number(eventItem?.sort_order ?? eventItem?.order);
-      const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim();
-      const slug = String(eventItem?.slug || eventItem?.id || '').trim();
-
+    .map((item, index) => {
+      const orderValue = Number(item?.sort_order ?? item?.order);
+      const youtubeId = String(item?.youtube_video_id || item?.youtubeId || item?.youtube || '').trim();
+      const slug = String(item?.slug || item?.id || '').trim();
       return {
-        id: String(eventItem?.id || '').trim(),
-        type: 'demo_music',
-        title: String(eventItem?.title || '').trim(),
+        id: String(item?.id || '').trim(),
+        title: String(item?.title || '').trim(),
+        summary: String(item?.summary || item?.description || '').trim(),
+        description: String(item?.description || '').trim(),
         youtubeId,
-        url: String(eventItem?.youtube_url || eventItem?.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : ''),
-        pageUrl: ccgGetRetroPagePath('demo_music', slug),
-        membersOnly: eventItem?.membersOnly === true,
-        visible: eventItem?.visible !== false && eventItem?.published !== false,
+        pageUrl: ccgGetDetailPath(slug),
+        visible: item?.visible !== false && item?.published !== false,
         order: Number.isFinite(orderValue) ? orderValue : Number.POSITIVE_INFINITY,
         index
       };
     })
-    .filter((eventItem) => eventItem.id && eventItem.title && eventItem.url && eventItem.visible)
-    .sort((a, b) => {
-      if (a.order !== b.order) return a.order - b.order;
-      return a.index - b.index;
-    });
+    .filter((item) => item.id && item.title && item.pageUrl && item.visible)
+    .sort((a, b) => (a.order - b.order) || (a.index - b.index));
 }
 
-function ccgRenderCards(gridEl, items) {
-  if (!gridEl) return;
-  gridEl.innerHTML = items.map(ccgBuildDemoMusicCard).join('');
-}
-
-async function ccgRunDemoMusicCollection() {
+async function ccgRunCollection() {
   const grid = document.getElementById('genreGamesGrid');
   const countEl = document.getElementById('genreGamesCount');
-
-  if (!grid) {
-    console.warn('[CCG AMIGA DEMO MUSIC] Missing grid container');
-    return;
-  }
+  if (!grid) return;
 
   try {
-    const tracks = await ccgLoadDemoMusic();
-
-    if (countEl) {
-      countEl.textContent = String(tracks.length);
-    }
-
-    if (tracks.length > 0) {
-      ccgRenderCards(grid, tracks);
-    } else {
-      grid.innerHTML = `
-        <div class="ccg-genre-empty">
-          <h3>No collection entries yet</h3>
-          <p>We&apos;re refreshing this set — check back soon or browse every game.</p>
-          <div class="ccg-genre-empty__actions">
-            <a class="ccg-btn ccg-btn--primary" href="../index.html">Browse All Games</a>
-            <a class="ccg-btn ccg-btn--secondary" href="../genres/index.html">Browse by Genre</a>
-          </div>
-        </div>
-      `;
-    }
-
+    const items = await ccgLoadItems();
+    if (countEl) countEl.textContent = String(items.length);
+    grid.innerHTML = items.map(ccgBuildCard).join('');
   } catch (error) {
     console.error('[CCG AMIGA DEMO MUSIC]', error);
-    if (countEl) {
-      countEl.textContent = '0';
-    }
-    grid.innerHTML = `
-      <div class="ccg-genre-empty">
-        <h3>Unable to load Amiga Demo Music</h3>
-        <p>Please try again later.</p>
-      </div>
-    `;
+    if (countEl) countEl.textContent = '0';
+    grid.innerHTML = '<div class="ccg-genre-empty"><h3>Unable to load this collection</h3></div>';
   }
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', ccgRunDemoMusicCollection, { once: true });
+  document.addEventListener('DOMContentLoaded', ccgRunCollection, { once: true });
 } else {
-  ccgRunDemoMusicCollection();
+  ccgRunCollection();
 }
