@@ -169,7 +169,7 @@ function buildContent(retroContentTemplate, payload) {
     video_summary: escapeHtml(payload.summary),
     youtube_id: escapeHtml(payload.youtubeId),
     video_description: escapeHtml(payload.description),
-    metadata_items: payload.metadataItemsHtml,
+    youtube_watch_url: escapeHtml(payload.youtubeWatchUrl),
     related_items: payload.relatedItemsHtml
   });
 }
@@ -241,17 +241,16 @@ function generateRetroPages() {
     const relatedItems = byType[entry.type]
       .filter((item) => item.slug !== entry.slug)
       .slice(0, 6)
-      .map((item) => `<li><a href="${config.routePrefix}/${escapeHtml(item.slug)}/">${escapeHtml(String(item.title || '').trim())}</a></li>`);
+      .map((item) => {
+        const relatedTitle = escapeHtml(String(item.title || '').trim());
+        const relatedSummary = escapeHtml(resolveSummary(item));
+        const relatedHref = `${config.routePrefix}/${escapeHtml(item.slug)}/`;
+        return `<li><a class="retro-video-page__related-card" href="${relatedHref}"><span class="retro-video-page__related-title">${relatedTitle}</span><p class="retro-video-page__related-summary">${relatedSummary}</p></a></li>`;
+      });
 
     const relatedItemsHtml = relatedItems.length
-      ? `<section class="retro-video-page__related">\n  <h2 class="game-subtitle">Related ${escapeHtml(config.collectionName)} videos</h2>\n  <ul>\n    ${relatedItems.join('\n    ')}\n  </ul>\n</section>`
+      ? `<section class="retro-video-page__related">\n  <h2 class="game-subtitle">More from ${escapeHtml(config.collectionName)}</h2>\n  <ul class="retro-video-page__related-grid">\n    ${relatedItems.join('\n    ')}\n  </ul>\n</section>`
       : '';
-
-    const metadataItemsHtml = [
-      `<li><strong>Collection:</strong> <a href="${escapeHtml(config.collectionUrl)}">${escapeHtml(config.collectionName)}</a></li>`,
-      `<li><strong>Published:</strong> ${escapeHtml(uploadDate)}</li>`,
-      `<li><strong>Video source:</strong> <a href="https://www.youtube.com/watch?v=${escapeHtml(entry.youtubeId)}" rel="noopener" target="_blank">YouTube</a></li>`
-    ].join('');
 
     const html = applyTemplate(baseTemplate, {
       title: escapeHtml(seoTitle),
@@ -266,7 +265,7 @@ function generateRetroPages() {
         summary,
         description,
         youtubeId: entry.youtubeId,
-        metadataItemsHtml,
+        youtubeWatchUrl: `https://www.youtube.com/watch?v=${entry.youtubeId}`,
         relatedItemsHtml
       }),
       scripts_extra: ''
