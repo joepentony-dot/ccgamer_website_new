@@ -1,30 +1,88 @@
 .retro-video-page {
-  max-width: 980px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 2rem 1rem 3rem;
-}
-
-.retro-video-page__back {
-  margin: 0 0 1.25rem;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem) 1rem 3.5rem;
 }
 
 .retro-video-page__hero {
-  margin-bottom: 1rem;
+  position: relative;
+  margin: 0 0 1.6rem;
+  padding: clamp(1.1rem, 2.2vw, 1.65rem);
+  border: 1px solid color-mix(in srgb, var(--ccg-neon, #57d6ff) 38%, transparent);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at top right, color-mix(in srgb, var(--ccg-neon, #57d6ff) 22%, transparent) 0%, transparent 55%),
+    linear-gradient(145deg, rgba(4, 10, 22, 0.94), rgba(11, 22, 40, 0.94));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45), 0 0 30px color-mix(in srgb, var(--ccg-neon, #57d6ff) 25%, transparent);
+}
+
+.retro-video-page__eyebrow {
+  display: inline-block;
+  margin: 0 0 0.7rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ccg-neon, #57d6ff) 42%, transparent);
+  font: 600 0.74rem/1.2 "Orbitron", sans-serif;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ccg-text, #fff) 90%, var(--ccg-neon, #57d6ff));
 }
 
 .retro-video-page__title {
-  margin: 0 0 0.75rem;
+  margin: 0;
+  line-height: 1.18;
 }
 
-.retro-video-page__summary,
-.retro-video-page__description {
-  line-height: 1.65;
+.retro-video-page__summary {
+  max-width: 75ch;
+  margin: 0.9rem 0 0;
+  line-height: 1.75;
+  font-size: 1.03rem;
+  color: color-mix(in srgb, var(--ccg-text, #fff) 90%, #c6d9ff);
+}
+
+.retro-video-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.retro-video-page__actions .ccg-btn {
+  text-decoration: none;
+  min-width: min(100%, 210px);
+  justify-content: center;
+}
+
+.retro-video-page__video-shell,
+.retro-video-page__description-block,
+.retro-video-page__related {
+  border: 1px solid color-mix(in srgb, var(--ccg-neon, #57d6ff) 30%, transparent);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(6, 12, 24, 0.96), rgba(8, 16, 32, 0.95));
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.retro-video-page__video-shell {
+  padding: clamp(0.55rem, 1.2vw, 0.85rem);
+  margin: 0 0 1.55rem;
 }
 
 .retro-video-page__video {
   position: relative;
   padding-top: 56.25%;
-  margin: 0 0 1.5rem;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000;
+}
+
+.retro-video-page__video::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--ccg-neon, #57d6ff) 28%, transparent);
+  border-radius: 12px;
 }
 
 .retro-video-page__video iframe {
@@ -35,23 +93,69 @@
   border: 0;
 }
 
-.retro-video-page__meta,
-.retro-video-page__description-block,
+.retro-video-page__description-block {
+  margin-bottom: 1.55rem;
+  padding: clamp(1rem, 1.6vw, 1.3rem);
+}
+
+.retro-video-page__description {
+  margin: 0;
+  line-height: 1.8;
+  max-width: 78ch;
+}
+
 .retro-video-page__related {
-  margin-bottom: 1.5rem;
+  padding: clamp(1rem, 1.6vw, 1.3rem);
 }
 
-.retro-video-page__meta-list {
+.retro-video-page__related-grid {
   margin: 0;
-  padding-left: 1.2rem;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 
-.retro-video-page__meta-list li,
-.retro-video-page__related li {
-  margin-bottom: 0.45rem;
+.retro-video-page__related-card {
+  display: block;
+  height: 100%;
+  padding: 0.95rem 0.95rem 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--ccg-neon, #57d6ff) 24%, transparent);
+  text-decoration: none;
+  background: linear-gradient(155deg, rgba(10, 22, 42, 0.95), rgba(8, 14, 30, 0.95));
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.retro-video-page__related ul {
+.retro-video-page__related-card:hover,
+.retro-video-page__related-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--ccg-neon, #57d6ff) 58%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ccg-neon, #57d6ff) 32%, transparent), 0 14px 24px rgba(0, 0, 0, 0.34);
+}
+
+.retro-video-page__related-title {
+  display: block;
+  margin-bottom: 0.5rem;
+  font: 600 0.95rem/1.45 "Orbitron", sans-serif;
+  color: var(--ccg-text, #fff);
+}
+
+.retro-video-page__related-summary {
   margin: 0;
-  padding-left: 1.2rem;
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--ccg-text, #fff) 85%, #9ec3ff);
+}
+
+@media (max-width: 760px) {
+  .retro-video-page {
+    padding-top: 1rem;
+  }
+
+  .retro-video-page__actions .ccg-btn {
+    width: 100%;
+    min-width: 0;
+  }
 }

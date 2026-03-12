@@ -1,23 +1,24 @@
 <section class="retro-video-page game-shell game-shell--detail">
-  <p class="retro-video-page__back"><a class="ccg-btn ccg-btn--primary" href="{{collection_url}}">← Back to {{collection_name}}</a></p>
-
   <header class="retro-video-page__hero game-hero">
+    <p class="retro-video-page__eyebrow">{{collection_name}} Feature</p>
     <h1 class="game-hero__title retro-video-page__title">{{video_title}}</h1>
     <p class="retro-video-page__summary">{{video_summary}}</p>
+
+    <div class="retro-video-page__actions" aria-label="Page actions">
+      <a class="ccg-btn ccg-btn--secondary" href="{{collection_url}}">← Back to {{collection_name}}</a>
+      <a class="ccg-btn ccg-btn--primary" href="{{youtube_watch_url}}" rel="noopener" target="_blank">Watch on YouTube ↗</a>
+    </div>
   </header>
 
-  <div class="retro-video-page__video">
-    <iframe src="https://www.youtube.com/embed/{{youtube_id}}"
-      title="{{video_title}}"
-      loading="lazy"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen></iframe>
+  <div class="retro-video-page__video-shell">
+    <div class="retro-video-page__video">
+      <iframe src="https://www.youtube.com/embed/{{youtube_id}}"
+        title="{{video_title}}"
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
   </div>
-
-  <section class="retro-video-page__meta" aria-label="Video metadata">
-    <h2 class="game-subtitle">Details</h2>
-    <ul class="retro-video-page__meta-list">{{metadata_items}}</ul>
-  </section>
 
   <section class="retro-video-page__description-block">
     <h2 class="game-subtitle">About this video</h2>
