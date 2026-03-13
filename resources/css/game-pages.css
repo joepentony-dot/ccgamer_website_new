@@ -1,69 +1,74 @@
 .ccg-game-utility-hub {
     width: min(1100px, 96%);
-    margin: clamp(12px, 2vw, 22px) auto;
-    padding: clamp(14px, 2vw, 22px);
+    margin: clamp(12px, 2vw, 24px) auto;
+    padding: clamp(16px, 2vw, 24px);
     border-radius: 18px;
     background:
-        linear-gradient(150deg, rgba(var(--accent-rgb), 0.16), rgba(7, 12, 24, 0.92) 38%, rgba(5, 8, 16, 0.95)),
-        rgba(6, 10, 18, 0.88);
-    border: 1px solid rgba(var(--accent-rgb), 0.38);
-    box-shadow: 0 20px 36px rgba(0, 0, 0, 0.5), 0 0 18px rgba(var(--accent-rgb), 0.2);
+        linear-gradient(160deg, rgba(var(--accent-rgb), 0.14), rgba(7, 12, 24, 0.94) 42%, rgba(4, 7, 15, 0.97)),
+        rgba(5, 9, 16, 0.92);
+    border: 1px solid rgba(var(--accent-rgb), 0.34);
+    box-shadow: 0 20px 36px rgba(0, 0, 0, 0.5), 0 0 18px rgba(var(--accent-rgb), 0.18);
+}
+
+.ccg-game-utility-hub .game-section__title {
+    letter-spacing: 0.1em;
 }
 
 .ccg-game-utility-hub__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 10px;
+    margin-top: 12px;
+    align-items: start;
 }
 
 .ccg-utility-card {
     display: grid;
     gap: 10px;
+    align-content: start;
+    min-height: 124px;
     padding: 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(var(--accent-rgb), 0.3);
-    background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.1), rgba(10, 15, 28, 0.62));
+    border-radius: 14px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    background: linear-gradient(146deg, rgba(var(--accent-rgb), 0.08), rgba(8, 14, 26, 0.74));
 }
 
 .ccg-utility-card__title {
     margin: 0;
     font-family: var(--ccg-font-main);
-    font-size: 0.92rem;
-    letter-spacing: 0.1em;
+    font-size: 0.88rem;
+    line-height: 1.2;
+    letter-spacing: 0.11em;
     text-transform: uppercase;
+    color: rgba(232, 244, 255, 0.95);
 }
 
 .ccg-utility-card__actions {
     display: grid;
     gap: 8px;
+    align-content: start;
 }
 
-.ccg-game-music {
-    margin-top: 20px;
-    padding: 18px;
-    background: rgba(0, 0, 0, 0.65);
-    border: 2px solid #00eaff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 234, 255, 0.6);
+.ccg-utility-card .game-pill {
+    min-height: 44px;
+    justify-content: center;
+    text-align: center;
 }
 
-.ccg-music-title {
-    font-family: Orbitron, sans-serif;
-    color: #00eaff;
-    margin-bottom: 12px;
-    text-shadow: 0 0 8px #00eaff;
+.ccg-utility-card--music {
+    grid-column: 1 / -1;
+    min-height: auto;
 }
 
 .ccg-music-tracks {
     display: grid;
-    gap: 12px;
+    gap: 10px;
 }
 
-.ccg-game-music audio {
+.ccg-music-tracks audio {
     width: 100%;
-    margin-bottom: 12px;
-    filter: drop-shadow(0 0 4px #00eaff);
+    margin: 0;
+    filter: drop-shadow(0 0 4px rgba(0, 234, 255, 0.42));
 }
 
 .ccg-hardware-accordion {
@@ -114,21 +119,8 @@
     .ccg-game-utility-hub__grid {
         grid-template-columns: 1fr;
     }
-}
 
-
-.ccg-music-block {
-    margin-top: 30px;
-    padding: 20px;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.45);
-}
-
-.ccg-game-music h3 {
-    font-family: Orbitron;
-    margin-bottom: 10px;
-}
-
-.ccg-game-music audio {
-    width: 100%;
+    .ccg-utility-card--music {
+        grid-column: auto;
+    }
 }

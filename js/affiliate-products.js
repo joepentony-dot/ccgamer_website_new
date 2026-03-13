@@ -260,7 +260,16 @@
 
             const hardware = section.querySelector(".game-facts__hardware");
             if (hardware) {
-                hardware.hidden = false;
+                hardware.hidden = true;
+            }
+            section.classList.remove("is-hardware-open");
+            const toggle = section.querySelector("[data-hardware-toggle]");
+            if (toggle) {
+                toggle.setAttribute("aria-expanded", "false");
+                const label = toggle.querySelector("span");
+                if (label) {
+                    label.textContent = "Show Hardware";
+                }
             }
             section.hidden = false;
         } catch (_error) {
