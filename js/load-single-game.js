@@ -505,7 +505,6 @@ async function hydrateSingleGamePage() {
         } else {
             setRenderAction(() => {
                 renderGame(resolvedGame);
-                injectGameMusic(resolvedGame.slug);
             });
         }
 
@@ -753,44 +752,6 @@ function resolvePrimaryLink(value) {
 
 function resolveManualUrl(game) {
     return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
-}
-
-function injectGameMusic(slug) {
-    const safeSlug = String(slug || "").trim();
-    if (!safeSlug) return;
-
-    const musicPath = `/resources/audio/games/${safeSlug}.mp3`;
-
-    fetch(musicPath, { method: "HEAD", cache: "force-cache" })
-        .then((res) => {
-            if (!res.ok) return;
-
-            const hub = document.querySelector(".ccg-utility-hub");
-            if (!hub) return;
-
-            if (hub.querySelector(`.ccg-music-block[data-music-slug="${safeSlug}"]`)) {
-                return;
-            }
-
-            const block = document.createElement("div");
-            block.className = "ccg-music-block";
-            block.dataset.musicSlug = safeSlug;
-
-            block.innerHTML = `
-        <div class="ccg-game-music">
-          <h3>Game Music</h3>
-          <audio controls preload="none">
-            <source src="${musicPath}" type="audio/mpeg">
-          </audio>
-        </div>
-      `;
-
-            hub.appendChild(block);
-
-            const utilityHubSection = document.getElementById("game-utility-hub");
-            if (utilityHubSection) utilityHubSection.hidden = false;
-        })
-        .catch(() => { });
 }
 
 function normaliseManualUrl(url) {
@@ -1243,47 +1204,33 @@ function renderGame(game) {
         }
     }
 
-    const utilityHub = document.querySelector(".ccg-utility-hub");
-    const existingMusicBlock = utilityHub
-        ? utilityHub.querySelector(".ccg-game-music")
-        : null;
+    const musicCard = document.getElementById("game-music-card");
+    const musicTracksEl = document.getElementById("gameMusicTracks");
     const musicTracks = Array.isArray(game.music)
         ? game.music.map((track) => String(track || "").trim()).filter(Boolean)
         : [];
 
-    if (existingMusicBlock) {
-        existingMusicBlock.remove();
-    }
+    if (musicCard && musicTracksEl) {
+        musicTracksEl.innerHTML = "";
 
-    if (game.music && game.music.length > 0 && utilityHub) {
-        const musicBlock = document.createElement("div");
-        musicBlock.className = "ccg-game-music";
+        if (musicTracks.length) {
+            musicTracks.forEach((track) => {
+                const audio = document.createElement("audio");
+                audio.controls = true;
+                audio.preload = "none";
 
-        const title = document.createElement("h3");
-        title.className = "ccg-music-title";
-        title.textContent = "🎵 Game Music";
+                const source = document.createElement("source");
+                source.src = `/resources/audio/games/${encodeURIComponent(track)}`;
+                source.type = "audio/mpeg";
 
-        const tracksWrap = document.createElement("div");
-        tracksWrap.className = "ccg-music-tracks";
-
-        musicBlock.appendChild(title);
-
-        musicTracks.forEach((track) => {
-            const audio = document.createElement("audio");
-            audio.controls = true;
-            audio.preload = "none";
-
-            const source = document.createElement("source");
-            source.src = `/resources/audio/games/${encodeURIComponent(track)}`;
-            source.type = "audio/mpeg";
-
-            audio.appendChild(source);
-            audio.append("Your browser does not support the audio element.");
-            tracksWrap.appendChild(audio);
-        });
-
-        musicBlock.appendChild(tracksWrap);
-        utilityHub.appendChild(musicBlock);
+                audio.appendChild(source);
+                audio.append("Your browser does not support the audio element.");
+                musicTracksEl.appendChild(audio);
+            });
+            musicCard.hidden = false;
+        } else {
+            musicCard.hidden = true;
+        }
     }
 
     const hasUtilityHub = !!(hasManual || hasDisk || lemonLinks.length || musicTracks.length);
