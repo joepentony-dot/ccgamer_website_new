@@ -115,3 +115,20 @@
         grid-template-columns: 1fr;
     }
 }
+
+
+.ccg-music-block {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.ccg-game-music h3 {
+    font-family: Orbitron;
+    margin-bottom: 10px;
+}
+
+.ccg-game-music audio {
+    width: 100%;
+}

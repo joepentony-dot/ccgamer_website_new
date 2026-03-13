@@ -503,7 +503,10 @@ async function hydrateSingleGamePage() {
             });
             setRenderAction(() => renderGameNotFound(resolvedGameId, candidateSlug));
         } else {
-            setRenderAction(() => renderGame(resolvedGame));
+            setRenderAction(() => {
+                renderGame(resolvedGame);
+                injectGameMusic(resolvedGame.slug);
+            });
         }
 
     } catch (err) {
@@ -636,6 +639,18 @@ function resolveGamesDataUrl() {
     return `${root}games/games.json`;
 }
 
+function normalizeGame(game) {
+    const entry = (game && typeof game === "object") ? game : {};
+    return {
+        ...entry,
+        genres: Array.isArray(entry.genres) ? entry.genres : [],
+        collections: Array.isArray(entry.collections) ? entry.collections : [],
+        disk: Array.isArray(entry.disk) ? entry.disk : (entry.disk ? [entry.disk] : []),
+        lemon: Array.isArray(entry.lemon) ? entry.lemon : (entry.lemon ? [entry.lemon] : []),
+        music: Array.isArray(entry.music) ? entry.music : (entry.music ? [entry.music] : []),
+    };
+}
+
 function resolveGamesDataFallbackUrls() {
     const urls = [];
     const pushUnique = (value) => {
@@ -674,7 +689,7 @@ async function fetchGamesLibrary() {
 
             const payload = await response.json();
             return {
-                games: Array.isArray(payload) ? payload : [],
+                games: Array.isArray(payload) ? payload.map(normalizeGame) : [],
                 source: url
             };
         } catch (error) {
@@ -738,6 +753,44 @@ function resolvePrimaryLink(value) {
 
 function resolveManualUrl(game) {
     return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
+}
+
+function injectGameMusic(slug) {
+    const safeSlug = String(slug || "").trim();
+    if (!safeSlug) return;
+
+    const musicPath = `/resources/audio/games/${safeSlug}.mp3`;
+
+    fetch(musicPath, { method: "HEAD", cache: "force-cache" })
+        .then((res) => {
+            if (!res.ok) return;
+
+            const hub = document.querySelector(".ccg-utility-hub");
+            if (!hub) return;
+
+            if (hub.querySelector(`.ccg-music-block[data-music-slug="${safeSlug}"]`)) {
+                return;
+            }
+
+            const block = document.createElement("div");
+            block.className = "ccg-music-block";
+            block.dataset.musicSlug = safeSlug;
+
+            block.innerHTML = `
+        <div class="ccg-game-music">
+          <h3>Game Music</h3>
+          <audio controls preload="none">
+            <source src="${musicPath}" type="audio/mpeg">
+          </audio>
+        </div>
+      `;
+
+            hub.appendChild(block);
+
+            const utilityHubSection = document.getElementById("game-utility-hub");
+            if (utilityHubSection) utilityHubSection.hidden = false;
+        })
+        .catch(() => { });
 }
 
 function normaliseManualUrl(url) {
