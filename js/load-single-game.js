@@ -1190,47 +1190,47 @@ function renderGame(game) {
         }
     }
 
-    const musicSection = document.getElementById("game-music-section");
-    const musicTracksEl = document.getElementById("gameMusicTracks");
+    const utilityHub = document.querySelector(".ccg-utility-hub");
+    const existingMusicBlock = utilityHub
+        ? utilityHub.querySelector(".ccg-game-music")
+        : null;
     const musicTracks = Array.isArray(game.music)
         ? game.music.map((track) => String(track || "").trim()).filter(Boolean)
         : [];
 
-    if (musicSection && musicTracksEl) {
-        if (musicTracks.length) {
-            musicTracksEl.innerHTML = "";
-            musicTracks.forEach((trackName) => {
-                const trackWrap = document.createElement("div");
-                trackWrap.className = "ccg-music-track";
+    if (existingMusicBlock) {
+        existingMusicBlock.remove();
+    }
 
-                const label = document.createElement("span");
-                label.className = "ccg-music-track-name";
-                const readableName = trackName
-                    .replace(/\.[a-z0-9]+$/i, "")
-                    .replace(/[-_]+/g, " ")
-                    .trim();
-                label.textContent = readableName
-                    ? readableName.replace(/\b\w/g, (char) => char.toUpperCase())
-                    : "Main Theme";
+    if (game.music && game.music.length > 0 && utilityHub) {
+        const musicBlock = document.createElement("div");
+        musicBlock.className = "ccg-game-music";
 
-                const audio = document.createElement("audio");
-                audio.controls = true;
-                audio.preload = "none";
+        const title = document.createElement("h3");
+        title.className = "ccg-music-title";
+        title.textContent = "🎵 Game Music";
 
-                const source = document.createElement("source");
-                source.src = `/resources/audio/games/${encodeURIComponent(trackName)}`;
-                source.type = "audio/mpeg";
+        const tracksWrap = document.createElement("div");
+        tracksWrap.className = "ccg-music-tracks";
 
-                audio.appendChild(source);
-                trackWrap.appendChild(label);
-                trackWrap.appendChild(audio);
-                musicTracksEl.appendChild(trackWrap);
-            });
-            musicSection.hidden = false;
-        } else {
-            musicTracksEl.innerHTML = "";
-            musicSection.hidden = true;
-        }
+        musicBlock.appendChild(title);
+
+        musicTracks.forEach((track) => {
+            const audio = document.createElement("audio");
+            audio.controls = true;
+            audio.preload = "none";
+
+            const source = document.createElement("source");
+            source.src = `/resources/audio/games/${encodeURIComponent(track)}`;
+            source.type = "audio/mpeg";
+
+            audio.appendChild(source);
+            audio.append("Your browser does not support the audio element.");
+            tracksWrap.appendChild(audio);
+        });
+
+        musicBlock.appendChild(tracksWrap);
+        utilityHub.appendChild(musicBlock);
     }
 
     const hasUtilityHub = !!(hasManual || hasDisk || lemonLinks.length || musicTracks.length);
@@ -1283,7 +1283,6 @@ function renderGame(game) {
             overview: descriptionSection,
             video: videoSection,
             downloads: utilityHubSection,
-            music: musicSection,
             gallery: screenshotsSection,
             related: relatedSection
         });
