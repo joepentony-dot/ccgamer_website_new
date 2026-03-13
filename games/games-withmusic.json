@@ -13,7 +13,7 @@
     "videoid": "ph1ugM0zHvE",
     "thumbnail": "resources/images/thumbnails/all/20_tons_new.png",
     "music": [
-      "20-tons-theme.mp3"
+      "20-tons.mp3"
     ],
     "pdf": "",
     "disk": [
@@ -136,7 +136,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "1942.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -238,7 +241,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "ace-of-aces.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -281,7 +287,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "action-biker.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -323,7 +332,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "action-service.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -369,7 +381,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "after-burner.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -421,7 +436,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "agony.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -471,7 +489,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "airborne-ranger.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -520,7 +541,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "airwolf.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -544,7 +568,7 @@
     "lemon": [
       "https://www.lemonamiga.com/game/aladdin"
     ],
-    "description": "Disney’s Aladdin (1994) on the Commodore Amiga is a colourful side-scrolling platformer by Virgin Interactive. Guide Aladdin through Agrabah and the Cave of Wonders, fighting guards with a scimitar and throwing apples while collecting gems and bonus tokens. Known for its fluid animation and film-inspired levels.",
+    "description": "Disney\u2019s Aladdin (1994) on the Commodore Amiga is a colourful side-scrolling platformer by Virgin Interactive. Guide Aladdin through Agrabah and the Cave of Wonders, fighting guards with a scimitar and throwing apples while collecting gems and bonus tokens. Known for its fluid animation and film-inspired levels.",
     "ccg_rating": 7,
     "ccg_rating_reason": "Beautiful animation and solid platforming, but a little short and slightly too forgiving.",
     "credits": {
@@ -564,7 +588,7 @@
       "re_releaser": []
     },
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
   },
   {
     "system": "AMIGA",
@@ -609,7 +633,10 @@
     },
     "developer": "Inforgrames",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "alcatraz.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -698,7 +725,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "alien.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -745,7 +775,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "alien-breed.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -785,7 +818,7 @@
       "coder": [
         "Alan Steel",
         "Edwin Rayner",
-        "Mevlüt Dinç",
+        "Mevl\u00fct Din\u00e7",
         "Steven Green"
       ],
       "graphics": [
@@ -847,7 +880,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "alleykat.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -940,7 +976,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "american-3d-pool.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -982,7 +1021,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "android-2.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1071,7 +1113,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "andy-capp.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -1105,20 +1150,23 @@
       ],
       "producer": "",
       "coder": [
-        "Éric Chahi"
+        "\u00c9ric Chahi"
       ],
       "graphics": [
-        "Éric Chahi"
+        "\u00c9ric Chahi"
       ],
       "musician": [
-        "Jean-François Freitas"
+        "Jean-Fran\u00e7ois Freitas"
       ],
       "re_releaser": [],
       "developer": "Delphine Software"
     },
     "developer": "Delphine Software",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "another-world.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1206,7 +1254,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "apocalypse.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1232,7 +1283,7 @@
     ],
     "description": "Apollo 18: Mission To The Moon is a Commodore 64 strategy and simulation game released by Accolade in 1987. you manage a space mission inspired by the Apollo programme, balancing planning, resource management, and decision-making. The game is praised for its educational angle and thoughtful approach to space exploration.",
     "ccg_rating": 10,
-    "ccg_rating_reason": "You’d defend it without hesitation",
+    "ccg_rating_reason": "You\u2019d defend it without hesitation",
     "credits": {
       "publisher": [
         "Accolade",
@@ -1341,7 +1392,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "arcade-classics.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1386,7 +1440,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "arcade-flight-simulator.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -1433,7 +1490,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "arcade-pool.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1459,7 +1519,7 @@
     ],
     "description": "Archon: The Light and the Dark is a Commodore 64 strategy game released in 1983 by Ariolasoft. Combining board-game strategy with real-time arcade combat, you command opposing fantasy forces battling for control of a shifting chessboard-like arena. The game is celebrated as a pioneering hybrid that influenced strategy design for years to come.",
     "ccg_rating": 10,
-    "ccg_rating_reason": "You’d defend it without hesitation",
+    "ccg_rating_reason": "You\u2019d defend it without hesitation",
     "credits": {
       "publisher": [
         "Ariolasoft",
@@ -1516,7 +1576,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "arctic-shipwreck.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1565,7 +1628,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "arkanoid.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1614,7 +1680,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "army-moves.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1802,7 +1871,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "auf-wiedersehen-monty.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1842,7 +1914,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "aussie-games.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1880,7 +1955,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "automania.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1928,7 +2006,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "aztec-challenge.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -1969,7 +2050,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "back-to-reality.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -2016,7 +2100,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "back-to-the-future.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -2063,7 +2150,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "bad-dudes-vs-dragonninja.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -2110,7 +2200,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "badlands.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -2158,7 +2251,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "bangkok-knights.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -2207,7 +2303,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "barbarian-the-ultimate-warrior.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -3049,7 +3148,7 @@
     ],
     "description": "Black Hawk is a Commodore 64 arcade shooter released in 1984 by Creative Sparks. you pilot a helicopter through hostile territory, destroying enemy forces while avoiding incoming fire. The game offers fast-paced action and straightforward controls.",
     "ccg_rating": 10,
-    "ccg_rating_reason": "You’d defend it without hesitation",
+    "ccg_rating_reason": "You\u2019d defend it without hesitation",
     "credits": {
       "publisher": [
         "Creative Sparks"
@@ -3453,7 +3552,7 @@
       ],
       "graphics": [],
       "musician": [
-        "Lars Hård"
+        "Lars H\u00e5rd"
       ],
       "re_releaser": [],
       "developer": ""
@@ -3661,7 +3760,7 @@
       "publisher": [
         "Simulmondo"
       ],
-      "producer": "Francesco Carlà",
+      "producer": "Francesco Carl\u00e0",
       "coder": [],
       "graphics": [],
       "musician": [],
@@ -4152,7 +4251,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "bruce-lee.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -4178,7 +4280,7 @@
     ],
     "description": "Brutal Sports Football is a fast, violent futuristic football game where mutant teams battle on a side-scrolling pitch. Score goals, smash opponents, and use power-ups to win through skill, strategy, or sheer brutality.",
     "ccg_rating": 9,
-    "ccg_rating_reason": "No other football game lets you win by knocking half the other team unconscious — fists, weapons, flying limbs, total chaos, and somehow it’s still brilliantly playable. Absolute carnage, every match.",
+    "ccg_rating_reason": "No other football game lets you win by knocking half the other team unconscious \u2014 fists, weapons, flying limbs, total chaos, and somehow it\u2019s still brilliantly playable. Absolute carnage, every match.",
     "credits": {
       "publisher": [
         "Millennium"
@@ -4249,7 +4351,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "bubble-bobble.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -4790,7 +4895,7 @@
     "credits": {
       "publisher": [
         "Ariolasoft",
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [],
@@ -4830,7 +4935,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Brøderbund",
+        "Br\u00f8derbund",
         "Palace Software"
       ],
       "producer": "",
@@ -4848,7 +4953,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "cauldron.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -5301,7 +5409,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "chimera.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -5414,7 +5525,7 @@
     "credits": {
       "publisher": [
         "Ariolasoft",
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [],
@@ -5647,7 +5758,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "cobra.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -5697,7 +5811,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "combat-school.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -5748,7 +5865,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "commando.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -5997,7 +6117,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "crazy-comets.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -6046,7 +6169,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "creatures.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -6338,7 +6464,7 @@
     "lemon": [
       "https://www.lemon64.com/game/cybernoid"
     ],
-    "description": "Cybernoid: The Fighting Machine is a 1988 Commodore 64 shoot ’em up by Hewson Consultants. Players battle pirates across flip-screen levels to recover stolen cargo, backed by a memorable SID soundtrack by Jeroen Tel that gives the game much of its identity.",
+    "description": "Cybernoid: The Fighting Machine is a 1988 Commodore 64 shoot \u2019em up by Hewson Consultants. Players battle pirates across flip-screen levels to recover stolen cargo, backed by a memorable SID soundtrack by Jeroen Tel that gives the game much of its identity.",
     "ccg_rating": 7,
     "ccg_rating_reason": "Stylish and atmospheric with great music, but the small number of levels and unforgiving enemy placement hold it back from being a real favourite.",
     "credits": {
@@ -6361,7 +6487,10 @@
       ]
     },
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "cybernoid.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -6457,7 +6586,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "dan-dare-pilot-of-the-future.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -6703,7 +6835,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Reaktör Software"
+        "Reakt\u00f6r Software"
       ],
       "producer": "",
       "coder": [],
@@ -6991,7 +7123,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "deflektor.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -7037,7 +7172,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "delta.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -7584,7 +7722,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "double-dragon.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -7630,7 +7771,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "double-dragon-2-the-revenge.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -7963,7 +8107,7 @@
         "Sohor Ty"
       ],
       "musician": [
-        "Stéphane Picq"
+        "St\u00e9phane Picq"
       ],
       "re_releaser": [],
       "developer": ""
@@ -8062,7 +8206,7 @@
       "coder": [
         "Armin Sander",
         "Florian Strauch",
-        "Jörg Puls",
+        "J\u00f6rg Puls",
         "Mathias Reichert",
         "Michael Kleps"
       ],
@@ -8383,7 +8527,7 @@
         "Jon Law"
       ],
       "musician": [
-        "Bjørn Lynne"
+        "Bj\u00f8rn Lynne"
       ],
       "re_releaser": [],
       "developer": ""
@@ -8794,7 +8938,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "fernandez-must-die.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -8923,7 +9070,7 @@
         "Russel Comte"
       ],
       "musician": [
-        "Andrián Pertout"
+        "Andri\u00e1n Pertout"
       ],
       "re_releaser": [
         "Mastertronic Plus"
@@ -9103,7 +9250,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "firelord.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -9245,7 +9395,10 @@
     },
     "developer": "Mastertronic",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "flash-gordon.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -9295,7 +9448,7 @@
       "musician": [
         "Fabrice Visserot",
         "Jean Baudlot",
-        "Raphaël Gesqua"
+        "Rapha\u00ebl Gesqua"
       ],
       "re_releaser": [],
       "developer": "Delphine Software"
@@ -9354,7 +9507,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "flimbos-quest.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -10041,7 +10197,7 @@
         "Paul Cuisset"
       ],
       "graphics": [
-        "Éric Chahi"
+        "\u00c9ric Chahi"
       ],
       "musician": [
         "Jean Baudlot"
@@ -10227,7 +10383,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "gauntlet.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -10607,7 +10766,7 @@
         "Pierre Gilhodes"
       ],
       "musician": [
-        "Frédéric Motte"
+        "Fr\u00e9d\u00e9ric Motte"
       ],
       "re_releaser": [],
       "developer": ""
@@ -10847,7 +11006,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "grand-prix-circuit.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -11055,14 +11217,17 @@
         "Manfred Trenz"
       ],
       "musician": [
-        "Chris Hülsbeck"
+        "Chris H\u00fclsbeck"
       ],
       "re_releaser": [],
       "developer": ""
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-great-giana-sisters.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -11111,7 +11276,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "green-beret.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -11486,7 +11654,7 @@
     "lemon": [
       "https://www.lemon64.com/game/happiest-days-of-your-life"
     ],
-    "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing the headmaster’s wallet, requiring them to explore a town/school to find the wallet and photographic evidence while dodging hazards",
+    "description": "Released by Firebird in 1986, The Happiest Days of Your Life is a challenging, flick-screen arcade-adventure for the C64. You control a schoolboy named G. McFat, wrongly accused of stealing the headmaster\u2019s wallet, requiring them to explore a town/school to find the wallet and photographic evidence while dodging hazards",
     "ccg_rating": 6,
     "ccg_rating_reason": "Not exactly in the same realm of Skool Daze. An Everyones A Wally Clone at best",
     "credits": {
@@ -11527,7 +11695,7 @@
     "lemon": [
       "https://www.lemon64.com/game/hawkeye"
     ],
-    "description": "Released on the Commodore 64 in 1988 by Thalamus, Hawkeye is a horizontally scrolling shoot ’em up that blends arcade action with light exploration and power-up management. The C64 version is particularly remembered for its fast, responsive controls, distinctive audiovisual style, and polished presentation that helped cement its reputation as one of Thalamus’ standout shooters.",
+    "description": "Released on the Commodore 64 in 1988 by Thalamus, Hawkeye is a horizontally scrolling shoot \u2019em up that blends arcade action with light exploration and power-up management. The C64 version is particularly remembered for its fast, responsive controls, distinctive audiovisual style, and polished presentation that helped cement its reputation as one of Thalamus\u2019 standout shooters.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -11552,7 +11720,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "hawkeye.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -11626,7 +11797,7 @@
     "lemon": [
       "https://www.lemon64.com/game/masters-of-the-universe-the-movie"
     ],
-    "description": "Released for the Commodore 64 in 1987 by Gremlin Graphics, He-Man and the Masters of the Universe: The Movie is an action-adventure inspired by the live-action film, mixing combat, exploration, and strategic decision-making. The C64 edition attempts to capture the film’s globe-spanning storyline while offering a more deliberate, map-based structure than many arcade-style adaptations of the era.",
+    "description": "Released for the Commodore 64 in 1987 by Gremlin Graphics, He-Man and the Masters of the Universe: The Movie is an action-adventure inspired by the live-action film, mixing combat, exploration, and strategic decision-making. The C64 edition attempts to capture the film\u2019s globe-spanning storyline while offering a more deliberate, map-based structure than many arcade-style adaptations of the era.",
     "ccg_rating": 6,
     "ccg_rating_reason": "A lot of running around, getting lost. But half decent game",
     "credits": {
@@ -11672,7 +11843,7 @@
     "lemon": [
       "https://www.lemon64.com/game/head-over-heels"
     ],
-    "description": "Head Over Heels is a Commodore 64 action-adventure released in 1987 by Ocean, renowned for its isometric perspective, clever level design, and dual-character mechanics. you switch between Head and Heels, each with unique abilities, solving intricate puzzles across a sprawling alien empire, making the C64 version one of the system’s most respected cerebral adventures.",
+    "description": "Head Over Heels is a Commodore 64 action-adventure released in 1987 by Ocean, renowned for its isometric perspective, clever level design, and dual-character mechanics. you switch between Head and Heels, each with unique abilities, solving intricate puzzles across a sprawling alien empire, making the C64 version one of the system\u2019s most respected cerebral adventures.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -11851,7 +12022,7 @@
     "lemon": [
       "https://www.lemon64.com/game/henrys-house"
     ],
-    "description": "Henry’s House is a Commodore 64 platform game released in 1984 by English Software, featuring single-screen levels focused on precise movement, timing, and route planning. The C64 version is known for its charming presentation, clever level layouts, and the constant pressure created by roaming enemies and environmental hazards.",
+    "description": "Henry\u2019s House is a Commodore 64 platform game released in 1984 by English Software, featuring single-screen levels focused on precise movement, timing, and route planning. The C64 version is known for its charming presentation, clever level layouts, and the constant pressure created by roaming enemies and environmental hazards.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -11891,7 +12062,7 @@
     "lemon": [
       "https://www.lemon64.com/game/herberts-dummy-run"
     ],
-    "description": "Released for the Commodore 64 in 1985 by Mikro-Gen, Herbert’s Dummy Run is an action-adventure that challenges you to navigate hazardous environments while rescuing hostages under strict time pressure. The C64 version emphasises memorisation and careful movement, offering a demanding experience that rewards practice and persistence.",
+    "description": "Released for the Commodore 64 in 1985 by Mikro-Gen, Herbert\u2019s Dummy Run is an action-adventure that challenges you to navigate hazardous environments while rescuing hostages under strict time pressure. The C64 version emphasises memorisation and careful movement, offering a demanding experience that rewards practice and persistence.",
     "ccg_rating": 6,
     "ccg_rating_reason": "Not the more memorable game from the Wally Week series",
     "credits": {
@@ -11935,7 +12106,7 @@
     "lemon": [
       "https://www.lemon64.com/game/hero-of-the-golden-talisman"
     ],
-    "description": "Hero Of The Golden Talisman is a Commodore 64 action-adventure released in 1985 by MAD under the Mastertronic label, combining platforming, combat, and exploration within a fantasy setting. The C64 version reflects the era’s budget-game creativity, offering varied screens and a strong emphasis on timing and spatial awareness.",
+    "description": "Hero Of The Golden Talisman is a Commodore 64 action-adventure released in 1985 by MAD under the Mastertronic label, combining platforming, combat, and exploration within a fantasy setting. The C64 version reflects the era\u2019s budget-game creativity, offering varied screens and a strong emphasis on timing and spatial awareness.",
     "ccg_rating": 7,
     "ccg_rating_reason": "Loads of places to explore!",
     "credits": {
@@ -12067,7 +12238,7 @@
     "lemon": [
       "https://www.lemon64.com/game/highlander"
     ],
-    "description": "Released in 1986 by Ocean for the Commodore 64, Highlander is a fighting game based on the cult film, featuring sword-based duels and one-on-one combat. The C64 version focuses on timing and positioning, translating the film’s theme of immortal combat into a straightforward arcade-style experience.",
+    "description": "Released in 1986 by Ocean for the Commodore 64, Highlander is a fighting game based on the cult film, featuring sword-based duels and one-on-one combat. The C64 version focuses on timing and positioning, translating the film\u2019s theme of immortal combat into a straightforward arcade-style experience.",
     "ccg_rating": 1,
     "ccg_rating_reason": "",
     "credits": {
@@ -12295,7 +12466,7 @@
     "lemon": [
       "https://www.lemon64.com/game/hover-bovver"
     ],
-    "description": "Hover Bovver is a Commodore 64 arcade game released in 1983 by Llamasoft, tasking you with mowing lawns while avoiding increasingly chaotic obstacles. The C64 version showcases Jeff Minter’s distinctive design style, mixing simple objectives with escalating difficulty and unpredictable enemy behaviour.",
+    "description": "Hover Bovver is a Commodore 64 arcade game released in 1983 by Llamasoft, tasking you with mowing lawns while avoiding increasingly chaotic obstacles. The C64 version showcases Jeff Minter\u2019s distinctive design style, mixing simple objectives with escalating difficulty and unpredictable enemy behaviour.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -12450,7 +12621,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-human-race.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -12512,7 +12686,7 @@
     "lemon": [
       "https://www.lemon64.com/game/hunchback-at-the-olympics"
     ],
-    "description": "Hunchback At The Olympics is a Commodore 64 sports game released in 1985 by Software Projects, reimagining the Hunchback formula through a series of athletic events. The C64 version blends humour with timing-based challenges, offering a playful twist on the original game’s mechanics.",
+    "description": "Hunchback At The Olympics is a Commodore 64 sports game released in 1985 by Software Projects, reimagining the Hunchback formula through a series of athletic events. The C64 version blends humour with timing-based challenges, offering a playful twist on the original game\u2019s mechanics.",
     "ccg_rating": 2,
     "ccg_rating_reason": "What is this montrosity?!",
     "credits": {
@@ -12551,7 +12725,7 @@
       "https://drive.google.com/file/d/1JQRAwfq_K55aSFKw5TqHkyn7fi3sggRT/view?usp=drive_link"
     ],
     "lemon": [],
-    "description": "Released on the Commodore 64 in 1985 by Ocean, Hunchback II: Quasimodo’s Revenge expands on the original with new levels, mechanics, and refined controls. The C64 version maintains the tough platforming focus while adding variety and depth, making it a popular follow-up among fans.",
+    "description": "Released on the Commodore 64 in 1985 by Ocean, Hunchback II: Quasimodo\u2019s Revenge expands on the original with new levels, mechanics, and refined controls. The C64 version maintains the tough platforming focus while adding variety and depth, making it a popular follow-up among fans.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -12631,7 +12805,7 @@
     "lemon": [
       "https://www.lemon64.com/game/hyper-sports"
     ],
-    "description": "Hyper Sports is a Commodore 64 sports game released in 1985 by Imagine, based on Konami’s arcade hit and featuring multiple Olympic-style events. The C64 version focuses on timing and rapid input, delivering competitive, high-energy gameplay well suited to both solo and multiplayer sessions.",
+    "description": "Hyper Sports is a Commodore 64 sports game released in 1985 by Imagine, based on Konami\u2019s arcade hit and featuring multiple Olympic-style events. The C64 version focuses on timing and rapid input, delivering competitive, high-energy gameplay well suited to both solo and multiplayer sessions.",
     "ccg_rating": 7,
     "ccg_rating_reason": "Brilliant arcade conversion",
     "credits": {
@@ -12677,7 +12851,7 @@
     "lemon": [
       "https://www.lemon64.com/game/ik-plus"
     ],
-    "description": "IK+ is a Commodore 64 fighting game released in 1987 by System 3, refining the original International Karate with smoother controls, improved visuals, and expanded movesets. The C64 version is widely regarded as one of the system’s finest one-on-one fighters, balancing accessibility with technical depth.",
+    "description": "IK+ is a Commodore 64 fighting game released in 1987 by System 3, refining the original International Karate with smoother controls, improved visuals, and expanded movesets. The C64 version is widely regarded as one of the system\u2019s finest one-on-one fighters, balancing accessibility with technical depth.",
     "ccg_rating": 10,
     "ccg_rating_reason": "Nobody could argue with this score",
     "credits": {
@@ -12774,7 +12948,7 @@
     "lemon": [
       "https://www.lemon64.com/game/ikari-warriors"
     ],
-    "description": "Ikari Warriors arrived on the Commodore 64 in 1988 from Elite, adapting SNK’s arcade shooter into a vertically scrolling, combat-heavy experience. The C64 version features large levels, constant enemy pressure, and the use of vehicles, offering a slower, more deliberate take on the arcade original.",
+    "description": "Ikari Warriors arrived on the Commodore 64 in 1988 from Elite, adapting SNK\u2019s arcade shooter into a vertically scrolling, combat-heavy experience. The C64 version features large levels, constant enemy pressure, and the use of vehicles, offering a slower, more deliberate take on the arcade original.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -12804,7 +12978,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "ikari-warriors.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -12873,7 +13050,7 @@
     "lemon": [
       "https://www.lemon64.com/game/impossible-mission"
     ],
-    "description": "Impossible Mission is a Commodore 64 action-adventure released in 1984 by Epyx, combining platforming, puzzle-solving, and exploration within a villain’s futuristic complex. The C64 version is iconic for its digitised speech, tense atmosphere, and demanding gameplay that rewards observation and memory. You might recognise the iconic speech in the opening of my website",
+    "description": "Impossible Mission is a Commodore 64 action-adventure released in 1984 by Epyx, combining platforming, puzzle-solving, and exploration within a villain\u2019s futuristic complex. The C64 version is iconic for its digitised speech, tense atmosphere, and demanding gameplay that rewards observation and memory. You might recognise the iconic speech in the opening of my website",
     "ccg_rating": 10,
     "ccg_rating_reason": "Still inspires discussion. Stay a while, stay forever",
     "credits": {
@@ -12970,7 +13147,7 @@
     "lemon": [
       "https://www.lemonamiga.com/game/indiana-jones-and-the-last-crusade-adventure"
     ],
-    "description": "Indiana Jones And The Last Crusade (Adventure) is an Amiga graphic adventure released in 1989 by US Gold, closely following the film’s narrative through exploration, puzzles, and dialogue-driven progression. The Amiga version benefits from improved visuals and interface design, delivering a faithful computer-based adventure experience.",
+    "description": "Indiana Jones And The Last Crusade (Adventure) is an Amiga graphic adventure released in 1989 by US Gold, closely following the film\u2019s narrative through exploration, puzzles, and dialogue-driven progression. The Amiga version benefits from improved visuals and interface design, delivering a faithful computer-based adventure experience.",
     "ccg_rating": 10,
     "ccg_rating_reason": "Another golden era point & click classic",
     "credits": {
@@ -13065,7 +13242,7 @@
     "lemon": [
       "https://www.lemon64.com/game/indiana-jones-and-the-temple-of-doom"
     ],
-    "description": "Indiana Jones And The Temple Of Doom is a Commodore 64 arcade conversion released in 1987 by US Gold, featuring multiple gameplay styles across its stages. The C64 version recreates the arcade’s variety, from mine cart chases to platforming and combat, demanding quick reactions and memorisation.",
+    "description": "Indiana Jones And The Temple Of Doom is a Commodore 64 arcade conversion released in 1987 by US Gold, featuring multiple gameplay styles across its stages. The C64 version recreates the arcade\u2019s variety, from mine cart chases to platforming and combat, demanding quick reactions and memorisation.",
     "ccg_rating": 6,
     "ccg_rating_reason": "",
     "credits": {
@@ -13329,7 +13506,7 @@
     "lemon": [
       "https://www.lemon64.com/game/international-soccer-commodore"
     ],
-    "description": "International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system’s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football titles.",
+    "description": "International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system\u2019s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football titles.",
     "ccg_rating": 10,
     "ccg_rating_reason": "My first ever football game on any computer",
     "credits": {
@@ -13367,7 +13544,7 @@
     "lemon": [
       "https://www.lemon64.com/game/international-tennis-commodore"
     ],
-    "description": "International Tennis arrived on the Commodore 64 in 1985 from Commodore, delivering a clear and accessible take on tennis gameplay. The C64 version focuses on timing, shot placement, and responsive controls, making it one of the system’s more enduring sports simulations.",
+    "description": "International Tennis arrived on the Commodore 64 in 1985 from Commodore, delivering a clear and accessible take on tennis gameplay. The C64 version focuses on timing, shot placement, and responsive controls, making it one of the system\u2019s more enduring sports simulations.",
     "ccg_rating": 7,
     "ccg_rating_reason": "A very good Tennis game! But hard as nails vs CPU",
     "credits": {
@@ -13409,7 +13586,7 @@
     "lemon": [
       "https://www.lemon64.com/game/into-the-eagles-nest"
     ],
-    "description": "Released on the Commodore 64 in 1987 by Mindscape, Into The Eagle’s Nest is an arcade-style action game inspired by World War II infiltration missions, tasking you with sneaking through a heavily guarded fortress to rescue prisoners. The C64 version blends shooting, exploration, and stealth elements, standing out for its tense pacing and methodical approach rather than constant run-and-gun action.",
+    "description": "Released on the Commodore 64 in 1987 by Mindscape, Into The Eagle\u2019s Nest is an arcade-style action game inspired by World War II infiltration missions, tasking you with sneaking through a heavily guarded fortress to rescue prisoners. The C64 version blends shooting, exploration, and stealth elements, standing out for its tense pacing and methodical approach rather than constant run-and-gun action.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -13691,7 +13868,7 @@
     "lemon": [
       "https://www.lemon64.com/game/jack-the-nipper-2"
     ],
-    "description": "Released on the Commodore 64 in 1987 by Gremlin Graphics, Jack The Nipper II In Coconut Capers shifts the series into a more traditional platform format set across tropical islands. The C64 version focuses on tighter level design and precision jumping, streamlining the gameplay while retaining the series’ mischievous tone.",
+    "description": "Released on the Commodore 64 in 1987 by Gremlin Graphics, Jack The Nipper II In Coconut Capers shifts the series into a more traditional platform format set across tropical islands. The C64 version focuses on tighter level design and precision jumping, streamlining the gameplay while retaining the series\u2019 mischievous tone.",
     "ccg_rating": 6,
     "ccg_rating_reason": "",
     "credits": {
@@ -13784,7 +13961,7 @@
     "lemon": [
       "https://www.lemon64.com/game/jammin"
     ],
-    "description": "Jammin’ is a Commodore 64 arcade game released in 1983 by Taskset, centred around fast reflexes and quick decision-making as you navigate a series of hazard-filled screens. The C64 version reflects early arcade design, emphasising score chasing and increasingly demanding enemy patterns.",
+    "description": "Jammin\u2019 is a Commodore 64 arcade game released in 1983 by Taskset, centred around fast reflexes and quick decision-making as you navigate a series of hazard-filled screens. The C64 version reflects early arcade design, emphasising score chasing and increasingly demanding enemy patterns.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -13870,7 +14047,7 @@
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=616"
     ],
-    "description": "Jimmy White’s Whirlwind Snooker is an Amiga sports simulation released in 1991 by Virgin Games, offering a detailed and authentic take on professional snooker. The Amiga version stands out for its smooth table physics, tactical depth, and faithful recreation of televised snooker presentation.",
+    "description": "Jimmy White\u2019s Whirlwind Snooker is an Amiga sports simulation released in 1991 by Virgin Games, offering a detailed and authentic take on professional snooker. The Amiga version stands out for its smooth table physics, tactical depth, and faithful recreation of televised snooker presentation.",
     "ccg_rating": 10,
     "ccg_rating_reason": "Technically brilliant for its time",
     "credits": {
@@ -13912,7 +14089,7 @@
     "lemon": [
       "https://www.lemon64.com/game/joe-blade"
     ],
-    "description": "Jimmy White’s Whirlwind Snooker is an Amiga sports simulation released in 1991 by Virgin Games, offering a detailed and authentic take on professional snooker. The Amiga version stands out for its smooth table physics, tactical depth, and faithful recreation of televised snooker presentation.",
+    "description": "Jimmy White\u2019s Whirlwind Snooker is an Amiga sports simulation released in 1991 by Virgin Games, offering a detailed and authentic take on professional snooker. The Amiga version stands out for its smooth table physics, tactical depth, and faithful recreation of televised snooker presentation.",
     "ccg_rating": 6,
     "ccg_rating_reason": "",
     "credits": {
@@ -14025,7 +14202,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "judge-dredd.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -14096,7 +14276,7 @@
     "lemon": [
       "https://www.lemon64.com/game/jungle-hunt"
     ],
-    "description": "Jungle Hunt is a Commodore 64 arcade conversion released in 1983 by Atarisoft, adapting the action platformer across vine-swinging, swimming, and obstacle-dodging stages. The C64 version delivers varied gameplay sequences that mirror the arcade’s constant shifts in perspective.",
+    "description": "Jungle Hunt is a Commodore 64 arcade conversion released in 1983 by Atarisoft, adapting the action platformer across vine-swinging, swimming, and obstacle-dodging stages. The C64 version delivers varied gameplay sequences that mirror the arcade\u2019s constant shifts in perspective.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -14224,7 +14404,7 @@
     "lemon": [
       "https://www.lemon64.com/game/kane"
     ],
-    "description": "Kane and Kane 2 are Commodore 64 arcade style wild western games released in 1985 by Mastertronic, combining horse riding and shooting elements. The C64 version reflects the era’s budget creativity, offering quick-play sessions and steadily increasing difficulty.",
+    "description": "Kane and Kane 2 are Commodore 64 arcade style wild western games released in 1985 by Mastertronic, combining horse riding and shooting elements. The C64 version reflects the era\u2019s budget creativity, offering quick-play sessions and steadily increasing difficulty.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -14275,7 +14455,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [
@@ -14463,7 +14643,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "kikstart-2.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -14486,7 +14669,7 @@
     "lemon": [
       "https://www.lemon64.com/game/kings-bounty"
     ],
-    "description": "King’s Bounty is a Commodore 64 role-playing and strategy game released in 1990 by New World Computing, combining exploration, army management, and turn-based combat. The C64 version offers a deep, open-ended experience that rewards planning, resource management, and tactical decision-making.",
+    "description": "King\u2019s Bounty is a Commodore 64 role-playing and strategy game released in 1990 by New World Computing, combining exploration, army management, and turn-based combat. The C64 version offers a deep, open-ended experience that rewards planning, resource management, and tactical decision-making.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -15037,7 +15220,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-last-ninja.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -15129,7 +15315,10 @@
     },
     "developer": "Mastertronic",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-last-v8.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -15463,7 +15652,7 @@
     "lemon": [
       "https://www.lemon64.com/game/live-and-let-die"
     ],
-    "description": "Live And Let Die is a Commodore 64 arcade action game released in 1988 by Domark, based on the James Bond film and featuring multiple gameplay styles across its stages. The C64 version blends vehicle-based action with shooting sequences, offering varied mechanics that reflect the film’s set pieces.",
+    "description": "Live And Let Die is a Commodore 64 arcade action game released in 1988 by Domark, based on the James Bond film and featuring multiple gameplay styles across its stages. The C64 version blends vehicle-based action with shooting sequences, offering varied mechanics that reflect the film\u2019s set pieces.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -15518,7 +15707,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [],
@@ -16081,7 +16270,7 @@
     "lemon": [
       "https://www.lemon64.com/game/marias-xmas-box"
     ],
-    "description": "Maria’s Christmas Box is a Commodore 64 casino-style strategy game released in 1988 by Anco, themed around festive gambling scenarios. The C64 version blends chance-based mechanics with simple decision-making, offering a seasonal twist on traditional casino gameplay.",
+    "description": "Maria\u2019s Christmas Box is a Commodore 64 casino-style strategy game released in 1988 by Anco, themed around festive gambling scenarios. The C64 version blends chance-based mechanics with simple decision-making, offering a seasonal twist on traditional casino gameplay.",
     "ccg_rating": 6,
     "ccg_rating_reason": "Show me them pixel tiddys!",
     "credits": {
@@ -16144,7 +16333,10 @@
     },
     "developer": "Mastertronic",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "master-of-magic.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -16393,7 +16585,7 @@
     "lemon": [
       "https://www.lemon64.com/game/miami-vice"
     ],
-    "description": "Miami Vice is a Commodore 64 arcade action game released in 1986 by Ocean, inspired by the television series and featuring vehicle-based combat and chase sequences. The C64 version reflects the show’s themes through fast-paced gameplay and urban environments.",
+    "description": "Miami Vice is a Commodore 64 arcade action game released in 1986 by Ocean, inspired by the television series and featuring vehicle-based combat and chase sequences. The C64 version reflects the show\u2019s themes through fast-paced gameplay and urban environments.",
     "ccg_rating": 4,
     "ccg_rating_reason": "",
     "credits": {
@@ -16418,7 +16610,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "miami-vice.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -16529,7 +16724,7 @@
     "lemon": [
       "https://www.lemon64.com/game/midnight-resistance"
     ],
-    "description": "Midnight Resistance is a Commodore 64 arcade shooter released in 1990 by Ocean, adapting the coin-op’s run-and-gun action into a horizontally scrolling format. The C64 version focuses on relentless enemy waves, weapon upgrades, and memorisation-heavy progression.",
+    "description": "Midnight Resistance is a Commodore 64 arcade shooter released in 1990 by Ocean, adapting the coin-op\u2019s run-and-gun action into a horizontally scrolling format. The C64 version focuses on relentless enemy waves, weapon upgrades, and memorisation-heavy progression.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -16553,7 +16748,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "midnight-resistance.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -16577,7 +16775,7 @@
     "lemon": [
       "https://www.lemon64.com/game/mike-reads-computer-pop-quiz"
     ],
-    "description": "Mike Read’s Computer Pop Quiz is a Commodore 64 quiz game released in 1988 by Elite, themed around contemporary pop music and chart trivia. The C64 version blends knowledge-based questions with presentation inspired by television quiz shows.",
+    "description": "Mike Read\u2019s Computer Pop Quiz is a Commodore 64 quiz game released in 1988 by Elite, themed around contemporary pop music and chart trivia. The C64 version blends knowledge-based questions with presentation inspired by television quiz shows.",
     "ccg_rating": 5,
     "ccg_rating_reason": "",
     "credits": {
@@ -16623,7 +16821,7 @@
     "lemon": [
       "https://www.lemon64.com/game/mikie"
     ],
-    "description": "Mikie is a Commodore 64 arcade game released in 1986 by Imagine, based on Konami’s school-themed arcade hit. The C64 version recreates the frantic objective-based gameplay, requiring you to collect items while avoiding teachers and hazards.",
+    "description": "Mikie is a Commodore 64 arcade game released in 1986 by Imagine, based on Konami\u2019s school-themed arcade hit. The C64 version recreates the frantic objective-based gameplay, requiring you to collect items while avoiding teachers and hazards.",
     "ccg_rating": 6,
     "ccg_rating_reason": "",
     "credits": {
@@ -16776,7 +16974,7 @@
         "Tami Borowick"
       ],
       "musician": [
-        "Chris Hülsbeck",
+        "Chris H\u00fclsbeck",
         "Rudolf Stember"
       ],
       "re_releaser": [],
@@ -16808,7 +17006,7 @@
     "lemon": [
       "https://www.lemonamiga.com/games/details.php?id=770"
     ],
-    "description": "Monkey Island 2 LeChuck’s Revenge is an Amiga adventure released in 1992 by US Gold, adapting the acclaimed point-and-click sequel for home computers. The Amiga version delivers rich storytelling, intricate puzzles, and polished audiovisual presentation.",
+    "description": "Monkey Island 2 LeChuck\u2019s Revenge is an Amiga adventure released in 1992 by US Gold, adapting the acclaimed point-and-click sequel for home computers. The Amiga version delivers rich storytelling, intricate puzzles, and polished audiovisual presentation.",
     "ccg_rating": 10,
     "ccg_rating_reason": "What a way to follow up a classic",
     "credits": {
@@ -16866,7 +17064,7 @@
     "lemon": [
       "https://www.lemon64.com/game/montezumas-revenge"
     ],
-    "description": "Montezuma’s Revenge is a Commodore 64 action-adventure released in 1984 by Parker Brothers, combining platforming with exploration across a trap-filled pyramid. The C64 version rewards careful movement and memorisation while offering multiple routes through its levels.",
+    "description": "Montezuma\u2019s Revenge is a Commodore 64 action-adventure released in 1984 by Parker Brothers, combining platforming with exploration across a trap-filled pyramid. The C64 version rewards careful movement and memorisation while offering multiple routes through its levels.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -16931,7 +17129,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "monty-on-the-run.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -17048,12 +17249,12 @@
     "lemon": [
       "https://www.lemon64.com/game/mountie-micks-death-ride"
     ],
-    "description": "Released on the Commodore 64 in 1987 by Reaktor Software, Mountie Mick’s Death Ride is a fast-paced arcade platformer built around constant forward motion and precise timing. The C64 version challenges you to stay ahead of hazards while reacting quickly to changing terrain, delivering short, intense bursts of action.",
+    "description": "Released on the Commodore 64 in 1987 by Reaktor Software, Mountie Mick\u2019s Death Ride is a fast-paced arcade platformer built around constant forward motion and precise timing. The C64 version challenges you to stay ahead of hazards while reacting quickly to changing terrain, delivering short, intense bursts of action.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Reaktör Software"
+        "Reakt\u00f6r Software"
       ],
       "producer": "",
       "coder": [
@@ -17538,7 +17739,7 @@
     "lemon": [
       "https://www.lemon64.com/game/neuromancer"
     ],
-    "description": "Neuromancer is a Commodore 64 adventure released in 1988 by Electronic Arts, inspired by William Gibson’s cyberpunk novel and blending exploration with hacking and combat systems. The C64 version is noted for its atmosphere, multiple gameplay layers, and ambitious design.",
+    "description": "Neuromancer is a Commodore 64 adventure released in 1988 by Electronic Arts, inspired by William Gibson\u2019s cyberpunk novel and blending exploration with hacking and combat systems. The C64 version is noted for its atmosphere, multiple gameplay layers, and ambitious design.",
     "ccg_rating": 10,
     "ccg_rating_reason": "Superb cyberpunk adventure",
     "credits": {
@@ -17963,7 +18164,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "ninja.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -18170,20 +18374,20 @@
       "producer": "",
       "coder": [
         "Alain Nakache",
-        "Stéphane Baudet",
+        "St\u00e9phane Baudet",
         "William Hennebois"
       ],
       "graphics": [
         "Alain Nakache",
         "Didier Chanfray",
         "Dominique Girou",
-        "Frédéric Bascou",
+        "Fr\u00e9d\u00e9ric Bascou",
         "Laurent Charbonnier",
         "Sophie Cau"
       ],
       "musician": [
         "Charles Callet",
-        "Stéphane Baudet"
+        "St\u00e9phane Baudet"
       ],
       "re_releaser": [],
       "developer": "Inforgrames"
@@ -18354,7 +18558,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "one-man-and-his-droid.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -18402,7 +18609,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "operation-wolf.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -18472,7 +18682,7 @@
     "lemon": [
       "https://www.lemon64.com/game/outlaws"
     ],
-    "description": "In Outlaws you are the Lone Rider, a Wild West hero galloping across prairie and town in this Commodore 64 side‑scroller. Mounted on your horse you can ride both ways, shoot bandits and dodging obstacles. Duck in the saddle to avoid enemy fire and avoid shooting innocent civilians, as that hurts your score.",
+    "description": "In Outlaws you are the Lone Rider, a Wild West hero galloping across prairie and town in this Commodore 64 side\u2011scroller. Mounted on your horse you can ride both ways, shoot bandits and dodging obstacles. Duck in the saddle to avoid enemy fire and avoid shooting innocent civilians, as that hurts your score.",
     "ccg_rating": 6,
     "ccg_rating_reason": "While atmospheric and visually crisp, it suffers from very limited gameplay depth",
     "credits": {
@@ -18561,7 +18771,7 @@
     "lemon": [
       "https://www.lemon64.com/game/paperboy"
     ],
-    "description": "Paperboy is a Commodore 64 arcade conversion released in 1986 by ECP Australia, challenging you to deliver newspapers while navigating hazardous suburban streets. The C64 version captures the arcade’s blend of precision throwing, obstacle avoidance, and escalating challenge.",
+    "description": "Paperboy is a Commodore 64 arcade conversion released in 1986 by ECP Australia, challenging you to deliver newspapers while navigating hazardous suburban streets. The C64 version captures the arcade\u2019s blend of precision throwing, obstacle avoidance, and escalating challenge.",
     "ccg_rating": 6,
     "ccg_rating_reason": "",
     "credits": {
@@ -18585,7 +18795,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "paperboy.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -18610,7 +18823,7 @@
     "lemon": [
       "https://www.lemon64.com/game/paradroid"
     ],
-    "description": "Released on the Commodore 64 in 1985 by Hewson, Paradroid is a genre-defining action-adventure that blends real-time exploration with tactical decision-making aboard a hostile spaceship. The C64 version is especially renowned for its innovative droid takeover mechanic, non-linear structure, and tense atmosphere, making it one of the system’s most influential and respected titles.",
+    "description": "Released on the Commodore 64 in 1985 by Hewson, Paradroid is a genre-defining action-adventure that blends real-time exploration with tactical decision-making aboard a hostile spaceship. The C64 version is especially renowned for its innovative droid takeover mechanic, non-linear structure, and tense atmosphere, making it one of the system\u2019s most influential and respected titles.",
     "ccg_rating": 10,
     "ccg_rating_reason": "Always a classic - Capturing the 999 droid",
     "credits": {
@@ -18710,7 +18923,7 @@
         "Ulf Mandorff"
       ],
       "graphics": [
-        "Markus Nyström"
+        "Markus Nystr\u00f6m"
       ],
       "musician": [
         "Olof Gustafsson"
@@ -18788,7 +19001,7 @@
     "lemon": [
       "https://www.lemon64.com/game/pit-fighter"
     ],
-    "description": "Pit-Fighter is a Commodore 64 fighting game released in 1991 by Domark, adapting Atari’s arcade brawler into a home computer format. The C64 version simplifies the arcade experience while retaining its one-on-one combat structure and tournament-style progression.",
+    "description": "Pit-Fighter is a Commodore 64 fighting game released in 1991 by Domark, adapting Atari\u2019s arcade brawler into a home computer format. The C64 version simplifies the arcade experience while retaining its one-on-one combat structure and tournament-style progression.",
     "ccg_rating": 4,
     "ccg_rating_reason": "",
     "credits": {
@@ -18997,7 +19210,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "platoon.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -19103,7 +19319,7 @@
     "lemon": [
       "https://www.lemon64.com/game/popeye"
     ],
-    "description": "Popeye is a Commodore 64 arcade conversion released in 1984 by Parker Brothers, based on the classic cartoon character and arcade game. The C64 version recreates the original’s screen-based objectives, requiring careful movement and enemy avoidance.",
+    "description": "Popeye is a Commodore 64 arcade conversion released in 1984 by Parker Brothers, based on the classic cartoon character and arcade game. The C64 version recreates the original\u2019s screen-based objectives, requiring careful movement and enemy avoidance.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -19279,7 +19495,7 @@
     "lemon": [
       "https://www.lemon64.com/game/power-drift"
     ],
-    "description": "Power Drift is a Commodore 64 racing game released in 1990 by Activision, adapting Sega’s arcade racer with its distinctive elevated tracks. The C64 version emphasises speed management and cornering while scaling back the arcade’s visual spectacle.",
+    "description": "Power Drift is a Commodore 64 racing game released in 1990 by Activision, adapting Sega\u2019s arcade racer with its distinctive elevated tracks. The C64 version emphasises speed management and cornering while scaling back the arcade\u2019s visual spectacle.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -19303,7 +19519,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "power-drift.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -19625,7 +19844,7 @@
       ],
       "musician": [
         "Allister Brimble",
-        "Bjørn Lynne"
+        "Bj\u00f8rn Lynne"
       ],
       "re_releaser": [],
       "developer": ""
@@ -19833,7 +20052,7 @@
     "lemon": [
       "https://www.lemon64.com/game/q-bert"
     ],
-    "description": "QBert is a Commodore 64 action game released in 1983 by Parker Brothers, adapting the arcade hit’s isometric puzzle mechanics. The C64 version focuses on precise movement and pattern avoidance across increasingly complex levels.",
+    "description": "QBert is a Commodore 64 action game released in 1983 by Parker Brothers, adapting the arcade hit\u2019s isometric puzzle mechanics. The C64 version focuses on precise movement and pattern avoidance across increasingly complex levels.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -20060,7 +20279,7 @@
       ],
       "producer": "",
       "coder": [
-        "François Lionet"
+        "Fran\u00e7ois Lionet"
       ],
       "graphics": [],
       "musician": [
@@ -20142,7 +20361,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [],
@@ -20222,7 +20441,7 @@
     "lemon": [
       "https://www.lemonamiga.com/game/rainbow-islands"
     ],
-    "description": "Rainbow Islands is an Amiga platform game released in 1989 by Ocean, adapting Taito’s colourful arcade sequel with vertical scrolling stages. The Amiga version delivers fluid controls, vibrant presentation, and demanding level design.",
+    "description": "Rainbow Islands is an Amiga platform game released in 1989 by Ocean, adapting Taito\u2019s colourful arcade sequel with vertical scrolling stages. The Amiga version delivers fluid controls, vibrant presentation, and demanding level design.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -20432,7 +20651,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "rastan.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -20691,7 +20913,7 @@
     "lemon": [
       "https://www.lemon64.com/game/renegade"
     ],
-    "description": "Renegade is a 1987 Commodore 64 beat ’em up from Imagine that helped define the genre on home computers, emphasising street brawling action, enemy waves, and directional combat.",
+    "description": "Renegade is a 1987 Commodore 64 beat \u2019em up from Imagine that helped define the genre on home computers, emphasising street brawling action, enemy waves, and directional combat.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -21068,9 +21290,9 @@
       ],
       "producer": "",
       "coder": [
-        "André Rocques",
+        "Andr\u00e9 Rocques",
         "Fabrice Hautecloque",
-        "Jean-François Trevien",
+        "Jean-Fran\u00e7ois Trevien",
         "Louis-Marie Rocques"
       ],
       "graphics": [
@@ -21139,7 +21361,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "robocop.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -21182,7 +21407,7 @@
       ],
       "musician": [
         "Martin Wall",
-        "Øisten Eide"
+        "\u00d8isten Eide"
       ],
       "re_releaser": [
         "The Hit Squad"
@@ -21580,7 +21805,7 @@
     "lemon": [
       "https://www.lemon64.com/game/r-type"
     ],
-    "description": "R-Type on Commodore 64 delivers a demanding horizontal shoot ’em up based on Irem’s arcade classic, featuring memorisation-driven level design, the iconic Force pod weapon system, relentless enemy patterns, and tense boss encounters that push the C64 hard.",
+    "description": "R-Type on Commodore 64 delivers a demanding horizontal shoot \u2019em up based on Irem\u2019s arcade classic, featuring memorisation-driven level design, the iconic Force pod weapon system, relentless enemy patterns, and tense boss encounters that push the C64 hard.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -21595,7 +21820,7 @@
         "Andreas Escher"
       ],
       "musician": [
-        "Chris Hülsbeck",
+        "Chris H\u00fclsbeck",
         "Ramiro Vaca"
       ],
       "re_releaser": [
@@ -21605,7 +21830,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "rtype.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -21676,10 +21904,10 @@
       ],
       "producer": "",
       "coder": [
-        "Branko Špoljarić"
+        "Branko \u0160poljari\u0107"
       ],
       "graphics": [
-        "Branko Špoljarić"
+        "Branko \u0160poljari\u0107"
       ],
       "musician": [],
       "re_releaser": [
@@ -21777,7 +22005,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-sacred-armour-of-antiriad.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -22010,7 +22241,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "sanxion.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -22710,7 +22944,7 @@
     "lemon": [
       "https://www.lemon64.com/game/sheep-in-space"
     ],
-    "description": "Sheep In Space is a 1984 Commodore 64 shooter from Llamasoft that delivers fast, abstract arcade action, blending surreal visuals with relentless enemy patterns typical of Jeff Minter’s style.",
+    "description": "Sheep In Space is a 1984 Commodore 64 shooter from Llamasoft that delivers fast, abstract arcade action, blending surreal visuals with relentless enemy patterns typical of Jeff Minter\u2019s style.",
     "ccg_rating": 6,
     "ccg_rating_reason": "Another zany Jeff Minter bonanza",
     "credits": {
@@ -23142,7 +23376,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "skate-rock.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -23593,7 +23830,7 @@
     "lemon": [
       "https://www.lemon64.com/game/southern-belle"
     ],
-    "description": "Southern Belle (Hewson 1986) is a classic Commodore 64 train simulator where you master the powerful King Arthur class steam locomotive on the famous 51-mile London Victoria to Brighton line. Take on the roles of fireman—shovelling coal and managing water—and driver—controlling throttle, brakes, and signals—for a highly realistic journey with authentic 1980s gameplay.",
+    "description": "Southern Belle (Hewson 1986) is a classic Commodore 64 train simulator where you master the powerful King Arthur class steam locomotive on the famous 51-mile London Victoria to Brighton line. Take on the roles of fireman\u2014shovelling coal and managing water\u2014and driver\u2014controlling throttle, brakes, and signals\u2014for a highly realistic journey with authentic 1980s gameplay.",
     "ccg_rating": 6,
     "ccg_rating_reason": "Would have been a higher score, only for the slow speed! Decent for it's time though",
     "credits": {
@@ -23633,7 +23870,7 @@
     "lemon": [
       "https://www.lemon64.com/game/space-harrierhttps://www.lemon64.com/game/space-harrier"
     ],
-    "description": "Space Harrier is a 1987 Commodore 64 arcade conversion by Elite that adapts Sega’s pseudo-3D shooter into fast forward-scrolling action with constant enemy pressure.",
+    "description": "Space Harrier is a 1987 Commodore 64 arcade conversion by Elite that adapts Sega\u2019s pseudo-3D shooter into fast forward-scrolling action with constant enemy pressure.",
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
@@ -23647,7 +23884,10 @@
     },
     "developer": "Elite",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "space-harrier.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -23863,7 +24103,10 @@
     },
     "developer": "Mastertronic",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "spellbound.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -23892,7 +24135,7 @@
     "credits": {
       "publisher": [
         "Ariolasoft",
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "Micro GraphicImage",
       "coder": [
@@ -24138,7 +24381,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "spy-vs-spy.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -24463,7 +24709,7 @@
         "Jani Isoranta",
         "Mare Ollinkari",
         "Petteri Putkonen",
-        "Santtu Luopajärvi"
+        "Santtu Luopaj\u00e4rvi"
       ],
       "musician": [
         "Bassbomb",
@@ -24544,7 +24790,7 @@
     "lemon": [
       "https://www.lemon64.com/game/stormbringer"
     ],
-    "description": "Stormbringer is a 1987 Commodore 64 action-adventure from Mastertronic that adapts Michael Moorcock’s fantasy world into combat-driven exploration.",
+    "description": "Stormbringer is a 1987 Commodore 64 action-adventure from Mastertronic that adapts Michael Moorcock\u2019s fantasy world into combat-driven exploration.",
     "ccg_rating": 6,
     "ccg_rating_reason": "You'll enjoy this if you're alredy a fan of David Jones' titles",
     "credits": {
@@ -24672,7 +24918,7 @@
     "lemon": [
       "https://www.lemon64.com/game/strider"
     ],
-    "description": "Strider is a 1989 Commodore 64 arcade conversion from US Gold that adapts Capcom’s fast-paced action platformer with acrobatic movement and weapon-based combat.",
+    "description": "Strider is a 1989 Commodore 64 arcade conversion from US Gold that adapts Capcom\u2019s fast-paced action platformer with acrobatic movement and weapon-based combat.",
     "ccg_rating": 2,
     "ccg_rating_reason": "A very poor arcade conversion of one of my favourite games, a shame. Thanks Tiertex!",
     "credits": {
@@ -25110,7 +25356,7 @@
     "lemon": [
       "https://www.lemon64.com/game/ironman-super-off-road"
     ],
-    "description": "Released for the Commodore 64 in 1990 by Virgin Mastertronic, Ivan Ironman Stewart’s Super Off Road is an overhead racing game based on the arcade hit, featuring tight tracks, vehicle upgrades, and competitive AI. The C64 version captures the essence of short, frantic races while adding a strategic layer through cash-earned performance improvements.",
+    "description": "Released for the Commodore 64 in 1990 by Virgin Mastertronic, Ivan Ironman Stewart\u2019s Super Off Road is an overhead racing game based on the arcade hit, featuring tight tracks, vehicle upgrades, and competitive AI. The C64 version captures the essence of short, frantic races while adding a strategic layer through cash-earned performance improvements.",
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
@@ -25948,7 +26194,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "thanatos.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -25981,11 +26230,11 @@
       ],
       "producer": "",
       "coder": [
-        "Bieno Martí Braitmaier",
+        "Bieno Mart\u00ed Braitmaier",
         "Zack Thompson"
       ],
       "graphics": [
-        "Bieno Martí Braitmaier"
+        "Bieno Mart\u00ed Braitmaier"
       ],
       "musician": [
         "Narciso Quintana Varo"
@@ -26018,7 +26267,7 @@
       "https://drive.google.com/file/d/18bTWBVn9M9X3iy50Z71ZBgcPKG44848Y/view?usp=drive_link"
     ],
     "lemon": [],
-    "description": "The Wombles is a 1990 Commodore 64 licensed game from Enigma Variations that mixes light action and task-based gameplay inspired by the popular children’s television series.",
+    "description": "The Wombles is a 1990 Commodore 64 licensed game from Enigma Variations that mixes light action and task-based gameplay inspired by the popular children\u2019s television series.",
     "ccg_rating": 5,
     "ccg_rating_reason": "Wombles are very strange creatures indeed",
     "credits": {
@@ -26596,15 +26845,15 @@
       ],
       "producer": "",
       "coder": [
-        "Chris Hülsbeck",
+        "Chris H\u00fclsbeck",
         "Matthias Sykosch"
       ],
       "graphics": [
-        "Chris Hülsbeck",
+        "Chris H\u00fclsbeck",
         "Uwe Meier"
       ],
       "musician": [
-        "Chris Hülsbeck"
+        "Chris H\u00fclsbeck"
       ],
       "re_releaser": [],
       "developer": ""
@@ -26868,14 +27117,14 @@
       ],
       "producer": "",
       "coder": [
-        "Ivàn Balàzs"
+        "Iv\u00e0n Bal\u00e0zs"
       ],
       "graphics": [
-        "Pàl Balog",
+        "P\u00e0l Balog",
         "Seke"
       ],
       "musician": [
-        "Zoltán Mericske"
+        "Zolt\u00e1n Mericske"
       ],
       "re_releaser": [],
       "developer": ""
@@ -27378,7 +27627,7 @@
         "Manfred Trenz"
       ],
       "musician": [
-        "Chris Hülsbeck",
+        "Chris H\u00fclsbeck",
         "Ramiro Vaca",
         "Stefan Hartwig"
       ],
@@ -27798,7 +28047,7 @@
       ],
       "producer": "",
       "coder": [
-        "Pasi Hytönen"
+        "Pasi Hyt\u00f6nen"
       ],
       "graphics": [],
       "musician": [
@@ -28052,13 +28301,13 @@
       "producer": "",
       "coder": [
         "Antal Zolnai",
-        "Gábor Pongyor"
+        "G\u00e1bor Pongyor"
       ],
       "graphics": [
         "Janos Zana"
       ],
       "musician": [
-        "Miklós Herendi"
+        "Mikl\u00f3s Herendi"
       ],
       "re_releaser": [],
       "developer": ""
@@ -28113,7 +28362,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "the-way-of-the-exploding-fist.mp3"
+    ]
   },
   {
     "system": "AMIGA",
@@ -28419,7 +28671,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Brøderbund"
+        "Br\u00f8derbund"
       ],
       "producer": "",
       "coder": [
@@ -28613,7 +28865,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "wizball.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -28721,53 +28976,51 @@
     "_ccg_migrated": false
   },
   {
-  "system": "C64",
-  "id": "x_out",
-  "slug": "x-out",
-  "title": "X-Out",
-  "sorttitle": "X-Out",
-  "year": 1990,
-  "genres": [
-    "shooting"
-  ],
-  "collections": [],
-  "videoid": "ANDFibxD8n0",
-  "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
-
-  "music": [
-    "x-out.mp3"
-  ],
-
-  "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
-  "disk": [
-    "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
-  ],
-  "lemon": [
-    "https://www.lemonamiga.com/game/x-out"
-  ],
-  "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
-  "ccg_rating": 7,
-  "ccg_rating_reason": "",
-  "credits": {
-    "publisher": [
-      "Rainbow Arts"
+    "system": "C64",
+    "id": "x_out",
+    "slug": "x-out",
+    "title": "X-Out",
+    "sorttitle": "X-Out",
+    "year": 1990,
+    "genres": [
+      "shooting"
     ],
-    "producer": "",
-    "coder": [
-      "Heiko Schröder"
+    "collections": [],
+    "videoid": "ANDFibxD8n0",
+    "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
+    "music": [
+      "x-out.mp3"
     ],
-    "graphics": [
-      "Celal Kandemiroglu"
+    "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
     ],
-    "musician": [
-      "Chris Hülsbeck"
+    "lemon": [
+      "https://www.lemonamiga.com/game/x-out"
     ],
-    "re_releaser": [],
-    "developer": ""
-  },
-  "developer": "",
-  "_ccg_enforced": false,
-  "_ccg_migrated": false
+    "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "",
+    "credits": {
+      "publisher": [
+        "Rainbow Arts"
+      ],
+      "producer": "",
+      "coder": [
+        "Heiko Schr\u00f6der"
+      ],
+      "graphics": [
+        "Celal Kandemiroglu"
+      ],
+      "musician": [
+        "Chris H\u00fclsbeck"
+      ],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
   },
   {
     "system": "AMIGA",
@@ -28854,7 +29107,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "yie-ar-kung-fu.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -28990,7 +29246,10 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "music": [
+      "zak-mckracken-and-the-alien-mindbenders.mp3"
+    ]
   },
   {
     "system": "C64",
@@ -29022,10 +29281,10 @@
       ],
       "producer": "Paul Chamberlain",
       "coder": [
-        "Jukka Tapanimäki"
+        "Jukka Tapanim\u00e4ki"
       ],
       "graphics": [
-        "Jukka Tapanimäki"
+        "Jukka Tapanim\u00e4ki"
       ],
       "musician": [
         "Charles Deenen"
@@ -29037,7 +29296,10 @@
     },
     "developer": "Hewson",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "music": [
+      "zamzara.mp3"
+    ]
   },
   {
     "system": "C64",
