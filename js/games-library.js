@@ -75,6 +75,18 @@ async function initGamesLibrary() {
     }
 }
 
+function normalizeGame(game) {
+    const entry = (game && typeof game === "object") ? game : {};
+    return {
+        ...entry,
+        genres: Array.isArray(entry.genres) ? entry.genres : [],
+        collections: Array.isArray(entry.collections) ? entry.collections : [],
+        disk: Array.isArray(entry.disk) ? entry.disk : (entry.disk ? [entry.disk] : []),
+        lemon: Array.isArray(entry.lemon) ? entry.lemon : (entry.lemon ? [entry.lemon] : []),
+        music: Array.isArray(entry.music) ? entry.music : (entry.music ? [entry.music] : []),
+    };
+}
+
 function loadGamesOnce() {
     if (CCG_GAMES_LOAD_PROMISE) return CCG_GAMES_LOAD_PROMISE;
 
@@ -86,7 +98,7 @@ function loadGamesOnce() {
         if (!res.ok) throw new Error("Failed to load games.json");
 
         const data = await res.json();
-        const incoming = Array.isArray(data) ? data : [];
+        const incoming = Array.isArray(data) ? data.map(normalizeGame) : [];
         CCG_ALL_GAMES = dedupeGames(incoming);
         CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
     })();
