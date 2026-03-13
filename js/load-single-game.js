@@ -33,6 +33,7 @@ let CCG_FAVOURITES_INIT = false;
 let CCG_FAVOURITES_LOADING = false;
 const CCG_BOX3D_PATH_CACHE = new Map();
 const CCG_BOX3D_SLUG_CACHE = new Map();
+const CCG_GAME_MUSIC_PATH_CACHE = new Map();
 const CCG_RENDER_GATE = {
     container: null,
     locked: false,
@@ -927,6 +928,72 @@ function resolveCanonicalGamePath(slug) {
     return `${root}games/${slug}/`;
 }
 
+function resolveMusicSlugFromPath() {
+    return normalizeSlugKey(getSlugFromPath());
+}
+
+function resolveGameMusicPath(slug) {
+    if (!slug) return "";
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    const safeRoot = root.endsWith("/") ? root : `${root}/`;
+    return `${safeRoot}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
+}
+
+async function checkGameMusicExists(path) {
+    if (!path) return false;
+    if (CCG_GAME_MUSIC_PATH_CACHE.has(path)) {
+        return CCG_GAME_MUSIC_PATH_CACHE.get(path);
+    }
+    try {
+        const response = await fetch(path, { method: "HEAD", cache: "force-cache" });
+        const exists = response.ok;
+        CCG_GAME_MUSIC_PATH_CACHE.set(path, exists);
+        return exists;
+    } catch (error) {
+        CCG_GAME_MUSIC_PATH_CACHE.set(path, false);
+        return false;
+    }
+}
+
+async function renderGameMusicCard({ utilityHubSection, hasManual, hasDisk, hasReading }) {
+    const musicCard = document.getElementById("game-music-card");
+    const musicTracksEl = document.getElementById("gameMusicTracks");
+    if (!musicCard || !musicTracksEl) {
+        if (utilityHubSection) {
+            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading);
+        }
+        return;
+    }
+
+    musicCard.hidden = true;
+    musicTracksEl.innerHTML = "";
+
+    const slug = resolveMusicSlugFromPath();
+    const musicPath = resolveGameMusicPath(slug);
+    const hasMusic = await checkGameMusicExists(musicPath);
+
+    if (hasMusic) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload = "none";
+
+        const source = document.createElement("source");
+        source.src = musicPath;
+        source.type = "audio/mpeg";
+
+        audio.appendChild(source);
+        audio.append("Your browser does not support the audio element.");
+        musicTracksEl.appendChild(audio);
+        musicCard.hidden = false;
+    }
+
+    if (utilityHubSection) {
+        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasMusic);
+    }
+}
+
 function updatePrettyUrlAfterResolve(game) {
     if (!isSlugRoutingAllowed()) return;
     const pretty = resolvePrettyGameUrl(game);
@@ -1204,39 +1271,12 @@ function renderGame(game) {
         }
     }
 
-    const musicCard = document.getElementById("game-music-card");
-    const musicTracksEl = document.getElementById("gameMusicTracks");
-    const musicTracks = Array.isArray(game.music)
-        ? game.music.map((track) => String(track || "").trim()).filter(Boolean)
-        : [];
-
-    if (musicCard && musicTracksEl) {
-        musicTracksEl.innerHTML = "";
-
-        if (musicTracks.length) {
-            musicTracks.forEach((track) => {
-                const audio = document.createElement("audio");
-                audio.controls = true;
-                audio.preload = "none";
-
-                const source = document.createElement("source");
-                source.src = `/resources/audio/games/${encodeURIComponent(track)}`;
-                source.type = "audio/mpeg";
-
-                audio.appendChild(source);
-                audio.append("Your browser does not support the audio element.");
-                musicTracksEl.appendChild(audio);
-            });
-            musicCard.hidden = false;
-        } else {
-            musicCard.hidden = true;
-        }
-    }
-
-    const hasUtilityHub = !!(hasManual || hasDisk || lemonLinks.length || musicTracks.length);
+    const hasReading = lemonLinks.length > 0;
+    const hasUtilityHub = !!(hasManual || hasDisk || hasReading);
     if (utilityHubSection) {
         utilityHubSection.hidden = !hasUtilityHub;
     }
+    void renderGameMusicCard({ utilityHubSection, hasManual, hasDisk, hasReading });
 
     renderAffiliateSection(game);
     initHardwareAccordion();
