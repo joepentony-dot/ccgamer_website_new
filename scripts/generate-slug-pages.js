@@ -3,20 +3,11 @@
 const fs = require("fs");
 const path = require("path");
 
-/* ---------------------------------------
-   Constants
---------------------------------------- */
-
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
-const REDIRECT_TARGET = "/games/game.html?slug=";
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const gamesDir = path.join(repoRoot, "games");
-
-/* ---------------------------------------
-   Utilities
---------------------------------------- */
 
 function slugify(text) {
     return String(text || "")
@@ -37,174 +28,197 @@ function escapeHtml(text) {
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
+        .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#39;");
 }
 
-function resolveImageUrl(game) {
-    const raw =
-        game.thumbnail ||
-        game.thumb ||
-        game.cover ||
-        game.image ||
-        "";
-
-    if (!raw) return "";
-
-    const cleaned = String(raw).trim();
-
-    if (!cleaned) return "";
-
-    if (/^https?:\/\//i.test(cleaned)) {
-        return cleaned;
-    }
-
-    const relative = cleaned.startsWith("/")
-        ? cleaned
-        : `/${cleaned}`;
-
-    return `${SITE_ROOT}${relative}`;
+function normalizeSlug(game) {
+    let slug = game.slug ? slugify(game.slug) : slugify(game.title);
+    if (slug === "smash-t-5" || slug === "smash-t-v") slug = "smash-tv";
+    return slug;
 }
 
 function detectPlatform(game) {
     const raw = String(game.system || game.platform || "").trim().toLowerCase();
-    if (raw === "c64" || raw.includes("commodore")) return "Commodore 64";
     if (raw === "amiga" || raw.includes("amiga")) return "Amiga";
     return "Commodore 64";
 }
 
-function detectSeoHooks(game) {
-    const hooks = ["Game Info"];
-    if (String(game.pdf || "").trim()) hooks.push("Manual");
-    if (String(game.videoid || game.videoId || "").trim()) hooks.push("Video");
-    if (String(game.ccg_rating_reason || "").trim().length >= 20) hooks.unshift("Review");
-    return hooks;
+function normalizePlatformShort(game) {
+    const raw = String(game.system || game.platform || "").trim().toLowerCase();
+    if (raw === "amiga" || raw.includes("amiga")) return "Amiga";
+    return "C64";
 }
 
-function joinHooks(hooks) {
-    if (hooks.length <= 1) return hooks[0] || "Game Info";
-    if (hooks.length === 2) return `${hooks[0]} & ${hooks[1]}`;
-    return `${hooks.slice(0, -1).join(", ")} & ${hooks[hooks.length - 1]}`;
-}
-
-function buildSeoDescription(game, title) {
+function buildDescription(game, title, platform) {
     const raw = stripHtml(game.description || game.desc || "");
-    const hooks = detectSeoHooks(game);
-    const platform = detectPlatform(game);
-
-    if (raw) {
-        return raw.length <= 155 ? raw : `${raw.slice(0, 152).trim()}...`;
-    }
-
-    const features = [];
-    if (hooks.includes("Manual")) features.push("manual access");
-    if (hooks.includes("Video")) features.push("gameplay video");
-    const featureText = features.length ? ` with ${joinHooks(features.map((f) => f[0].toUpperCase() + f.slice(1)))}` : "";
-    return `${title} on ${platform}${featureText} and full game information.`;
+    if (raw) return raw.length <= 300 ? raw : `${raw.slice(0, 297).trim()}...`;
+    return `${title} is a retro ${platform} title featured on Cheeky Commodore Gamer with screenshots, game information, manual links and video coverage.`;
 }
 
-/* ---------------------------------------
-   Validation (Only Fatal Fields)
---------------------------------------- */
+function getThumbnailFilename(game, slug) {
+    const raw = String(game.thumbnail || "").trim();
+    const expected = `${slug.replace(/-/g, "_")}_europe.jpg`;
+    if (!raw) return expected;
+    return raw.includes("/") ? path.basename(raw) : raw;
+}
 
-function validateGame(game, slug) {
+function validateForGeneration(game, slug, gamesBySlug) {
     const issues = [];
 
-    // Only fatal blockers
     if (!slug) issues.push("missing slug");
     if (!game.title) issues.push("missing title");
+    if (!gamesBySlug.has(slug)) issues.push("games.json entry lookup failed for slug");
 
-    // Everything else allowed (fallbacks handle it)
-    return issues;
+    const thumbnailFile = getThumbnailFilename(game, slug);
+    const expectedThumbnail = `${slug.replace(/-/g, "_")}_europe.jpg`;
+    if (thumbnailFile !== expectedThumbnail) {
+        issues.push(`thumbnail must be ${expectedThumbnail} (found ${thumbnailFile || "empty"})`);
+    }
+
+    const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
+    const ogImage = `${SITE_ROOT}/resources/images/thumbnails/all/${expectedThumbnail}`;
+
+    if (!canonicalUrl.endsWith(`/games/${slug}/`)) issues.push("canonical URL mismatch");
+    if (!ogImage.endsWith(`/resources/images/thumbnails/all/${expectedThumbnail}`)) issues.push("OpenGraph image path mismatch");
+
+    return {
+        issues,
+        expectedThumbnail,
+        canonicalUrl,
+        ogImage
+    };
 }
 
-/* ---------------------------------------
-   HTML Builder
---------------------------------------- */
+function buildRedirectStubHtml({ slug, title }) {
+    const canonicalPath = `/games/${slug}/`;
+    const canonicalUrl = `${SITE_ROOT}${canonicalPath}`;
 
-function buildHtml(game, slug, description, imageUrl, publisher, year) {
-    const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
-    const platform = detectPlatform(game);
-    const hooks = detectSeoHooks(game);
-    const title = `${normalizedTitle} (${platform}) – ${joinHooks(hooks)}`;
-    const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
-    const redirectUrl = `${REDIRECT_TARGET}${encodeURIComponent(slug)}`;
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script src="/js/analytics.js"></script>
+<meta http-equiv="refresh" content="0; url=${canonicalPath}">
+<script>
+(function(){
+window.location.replace("${canonicalPath}");
+})();
+</script>
+<title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
+<meta name="description" content="${escapeHtml(title)} on Commodore 64 — screenshots, manual, downloads and video.">
+<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+</head>
+<body></body>
+</html>
+`;
+}
 
-    const safeTitle = escapeHtml(title);
-    const safeDescription = escapeHtml(description);
-    const safePublisher = escapeHtml(publisher);
-    const safeYear = escapeHtml(year);
-    const safeImageUrl = escapeHtml(imageUrl);
-    const safeCanonical = escapeHtml(canonicalUrl);
+function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
+    const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
 
     const schemaData = {
         "@context": "https://schema.org",
         "@type": "VideoGame",
-        name: normalizedTitle,
+        name: title,
         description,
         datePublished: String(year),
-        gamePlatform: String(game.system || game.platform || ""),
+        gamePlatform: platformShort,
         publisher,
-        image: imageUrl,
+        image: ogImage,
         url: canonicalUrl
     };
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=${redirectUrl}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>${safeTitle}</title>
-    <meta name="description" content="${safeDescription}" />
-
-    <link rel="canonical" href="${safeCanonical}" />
-
-    <meta property="og:title" content="${safeTitle}" />
-    <meta property="og:description" content="${safeDescription}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${safeCanonical}" />
-    <meta property="og:image" content="${safeImageUrl}" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${safeTitle}" />
-    <meta name="twitter:description" content="${safeDescription}" />
-    <meta name="twitter:image" content="${safeImageUrl}" />
-
-
-    <script>
-        (function () {
-            try {
-                window.location.replace("${redirectUrl}");
-            } catch (e) {
-                window.location.href = "${redirectUrl}";
-            }
-        })();
-    </script>
-
-    <script type="application/ld+json">
-${JSON.stringify(schemaData, null, 4)}
-    </script>
-
+<title>${escapeHtml(seoTitle)}</title>
+<script src="/js/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="description" content="${escapeHtml(description)}">
+<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cheeky Commodore Gamer">
+<meta property="og:title" content="${escapeHtml(seoTitle)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:url" content="${escapeHtml(canonicalUrl)}">
+<meta property="og:image" content="${escapeHtml(ogImage)}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(seoTitle)}">
+<meta name="twitter:description" content="${escapeHtml(description)}">
+<meta name="twitter:image" content="${escapeHtml(ogImage)}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="../favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../resources/css/ccg-master.css">
+<link rel="stylesheet" href="../resources/css/ccg-mode.css">
+<link rel="stylesheet" href="../resources/css/ccg-effects.css">
+<link rel="stylesheet" href="../resources/css/ccg-anim.css">
+<link rel="stylesheet" href="../resources/css/ccg-overlays.css">
+<link rel="stylesheet" href="../resources/css/ccg-cards.css">
+<link rel="stylesheet" href="../resources/css/games.css">
+<link rel="stylesheet" href="../resources/css/ccg-footer.css">
+<link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
+<script src="../js/ccg-mobile-lite.js" defer></script>
+<script type="application/ld+json">
+${JSON.stringify(schemaData, null, 2)}
+</script>
 </head>
-<body>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+<div class="ccg-bg" aria-hidden="true">
+<div class="ccg-bg-starfield"></div>
+<div class="ccg-bg-grid"></div>
+<div class="ccg-bg-crt-overlay"></div>
+</div>
+<div class="ccg-page">
+<main class="ccg-main">
+<section class="game-hero">
+<div class="game-hero__inner">
+<div class="game-hero__media">
+<img class="game-hero__thumb" src="../resources/images/thumbnails/all/${escapeHtml(path.basename(ogImage))}" alt="${escapeHtml(title)} cover" loading="lazy" width="460" height="215">
+</div>
+<div class="game-hero__content">
+<h1 class="game-hero__title">${escapeHtml(title)}</h1>
+<div class="game-hero__meta">
+<span class="game-meta__item">${escapeHtml(String(year))}</span>
+<span class="game-meta__sep">•</span>
+<span class="game-meta__item">${escapeHtml(platformShort)}</span>
+<span class="game-meta__sep">•</span>
+<span class="game-meta__item">${escapeHtml(publisher)}</span>
+</div>
+</div>
+</div>
+</section>
+<section class="game-section">
+<p class="game-section__kicker">Overview</p>
+<h2 class="game-section__title">Game Summary</h2>
+<div class="game-description">${escapeHtml(description)}</div>
+</section>
+<section class="game-section">
+<p class="game-section__kicker">Explore</p>
+<h2 class="game-section__title">More Details</h2>
+<div class="game-downloads">
+<a class="ccg-btn ccg-btn--primary" href="/games/${escapeHtml(slug)}/">View the full interactive game page</a>
+<a class="ccg-btn ccg-btn--ghost" href="/games/index.html">Browse all games</a>
+</div>
+</section>
+</main>
+<footer class="ccg-footer">
+<p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer. Not affiliated with Commodore, Amiga or publishers.</p>
+</footer>
+</div>
+<script src="../js/ccg-base.js" defer></script>
+<script src="../resources/js/ccg-share.js" defer></script>
+<script data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
 `;
 }
 
-/* ---------------------------------------
-   Main Runner
---------------------------------------- */
-
 function main() {
-
     let games;
-
     try {
-        const raw = fs.readFileSync(gamesJsonPath, "utf8");
-        games = JSON.parse(raw);
+        games = JSON.parse(fs.readFileSync(gamesJsonPath, "utf8"));
     } catch (err) {
         console.error(`[ERROR] Failed to read games.json: ${err.message}`);
         process.exit(1);
@@ -215,115 +229,76 @@ function main() {
         process.exit(1);
     }
 
-    let processed = 0;
-    let created = 0;
-    let skipped = 0;
-    let errors = 0;
-    let warnings = 0;
+    const gamesBySlug = new Map();
+    for (const game of games) {
+        const slug = normalizeSlug(game);
+        if (slug) gamesBySlug.set(slug, game);
+    }
 
-    games.forEach((game) => {
+    const planned = [];
 
-        processed += 1;
-
-        let slug = game.slug
-            ? slugify(game.slug)
-            : slugify(game.title);
-
-        if (slug === "smash-t-5" || slug === "smash-t-v") {
-            slug = "smash-tv";
-        }
-
-        /* Fallback-safe metadata */
-
-        const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
-        const description = buildSeoDescription(game, normalizedTitle);
-
-        const imageUrl =
-            resolveImageUrl(game) ||
-            `${SITE_ROOT}/resources/images/thumbnails/placeholder.jpg`;
-
-        const publisher = stripHtml(
-            game.publisher ||
-            game.developer ||
-            "Unknown Publisher"
-        );
-
-        const year = stripHtml(
-            game.year ||
-            "Unknown Year"
-        );
-
-        /* Non-fatal warnings */
-
-        if (!game.publisher && !game.developer) {
-            console.warn(`[WARN] ${slug}: missing publisher`);
-            warnings += 1;
-        }
-
-        if (!game.year) {
-            console.warn(`[WARN] ${slug}: missing year`);
-            warnings += 1;
-        }
-
-        if (!game.description && !game.desc) {
-            console.warn(`[WARN] ${slug}: missing description`);
-            warnings += 1;
-        }
-
-        if (!resolveImageUrl(game)) {
-            console.warn(`[WARN] ${slug}: missing image`);
-            warnings += 1;
-        }
-
-        /* Fatal validation */
-
-        const issues = validateGame(game, slug);
-
-        if (issues.length) {
-            errors += 1;
-            console.error(
-                `[ERROR] ${game.id || game.title || "unknown"}: ${issues.join(", ")}`
-            );
-            return;
-        }
-
+    for (const game of games) {
+        const slug = normalizeSlug(game);
         const outputDir = path.join(gamesDir, slug);
-        const outputPath = path.join(outputDir, "index.html");
+        const canonicalPath = path.join(outputDir, "index.html");
+        const stubPath = path.join(gamesDir, `${slug}.html`);
 
-        if (fs.existsSync(outputPath)) {
-            skipped += 1;
-            console.warn(`[SKIP] ${slug}: already exists`);
-            return;
+        if (fs.existsSync(canonicalPath) && fs.existsSync(stubPath)) {
+            continue;
         }
 
-        fs.mkdirSync(outputDir, { recursive: true });
+        const validation = validateForGeneration(game, slug, gamesBySlug);
+        if (validation.issues.length) {
+            console.error(`[ERROR] ${slug || game.title || "unknown"}: ${validation.issues.join("; ")}`);
+            console.error("[ABORT] Validation failed. No files were generated.");
+            process.exit(1);
+        }
 
-        const html = buildHtml(
-            game,
-            slug,
-            description,
-            imageUrl,
-            publisher,
-            year
-        );
+        planned.push({ game, slug, outputDir, canonicalPath, stubPath, ...validation });
+    }
 
-        fs.writeFileSync(outputPath, html, "utf8");
+    let created = 0;
 
-        created += 1;
+    for (const item of planned) {
+        const game = item.game;
+        const title = stripHtml(game.title || "Game");
+        const year = stripHtml(game.year || "Unknown Year");
+        const publisher = stripHtml(game.publisher || game.developer || "Unknown Publisher");
+        const platformLong = detectPlatform(game);
+        const platformShort = normalizePlatformShort(game);
+        const description = buildDescription(game, title, platformLong);
 
-        console.log(`[CREATE] ${slug}: ${outputPath}`);
-    });
+        fs.mkdirSync(item.outputDir, { recursive: true });
 
-    console.log("\nSummary:");
-    console.log(`Processed: ${processed}`);
-    console.log(`Created: ${created}`);
-    console.log(`Skipped: ${skipped}`);
-    console.log(`Warnings: ${warnings}`);
-    console.log(`Errors: ${errors}`);
+        if (!fs.existsSync(item.stubPath)) {
+            fs.writeFileSync(item.stubPath, buildRedirectStubHtml({ slug: item.slug, title }), "utf8");
+            created += 1;
+            console.log(`[CREATE] games/${item.slug}.html`);
+        }
+
+        if (!fs.existsSync(item.canonicalPath)) {
+            fs.writeFileSync(
+                item.canonicalPath,
+                buildCanonicalHtml({
+                    slug: item.slug,
+                    game,
+                    title,
+                    description,
+                    canonicalUrl: item.canonicalUrl,
+                    ogImage: item.ogImage,
+                    year,
+                    publisher,
+                    platformLong,
+                    platformShort
+                }),
+                "utf8"
+            );
+            created += 1;
+            console.log(`[CREATE] games/${item.slug}/index.html`);
+        }
+    }
+
+    console.log(`\nSummary:\nPlanned slugs: ${planned.length}\nFiles created: ${created}`);
 }
-
-/* ---------------------------------------
-   Run
---------------------------------------- */
 
 main();
