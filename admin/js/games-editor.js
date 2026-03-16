@@ -922,13 +922,17 @@ function buildGamesIndex(games) {
 }
 
 function buildGamesSearch(games) {
+  const toList = (value) => (Array.isArray(value) ? value : (value ? [value] : []));
   const payload = (Array.isArray(games) ? games : []).map((game) => ({
     slug: game.slug || '',
     title: game.title || '',
     sorttitle: game.sorttitle || game.title || '',
     system: game.system || '',
     year: Number(game.year) || 0,
+    publisher: toList(game.publisher || game?.credits?.publisher),
+    genre: Array.isArray(game.genres) ? game.genres : [],
     genres: Array.isArray(game.genres) ? game.genres : [],
+    composer: toList(game.composer || game?.credits?.musician),
     music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : [])
   }));
   return JSON.stringify(payload, null, 2);

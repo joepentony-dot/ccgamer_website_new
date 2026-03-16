@@ -17,6 +17,34 @@ function normaliseMusicNames(value) {
     });
 }
 
+
+function normaliseComposerNames(game) {
+  const composers = [];
+
+  if (Array.isArray(game?.composer)) {
+    composers.push(...game.composer);
+  } else if (game?.composer) {
+    composers.push(game.composer);
+  }
+
+  const musicianCredits = game?.credits?.musician;
+  if (Array.isArray(musicianCredits)) {
+    composers.push(...musicianCredits);
+  } else if (musicianCredits) {
+    composers.push(musicianCredits);
+  }
+
+  return normaliseMusicNames(composers);
+}
+
+function normalisePublisherNames(game) {
+  const publisherCredits = game?.credits?.publisher;
+  const list = Array.isArray(publisherCredits)
+    ? publisherCredits
+    : (publisherCredits ? [publisherCredits] : (game?.publisher ? [game.publisher] : []));
+  return normaliseMusicNames(list);
+}
+
 function composerSlug(name) {
   return String(name ?? "")
     .toLowerCase()
@@ -173,7 +201,12 @@ fs.writeFileSync("games/games-index.json", JSON.stringify(indexData, null, 2));
 const searchData = games.map((game) => ({
   title: game.title,
   slug: game.slug,
+  publisher: normalisePublisherNames(game),
+  genre: Array.isArray(game.genres) ? game.genres : [],
+  genres: Array.isArray(game.genres) ? game.genres : [],
+  composer: normaliseComposerNames(game),
   music: normaliseMusicNames(game.music),
+  year: game.year,
 }));
 
 fs.writeFileSync("games/games-search.json", JSON.stringify(searchData, null, 2));
