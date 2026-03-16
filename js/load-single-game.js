@@ -957,7 +957,7 @@ async function checkGameMusicExists(path) {
     }
 }
 
-async function renderGameMusicCard({ utilityHubSection, hasManual, hasDisk, hasReading }) {
+async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
     const musicCard = document.getElementById("game-music-card");
     const musicTracksEl = document.getElementById("gameMusicTracks");
     if (!musicCard || !musicTracksEl) {
@@ -986,6 +986,17 @@ async function renderGameMusicCard({ utilityHubSection, hasManual, hasDisk, hasR
         audio.appendChild(source);
         audio.append("Your browser does not support the audio element.");
         musicTracksEl.appendChild(audio);
+
+        const composers = Array.isArray(game?.music)
+            ? game.music.map((name) => String(name || "").trim()).filter(Boolean)
+            : [];
+        if (composers.length) {
+            const composerLine = document.createElement("p");
+            composerLine.className = "ccg-music-composer";
+            composerLine.textContent = `Music by ${composers.join(", ")}`;
+            musicTracksEl.appendChild(composerLine);
+        }
+
         musicCard.hidden = false;
     }
 
@@ -1276,7 +1287,7 @@ function renderGame(game) {
     if (utilityHubSection) {
         utilityHubSection.hidden = !hasUtilityHub;
     }
-    void renderGameMusicCard({ utilityHubSection, hasManual, hasDisk, hasReading });
+    void renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading });
 
     renderAffiliateSection(game);
     initHardwareAccordion();

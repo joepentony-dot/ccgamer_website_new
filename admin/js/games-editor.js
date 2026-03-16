@@ -928,7 +928,8 @@ function buildGamesSearch(games) {
     sorttitle: game.sorttitle || game.title || '',
     system: game.system || '',
     year: Number(game.year) || 0,
-    genres: Array.isArray(game.genres) ? game.genres : []
+    genres: Array.isArray(game.genres) ? game.genres : [],
+    music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : [])
   }));
   return JSON.stringify(payload, null, 2);
 }
