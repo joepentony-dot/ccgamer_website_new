@@ -14,6 +14,7 @@ fs.writeFileSync("games/games-index.json", JSON.stringify(indexData, null, 2));
 const searchData = games.map((game) => ({
   title: game.title,
   slug: game.slug,
+  music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : []),
 }));
 
 fs.writeFileSync("games/games-search.json", JSON.stringify(searchData, null, 2));

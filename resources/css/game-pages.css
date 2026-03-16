@@ -71,6 +71,12 @@
     filter: drop-shadow(0 0 4px rgba(0, 234, 255, 0.42));
 }
 
+.ccg-music-composer {
+    margin: 0;
+    font-size: 0.92rem;
+    color: rgba(214, 241, 255, 0.9);
+}
+
 .ccg-hardware-accordion {
     display: grid;
     gap: 10px;
