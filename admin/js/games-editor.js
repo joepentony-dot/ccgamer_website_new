@@ -72,7 +72,11 @@ const state = {
     redirect: ''
   },
   thumbnailCheck: 'idle',
-  musicCheck: 'idle'
+  musicCheck: 'idle',
+  slugManuallyEdited: false,
+  siteSettings: {
+    facebookAppId: ''
+  }
 };
 
 const el = {
@@ -106,6 +110,8 @@ const el = {
   previewFileFolder: document.querySelector('[data-preview-file-folder]'),
   previewGamesJsonPath: document.querySelector('[data-preview-games-json-path]'),
   downloadStatus: document.querySelector('[data-download-status]'),
+  rebuildAllButton: document.querySelector('[data-action="rebuild-all"]'),
+  rebuildStatus: document.querySelector('[data-rebuild-status]'),
   nextButtons: Array.from(document.querySelectorAll('[data-action="next"]')),
   backButtons: Array.from(document.querySelectorAll('[data-action="back"]')),
   downloadButton: document.querySelector('[data-action="download"]'),
@@ -120,7 +126,7 @@ init();
 async function init() {
   hydrateFilenameOnlyModePreference();
   bindEvents();
-  await Promise.all([loadLibrary(), loadTemplates()]);
+  await Promise.all([loadLibrary(), loadTemplates(), loadSiteSettings()]);
   updateDerivedPreviews();
   renderStep();
 }
@@ -156,6 +162,7 @@ function bindEvents() {
 
     if (fieldName === 'slug') {
       state.slugTouched = Boolean(value.trim());
+      state.slugManuallyEdited = true;
       updateStep1UiState();
       updateDerivedPreviews();
       return;
@@ -169,9 +176,7 @@ function bindEvents() {
     }
 
     if (fieldName === 'title') {
-      if (!state.slugTouched) {
-        setFieldValue('slug', slugify(value));
-      }
+      updateSlugAuto(slugify(value));
 
       if (!state.idTouched) {
         setFieldValue('id', idify(value));
@@ -266,6 +271,19 @@ function bindEvents() {
     await loadLibrary(true);
   });
 
+  el.rebuildAllButton?.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/admin/api/rebuild-games', { method: 'POST' });
+      if (response.ok) {
+        setRebuildStatus('Rebuild request sent successfully.', false);
+        return;
+      }
+      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+    } catch (error) {
+      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+    }
+  });
+
 
   el.backButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -285,6 +303,12 @@ function bindEvents() {
     }
 
     try {
+      const requiredFileCheck = await validateRequiredFiles();
+      if (!requiredFileCheck.ok) {
+        setDownloadStatus(requiredFileCheck.message, true);
+        return;
+      }
+
       const packageData = buildPackageData();
       await downloadZip(packageData);
       setDownloadStatus('Download started successfully.', false);
@@ -325,6 +349,7 @@ function clearDraft() {
   state.draft = { ...EMPTY_DRAFT };
   state.slugTouched = false;
   state.idTouched = false;
+  state.slugManuallyEdited = false;
   state.step = 1;
   el.fields.forEach((field) => {
     if (field.type === 'radio') {
@@ -547,6 +572,28 @@ function validateStep2() {
   return errors;
 }
 
+async function fileExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function validateRequiredFiles() {
+  const slug = String(state.draft.slug || '').trim();
+  if (!slug) return { ok: false, message: 'Slug is required before file validation.' };
+
+  const thumbnailUrl = `/resources/images/thumbnails/all/${slug}.jpg`;
+  const thumbnailOk = await fileExists(thumbnailUrl);
+  if (!thumbnailOk) {
+    return { ok: false, message: `Missing required thumbnail: ${thumbnailUrl}` };
+  }
+
+  return { ok: true };
+}
+
 function validateStep2Warnings() {
   const warnings = [];
   const thumbnailRaw = String(state.draft.thumbnail || '').trim();
@@ -658,6 +705,8 @@ function buildPackageData() {
     _ccg_migrated: false
   };
 
+  entryLemonDeduplicate(gameEntry);
+
   if (!Array.isArray(gameEntry.music) || gameEntry.music.length === 0) {
     delete gameEntry.music;
   }
@@ -751,7 +800,8 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     SLUG: cleanForHtml(slug),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
     THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
-    DESCRIPTION: cleanForHtml(seoDescription)
+    DESCRIPTION: cleanForHtml(seoDescription),
+    FB_APP_ID_META: buildFacebookAppIdMeta(state.siteSettings.facebookAppId)
   };
 }
 
@@ -763,6 +813,11 @@ function extractFilename(pathValue) {
   return segments[segments.length - 1] || 'default.jpg';
 }
 
+function entryLemonDeduplicate(entry) {
+  if (!entry || !Array.isArray(entry.lemon)) return;
+  entry.lemon = [...new Set(entry.lemon)];
+}
+
 function buildLemonLinks(lemonUrl, externalLinks) {
   const links = [];
   const lemon = String(lemonUrl || '').trim();
@@ -770,7 +825,7 @@ function buildLemonLinks(lemonUrl, externalLinks) {
   parseLines(externalLinks).forEach((link) => {
     if (!links.includes(link)) links.push(link);
   });
-  return links;
+  return [...new Set(links)];
 }
 
 async function fetchLemonData() {
@@ -787,10 +842,16 @@ async function fetchLemonData() {
     const parser = new DOMParser();
     const doc = parser.parseFromString(data.contents || '', 'text/html');
 
-    const title = readLemonText(doc, ['h1']);
-    const year = (readLemonText(doc, ['.release-year', '.game-info .year', '[class*=year]']) || '').replace(/\D/g, '');
-    const publisher = readLemonText(doc, ["a[href*='/publisher/']"]);
-    const coder = readLemonText(doc, ["a[href*='/person/']"]);
+    const title =
+      safeText(doc.querySelector('h1')) ||
+      safeText(doc.querySelector('.game-title'));
+    const year = safeText(doc.querySelector('.release-year')).replace(/\D/g, '');
+    const publisher =
+      safeText(doc.querySelector("a[href*='/publisher/']")) ||
+      safeText(doc.querySelector('.gamepublisher'));
+    const coder =
+      safeText(doc.querySelector("a[href*='/person/']")) ||
+      safeText(doc.querySelector('.gamecoder'));
     const musician = readLemonText(doc, ["a[href*='/musician/']", "a[href*='/musician']", '.musician a']);
     const graphics = readLemonText(doc, ['.graphics a', "a[href*='/graphics/']"]);
     const genre = readLemonText(doc, ["a[href*='/genre/']", '.genre a']);
@@ -810,7 +871,7 @@ async function fetchLemonData() {
       }
     }
 
-    if (!state.slugTouched && title) setFieldValue('slug', slugify(title));
+    if (title) updateSlugAuto(slugify(title));
     if (!state.idTouched && title) setFieldValue('id', idify(title));
 
     updateStep1UiState();
@@ -819,6 +880,10 @@ async function fetchLemonData() {
     console.error(error);
     window.alert('Could not fetch Lemon64 data.');
   }
+}
+
+function safeText(el) {
+  return el ? el.innerText.trim() : '';
 }
 
 function readLemonText(doc, selectors) {
@@ -1005,6 +1070,31 @@ function markOptionChecked(optionType, values) {
   });
 }
 
+
+function updateSlugAuto(newSlug) {
+  if (!state.slugManuallyEdited) {
+    setFieldValue('slug', newSlug);
+    state.slugTouched = Boolean(String(newSlug || '').trim());
+  }
+}
+
+function buildFacebookAppIdMeta(appId) {
+  const value = String(appId || '').trim();
+  if (!value) return '';
+  return `<meta property="fb:app_id" content="${cleanForHtml(value)}">`;
+}
+
+async function loadSiteSettings() {
+  try {
+    const response = await fetch('/admin/site-settings.json', { cache: 'no-store' });
+    if (!response.ok) return;
+    const json = await response.json();
+    state.siteSettings.facebookAppId = String(json.facebookAppId || '').trim();
+  } catch (error) {
+    state.siteSettings.facebookAppId = '';
+  }
+}
+
 function setFieldValue(fieldName, value) {
   state.draft[fieldName] = value;
   const field = document.querySelector(`[data-field="${fieldName}"]`);
@@ -1087,6 +1177,12 @@ function parseLines(value) {
     .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function setRebuildStatus(message, isError = false) {
+  if (!el.rebuildStatus) return;
+  el.rebuildStatus.textContent = message;
+  el.rebuildStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
 function parseCommaList(value) {
