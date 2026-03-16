@@ -2,6 +2,8 @@ const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const FILENAME_ONLY_STORAGE_KEY = 'ccg-games-editor-filename-only-mode';
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
+const LANDING_TEMPLATE_PATH = '/admin/templates/game-landing-template.html';
+const REDIRECT_TEMPLATE_PATH = '/admin/templates/game-redirect-template.html';
 
 const REQUIRED_GENRE_VALUES = [
   'action adventure',
@@ -63,7 +65,13 @@ const state = {
   packageData: null,
   slugTouched: false,
   idTouched: false,
-  draft: { ...EMPTY_DRAFT }
+  draft: { ...EMPTY_DRAFT },
+  templates: {
+    landing: '',
+    redirect: ''
+  },
+  thumbnailCheck: 'idle',
+  musicCheck: 'idle'
 };
 
 const el = {
@@ -85,6 +93,12 @@ const el = {
   step3Errors: document.querySelector('[data-errors-step3]'),
   previewEntry: document.querySelector('[data-preview-entry]'),
   previewSitemap: document.querySelector('[data-preview-sitemap]'),
+  previewSlug: document.querySelector('[data-preview-slug]'),
+  previewThumbnailPath: document.querySelector('[data-preview-thumbnail-path]'),
+  previewThumbnailStatus: document.querySelector('[data-preview-thumbnail-status]'),
+  previewMusicStatus: document.querySelector('[data-preview-music-status]'),
+  previewLandingUrl: document.querySelector('[data-preview-landing-url]'),
+  previewRedirectTarget: document.querySelector('[data-preview-redirect-target]'),
   previewRating: document.querySelector('[data-preview-rating]'),
   previewRatingReason: document.querySelector('[data-preview-rating-reason]'),
   previewFileFlat: document.querySelector('[data-preview-file-flat]'),
@@ -105,7 +119,8 @@ init();
 async function init() {
   hydrateFilenameOnlyModePreference();
   bindEvents();
-  await loadLibrary();
+  await Promise.all([loadLibrary(), loadTemplates()]);
+  updateDerivedPreviews();
   renderStep();
 }
 
@@ -119,6 +134,7 @@ function bindEvents() {
       if (!field.checked) return;
       state.draft[field.dataset.field] = field.value;
       updateStep1UiState();
+      updateDerivedPreviews();
       return;
     }
 
@@ -129,6 +145,7 @@ function bindEvents() {
         renderWarnings(el.step2Warnings, validateStep2Warnings());
       }
       updateStep1UiState();
+      updateDerivedPreviews();
       return;
     }
 
@@ -139,12 +156,14 @@ function bindEvents() {
     if (fieldName === 'slug') {
       state.slugTouched = Boolean(value.trim());
       updateStep1UiState();
+      updateDerivedPreviews();
       return;
     }
 
     if (fieldName === 'id') {
       state.idTouched = Boolean(value.trim());
       updateStep1UiState();
+      updateDerivedPreviews();
       return;
     }
 
@@ -164,6 +183,7 @@ function bindEvents() {
     }
 
     updateStep1UiState();
+    updateDerivedPreviews();
   };
 
   const handleOptionChange = (event) => {
@@ -184,6 +204,8 @@ function bindEvents() {
 
     state.draft[target] = selected;
     updateStep1UiState();
+    updateDerivedPreviews();
+    updateDerivedPreviews();
   };
 
   document.addEventListener('input', handleFieldInput, true);
@@ -431,8 +453,7 @@ function validateStep1() {
     ['slug', 'Slug is required.'],
     ['id', 'ID is required.'],
     ['description', 'Description is required.'],
-    ['ccg_rating', 'CCG Rating is required.'],
-    ['videoId', 'Video ID is required.']
+    ['ccg_rating', 'CCG Rating is required.']
   ];
 
   required.forEach(([key, message]) => {
@@ -470,6 +491,10 @@ function validateStep1() {
 
   if (slug && state.slugSet.has(slug)) errors.push('Slug already exists in games.json.');
   if (id && state.idSet.has(id)) errors.push('ID already exists in games.json.');
+
+  if (!String(state.draft.creditsPublisher || '').trim()) {
+    errors.push('Publisher is required.');
+  }
 
   if (!Array.isArray(state.draft.genres) || state.draft.genres.length === 0) {
     errors.push('At least one genre is required.');
@@ -639,218 +664,9 @@ function buildPackageData() {
   const imagePath = gameEntry.thumbnail || 'resources/images/thumbnails/all/default.jpg';
   const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
 
-  const flatSeoStub = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-
-    <!-- Canonical route enforcement: redirect /games/${escapeJs(slug)}.html -> /games/${escapeJs(slug)}/ -->
-    <meta http-equiv="refresh" content="0; url=/games/${escapeJs(slug)}/">
-    <script>
-      (function () {
-        var suffix = window.location.search + window.location.hash;
-        window.location.replace("/games/${escapeJs(slug)}/" + suffix);
-      })();
-    </script>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>${cleanForHtml(seoTitle)}</title>
-    <script src="/js/analytics.js"></script>
-    <meta name="description" content="${seoDescription}" />
-
-    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
-
-    <meta property="og:title" content="${cleanForHtml(seoTitle)}" />
-    <meta property="og:description" content="${seoDescription}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
-    <meta property="og:image" content="${cleanForHtml(imageUrl)}" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${cleanForHtml(seoTitle)}" />
-    <meta name="twitter:description" content="${seoDescription}" />
-    <meta name="twitter:image" content="${cleanForHtml(imageUrl)}" />
-
-    <link rel="icon" href="../favicon.ico" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
-
-    <link rel="stylesheet" href="../resources/css/ccg-master.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-effects.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-anim.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-overlays.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-cards.css" />
-    <link rel="stylesheet" href="../resources/css/games.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-footer.css" />
-    <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
-    <script src="../js/ccg-mobile-lite.js" defer></script>
-
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "VideoGame",
-        "name": "${cleanForHtml(title)}",
-        "description": "${seoDescription}",
-        "datePublished": "${String(year)}",
-        "gamePlatform": "${cleanForHtml(system)}",
-        "publisher": "${cleanForHtml(publisherForSeo)}",
-        "image": "${cleanForHtml(imageUrl)}",
-        "url": "${SITE_ORIGIN}/games/${cleanForHtml(slug)}/"
-    }
-    </script>
-</head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-
-<div class="ccg-bg" aria-hidden="true">
-    <div class="ccg-bg-starfield" aria-hidden="true"></div>
-    <div class="ccg-bg-grid" aria-hidden="true"></div>
-    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
-</div>
-
-<div class="ccg-page">
-    <main class="ccg-main">
-
-        <section class="game-hero">
-            <div class="game-hero__inner">
-
-                <div class="game-hero__media">
-                    <img
-                        class="game-hero__thumb"
-                        src="../${cleanForHtml(imagePath).replace(/^\/+/, '')}"
-                        alt="${cleanForHtml(title)} cover"
-                        loading="lazy"
-                     width="460" height="215"  srcset="../${cleanForHtml(imagePath).replace(/^\/+/, '')} 460w" sizes="(max-width: 720px) 90vw, 460px" />
-                </div>
-
-                <div class="game-hero__content">
-                    <h1 class="game-hero__title">${cleanForHtml(title)}</h1>
-
-                    <div class="game-hero__meta">
-                        <span class="game-meta__item">${String(year)}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">${cleanForHtml(system)}</span>
-                        <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">${cleanForHtml(publisherForSeo)}</span>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <section class="game-section">
-            <p class="game-section__kicker">Overview</p>
-            <h2 class="game-section__title">Game Summary</h2>
-
-            <div class="game-description">
-                ${seoDescription}
-            </div>
-        </section>
-
-        <section class="game-section">
-            <p class="game-section__kicker">Explore</p>
-            <h2 class="game-section__title">More Details</h2>
-
-            <div class="game-downloads">
-                <a class="ccg-btn ccg-btn--primary"
-                   href="/games/game.html?id=${encodeURIComponent(id)}">
-                    View the full interactive game page
-                </a>
-
-                <a class="ccg-btn ccg-btn--ghost"
-                   href="/games/index.html">
-                    Browse all games
-                </a>
-            </div>
-        </section>
-
-
-
-        <section class="ccg-share" data-ccg-share>
-            <button class="ccg-share-btn" type="button" data-ccg-share-btn>Share this game</button>
-            <div class="ccg-share-fallback" data-ccg-share-fallback aria-hidden="true">
-                <a data-ccg-share-email target="_blank" rel="noopener">Email</a>
-                <a data-ccg-share-whatsapp target="_blank" rel="noopener">WhatsApp</a>
-                <a data-ccg-share-x target="_blank" rel="noopener">X</a>
-                <a data-ccg-share-facebook target="_blank" rel="noopener">Facebook</a>
-                <button type="button" data-ccg-share-copy>Copy link</button>
-            </div>
-        </section>
-
-    </main>
-
-    <footer class="ccg-footer">
-        <p class="ccg-footer__text">
-            © <span data-ccg-year></span> Cheeky Commodore Gamer.
-            Not affiliated with Commodore, Amiga or publishers.
-        </p>
-    </footer>
-</div>
-
-<script src="../js/ccg-base.js" defer></script>
-
-<script src="../resources/js/ccg-share.js" defer></script>
-
-<!-- GOATCOUNTER — SAFE ANALYTICS -->
-<script
-  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
-  async
-  src="https://gc.zgo.at/count.js">
-</script>
-
-</body>
-</html>`;
-
-  const folderRedirect = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${cleanForHtml(seoTitle)}</title>
-    <script src="/js/analytics.js"></script>
-    <meta name="description" content="${seoDescription}" />
-
-    <link rel="canonical" href="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
-
-    <meta property="og:title" content="${cleanForHtml(seoTitle)}" />
-    <meta property="og:description" content="${seoDescription}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${SITE_ORIGIN}/games/${cleanForHtml(slug)}/" />
-    <meta property="og:image" content="${cleanForHtml(imageUrl)}" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${cleanForHtml(seoTitle)}" />
-    <meta name="twitter:description" content="${seoDescription}" />
-    <meta name="twitter:image" content="${cleanForHtml(imageUrl)}" />
-
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-        }
-    </style>
-
-    <script>
-        (function () {
-            if (typeof window !== "undefined") {
-                window.location.replace("/games/game.html?id=${escapeJs(id)}");
-            }
-        })();
-    </script>
-</head>
-<body>
-<script
-  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
-  async
-  src="https://gc.zgo.at/count.js">
-</script>
-</body>
-</html>`;
+  const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription });
+  const flatSeoStub = renderTemplate(state.templates.landing, templateVars);
+  const folderRedirect = renderTemplate(state.templates.redirect, templateVars);
 
   const mergedGames = mergeGamesJson(gameEntry, state.library);
   const gamesJsonOutput = state.draft.jsonExportMode === 'full'
@@ -859,6 +675,8 @@ function buildPackageData() {
 
   // Sitemap logic replacement: always build a complete sitemap-games.xml from games.json data.
   const sitemap = buildFullGamesSitemap(mergedGames);
+  const gamesIndex = buildGamesIndex(mergedGames);
+  const gamesSearch = buildGamesSearch(mergedGames);
 
   const readme = [
     'CCG Game Package',
@@ -869,6 +687,8 @@ function buildPackageData() {
     `- games/${slug}.html`,
     `- games/${slug}/index.html`,
     '- sitemap-games.xml',
+    '- games/games-index.json',
+    '- games/games-search.json',
     '',
     'games.json instructions:',
     '- If you exported FULL games.json: replace /games/games.json in the repo with this file.',
@@ -890,9 +710,88 @@ function buildPackageData() {
     flatSeoStub,
     folderRedirect,
     sitemap,
+    gamesIndex,
+    gamesSearch,
     readme,
     normalizedBox3dPath
   };
+}
+
+
+async function loadTemplates() {
+  const [landing, redirect] = await Promise.all([
+    fetchTemplate(LANDING_TEMPLATE_PATH),
+    fetchTemplate(REDIRECT_TEMPLATE_PATH)
+  ]);
+  state.templates.landing = landing;
+  state.templates.redirect = redirect;
+}
+
+async function fetchTemplate(path) {
+  const response = await fetch(path, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`Could not load template: ${path}`);
+  return response.text();
+}
+
+function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription }) {
+  return {
+    GAME_NAME: cleanForHtml(title),
+    YEAR: String(year),
+    PUBLISHER: cleanForHtml(publisherForSeo),
+    PLATFORM: cleanForHtml(system),
+    SLUG: cleanForHtml(slug),
+    THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
+    DESCRIPTION: cleanForHtml(seoDescription)
+  };
+}
+
+function renderTemplate(template, vars) {
+  let output = String(template || '');
+  Object.entries(vars).forEach(([key, value]) => {
+    output = output.replaceAll(`{{${key}}}`, value);
+  });
+  return output;
+}
+
+function buildGamesIndex(games) {
+  const payload = (Array.isArray(games) ? games : []).map((game) => ({
+    slug: game.slug || '',
+    title: game.title || '',
+    sorttitle: game.sorttitle || game.title || '',
+    year: Number(game.year) || 0,
+    system: game.system || '',
+    thumbnail: game.thumbnail || '',
+    genres: Array.isArray(game.genres) ? game.genres : [],
+    collections: Array.isArray(game.collections) ? game.collections : []
+  }));
+  return JSON.stringify(payload, null, 2);
+}
+
+function buildGamesSearch(games) {
+  const payload = (Array.isArray(games) ? games : []).map((game) => ({
+    slug: game.slug || '',
+    title: game.title || '',
+    sorttitle: game.sorttitle || game.title || '',
+    system: game.system || '',
+    year: Number(game.year) || 0,
+    genres: Array.isArray(game.genres) ? game.genres : []
+  }));
+  return JSON.stringify(payload, null, 2);
+}
+
+function updateDerivedPreviews() {
+  const slug = String(state.draft.slug || '').trim();
+  const thumbnailPath = normalizeThumbnailPath(state.draft.thumbnail, slug || 'game-slug');
+  if (el.previewSlug) el.previewSlug.textContent = slug || '—';
+  if (el.previewThumbnailPath) el.previewThumbnailPath.textContent = thumbnailPath;
+  if (el.previewLandingUrl) el.previewLandingUrl.textContent = `/games/${slug || '[slug]'}.html`;
+  if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = `/games/game.html?id=${slug || '[slug]'}`;
+  if (el.previewThumbnailStatus) {
+    el.previewThumbnailStatus.textContent = thumbnailPath ? `Will store: ${thumbnailPath}` : 'No thumbnail set.';
+  }
+  if (el.previewMusicStatus) {
+    el.previewMusicStatus.textContent = slug ? `Auto-detect on page: /resources/audio/games/${slug}.mp3` : 'Music auto-detection requires a slug.';
+  }
 }
 
 function mergeGamesJson(newEntry, library) {
@@ -916,6 +815,8 @@ async function downloadZip(packageData) {
   zip.file(`games/${packageData.slug}.html`, `${packageData.flatSeoStub}\n`);
   zip.file(`games/${packageData.slug}/index.html`, `${packageData.folderRedirect}\n`);
   zip.file('sitemap-games.xml', `${packageData.sitemap}\n`);
+  zip.file('games/games-index.json', `${packageData.gamesIndex}\n`);
+  zip.file('games/games-search.json', `${packageData.gamesSearch}\n`);
   zip.file('README.txt', `${packageData.readme}\n`);
 
   const blob = await zip.generateAsync({ type: 'blob' });

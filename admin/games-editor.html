@@ -62,7 +62,7 @@
         <span class="mode-pill" aria-label="Current mode">Current mode: Game Builder</span>
       </div>
       <h1>CCG Game Builder</h1>
-      <p>4-step wizard: add one game entry, build canonical SEO stubs, and download one deployment ZIP.</p>
+      <p>4-step wizard: add one game entry with locked templates, validate it, and download one deployment ZIP.</p>
       <p>
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-library">Fetch live games.json</button>
       </p>
@@ -132,6 +132,11 @@
         <label>Re-release / Compilation notes<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
       <div class="hint">Slug and ID auto-sync from title until manually edited.</div>
+      <div class="preview-box full">
+        <p><strong>Slug preview:</strong> <span data-preview-slug>—</span></p>
+        <p><strong>Landing page path:</strong> <code data-preview-landing-url>/games/[slug].html</code></p>
+        <p><strong>Redirect target:</strong> <code data-preview-redirect-target>/games/game.html?id=[slug]</code></p>
+      </div>
       <ul class="error-list" data-errors-step1 hidden></ul>
       <div class="actions">
         <span></span>
@@ -150,6 +155,11 @@
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="southern-belle or resources/images/games/boxes-3d/southern-belle.webp" /></label>
         <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
 https://www.mobygames.com/..."></textarea></label>
+      </div>
+      <div class="preview-box">
+        <p><strong>Thumbnail storage path:</strong> <code data-preview-thumbnail-path></code></p>
+        <p class="hint" data-preview-thumbnail-status></p>
+        <p class="hint" data-preview-music-status></p>
       </div>
       <ul class="error-list" data-errors-step2 hidden></ul>
       <ul class="hint" data-warnings-step2 hidden></ul>
@@ -170,6 +180,8 @@ https://www.mobygames.com/..."></textarea></label>
         <li data-preview-file-flat></li>
         <li data-preview-file-folder></li>
         <li>sitemap-games.xml</li>
+        <li>games/games-index.json</li>
+        <li>games/games-search.json</li>
         <li>README.txt</li>
       </ul>
       <h3>Sitemap (full games sitemap)</h3>
