@@ -30,8 +30,10 @@ sitemap += `\n</urlset>`;
 fs.writeFileSync("sitemap-games.xml", sitemap);
 
 const isLocalRun = !process.env.CI && !process.env.GITHUB_ACTIONS;
+const forcePageBuild = process.env.CCG_BUILD_GAME_PAGES === "1";
+const shouldBuildPages = isLocalRun || forcePageBuild;
 
-if (isLocalRun) {
+if (shouldBuildPages) {
   const template = fs.readFileSync("templates/game-template.html", "utf8");
 
   const redirectTemplate = fs.readFileSync(
