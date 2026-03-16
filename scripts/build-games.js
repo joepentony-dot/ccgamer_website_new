@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 const games = require("../games/games.json");
 
 const indexData = games.map((game) => ({
@@ -27,3 +28,32 @@ games.forEach((game) => {
 sitemap += `\n</urlset>`;
 
 fs.writeFileSync("sitemap-games.xml", sitemap);
+
+const isLocalRun = !process.env.CI && !process.env.GITHUB_ACTIONS;
+
+if (isLocalRun) {
+  const template = fs.readFileSync("templates/game-template.html", "utf8");
+
+  const redirectTemplate = fs.readFileSync(
+    "templates/game-redirect-template.html",
+    "utf8"
+  );
+
+  const fillTemplate = (source, game) =>
+    source
+      .replaceAll("[title]", String(game.title ?? ""))
+      .replaceAll("[slug]", String(game.slug ?? ""))
+      .replaceAll("[year]", String(game.year ?? ""))
+      .replaceAll("[publisher]", String(game.publisher ?? ""))
+      .replaceAll("[thumbnail]", String(game.thumbnail ?? ""));
+
+  games.forEach((game) => {
+    const gameDir = path.join("games", game.slug);
+    const gamePagePath = path.join(gameDir, "index.html");
+    const gameRedirectPath = path.join("games", `${game.slug}.html`);
+
+    fs.mkdirSync(gameDir, { recursive: true });
+    fs.writeFileSync(gamePagePath, fillTemplate(template, game));
+    fs.writeFileSync(gameRedirectPath, fillTemplate(redirectTemplate, game));
+  });
+}
