@@ -27445,6 +27445,55 @@
   },
   {
     "system": "C64",
+    "id": "tusker",
+    "slug": "tusker",
+    "title": "Tusker",
+    "sorttitle": "Tusker",
+    "year": 1989,
+    "genres": [
+      "action adventure"
+    ],
+    "collections": [
+      "top picks"
+    ],
+    "videoid": "y-H_XRlwKkA",
+    "thumbnail": "resources/images/thumbnails/all/tusker.jpg",
+    "pdf": "https://drive.google.com/file/d/1LLahvSXr5jQwXNhjAdaNZaYnXpsDVSW-/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/10oqXSJXz7KgbpQIafkbd5YpFqFuVjbMN/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/tusker"
+    ],
+    "description": "Tusker (1989) is a cinematic Commodore 64 action-adventure by System 3 where an explorer searches Africa for the legendary Elephant Graveyard.",
+    "ccg_rating": 9,
+    "ccg_rating_reason": "Cinematic exploration, challenging puzzles and atmospheric SID music create one of the most memorable late-era action-adventures on the Commodore 64",
+    "credits": {
+      "publisher": [
+        "System 3"
+      ],
+      "developer": [],
+      "producer": "",
+      "coder": [
+        "Duncan Meech"
+      ],
+      "graphics": [
+        "Duncan Meech",
+        "Gary Carr",
+        "Hugh Riley"
+      ],
+      "musician": [
+        "Matt Gray"
+      ],
+      "re_releaser": [
+        "Kixx"
+      ]
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "uchi_mata",
     "slug": "uchi-mata",
     "title": "Uchi Mata",
@@ -28721,53 +28770,51 @@
     "_ccg_migrated": false
   },
   {
-  "system": "C64",
-  "id": "x_out",
-  "slug": "x-out",
-  "title": "X-Out",
-  "sorttitle": "X-Out",
-  "year": 1990,
-  "genres": [
-    "shooting"
-  ],
-  "collections": [],
-  "videoid": "ANDFibxD8n0",
-  "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
-
-  "music": [
-    "x-out.mp3"
-  ],
-
-  "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
-  "disk": [
-    "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
-  ],
-  "lemon": [
-    "https://www.lemonamiga.com/game/x-out"
-  ],
-  "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
-  "ccg_rating": 7,
-  "ccg_rating_reason": "",
-  "credits": {
-    "publisher": [
-      "Rainbow Arts"
+    "system": "C64",
+    "id": "x_out",
+    "slug": "x-out",
+    "title": "X-Out",
+    "sorttitle": "X-Out",
+    "year": 1990,
+    "genres": [
+      "shooting"
     ],
-    "producer": "",
-    "coder": [
-      "Heiko Schröder"
+    "collections": [],
+    "videoid": "ANDFibxD8n0",
+    "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
+    "music": [
+      "x-out.mp3"
     ],
-    "graphics": [
-      "Celal Kandemiroglu"
+    "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
     ],
-    "musician": [
-      "Chris Hülsbeck"
+    "lemon": [
+      "https://www.lemonamiga.com/game/x-out"
     ],
-    "re_releaser": [],
-    "developer": ""
-  },
-  "developer": "",
-  "_ccg_enforced": false,
-  "_ccg_migrated": false
+    "description": "X Out is a 1990 Amiga horizontal scrolling shooter from Rainbow Arts known for its shop-based ship customisation system and challenging enemy-heavy level design.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "",
+    "credits": {
+      "publisher": [
+        "Rainbow Arts"
+      ],
+      "producer": "",
+      "coder": [
+        "Heiko Schröder"
+      ],
+      "graphics": [
+        "Celal Kandemiroglu"
+      ],
+      "musician": [
+        "Chris Hülsbeck"
+      ],
+      "re_releaser": [],
+      "developer": ""
+    },
+    "developer": "",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
   },
   {
     "system": "AMIGA",
