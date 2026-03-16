@@ -844,11 +844,28 @@ function getGameSearchData(game) {
         return CCG_SEARCH_CACHE.get(game);
     }
 
+    const publisherValues = Array.isArray(game.publisher)
+        ? game.publisher
+        : (Array.isArray(game?.credits?.publisher)
+            ? game.credits.publisher
+            : (game.publisher ? [game.publisher] : (game?.credits?.publisher ? [game.credits.publisher] : [])));
+    const genreValues = Array.isArray(game.genres) ? game.genres : (game.genre ? [game.genre] : []);
+    const musicValues = Array.isArray(game.music) ? game.music : (game.music ? [game.music] : []);
+    const composerValues = Array.isArray(game.composer)
+        ? game.composer
+        : (game.composer ? [game.composer] : (Array.isArray(game?.credits?.musician)
+            ? game.credits.musician
+            : (game?.credits?.musician ? [game.credits.musician] : [])));
+
     const searchFields = [
         String(game.title || ""),
         String(game.sorttitle || ""),
         String(game.id || ""),
-        String(game.slug || "")
+        String(game.slug || ""),
+        ...publisherValues.map((value) => String(value || "")),
+        ...genreValues.map((value) => String(value || "")),
+        ...musicValues.map((value) => String(value || "")),
+        ...composerValues.map((value) => String(value || ""))
     ].map(normalizeSearchText).filter(Boolean);
 
     const combined = searchFields.join(" ");
