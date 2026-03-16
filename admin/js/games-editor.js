@@ -49,6 +49,7 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
+  lemonUrl: '',
   filenameOnlyMode: true,
   jsonExportMode: 'full',
   notifyMembers: false,
@@ -71,7 +72,11 @@ const state = {
     redirect: ''
   },
   thumbnailCheck: 'idle',
-  musicCheck: 'idle'
+  musicCheck: 'idle',
+  slugManuallyEdited: false,
+  siteSettings: {
+    facebookAppId: ''
+  }
 };
 
 const el = {
@@ -105,6 +110,8 @@ const el = {
   previewFileFolder: document.querySelector('[data-preview-file-folder]'),
   previewGamesJsonPath: document.querySelector('[data-preview-games-json-path]'),
   downloadStatus: document.querySelector('[data-download-status]'),
+  rebuildAllButton: document.querySelector('[data-action="rebuild-all"]'),
+  rebuildStatus: document.querySelector('[data-rebuild-status]'),
   nextButtons: Array.from(document.querySelectorAll('[data-action="next"]')),
   backButtons: Array.from(document.querySelectorAll('[data-action="back"]')),
   downloadButton: document.querySelector('[data-action="download"]'),
@@ -119,7 +126,7 @@ init();
 async function init() {
   hydrateFilenameOnlyModePreference();
   bindEvents();
-  await Promise.all([loadLibrary(), loadTemplates()]);
+  await Promise.all([loadLibrary(), loadTemplates(), loadSiteSettings()]);
   updateDerivedPreviews();
   renderStep();
 }
@@ -155,6 +162,7 @@ function bindEvents() {
 
     if (fieldName === 'slug') {
       state.slugTouched = Boolean(value.trim());
+      state.slugManuallyEdited = true;
       updateStep1UiState();
       updateDerivedPreviews();
       return;
@@ -168,9 +176,7 @@ function bindEvents() {
     }
 
     if (fieldName === 'title') {
-      if (!state.slugTouched) {
-        setFieldValue('slug', slugify(value));
-      }
+      updateSlugAuto(slugify(value));
 
       if (!state.idTouched) {
         setFieldValue('id', idify(value));
@@ -265,6 +271,20 @@ function bindEvents() {
     await loadLibrary(true);
   });
 
+  el.rebuildAllButton?.addEventListener('click', async () => {
+    try {
+      const response = await fetch('/admin/api/rebuild-games', { method: 'POST' });
+      if (response.ok) {
+        setRebuildStatus('Rebuild request sent successfully.', false);
+        return;
+      }
+      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+    } catch (error) {
+      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+    }
+  });
+
+
   el.backButtons.forEach((button) => {
     button.addEventListener('click', () => {
       state.step = Math.max(1, state.step - 1);
@@ -283,6 +303,12 @@ function bindEvents() {
     }
 
     try {
+      const requiredFileCheck = await validateRequiredFiles();
+      if (!requiredFileCheck.ok) {
+        setDownloadStatus(requiredFileCheck.message, true);
+        return;
+      }
+
       const packageData = buildPackageData();
       await downloadZip(packageData);
       setDownloadStatus('Download started successfully.', false);
@@ -323,6 +349,7 @@ function clearDraft() {
   state.draft = { ...EMPTY_DRAFT };
   state.slugTouched = false;
   state.idTouched = false;
+  state.slugManuallyEdited = false;
   state.step = 1;
   el.fields.forEach((field) => {
     if (field.type === 'radio') {
@@ -527,6 +554,10 @@ function validateStep1() {
 
 function validateStep2() {
   const errors = [];
+  if (!String(state.draft.thumbnail || '').trim()) {
+    errors.push('Thumbnail is required.');
+  }
+
   parseLines(state.draft.disk).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid disk URL: ${url}`);
   });
@@ -535,7 +566,32 @@ function validateStep2() {
     if (!isValidUrl(url)) errors.push(`Invalid external link URL: ${url}`);
   });
 
+  const lemonUrl = String(state.draft.lemonUrl || '').trim();
+  if (lemonUrl && !isValidUrl(lemonUrl)) errors.push('Lemon64 URL must be a valid URL.');
+
   return errors;
+}
+
+async function fileExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch (error) {
+    return false;
+  }
+}
+
+async function validateRequiredFiles() {
+  const slug = String(state.draft.slug || '').trim();
+  if (!slug) return { ok: false, message: 'Slug is required before file validation.' };
+
+  const thumbnailUrl = `/resources/images/thumbnails/all/${slug}.jpg`;
+  const thumbnailOk = await fileExists(thumbnailUrl);
+  if (!thumbnailOk) {
+    return { ok: false, message: `Missing required thumbnail: ${thumbnailUrl}` };
+  }
+
+  return { ok: true };
 }
 
 function validateStep2Warnings() {
@@ -640,7 +696,7 @@ function buildPackageData() {
     music: parseCommaList(state.draft.music),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
-    lemon: parseLines(state.draft.externalLinks),
+    lemon: buildLemonLinks(state.draft.lemonUrl, state.draft.externalLinks),
     description: state.draft.description.trim(),
     ccg_rating: Number(state.draft.ccg_rating),
     ccg_rating_reason: state.draft.ccg_rating_reason.trim(),
@@ -648,6 +704,8 @@ function buildPackageData() {
     _ccg_enforced: false,
     _ccg_migrated: false
   };
+
+  entryLemonDeduplicate(gameEntry);
 
   if (!Array.isArray(gameEntry.music) || gameEntry.music.length === 0) {
     delete gameEntry.music;
@@ -741,9 +799,105 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     PLATFORM: cleanForHtml(system),
     SLUG: cleanForHtml(slug),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
-    DESCRIPTION: cleanForHtml(seoDescription)
+    THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
+    DESCRIPTION: cleanForHtml(seoDescription),
+    FB_APP_ID_META: buildFacebookAppIdMeta(state.siteSettings.facebookAppId)
   };
 }
+
+
+function extractFilename(pathValue) {
+  const value = String(pathValue || '').trim().replace(/\?.*$/, '');
+  if (!value) return 'default.jpg';
+  const segments = value.split('/').filter(Boolean);
+  return segments[segments.length - 1] || 'default.jpg';
+}
+
+function entryLemonDeduplicate(entry) {
+  if (!entry || !Array.isArray(entry.lemon)) return;
+  entry.lemon = [...new Set(entry.lemon)];
+}
+
+function buildLemonLinks(lemonUrl, externalLinks) {
+  const links = [];
+  const lemon = String(lemonUrl || '').trim();
+  if (lemon) links.push(lemon);
+  parseLines(externalLinks).forEach((link) => {
+    if (!links.includes(link)) links.push(link);
+  });
+  return [...new Set(links)];
+}
+
+async function fetchLemonData() {
+  const url = String(state.draft.lemonUrl || '').trim();
+
+  if (!url.includes('lemon64.com')) {
+    window.alert('Please enter a valid Lemon64 URL.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    const data = await response.json();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.contents || '', 'text/html');
+
+    const title =
+      safeText(doc.querySelector('h1')) ||
+      safeText(doc.querySelector('.game-title'));
+    const year = safeText(doc.querySelector('.release-year')).replace(/\D/g, '');
+    const publisher =
+      safeText(doc.querySelector("a[href*='/publisher/']")) ||
+      safeText(doc.querySelector('.gamepublisher'));
+    const coder =
+      safeText(doc.querySelector("a[href*='/person/']")) ||
+      safeText(doc.querySelector('.gamecoder'));
+    const musician = readLemonText(doc, ["a[href*='/musician/']", "a[href*='/musician']", '.musician a']);
+    const graphics = readLemonText(doc, ['.graphics a', "a[href*='/graphics/']"]);
+    const genre = readLemonText(doc, ["a[href*='/genre/']", '.genre a']);
+
+    if (title) setFieldValue('title', title);
+    if (year) setFieldValue('year', year);
+    if (publisher) setFieldValue('creditsPublisher', publisher);
+    if (coder) setFieldValue('creditsCoder', coder);
+    if (musician) setFieldValue('creditsMusic', musician);
+    if (graphics) setFieldValue('creditsGraphics', graphics);
+
+    if (genre) {
+      const normalizedGenre = mapLegacyCategoryValue(genre, 'genres');
+      if (normalizedGenre && state.genres.includes(normalizedGenre)) {
+        state.draft.genres = [normalizedGenre];
+        markOptionChecked('genres', state.draft.genres);
+      }
+    }
+
+    if (title) updateSlugAuto(slugify(title));
+    if (!state.idTouched && title) setFieldValue('id', idify(title));
+
+    updateStep1UiState();
+    updateDerivedPreviews();
+  } catch (error) {
+    console.error(error);
+    window.alert('Could not fetch Lemon64 data.');
+  }
+}
+
+function safeText(el) {
+  return el ? el.innerText.trim() : '';
+}
+
+function readLemonText(doc, selectors) {
+  for (const selector of selectors) {
+    const node = doc.querySelector(selector);
+    if (node && node.textContent) {
+      const value = node.textContent.trim();
+      if (value) return value;
+    }
+  }
+  return '';
+}
+
+window.fetchLemonData = fetchLemonData;
 
 function renderTemplate(template, vars) {
   let output = String(template || '');
@@ -916,6 +1070,31 @@ function markOptionChecked(optionType, values) {
   });
 }
 
+
+function updateSlugAuto(newSlug) {
+  if (!state.slugManuallyEdited) {
+    setFieldValue('slug', newSlug);
+    state.slugTouched = Boolean(String(newSlug || '').trim());
+  }
+}
+
+function buildFacebookAppIdMeta(appId) {
+  const value = String(appId || '').trim();
+  if (!value) return '';
+  return `<meta property="fb:app_id" content="${cleanForHtml(value)}">`;
+}
+
+async function loadSiteSettings() {
+  try {
+    const response = await fetch('/admin/site-settings.json', { cache: 'no-store' });
+    if (!response.ok) return;
+    const json = await response.json();
+    state.siteSettings.facebookAppId = String(json.facebookAppId || '').trim();
+  } catch (error) {
+    state.siteSettings.facebookAppId = '';
+  }
+}
+
 function setFieldValue(fieldName, value) {
   state.draft[fieldName] = value;
   const field = document.querySelector(`[data-field="${fieldName}"]`);
@@ -998,6 +1177,12 @@ function parseLines(value) {
     .split(/\r?\n|,/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function setRebuildStatus(message, isError = false) {
+  if (!el.rebuildStatus) return;
+  el.rebuildStatus.textContent = message;
+  el.rebuildStatus.className = `status ${isError ? 'error' : 'ok'}`;
 }
 
 function parseCommaList(value) {

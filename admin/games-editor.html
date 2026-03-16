@@ -65,8 +65,10 @@
       <p>4-step wizard: add one game entry with locked templates, validate it, and download one deployment ZIP.</p>
       <p>
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-library">Fetch live games.json</button>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-action="rebuild-all">Rebuild All Game Pages</button>
       </p>
       <p class="status" data-top-status>Loading existing games…</p>
+      <p class="status" data-rebuild-status></p>
     </section>
 
     <nav class="stepper" aria-label="Wizard steps">
@@ -79,7 +81,7 @@
     <section class="builder-card" data-step="1">
       <h2>Step 1 — Game Details</h2>
       <div class="form-grid">
-        <label>Title *<input data-field="title" required /></label>
+        <label>Title *<input id="title" data-field="title" required /></label>
         <label>System *
           <select data-field="system" required>
             <option value="">Select</option>
@@ -87,9 +89,16 @@
             <option value="AMIGA">AMIGA</option>
           </select>
         </label>
-        <label>Year *<input data-field="year" inputmode="numeric" placeholder="1987" required /></label>
+        <label>Year *<input id="year" data-field="year" inputmode="numeric" placeholder="1987" required /></label>
         <label>Slug *<input data-field="slug" required /></label>
         <label>ID *<input data-field="id" required /></label>
+        <div class="full">
+          <label for="lemonUrl">Lemon64 URL</label>
+          <div class="actions">
+            <input type="text" id="lemonUrl" data-field="lemonUrl" placeholder="https://www.lemon64.com/game/tusker" />
+            <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-lemon" onclick="fetchLemonData()">Auto Fill</button>
+          </div>
+        </div>
         <div class="full">
           <label>Genres *</label>
           <div class="chip-panel" data-genre-options></div>
@@ -124,11 +133,11 @@
         <div class="full">
           <h3>Credits (optional)</h3>
         </div>
-        <label>Publisher<input data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
+        <label>Publisher<input id="publisher" data-field="creditsPublisher" placeholder="Name 1, Name 2" /></label>
         <label>Developer<input data-field="creditsDeveloper" placeholder="Studio 1, Studio 2" /></label>
-        <label>Programmer(s)<input data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
-        <label>Graphics<input data-field="creditsGraphics" placeholder="Name 1, Name 2" /></label>
-        <label>Music<input data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
+        <label>Programmer(s)<input id="coder" data-field="creditsCoder" placeholder="Name 1, Name 2" /></label>
+        <label>Graphics<input id="graphics" data-field="creditsGraphics" placeholder="Name 1, Name 2" /></label>
+        <label>Music<input id="musician" data-field="creditsMusic" placeholder="Name 1, Name 2" /></label>
         <label>Re-release / Compilation notes<input data-field="creditsReReleaser" placeholder="Label 1, Label 2" /></label>
       </div>
       <div class="hint">Slug and ID auto-sync from title until manually edited.</div>

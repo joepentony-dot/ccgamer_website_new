@@ -7,6 +7,8 @@ const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesDir = path.join(repoRoot, "games");
+const gamesJsonPath = path.join(gamesDir, "games.json");
+const thumbnailsDir = path.join(repoRoot, "resources", "images", "thumbnails", "all");
 
 function slugify(text) {
     return String(text || "")
@@ -18,6 +20,10 @@ function slugify(text) {
 
 function toGameId(slug) {
     return String(slug || "").replace(/-/g, "_");
+}
+
+function stripHtml(text) {
+    return String(text || "").replace(/<[^>]*>/g, "").trim();
 }
 
 function escapeHtml(text) {
@@ -85,6 +91,51 @@ function validateForGeneration(game, slug, gamesBySlug) {
         canonicalUrl,
         ogImage
     };
+}
+
+function validateGamesForGeneration(games) {
+    const errors = [];
+    const slugMap = new Map();
+
+    if (!Array.isArray(games)) {
+        errors.push("games.json must contain a top-level array.");
+        return errors;
+    }
+
+    for (let index = 0; index < games.length; index += 1) {
+        const game = games[index] || {};
+        const title = stripHtml(game.title || "");
+        const slug = normalizeSlug(game);
+        const thumbnail = getThumbnailFilename(game, slug);
+
+        if (!slug) {
+            errors.push(`Entry ${index + 1} (${title || "untitled"}) is missing a valid slug.`);
+        } else {
+            if (!slugMap.has(slug)) slugMap.set(slug, []);
+            slugMap.get(slug).push({ index: index + 1, title });
+        }
+
+        if (!thumbnail) {
+            errors.push(`Entry ${index + 1} (${title || slug || "unknown"}) is missing thumbnail.`);
+            continue;
+        }
+
+        const thumbnailPath = path.join(thumbnailsDir, thumbnail);
+        if (!fs.existsSync(thumbnailPath)) {
+            errors.push(`Missing thumbnail for ${title || slug || "unknown"}: resources/images/thumbnails/all/${thumbnail}`);
+        }
+    }
+
+    for (const [slug, entries] of slugMap.entries()) {
+        if (entries.length > 1) {
+            const detail = entries
+                .map((entry) => `#${entry.index}${entry.title ? ` (${entry.title})` : ""}`)
+                .join(", ");
+            errors.push(`Duplicate slug "${slug}" found in entries: ${detail}`);
+        }
+    }
+
+    return errors;
 }
 
 function buildRedirectStubHtml({ slug, title }) {
@@ -293,6 +344,15 @@ function main() {
         games = JSON.parse(fs.readFileSync(gamesJsonPath, "utf8"));
     } catch (err) {
         console.error(`[ERROR] Failed to read games.json: ${err.message}`);
+        process.exit(1);
+    }
+
+    const preflightErrors = validateGamesForGeneration(games);
+    if (preflightErrors.length > 0) {
+        console.error("[ERROR] Generation aborted. games.json validation failed:");
+        for (const error of preflightErrors) {
+            console.error(` - ${error}`);
+        }
         process.exit(1);
     }
 
