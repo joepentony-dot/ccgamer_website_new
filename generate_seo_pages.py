@@ -67,6 +67,99 @@ def resolve_slug(game: Dict[str, Any]) -> str:
     return slugify(title)
 
 
+
+
+def split_tokens(value: Any) -> List[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if value is None:
+        return []
+    return [item.strip() for item in str(value).split(",") if item.strip()]
+
+
+def first_non_empty(*values: Any) -> str:
+    for value in values:
+        if isinstance(value, list):
+            for item in value:
+                text = str(item).strip()
+                if text:
+                    return text
+            continue
+        text = str(value or "").strip()
+        if text:
+            return text
+    return ""
+
+
+def build_video_game_schema(
+    *,
+    game: Dict[str, Any],
+    title: str,
+    description: str,
+    year: str,
+    platform: str,
+    schema_image: str,
+    schema_url: str,
+    publisher: str,
+) -> Dict[str, Any]:
+    schema: Dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": title,
+        "description": description,
+        "url": schema_url,
+    }
+
+    if str(year).strip():
+        schema["datePublished"] = str(year).strip()
+    if str(platform).strip():
+        schema["gamePlatform"] = str(platform).strip()
+
+    genres = split_tokens(game.get("genres"))
+    if genres:
+        schema["genre"] = genres[0] if len(genres) == 1 else genres
+
+    publisher_name = first_non_empty(game.get("credits", {}).get("publisher") if isinstance(game.get("credits"), dict) else "", game.get("publisher"), publisher)
+    if publisher_name:
+        org = {"@type": "Organization", "name": publisher_name}
+        schema["publisher"] = org
+        schema["author"] = org
+
+    if str(schema_image).strip():
+        schema["image"] = schema_image
+
+    raw_rating = game.get("ccg_rating")
+    try:
+        rating_value = float(raw_rating)
+    except (TypeError, ValueError):
+        rating_value = None
+
+    if rating_value is not None:
+        rating_text = str(int(rating_value)) if rating_value.is_integer() else str(rating_value)
+        schema["aggregateRating"] = {
+            "@type": "AggregateRating",
+            "ratingValue": rating_text,
+            "bestRating": "10",
+            "ratingCount": "1",
+        }
+
+    review_text = str(game.get("ccg_rating_reason") or "").strip()
+    if review_text:
+        review: Dict[str, Any] = {
+            "@type": "Review",
+            "reviewBody": review_text,
+        }
+        if rating_value is not None:
+            rating_text = str(int(rating_value)) if rating_value.is_integer() else str(rating_value)
+            review["reviewRating"] = {
+                "@type": "Rating",
+                "ratingValue": rating_text,
+                "bestRating": "10",
+            }
+        schema["review"] = review
+
+    return schema
+
 def seo_template(
     *,
     title: str,
@@ -85,6 +178,7 @@ def seo_template(
     interactive_href: str,
     browse_href: str,
     display_slug: str,
+    schema_json: str,
 ) -> str:
     """SEO landing page that immediately updates the visible URL without redirect."""
     safe_title = html.escape(title)
@@ -95,6 +189,7 @@ def seo_template(
     safe_thumb_alt = html.escape(thumb_alt)
     safe_interactive_href = html.escape(interactive_href, quote=True)
     safe_browse_href = html.escape(browse_href, quote=True)
+    schema_json = "\n".join(["    " + line for line in schema_json.splitlines()])
     return f"""<!DOCTYPE html>
 <html lang=\"en\">
 <head>
@@ -132,17 +227,7 @@ def seo_template(
     <link rel=\"stylesheet\" href=\"../../resources/css/ccg-footer.css\" />
 
     <script type=\"application/ld+json\">
-    {{
-        \"@context\": \"https://schema.org\",
-        \"@type\": \"VideoGame\",
-        \"name\": \"{safe_title}\",
-        \"description\": \"{safe_description}\",
-        \"datePublished\": \"{safe_year}\",
-        \"gamePlatform\": \"{safe_platform}\",
-        \"publisher\": \"{safe_publisher}\",
-        \"image\": \"{schema_image}\",
-        \"url\": \"{schema_url}\"
-    }}
+{schema_json}
     </script>
 </head>
 <body class=\"ccg-body\" data-ccg-mode=\"{mode}\" data-mode=\"{mode}\">
@@ -291,24 +376,36 @@ def main() -> int:
 
         desc = make_description(title)
         page_url = f"{domain}/games/{slug}/"
+        thumb_abs = to_abs_url(domain, thumb_rel)
+        schema_data = build_video_game_schema(
+            game=game,
+            title=title,
+            description=desc,
+            year=year,
+            platform=platform,
+            schema_image=thumb_abs,
+            schema_url=page_url,
+            publisher=publisher,
+        )
 
         page_html = seo_template(
             title=title,
             description=desc,
             canonical_url=page_url,
             og_url=page_url,
-            og_image=to_abs_url(domain, thumb_rel),
+            og_image=thumb_abs,
             year=year,
             platform=platform,
             publisher=publisher,
             schema_url=page_url,
-            schema_image=to_abs_url(domain, thumb_rel),
+            schema_image=thumb_abs,
             thumb_src_rel=f"../{thumb_rel}",
             thumb_alt=f"{title} cover",
             mode=mode,
             interactive_href=f"/games/{slug}/",
             browse_href="/games/index.html",
             display_slug=slug,
+            schema_json=json.dumps(schema_data, ensure_ascii=False, indent=4),
         )
 
         page_file = root / "games" / slug / "index.html"

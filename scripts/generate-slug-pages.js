@@ -111,20 +111,95 @@ window.location.replace("${canonicalPath}");
 `;
 }
 
-function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
-    const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
 
-    const schemaData = {
+function toTokenList(value) {
+    if (Array.isArray(value)) {
+        return value.map(item => String(item || "").trim()).filter(Boolean);
+    }
+    return String(value || "")
+        .split(",")
+        .map(item => item.trim())
+        .filter(Boolean);
+}
+
+function firstNonEmpty(values) {
+    for (const value of values) {
+        const text = String(value || "").trim();
+        if (text) return text;
+    }
+    return "";
+}
+
+function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage, year, platformLong, publisher }) {
+    const schema = {
         "@context": "https://schema.org",
         "@type": "VideoGame",
         name: title,
         description,
-        datePublished: String(year),
-        gamePlatform: platformShort,
-        publisher,
-        image: ogImage,
         url: canonicalUrl
     };
+
+    if (String(year || "").trim()) schema.datePublished = String(year).trim();
+    if (String(platformLong || "").trim()) schema.gamePlatform = String(platformLong).trim();
+
+    const genres = toTokenList(game?.genres);
+    if (genres.length === 1) schema.genre = genres[0];
+    if (genres.length > 1) schema.genre = genres;
+
+    const publisherName = firstNonEmpty([
+        ...(Array.isArray(game?.credits?.publisher) ? game.credits.publisher : [game?.credits?.publisher]),
+        game?.publisher,
+        publisher
+    ]);
+    if (publisherName) {
+        schema.publisher = { "@type": "Organization", name: publisherName };
+        schema.author = { "@type": "Organization", name: publisherName };
+    }
+
+    if (String(ogImage || "").trim()) schema.image = ogImage;
+
+    const ratingValue = Number(game?.ccg_rating);
+    if (Number.isFinite(ratingValue)) {
+        schema.aggregateRating = {
+            "@type": "AggregateRating",
+            ratingValue: String(ratingValue),
+            bestRating: "10",
+            ratingCount: "1"
+        };
+    }
+
+    const ratingReason = String(game?.ccg_rating_reason || "").trim();
+    if (ratingReason) {
+        schema.review = {
+            "@type": "Review",
+            reviewBody: ratingReason,
+            reviewRating: Number.isFinite(ratingValue)
+                ? {
+                    "@type": "Rating",
+                    ratingValue: String(ratingValue),
+                    bestRating: "10"
+                }
+                : undefined
+        };
+        if (!schema.review.reviewRating) delete schema.review.reviewRating;
+    }
+
+    return schema;
+}
+
+function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
+    const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
+
+    const schemaData = buildVideoGameSchema({
+        game,
+        title,
+        description,
+        canonicalUrl,
+        ogImage,
+        year,
+        platformLong,
+        publisher
+    });
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -221,12 +296,6 @@ function main() {
         process.exit(1);
     }
 
-function generatePageFiles(game, templates, options = {}) {
-    const normalized = validateGame(game);
-    if (normalized.issues.length > 0) {
-        throw new Error(`${normalized.slug || game.slug || "unknown"}: ${normalized.issues.join(", ")}`);
-    }
-
     const gamesBySlug = new Map();
     for (const game of games) {
         const slug = normalizeSlug(game);
@@ -296,7 +365,10 @@ function generatePageFiles(game, templates, options = {}) {
         }
     }
 
-    console.log(`\nSummary:\nPlanned slugs: ${planned.length}\nFiles created: ${created}`);
+    console.log(`
+Summary:
+Planned slugs: ${planned.length}
+Files created: ${created}`);
 }
 
 main();
