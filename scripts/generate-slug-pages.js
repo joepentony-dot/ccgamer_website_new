@@ -6,7 +6,6 @@ const path = require("path");
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
 
 const repoRoot = path.resolve(__dirname, "..");
-const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const gamesDir = path.join(repoRoot, "games");
 
 function slugify(text) {
@@ -17,10 +16,8 @@ function slugify(text) {
         .replace(/^-+|-+$/g, "");
 }
 
-function stripHtml(text) {
-    return String(text || "")
-        .replace(/<[^>]*>/g, "")
-        .trim();
+function toGameId(slug) {
+    return String(slug || "").replace(/-/g, "_");
 }
 
 function escapeHtml(text) {
@@ -224,9 +221,10 @@ function main() {
         process.exit(1);
     }
 
-    if (!Array.isArray(games)) {
-        console.error("[ERROR] games.json is not an array.");
-        process.exit(1);
+function generatePageFiles(game, templates, options = {}) {
+    const normalized = validateGame(game);
+    if (normalized.issues.length > 0) {
+        throw new Error(`${normalized.slug || game.slug || "unknown"}: ${normalized.issues.join(", ")}`);
     }
 
     const gamesBySlug = new Map();
