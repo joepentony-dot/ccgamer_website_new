@@ -1,0 +1,6769 @@
+[
+  {
+    "slug": "20-tons",
+    "title": "20 Tons",
+    "sorttitle": "20 Tons",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "720-degrees",
+    "title": "720 Degrees",
+    "sorttitle": "720 Degrees",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "sports"
+    ]
+  },
+  {
+    "slug": "1942",
+    "title": "1942",
+    "sorttitle": "1942",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "accolades-comics",
+    "title": "Accolade's Comics",
+    "sorttitle": "Accolade's Comics",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "ace-of-aces",
+    "title": "Ace Of Aces",
+    "sorttitle": "Ace Of Aces",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "action-biker",
+    "title": "Action Biker",
+    "sorttitle": "Action Biker",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "action-service",
+    "title": "Action Service",
+    "sorttitle": "Action Service",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "after-burner",
+    "title": "After Burner",
+    "sorttitle": "After Burner",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "agony",
+    "title": "Agony",
+    "sorttitle": "Agony",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "airborne-ranger",
+    "title": "Airborne Ranger",
+    "sorttitle": "Airborne Ranger",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "airwolf",
+    "title": "Airwolf",
+    "sorttitle": "Airwolf",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "aladdin",
+    "title": "Aladdin",
+    "sorttitle": "Aladdin",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "alcatraz",
+    "title": "Alcatraz",
+    "sorttitle": "Alcatraz",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "alcazar-the-forgotten-fortress",
+    "title": "Alcazar: The Forgotten Fortress",
+    "sorttitle": "Alcazar: The Forgotten Fortress",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "alien",
+    "title": "Alien",
+    "sorttitle": "Alien",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "horror",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "alien-breed",
+    "title": "Alien Breed",
+    "sorttitle": "Alien Breed",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "horror",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "aliens-the-computer-game",
+    "title": "Aliens: The Computer Game",
+    "sorttitle": "Aliens: The Computer Game",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "alleykat",
+    "title": "Alleykat",
+    "sorttitle": "Alleykat",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "alter-ego",
+    "title": "Alter Ego",
+    "sorttitle": "Alter Ego",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "american-3d-pool",
+    "title": "American 3D Pool",
+    "sorttitle": "American 3D Pool",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "android-2",
+    "title": "Android 2",
+    "sorttitle": "Android 2",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "android-nim",
+    "title": "Android Nim",
+    "sorttitle": "Android Nim",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle",
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "andy-capp",
+    "title": "Andy Capp",
+    "sorttitle": "Andy Capp",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "another-world",
+    "title": "Another World",
+    "sorttitle": "Another World",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "ant-attack",
+    "title": "Ant Attack",
+    "sorttitle": "Ant Attack",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "apocalypse",
+    "title": "Apocalypse",
+    "sorttitle": "Apocalypse",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "apollo-18-mission-to-the-moon",
+    "title": "Apollo 18: Mission To The Moon",
+    "sorttitle": "Apollo 18: Mission To The Moon",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "arachnophobia",
+    "title": "Arachnophobia",
+    "sorttitle": "Arachnophobia",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "arcade-classics",
+    "title": "Arcade Classics",
+    "sorttitle": "Arcade Classics",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "arcade-flight-simulator",
+    "title": "Arcade Flight Simulator",
+    "sorttitle": "Arcade Flight Simulator",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "arcade-pool",
+    "title": "Arcade Pool",
+    "sorttitle": "Arcade Pool",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "sports",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "archon-the-light-and-the-dark",
+    "title": "Archon: The Light And The Dark",
+    "sorttitle": "Archon",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "arctic-shipwreck",
+    "title": "Arctic Shipwreck",
+    "sorttitle": "Arctic Shipwreck",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "arkanoid",
+    "title": "Arkanoid",
+    "sorttitle": "Arkanoid",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "army-moves",
+    "title": "Army Moves",
+    "sorttitle": "Army Moves",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "arnie",
+    "title": "Arnie",
+    "sorttitle": "Arnie",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "asterix-and-the-magic-cauldron",
+    "title": "Asterix And The Magic Cauldron",
+    "sorttitle": "Asterix And The Magic Cauldron",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "attack-of-the-mutant-camels",
+    "title": "Attack Of The Mutant Camels",
+    "sorttitle": "Attack Of The Mutant Camels",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "auf-wiedersehen-monty",
+    "title": "Auf Wiedersehen Monty",
+    "sorttitle": "Auf Wiedersehen Monty",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "aussie-games",
+    "title": "Aussie Games",
+    "sorttitle": "Aussie Games",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "automania",
+    "title": "Automania",
+    "sorttitle": "Automania",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "aztec-challenge",
+    "title": "Aztec Challenge",
+    "sorttitle": "Aztec Challenge",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "back-to-reality",
+    "title": "Back To Reality",
+    "sorttitle": "Back To Reality",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "back-to-the-future",
+    "title": "Back To The Future",
+    "sorttitle": "Back To The Future",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "bad-dudes-vs-dragonninja",
+    "title": "Bad Dudes Vs Dragonninja",
+    "sorttitle": "Bad Dudes Vs Dragonninja",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "badlands",
+    "title": "Badlands",
+    "sorttitle": "Badlands",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "bangkok-knights",
+    "title": "Bangkok Knights",
+    "sorttitle": "Bangkok Knights",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "barbarian-the-ultimate-warrior",
+    "title": "Barbarian: The Ultimate Warrior",
+    "sorttitle": "Barbarian",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "barbarian-2-the-dungeon-of-drax",
+    "title": "Barbarian II: The Dungeon Of Drax",
+    "sorttitle": "Barbarian 2",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "barry-mcguigan-world-championship-boxing",
+    "title": "Barry Mcguigan World Championship Boxing",
+    "sorttitle": "Barry Mcguigan World Championship Boxing",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "batman-the-caped-crusader",
+    "title": "Batman: The Caped Crusader",
+    "sorttitle": "Batman: The Caped Crusader",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "batman-the-movie",
+    "title": "Batman: The Movie",
+    "sorttitle": "Batman: The Movie",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "battle-chess",
+    "title": "Battle Chess",
+    "sorttitle": "Battle Chess",
+    "system": "AMIGA",
+    "year": 1988,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "bc-bill",
+    "title": "B.C. Bill",
+    "sorttitle": "BC Bill",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "bcs-quest-for-tires",
+    "title": "B.C.'S Quest For Tires",
+    "sorttitle": "BC Quest",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "bc2-grogs-revenge",
+    "title": "B.C. II: Grog's Revenge",
+    "sorttitle": "BC Quest 2",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "beach-head",
+    "title": "Beach-Head",
+    "sorttitle": "Beach-Head",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "beach-head-2",
+    "title": "Beach-Head II",
+    "sorttitle": "Beach-Head II",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "below-the-root",
+    "title": "Below The Root",
+    "sorttitle": "Below The Root",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "beneath-a-steel-sky",
+    "title": "Beneath A Steel Sky",
+    "sorttitle": "Beneath A Steel Sky",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "benefactor",
+    "title": "Benefactor",
+    "sorttitle": "Benefactor",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "beyond-the-forbidden-forest",
+    "title": "Beyond The Forbidden Forest",
+    "sorttitle": "Beyond The Forbidden Forest",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "big-trouble-in-little-china",
+    "title": "Big Trouble In Little China",
+    "sorttitle": "Big Trouble In Little China",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "bionic-commando",
+    "title": "Bionic Commando",
+    "sorttitle": "Bionic Commando",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "bionic-granny",
+    "title": "Bionic Granny",
+    "sorttitle": "Bionic Granny",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "bismark",
+    "title": "Bismark",
+    "sorttitle": "Bismark",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "black-hawk",
+    "title": "Black Hawk",
+    "sorttitle": "Black Hawk",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "black-knight",
+    "title": "Black Knight",
+    "sorttitle": "Black Knight",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "black-tiger",
+    "title": "Black Tiger",
+    "sorttitle": "Black Tiger",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "blackwyche",
+    "title": "Blackwyche",
+    "sorttitle": "Blackwyche",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "blade-runner",
+    "title": "Blade Runner",
+    "sorttitle": "Blade Runner",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "blades-of-steel",
+    "title": "Blades Of Steel",
+    "sorttitle": "Blades Of Steel",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "blagger",
+    "title": "Blagger",
+    "sorttitle": "Blagger",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "blagger-goes-to-hollywood",
+    "title": "Blagger Goes To Hollywood",
+    "sorttitle": "Blagger Goes To Hollywood",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "blockbusters",
+    "title": "Blockbusters",
+    "sorttitle": "Blockbusters",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "blood-n-guts",
+    "title": "Blood 'N Guts",
+    "sorttitle": "Blood 'N Guts",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "bloodwych",
+    "title": "Bloodwych",
+    "sorttitle": "Bloodwych",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "blue-max",
+    "title": "Blue Max",
+    "sorttitle": "Blue Max",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "bmx-kidz",
+    "title": "BMX Kidz",
+    "sorttitle": "Bmx Kidz",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "racing",
+      "sports"
+    ]
+  },
+  {
+    "slug": "bmx-simulator",
+    "title": "BMX Simulator",
+    "sorttitle": "Bmx Simulator",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "bocce",
+    "title": "Bocce",
+    "sorttitle": "Bocce",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "bomb-jack",
+    "title": "Bomb Jack",
+    "sorttitle": "Bomb Jack",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "booty",
+    "title": "Booty",
+    "sorttitle": "Booty",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "boulder-dash",
+    "title": "Boulder Dash",
+    "sorttitle": "Boulder Dash",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "bounces",
+    "title": "Bounces",
+    "sorttitle": "Bounces",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "bounder",
+    "title": "Bounder",
+    "sorttitle": "Bounder",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "bozos-night-out",
+    "title": "Bozo's Night Out",
+    "sorttitle": "Bozo's Night Out",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "breakdance",
+    "title": "Breakdance",
+    "sorttitle": "Breakdance",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "breakthru",
+    "title": "Breakthru",
+    "sorttitle": "Breakthru",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "brian-bloodaxe",
+    "title": "Brian Bloodaxe",
+    "sorttitle": "Brian Bloodaxe",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "brian-jacks-superstar-challenge",
+    "title": "Brian Jacks Superstar Challenge",
+    "sorttitle": "Brian Jacks Superstar Challenge",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "bruce-lee",
+    "title": "Bruce Lee",
+    "sorttitle": "Bruce Lee",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "fighting",
+      "platform"
+    ]
+  },
+  {
+    "slug": "brutal-sports-football",
+    "title": "Brutal Sports Football",
+    "sorttitle": "Brutal Sports Football",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "bubble-bobble",
+    "title": "Bubble Bobble",
+    "sorttitle": "Bubble Bobble",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "buggy-boy",
+    "title": "Buggy Boy",
+    "sorttitle": "Buggy Boy",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "bullys-sporting-darts",
+    "title": "Bully's Sporting Darts",
+    "sorttitle": "Bully's Sporting Darts",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "by-fair-means-or-foul",
+    "title": "By Fair Means Or Foul",
+    "sorttitle": "By Fair Means Or Foul",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "cabal",
+    "title": "Cabal",
+    "sorttitle": "Cabal",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "cadaver",
+    "title": "Cadaver",
+    "sorttitle": "Cadaver",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "california-games",
+    "title": "California Games",
+    "sorttitle": "California Games",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "cannon-fodder",
+    "title": "Cannon Fodder",
+    "sorttitle": "Cannon Fodder",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "cannon-fodder-2",
+    "title": "Cannon Fodder 2",
+    "sorttitle": "Cannon Fodder 2",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-captive",
+    "title": "The Captive",
+    "sorttitle": "Captive",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "card-sharks",
+    "title": "Card Sharks",
+    "sorttitle": "Card Sharks",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "casino"
+    ]
+  },
+  {
+    "slug": "castle-master",
+    "title": "Castle Master",
+    "sorttitle": "Castle Master",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-castles-of-dr-creep",
+    "title": "The Castles Of Dr. Creep",
+    "sorttitle": "Castles Of Dr. Creep",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "cauldron",
+    "title": "Cauldron",
+    "sorttitle": "Cauldron",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "cauldron-2-the-pumpkin-strikes-back",
+    "title": "Cauldron II: The Pumpkin Strikes Back",
+    "sorttitle": "Cauldron II: The Pumpkin Strikes Back",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "cave-of-the-word-wizard",
+    "title": "Cave Of The Word Wizard",
+    "sorttitle": "Cave Of The Word Wizard",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "cavelon",
+    "title": "Cavelon",
+    "sorttitle": "Cavelon",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "caveman-ugh-lympics",
+    "title": "Caveman Ugh-Lympics",
+    "sorttitle": "Caveman Ugh-Lympics",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "celtic-legends",
+    "title": "Celtic Legends",
+    "sorttitle": "Celtic Legends",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "championship-wrestling",
+    "title": "Championship Wrestling",
+    "sorttitle": "Championship Wrestling",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-chaos-engine",
+    "title": "The Chaos Engine",
+    "sorttitle": "Chaos Engine",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "chase-h-q",
+    "title": "Chase H.Q.",
+    "sorttitle": "Chase H.Q.",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "chiller",
+    "title": "Chiller",
+    "sorttitle": "Chiller",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "chimera",
+    "title": "Chimera",
+    "sorttitle": "Chimera",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "china-miner",
+    "title": "China Miner",
+    "sorttitle": "China Miner",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "chomp",
+    "title": "Chomp!",
+    "sorttitle": "Chomp!",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "choplifter",
+    "title": "Choplifter",
+    "sorttitle": "Choplifter",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "chopper",
+    "title": "Chopper",
+    "sorttitle": "Chopper",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "chuckie-egg",
+    "title": "Chuckie Egg",
+    "sorttitle": "Chuckie Egg",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "civilization",
+    "title": "Civilization",
+    "sorttitle": "Civilization",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "cliff-hanger",
+    "title": "Cliff Hanger",
+    "sorttitle": "Cliff Hanger",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "cobra",
+    "title": "Cobra",
+    "sorttitle": "Cobra",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "combat-school",
+    "title": "Combat School",
+    "sorttitle": "Combat School",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "sports"
+    ]
+  },
+  {
+    "slug": "commando",
+    "title": "Commando",
+    "sorttitle": "Commando",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "congo-bongo",
+    "title": "Congo Bongo",
+    "sorttitle": "Congo Bongo",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "cops-n-robbers",
+    "title": "Cops 'N' Robbers",
+    "sorttitle": "Cops 'N' Robbers",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "cosmic-convoy",
+    "title": "Cosmic Convoy",
+    "sorttitle": "Cosmic Convoy",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "cosmic-tunnels",
+    "title": "Cosmic Tunnels",
+    "sorttitle": "Cosmic Tunnels",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "countdown-to-meltdown",
+    "title": "Countdown To Meltdown",
+    "sorttitle": "Countdown To Meltdown",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "crazy-comets",
+    "title": "Crazy Comets",
+    "sorttitle": "Crazy Comets",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "creatures",
+    "title": "Creatures",
+    "sorttitle": "Creatures",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "creatures-2-torture-trouble",
+    "title": "Creatures 2: Torture Trouble",
+    "sorttitle": "Creatures 2",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "crossfire",
+    "title": "Crossfire",
+    "sorttitle": "Crossfire",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "crystal-castles",
+    "title": "Crystal Castles",
+    "sorttitle": "Crystal Castles",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "crystal-dragon",
+    "title": "Crystal Dragon",
+    "sorttitle": "Crystal Dragon",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "curse-of-ra",
+    "title": "Curse Of Ra",
+    "sorttitle": "Curse Of Ra",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "curse-of-the-azure-bonds",
+    "title": "Curse of the Azure Bonds",
+    "sorttitle": "Curse of the Azure Bonds",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "cybernoid",
+    "title": "Cybernoid",
+    "sorttitle": "Cybernoid",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "d-generation",
+    "title": "D/Generation",
+    "sorttitle": "D/Generation",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "action-adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "dan-dare-pilot-of-the-future",
+    "title": "Dan Dare: Pilot Of The Future",
+    "sorttitle": "Dan Dare",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "dan-dare-2-mekons-revenge",
+    "title": "Dan Dare II: Mekon's Revenge",
+    "sorttitle": "Dan Dare 2",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "dan-dare-iii-the-escape",
+    "title": "Dan Dare III - The Escape",
+    "sorttitle": "Dan Dare 3",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "dancing-monster",
+    "title": "Dancing Monster",
+    "sorttitle": "Dancing Monster",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "horror",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "darkseed",
+    "title": "Darkseed",
+    "sorttitle": "Darkseed",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "davy-king-of-the-wild-frontier",
+    "title": "Davy: King Of The Wild Frontier",
+    "sorttitle": "Davy: King Of The Wild Frontier",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "deactivators",
+    "title": "Deactivators",
+    "sorttitle": "Deactivators",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "daley-thompsons-decathlon",
+    "title": "Daley Thompson's Decathlon",
+    "sorttitle": "Decathlon",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-activision-decathlon",
+    "title": "The Activision Decathlon",
+    "sorttitle": "Decathlon",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "defender",
+    "title": "Defender",
+    "sorttitle": "Defender",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "defender-of-the-crown",
+    "title": "Defender Of The Crown",
+    "sorttitle": "Defender Of The Crown",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "defenders-of-the-earth",
+    "title": "Defenders Of The Earth",
+    "sorttitle": "Defenders Of The Earth",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "deflektor",
+    "title": "Deflektor",
+    "sorttitle": "Deflektor",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "delta",
+    "title": "Delta",
+    "sorttitle": "Delta",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "derby-day",
+    "title": "Derby Day",
+    "sorttitle": "Derby Day",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "casino",
+      "racing",
+      "sports"
+    ]
+  },
+  {
+    "slug": "desert-strike",
+    "title": "Desert Strike",
+    "sorttitle": "Desert Strike",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "die-hard",
+    "title": "Die Hard",
+    "sorttitle": "Die Hard",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "dino-eggs",
+    "title": "Dino Eggs",
+    "sorttitle": "Dino Eggs",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "dizzy",
+    "title": "Dizzy",
+    "sorttitle": "Dizzy",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "doctor-who-and-the-mines-of-terror",
+    "title": "Doctor Who And The Mines Of Terror",
+    "sorttitle": "Doctor Who And The Mines Of Terror",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-dolphins-rune",
+    "title": "The Dolphin's Rune",
+    "sorttitle": "Dolphin's Rune",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "donald-ducks-playground",
+    "title": "Donald Duck's Playground",
+    "sorttitle": "Donald Duck's Playground",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "donkey-kong",
+    "title": "Donkey Kong",
+    "sorttitle": "Donkey Kong",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "doriath",
+    "title": "Doriath",
+    "sorttitle": "Doriath",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "double-dare",
+    "title": "Double Dare",
+    "sorttitle": "Double Dare",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "double-dragon",
+    "title": "Double Dragon",
+    "sorttitle": "Double Dragon",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "double-dragon-2-the-revenge",
+    "title": "Double Dragon II: The Revenge",
+    "sorttitle": "Double Dragon 2",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "dragon-skulle",
+    "title": "Dragon Skulle",
+    "sorttitle": "Dragon Skulle",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "dragons-lair",
+    "title": "Dragon's Lair",
+    "sorttitle": "Dragon's Lair 1",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "dragons-lair-2-escape-from-singes-castle",
+    "title": "Dragon's Lair II : Escape From Singe'S Castle",
+    "sorttitle": "Dragon's Lair 2",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "dreamweb",
+    "title": "Dreamweb",
+    "sorttitle": "Dreamweb",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "dropzone",
+    "title": "Dropzone",
+    "sorttitle": "Dropzone",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "ducktales-the-quest-for-gold",
+    "title": "Ducktales: The Quest For Gold",
+    "sorttitle": "Ducktales: The Quest For Gold",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "platform",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "dune",
+    "title": "Dune",
+    "sorttitle": "Dune",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "dune-2-the-battle-for-arrakis",
+    "title": "Dune II: The Battle For Arrakis",
+    "sorttitle": "Dune 2",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "dynablaster",
+    "title": "Dynablaster",
+    "sorttitle": "Dynablaster",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "dynamite-dan",
+    "title": "Dynamite Dan",
+    "sorttitle": "Dynamite Dan",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "eddie-kidd-jump-challenge",
+    "title": "Eddie Kidd Jump Challenge",
+    "sorttitle": "Eddie Kidd Jump Challenge",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "racing",
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-eidolon",
+    "title": "The Eidolon",
+    "sorttitle": "Eidolon",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "elite",
+    "title": "Elite",
+    "sorttitle": "Elite",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "emlyn-hughes-international-soccer",
+    "title": "Emlyn Hughes International Soccer",
+    "sorttitle": "Emlyn Hughes International Soccer",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "entombed",
+    "title": "Entombed",
+    "sorttitle": "Entombed",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "escape-from-colditz",
+    "title": "Escape From Colditz",
+    "sorttitle": "Escape From Colditz",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "escape-from-the-planet-of-the-robot-monsters",
+    "title": "Escape From The Planet Of The Robot Monsters",
+    "sorttitle": "Escape From The Planet Of The Robot Monsters",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "everyones-a-wally",
+    "title": "Everyone's A Wally",
+    "sorttitle": "Everyone's A Wally",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-evil-dead",
+    "title": "The Evil Dead",
+    "sorttitle": "Evil Dead",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "exile",
+    "title": "Exile",
+    "sorttitle": "Exile",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "eye-of-the-beholder-2-the-legend-of-darkmoon",
+    "title": "Eye Of The Beholder II: The Legend Of Darkmoon",
+    "sorttitle": "Eye Of The Beholder 2",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "face-off",
+    "title": "Face Off!",
+    "sorttitle": "Face Off!",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-faces-of-haarne",
+    "title": "The Faces Of Haarne",
+    "sorttitle": "Faces Of Haarne",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "falcon-patrol",
+    "title": "Falcon Patrol",
+    "sorttitle": "Falcon Patrol",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "fernandez-must-die",
+    "title": "Fernandez Must Die",
+    "sorttitle": "Fernandez Must Die",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "feud",
+    "title": "Feud",
+    "sorttitle": "Feud",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "fiendish-freddys-big-top-o-fun",
+    "title": "Fiendish Freddy's Big Top O' Fun",
+    "sorttitle": "Fiendish Freddy's Big Top O' Fun",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "fighting-warrior",
+    "title": "Fighting Warrior",
+    "sorttitle": "Fighting Warrior",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "final-fight",
+    "title": "Final Fight",
+    "sorttitle": "Final Fight",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "finders-keepers",
+    "title": "Finders Keepers",
+    "sorttitle": "Finders Keepers",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "fire-ant",
+    "title": "Fire Ant",
+    "sorttitle": "Fire Ant",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "firelord",
+    "title": "Firelord",
+    "sorttitle": "Firelord",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "first-samurai",
+    "title": "First Samurai",
+    "sorttitle": "First Samurai",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "fighting",
+      "platform"
+    ]
+  },
+  {
+    "slug": "fist-2-the-legend-continues",
+    "title": "Fist II: The Legend Continues",
+    "sorttitle": "Fist II: The Legend Continues",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "flash-gordon",
+    "title": "Flash Gordon",
+    "sorttitle": "Flash Gordon",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "flashback-the-quest-for-identity",
+    "title": "Flashback: The Quest For Identity",
+    "sorttitle": "Flashback: The Quest For Identity",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "flimbos-quest",
+    "title": "Flimbo's Quest",
+    "sorttitle": "Flimbo's Quest",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "flip-and-flop",
+    "title": "Flip And Flop",
+    "sorttitle": "Flip And Flop",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "floor-13",
+    "title": "Floor 13",
+    "sorttitle": "Floor 13",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "floyd-of-the-jungle",
+    "title": "Floyd Of The Jungle",
+    "sorttitle": "Floyd Of The Jungle",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "flunky",
+    "title": "Flunky",
+    "sorttitle": "Flunky",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "flying-feathers",
+    "title": "Flying Feathers",
+    "sorttitle": "Flying Feathers",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "forbidden-forest",
+    "title": "Forbidden Forest",
+    "sorttitle": "Forbidden Forest",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "force-seven",
+    "title": "Force Seven",
+    "sorttitle": "force 7",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "fort-apocalypse",
+    "title": "Fort Apocalypse",
+    "sorttitle": "Fort Apocalypse",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "frak",
+    "title": "Frak!",
+    "sorttitle": "Frak!",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "frankie-goes-to-hollywood",
+    "title": "Frankie Goes To Hollywood",
+    "sorttitle": "Frankie Goes To Hollywood",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "freak-factory",
+    "title": "Freak Factory",
+    "sorttitle": "Freak Factory",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "friday-the-13th",
+    "title": "Friday The 13th",
+    "sorttitle": "Friday 13th",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "fright-night",
+    "title": "Fright Night",
+    "sorttitle": "Fright Night",
+    "system": "AMIGA",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "frightmare",
+    "title": "Frightmare",
+    "sorttitle": "Frightmare",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "horror",
+      "platform"
+    ]
+  },
+  {
+    "slug": "fruit-machine-simulator",
+    "title": "Fruit Machine Simulator",
+    "sorttitle": "Fruit Machine Simulator",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "casino"
+    ]
+  },
+  {
+    "slug": "future-wars",
+    "title": "Future Wars",
+    "sorttitle": "Future Wars",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "galactic-gardener",
+    "title": "Galactic Gardener",
+    "sorttitle": "Galactic Gardener",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "gary-linekers-superstar-soccer",
+    "title": "Gary Lineker's Superstar Soccer",
+    "sorttitle": "Gary Lineker's Superstar Soccer",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "gateway-to-apshai",
+    "title": "Gateway To Apshai",
+    "sorttitle": "Gateway To Apshai",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "gauntlet",
+    "title": "Gauntlet",
+    "sorttitle": "Gauntlet",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "gemstone-warrior",
+    "title": "Gemstone Warrior",
+    "sorttitle": "Gemstone Warrior",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "ghetto-blaster",
+    "title": "Ghetto Blaster",
+    "sorttitle": "Ghetto Blaster",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "ghostbusters",
+    "title": "Ghostbusters",
+    "sorttitle": "Ghostbusters",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "ghostbusters-2",
+    "title": "Ghostbusters II",
+    "sorttitle": "Ghostbusters 2",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "ghost-hunters",
+    "title": "Ghost Hunters",
+    "sorttitle": "GhostHunters",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "action-adventure",
+      "horror",
+      "platform"
+    ]
+  },
+  {
+    "slug": "ghosts-n-goblins",
+    "title": "Ghosts 'N Goblins",
+    "sorttitle": "Ghosts 'N Goblins",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "horror",
+      "platform"
+    ]
+  },
+  {
+    "slug": "give-my-regards-to-broad-street",
+    "title": "Give My Regards To Broad Street",
+    "sorttitle": "Give My Regards To Broad Street",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle",
+      "racing"
+    ]
+  },
+  {
+    "slug": "gobliiins",
+    "title": "Gobliiins",
+    "sorttitle": "Gobliiins",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "gods",
+    "title": "Gods",
+    "sorttitle": "Gods",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "golden-axe",
+    "title": "Golden Axe",
+    "sorttitle": "Golden Axe",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "the-goonies",
+    "title": "The Goonies",
+    "sorttitle": "Goonies",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "gorf",
+    "title": "Gorf",
+    "sorttitle": "Gorf",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "grand-prix-circuit",
+    "title": "Grand Prix Circuit",
+    "sorttitle": "Grand Prix Circuit",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "grand-prix-simulator",
+    "title": "Grand Prix Simulator",
+    "sorttitle": "Grand Prix Simulator",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "grange-hill",
+    "title": "Grange Hill",
+    "sorttitle": "Grange Hill",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "grannys-garden",
+    "title": "Granny's Garden",
+    "sorttitle": "Granny's Garden",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure",
+      "quiz",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "the-great-escape",
+    "title": "The Great Escape",
+    "sorttitle": "Great Escape",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-great-giana-sisters",
+    "title": "The Great Giana Sisters",
+    "sorttitle": "Great Giana Sisters",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "green-beret",
+    "title": "Green Beret",
+    "sorttitle": "Green Beret",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "gribblys-day-out",
+    "title": "Gribbly's Day Out",
+    "sorttitle": "Gribbly's Day Out",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "gryzor",
+    "title": "Gryzor",
+    "sorttitle": "Gryzor",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "platform",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "the-guild-of-thieves",
+    "title": "The Guild Of Thieves",
+    "sorttitle": "Guild Of Thieves",
+    "system": "AMIGA",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "guzzler",
+    "title": "Guzzler",
+    "sorttitle": "Guzzler",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "gyropod",
+    "title": "Gyropod",
+    "sorttitle": "Gyropod",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "hero",
+    "title": "H.E.R.O.",
+    "sorttitle": "H.E.R.O.",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "hacker",
+    "title": "Hacker",
+    "sorttitle": "Hacker",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "halls-of-the-things",
+    "title": "Halls Of The Things",
+    "sorttitle": "Halls Of The Things",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "the-happiest-days-of-your-life",
+    "title": "The Happiest Days Of Your Life",
+    "sorttitle": "Happiest Days Of Your Life",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "hawkeye",
+    "title": "Hawkeye",
+    "sorttitle": "Hawkeye",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "he-man-and-the-masters-of-the-universe-the-ilearth-stone",
+    "title": "He-Man and the Masters of the Universe: The Ilearth Stone",
+    "sorttitle": "He-Man Ilearth Stone",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "he-man-and-the-masters-of-the-universe-the-movie",
+    "title": "He-Man and the Masters of the Universe: The Movie",
+    "sorttitle": "He-Man the movie",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "head-over-heels",
+    "title": "Head Over Heels",
+    "sorttitle": "Head Over Heels",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "heart-of-africa",
+    "title": "Heart Of Africa",
+    "sorttitle": "Heart Of Africa",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "heartland",
+    "title": "Heartland",
+    "sorttitle": "Heartland",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "heimdall",
+    "title": "Heimdall",
+    "sorttitle": "Heimdall",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "henrys-house",
+    "title": "Henry's House",
+    "sorttitle": "Henry's House",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "herberts-dummy-run",
+    "title": "Herbert's Dummy Run",
+    "sorttitle": "Herbert's Dummy Run",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "hero-of-the-golden-talisman",
+    "title": "Hero Of The Golden Talisman",
+    "sorttitle": "Hero Of The Golden Talisman",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "heroquest",
+    "title": "Heroquest",
+    "sorttitle": "Heroquest",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "high-noon",
+    "title": "High Noon",
+    "sorttitle": "High Noon",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "highlander",
+    "title": "Highlander",
+    "sorttitle": "Highlander",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "the-hitchhikers-guide-to-the-galaxy",
+    "title": "The Hitchhikers Guide To The Galaxy",
+    "sorttitle": "Hitchhikers Guide To The Galaxy",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "hollywood-or-bust",
+    "title": "Hollywood Or Bust",
+    "sorttitle": "Hollywood Or Bust",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "home-alone",
+    "title": "Home Alone",
+    "sorttitle": "Home Alone",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "hostages",
+    "title": "Hostages",
+    "sorttitle": "Hostages",
+    "system": "AMIGA",
+    "year": 1988,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "hover-bovver",
+    "title": "Hover Bovver",
+    "sorttitle": "Hover Bovver",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "how-to-be-a-complete-bastard",
+    "title": "How To Be A Complete Bastard",
+    "sorttitle": "How To Be A Complete Bastard",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "hudson-hawk",
+    "title": "Hudson Hawk",
+    "sorttitle": "Hudson Hawk",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-human-race",
+    "title": "The Human Race",
+    "sorttitle": "Human Race",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "hunchback",
+    "title": "Hunchback",
+    "sorttitle": "Hunchback",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "hunchback-at-the-olympics",
+    "title": "Hunchback At The Olympics",
+    "sorttitle": "Hunchback At The Olympics",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "hunchback-2-quasimodos-revenge",
+    "title": "Hunchback 2",
+    "sorttitle": "Hunchback II: Quasimodo's Revenge",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform",
+      "arcade"
+    ]
+  },
+  {
+    "slug": "hunter",
+    "title": "Hunter",
+    "sorttitle": "Hunter",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "hyper-sports",
+    "title": "Hyper Sports",
+    "sorttitle": "Hyper Sports",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "ik-c64",
+    "title": "IK+",
+    "sorttitle": "Ik+",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "ik-amiga",
+    "title": "IK+",
+    "sorttitle": "Ik+",
+    "system": "AMIGA",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "ikari-warriors",
+    "title": "Ikari Warriors",
+    "sorttitle": "Ikari Warriors",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "the-immortal",
+    "title": "The Immortal",
+    "sorttitle": "Immortal",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "impossible-mission",
+    "title": "Impossible Mission",
+    "sorttitle": "Impossible Mission",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "indiana-jones-and-the-fate-of-atlantis",
+    "title": "Indiana Jones And The Fate Of Atlantis",
+    "sorttitle": "Indiana Jones And The Fate Of Atlantis",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "indiana-jones-and-the-last-crusade-adventure",
+    "title": "Indiana Jones And The Last Crusade (Adventure)",
+    "sorttitle": "Indiana Jones And The Last Crusade (Adventure)",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "indiana-jones-and-the-last-crusade-the-action-game",
+    "title": "Indiana Jones And The Last Crusade: The Action Game",
+    "sorttitle": "Indiana Jones And The Last Crusade: The Action Game",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "indiana-jones-and-the-temple-of-doom",
+    "title": "Indiana Jones And The Temple Of Doom",
+    "sorttitle": "Indiana Jones And The Temple Of Doom",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "indiana-jones-in-the-lost-kingdom",
+    "title": "Indiana Jones In The Lost Kingdom",
+    "sorttitle": "Indiana Jones In The Lost Kingdom",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "danny-sullivans-indy-heat",
+    "title": "Danny Sullivans Indy Heat",
+    "sorttitle": "Indy Heat",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "infernal-runner",
+    "title": "Infernal Runner",
+    "sorttitle": "Infernal Runner",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "horror",
+      "platform"
+    ]
+  },
+  {
+    "slug": "infiltrator",
+    "title": "Infiltrator",
+    "sorttitle": "Infiltrator",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "international-basketball",
+    "title": "International Basketball",
+    "sorttitle": "International Basketball",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "international-soccer",
+    "title": "International Soccer",
+    "sorttitle": "International Soccer",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "international-tennis",
+    "title": "International Tennis",
+    "sorttitle": "International Tennis",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "into-the-eagles-nest",
+    "title": "Into The Eagle's Nest",
+    "sorttitle": "Into The Eagle's Nest",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "invade-a-load",
+    "title": "Invade-A-Load",
+    "sorttitle": "Invade-A-Load",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "iridis-alpha",
+    "title": "Iridis Alpha",
+    "sorttitle": "Iridis Alpha",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "it-came-from-the-desert",
+    "title": "It Came From The Desert",
+    "sorttitle": "It Came From The Desert",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "antheads-it-came-from-the-desert-2",
+    "title": "Antheads: It Came From The Desert II",
+    "sorttitle": "It Came From The Desert II",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "jack-the-nipper",
+    "title": "Jack The Nipper",
+    "sorttitle": "Jack The Nipper",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "jack-the-nipper-2-in-coconut-capers",
+    "title": "Jack The Nipper II: In Coconut Capers",
+    "sorttitle": "Jack The Nipper II: In Coconut Capers",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "james-pond-underwater-agent",
+    "title": "James Pond: Underwater Agent",
+    "sorttitle": "James Pond: Underwater Agent",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "jammin",
+    "title": "Jammin'",
+    "sorttitle": "Jammin'",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "jet-set-willy",
+    "title": "Jet Set Willy",
+    "sorttitle": "Jet Set Willy",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "jimmy-whites-whirlwind-snooker",
+    "title": "Jimmy White's Whirlwind Snooker",
+    "sorttitle": "Jimmy White's Whirlwind Snooker",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "joe-blade",
+    "title": "Joe Blade",
+    "sorttitle": "Joe Blade",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "joe-blade-2",
+    "title": "Joe Blade II",
+    "sorttitle": "Joe Blade II",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "judge-dredd",
+    "title": "Judge Dredd",
+    "sorttitle": "Judge Dredd",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "jumpman",
+    "title": "Jumpman",
+    "sorttitle": "Jumpman",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "jungle-hunt",
+    "title": "Jungle Hunt",
+    "sorttitle": "Jungle Hunt",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "jupiter-lander",
+    "title": "Jupiter Lander",
+    "sorttitle": "Jupiter Lander",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "kamikaze",
+    "title": "Kamikaze",
+    "sorttitle": "Kamikaze",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "kane-kane-2",
+    "title": "Kane & Kane 2",
+    "sorttitle": "Kane & Kane 2",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "karateka",
+    "title": "Karateka",
+    "sorttitle": "Karateka",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "kawasaki-rhythm-rocker",
+    "title": "Kawasaki Rhythm Rocker",
+    "sorttitle": "Kawasaki Rhythm Rocker",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "quiz",
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "kgb",
+    "title": "KGB",
+    "sorttitle": "Kgb",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "kickman",
+    "title": "Kickman",
+    "sorttitle": "Kickman",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "kikstart-2",
+    "title": "Kikstart II",
+    "sorttitle": "Kikstart II",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "racing",
+      "sports"
+    ]
+  },
+  {
+    "slug": "kings-bounty",
+    "title": "King's Bounty",
+    "sorttitle": "King's Bounty",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "kingpin",
+    "title": "Kingpin",
+    "sorttitle": "Kingpin",
+    "system": "AMIGA",
+    "year": 1995,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "klax",
+    "title": "Klax",
+    "sorttitle": "Klax",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "knight-games",
+    "title": "Knight Games",
+    "sorttitle": "Knight Games",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "fighting",
+      "sports"
+    ]
+  },
+  {
+    "slug": "knight-tyme",
+    "title": "Knight Tyme",
+    "sorttitle": "Knight Tyme",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "knightmare",
+    "title": "Knightmare",
+    "sorttitle": "Knightmare",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "kobyashi-naru",
+    "title": "Kobyashi Naru",
+    "sorttitle": "Kobyashi Naru",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "koronis-rift",
+    "title": "Koronis Rift",
+    "sorttitle": "Koronis Rift",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "kung-fu-master",
+    "title": "Kung-Fu Master",
+    "sorttitle": "Kung-Fu Master",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "labyrinth",
+    "title": "Labyrinth",
+    "sorttitle": "Labyrinth",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "las-vegas-casino",
+    "title": "Las Vegas Casino",
+    "sorttitle": "Las Vegas Casino",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "casino"
+    ]
+  },
+  {
+    "slug": "laser-squad",
+    "title": "Laser Squad",
+    "sorttitle": "Laser Squad",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-last-ninja",
+    "title": "The Last Ninja",
+    "sorttitle": "Last Ninja",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "last-ninja-2-back-with-a-vengeance",
+    "title": "Last Ninja 2: Back With A Vengeance",
+    "sorttitle": "Last Ninja 2: Back With A Vengeance",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-last-v8",
+    "title": "The Last V8",
+    "sorttitle": "Last V8",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "law-of-the-west",
+    "title": "Law Of The West",
+    "sorttitle": "Law Of The West",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure",
+      "arcade"
+    ]
+  },
+  {
+    "slug": "lazarian",
+    "title": "Lazarian",
+    "sorttitle": "Lazarian",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "lazy-jones",
+    "title": "Lazy Jones",
+    "sorttitle": "Lazy Jones",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "le-mans",
+    "title": "Le Mans",
+    "sorttitle": "Le Mans",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "leader-board",
+    "title": "Leader Board",
+    "sorttitle": "Leader Board",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "sports",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "lemmings",
+    "title": "Lemmings",
+    "sorttitle": "Lemmings",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "little-computer-people",
+    "title": "Little Computer People",
+    "sorttitle": "Little Computer People",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "live-and-let-die",
+    "title": "Live And Let Die",
+    "sorttitle": "Live And Let Die",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "lode-runner",
+    "title": "Lode Runner",
+    "sorttitle": "Lode Runner",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "loom",
+    "title": "Loom",
+    "sorttitle": "Loom",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "the-lords-of-midnight",
+    "title": "The Lords Of Midnight",
+    "sorttitle": "Lords Of Midnight",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-lost-patrol",
+    "title": "The Lost Patrol",
+    "sorttitle": "Lost Patrol",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "action-adventure",
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "lotus-turbo-challenge-2",
+    "title": "Lotus Turbo Challenge 2",
+    "sorttitle": "Lotus Turbo Challenge 2",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "lure-of-the-temptress",
+    "title": "Lure Of The Temptress",
+    "sorttitle": "Lure Of The Temptress",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "mule",
+    "title": "M.U.L.E.",
+    "sorttitle": "M.U.L.E.",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "mad-doctor",
+    "title": "Mad Doctor",
+    "sorttitle": "Mad Doctor",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "mad-nurse",
+    "title": "Mad Nurse",
+    "sorttitle": "Mad Nurse",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "magic-carpet",
+    "title": "Magic Carpet",
+    "sorttitle": "Magic Carpet",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "mail-order-monsters",
+    "title": "Mail Order Monsters",
+    "sorttitle": "Mail Order Monsters",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "horror",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "maniac-mansion",
+    "title": "Maniac Mansion",
+    "sorttitle": "Maniac Mansion",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "manic-miner",
+    "title": "Manic Miner",
+    "sorttitle": "Manic Miner",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "marias-christmas-box",
+    "title": "Maria's Christmas Box",
+    "sorttitle": "Maria's Christmas Box",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "casino",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "master-of-magic",
+    "title": "Master Of Magic",
+    "sorttitle": "Master Of Magic",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "master-of-the-lamps",
+    "title": "Master Of The Lamps",
+    "sorttitle": "Master Of The Lamps",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "match-day-2",
+    "title": "Match Day II",
+    "sorttitle": "Match Day II",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "max-headroom",
+    "title": "Max Headroom",
+    "sorttitle": "Max Headroom",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "mean-streets",
+    "title": "Mean Streets",
+    "sorttitle": "Mean Streets",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "mega-lo-mania",
+    "title": "Mega Lo Mania",
+    "sorttitle": "Mega Lo Mania",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "miami-vice",
+    "title": "Miami Vice",
+    "sorttitle": "Miami Vice",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "micro-mouse-goes-debugging",
+    "title": "Micro Mouse Goes Debugging",
+    "sorttitle": "Micro Mouse Goes Debugging",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "quiz",
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "microprose-soccer",
+    "title": "Microprose Soccer",
+    "sorttitle": "Microprose Soccer",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "midnight-resistance",
+    "title": "Midnight Resistance",
+    "sorttitle": "Midnight Resistance",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "mike-reads-computer-pop-quiz",
+    "title": "Mike Read's Computer Pop Quiz",
+    "sorttitle": "Mike Read's Computer Pop Quiz",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "mikie",
+    "title": "Mikie",
+    "sorttitle": "Mikie",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "milk-race",
+    "title": "Milk Race",
+    "sorttitle": "Milk Race",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "racing",
+      "sports"
+    ]
+  },
+  {
+    "slug": "miner-2049er",
+    "title": "Miner 2049er",
+    "sorttitle": "Miner 2049er",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-secret-of-monkey-island",
+    "title": "The Secret Of Monkey Island",
+    "sorttitle": "Monkey Island",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "monkey-island-2-lechucks-revenge",
+    "title": "Monkey Island 2: Lechuck'S Revenge",
+    "sorttitle": "Monkey Island 2: Lechuck'S Revenge",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "montezumas-revenge",
+    "title": "Montezuma's Revenge",
+    "sorttitle": "Montezuma's Revenge",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "monty-on-the-run",
+    "title": "Monty On The Run",
+    "sorttitle": "Monty On The Run",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "moon-shuttle",
+    "title": "Moon Shuttle",
+    "sorttitle": "Moon Shuttle",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "moonstone-a-hard-days-knight",
+    "title": "Moonstone: A Hard Days Knight",
+    "sorttitle": "Moonstone: A Hard Days Knight",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "mountie-micks-death-ride",
+    "title": "Mountie Mick's Death Ride",
+    "sorttitle": "Mountie Mick's Death Ride",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-movie-monster-game",
+    "title": "The Movie Monster Game",
+    "sorttitle": "Movie Monster Game",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "mr-robot-and-his-robot-factory",
+    "title": "Mr Robot And His Robot Factory",
+    "sorttitle": "Mr Robot And His Robot Factory",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-muncher",
+    "title": "The Muncher",
+    "sorttitle": "Muncher",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "murder-on-the-mississippi",
+    "title": "Murder On The Mississippi",
+    "sorttitle": "Murder On The Mississippi",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "mutant-monty",
+    "title": "Mutant Monty",
+    "sorttitle": "Mutant Monty",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "myth-history-in-the-making",
+    "title": "Myth: History In The Making",
+    "sorttitle": "Myth: History In The Making",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "narc",
+    "title": "Narc",
+    "sorttitle": "Narc",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "nebulus",
+    "title": "Nebulus",
+    "sorttitle": "Nebulus",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "nemesis",
+    "title": "Nemesis",
+    "sorttitle": "Nemesis",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "nemesis-the-warlock",
+    "title": "Nemesis The Warlock",
+    "sorttitle": "Nemesis The Warlock",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "neuromancer",
+    "title": "Neuromancer",
+    "sorttitle": "Neuromancer",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "the-neverending-story",
+    "title": "The Neverending Story",
+    "sorttitle": "Neverending Story",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "the-new-zealand-story",
+    "title": "The New Zealand Story",
+    "sorttitle": "New Zealand Story",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "nexus",
+    "title": "Nexus",
+    "sorttitle": "Nexus",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "night-driver",
+    "title": "Night Driver",
+    "sorttitle": "Night Driver",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "nightbreed-the-action-game",
+    "title": "Nightbreed: The Action Game",
+    "sorttitle": "Nightbreed: The Action Game",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "nightbreed-the-interactive-movie",
+    "title": "Nightbreed: The Interactive Movie",
+    "sorttitle": "Nightbreed: The Interactive Movie",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "a-nightmare-on-elm-street",
+    "title": "A Nightmare On Elm Street",
+    "sorttitle": "Nightmare On Elm Street",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "nightshade",
+    "title": "Nightshade",
+    "sorttitle": "Nightshade",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "ninja",
+    "title": "Ninja",
+    "sorttitle": "Ninja",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "ninja-massacre",
+    "title": "Ninja Massacre",
+    "sorttitle": "Ninja Massacre",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "ninja-rabbits",
+    "title": "Ninja Rabbits",
+    "sorttitle": "Ninja Rabbits",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "fighting",
+      "platform"
+    ]
+  },
+  {
+    "slug": "nippon-safes-inc",
+    "title": "Nippon Safes Inc.",
+    "sorttitle": "Nippon Safes Inc.",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "nodes-of-yesod",
+    "title": "Nodes Of Yesod",
+    "sorttitle": "Nodes Of Yesod",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "north-south",
+    "title": "North & South",
+    "sorttitle": "North & South",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "nosferatu-the-vampyre",
+    "title": "Nosferatu The Vampyre",
+    "sorttitle": "Nosferatu The Vampyre",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "the-official-father-christmas",
+    "title": "The Official Father Christmas",
+    "sorttitle": "Official Father Christmas",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "omega-race",
+    "title": "Omega Race",
+    "sorttitle": "Omega Race",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "one-man-and-his-droid",
+    "title": "One Man And His Droid",
+    "sorttitle": "One Man And His Droid",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "operation-wolf",
+    "title": "Operation Wolf",
+    "sorttitle": "Operation Wolf",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "orc-attack",
+    "title": "Orc Attack",
+    "sorttitle": "Orc Attack",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "outlaws",
+    "title": "Outlaws",
+    "sorttitle": "Outlaws",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "painterboy",
+    "title": "Painterboy",
+    "sorttitle": "Painterboy",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "paperboy",
+    "title": "Paperboy",
+    "sorttitle": "Paperboy",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "paradroid",
+    "title": "Paradroid",
+    "sorttitle": "Paradroid",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "park-patrol",
+    "title": "Park Patrol",
+    "sorttitle": "Park Patrol",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "pinball-dreams",
+    "title": "Pinball Dreams",
+    "sorttitle": "Pinball Dreams",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "sid-meiers-pirates",
+    "title": "Sid Meier's Pirates!",
+    "sorttitle": "Pirates",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "pit-fighter",
+    "title": "Pit-Fighter",
+    "sorttitle": "Pit-Fighter",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "pitfall",
+    "title": "Pitfall!",
+    "sorttitle": "Pitfall",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "pitfall-2-lost-caverns",
+    "title": "Pitfall II: Lost Caverns",
+    "sorttitle": "Pitfall 2",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "pitstop-2",
+    "title": "Pitstop II",
+    "sorttitle": "Pitstop II",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "platoon",
+    "title": "Platoon",
+    "sorttitle": "Platoon",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "pneumatic-hammers",
+    "title": "Pneumatic Hammers",
+    "sorttitle": "Pneumatic Hammers",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "pole-position",
+    "title": "Pole Position",
+    "sorttitle": "Pole Position",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "popeye-c64",
+    "title": "Popeye",
+    "sorttitle": "Popeye",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "popeye-c64-popeye-donpriestley",
+    "title": "Popeye",
+    "sorttitle": "Popeye",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "populous",
+    "title": "Populous",
+    "sorttitle": "Populous",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "poster-paster",
+    "title": "Poster Paster",
+    "sorttitle": "Poster Paster",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "power-drift",
+    "title": "Power Drift",
+    "sorttitle": "Power Drift",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "predator",
+    "title": "Predator",
+    "sorttitle": "Predator",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-prince",
+    "title": "The Prince",
+    "sorttitle": "Prince",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "prince-clumsy",
+    "title": "Prince Clumsy",
+    "sorttitle": "Prince Clumsy",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "prince-of-persia",
+    "title": "Prince Of Persia",
+    "sorttitle": "Prince Of Persia",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "project-firestart",
+    "title": "Project Firestart",
+    "sorttitle": "Project Firestart",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "project-stealth-fighter",
+    "title": "Project Stealth Fighter",
+    "sorttitle": "Project Stealth Fighter",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "project-x",
+    "title": "Project-X",
+    "sorttitle": "Project-X",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "psycho-hopper",
+    "title": "Psycho Hopper",
+    "sorttitle": "Psycho Hopper",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "shooting",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "psycho-santa",
+    "title": "Psycho Santa",
+    "sorttitle": "Psycho Santa",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "push-over",
+    "title": "Push-Over",
+    "sorttitle": "Push-Over",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "pyjamarama",
+    "title": "Pyjamarama",
+    "sorttitle": "Pyjamarama",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "q-bert",
+    "title": "Q*Bert",
+    "sorttitle": "Q*Bert",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "a-question-of-sport",
+    "title": "A Question Of Sport",
+    "sorttitle": "Question Of Sport",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "quiz"
+    ]
+  },
+  {
+    "slug": "quick-draw-mcgraw",
+    "title": "Quick Draw Mcgraw",
+    "sorttitle": "Quick Draw Mcgraw",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "quinx",
+    "title": "Quinx",
+    "sorttitle": "Quinx",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "radar-rat-race",
+    "title": "Radar Rat Race",
+    "sorttitle": "Radar Rat Race",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "raging-beast",
+    "title": "Raging Beast",
+    "sorttitle": "Raging Beast",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "sports"
+    ]
+  },
+  {
+    "slug": "rags-to-riches",
+    "title": "Rags To Riches",
+    "sorttitle": "Rags To Riches",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure",
+      "arcade",
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "raid-on-bungeling-bay",
+    "title": "Raid On Bungeling Bay",
+    "sorttitle": "Raid On Bungeling Bay",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "raid-over-moscow",
+    "title": "Raid Over Moscow",
+    "sorttitle": "Raid Over Moscow",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "rainbow-islands",
+    "title": "Rainbow Islands",
+    "sorttitle": "Rainbow Islands",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "rambo-first-blood-part-2",
+    "title": "Rambo: First Blood Part II",
+    "sorttitle": "Rambo: First Blood Part Ii",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "rampage",
+    "title": "Rampage",
+    "sorttitle": "Rampage",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "rampart",
+    "title": "Rampart",
+    "sorttitle": "Rampart",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "rastan",
+    "title": "Rastan",
+    "sorttitle": "Rastan",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "the-rats",
+    "title": "The Rats",
+    "sorttitle": "Rats",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "horror",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-real-ghostbusters",
+    "title": "The Real Ghostbusters",
+    "sorttitle": "Real Ghostbusters",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "realm-of-impossibility",
+    "title": "Realm Of Impossibility",
+    "sorttitle": "Realm Of Impossibility",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "horror"
+    ]
+  },
+  {
+    "slug": "rebel",
+    "title": "Rebel",
+    "sorttitle": "Rebel",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "red-heat",
+    "title": "Red Heat",
+    "sorttitle": "Red Heat",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "renegade",
+    "title": "Renegade",
+    "sorttitle": "Renegade",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "rescue-on-fractalus",
+    "title": "Rescue On Fractalus!",
+    "sorttitle": "Rescue On Fractalus!",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "revenge-of-the-mutant-camels",
+    "title": "Revenge Of The Mutant Camels",
+    "sorttitle": "Revenge Of The Mutant Camels",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "rick-dangerous",
+    "title": "Rick Dangerous",
+    "sorttitle": "Rick Dangerous",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "river-raid",
+    "title": "River Raid",
+    "sorttitle": "River Raid",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "road-runner",
+    "title": "Road Runner",
+    "sorttitle": "Road Runner",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-adventures-of-robin-hood",
+    "title": "The Adventures Of Robin Hood",
+    "sorttitle": "Robin Hood",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "robin-of-the-wood",
+    "title": "Robin Of The Wood",
+    "sorttitle": "Robin Of The Wood",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "robinsons-requiem",
+    "title": "Robinson's Requiem",
+    "sorttitle": "Robinson'S Requiem",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "adventure",
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "robocop",
+    "title": "Robocop",
+    "sorttitle": "Robocop",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "robocop-3",
+    "title": "Robocop 3",
+    "sorttitle": "Robocop 3",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "rock-star-ate-my-hamster",
+    "title": "Rock Star Ate My Hamster",
+    "sorttitle": "Rock Star Ate My Hamster",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "rock-n-wrestle",
+    "title": "Rock'n Wrestle",
+    "sorttitle": "Rock'N Wrestle",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "fighting",
+      "sports"
+    ]
+  },
+  {
+    "slug": "rocket-ball",
+    "title": "Rocket Ball",
+    "sorttitle": "Rocket Ball",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "rocket-ranger",
+    "title": "Rocket Ranger",
+    "sorttitle": "Rocket Ranger",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-rocky-horror-show",
+    "title": "The Rocky Horror Show",
+    "sorttitle": "Rocky Horror Show",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "rodland",
+    "title": "Rodland",
+    "sorttitle": "Rodland",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "roller-coaster-rumbler",
+    "title": "Roller Coaster Rumbler",
+    "sorttitle": "Roller Coaster Rumbler",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "rolling-thunder",
+    "title": "Rolling Thunder",
+    "sorttitle": "Rolling Thunder",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "rtype",
+    "title": "R-Type",
+    "sorttitle": "RType",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "the-running-man",
+    "title": "The Running Man",
+    "sorttitle": "Running Man",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "saboteur",
+    "title": "Saboteur",
+    "sorttitle": "Saboteur",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "saboteur-2-avenging-angel",
+    "title": "Saboteur II: Avenging Angel",
+    "sorttitle": "Saboteur II: Avenging Angel",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-sacred-armour-of-antiriad",
+    "title": "The Sacred Armour Of Antiriad",
+    "sorttitle": "Sacred Armour Of Antiriad",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "saint-dragon",
+    "title": "Saint Dragon",
+    "sorttitle": "Saint Dragon",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "samantha-fox-strip-poker",
+    "title": "Samantha Fox Strip Poker",
+    "sorttitle": "Samantha Fox Strip Poker",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "casino",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "samurai-warrior-the-battles-of-usagi-yojimbo",
+    "title": "Samurai Warrior: The Battles Of Usagi Yojimbo",
+    "sorttitle": "Samurai Warrior: The Battles Of Usagi Yojimbo",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "santas-xmas-caper",
+    "title": "Santa's Xmas Caper",
+    "sorttitle": "Santa's Xmas Caper",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "sanxion",
+    "title": "Sanxion",
+    "sorttitle": "Sanxion",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "sas-combat-simulator",
+    "title": "SAS Combat Simulator",
+    "sorttitle": "SAS Combat Simulator",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "savage-pond",
+    "title": "Savage Pond",
+    "sorttitle": "Savage Pond",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "scarabaeus",
+    "title": "Scarabaeus",
+    "sorttitle": "Scarabaeus",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure",
+      "horror",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "schizofrenia",
+    "title": "Schizofrenia",
+    "sorttitle": "Schizofrenia",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "seaside-special",
+    "title": "Seaside Special",
+    "sorttitle": "Seaside Special",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "seek-destroy",
+    "title": "Seek & Destroy",
+    "sorttitle": "Seek & Destroy",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "sensible-golf",
+    "title": "Sensible Golf",
+    "sorttitle": "Sensible Golf",
+    "system": "AMIGA",
+    "year": 1995,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "sensible-soccer",
+    "title": "Sensible Soccer",
+    "sorttitle": "Sensible Soccer",
+    "system": "AMIGA",
+    "year": 1995,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-sentinel",
+    "title": "The Sentinel",
+    "sorttitle": "Sentinel",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "puzzle",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "serenade",
+    "title": "Serenade",
+    "sorttitle": "Serenade",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "the-settlers",
+    "title": "The Settlers",
+    "sorttitle": "Settlers",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "shadow-dancer",
+    "title": "Shadow Dancer",
+    "sorttitle": "Shadow Dancer",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "shadow-fighter",
+    "title": "Shadow Fighter",
+    "sorttitle": "Shadow Fighter",
+    "system": "AMIGA",
+    "year": 1995,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "shadow-of-the-beast",
+    "title": "Shadow Of The Beast",
+    "sorttitle": "Shadow Of The Beast",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "shao-lins-road",
+    "title": "Shao-Lin's Road",
+    "sorttitle": "Shao-Lin's Road",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "sheep-in-space",
+    "title": "Sheep In Space",
+    "sorttitle": "Sheep In Space",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "shinobi",
+    "title": "Shinobi",
+    "sorttitle": "Shinobi",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "shoot-out",
+    "title": "Shoot-Out",
+    "sorttitle": "Shoot-Out",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "short-circuit",
+    "title": "Short Circuit",
+    "sorttitle": "Short Circuit",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "silent-service",
+    "title": "Silent Service",
+    "sorttitle": "Silent Service",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "silkworm",
+    "title": "Silkworm",
+    "sorttitle": "Silkworm",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "simcity",
+    "title": "Simcity",
+    "sorttitle": "Simcity",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "simon-the-sorcerer",
+    "title": "Simon The Sorcerer",
+    "sorttitle": "Simon The Sorcerer",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "skate-or-die",
+    "title": "Skate Or Die",
+    "sorttitle": "Skate Or Die",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "sports"
+    ]
+  },
+  {
+    "slug": "skate-rock",
+    "title": "Skate Rock",
+    "sorttitle": "Skate Rock",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "skidmarks",
+    "title": "Skidmarks",
+    "sorttitle": "Skidmarks",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "skool-daze",
+    "title": "Skool Daze",
+    "sorttitle": "Skool Daze",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "skull-crossbones",
+    "title": "Skull & Crossbones",
+    "sorttitle": "Skull & Crossbones",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "fighting"
+    ]
+  },
+  {
+    "slug": "slaine",
+    "title": "Slaine",
+    "sorttitle": "Slaine",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "adventure",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "slalom",
+    "title": "Slalom!",
+    "sorttitle": "Slalom!",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade",
+      "sports"
+    ]
+  },
+  {
+    "slug": "slicks",
+    "title": "Slicks",
+    "sorttitle": "Slicks",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "smash-tv",
+    "title": "Smash TV",
+    "sorttitle": "Smash TV",
+    "system": "C64",
+    "year": 1992,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-snowman",
+    "title": "The Snowman",
+    "sorttitle": "Snowman",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "soccer-boss",
+    "title": "Soccer Boss",
+    "sorttitle": "Soccer Boss",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "son-of-blagger",
+    "title": "Son Of Blagger",
+    "sorttitle": "Son Of Blagger",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "southern-belle",
+    "title": "Southern Belle",
+    "sorttitle": "Southern Belle",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "space-harrier",
+    "title": "Space Harrier",
+    "sorttitle": "Space Harrier",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "space-hulk",
+    "title": "Space Hulk",
+    "sorttitle": "Space Hulk",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "space-taxi",
+    "title": "Space Taxi",
+    "sorttitle": "Space Taxi",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "spartacus-the-swordslayer",
+    "title": "Spartacus: The Swordslayer",
+    "sorttitle": "Spartacus: The Swordslayer",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "speedball-2-brutal-deluxe",
+    "title": "Speedball 2: Brutal Deluxe",
+    "sorttitle": "Speedball 2: Brutal Deluxe",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "spellbound",
+    "title": "Spellbound",
+    "sorttitle": "Spellbound",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "spelunker",
+    "title": "Spelunker",
+    "sorttitle": "Spelunker",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "spiky-harold",
+    "title": "Spiky Harold",
+    "sorttitle": "Spiky Harold",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "spitting-image",
+    "title": "Spitting Image",
+    "sorttitle": "Spitting Image",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "split-personalities",
+    "title": "Split Personalities",
+    "sorttitle": "Split Personalities",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "spy-hunter",
+    "title": "Spy Hunter",
+    "sorttitle": "Spy Hunter",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "spy-vs-spy",
+    "title": "Spy Vs Spy",
+    "sorttitle": "Spy Vs Spy",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "spy-vs-spy-2-the-island-caper",
+    "title": "Spy Vs Spy II: The Island Caper",
+    "sorttitle": "Spy Vs Spy 2",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "spy-vs-spy-3-arctic-antics",
+    "title": "Spy Vs Spy III: Arctic Antics",
+    "sorttitle": "Spy Vs Spy 3",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-staff-of-karnath",
+    "title": "The Staff Of Karnath",
+    "sorttitle": "Staff Of Karnath",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "stairways",
+    "title": "Stairways",
+    "sorttitle": "Stairways",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "shooting",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "star-wars",
+    "title": "Star Wars",
+    "sorttitle": "Star Wars",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "star-wars-droids",
+    "title": "Star Wars: Droids",
+    "sorttitle": "Star Wars: Droids",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "stardust",
+    "title": "Stardust",
+    "sorttitle": "Stardust",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "starquake",
+    "title": "Starquake",
+    "sorttitle": "Starquake",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "stormbringer",
+    "title": "Stormbringer",
+    "sorttitle": "Stormbringer",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "street-fighter",
+    "title": "Street Fighter",
+    "sorttitle": "Street Fighter",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "street-hassle",
+    "title": "Street Hassle",
+    "sorttitle": "Street Hassle",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "strider",
+    "title": "Strider",
+    "sorttitle": "Strider",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "strip-poker-a-sizzling-game-of-chance",
+    "title": "Strip Poker: A Sizzling Game Of Chance",
+    "sorttitle": "Strip Poker: A Sizzling Game Of Chance",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "casino"
+    ]
+  },
+  {
+    "slug": "strontium-dog-and-the-death-gauntlet",
+    "title": "Strontium Dog And The Death Gauntlet",
+    "sorttitle": "Strontium Dog And The Death Gauntlet",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "stunt-car-racer",
+    "title": "Stunt Car Racer",
+    "sorttitle": "Stunt Car Racer",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "summer-games",
+    "title": "Summer Games",
+    "sorttitle": "Summer Games",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "summer-games-2",
+    "title": "Summer Games II",
+    "sorttitle": "Summer Games II",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "super-cars-2",
+    "title": "Super Cars II",
+    "sorttitle": "Super Cars 2",
+    "system": "AMIGA",
+    "year": 1991,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "super-cycle",
+    "title": "Super Cycle",
+    "sorttitle": "Super Cycle",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "super-gran-the-adventure",
+    "title": "Super Gran: The Adventure",
+    "sorttitle": "Super Gran: The Adventure",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "super-gridder",
+    "title": "Super Gridder",
+    "sorttitle": "Super Gridder",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "ivan-ironman-stewarts-super-off-road",
+    "title": "Ivan 'Ironman' Stewart's Super Off Road",
+    "sorttitle": "Super Off Road",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "super-pipeline",
+    "title": "Super Pipeline",
+    "sorttitle": "Super Pipeline",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "super-robin-hood",
+    "title": "Super Robin Hood",
+    "sorttitle": "Super Robin Hood",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "super-trolley",
+    "title": "Super Trolley",
+    "sorttitle": "Super Trolley",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "superfrog",
+    "title": "Superfrog",
+    "sorttitle": "Superfrog",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "switchblade",
+    "title": "Switchblade",
+    "sorttitle": "Switchblade",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "swiv",
+    "title": "S.W.I.V.",
+    "sorttitle": "swiv.",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "the-sword-of-fargoal",
+    "title": "The Sword Of Fargoal",
+    "sorttitle": "Sword Of Fargoal",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "syndicate",
+    "title": "Syndicate",
+    "sorttitle": "Syndicate",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "system-15000",
+    "title": "System 15000",
+    "sorttitle": "System 15000",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "tales-of-the-arabian-nights",
+    "title": "Tales Of The Arabian Nights",
+    "sorttitle": "Tales Of The Arabian Nights",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform"
+    ]
+  },
+  {
+    "slug": "tapper",
+    "title": "Tapper",
+    "sorttitle": "Tapper",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "target-renegade",
+    "title": "Target: Renegade",
+    "sorttitle": "Target: Renegade",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "tau-ceti",
+    "title": "Tau Ceti",
+    "sorttitle": "Tau Ceti",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "teenage-mutant-hero-turtles",
+    "title": "Teenage Mutant Hero Turtles",
+    "sorttitle": "Teenage Mutant Hero Turtles",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "teenage-mutant-hero-turtles-the-coin-op",
+    "title": "Teenage Mutant Hero Turtles: The Coin-Op",
+    "sorttitle": "Teenage Mutant Hero Turtles: The Coin-Op",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "terminator-2-judgment-day",
+    "title": "Terminator 2: Judgment Day",
+    "sorttitle": "Terminator 2: Judgment Day",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "terror-of-the-deep",
+    "title": "Terror Of The Deep",
+    "sorttitle": "Terror Of The Deep",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "action-adventure",
+      "strategy",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "thanatos",
+    "title": "Thanatos",
+    "sorttitle": "Thanatos",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-smiths-are-dead",
+    "title": "The Smiths Are Dead",
+    "sorttitle": "The Smiths Are Dead",
+    "system": "C64",
+    "year": 2023,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "the-wombles",
+    "title": "The Wombles",
+    "sorttitle": "The Wombles",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "miscellaneous",
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "theme-park",
+    "title": "Theme Park",
+    "sorttitle": "Theme Park",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "they-stole-a-million",
+    "title": "They Stole A Million",
+    "sorttitle": "They Stole A Million",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "thing-on-a-spring",
+    "title": "Thing On A Spring",
+    "sorttitle": "Thing On A Spring",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-three-stooges",
+    "title": "The Three Stooges",
+    "sorttitle": "Three Stooges",
+    "system": "AMIGA",
+    "year": 1987,
+    "genres": [
+      "adventure",
+      "arcade",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "thrusta",
+    "title": "Thrusta",
+    "sorttitle": "Thrusta",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "thunder-blade",
+    "title": "Thunder Blade",
+    "sorttitle": "Thunder Blade",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "thunderbirds",
+    "title": "Thunderbirds",
+    "sorttitle": "Thunderbirds",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "thundercats",
+    "title": "Thundercats",
+    "sorttitle": "Thundercats",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "tilt",
+    "title": "Tilt",
+    "sorttitle": "Tilt",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "time-tunnel",
+    "title": "Time Tunnel",
+    "sorttitle": "Time Tunnel",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "times-of-lore",
+    "title": "Times Of Lore",
+    "sorttitle": "Times Of Lore",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "role-playing"
+    ]
+  },
+  {
+    "slug": "tir-na-nog",
+    "title": "Tir Na Nog",
+    "sorttitle": "Tir Na Nog",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "adventure",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "to-be-on-top",
+    "title": "To Be On Top",
+    "sorttitle": "To Be On Top",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure",
+      "puzzle",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "toki",
+    "title": "Toki",
+    "sorttitle": "Toki",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "tooth-invaders",
+    "title": "Tooth Invaders",
+    "sorttitle": "Tooth Invaders",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "top-gun",
+    "title": "Top Gun",
+    "sorttitle": "Top Gun",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "total-carnage",
+    "title": "Total Carnage",
+    "sorttitle": "Total Carnage",
+    "system": "AMIGA",
+    "year": 1994,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "total-recall",
+    "title": "Total Recall",
+    "sorttitle": "Total Recall",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "tour-de-france",
+    "title": "Tour De France",
+    "sorttitle": "Tour De France",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "racing"
+    ]
+  },
+  {
+    "slug": "toy-bizarre",
+    "title": "Toy Bizarre",
+    "sorttitle": "Toy Bizarre",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "platform"
+    ]
+  },
+  {
+    "slug": "track-field",
+    "title": "Track & Field",
+    "sorttitle": "Track & Field",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-train-escape-to-normandy",
+    "title": "The Train: Escape To Normandy",
+    "sorttitle": "Train: Escape To Normandy",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "trains",
+    "title": "Trains",
+    "sorttitle": "Trains",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "strategy"
+    ]
+  },
+  {
+    "slug": "the-transformers",
+    "title": "The Transformers",
+    "sorttitle": "Transformers",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-trap-door",
+    "title": "The Trap Door",
+    "sorttitle": "Trap Door",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "through-the-trap-door",
+    "title": "Through The Trap Door",
+    "sorttitle": "Trap Door 2",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "action-adventure",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "trashman",
+    "title": "Trashman",
+    "sorttitle": "Trashman",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "trolls-and-tribulations",
+    "title": "Trolls And Tribulations",
+    "sorttitle": "Trolls And Tribulations",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "turbo-out-run",
+    "title": "Turbo Out Run",
+    "sorttitle": "Turbo Out Run",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "racing"
+    ]
+  },
+  {
+    "slug": "turrican",
+    "title": "Turrican",
+    "sorttitle": "Turrican",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "turrican-2-the-final-fight",
+    "title": "Turrican II: The Final Fight",
+    "sorttitle": "Turrican 2",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "tusker",
+    "title": "Tusker",
+    "sorttitle": "Tusker",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "action adventure"
+    ]
+  },
+  {
+    "slug": "uchi-mata",
+    "title": "Uchi Mata",
+    "sorttitle": "Uchi Mata",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "fighting",
+      "sports"
+    ]
+  },
+  {
+    "slug": "ultima-1-the-first-age-of-darkness",
+    "title": "Ultima I: The First Age Of Darkness",
+    "sorttitle": "Ultima 1",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "role-playing",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "underwurlde",
+    "title": "Underwurlde",
+    "sorttitle": "Underwurlde",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure",
+      "platform"
+    ]
+  },
+  {
+    "slug": "the-untouchables",
+    "title": "The Untouchables",
+    "sorttitle": "Untouchables",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "up-up-and-away",
+    "title": "Up Up And Away",
+    "sorttitle": "Up Up And Away",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "up-n-down",
+    "title": "Up'N Down",
+    "sorttitle": "Up'N Down",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "uridium",
+    "title": "Uridium",
+    "sorttitle": "Uridium",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "uuno-turhapuro-muuttaa-maalle",
+    "title": "Uuno Turhapuro Muuttaa Maalle",
+    "sorttitle": "Uuno Turhapuro Muuttaa Maalle",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade",
+      "sports",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "v-the-computer-game",
+    "title": "V: The Computer Game",
+    "sorttitle": "V: The Computer Game",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "vendetta",
+    "title": "Vendetta",
+    "sorttitle": "Vendetta",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "vigilante",
+    "title": "Vigilante",
+    "sorttitle": "Vigilante",
+    "system": "C64",
+    "year": 1989,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "visible-solar-system",
+    "title": "Visible Solar System",
+    "sorttitle": "Visible Solar System",
+    "system": "C64",
+    "year": 1982,
+    "genres": [
+      "quiz",
+      "miscellaneous"
+    ]
+  },
+  {
+    "slug": "walker",
+    "title": "Walker",
+    "sorttitle": "Walker",
+    "system": "AMIGA",
+    "year": 1993,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "water-polo",
+    "title": "Water Polo",
+    "sorttitle": "Water Polo",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "the-way-of-the-exploding-fist",
+    "title": "The Way Of The Exploding Fist",
+    "sorttitle": "Way Of The Exploding Fist",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "ween-the-prophecy",
+    "title": "Ween: The Prophecy",
+    "sorttitle": "Ween: The Prophecy",
+    "system": "AMIGA",
+    "year": 1992,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "weird-dreams",
+    "title": "Weird Dreams",
+    "sorttitle": "Weird Dreams",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "action-adventure",
+      "horror"
+    ]
+  },
+  {
+    "slug": "west-bank",
+    "title": "West Bank",
+    "sorttitle": "West Bank",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "who-dares-wins-2",
+    "title": "Who Dares Wins II",
+    "sorttitle": "Who Dares Wins 2",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "the-willow-pattern-adventure",
+    "title": "The Willow Pattern Adventure",
+    "sorttitle": "Willow Pattern",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "wings",
+    "title": "Wings",
+    "sorttitle": "Wings",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "wings-of-fury",
+    "title": "Wings Of Fury",
+    "sorttitle": "Wings Of Fury",
+    "system": "AMIGA",
+    "year": 1990,
+    "genres": [
+      "arcade",
+      "strategy"
+    ]
+  },
+  {
+    "slug": "winter-games",
+    "title": "Winter Games",
+    "sorttitle": "Winter Games",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "wizard",
+    "title": "Wizard",
+    "sorttitle": "Wizard",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade",
+      "platform",
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "wizard-of-wor",
+    "title": "Wizard Of Wor",
+    "sorttitle": "Wizard Of Wor",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "wizball",
+    "title": "Wizball",
+    "sorttitle": "Wizball",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "world-games",
+    "title": "World Games",
+    "sorttitle": "World Games",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "sports"
+    ]
+  },
+  {
+    "slug": "wwf-wrestlemania",
+    "title": "WWF Wrestlemania",
+    "sorttitle": "WWF Wrestlemania",
+    "system": "C64",
+    "year": 1991,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "x-out",
+    "title": "X-Out",
+    "sorttitle": "X-Out",
+    "system": "C64",
+    "year": 1990,
+    "genres": [
+      "shooting"
+    ]
+  },
+  {
+    "slug": "xybots",
+    "title": "Xybots",
+    "sorttitle": "Xybots",
+    "system": "AMIGA",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "yie-ar-kung-fu",
+    "title": "Yie Ar Kung-Fu",
+    "sorttitle": "Yie Ar Kung-Fu",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "fighting"
+    ]
+  },
+  {
+    "slug": "yogi-bear",
+    "title": "Yogi Bear",
+    "sorttitle": "Yogi Bear",
+    "system": "C64",
+    "year": 1987,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "the-young-ones",
+    "title": "The Young Ones",
+    "sorttitle": "Young Ones",
+    "system": "C64",
+    "year": 1986,
+    "genres": [
+      "action-adventure"
+    ]
+  },
+  {
+    "slug": "zak-mckracken-and-the-alien-mindbenders",
+    "title": "Zak Mckracken And The Alien Mindbenders",
+    "sorttitle": "Zak Mckracken",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "zamzara",
+    "title": "Zamzara",
+    "sorttitle": "Zamzara",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "platform",
+      "shooting"
+    ]
+  },
+  {
+    "slug": "zaxxon",
+    "title": "Zaxxon",
+    "sorttitle": "Zaxxon",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "zenji",
+    "title": "Zenji",
+    "sorttitle": "Zenji",
+    "system": "C64",
+    "year": 1984,
+    "genres": [
+      "puzzle"
+    ]
+  },
+  {
+    "slug": "zone-trooper",
+    "title": "Zone Trooper",
+    "sorttitle": "Zone Trooper",
+    "system": "C64",
+    "year": 1988,
+    "genres": [
+      "arcade"
+    ]
+  },
+  {
+    "slug": "zork-trilogy",
+    "title": "Zork Trilogy",
+    "sorttitle": "Zork Trilogy",
+    "system": "C64",
+    "year": 1983,
+    "genres": [
+      "adventure"
+    ]
+  },
+  {
+    "slug": "zorro",
+    "title": "Zorro",
+    "sorttitle": "Zorro",
+    "system": "C64",
+    "year": 1985,
+    "genres": [
+      "arcade",
+      "platform",
+      "puzzle"
+    ]
+  }
+]

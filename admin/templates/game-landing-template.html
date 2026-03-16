@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Tusker | Cheeky Commodore Gamer</title>
+    <title>{{GAME_NAME}} | Cheeky Commodore Gamer</title>
 
     <script src="/js/analytics.js"></script>
-    <meta name="description" content="Tusker on Commodore — screenshots, manual, downloads and video.">
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/tusker/">
+    <meta name="description" content="{{DESCRIPTION}}">
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/{{SLUG}}/">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Cheeky Commodore Gamer">
-    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/tusker/">
-    <meta property="og:title" content="Tusker | Cheeky Commodore Gamer">
-    <meta property="og:description" content="Tusker on Commodore — screenshots, manual, downloads and video.">
-    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tusker.jpg">
+    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/{{SLUG}}/">
+    <meta property="og:title" content="{{GAME_NAME}} | Cheeky Commodore Gamer">
+    <meta property="og:description" content="{{DESCRIPTION}}">
+    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/{{THUMBNAIL}}">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Tusker | Cheeky Commodore Gamer">
-    <meta name="twitter:description" content="Tusker on Commodore — screenshots, manual, downloads and video.">
-    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tusker.jpg">
+    <meta name="twitter:title" content="{{GAME_NAME}} | Cheeky Commodore Gamer">
+    <meta name="twitter:description" content="{{DESCRIPTION}}">
+    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/{{THUMBNAIL}}">
     <meta charset="UTF-8" />
-    <!-- Canonical route enforcement: redirect /games/tusker.html -> /games/tusker/ -->
-    <meta http-equiv="refresh" content="0; url=/games/tusker/">
+    <!-- Canonical route enforcement: redirect /games/{{SLUG}}.html -> /games/{{SLUG}}/ -->
+    <meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
     <script>
       (function () {
         var suffix = window.location.search + window.location.hash;
-        window.location.replace("/games/tusker/" + suffix);
+        window.location.replace("/games/{{SLUG}}/" + suffix);
       })();
     </script>
 
@@ -47,13 +47,13 @@
     {
         "@context": "https://schema.org",
         "@type": "VideoGame",
-        "name": "Tusker",
-        "description": "Tusker on Commodore — screenshots, manual, downloads and video.",
-        "datePublished": "1989",
-        "gamePlatform": "C64",
-        "publisher": "System 3",
-        "image": "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/tusker.jpg",
-        "url": "https://www.cheekycommodoregamer.co.uk/games/tusker/"
+        "name": "{{GAME_NAME}}",
+        "description": "{{DESCRIPTION}}",
+        "datePublished": "{{YEAR}}",
+        "gamePlatform": "{{PLATFORM}}",
+        "publisher": "{{PUBLISHER}}",
+        "image": "https://www.cheekycommodoregamer.co.uk/{{THUMBNAIL}}",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/{{SLUG}}/"
     }
     </script>
 </head>
@@ -74,21 +74,21 @@
                 <div class="game-hero__media">
                     <img
                         class="game-hero__thumb"
-                        src="../resources/images/thumbnails/all/tusker.jpg"
-                        alt="Tusker cover"
+                        src="../{{THUMBNAIL}}"
+                        alt="{{GAME_NAME}} cover"
                         loading="lazy"
-                        width="460" height="215" srcset="../resources/images/thumbnails/all/tusker.jpg 460w" sizes="(max-width: 720px) 90vw, 460px" />
+                        width="460" height="215" srcset="../{{THUMBNAIL}} 460w" sizes="(max-width: 720px) 90vw, 460px" />
                 </div>
 
                 <div class="game-hero__content">
-                    <h1 class="game-hero__title">Tusker</h1>
+                    <h1 class="game-hero__title">{{GAME_NAME}}</h1>
 
                     <div class="game-hero__meta">
-                        <span class="game-meta__item">1989</span>
+                        <span class="game-meta__item">{{YEAR}}</span>
                         <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">C64</span>
+                        <span class="game-meta__item">{{PLATFORM}}</span>
                         <span class="game-meta__sep">•</span>
-                        <span class="game-meta__item">System 3</span>
+                        <span class="game-meta__item">{{PUBLISHER}}</span>
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@
             <h2 class="game-section__title">Game Summary</h2>
 
             <div class="game-description">
-                Tusker on Commodore — screenshots, manual, downloads and video.
+                {{DESCRIPTION}}
             </div>
         </section>
 
@@ -109,7 +109,7 @@
             <h2 class="game-section__title">More Details</h2>
 
             <div class="game-downloads">
-                <a class="ccg-btn ccg-btn--primary" href="/games/tusker/">
+                <a class="ccg-btn ccg-btn--primary" href="/games/{{SLUG}}/">
                     View the full interactive game page
                 </a>
 
@@ -145,4 +145,3 @@
 
 </body>
 </html>
-
