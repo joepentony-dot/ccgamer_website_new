@@ -2,21 +2,15 @@
 
 const fs = require("fs");
 const path = require("path");
-
-/* ---------------------------------------
-   Constants
---------------------------------------- */
+const { applyTemplate, readTemplate } = require("./template-engine");
 
 const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
-const REDIRECT_TARGET = "/games/game.html?slug=";
-
 const repoRoot = path.resolve(__dirname, "..");
-const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const gamesDir = path.join(repoRoot, "games");
-
-/* ---------------------------------------
-   Utilities
---------------------------------------- */
+const gamesJsonPath = path.join(gamesDir, "games.json");
+const sitemapGamesPath = path.join(repoRoot, "sitemap-games.xml");
+const gameTemplatePath = path.join(repoRoot, "templates", "game-template.html");
+const redirectTemplatePath = path.join(repoRoot, "templates", "game-redirect-template.html");
 
 function slugify(text) {
     return String(text || "")
@@ -26,304 +20,236 @@ function slugify(text) {
         .replace(/^-+|-+$/g, "");
 }
 
+function toGameId(slug) {
+    return String(slug || "").replace(/-/g, "_");
+}
+
 function stripHtml(text) {
-    return String(text || "")
-        .replace(/<[^>]*>/g, "")
-        .trim();
+    return String(text || "").replace(/<[^>]*>/g, "").trim();
 }
 
-function escapeHtml(text) {
-    return String(text || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+function normalizeThumbnail(thumbnail, slug) {
+    const raw = String(thumbnail || "").trim();
+    if (!raw) return `${toGameId(slug)}_europe.jpg`;
+    return raw.includes("/") ? path.basename(raw) : raw;
 }
 
-function resolveImageUrl(game) {
-    const raw =
-        game.thumbnail ||
-        game.thumb ||
-        game.cover ||
-        game.image ||
-        "";
+function normalizeDescription(description, gameName) {
+    const cleaned = stripHtml(description);
+    if (cleaned) return cleaned;
+    return `${gameName} on Commodore — screenshots, manual, downloads and video.`;
+}
 
-    if (!raw) return "";
-
-    const cleaned = String(raw).trim();
-
-    if (!cleaned) return "";
-
-    if (/^https?:\/\//i.test(cleaned)) {
-        return cleaned;
+function parseArgs(argv) {
+    const args = {};
+    for (let i = 0; i < argv.length; i += 1) {
+        const token = argv[i];
+        if (!token.startsWith("--")) continue;
+        const key = token.slice(2);
+        const next = argv[i + 1];
+        if (!next || next.startsWith("--")) {
+            args[key] = true;
+            continue;
+        }
+        args[key] = next;
+        i += 1;
     }
-
-    const relative = cleaned.startsWith("/")
-        ? cleaned
-        : `/${cleaned}`;
-
-    return `${SITE_ROOT}${relative}`;
+    return args;
 }
 
-function detectPlatform(game) {
-    const raw = String(game.system || game.platform || "").trim().toLowerCase();
-    if (raw === "c64" || raw.includes("commodore")) return "Commodore 64";
-    if (raw === "amiga" || raw.includes("amiga")) return "Amiga";
-    return "Commodore 64";
-}
-
-function detectSeoHooks(game) {
-    const hooks = ["Game Info"];
-    if (String(game.pdf || "").trim()) hooks.push("Manual");
-    if (String(game.videoid || game.videoId || "").trim()) hooks.push("Video");
-    if (String(game.ccg_rating_reason || "").trim().length >= 20) hooks.unshift("Review");
-    return hooks;
-}
-
-function joinHooks(hooks) {
-    if (hooks.length <= 1) return hooks[0] || "Game Info";
-    if (hooks.length === 2) return `${hooks[0]} & ${hooks[1]}`;
-    return `${hooks.slice(0, -1).join(", ")} & ${hooks[hooks.length - 1]}`;
-}
-
-function buildSeoDescription(game, title) {
-    const raw = stripHtml(game.description || game.desc || "");
-    const hooks = detectSeoHooks(game);
-    const platform = detectPlatform(game);
-
-    if (raw) {
-        return raw.length <= 155 ? raw : `${raw.slice(0, 152).trim()}...`;
+function readGamesJson() {
+    const raw = fs.readFileSync(gamesJsonPath, "utf8");
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) {
+        throw new Error("games.json is not an array.");
     }
-
-    const features = [];
-    if (hooks.includes("Manual")) features.push("manual access");
-    if (hooks.includes("Video")) features.push("gameplay video");
-    const featureText = features.length ? ` with ${joinHooks(features.map((f) => f[0].toUpperCase() + f.slice(1)))}` : "";
-    return `${title} on ${platform}${featureText} and full game information.`;
+    return data;
 }
 
-/* ---------------------------------------
-   Validation (Only Fatal Fields)
---------------------------------------- */
+function writeGamesJson(games) {
+    fs.writeFileSync(gamesJsonPath, `${JSON.stringify(games, null, 2)}\n`, "utf8");
+}
 
-function validateGame(game, slug) {
+function validateGame(game) {
+    const slug = slugify(game.slug || game.title);
+    const title = stripHtml(game.title);
+    const year = String(game.year || "").trim();
+    const publisher = stripHtml(game.publisher || game.developer || "Unknown Publisher");
+    const thumbnail = normalizeThumbnail(game.thumbnail, slug);
+    const description = normalizeDescription(game.description || game.desc, title || "Game");
+
     const issues = [];
-
-    // Only fatal blockers
     if (!slug) issues.push("missing slug");
-    if (!game.title) issues.push("missing title");
+    if (!title) issues.push("missing title");
+    if (!year) issues.push("missing year");
+    if (!publisher) issues.push("missing publisher");
+    if (!thumbnail) issues.push("missing thumbnail");
 
-    // Everything else allowed (fallbacks handle it)
-    return issues;
+    return {
+        issues,
+        slug,
+        title,
+        year,
+        publisher,
+        thumbnail,
+        description
+    };
 }
 
-/* ---------------------------------------
-   HTML Builder
---------------------------------------- */
+function loadTemplates() {
+    return {
+        gameTemplate: readTemplate(gameTemplatePath),
+        redirectTemplate: readTemplate(redirectTemplatePath)
+    };
+}
 
-function buildHtml(game, slug, description, imageUrl, publisher, year) {
-    const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
-    const platform = detectPlatform(game);
-    const hooks = detectSeoHooks(game);
-    const title = `${normalizedTitle} (${platform}) – ${joinHooks(hooks)}`;
-    const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
-    const redirectUrl = `${REDIRECT_TARGET}${encodeURIComponent(slug)}`;
+function generatePageFiles(game, templates, options = {}) {
+    const normalized = validateGame(game);
+    if (normalized.issues.length > 0) {
+        throw new Error(`${normalized.slug || game.slug || "unknown"}: ${normalized.issues.join(", ")}`);
+    }
 
-    const safeTitle = escapeHtml(title);
-    const safeDescription = escapeHtml(description);
-    const safePublisher = escapeHtml(publisher);
-    const safeYear = escapeHtml(year);
-    const safeImageUrl = escapeHtml(imageUrl);
-    const safeCanonical = escapeHtml(canonicalUrl);
-
-    const schemaData = {
-        "@context": "https://schema.org",
-        "@type": "VideoGame",
-        name: normalizedTitle,
-        description,
-        datePublished: String(year),
-        gamePlatform: String(game.system || game.platform || ""),
-        publisher,
-        image: imageUrl,
-        url: canonicalUrl
+    const values = {
+        GAME_NAME: normalized.title,
+        YEAR: normalized.year,
+        PUBLISHER: normalized.publisher,
+        SLUG: normalized.slug,
+        THUMBNAIL: normalized.thumbnail,
+        DESCRIPTION: normalized.description
     };
 
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=${redirectUrl}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    const canonicalDir = path.join(gamesDir, normalized.slug);
+    const canonicalPath = path.join(canonicalDir, "index.html");
+    const redirectPath = path.join(gamesDir, `${normalized.slug}.html`);
 
-    <title>${safeTitle}</title>
-    <meta name="description" content="${safeDescription}" />
+    const shouldWriteCanonical = options.force || !fs.existsSync(canonicalPath);
+    const shouldWriteRedirect = options.force || !fs.existsSync(redirectPath);
 
-    <link rel="canonical" href="${safeCanonical}" />
+    if (shouldWriteCanonical || shouldWriteRedirect) {
+        fs.mkdirSync(canonicalDir, { recursive: true });
+    }
 
-    <meta property="og:title" content="${safeTitle}" />
-    <meta property="og:description" content="${safeDescription}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${safeCanonical}" />
-    <meta property="og:image" content="${safeImageUrl}" />
+    if (shouldWriteCanonical) {
+        fs.writeFileSync(canonicalPath, applyTemplate(templates.gameTemplate, values), "utf8");
+    }
+    if (shouldWriteRedirect) {
+        fs.writeFileSync(redirectPath, applyTemplate(templates.redirectTemplate, values), "utf8");
+    }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${safeTitle}" />
-    <meta name="twitter:description" content="${safeDescription}" />
-    <meta name="twitter:image" content="${safeImageUrl}" />
-
-
-    <script>
-        (function () {
-            try {
-                window.location.replace("${redirectUrl}");
-            } catch (e) {
-                window.location.href = "${redirectUrl}";
-            }
-        })();
-    </script>
-
-    <script type="application/ld+json">
-${JSON.stringify(schemaData, null, 4)}
-    </script>
-
-</head>
-<body>
-</body>
-</html>
-`;
+    return {
+        slug: normalized.slug,
+        wroteCanonical: shouldWriteCanonical,
+        wroteRedirect: shouldWriteRedirect
+    };
 }
 
-/* ---------------------------------------
-   Main Runner
---------------------------------------- */
+function ensureGameEntry(games, payload) {
+    const slug = slugify(payload.slug || payload.title);
+    if (!slug) {
+        throw new Error("--slug or --title is required for --add");
+    }
+
+    const existing = games.find((game) => slugify(game.slug || game.title) === slug);
+    if (existing) {
+        return { games, slug, added: false };
+    }
+
+    const title = stripHtml(payload.title || slug);
+    const yearValue = Number(payload.year);
+    const year = Number.isFinite(yearValue) ? yearValue : payload.year;
+    const publisher = stripHtml(payload.publisher || "Unknown Publisher");
+    const thumbnail = normalizeThumbnail(payload.thumbnail, slug);
+    const description = normalizeDescription(payload.description, title);
+
+    const entry = {
+        system: payload.platform || "C64",
+        id: toGameId(slug),
+        slug,
+        title,
+        sorttitle: title,
+        year,
+        genres: [],
+        collections: [],
+        videoid: "",
+        thumbnail: `resources/images/thumbnails/all/${thumbnail}`,
+        music: [],
+        pdf: "",
+        disk: [],
+        lemon: [],
+        description,
+        credits: {
+            publisher: [publisher],
+            producer: "",
+            coder: [],
+            graphics: [],
+            musician: [],
+            re_releaser: [],
+            developer: ""
+        },
+        developer: ""
+    };
+
+    const next = [...games, entry].sort((a, b) => String(a.sorttitle || a.title || "").localeCompare(String(b.sorttitle || b.title || "")));
+    return { games: next, slug, added: true };
+}
+
+function writeSitemapGames(games) {
+    const today = new Date().toISOString().slice(0, 10);
+    const slugs = games
+        .map((game) => slugify(game.slug || game.title))
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b));
+
+    const lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ];
+
+    for (const slug of slugs) {
+        lines.push("  <url>");
+        lines.push(`    <loc>${SITE_ROOT}/games/${slug}/</loc>`);
+        lines.push(`    <lastmod>${today}</lastmod>`);
+        lines.push("  </url>");
+    }
+
+    lines.push("</urlset>");
+    fs.writeFileSync(sitemapGamesPath, `${lines.join("\n")}\n`, "utf8");
+}
 
 function main() {
+    const args = parseArgs(process.argv.slice(2));
+    const templates = loadTemplates();
+    let games = readGamesJson();
 
-    let games;
+    let addedGame = false;
 
-    try {
-        const raw = fs.readFileSync(gamesJsonPath, "utf8");
-        games = JSON.parse(raw);
-    } catch (err) {
-        console.error(`[ERROR] Failed to read games.json: ${err.message}`);
-        process.exit(1);
+    if (args.add) {
+        const result = ensureGameEntry(games, args);
+        games = result.games;
+        if (result.added) {
+            writeGamesJson(games);
+            addedGame = true;
+            console.log(`[UPDATE] games/games.json added slug: ${result.slug}`);
+        } else {
+            console.log(`[SKIP] games/games.json slug already exists: ${result.slug}`);
+        }
     }
 
-    if (!Array.isArray(games)) {
-        console.error("[ERROR] games.json is not an array.");
-        process.exit(1);
+    let createdCanonical = 0;
+    let createdRedirect = 0;
+
+    for (const game of games) {
+        const outcome = generatePageFiles(game, templates, { force: Boolean(args.force) });
+        if (outcome.wroteCanonical) createdCanonical += 1;
+        if (outcome.wroteRedirect) createdRedirect += 1;
     }
 
-    let processed = 0;
-    let created = 0;
-    let skipped = 0;
-    let errors = 0;
-    let warnings = 0;
+    if (addedGame || args["sync-sitemap"]) {
+        writeSitemapGames(games);
+        console.log(`[UPDATE] ${path.relative(repoRoot, sitemapGamesPath)}`);
+    }
 
-    games.forEach((game) => {
-
-        processed += 1;
-
-        let slug = game.slug
-            ? slugify(game.slug)
-            : slugify(game.title);
-
-        if (slug === "smash-t-5" || slug === "smash-t-v") {
-            slug = "smash-tv";
-        }
-
-        /* Fallback-safe metadata */
-
-        const normalizedTitle = slug === "smash-tv" ? "Smash TV" : stripHtml(game.title);
-        const description = buildSeoDescription(game, normalizedTitle);
-
-        const imageUrl =
-            resolveImageUrl(game) ||
-            `${SITE_ROOT}/resources/images/thumbnails/placeholder.jpg`;
-
-        const publisher = stripHtml(
-            game.publisher ||
-            game.developer ||
-            "Unknown Publisher"
-        );
-
-        const year = stripHtml(
-            game.year ||
-            "Unknown Year"
-        );
-
-        /* Non-fatal warnings */
-
-        if (!game.publisher && !game.developer) {
-            console.warn(`[WARN] ${slug}: missing publisher`);
-            warnings += 1;
-        }
-
-        if (!game.year) {
-            console.warn(`[WARN] ${slug}: missing year`);
-            warnings += 1;
-        }
-
-        if (!game.description && !game.desc) {
-            console.warn(`[WARN] ${slug}: missing description`);
-            warnings += 1;
-        }
-
-        if (!resolveImageUrl(game)) {
-            console.warn(`[WARN] ${slug}: missing image`);
-            warnings += 1;
-        }
-
-        /* Fatal validation */
-
-        const issues = validateGame(game, slug);
-
-        if (issues.length) {
-            errors += 1;
-            console.error(
-                `[ERROR] ${game.id || game.title || "unknown"}: ${issues.join(", ")}`
-            );
-            return;
-        }
-
-        const outputDir = path.join(gamesDir, slug);
-        const outputPath = path.join(outputDir, "index.html");
-
-        if (fs.existsSync(outputPath)) {
-            skipped += 1;
-            console.warn(`[SKIP] ${slug}: already exists`);
-            return;
-        }
-
-        fs.mkdirSync(outputDir, { recursive: true });
-
-        const html = buildHtml(
-            game,
-            slug,
-            description,
-            imageUrl,
-            publisher,
-            year
-        );
-
-        fs.writeFileSync(outputPath, html, "utf8");
-
-        created += 1;
-
-        console.log(`[CREATE] ${slug}: ${outputPath}`);
-    });
-
-    console.log("\nSummary:");
-    console.log(`Processed: ${processed}`);
-    console.log(`Created: ${created}`);
-    console.log(`Skipped: ${skipped}`);
-    console.log(`Warnings: ${warnings}`);
-    console.log(`Errors: ${errors}`);
+    console.log(`[DONE] Canonical pages created: ${createdCanonical}; redirect stubs created: ${createdRedirect}.`);
 }
-
-/* ---------------------------------------
-   Run
---------------------------------------- */
 
 main();
