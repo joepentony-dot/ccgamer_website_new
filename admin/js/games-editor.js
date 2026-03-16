@@ -49,6 +49,7 @@ const EMPTY_DRAFT = {
   thumbnail: '',
   box3d: '',
   externalLinks: '',
+  lemonUrl: '',
   filenameOnlyMode: true,
   jsonExportMode: 'full',
   notifyMembers: false,
@@ -264,6 +265,7 @@ function bindEvents() {
   el.fetchLibraryButton?.addEventListener('click', async () => {
     await loadLibrary(true);
   });
+
 
   el.backButtons.forEach((button) => {
     button.addEventListener('click', () => {
@@ -527,6 +529,10 @@ function validateStep1() {
 
 function validateStep2() {
   const errors = [];
+  if (!String(state.draft.thumbnail || '').trim()) {
+    errors.push('Thumbnail is required.');
+  }
+
   parseLines(state.draft.disk).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid disk URL: ${url}`);
   });
@@ -534,6 +540,9 @@ function validateStep2() {
   parseLines(state.draft.externalLinks).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid external link URL: ${url}`);
   });
+
+  const lemonUrl = String(state.draft.lemonUrl || '').trim();
+  if (lemonUrl && !isValidUrl(lemonUrl)) errors.push('Lemon64 URL must be a valid URL.');
 
   return errors;
 }
@@ -640,7 +649,7 @@ function buildPackageData() {
     music: parseCommaList(state.draft.music),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
-    lemon: parseLines(state.draft.externalLinks),
+    lemon: buildLemonLinks(state.draft.lemonUrl, state.draft.externalLinks),
     description: state.draft.description.trim(),
     ccg_rating: Number(state.draft.ccg_rating),
     ccg_rating_reason: state.draft.ccg_rating_reason.trim(),
@@ -741,9 +750,89 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     PLATFORM: cleanForHtml(system),
     SLUG: cleanForHtml(slug),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
+    THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
     DESCRIPTION: cleanForHtml(seoDescription)
   };
 }
+
+
+function extractFilename(pathValue) {
+  const value = String(pathValue || '').trim().replace(/\?.*$/, '');
+  if (!value) return 'default.jpg';
+  const segments = value.split('/').filter(Boolean);
+  return segments[segments.length - 1] || 'default.jpg';
+}
+
+function buildLemonLinks(lemonUrl, externalLinks) {
+  const links = [];
+  const lemon = String(lemonUrl || '').trim();
+  if (lemon) links.push(lemon);
+  parseLines(externalLinks).forEach((link) => {
+    if (!links.includes(link)) links.push(link);
+  });
+  return links;
+}
+
+async function fetchLemonData() {
+  const url = String(state.draft.lemonUrl || '').trim();
+
+  if (!url.includes('lemon64.com')) {
+    window.alert('Please enter a valid Lemon64 URL.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+    const data = await response.json();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(data.contents || '', 'text/html');
+
+    const title = readLemonText(doc, ['h1']);
+    const year = (readLemonText(doc, ['.release-year', '.game-info .year', '[class*=year]']) || '').replace(/\D/g, '');
+    const publisher = readLemonText(doc, ["a[href*='/publisher/']"]);
+    const coder = readLemonText(doc, ["a[href*='/person/']"]);
+    const musician = readLemonText(doc, ["a[href*='/musician/']", "a[href*='/musician']", '.musician a']);
+    const graphics = readLemonText(doc, ['.graphics a', "a[href*='/graphics/']"]);
+    const genre = readLemonText(doc, ["a[href*='/genre/']", '.genre a']);
+
+    if (title) setFieldValue('title', title);
+    if (year) setFieldValue('year', year);
+    if (publisher) setFieldValue('creditsPublisher', publisher);
+    if (coder) setFieldValue('creditsCoder', coder);
+    if (musician) setFieldValue('creditsMusic', musician);
+    if (graphics) setFieldValue('creditsGraphics', graphics);
+
+    if (genre) {
+      const normalizedGenre = mapLegacyCategoryValue(genre, 'genres');
+      if (normalizedGenre && state.genres.includes(normalizedGenre)) {
+        state.draft.genres = [normalizedGenre];
+        markOptionChecked('genres', state.draft.genres);
+      }
+    }
+
+    if (!state.slugTouched && title) setFieldValue('slug', slugify(title));
+    if (!state.idTouched && title) setFieldValue('id', idify(title));
+
+    updateStep1UiState();
+    updateDerivedPreviews();
+  } catch (error) {
+    console.error(error);
+    window.alert('Could not fetch Lemon64 data.');
+  }
+}
+
+function readLemonText(doc, selectors) {
+  for (const selector of selectors) {
+    const node = doc.querySelector(selector);
+    if (node && node.textContent) {
+      const value = node.textContent.trim();
+      if (value) return value;
+    }
+  }
+  return '';
+}
+
+window.fetchLemonData = fetchLemonData;
 
 function renderTemplate(template, vars) {
   let output = String(template || '');
