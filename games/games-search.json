@@ -14,16 +14,14 @@
     "composer": [
       "Chris Newcombe"
     ],
-    "music": [
-      "20-tons.mp3"
-    ],
+    "music": [],
     "year": 1985
   },
   {
     "title": "720 Degrees",
     "slug": "720-degrees",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -82,7 +80,7 @@
     "slug": "ace-of-aces",
     "publisher": [
       "Accolade",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "strategy"
@@ -183,7 +181,7 @@
     "title": "Airborne Ranger",
     "slug": "airborne-ranger",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "action-adventure",
@@ -453,7 +451,7 @@
     "title": "Another World",
     "slug": "another-world",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure",
@@ -464,7 +462,7 @@
       "platform"
     ],
     "composer": [
-      "Jean-François Freitas"
+      "Jean-Francois Freitas"
     ],
     "music": [],
     "year": 1991
@@ -494,7 +492,7 @@
     "slug": "apocalypse",
     "publisher": [
       "Virgin Interactive",
-      "3 logos"
+      "3 Logos"
     ],
     "genre": [
       "shooting"
@@ -953,7 +951,7 @@
     "slug": "batman-the-caped-crusader",
     "publisher": [
       "Data East",
-      "ERBE Software",
+      "Erbe Software",
       "Ocean"
     ],
     "genre": [
@@ -1111,7 +1109,7 @@
     "slug": "beneath-a-steel-sky",
     "publisher": [
       "Virgin Interactive",
-      "3 logos"
+      "3 Logos"
     ],
     "genre": [
       "adventure"
@@ -1187,7 +1185,7 @@
     "title": "Bionic Commando",
     "slug": "bionic-commando",
     "publisher": [
-      "GO!"
+      "Go!"
     ],
     "genre": [
       "arcade",
@@ -1276,7 +1274,7 @@
     "title": "Black Tiger",
     "slug": "black-tiger",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -1312,7 +1310,7 @@
     "title": "Blade Runner",
     "slug": "blade-runner",
     "publisher": [
-      "CRL"
+      "Crl"
     ],
     "genre": [
       "arcade"
@@ -1381,7 +1379,7 @@
     "title": "Blockbusters",
     "slug": "blockbusters",
     "publisher": [
-      "TV Games"
+      "Tv Games"
     ],
     "genre": [
       "quiz"
@@ -1406,7 +1404,7 @@
       "sports"
     ],
     "composer": [
-      "Lars Hård"
+      "Lars Hard"
     ],
     "music": [],
     "year": 1986
@@ -1432,7 +1430,7 @@
     "slug": "blue-max",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -1615,7 +1613,7 @@
     "title": "Breakdance",
     "slug": "breakdance",
     "publisher": [
-      "CBS Electronics Software",
+      "Cbs Electronics Software",
       "Epyx"
     ],
     "genre": [
@@ -1634,7 +1632,7 @@
     "title": "Breakthru",
     "slug": "breakthru",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -1687,7 +1685,7 @@
     "slug": "bruce-lee",
     "publisher": [
       "Datasoft",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -1838,7 +1836,7 @@
     "slug": "california-games",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -1857,7 +1855,7 @@
     "slug": "cannon-fodder",
     "publisher": [
       "Virgin Interactive",
-      "3 logos"
+      "3 Logos"
     ],
     "genre": [
       "arcade",
@@ -1879,7 +1877,7 @@
     "slug": "cannon-fodder-2",
     "publisher": [
       "Virgin Interactive",
-      "3 logos"
+      "3 Logos"
     ],
     "genre": [
       "arcade",
@@ -1960,7 +1958,7 @@
     "slug": "the-castles-of-dr-creep",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "puzzle",
@@ -1980,7 +1978,7 @@
     "title": "Cauldron",
     "slug": "cauldron",
     "publisher": [
-      "Brøderbund",
+      "BrøDerbund",
       "Palace Software"
     ],
     "genre": [
@@ -2061,7 +2059,7 @@
       "sports"
     ],
     "composer": [
-      "Alan McKean",
+      "Alan Mckean",
       "Bryce Morsello"
     ],
     "music": [],
@@ -2089,15 +2087,15 @@
     "title": "Championship Wrestling",
     "slug": "championship-wrestling",
     "publisher": [
-      "d3m Software",
-      "ECP",
+      "D3m Software",
+      "Ecp",
       "Epyx",
-      "ERBE Software",
+      "Erbe Software",
       "Pylator",
       "Quick Soft",
       "Rushware",
       "Scandomatic",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -2232,7 +2230,7 @@
     "slug": "choplifter",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "arcade",
@@ -2268,7 +2266,7 @@
     "title": "Chuckie Egg",
     "slug": "chuckie-egg",
     "publisher": [
-      "A'n'F Software"
+      "A'N'F Software"
     ],
     "genre": [
       "platform"
@@ -2286,7 +2284,7 @@
     "title": "Civilization",
     "slug": "civilization",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "strategy"
@@ -2385,7 +2383,7 @@
     "slug": "congo-bongo",
     "publisher": [
       "Sega",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -2550,7 +2548,7 @@
     "title": "Crystal Castles",
     "slug": "crystal-castles",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -2774,7 +2772,7 @@
     "title": "Deactivators",
     "slug": "deactivators",
     "publisher": [
-      "Reaktör Software"
+      "Reaktor Software"
     ],
     "genre": [
       "strategy"
@@ -2783,7 +2781,7 @@
       "strategy"
     ],
     "composer": [
-      "Simon PC Frost"
+      "Simon Pc Frost"
     ],
     "music": [],
     "year": 1986
@@ -2920,7 +2918,7 @@
     "title": "Derby Day",
     "slug": "derby-day",
     "publisher": [
-      "CRL"
+      "Crl"
     ],
     "genre": [
       "casino",
@@ -3115,7 +3113,7 @@
     "slug": "double-dare",
     "publisher": [
       "Alternative Software",
-      "GameTek"
+      "Gametek"
     ],
     "genre": [
       "quiz"
@@ -3244,7 +3242,7 @@
     "title": "Dropzone",
     "slug": "dropzone",
     "publisher": [
-      "UK Gold"
+      "Uk Gold"
     ],
     "genre": [
       "arcade",
@@ -3263,7 +3261,7 @@
     "slug": "ducktales-the-quest-for-gold",
     "publisher": [
       "Titus Software",
-      "2 logos"
+      "2 Logos"
     ],
     "genre": [
       "platform",
@@ -3295,7 +3293,7 @@
       "strategy"
     ],
     "composer": [
-      "Stéphane Picq"
+      "Stephane Picq"
     ],
     "music": [],
     "year": 1992
@@ -3323,7 +3321,7 @@
     "slug": "dynablaster",
     "publisher": [
       "Hudson Soft",
-      "2 logos"
+      "2 Logos"
     ],
     "genre": [
       "arcade",
@@ -3463,7 +3461,7 @@
       "action-adventure"
     ],
     "composer": [
-      "Bjørn Lynne"
+      "BjøRn Lynne"
     ],
     "music": [],
     "year": 1991
@@ -3563,7 +3561,7 @@
     "slug": "face-off",
     "publisher": [
       "Gamestar",
-      "2 logos"
+      "2 Logos"
     ],
     "genre": [
       "sports"
@@ -3681,7 +3679,7 @@
       "fighting"
     ],
     "composer": [
-      "Andrián Pertout"
+      "Andrian Pertout"
     ],
     "music": [],
     "year": 1985
@@ -3690,7 +3688,7 @@
     "title": "Final Fight",
     "slug": "final-fight",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "fighting"
@@ -3804,7 +3802,7 @@
     "title": "Flash Gordon",
     "slug": "flash-gordon",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "action-adventure"
@@ -3822,7 +3820,7 @@
     "title": "Flashback: The Quest For Identity",
     "slug": "flashback-the-quest-for-identity",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure",
@@ -3835,7 +3833,7 @@
     "composer": [
       "Fabrice Visserot",
       "Jean Baudlot",
-      "Raphaël Gesqua"
+      "Raphael Gesqua"
     ],
     "music": [],
     "year": 1992
@@ -3901,7 +3899,7 @@
     "title": "Floyd Of The Jungle",
     "slug": "floyd-of-the-jungle",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "arcade",
@@ -3994,7 +3992,7 @@
     "slug": "fort-apocalypse",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "shooting"
@@ -4192,7 +4190,7 @@
     "title": "Gateway To Apshai",
     "slug": "gateway-to-apshai",
     "publisher": [
-      "CBS Electronics Software",
+      "Cbs Electronics Software",
       "Epyx"
     ],
     "genre": [
@@ -4209,7 +4207,7 @@
     "title": "Gauntlet",
     "slug": "gauntlet",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -4354,7 +4352,7 @@
     "publisher": [
       "Mastertronic",
       "Mind Games",
-      "OziSoft"
+      "Ozisoft"
     ],
     "genre": [
       "puzzle",
@@ -4385,7 +4383,7 @@
       "puzzle"
     ],
     "composer": [
-      "Frédéric Motte"
+      "Frederic Motte"
     ],
     "music": [],
     "year": 1992
@@ -4433,8 +4431,8 @@
     "publisher": [
       "American Action",
       "Datasoft",
-      "ERBE Software",
-      "US Gold"
+      "Erbe Software",
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -4563,7 +4561,7 @@
     "title": "The Great Giana Sisters",
     "slug": "the-great-giana-sisters",
     "publisher": [
-      "GO!",
+      "Go!",
       "Rainbow Arts"
     ],
     "genre": [
@@ -4573,7 +4571,7 @@
       "platform"
     ],
     "composer": [
-      "Chris Hülsbeck"
+      "Chris Hulsbeck"
     ],
     "music": [],
     "year": 1987
@@ -4787,7 +4785,7 @@
     "title": "He-Man and the Masters of the Universe: The Ilearth Stone",
     "slug": "he-man-and-the-masters-of-the-universe-the-ilearth-stone",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure",
@@ -4920,7 +4918,7 @@
     "title": "Herbert's Dummy Run",
     "slug": "herberts-dummy-run",
     "publisher": [
-      "ERBE Software",
+      "Erbe Software",
       "Mikro-Gen"
     ],
     "genre": [
@@ -4939,7 +4937,7 @@
     "title": "Hero Of The Golden Talisman",
     "slug": "hero-of-the-golden-talisman",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "action-adventure",
@@ -5062,7 +5060,7 @@
       "strategy"
     ],
     "composer": [
-      "Tom McMail"
+      "Tom Mcmail"
     ],
     "music": [],
     "year": 1991
@@ -5288,7 +5286,7 @@
     "slug": "ikari-warriors",
     "publisher": [
       "Elite",
-      "MCM Software"
+      "Mcm Software"
     ],
     "genre": [
       "arcade",
@@ -5327,9 +5325,9 @@
     "title": "Impossible Mission",
     "slug": "impossible-mission",
     "publisher": [
-      "CBS Electronics Software",
+      "Cbs Electronics Software",
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure"
@@ -5345,7 +5343,7 @@
     "title": "Indiana Jones And The Fate Of Atlantis",
     "slug": "indiana-jones-and-the-fate-of-atlantis",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure"
@@ -5363,7 +5361,7 @@
     "title": "Indiana Jones And The Last Crusade (Adventure)",
     "slug": "indiana-jones-and-the-last-crusade-adventure",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "adventure"
@@ -5379,7 +5377,7 @@
     "title": "Indiana Jones And The Last Crusade: The Action Game",
     "slug": "indiana-jones-and-the-last-crusade-the-action-game",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "action-adventure"
@@ -5397,7 +5395,7 @@
     "title": "Indiana Jones And The Temple Of Doom",
     "slug": "indiana-jones-and-the-temple-of-doom",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -5474,7 +5472,7 @@
     "slug": "infiltrator",
     "publisher": [
       "Mindscape",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "strategy"
@@ -5738,7 +5736,7 @@
       "sports"
     ],
     "composer": [
-      "Archer MacLean"
+      "Archer Maclean"
     ],
     "music": [],
     "year": 1991
@@ -5803,7 +5801,7 @@
     "title": "Jumpman",
     "slug": "jumpman",
     "publisher": [
-      "CBS Electronics Software",
+      "Cbs Electronics Software",
       "Epyx"
     ],
     "genre": [
@@ -5896,7 +5894,7 @@
     "title": "Karateka",
     "slug": "karateka",
     "publisher": [
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "fighting"
@@ -6267,7 +6265,7 @@
     "slug": "law-of-the-west",
     "publisher": [
       "Accolade",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "adventure",
@@ -6414,7 +6412,7 @@
     "title": "Lode Runner",
     "slug": "lode-runner",
     "publisher": [
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "arcade",
@@ -6677,7 +6675,7 @@
     "title": "Master Of Magic",
     "slug": "master-of-magic",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "action-adventure",
@@ -6810,7 +6808,7 @@
     "title": "Micro Mouse Goes Debugging",
     "slug": "micro-mouse-goes-debugging",
     "publisher": [
-      "MC Lothlorien"
+      "Mc Lothlorien"
     ],
     "genre": [
       "quiz",
@@ -6830,7 +6828,7 @@
     "title": "Microprose Soccer",
     "slug": "microprose-soccer",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "sports"
@@ -6940,7 +6938,7 @@
     "title": "The Secret Of Monkey Island",
     "slug": "the-secret-of-monkey-island",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "adventure"
@@ -6949,7 +6947,7 @@
       "adventure"
     ],
     "composer": [
-      "Chris Hülsbeck",
+      "Chris Hulsbeck",
       "Rudolf Stember"
     ],
     "music": [],
@@ -6959,7 +6957,7 @@
     "title": "Monkey Island 2: Lechuck'S Revenge",
     "slug": "monkey-island-2-lechucks-revenge",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "adventure"
@@ -6970,7 +6968,7 @@
     "composer": [
       "Clint Bajakain",
       "Michael Z. Land",
-      "Peter McConnell"
+      "Peter Mcconnell"
     ],
     "music": [],
     "year": 1992
@@ -7049,7 +7047,7 @@
     "title": "Mountie Mick's Death Ride",
     "slug": "mountie-micks-death-ride",
     "publisher": [
-      "Reaktör Software"
+      "Reaktor Software"
     ],
     "genre": [
       "arcade",
@@ -7070,7 +7068,7 @@
     "slug": "the-movie-monster-game",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -7416,7 +7414,7 @@
     "title": "Ninja",
     "slug": "ninja",
     "publisher": [
-      "Entertainment USA",
+      "Entertainment Usa",
       "Mastertronic"
     ],
     "genre": [
@@ -7455,7 +7453,7 @@
     "title": "Ninja Rabbits",
     "slug": "ninja-rabbits",
     "publisher": [
-      "MicroValue",
+      "Microvalue",
       "System 4 Software"
     ],
     "genre": [
@@ -7522,7 +7520,7 @@
     ],
     "composer": [
       "Charles Callet",
-      "Stéphane Baudet"
+      "Stephane Baudet"
     ],
     "music": [],
     "year": 1989
@@ -7676,7 +7674,7 @@
     "title": "Paperboy",
     "slug": "paperboy",
     "publisher": [
-      "ECP",
+      "Ecp",
       "Elite",
       "Mindscape",
       "Zafiro Software Division"
@@ -7753,7 +7751,7 @@
     "title": "Sid Meier's Pirates!",
     "slug": "sid-meiers-pirates",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "strategy"
@@ -7827,9 +7825,9 @@
     "title": "Pitstop II",
     "slug": "pitstop-2",
     "publisher": [
-      "CBS Electronics Software",
+      "Cbs Electronics Software",
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "racing"
@@ -7885,7 +7883,7 @@
     "publisher": [
       "Atarisoft",
       "Datasoft",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "racing"
@@ -8072,7 +8070,7 @@
       "horror"
     ],
     "composer": [
-      "Alan McKean"
+      "Alan Mckean"
     ],
     "music": [],
     "year": 1989
@@ -8081,7 +8079,7 @@
     "title": "Project Stealth Fighter",
     "slug": "project-stealth-fighter",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "strategy"
@@ -8111,7 +8109,7 @@
     ],
     "composer": [
       "Allister Brimble",
-      "Bjørn Lynne"
+      "BjøRn Lynne"
     ],
     "music": [],
     "year": 1992
@@ -8285,7 +8283,7 @@
     "publisher": [
       "Firebird",
       "Green Valley Publishing",
-      "VIFI International"
+      "Vifi International"
     ],
     "genre": [
       "arcade",
@@ -8327,7 +8325,7 @@
     "title": "Raid On Bungeling Bay",
     "slug": "raid-on-bungeling-bay",
     "publisher": [
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "shooting"
@@ -8458,7 +8456,7 @@
     "title": "The Rats",
     "slug": "the-rats",
     "publisher": [
-      "Hodder and Stoughton"
+      "Hodder And Stoughton"
     ],
     "genre": [
       "horror",
@@ -8646,7 +8644,7 @@
     "title": "Road Runner",
     "slug": "road-runner",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -8750,7 +8748,7 @@
     ],
     "composer": [
       "Martin Wall",
-      "Øisten Eide"
+      "øIsten Eide"
     ],
     "music": [],
     "year": 1992
@@ -8799,7 +8797,7 @@
     "title": "Rocket Ball",
     "slug": "rocket-ball",
     "publisher": [
-      "IJK Software"
+      "Ijk Software"
     ],
     "genre": [
       "sports"
@@ -8838,7 +8836,7 @@
     "title": "The Rocky Horror Show",
     "slug": "the-rocky-horror-show",
     "publisher": [
-      "CRL"
+      "Crl"
     ],
     "genre": [
       "action-adventure"
@@ -8886,7 +8884,7 @@
       "shooting"
     ],
     "composer": [
-      "RMS Special"
+      "Rms Special"
     ],
     "music": [],
     "year": 1989
@@ -8896,7 +8894,7 @@
     "slug": "rolling-thunder",
     "publisher": [
       "Tengen",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -8923,7 +8921,7 @@
       "shooting"
     ],
     "composer": [
-      "Chris Hülsbeck",
+      "Chris Hulsbeck",
       "Ramiro Vaca"
     ],
     "music": [],
@@ -9213,7 +9211,7 @@
     "slug": "sensible-golf",
     "publisher": [
       "Virgin Interactive",
-      "3 logos"
+      "3 Logos"
     ],
     "genre": [
       "sports"
@@ -9274,7 +9272,7 @@
     "title": "Serenade",
     "slug": "serenade",
     "publisher": [
-      "VIFI International"
+      "Vifi International"
     ],
     "genre": [
       "puzzle",
@@ -9313,7 +9311,7 @@
     "title": "Shadow Dancer",
     "slug": "shadow-dancer",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -9332,7 +9330,7 @@
     "slug": "shadow-fighter",
     "publisher": [
       "Gremlin Interactive",
-      "2 logos"
+      "2 Logos"
     ],
     "genre": [
       "arcade",
@@ -9466,7 +9464,7 @@
     "title": "Silent Service",
     "slug": "silent-service",
     "publisher": [
-      "MicroProse Software"
+      "Microprose Software"
     ],
     "genre": [
       "strategy"
@@ -9861,7 +9859,7 @@
     "title": "Spellbound",
     "slug": "spellbound",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "action-adventure"
@@ -9880,7 +9878,7 @@
     "slug": "spelunker",
     "publisher": [
       "Ariolasoft",
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "arcade",
@@ -9954,7 +9952,7 @@
     "slug": "spy-hunter",
     "publisher": [
       "Sega",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -10084,7 +10082,7 @@
     "title": "Star Wars: Droids",
     "slug": "star-wars-droids",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "arcade"
@@ -10141,7 +10139,7 @@
     "title": "Stormbringer",
     "slug": "stormbringer",
     "publisher": [
-      "MAD (Mastertronic)"
+      "Mad (Mastertronic)"
     ],
     "genre": [
       "action-adventure"
@@ -10159,7 +10157,7 @@
     "title": "Street Fighter",
     "slug": "street-fighter",
     "publisher": [
-      "GO!"
+      "Go!"
     ],
     "genre": [
       "fighting"
@@ -10193,7 +10191,7 @@
     "title": "Strider",
     "slug": "strider",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -10245,7 +10243,7 @@
     "title": "Stunt Car Racer",
     "slug": "stunt-car-racer",
     "publisher": [
-      "MicroStyle"
+      "Microstyle"
     ],
     "genre": [
       "racing"
@@ -10262,7 +10260,7 @@
     "slug": "summer-games",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -10281,7 +10279,7 @@
     "slug": "summer-games-2",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -10318,7 +10316,7 @@
     "slug": "super-cycle",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -10509,7 +10507,7 @@
       "role-playing"
     ],
     "composer": [
-      "Jeff McCord"
+      "Jeff Mccord"
     ],
     "music": [],
     "year": 1983
@@ -10572,10 +10570,10 @@
     "title": "Tapper",
     "slug": "tapper",
     "publisher": [
-      "ERBE Software",
+      "Erbe Software",
       "Handic Software",
       "Sega",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -10611,7 +10609,7 @@
     "title": "Tau Ceti",
     "slug": "tau-ceti",
     "publisher": [
-      "CRL"
+      "Crl"
     ],
     "genre": [
       "action-adventure",
@@ -10800,7 +10798,7 @@
       "Epyx",
       "Gremlin Graphics",
       "Melbourne House",
-      "OziSoft"
+      "Ozisoft"
     ],
     "genre": [
       "platform"
@@ -10856,7 +10854,7 @@
     "title": "Thunder Blade",
     "slug": "thunder-blade",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "shooting"
@@ -10930,7 +10928,7 @@
     "title": "Time Tunnel",
     "slug": "time-tunnel",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "adventure",
@@ -11001,7 +10999,7 @@
       "miscellaneous"
     ],
     "composer": [
-      "Chris Hülsbeck"
+      "Chris Hulsbeck"
     ],
     "music": [],
     "year": 1987
@@ -11064,7 +11062,7 @@
     "title": "Total Carnage",
     "slug": "total-carnage",
     "publisher": [
-      "ICE"
+      "Ice"
     ],
     "genre": [
       "arcade"
@@ -11107,7 +11105,7 @@
       "racing"
     ],
     "composer": [
-      "Zoltán Mericske"
+      "Zoltan Mericske"
     ],
     "music": [],
     "year": 1985
@@ -11288,7 +11286,7 @@
     "slug": "turbo-out-run",
     "publisher": [
       "Sega",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade",
@@ -11319,7 +11317,7 @@
       "shooting"
     ],
     "composer": [
-      "Chris Hülsbeck",
+      "Chris Hulsbeck",
       "Ramiro Vaca",
       "Stefan Hartwig"
     ],
@@ -11468,7 +11466,7 @@
     "slug": "up-n-down",
     "publisher": [
       "Sega",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
@@ -11556,7 +11554,7 @@
     "title": "Vigilante",
     "slug": "vigilante",
     "publisher": [
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "fighting"
@@ -11618,7 +11616,7 @@
       "sports"
     ],
     "composer": [
-      "Miklós Herendi"
+      "Miklos Herendi"
     ],
     "music": [],
     "year": 1987
@@ -11758,7 +11756,7 @@
     "title": "Wings Of Fury",
     "slug": "wings-of-fury",
     "publisher": [
-      "Brøderbund"
+      "BrøDerbund"
     ],
     "genre": [
       "arcade",
@@ -11779,7 +11777,7 @@
     "slug": "winter-games",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -11850,7 +11848,7 @@
     "slug": "world-games",
     "publisher": [
       "Epyx",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "sports"
@@ -11868,7 +11866,7 @@
     "title": "WWF Wrestlemania",
     "slug": "wwf-wrestlemania",
     "publisher": [
-      "ERBE Software",
+      "Erbe Software",
       "Ocean"
     ],
     "genre": [
@@ -11896,11 +11894,9 @@
       "shooting"
     ],
     "composer": [
-      "Chris Hülsbeck"
+      "Chris Hulsbeck"
     ],
-    "music": [
-      "x-out.mp3"
-    ],
+    "music": [],
     "year": 1990
   },
   {
@@ -12018,7 +12014,7 @@
     "slug": "zaxxon",
     "publisher": [
       "Synapse Software",
-      "US Gold"
+      "Us Gold"
     ],
     "genre": [
       "arcade"
