@@ -94,12 +94,19 @@
     return { composers, byKey, bySlug };
   }
 
+  function resolveSiteRoot() {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+      ? window.ccgGetSiteRoot()
+      : "/";
+    return root.endsWith("/") ? root : `${root}/`;
+  }
+
   function getGameUrl(slug) {
-    return `/games/${slug}/`;
+    return `${resolveSiteRoot()}games/${slug}/`;
   }
 
   function getComposerUrl(slug) {
-    return `/music/${slug}.html`;
+    return `${resolveSiteRoot()}music/${slug}.html`;
   }
 
   function getComposerImageCandidates(slug) {
@@ -131,7 +138,7 @@
     if (!slug) {
       return "";
     }
-    return `/resources/audio/games/${encodeURIComponent(slug)}.mp3`;
+    return `${resolveSiteRoot()}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
   }
 
   function getPlatformLabel(systems) {
@@ -462,30 +469,27 @@
 
       card.appendChild(gameLink);
 
-      const playerWrap = document.createElement("div");
-      playerWrap.className = "ccg-composer-game-utility composer-player-row";
+      const musicPath = getGameMusicPath(game);
+      if (musicPath && await assetExists(musicPath)) {
+        const playerWrap = document.createElement("div");
+        playerWrap.className = "ccg-composer-game-utility composer-player-row";
 
-      const playerSlot = document.createElement("div");
-      playerSlot.className = "ccg-composer-game-player-slot";
+        const playerSlot = document.createElement("div");
+        playerSlot.className = "ccg-composer-game-player-slot";
 
-      const audio = document.createElement("audio");
-      audio.controls = true;
-      audio.preload = "none";
-      audio.className = "ccg-composer-mini-player";
-      const source = document.createElement("source");
-      source.src = getGameMusicPath(game);
-      source.type = "audio/mpeg";
-      audio.appendChild(source);
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload = "none";
+        audio.className = "ccg-composer-mini-player";
+        const source = document.createElement("source");
+        source.src = musicPath;
+        source.type = "audio/mpeg";
+        audio.appendChild(source);
 
-      audio.addEventListener("error", () => {
-        if (playerWrap.parentNode) {
-          playerWrap.parentNode.removeChild(playerWrap);
-        }
-      });
-
-      playerSlot.appendChild(audio);
-      playerWrap.appendChild(playerSlot);
-      card.appendChild(playerWrap);
+        playerSlot.appendChild(audio);
+        playerWrap.appendChild(playerSlot);
+        card.appendChild(playerWrap);
+      }
 
       return card;
     }));

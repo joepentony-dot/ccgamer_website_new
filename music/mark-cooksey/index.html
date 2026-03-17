@@ -1,69 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="music-composer">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mark Cooksey | C64 & Amiga Music</title>
-  <meta name="description" content="Explore music by Mark Cooksey on the Commodore 64 and Amiga. Listen to classic game soundtracks and SID music.">
-  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/mark-cooksey/index.html">
-  <link rel="stylesheet" href="/resources/css/ccg-master.css">
-  <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/music-composer.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mark Cooksey — C64 &amp; Amiga Music Composer | Cheeky Commodore Gamer</title>
+<meta name="description" content="Explore C64 and Amiga games featuring music by Mark Cooksey, with archive links back to each game page on Cheeky Commodore Gamer.">
+<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/mark-cooksey/">
+<link rel="stylesheet" href="/resources/css/ccg-master.css">
+<link rel="stylesheet" href="/resources/css/ccg-buttons.css">
+<link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-<header>
-  <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
-    <div class="ccg-breadcrumb-nav">
-      <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
-      <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
-      <a href="/music/index.html" class="ccg-btn ccg-btn--secondary">Music Hub</a>
-      <a href="/music/composers/index.html" class="ccg-btn ccg-btn--secondary">All Composers</a>
-      <a href="/music/mark-cooksey/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Mark Cooksey</a>
+  <main class="ccg-main ccg-composer-page" data-composer-name="Mark Cooksey" data-composer-slug="mark-cooksey">
+    <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
+      <div class="ccg-breadcrumb-nav">
+        <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
+        <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
+        <a href="/music/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Music Hub</a>
+      </div>
+    </nav>
+    <h1 class="ccg-composer-title">Mark Cooksey — C64 & Amiga Music</h1>
+    <p class="ccg-composer-subtitle">Loading composer archive details…</p>
+
+
+    <div id="composer-content"></div>
+
+    <h2 class="ccg-composer-section-title">Games featuring Mark Cooksey</h2>
+    <ul id="composer-games" class="ccg-composer-games">
+      <li>Loading...</li>
+    </ul>
+
+    <section class="ccg-composer-featured" aria-labelledby="other-composers-heading">
+      <h2 id="other-composers-heading" class="ccg-composer-section-title">Browse other featured composers</h2>
+      <div id="composer-featured-list" class="ccg-composer-chip-list"></div>
+    </section>
+
+    <div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap hidden>
+      <button class="ccg-back-to-top" data-ccg-back-to-top aria-label="Back to top" type="button">↑</button>
+      <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
     </div>
-  </nav>
-</header>
-<main class="ccg-main ccg-composer-page">
-<section class="composer-hero">
-  <h1>Mark Cooksey</h1>
-  <p>C64 / Amiga</p>
-</section>
-<section class="composer-tracks">
-  <h2>🎧 Music Tracks</h2>
-  <div id="composer-track-list"></div>
-</section>
-</main>
-<script src="/js/load-games.js"></script>
-<script>
-function renderTracks() {
-  const composerName = "Mark Cooksey";
-  const container = document.getElementById("composer-track-list");
-
-  if (!window.games) {
-    container.innerHTML = "<p>No data available.</p>";
-    return;
-  }
-
-  const matches = window.games.filter(g =>
-    g.music && g.music.includes(composerName)
-  );
-
-  if (matches.length === 0) {
-    container.innerHTML = "<p>No tracks found.</p>";
-    return;
-  }
-
-  container.innerHTML = matches.map(game => `
-    <div class="track-card">
-      <a href="/games/${game.slug}/index.html">
-        ${game.title}
-      </a>
-    </div>
-  `).join('');
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(renderTracks, 300);
-});
-</script>
+  </main>
+  <script src="/js/music-composer-pages.js" defer></script>
 </body>
 </html>
