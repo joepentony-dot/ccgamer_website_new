@@ -162,7 +162,11 @@ function renderComposerPage(entry) {
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="ccg-main ccg-composer-page" data-composer-name="${composerName}" data-composer-slug="${composerSlugValue}">
     <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
-      <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a> › <a href="/music/index.html">Music Hub</a>
+      <div class="ccg-breadcrumb-nav">
+        <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
+        <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
+        <a href="/music/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Music Hub</a>
+      </div>
     </nav>
     <h1 class="ccg-composer-title">${composerName} — C64 & Amiga Music</h1>
     <p class="ccg-composer-subtitle">Loading composer archive details…</p>
@@ -183,6 +187,10 @@ function renderComposerPage(entry) {
       <h2 id="all-composers-heading" class="ccg-composer-section-title">Full List Of Composers</h2>
       <div id="composer-all-list" class="ccg-composer-chip-list"></div>
     </section>
+
+    <div class="ccg-back-to-top">
+      <button class="ccg-btn ccg-btn--primary" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">↑ Back to Top</button>
+    </div>
   </main>
   <script src="/js/music-composer-pages.js" defer></script>
 </body>
@@ -204,7 +212,11 @@ function renderMusicIndexPage() {
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="ccg-main ccg-music-hub">
     <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
-      <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a>
+      <div class="ccg-breadcrumb-nav">
+        <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
+        <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
+        <a href="/music/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Music Hub</a>
+      </div>
     </nav>
     <section class="ccg-music-hub__hero">
       <h1 class="ccg-composer-title">C64 & Amiga Music Hub</h1>

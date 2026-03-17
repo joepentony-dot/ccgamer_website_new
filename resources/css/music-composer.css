@@ -7,13 +7,26 @@
 
 .ccg-composer-breadcrumbs {
   margin-bottom: 1rem;
-  font-size: 0.86rem;
-  opacity: 0.9;
 }
 
-.ccg-composer-breadcrumbs a {
-  color: #8ddcff;
-  text-decoration: none;
+.ccg-breadcrumb-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.ccg-breadcrumb-nav .ccg-btn {
+  font-size: 0.75rem;
+  padding: 0.32rem 0.68rem;
+}
+
+.ccg-breadcrumb-nav .ccg-btn.is-active {
+  box-shadow: 0 0 18px rgba(85, 251, 255, 0.28), 0 8px 20px rgba(2, 8, 22, 0.66);
+}
+
+.ccg-back-to-top {
+  margin: 2.6rem 0 0.4rem;
+  text-align: center;
 }
 
 .ccg-composer-title { margin: 0; }
