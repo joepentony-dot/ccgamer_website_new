@@ -7,6 +7,7 @@
 <meta name="description" content="Explore the C64 and Amiga game music of Ben Daglish, including verified biographical details, notable soundtrack credits, and linked game pages.">
 <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/ben-daglish/">
 <link rel="stylesheet" href="/resources/css/ccg-master.css">
+<link rel="stylesheet" href="/resources/css/ccg-buttons.css">
 <link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -38,8 +39,9 @@
       <div id="composer-all-list" class="ccg-composer-chip-list"></div>
     </section>
 
-    <div class="ccg-back-to-top">
-      <button class="ccg-btn ccg-btn--primary" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">↑ Back to Top</button>
+    <div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap hidden>
+      <button class="ccg-back-to-top" data-ccg-back-to-top aria-label="Back to top" type="button">↑</button>
+      <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
     </div>
   </main>
   <script src="/js/music-composer-pages.js" defer></script>
