@@ -7,7 +7,7 @@
   <meta name="description" content="Explore Commodore 64 composer game archives on Cheeky Commodore Gamer.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/composer/">
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
-<link rel="stylesheet" href="/resources/css/ccg-buttons.css">
+  <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
   <link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -19,9 +19,12 @@
         <a href="/music/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Music Hub</a>
       </div>
     </nav>
+
     <h1 class="ccg-composer-title">Commodore 64 Music Composer Archive</h1>
-    <p class="ccg-composer-subtitle">Featured game archive and soundtrack references</p>
-    <p class="ccg-composer-intro">Explore soundtrack contributions from classic C64 musicians, with every relevant game linked directly from the archive below.</p>
+    <p class="ccg-composer-subtitle">Loading composer archive details…</p>
+    <p class="ccg-composer-intro">Explore soundtrack contributions from classic C64 musicians, with linked game pages and playable tracks where available.</p>
+
+    <div id="composer-content"></div>
 
     <h2 class="ccg-composer-section-title">Games featuring this composer</h2>
     <ul id="composer-games" class="ccg-composer-games">
@@ -29,12 +32,15 @@
     </ul>
 
     <section class="ccg-composer-featured" aria-labelledby="other-composers-heading">
-      <h2 id="other-composers-heading" class="ccg-composer-section-title">Other featured C64 composers</h2>
+      <h2 id="other-composers-heading" class="ccg-composer-section-title">Browse other featured composers</h2>
       <div id="composer-featured-list" class="ccg-composer-chip-list"></div>
     </section>
 
+    <section class="ccg-composer-featured" aria-labelledby="all-composers-heading">
+      <h2 id="all-composers-heading" class="ccg-composer-section-title">Browse all composers</h2>
+      <div id="composer-all-list" class="ccg-composer-chip-list"></div>
+    </section>
 
-    <div id="composer-content"></div>
     <div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap hidden>
       <button class="ccg-back-to-top" data-ccg-back-to-top aria-label="Back to top" type="button">↑</button>
       <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
