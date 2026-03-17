@@ -290,3 +290,68 @@
   box-shadow: 0 20px 40px rgba(0,0,0,0.7), 0 0 18px rgba(var(--accent-rgb), 0.35);
   outline: none;
 }
+
+
+.composer-section {
+  margin-top: 1.2rem;
+}
+
+.composer-grid {
+  display: grid;
+}
+
+.composer-grid-featured {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.composer-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.composer-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 10px;
+}
+
+.composer-card--featured {
+  border: 1px solid rgba(0,255,255,0.2);
+  background: rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.composer-thumb img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.composer-info {
+  padding: 10px;
+}
+
+.composer-platform {
+  color: #99f6ff;
+  font-weight: 600;
+}
+
+.composer-count {
+  opacity: 0.86;
+}
+
+.composer-card--compact {
+  padding: 10px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 8px;
+}
+
+.composer-card--compact h3 {
+  font-size: 0.95rem;
+}

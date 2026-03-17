@@ -241,7 +241,7 @@
     const titleEl = document.querySelector(".ccg-composer-title");
     const subEl = document.querySelector(".ccg-composer-subtitle");
     if (titleEl) titleEl.textContent = `${composerName} — C64 & Amiga Music`;
-    if (subEl) subEl.textContent = `${getComposerPlatformLabel(composerGames)} • ${count} games on Cheeky Commodore Gamer`;
+    if (subEl) subEl.textContent = `${getComposerPlatformLabel(composerGames)} • ${count} Tracks`;
     const pageRoot = document.querySelector(".ccg-composer-page");
     if (pageRoot && !document.querySelector(".ccg-composer-profile")) {
       const portrait = await resolvePortraitPath(slug);
@@ -285,7 +285,7 @@
     const nav = document.getElementById("composer-nav-row");
     if (!nav) return;
     nav.innerHTML = "";
-    [["Back to Music Hub", `${getSiteRoot()}music/index.html`], ["Browse composers", `${getSiteRoot()}music/index.html#all-composers`]].forEach(([label, href]) => {
+    [["Back to Music Hub", `${getSiteRoot()}music/index.html`], ["Browse composers", `${getSiteRoot()}music/composers/index.html`]].forEach(([label, href]) => {
       const link = document.createElement("a");
       link.className = "ccg-btn ccg-btn--primary ccg-composer-nav__button";
       link.href = href;
@@ -301,34 +301,69 @@
     });
   }
 
-  function renderHub(index) {
-    const featuredEl = document.getElementById("music-featured-composers");
-    const extraEl = document.getElementById("music-additional-composers");
+  async function createComposerCard(composer) {
+    const slug = composer.slug;
+    const imagePath = `/resources/images/composers/${slug}.jpg`;
+    const hasImage = await imageExists(imagePath);
+
+    if (hasImage) {
+      return `
+        <a href="/music/${slug}/" class="composer-card composer-card--featured">
+          <div class="composer-thumb">
+            <img src="${imagePath}" alt="${composer.name}">
+          </div>
+          <div class="composer-info">
+            <h3>${composer.name}</h3>
+            <p class="composer-platform">${composer.platform || "C64"}</p>
+            <p class="composer-count">${composer.count} Tracks</p>
+          </div>
+        </a>
+      `;
+    }
+
+    return `
+      <a href="/music/${slug}/" class="composer-card composer-card--compact">
+        <div class="composer-info">
+          <h3>${composer.name}</h3>
+          <p class="composer-platform">${composer.platform || "C64"}</p>
+          <p class="composer-count">${composer.count} Tracks</p>
+        </div>
+      </a>
+    `;
+  }
+
+  async function renderComposers(composers) {
+    const featured = [];
+    const compact = [];
+
+    for (const composer of composers) {
+      const card = await createComposerCard(composer);
+
+      if (card.includes("composer-card--featured")) {
+        featured.push(card);
+      } else {
+        compact.push(card);
+      }
+    }
+
+    const featuredGrid = document.querySelector(".composer-grid-featured");
+    const compactGrid = document.querySelector(".composer-grid-compact");
+    if (featuredGrid) featuredGrid.innerHTML = featured.join("");
+    if (compactGrid) compactGrid.innerHTML = compact.join("");
+  }
+
+  async function renderHub(index) {
     const eligibleNames = getEligibleComposerNames(index);
-    if (featuredEl) {
-      featuredEl.innerHTML = "";
-      FEATURED_COMPOSERS.filter((entry) => (index.get(entry.name) || []).length >= MIN_ARCHIVE_CREDITS).forEach((entry) => {
-        const games = index.get(entry.name) || [];
-        const link = document.createElement("a");
-        link.className = "ccg-btn ccg-btn--ghost ccg-music-hub__composer ccg-music-hub__composer--featured";
-        link.href = `${getSiteRoot()}music/${entry.slug}.html`;
-        link.innerHTML = `<strong>${entry.name}</strong><span class="ccg-music-hub__platform">${getComposerPlatformLabel(games)}</span><span>${games.length} games on Cheeky Commodore Gamer</span>`;
-        featuredEl.appendChild(link);
-      });
-      featuredEl.id = "featured-composers";
-    }
-    if (extraEl) {
-      extraEl.innerHTML = "";
-      eligibleNames.forEach((name) => {
-        const games = index.get(name) || [];
-        const link = document.createElement("a");
-        link.className = `ccg-btn ccg-btn--ghost ccg-music-hub__composer${FEATURED_BY_NAME.has(normalizeComposerKey(name)) ? " ccg-music-hub__composer--featured" : ""}`;
-        link.href = `${getSiteRoot()}music/${composerSlug(name)}.html`;
-        link.innerHTML = `<strong>${name}</strong><span class="ccg-music-hub__platform">${getComposerPlatformLabel(games)}</span><span>${games.length} games on Cheeky Commodore Gamer</span>`;
-        extraEl.appendChild(link);
-      });
-      extraEl.id = "all-composers";
-    }
+    const composers = eligibleNames.map((name) => {
+      const games = index.get(name) || [];
+      return {
+        name,
+        slug: composerSlug(name),
+        count: games.length,
+        platform: getComposerPlatformLabel(games)
+      };
+    });
+    await renderComposers(composers);
     const stats = document.getElementById("music-hub-stats");
     if (stats) stats.textContent = `${eligibleNames.length} composers in the Cheeky Commodore Gamer archive.`;
     const title = document.querySelector(".ccg-music-hub .ccg-composer-title");
@@ -344,8 +379,11 @@
     const allGames = Array.isArray(data) ? data : [];
     const composerIndex = buildComposerIndex(allGames);
     const eligibleNames = getEligibleComposerNames(composerIndex);
-    renderHub(composerIndex);
-    if (!listEl) return;
+    await renderHub(composerIndex);
+    if (!listEl) {
+      initBackToTop();
+      return;
+    }
     const composerName = resolveComposerFromPage(composerIndex);
     if (!composerName) { listEl.innerHTML = "<li>Composer archive unavailable.</li>"; return; }
     renderComposerChips("composer-featured-list", FEATURED_COMPOSERS.map((entry) => entry.name), composerName);
@@ -357,7 +395,7 @@
   }
 
   const boot = () => init().catch(() => {
-    renderHub(new Map());
+    renderComposers([]);
     const listEl = document.getElementById("composer-games");
     if (listEl) listEl.innerHTML = "<li>Unable to load composer games right now.</li>";
     initBackToTop();
