@@ -227,23 +227,32 @@
       sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
     );
 
-    const prioritySet = new Set(FEATURED_PRIORITY);
-    const featuredPriority = FEATURED_PRIORITY
+    const existingFeatured = imageLookups.filter((item) => Boolean(item.imagePath)).slice(0, 6);
+    const priorityFeatured = FEATURED_PRIORITY
       .map((priorityName) => imageLookups.find((item) => normaliseName(item.composer.name) === priorityName))
       .filter(Boolean);
 
-    const featuredByMetrics = imageLookups.filter((item) => {
-      if (prioritySet.has(normaliseName(item.composer.name))) {
-        return false;
-      }
+    const featuredMap = new Map();
+    [...existingFeatured, ...priorityFeatured].forEach((item) => {
+      featuredMap.set(normaliseName(item.composer.name), item);
+    });
+
+    const extendedFeatured = imageLookups.filter((item) => {
       const bucket = stats.get(item.composer.slug);
       const trackCount = bucket ? bucket.games.length : 0;
       return Boolean(item.imagePath) && trackCount >= 5;
     });
 
-    const featured = [...featuredPriority, ...featuredByMetrics].slice(0, 9);
-    const featuredSlugs = new Set(featured.map((item) => item.composer.slug));
-    const rest = imageLookups.filter((item) => !featuredSlugs.has(item.composer.slug));
+    extendedFeatured.forEach((item) => {
+      const key = normaliseName(item.composer.name);
+      if (!featuredMap.has(key)) {
+        featuredMap.set(key, item);
+      }
+    });
+
+    const featured = Array.from(featuredMap.values());
+    const featuredNames = new Set(featured.map((item) => normaliseName(item.composer.name)));
+    const rest = imageLookups.filter((item) => !featuredNames.has(normaliseName(item.composer.name)));
 
     function cardMarkup(composer, imagePath, compact) {
       const bucket = stats.get(composer.slug);
