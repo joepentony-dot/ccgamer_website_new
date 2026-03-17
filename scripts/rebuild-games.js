@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { spawnSync } = require('child_process');
 const { applyTemplate, readTemplate } = require('./template-engine');
 
 const repoRoot = path.resolve(__dirname, '..');
@@ -12,6 +13,14 @@ const gamesRoot = path.join(repoRoot, 'games');
 function fail(message) {
   console.error(`[rebuild-games] ${message}`);
   process.exit(1);
+}
+
+function runNodeScript(scriptName) {
+  const scriptPath = path.join(__dirname, scriptName);
+  const result = spawnSync(process.execPath, [scriptPath], { cwd: repoRoot, stdio: 'inherit' });
+  if (result.status !== 0) {
+    fail(`${scriptName} failed with status ${result.status ?? 1}.`);
+  }
 }
 
 function ensureInputs() {
@@ -98,6 +107,9 @@ function rebuild() {
   });
 
   console.log(`[rebuild-games] Rebuilt ${count} game page(s).`);
+  runNodeScript('build-games.js');
+  runNodeScript('generate-sitemaps.js');
+  console.log('[rebuild-games] Regenerated games indexes, music hub/composer pages, and sitemaps.');
 }
 
 rebuild();

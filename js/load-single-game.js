@@ -957,13 +957,14 @@ const CANONICAL_COMPOSER_NAMES = new Map([
     ["martin galway", "Martin Galway"],
     ["ben daglish", "Ben Daglish"],
     ["matt gray", "Matt Gray"],
+    ["matthew del gray", "Matt Gray"],
     ["david whittaker", "David Whittaker"],
     ["jeroen tel", "Jeroen Tel"],
     ["fred gray", "Fred Gray"],
     ["chris huelsbeck", "Chris Hülsbeck"],
+    ["chris hulsbeck", "Chris Hülsbeck"],
     ["chris hülsbeck", "Chris Hülsbeck"],
-    ["tim follin", "Tim Follin"],
-    ["reyn ouwehand", "Reyn Ouwehand"]
+    ["christopher hülsbeck", "Chris Hülsbeck"]
 ]);
 
 function canonicalizeComposerName(value) {
@@ -1014,8 +1015,8 @@ const APPROVED_COMPOSER_SLUGS = new Map([
     ["fred gray", "fred-gray"],
     ["chris hülsbeck", "chris-huelsbeck"],
     ["chris huelsbeck", "chris-huelsbeck"],
-    ["tim follin", "tim-follin"],
-    ["reyn ouwehand", "reyn-ouwehand"]
+    ["chris hulsbeck", "chris-huelsbeck"],
+    ["christopher hülsbeck", "chris-huelsbeck"]
 ]);
 
 function resolveComposerSlug(name) {
