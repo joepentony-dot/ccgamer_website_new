@@ -3,7 +3,9 @@ const path = require("path");
 const crypto = require("crypto");
 const games = require("../games/games.json");
 
-const APPROVED_COMPOSERS = [
+const MIN_ARCHIVE_CREDITS = 5;
+
+const FEATURED_COMPOSERS = [
   {
     name: "Rob Hubbard",
     slug: "rob-hubbard",
@@ -56,17 +58,44 @@ const APPROVED_COMPOSERS = [
   },
 ];
 
-function normalizeForMatch(value) {
+const CANONICAL_NAME_MAP = {
+  "rob hubbard": "Rob Hubbard",
+  "r hubbard": "Rob Hubbard",
+  "r. hubbard": "Rob Hubbard",
+  "martin galway": "Martin Galway",
+  "ben daglish": "Ben Daglish",
+  "matt gray": "Matt Gray",
+  "david whittaker": "David Whittaker",
+  "jeroen tel": "Jeroen Tel",
+  "fred gray": "Fred Gray",
+  "chris huelsbeck": "Chris Hülsbeck",
+  "chris hülsbeck": "Chris Hülsbeck",
+  "tim follin": "Tim Follin",
+  "reyn ouwehand": "Reyn Ouwehand",
+};
+
+function normalizeComposerKey(value) {
   return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, " ")
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
-const APPROVED_BY_NAME = new Map(
-  APPROVED_COMPOSERS.map((entry) => [normalizeForMatch(entry.name), entry])
+function canonicalizeComposerName(value) {
+  const key = normalizeComposerKey(value);
+  if (!key) return "";
+  if (CANONICAL_NAME_MAP[key]) return CANONICAL_NAME_MAP[key];
+  return key.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function slugifyComposer(name) {
+  return normalizeComposerKey(name).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+const FEATURED_BY_NAME = new Map(
+  FEATURED_COMPOSERS.map((entry) => [normalizeComposerKey(entry.name), entry])
 );
 
 function normaliseMusicNames(value) {
@@ -76,13 +105,16 @@ function normaliseMusicNames(value) {
   return list
     .map((name) => String(name ?? "").trim())
     .filter(Boolean)
+    .filter((name) => !/\.mp3$/i.test(name))
+    .map(canonicalizeComposerName)
+    .filter(Boolean)
     .filter((name) => {
-      if (seen.has(name)) return false;
-      seen.add(name);
+      const key = normalizeComposerKey(name);
+      if (seen.has(key)) return false;
+      seen.add(key);
       return true;
     });
 }
-
 
 function normaliseComposerNames(game) {
   const composers = [];
@@ -98,6 +130,12 @@ function normaliseComposerNames(game) {
     composers.push(...musicianCredits);
   } else if (musicianCredits) {
     composers.push(musicianCredits);
+  }
+
+  if (Array.isArray(game?.music)) {
+    composers.push(...game.music);
+  } else if (game?.music) {
+    composers.push(game.music);
   }
 
   return normaliseMusicNames(composers);
@@ -135,32 +173,52 @@ function writeFileIfChanged(filePath, content) {
 }
 
 function buildComposerEntries(gamesList) {
-  const composers = Object.fromEntries(
-    APPROVED_COMPOSERS.map((composer) => [composer.slug, []])
-  );
+  const composerGames = new Map();
 
   gamesList.forEach((game) => {
-    const composerNames = normaliseComposerNames(game);
-    if (composerNames.length === 0) return;
-
-    composerNames.forEach((name) => {
-      const approved = APPROVED_BY_NAME.get(normalizeForMatch(name));
-      if (!approved) return;
-
-      composers[approved.slug].push({
+    normaliseComposerNames(game).forEach((name) => {
+      if (!composerGames.has(name)) {
+        composerGames.set(name, []);
+      }
+      composerGames.get(name).push({
         slug: game.slug,
         title: game.title,
+        year: game.year,
+        thumbnail: game.thumbnail,
       });
     });
   });
 
-  return APPROVED_COMPOSERS.map((composer) => ({
-    ...composer,
-    games: composers[composer.slug]
-      .filter((game, index, list) => list.findIndex((item) => item.slug === game.slug) === index)
+  const featuredKeys = new Set(FEATURED_COMPOSERS.map((entry) => normalizeComposerKey(entry.name)));
+
+  const featuredEntries = FEATURED_COMPOSERS.map((composer) => {
+    const gamesForComposer = composerGames.get(composer.name) || [];
+    return {
+      ...composer,
+      featured: true,
+      games: gamesForComposer,
+    };
+  });
+
+  const additionalEntries = Array.from(composerGames.entries())
+    .filter(([name, gamesForComposer]) => !featuredKeys.has(normalizeComposerKey(name)) && gamesForComposer.length >= MIN_ARCHIVE_CREDITS)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([name, gamesForComposer]) => ({
+      name,
+      slug: slugifyComposer(name),
+      intro: `${name} appears across multiple game soundtracks in the Cheeky Commodore Gamer archive. Browse the full game list below.`,
+      featured: false,
+      games: gamesForComposer,
+    }));
+
+  return [...featuredEntries, ...additionalEntries]
+    .map((composer) => ({
+      ...composer,
+      games: composer.games
+        .filter((game, index, list) => list.findIndex((item) => item.slug === game.slug) === index)
         .slice()
         .sort((a, b) => String(a.title ?? "").localeCompare(String(b.title ?? ""))),
-  }));
+    }));
 }
 
 function renderComposerPage(entry) {
@@ -189,14 +247,21 @@ function renderComposerPage(entry) {
     <p class="ccg-composer-subtitle">Featured game archive and soundtrack references</p>
     <p class="ccg-composer-intro">${intro}</p>
 
+    <div class="ccg-composer-nav" id="composer-nav-row"></div>
+
     <h2 class="ccg-composer-section-title">Games featuring ${composerName}</h2>
     <ul id="composer-games" class="ccg-composer-games">
       <li>Loading...</li>
     </ul>
 
     <section class="ccg-composer-featured" aria-labelledby="other-composers-heading">
-      <h2 id="other-composers-heading" class="ccg-composer-section-title">Other featured C64 composers</h2>
+      <h2 id="other-composers-heading" class="ccg-composer-section-title">Featured composers</h2>
       <div id="composer-featured-list" class="ccg-composer-chip-list"></div>
+    </section>
+
+    <section class="ccg-composer-featured" aria-labelledby="all-composers-heading">
+      <h2 id="all-composers-heading" class="ccg-composer-section-title">All eligible composers</h2>
+      <div id="composer-all-list" class="ccg-composer-chip-list"></div>
     </section>
   </main>
   <script src="/js/music-composer-pages.js" defer></script>
@@ -204,11 +269,7 @@ function renderComposerPage(entry) {
 </html>`;
 }
 
-function renderMusicIndexPage(composerEntries) {
-  const composerLinks = composerEntries
-    .map((entry) => `      <a class="ccg-music-hub__composer" href="/music/${htmlEscape(entry.slug)}.html">${htmlEscape(entry.name)}</a>`)
-    .join("\n");
-
+function renderMusicIndexPage() {
   return `<!DOCTYPE html>
 <html lang="en" data-ccg-page="music-hub">
 <head>
@@ -225,12 +286,21 @@ function renderMusicIndexPage(composerEntries) {
     <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
       <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a>
     </nav>
-    <h1 class="ccg-composer-title">Featured Commodore 64 Music Composers</h1>
-    <p class="ccg-composer-intro">Explore dedicated music archive pages for major C64 composers and jump directly to games on Cheeky Commodore Gamer that feature their work.</p>
-    <div class="ccg-music-hub__grid">
-${composerLinks}
-    </div>
+    <section class="ccg-music-hub__hero">
+      <h1 class="ccg-composer-title">Commodore 64 Music Hub</h1>
+      <p class="ccg-composer-intro">Explore legendary SID composers and the games that made them famous.</p>
+      <p class="ccg-composer-subtitle" id="music-hub-stats">Loading archive totals…</p>
+    </section>
+
+    <h2 class="ccg-composer-section-title">Featured composers</h2>
+    <div id="music-featured-composers" class="ccg-music-hub__grid"></div>
+
+    <section class="ccg-music-hub__additional" aria-labelledby="additional-composers-title">
+      <h2 id="additional-composers-title" class="ccg-composer-section-title">All eligible composers</h2>
+      <div id="music-additional-composers" class="ccg-music-hub__grid"></div>
+    </section>
   </main>
+  <script src="/js/music-composer-pages.js" defer></script>
 </body>
 </html>`;
 }
@@ -243,7 +313,7 @@ function cleanStaleComposerPages(composerEntries) {
 
   fs.readdirSync(musicDir, { withFileTypes: true })
     .forEach((entry) => {
-      if (entry.name === "index.html" || entry.name === ".music-data.hash") return;
+      if (entry.name === "index.html" || entry.name === "composer.html" || entry.name === ".music-data.hash") return;
 
       if (entry.isDirectory()) {
         fs.rmSync(path.join(musicDir, entry.name), { recursive: true, force: true });
@@ -337,7 +407,7 @@ if (shouldBuildPages) {
     });
 
     cleanStaleComposerPages(composerEntries);
-    writeFileIfChanged(path.join("music", "index.html"), renderMusicIndexPage(composerEntries));
+    writeFileIfChanged(path.join("music", "index.html"), renderMusicIndexPage());
     writeFileIfChanged(musicHashPath, `${musicHash}\n`);
   }
 }

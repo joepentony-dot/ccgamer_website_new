@@ -1025,7 +1025,7 @@ function resolveComposerSlug(name) {
     const credits = CCG_SINGLE_ALL_GAMES.reduce((total, entry) => {
         return total + (normalizeComposerNames(entry).some((composer) => normalizeComposerKey(composer) === key) ? 1 : 0);
     }, 0);
-    return credits >= 5 ? `composer.html?composer=${encodeURIComponent(key.replace(/\s+/g, "-"))}` : "";
+    return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
 async function checkGameMusicExists(path) {
@@ -1081,7 +1081,7 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
             const composerSlug = resolveComposerSlug(name);
             if (composerSlug) {
                 const composerLink = document.createElement("a");
-                composerLink.href = composerSlug.includes("?") ? `${root}music/${composerSlug}` : `${root}music/${composerSlug}.html`;
+                composerLink.href = `${root}music/${composerSlug}.html`;
                 composerLink.className = "ccg-composer-button";
                 composerLink.textContent = name;
                 composerList.appendChild(composerLink);
@@ -1092,13 +1092,17 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
                 composerList.appendChild(composerText);
             }
 
-            if (index < composers.length - 1) {
-                composerList.appendChild(document.createTextNode(", "));
-            }
         });
 
         composerLine.appendChild(composerList);
         musicTracksEl.appendChild(composerLine);
+
+        if (composers.some((name) => Boolean(resolveComposerSlug(name)))) {
+            const hint = document.createElement("p");
+            hint.className = "ccg-music-composer__hint";
+            hint.textContent = "Tap a composer chip to open their archive page.";
+            musicTracksEl.appendChild(hint);
+        }
 
         const primaryComposer = composers[0];
         const relatedByComposer = CCG_SINGLE_ALL_GAMES
