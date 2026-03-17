@@ -3,6 +3,72 @@ const path = require("path");
 const crypto = require("crypto");
 const games = require("../games/games.json");
 
+const APPROVED_COMPOSERS = [
+  {
+    name: "Rob Hubbard",
+    slug: "rob-hubbard",
+    intro: "Widely regarded as one of the most influential Commodore 64 composers, Rob Hubbard helped define the SID sound with landmark scores that blended melody, rhythm and technical craft.",
+  },
+  {
+    name: "Martin Galway",
+    slug: "martin-galway",
+    intro: "Martin Galway is known for memorable SID soundtracks on major C64 releases, combining cinematic atmosphere with a distinctive electronic style.",
+  },
+  {
+    name: "Ben Daglish",
+    slug: "ben-daglish",
+    intro: "Ben Daglish created many recognisable C64 themes and is associated with some of the most beloved game music of the 8-bit era.",
+  },
+  {
+    name: "Matt Gray",
+    slug: "matt-gray",
+    intro: "Matt Gray delivered polished, high-energy C64 music and remains closely associated with some of the platform's most iconic late-era soundtracks.",
+  },
+  {
+    name: "David Whittaker",
+    slug: "david-whittaker",
+    intro: "David Whittaker composed across a huge range of C64 games and is known for versatile SID work that became a staple of British home-computer gaming.",
+  },
+  {
+    name: "Jeroen Tel",
+    slug: "jeroen-tel",
+    intro: "Jeroen Tel is widely known for bold, punchy C64 compositions and for helping shape the signature audio style heard in many late-80s and early-90s releases.",
+  },
+  {
+    name: "Fred Gray",
+    slug: "fred-gray",
+    intro: "Fred Gray composed memorable C64 scores that blended strong melodies with inventive SID programming, earning a lasting reputation among retro players.",
+  },
+  {
+    name: "Chris Hülsbeck",
+    slug: "chris-huelsbeck",
+    intro: "Chris Hülsbeck is associated with some of the most recognisable 8-bit and 16-bit game music, with C64 works that showcased melodic writing and technical precision.",
+  },
+  {
+    name: "Tim Follin",
+    slug: "tim-follin",
+    intro: "Tim Follin is celebrated for technically advanced and harmonically rich C64 music, widely regarded as some of the most ambitious SID composition of the era.",
+  },
+  {
+    name: "Reyn Ouwehand",
+    slug: "reyn-ouwehand",
+    intro: "Reyn Ouwehand became a key modern-era C64 composer, known for refined SID craftsmanship and music that bridges classic influences with contemporary production discipline.",
+  },
+];
+
+function normalizeForMatch(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+const APPROVED_BY_NAME = new Map(
+  APPROVED_COMPOSERS.map((entry) => [normalizeForMatch(entry.name), entry])
+);
+
 function normaliseMusicNames(value) {
   const list = Array.isArray(value) ? value : (value ? [value] : []);
   const seen = new Set();
@@ -45,15 +111,6 @@ function normalisePublisherNames(game) {
   return normaliseMusicNames(list);
 }
 
-function composerSlug(name) {
-  return String(name ?? "")
-    .toLowerCase()
-    .replace(/[^\w\s]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 function htmlEscape(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -78,99 +135,102 @@ function writeFileIfChanged(filePath, content) {
 }
 
 function buildComposerEntries(gamesList) {
-  const composers = {};
+  const composers = Object.fromEntries(
+    APPROVED_COMPOSERS.map((composer) => [composer.slug, []])
+  );
 
   gamesList.forEach((game) => {
-    const musicNames = normaliseMusicNames(game.music);
-    if (musicNames.length === 0) return;
+    const composerNames = normaliseComposerNames(game);
+    if (composerNames.length === 0) return;
 
-    musicNames.forEach((name) => {
-      if (!composers[name]) {
-        composers[name] = [];
-      }
+    composerNames.forEach((name) => {
+      const approved = APPROVED_BY_NAME.get(normalizeForMatch(name));
+      if (!approved) return;
 
-      composers[name].push({
+      composers[approved.slug].push({
         slug: game.slug,
         title: game.title,
-        thumbnail: game.thumbnail,
       });
     });
   });
 
-  return Object.keys(composers)
-    .sort((a, b) => a.localeCompare(b))
-    .map((name) => ({
-      name,
-      slug: composerSlug(name),
-      games: composers[name]
+  return APPROVED_COMPOSERS.map((composer) => ({
+    ...composer,
+    games: composers[composer.slug]
+      .filter((game, index, list) => list.findIndex((item) => item.slug === game.slug) === index)
         .slice()
         .sort((a, b) => String(a.title ?? "").localeCompare(String(b.title ?? ""))),
-    }))
-    .filter((entry) => entry.slug);
+  }));
 }
 
 function renderComposerPage(entry) {
   const composerName = htmlEscape(entry.name);
-  const gameCards = entry.games.map((game) => {
-    const gameTitle = htmlEscape(game.title);
-    const gameSlug = htmlEscape(game.slug);
-    const gameThumb = htmlEscape(game.thumbnail || "default.jpg");
-
-    return `<article class="ccg-card">
-  <a href="/games/${gameSlug}/" class="ccg-card__media-link" aria-label="Open ${gameTitle}">
-    <img src="/resources/images/thumbnails/all/${gameThumb}" alt="${gameTitle} thumbnail" loading="lazy">
-  </a>
-  <div class="ccg-card__body">
-    <h2 class="ccg-card__title"><a href="/games/${gameSlug}/">${gameTitle}</a></h2>
-  </div>
-</article>`;
-  }).join("\n");
+  const composerSlugValue = htmlEscape(entry.slug);
+  const description = htmlEscape(`Explore Commodore 64 games featuring music by ${entry.name}, with archive links back to each game page on Cheeky Commodore Gamer.`);
+  const intro = htmlEscape(entry.intro);
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="music-composer">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${composerName} Music | Cheeky Commodore Gamer</title>
+<title>${composerName} — Commodore 64 Music | Cheeky Commodore Gamer</title>
+<meta name="description" content="${description}">
+<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/${composerSlugValue}/">
 <link rel="stylesheet" href="/resources/css/ccg-master.css">
-<link rel="stylesheet" href="/resources/css/ccg-cards.css">
-<link rel="stylesheet" href="/resources/css/ccg-mode.css">
+<link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-<main class="ccg-main" style="padding:2rem;max-width:1200px;margin:0 auto;">
-  <h1>${composerName}</h1>
-  <p>Games with music by ${composerName}</p>
-  <p><a href="/music/index.html">Browse all composers</a></p>
-  <section class="ccg-card-grid" style="display:grid;gap:1rem;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));">
-${gameCards}
-  </section>
-</main>
+  <main class="ccg-main ccg-composer-page" data-composer-name="${composerName}">
+    <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a> › <a href="/music/index.html">Music</a>
+    </nav>
+    <h1 class="ccg-composer-title">${composerName} — Commodore 64 Music</h1>
+    <p class="ccg-composer-subtitle">Featured game archive and soundtrack references</p>
+    <p class="ccg-composer-intro">${intro}</p>
+
+    <h2 class="ccg-composer-section-title">Games featuring ${composerName}</h2>
+    <ul id="composer-games" class="ccg-composer-games">
+      <li>Loading...</li>
+    </ul>
+
+    <section class="ccg-composer-featured" aria-labelledby="other-composers-heading">
+      <h2 id="other-composers-heading" class="ccg-composer-section-title">Other featured C64 composers</h2>
+      <div id="composer-featured-list" class="ccg-composer-chip-list"></div>
+    </section>
+  </main>
+  <script src="/js/music-composer-pages.js" defer></script>
 </body>
 </html>`;
 }
 
 function renderMusicIndexPage(composerEntries) {
   const composerLinks = composerEntries
-    .map((entry) => `<li><a href="/music/${htmlEscape(entry.slug)}/">${htmlEscape(entry.name)}</a></li>`)
+    .map((entry) => `      <a class="ccg-music-hub__composer" href="/music/${htmlEscape(entry.slug)}.html">${htmlEscape(entry.name)}</a>`)
     .join("\n");
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="music-hub">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Music Composers | Cheeky Commodore Gamer</title>
+<title>Commodore 64 Music Composers | Cheeky Commodore Gamer</title>
+<meta name="description" content="Browse featured Commodore 64 composers including Rob Hubbard, Martin Galway, Ben Daglish and more, with links to game archives on Cheeky Commodore Gamer.">
+<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/">
 <link rel="stylesheet" href="/resources/css/ccg-master.css">
-<link rel="stylesheet" href="/resources/css/ccg-cards.css">
-<link rel="stylesheet" href="/resources/css/ccg-mode.css">
+<link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-<main class="ccg-main" style="padding:2rem;max-width:900px;margin:0 auto;">
-  <h1>Music Composers</h1>
-  <ul>
+  <main class="ccg-main ccg-music-hub">
+    <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a>
+    </nav>
+    <h1 class="ccg-composer-title">Featured Commodore 64 Music Composers</h1>
+    <p class="ccg-composer-intro">Explore dedicated music archive pages for major C64 composers and jump directly to games on Cheeky Commodore Gamer that feature their work.</p>
+    <div class="ccg-music-hub__grid">
 ${composerLinks}
-  </ul>
-</main>
+    </div>
+  </main>
 </body>
 </html>`;
 }
@@ -179,13 +239,21 @@ function cleanStaleComposerPages(composerEntries) {
   const musicDir = "music";
   if (!fs.existsSync(musicDir)) return;
 
-  const activeSlugs = new Set(composerEntries.map((entry) => entry.slug));
+  const activeFiles = new Set(composerEntries.map((entry) => `${entry.slug}.html`));
 
   fs.readdirSync(musicDir, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
     .forEach((entry) => {
-      if (activeSlugs.has(entry.name)) return;
-      fs.rmSync(path.join(musicDir, entry.name), { recursive: true, force: true });
+      if (entry.name === "index.html" || entry.name === ".music-data.hash") return;
+
+      if (entry.isDirectory()) {
+        fs.rmSync(path.join(musicDir, entry.name), { recursive: true, force: true });
+        return;
+      }
+
+      if (!entry.isFile() || !entry.name.endsWith(".html")) return;
+      if (activeFiles.has(entry.name)) return;
+
+      fs.rmSync(path.join(musicDir, entry.name), { force: true });
     });
 }
 
@@ -264,7 +332,7 @@ if (shouldBuildPages) {
 
   if (musicHash !== previousMusicHash) {
     composerEntries.forEach((entry) => {
-      const composerFile = path.join("music", entry.slug, "index.html");
+      const composerFile = path.join("music", `${entry.slug}.html`);
       writeFileIfChanged(composerFile, renderComposerPage(entry));
     });
 
