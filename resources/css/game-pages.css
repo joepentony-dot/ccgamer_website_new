@@ -130,3 +130,46 @@
         grid-column: auto;
     }
 }
+
+.ccg-music-composer {
+    display: grid;
+    gap: 8px;
+}
+
+.ccg-music-composer__label {
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.ccg-music-composer__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.ccg-composer-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(var(--accent-rgb), 0.45);
+    background: rgba(var(--accent-rgb), 0.14);
+    color: #e8f7ff;
+    font-size: 0.78rem;
+    text-decoration: none;
+    transition: background 160ms ease, border-color 160ms ease;
+}
+
+.ccg-composer-button:hover,
+.ccg-composer-button:focus-visible {
+    background: rgba(var(--accent-rgb), 0.3);
+    border-color: rgba(var(--accent-rgb), 0.68);
+}
+
+.ccg-composer-text {
+    font-size: 0.82rem;
+    color: rgba(214, 241, 255, 0.96);
+}

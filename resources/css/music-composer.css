@@ -1,18 +1,94 @@
-.ccg-composer-page {
-  max-width: 960px;
+.ccg-composer-page,
+.ccg-music-hub {
+  max-width: 980px;
   margin: 0 auto;
-  padding: 2rem 1rem 3rem;
+  padding: clamp(1.2rem, 2vw, 2rem) 1rem 3rem;
+}
+
+.ccg-composer-breadcrumbs {
+  margin-bottom: 1rem;
+  font-size: 0.86rem;
+  opacity: 0.9;
+}
+
+.ccg-composer-breadcrumbs a {
+  color: #8ddcff;
+  text-decoration: none;
+}
+
+.ccg-composer-title {
+  margin: 0;
 }
 
 .ccg-composer-subtitle {
-  margin: 0 0 1rem;
+  margin: 0.3rem 0 1rem;
+  opacity: 0.92;
+}
+
+.ccg-composer-intro {
+  margin: 0 0 1.2rem;
+  line-height: 1.6;
+  max-width: 70ch;
+}
+
+.ccg-composer-section-title {
+  margin: 1.8rem 0 0.8rem;
 }
 
 .ccg-composer-games {
   margin: 0;
-  padding-left: 1.25rem;
+  padding-left: 1.1rem;
 }
 
-.ccg-composer-games li {
-  margin: 0.35rem 0;
+.ccg-composer-games__item {
+  margin: 0.6rem 0;
+}
+
+.ccg-composer-game-link {
+  color: #e9f9ff;
+}
+
+.ccg-composer-games__cue {
+  display: block;
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin-top: 0.2rem;
+}
+
+.ccg-composer-featured {
+  margin-top: 1.8rem;
+}
+
+.ccg-composer-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.ccg-composer-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(141, 220, 255, 0.38);
+  background: rgba(141, 220, 255, 0.1);
+  text-decoration: none;
+  color: #dff5ff;
+  font-size: 0.82rem;
+}
+
+.ccg-music-hub__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.7rem;
+}
+
+.ccg-music-hub__composer {
+  display: block;
+  border-radius: 12px;
+  border: 1px solid rgba(141, 220, 255, 0.3);
+  background: rgba(7, 18, 28, 0.72);
+  padding: 0.75rem 0.9rem;
+  text-decoration: none;
+  color: #e9f9ff;
 }
