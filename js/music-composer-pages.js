@@ -1,26 +1,27 @@
 (function () {
   const PROFILE_DATA = {
-    "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", platform: "C64 / Amiga", bio: "Allister Brimble is a British video-game composer known for 16-bit era soundtracks and home-computer music." },
-    "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", platform: "Amiga", bio: "Barry Leitch is a game composer known for energetic music across Amiga and later systems." },
-    "ben-daglish": { name: "Ben Daglish", slug: "ben-daglish", platform: "C64 / Amiga", bio: "Ben Daglish was an English composer and musician whose work became a major part of 1980s home-computer gaming." },
-    "chris-huelsbeck": { name: "Chris Hülsbeck", slug: "chris-huelsbeck", platform: "C64 / Amiga", aliases: ["Chris Hulsbeck"], bio: "Chris Hülsbeck is a German game-music composer widely known for European home computer soundtracks." },
-    "dave-thomas": { name: "Dave Thomas", slug: "dave-thomas", platform: "C64", bio: "Dave Thomas is a composer associated with classic Commodore 64 game music." },
-    "david-dunn": { name: "David Dunn", slug: "david-dunn", platform: "C64", bio: "David Dunn is a game composer associated with home-computer era releases." },
-    "david-whittaker": { name: "David Whittaker", slug: "david-whittaker", platform: "C64 / Amiga", bio: "David Whittaker is an English video-game composer whose work spans many home computer formats." },
-    "fred-gray": { name: "Fred Gray", slug: "fred-gray", platform: "C64 / Amiga", bio: "Fred Gray is an English game-music composer known for Commodore 64 and Amiga releases." },
-    "jeroen-tel": { name: "Jeroen Tel", slug: "jeroen-tel", platform: "C64 / Amiga", bio: "Jeroen Tel is a Dutch composer known for late-1980s and early-1990s game music." },
-    "jonathan-dunn": { name: "Jonathan Dunn", slug: "jonathan-dunn", platform: "C64", bio: "Jonathan Dunn is known for distinctive Commodore 64 music and sound design." },
-    "keith-tinman": { name: "Keith Tinman", slug: "keith-tinman", platform: "C64", bio: "Keith Tinman is a composer associated with classic C64 titles." },
-    "mark-cooksey": { name: "Mark Cooksey", slug: "mark-cooksey", platform: "C64 / Amiga", bio: "Mark Cooksey is a British composer known for memorable C64 and Amiga game themes." },
-    "martin-galway": { name: "Martin Galway", slug: "martin-galway", platform: "C64", bio: "Martin Galway is a British composer strongly associated with Commodore 64 and ZX Spectrum game music." },
-    "matt-furniss": { name: "Matt Furniss", slug: "matt-furniss", platform: "C64 / Amiga", bio: "Matt Furniss is an English composer known for prolific work across Amiga and console generations." },
-    "matt-gray": { name: "Matt Gray", slug: "matt-gray", platform: "C64", bio: "Matt Gray is a British producer and composer known for Commodore 64 music including Last Ninja 2." },
-    "neil-brennan": { name: "Neil Brennan", slug: "neil-brennan", platform: "C64", bio: "Neil Brennan is associated with music for classic Commodore 64 releases." },
-    "paul-hodgson": { name: "Paul Hodgson", slug: "paul-hodgson", platform: "C64", bio: "Paul Hodgson is a game composer known from C64-era productions." },
-    "richard-joseph": { name: "Richard Joseph", slug: "richard-joseph", platform: "C64 / Amiga", bio: "Richard Joseph was a British game composer and audio director known for his Amiga and C64 era work." },
-    "rob-hubbard": { name: "Rob Hubbard", slug: "rob-hubbard", platform: "C64 / Amiga", bio: "Rob Hubbard is a British composer and programmer best known for influential Commodore 64 game music in the 1980s." },
-    "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", platform: "C64", bio: "Russell Lieblich is known for his SID music work on the Commodore 64." }
+    "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", bio: "Allister Brimble is a British game composer known for work on home computers and 16-bit platforms, including projects on Commodore systems and beyond." },
+    "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", bio: "Barry Leitch is a game composer associated with Amiga-era releases and later soundtrack work across multiple platforms." },
+    "ben-daglish": { name: "Ben Daglish", slug: "ben-daglish", born: "1966-07-31", birthplace: "London, England", bio: "Ben Daglish was an English composer and musician whose work became a major part of 1980s home-computer gaming. He is best known for C64 scores including The Last Ninja, Krakout and Deflektor, and he also wrote music for Amiga releases." },
+    "chris-huelsbeck": { name: "Chris Hülsbeck", slug: "chris-huelsbeck", aliases: ["Chris Hulsbeck"], born: "1968-03-02", birthplace: "Kassel, Germany", bio: "Chris Hülsbeck is a German game composer known for European home-computer soundtracks including The Great Giana Sisters and the Turrican series across C64 and Amiga eras." },
+    "dave-thomas": { name: "Dave Thomas", slug: "dave-thomas", bio: "Dave Thomas is credited on Commodore 64 game soundtracks in the archive catalogue." },
+    "david-dunn": { name: "David Dunn", slug: "david-dunn", bio: "David Dunn is credited on Commodore-era game music releases represented in this archive." },
+    "david-whittaker": { name: "David Whittaker", slug: "david-whittaker", born: "1957-04-24", birthplace: "Bury, Lancashire, England", bio: "David Whittaker is an English video-game composer whose music spans major home-computer formats from the 1980s and early 1990s, including notable C64 and Amiga work." },
+    "fred-gray": { name: "Fred Gray", slug: "fred-gray", bio: "Fred Gray is an English game composer known for Commodore 64 and Amiga-era music, with credits including Shadowfire and Mutants." },
+    "jeroen-tel": { name: "Jeroen Tel", slug: "jeroen-tel", born: "1972-05-19", birthplace: "Eindhoven, Netherlands", bio: "Jeroen Tel is a Dutch composer known for late-1980s and early-1990s computer game music, including C64 and Amiga releases and his work with Maniacs of Noise." },
+    "jonathan-dunn": { name: "Jonathan Dunn", slug: "jonathan-dunn", bio: "Jonathan Dunn is known for distinctive Commodore 64 music and sound design, including well-known Ocean Software-era credits." },
+    "keith-tinman": { name: "Keith Tinman", slug: "keith-tinman", bio: "Keith Tinman is credited on classic C64 game music releases in this archive." },
+    "mark-cooksey": { name: "Mark Cooksey", slug: "mark-cooksey", bio: "Mark Cooksey is a British composer known for C64 and Amiga game themes in the late 1980s and early 1990s." },
+    "martin-galway": { name: "Martin Galway", slug: "martin-galway", born: "1966-01-03", birthplace: "Belfast, Northern Ireland", bio: "Martin Galway is a British composer strongly associated with Commodore 64 game music, particularly Ocean-era scores and loader tracks." },
+    "matt-furniss": { name: "Matt Furniss", slug: "matt-furniss", bio: "Matt Furniss is an English composer known for prolific game music work spanning C64, Amiga, and later console generations." },
+    "matt-gray": { name: "Matt Gray", slug: "matt-gray", born: "1970-05", birthplace: "Kent, England", bio: "Matt Gray is a British producer and composer known for Commodore 64 music, especially his soundtrack work on Last Ninja 2." },
+    "neil-brennan": { name: "Neil Brennan", slug: "neil-brennan", bio: "Neil Brennan is credited on Commodore 64 game music releases represented in the archive." },
+    "paul-hodgson": { name: "Paul Hodgson", slug: "paul-hodgson", bio: "Paul Hodgson is credited on C64-era game soundtracks in this collection." },
+    "richard-joseph": { name: "Richard Joseph", slug: "richard-joseph", bio: "Richard Joseph was a British game composer and audio director known for C64 and Amiga-era scores." },
+    "rob-hubbard": { name: "Rob Hubbard", slug: "rob-hubbard", born: "1955", birthplace: "Kingston upon Hull, England", bio: "Rob Hubbard is a British composer and programmer best known for influential Commodore 64 game music in the 1980s, including Commando, Monty on the Run, and International Karate." },
+    "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", bio: "Russell Lieblich is known for SID music work on the Commodore 64, including his score for Mutants." }
   };
+
 
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
@@ -131,6 +132,21 @@
       return "";
     }
     return `/resources/audio/games/${encodeURIComponent(slug)}.mp3`;
+  }
+
+  function getPlatformLabel(systems) {
+    const values = Array.from(systems || [])
+      .map((value) => String(value || "").trim().toUpperCase())
+      .filter(Boolean);
+
+    const hasC64 = values.some((value) => value.includes("C64") || value.includes("COMMODORE 64"));
+    const hasAmiga = values.some((value) => value.includes("AMIGA"));
+
+    const labels = [];
+    if (hasAmiga) labels.push("AMIGA");
+    if (hasC64) labels.push("C64");
+
+    return labels.length ? labels.join(" / ") : "";
   }
 
   async function assetExists(path) {
@@ -249,7 +265,7 @@
   function cardMarkup(composer, imagePath, stats, compact) {
     const bucket = stats.get(composer.slug);
     const trackCount = bucket ? bucket.games.length : 0;
-    const systemLabel = bucket && bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
+    const systemLabel = getPlatformLabel(bucket && bucket.systems);
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
     return `
@@ -366,7 +382,7 @@
       return;
     }
 
-    const systemLabel = bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
+    const systemLabel = getPlatformLabel(bucket.systems);
     const gameCount = bucket.games.length;
     const imagePath = await getComposerImagePath(composer.slug);
 
@@ -375,16 +391,20 @@
         ${imagePath ? `<img src="${imagePath}" alt="${composer.name}" class="ccg-composer-profile__image" loading="lazy">` : ""}
         <div>
           <h2 class="ccg-composer-profile__title">${composer.name}</h2>
-          <p class="ccg-composer-profile__platform">${systemLabel}</p>
+          ${systemLabel ? `<p class="ccg-composer-profile__platform">${systemLabel}</p>` : ""}
           <p class="ccg-composer-profile__facts">${gameCount} linked game credits</p>
-          <p class="ccg-composer-profile__bio">${composer.bio || "Composer biography currently unavailable in this archive."}</p>
+          ${composer.born ? `<p class="ccg-composer-profile__factline"><strong>Born:</strong> ${composer.born}</p>` : ""}
+          ${composer.birthplace ? `<p class="ccg-composer-profile__factline"><strong>Birthplace:</strong> ${composer.birthplace}</p>` : ""}
+          ${composer.bio ? `<p class="ccg-composer-profile__bio">${composer.bio}</p>` : ""}
         </div>
       </article>
     `;
 
     const subtitle = document.querySelector(".ccg-composer-subtitle");
     if (subtitle) {
-      subtitle.textContent = `${gameCount} linked game credits across ${systemLabel}`;
+      subtitle.textContent = systemLabel
+        ? `${gameCount} linked game credits across ${systemLabel}`
+        : `${gameCount} linked game credits`;
     }
   }
 
@@ -452,7 +472,10 @@
       audio.controls = true;
       audio.preload = "none";
       audio.className = "ccg-composer-mini-player";
-      audio.src = `/resources/audio/games/${String(game.slug || "").trim()}.mp3`;
+      const source = document.createElement("source");
+      source.src = getGameMusicPath(game);
+      source.type = "audio/mpeg";
+      audio.appendChild(source);
 
       audio.addEventListener("error", () => {
         if (playerWrap.parentNode) {
