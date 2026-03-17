@@ -31,9 +31,14 @@
       <div class="composer-grid composer-grid-featured"></div>
     </section>
 
-    <section class="composer-section">
+    <section class="composer-section composer-discovery">
       <h2>All Composers</h2>
-      <div class="composer-grid composer-grid-compact"></div>
+      <p class="composer-discovery__intro">Search the archive and expand letter groups to jump directly to any composer profile.</p>
+      <label class="composer-discovery__search-wrap" for="composer-discovery-search">
+        <span class="composer-discovery__search-label">Search composers</span>
+        <input id="composer-discovery-search" class="composer-discovery__search" type="search" autocomplete="off" placeholder="Type a composer name…">
+      </label>
+      <div id="composer-discovery-accordion" class="composer-accordion" aria-live="polite"></div>
     </section>
 
     <div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap hidden>
