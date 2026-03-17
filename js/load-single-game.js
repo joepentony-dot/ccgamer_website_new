@@ -941,6 +941,43 @@ function resolveGameMusicPath(slug) {
     return `${safeRoot}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
 }
 
+function normalizeComposerNames(game) {
+    const names = [];
+
+    const pushMany = (value) => {
+        if (Array.isArray(value)) {
+            value.forEach((item) => names.push(item));
+            return;
+        }
+        if (value) names.push(value);
+    };
+
+    pushMany(game?.music);
+    pushMany(game?.composer);
+    pushMany(game?.credits?.musician);
+
+    const seen = new Set();
+    return names
+        .map((name) => String(name || "").trim())
+        .filter(Boolean)
+        .filter((name) => {
+            const key = name.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+}
+
+function slugifyComposerName(name) {
+    return String(name || "")
+        .toLowerCase()
+        .replace(/[’']/g, "")
+        .replace(/[^a-z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
 async function checkGameMusicExists(path) {
     if (!path) return false;
     if (CCG_GAME_MUSIC_PATH_CACHE.has(path)) {
@@ -973,8 +1010,36 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
     const slug = resolveMusicSlugFromPath();
     const musicPath = resolveGameMusicPath(slug);
     const hasMusic = await checkGameMusicExists(musicPath);
+    const composers = normalizeComposerNames(game);
 
     if (hasMusic) {
+        if (composers.length) {
+            const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+                ? window.ccgGetSiteRoot()
+                : "/";
+            const composerLine = document.createElement("p");
+            composerLine.className = "ccg-music-composer";
+            composerLine.append("Music by ");
+
+            composers.forEach((name, index) => {
+                const composerSlug = slugifyComposerName(name);
+                if (composerSlug) {
+                    const composerLink = document.createElement("a");
+                    composerLink.href = `${root}music/${composerSlug}/`;
+                    composerLink.textContent = name;
+                    composerLine.appendChild(composerLink);
+                } else {
+                    composerLine.append(name);
+                }
+
+                if (index < composers.length - 1) {
+                    composerLine.append(", ");
+                }
+            });
+
+            musicTracksEl.appendChild(composerLine);
+        }
+
         const audio = document.createElement("audio");
         audio.controls = true;
         audio.preload = "none";
@@ -986,16 +1051,6 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
         audio.appendChild(source);
         audio.append("Your browser does not support the audio element.");
         musicTracksEl.appendChild(audio);
-
-        const composers = Array.isArray(game?.music)
-            ? game.music.map((name) => String(name || "").trim()).filter(Boolean)
-            : [];
-        if (composers.length) {
-            const composerLine = document.createElement("p");
-            composerLine.className = "ccg-music-composer";
-            composerLine.textContent = `Music by ${composers.join(", ")}`;
-            musicTracksEl.appendChild(composerLine);
-        }
 
         musicCard.hidden = false;
     }
