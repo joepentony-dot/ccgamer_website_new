@@ -147,7 +147,6 @@ function renderComposerPage(entry) {
   const profile = FEATURED_PROFILE_DATA[entry.slug];
   const title = profile?.seoTitle || `${entry.name} — C64 & Amiga Music Composer | Cheeky Commodore Gamer`;
   const description = profile?.metaDescription || `Explore C64 and Amiga games featuring music by ${entry.name}, with archive links back to each game page on Cheeky Commodore Gamer.`;
-  const intro = profile?.shortBio || `${entry.name} appears across multiple game soundtracks in the Cheeky Commodore Gamer archive. Browse the full game list below.`;
 
   return `<!DOCTYPE html>
 <html lang="en" data-ccg-page="music-composer">
@@ -167,7 +166,6 @@ function renderComposerPage(entry) {
     </nav>
     <h1 class="ccg-composer-title">${composerName} — C64 & Amiga Music</h1>
     <p class="ccg-composer-subtitle">Loading composer archive details…</p>
-    <p class="ccg-composer-intro">${htmlEscape(intro)}</p>
 
     <div class="ccg-composer-nav" id="composer-nav-row"></div>
 
