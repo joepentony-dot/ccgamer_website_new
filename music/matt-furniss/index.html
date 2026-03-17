@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matt Furniss | C64 & Amiga Music</title>
+  <meta name="description" content="Explore music by Matt Furniss on the Commodore 64 and Amiga. Listen to classic game soundtracks and SID music.">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/matt-furniss/index.html">
+  <link rel="stylesheet" href="/resources/css/ccg-master.css">
+  <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
+  <link rel="stylesheet" href="/resources/css/music-composer.css">
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+<header>
+  <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
+    <div class="ccg-breadcrumb-nav">
+      <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
+      <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
+      <a href="/music/index.html" class="ccg-btn ccg-btn--secondary">Music Hub</a>
+      <a href="/music/composers/index.html" class="ccg-btn ccg-btn--secondary">All Composers</a>
+      <a href="/music/matt-furniss/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Matt Furniss</a>
+    </div>
+  </nav>
+</header>
+<main class="ccg-main ccg-composer-page">
+<section class="composer-hero">
+  <h1>Matt Furniss</h1>
+  <p>C64 / Amiga</p>
+</section>
+<section class="composer-tracks">
+  <h2>🎧 Music Tracks</h2>
+  <div id="composer-track-list"></div>
+</section>
+</main>
+<script src="/js/load-games.js"></script>
+<script>
+function renderTracks() {
+  const composerName = "Matt Furniss";
+  const container = document.getElementById("composer-track-list");
+
+  if (!window.games) {
+    container.innerHTML = "<p>No data available.</p>";
+    return;
+  }
+
+  const matches = window.games.filter(g =>
+    g.music && g.music.includes(composerName)
+  );
+
+  if (matches.length === 0) {
+    container.innerHTML = "<p>No tracks found.</p>";
+    return;
+  }
+
+  container.innerHTML = matches.map(game => `
+    <div class="track-card">
+      <a href="/games/${game.slug}/index.html">
+        ${game.title}
+      </a>
+    </div>
+  `).join('');
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setTimeout(renderTracks, 300);
+});
+</script>
+</body>
+</html>
