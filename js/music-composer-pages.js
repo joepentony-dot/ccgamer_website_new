@@ -12,6 +12,19 @@
     { name: "Tim Follin", slug: "tim-follin" },
     { name: "Reyn Ouwehand", slug: "reyn-ouwehand" }
   ];
+  const COMPOSER_BIOS = {
+    "Rob Hubbard": "Widely regarded as one of the most influential Commodore 64 composers, Rob Hubbard helped define the SID sound with landmark scores that blended melody, rhythm and technical craft.",
+    "Martin Galway": "Martin Galway is known for memorable SID soundtracks on major C64 releases, combining cinematic atmosphere with a distinctive electronic style.",
+    "Ben Daglish": "Ben Daglish created many recognisable C64 themes and is associated with some of the most beloved game music of the 8-bit era.",
+    "Matt Gray": "Matt Gray delivered polished, high-energy C64 music and remains closely associated with some of the platform's most iconic late-era soundtracks.",
+    "David Whittaker": "David Whittaker composed across a huge range of C64 games and is known for versatile SID work that became a staple of British home-computer gaming.",
+    "Jeroen Tel": "Jeroen Tel is widely known for bold, punchy C64 compositions and for helping shape the signature audio style heard in many late-80s and early-90s releases.",
+    "Fred Gray": "Fred Gray composed memorable C64 scores that blended strong melodies with inventive SID programming, earning a lasting reputation among retro players.",
+    "Chris Hülsbeck": "Chris Hülsbeck is associated with some of the most recognisable 8-bit and 16-bit game music, with C64 works that showcased melodic writing and technical precision.",
+    "Tim Follin": "Tim Follin is celebrated for technically advanced and harmonically rich C64 music, widely regarded as some of the most ambitious SID composition of the era.",
+    "Reyn Ouwehand": "Reyn Ouwehand became a key modern-era C64 composer, known for refined SID craftsmanship and music that bridges classic influences with contemporary production discipline."
+  };
+  const MUSIC_EXISTS_CACHE = new Map();
 
   const CANONICAL_NAME_MAP = {
     "rob hubbard": "Rob Hubbard",
@@ -153,6 +166,79 @@
     return slug ? `${root}games/${slug}.html` : `${root}games/index.html`;
   }
 
+  function resolveGameAudioCandidates(game) {
+    const slug = String(game && game.slug || "").trim().toLowerCase();
+    if (!slug) return [];
+    const root = getSiteRoot();
+    const direct = `${root}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
+    const underscore = `${root}resources/audio/games/${encodeURIComponent(slug.replace(/-/g, "_"))}.mp3`;
+    return direct === underscore ? [direct] : [direct, underscore];
+  }
+
+  async function checkMusicPath(path) {
+    if (!path) return false;
+    if (MUSIC_EXISTS_CACHE.has(path)) {
+      return MUSIC_EXISTS_CACHE.get(path);
+    }
+    try {
+      const response = await fetch(path, { method: "HEAD", cache: "force-cache" });
+      const exists = response.ok;
+      MUSIC_EXISTS_CACHE.set(path, exists);
+      return exists;
+    } catch (error) {
+      MUSIC_EXISTS_CACHE.set(path, false);
+      return false;
+    }
+  }
+
+  async function resolveExistingMusicPath(game) {
+    const candidates = resolveGameAudioCandidates(game);
+    for (const candidate of candidates) {
+      if (await checkMusicPath(candidate)) return candidate;
+    }
+    return "";
+  }
+
+  function attachMiniPlayer(placeholder, audioPath) {
+    if (!placeholder || !audioPath || placeholder.dataset.hasPlayer === "true") return;
+    const audio = document.createElement("audio");
+    audio.className = "ccg-composer-mini-player";
+    audio.controls = true;
+    audio.preload = "none";
+    const source = document.createElement("source");
+    source.src = audioPath;
+    source.type = "audio/mpeg";
+    audio.appendChild(source);
+    audio.append("Your browser does not support the audio element.");
+    placeholder.appendChild(audio);
+    placeholder.dataset.hasPlayer = "true";
+  }
+
+  function queueMiniPlayer(game, placeholder) {
+    if (!placeholder || placeholder.dataset.musicResolved === "true") return;
+    placeholder.dataset.musicResolved = "true";
+
+    if (typeof IntersectionObserver !== "function") {
+      resolveExistingMusicPath(game).then((path) => {
+        if (path) attachMiniPlayer(placeholder, path);
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(async (entries) => {
+      entries.forEach(async (entry) => {
+        if (!entry.isIntersecting) return;
+        observer.unobserve(entry.target);
+        const path = await resolveExistingMusicPath(game);
+        if (path) {
+          attachMiniPlayer(placeholder, path);
+        }
+      });
+    }, { rootMargin: "300px 0px" });
+
+    observer.observe(placeholder);
+  }
+
   function renderGames(listEl, games, composerName) {
     listEl.innerHTML = "";
 
@@ -196,6 +282,13 @@
         content.appendChild(minor);
       }
 
+      const utilityRow = document.createElement("span");
+      utilityRow.className = "ccg-composer-game-utility";
+      const playerSlot = document.createElement("span");
+      playerSlot.className = "ccg-composer-game-player-slot";
+      utilityRow.appendChild(playerSlot);
+      queueMiniPlayer(game, playerSlot);
+
       link.appendChild(thumbnail);
       link.appendChild(content);
 
@@ -204,6 +297,7 @@
       cue.textContent = "Open game page";
 
       li.appendChild(link);
+      li.appendChild(utilityRow);
       li.appendChild(cue);
       fragment.appendChild(li);
     });
@@ -234,6 +328,42 @@
     }
     if (subEl) {
       subEl.textContent = `${count} games on Cheeky Commodore Gamer`;
+    }
+    const introEl = document.querySelector(".ccg-composer-intro");
+    if (introEl) {
+      introEl.textContent = COMPOSER_BIOS[composerName] || introEl.textContent;
+    }
+
+    const pageRoot = document.querySelector(".ccg-composer-page");
+    const existingProfile = document.querySelector(".ccg-composer-profile");
+    if (pageRoot && !existingProfile) {
+      const profile = document.createElement("section");
+      profile.className = "ccg-composer-profile";
+      const image = document.createElement("img");
+      image.className = "ccg-composer-profile__image";
+      image.alt = `${composerName} portrait`;
+      image.loading = "lazy";
+      image.src = `${getSiteRoot()}resources/images/composers/${composerSlug(composerName)}.jpg`;
+      image.addEventListener("error", () => {
+        image.classList.add("is-fallback");
+        image.src = `${getSiteRoot()}resources/images/thumbnails/placeholder.png`;
+      }, { once: true });
+
+      const content = document.createElement("div");
+      content.className = "ccg-composer-profile__content";
+      const heading = document.createElement("h2");
+      heading.className = "ccg-composer-profile__title";
+      heading.textContent = composerName;
+      const bio = document.createElement("p");
+      bio.className = "ccg-composer-profile__bio";
+      bio.textContent = COMPOSER_BIOS[composerName] || "Explore this composer's key C64 soundtrack credits and discover featured game pages in the archive below.";
+      content.appendChild(heading);
+      content.appendChild(bio);
+      profile.appendChild(image);
+      profile.appendChild(content);
+
+      const nav = document.getElementById("composer-nav-row");
+      pageRoot.insertBefore(profile, nav || pageRoot.querySelector("h2"));
     }
     document.title = `${composerName} — Commodore 64 Music & Games | Cheeky Commodore Gamer`;
 
