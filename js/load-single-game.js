@@ -932,15 +932,6 @@ function resolveMusicSlugFromPath() {
     return normalizeSlugKey(getSlugFromPath());
 }
 
-function resolveGameMusicPath(slug) {
-    if (!slug) return "";
-    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
-        ? window.ccgGetSiteRoot()
-        : "/";
-    const safeRoot = root.endsWith("/") ? root : `${root}/`;
-    return `${safeRoot}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
-}
-
 function normalizeComposerKey(value) {
     return String(value || "")
         .trim()
@@ -1029,22 +1020,6 @@ function resolveComposerSlug(name) {
     return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
-async function checkGameMusicExists(path) {
-    if (!path) return false;
-    if (CCG_GAME_MUSIC_PATH_CACHE.has(path)) {
-        return CCG_GAME_MUSIC_PATH_CACHE.get(path);
-    }
-    try {
-        const response = await fetch(path, { method: "HEAD", cache: "force-cache" });
-        const exists = response.ok;
-        CCG_GAME_MUSIC_PATH_CACHE.set(path, exists);
-        return exists;
-    } catch (error) {
-        CCG_GAME_MUSIC_PATH_CACHE.set(path, false);
-        return false;
-    }
-}
-
 async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
     const musicCard = document.getElementById("game-music-card");
     const musicTracksEl = document.getElementById("gameMusicTracks");
@@ -1059,8 +1034,9 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
     musicTracksEl.innerHTML = "";
 
     const slug = resolveMusicSlugFromPath();
-    const musicPath = resolveGameMusicPath(slug);
-    const hasMusic = await checkGameMusicExists(musicPath);
+    const hasMusic = window.ccgGameMusic
+        ? await window.ccgGameMusic.renderGameMusicPlayer({ slug, mount: musicTracksEl })
+        : false;
     const composers = normalizeComposerNames(game);
 
     if (composers.length) {
@@ -1134,18 +1110,6 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
     }
 
     if (hasMusic) {
-        const audio = document.createElement("audio");
-        audio.controls = true;
-        audio.preload = "none";
-
-        const source = document.createElement("source");
-        source.src = musicPath;
-        source.type = "audio/mpeg";
-
-        audio.appendChild(source);
-        audio.append("Your browser does not support the audio element.");
-        musicTracksEl.appendChild(audio);
-
         musicCard.hidden = false;
     }
 
