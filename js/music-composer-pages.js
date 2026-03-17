@@ -8,9 +8,7 @@
     { name: "David Whittaker", slug: "david-whittaker" },
     { name: "Jeroen Tel", slug: "jeroen-tel" },
     { name: "Fred Gray", slug: "fred-gray" },
-    { name: "Chris Hülsbeck", slug: "chris-huelsbeck" },
-    { name: "Tim Follin", slug: "tim-follin" },
-    { name: "Reyn Ouwehand", slug: "reyn-ouwehand" }
+    { name: "Chris Hülsbeck", slug: "chris-huelsbeck" }
   ];
   const COMPOSER_BIOS = {
     "Rob Hubbard": "Widely regarded as one of the most influential Commodore 64 composers, Rob Hubbard helped define the SID sound with landmark scores that blended melody, rhythm and technical craft.",
@@ -21,8 +19,6 @@
     "Jeroen Tel": "Jeroen Tel is widely known for bold, punchy C64 compositions and for helping shape the signature audio style heard in many late-80s and early-90s releases.",
     "Fred Gray": "Fred Gray composed memorable C64 scores that blended strong melodies with inventive SID programming, earning a lasting reputation among retro players.",
     "Chris Hülsbeck": "Chris Hülsbeck is associated with some of the most recognisable 8-bit and 16-bit game music, with C64 works that showcased melodic writing and technical precision.",
-    "Tim Follin": "Tim Follin is celebrated for technically advanced and harmonically rich C64 music, widely regarded as some of the most ambitious SID composition of the era.",
-    "Reyn Ouwehand": "Reyn Ouwehand became a key modern-era C64 composer, known for refined SID craftsmanship and music that bridges classic influences with contemporary production discipline."
   };
   const MUSIC_EXISTS_CACHE = new Map();
 
@@ -37,6 +33,7 @@
     "jeroen tel": "Jeroen Tel",
     "fred gray": "Fred Gray",
     "chris huelsbeck": "Chris Hülsbeck",
+    "chris hulsbeck": "Chris Hülsbeck",
     "chris hülsbeck": "Chris Hülsbeck",
     "tim follin": "Tim Follin",
     "reyn ouwehand": "Reyn Ouwehand"
@@ -128,8 +125,34 @@
     return index;
   }
 
+  function gamePlatforms(game) {
+    const platformText = [game?.system, game?.platform, game?.computer]
+      .map((entry) => String(entry || "").toLowerCase())
+      .join(" ");
+    const platforms = new Set();
+    if (/\bc64\b|commodore\s*64/.test(platformText)) {
+      platforms.add("C64");
+    }
+    if (/\bamiga\b/.test(platformText)) {
+      platforms.add("Amiga");
+    }
+    return platforms;
+  }
+
+  function getComposerPlatformLabel(games) {
+    const platforms = new Set();
+    (games || []).forEach((game) => {
+      gamePlatforms(game).forEach((platform) => platforms.add(platform));
+    });
+    if (platforms.has("C64") && platforms.has("Amiga")) return "C64 | Amiga";
+    if (platforms.has("Amiga")) return "Amiga";
+    return "C64";
+  }
+
   function getEligibleComposerNames(index) {
-    const featured = FEATURED_COMPOSERS.map((entry) => entry.name);
+    const featured = FEATURED_COMPOSERS
+      .filter((entry) => (index.get(entry.name) || []).length >= MIN_ARCHIVE_CREDITS)
+      .map((entry) => entry.name);
     const extras = Array.from(index.entries())
       .filter(([name, games]) => !FEATURED_BY_NAME.has(normalizeComposerKey(name)) && games.length >= MIN_ARCHIVE_CREDITS)
       .sort((a, b) => a[0].localeCompare(b[0]))
@@ -320,14 +343,14 @@
     });
   }
 
-  function renderComposerMeta(composerName, count, eligibleNames) {
+  function renderComposerMeta(composerName, count, eligibleNames, composerGames) {
     const titleEl = document.querySelector(".ccg-composer-title");
     const subEl = document.querySelector(".ccg-composer-subtitle");
     if (titleEl) {
-      titleEl.textContent = `${composerName} — Commodore 64 Music`;
+      titleEl.textContent = `${composerName} — C64 & Amiga Music`;
     }
     if (subEl) {
-      subEl.textContent = `${count} games on Cheeky Commodore Gamer`;
+      subEl.textContent = `${getComposerPlatformLabel(composerGames)} • ${count} games on Cheeky Commodore Gamer`;
     }
     const introEl = document.querySelector(".ccg-composer-intro");
     if (introEl) {
@@ -365,11 +388,11 @@
       const nav = document.getElementById("composer-nav-row");
       pageRoot.insertBefore(profile, nav || pageRoot.querySelector("h2"));
     }
-    document.title = `${composerName} — Commodore 64 Music & Games | Cheeky Commodore Gamer`;
+    document.title = `${composerName} — C64 & Amiga Music & Games | Cheeky Commodore Gamer`;
 
     const desc = document.querySelector('meta[name="description"]');
     if (desc) {
-      desc.setAttribute("content", `Explore the legendary Commodore 64 music of ${composerName}, including every C64 game featuring their iconic SID soundtracks.`);
+      desc.setAttribute("content", `Explore the legendary C64 and Amiga music of ${composerName}, including games featuring their iconic soundtracks.`);
     }
 
     const nav = document.getElementById("composer-nav-row");
@@ -377,9 +400,9 @@
       const root = getSiteRoot();
       nav.innerHTML = "";
       [
-        ["Back to Music Hub", `${root}music/index.html`],
-        ["Browse All Composers", `${root}music/index.html#all-composers`],
-        ["Featured Composers", `${root}music/index.html#featured-composers`]
+        ["Back to C64 & Amiga Music Hub", `${root}music/index.html`],
+        ["Full List Of Composers", `${root}music/index.html#all-composers`],
+        ["Featured C64 & Amiga Composers", `${root}music/index.html#featured-composers`]
       ].forEach(([label, href]) => {
         const link = document.createElement("a");
         link.className = "ccg-composer-nav__button";
@@ -410,12 +433,16 @@
     const featuredKeys = new Set(FEATURED_COMPOSERS.map((entry) => normalizeComposerKey(entry.name)));
     if (featuredEl) {
       featuredEl.innerHTML = "";
-      FEATURED_COMPOSERS.forEach((composer) => {
+      FEATURED_COMPOSERS
+        .filter((composer) => (index.get(composer.name) || []).length >= MIN_ARCHIVE_CREDITS)
+        .forEach((composer) => {
         const link = document.createElement("a");
-        link.className = "ccg-music-hub__composer";
+        link.className = "ccg-music-hub__composer ccg-music-hub__composer--featured";
         link.href = `${root}music/${composer.slug}.html`;
-        const count = (index.get(composer.name) || []).length;
-        link.innerHTML = `<strong>${composer.name}</strong><span>${count} games</span>`;
+        const games = index.get(composer.name) || [];
+        const count = games.length;
+        const platformLabel = getComposerPlatformLabel(games);
+        link.innerHTML = `<strong>${composer.name}</strong><span class="ccg-music-hub__platform">${platformLabel}</span><span>${count} games on Cheeky Commodore Gamer</span>`;
         featuredEl.appendChild(link);
       });
     }
@@ -428,7 +455,8 @@
         link.href = `${root}music/${composerSlug(name)}.html`;
         const games = index.get(name) || [];
         const isFeatured = featuredKeys.has(normalizeComposerKey(name));
-        link.innerHTML = `<strong>${name}</strong><span>${games.length} games${isFeatured ? " • Featured" : ""}</span>`;
+        const platformLabel = getComposerPlatformLabel(games);
+        link.innerHTML = `<strong>${name}</strong><span class="ccg-music-hub__platform">${platformLabel}</span><span>${games.length} games on Cheeky Commodore Gamer${isFeatured ? " • Featured" : ""}</span>`;
         extraEl.appendChild(link);
       });
       extraEl.id = "all-composers";
@@ -441,6 +469,19 @@
     const stats = document.getElementById("music-hub-stats");
     if (stats) {
       stats.textContent = `${eligibleNames.length} composers currently featured in the Cheeky Commodore Gamer music archive.`;
+    }
+
+    const hubTitle = document.querySelector(".ccg-music-hub .ccg-composer-title");
+    if (hubTitle) hubTitle.textContent = "C64 & Amiga Music Hub";
+
+    const featuredHeading = document.querySelector("#featured-composers")?.previousElementSibling;
+    if (featuredHeading && featuredHeading.classList.contains("ccg-composer-section-title")) {
+      featuredHeading.textContent = "Featured C64 & Amiga Composers";
+    }
+
+    const additionalHeading = document.getElementById("additional-composers-title");
+    if (additionalHeading) {
+      additionalHeading.textContent = "Full List Of Composers";
     }
   }
 
@@ -472,7 +513,7 @@
       renderComposerChips("composer-featured-list", FEATURED_COMPOSERS.map((entry) => entry.name), composerName);
       renderComposerChips("composer-all-list", eligibleNames, composerName);
       const games = composerIndex.get(composerName) || [];
-      renderComposerMeta(composerName, games.length, eligibleNames);
+      renderComposerMeta(composerName, games.length, eligibleNames, games);
       renderGames(listEl, games, composerName);
     } catch (error) {
       renderHub(new Map());

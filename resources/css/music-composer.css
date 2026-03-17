@@ -181,6 +181,23 @@
   opacity: 0.86;
 }
 
+.ccg-music-hub__platform {
+  color: #99f6ff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  opacity: 1;
+}
+
+.ccg-music-hub__composer--featured {
+  border-color: rgba(146, 255, 226, 0.68);
+  box-shadow: 0 0 18px rgba(67, 255, 217, 0.2), inset 0 0 20px rgba(67, 255, 217, 0.08);
+}
+
+.ccg-music-hub__composer--featured strong {
+  color: #abffe8;
+  text-shadow: 0 0 10px rgba(104, 255, 227, 0.35);
+}
+
 .ccg-music-hub__additional { margin-top: 1.2rem; }
 
 @media (max-width: 560px) {
