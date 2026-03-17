@@ -215,18 +215,7 @@
     return stats;
   }
 
-  async function renderHubCards(composers, stats) {
-    const containerFeatured = document.querySelector(".composer-grid-featured");
-    const containerAll = document.querySelector(".composer-grid-compact");
-    if (!containerFeatured || !containerAll) {
-      return;
-    }
-
-    const sorted = [...composers].sort((a, b) => a.name.localeCompare(b.name));
-    const imageLookups = await Promise.all(
-      sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
-    );
-
+  function buildFeaturedSet(imageLookups, stats) {
     const existingFeatured = imageLookups.filter((item) => Boolean(item.imagePath)).slice(0, 6);
     const priorityFeatured = FEATURED_PRIORITY
       .map((priorityName) => imageLookups.find((item) => normaliseName(item.composer.name) === priorityName))
@@ -250,30 +239,119 @@
       }
     });
 
-    const featured = Array.from(featuredMap.values());
-    const featuredNames = new Set(featured.map((item) => normaliseName(item.composer.name)));
-    const rest = imageLookups.filter((item) => !featuredNames.has(normaliseName(item.composer.name)));
+    return Array.from(featuredMap.values());
+  }
 
-    function cardMarkup(composer, imagePath, compact) {
-      const bucket = stats.get(composer.slug);
-      const trackCount = bucket ? bucket.games.length : 0;
-      const systemLabel = bucket && bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
-      const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
+  function getSortedComposers(registry) {
+    return [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));
+  }
 
-      return `
-        <a href="${getComposerUrl(composer.slug)}" class="${cardClass}" data-slug="${composer.slug}">
-          ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
-          <div class="composer-info">
-            <h3>${composer.name}</h3>
-            <p class="composer-platform">${systemLabel}</p>
-            <p class="composer-count">${trackCount} Tracks</p>
-          </div>
-        </a>
-      `;
+  function cardMarkup(composer, imagePath, stats, compact) {
+    const bucket = stats.get(composer.slug);
+    const trackCount = bucket ? bucket.games.length : 0;
+    const systemLabel = bucket && bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
+    const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
+
+    return `
+      <a href="${getComposerUrl(composer.slug)}" class="${cardClass}" data-slug="${composer.slug}">
+        ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
+        <div class="composer-info">
+          <h3>${composer.name}</h3>
+          <p class="composer-platform">${systemLabel}</p>
+          <p class="composer-count">${trackCount} Tracks</p>
+        </div>
+      </a>
+    `;
+  }
+
+  function renderHubAccordion(allComposers, stats) {
+    const searchInput = document.getElementById("composer-discovery-search");
+    const accordion = document.getElementById("composer-discovery-accordion");
+    if (!searchInput || !accordion) {
+      return;
     }
 
-    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, false)).join("");
-    containerAll.innerHTML = rest.map(({ composer }) => cardMarkup(composer, "", true)).join("");
+    const groups = new Map();
+    allComposers.forEach((composer) => {
+      const letter = composer.name.charAt(0).toUpperCase();
+      const key = /[A-Z]/.test(letter) ? letter : "#";
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+      groups.get(key).push(composer);
+    });
+
+    const orderedLetters = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")]
+      .filter((letter) => groups.has(letter));
+
+    let openSet = new Set();
+
+    const draw = () => {
+      const query = normaliseName(searchInput.value);
+      const hasQuery = query.length > 0;
+
+      const sections = orderedLetters.map((letter) => {
+        const matches = groups.get(letter).filter((composer) => normaliseName(composer.name).includes(query));
+        if (!matches.length) {
+          return "";
+        }
+
+        const shouldOpen = hasQuery || openSet.has(letter);
+        const chips = matches
+          .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer.slug)}">${composer.name}<span>${stats.get(composer.slug)?.games.length || 0}</span></a>`)
+          .join("");
+
+        return `
+          <section class="composer-accordion__group ${shouldOpen ? "is-open" : ""}" data-letter="${letter}">
+            <button class="composer-accordion__header" type="button" aria-expanded="${shouldOpen ? "true" : "false"}">
+              <span class="composer-accordion__letter">${letter}</span>
+              <span class="composer-accordion__count">${matches.length}</span>
+            </button>
+            <div class="composer-accordion__body" ${shouldOpen ? "" : "hidden"}>
+              <div class="ccg-composer-chip-list">${chips}</div>
+            </div>
+          </section>
+        `;
+      });
+
+      accordion.innerHTML = sections.filter(Boolean).join("") || "<p class='composer-accordion__empty'>No composers match this search.</p>";
+
+      accordion.querySelectorAll(".composer-accordion__header").forEach((button) => {
+        button.addEventListener("click", () => {
+          const group = button.closest(".composer-accordion__group");
+          if (!group) {
+            return;
+          }
+          const letter = group.getAttribute("data-letter") || "";
+          if (openSet.has(letter)) {
+            openSet.delete(letter);
+          } else {
+            openSet.add(letter);
+          }
+          draw();
+        });
+      });
+    };
+
+    searchInput.addEventListener("input", draw);
+    draw();
+  }
+
+  async function renderHubCards(composers, stats) {
+    const containerFeatured = document.querySelector(".composer-grid-featured");
+    if (!containerFeatured) {
+      return;
+    }
+
+    const sorted = [...composers].sort((a, b) => a.name.localeCompare(b.name));
+    const imageLookups = await Promise.all(
+      sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
+    );
+
+    const featured = buildFeaturedSet(imageLookups, stats);
+    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false)).join("");
+
+    renderHubAccordion(sorted, stats);
 
     const totalsLabel = document.getElementById("music-hub-stats");
     if (totalsLabel) {
@@ -323,48 +401,98 @@
       return;
     }
 
-    const cards = await Promise.all(sortedGames.map(async (game) => {
+    const rows = await Promise.all(sortedGames.map(async (game) => {
       const thumbSrc = resolveThumbnailPath(game);
       const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
-      const musicSrc = getGameMusicPath(game);
+      const card = document.createElement("li");
+      card.className = `ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}`.trim();
 
-      return `
-        <li class="ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}">
-          <a class="ccg-composer-game-link" href="${getGameUrl(game.slug)}">
-            ${hasThumb ? `<img src="${thumbSrc}" alt="${game.title}" class="ccg-composer-game-thumb" loading="lazy">` : ""}
-            <span class="ccg-composer-game-meta">
-              <span class="ccg-composer-game-title">${game.title}</span>
-              <span class="ccg-composer-game-minor">${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}</span>
-            </span>
-            <span class="ccg-composer-game-action">Open game page</span>
-          </a>
-          ${musicSrc ? `<div class="ccg-composer-game-utility composer-player-row"><div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="${musicSrc}" onerror="this.closest('.composer-player-row')?.remove();"></audio></div></div>` : ""}
-        </li>
-      `;
+      const gameLink = document.createElement("a");
+      gameLink.className = "ccg-composer-game-link";
+      gameLink.href = getGameUrl(game.slug);
+
+      if (hasThumb) {
+        const image = document.createElement("img");
+        image.className = "ccg-composer-game-thumb";
+        image.loading = "lazy";
+        image.src = thumbSrc;
+        image.alt = game.title || "Game thumbnail";
+        gameLink.appendChild(image);
+      }
+
+      const meta = document.createElement("span");
+      meta.className = "ccg-composer-game-meta";
+
+      const title = document.createElement("span");
+      title.className = "ccg-composer-game-title";
+      title.textContent = game.title || "Untitled game";
+
+      const minor = document.createElement("span");
+      minor.className = "ccg-composer-game-minor";
+      minor.textContent = `${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}`;
+
+      meta.appendChild(title);
+      meta.appendChild(minor);
+      gameLink.appendChild(meta);
+
+      const action = document.createElement("span");
+      action.className = "ccg-composer-game-action";
+      action.textContent = "Open game page";
+      gameLink.appendChild(action);
+
+      card.appendChild(gameLink);
+
+      const playerWrap = document.createElement("div");
+      playerWrap.className = "ccg-composer-game-utility composer-player-row";
+
+      const playerSlot = document.createElement("div");
+      playerSlot.className = "ccg-composer-game-player-slot";
+
+      const audio = document.createElement("audio");
+      audio.controls = true;
+      audio.preload = "none";
+      audio.className = "ccg-composer-mini-player";
+      audio.src = `/resources/audio/games/${String(game.slug || "").trim()}.mp3`;
+
+      audio.addEventListener("error", () => {
+        if (playerWrap.parentNode) {
+          playerWrap.parentNode.removeChild(playerWrap);
+        }
+      });
+
+      playerSlot.appendChild(audio);
+      playerWrap.appendChild(playerSlot);
+      card.appendChild(playerWrap);
+
+      return card;
     }));
 
-    gamesList.innerHTML = cards.join("");
+    gamesList.innerHTML = "";
+    rows.forEach((row) => gamesList.appendChild(row));
   }
 
-  function renderComposerChips(registry, currentSlug) {
+  function renderComposerChips(registry, stats, currentSlug) {
     const featured = document.getElementById("composer-featured-list");
-    const all = document.getElementById("composer-all-list");
-
-    const sorted = [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));
-    const featuredSet = sorted.slice(0, 8);
-
-    function chip(composer) {
-      const active = composer.slug === currentSlug ? " is-active" : "";
-      return `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip${active}" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`;
+    if (!featured) {
+      return;
     }
 
-    if (featured) {
-      featured.innerHTML = featuredSet.filter((composer) => composer.slug !== currentSlug).map((composer) => chip(composer)).join("");
-    }
+    const sorted = getSortedComposers(registry);
+    const featuredPriority = FEATURED_PRIORITY
+      .map((name) => sorted.find((composer) => normaliseName(composer.name) === name))
+      .filter(Boolean);
 
-    if (all) {
-      all.innerHTML = sorted.filter((composer) => composer.slug !== currentSlug).map((composer) => chip(composer)).join("");
-    }
+    const fallback = sorted
+      .filter((composer) => !featuredPriority.some((item) => item.slug === composer.slug))
+      .sort((a, b) => (stats.get(b.slug)?.games.length || 0) - (stats.get(a.slug)?.games.length || 0));
+
+    const featuredSet = [...featuredPriority, ...fallback]
+      .filter((composer) => composer.slug !== currentSlug)
+      .slice(0, 8);
+
+    featured.innerHTML = featuredSet
+      .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`)
+      .join("");
   }
 
   async function loadGames() {
@@ -428,7 +556,7 @@
       const games = await loadGames();
       const stats = collectComposerStats(games, registry);
 
-      if (document.querySelector(".composer-grid-featured") && document.querySelector(".composer-grid-compact")) {
+      if (document.querySelector(".composer-grid-featured") && document.getElementById("composer-discovery-accordion")) {
         await renderHubCards(registry.composers, stats);
       }
 
@@ -442,7 +570,7 @@
         } else {
           await renderComposerProfile(composer, bucket);
           await renderComposerGames(bucket);
-          renderComposerChips(registry, currentSlug);
+          renderComposerChips(registry, stats, currentSlug);
         }
       }
 
