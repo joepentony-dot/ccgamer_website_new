@@ -941,6 +941,38 @@ function resolveGameMusicPath(slug) {
     return `${safeRoot}resources/audio/games/${encodeURIComponent(slug)}.mp3`;
 }
 
+function normalizeComposerKey(value) {
+    return String(value || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+}
+
+const CANONICAL_COMPOSER_NAMES = new Map([
+    ["rob hubbard", "Rob Hubbard"],
+    ["r hubbard", "Rob Hubbard"],
+    ["r. hubbard", "Rob Hubbard"],
+    ["martin galway", "Martin Galway"],
+    ["ben daglish", "Ben Daglish"],
+    ["matt gray", "Matt Gray"],
+    ["david whittaker", "David Whittaker"],
+    ["jeroen tel", "Jeroen Tel"],
+    ["fred gray", "Fred Gray"],
+    ["chris huelsbeck", "Chris Hülsbeck"],
+    ["chris hülsbeck", "Chris Hülsbeck"],
+    ["tim follin", "Tim Follin"],
+    ["reyn ouwehand", "Reyn Ouwehand"]
+]);
+
+function canonicalizeComposerName(value) {
+    const key = normalizeComposerKey(value);
+    if (!key) return "";
+    if (CANONICAL_COMPOSER_NAMES.has(key)) return CANONICAL_COMPOSER_NAMES.get(key);
+    return key.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 function normalizeComposerNames(game) {
     const names = [];
 
@@ -960,8 +992,11 @@ function normalizeComposerNames(game) {
     return names
         .map((name) => String(name || "").trim())
         .filter(Boolean)
+        .filter((name) => !/\.mp3$/i.test(name))
+        .map((name) => canonicalizeComposerName(name))
+        .filter(Boolean)
         .filter((name) => {
-            const key = name.toLowerCase();
+            const key = normalizeComposerKey(name);
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
@@ -983,9 +1018,14 @@ const APPROVED_COMPOSER_SLUGS = new Map([
     ["reyn ouwehand", "reyn-ouwehand"]
 ]);
 
-function resolveApprovedComposerSlug(name) {
-    const key = String(name || "").trim().toLowerCase();
-    return APPROVED_COMPOSER_SLUGS.get(key) || "";
+function resolveComposerSlug(name) {
+    const key = normalizeComposerKey(name);
+    const approved = APPROVED_COMPOSER_SLUGS.get(key);
+    if (approved) return approved;
+    const credits = CCG_SINGLE_ALL_GAMES.reduce((total, entry) => {
+        return total + (normalizeComposerNames(entry).some((composer) => normalizeComposerKey(composer) === key) ? 1 : 0);
+    }, 0);
+    return credits >= 5 ? `composer.html?composer=${encodeURIComponent(key.replace(/\s+/g, "-"))}` : "";
 }
 
 async function checkGameMusicExists(path) {
@@ -1038,10 +1078,10 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
         composerList.className = "ccg-music-composer__list";
 
         composers.forEach((name, index) => {
-            const composerSlug = resolveApprovedComposerSlug(name);
+            const composerSlug = resolveComposerSlug(name);
             if (composerSlug) {
                 const composerLink = document.createElement("a");
-                composerLink.href = `${root}music/${composerSlug}.html`;
+                composerLink.href = composerSlug.includes("?") ? `${root}music/${composerSlug}` : `${root}music/${composerSlug}.html`;
                 composerLink.className = "ccg-composer-button";
                 composerLink.textContent = name;
                 composerList.appendChild(composerLink);
@@ -1059,6 +1099,33 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
 
         composerLine.appendChild(composerList);
         musicTracksEl.appendChild(composerLine);
+
+        const primaryComposer = composers[0];
+        const relatedByComposer = CCG_SINGLE_ALL_GAMES
+            .filter((candidate) => candidate && candidate.id !== game?.id)
+            .filter((candidate) => normalizeComposerNames(candidate).some((name) => normalizeComposerKey(name) === normalizeComposerKey(primaryComposer)))
+            .slice(0, 4);
+
+        if (relatedByComposer.length) {
+            const relatedWrap = document.createElement("div");
+            relatedWrap.className = "ccg-music-related";
+            const label = document.createElement("p");
+            label.className = "ccg-music-related__label";
+            label.textContent = `More games by ${primaryComposer}`;
+            relatedWrap.appendChild(label);
+
+            const list = document.createElement("div");
+            list.className = "ccg-music-related__list";
+            relatedByComposer.forEach((candidate) => {
+                const link = document.createElement("a");
+                link.className = "ccg-composer-button";
+                link.href = `${root}games/${String(candidate.slug || "").trim()}.html`;
+                link.textContent = String(candidate.title || candidate.slug || "Game");
+                list.appendChild(link);
+            });
+            relatedWrap.appendChild(list);
+            musicTracksEl.appendChild(relatedWrap);
+        }
     }
 
     if (hasMusic) {

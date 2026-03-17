@@ -173,3 +173,21 @@
     font-size: 0.82rem;
     color: rgba(214, 241, 255, 0.96);
 }
+
+.ccg-music-related {
+    margin-top: 8px;
+}
+
+.ccg-music-related__label {
+    margin: 0 0 6px;
+    font-size: 0.75rem;
+    opacity: 0.88;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-music-related__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
