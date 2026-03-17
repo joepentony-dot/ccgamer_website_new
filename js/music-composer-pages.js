@@ -22,6 +22,9 @@
     "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", platform: "C64", bio: "Russell Lieblich is known for his SID music work on the Commodore 64." }
   };
 
+  const ASSET_EXISTS_CACHE = new Map();
+  const COMPOSER_IMAGE_CACHE = new Map();
+
   function slugifyName(value) {
     return String(value || "")
       .normalize("NFD")
@@ -87,8 +90,70 @@
     return `/music/${slug}.html`;
   }
 
-  function getComposerImagePath(slug) {
-    return `/resources/images/composers/${slug}.jpg`;
+  function getComposerImageCandidates(slug) {
+    const base = `/resources/images/composers/${slug}`;
+    return [`${base}.jpg`, `${base}.jpeg`, `${base}.png`, `${base}.webp`];
+  }
+
+  function resolveThumbnailPath(game) {
+    const raw = String(game?.thumbnail || game?.thumb || game?.cover || "").trim();
+    if (!raw) {
+      return "";
+    }
+
+    const cleaned = raw
+      .replace(/^\/+/, "")
+      .replace(/^resources\/images\/thumbnails\/all\//, "")
+      .replace(/^resources\/images\/thumbnails\//, "")
+      .replace(/^resources\/images\//, "");
+
+    if (!cleaned) {
+      return "";
+    }
+
+    return `/resources/images/thumbnails/all/${cleaned}`;
+  }
+
+  function getGameMusicPath(game) {
+    const slug = String(game?.slug || "").trim();
+    if (!slug) {
+      return "";
+    }
+    return `/resources/audio/games/${encodeURIComponent(slug)}.mp3`;
+  }
+
+  async function assetExists(path) {
+    if (!path) {
+      return false;
+    }
+    if (ASSET_EXISTS_CACHE.has(path)) {
+      return ASSET_EXISTS_CACHE.get(path);
+    }
+
+    const request = fetch(path, { method: "HEAD", cache: "force-cache" })
+      .then((response) => response.ok)
+      .catch(() => false);
+
+    ASSET_EXISTS_CACHE.set(path, request);
+    const exists = await request;
+    ASSET_EXISTS_CACHE.set(path, exists);
+    return exists;
+  }
+
+  async function getComposerImagePath(slug) {
+    if (COMPOSER_IMAGE_CACHE.has(slug)) {
+      return COMPOSER_IMAGE_CACHE.get(slug);
+    }
+
+    for (const candidate of getComposerImageCandidates(slug)) {
+      if (await assetExists(candidate)) {
+        COMPOSER_IMAGE_CACHE.set(slug, candidate);
+        return candidate;
+      }
+    }
+
+    COMPOSER_IMAGE_CACHE.set(slug, "");
+    return "";
   }
 
   function collectComposerStats(games, registry) {
@@ -96,17 +161,16 @@
 
     registry.composers.forEach((composer) => {
       stats.set(composer.slug, {
-        composer,
         games: [],
         systems: new Set()
       });
     });
 
     games.forEach((game) => {
-      const composerNames = getComposerNamesFromGame(game);
+      const names = getComposerNamesFromGame(game);
       const matched = new Set();
 
-      composerNames.forEach((name) => {
+      names.forEach((name) => {
         const key = normaliseName(name);
         if (!key) {
           return;
@@ -140,7 +204,7 @@
     return stats;
   }
 
-  function renderHubCards(composers, stats) {
+  async function renderHubCards(composers, stats) {
     const containerFeatured = document.querySelector(".composer-grid-featured");
     const containerAll = document.querySelector(".composer-grid-compact");
     if (!containerFeatured || !containerAll) {
@@ -148,23 +212,23 @@
     }
 
     const sorted = [...composers].sort((a, b) => a.name.localeCompare(b.name));
-    const featured = sorted.slice(0, 6);
-    const rest = sorted.slice(6);
+    const imageLookups = await Promise.all(
+      sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
+    );
 
-    function cardMarkup(composer, compact) {
+    const featured = imageLookups.filter((item) => Boolean(item.imagePath)).slice(0, 6);
+    const featuredSlugs = new Set(featured.map((item) => item.composer.slug));
+    const rest = imageLookups.filter((item) => !featuredSlugs.has(item.composer.slug));
+
+    function cardMarkup(composer, imagePath, compact) {
       const bucket = stats.get(composer.slug);
       const trackCount = bucket ? bucket.games.length : 0;
       const systemLabel = bucket && bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
-      const imagePath = getComposerImagePath(composer.slug);
       const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
-
-      if (bucket && bucket.games.length > 0 && trackCount === 0) {
-        console.warn(`[music-hub] Validation mismatch for ${composer.name}: games present but count is zero.`);
-      }
 
       return `
         <a href="${getComposerUrl(composer.slug)}" class="${cardClass}" data-slug="${composer.slug}">
-          ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" onerror="this.style.display='none'"></div>`}
+          ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
           <div class="composer-info">
             <h3>${composer.name}</h3>
             <p class="composer-platform">${systemLabel}</p>
@@ -174,8 +238,8 @@
       `;
     }
 
-    containerFeatured.innerHTML = featured.map((composer) => cardMarkup(composer, false)).join("");
-    containerAll.innerHTML = rest.map((composer) => cardMarkup(composer, true)).join("");
+    containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, false)).join("");
+    containerAll.innerHTML = rest.map(({ composer }) => cardMarkup(composer, "", true)).join("");
 
     const totalsLabel = document.getElementById("music-hub-stats");
     if (totalsLabel) {
@@ -184,7 +248,7 @@
     }
   }
 
-  function renderComposerProfile(composer, bucket) {
+  async function renderComposerProfile(composer, bucket) {
     const content = document.getElementById("composer-content");
     if (!content) {
       return;
@@ -192,10 +256,11 @@
 
     const systemLabel = bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
     const gameCount = bucket.games.length;
+    const imagePath = await getComposerImagePath(composer.slug);
 
     content.innerHTML = `
-      <article class="ccg-composer-profile ${composer.slug ? "" : "ccg-composer-profile--text-only"}">
-        <img src="${getComposerImagePath(composer.slug)}" alt="${composer.name}" class="ccg-composer-profile__image" onerror="this.classList.add('is-fallback'); this.src='/resources/images/icons/icon-192.png';">
+      <article class="ccg-composer-profile ${imagePath ? "" : "ccg-composer-profile--text-only"}">
+        ${imagePath ? `<img src="${imagePath}" alt="${composer.name}" class="ccg-composer-profile__image" loading="lazy">` : ""}
         <div>
           <h2 class="ccg-composer-profile__title">${composer.name}</h2>
           <p class="ccg-composer-profile__platform">${systemLabel}</p>
@@ -211,7 +276,7 @@
     }
   }
 
-  function renderComposerGames(bucket) {
+  async function renderComposerGames(bucket) {
     const gamesList = document.getElementById("composer-games");
     if (!gamesList) {
       return;
@@ -224,54 +289,48 @@
       return;
     }
 
-    gamesList.innerHTML = sortedGames.map((game) => {
-      const thumb = game.thumbnail ? `<img src="${game.thumbnail}" alt="${game.title}" class="ccg-composer-game-thumb" loading="lazy">` : "";
-      const player = Array.isArray(game.music) && game.music.length
-        ? game.music
-            .filter((file) => typeof file === "string" && /\.(mp3|ogg|wav|flac)$/i.test(file))
-            .slice(0, 1)
-            .map((file) => `<div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="/resources/music/${file}"></audio></div>`)
-            .join("")
-        : "<span class='ccg-composer-games__cue'>No embedded player for this entry.</span>";
+    const cards = await Promise.all(sortedGames.map(async (game) => {
+      const thumbSrc = resolveThumbnailPath(game);
+      const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
+      const musicSrc = getGameMusicPath(game);
+      const hasMusic = musicSrc ? await assetExists(musicSrc) : false;
 
       return `
-        <li class="ccg-composer-games__item">
+        <li class="ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}">
           <a class="ccg-composer-game-link" href="${getGameUrl(game.slug)}">
-            ${thumb}
+            ${hasThumb ? `<img src="${thumbSrc}" alt="${game.title}" class="ccg-composer-game-thumb" loading="lazy">` : ""}
             <span class="ccg-composer-game-meta">
               <span class="ccg-composer-game-title">${game.title}</span>
-              <span class="ccg-composer-game-minor">${game.year || ""} ${game.system ? `• ${game.system.toUpperCase()}` : ""}</span>
+              <span class="ccg-composer-game-minor">${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}</span>
             </span>
+            <span class="ccg-composer-game-action">Open game page</span>
           </a>
-          <div class="ccg-composer-game-utility">${player}</div>
+          ${hasMusic ? `<div class="ccg-composer-game-utility"><div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="${musicSrc}"></audio></div></div>` : ""}
         </li>
       `;
-    }).join("");
+    }));
+
+    gamesList.innerHTML = cards.join("");
   }
 
   function renderComposerChips(registry, currentSlug) {
     const featured = document.getElementById("composer-featured-list");
     const all = document.getElementById("composer-all-list");
-    const navRow = document.getElementById("composer-nav-row");
 
     const sorted = [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));
-    const featuredSet = sorted.slice(0, 6);
+    const featuredSet = sorted.slice(0, 8);
 
-    function chip(composer, activeClass) {
+    function chip(composer) {
       const active = composer.slug === currentSlug ? " is-active" : "";
-      return `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip ${activeClass || ""}${active}" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`;
+      return `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip${active}" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`;
     }
 
     if (featured) {
-      featured.innerHTML = featuredSet.map((composer) => chip(composer, "")).join("");
+      featured.innerHTML = featuredSet.filter((composer) => composer.slug !== currentSlug).map((composer) => chip(composer)).join("");
     }
 
     if (all) {
-      all.innerHTML = sorted.map((composer) => chip(composer, "")).join("");
-    }
-
-    if (navRow) {
-      navRow.innerHTML = sorted.map((composer) => chip(composer, "ccg-composer-nav__button")).join("");
+      all.innerHTML = sorted.filter((composer) => composer.slug !== currentSlug).map((composer) => chip(composer)).join("");
     }
   }
 
@@ -337,7 +396,7 @@
       const stats = collectComposerStats(games, registry);
 
       if (document.querySelector(".composer-grid-featured") && document.querySelector(".composer-grid-compact")) {
-        renderHubCards(registry.composers, stats);
+        await renderHubCards(registry.composers, stats);
       }
 
       const currentSlug = getCurrentComposerSlug(registry);
@@ -348,8 +407,8 @@
         if (!composer) {
           console.error(`[music-composer] Unknown composer slug: ${currentSlug}`);
         } else {
-          renderComposerProfile(composer, bucket);
-          renderComposerGames(bucket);
+          await renderComposerProfile(composer, bucket);
+          await renderComposerGames(bucket);
           renderComposerChips(registry, currentSlug);
         }
       }
