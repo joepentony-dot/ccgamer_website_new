@@ -24,6 +24,17 @@
 
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
+  const FEATURED_PRIORITY = [
+    "rob hubbard",
+    "martin galway",
+    "jeroen tel",
+    "jonathan dunn",
+    "matt gray",
+    "mark cooksey",
+    "neil brennan",
+    "richard joseph",
+    "russell lieblich"
+  ];
 
   function slugifyName(value) {
     return String(value || "")
@@ -216,7 +227,21 @@
       sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
     );
 
-    const featured = imageLookups.filter((item) => Boolean(item.imagePath)).slice(0, 6);
+    const prioritySet = new Set(FEATURED_PRIORITY);
+    const featuredPriority = FEATURED_PRIORITY
+      .map((priorityName) => imageLookups.find((item) => normaliseName(item.composer.name) === priorityName))
+      .filter(Boolean);
+
+    const featuredByMetrics = imageLookups.filter((item) => {
+      if (prioritySet.has(normaliseName(item.composer.name))) {
+        return false;
+      }
+      const bucket = stats.get(item.composer.slug);
+      const trackCount = bucket ? bucket.games.length : 0;
+      return Boolean(item.imagePath) && trackCount >= 5;
+    });
+
+    const featured = [...featuredPriority, ...featuredByMetrics].slice(0, 9);
     const featuredSlugs = new Set(featured.map((item) => item.composer.slug));
     const rest = imageLookups.filter((item) => !featuredSlugs.has(item.composer.slug));
 
@@ -293,7 +318,6 @@
       const thumbSrc = resolveThumbnailPath(game);
       const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
       const musicSrc = getGameMusicPath(game);
-      const hasMusic = musicSrc ? await assetExists(musicSrc) : false;
 
       return `
         <li class="ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}">
@@ -305,7 +329,7 @@
             </span>
             <span class="ccg-composer-game-action">Open game page</span>
           </a>
-          ${hasMusic ? `<div class="ccg-composer-game-utility"><div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="${musicSrc}"></audio></div></div>` : ""}
+          ${musicSrc ? `<div class="ccg-composer-game-utility composer-player-row"><div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="${musicSrc}" onerror="this.closest('.composer-player-row')?.remove();"></audio></div></div>` : ""}
         </li>
       `;
     }));
