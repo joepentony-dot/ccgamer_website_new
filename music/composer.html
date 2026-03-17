@@ -12,7 +12,11 @@
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="ccg-main ccg-composer-page">
     <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
-      <a href="/home.html">Home</a> › <a href="/games/index.html">Games</a> › <a href="/music/index.html">Music</a>
+      <div class="ccg-breadcrumb-nav">
+        <a href="/home.html" class="ccg-btn ccg-btn--secondary">Home</a>
+        <a href="/games/index.html" class="ccg-btn ccg-btn--secondary">Games</a>
+        <a href="/music/index.html" class="ccg-btn ccg-btn--primary is-active" aria-current="page">Music Hub</a>
+      </div>
     </nav>
     <h1 class="ccg-composer-title">Commodore 64 Music Composer Archive</h1>
     <p class="ccg-composer-subtitle">Featured game archive and soundtrack references</p>
@@ -27,6 +31,10 @@
       <h2 id="other-composers-heading" class="ccg-composer-section-title">Other featured C64 composers</h2>
       <div id="composer-featured-list" class="ccg-composer-chip-list"></div>
     </section>
+
+    <div class="ccg-back-to-top">
+      <button class="ccg-btn ccg-btn--primary" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">↑ Back to Top</button>
+    </div>
   </main>
   <script src="/js/music-composer-pages.js" defer></script>
 </body>
