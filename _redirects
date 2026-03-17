@@ -1,3 +1,5 @@
+/music/:slug/ /music/:slug.html 200!
+/music/:slug.html /music/:slug.html 200
 /games/genres/* /games/genres/:splat 200
 /games/collections/* /games/collections/:splat 200
 /games/seo/* /games/seo/:splat 200

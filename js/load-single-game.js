@@ -968,14 +968,24 @@ function normalizeComposerNames(game) {
         });
 }
 
-function slugifyComposerName(name) {
-    return String(name || "")
-        .toLowerCase()
-        .replace(/[’']/g, "")
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
-        .replace(/^-|-$/g, "");
+
+const APPROVED_COMPOSER_SLUGS = new Map([
+    ["rob hubbard", "rob-hubbard"],
+    ["martin galway", "martin-galway"],
+    ["ben daglish", "ben-daglish"],
+    ["matt gray", "matt-gray"],
+    ["david whittaker", "david-whittaker"],
+    ["jeroen tel", "jeroen-tel"],
+    ["fred gray", "fred-gray"],
+    ["chris hülsbeck", "chris-huelsbeck"],
+    ["chris huelsbeck", "chris-huelsbeck"],
+    ["tim follin", "tim-follin"],
+    ["reyn ouwehand", "reyn-ouwehand"]
+]);
+
+function resolveApprovedComposerSlug(name) {
+    const key = String(name || "").trim().toLowerCase();
+    return APPROVED_COMPOSER_SLUGS.get(key) || "";
 }
 
 async function checkGameMusicExists(path) {
@@ -1022,7 +1032,7 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
             composerLine.append("Music by ");
 
             composers.forEach((name, index) => {
-                const composerSlug = slugifyComposerName(name);
+                const composerSlug = resolveApprovedComposerSlug(name);
                 if (composerSlug) {
                     const composerLink = document.createElement("a");
                     composerLink.href = `${root}music/${composerSlug}/`;
