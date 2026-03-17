@@ -48,6 +48,105 @@ const DEFAULT_STATIC_PATHS = [
   'quiz/quiz.html',
   'viewer/manual.html',
 ];
+const MIN_ARCHIVE_CREDITS = 5;
+const FEATURED_COMPOSERS = [
+  { name: 'Rob Hubbard', slug: 'rob-hubbard' },
+  { name: 'Martin Galway', slug: 'martin-galway' },
+  { name: 'Ben Daglish', slug: 'ben-daglish' },
+  { name: 'Matt Gray', slug: 'matt-gray' },
+  { name: 'David Whittaker', slug: 'david-whittaker' },
+  { name: 'Jeroen Tel', slug: 'jeroen-tel' },
+  { name: 'Fred Gray', slug: 'fred-gray' },
+  { name: 'Chris Hülsbeck', slug: 'chris-huelsbeck' },
+  { name: 'Tim Follin', slug: 'tim-follin' },
+  { name: 'Reyn Ouwehand', slug: 'reyn-ouwehand' },
+];
+
+function normalizeComposerKey(value) {
+  return String(value || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function toComposerList(value) {
+  if (Array.isArray(value)) return value;
+  if (value === null || value === undefined || value === '') return [];
+  return [value];
+}
+
+function getComposerValues(game) {
+  const seen = new Set();
+  return [
+    ...toComposerList(game && game.composer),
+    ...toComposerList(game && game.credits && game.credits.musician),
+    ...toComposerList(game && game.music),
+  ]
+    .map((entry) => String(entry || '').trim())
+    .filter(Boolean)
+    .filter((entry) => !/\.mp3$/i.test(entry))
+    .filter((entry) => {
+      const key = normalizeComposerKey(entry);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+}
+
+function composerSlug(name, featuredByName) {
+  const featured = featuredByName.get(normalizeComposerKey(name));
+  if (featured) return featured.slug;
+  return normalizeComposerKey(name).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+
+function buildComposerUrls(siteUrl, games) {
+  const featuredByName = new Map(
+    FEATURED_COMPOSERS.map((entry) => [normalizeComposerKey(entry.name), entry])
+  );
+  const composerCount = new Map();
+
+  for (const game of games) {
+    for (const composer of getComposerValues(game)) {
+      const key = normalizeComposerKey(composer);
+      composerCount.set(key, (composerCount.get(key) || 0) + 1);
+    }
+  }
+
+  const eligibleSlugs = new Set(FEATURED_COMPOSERS.map((entry) => entry.slug));
+
+  for (const [key, count] of composerCount.entries()) {
+    if (featuredByName.has(key) || count >= MIN_ARCHIVE_CREDITS) {
+      const canonicalName = featuredByName.has(key) ? featuredByName.get(key).name : key;
+      const slug = composerSlug(canonicalName, featuredByName);
+      if (slug) eligibleSlugs.add(slug);
+    }
+  }
+
+  const musicDir = path.join(repoRoot, 'music');
+  const composerEntries = [];
+  for (const slug of [...eligibleSlugs].sort((a, b) => a.localeCompare(b))) {
+    const filePath = path.join(musicDir, `${slug}.html`);
+    if (!fs.existsSync(filePath)) continue;
+    composerEntries.push({
+      loc: `${siteUrl}/music/${slug}/`,
+      lastmod: getGitLastMod(filePath),
+      filePath,
+    });
+  }
+
+  const musicIndex = path.join(musicDir, 'index.html');
+  if (fs.existsSync(musicIndex)) {
+    composerEntries.unshift({
+      loc: `${siteUrl}/music/`,
+      lastmod: getGitLastMod(musicIndex),
+      filePath: musicIndex,
+    });
+  }
+
+  return composerEntries;
+}
 
 function readJson(filePath) {
   const raw = fs.readFileSync(filePath, 'utf8');
@@ -295,7 +394,7 @@ function generateGameSitemap(siteUrl, games) {
   };
 }
 
-function generateStaticSitemap(siteUrl) {
+function generateStaticSitemap(siteUrl, games) {
   const warnings = [];
   const staticPaths = loadStaticPaths(warnings);
   const entriesByLoc = new Map();
@@ -322,6 +421,13 @@ function generateStaticSitemap(siteUrl) {
     const existing = entriesByLoc.get(loc);
     if (nextEntry.lastmod > existing.lastmod) {
       entriesByLoc.set(loc, nextEntry);
+    }
+  }
+
+  const composerEntries = buildComposerUrls(siteUrl, games);
+  for (const entry of composerEntries) {
+    if (!entriesByLoc.has(entry.loc) || entry.lastmod > entriesByLoc.get(entry.loc).lastmod) {
+      entriesByLoc.set(entry.loc, entry);
     }
   }
 
@@ -368,7 +474,7 @@ function main() {
 
   const games = readJson(gamesJsonPath);
   const gameResult = generateGameSitemap(siteUrl, games);
-  const staticResult = generateStaticSitemap(siteUrl);
+  const staticResult = generateStaticSitemap(siteUrl, games);
 
   const sitemapEntries = [
     {

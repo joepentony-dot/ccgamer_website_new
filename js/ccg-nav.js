@@ -19,17 +19,7 @@
     ['Quiz', 'https://www.cheekycommodoregamer.co.uk/quiz/quiz.html'],
     ['Emulation', 'https://www.cheekycommodoregamer.co.uk/emulation.html'],
     ['About', 'https://www.cheekycommodoregamer.co.uk/about.html'],
-    ['Contact', 'https://www.cheekycommodoregamer.co.uk/contact.html'],
-    ['Rob Hubbard', 'https://www.cheekycommodoregamer.co.uk/music/rob-hubbard.html'],
-    ['Martin Galway', 'https://www.cheekycommodoregamer.co.uk/music/martin-galway.html'],
-    ['Ben Daglish', 'https://www.cheekycommodoregamer.co.uk/music/ben-daglish.html'],
-    ['Matt Gray', 'https://www.cheekycommodoregamer.co.uk/music/matt-gray.html'],
-    ['David Whittaker', 'https://www.cheekycommodoregamer.co.uk/music/david-whittaker.html'],
-    ['Jeroen Tel', 'https://www.cheekycommodoregamer.co.uk/music/jeroen-tel.html'],
-    ['Fred Gray', 'https://www.cheekycommodoregamer.co.uk/music/fred-gray.html'],
-    ['Chris Hülsbeck', 'https://www.cheekycommodoregamer.co.uk/music/chris-huelsbeck.html'],
-    ['Tim Follin', 'https://www.cheekycommodoregamer.co.uk/music/tim-follin.html'],
-    ['Reyn Ouwehand', 'https://www.cheekycommodoregamer.co.uk/music/reyn-ouwehand.html']
+    ['Contact', 'https://www.cheekycommodoregamer.co.uk/contact.html']
   ];
 
   function ensureRequiredCSS() {

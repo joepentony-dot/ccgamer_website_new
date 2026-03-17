@@ -21,6 +21,41 @@
 .ccg-composer-intro { margin: 0 0 1.2rem; line-height: 1.6; max-width: 72ch; }
 .ccg-composer-section-title { margin: 1.8rem 0 0.8rem; }
 
+.ccg-composer-profile {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 0.9rem;
+  border: 1px solid rgba(109, 225, 255, 0.3);
+  border-radius: 14px;
+  padding: 0.75rem;
+  background: linear-gradient(160deg, rgba(9, 26, 40, 0.88), rgba(7, 16, 30, 0.82));
+  margin: 0.5rem 0 1rem;
+}
+
+.ccg-composer-profile__image {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(141, 220, 255, 0.3);
+}
+
+.ccg-composer-profile__image.is-fallback {
+  object-fit: contain;
+  background: rgba(7, 18, 28, 0.72);
+}
+
+.ccg-composer-profile__title {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+}
+
+.ccg-composer-profile__bio {
+  margin: 0;
+  line-height: 1.5;
+  opacity: 0.92;
+}
+
 .ccg-music-hub__hero {
   border: 1px solid rgba(109, 225, 255, 0.35);
   background: radial-gradient(circle at top, rgba(31, 88, 129, 0.35), rgba(7, 16, 30, 0.88));
@@ -93,6 +128,22 @@
   gap: 0.2rem;
 }
 
+.ccg-composer-game-utility {
+  display: flex;
+  align-items: center;
+  min-height: 30px;
+}
+
+.ccg-composer-game-player-slot {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ccg-composer-mini-player {
+  height: 28px;
+  width: min(280px, 65vw);
+}
+
 .ccg-composer-game-title { font-weight: 600; }
 
 .ccg-composer-game-minor {
@@ -131,3 +182,14 @@
 }
 
 .ccg-music-hub__additional { margin-top: 1.2rem; }
+
+@media (max-width: 560px) {
+  .ccg-composer-profile {
+    grid-template-columns: 1fr;
+  }
+
+  .ccg-composer-profile__image {
+    width: 88px;
+    height: 88px;
+  }
+}
