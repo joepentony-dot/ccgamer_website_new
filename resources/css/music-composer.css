@@ -1,0 +1,18 @@
+.ccg-composer-page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.ccg-composer-subtitle {
+  margin: 0 0 1rem;
+}
+
+.ccg-composer-games {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.ccg-composer-games li {
+  margin: 0.35rem 0;
+}
