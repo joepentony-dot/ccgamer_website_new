@@ -58,8 +58,6 @@ const FEATURED_COMPOSERS = [
   { name: 'Jeroen Tel', slug: 'jeroen-tel' },
   { name: 'Fred Gray', slug: 'fred-gray' },
   { name: 'Chris Hülsbeck', slug: 'chris-huelsbeck' },
-  { name: 'Tim Follin', slug: 'tim-follin' },
-  { name: 'Reyn Ouwehand', slug: 'reyn-ouwehand' },
 ];
 
 function normalizeComposerKey(value) {

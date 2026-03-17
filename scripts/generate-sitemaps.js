@@ -104,8 +104,19 @@ function buildPagesSitemap() {
         { loc: `${SITE_ROOT}/quiz/`, file: path.join(repoRoot, "quiz", "index.html") },
         { loc: `${SITE_ROOT}/quiz/quiz.html`, file: path.join(repoRoot, "quiz", "quiz.html") },
         { loc: `${SITE_ROOT}/redirect.html`, file: path.join(repoRoot, "redirect.html") },
-        { loc: `${SITE_ROOT}/complete-index.html`, file: path.join(repoRoot, "complete-index.html") }
+        { loc: `${SITE_ROOT}/complete-index.html`, file: path.join(repoRoot, "complete-index.html") },
+        { loc: `${SITE_ROOT}/music/`, file: path.join(repoRoot, "music", "index.html") }
     ];
+
+    const musicDir = path.join(repoRoot, "music");
+    if (fs.existsSync(musicDir)) {
+        fs.readdirSync(musicDir, { withFileTypes: true })
+            .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && entry.name !== 'index.html' && entry.name !== 'composer.html')
+            .forEach((entry) => {
+                const slug = entry.name.replace(/\.html$/i, '');
+                pageEntries.push({ loc: `${SITE_ROOT}/music/${slug}/`, file: path.join(musicDir, entry.name) });
+            });
+    }
 
     const retroPages = generateRetroPages();
     const uniqueEntries = [...pageEntries, ...retroPages.pageEntries].filter((entry, index, arr) => (

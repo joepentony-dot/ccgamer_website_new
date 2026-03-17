@@ -2,7 +2,7 @@
 .ccg-music-hub {
   max-width: 1040px;
   margin: 0 auto;
-  padding: clamp(1.2rem, 2vw, 2rem) 1rem 3rem;
+  padding: clamp(0.9rem, 1.5vw, 1.5rem) 1rem 2.2rem;
 }
 
 .ccg-composer-breadcrumbs {
@@ -17,8 +17,8 @@
 }
 
 .ccg-composer-title { margin: 0; }
-.ccg-composer-subtitle { margin: 0.3rem 0 1rem; opacity: 0.92; }
-.ccg-composer-intro { margin: 0 0 1.2rem; line-height: 1.6; max-width: 72ch; }
+.ccg-composer-subtitle { margin: 0.25rem 0 0.65rem; opacity: 0.92; }
+.ccg-composer-intro { margin: 0 0 0.85rem; line-height: 1.55; max-width: 72ch; }
 .ccg-composer-section-title { margin: 1.8rem 0 0.8rem; }
 
 .ccg-composer-profile {
@@ -29,7 +29,7 @@
   border-radius: 14px;
   padding: 0.75rem;
   background: linear-gradient(160deg, rgba(9, 26, 40, 0.88), rgba(7, 16, 30, 0.82));
-  margin: 0.5rem 0 1rem;
+  margin: 0.35rem 0 0.75rem;
 }
 
 .ccg-composer-profile__image {
@@ -52,8 +52,24 @@
 
 .ccg-composer-profile__bio {
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.45;
   opacity: 0.92;
+}
+
+.ccg-composer-profile--text-only {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ccg-composer-profile__platform {
+  margin: 0 0 0.25rem;
+  color: #99f6ff;
+  font-weight: 600;
+}
+
+.ccg-composer-profile__facts {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  opacity: 0.85;
 }
 
 .ccg-music-hub__hero {
@@ -71,7 +87,7 @@
   gap: 0.55rem;
 }
 
-.ccg-composer-nav { margin: 1rem 0 1.2rem; }
+.ccg-composer-nav { margin: 0.7rem 0 0.9rem; }
 
 .ccg-composer-nav__button,
 .ccg-composer-chip {

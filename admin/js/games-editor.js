@@ -747,10 +747,16 @@ function buildPackageData() {
     '- sitemap-games.xml',
     '- games/games-index.json',
     '- games/games-search.json',
+    '- music/index.html and /music/*.html (via node scripts/build-games.js)',
+    '- sitemap-pages.xml (via node scripts/generate-sitemaps.js)',
     '',
     'games.json instructions:',
     '- If you exported FULL games.json: replace /games/games.json in the repo with this file.',
     '- If you exported ENTRY ONLY: copy the single object into /games/games.json manually in sort order.',
+    '',
+    'Then run after merging files:',
+    '- node scripts/build-games.js',
+    '- node scripts/generate-sitemaps.js',
     '',
     'sitemap-games.xml:',
     '- Full upload-ready sitemap generated directly from games.json.',
@@ -923,6 +929,31 @@ function buildGamesIndex(games) {
 
 function buildGamesSearch(games) {
   const toList = (value) => (Array.isArray(value) ? value : (value ? [value] : []));
+  const canonicalComposer = (value) => {
+    const key = String(value || '').trim().replace(/\s+/g, ' ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const map = {
+      'rob hubbard': 'Rob Hubbard', 'r hubbard': 'Rob Hubbard', 'martin galway': 'Martin Galway', 'ben daglish': 'Ben Daglish',
+      'matt gray': 'Matt Gray', 'matthew del gray': 'Matt Gray', 'david whittaker': 'David Whittaker', 'jeroen tel': 'Jeroen Tel',
+      'fred gray': 'Fred Gray', 'chris huelsbeck': 'Chris Hülsbeck', 'chris hulsbeck': 'Chris Hülsbeck', 'chris hülsbeck': 'Chris Hülsbeck', 'christopher hülsbeck': 'Chris Hülsbeck'
+    };
+    return map[key] || (key ? key.replace(/\b\w/g, (char) => char.toUpperCase()) : '');
+  };
+  const normalizeComposerList = (game) => {
+    const seen = new Set();
+    return [...toList(game.composer), ...toList(game?.credits?.musician), ...toList(game.music)]
+      .map((item) => String(item || '').trim())
+      .filter(Boolean)
+      .filter((name) => !/\.mp3$/i.test(name))
+      .map(canonicalComposer)
+      .filter(Boolean)
+      .filter((name) => {
+        const key = name.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  };
+
   const payload = (Array.isArray(games) ? games : []).map((game) => ({
     slug: game.slug || '',
     title: game.title || '',
@@ -932,7 +963,7 @@ function buildGamesSearch(games) {
     publisher: toList(game.publisher || game?.credits?.publisher),
     genre: Array.isArray(game.genres) ? game.genres : [],
     genres: Array.isArray(game.genres) ? game.genres : [],
-    composer: toList(game.composer || game?.credits?.musician),
+    composer: normalizeComposerList(game),
     music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : [])
   }));
   return JSON.stringify(payload, null, 2);
