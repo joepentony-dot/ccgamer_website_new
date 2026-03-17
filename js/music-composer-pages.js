@@ -38,44 +38,33 @@
     };
   }
 
-  function getComposerBySlug(slug, composers) {
-    return composers.find((composer) => composer.slug === normaliseSlug(slug));
-  }
-
   function buildComposerData() {
     if (Array.isArray(window.composers) && window.composers.length) {
       return window.composers.map(normaliseComposer);
     }
 
-    const fromProfile = Object.values(PROFILE_DATA).map(normaliseComposer);
-    const pageMain = document.querySelector("[data-composer-name]");
-    if (!pageMain) return fromProfile;
-
-    const pageName = pageMain.getAttribute("data-composer-name") || "";
-    const pageSlug = normaliseSlug(pageMain.getAttribute("data-composer-slug") || "");
-    if (!pageName || !pageSlug) return fromProfile;
-
-    const existing = fromProfile.find((composer) => composer.slug === pageSlug);
-    if (existing) return fromProfile;
-
-    return fromProfile.concat([
-      normaliseComposer({
-        name: pageName,
-        slug: pageSlug,
-        platform: "C64 / Amiga",
-        count: 0,
-        bio: "Biography coming soon."
-      })
-    ]);
+    return Object.values(PROFILE_DATA).map(normaliseComposer);
   }
 
-  function createComposerCard(composer) {
+  function getComposerTrackCount(composerName, games) {
+    let count = 0;
+
+    games.forEach((game) => {
+      if (game.music && game.music.includes(composerName)) {
+        count++;
+      }
+    });
+
+    return count;
+  }
+
+  function createComposerCard(composer, games) {
     const slug = normaliseSlug(composer.slug || composer.name);
     const imagePath = `/resources/images/composers/${slug}.jpg`;
+    const trackCount = getComposerTrackCount(composer.name, games);
 
     return `
-    <a href="/music/${slug}/" class="composer-card">
-      
+    <a href="/music/${slug}/index.html" class="composer-card" data-slug="${slug}">
       <div class="composer-thumb">
         <img src="${imagePath}" 
              alt="${composer.name}" 
@@ -84,16 +73,15 @@
 
       <div class="composer-info">
         <h3>${composer.name}</h3>
-        <p class="composer-platform">${composer.platform || 'C64'}</p>
-        <p class="composer-count">${composer.count || 0} Tracks</p>
+        <p class="composer-platform">${composer.platform || "C64"}</p>
+        <p class="composer-count">${trackCount} Tracks</p>
       </div>
 
     </a>
   `;
   }
 
-  function renderComposers(composers) {
-
+  function renderComposers(composers, games) {
     const containerFeatured = document.querySelector(".composer-grid-featured");
     const containerAll = document.querySelector(".composer-grid-compact");
 
@@ -102,87 +90,55 @@
       return;
     }
 
-    let featuredHTML = '';
-    let allHTML = '';
+    let featuredHTML = "";
+    let allHTML = "";
 
     composers.forEach((composer, index) => {
+      const card = createComposerCard(composer, games);
 
-      const card = createComposerCard(composer);
-
-      // First 6 = featured
       if (index < 6) {
         featuredHTML += card;
       } else {
         allHTML += card;
       }
-
     });
 
     containerFeatured.innerHTML = featuredHTML;
     containerAll.innerHTML = allHTML;
   }
 
-  function renderComposerPage(composers) {
-    const pathParts = window.location.pathname.split("/").filter(Boolean);
-    const slug = normaliseSlug(pathParts[pathParts.length - 1] || "");
-
-    const composer = getComposerBySlug(slug, composers);
-
-    const container = document.getElementById("composer-content");
-    if (!container) {
-      console.error("#composer-content container is missing");
-      return;
+  async function loadGames() {
+    const response = await fetch("/games/games.json", { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Failed to load games.json");
     }
 
-    if (!composer) {
-      container.innerHTML = `
-      <div class="composer-error">
-        <h1>Composer Not Found</h1>
-        <p>We couldn't load this composer page properly.</p>
-        <a href="/music/composers/">← Back to Music Hub</a>
-      </div>
-    `;
-      return;
-    }
-
-    container.innerHTML = `
-    <section class="composer-hero">
-      <h1>${composer.name}</h1>
-      <p>${composer.platform || "C64 / Amiga"}</p>
-      <p>${composer.count || 0} Tracks</p>
-    </section>
-
-    <section class="composer-bio">
-      <p>${composer.bio || "Biography coming soon."}</p>
-    </section>
-
-    <section class="composer-tracks">
-      <h2>🎧 Tracks</h2>
-      <div id="composer-track-list"></div>
-    </section>
-  `;
+    const data = await response.json();
+    return Array.isArray(data) ? data : [];
   }
 
   const composers = buildComposerData();
 
-  document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", async () => {
+    if (!document.querySelector(".composer-grid-featured") || !document.querySelector(".composer-grid-compact")) {
+      return;
+    }
 
-    if (typeof composers !== "undefined" && composers.length > 0) {
-      if (document.querySelector(".composer-grid-featured") && document.querySelector(".composer-grid-compact")) {
-        renderComposers(composers);
-      }
-
-      if (document.getElementById("composer-content")) {
-        renderComposerPage(composers);
-      }
-    } else {
+    if (typeof composers === "undefined" || composers.length === 0) {
       console.error("Composer data missing or empty");
-
       const fallback = document.querySelector(".composer-grid-featured");
       if (fallback) {
         fallback.innerHTML = "<p style='padding:20px'>Unable to load composers.</p>";
       }
+      return;
     }
 
+    try {
+      const games = await loadGames();
+      renderComposers(composers, games);
+    } catch (error) {
+      console.error("Unable to render composer cards", error);
+      renderComposers(composers, []);
+    }
   });
 })();
