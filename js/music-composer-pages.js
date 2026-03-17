@@ -1,144 +1,372 @@
 (function () {
   const PROFILE_DATA = {
-    "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", platform: "C64 / Amiga", count: 0, bio: "Allister Brimble is a British video-game composer known for 16-bit era soundtracks and home-computer music." },
-    "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", platform: "Amiga", count: 0, bio: "Barry Leitch is a game composer known for energetic music across Amiga and later systems." },
-    "ben-daglish": { name: "Ben Daglish", slug: "ben-daglish", platform: "C64 / Amiga", count: 0, bio: "Ben Daglish was an English composer and musician whose work became a major part of 1980s home-computer gaming." },
-    "chris-huelsbeck": { name: "Chris Hülsbeck", slug: "chris-huelsbeck", platform: "C64 / Amiga", count: 0, bio: "Chris Hülsbeck is a German game-music composer widely known for European home computer soundtracks." },
-    "dave-thomas": { name: "Dave Thomas", slug: "dave-thomas", platform: "C64", count: 0, bio: "Dave Thomas is a composer associated with classic Commodore 64 game music." },
-    "david-dunn": { name: "David Dunn", slug: "david-dunn", platform: "C64", count: 0, bio: "David Dunn is a game composer associated with home-computer era releases." },
-    "david-whittaker": { name: "David Whittaker", slug: "david-whittaker", platform: "C64 / Amiga", count: 0, bio: "David Whittaker is an English video-game composer whose work spans many home computer formats." },
-    "fred-gray": { name: "Fred Gray", slug: "fred-gray", platform: "C64 / Amiga", count: 0, bio: "Fred Gray is an English game-music composer known for Commodore 64 and Amiga releases." },
-    "jeroen-tel": { name: "Jeroen Tel", slug: "jeroen-tel", platform: "C64 / Amiga", count: 0, bio: "Jeroen Tel is a Dutch composer known for late-1980s and early-1990s game music." },
-    "jonathan-dunn": { name: "Jonathan Dunn", slug: "jonathan-dunn", platform: "C64", count: 0, bio: "Jonathan Dunn is known for distinctive Commodore 64 music and sound design." },
-    "keith-tinman": { name: "Keith Tinman", slug: "keith-tinman", platform: "C64", count: 0, bio: "Keith Tinman is a composer associated with classic C64 titles." },
-    "mark-cooksey": { name: "Mark Cooksey", slug: "mark-cooksey", platform: "C64 / Amiga", count: 0, bio: "Mark Cooksey is a British composer known for memorable C64 and Amiga game themes." },
-    "martin-galway": { name: "Martin Galway", slug: "martin-galway", platform: "C64", count: 0, bio: "Martin Galway is a British composer strongly associated with Commodore 64 and ZX Spectrum game music." },
-    "matt-furniss": { name: "Matt Furniss", slug: "matt-furniss", platform: "C64 / Amiga", count: 0, bio: "Matt Furniss is an English composer known for prolific work across Amiga and console generations." },
-    "matt-gray": { name: "Matt Gray", slug: "matt-gray", platform: "C64", count: 0, bio: "Matt Gray is a British producer and composer known for Commodore 64 music including Last Ninja 2." },
-    "neil-brennan": { name: "Neil Brennan", slug: "neil-brennan", platform: "C64", count: 0, bio: "Neil Brennan is associated with music for classic Commodore 64 releases." },
-    "paul-hodgson": { name: "Paul Hodgson", slug: "paul-hodgson", platform: "C64", count: 0, bio: "Paul Hodgson is a game composer known from C64-era productions." },
-    "richard-joseph": { name: "Richard Joseph", slug: "richard-joseph", platform: "C64 / Amiga", count: 0, bio: "Richard Joseph was a British game composer and audio director known for his Amiga and C64 era work." },
-    "rob-hubbard": { name: "Rob Hubbard", slug: "rob-hubbard", platform: "C64 / Amiga", count: 0, bio: "Rob Hubbard is a British composer and programmer best known for influential Commodore 64 game music in the 1980s." },
-    "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", platform: "C64", count: 0, bio: "Russell Lieblich is known for his SID music work on the Commodore 64." }
+    "allister-brimble": { name: "Allister Brimble", slug: "allister-brimble", platform: "C64 / Amiga", bio: "Allister Brimble is a British video-game composer known for 16-bit era soundtracks and home-computer music." },
+    "barry-leitch": { name: "Barry Leitch", slug: "barry-leitch", platform: "Amiga", bio: "Barry Leitch is a game composer known for energetic music across Amiga and later systems." },
+    "ben-daglish": { name: "Ben Daglish", slug: "ben-daglish", platform: "C64 / Amiga", bio: "Ben Daglish was an English composer and musician whose work became a major part of 1980s home-computer gaming." },
+    "chris-huelsbeck": { name: "Chris Hülsbeck", slug: "chris-huelsbeck", platform: "C64 / Amiga", aliases: ["Chris Hulsbeck"], bio: "Chris Hülsbeck is a German game-music composer widely known for European home computer soundtracks." },
+    "dave-thomas": { name: "Dave Thomas", slug: "dave-thomas", platform: "C64", bio: "Dave Thomas is a composer associated with classic Commodore 64 game music." },
+    "david-dunn": { name: "David Dunn", slug: "david-dunn", platform: "C64", bio: "David Dunn is a game composer associated with home-computer era releases." },
+    "david-whittaker": { name: "David Whittaker", slug: "david-whittaker", platform: "C64 / Amiga", bio: "David Whittaker is an English video-game composer whose work spans many home computer formats." },
+    "fred-gray": { name: "Fred Gray", slug: "fred-gray", platform: "C64 / Amiga", bio: "Fred Gray is an English game-music composer known for Commodore 64 and Amiga releases." },
+    "jeroen-tel": { name: "Jeroen Tel", slug: "jeroen-tel", platform: "C64 / Amiga", bio: "Jeroen Tel is a Dutch composer known for late-1980s and early-1990s game music." },
+    "jonathan-dunn": { name: "Jonathan Dunn", slug: "jonathan-dunn", platform: "C64", bio: "Jonathan Dunn is known for distinctive Commodore 64 music and sound design." },
+    "keith-tinman": { name: "Keith Tinman", slug: "keith-tinman", platform: "C64", bio: "Keith Tinman is a composer associated with classic C64 titles." },
+    "mark-cooksey": { name: "Mark Cooksey", slug: "mark-cooksey", platform: "C64 / Amiga", bio: "Mark Cooksey is a British composer known for memorable C64 and Amiga game themes." },
+    "martin-galway": { name: "Martin Galway", slug: "martin-galway", platform: "C64", bio: "Martin Galway is a British composer strongly associated with Commodore 64 and ZX Spectrum game music." },
+    "matt-furniss": { name: "Matt Furniss", slug: "matt-furniss", platform: "C64 / Amiga", bio: "Matt Furniss is an English composer known for prolific work across Amiga and console generations." },
+    "matt-gray": { name: "Matt Gray", slug: "matt-gray", platform: "C64", bio: "Matt Gray is a British producer and composer known for Commodore 64 music including Last Ninja 2." },
+    "neil-brennan": { name: "Neil Brennan", slug: "neil-brennan", platform: "C64", bio: "Neil Brennan is associated with music for classic Commodore 64 releases." },
+    "paul-hodgson": { name: "Paul Hodgson", slug: "paul-hodgson", platform: "C64", bio: "Paul Hodgson is a game composer known from C64-era productions." },
+    "richard-joseph": { name: "Richard Joseph", slug: "richard-joseph", platform: "C64 / Amiga", bio: "Richard Joseph was a British game composer and audio director known for his Amiga and C64 era work." },
+    "rob-hubbard": { name: "Rob Hubbard", slug: "rob-hubbard", platform: "C64 / Amiga", bio: "Rob Hubbard is a British composer and programmer best known for influential Commodore 64 game music in the 1980s." },
+    "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", platform: "C64", bio: "Russell Lieblich is known for his SID music work on the Commodore 64." }
   };
 
-  function normaliseSlug(value) {
+  function slugifyName(value) {
     return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
       .trim()
-      .replace(/\s+/g, "-");
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
   }
 
-  function normaliseComposer(composer) {
-    const name = composer.name || "Unknown Composer";
-    return {
-      ...composer,
-      name,
-      slug: normaliseSlug(composer.slug || name)
-    };
+  function normaliseName(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
   }
 
-  function buildComposerData() {
-    if (Array.isArray(window.composers) && window.composers.length) {
-      return window.composers.map(normaliseComposer);
+  function getComposerNamesFromGame(game) {
+    if (!game || typeof game !== "object") {
+      return [];
     }
 
-    return Object.values(PROFILE_DATA).map(normaliseComposer);
+    const credits = game.credits && typeof game.credits === "object" ? game.credits : null;
+    const fromCredits = credits && Array.isArray(credits.musician) ? credits.musician : [];
+    const fromMusicBy = Array.isArray(game.musicBy) ? game.musicBy : [];
+    const fromComposers = Array.isArray(game.composers) ? game.composers : [];
+    const fromComposer = typeof game.composer === "string" ? [game.composer] : [];
+    const fromLegacyMusicNames = Array.isArray(game.music)
+      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac)$/i.test(item))
+      : [];
+
+    return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
+      .map((name) => String(name || "").trim())
+      .filter(Boolean);
   }
 
-  function getComposerTrackCount(composerName, games) {
-    let count = 0;
+  function createComposerRegistry() {
+    const composers = Object.values(PROFILE_DATA).map((profile) => ({
+      ...profile,
+      slug: profile.slug || slugifyName(profile.name),
+      aliases: Array.isArray(profile.aliases) ? profile.aliases : []
+    }));
 
-    games.forEach((game) => {
-      if (game.music && game.music.includes(composerName)) {
-        count++;
-      }
+    const byKey = new Map();
+    const bySlug = new Map();
+
+    composers.forEach((composer) => {
+      bySlug.set(composer.slug, composer);
+      byKey.set(normaliseName(composer.name), composer);
+      composer.aliases.forEach((alias) => byKey.set(normaliseName(alias), composer));
     });
 
-    return count;
+    return { composers, byKey, bySlug };
   }
 
-  function createComposerCard(composer, games) {
-    const slug = normaliseSlug(composer.slug || composer.name);
-    const imagePath = `/resources/images/composers/${slug}.jpg`;
-    const trackCount = getComposerTrackCount(composer.name, games);
-
-    return `
-    <a href="/music/${slug}/index.html" class="composer-card" data-slug="${slug}">
-      <div class="composer-thumb">
-        <img src="${imagePath}" 
-             alt="${composer.name}" 
-             onerror="this.style.display='none'">
-      </div>
-
-      <div class="composer-info">
-        <h3>${composer.name}</h3>
-        <p class="composer-platform">${composer.platform || "C64"}</p>
-        <p class="composer-count">${trackCount} Tracks</p>
-      </div>
-
-    </a>
-  `;
+  function getGameUrl(slug) {
+    return `/games/${slug}/`;
   }
 
-  function renderComposers(composers, games) {
+  function getComposerUrl(slug) {
+    return `/music/${slug}.html`;
+  }
+
+  function getComposerImagePath(slug) {
+    return `/resources/images/composers/${slug}.jpg`;
+  }
+
+  function collectComposerStats(games, registry) {
+    const stats = new Map();
+
+    registry.composers.forEach((composer) => {
+      stats.set(composer.slug, {
+        composer,
+        games: [],
+        systems: new Set()
+      });
+    });
+
+    games.forEach((game) => {
+      const composerNames = getComposerNamesFromGame(game);
+      const matched = new Set();
+
+      composerNames.forEach((name) => {
+        const key = normaliseName(name);
+        if (!key) {
+          return;
+        }
+
+        let composer = registry.byKey.get(key);
+        if (!composer) {
+          const slugGuess = slugifyName(name);
+          composer = registry.bySlug.get(slugGuess);
+        }
+
+        if (!composer || matched.has(composer.slug)) {
+          return;
+        }
+
+        matched.add(composer.slug);
+
+        const bucket = stats.get(composer.slug);
+        if (!bucket) {
+          return;
+        }
+
+        bucket.games.push(game);
+        const systemLabel = String(game.system || "").trim().toUpperCase();
+        if (systemLabel) {
+          bucket.systems.add(systemLabel);
+        }
+      });
+    });
+
+    return stats;
+  }
+
+  function renderHubCards(composers, stats) {
     const containerFeatured = document.querySelector(".composer-grid-featured");
     const containerAll = document.querySelector(".composer-grid-compact");
-
     if (!containerFeatured || !containerAll) {
-      console.error("Composer containers missing");
       return;
     }
 
-    let featuredHTML = "";
-    let allHTML = "";
+    const sorted = [...composers].sort((a, b) => a.name.localeCompare(b.name));
+    const featured = sorted.slice(0, 6);
+    const rest = sorted.slice(6);
 
-    composers.forEach((composer, index) => {
-      const card = createComposerCard(composer, games);
+    function cardMarkup(composer, compact) {
+      const bucket = stats.get(composer.slug);
+      const trackCount = bucket ? bucket.games.length : 0;
+      const systemLabel = bucket && bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
+      const imagePath = getComposerImagePath(composer.slug);
+      const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
-      if (index < 6) {
-        featuredHTML += card;
-      } else {
-        allHTML += card;
+      if (bucket && bucket.games.length > 0 && trackCount === 0) {
+        console.warn(`[music-hub] Validation mismatch for ${composer.name}: games present but count is zero.`);
       }
-    });
 
-    containerFeatured.innerHTML = featuredHTML;
-    containerAll.innerHTML = allHTML;
+      return `
+        <a href="${getComposerUrl(composer.slug)}" class="${cardClass}" data-slug="${composer.slug}">
+          ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" onerror="this.style.display='none'"></div>`}
+          <div class="composer-info">
+            <h3>${composer.name}</h3>
+            <p class="composer-platform">${systemLabel}</p>
+            <p class="composer-count">${trackCount} Tracks</p>
+          </div>
+        </a>
+      `;
+    }
+
+    containerFeatured.innerHTML = featured.map((composer) => cardMarkup(composer, false)).join("");
+    containerAll.innerHTML = rest.map((composer) => cardMarkup(composer, true)).join("");
+
+    const totalsLabel = document.getElementById("music-hub-stats");
+    if (totalsLabel) {
+      const totalTracks = Array.from(stats.values()).reduce((sum, bucket) => sum + bucket.games.length, 0);
+      totalsLabel.textContent = `${sorted.length} composers • ${totalTracks} linked game credits`;
+    }
+  }
+
+  function renderComposerProfile(composer, bucket) {
+    const content = document.getElementById("composer-content");
+    if (!content) {
+      return;
+    }
+
+    const systemLabel = bucket.systems.size ? Array.from(bucket.systems).sort().join(" / ") : (composer.platform || "C64 / Amiga");
+    const gameCount = bucket.games.length;
+
+    content.innerHTML = `
+      <article class="ccg-composer-profile ${composer.slug ? "" : "ccg-composer-profile--text-only"}">
+        <img src="${getComposerImagePath(composer.slug)}" alt="${composer.name}" class="ccg-composer-profile__image" onerror="this.classList.add('is-fallback'); this.src='/resources/images/icons/icon-192.png';">
+        <div>
+          <h2 class="ccg-composer-profile__title">${composer.name}</h2>
+          <p class="ccg-composer-profile__platform">${systemLabel}</p>
+          <p class="ccg-composer-profile__facts">${gameCount} linked game credits</p>
+          <p class="ccg-composer-profile__bio">${composer.bio || "Composer biography currently unavailable in this archive."}</p>
+        </div>
+      </article>
+    `;
+
+    const subtitle = document.querySelector(".ccg-composer-subtitle");
+    if (subtitle) {
+      subtitle.textContent = `${gameCount} linked game credits across ${systemLabel}`;
+    }
+  }
+
+  function renderComposerGames(bucket) {
+    const gamesList = document.getElementById("composer-games");
+    if (!gamesList) {
+      return;
+    }
+
+    const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+    if (!sortedGames.length) {
+      gamesList.innerHTML = "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
+      return;
+    }
+
+    gamesList.innerHTML = sortedGames.map((game) => {
+      const thumb = game.thumbnail ? `<img src="${game.thumbnail}" alt="${game.title}" class="ccg-composer-game-thumb" loading="lazy">` : "";
+      const player = Array.isArray(game.music) && game.music.length
+        ? game.music
+            .filter((file) => typeof file === "string" && /\.(mp3|ogg|wav|flac)$/i.test(file))
+            .slice(0, 1)
+            .map((file) => `<div class="ccg-composer-game-player-slot"><audio controls preload="none" class="ccg-composer-mini-player" src="/resources/music/${file}"></audio></div>`)
+            .join("")
+        : "<span class='ccg-composer-games__cue'>No embedded player for this entry.</span>";
+
+      return `
+        <li class="ccg-composer-games__item">
+          <a class="ccg-composer-game-link" href="${getGameUrl(game.slug)}">
+            ${thumb}
+            <span class="ccg-composer-game-meta">
+              <span class="ccg-composer-game-title">${game.title}</span>
+              <span class="ccg-composer-game-minor">${game.year || ""} ${game.system ? `• ${game.system.toUpperCase()}` : ""}</span>
+            </span>
+          </a>
+          <div class="ccg-composer-game-utility">${player}</div>
+        </li>
+      `;
+    }).join("");
+  }
+
+  function renderComposerChips(registry, currentSlug) {
+    const featured = document.getElementById("composer-featured-list");
+    const all = document.getElementById("composer-all-list");
+    const navRow = document.getElementById("composer-nav-row");
+
+    const sorted = [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));
+    const featuredSet = sorted.slice(0, 6);
+
+    function chip(composer, activeClass) {
+      const active = composer.slug === currentSlug ? " is-active" : "";
+      return `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip ${activeClass || ""}${active}" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`;
+    }
+
+    if (featured) {
+      featured.innerHTML = featuredSet.map((composer) => chip(composer, "")).join("");
+    }
+
+    if (all) {
+      all.innerHTML = sorted.map((composer) => chip(composer, "")).join("");
+    }
+
+    if (navRow) {
+      navRow.innerHTML = sorted.map((composer) => chip(composer, "ccg-composer-nav__button")).join("");
+    }
   }
 
   async function loadGames() {
     const response = await fetch("/games/games.json", { cache: "no-store" });
     if (!response.ok) {
-      throw new Error("Failed to load games.json");
+      throw new Error(`Failed to load games.json (${response.status})`);
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    if (!Array.isArray(data)) {
+      throw new Error("games.json returned a non-array payload");
+    }
+
+    return data;
   }
 
-  const composers = buildComposerData();
+  function getCurrentComposerSlug(registry) {
+    const pageRoot = document.querySelector("[data-composer-slug], [data-composer-name]");
+    if (!pageRoot) {
+      return "";
+    }
+
+    const slugFromAttr = pageRoot.getAttribute("data-composer-slug");
+    const nameFromAttr = pageRoot.getAttribute("data-composer-name");
+
+    if (slugFromAttr && registry.bySlug.has(slugFromAttr)) {
+      return slugFromAttr;
+    }
+
+    const key = normaliseName(nameFromAttr || "");
+    const composer = registry.byKey.get(key);
+    return composer ? composer.slug : slugifyName(nameFromAttr || "");
+  }
+
+  function initBackToTop() {
+    const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
+    const button = document.querySelector("[data-ccg-back-to-top]");
+    if (!wrap || !button) {
+      return;
+    }
+
+    wrap.hidden = false;
+    const toggle = () => {
+      const visible = window.scrollY > 220;
+      wrap.classList.toggle("is-visible", visible);
+    };
+
+    button.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", toggle, { passive: true });
+    toggle();
+  }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    if (!document.querySelector(".composer-grid-featured") || !document.querySelector(".composer-grid-compact")) {
-      return;
-    }
-
-    if (typeof composers === "undefined" || composers.length === 0) {
-      console.error("Composer data missing or empty");
-      const fallback = document.querySelector(".composer-grid-featured");
-      if (fallback) {
-        fallback.innerHTML = "<p style='padding:20px'>Unable to load composers.</p>";
-      }
-      return;
-    }
+    const registry = createComposerRegistry();
+    initBackToTop();
 
     try {
       const games = await loadGames();
-      renderComposers(composers, games);
+      const stats = collectComposerStats(games, registry);
+
+      if (document.querySelector(".composer-grid-featured") && document.querySelector(".composer-grid-compact")) {
+        renderHubCards(registry.composers, stats);
+      }
+
+      const currentSlug = getCurrentComposerSlug(registry);
+      if (currentSlug) {
+        const composer = registry.bySlug.get(currentSlug);
+        const bucket = stats.get(currentSlug) || { games: [], systems: new Set() };
+
+        if (!composer) {
+          console.error(`[music-composer] Unknown composer slug: ${currentSlug}`);
+        } else {
+          renderComposerProfile(composer, bucket);
+          renderComposerGames(bucket);
+          renderComposerChips(registry, currentSlug);
+        }
+      }
+
+      console.info(`[music] Loaded ${registry.composers.length} composers and ${games.length} games.`);
     } catch (error) {
-      console.error("Unable to render composer cards", error);
-      renderComposers(composers, []);
+      console.error("[music] Unable to load composer archive", error);
+
+      const hubStats = document.getElementById("music-hub-stats");
+      if (hubStats) {
+        hubStats.textContent = "Unable to load archive data right now.";
+      }
+
+      const gamesList = document.getElementById("composer-games");
+      if (gamesList) {
+        gamesList.innerHTML = "<li class='ccg-composer-games__item'>Unable to load game archive data. Please try again later.</li>";
+      }
     }
   });
 })();
