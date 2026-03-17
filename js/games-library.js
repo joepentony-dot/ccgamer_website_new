@@ -822,6 +822,8 @@ function updateYearRangeLabel(labelEl) {
 function normalizeSearchText(text) {
     return String(text || "")
         .toLowerCase()
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
         .replace(/[’']/g, "")
         .replace(/[-_]+/g, " ")
         .replace(/[^a-z0-9\s]+/g, " ")

@@ -1022,34 +1022,46 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
     const hasMusic = await checkGameMusicExists(musicPath);
     const composers = normalizeComposerNames(game);
 
+    if (composers.length) {
+        const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+            ? window.ccgGetSiteRoot()
+            : "/";
+        const composerLine = document.createElement("p");
+        composerLine.className = "ccg-music-composer";
+
+        const composerLabel = document.createElement("span");
+        composerLabel.className = "ccg-music-composer__label";
+        composerLabel.textContent = "Music by";
+        composerLine.appendChild(composerLabel);
+
+        const composerList = document.createElement("span");
+        composerList.className = "ccg-music-composer__list";
+
+        composers.forEach((name, index) => {
+            const composerSlug = resolveApprovedComposerSlug(name);
+            if (composerSlug) {
+                const composerLink = document.createElement("a");
+                composerLink.href = `${root}music/${composerSlug}.html`;
+                composerLink.className = "ccg-composer-button";
+                composerLink.textContent = name;
+                composerList.appendChild(composerLink);
+            } else {
+                const composerText = document.createElement("span");
+                composerText.className = "ccg-composer-text";
+                composerText.textContent = name;
+                composerList.appendChild(composerText);
+            }
+
+            if (index < composers.length - 1) {
+                composerList.appendChild(document.createTextNode(", "));
+            }
+        });
+
+        composerLine.appendChild(composerList);
+        musicTracksEl.appendChild(composerLine);
+    }
+
     if (hasMusic) {
-        if (composers.length) {
-            const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
-                ? window.ccgGetSiteRoot()
-                : "/";
-            const composerLine = document.createElement("p");
-            composerLine.className = "ccg-music-composer";
-            composerLine.append("Music by ");
-
-            composers.forEach((name, index) => {
-                const composerSlug = resolveApprovedComposerSlug(name);
-                if (composerSlug) {
-                    const composerLink = document.createElement("a");
-                    composerLink.href = `${root}music/${composerSlug}/`;
-                    composerLink.textContent = name;
-                    composerLine.appendChild(composerLink);
-                } else {
-                    composerLine.append(name);
-                }
-
-                if (index < composers.length - 1) {
-                    composerLine.append(", ");
-                }
-            });
-
-            musicTracksEl.appendChild(composerLine);
-        }
-
         const audio = document.createElement("audio");
         audio.controls = true;
         audio.preload = "none";
@@ -1065,8 +1077,12 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
         musicCard.hidden = false;
     }
 
+    if (composers.length && !hasMusic) {
+        musicCard.hidden = false;
+    }
+
     if (utilityHubSection) {
-        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasMusic);
+        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasMusic || composers.length);
     }
 }
 
