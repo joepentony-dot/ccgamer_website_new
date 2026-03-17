@@ -28,6 +28,7 @@
 
   const FEATURED_BY_NAME = new Map(FEATURED_COMPOSERS.map((entry) => [normalizeComposerKey(entry.name), entry]));
   const EXISTS_CACHE = new Map();
+  const IMAGE_EXISTS_CACHE = new Map();
 
   function getSiteRoot() { return (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function") ? window.ccgGetSiteRoot() : "/"; }
   function normalizeComposerKey(value) { return String(value || "").trim().replace(/\s+/g, " ").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
@@ -118,10 +119,55 @@
   async function resolvePortraitPath(slug) {
     const root = getSiteRoot();
     const png = `${root}resources/images/composers/${slug}.png`;
-    if (await pathExists(png)) return png;
+    if (await imageExists(png)) return png;
     const jpg = `${root}resources/images/composers/${slug}.jpg`;
-    if (await pathExists(jpg)) return jpg;
+    if (await imageExists(jpg)) return jpg;
     return "";
+  }
+
+  function imageExists(path) {
+    if (!path) return Promise.resolve(false);
+    if (IMAGE_EXISTS_CACHE.has(path)) return IMAGE_EXISTS_CACHE.get(path);
+    const check = new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => resolve(true);
+      image.onerror = () => resolve(false);
+      image.src = `${path}${path.includes("?") ? "&" : "?"}ccg_image_probe=1`;
+    });
+    IMAGE_EXISTS_CACHE.set(path, check);
+    return check;
+  }
+
+  function initBackToTop() {
+    const button = document.querySelector("[data-ccg-back-to-top]");
+    const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
+    if (!button || !wrap) return;
+
+    wrap.hidden = false;
+    button.addEventListener("click", () => {
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
+    });
+
+    const updateVisibility = () => {
+      const scrollBottom = window.scrollY + window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
+      wrap.classList.toggle("is-visible", scrollBottom >= docHeight - 80);
+    };
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        updateVisibility();
+        ticking = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    updateVisibility();
   }
 
   function attachMiniPlayer(placeholder, audioPath) {
@@ -172,7 +218,7 @@
     names.filter((name) => name !== currentName).forEach((name) => {
       const link = document.createElement("a");
       link.href = `${getSiteRoot()}music/${composerSlug(name)}.html`;
-      link.className = "ccg-composer-chip";
+      link.className = "ccg-btn ccg-btn--ghost ccg-composer-chip";
       link.textContent = name;
       container.appendChild(link);
     });
@@ -233,14 +279,14 @@
     nav.innerHTML = "";
     [["Back to Music Hub", `${getSiteRoot()}music/index.html`], ["Browse composers", `${getSiteRoot()}music/index.html#all-composers`]].forEach(([label, href]) => {
       const link = document.createElement("a");
-      link.className = "ccg-composer-nav__button";
+      link.className = "ccg-btn ccg-btn--primary ccg-composer-nav__button";
       link.href = href;
       link.textContent = label;
       nav.appendChild(link);
     });
     eligibleNames.filter((name) => name !== composerName).slice(0, 4).forEach((name) => {
       const link = document.createElement("a");
-      link.className = "ccg-composer-nav__button ccg-composer-nav__button--secondary";
+      link.className = "ccg-btn ccg-btn--ghost ccg-composer-nav__button ccg-composer-nav__button--secondary";
       link.href = `${getSiteRoot()}music/${composerSlug(name)}.html`;
       link.textContent = name;
       nav.appendChild(link);
@@ -256,7 +302,7 @@
       FEATURED_COMPOSERS.filter((entry) => (index.get(entry.name) || []).length >= MIN_ARCHIVE_CREDITS).forEach((entry) => {
         const games = index.get(entry.name) || [];
         const link = document.createElement("a");
-        link.className = "ccg-music-hub__composer ccg-music-hub__composer--featured";
+        link.className = "ccg-btn ccg-btn--ghost ccg-music-hub__composer ccg-music-hub__composer--featured";
         link.href = `${getSiteRoot()}music/${entry.slug}.html`;
         link.innerHTML = `<strong>${entry.name}</strong><span class="ccg-music-hub__platform">${getComposerPlatformLabel(games)}</span><span>${games.length} games on Cheeky Commodore Gamer</span>`;
         featuredEl.appendChild(link);
@@ -268,7 +314,7 @@
       eligibleNames.forEach((name) => {
         const games = index.get(name) || [];
         const link = document.createElement("a");
-        link.className = `ccg-music-hub__composer${FEATURED_BY_NAME.has(normalizeComposerKey(name)) ? " ccg-music-hub__composer--featured" : ""}`;
+        link.className = `ccg-btn ccg-btn--ghost ccg-music-hub__composer${FEATURED_BY_NAME.has(normalizeComposerKey(name)) ? " ccg-music-hub__composer--featured" : ""}`;
         link.href = `${getSiteRoot()}music/${composerSlug(name)}.html`;
         link.innerHTML = `<strong>${name}</strong><span class="ccg-music-hub__platform">${getComposerPlatformLabel(games)}</span><span>${games.length} games on Cheeky Commodore Gamer</span>`;
         extraEl.appendChild(link);
@@ -299,12 +345,14 @@
     const games = composerIndex.get(composerName) || [];
     await renderComposerMeta(composerName, games.length, eligibleNames, games);
     renderGames(listEl, games);
+    initBackToTop();
   }
 
   const boot = () => init().catch(() => {
     renderHub(new Map());
     const listEl = document.getElementById("composer-games");
     if (listEl) listEl.innerHTML = "<li>Unable to load composer games right now.</li>";
+    initBackToTop();
   });
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
