@@ -996,6 +996,23 @@ function normalizeComposerNames(game) {
 }
 
 
+function getComposerArchiveUrl(name, composerSlug) {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    const normalizedRoot = root.endsWith("/") ? root : `${root}/`;
+    const safeName = String(name || "").trim();
+    const safeSlug = String(composerSlug || "").trim();
+
+    if (safeSlug) {
+        return `${normalizedRoot}music/${safeSlug}/`;
+    }
+
+    const params = new URLSearchParams();
+    params.set("name", safeName);
+    return `${normalizedRoot}music/composer.html?${params.toString()}`;
+}
+
 const APPROVED_COMPOSER_SLUGS = new Map([
     ["rob hubbard", "rob-hubbard"],
     ["martin galway", "martin-galway"],
@@ -1034,17 +1051,17 @@ async function renderGameMusic(slug, container) {
     const audioSrc = await resolver(normalizedSlug);
     if (!audioSrc) return;
 
-    const audio = document.createElement("audio");
-    audio.controls = true;
-    audio.preload = "none";
-    audio.className = "ccg-game-audio-player";
+    const sharedPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+        ? window.CCGSharedMusicPlayer.createAudioPlayer
+        : null;
 
-    const source = document.createElement("source");
-    source.src = audioSrc;
-    source.type = "audio/mpeg";
+    const player = sharedPlayer
+        ? sharedPlayer({ src: audioSrc, playerClass: "ccg-game-audio-player" })
+        : null;
 
-    audio.appendChild(source);
-    container.appendChild(audio);
+    if (!player) return;
+
+    container.appendChild(player);
     container.dataset.ccgMusicRendered = "true";
 
     const musicCard = container.closest("#game-music-card");
@@ -1085,9 +1102,6 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
 
 
     if (composers.length) {
-        const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
-            ? window.ccgGetSiteRoot()
-            : "/";
         const composerLine = document.createElement("p");
         composerLine.className = "ccg-music-composer";
 
@@ -1099,27 +1113,19 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         const composerList = document.createElement("span");
         composerList.className = "ccg-music-composer__list";
 
-        composers.forEach((name, index) => {
+        composers.forEach((name) => {
             const composerSlug = resolveComposerSlug(name);
-            if (composerSlug) {
-                const composerLink = document.createElement("a");
-                composerLink.href = `${root}music/${composerSlug}.html`;
-                composerLink.className = "ccg-composer-button";
-                composerLink.textContent = name;
-                composerList.appendChild(composerLink);
-            } else {
-                const composerText = document.createElement("span");
-                composerText.className = "ccg-composer-text";
-                composerText.textContent = name;
-                composerList.appendChild(composerText);
-            }
-
+            const composerLink = document.createElement("a");
+            composerLink.href = getComposerArchiveUrl(name, composerSlug);
+            composerLink.className = "ccg-composer-button";
+            composerLink.textContent = name;
+            composerList.appendChild(composerLink);
         });
 
         composerLine.appendChild(composerList);
         musicTracksEl.appendChild(composerLine);
 
-        if (composers.some((name) => Boolean(resolveComposerSlug(name)))) {
+        if (composers.length) {
             const hint = document.createElement("p");
             hint.className = "ccg-music-composer__hint";
             hint.textContent = "Tap a composer chip to open their archive page.";
@@ -1127,6 +1133,9 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         }
 
         const primaryComposer = composers[0];
+        const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+            ? window.ccgGetSiteRoot()
+            : "/";
         const relatedByComposer = CCG_SINGLE_ALL_GAMES
             .filter((candidate) => candidate && candidate.id !== game?.id)
             .filter((candidate) => normalizeComposerNames(candidate).some((name) => normalizeComposerKey(name) === normalizeComposerKey(primaryComposer)))
