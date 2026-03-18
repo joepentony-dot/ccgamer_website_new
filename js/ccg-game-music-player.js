@@ -34,11 +34,12 @@
     if (!mount) return false;
 
     const musicPath = resolveGameMusicPath(slug);
+    const hasMusic = await checkGameMusicExists(musicPath);
+    if (!hasMusic) return false;
 
     const audio = document.createElement("audio");
     audio.controls = true;
     audio.preload = "none";
-
     if (className) {
       audio.className = className;
     }
@@ -48,14 +49,7 @@
     source.type = "audio/mpeg";
 
     audio.appendChild(source);
-
-    // Graceful fallback — if file missing, remove player
-    const clearMountOnError = () => {
-      mount.innerHTML = "";
-    };
-    audio.addEventListener("error", clearMountOnError);
-    source.addEventListener("error", clearMountOnError);
-
+    audio.append("Your browser does not support the audio element.");
     mount.appendChild(audio);
 
     return true;
