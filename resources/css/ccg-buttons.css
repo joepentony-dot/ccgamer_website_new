@@ -61,10 +61,12 @@ button.ccg-btn {
     backdrop-filter: none !important;
 
     transition:
-        transform 0.3s var(--ccg-ease-out),
-        box-shadow 0.32s var(--ccg-ease-out),
-        background 0.3s ease,
-        border-color 0.3s ease;
+        transform 0.2s ease,
+        box-shadow 0.25s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+
+    min-height: 42px;
 }
 
 /* ============================================================
@@ -119,7 +121,7 @@ button.ccg-btn {
 ============================================================ */
 
 .ccg-btn:focus-visible {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 
     box-shadow: var(--ccg-btn-hover-shadow);
 
@@ -128,7 +130,7 @@ button.ccg-btn {
 
 @media (hover: hover) and (pointer: fine) {
     .ccg-btn:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
 
         box-shadow: var(--ccg-btn-hover-shadow);
 

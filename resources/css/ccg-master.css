@@ -90,6 +90,13 @@
     /* TOUCH & MOBILE SAFETY */
     --ccg-touch-size: 48px;
 
+    /* GLOBAL SPACING SYSTEM */
+    --ccg-space-xs: 6px;
+    --ccg-space-sm: 10px;
+    --ccg-space-md: 16px;
+    --ccg-space-lg: 24px;
+    --ccg-space-xl: 32px;
+
     /* MODE ACCENTS */
     --accent-rgb: 92,127,163;
 }
@@ -440,6 +447,64 @@ li {
     list-style: none;
 }
 
+
+/* ============================================================
+   GLOBAL UX POLISH — SPACING / RHYTHM / STABILITY
+============================================================ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+section,
+.ccg-section {
+    margin-bottom: var(--ccg-space-xl);
+}
+
+p {
+    line-height: 1.6;
+    margin-bottom: var(--ccg-space-md);
+}
+
+h1,
+h2,
+h3 {
+    margin-bottom: var(--ccg-space-sm);
+    letter-spacing: 0.5px;
+}
+
+a {
+    transition: color 0.2s ease, opacity 0.2s ease;
+    min-height: 42px;
+}
+
+a:hover {
+    opacity: 0.85;
+}
+
+.ccg-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: var(--ccg-space-md);
+    padding-right: var(--ccg-space-md);
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 22px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    .ccg-card,
+    .game-card,
+    .composer-card {
+        margin-bottom: var(--ccg-space-md);
+    }
+}
 
 /* ============================================================
    PAGE WRAPPERS
