@@ -1,20 +1,30 @@
 (function () {
   "use strict";
 
-  const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
-  const DEFAULT_LOCAL_MUSIC_PATH = "/resources/audio/games/";
+  const DEFAULT_MUSIC_BASE_URL = "https://audio.cheekycommodoregamer.co.uk/";
   const urlCache = new Map();
   const probeCache = new Map();
+  let missingConfigWarningShown = false;
 
   function ensureTrailingSlash(value, fallback) {
     const trimmed = String(value || "").trim() || fallback;
     return trimmed.endsWith("/") ? trimmed : `${trimmed}/`;
   }
 
-  window.CCG_CONFIG = Object.assign({}, window.CCG_CONFIG || {}, {
-    MUSIC_BASE_URL: ensureTrailingSlash(window.CCG_CONFIG && window.CCG_CONFIG.MUSIC_BASE_URL, DEFAULT_MUSIC_BASE_URL),
-    MUSIC_FALLBACK_PATH: ensureTrailingSlash(window.CCG_CONFIG && window.CCG_CONFIG.MUSIC_FALLBACK_PATH, DEFAULT_LOCAL_MUSIC_PATH)
-  });
+  function getConfig() {
+    const configuredBaseUrl = window.CCG_CONFIG && window.CCG_CONFIG.MUSIC_BASE_URL;
+
+    window.CCG_CONFIG = Object.assign({}, window.CCG_CONFIG || {}, {
+      MUSIC_BASE_URL: ensureTrailingSlash(configuredBaseUrl, DEFAULT_MUSIC_BASE_URL)
+    });
+
+    if (!String(configuredBaseUrl || "").trim() && !missingConfigWarningShown) {
+      console.warn("[CCG music] Missing MUSIC_BASE_URL config. Falling back to default custom domain.");
+      missingConfigWarningShown = true;
+    }
+
+    return window.CCG_CONFIG;
+  }
 
   function normalizeSlug(slug) {
     return String(slug || "")
@@ -24,11 +34,9 @@
   }
 
   function buildUrl(baseUrl, slug) {
-    return `${ensureTrailingSlash(baseUrl, DEFAULT_MUSIC_BASE_URL)}${slug}.mp3`;
-  }
-
-  function buildFallbackUrl(slug) {
-    return buildUrl(window.CCG_CONFIG.MUSIC_FALLBACK_PATH, slug);
+    const normalizedSlug = normalizeSlug(slug);
+    if (!normalizedSlug) return "";
+    return `${ensureTrailingSlash(baseUrl, DEFAULT_MUSIC_BASE_URL)}${normalizedSlug}.mp3`;
   }
 
   async function canLoad(url) {
@@ -54,17 +62,13 @@
     }
 
     const resolved = (async () => {
-      const primaryUrl = buildUrl(window.CCG_CONFIG.MUSIC_BASE_URL, normalizedSlug);
-      if (await canLoad(primaryUrl)) {
-        return primaryUrl;
+      const config = getConfig();
+      const primaryUrl = buildUrl(config.MUSIC_BASE_URL, normalizedSlug);
+      if (!primaryUrl) {
+        return "";
       }
 
-      const fallbackUrl = buildFallbackUrl(normalizedSlug);
-      if (fallbackUrl !== primaryUrl && await canLoad(fallbackUrl)) {
-        return fallbackUrl;
-      }
-
-      return "";
+      return (await canLoad(primaryUrl)) ? primaryUrl : "";
     })();
 
     urlCache.set(normalizedSlug, resolved);
@@ -73,16 +77,13 @@
     return finalUrl;
   }
 
+  getConfig();
+
   window.CCGMusic = Object.assign({}, window.CCGMusic || {}, {
     normalizeSlug,
     resolveGameMusicUrl,
     buildPrimaryUrl(slug) {
-      const normalizedSlug = normalizeSlug(slug);
-      return normalizedSlug ? buildUrl(window.CCG_CONFIG.MUSIC_BASE_URL, normalizedSlug) : "";
-    },
-    buildFallbackUrl(slug) {
-      const normalizedSlug = normalizeSlug(slug);
-      return normalizedSlug ? buildFallbackUrl(normalizedSlug) : "";
+      return buildUrl(getConfig().MUSIC_BASE_URL, slug);
     }
   });
 })();
