@@ -4078,3 +4078,124 @@ body {
        .ccg-nav-drawer__panel) {
     contain: paint;
 }
+
+/* ============================================================
+   OMEGA CINEMATIC POLISH — PHASE 2
+   ------------------------------------------------------------
+   Additive atmosphere-only enhancements.
+   Zero layout changes. Zero JS impact. Zero loader impact.
+============================================================ */
+
+:root {
+    --ccg-accent-primary: #00c8ff;
+}
+
+[data-mode="amiga"] {
+    --ccg-accent-primary: #ff00aa;
+}
+
+body {
+    position: relative;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background:
+        radial-gradient(circle at top, rgba(0, 150, 255, 0.08), transparent 60%),
+        radial-gradient(circle at bottom, rgba(255, 0, 120, 0.06), transparent 70%);
+}
+
+:where(.ccg-page, .ccg-main, main, header, .ccg-header, .ccg-section, .ccg-card, .game-card, .composer-card) {
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-section {
+    position: relative;
+}
+
+.ccg-section::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0, 200, 255, 0.3),
+        transparent
+    );
+}
+
+.ccg-card,
+.game-card,
+.composer-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.ccg-card::before,
+.game-card::before,
+.composer-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 0 20px rgba(0, 150, 255, 0.08);
+}
+
+.ccg-card:hover,
+.game-card:hover,
+.composer-card:hover {
+    box-shadow:
+        0 10px 25px rgba(0, 0, 0, 0.4),
+        0 0 12px rgba(0, 200, 255, 0.25);
+}
+
+header,
+.ccg-header {
+    position: relative;
+}
+
+header::after,
+.ccg-header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(0, 200, 255, 0.4),
+        transparent
+    );
+}
+
+h1,
+h2 {
+    text-shadow: 0 0 6px rgba(0, 200, 255, 0.15);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(#00c8ff, #ff0066);
+    border-radius: 6px;
+}
