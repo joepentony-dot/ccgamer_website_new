@@ -1038,24 +1038,17 @@ function renderGameMusic(slug, container) {
     source.type = "audio/mpeg";
 
     audio.appendChild(source);
+    container.appendChild(audio);
 
-    audio.addEventListener("loadedmetadata", () => {
-        if (!container.contains(audio)) {
-            container.appendChild(audio);
-        }
+    const musicCard = container.closest("#game-music-card");
+    if (musicCard) {
+        musicCard.hidden = false;
+    }
 
-        const musicCard = container.closest("#game-music-card");
-        if (musicCard) {
-            musicCard.hidden = false;
-        }
-
-        const utilityHubSection = container.closest("#game-utility-hub-section");
-        if (utilityHubSection) {
-            utilityHubSection.hidden = false;
-        }
-    }, { once: true });
-
-    audio.load();
+    const utilityHubSection = container.closest("#game-utility-hub-section");
+    if (utilityHubSection) {
+        utilityHubSection.hidden = false;
+    }
 }
 
 function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
