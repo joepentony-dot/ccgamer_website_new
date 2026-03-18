@@ -1026,7 +1026,7 @@ function renderGameMusic(slug, container) {
     const normalizedSlug = normalizeSlugKey(slug);
     if (!normalizedSlug) return;
 
-    const audioSrc = `../resources/audio/games/${normalizedSlug}.mp3`;
+    const audioSrc = `/resources/audio/games/${normalizedSlug}.mp3`;
 
     const audio = document.createElement("audio");
     audio.controls = true;
