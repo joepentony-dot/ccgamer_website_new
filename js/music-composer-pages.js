@@ -181,15 +181,6 @@
     return "";
   }
 
-  async function checkGameMusicExists(src) {
-    try {
-      const res = await fetch(src, { method: "HEAD" });
-      return res.ok;
-    } catch (error) {
-      return false;
-    }
-  }
-
   function createMusicPlayer(src) {
     const wrapper = document.createElement("div");
     wrapper.className = "ccg-composer-game-utility composer-player-row";
@@ -440,75 +431,61 @@
 
   async function renderComposerGames(bucket) {
     const gamesList = document.getElementById("composer-games");
-    if (!gamesList) {
-      return;
-    }
+    if (!gamesList) return;
 
-    const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    const sortedGames = [...bucket.games].sort((a, b) =>
+      (a.title || "").localeCompare(b.title || "")
+    );
 
     if (!sortedGames.length) {
-      gamesList.innerHTML = "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
+      gamesList.innerHTML =
+        "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
       return;
     }
 
-    const rows = await Promise.all(sortedGames.map(async (game) => {
-      const thumbSrc = resolveThumbnailPath(game);
-      const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
+    const siteRoot =
+      (typeof window !== "undefined" &&
+        typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+
+    gamesList.innerHTML = "";
+
+    for (const game of sortedGames) {
       const card = document.createElement("li");
-      card.className = `ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}`.trim();
+      card.className = "ccg-composer-games__item";
 
       const gameSlug = String(game?.slug || "").trim();
 
-      const gameLink = document.createElement("a");
-      gameLink.className = "ccg-composer-game-link";
-      gameLink.href = gameSlug ? getGameUrl(gameSlug) : "#";
-
-      if (hasThumb) {
-        const image = document.createElement("img");
-        image.className = "ccg-composer-game-thumb";
-        image.loading = "lazy";
-        image.src = thumbSrc;
-        image.alt = game.title || "Game thumbnail";
-        gameLink.appendChild(image);
-      }
-
-      const meta = document.createElement("span");
-      meta.className = "ccg-composer-game-meta";
+      // --- GAME LINK ---
+      const link = document.createElement("a");
+      link.className = "ccg-composer-game-link";
+      link.href = gameSlug ? `${siteRoot}games/${gameSlug}/` : "#";
 
       const title = document.createElement("span");
       title.className = "ccg-composer-game-title";
       title.textContent = game.title || "Untitled game";
 
-      const minor = document.createElement("span");
-      minor.className = "ccg-composer-game-minor";
-      minor.textContent = `${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}`;
+      link.appendChild(title);
+      card.appendChild(link);
 
-      meta.appendChild(title);
-      meta.appendChild(minor);
-      gameLink.appendChild(meta);
+      // --- MUSIC PLAYER (FINAL STABLE VERSION) ---
+      if (gameSlug) {
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.preload = "none";
+        audio.className = "ccg-composer-mini-player";
 
-      const action = document.createElement("span");
-      action.className = "ccg-composer-game-action";
-      action.textContent = "Open game page";
-      gameLink.appendChild(action);
+        const source = document.createElement("source");
+        source.src = `${siteRoot}resources/audio/games/${gameSlug}.mp3`;
+        source.type = "audio/mpeg";
 
-      card.appendChild(gameLink);
-
-      if (!game.slug) return card;
-
-      const musicSrc = `/resources/audio/games/${gameSlug}.mp3`;
-      console.log("[MUSIC DEBUG]", game.slug, `/resources/audio/games/${game.slug}.mp3`);
-      const hasPlayer = await checkGameMusicExists(musicSrc);
-
-      if (hasPlayer) {
-        card.appendChild(createMusicPlayer(musicSrc));
+        audio.appendChild(source);
+        card.appendChild(audio);
       }
 
-      return card;
-    }));
-
-    gamesList.innerHTML = "";
-    rows.forEach((row) => gamesList.appendChild(row));
+      gamesList.appendChild(card);
+    }
   }
 
   function renderComposerChips(registry, stats, currentSlug) {
