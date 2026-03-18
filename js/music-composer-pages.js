@@ -273,6 +273,10 @@
   }
 
   function createMusicPlayer(src) {
+    if (!src) {
+      return null;
+    }
+
     const wrapper = document.createElement("div");
     wrapper.className = "ccg-composer-game-utility composer-player-row";
 
@@ -293,6 +297,13 @@
     wrapper.appendChild(playerSlot);
 
     return wrapper;
+  }
+
+  async function resolveGameMusicUrl(slug) {
+    const resolver = window.CCGMusic && typeof window.CCGMusic.resolveGameMusicUrl === "function"
+      ? window.CCGMusic.resolveGameMusicUrl
+      : async () => "";
+    return resolver(slug);
   }
 
   function collectComposerStats(registry) {
@@ -508,7 +519,6 @@
       return;
     }
 
-    const siteRoot = resolveSiteRoot();
     const rows = await Promise.all(sortedGames.map(async (game) => {
       const thumbSrc = resolveThumbnailPath(game);
       const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
@@ -555,22 +565,12 @@
 
       card.appendChild(gameLink);
 
-      // --- ADD MINI AUDIO PLAYER ---
-      if (game.slug) {
+      const musicSrc = await resolveGameMusicUrl(game.slug);
+      const audioPlayer = createMusicPlayer(musicSrc);
+      if (audioPlayer) {
         const audioWrap = document.createElement("div");
         audioWrap.className = "ccg-composer-audio-wrap";
-
-        const audio = document.createElement("audio");
-        audio.controls = true;
-        audio.preload = "none";
-        audio.className = "ccg-composer-mini-player";
-
-        const source = document.createElement("source");
-        source.src = `${siteRoot}resources/audio/games/${game.slug}.mp3`;
-        source.type = "audio/mpeg";
-
-        audio.appendChild(source);
-        audioWrap.appendChild(audio);
+        audioWrap.appendChild(audioPlayer);
         card.appendChild(audioWrap);
       }
 

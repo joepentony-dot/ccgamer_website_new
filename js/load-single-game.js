@@ -1020,13 +1020,19 @@ function resolveComposerSlug(name) {
     return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
-function renderGameMusic(slug, container) {
+async function renderGameMusic(slug, container) {
     if (!slug || !container) return;
+    if (container.dataset.ccgMusicRendered === "true") return;
 
     const normalizedSlug = normalizeSlugKey(slug);
     if (!normalizedSlug) return;
 
-    const audioSrc = `/resources/audio/games/${normalizedSlug}.mp3`;
+    const resolver = window.CCGMusic && typeof window.CCGMusic.resolveGameMusicUrl === "function"
+        ? window.CCGMusic.resolveGameMusicUrl
+        : async () => "";
+
+    const audioSrc = await resolver(normalizedSlug);
+    if (!audioSrc) return;
 
     const audio = document.createElement("audio");
     audio.controls = true;
@@ -1039,6 +1045,7 @@ function renderGameMusic(slug, container) {
 
     audio.appendChild(source);
     container.appendChild(audio);
+    container.dataset.ccgMusicRendered = "true";
 
     const musicCard = container.closest("#game-music-card");
     if (musicCard) {
