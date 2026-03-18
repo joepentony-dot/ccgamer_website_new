@@ -19,6 +19,11 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    # ✅ REQUIRED FIX — ADD THIS BLOCK
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       # Checkout repo
       - name: Checkout
