@@ -22,7 +22,6 @@
     "russell-lieblich": { name: "Russell Lieblich", slug: "russell-lieblich", bio: "Russell Lieblich is known for SID music work on the Commodore 64, including his score for Mutants." }
   };
 
-
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
   const FEATURED_PRIORITY = [
@@ -452,15 +451,19 @@
       return;
     }
 
+    const siteRoot = resolveSiteRoot();
+
     const rows = await Promise.all(sortedGames.map(async (game) => {
       const thumbSrc = resolveThumbnailPath(game);
       const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
       const card = document.createElement("li");
       card.className = `ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}`.trim();
 
+      const gameSlug = String(game?.slug || "").trim();
+
       const gameLink = document.createElement("a");
       gameLink.className = "ccg-composer-game-link";
-      gameLink.href = getGameUrl(game.slug);
+      gameLink.href = gameSlug ? getGameUrl(gameSlug) : "#";
 
       if (hasThumb) {
         const image = document.createElement("img");
@@ -493,11 +496,13 @@
 
       card.appendChild(gameLink);
 
-      const musicSrc = `../resources/audio/games/${game.slug}.mp3`;
-      const hasPlayer = await checkGameMusicExists(musicSrc);
+      if (gameSlug) {
+        const musicSrc = `${siteRoot}resources/audio/games/${gameSlug}.mp3`;
+        const hasPlayer = await checkGameMusicExists(musicSrc);
 
-      if (hasPlayer) {
-        card.appendChild(createMusicPlayer(musicSrc));
+        if (hasPlayer) {
+          card.appendChild(createMusicPlayer(musicSrc));
+        }
       }
 
       return card;
