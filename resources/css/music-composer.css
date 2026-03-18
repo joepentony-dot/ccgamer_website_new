@@ -552,3 +552,47 @@
   }
 
 }
+
+/* --- SUPPORT BUTTON WRAPPER --- */
+.ccg-composer-support {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* --- BASE BUTTON (inherits your style safely) --- */
+.ccg-btn {
+  padding: 12px 22px;
+  font-family: inherit;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  display: inline-block;
+}
+
+/* --- PAYPAL BUTTON (CYAN GLOW) --- */
+.ccg-btn--support {
+  border: 1px solid #00e5ff;
+  color: #00e5ff;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
+.ccg-btn--support:hover {
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 16px rgba(0, 229, 255, 0.7);
+}
+
+/* --- YOUTUBE BUTTON (RED GLOW) --- */
+.ccg-btn--youtube {
+  border: 1px solid #ff0033;
+  color: #ff0033;
+  box-shadow: 0 0 8px rgba(255, 0, 51, 0.4);
+}
+
+.ccg-btn--youtube:hover {
+  background: rgba(255, 0, 51, 0.1);
+  box-shadow: 0 0 16px rgba(255, 0, 51, 0.7);
+}
