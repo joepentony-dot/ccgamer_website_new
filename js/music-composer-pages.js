@@ -431,61 +431,83 @@
 
   async function renderComposerGames(bucket) {
     const gamesList = document.getElementById("composer-games");
-    if (!gamesList) return;
-
-    const sortedGames = [...bucket.games].sort((a, b) =>
-      (a.title || "").localeCompare(b.title || "")
-    );
-
-    if (!sortedGames.length) {
-      gamesList.innerHTML =
-        "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
+    if (!gamesList) {
       return;
     }
 
-    const siteRoot =
-      (typeof window !== "undefined" &&
-        typeof window.ccgGetSiteRoot === "function")
-        ? window.ccgGetSiteRoot()
-        : "/";
+    const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
 
-    gamesList.innerHTML = "";
+    if (!sortedGames.length) {
+      gamesList.innerHTML = "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
+      return;
+    }
 
-    for (const game of sortedGames) {
+    const siteRoot = resolveSiteRoot();
+    const rows = await Promise.all(sortedGames.map(async (game) => {
+      const thumbSrc = resolveThumbnailPath(game);
+      const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
       const card = document.createElement("li");
-      card.className = "ccg-composer-games__item";
+      card.className = `ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}`.trim();
 
-      const gameSlug = String(game?.slug || "").trim();
+      const gameLink = document.createElement("a");
+      gameLink.className = "ccg-composer-game-link";
+      gameLink.href = getGameUrl(game.slug);
 
-      // --- GAME LINK ---
-      const link = document.createElement("a");
-      link.className = "ccg-composer-game-link";
-      link.href = gameSlug ? `${siteRoot}games/${gameSlug}/` : "#";
+      if (hasThumb) {
+        const image = document.createElement("img");
+        image.className = "ccg-composer-game-thumb";
+        image.loading = "lazy";
+        image.src = thumbSrc;
+        image.alt = game.title || "Game thumbnail";
+        gameLink.appendChild(image);
+      }
+
+      const meta = document.createElement("span");
+      meta.className = "ccg-composer-game-meta";
 
       const title = document.createElement("span");
       title.className = "ccg-composer-game-title";
       title.textContent = game.title || "Untitled game";
 
-      link.appendChild(title);
-      card.appendChild(link);
+      const minor = document.createElement("span");
+      minor.className = "ccg-composer-game-minor";
+      minor.textContent = `${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}`;
 
-      // --- MUSIC PLAYER (FINAL STABLE VERSION) ---
-      if (gameSlug) {
+      meta.appendChild(title);
+      meta.appendChild(minor);
+      gameLink.appendChild(meta);
+
+      const action = document.createElement("span");
+      action.className = "ccg-composer-game-action";
+      action.textContent = "Open game page";
+      gameLink.appendChild(action);
+
+      card.appendChild(gameLink);
+
+      // --- ADD MINI AUDIO PLAYER ---
+      if (game.slug) {
+        const audioWrap = document.createElement("div");
+        audioWrap.className = "ccg-composer-audio-wrap";
+
         const audio = document.createElement("audio");
         audio.controls = true;
         audio.preload = "none";
         audio.className = "ccg-composer-mini-player";
 
         const source = document.createElement("source");
-        source.src = `${siteRoot}resources/audio/games/${gameSlug}.mp3`;
+        source.src = `${siteRoot}resources/audio/games/${game.slug}.mp3`;
         source.type = "audio/mpeg";
 
         audio.appendChild(source);
-        card.appendChild(audio);
+        audioWrap.appendChild(audio);
+        card.appendChild(audioWrap);
       }
 
-      gamesList.appendChild(card);
-    }
+      return card;
+    }));
+
+    gamesList.innerHTML = "";
+    rows.forEach((row) => gamesList.appendChild(row));
   }
 
   function renderComposerChips(registry, stats, currentSlug) {

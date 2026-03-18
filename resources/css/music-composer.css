@@ -360,10 +360,17 @@
   max-width: min(270px, 100%);
 }
 
+.ccg-composer-audio-wrap {
+  margin-top: 8px;
+}
+
 .ccg-composer-mini-player,
 .composer-player-row audio {
-  height: 26px;
-  width: 100%;
+  width: 220px;
+  height: 28px;
+  transform: scale(0.9);
+  transform-origin: left center;
+  max-width: 100%;
 }
 
 .ccg-composer-featured {
