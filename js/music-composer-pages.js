@@ -24,6 +24,7 @@
 
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
+  const DEDICATED_COMPOSER_SLUGS = new Set(Object.keys(PROFILE_DATA));
   const FEATURED_PRIORITY = [
     "rob hubbard",
     "martin galway",
@@ -195,8 +196,25 @@
     return `${resolveSiteRoot()}games/${slug}/`;
   }
 
-  function getComposerUrl(slug) {
-    return `${resolveSiteRoot()}music/${slug}/`;
+  function getFallbackComposerUrl(name) {
+    const params = new URLSearchParams();
+    params.set("name", name);
+    return `${resolveSiteRoot()}music/composer.html?${params.toString()}`;
+  }
+
+  function getComposerUrl(composerOrSlug, composerName) {
+    const slug = typeof composerOrSlug === "object" && composerOrSlug
+      ? slugifyName(composerOrSlug.slug || composerOrSlug.name)
+      : slugifyName(composerOrSlug);
+    const name = typeof composerOrSlug === "object" && composerOrSlug
+      ? String(composerOrSlug.name || composerName || "").trim()
+      : String(composerName || "").trim();
+
+    if (slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
+      return `${resolveSiteRoot()}music/${slug}/`;
+    }
+
+    return getFallbackComposerUrl(name || composerName || composerOrSlug || slug);
   }
 
   function getComposerImageCandidates(slug) {
@@ -273,30 +291,20 @@
   }
 
   function createMusicPlayer(src) {
-    if (!src) {
+    const sharedPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+      ? window.CCGSharedMusicPlayer.createAudioPlayer
+      : null;
+
+    if (!sharedPlayer) {
       return null;
     }
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "ccg-composer-game-utility composer-player-row";
-
-    const playerSlot = document.createElement("div");
-    playerSlot.className = "ccg-composer-game-player-slot";
-
-    const audio = document.createElement("audio");
-    audio.controls = true;
-    audio.preload = "none";
-    audio.className = "ccg-composer-mini-player";
-
-    const source = document.createElement("source");
-    source.src = src;
-    source.type = "audio/mpeg";
-
-    audio.appendChild(source);
-    playerSlot.appendChild(audio);
-    wrapper.appendChild(playerSlot);
-
-    return wrapper;
+    return sharedPlayer({
+      src,
+      playerClass: "ccg-composer-mini-player",
+      wrapperClass: "ccg-composer-game-utility composer-player-row",
+      slotClass: "ccg-composer-game-player-slot"
+    });
   }
 
   async function resolveGameMusicUrl(slug) {
@@ -365,7 +373,7 @@
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
     return `
-      <a href="${getComposerUrl(composer.slug)}" class="${cardClass}" data-slug="${composer.slug}">
+      <a href="${getComposerUrl(composer, composer.name)}" class="${cardClass}" data-slug="${composer.slug}">
         ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
@@ -410,7 +418,7 @@
 
         const shouldOpen = hasQuery || openSet.has(letter);
         const chips = matches
-          .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer.slug)}">${composer.name}<span>${stats.get(composer.slug)?.games.length || 0}</span></a>`)
+          .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer, composer.name)}">${composer.name}<span>${stats.get(composer.slug)?.games.length || 0}</span></a>`)
           .join("");
 
         return `
@@ -506,7 +514,7 @@
     }
   }
 
-  async function renderComposerGames(bucket) {
+  async function renderComposerGames(bucket, requestedName) {
     const gamesList = document.getElementById("composer-games");
     if (!gamesList) {
       return;
@@ -515,7 +523,8 @@
     const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
 
     if (!sortedGames.length) {
-      gamesList.innerHTML = "<li class='ccg-composer-games__item'>No linked games found for this composer yet.</li>";
+      const safeName = requestedName ? requestedName.replace(/[<>]/g, "") : "this composer";
+      gamesList.innerHTML = `<li class="ccg-composer-games__item">No linked games found for ${safeName} yet. Try the <a href="/music/index.html">music hub</a> to browse the full archive.</li>`;
       return;
     }
 
@@ -601,7 +610,7 @@
       .slice(0, 8);
 
     featured.innerHTML = featuredSet
-      .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer.slug)}">${composer.name}</a>`)
+      .map((composer) => `<a class="ccg-btn ccg-btn--secondary ccg-composer-chip" href="${getComposerUrl(composer, composer.name)}">${composer.name}</a>`)
       .join("");
   }
 
@@ -619,22 +628,95 @@
     return data;
   }
 
-  function getCurrentComposerSlug(registry) {
+  function getCurrentComposerSelection(registry) {
     const pageRoot = document.querySelector("[data-composer-slug], [data-composer-name]");
-    if (!pageRoot) {
-      return "";
-    }
+    const params = new URLSearchParams(window.location.search);
+    const slugFromQuery = slugifyName(params.get("slug") || "");
+    const nameFromQuery = String(params.get("name") || "").trim();
 
-    const slugFromAttr = pageRoot.getAttribute("data-composer-slug");
-    const nameFromAttr = pageRoot.getAttribute("data-composer-name");
+    const slugFromAttr = pageRoot ? slugifyName(pageRoot.getAttribute("data-composer-slug") || "") : "";
+    const nameFromAttr = pageRoot ? String(pageRoot.getAttribute("data-composer-name") || "").trim() : "";
 
     if (slugFromAttr && registry.bySlug.has(slugFromAttr)) {
-      return slugFromAttr;
+      return { slug: slugFromAttr, requestedName: nameFromAttr || registry.bySlug.get(slugFromAttr)?.name || "" };
     }
 
-    const key = normaliseName(nameFromAttr || "");
-    const composer = registry.byKey.get(key);
-    return composer ? composer.slug : slugifyName(nameFromAttr || "");
+    if (slugFromQuery && registry.bySlug.has(slugFromQuery)) {
+      return { slug: slugFromQuery, requestedName: nameFromQuery || registry.bySlug.get(slugFromQuery)?.name || "" };
+    }
+
+    const requestedName = nameFromQuery || nameFromAttr;
+    const key = normaliseName(requestedName || "");
+    const composer = key ? registry.byKey.get(key) : null;
+    return {
+      slug: composer ? composer.slug : (slugFromAttr || slugFromQuery || slugifyName(requestedName || "")),
+      requestedName
+    };
+  }
+
+  function updateComposerMetadata(composer, bucket, requestedName) {
+    const name = composer?.name || requestedName || "Composer";
+    const gameCount = bucket?.games?.length || 0;
+    const title = composer
+      ? `${name} — C64 & Amiga Music Composer | Cheeky Commodore Gamer`
+      : `${name} — Composer Archive Search | Cheeky Commodore Gamer`;
+    const description = composer
+      ? `Explore C64 and Amiga games featuring music by ${name}, with archive links back to each game page on Cheeky Commodore Gamer.`
+      : `Browse the Cheeky Commodore Gamer music archive for ${name} and discover matching game soundtrack credits.`;
+    const canonical = composer && DEDICATED_COMPOSER_SLUGS.has(composer.slug)
+      ? `https://www.cheekycommodoregamer.co.uk/music/${composer.slug}/`
+      : `https://www.cheekycommodoregamer.co.uk/music/composer.html?name=${encodeURIComponent(name)}`;
+
+    document.title = title;
+
+    const mappings = {
+      'meta[name="description"]': description,
+      'meta[property="og:title"]': title,
+      'meta[property="og:description"]': description,
+      'meta[property="og:url"]': canonical,
+      'meta[name="twitter:title"]': title,
+      'meta[name="twitter:description"]': description
+    };
+
+    Object.entries(mappings).forEach(([selector, value]) => {
+      const node = document.querySelector(selector);
+      if (node) {
+        node.setAttribute("content", value);
+      }
+    });
+
+    const canonicalNode = document.querySelector('link[rel="canonical"]');
+    if (canonicalNode) {
+      canonicalNode.setAttribute("href", canonical);
+    }
+
+    const heading = document.querySelector(".ccg-composer-title");
+    if (heading && !heading.closest('[data-composer-slug], [data-composer-name]')) {
+      heading.textContent = composer
+        ? `${name} — C64 & Amiga Music`
+        : `${name} — Composer Archive`;
+    }
+
+    const intro = document.querySelector(".ccg-composer-intro");
+    if (intro) {
+      intro.textContent = composer
+        ? `Explore soundtrack contributions from ${name}, with linked game pages and playable tracks where available.`
+        : `Search the archive for ${name} and browse any matching C64 or Amiga soundtrack credits below.`;
+    }
+
+    const gamesHeading = document.querySelector(".ccg-composer-section-title");
+    if (gamesHeading) {
+      gamesHeading.textContent = composer
+        ? `Games featuring ${name}`
+        : `Games matching ${name}`;
+    }
+
+    const subtitle = document.querySelector(".ccg-composer-subtitle");
+    if (subtitle && !composer) {
+      subtitle.textContent = gameCount
+        ? `${gameCount} linked game credits found for ${name}`
+        : `No linked game credits found for ${name}`;
+    }
   }
 
   function initBackToTop() {
@@ -670,17 +752,19 @@
         await renderHubCards(registry.composers, stats);
       }
 
-      const currentSlug = getCurrentComposerSlug(registry);
-      if (currentSlug) {
-        const composer = registry.bySlug.get(currentSlug);
-        const bucket = stats.get(currentSlug) || { games: [], systems: new Set() };
+      const selection = getCurrentComposerSelection(registry);
+      if (selection.slug || selection.requestedName) {
+        const composer = registry.bySlug.get(selection.slug) || registry.byKey.get(normaliseName(selection.requestedName || ""));
+        const bucket = composer ? (stats.get(composer.slug) || { games: [], systems: new Set() }) : { games: [], systems: new Set() };
+        updateComposerMetadata(composer || null, bucket, selection.requestedName);
 
-        if (!composer) {
-          console.error(`[music-composer] Unknown composer slug: ${currentSlug}`);
-        } else {
+        if (composer) {
           await renderComposerProfile(composer, bucket);
-          await renderComposerGames(bucket);
-          renderComposerChips(registry, stats, currentSlug);
+          await renderComposerGames(bucket, composer.name);
+          renderComposerChips(registry, stats, composer.slug);
+        } else {
+          await renderComposerGames(bucket, selection.requestedName || "this composer");
+          renderComposerChips(registry, stats, "");
         }
       }
 
