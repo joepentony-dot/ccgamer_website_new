@@ -122,14 +122,18 @@ body {
         linear-gradient(135deg, #05060f, #060714 48%, #05060f);
     color: var(--ccg-text-light);
     font-family: var(--ccg-font-body);
-    scroll-behavior: smooth;
     text-size-adjust: 100%;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-html {
+/* ================================
+   SAFE SCROLL BEHAVIOUR
+   ================================ */
+
+/* Only apply smooth scroll for anchor navigation, not global */
+:root {
     scroll-behavior: auto;
 }
 
@@ -451,10 +455,6 @@ li {
 /* ============================================================
    GLOBAL UX POLISH — SPACING / RHYTHM / STABILITY
 ============================================================ */
-
-html {
-    scroll-behavior: smooth;
-}
 
 section,
 .ccg-section {
@@ -4156,8 +4156,7 @@ body::before {
 .game-card:hover,
 .composer-card:hover {
     box-shadow:
-        0 10px 25px rgba(0, 0, 0, 0.4),
-        0 0 12px rgba(0, 200, 255, 0.25);
+        0 6px 14px rgba(0, 0, 0, 0.35);
 }
 
 header,
@@ -4218,10 +4217,7 @@ h2 {
 }
 
 .ccg-btn--support,
-.ccg-btn--youtube,
-.ccg-card:hover,
-.game-card:hover,
-.composer-card:hover {
+.ccg-btn--youtube {
     box-shadow:
         0 0 10px var(--ccg-accent),
         0 0 20px rgba(0,0,0,0.4);
@@ -4242,7 +4238,8 @@ h2 {
 }
 
 .ccg-btn--support {
-    animation: ccgPulse 3s infinite ease-in-out;
+    animation: ccgPulse 4s infinite ease-in-out;
+    will-change: box-shadow;
 }
 
 .featured-card {
@@ -4265,7 +4262,24 @@ h2 {
         transparent
     );
     transform: translateX(-100%) rotate(25deg);
-    animation: ccgShimmer 6s infinite linear;
+    animation: ccgShimmer 12s infinite linear;
+    opacity: 0.4;
+}
+
+/* ================================
+   SCROLL PERFORMANCE BOOST
+   ================================ */
+
+.ccg-card,
+.game-card,
+.composer-card {
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* Reduce effects while scrolling */
+body.scrolling * {
+    animation-play-state: paused !important;
 }
 
 @keyframes ccgShimmer {
