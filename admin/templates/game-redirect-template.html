@@ -20,12 +20,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/js/analytics.js"></script>
-    <meta http-equiv="refresh" content="0; url=/games/game.html?id={{SLUG}}">
+    <meta name="robots" content="noindex,follow">
+    <meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
     <script>
         (function () {
-            if (typeof window !== "undefined") {
-                window.location.replace("/games/game.html?id={{SLUG}}");
-            }
+            window.location.replace("/games/{{SLUG}}/" + window.location.search + window.location.hash);
         })();
     </script>
 </head>
