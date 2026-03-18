@@ -6,12 +6,13 @@ on:
       - main
 
 concurrency:
-  group: ccg-pages
+  group: seo-automation
   cancel-in-progress: true
 
 jobs:
   seo:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -22,14 +23,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Generate game sitemap
         run: node tools/seo/generate-sitemap.js
 
       - name: Run SEO audit
         run: node tools/seo/seo-audit.js
-        continue-on-error: true
 
       - name: Ensure sitemap files are up to date
-        run: git diff --exit-code sitemap.xml sitemap-games.xml sitemap-pages.xml
-        continue-on-error: true
+        run: git diff --exit-code -- sitemap.xml sitemap-games.xml sitemap-pages.xml
