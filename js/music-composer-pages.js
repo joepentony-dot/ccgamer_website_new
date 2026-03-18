@@ -469,9 +469,14 @@
       title.className = "ccg-composer-game-title";
       title.textContent = game.title || "Untitled game";
 
+      const metaParts = [];
+      if (game.year) metaParts.push(game.year);
+      if (game.system) metaParts.push(String(game.system).toUpperCase());
+      if (game.publisher) metaParts.push(game.publisher);
+
       const minor = document.createElement("span");
       minor.className = "ccg-composer-game-minor";
-      minor.textContent = `${game.year || ""}${game.system ? ` • ${String(game.system).toUpperCase()}` : ""}`;
+      minor.textContent = metaParts.join(" · ");
 
       meta.appendChild(title);
       meta.appendChild(minor);
