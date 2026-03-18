@@ -182,21 +182,36 @@
     return "";
   }
 
-  async function ensureGameMusicApi() {
-    if (window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function") {
-      return true;
+  async function checkGameMusicExists(src) {
+    try {
+      const res = await fetch(src, { method: "HEAD" });
+      return res.ok;
+    } catch (error) {
+      return false;
     }
+  }
 
-    await new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = `${resolveSiteRoot()}js/ccg-game-music-player.js`;
-      script.defer = true;
-      script.onload = () => resolve();
-      script.onerror = () => resolve();
-      document.head.appendChild(script);
-    });
+  function createMusicPlayer(src) {
+    const wrapper = document.createElement("div");
+    wrapper.className = "ccg-composer-game-utility composer-player-row";
 
-    return Boolean(window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function");
+    const playerSlot = document.createElement("div");
+    playerSlot.className = "ccg-composer-game-player-slot";
+
+    const audio = document.createElement("audio");
+    audio.controls = true;
+    audio.preload = "none";
+    audio.className = "ccg-composer-mini-player";
+
+    const source = document.createElement("source");
+    source.src = src;
+    source.type = "audio/mpeg";
+
+    audio.appendChild(source);
+    playerSlot.appendChild(audio);
+    wrapper.appendChild(playerSlot);
+
+    return wrapper;
   }
 
   function collectComposerStats(games, registry) {
@@ -478,23 +493,11 @@
 
       card.appendChild(gameLink);
 
-      if (window.ccgGameMusic) {
-        const playerWrap = document.createElement("div");
-        playerWrap.className = "ccg-composer-game-utility composer-player-row";
+      const musicSrc = `../resources/audio/games/${game.slug}.mp3`;
+      const hasPlayer = await checkGameMusicExists(musicSrc);
 
-        const playerSlot = document.createElement("div");
-        playerSlot.className = "ccg-composer-game-player-slot";
-
-        const hasPlayer = await window.ccgGameMusic.renderGameMusicPlayer({
-          slug: game.slug,
-          mount: playerSlot,
-          className: "ccg-composer-mini-player"
-        });
-
-        if (hasPlayer) {
-          playerWrap.appendChild(playerSlot);
-          card.appendChild(playerWrap);
-        }
+      if (hasPlayer) {
+        card.appendChild(createMusicPlayer(musicSrc));
       }
 
       return card;
@@ -586,7 +589,6 @@
     initBackToTop();
 
     try {
-      await ensureGameMusicApi();
       const games = await loadGames();
       const stats = collectComposerStats(games, registry);
 
