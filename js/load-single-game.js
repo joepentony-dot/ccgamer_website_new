@@ -1020,29 +1020,45 @@ function resolveComposerSlug(name) {
     return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
-async function checkGameMusicExists(src) {
-    try {
-        const res = await fetch(src, { method: "HEAD" });
-        return res.ok;
-    } catch (error) {
-        return false;
-    }
-}
+function renderGameMusic(slug, container) {
+    if (!slug || !container) return;
 
-function createGameMusicPlayer(src) {
+    const normalizedSlug = normalizeSlugKey(slug);
+    if (!normalizedSlug) return;
+
+    const audioSrc = `../resources/audio/games/${normalizedSlug}.mp3`;
+
     const audio = document.createElement("audio");
     audio.controls = true;
     audio.preload = "none";
+    audio.className = "ccg-game-audio-player";
 
     const source = document.createElement("source");
-    source.src = src;
+    source.src = audioSrc;
     source.type = "audio/mpeg";
 
     audio.appendChild(source);
-    return audio;
+
+    audio.addEventListener("loadedmetadata", () => {
+        if (!container.contains(audio)) {
+            container.appendChild(audio);
+        }
+
+        const musicCard = container.closest("#game-music-card");
+        if (musicCard) {
+            musicCard.hidden = false;
+        }
+
+        const utilityHubSection = container.closest("#game-utility-hub-section");
+        if (utilityHubSection) {
+            utilityHubSection.hidden = false;
+        }
+    }, { once: true });
+
+    audio.load();
 }
 
-async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
+function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
     const musicCard = document.getElementById("game-music-card");
     const musicTracksEl = document.getElementById("gameMusicTracks");
     if (!musicCard || !musicTracksEl) {
@@ -1055,14 +1071,18 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
     musicCard.hidden = true;
     musicTracksEl.innerHTML = "";
 
-    const slug = resolveMusicSlugFromPath();
-    const musicSrc = `../resources/audio/games/${slug}.mp3`;
-    const hasMusic = await checkGameMusicExists(musicSrc);
+    const musicContainer = document.createElement("div");
+    musicContainer.id = "game-music";
+    musicTracksEl.appendChild(musicContainer);
 
-    if (hasMusic) {
-        musicTracksEl.appendChild(createGameMusicPlayer(musicSrc));
-    }
     const composers = normalizeComposerNames(game);
+    const hasComposerContent = composers.length > 0;
+    if (hasComposerContent) {
+        musicCard.hidden = false;
+    }
+
+    renderGameMusic(game?.slug, musicContainer);
+
 
     if (composers.length) {
         const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
@@ -1134,16 +1154,8 @@ async function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk
         }
     }
 
-    if (hasMusic) {
-        musicCard.hidden = false;
-    }
-
-    if (composers.length && !hasMusic) {
-        musicCard.hidden = false;
-    }
-
     if (utilityHubSection) {
-        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasMusic || composers.length);
+        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasComposerContent);
     }
 }
 
