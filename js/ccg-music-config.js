@@ -1,7 +1,7 @@
 (function () {
   "use strict";
 
-  // ✅ REVERTED TO WORKING R2 PUBLIC URL
+  // ✅ WORKING R2 URL
   const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
 
   const urlCache = new Map();
@@ -56,7 +56,7 @@
         return "";
       }
 
-      // ✅ CRITICAL FIX: ALWAYS RETURN URL (NO HEAD CHECK)
+      // ✅ ALWAYS RETURN URL (NO HEAD CHECK)
       return primaryUrl;
     })();
 
@@ -66,7 +66,6 @@
     return finalUrl;
   }
 
-  // Initialize config immediately
   getConfig();
 
   window.CCGMusic = Object.assign({}, window.CCGMusic || {}, {
