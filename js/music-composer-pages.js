@@ -74,12 +74,103 @@
       .filter(Boolean);
   }
 
-  function createComposerRegistry() {
-    const composers = Object.values(PROFILE_DATA).map((profile) => ({
-      ...profile,
-      slug: profile.slug || slugifyName(profile.name),
-      aliases: Array.isArray(profile.aliases) ? profile.aliases : []
-    }));
+  function buildComposerIndex(games) {
+    const composers = {};
+
+    games.forEach((game) => {
+      if (!game.music || !Array.isArray(game.music)) {
+        const fallbackNames = getComposerNamesFromGame(game);
+        fallbackNames.forEach((name) => {
+          const composer = String(name || "").trim();
+          if (!composer) {
+            return;
+          }
+
+          if (!composers[composer]) {
+            composers[composer] = {
+              name: composer,
+              slug: composer
+                .toLowerCase()
+                .replace(/[^\w\s]/g, "")
+                .replace(/\s+/g, "-"),
+              games: []
+            };
+          }
+
+          composers[composer].games.push(game);
+          composers[composer].games = [
+            ...new Map(
+              composers[composer].games.map((g) => [g.slug, g])
+            ).values()
+          ];
+        });
+        return;
+      }
+
+      game.music.forEach((name) => {
+        const composer = String(name || "").trim();
+        if (!composer || /\.(mp3|ogg|wav|flac)$/i.test(composer)) {
+          return;
+        }
+
+        if (!composers[composer]) {
+          composers[composer] = {
+            name: composer,
+            slug: composer
+              .toLowerCase()
+              .replace(/[^\w\s]/g, "")
+              .replace(/\s+/g, "-"),
+            games: []
+          };
+        }
+
+        composers[composer].games.push(game);
+        composers[composer].games = [
+          ...new Map(
+            composers[composer].games.map((g) => [g.slug, g])
+          ).values()
+        ];
+      });
+    });
+
+    return composers;
+  }
+
+  function createComposerRegistry(games) {
+    const composersFromGames = buildComposerIndex(games);
+    const composerMap = new Map();
+
+    Object.values(PROFILE_DATA).forEach((profile) => {
+      const composer = {
+        ...profile,
+        slug: profile.slug || slugifyName(profile.name),
+        aliases: Array.isArray(profile.aliases) ? profile.aliases : [],
+        games: []
+      };
+      composerMap.set(composer.slug, composer);
+    });
+
+    Object.values(composersFromGames).forEach((entry) => {
+      const slug = slugifyName(entry.slug || entry.name);
+      const existing = composerMap.get(slug);
+      if (existing) {
+        existing.games = entry.games;
+        if (!existing.name) {
+          existing.name = entry.name;
+        }
+      } else {
+        composerMap.set(slug, {
+          name: entry.name,
+          slug,
+          aliases: [],
+          games: entry.games
+        });
+      }
+    });
+
+    const composers = Array.from(composerMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
 
     const byKey = new Map();
     const bySlug = new Map();
@@ -105,7 +196,7 @@
   }
 
   function getComposerUrl(slug) {
-    return `${resolveSiteRoot()}music/${slug}.html`;
+    return `${resolveSiteRoot()}music/${slug}/`;
   }
 
   function getComposerImageCandidates(slug) {
@@ -204,48 +295,21 @@
     return wrapper;
   }
 
-  function collectComposerStats(games, registry) {
+  function collectComposerStats(registry) {
     const stats = new Map();
 
     registry.composers.forEach((composer) => {
-      stats.set(composer.slug, {
-        games: [],
-        systems: new Set()
-      });
-    });
-
-    games.forEach((game) => {
-      const names = getComposerNamesFromGame(game);
-      const matched = new Set();
-
-      names.forEach((name) => {
-        const key = normaliseName(name);
-        if (!key) {
-          return;
-        }
-
-        let composer = registry.byKey.get(key);
-        if (!composer) {
-          const slugGuess = slugifyName(name);
-          composer = registry.bySlug.get(slugGuess);
-        }
-
-        if (!composer || matched.has(composer.slug)) {
-          return;
-        }
-
-        matched.add(composer.slug);
-
-        const bucket = stats.get(composer.slug);
-        if (!bucket) {
-          return;
-        }
-
-        bucket.games.push(game);
+      const systems = new Set();
+      composer.games.forEach((game) => {
         const systemLabel = String(game.system || "").trim().toUpperCase();
         if (systemLabel) {
-          bucket.systems.add(systemLabel);
+          systems.add(systemLabel);
         }
+      });
+
+      stats.set(composer.slug, {
+        games: [...composer.games],
+        systems
       });
     });
 
@@ -380,20 +444,22 @@
       return;
     }
 
-    const sorted = [...composers].sort((a, b) => a.name.localeCompare(b.name));
+    const composerList = Object.values(composers).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    );
     const imageLookups = await Promise.all(
-      sorted.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
+      composerList.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
     );
 
     const featured = buildFeaturedSet(imageLookups, stats);
     containerFeatured.innerHTML = featured.map(({ composer, imagePath }) => cardMarkup(composer, imagePath, stats, false)).join("");
 
-    renderHubAccordion(sorted, stats);
+    renderHubAccordion(composerList, stats);
 
     const totalsLabel = document.getElementById("music-hub-stats");
     if (totalsLabel) {
       const totalTracks = Array.from(stats.values()).reduce((sum, bucket) => sum + bucket.games.length, 0);
-      totalsLabel.textContent = `${sorted.length} composers • ${totalTracks} linked game credits`;
+      totalsLabel.textContent = `${composerList.length} composers • ${totalTracks} linked game credits`;
     }
   }
 
@@ -593,12 +659,12 @@
   }
 
   document.addEventListener("DOMContentLoaded", async () => {
-    const registry = createComposerRegistry();
     initBackToTop();
 
     try {
       const games = await loadGames();
-      const stats = collectComposerStats(games, registry);
+      const registry = createComposerRegistry(games);
+      const stats = collectComposerStats(registry);
 
       if (document.querySelector(".composer-grid-featured") && document.getElementById("composer-discovery-accordion")) {
         await renderHubCards(registry.composers, stats);
