@@ -7,6 +7,7 @@
     if (finePointerQuery && !finePointerQuery.matches) return;
 
     const root = document.documentElement;
+    const body = document.body;
     const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
     const state = {
         idle: false,
@@ -19,7 +20,7 @@
     let idleTimer = null;
     let scrollTimer = null;
     const idleDelay = 5000;
-    const scrollIdleDelay = 140;
+    const scrollIdleDelay = 150;
 
     function shouldPause() {
         if (!state.visible) return true;
@@ -46,10 +47,12 @@
 
     function handleScroll() {
         state.scrolling = true;
+        body?.classList.add("scrolling");
         applyPauseState();
         if (scrollTimer) clearTimeout(scrollTimer);
         scrollTimer = window.setTimeout(() => {
             state.scrolling = false;
+            body?.classList.remove("scrolling");
             applyPauseState();
         }, scrollIdleDelay);
     }
