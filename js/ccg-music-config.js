@@ -1,9 +1,10 @@
 (function () {
   "use strict";
 
-  const DEFAULT_MUSIC_BASE_URL = "https://audio.cheekycommodoregamer.co.uk/";
+  // ✅ REVERTED TO WORKING R2 PUBLIC URL
+  const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
+
   const urlCache = new Map();
-  const probeCache = new Map();
   let missingConfigWarningShown = false;
 
   function ensureTrailingSlash(value, fallback) {
@@ -19,7 +20,7 @@
     });
 
     if (!String(configuredBaseUrl || "").trim() && !missingConfigWarningShown) {
-      console.warn("[CCG music] Missing MUSIC_BASE_URL config. Falling back to default custom domain.");
+      console.warn("[CCG music] Missing MUSIC_BASE_URL config. Falling back to R2 public URL.");
       missingConfigWarningShown = true;
     }
 
@@ -39,20 +40,6 @@
     return `${ensureTrailingSlash(baseUrl, DEFAULT_MUSIC_BASE_URL)}${normalizedSlug}.mp3`;
   }
 
-  async function canLoad(url) {
-    if (!url) return false;
-    if (probeCache.has(url)) return probeCache.get(url);
-
-    const request = fetch(url, { method: "HEAD", cache: "force-cache" })
-      .then((response) => response.ok)
-      .catch(() => false);
-
-    probeCache.set(url, request);
-    const ok = await request;
-    probeCache.set(url, ok);
-    return ok;
-  }
-
   async function resolveGameMusicUrl(slug) {
     const normalizedSlug = normalizeSlug(slug);
     if (!normalizedSlug) return "";
@@ -64,11 +51,13 @@
     const resolved = (async () => {
       const config = getConfig();
       const primaryUrl = buildUrl(config.MUSIC_BASE_URL, normalizedSlug);
+
       if (!primaryUrl) {
         return "";
       }
 
-      return (await canLoad(primaryUrl)) ? primaryUrl : "";
+      // ✅ CRITICAL FIX: ALWAYS RETURN URL (NO HEAD CHECK)
+      return primaryUrl;
     })();
 
     urlCache.set(normalizedSlug, resolved);
@@ -77,6 +66,7 @@
     return finalUrl;
   }
 
+  // Initialize config immediately
   getConfig();
 
   window.CCGMusic = Object.assign({}, window.CCGMusic || {}, {
