@@ -4199,3 +4199,108 @@ h2 {
     background: linear-gradient(#00c8ff, #ff0066);
     border-radius: 6px;
 }
+
+
+/* ============================================================
+   GLOBAL ACCENT + MICRO-MOTION SYSTEM
+   ------------------------------------------------------------
+   • Additive only
+   • Mode-aware C64 / Amiga accent glow
+   • Low-intensity motion with reduced-motion safety
+============================================================ */
+
+:root {
+    --ccg-accent: #00c8ff;
+}
+
+[data-mode="amiga"] {
+    --ccg-accent: #ff00aa;
+}
+
+.ccg-btn--support,
+.ccg-btn--youtube,
+.ccg-card:hover,
+.game-card:hover,
+.composer-card:hover {
+    box-shadow:
+        0 0 10px var(--ccg-accent),
+        0 0 20px rgba(0,0,0,0.4);
+}
+
+@keyframes ccgPulse {
+    0% {
+        box-shadow: 0 0 6px var(--ccg-accent);
+    }
+
+    50% {
+        box-shadow: 0 0 12px var(--ccg-accent);
+    }
+
+    100% {
+        box-shadow: 0 0 6px var(--ccg-accent);
+    }
+}
+
+.ccg-btn--support {
+    animation: ccgPulse 3s infinite ease-in-out;
+}
+
+.featured-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-card::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.08),
+        transparent
+    );
+    transform: translateX(-100%) rotate(25deg);
+    animation: ccgShimmer 6s infinite linear;
+}
+
+@keyframes ccgShimmer {
+    0% {
+        transform: translateX(-100%) rotate(25deg);
+    }
+
+    100% {
+        transform: translateX(100%) rotate(25deg);
+    }
+}
+
+body.ccg-crt::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02),
+        rgba(255,255,255,0.02) 1px,
+        transparent 1px,
+        transparent 3px
+    );
+    z-index: 9999;
+}
+
+:focus-visible {
+    outline: 2px solid var(--ccg-accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
