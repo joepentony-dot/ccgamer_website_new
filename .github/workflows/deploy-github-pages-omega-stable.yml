@@ -10,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# 🚨 CRITICAL — prevents overlapping/cancelled builds
 concurrency:
   group: "pages-deploy"
   cancel-in-progress: false
@@ -18,28 +17,22 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
-    # ✅ REQUIRED FIX — ADD THIS BLOCK
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      # Checkout repo
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Setup Pages
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Upload entire site
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./
 
-      # Deploy
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
