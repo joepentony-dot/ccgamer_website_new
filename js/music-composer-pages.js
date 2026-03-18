@@ -451,8 +451,6 @@
       return;
     }
 
-    const siteRoot = resolveSiteRoot();
-
     const rows = await Promise.all(sortedGames.map(async (game) => {
       const thumbSrc = resolveThumbnailPath(game);
       const hasThumb = thumbSrc ? await assetExists(thumbSrc) : false;
@@ -496,13 +494,14 @@
 
       card.appendChild(gameLink);
 
-      if (gameSlug) {
-        const musicSrc = `${siteRoot}resources/audio/games/${gameSlug}.mp3`;
-        const hasPlayer = await checkGameMusicExists(musicSrc);
+      if (!game.slug) return card;
 
-        if (hasPlayer) {
-          card.appendChild(createMusicPlayer(musicSrc));
-        }
+      const musicSrc = `/resources/audio/games/${gameSlug}.mp3`;
+      console.log("[MUSIC DEBUG]", game.slug, `/resources/audio/games/${game.slug}.mp3`);
+      const hasPlayer = await checkGameMusicExists(musicSrc);
+
+      if (hasPlayer) {
+        card.appendChild(createMusicPlayer(musicSrc));
       }
 
       return card;
