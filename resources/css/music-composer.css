@@ -509,3 +509,59 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 768px) {
+
+  /* --- CENTER PROFILE IMAGE --- */
+  .ccg-composer-profile-image,
+  .ccg-composer-profile img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* --- CENTER PROFILE CONTAINER --- */
+  .ccg-composer-profile {
+    text-align: center;
+  }
+
+  /* --- LEFT ALIGN BIO FOR READABILITY --- */
+  .ccg-composer-bio,
+  .ccg-composer-description {
+    text-align: left;
+    line-height: 1.6;
+    padding: 0 10px;
+  }
+
+  /* --- IMPROVE GAME CARD LAYOUT --- */
+  .ccg-composer-games__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* --- FULL-WIDTH THUMBNAILS --- */
+  .ccg-composer-game-thumb,
+  .ccg-composer-game-thumb img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  /* --- ADD SPACING BETWEEN ELEMENTS --- */
+  .ccg-composer-game-title {
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .ccg-composer-game-meta {
+    text-align: center;
+  }
+
+  /* --- AUDIO PLAYER ALIGNMENT --- */
+  .ccg-composer-mini-player {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 260px;
+  }
+
+}
