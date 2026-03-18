@@ -12,6 +12,33 @@
 ============================================================ */
 
 
+.ccg-card,
+.game-card,
+.composer-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 10px;
+}
+
+.ccg-card:hover,
+.game-card:hover,
+.composer-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.ccg-card img,
+.game-card img,
+.composer-card img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
 /* ============================================================
    SHARED CARD BASE (STRUCTURE + SURFACE)
 ============================================================ */
@@ -132,6 +159,7 @@
     width: 100%;
     height: 100%;
     display: block;
+    object-fit: cover;
 }
 
 
