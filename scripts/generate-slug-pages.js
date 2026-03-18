@@ -150,11 +150,12 @@ function buildRedirectStubHtml({ slug, title }) {
 <meta http-equiv="refresh" content="0; url=${canonicalPath}">
 <script>
 (function(){
-window.location.replace("${canonicalPath}");
+window.location.replace("${canonicalPath}" + window.location.search + window.location.hash);
 })();
 </script>
 <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
-<meta name="description" content="${escapeHtml(title)} on Commodore 64 — screenshots, manual, downloads and video.">
+<meta name="description" content="Redirecting to the canonical Cheeky Commodore Gamer page for ${escapeHtml(title)}.">
+<meta name="robots" content="noindex,follow">
 <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
 </head>
 <body></body>

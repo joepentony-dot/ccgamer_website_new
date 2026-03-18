@@ -206,7 +206,18 @@ function renderMusicIndexPage() {
 <title>C64 & Amiga Music Hub | Cheeky Commodore Gamer</title>
 <meta name="description" content="Browse featured and full-list C64 and Amiga game music composers with archive links to composer pages and game soundtracks on Cheeky Commodore Gamer.">
 <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/">
+<meta property="og:title" content="C64 & Amiga Music Hub | Cheeky Commodore Gamer">
+<meta property="og:description" content="Browse featured and full-list C64 and Amiga game music composers with archive links to composer pages and game soundtracks on Cheeky Commodore Gamer.">
+<meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/music/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cheeky Commodore Gamer">
+<meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="C64 & Amiga Music Hub | Cheeky Commodore Gamer">
+<meta name="twitter:description" content="Browse featured and full-list C64 and Amiga game music composers with archive links to composer pages and game soundtracks on Cheeky Commodore Gamer.">
+<meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
 <link rel="stylesheet" href="/resources/css/ccg-master.css">
+<link rel="stylesheet" href="/resources/css/ccg-buttons.css">
 <link rel="stylesheet" href="/resources/css/music-composer.css">
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -279,11 +290,15 @@ if (shouldBuildPages) {
   const template = fs.readFileSync("templates/game-template.html", "utf8");
   const redirectTemplate = fs.readFileSync("templates/game-redirect-template.html", "utf8");
   const fillTemplate = (source, game) => source
-    .replaceAll("[title]", String(game.title ?? ""))
-    .replaceAll("[slug]", String(game.slug ?? ""))
-    .replaceAll("[year]", String(game.year ?? ""))
-    .replaceAll("[publisher]", String(game.publisher ?? ""))
-    .replaceAll("[thumbnail]", String(game.thumbnail ?? ""));
+    .replaceAll('{{GAME_NAME}}', String(game.title ?? ''))
+    .replaceAll('{{SLUG}}', String(game.slug ?? ''))
+    .replaceAll('{{YEAR}}', String(game.year ?? ''))
+    .replaceAll('{{PUBLISHER}}', String(game.publisher ?? ''))
+    .replaceAll('{{THUMBNAIL}}', String(game.thumbnail ?? '').replace(/^resources\/images\/thumbnails\/all\//, ''))
+    .replaceAll('{{THUMBNAIL_FILENAME}}', String(game.thumbnail ?? '').split('/').pop() || '')
+    .replaceAll('{{DESCRIPTION}}', String(game.description ?? ''))
+    .replaceAll('{{PLATFORM}}', String(game.system ?? '').trim().toUpperCase() === 'AMIGA' ? 'Amiga' : 'C64')
+    .replaceAll('{{FB_APP_ID_META}}', '');
 
   games.forEach((game) => {
     const gameDir = path.join("games", game.slug);
