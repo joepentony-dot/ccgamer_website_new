@@ -512,55 +512,42 @@
 
 @media (max-width: 768px) {
 
-  /* --- CENTER PROFILE IMAGE --- */
-  .ccg-composer-profile-image,
+  /* --- PROFILE IMAGE CENTER --- */
   .ccg-composer-profile img {
     display: block;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
   }
 
-  /* --- CENTER PROFILE CONTAINER --- */
+  /* --- KEEP HEADER CENTERED --- */
   .ccg-composer-profile {
     text-align: center;
   }
 
-  /* --- LEFT ALIGN BIO FOR READABILITY --- */
+  /* --- BIO LEFT ALIGN (READABLE) --- */
   .ccg-composer-bio,
   .ccg-composer-description {
     text-align: left;
     line-height: 1.6;
-    padding: 0 10px;
+    padding: 0 12px;
   }
 
-  /* --- IMPROVE GAME CARD LAYOUT --- */
-  .ccg-composer-games__item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* --- FULL-WIDTH THUMBNAILS --- */
-  .ccg-composer-game-thumb,
+  /* --- THUMBNAILS SCALE NICELY (NO CROPPING) --- */
   .ccg-composer-game-thumb img {
     width: 100%;
-    max-width: 320px;
     height: auto;
+    object-fit: contain;
   }
 
-  /* --- ADD SPACING BETWEEN ELEMENTS --- */
-  .ccg-composer-game-title {
-    margin-top: 10px;
-    text-align: center;
+  /* --- LIMIT THUMB WIDTH (DON'T BREAK CARD) --- */
+  .ccg-composer-game-thumb {
+    max-width: 320px;
+    margin: 0 auto;
   }
 
-  .ccg-composer-game-meta {
-    text-align: center;
-  }
-
-  /* --- AUDIO PLAYER ALIGNMENT --- */
+  /* --- AUDIO PLAYER SAFE ADJUSTMENT --- */
   .ccg-composer-mini-player {
     margin-top: 10px;
-    width: 100%;
     max-width: 260px;
   }
 
