@@ -5,6 +5,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 # 🚨 CRITICAL — prevents overlapping/cancelled builds
 concurrency:
   group: "pages-deploy"
