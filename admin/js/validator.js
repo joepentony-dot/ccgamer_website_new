@@ -376,8 +376,8 @@ export function validateExportOutputs(outputs = {}) {
     if (slug && !flatHtml.includes(`/games/${slug}.html`)) {
       errors.push('Flat SEO HTML does not include canonical slug.');
     }
-    if (id && !flatHtml.includes(`/games/game.html?id=${id}`)) {
-      errors.push('Flat SEO HTML does not include game id link.');
+    if (slug && !flatHtml.includes(`/games/${slug}/`)) {
+      errors.push('Flat SEO HTML does not include canonical redirect link.');
     }
     if (!flatHtml.includes('application/ld+json')) {
       errors.push('Flat SEO HTML does not include JSON-LD markup.');

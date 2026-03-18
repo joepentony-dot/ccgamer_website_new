@@ -279,7 +279,7 @@ export function buildGamePageHtml(entry, { siteOrigin = DEFAULT_SITE_ORIGIN } = 
 
   const title = String(entry.title || entry.id || slug);
   const description = resolveDescription(entry);
-  const canonicalUrl = `${siteOrigin.replace(/\/$/, '')}/games/${slug}.html`;
+  const canonicalUrl = `${siteOrigin.replace(/\/$/, '')}/games/${slug}/`;
   const ogImageUrl = resolveAbsoluteAsset(entry.thumbnail, siteOrigin);
   const publisher = resolvePublisher(entry);
   const platform = String(entry.system || '').trim().toUpperCase() || 'C64';
@@ -287,7 +287,7 @@ export function buildGamePageHtml(entry, { siteOrigin = DEFAULT_SITE_ORIGIN } = 
   const mode = resolveMode(entry.system);
   const thumbSrc = resolveRelativeAsset(entry.thumbnail, { prefix: '../' });
   const thumbAlt = `${title} cover`;
-  const interactiveHref = `/games/game.html?id=${encodeURIComponent(entry.id || slug)}`;
+  const interactiveHref = `/games/${slug}/`;
   const browseHref = '/games/index.html';
   const jsonLd = JSON.stringify(
     {

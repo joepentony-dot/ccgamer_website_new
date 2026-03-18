@@ -674,7 +674,7 @@ function buildPackageData() {
   const slug = state.draft.slug.trim();
   const id = state.draft.id.trim();
   const title = state.draft.title.trim();
-  const gameUrl = `${SITE_ORIGIN}/games/game.html?id=${encodeURIComponent(id)}`;
+  const gameUrl = `${SITE_ORIGIN}/games/${encodeURIComponent(slug)}/`;
   const seoTitle = buildSeoTitleFromDraft();
   const seoDescription = buildSeoDescriptionFromDraft();
   const system = state.draft.system.trim();
@@ -723,8 +723,8 @@ function buildPackageData() {
   const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
 
   const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription });
-  const flatSeoStub = renderTemplate(state.templates.landing, templateVars);
-  const folderRedirect = renderTemplate(state.templates.redirect, templateVars);
+  const flatSeoStub = renderTemplate(state.templates.redirect, templateVars);
+  const folderRedirect = renderTemplate(state.templates.landing, templateVars);
 
   const mergedGames = mergeGamesJson(gameEntry, state.library);
   const gamesJsonOutput = state.draft.jsonExportMode === 'full'
@@ -974,8 +974,8 @@ function updateDerivedPreviews() {
   const thumbnailPath = normalizeThumbnailPath(state.draft.thumbnail, slug || 'game-slug');
   if (el.previewSlug) el.previewSlug.textContent = slug || '—';
   if (el.previewThumbnailPath) el.previewThumbnailPath.textContent = thumbnailPath;
-  if (el.previewLandingUrl) el.previewLandingUrl.textContent = `/games/${slug || '[slug]'}.html`;
-  if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = `/games/game.html?id=${slug || '[slug]'}`;
+  if (el.previewLandingUrl) el.previewLandingUrl.textContent = `/games/${slug || '[slug]'}/`;
+  if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = `/games/${slug || '[slug]'}/`;
   if (el.previewThumbnailStatus) {
     el.previewThumbnailStatus.textContent = thumbnailPath ? `Will store: ${thumbnailPath}` : 'No thumbnail set.';
   }

@@ -32,6 +32,16 @@
     <script src="/js/analytics.js"></script>
     <meta name="description"
           content="Browse the full Cheeky Commodore Gamer library — all Commodore 64 & Amiga titles with search, alphabet index and quick access to single-game detail pages.">
+    <meta property="og:title" content="Browse All Games | Cheeky Commodore Gamer" />
+    <meta property="og:description" content="Browse the full Cheeky Commodore Gamer library — all Commodore 64 & Amiga titles with search, alphabet index and quick access to single-game detail pages." />
+    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cheeky Commodore Gamer" />
+    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Browse All Games | Cheeky Commodore Gamer" />
+    <meta name="twitter:description" content="Browse the full Cheeky Commodore Gamer library — all Commodore 64 & Amiga titles with search, alphabet index and quick access to single-game detail pages." />
+    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
 
     <link rel="icon" href="../favicon.ico" />
 
@@ -218,9 +228,11 @@
         <!-- SEARCH -->
         <section class="games-tools ccg-chapter">
             <div class="games-search">
-                <input type="search" id="gamesSearchInput" placeholder="Search games…" />
-                <button id="gamesSearchClear" type="button">×</button>
+                <label class="visually-hidden" for="gamesSearchInput">Search the games library</label>
+                <input type="search" id="gamesSearchInput" placeholder="Search games…" aria-describedby="gamesSearchHelp" />
+                <button id="gamesSearchClear" type="button" aria-label="Clear game search">×</button>
             </div>
+            <p id="gamesSearchHelp" class="visually-hidden">Search by game title, composer, publisher, genre, or year.</p>
 
             <div class="games-filter" data-games-filter>
                 <div class="games-filter__controls" role="group" aria-label="Filter games by system">
