@@ -1,183 +1,77 @@
-#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
 
-const fs = require("fs");
-const path = require("path");
-const { generateRetroPages } = require("./generate-retro-pages");
-const gameOutputUtils = require("./game-output-utils");
+const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 
-const SITE_ROOT = gameOutputUtils.SITE_ORIGIN;
+// Load your actual game index (this is the correct source)
+const games = require('../games/games-index.json');
 
-const repoRoot = path.resolve(__dirname, "..");
-const gamesDir = path.join(repoRoot, "games");
-const gamesJsonPath = path.join(gamesDir, "games.json");
-const sitemapPath = path.join(repoRoot, "sitemap.xml");
-const sitemapGamesPath = path.join(repoRoot, "sitemap-games.xml");
-const sitemapPagesPath = path.join(repoRoot, "sitemap-pages.xml");
+const staticPages = [
+  '',
+  '/games/',
+  '/games/genres/',
+  '/games/collections/',
+  '/music/',
+  '/music/amiga-demo-music/',
+  '/retro-events/',
+  '/retro-specials/'
+];
 
-function formatDate(date) {
-    return date.toISOString().split("T")[0];
-}
+function generateSitemap() {
+  let urls = [];
 
-function getLastmod(filePath) {
-    try {
-        const stat = fs.statSync(filePath);
-        return formatDate(stat.mtime);
-    } catch (err) {
-        return formatDate(new Date());
-    }
-}
+  // Static pages
+  staticPages.forEach(page => {
+    urls.push(`
+  <url>
+    <loc>${SITE_URL}${page}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>${page === '' ? '1.0' : '0.8'}</priority>
+  </url>`);
+  });
 
-function buildUrlEntry(loc, lastmod) {
-    const safeLoc = String(loc).replace(/&/g, '&amp;');
-    return `  <url>\n    <loc>${safeLoc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
-}
+  // Game pages (THIS IS THE IMPORTANT FIX)
+  games.forEach(game => {
+    const loc = `${SITE_URL}/games/${game.slug}/`;
 
-function buildSitemap(urls) {
-    return `<?xml version="1.0" encoding="UTF-8"?>\n`
-        + `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-        + `${urls.join("\n")}\n`
-        + `</urlset>\n`;
-}
+    let imageTag = '';
 
-function buildSitemapIndex(entries) {
-    return `<?xml version="1.0" encoding="UTF-8"?>\n`
-        + `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`
-        + `${entries.join("\n")}\n`
-        + `</sitemapindex>\n`;
-}
-
-function buildSitemapIndexEntry(loc, lastmod) {
-    const safeLoc = String(loc).replace(/&/g, '&amp;');
-    return `  <sitemap>\n    <loc>${safeLoc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
-}
-
-function readGames() {
-    const raw = fs.readFileSync(gamesJsonPath, 'utf8');
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) {
-        throw new Error('games/games.json must contain an array.');
-    }
-    return parsed;
-}
-
-function getGameEntries() {
-    const seen = new Set();
-    return readGames().reduce((entries, game) => {
-        const slug = gameOutputUtils.normalizeGameSlug(game?.slug, game?.title);
-        if (!slug || seen.has(slug)) return entries;
-        seen.add(slug);
-        entries.push({
-            slug,
-            indexPath: path.join(gamesDir, slug, 'index.html')
-        });
-        return entries;
-    }, []);
-}
-
-function buildGameSitemap() {
-    const gameSlugs = getGameEntries();
-    const urls = gameSlugs.map(({ slug, indexPath }) => {
-        const loc = gameOutputUtils.formatGameSitemapUrl(slug, SITE_ROOT);
-        const lastmod = getLastmod(indexPath);
-        return buildUrlEntry(loc, lastmod);
-    });
-
-    const xml = buildSitemap(urls);
-    fs.writeFileSync(sitemapGamesPath, xml, "utf8");
-
-    return {
-        count: gameSlugs.length,
-        urls: urls.length
-    };
-}
-
-function buildPagesSitemap() {
-    const pageEntries = [
-        { loc: `${SITE_ROOT}/`, file: path.join(repoRoot, "index.html") },
-        { loc: `${SITE_ROOT}/home.html`, file: path.join(repoRoot, "home.html") },
-        { loc: `${SITE_ROOT}/about.html`, file: path.join(repoRoot, "about.html") },
-        { loc: `${SITE_ROOT}/contact.html`, file: path.join(repoRoot, "contact.html") },
-        { loc: `${SITE_ROOT}/emulation.html`, file: path.join(repoRoot, "emulation.html") },
-        { loc: `${SITE_ROOT}/games/`, file: path.join(repoRoot, "games", "index.html") },
-        { loc: `${SITE_ROOT}/games/collections/`, file: path.join(repoRoot, "games", "collections", "index.html") },
-        { loc: `${SITE_ROOT}/games/genres/`, file: path.join(repoRoot, "games", "genres", "index.html") },
-        { loc: `${SITE_ROOT}/quiz/`, file: path.join(repoRoot, "quiz", "index.html") },
-        { loc: `${SITE_ROOT}/quiz/quiz.html`, file: path.join(repoRoot, "quiz", "quiz.html") },
-        { loc: `${SITE_ROOT}/redirect.html`, file: path.join(repoRoot, "redirect.html") },
-        { loc: `${SITE_ROOT}/complete-index.html`, file: path.join(repoRoot, "complete-index.html") },
-        { loc: `${SITE_ROOT}/music/`, file: path.join(repoRoot, "music", "index.html") }
-    ];
-
-    // ✅ AUTO-INCLUDE ALL COLLECTION PAGES
-    const collectionsDir = path.join(repoRoot, "games", "collections");
-
-    if (fs.existsSync(collectionsDir)) {
-        fs.readdirSync(collectionsDir, { withFileTypes: true })
-            .filter(entry => entry.isFile() && entry.name.endsWith('.html'))
-            .forEach(entry => {
-                const filePath = path.join(collectionsDir, entry.name);
-                const loc = `${SITE_ROOT}/games/collections/${entry.name}`;
-
-                pageEntries.push({
-                    loc,
-                    file: filePath
-                });
-            });
+    // ✅ Use REAL thumbnail from your data
+    if (game.thumbnail) {
+      imageTag = `
+    <image:image>
+      <image:loc>${SITE_URL}/${game.thumbnail}</image:loc>
+      <image:title>${escapeXml(game.title)}</image:title>
+    </image:image>`;
     }
 
-    const musicDir = path.join(repoRoot, "music");
-    if (fs.existsSync(musicDir)) {
-        fs.readdirSync(musicDir, { withFileTypes: true })
-            .filter((entry) => entry.isFile() && entry.name.endsWith('.html') && entry.name !== 'index.html' && entry.name !== 'composer.html')
-            .forEach((entry) => {
-                const slug = entry.name.replace(/\.html$/i, '');
-                pageEntries.push({ loc: `${SITE_ROOT}/music/${slug}/`, file: path.join(musicDir, entry.name) });
-            });
-    }
+    urls.push(`
+  <url>
+    <loc>${loc}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>${imageTag}
+  </url>`);
+  });
 
-    const retroPages = generateRetroPages();
-    const uniqueEntries = [...pageEntries, ...retroPages.pageEntries].filter((entry, index, arr) => (
-        arr.findIndex((candidate) => candidate.loc === entry.loc) === index
-    ));
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urls.join('\n')}
+</urlset>`;
 
-    const urls = uniqueEntries.map((entry) => {
-        const lastmod = getLastmod(entry.file);
-        return buildUrlEntry(entry.loc, lastmod);
-    });
+  fs.writeFileSync(path.join(__dirname, '../sitemap.xml'), sitemap);
 
-    const xml = buildSitemap(urls);
-    fs.writeFileSync(sitemapPagesPath, xml, "utf8");
-
-    return {
-        urls: urls.length,
-        retroUrls: retroPages.pageEntries.length
-    };
+  console.log(`✅ Sitemap generated with ${games.length} games`);
 }
 
-function buildRootSitemap() {
-    const now = formatDate(new Date());
-    const entries = [
-        buildSitemapIndexEntry(`${SITE_ROOT}/sitemap-games.xml`, now),
-        buildSitemapIndexEntry(`${SITE_ROOT}/sitemap-pages.xml`, now)
-    ];
-
-    const xml = buildSitemapIndex(entries);
-    fs.writeFileSync(sitemapPath, xml, "utf8");
+function escapeXml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
 
-function main() {
-    const gameStats = buildGameSitemap();
-    const pageStats = buildPagesSitemap();
-    buildRootSitemap();
-
-    console.log(`Game pages found: ${gameStats.count}`);
-    console.log(`URLs written (games): ${gameStats.urls}`);
-    console.log(`URLs written (pages): ${pageStats.urls}`);
-    console.log(`Retro video pages generated: ${pageStats.retroUrls}`);
-    console.log("Sitemaps written:");
-    console.log(`- ${sitemapPath}`);
-    console.log(`- ${sitemapGamesPath}`);
-    console.log(`- ${sitemapPagesPath}`);
-}
-
-main();
+generateSitemap();
