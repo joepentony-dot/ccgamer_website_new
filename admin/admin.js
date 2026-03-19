@@ -991,18 +991,18 @@ ${JSON.stringify({
         if (!state.draftGame) return;
         state.draftGame = {
             ...state.draftGame,
-            system: inputs.system.value,
+            system: inputs.system.value || "C64",
             title: inputs.title.value.trim(),
             sorttitle: inputs.sortTitle.value.trim(),
             id: inputs.id.value.trim(),
             slug: inputs.slug.value.trim(),
             year: inputs.year.value ? Number(inputs.year.value) : "",
-            videoid: inputs.videoId.value.trim(),
-            thumbnail: inputs.thumbnail.value.trim(),
+            videoid: inputs.videoId.value.trim() || "",
+            thumbnail: inputs.thumbnail.value.trim() || "",
             pdf: inputs.pdf.value.trim(),
             disk: getListValues(inputs.diskList),
-            description: inputs.description.value.trim(),
-            ccg_rating: inputs.rating.value ? Number(inputs.rating.value) : "",
+            description: inputs.description.value.trim() || "",
+            ccg_rating: inputs.rating.value ? Number(inputs.rating.value) : null,
             ccg_rating_reason: inputs.ratingReason.value.trim(),
             credits: {
                 publisher: getListValues(inputs.publisherList),
