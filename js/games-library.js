@@ -87,18 +87,66 @@ function normalizeGame(game) {
     };
 }
 
+function mapSearchEntryToGame(entry) {
+    const item = (entry && typeof entry === "object") ? entry : {};
+    return normalizeGame({
+        ...item,
+        genres: Array.isArray(item.genres)
+            ? item.genres
+            : (Array.isArray(item.genre) ? item.genre : (item.genre ? [item.genre] : [])),
+        composer: Array.isArray(item.composer) ? item.composer : (item.composer ? [item.composer] : []),
+        music: Array.isArray(item.music) ? item.music : (item.music ? [item.music] : []),
+        publisher: Array.isArray(item.publisher) ? item.publisher : (item.publisher ? [item.publisher] : []),
+    });
+}
+
+async function fetchGamesDataset(root) {
+    const candidates = [
+        {
+            label: "games.json",
+            url: `${root}games/games.json`,
+            mapper: (data) => Array.isArray(data) ? data.map(normalizeGame) : [],
+        },
+        {
+            label: "games-search.json",
+            url: `${root}games/games-search.json`,
+            mapper: (data) => Array.isArray(data) ? data.map(mapSearchEntryToGame) : [],
+        },
+    ];
+
+    const failures = [];
+
+    for (const candidate of candidates) {
+        try {
+            const res = await fetch(candidate.url, { cache: "no-store" });
+            if (!res.ok) {
+                failures.push(`${candidate.label} HTTP ${res.status}`);
+                continue;
+            }
+
+            const data = await res.json();
+            const mapped = candidate.mapper(data).filter(Boolean);
+            if (mapped.length > 0) {
+                console.info(`[CCG] Games library loaded via ${candidate.label}: ${mapped.length} entries`);
+                return mapped;
+            }
+
+            failures.push(`${candidate.label} returned 0 entries`);
+        } catch (error) {
+            failures.push(`${candidate.label} ${error.message}`);
+        }
+    }
+
+    throw new Error(`Failed to load game datasets. ${failures.join("; ")}`);
+}
+
 function loadGamesOnce() {
     if (CCG_GAMES_LOAD_PROMISE) return CCG_GAMES_LOAD_PROMISE;
 
     CCG_GAMES_LOAD_PROMISE = (async () => {
         resetGamesState();
         const root = window.ccgGetSiteRoot ? window.ccgGetSiteRoot() : "/";
-        const url = `${root}games/games.json`;
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to load games.json");
-
-        const data = await res.json();
-        const incoming = Array.isArray(data) ? data.map(normalizeGame) : [];
+        const incoming = await fetchGamesDataset(root);
         CCG_ALL_GAMES = dedupeGames(incoming);
         CCG_GAMES_TOTAL = CCG_ALL_GAMES.length;
     })();
