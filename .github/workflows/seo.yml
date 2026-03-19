@@ -13,12 +13,15 @@ jobs:
   seo:
     runs-on: ubuntu-latest
 
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
 
@@ -26,7 +29,12 @@ jobs:
         run: npm install || true
 
       - name: Generate sitemap
-        run: node scripts/generate-sitemap.js
+        run: |
+          if [ -f scripts/generate-sitemap.js ]; then
+            node scripts/generate-sitemap.js
+          else
+            echo "No sitemap script found, skipping"
+          fi
 
       - name: Commit sitemap if changed
         run: |
