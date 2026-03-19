@@ -100,9 +100,6 @@ function buildPagesSitemap() {
         { loc: `${SITE_ROOT}/emulation.html`, file: path.join(repoRoot, "emulation.html") },
         { loc: `${SITE_ROOT}/games/`, file: path.join(repoRoot, "games", "index.html") },
         { loc: `${SITE_ROOT}/games/collections/`, file: path.join(repoRoot, "games", "collections", "index.html") },
-        { loc: `${SITE_ROOT}/games/collections/amiga-demo-music.html`, file: path.join(repoRoot, "games", "collections", "amiga-demo-music.html") },
-        { loc: `${SITE_ROOT}/games/collections/retro-events.html`, file: path.join(repoRoot, "games", "collections", "retro-events.html") },
-        { loc: `${SITE_ROOT}/games/collections/retro-specials.html`, file: path.join(repoRoot, "games", "collections", "retro-specials.html") },
         { loc: `${SITE_ROOT}/games/genres/`, file: path.join(repoRoot, "games", "genres", "index.html") },
         { loc: `${SITE_ROOT}/quiz/`, file: path.join(repoRoot, "quiz", "index.html") },
         { loc: `${SITE_ROOT}/quiz/quiz.html`, file: path.join(repoRoot, "quiz", "quiz.html") },
@@ -110,6 +107,23 @@ function buildPagesSitemap() {
         { loc: `${SITE_ROOT}/complete-index.html`, file: path.join(repoRoot, "complete-index.html") },
         { loc: `${SITE_ROOT}/music/`, file: path.join(repoRoot, "music", "index.html") }
     ];
+
+    // ✅ AUTO-INCLUDE ALL COLLECTION PAGES
+    const collectionsDir = path.join(repoRoot, "games", "collections");
+
+    if (fs.existsSync(collectionsDir)) {
+        fs.readdirSync(collectionsDir, { withFileTypes: true })
+            .filter(entry => entry.isFile() && entry.name.endsWith('.html'))
+            .forEach(entry => {
+                const filePath = path.join(collectionsDir, entry.name);
+                const loc = `${SITE_ROOT}/games/collections/${entry.name}`;
+
+                pageEntries.push({
+                    loc,
+                    file: filePath
+                });
+            });
+    }
 
     const musicDir = path.join(repoRoot, "music");
     if (fs.existsSync(musicDir)) {
