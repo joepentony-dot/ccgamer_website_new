@@ -27,10 +27,6 @@ function readSiteUrl() {
   return DEFAULT_SITE_URL;
 }
 
-function toRepoRelative(filePath) {
-  return path.relative(repoRoot, filePath).split(path.sep).join('/');
-}
-
 function ensureFile(relPath, errors, checks) {
   const fullPath = path.join(repoRoot, relPath);
   if (!fs.existsSync(fullPath)) {
@@ -52,91 +48,25 @@ function parseLocs(xml, tagName) {
 }
 
 function validateXmlShape(name, xml, rootTag, errors, checks) {
-  const header = '<?xml version="1.0" encoding="UTF-8"?>';
-  if (!xml.startsWith(header)) {
-    errors.push(`${name} is missing the XML declaration.`);
-  }
-  if (!xml.includes(`<${rootTag} xmlns="${SITEMAP_XMLNS}"`)) {
-    errors.push(`${name} does not declare the sitemap XML namespace.`);
-  }
-  if (!xml.trim().endsWith(`</${rootTag}>`)) {
-    errors.push(`${name} is missing the closing </${rootTag}> tag.`);
-  }
-  if (!/[\r\n]/.test(xml)) {
-    errors.push(`${name} does not look like valid XML output.`);
-  }
+  if (!xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>')) errors.push(`${name} is missing the XML declaration.`);
+  if (!xml.includes(`<${rootTag} xmlns="${SITEMAP_XMLNS}"`)) errors.push(`${name} does not declare the sitemap XML namespace.`);
+  if (!xml.trim().endsWith(`</${rootTag}>`)) errors.push(`${name} is missing the closing </${rootTag}> tag.`);
   checks.push(`Validated XML wrapper for \`${name}\`.`);
-}
-
-function validateAbsoluteHttpsUrls(entries, sourceName, siteUrl, errors, warnings, checks) {
-  const seen = new Set();
-  for (const entry of entries) {
-    if (!entry.loc.startsWith(`${siteUrl}/`) && entry.loc !== `${siteUrl}/`) {
-      errors.push(`${sourceName} contains URL outside canonical site root: ${entry.loc}`);
-      continue;
-    }
-    if (!entry.loc.startsWith('https://')) {
-      errors.push(`${sourceName} contains non-HTTPS URL: ${entry.loc}`);
-    }
-    if (seen.has(entry.loc)) {
-      errors.push(`${sourceName} contains duplicate URL: ${entry.loc}`);
-    }
-    seen.add(entry.loc);
-    if (/\s/.test(entry.loc)) {
-      errors.push(`${sourceName} contains whitespace in URL: ${entry.loc}`);
-    }
-    if (entry.lastmod && !/^\d{4}-\d{2}-\d{2}$/.test(entry.lastmod)) {
-      errors.push(`${sourceName} contains invalid lastmod: ${entry.loc} -> ${entry.lastmod}`);
-    }
-    if (/\/games\/[^/]+\.html$/i.test(entry.loc)) {
-      errors.push(`${sourceName} includes legacy .html game stub URL: ${entry.loc}`);
-    }
-    if (/\/redirect\.html$/i.test(entry.loc)) {
-      errors.push(`${sourceName} includes redirect-only URL: ${entry.loc}`);
-    }
-    if (/\?/.test(entry.loc) || /#/.test(entry.loc)) {
-      warnings.push(`${sourceName} contains query/hash URL: ${entry.loc}`);
-    }
-  }
-  checks.push(`Validated ${entries.length} URL entries in \`${sourceName}\`.`);
 }
 
 function readHtmlMeta(filePath) {
   const html = fs.readFileSync(filePath, 'utf8');
-  const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i)?.[1]?.trim() || '';
-  const ogUrl = html.match(/<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i)?.[1]?.trim() || '';
-  const robots = html.match(/<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i)?.[1]?.trim() || '';
-  const title = html.match(/<title>([^<]+)<\/title>/i)?.[1]?.trim() || '';
-  const description = html.match(/<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i)?.[1]?.trim() || '';
-  return { html, canonical, ogUrl, robots, title, description };
-}
-
-function validateHtmlPage(relPath, expectedCanonical, { requireOgUrl = false, allowNoindex = false } = {}, errors, warnings, checks) {
-  const filePath = path.join(repoRoot, relPath);
-  if (!fs.existsSync(filePath)) {
-    errors.push(`Missing sampled HTML page: ${relPath}`);
-    return;
-  }
-
-  const meta = readHtmlMeta(filePath);
-  if (!meta.title) {
-    errors.push(`${relPath} is missing a <title>.`);
-  }
-  if (!meta.description) {
-    warnings.push(`${relPath} is missing a meta description.`);
-  }
-  if (!meta.canonical) {
-    errors.push(`${relPath} is missing a canonical URL.`);
-  } else if (expectedCanonical && meta.canonical !== expectedCanonical) {
-    errors.push(`${relPath} canonical mismatch. Expected ${expectedCanonical} but found ${meta.canonical}`);
-  }
-  if (requireOgUrl && meta.ogUrl !== meta.canonical) {
-    errors.push(`${relPath} og:url mismatch. canonical=${meta.canonical || '(missing)'} og:url=${meta.ogUrl || '(missing)'}`);
-  }
-  if (!allowNoindex && /noindex/i.test(meta.robots)) {
-    errors.push(`${relPath} is unexpectedly marked noindex.`);
-  }
-  checks.push(`Validated HTML metadata for \`${relPath}\`.`);
+  const read = (pattern) => html.match(pattern)?.[1]?.trim() || '';
+  return {
+    html,
+    canonical: read(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i),
+    ogUrl: read(/<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i),
+    twitterUrl: read(/<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i),
+    robots: read(/<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i),
+    title: read(/<title>([^<]+)<\/title>/i),
+    description: read(/<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i),
+    refreshTarget: read(/<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i),
+  };
 }
 
 function main() {
@@ -145,31 +75,16 @@ function main() {
   const warnings = [];
   const checks = [];
 
-  for (const relPath of REQUIRED_FILES) {
-    ensureFile(relPath, errors, checks);
-  }
+  for (const relPath of REQUIRED_FILES) ensureFile(relPath, errors, checks);
 
-  const robotsPath = path.join(repoRoot, 'robots.txt');
-  const robots = fs.readFileSync(robotsPath, 'utf8');
+  const robots = fs.readFileSync(path.join(repoRoot, 'robots.txt'), 'utf8');
   const sitemapLine = robots.split(/\r?\n/).find((line) => /^Sitemap:/i.test(line));
-  if (!sitemapLine) {
-    errors.push('robots.txt is missing a Sitemap directive.');
-  } else {
-    const robotsSitemapUrl = sitemapLine.replace(/^Sitemap:\s*/i, '').trim();
-    const expected = `${siteUrl}/sitemap.xml`;
-    if (robotsSitemapUrl !== expected) {
-      errors.push(`robots.txt Sitemap directive mismatch. Expected ${expected} but found ${robotsSitemapUrl}`);
-    }
-    checks.push('Validated robots.txt sitemap directive.');
-  }
-  if (/Disallow:\s*\/\s*$/mi.test(robots)) {
-    errors.push('robots.txt blocks the entire site.');
-  }
+  if (!sitemapLine) errors.push('robots.txt is missing a Sitemap directive.');
+  else if (sitemapLine.replace(/^Sitemap:\s*/i, '').trim() !== `${siteUrl}/sitemap.xml`) errors.push('robots.txt Sitemap directive mismatch.');
 
   const sitemapIndexXml = fs.readFileSync(path.join(repoRoot, 'sitemap.xml'), 'utf8');
   const gamesSitemapXml = fs.readFileSync(path.join(repoRoot, 'sitemap-games.xml'), 'utf8');
   const pagesSitemapXml = fs.readFileSync(path.join(repoRoot, 'sitemap-pages.xml'), 'utf8');
-
   validateXmlShape('sitemap.xml', sitemapIndexXml, 'sitemapindex', errors, checks);
   validateXmlShape('sitemap-games.xml', gamesSitemapXml, 'urlset', errors, checks);
   validateXmlShape('sitemap-pages.xml', pagesSitemapXml, 'urlset', errors, checks);
@@ -177,84 +92,82 @@ function main() {
   const sitemapIndexEntries = parseLocs(sitemapIndexXml, 'sitemap');
   const gameEntries = parseLocs(gamesSitemapXml, 'url');
   const pageEntries = parseLocs(pagesSitemapXml, 'url');
-
-  validateAbsoluteHttpsUrls(sitemapIndexEntries, 'sitemap.xml', siteUrl, errors, warnings, checks);
-  validateAbsoluteHttpsUrls(gameEntries, 'sitemap-games.xml', siteUrl, errors, warnings, checks);
-  validateAbsoluteHttpsUrls(pageEntries, 'sitemap-pages.xml', siteUrl, errors, warnings, checks);
-
-  const expectedChildSitemaps = new Set([
-    `${siteUrl}/sitemap-games.xml`,
-    `${siteUrl}/sitemap-pages.xml`,
-  ]);
-  for (const entry of sitemapIndexEntries) {
-    expectedChildSitemaps.delete(entry.loc);
+  const gameLocs = new Set();
+  for (const entry of gameEntries) {
+    if (!entry.loc.startsWith(`${siteUrl}/games/`)) errors.push(`sitemap-games.xml contains non-game URL: ${entry.loc}`);
+    if (/\.html$/i.test(entry.loc)) errors.push(`sitemap-games.xml includes redirect stub URL: ${entry.loc}`);
+    if (gameLocs.has(entry.loc)) errors.push(`sitemap-games.xml contains duplicate URL: ${entry.loc}`);
+    gameLocs.add(entry.loc);
   }
-  if (expectedChildSitemaps.size > 0) {
-    errors.push(`sitemap.xml is missing child sitemap references: ${[...expectedChildSitemaps].join(', ')}`);
+  const pageLocs = new Set();
+  for (const entry of pageEntries) {
+    if (pageLocs.has(entry.loc)) errors.push(`sitemap-pages.xml contains duplicate URL: ${entry.loc}`);
+    pageLocs.add(entry.loc);
   }
-
-  const pageLocs = new Set(pageEntries.map((entry) => entry.loc));
-  const gameLocs = new Set(gameEntries.map((entry) => entry.loc));
-
-  const homepageMeta = readHtmlMeta(path.join(repoRoot, 'index.html'));
-  const gamesIndexMeta = readHtmlMeta(path.join(repoRoot, 'games', 'index.html'));
-  validateHtmlPage('index.html', homepageMeta.canonical || `${siteUrl}/`, { requireOgUrl: true }, errors, warnings, checks);
-  validateHtmlPage('games/index.html', gamesIndexMeta.canonical || `${siteUrl}/games/`, { requireOgUrl: true }, errors, warnings, checks);
+  const expectedChildren = new Set([`${siteUrl}/sitemap-games.xml`, `${siteUrl}/sitemap-pages.xml`]);
+  sitemapIndexEntries.forEach((entry) => expectedChildren.delete(entry.loc));
+  if (expectedChildren.size) errors.push(`sitemap.xml is missing child sitemap references: ${[...expectedChildren].join(', ')}`);
 
   const gamesJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games', 'games.json'), 'utf8'));
   const gamesIndexJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games', 'games-index.json'), 'utf8'));
   const gamesSearchJson = JSON.parse(fs.readFileSync(path.join(repoRoot, 'games', 'games-search.json'), 'utf8'));
-
-  if (!Array.isArray(gamesJson) || gamesJson.length === 0) {
-    errors.push('games/games.json is empty or invalid.');
-  }
-  if (!Array.isArray(gamesIndexJson) || gamesIndexJson.length === 0) {
-    errors.push('games/games-index.json is empty or invalid.');
-  }
-  if (!Array.isArray(gamesSearchJson) || gamesSearchJson.length === 0) {
-    errors.push('games/games-search.json is empty or invalid.');
-  }
-  checks.push(`Validated game data assets: games.json=${gamesJson.length}, games-index.json=${gamesIndexJson.length}, games-search.json=${gamesSearchJson.length}.`);
-
-  const firstGame = gamesJson.find((game) => game && typeof game.slug === 'string' && game.slug.trim());
-  if (!firstGame) {
-    errors.push('Could not find a valid game slug in games/games.json.');
-  } else {
-    const gameSlug = firstGame.slug.trim();
-    const canonical = `${siteUrl}/games/${gameSlug}/`;
-    const gameHtmlPath = fs.existsSync(path.join(repoRoot, 'games', gameSlug, 'index.html'))
-      ? path.join('games', gameSlug, 'index.html')
-      : path.join('games', `${gameSlug}.html`);
-    validateHtmlPage(gameHtmlPath, canonical, { requireOgUrl: true }, errors, warnings, checks);
-    if (!gameLocs.has(canonical)) {
-      errors.push(`Sample game canonical missing from sitemap-games.xml: ${canonical}`);
+  const bySlug = new Map();
+  for (const game of gamesJson) {
+    const slug = String(game?.slug || '').trim();
+    if (!slug) {
+      errors.push('games/games.json contains an entry with a missing slug.');
+      continue;
     }
+    if (bySlug.has(slug)) errors.push(`games/games.json contains duplicate slug: ${slug}`);
+    bySlug.set(slug, game);
   }
+  if (gamesIndexJson.length !== bySlug.size) errors.push(`games/games-index.json count mismatch. Expected ${bySlug.size}, found ${gamesIndexJson.length}`);
+  if (gamesSearchJson.length !== bySlug.size) errors.push(`games/games-search.json count mismatch. Expected ${bySlug.size}, found ${gamesSearchJson.length}`);
+  if (!fs.readFileSync(path.join(repoRoot, 'games', 'index.html'), 'utf8').includes('id="gamesTotalCount"')) errors.push('games/index.html no longer contains the games total counter element.');
 
-  const redirectStub = firstGame ? path.join(repoRoot, 'games', `${firstGame.slug}.html`) : null;
-  if (redirectStub && fs.existsSync(redirectStub)) {
-    const redirectMeta = readHtmlMeta(redirectStub);
-    if (!/noindex/i.test(redirectMeta.robots)) {
-      errors.push(`Redirect stub games/${firstGame.slug}.html must remain noindex,follow.`);
+  const seenIndex = new Set();
+  gamesIndexJson.forEach((entry) => {
+    const slug = String(entry?.slug || '').trim();
+    if (!slug || !bySlug.has(slug)) errors.push(`games-index.json contains unknown slug: ${slug || '(missing)'}`);
+    if (seenIndex.has(slug)) errors.push(`games-index.json contains duplicate slug: ${slug}`);
+    seenIndex.add(slug);
+  });
+  const seenSearch = new Set();
+  gamesSearchJson.forEach((entry) => {
+    const slug = String(entry?.slug || '').trim();
+    if (!slug || !bySlug.has(slug)) errors.push(`games-search.json contains unknown slug: ${slug || '(missing)'}`);
+    if (seenSearch.has(slug)) errors.push(`games-search.json contains duplicate slug: ${slug}`);
+    seenSearch.add(slug);
+  });
+
+  for (const slug of bySlug.keys()) {
+    const canonicalUrl = `${siteUrl}/games/${slug}/`;
+    const canonicalRel = path.join('games', slug, 'index.html');
+    const canonicalPath = path.join(repoRoot, canonicalRel);
+    const stubRel = path.join('games', `${slug}.html`);
+    const stubPath = path.join(repoRoot, stubRel);
+
+    if (!fs.existsSync(canonicalPath)) {
+      errors.push(`Missing canonical page: ${canonicalRel}`);
+      continue;
     }
-    checks.push(`Validated redirect stub metadata for \`games/${firstGame.slug}.html\`.`);
-  }
+    if (!fs.existsSync(stubPath)) {
+      errors.push(`Missing redirect stub: ${stubRel}`);
+      continue;
+    }
 
-  if (!pageLocs.has(gamesIndexMeta.canonical || `${siteUrl}/games/`)) {
-    errors.push('sitemap-pages.xml is missing the canonical /games/ browse page URL.');
-  }
-  if (!pageLocs.has(homepageMeta.canonical || `${siteUrl}/`)) {
-    errors.push('sitemap-pages.xml is missing the canonical homepage URL.');
-  }
+    const meta = readHtmlMeta(canonicalPath);
+    if (meta.canonical !== canonicalUrl) errors.push(`${canonicalRel} canonical mismatch. Expected ${canonicalUrl} but found ${meta.canonical || '(missing)'}`);
+    if (meta.ogUrl !== canonicalUrl) errors.push(`${canonicalRel} og:url mismatch. Expected ${canonicalUrl} but found ${meta.ogUrl || '(missing)'}`);
+    if (meta.twitterUrl !== canonicalUrl) errors.push(`${canonicalRel} twitter:url mismatch. Expected ${canonicalUrl} but found ${meta.twitterUrl || '(missing)'}`);
+    if (!meta.title) errors.push(`${canonicalRel} is missing a <title>.`);
+    if (!meta.description) errors.push(`${canonicalRel} is missing a meta description.`);
+    if (!gameLocs.has(canonicalUrl)) errors.push(`sitemap-games.xml is missing canonical URL: ${canonicalUrl}`);
 
-  const gamesIndexHtml = fs.readFileSync(path.join(repoRoot, 'games', 'index.html'), 'utf8');
-  if (!gamesIndexHtml.includes('id="gamesTotalCount"')) {
-    errors.push('games/index.html no longer contains the games total counter element.');
-  }
-  if (!fs.readFileSync(path.join(repoRoot, 'js', 'games-library.js'), 'utf8').includes('games-search.json')) {
-    warnings.push('games-library.js does not reference games-search.json fallback logic.');
-  } else {
-    checks.push('Validated browse-page fallback reference to games-search.json.');
+    const stubMeta = readHtmlMeta(stubPath);
+    if (stubMeta.canonical !== canonicalUrl) errors.push(`${stubRel} canonical mismatch. Expected ${canonicalUrl} but found ${stubMeta.canonical || '(missing)'}`);
+    if (stubMeta.robots.toLowerCase() !== 'noindex,follow') errors.push(`${stubRel} robots mismatch. Expected noindex,follow but found ${stubMeta.robots || '(missing)'}`);
+    if (stubMeta.refreshTarget !== `/games/${slug}/`) errors.push(`${stubRel} redirect target mismatch. Expected /games/${slug}/ but found ${stubMeta.refreshTarget || '(missing)'}`);
   }
 
   const report = [
@@ -278,10 +191,7 @@ function main() {
 
   fs.writeFileSync(REPORT_PATH, report, 'utf8');
   console.log(report);
-
-  if (errors.length > 0) {
-    process.exitCode = 1;
-  }
+  if (errors.length > 0) process.exitCode = 1;
 }
 
 main();

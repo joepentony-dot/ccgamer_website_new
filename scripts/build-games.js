@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const { spawnSync } = require("child_process");
 const gameOutputUtils = require("./game-output-utils");
+const { processChangedGamesOnly } = require("./generate-slug-pages");
 const games = require("../games/games.json");
 
 const MIN_ARCHIVE_CREDITS = 5;
@@ -262,62 +264,71 @@ function cleanStaleComposerPages(composerEntries) {
   });
 }
 
-const indexData = games.map((game) => ({ slug: game.slug, title: game.title, year: game.year, thumbnail: game.thumbnail }));
-fs.writeFileSync("games/games-index.json", JSON.stringify(indexData, null, 2));
+function buildGamesIndexData(gamesList) {
+  return gamesList.map((game) => ({
+    slug: game.slug,
+    title: game.title,
+    year: game.year,
+    thumbnail: game.thumbnail
+  }));
+}
 
-const searchData = games.map((game) => ({
-  title: game.title,
-  slug: game.slug,
-  publisher: normalisePublisherNames(game),
-  genre: Array.isArray(game.genres) ? game.genres : [],
-  genres: Array.isArray(game.genres) ? game.genres : [],
-  composer: normaliseComposerNames(game),
-  music: normaliseMusicNames(game.music),
-  year: game.year
-}));
-fs.writeFileSync("games/games-search.json", JSON.stringify(searchData, null, 2));
+function buildGamesSearchData(gamesList) {
+  return gamesList.map((game) => ({
+    title: game.title,
+    slug: game.slug,
+    publisher: normalisePublisherNames(game),
+    genre: Array.isArray(game.genres) ? game.genres : [],
+    genres: Array.isArray(game.genres) ? game.genres : [],
+    composer: normaliseComposerNames(game),
+    music: normaliseMusicNames(game.music),
+    year: game.year
+  }));
+}
 
-let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-sitemap += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-games.forEach((game) => { sitemap += `\n <url>\n   <loc>${gameOutputUtils.formatGameSitemapUrl(game.slug)}</loc>\n   <changefreq>monthly</changefreq>\n   <priority>0.8</priority>\n </url>`; });
-sitemap += `\n</urlset>`;
-fs.writeFileSync("sitemap-games.xml", sitemap);
-
-const isLocalRun = !process.env.CI && !process.env.GITHUB_ACTIONS;
-const forcePageBuild = process.env.CCG_BUILD_GAME_PAGES === "1";
-const shouldBuildPages = isLocalRun || forcePageBuild;
-
-if (shouldBuildPages) {
-  const template = fs.readFileSync("templates/game-template.html", "utf8");
-  const redirectTemplate = fs.readFileSync("templates/game-redirect-template.html", "utf8");
-  const fillTemplate = (source, game) => source
-    .replaceAll('{{GAME_NAME}}', String(game.title ?? ''))
-    .replaceAll('{{SLUG}}', String(game.slug ?? ''))
-    .replaceAll('{{CANONICAL_URL}}', gameOutputUtils.getGameCanonicalUrl(game.slug))
-    .replaceAll('{{YEAR}}', String(game.year ?? ''))
-    .replaceAll('{{PUBLISHER}}', String(game.publisher ?? ''))
-    .replaceAll('{{THUMBNAIL}}', String(game.thumbnail ?? '').replace(/^resources\/images\/thumbnails\/all\//, ''))
-    .replaceAll('{{THUMBNAIL_FILENAME}}', String(game.thumbnail ?? '').split('/').pop() || '')
-    .replaceAll('{{DESCRIPTION}}', String(game.description ?? ''))
-    .replaceAll('{{PLATFORM}}', String(game.system ?? '').trim().toUpperCase() === 'AMIGA' ? 'Amiga' : 'C64')
-    .replaceAll('{{FB_APP_ID_META}}', '');
-
-  games.forEach((game) => {
-    const gameDir = path.join("games", game.slug);
-    fs.mkdirSync(gameDir, { recursive: true });
-    fs.writeFileSync(path.join(gameDir, "index.html"), fillTemplate(template, game));
-    fs.writeFileSync(path.join("games", `${game.slug}.html`), fillTemplate(redirectTemplate, game));
-  });
-
-  const composerEntries = buildComposerEntries(games);
-  const musicHash = crypto.createHash("sha256").update(JSON.stringify(composerEntries)).digest("hex");
-  const musicHashPath = path.join("music", ".music-data.hash");
-  const previousMusicHash = fs.existsSync(musicHashPath) ? fs.readFileSync(musicHashPath, "utf8").trim() : "";
-
-  if (musicHash !== previousMusicHash) {
-    composerEntries.forEach((entry) => writeFileIfChanged(path.join("music", `${entry.slug}.html`), renderComposerPage(entry)));
-    cleanStaleComposerPages(composerEntries);
-    writeFileIfChanged(path.join("music", "index.html"), renderMusicIndexPage());
-    writeFileIfChanged(musicHashPath, `${musicHash}\n`);
+function runSeoVerification() {
+  const result = spawnSync(process.execPath, [path.join(__dirname, 'verify-seo.mjs')], { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
+  if (result.status !== 0) {
+    throw new Error(`verify-seo.mjs failed with status ${result.status ?? 1}`);
   }
 }
+
+function main() {
+  const indexChanged = writeFileIfChanged('games/games-index.json', `${JSON.stringify(buildGamesIndexData(games), null, 2)}\n`);
+  const searchChanged = writeFileIfChanged('games/games-search.json', `${JSON.stringify(buildGamesSearchData(games), null, 2)}\n`);
+
+  const composerEntries = buildComposerEntries(games);
+  const musicHash = crypto.createHash('sha256').update(JSON.stringify(composerEntries)).digest('hex');
+  const musicHashPath = path.join('music', '.music-data.hash');
+  const previousMusicHash = fs.existsSync(musicHashPath) ? fs.readFileSync(musicHashPath, 'utf8').trim() : '';
+  let musicWrites = 0;
+
+  if (musicHash !== previousMusicHash) {
+    composerEntries.forEach((entry) => {
+      if (writeFileIfChanged(path.join('music', `${entry.slug}.html`), renderComposerPage(entry))) musicWrites += 1;
+    });
+    cleanStaleComposerPages(composerEntries);
+    if (writeFileIfChanged(path.join('music', 'index.html'), renderMusicIndexPage())) musicWrites += 1;
+    if (writeFileIfChanged(musicHashPath, `${musicHash}\n`)) musicWrites += 1;
+  }
+
+  const pageResult = processChangedGamesOnly(games);
+  console.log(`[DATA] games-index.json ${indexChanged ? 'updated' : 'unchanged'}`);
+  console.log(`[DATA] games-search.json ${searchChanged ? 'updated' : 'unchanged'}`);
+  console.log(`[DATA] music pages written: ${musicWrites}`);
+  console.log(`[DATA] game pages processed incrementally: ${pageResult.planned}`);
+  runSeoVerification();
+}
+
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  buildComposerEntries,
+  buildGamesIndexData,
+  buildGamesSearchData,
+  cleanStaleComposerPages,
+  renderComposerPage,
+  renderMusicIndexPage
+};

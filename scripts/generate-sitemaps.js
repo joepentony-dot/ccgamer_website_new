@@ -9,11 +9,10 @@ const SITE_ROOT = gameOutputUtils.SITE_ORIGIN;
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesDir = path.join(repoRoot, "games");
+const gamesJsonPath = path.join(gamesDir, "games.json");
 const sitemapPath = path.join(repoRoot, "sitemap.xml");
 const sitemapGamesPath = path.join(repoRoot, "sitemap-games.xml");
 const sitemapPagesPath = path.join(repoRoot, "sitemap-pages.xml");
-
-const excludedGameDirs = new Set(["collections", "genres"]);
 
 function formatDate(date) {
     return date.toISOString().split("T")[0];
@@ -52,28 +51,31 @@ function buildSitemapIndexEntry(loc, lastmod) {
     return `  <sitemap>\n    <loc>${safeLoc}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </sitemap>`;
 }
 
-function getGameSlugs() {
-    const entries = fs.readdirSync(gamesDir, { withFileTypes: true });
-    const slugs = [];
+function readGames() {
+    const raw = fs.readFileSync(gamesJsonPath, 'utf8');
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+        throw new Error('games/games.json must contain an array.');
+    }
+    return parsed;
+}
 
-    entries.forEach((entry) => {
-        if (!entry.isDirectory()) return;
-        if (excludedGameDirs.has(entry.name)) return;
-
-        const indexPath = path.join(gamesDir, entry.name, "index.html");
-        if (!fs.existsSync(indexPath)) return;
-
-        slugs.push({
-            slug: entry.name,
-            indexPath
+function getGameEntries() {
+    const seen = new Set();
+    return readGames().reduce((entries, game) => {
+        const slug = gameOutputUtils.normalizeGameSlug(game?.slug, game?.title);
+        if (!slug || seen.has(slug)) return entries;
+        seen.add(slug);
+        entries.push({
+            slug,
+            indexPath: path.join(gamesDir, slug, 'index.html')
         });
-    });
-
-    return slugs;
+        return entries;
+    }, []);
 }
 
 function buildGameSitemap() {
-    const gameSlugs = getGameSlugs();
+    const gameSlugs = getGameEntries();
     const urls = gameSlugs.map(({ slug, indexPath }) => {
         const loc = gameOutputUtils.formatGameSitemapUrl(slug, SITE_ROOT);
         const lastmod = getLastmod(indexPath);
