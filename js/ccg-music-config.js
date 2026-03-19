@@ -5,6 +5,7 @@
   const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
 
   const urlCache = new Map();
+  const availabilityCache = new Map();
   let missingConfigWarningShown = false;
 
   function ensureTrailingSlash(value, fallback) {
@@ -40,6 +41,46 @@
     return `${ensureTrailingSlash(baseUrl, DEFAULT_MUSIC_BASE_URL)}${normalizedSlug}.mp3`;
   }
 
+  async function musicExists(url) {
+    if (!url) return false;
+
+    if (availabilityCache.has(url)) {
+      return availabilityCache.get(url);
+    }
+
+    const request = (async () => {
+      try {
+        const response = await fetch(url, {
+          method: "HEAD",
+          cache: "no-store"
+        });
+
+        if (response.ok) {
+          return true;
+        }
+      } catch (error) {
+        console.warn("[CCG music] Music HEAD check failed, attempting fallback GET.", url, error);
+      }
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { Range: "bytes=0-1" },
+          cache: "no-store"
+        });
+        return response.ok;
+      } catch (error) {
+        console.error("[CCG music] Music GET fallback failed.", url, error);
+        return false;
+      }
+    })();
+
+    availabilityCache.set(url, request);
+    const exists = await request;
+    availabilityCache.set(url, exists);
+    return exists;
+  }
+
   async function resolveGameMusicUrl(slug) {
     const normalizedSlug = normalizeSlug(slug);
     if (!normalizedSlug) return "";
@@ -56,8 +97,8 @@
         return "";
       }
 
-      // ✅ ALWAYS RETURN URL (NO HEAD CHECK)
-      return primaryUrl;
+      const exists = await musicExists(primaryUrl);
+      return exists ? primaryUrl : "";
     })();
 
     urlCache.set(normalizedSlug, resolved);
@@ -70,6 +111,7 @@
 
   window.CCGMusic = Object.assign({}, window.CCGMusic || {}, {
     normalizeSlug,
+    musicExists,
     resolveGameMusicUrl,
     buildPrimaryUrl(slug) {
       return buildUrl(getConfig().MUSIC_BASE_URL, slug);
