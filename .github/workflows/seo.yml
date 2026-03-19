@@ -4,14 +4,20 @@ on:
   push:
     branches:
       - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 concurrency:
-  group: seo-automation
+  group: seo-automation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   seo:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Check out repository
@@ -22,13 +28,33 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '20'
 
-      - name: Generate game sitemap
+      - name: Print environment diagnostics
+        run: |
+          echo "Node $(node -v)"
+          echo "NPM $(npm -v)"
+          echo "PWD $(pwd)"
+          git status --short
+
+      - name: Generate SEO sitemaps
         run: node tools/seo/generate-sitemap.js
 
-      - name: Run SEO audit
-        run: node tools/seo/seo-audit.js
+      - name: Verify SEO outputs
+        run: node scripts/verify-seo.mjs
 
-      - name: Ensure sitemap files are up to date
-        run: git diff --exit-code -- sitemap.xml sitemap-games.xml sitemap-pages.xml
+      - name: Ensure generated SEO assets are committed
+        run: git diff --exit-code -- robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml
+
+      - name: Upload SEO artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-artifacts
+          path: |
+            robots.txt
+            sitemap.xml
+            sitemap-games.xml
+            sitemap-pages.xml
+            seo-audit-report.md
+          if-no-files-found: error

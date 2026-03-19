@@ -235,6 +235,41 @@ function validateXmlDocument(xml, expectedRootTag) {
   }
 }
 
+
+function readHtmlSeoMeta(filePath) {
+  if (!fs.existsSync(filePath) || path.extname(filePath).toLowerCase() !== '.html') {
+    return { canonical: '', robots: '' };
+  }
+
+  const html = fs.readFileSync(filePath, 'utf8');
+  const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+  const robots = html.match(/<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i);
+
+  return {
+    canonical: canonical ? canonical[1].trim() : '',
+    robots: robots ? robots[1].trim() : '',
+  };
+}
+
+function resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings) {
+  const seoMeta = readHtmlSeoMeta(filePath);
+  if (/noindex/i.test(seoMeta.robots)) {
+    warnings.push(`Excluding noindex page from sitemap: ${toRepoRelative(filePath)}.`);
+    return null;
+  }
+
+  if (!seoMeta.canonical) {
+    return fallbackLoc;
+  }
+
+  if (!seoMeta.canonical.startsWith(siteUrl)) {
+    warnings.push(`Canonical for ${toRepoRelative(filePath)} points outside ${siteUrl}; using fallback sitemap URL.`);
+    return fallbackLoc;
+  }
+
+  return seoMeta.canonical.replace(/[?#].*$/, '');
+}
+
 function buildUrlEntry(loc, lastmod) {
   return [
     '  <url>',
@@ -404,7 +439,12 @@ function generateStaticSitemap(siteUrl, games) {
       continue;
     }
 
-    const loc = resolved.locPath ? `${siteUrl}/${resolved.locPath}` : `${siteUrl}/`;
+    const fallbackLoc = resolved.locPath ? `${siteUrl}/${resolved.locPath}` : `${siteUrl}/`;
+    const loc = resolveCanonicalLoc(resolved.filePath, fallbackLoc, siteUrl, warnings);
+    if (!loc) {
+      continue;
+    }
+
     const nextEntry = {
       loc,
       lastmod: getGitLastMod(resolved.filePath),
