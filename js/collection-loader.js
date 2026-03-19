@@ -78,6 +78,24 @@ function ccgRunCollectionLoader() {
                 countEl.textContent = filtered.length;
             }
 
+            if (typeof window.ccgSchemaCollection === "function") {
+                window.ccgSchemaCollection({
+                    title: collectionName,
+                    items: filtered
+                });
+            }
+
+            if (typeof window.ccgSchemaBreadcrumb === "function") {
+                const collectionPath = window.location.pathname.endsWith('/')
+                    ? window.location.pathname
+                    : `${window.location.pathname.replace(/\.html?$/, '')}.html`;
+                window.ccgSchemaBreadcrumb([
+                    { name: "Home", url: "https://www.cheekycommodoregamer.co.uk/" },
+                    { name: "Collections", url: "https://www.cheekycommodoregamer.co.uk/games/collections/" },
+                    { name: collectionName, url: `https://www.cheekycommodoregamer.co.uk${collectionPath}` }
+                ]);
+            }
+
             const cards = filtered.map(ccgBuildGameCard).join("");
 
             if (cards) {

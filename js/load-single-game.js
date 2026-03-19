@@ -1293,6 +1293,17 @@ function renderGame(game) {
     updatePrettyUrlAfterResolve(game);
     updateMeta(game);
 
+    if (typeof window.ccgSchemaGame === 'function') {
+        window.ccgSchemaGame(game);
+    }
+    if (typeof window.ccgSchemaBreadcrumb === 'function') {
+        window.ccgSchemaBreadcrumb([
+            { name: 'Home', url: 'https://www.cheekycommodoregamer.co.uk/' },
+            { name: 'Games', url: 'https://www.cheekycommodoregamer.co.uk/games/' },
+            { name: resolveCanonicalGameTitle(game), url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/` }
+        ]);
+    }
+
     /* HERO */
     const thumb = resolveGameThumb(game.thumbnail || game.thumb || game.cover);
     const heroBg = document.getElementById("gameHeroBG");
