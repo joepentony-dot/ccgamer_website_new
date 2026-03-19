@@ -1518,6 +1518,8 @@ function renderGame(game) {
         console.warn("[CCG SINGLE] Optional UX enhancements skipped.", error);
     }
 
+    injectGameSchema(game);
+
     if (typeof document !== "undefined" && document.body) {
         const slug = String(game?.slug || "").trim();
         if (slug) {
@@ -2662,28 +2664,101 @@ function updateMeta(game) {
     const twitterImage = document.getElementById("game-twitter-image");
     if (twitterImage && imageUrl) twitterImage.setAttribute("content", imageUrl);
 
-    const jsonLd = document.getElementById("game-jsonld");
-    if (jsonLd) {
-        const publisher = resolveSeoPublisher(game);
-        const schema = {
-            "@context": "https://schema.org",
-            "@type": "VideoGame",
-            "name": gameTitle,
-            "url": canonicalUrl,
-            "description": desc,
-            "author": {
-                "@type": "Organization",
-                "name": "Cheeky Commodore Gamer"
-            }
-        };
+}
 
-        if (game.year) schema.datePublished = String(game.year);
-        if (platform) schema.gamePlatform = platform;
-        if (publisher) schema.publisher = { "@type": "Organization", "name": publisher };
-        if (imageUrl) schema.image = imageUrl;
+function buildAbsoluteGameUrl(path) {
+    const cleaned = String(path || "").trim().replace(/^\/+/, "");
+    if (!cleaned) return "";
+    if (/^https?:\/\//i.test(cleaned)) return cleaned;
+    return `https://www.cheekycommodoregamer.co.uk/${cleaned}`;
+}
 
-        jsonLd.textContent = JSON.stringify(schema);
+function normaliseSchemaValue(value) {
+    if (Array.isArray(value)) {
+        const items = value
+            .map(item => String(item || "").trim())
+            .filter(Boolean);
+        return items.length ? items : undefined;
     }
+
+    if (value && typeof value === "object") {
+        Object.keys(value).forEach((key) => {
+            const normalised = normaliseSchemaValue(value[key]);
+            if (normalised === undefined) {
+                delete value[key];
+            } else {
+                value[key] = normalised;
+            }
+        });
+        return Object.keys(value).length ? value : undefined;
+    }
+
+    if (value === undefined || value === null) return undefined;
+
+    const text = String(value).trim();
+    return text ? text : undefined;
+}
+
+function injectGameSchema(game) {
+    if (!game) return;
+
+    const existing = document.getElementById('ccg-schema');
+    if (existing) existing.remove();
+
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": ["VideoGame", "CreativeWork"],
+        "name": game.title,
+        "url": `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/`,
+        "image": game.thumbnail
+            ? buildAbsoluteGameUrl(game.thumbnail)
+            : undefined,
+        "datePublished": game.year ? String(game.year) : undefined,
+        "genre": Array.isArray(game.genres) ? game.genres : [],
+        "gamePlatform": game.system || "Commodore 64",
+        "publisher": game.credits?.publisher || [],
+        "author": game.credits?.musician || [],
+        "description": game.description || "",
+        "aggregateRating": game.ccg_rating
+            ? {
+                "@type": "AggregateRating",
+                "ratingValue": String(game.ccg_rating),
+                "bestRating": "10",
+                "ratingCount": "1"
+            }
+            : undefined,
+        "video": game.videoid
+            ? {
+                "@type": "VideoObject",
+                "name": game.title,
+                "thumbnailUrl": `https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg`,
+                "uploadDate": game.year ? `${game.year}-01-01` : undefined,
+                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`
+            }
+            : undefined
+    };
+
+    Object.keys(schema).forEach((key) => {
+        const normalised = normaliseSchemaValue(schema[key]);
+        if (normalised === undefined) {
+            delete schema[key];
+        } else {
+            schema[key] = normalised;
+        }
+    });
+
+    const fallback = document.getElementById('ccg-schema-fallback');
+    if (fallback) {
+        fallback.textContent = JSON.stringify(schema);
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'ccg-schema';
+    script.textContent = JSON.stringify(schema);
+
+    document.head.appendChild(script);
 }
 
 function normaliseTokenValue(value) {
