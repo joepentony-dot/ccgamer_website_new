@@ -64,8 +64,10 @@
 ============================================================ */
 
 .ccg-socials__icon {
+    display: block;
     width: 60%;
     height: 60%;
+    flex: 0 0 auto;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
