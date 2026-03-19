@@ -51,6 +51,9 @@
     ensureRequiredCSS();
     rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
     rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
+    document.querySelectorAll('.ccg-socials-fallback').forEach(el => {
+      el.style.display = 'none';
+    });
     normalizeButtons();
   });
 })();

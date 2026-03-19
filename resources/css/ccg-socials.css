@@ -112,3 +112,18 @@
         height: 65%;
     }
 }
+
+
+.ccg-socials-fallback {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.ccg-socials-fallback a {
+    color: #00eaff;
+    text-decoration: none;
+    font-weight: bold;
+}
