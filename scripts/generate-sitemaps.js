@@ -3,8 +3,9 @@
 const fs = require("fs");
 const path = require("path");
 const { generateRetroPages } = require("./generate-retro-pages");
+const gameOutputUtils = require("./game-output-utils");
 
-const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
+const SITE_ROOT = gameOutputUtils.SITE_ORIGIN;
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesDir = path.join(repoRoot, "games");
@@ -74,7 +75,7 @@ function getGameSlugs() {
 function buildGameSitemap() {
     const gameSlugs = getGameSlugs();
     const urls = gameSlugs.map(({ slug, indexPath }) => {
-        const loc = `${SITE_ROOT}/games/${slug}/`;
+        const loc = gameOutputUtils.formatGameSitemapUrl(slug, SITE_ROOT);
         const lastmod = getLastmod(indexPath);
         return buildUrlEntry(loc, lastmod);
     });

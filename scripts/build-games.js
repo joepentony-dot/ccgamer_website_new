@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const gameOutputUtils = require("./game-output-utils");
 const games = require("../games/games.json");
 
 const MIN_ARCHIVE_CREDITS = 5;
@@ -278,7 +279,7 @@ fs.writeFileSync("games/games-search.json", JSON.stringify(searchData, null, 2))
 
 let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n`;
 sitemap += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
-games.forEach((game) => { sitemap += `\n <url>\n   <loc>https://www.cheekycommodoregamer.co.uk/games/${game.slug}/</loc>\n   <changefreq>monthly</changefreq>\n   <priority>0.8</priority>\n </url>`; });
+games.forEach((game) => { sitemap += `\n <url>\n   <loc>${gameOutputUtils.formatGameSitemapUrl(game.slug)}</loc>\n   <changefreq>monthly</changefreq>\n   <priority>0.8</priority>\n </url>`; });
 sitemap += `\n</urlset>`;
 fs.writeFileSync("sitemap-games.xml", sitemap);
 
@@ -292,6 +293,7 @@ if (shouldBuildPages) {
   const fillTemplate = (source, game) => source
     .replaceAll('{{GAME_NAME}}', String(game.title ?? ''))
     .replaceAll('{{SLUG}}', String(game.slug ?? ''))
+    .replaceAll('{{CANONICAL_URL}}', gameOutputUtils.getGameCanonicalUrl(game.slug))
     .replaceAll('{{YEAR}}', String(game.year ?? ''))
     .replaceAll('{{PUBLISHER}}', String(game.publisher ?? ''))
     .replaceAll('{{THUMBNAIL}}', String(game.thumbnail ?? '').replace(/^resources\/images\/thumbnails\/all\//, ''))

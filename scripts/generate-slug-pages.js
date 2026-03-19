@@ -2,24 +2,17 @@
 
 const fs = require("fs");
 const path = require("path");
+const gameOutputUtils = require("./game-output-utils");
 
-const SITE_ROOT = "https://www.cheekycommodoregamer.co.uk";
+const SITE_ROOT = gameOutputUtils.SITE_ORIGIN;
 
 const repoRoot = path.resolve(__dirname, "..");
 const gamesDir = path.join(repoRoot, "games");
 const gamesJsonPath = path.join(gamesDir, "games.json");
 const thumbnailsDir = path.join(repoRoot, "resources", "images", "thumbnails", "all");
 
-function slugify(text) {
-    return String(text || "")
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-}
-
 function toGameId(slug) {
-    return String(slug || "").replace(/-/g, "_");
+    return gameOutputUtils.slugToGameId(slug).replace(/-/g, "_");
 }
 
 function stripHtml(text) {
@@ -36,9 +29,7 @@ function escapeHtml(text) {
 }
 
 function normalizeSlug(game) {
-    let slug = game.slug ? slugify(game.slug) : slugify(game.title);
-    if (slug === "smash-t-5" || slug === "smash-t-v") slug = "smash-tv";
-    return slug;
+    return gameOutputUtils.normalizeGameSlug(game.slug, game.title);
 }
 
 function detectPlatform(game) {
@@ -79,7 +70,7 @@ function validateForGeneration(game, slug, gamesBySlug) {
         issues.push(`thumbnail must be ${expectedThumbnail} (found ${thumbnailFile || "empty"})`);
     }
 
-    const canonicalUrl = `${SITE_ROOT}/games/${slug}/`;
+    const canonicalUrl = gameOutputUtils.getGameCanonicalUrl(slug, SITE_ROOT);
     const ogImage = `${SITE_ROOT}/resources/images/thumbnails/all/${expectedThumbnail}`;
 
     if (!canonicalUrl.endsWith(`/games/${slug}/`)) issues.push("canonical URL mismatch");
@@ -139,8 +130,7 @@ function validateGamesForGeneration(games) {
 }
 
 function buildRedirectStubHtml({ slug, title }) {
-    const canonicalPath = `/games/${slug}/`;
-    const canonicalUrl = `${SITE_ROOT}${canonicalPath}`;
+    const { canonicalPath, canonicalUrl, robots } = gameOutputUtils.getGameRedirectStubData(slug, SITE_ROOT);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -155,7 +145,7 @@ window.location.replace("${canonicalPath}" + window.location.search + window.loc
 </script>
 <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
 <meta name="description" content="Redirecting to the canonical Cheeky Commodore Gamer page for ${escapeHtml(title)}.">
-<meta name="robots" content="noindex,follow">
+<meta name="robots" content="${robots}">
 <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
 </head>
 <body></body>
