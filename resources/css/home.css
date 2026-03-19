@@ -1659,41 +1659,6 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
 }
 
 /* ============================================================
-   HOME SUPPORT CTA
-============================================================ */
-
-/* Tighten excessive vertical gap on home CTA */
-.home-support-cta {
-    margin: clamp(32px, 5vw, 56px) auto clamp(36px, 6vw, 64px);
-    max-width: 1020px;
-    padding: 0 clamp(16px, 4vw, 26px);
-}
-
-.home-support-cta__inner {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: clamp(16px, 4vw, 26px);
-}
-
-.home-support-cta__card {
-    position: relative;
-    display: grid;
-    gap: 16px;
-    padding: clamp(18px, 3vw, 26px);
-    border-radius: 20px;
-    background:
-        linear-gradient(150deg, rgba(8, 12, 26, 0.94), rgba(8, 12, 26, 0.82)),
-        radial-gradient(circle at 20% 15%, rgba(var(--accent-rgb), 0.25), transparent 45%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-        0 20px 44px rgba(0, 0, 0, 0.75),
-        0 0 26px rgba(var(--accent-rgb), 0.25),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-    isolation: isolate;
-}
-
-/* ============================================================
    HOME FOOTER MINI STATS (MOBILE-ONLY DISPLAY)
 ============================================================ */
 
@@ -1725,102 +1690,7 @@ body[data-ccg-mode="amiga"] .home-hero[data-hero-mode="amiga"] .home-hero__visua
     opacity: 0.5;
 }
 
-.home-support-cta__card::before {
-    content: "";
-    position: absolute;
-    inset: -40%;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.18), transparent 55%);
-    opacity: 0.25;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.home-support-cta__card > * {
-    position: relative;
-    z-index: 1;
-}
-
-.home-support-cta__copy {
-    margin: 0;
-    color: rgba(235, 240, 255, 0.88);
-    line-height: 1.55;
-    font-size: 0.98rem;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.45);
-}
-
-.home-support-cta__button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px 28px;
-    border-radius: 999px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    border: 1px solid rgba(255,255,255,0.18);
-    background: linear-gradient(145deg, rgba(12,16,32,0.92), rgba(5,8,16,0.78));
-    color: #eef3ff;
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.08),
-        0 12px 28px rgba(0,0,0,0.65),
-        0 0 16px rgba(var(--accent-rgb),0.16);
-    transition:
-        transform var(--ccg-hover-duration) var(--ccg-ease-out-lux),
-        box-shadow var(--ccg-hover-duration) var(--ccg-ease-out-lux),
-        filter var(--ccg-hover-duration) var(--ccg-ease-out-lux),
-        border-color var(--ccg-hover-duration) var(--ccg-ease-out-lux);
-}
-
-.home-support-cta__button--paypal {
-    background:
-        linear-gradient(145deg, rgba(12,16,32,0.92), rgba(5,8,16,0.78)),
-        linear-gradient(135deg, rgba(60, 168, 255, 0.5), rgba(140, 110, 255, 0.4));
-    color: #f3f7ff;
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.1),
-        0 14px 28px rgba(0,0,0,0.7),
-        0 0 20px rgba(70, 160, 255, 0.28);
-}
-
-.home-support-cta__button--youtube {
-    background:
-        linear-gradient(145deg, rgba(12,16,32,0.92), rgba(5,8,16,0.78)),
-        linear-gradient(135deg, rgba(255, 80, 120, 0.5), rgba(255, 40, 80, 0.34));
-    color: #f7f2f5;
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.1),
-        0 14px 28px rgba(0,0,0,0.7),
-        0 0 20px rgba(255, 60, 100, 0.28);
-    font-size: 1.02rem;
-}
-
-.home-support-cta__button:hover,
-.home-support-cta__button:focus-visible {
-    transform: translateY(-1px);
-    border-color: rgba(var(--accent-rgb),0.45);
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.14),
-        0 18px 36px rgba(0,0,0,0.75),
-        0 0 28px rgba(var(--accent-rgb),0.35);
-    filter: brightness(1.06);
-    outline: none;
-}
-
-.home-support-cta__button:active {
-    transform: translateY(1px);
-    box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,0.12),
-        0 10px 22px rgba(0,0,0,0.7),
-        0 0 16px rgba(var(--accent-rgb),0.22);
-}
-
 @media (max-width: 640px) {
-    .home-support-cta__button {
-        width: 100%;
-        padding: 16px 20px;
-        font-size: 0.95rem;
-    }
-
     .home-hero__actions {
         grid-template-columns: 1fr;
     }
@@ -2436,10 +2306,6 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
 
     .home-visitor-callout {
         margin: clamp(18px, 3vw, 32px) auto 4px;
-    }
-
-    .home-support-cta {
-        margin: 12px auto clamp(12px, 2vw, 20px);
     }
 
     .home-bottom-cta {
@@ -3075,10 +2941,6 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
         padding: 14px 14px;
     }
 
-    .home-support-cta {
-        margin: 14px auto 2px;
-    }
-
     .ccg-main--home + .ccg-omega-divider {
         margin: 0 auto;
     }
@@ -3145,4 +3007,73 @@ html[data-ccg-mode="amiga"] .home-bottom-cta__actions .home-cta-main:focus-visib
 }
 html[data-ccg-page="home"] body#top {
     background: linear-gradient(135deg, #05070d 0%, #050812 48%, #05070d 100%);
+}
+
+/* =========================================
+   HOME CTA UPGRADE (MATCH COMPOSER STYLE)
+   ========================================= */
+
+.home-cta-upgrade {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin: 40px 0 30px; /* reduced bottom spacing */
+}
+
+.cta-card {
+  background: rgba(5, 15, 30, 0.85);
+  border: 1px solid rgba(0, 200, 255, 0.25);
+  padding: 22px;
+  text-align: center;
+  transition: all 0.25s ease;
+}
+
+.cta-card:hover {
+  border-color: rgba(0, 200, 255, 0.6);
+  box-shadow: 0 0 18px rgba(0, 200, 255, 0.2);
+}
+
+.cta-text {
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  color: #cfeaff;
+}
+
+/* Ensure buttons match composer pages */
+.home-cta-upgrade .ccg-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  text-decoration: none;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.ccg-btn-blue {
+  border: 1px solid #00d0ff;
+  color: #00d0ff;
+}
+
+.ccg-btn-blue:hover {
+  background: rgba(0, 208, 255, 0.1);
+  box-shadow: 0 0 10px rgba(0, 208, 255, 0.4);
+}
+
+.ccg-btn-red {
+  border: 1px solid #ff2d55;
+  color: #ff2d55;
+}
+
+.ccg-btn-red:hover {
+  background: rgba(255, 45, 85, 0.1);
+  box-shadow: 0 0 10px rgba(255, 45, 85, 0.4);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .home-cta-upgrade {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 }
