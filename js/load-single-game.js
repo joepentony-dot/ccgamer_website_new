@@ -1056,7 +1056,27 @@ async function renderGameMusic(slug, container) {
         : null;
 
     const player = sharedPlayer
-        ? sharedPlayer({ src: audioSrc, playerClass: "ccg-game-audio-player" })
+        ? sharedPlayer({
+            src: audioSrc,
+            playerClass: "ccg-game-audio-player",
+            onError() {
+                container.innerHTML = "";
+                container.dataset.ccgMusicRendered = "false";
+
+                const musicCard = container.closest("#game-music-card");
+                if (musicCard) {
+                    musicCard.hidden = true;
+                }
+
+                const utilityHubSection = container.closest("#game-utility-hub-section");
+                if (utilityHubSection) {
+                    const hasVisibleContent = Array.from(utilityHubSection.children || []).some((child) => {
+                        return child instanceof HTMLElement && !child.hidden;
+                    });
+                    utilityHubSection.hidden = !hasVisibleContent;
+                }
+            }
+        })
         : null;
 
     if (!player) return;

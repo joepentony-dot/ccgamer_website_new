@@ -23,6 +23,12 @@
     source.type = options.sourceType || "audio/mpeg";
     audio.appendChild(source);
 
+    if (typeof options.onError === "function") {
+      audio.addEventListener("error", () => {
+        options.onError(audio);
+      }, { once: true });
+    }
+
     if (!options.wrapperClass) {
       return audio;
     }
