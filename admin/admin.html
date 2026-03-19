@@ -115,6 +115,11 @@
                     <a aria-label="Facebook" href="https://www.facebook.com/cheekycommodoregamer"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
                     <a aria-label="Discord" href="https://discord.gg/83Xw9ktAn4"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
                 </div>
+            <div class="ccg-socials-fallback">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+            </div>
             </div>
         </div>
         <div aria-hidden="true" class="ccg-nav-drawer" data-ccg-nav-drawer="">
@@ -933,5 +938,17 @@ import { injectDeprecatedBanner } from "/admin/js/admin-nav.js?v=admin-stable-20
 injectDeprecatedBanner("Legacy admin — use Games Editor instead");
 </script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'none';
+  });
+});
+window.addEventListener('error', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'flex';
+  });
+});
+</script>
 </body>
 </html>

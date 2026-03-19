@@ -158,6 +158,11 @@
                 <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
                 <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
             </div>
+            <div class="ccg-socials-fallback">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+            </div>
 
         </div>
     </div>
@@ -279,5 +284,17 @@
 <script src="/js/ccg-community-auth.js" defer></script>
 <script src="/js/ccg-auth.js" defer></script>
 <script src="/js/ccg-mode.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'none';
+  });
+});
+window.addEventListener('error', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'flex';
+  });
+});
+</script>
 </body>
 </html>
