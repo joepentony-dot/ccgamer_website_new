@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: seo-automation-${{ github.ref }}
@@ -43,8 +43,18 @@ jobs:
       - name: Verify SEO outputs
         run: node scripts/verify-seo.mjs
 
-      - name: Ensure generated SEO assets are committed
-        run: git diff --exit-code -- robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml
+      - name: Commit updated SEO assets (if changed)
+        run: |
+          if ! git diff --quiet -- robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml; then
+            echo "SEO files changed — committing updates"
+            git config user.name "github-actions"
+            git config user.email "github-actions@github.com"
+            git add robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml
+            git commit -m "Auto-update SEO assets [skip ci]"
+            git push
+          else
+            echo "No SEO changes detected"
+          fi
 
       - name: Upload SEO artifacts
         if: always()
