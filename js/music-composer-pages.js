@@ -762,6 +762,17 @@
           await renderComposerProfile(composer, bucket);
           await renderComposerGames(bucket, composer.name);
           renderComposerChips(registry, stats, composer.slug);
+
+          if (typeof window.ccgSchemaComposer === "function") {
+            window.ccgSchemaComposer(composer.name, bucket.games);
+          }
+          if (typeof window.ccgSchemaBreadcrumb === "function") {
+            window.ccgSchemaBreadcrumb([
+              { name: "Home", url: "https://www.cheekycommodoregamer.co.uk/" },
+              { name: "Music Hub", url: "https://www.cheekycommodoregamer.co.uk/music/" },
+              { name: composer.name, url: `https://www.cheekycommodoregamer.co.uk${getComposerUrl(composer, composer.name)}` }
+            ]);
+          }
         } else {
           await renderComposerGames(bucket, selection.requestedName || "this composer");
           renderComposerChips(registry, stats, "");
