@@ -887,7 +887,7 @@ a:hover {
 
 @media (max-width: 768px) {
     .ccg-header {
-        overflow: hidden;
+        overflow: visible;
     }
 
     .ccg-header::after {
@@ -2469,6 +2469,8 @@ html.ccg-perf-paused [data-ccg-wow] {
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    z-index: 50;
 }
 
 .ccg-mode-toggle {
@@ -2757,7 +2759,7 @@ body.ccg-is-mobile .home-hero__bg {
 
         isolation: isolate;
         contain: layout paint;
-        overflow: hidden;
+        overflow: visible;
 
         transform: translateZ(0);
         backface-visibility: hidden;
@@ -2777,7 +2779,7 @@ body.ccg-is-mobile .home-hero__bg {
     ---------------------------------------- */
     .ccg-header-inner {
         max-width: 100%;
-        overflow: hidden;
+        overflow: visible;
         contain: layout paint;
     }
 
@@ -2787,7 +2789,7 @@ body.ccg-is-mobile .home-hero__bg {
     .ccg-nav,
     .ccg-header-actions {
         max-width: 100%;
-        overflow: hidden;
+        overflow: visible;
     }
 
     /* ----------------------------------------
@@ -4316,5 +4318,28 @@ body.ccg-crt::before {
     * {
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* FORCE SOCIALS VISIBILITY FIX */
+.socials,
+.social-icons,
+.ccg-socials,
+.ccg-header-socials {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    z-index: 50;
+}
+
+@media (max-width: 768px) {
+    .socials,
+    .social-icons,
+    .ccg-socials,
+    .ccg-header-socials {
+        margin-top: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 }
