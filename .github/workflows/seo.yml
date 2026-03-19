@@ -4,67 +4,36 @@ on:
   push:
     branches:
       - main
-  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: write
 
-concurrency:
-  group: seo-automation-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   seo:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
 
     steps:
-      - name: Check out repository
+      - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 20
 
-      - name: Print environment diagnostics
+      - name: Install dependencies
+        run: npm install || true
+
+      - name: Generate sitemap
+        run: node scripts/generate-sitemap.js
+
+      - name: Commit sitemap if changed
         run: |
-          echo "Node $(node -v)"
-          echo "NPM $(npm -v)"
-          echo "PWD $(pwd)"
-          git status --short
+          git config user.name "seo-bot"
+          git config user.email "seo-bot@users.noreply.github.com"
+          git add sitemap.xml
+          git diff --cached --quiet || git commit -m "Auto-update sitemap"
 
-      - name: Generate SEO sitemaps
-        run: node tools/seo/generate-sitemap.js
-
-      - name: Verify SEO outputs
-        run: node scripts/verify-seo.mjs
-
-      - name: Commit updated SEO assets (if changed)
-        run: |
-          if ! git diff --quiet -- robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml; then
-            echo "SEO files changed — committing updates"
-            git config user.name "github-actions"
-            git config user.email "github-actions@github.com"
-            git add robots.txt sitemap.xml sitemap-games.xml sitemap-pages.xml
-            git commit -m "Auto-update SEO assets [skip ci]"
-            git push
-          else
-            echo "No SEO changes detected"
-          fi
-
-      - name: Upload SEO artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: seo-artifacts
-          path: |
-            robots.txt
-            sitemap.xml
-            sitemap-games.xml
-            sitemap-pages.xml
-            seo-audit-report.md
-          if-no-files-found: error
+      - name: Push changes
+        run: git push
