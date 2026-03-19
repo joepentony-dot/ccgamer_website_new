@@ -4,6 +4,7 @@ const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
 const LANDING_TEMPLATE_PATH = '/admin/templates/game-landing-template.html';
 const REDIRECT_TEMPLATE_PATH = '/admin/templates/game-redirect-template.html';
+const GAME_OUTPUT_UTILS_PATH = '/scripts/game-output-utils.js';
 
 const REQUIRED_GENRE_VALUES = [
   'action adventure',
@@ -76,7 +77,8 @@ const state = {
   slugManuallyEdited: false,
   siteSettings: {
     facebookAppId: ''
-  }
+  },
+  gameOutputUtils: null
 };
 
 const el = {
@@ -126,7 +128,7 @@ init();
 async function init() {
   hydrateFilenameOnlyModePreference();
   bindEvents();
-  await Promise.all([loadLibrary(), loadTemplates(), loadSiteSettings()]);
+  await Promise.all([loadGameOutputUtils(), loadLibrary(), loadTemplates(), loadSiteSettings()]);
   updateDerivedPreviews();
   renderStep();
 }
@@ -506,9 +508,13 @@ function validateStep1() {
   }
 
 
-  const slug = String(state.draft.slug || '').trim().toLowerCase();
-  if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+  const rawSlug = String(state.draft.slug || '').trim();
+  const slug = rawSlug ? normalizeGameSlug(rawSlug, state.draft.title) : '';
+  if (rawSlug && !getGameOutputUtils().isValidGameSlug(slug)) {
     errors.push('Slug must be lowercase kebab-case.');
+  }
+  if (rawSlug && slug !== rawSlug) {
+    errors.push(`Slug normalizes to "${slug}". Update the slug field to match the canonical format.`);
   }
 
   const id = String(state.draft.id || '').trim().toLowerCase();
@@ -582,7 +588,7 @@ async function fileExists(url) {
 }
 
 async function validateRequiredFiles() {
-  const slug = String(state.draft.slug || '').trim();
+  const slug = normalizeGameSlug(String(state.draft.slug || '').trim(), state.draft.title);
   if (!slug) return { ok: false, message: 'Slug is required before file validation.' };
 
   const thumbnailUrl = `/resources/images/thumbnails/all/${slug}.jpg`;
@@ -640,6 +646,11 @@ function normalizeSeoPlatformLabel(system) {
   return String(system || '').trim().toUpperCase() === 'AMIGA' ? 'Amiga' : 'Commodore 64';
 }
 
+function getGameOutputUtils() {
+  if (!state.gameOutputUtils) throw new Error('Shared game output utility is not loaded.');
+  return state.gameOutputUtils;
+}
+
 function buildSeoTitleFromDraft() {
   const title = String(state.draft.title || '').trim();
   const platform = normalizeSeoPlatformLabel(state.draft.system);
@@ -671,10 +682,11 @@ function validateStep3() {
 }
 
 function buildPackageData() {
-  const slug = state.draft.slug.trim();
+  const utils = getGameOutputUtils();
+  const slug = utils.normalizeGameSlug(state.draft.slug.trim(), state.draft.title.trim());
   const id = state.draft.id.trim();
   const title = state.draft.title.trim();
-  const gameUrl = `${SITE_ORIGIN}/games/${encodeURIComponent(slug)}/`;
+  const gameUrl = utils.getGameCanonicalUrl(slug, SITE_ORIGIN);
   const seoTitle = buildSeoTitleFromDraft();
   const seoDescription = buildSeoDescriptionFromDraft();
   const system = state.draft.system.trim();
@@ -791,6 +803,31 @@ async function loadTemplates() {
   state.templates.redirect = redirect;
 }
 
+async function loadGameOutputUtils() {
+  await new Promise((resolve, reject) => {
+    const existing = window.CCGGameOutputUtils;
+    if (existing) {
+      state.gameOutputUtils = existing;
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `${GAME_OUTPUT_UTILS_PATH}?v=${Date.now()}`;
+    script.async = true;
+    script.onload = () => {
+      if (window.CCGGameOutputUtils) {
+        state.gameOutputUtils = window.CCGGameOutputUtils;
+        resolve();
+        return;
+      }
+      reject(new Error('Shared game output utility did not attach to window.'));
+    };
+    script.onerror = () => reject(new Error(`Could not load shared utility: ${GAME_OUTPUT_UTILS_PATH}`));
+    document.head.appendChild(script);
+  });
+}
+
 async function fetchTemplate(path) {
   const response = await fetch(path, { cache: 'no-store' });
   if (!response.ok) throw new Error(`Could not load template: ${path}`);
@@ -798,12 +835,15 @@ async function fetchTemplate(path) {
 }
 
 function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription }) {
+  const utils = getGameOutputUtils();
+  const seoUrls = utils.getGameSeoUrls(slug, SITE_ORIGIN);
   return {
     GAME_NAME: cleanForHtml(title),
     YEAR: String(year),
     PUBLISHER: cleanForHtml(publisherForSeo),
     PLATFORM: cleanForHtml(system),
     SLUG: cleanForHtml(slug),
+    CANONICAL_URL: cleanForHtml(seoUrls.canonicalUrl),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
     THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
     DESCRIPTION: cleanForHtml(seoDescription),
@@ -877,7 +917,7 @@ async function fetchLemonData() {
       }
     }
 
-    if (title) updateSlugAuto(slugify(title));
+    if (title) updateSlugAuto(normalizeGameSlug(title));
     if (!state.idTouched && title) setFieldValue('id', idify(title));
 
     updateStep1UiState();
@@ -970,12 +1010,14 @@ function buildGamesSearch(games) {
 }
 
 function updateDerivedPreviews() {
-  const slug = String(state.draft.slug || '').trim();
+  const rawSlug = String(state.draft.slug || '').trim();
+  const slug = normalizeGameSlug(rawSlug || state.draft.title || '');
   const thumbnailPath = normalizeThumbnailPath(state.draft.thumbnail, slug || 'game-slug');
+  const canonicalPath = slug ? getGameOutputUtils().getGameCanonicalPath(slug) : '/games/[slug]/';
   if (el.previewSlug) el.previewSlug.textContent = slug || '—';
   if (el.previewThumbnailPath) el.previewThumbnailPath.textContent = thumbnailPath;
-  if (el.previewLandingUrl) el.previewLandingUrl.textContent = `/games/${slug || '[slug]'}/`;
-  if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = `/games/${slug || '[slug]'}/`;
+  if (el.previewLandingUrl) el.previewLandingUrl.textContent = canonicalPath;
+  if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = canonicalPath;
   if (el.previewThumbnailStatus) {
     el.previewThumbnailStatus.textContent = thumbnailPath ? `Will store: ${thumbnailPath}` : 'No thumbnail set.';
   }
@@ -1339,7 +1381,7 @@ function hydrateFilenameOnlyModePreference() {
 function buildFullGamesSitemap(games) {
   const todayIso = new Date().toISOString().split('T')[0];
   const urlLines = (Array.isArray(games) ? games : []).map((game) => {
-    const slug = String(game?.slug || '').trim();
+    const slug = normalizeGameSlug(String(game?.slug || '').trim());
     if (!slug) return '';
 
     const updated = String(game?.updated || '').trim();
@@ -1349,7 +1391,7 @@ function buildFullGamesSitemap(games) {
       : todayIso;
 
     return `  <url>
-    <loc>${escapeXml(`${SITE_ORIGIN}/games/${slug}/`)}</loc>
+    <loc>${escapeXml(getGameOutputUtils().formatGameSitemapUrl(slug, SITE_ORIGIN))}</loc>
     <lastmod>${escapeXml(lastmod)}</lastmod>
   </url>`;
   }).filter(Boolean);
@@ -1373,14 +1415,12 @@ function setStep1ContinueState(enabled) {
   button.setAttribute('aria-disabled', String(!enabled));
 }
 
+function normalizeGameSlug(value, fallbackValue = '') {
+  return getGameOutputUtils().normalizeGameSlug(value, fallbackValue);
+}
+
 function slugify(value) {
-  return String(value || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+  return normalizeGameSlug(value);
 }
 
 function normalizeRatingValue(value) {
@@ -1392,7 +1432,7 @@ function normalizeRatingValue(value) {
 }
 
 function idify(value) {
-  return slugify(value).replace(/-/g, '_');
+  return getGameOutputUtils().slugToGameId(value);
 }
 
 function isValidUrl(value) {
