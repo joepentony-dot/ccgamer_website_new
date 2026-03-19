@@ -153,6 +153,78 @@ window.location.replace("${canonicalPath}" + window.location.search + window.loc
 `;
 }
 
+function extractTagValue(html, pattern) {
+    const match = String(html || "").match(pattern);
+    return match ? match[1].trim() : "";
+}
+
+function normalizeHtmlForComparison(html) {
+    return String(html || "").replace(/\r\n/g, "\n").trim();
+}
+
+function getExpectedPageArtifacts(game, slug, validation) {
+    const title = stripHtml(game.title || "Game");
+    const year = stripHtml(game.year || "Unknown Year");
+    const publisher = stripHtml(game.publisher || game.developer || "Unknown Publisher");
+    const platformLong = detectPlatform(game);
+    const platformShort = normalizePlatformShort(game);
+    const description = buildDescription(game, title, platformLong);
+
+    return {
+        title,
+        year,
+        publisher,
+        platformLong,
+        platformShort,
+        description,
+        stubHtml: buildRedirectStubHtml({ slug, title }),
+        canonicalHtml: buildCanonicalHtml({
+            slug,
+            game,
+            title,
+            description,
+            canonicalUrl: validation.canonicalUrl,
+            ogImage: validation.ogImage,
+            year,
+            publisher,
+            platformLong,
+            platformShort
+        })
+    };
+}
+
+function getCanonicalRewriteReason(filePath, expected) {
+    if (!fs.existsSync(filePath)) return "missing canonical page";
+
+    const html = fs.readFileSync(filePath, "utf8");
+    const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+    const ogUrl = extractTagValue(html, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
+
+    if (canonical !== expected.canonicalUrl) return "canonical mismatch";
+    if (ogUrl !== expected.canonicalUrl) return "og:url mismatch";
+
+    if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.canonicalHtml)) {
+        return "metadata outdated";
+    }
+
+    return "";
+}
+
+function getStubRewriteReason(filePath, expected) {
+    if (!fs.existsSync(filePath)) return "missing redirect stub";
+
+    const html = fs.readFileSync(filePath, "utf8");
+    const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+
+    if (canonical !== expected.canonicalUrl) return "canonical mismatch";
+
+    if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.stubHtml)) {
+        return "metadata outdated";
+    }
+
+    return "";
+}
+
 
 function toTokenList(value) {
     if (Array.isArray(value)) {
@@ -361,10 +433,6 @@ function main() {
         const canonicalPath = path.join(outputDir, "index.html");
         const stubPath = path.join(gamesDir, `${slug}.html`);
 
-        if (fs.existsSync(canonicalPath) && fs.existsSync(stubPath)) {
-            continue;
-        }
-
         const validation = validateForGeneration(game, slug, gamesBySlug);
         if (validation.issues.length) {
             console.error(`[ERROR] ${slug || game.title || "unknown"}: ${validation.issues.join("; ")}`);
@@ -372,54 +440,62 @@ function main() {
             process.exit(1);
         }
 
-        planned.push({ game, slug, outputDir, canonicalPath, stubPath, ...validation });
-    }
+        const expected = getExpectedPageArtifacts(game, slug, validation);
+        const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected });
+        const stubReason = getStubRewriteReason(stubPath, { ...validation, ...expected });
 
-    let created = 0;
-
-    for (const item of planned) {
-        const game = item.game;
-        const title = stripHtml(game.title || "Game");
-        const year = stripHtml(game.year || "Unknown Year");
-        const publisher = stripHtml(game.publisher || game.developer || "Unknown Publisher");
-        const platformLong = detectPlatform(game);
-        const platformShort = normalizePlatformShort(game);
-        const description = buildDescription(game, title, platformLong);
-
-        fs.mkdirSync(item.outputDir, { recursive: true });
-
-        if (!fs.existsSync(item.stubPath)) {
-            fs.writeFileSync(item.stubPath, buildRedirectStubHtml({ slug: item.slug, title }), "utf8");
-            created += 1;
-            console.log(`[CREATE] games/${item.slug}.html`);
+        if (!canonicalReason && !stubReason) {
+            continue;
         }
 
-        if (!fs.existsSync(item.canonicalPath)) {
-            fs.writeFileSync(
-                item.canonicalPath,
-                buildCanonicalHtml({
-                    slug: item.slug,
-                    game,
-                    title,
-                    description,
-                    canonicalUrl: item.canonicalUrl,
-                    ogImage: item.ogImage,
-                    year,
-                    publisher,
-                    platformLong,
-                    platformShort
-                }),
-                "utf8"
-            );
-            created += 1;
-            console.log(`[CREATE] games/${item.slug}/index.html`);
+        planned.push({
+            game,
+            slug,
+            outputDir,
+            canonicalPath,
+            stubPath,
+            canonicalReason,
+            stubReason,
+            ...validation,
+            ...expected
+        });
+    }
+
+    let written = 0;
+
+    for (const item of planned) {
+        fs.mkdirSync(item.outputDir, { recursive: true });
+
+        if (item.stubReason) {
+            fs.writeFileSync(item.stubPath, item.stubHtml, "utf8");
+            written += 1;
+            console.log(`[WRITE] games/${item.slug}.html (${item.stubReason})`);
+        }
+
+        if (item.canonicalReason) {
+            fs.writeFileSync(item.canonicalPath, item.canonicalHtml, "utf8");
+            written += 1;
+            console.log(`[WRITE] games/${item.slug}/index.html (${item.canonicalReason})`);
         }
     }
 
     console.log(`
 Summary:
 Planned slugs: ${planned.length}
-Files created: ${created}`);
+Files written: ${written}`);
 }
 
-main();
+if (require.main === module) {
+    main();
+}
+
+module.exports = {
+    buildCanonicalHtml,
+    buildRedirectStubHtml,
+    buildDescription,
+    getCanonicalRewriteReason,
+    getExpectedPageArtifacts,
+    getStubRewriteReason,
+    normalizeSlug,
+    validateForGeneration
+};
