@@ -280,9 +280,9 @@ function bindEvents() {
         setRebuildStatus('Rebuild request sent successfully.', false);
         return;
       }
-      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+      setRebuildStatus('Could not run incremental refresh from browser. Run in terminal: node scripts/build-games.js', true);
     } catch (error) {
-      setRebuildStatus('Could not run rebuild from browser. Run in terminal: node scripts/rebuild-games.js', true);
+      setRebuildStatus('Could not run incremental refresh from browser. Run in terminal: node scripts/build-games.js', true);
     }
   });
 
@@ -686,7 +686,8 @@ function buildPackageData() {
   const slug = utils.normalizeGameSlug(state.draft.slug.trim(), state.draft.title.trim());
   const id = state.draft.id.trim();
   const title = state.draft.title.trim();
-  const gameUrl = utils.getGameCanonicalUrl(slug, SITE_ORIGIN);
+  const seoUrls = utils.getGameSeoUrls(slug, SITE_ORIGIN);
+  const gameUrl = seoUrls.canonicalUrl;
   const seoTitle = buildSeoTitleFromDraft();
   const seoDescription = buildSeoDescriptionFromDraft();
   const system = state.draft.system.trim();
@@ -737,6 +738,11 @@ function buildPackageData() {
   const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription });
   const flatSeoStub = renderTemplate(state.templates.redirect, templateVars);
   const folderRedirect = renderTemplate(state.templates.landing, templateVars);
+
+  const seoValidationErrors = validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, flatSeoStub, folderRedirect });
+  if (seoValidationErrors.length) {
+    throw new Error(seoValidationErrors.join(' | '));
+  }
 
   const mergedGames = mergeGamesJson(gameEntry, state.library);
   const gamesJsonOutput = state.draft.jsonExportMode === 'full'
@@ -951,6 +957,35 @@ function renderTemplate(template, vars) {
     output = output.replaceAll(`{{${key}}}`, value);
   });
   return output;
+}
+
+function readMetaValue(html, pattern) {
+  const match = String(html || '').match(pattern);
+  return match ? match[1].trim() : '';
+}
+
+function validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, flatSeoStub, folderRedirect }) {
+  const errors = [];
+  const canonicalPath = getGameOutputUtils().getGameCanonicalPath(slug);
+  const canonical = readMetaValue(folderRedirect, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+  const ogUrl = readMetaValue(folderRedirect, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
+  const twitterUrl = readMetaValue(folderRedirect, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
+  const description = readMetaValue(folderRedirect, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
+  const stubCanonical = readMetaValue(flatSeoStub, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+  const stubRobots = readMetaValue(flatSeoStub, /<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i).toLowerCase();
+  const stubRedirect = readMetaValue(flatSeoStub, /<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i);
+
+  if (!getGameOutputUtils().isValidGameSlug(slug)) errors.push('Slug is invalid for canonical publishing.');
+  if (!String(seoDescription || '').trim()) errors.push('Required metadata missing: description.');
+  if (canonical !== seoUrls.canonicalUrl) errors.push('Canonical mismatch in generated landing page.');
+  if (ogUrl !== seoUrls.ogUrl) errors.push('og:url mismatch in generated landing page.');
+  if (twitterUrl !== seoUrls.twitterUrl) errors.push('twitter:url mismatch in generated landing page.');
+  if (!description) errors.push('Required metadata missing from generated landing page.');
+  if (stubCanonical !== seoUrls.canonicalUrl) errors.push('Redirect stub canonical mismatch.');
+  if (stubRobots !== 'noindex,follow') errors.push('Redirect stub must be noindex,follow.');
+  if (stubRedirect !== canonicalPath) errors.push('Redirect stub would be missing or point to the wrong canonical path.');
+
+  return errors;
 }
 
 function buildGamesIndex(games) {
@@ -1380,9 +1415,11 @@ function hydrateFilenameOnlyModePreference() {
 
 function buildFullGamesSitemap(games) {
   const todayIso = new Date().toISOString().split('T')[0];
+  const seen = new Set();
   const urlLines = (Array.isArray(games) ? games : []).map((game) => {
     const slug = normalizeGameSlug(String(game?.slug || '').trim());
-    if (!slug) return '';
+    if (!slug || seen.has(slug)) return '';
+    seen.add(slug);
 
     const updated = String(game?.updated || '').trim();
     const parsedUpdated = updated ? new Date(updated) : null;

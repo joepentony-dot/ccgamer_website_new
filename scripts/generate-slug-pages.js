@@ -10,6 +10,7 @@ const repoRoot = path.resolve(__dirname, "..");
 const gamesDir = path.join(repoRoot, "games");
 const gamesJsonPath = path.join(gamesDir, "games.json");
 const thumbnailsDir = path.join(repoRoot, "resources", "images", "thumbnails", "all");
+const RESERVED_GAME_DIRS = new Set(["collections", "genres"]);
 
 function toGameId(slug) {
     return gameOutputUtils.slugToGameId(slug).replace(/-/g, "_");
@@ -52,8 +53,8 @@ function buildDescription(game, title, platform) {
 
 function getThumbnailFilename(game, slug) {
     const raw = String(game.thumbnail || "").trim();
-    const expected = `${slug.replace(/-/g, "_")}_europe.jpg`;
-    if (!raw) return expected;
+    const fallback = `${slug.replace(/-/g, "_")}_europe.jpg`;
+    if (!raw) return fallback;
     return raw.includes("/") ? path.basename(raw) : raw;
 }
 
@@ -65,14 +66,12 @@ function validateForGeneration(game, slug, gamesBySlug) {
     if (!gamesBySlug.has(slug)) issues.push("games.json entry lookup failed for slug");
 
     const thumbnailFile = getThumbnailFilename(game, slug);
-    const expectedThumbnail = `${slug.replace(/-/g, "_")}_europe.jpg`;
-    if (thumbnailFile !== expectedThumbnail) {
-        issues.push(`thumbnail must be ${expectedThumbnail} (found ${thumbnailFile || "empty"})`);
-    }
-
+    const expectedThumbnail = thumbnailFile;
     const canonicalUrl = gameOutputUtils.getGameCanonicalUrl(slug, SITE_ROOT);
     const ogImage = `${SITE_ROOT}/resources/images/thumbnails/all/${expectedThumbnail}`;
 
+    if (!thumbnailFile) issues.push('missing thumbnail');
+    if (!fs.existsSync(path.join(thumbnailsDir, expectedThumbnail))) issues.push(`missing thumbnail file ${expectedThumbnail}`);
     if (!canonicalUrl.endsWith(`/games/${slug}/`)) issues.push("canonical URL mismatch");
     if (!ogImage.endsWith(`/resources/images/thumbnails/all/${expectedThumbnail}`)) issues.push("OpenGraph image path mismatch");
 
@@ -199,9 +198,17 @@ function getCanonicalRewriteReason(filePath, expected) {
     const html = fs.readFileSync(filePath, "utf8");
     const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
     const ogUrl = extractTagValue(html, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
+    const twitterUrl = extractTagValue(html, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
+    const title = extractTagValue(html, /<title>([^<]*)<\/title>/i);
+    const description = extractTagValue(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
+    const expectedTitle = extractTagValue(expected.canonicalHtml, /<title>([^<]*)<\/title>/i);
+    const expectedDescription = extractTagValue(expected.canonicalHtml, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
 
     if (canonical !== expected.canonicalUrl) return "canonical mismatch";
     if (ogUrl !== expected.canonicalUrl) return "og:url mismatch";
+    if (twitterUrl !== expected.canonicalUrl) return "twitter:url mismatch";
+    if (title !== expectedTitle) return "title metadata changed";
+    if (description !== expectedDescription) return "description metadata changed";
 
     if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.canonicalHtml)) {
         return "metadata outdated";
@@ -215,8 +222,13 @@ function getStubRewriteReason(filePath, expected) {
 
     const html = fs.readFileSync(filePath, "utf8");
     const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+    const robots = extractTagValue(html, /<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i).toLowerCase();
+    const redirect = extractTagValue(html, /<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i);
+    const expectedRedirect = gameOutputUtils.getGameRedirectStubData(expected.slug, SITE_ROOT).redirectTarget;
 
     if (canonical !== expected.canonicalUrl) return "canonical mismatch";
+    if (robots !== "noindex,follow") return "robots mismatch";
+    if (redirect !== expectedRedirect) return "redirect target mismatch";
 
     if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.stubHtml)) {
         return "metadata outdated";
@@ -224,7 +236,6 @@ function getStubRewriteReason(filePath, expected) {
 
     return "";
 }
-
 
 function toTokenList(value) {
     if (Array.isArray(value)) {
@@ -333,6 +344,7 @@ function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogIm
 <meta name="twitter:title" content="${escapeHtml(seoTitle)}">
 <meta name="twitter:description" content="${escapeHtml(description)}">
 <meta name="twitter:image" content="${escapeHtml(ogImage)}">
+<meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../favicon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -401,22 +413,41 @@ ${JSON.stringify(schemaData, null, 2)}
 `;
 }
 
-function main() {
-    let games;
-    try {
-        games = JSON.parse(fs.readFileSync(gamesJsonPath, "utf8"));
-    } catch (err) {
-        console.error(`[ERROR] Failed to read games.json: ${err.message}`);
-        process.exit(1);
-    }
+function writeTextFileIfChanged(filePath, content) {
+    const next = String(content);
+    const previous = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : null;
+    if (previous === next) return false;
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    fs.writeFileSync(filePath, next, "utf8");
+    return true;
+}
 
+function findStaleGameOutputs(activeSlugs) {
+    const stale = [];
+    fs.readdirSync(gamesDir, { withFileTypes: true }).forEach((entry) => {
+        if (entry.name === "index.html" || entry.name === "games.json" || entry.name === "games-index.json" || entry.name === "games-search.json") return;
+        if (entry.isDirectory()) {
+            if (RESERVED_GAME_DIRS.has(entry.name)) return;
+            if (!activeSlugs.has(entry.name)) {
+                stale.push({ type: "canonical", slug: entry.name, filePath: path.join(gamesDir, entry.name) });
+            }
+            return;
+        }
+        if (!entry.isFile() || !entry.name.endsWith(".html")) return;
+        const slug = entry.name.replace(/\.html$/i, "");
+        if (!activeSlugs.has(slug)) {
+            stale.push({ type: "stub", slug, filePath: path.join(gamesDir, entry.name) });
+        }
+    });
+    return stale;
+}
+
+function planChangedGames(games) {
     const preflightErrors = validateGamesForGeneration(games);
     if (preflightErrors.length > 0) {
-        console.error("[ERROR] Generation aborted. games.json validation failed:");
-        for (const error of preflightErrors) {
-            console.error(` - ${error}`);
-        }
-        process.exit(1);
+        const error = new Error(`Generation aborted. games.json validation failed:\n - ${preflightErrors.join("\n - ")}`);
+        error.validationErrors = preflightErrors;
+        throw error;
     }
 
     const gamesBySlug = new Map();
@@ -426,27 +457,24 @@ function main() {
     }
 
     const planned = [];
-
     for (const game of games) {
         const slug = normalizeSlug(game);
         const outputDir = path.join(gamesDir, slug);
         const canonicalPath = path.join(outputDir, "index.html");
         const stubPath = path.join(gamesDir, `${slug}.html`);
-
         const validation = validateForGeneration(game, slug, gamesBySlug);
+
         if (validation.issues.length) {
-            console.error(`[ERROR] ${slug || game.title || "unknown"}: ${validation.issues.join("; ")}`);
-            console.error("[ABORT] Validation failed. No files were generated.");
-            process.exit(1);
+            const error = new Error(`${slug || game.title || "unknown"}: ${validation.issues.join("; ")}`);
+            error.validationErrors = validation.issues;
+            throw error;
         }
 
         const expected = getExpectedPageArtifacts(game, slug, validation);
-        const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected });
-        const stubReason = getStubRewriteReason(stubPath, { ...validation, ...expected });
+        const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected, slug });
+        const stubReason = getStubRewriteReason(stubPath, { ...validation, ...expected, slug });
 
-        if (!canonicalReason && !stubReason) {
-            continue;
-        }
+        if (!canonicalReason && !stubReason) continue;
 
         planned.push({
             game,
@@ -461,28 +489,59 @@ function main() {
         });
     }
 
+    return {
+        planned,
+        stale: findStaleGameOutputs(new Set(gamesBySlug.keys()))
+    };
+}
+
+function processChangedGamesOnly(games) {
+    const { planned, stale } = planChangedGames(games);
     let written = 0;
+    let removed = 0;
+
+    for (const item of stale) {
+        fs.rmSync(item.filePath, { recursive: true, force: true });
+        removed += 1;
+        console.log(`[REMOVE] ${path.relative(repoRoot, item.filePath).split(path.sep).join("/")} (removed from games.json)`);
+    }
 
     for (const item of planned) {
         fs.mkdirSync(item.outputDir, { recursive: true });
 
-        if (item.stubReason) {
-            fs.writeFileSync(item.stubPath, item.stubHtml, "utf8");
+        if (item.stubReason && writeTextFileIfChanged(item.stubPath, item.stubHtml)) {
             written += 1;
             console.log(`[WRITE] games/${item.slug}.html (${item.stubReason})`);
         }
 
-        if (item.canonicalReason) {
-            fs.writeFileSync(item.canonicalPath, item.canonicalHtml, "utf8");
+        if (item.canonicalReason && writeTextFileIfChanged(item.canonicalPath, item.canonicalHtml)) {
             written += 1;
             console.log(`[WRITE] games/${item.slug}/index.html (${item.canonicalReason})`);
         }
     }
 
-    console.log(`
-Summary:
-Planned slugs: ${planned.length}
-Files written: ${written}`);
+    return { planned: planned.length, written, removed };
+}
+
+function readGamesFromDisk() {
+    try {
+        return JSON.parse(fs.readFileSync(gamesJsonPath, "utf8"));
+    } catch (err) {
+        console.error(`[ERROR] Failed to read games.json: ${err.message}`);
+        process.exit(1);
+    }
+}
+
+function main() {
+    let result;
+    try {
+        result = processChangedGamesOnly(readGamesFromDisk());
+    } catch (error) {
+        console.error(`[ERROR] ${error.message}`);
+        process.exit(1);
+    }
+
+    console.log(`\nSummary:\nProcessed slugs: ${result.planned}\nFiles written: ${result.written}\nStale outputs removed: ${result.removed}`);
 }
 
 if (require.main === module) {
@@ -497,5 +556,8 @@ module.exports = {
     getExpectedPageArtifacts,
     getStubRewriteReason,
     normalizeSlug,
-    validateForGeneration
+    planChangedGames,
+    processChangedGamesOnly,
+    validateForGeneration,
+    validateGamesForGeneration
 };
