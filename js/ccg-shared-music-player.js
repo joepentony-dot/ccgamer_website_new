@@ -39,8 +39,10 @@
     audio.setAttribute("aria-hidden", "true");
     audio.tabIndex = -1;
 
+    // ALWAYS build UI
     const playerUI = document.createElement("div");
     playerUI.className = "ccg-omega-player";
+
     playerUI.innerHTML = `
       <button class="ccg-btn-play" type="button" aria-label="Play or pause track">▶</button>
       <div class="ccg-progress-wrap" role="progressbar" aria-label="Track progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -84,15 +86,25 @@
       }
     });
     audio.addEventListener("loadedmetadata", () => {
+      if (!audio.duration || Number.isNaN(audio.duration)) {
+        playerUI.style.display = "none";
+        return;
+      }
+      playerUI.style.display = "";
       if (timeDisplay) {
         timeDisplay.textContent = formatTime(audio.currentTime);
       }
     });
     audio.addEventListener("timeupdate", () => {
-      const percent = (audio.currentTime / audio.duration) * 100 || 0;
-      progressBar.style.width = `${percent}%`;
+      if (!audio.duration) return;
+
+      const percent = (audio.currentTime / audio.duration) * 100;
+      progressBar.style.width = percent + "%";
       progressWrap.setAttribute("aria-valuenow", `${Math.round(percent)}`);
-      timeDisplay.textContent = formatTime(audio.currentTime);
+
+      const mins = Math.floor(audio.currentTime / 60);
+      const secs = Math.floor(audio.currentTime % 60).toString().padStart(2, "0");
+      timeDisplay.textContent = `${mins}:${secs}`;
     });
 
     progressWrap.addEventListener("click", (event) => {

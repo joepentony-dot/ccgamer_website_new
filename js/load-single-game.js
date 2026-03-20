@@ -1081,6 +1081,7 @@ async function renderGameMusic(slug, container) {
 
     if (!player) return;
 
+    container.innerHTML = "";
     container.appendChild(player);
     container.dataset.ccgMusicRendered = "true";
 

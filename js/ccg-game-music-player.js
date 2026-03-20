@@ -10,48 +10,23 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
     ? window.CCGSharedMusicPlayer.createAudioPlayer
     : null;
 
-  if (sharedPlayer) {
-    const player = sharedPlayer({
-      src: url,
-      playerClass: "ccg-game-audio-player",
-      wrapperClass: "game-music",
-      onError() {
-        if (container && container.parentNode) {
-          container.parentNode.removeChild(container);
-        }
-      }
-    });
-
-    if (player) {
-      container.appendChild(player);
-    }
+  if (!sharedPlayer) {
     return;
   }
 
-  // Create audio element
-  const audio = document.createElement("audio");
-  audio.controls = false;
-  audio.preload = "none";
-  audio.style.width = "100%";
-
-  // Create source
-  const source = document.createElement("source");
-  source.src = url;
-  source.type = "audio/mpeg";
-
-  audio.appendChild(source);
-
-  // If file fails to load, remove player cleanly
-  audio.addEventListener("error", () => {
-    if (container && container.parentNode) {
-      container.parentNode.removeChild(container);
+  const player = sharedPlayer({
+    src: url,
+    playerClass: "ccg-game-audio-player",
+    wrapperClass: "game-music",
+    onError() {
+      if (container && container.parentNode) {
+        container.parentNode.removeChild(container);
+      }
     }
   });
 
-  // Wrapper for styling consistency
-  const wrapper = document.createElement("div");
-  wrapper.className = "game-music";
-
-  wrapper.appendChild(audio);
-  container.appendChild(wrapper);
+  if (player) {
+    container.innerHTML = "";
+    container.appendChild(player);
+  }
 };
