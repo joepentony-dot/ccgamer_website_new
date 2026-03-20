@@ -1037,53 +1037,26 @@ function resolveComposerSlug(name) {
     return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
-async function renderGameMusic(slug, container) {
+function renderGameMusic(slug, container) {
     if (!slug || !container) return;
     if (container.dataset.ccgMusicRendered === "true") return;
 
     const normalizedSlug = normalizeSlugKey(slug);
     if (!normalizedSlug) return;
 
-    const resolver = window.CCGMusic && typeof window.CCGMusic.resolveGameMusicUrl === "function"
-        ? window.CCGMusic.resolveGameMusicUrl
-        : async () => "";
-
-    const audioSrc = await resolver(normalizedSlug);
-    if (!audioSrc) return;
-
-    const sharedPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
-        ? window.CCGSharedMusicPlayer.createAudioPlayer
-        : null;
-
-    const player = sharedPlayer
-        ? sharedPlayer({
-            src: audioSrc,
-            playerClass: "ccg-game-audio-player",
-            onError() {
-                container.innerHTML = "";
-                container.dataset.ccgMusicRendered = "false";
-
-                const musicCard = container.closest("#game-music-card");
-                if (musicCard) {
-                    musicCard.hidden = true;
-                }
-
-                const utilityHubSection = container.closest("#game-utility-hub-section");
-                if (utilityHubSection) {
-                    const hasVisibleContent = Array.from(utilityHubSection.children || []).some((child) => {
-                        return child instanceof HTMLElement && !child.hidden;
-                    });
-                    utilityHubSection.hidden = !hasVisibleContent;
-                }
-            }
-        })
-        : null;
-
-    if (!player) return;
+    if (!window.ccgGameMusic || typeof window.ccgGameMusic.renderGameMusicPlayer !== "function") {
+        return;
+    }
 
     container.innerHTML = "";
-    container.appendChild(player);
+
+    window.ccgGameMusic.renderGameMusicPlayer(
+        container,
+        normalizedSlug
+    );
+
     container.dataset.ccgMusicRendered = "true";
+    console.log("[CCG MUSIC] Restored working player:", normalizedSlug);
 
     const musicCard = container.closest("#game-music-card");
     if (musicCard) {
