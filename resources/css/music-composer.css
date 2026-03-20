@@ -1000,3 +1000,38 @@
 }
 
 
+#gameMusicTracks .ccg-omega-player--game {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid rgba(0, 255, 255, 0.28);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 20, 30, 0.68),
+    rgba(0, 10, 20, 0.92)
+  );
+  box-shadow:
+    0 0 14px rgba(0, 255, 255, 0.16),
+    inset 0 0 10px rgba(0, 255, 255, 0.08);
+}
+
+#gameMusicTracks .ccg-omega-player--game.is-playing {
+  box-shadow:
+    0 0 18px rgba(0, 255, 255, 0.35),
+    inset 0 0 12px rgba(0, 255, 255, 0.14);
+}
+
+#gameMusicTracks .ccg-omega-player-status {
+  font-size: 12px;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  color: rgba(220, 235, 255, 0.92);
+}
+
+#gameMusicTracks .ccg-omega-player--game audio {
+  width: 100%;
+  display: block;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 6px;
+  padding: 6px;
+}
+
