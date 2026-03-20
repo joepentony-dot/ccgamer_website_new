@@ -199,3 +199,25 @@
     color: rgba(159, 232, 255, 0.92);
     letter-spacing: 0.02em;
 }
+
+
+.ccg-game-music-player-host {
+    width: 100%;
+}
+
+.ccg-game-music-player-host .omega-player {
+    border-radius: 14px;
+}
+
+.ccg-game-music-player-host .omega-player-status {
+    font-weight: 700;
+}
+
+.game-music-missing.music-missing-text {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px dashed rgba(var(--accent-rgb), 0.38);
+    border-radius: 12px;
+    background: rgba(5, 18, 34, 0.48);
+    color: rgba(214, 241, 255, 0.9);
+}
