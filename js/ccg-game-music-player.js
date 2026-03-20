@@ -1,30 +1,27 @@
-(function () {
-  if (!window.ccgGameMusic) {
-    window.ccgGameMusic = {};
-  }
+window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
+  if (!container || !slug) return;
 
-  window.ccgGameMusic.renderGameMusicPlayer = async function (container, slug) {
-    if (!container || !slug) return;
+  const url = `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
 
-    const url = `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.preload = "none";
+  audio.style.width = "100%";
 
-    try {
-      const res = await fetch(url, { method: "GET", headers: { Range: "bytes=0-1" } });
+  const source = document.createElement("source");
+  source.src = url;
+  source.type = "audio/mpeg";
 
-      if (!(res.status === 200 || res.status === 206)) {
-        return; // file does NOT exist → no player
-      }
+  audio.appendChild(source);
 
-    } catch (e) {
-      return;
-    }
+  // Only show player if it actually starts loading
+  audio.addEventListener("error", () => {
+    container.remove(); // remove empty player cleanly
+  });
 
-    container.innerHTML = `
-      <div class="game-music">
-        <audio controls preload="none">
-          <source src="${url}" type="audio/mpeg">
-        </audio>
-      </div>
-    `;
-  };
-})();
+  const wrapper = document.createElement("div");
+  wrapper.className = "game-music";
+
+  wrapper.appendChild(audio);
+  container.appendChild(wrapper);
+};
