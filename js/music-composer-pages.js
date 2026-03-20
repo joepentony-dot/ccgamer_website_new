@@ -37,23 +37,35 @@
     "russell lieblich"
   ];
 
-  function slugifyName(value) {
+  function normalizeComposerKey(value) {
+    if (typeof window.normalizeComposerName === "function") {
+      return window.normalizeComposerName(value);
+    }
+
     return String(value || "")
       .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[̀-ͯ]/g, "")
       .toLowerCase()
-      .trim()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  }
+
+  function getCanonicalComposerName(value) {
+    if (typeof window.getCanonicalComposer === "function") {
+      return window.getCanonicalComposer(value);
+    }
+
+    return String(value || "").trim();
+  }
+
+  function slugifyName(value) {
+    return normalizeComposerKey(getCanonicalComposerName(value))
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
   }
 
   function normaliseName(value) {
-    return String(value || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, " ")
-      .trim();
+    return normalizeComposerKey(value);
   }
 
   function getComposerNamesFromGame(game) {
@@ -71,7 +83,7 @@
       : [];
 
     return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
-      .map((name) => String(name || "").trim())
+      .map((name) => getCanonicalComposerName(name))
       .filter(Boolean);
   }
 
@@ -79,56 +91,27 @@
     const composers = {};
 
     games.forEach((game) => {
-      if (!game.music || !Array.isArray(game.music)) {
-        const fallbackNames = getComposerNamesFromGame(game);
-        fallbackNames.forEach((name) => {
-          const composer = String(name || "").trim();
-          if (!composer) {
-            return;
-          }
+      const names = getComposerNamesFromGame(game);
+      names.forEach((name) => {
+        const normalized = normalizeComposerKey(name);
+        const canonical = getCanonicalComposerName(name);
 
-          if (!composers[composer]) {
-            composers[composer] = {
-              name: composer,
-              slug: composer
-                .toLowerCase()
-                .replace(/[^\w\s]/g, "")
-                .replace(/\s+/g, "-"),
-              games: []
-            };
-          }
-
-          composers[composer].games.push(game);
-          composers[composer].games = [
-            ...new Map(
-              composers[composer].games.map((g) => [g.slug, g])
-            ).values()
-          ];
-        });
-        return;
-      }
-
-      game.music.forEach((name) => {
-        const composer = String(name || "").trim();
-        if (!composer || /\.(mp3|ogg|wav|flac)$/i.test(composer)) {
+        if (!normalized || /\.(mp3|ogg|wav|flac)$/i.test(canonical)) {
           return;
         }
 
-        if (!composers[composer]) {
-          composers[composer] = {
-            name: composer,
-            slug: composer
-              .toLowerCase()
-              .replace(/[^\w\s]/g, "")
-              .replace(/\s+/g, "-"),
+        if (!composers[normalized]) {
+          composers[normalized] = {
+            name: canonical,
+            slug: slugifyName(canonical),
             games: []
           };
         }
 
-        composers[composer].games.push(game);
-        composers[composer].games = [
+        composers[normalized].games.push(game);
+        composers[normalized].games = [
           ...new Map(
-            composers[composer].games.map((g) => [g.slug, g])
+            composers[normalized].games.map((g) => [g.slug, g])
           ).values()
         ];
       });
@@ -715,6 +698,24 @@
     }
   }
 
+  function ensureBackButton() {
+    const pageRoot = document.querySelector(".ccg-composer-page");
+    if (!pageRoot || document.querySelector(".back-button")) {
+      return;
+    }
+
+    const buttonWrap = document.createElement("div");
+    buttonWrap.className = "back-button";
+    buttonWrap.innerHTML = '<a href="/music/index.html" class="ccg-btn ccg-btn--secondary">← Back to Music Hub</a>';
+
+    const breadcrumbs = pageRoot.querySelector(".ccg-composer-breadcrumbs");
+    if (breadcrumbs) {
+      breadcrumbs.insertAdjacentElement("afterend", buttonWrap);
+    } else {
+      pageRoot.insertAdjacentElement("afterbegin", buttonWrap);
+    }
+  }
+
   function initBackToTop() {
     const wrap = document.querySelector("[data-ccg-back-to-top-wrap]");
     const button = document.querySelector("[data-ccg-back-to-top]");
@@ -738,6 +739,7 @@
 
   document.addEventListener("DOMContentLoaded", async () => {
     initBackToTop();
+    ensureBackButton();
 
     try {
       const games = await loadGames();
