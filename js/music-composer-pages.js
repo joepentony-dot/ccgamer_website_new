@@ -520,18 +520,45 @@
       const card = document.createElement("li");
       card.className = `ccg-composer-games__item ${hasThumb ? "" : "ccg-composer-games__item--no-thumb"}`.trim();
 
+      const cardShell = document.createElement("div");
+      cardShell.className = "ccg-composer-game-card-shell";
+
       const gameLink = document.createElement("a");
       gameLink.className = "ccg-composer-game-link";
       gameLink.href = getGameUrl(game.slug);
 
       if (hasThumb) {
+        const thumbWrap = document.createElement("span");
+        thumbWrap.className = "ccg-composer-game-thumb-wrap";
+
         const image = document.createElement("img");
         image.className = "ccg-composer-game-thumb";
         image.loading = "lazy";
         image.src = thumbSrc;
         image.alt = game.title || "Game thumbnail";
-        gameLink.appendChild(image);
+        thumbWrap.appendChild(image);
+
+        const overlay = document.createElement("span");
+        overlay.className = "ccg-composer-game-thumb-overlay";
+        overlay.setAttribute("aria-hidden", "true");
+        overlay.innerHTML = '<span class="ccg-composer-game-thumb-overlay__icon"></span><span class="ccg-composer-game-thumb-overlay__label">Preview track</span>';
+        thumbWrap.appendChild(overlay);
+
+        gameLink.appendChild(thumbWrap);
       }
+
+      const content = document.createElement("span");
+      content.className = "ccg-composer-game-content";
+
+      const statusRow = document.createElement("span");
+      statusRow.className = "ccg-composer-game-status-row";
+      const statusBadge = document.createElement("span");
+      statusBadge.className = "ccg-composer-game-status";
+      statusBadge.textContent = "Track ready";
+      statusBadge.dataset.readyLabel = "Track ready";
+      statusBadge.dataset.playingLabel = "Now playing";
+      statusRow.appendChild(statusBadge);
+      content.appendChild(statusRow);
 
       const meta = document.createElement("span");
       meta.className = "ccg-composer-game-meta";
@@ -539,26 +566,43 @@
       const title = document.createElement("span");
       title.className = "ccg-composer-game-title";
       title.textContent = game.title || "Untitled game";
-
-      const metaParts = [];
-      if (game.year) metaParts.push(game.year);
-      if (game.system) metaParts.push(String(game.system).toUpperCase());
-      if (game.publisher) metaParts.push(game.publisher);
-
-      const minor = document.createElement("span");
-      minor.className = "ccg-composer-game-minor";
-      minor.textContent = metaParts.join(" · ");
-
       meta.appendChild(title);
-      meta.appendChild(minor);
-      gameLink.appendChild(meta);
+
+      const tagRow = document.createElement("span");
+      tagRow.className = "ccg-composer-game-tags";
+
+      const appendTag = (value, extraClass = "") => {
+        if (!value) return;
+        const tag = document.createElement("span");
+        tag.className = `ccg-composer-game-tag ${extraClass}`.trim();
+        tag.textContent = value;
+        tagRow.appendChild(tag);
+      };
+
+      appendTag(game.year, "ccg-composer-game-tag--year");
+      appendTag(game.system ? String(game.system).toUpperCase() : "", "ccg-composer-game-tag--system");
+
+      if (tagRow.childElementCount) {
+        meta.appendChild(tagRow);
+      }
+
+      if (game.publisher) {
+        const minor = document.createElement("span");
+        minor.className = "ccg-composer-game-minor";
+        minor.textContent = game.publisher;
+        meta.appendChild(minor);
+      }
+
+      content.appendChild(meta);
+      gameLink.appendChild(content);
 
       const action = document.createElement("span");
       action.className = "ccg-composer-game-action";
-      action.textContent = "Open game page";
+      action.innerHTML = '<span>Open game page</span><span aria-hidden="true">↗</span>';
       gameLink.appendChild(action);
 
-      card.appendChild(gameLink);
+      cardShell.appendChild(gameLink);
+      card.appendChild(cardShell);
 
       const musicSrc = await resolveGameMusicUrl(game.slug);
       if (musicSrc) {
@@ -572,13 +616,66 @@
               slotClass: "ccg-composer-game-player-slot",
               onError() {
                 audioWrap.remove();
+                card.classList.remove("ccg-composer-games__item--has-audio");
               }
             })
           : null;
 
         if (audioPlayer) {
+          const audioEl = audioPlayer.querySelector("audio");
+          card.classList.add("ccg-composer-games__item--has-audio");
           audioWrap.appendChild(audioPlayer);
-          card.appendChild(audioWrap);
+          cardShell.appendChild(audioWrap);
+
+          if (audioEl) {
+            const syncPlayingState = (isPlaying) => {
+              card.classList.toggle("is-playing", isPlaying);
+              statusBadge.textContent = isPlaying ? (statusBadge.dataset.playingLabel || "Now playing") : (statusBadge.dataset.readyLabel || "Track ready");
+            };
+
+            audioEl.addEventListener("play", () => {
+              document.querySelectorAll(".ccg-composer-games__item.is-playing").forEach((item) => {
+                if (item !== card) {
+                  item.classList.remove("is-playing");
+                  const badge = item.querySelector(".ccg-composer-game-status");
+                  if (badge) {
+                    badge.textContent = badge.dataset.readyLabel || "Track ready";
+                  }
+                  const otherAudio = item.querySelector("audio");
+                  if (otherAudio && !otherAudio.paused) {
+                    otherAudio.pause();
+                  }
+                }
+              });
+              syncPlayingState(true);
+            });
+            audioEl.addEventListener("pause", () => syncPlayingState(false));
+            audioEl.addEventListener("ended", () => syncPlayingState(false));
+
+            if (hasThumb) {
+              const thumbToggle = gameLink.querySelector(".ccg-composer-game-thumb-wrap");
+              if (thumbToggle) {
+                thumbToggle.setAttribute("role", "button");
+                thumbToggle.setAttribute("tabindex", "0");
+                thumbToggle.setAttribute("aria-label", `Play or pause music sample for ${game.title || "this game"}`);
+                const togglePlayback = (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (audioEl.paused) {
+                    audioEl.play().catch(() => {});
+                  } else {
+                    audioEl.pause();
+                  }
+                };
+                thumbToggle.addEventListener("click", togglePlayback);
+                thumbToggle.addEventListener("keydown", (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    togglePlayback(event);
+                  }
+                });
+              }
+            }
+          }
         }
       }
 
