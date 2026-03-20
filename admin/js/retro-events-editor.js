@@ -1,6 +1,18 @@
-const RETRO_EVENTS_DATA_PATH = '/data/retro-events.json';
-const RETRO_SPECIALS_DATA_PATH = '/data/retro-specials.json';
-const AMIGA_DEMO_MUSIC_DATA_PATH = '/data/amiga-demo-music.json';
+const DATA_FILES = {
+  'retro-events': '/data/retro-events.json',
+  'retro-specials': '/data/retro-specials.json',
+  'amiga-demo-music': '/data/amiga-demo-music.json'
+};
+
+const SECTION_TYPES = {
+  'retro-events': 'retro_event',
+  'retro-specials': 'retro_special',
+  'amiga-demo-music': 'demo_music'
+};
+
+const TYPE_TO_SECTION = Object.fromEntries(
+  Object.entries(SECTION_TYPES).map(([section, type]) => [type, section])
+);
 
 const state = {
   events: [],
@@ -83,29 +95,33 @@ function bindEvents() {
 
 async function loadEvents() {
   try {
-    const [retroResponse, specialsResponse, demoResponse] = await Promise.all([
-      fetch(RETRO_EVENTS_DATA_PATH, { cache: 'no-store' }),
-      fetch(RETRO_SPECIALS_DATA_PATH, { cache: 'no-store' }),
-      fetch(AMIGA_DEMO_MUSIC_DATA_PATH, { cache: 'no-store' })
-    ]);
+    const sections = Object.keys(DATA_FILES);
+    const responses = await Promise.all(sections.map((section) => loadData(section)));
 
-    if (!retroResponse.ok) throw new Error(`Failed to load retro-events.json (${retroResponse.status})`);
-    if (!specialsResponse.ok) throw new Error(`Failed to load retro-specials.json (${specialsResponse.status})`);
-    if (!demoResponse.ok) throw new Error(`Failed to load amiga-demo-music.json (${demoResponse.status})`);
+    state.events = sanitizeEvents(responses.flatMap((items) => (Array.isArray(items) ? items : [])));
 
-    const [retroData, specialsData, demoData] = await Promise.all([retroResponse.json(), specialsResponse.json(), demoResponse.json()]);
-
-    state.events = sanitizeEvents([
-      ...(Array.isArray(retroData) ? retroData : []),
-      ...(Array.isArray(specialsData) ? specialsData : []),
-      ...(Array.isArray(demoData) ? demoData : [])
-    ]);
-
-    setStatus(`Loaded ${state.events.length} entries from ${RETRO_EVENTS_DATA_PATH}, ${RETRO_SPECIALS_DATA_PATH}, and ${AMIGA_DEMO_MUSIC_DATA_PATH}.`, false);
+    setStatus(`Loaded ${state.events.length} entries from ${sections.map((section) => DATA_FILES[section]).join(', ')}.`, false);
   } catch (error) {
     state.events = [];
     setStatus(error.message, true);
   }
+}
+
+async function loadData(section) {
+  const file = DATA_FILES[section];
+  console.log('Loaded section:', section);
+  console.log('Using file:', file);
+
+  if (!file) {
+    throw new Error(`Unknown retro section: ${section}`);
+  }
+
+  const response = await fetch(`${file}?t=${Date.now()}`, { cache: 'no-store' });
+  if (!response.ok) {
+    throw new Error(`Failed to load ${file.split('/').pop()} (${response.status})`);
+  }
+
+  return response.json();
 }
 
 function sanitizeEvents(data) {
@@ -114,14 +130,11 @@ function sanitizeEvents(data) {
   return data
     .map((eventItem, index) => sanitizeEvent(eventItem, index))
     .filter((eventItem) => eventItem.id && eventItem.title && eventItem.youtubeId)
-    .sort((a, b) => {
-      if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
-      return a.index - b.index;
-    });
+    .sort(compareEvents);
 }
 
 function sanitizeEvent(eventItem, index) {
-  const type = normalizeType(eventItem?.type);
+  const type = normalizeType(eventItem?.type || eventItem?.collection);
   const title = String(eventItem?.title || '').trim();
   const youtubeUrl = String(eventItem?.youtube_url || eventItem?.url || '').trim();
   const youtubeId = String(eventItem?.youtube_video_id || eventItem?.youtubeId || eventItem?.youtube || '').trim() || extractYoutubeId(youtubeUrl);
@@ -274,10 +287,7 @@ function renderEvents() {
 
   const filterType = el.typeFilter?.value || 'all';
   const filtered = state.events.filter((eventItem) => filterType === 'all' || eventItem.type === filterType);
-  const sorted = [...filtered].sort((a, b) => {
-    if (a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
-    return a.title.localeCompare(b.title);
-  });
+  const sorted = [...filtered].sort(compareEvents);
 
   el.list.innerHTML = '';
   if (!sorted.length) {
@@ -320,7 +330,7 @@ function moveItem(id, direction) {
 
   const sameType = state.events
     .filter((item) => item.type === current.type)
-    .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
+    .sort(compareEvents);
 
   const currentIndex = sameType.findIndex((item) => item.id === id);
   const swapIndex = currentIndex + direction;
@@ -375,28 +385,12 @@ function deleteEvent(id) {
 async function saveJsonFile(type) {
   normalizeSortOrders();
 
-  const isDemoMusic = type === 'demo_music';
-  const isRetroSpecial = type === 'retro_special';
-  const pathLabel = isDemoMusic
-    ? AMIGA_DEMO_MUSIC_DATA_PATH
-    : isRetroSpecial
-      ? RETRO_SPECIALS_DATA_PATH
-      : RETRO_EVENTS_DATA_PATH;
-  const fileName = isDemoMusic
-    ? 'amiga-demo-music.json'
-    : isRetroSpecial
-      ? 'retro-specials.json'
-      : 'retro-events.json';
-
+  const section = TYPE_TO_SECTION[normalizeType(type)] || 'retro-events';
+  const fileName = `${section}.json`;
+  const pathLabel = DATA_FILES[section];
   const payloadItems = state.events
-    .filter((item) => (
-      isDemoMusic
-        ? item.type === 'demo_music'
-        : isRetroSpecial
-          ? item.type === 'retro_special'
-          : item.type === 'retro_event'
-    ))
-    .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title))
+    .filter((item) => TYPE_TO_SECTION[item.type] === section)
+    .sort(compareEvents)
     .map((item) => toPersistedItem(item));
 
   const payload = JSON.stringify(payloadItems, null, 2);
@@ -452,7 +446,8 @@ function toPersistedItem(item) {
     seo: {
       title: item?.seo?.title || buildSeoTitle(item.title, item.type),
       description: item?.seo?.description || buildSeoDescription(item.title, item.type)
-    }
+    },
+    collection: TYPE_TO_SECTION[item.type] || 'retro-events'
   };
 
   if (item.type === 'demo_music') {
@@ -524,10 +519,11 @@ function normalizeSortOrders(type) {
   types.forEach((currentType) => {
     const sameType = state.events
       .filter((item) => item.type === currentType)
-      .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
+      .sort(compareEvents);
 
     sameType.forEach((item, index) => {
       item.sort_order = (index + 1) * 10;
+      item.order = item.sort_order;
     });
   });
 }
@@ -540,9 +536,20 @@ function getNextSortOrder(type) {
 }
 
 function normalizeType(type) {
-  if (type === 'demo_music' || type === 'amiga_demo_music') return 'demo_music';
-  if (type === 'retro_special') return 'retro_special';
+  if (type === 'demo_music' || type === 'amiga_demo_music' || type === 'amiga-demo-music') return 'demo_music';
+  if (type === 'retro_special' || type === 'retro-special' || type === 'retro-specials') return 'retro_special';
+  if (type === 'retro-events' || type === 'retro_event') return 'retro_event';
   return 'retro_event';
+}
+
+function compareEvents(a, b) {
+  const aOrder = Number(a?.sort_order ?? a?.order);
+  const bOrder = Number(b?.sort_order ?? b?.order);
+  const left = Number.isFinite(aOrder) ? aOrder : 9999;
+  const right = Number.isFinite(bOrder) ? bOrder : 9999;
+
+  if (left !== right) return left - right;
+  return String(a?.title || '').localeCompare(String(b?.title || '')) || ((a?.index ?? 9999) - (b?.index ?? 9999));
 }
 
 function getSelectedType() {
