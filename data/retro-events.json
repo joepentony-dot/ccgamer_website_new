@@ -1,130 +1,138 @@
 [
   {
     "id": "north-west-computer-museum-leigh",
-    "type": "retro_event",
-    "title": "North West Computer Museum, Leigh \u2013 Visiting with the Yorkshire Amiga Group",
+    "slug": "north-west-computer-museum-leigh",
+    "type": "retro-events",
+    "title": "North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group",
     "youtubeId": "QwJKwDVd2h8",
+    "thumbnail": "https://img.youtube.com/vi/QwJKwDVd2h8/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "North West Computer Museum, Leigh \u2013 Visiting with the Yorkshire Amiga Group | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch North West Computer Museum, Leigh \u2013 Visiting with the Yorkshire Amiga Group on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 0,
     "summary": "A retro event visit to the North West Computer Museum in Leigh with the Yorkshire Amiga Group.",
     "description": "This Retro Events episode follows a trip to the North West Computer Museum and showcases real-world retro computing culture. It captures museum highlights, community spirit and the value of preserving classic hardware and software history.",
-    "collection": "retro-specials",
-    "slug": "north-west-computer-museum-leigh",
-    "thumbnail": "https://img.youtube.com/vi/QwJKwDVd2h8/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch North West Computer Museum, Leigh – Visiting with the Yorkshire Amiga Group on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "play-expo-blackpool-romero-highlights",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle 2022 \u2013 John Romero & Retro Gaming Weekend Highlights",
+    "slug": "play-expo-blackpool-romero-highlights",
+    "type": "retro-events",
+    "title": "Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights",
     "youtubeId": "_KRx_UxPWTM",
+    "thumbnail": "https://img.youtube.com/vi/_KRx_UxPWTM/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle 2022 \u2013 John Romero & Retro Gaming Weekend Highlights | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle 2022 \u2013 John Romero & Retro Gaming Weekend Highlights on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 1,
     "summary": "Highlights from Play Expo Blackpool featuring John Romero and a packed retro gaming weekend.",
     "description": "Recorded at Play Expo Blackpool, this event video covers key moments from the Norbreck Castle show floor and guest appearances. It provides a grounded look at the convention atmosphere and the broad appeal of modern retro events.",
-    "collection": "retro-specials",
-    "slug": "play-expo-blackpool-romero-highlights",
-    "thumbnail": "https://img.youtube.com/vi/_KRx_UxPWTM/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle 2022 – John Romero & Retro Gaming Weekend Highlights on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "play-expo-blackpool-legendary-guests",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle 2023 \u2013 Retro Gaming Highlights & Legendary Guests",
+    "slug": "play-expo-blackpool-legendary-guests",
+    "type": "retro-events",
+    "title": "Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests",
     "youtubeId": "C7_aTXHJ4iI",
+    "thumbnail": "https://img.youtube.com/vi/C7_aTXHJ4iI/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle 2023 \u2013 Retro Gaming Highlights & Legendary Guests | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle 2023 \u2013 Retro Gaming Highlights & Legendary Guests on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 2,
     "summary": "Coverage of Play Expo Blackpool with event highlights and notable retro gaming guests.",
     "description": "This Retro Events entry revisits another Play Expo Blackpool weekend focused on classic gaming culture and live event energy. The video highlights the venue, standout moments and guest-driven interest around retro gaming.",
-    "collection": "retro-specials",
-    "slug": "play-expo-blackpool-legendary-guests",
-    "thumbnail": "https://img.youtube.com/vi/C7_aTXHJ4iI/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle 2023 – Retro Gaming Highlights & Legendary Guests on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "play-expo-blackpool-romero-rare-consoles",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool Norbreck Castle 2024 \u2013 Warren Davies, Rare Consoles & Retro Gaming Gold",
+    "slug": "play-expo-blackpool-romero-rare-consoles",
+    "type": "retro-events",
+    "title": "Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold",
     "youtubeId": "Z6iXT4iPqs8",
+    "thumbnail": "https://img.youtube.com/vi/Z6iXT4iPqs8/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool Norbreck Castle 2024 \u2013 Warren Davies, Rare Consoles & Retro Gaming Gold | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool Norbreck Castle 2024 \u2013 Warren Davies, Rare Consoles & Retro Gaming Gold on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 3,
     "summary": "A Play Expo Blackpool event roundup featuring rare consoles and retro show-floor discoveries.",
     "description": "Cheeky Commodore Gamer captures Play Expo Blackpool with footage centred on rare hardware, guests and crowd favourites. It is a practical snapshot of what attendees can expect from a major UK retro gaming expo.",
-    "collection": "retro-specials",
-    "slug": "play-expo-blackpool-romero-rare-consoles",
-    "thumbnail": "https://img.youtube.com/vi/Z6iXT4iPqs8/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool Norbreck Castle 2024 – Warren Davies, Rare Consoles & Retro Gaming Gold on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "play-expo-blackpool-2025",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool 2025 \u2013 Retro Gaming Weekend at the Norbreck Castle",
+    "slug": "play-expo-blackpool-2025",
+    "type": "retro-events",
+    "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle",
     "youtubeId": "smVNHlm_jM0",
+    "thumbnail": "https://img.youtube.com/vi/smVNHlm_jM0/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "Play Expo Blackpool 2025 \u2013 Retro Gaming Weekend at the Norbreck Castle | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool 2025 \u2013 Retro Gaming Weekend at the Norbreck Castle on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 4,
     "summary": "A Retro Events look at Play Expo Blackpool 2025 and its latest retro gaming weekend highlights.",
     "description": "This event video documents Play Expo Blackpool 2025 at the Norbreck Castle and follows the show experience from a fan perspective. It focuses on the games, displays and community atmosphere that define the weekend.",
-    "collection": "retro-specials",
-    "slug": "play-expo-blackpool-2025",
-    "thumbnail": "https://img.youtube.com/vi/smVNHlm_jM0/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool 2025 – Retro Gaming Weekend at the Norbreck Castle on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "play-expo-blackpool-cutting-room-floor",
-    "type": "retro_event",
-    "title": "Play Expo Blackpool 2024 \u2013 Cutting Room Floor Bonus Retro Gaming Footage",
+    "slug": "play-expo-blackpool-cutting-room-floor",
+    "type": "retro-events",
+    "title": "Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage",
     "youtubeId": "n_ZymsSyDAg",
+    "thumbnail": "https://img.youtube.com/vi/n_ZymsSyDAg/hqdefault.jpg",
     "membersOnly": true,
-    "seo": {
-      "title": "Play Expo Blackpool 2024 \u2013 Cutting Room Floor Bonus Retro Gaming Footage | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Play Expo Blackpool 2024 \u2013 Cutting Room Floor Bonus Retro Gaming Footage on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 5,
     "summary": "Bonus Play Expo footage collecting extra moments and behind-the-scenes event clips.",
     "description": "This members-only Retro Events cut gathers additional Play Expo Blackpool footage that did not make the main feature. It offers extra context and atmosphere for viewers who enjoy full event coverage.",
-    "collection": "retro-specials",
-    "slug": "play-expo-blackpool-cutting-room-floor",
-    "thumbnail": "https://img.youtube.com/vi/n_ZymsSyDAg/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Play Expo Blackpool 2024 – Cutting Room Floor Bonus Retro Gaming Footage on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "video-game-market-leeds-2024",
-    "type": "retro_event",
-    "title": "Video Game Market Leeds 2024 \u2013 Royal Armouries Retro Gaming Finds",
+    "slug": "video-game-market-leeds-2024",
+    "type": "retro-events",
+    "title": "Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds",
     "youtubeId": "sAU3CPCCpvE",
+    "thumbnail": "https://img.youtube.com/vi/sAU3CPCCpvE/hqdefault.jpg",
     "membersOnly": false,
-    "seo": {
-      "title": "Video Game Market Leeds 2024 \u2013 Royal Armouries Retro Gaming Finds | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Video Game Market Leeds 2024 \u2013 Royal Armouries Retro Gaming Finds on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 6,
     "summary": "On-location coverage from the Video Game Market Leeds 2024 event at the Royal Armouries.",
     "description": "This Retro Events episode follows a visit to the Leeds video game market and captures the experience of browsing retro stalls in person. It highlights event atmosphere, collector interest and the social side of retro gaming meetups.",
-    "collection": "retro-specials",
-    "slug": "video-game-market-leeds-2024",
-    "thumbnail": "https://img.youtube.com/vi/sAU3CPCCpvE/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds on Cheeky Commodore Gamer's Retro Events collection."
+    }
   },
   {
     "id": "yorkshire-amiga-group-meetup",
-    "type": "retro_event",
-    "title": "Yorkshire Amiga Group \u2013 North West Retro Computing Meetup",
+    "slug": "yorkshire-amiga-group-meetup",
+    "type": "retro-events",
+    "title": "Yorkshire Amiga Group – North West Retro Computing Meetup",
     "youtubeId": "SiMgKvZeXws",
+    "thumbnail": "https://img.youtube.com/vi/SiMgKvZeXws/hqdefault.jpg",
     "membersOnly": true,
-    "seo": {
-      "title": "Yorkshire Amiga Group \u2013 North West Retro Computing Meetup | Retro Event | Cheeky Commodore Gamer",
-      "description": "Watch Yorkshire Amiga Group \u2013 North West Retro Computing Meetup on Cheeky Commodore Gamer's Retro Events collection."
-    },
+    "order": 7,
     "summary": "A meetup-focused retro event featuring the Yorkshire Amiga Group and community enthusiasts.",
     "description": "This members-only Retro Events video captures a North West retro computing meetup with the Yorkshire Amiga Group. It focuses on the people, conversations and shared enthusiasm that keep local retro communities active.",
-    "collection": "retro-specials",
-    "slug": "yorkshire-amiga-group-meetup",
-    "thumbnail": "https://img.youtube.com/vi/SiMgKvZeXws/hqdefault.jpg"
+    "collection": "retro-events",
+    "seo": {
+      "title": "Yorkshire Amiga Group – North West Retro Computing Meetup | Retro Event | Cheeky Commodore Gamer",
+      "description": "Watch Yorkshire Amiga Group – North West Retro Computing Meetup on Cheeky Commodore Gamer's Retro Events collection."
+    }
   }
 ]

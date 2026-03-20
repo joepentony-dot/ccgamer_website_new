@@ -57,8 +57,8 @@ async function ccgLoadItems() {
 
   return data
     .map((item, index) => {
-      const orderValue = Number(item?.sort_order ?? item?.order);
-      const youtubeId = String(item?.youtube_video_id || item?.youtubeId || item?.youtube || '').trim();
+      const orderValue = Number(item?.order);
+      const youtubeId = String(item?.youtubeId || '').trim();
       const slug = String(item?.slug || item?.id || '').trim();
       return {
         id: String(item?.id || '').trim(),
