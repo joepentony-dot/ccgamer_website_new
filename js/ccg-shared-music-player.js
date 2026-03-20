@@ -166,3 +166,107 @@
 
   api.createAudioPlayer = createAudioPlayer;
 })();
+
+(function (global) {
+  if (!global) {
+    return;
+  }
+
+  global.CCGSharedMusicPlayer = global.CCGSharedMusicPlayer || {};
+  const NS = global.CCGSharedMusicPlayer;
+
+  const _probeCache = NS._probeCache instanceof Map ? NS._probeCache : new Map();
+  NS._probeCache = _probeCache;
+
+  function resolveMp3Url(slug) {
+    if (typeof NS.getMp3Url === "function") return NS.getMp3Url(slug);
+    return `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
+  }
+
+  function probeAudioMetadata(url, { timeoutMs = 6000, logCtx = "" } = {}) {
+    if (_probeCache.has(url)) return _probeCache.get(url);
+
+    const p = new Promise((resolve) => {
+      const a = new Audio();
+      a.preload = "metadata";
+      a.src = url;
+
+      let done = false;
+      let timeoutId = null;
+
+      const cleanup = () => {
+        a.removeEventListener("loadedmetadata", onOk);
+        a.removeEventListener("error", onErr);
+        if (timeoutId) {
+          global.clearTimeout(timeoutId);
+        }
+        a.src = "";
+      };
+
+      const finish = (result) => {
+        if (done) return;
+        done = true;
+        cleanup();
+        resolve(result);
+      };
+
+      const onOk = () => {
+        const duration = Number.isFinite(a.duration) ? a.duration : undefined;
+        finish({ ok: true, duration });
+      };
+
+      const onErr = () => finish({ ok: false });
+
+      a.addEventListener("loadedmetadata", onOk, { once: true });
+      a.addEventListener("error", onErr, { once: true });
+
+      try {
+        a.load();
+      } catch (_) {}
+
+      timeoutId = global.setTimeout(() => {
+        if (!done) {
+          console.warn(`[CCG MUSIC][probe] timeout ${timeoutMs}ms ${logCtx} url=${url}`);
+          finish({ ok: false });
+        }
+      }, timeoutMs);
+    });
+
+    _probeCache.set(url, p);
+    return p;
+  }
+
+  NS.renderIfPlayable = async function renderIfPlayable(container, slug, opts = {}) {
+    const { onPlayable, onMissing, logCtx = "" } = opts;
+
+    if (!container || !slug) return false;
+
+    const url = resolveMp3Url(slug);
+    const result = await probeAudioMetadata(url, { timeoutMs: 6000, logCtx });
+
+    if (!result.ok) {
+      container.innerHTML = "";
+      if (typeof onMissing === "function") onMissing();
+      console.log(`[CCG MUSIC][renderIfPlayable] missing/unplayable ${logCtx} slug=${slug}`);
+      return false;
+    }
+
+    container.innerHTML = "";
+
+    if (global.ccgGameMusic && typeof global.ccgGameMusic.renderGameMusicPlayer === "function") {
+      global.ccgGameMusic.renderGameMusicPlayer(container, slug, {
+        omegaMode: true,
+        logCtx
+      });
+      if (typeof onPlayable === "function") onPlayable(result);
+      console.log(`[CCG MUSIC][renderIfPlayable] rendered Omega ${logCtx} slug=${slug}`);
+      return true;
+    }
+
+    if (typeof onMissing === "function") onMissing();
+    return false;
+  };
+
+  NS._probeAudioMetadata = probeAudioMetadata;
+  NS._resolveMp3Url = resolveMp3Url;
+})(window);
