@@ -840,3 +840,91 @@
   background: rgba(255, 0, 51, 0.1);
   box-shadow: 0 0 16px rgba(255, 0, 51, 0.7);
 }
+
+
+.ccg-shared-audio-player,
+.game-music,
+.ccg-essential-track__player-wrap {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.ccg-omega-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #00eaff;
+  background: rgba(0, 20, 40, 0.7);
+  box-shadow: 0 0 12px rgba(0, 234, 255, 0.4);
+  border-radius: 12px;
+}
+
+.ccg-btn-play {
+  background: #00eaff;
+  color: #000;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  border-radius: 999px;
+  min-width: 2.5rem;
+}
+
+.ccg-progress-wrap {
+  flex: 1;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  position: relative;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.ccg-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: #00eaff;
+  box-shadow: 0 0 8px #00eaff;
+}
+
+.ccg-time {
+  font-size: 12px;
+  min-width: 2.5rem;
+  text-align: right;
+}
+
+.ccg-essential-track {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #00eaff;
+  box-shadow: 0 0 15px rgba(0, 234, 255, 0.5);
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(8, 24, 36, 0.9), rgba(2, 9, 20, 0.95));
+}
+
+.ccg-essential-track h2 {
+  margin: 0 0 0.45rem;
+}
+
+.ccg-essential-track__title,
+.ccg-essential-track__meta {
+  margin: 0;
+}
+
+.ccg-essential-track__title a {
+  color: #9ff9ff;
+  text-decoration: none;
+}
+
+.ccg-essential-track__title a:hover,
+.ccg-essential-track__title a:focus-visible {
+  text-decoration: underline;
+}
+
+.ccg-essential-track__meta {
+  font-size: 0.82rem;
+  opacity: 0.84;
+}
