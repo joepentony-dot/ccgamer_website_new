@@ -16,18 +16,19 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
   status.className = "omega-player-status";
   status.textContent = "● TRACK READY";
 
-  wrapper.appendChild(status);
-
   const audio = document.createElement("audio");
   audio.controls = true;
   audio.preload = "none";
-  audio.style.width = "100%";
 
   const source = document.createElement("source");
   source.src = url;
   source.type = "audio/mpeg";
 
   audio.appendChild(source);
+
+  wrapper.appendChild(status);
+  wrapper.appendChild(audio);
+  container.appendChild(wrapper);
 
   audio.addEventListener("play", () => {
     status.textContent = "● NOW PLAYING";
@@ -39,18 +40,15 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
     wrapper.classList.remove("is-playing");
   });
 
-  wrapper.appendChild(audio);
-  container.appendChild(wrapper);
-
-  const showMissingState = () => {
-    container.innerHTML = `
+  audio.addEventListener(
+    "error",
+    () => {
+      container.innerHTML = `
       <div class="game-music-missing">
-        <div class="music-missing-text">🎵 Track currently not available</div>
+        🎵 Track currently not available
       </div>
     `;
-  };
-
-  audio.addEventListener("error", showMissingState, { once: true });
-
-  console.log("[CCG MUSIC] Rendering direct player:", slug);
+    },
+    { once: true }
+  );
 };

@@ -969,34 +969,26 @@
   box-shadow:
     0 0 12px rgba(0,255,255,0.15),
     inset 0 0 10px rgba(0,255,255,0.08);
-  transition: all 0.3s ease;
-}
-
-.omega-player.is-playing {
-  box-shadow:
-    0 0 18px rgba(0,255,255,0.4),
-    inset 0 0 14px rgba(0,255,255,0.2);
 }
 
 .omega-player-status {
   font-size: 12px;
-  letter-spacing: 1px;
   margin-bottom: 10px;
-  color: rgba(0,255,255,0.85);
+  color: rgba(0,255,255,0.9);
+  letter-spacing: 1px;
 }
 
-/* Make native player feel integrated */
+.omega-player.is-playing {
+  box-shadow:
+    0 0 20px rgba(0,255,255,0.5),
+    inset 0 0 14px rgba(0,255,255,0.2);
+}
 
 .omega-player audio {
   width: 100%;
-  border-radius: 6px;
   background: rgba(0,0,0,0.35);
+  border-radius: 6px;
   padding: 6px;
 }
 
-/* Optional subtle hover lift */
-
-.omega-player:hover {
-  transform: translateY(-1px);
-}
 
