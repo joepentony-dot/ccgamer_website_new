@@ -3077,3 +3077,163 @@ html[data-ccg-page="home"] body#top {
     gap: 20px;
   }
 }
+
+/* =========================================
+   🎯 CONTROLLED SPACING (NOT OVER-TIGHT)
+   ========================================= */
+
+/* Reduce ONLY large section gaps */
+.home-section,
+section {
+  margin-top: 60px !important;
+  margin-bottom: 60px !important;
+}
+
+/* Hero stays premium */
+.hero-section {
+  margin-bottom: 50px !important;
+}
+
+/* Reduce inner padding slightly */
+.section-inner {
+  padding-top: 30px !important;
+  padding-bottom: 30px !important;
+}
+
+/* Tighten text blocks slightly */
+.hero-section p {
+  margin-bottom: 18px;
+}
+
+/* =========================================
+   🎯 CTA GROUPING (MAJOR UX WIN)
+   ========================================= */
+
+.hero-buttons,
+.cta-row,
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+}
+
+/* Ensure buttons feel grouped */
+.hero-buttons a,
+.hero-buttons button {
+  min-width: 180px;
+}
+
+/* =========================================
+   🎯 BUTTON HIERARCHY (SUBTLE, NOT LOUD)
+   ========================================= */
+
+/* PRIMARY (Random / Browse) */
+.btn-primary-omega {
+  background: linear-gradient(135deg, #00e6ff, #0088ff);
+  box-shadow: 0 0 12px rgba(0,255,255,0.5);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-omega:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 20px rgba(0,255,255,0.8);
+}
+
+/* SECONDARY */
+.btn-secondary-omega {
+  opacity: 0.9;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary-omega:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+/* UTILITY (Support / Subscribe) */
+.btn-utility-omega {
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+/* =========================================
+   🎯 FEATURED CARDS — ADD ENERGY
+   ========================================= */
+
+.featured-card,
+.game-card {
+  transition: all 0.25s ease;
+}
+
+.featured-card:hover,
+.game-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 0 18px rgba(0,255,255,0.35);
+}
+
+/* =========================================
+   🎯 SECTION FLOW (REMOVE “FLOATING GAPS”)
+   ========================================= */
+
+.section-divider {
+  height: 1px;
+  width: 70%;
+  margin: 45px auto;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(0,255,255,0.5),
+    transparent
+  );
+}
+
+/* =========================================
+   🎯 MID-PAGE CTA IMPROVEMENT
+   ========================================= */
+
+/* “Explore the games” section buttons */
+.home-cta-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+/* Slight lift so they feel clickable */
+.home-cta-buttons a {
+  transition: all 0.2s ease;
+}
+
+.home-cta-buttons a:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   🎯 FOOTER CTA — LESS DETACHED
+   ========================================= */
+
+.footer-cta {
+  margin-top: 40px !important;
+}
+
+/* =========================================
+   📱 MOBILE REFINEMENT (IMPORTANT)
+   ========================================= */
+
+@media (max-width: 768px) {
+
+  .home-section,
+  section {
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .hero-buttons,
+  .cta-row {
+    gap: 8px;
+  }
+
+}
