@@ -500,6 +500,77 @@
     }
   }
 
+  async function createEssentialTrack(bucket) {
+    if (!bucket || !Array.isArray(bucket.games) || !bucket.games.length) {
+      return null;
+    }
+
+    const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+
+    for (const game of sortedGames) {
+      const musicSrc = await resolveGameMusicUrl(game.slug);
+      if (!musicSrc) {
+        continue;
+      }
+
+      const essential = document.createElement("div");
+      essential.className = "ccg-essential-track";
+      essential.innerHTML = `
+        <h2>🔥 Essential Track</h2>
+        <p class="ccg-essential-track__title">${game.title || "Untitled game"}</p>
+        <p class="ccg-essential-track__meta">${[game.year, game.system ? String(game.system).toUpperCase() : ""].filter(Boolean).join(" • ")}</p>
+      `;
+
+      const audioPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+        ? window.CCGSharedMusicPlayer.createAudioPlayer({
+            src: musicSrc,
+            playerClass: "ccg-composer-essential-player",
+            wrapperClass: "ccg-essential-track__player-wrap",
+            slotClass: "ccg-essential-track__player-slot"
+          })
+        : null;
+
+      if (audioPlayer) {
+        essential.appendChild(audioPlayer);
+      }
+
+      const title = essential.querySelector(".ccg-essential-track__title");
+      if (title) {
+        const titleLink = document.createElement("a");
+        titleLink.href = getGameUrl(game.slug);
+        titleLink.textContent = title.textContent;
+        title.textContent = "";
+        title.appendChild(titleLink);
+      }
+
+      return essential;
+    }
+
+    return null;
+  }
+
+  async function renderEssentialTrack(bucket) {
+    const container = document.querySelector(".ccg-composer-page");
+    if (!container) {
+      return;
+    }
+
+    container.querySelectorAll(".ccg-essential-track").forEach((node) => node.remove());
+
+    const essential = await createEssentialTrack(bucket);
+    if (!essential) {
+      return;
+    }
+
+    const header = container.querySelector(".ccg-composer-intro, .ccg-composer-subtitle, .ccg-composer-title");
+    if (header && header.parentNode) {
+      header.insertAdjacentElement("afterend", essential);
+      return;
+    }
+
+    container.prepend(essential);
+  }
+
   async function renderComposerGames(bucket, requestedName) {
     const gamesList = document.getElementById("composer-games");
     if (!gamesList) {
@@ -875,6 +946,7 @@
 
         if (composer) {
           await renderComposerProfile(composer, bucket);
+          await renderEssentialTrack(bucket);
           await renderComposerGames(bucket, composer.name);
           renderComposerChips(registry, stats, composer.slug);
 
@@ -889,6 +961,7 @@
             ]);
           }
         } else {
+          await renderEssentialTrack(bucket);
           await renderComposerGames(bucket, selection.requestedName || "this composer");
           renderComposerChips(registry, stats, "");
         }
