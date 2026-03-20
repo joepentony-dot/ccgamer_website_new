@@ -353,26 +353,36 @@
 
 .composer-player-row {
   margin-top: 0.34rem;
-  max-width: 340px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .ccg-composer-game-player-slot {
   display: inline-flex;
   align-items: center;
-  max-width: min(270px, 100%);
+  width: 100%;
+  max-width: 100%;
 }
 
 .ccg-composer-audio-wrap {
   margin-top: 8px;
+  width: 100%;
+}
+
+.game-music audio,
+.music-player audio,
+.ccg-composer-mini-player,
+.composer-player-row audio {
+  width: 100%;
+  max-width: 100%;
+  display: block;
 }
 
 .ccg-composer-mini-player,
 .composer-player-row audio {
-  width: 220px;
   height: 28px;
   transform: scale(0.9);
   transform-origin: left center;
-  max-width: 100%;
 }
 
 .ccg-composer-featured {
