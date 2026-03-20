@@ -1044,10 +1044,10 @@ function renderGameMusic(slug, container) {
     const normalizedSlug = normalizeSlugKey(slug);
     if (!normalizedSlug) return;
 
-    if (container && normalizedSlug) {
+    if (container && normalizedSlug && window.CCGSharedMusicPlayer) {
         container.innerHTML = "";
 
-        window.ccgGameMusic.renderGameMusicPlayer(
+        window.CCGSharedMusicPlayer.render(
             container,
             normalizedSlug
         );
