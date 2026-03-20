@@ -89,9 +89,15 @@ function resolveThumbnail(entry, youtubeId) {
   return `${SITE_ROOT}/resources/images/collections/retro-specials.png`;
 }
 
+function formatVideoUploadDate(value) {
+  const candidate = String(value || '').trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(candidate)) return '';
+  return `${candidate}T00:00:00+00:00`;
+}
+
 function resolveUploadDate(entry, fallbackDate) {
-  const candidate = String(entry.published_date || entry.publishedDate || entry.uploadDate || '').trim();
-  return /^\d{4}-\d{2}-\d{2}$/.test(candidate) ? candidate : fallbackDate;
+  const candidate = entry.published_date || entry.publishedDate || entry.uploadDate;
+  return formatVideoUploadDate(candidate) || formatVideoUploadDate(fallbackDate);
 }
 
 function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId }) {
@@ -103,6 +109,7 @@ function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canoni
     thumbnailUrl,
     uploadDate,
     embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    contentUrl: `https://www.youtube.com/watch?v=${youtubeId}`,
     url: canonicalUrl
   };
 }

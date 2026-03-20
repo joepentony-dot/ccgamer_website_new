@@ -2762,9 +2762,11 @@ function injectGameSchema(game) {
             ? {
                 "@type": "VideoObject",
                 "name": game.title,
+                "description": game.description || game.tagline || game.title,
                 "thumbnailUrl": `https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg`,
-                "uploadDate": game.year ? `${game.year}-01-01` : undefined,
-                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`
+                "uploadDate": game.year ? `${game.year}-01-01T00:00:00+00:00` : undefined,
+                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`,
+                "contentUrl": `https://www.youtube.com/watch?v=${game.videoid}`
             }
             : undefined
     };
