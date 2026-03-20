@@ -36,6 +36,25 @@
     "rob hubbard": "/music/rob-hubbard/"
   };
   const FEATURED_PRIORITY = Object.keys(FEATURED_COMPOSER_URLS);
+  const ESSENTIAL_TRACKS = {
+    "allister brimble": "danny-sullivans-indy-heat",
+    "barry leitch": "lotus-turbo-challenge-2",
+    "ben daglish": "the-last-ninja",
+    "chris hülsbeck": "x-out",
+    "chris hulsbeck": "x-out",
+    "david whittaker": "lazy-jones",
+    "fred gray": "robin-of-the-wood",
+    "martin galway": "wizball",
+    "rob hubbard": "master-of-magic",
+    "russell lieblich": "ghostbusters",
+    "jeroen tel": "cybernoid",
+    "jonathan dunn": "platoon",
+    "keith tinman": "heartland",
+    "mark cooksey": "airwolf",
+    "matt furniss": "escape-from-the-planet-of-the-robot-monsters",
+    "neil brennan": "fist-ii-the-legend-continues",
+    "richard joseph": "cannon-fodder"
+  };
 
   function normalizeComposerKey(value) {
     if (typeof window.normalizeComposerName === "function") {
@@ -500,56 +519,59 @@
     }
   }
 
-  async function createEssentialTrack(bucket) {
-    if (!bucket || !Array.isArray(bucket.games) || !bucket.games.length) {
+  async function createEssentialTrack(bucket, composerName) {
+    const key = composerName.toLowerCase();
+    const slug = ESSENTIAL_TRACKS[key];
+
+    if (!slug || !window.CCGSharedMusicPlayer || typeof window.CCGSharedMusicPlayer.createAudioPlayer !== "function") {
       return null;
     }
 
-    const sortedGames = [...bucket.games].sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-
-    for (const game of sortedGames) {
-      const musicSrc = await resolveGameMusicUrl(game.slug);
-      if (!musicSrc) {
-        continue;
-      }
-
-      const essential = document.createElement("div");
-      essential.className = "ccg-essential-track";
-      essential.innerHTML = `
-        <h2>🔥 Essential Track</h2>
-        <p class="ccg-essential-track__title">${game.title || "Untitled game"}</p>
-        <p class="ccg-essential-track__meta">${[game.year, game.system ? String(game.system).toUpperCase() : ""].filter(Boolean).join(" • ")}</p>
-      `;
-
-      const audioPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
-        ? window.CCGSharedMusicPlayer.createAudioPlayer({
-            src: musicSrc,
-            playerClass: "ccg-composer-essential-player",
-            wrapperClass: "ccg-essential-track__player-wrap",
-            slotClass: "ccg-essential-track__player-slot"
-          })
-        : null;
-
-      if (audioPlayer) {
-        essential.appendChild(audioPlayer);
-      }
-
-      const title = essential.querySelector(".ccg-essential-track__title");
-      if (title) {
-        const titleLink = document.createElement("a");
-        titleLink.href = getGameUrl(game.slug);
-        titleLink.textContent = title.textContent;
-        title.textContent = "";
-        title.appendChild(titleLink);
-      }
-
-      return essential;
+    const musicSrc = await resolveGameMusicUrl(slug);
+    if (!musicSrc) {
+      return null;
     }
 
-    return null;
+    const matchedGame = Array.isArray(bucket?.games)
+      ? bucket.games.find((game) => game?.slug === slug)
+      : null;
+    const displayTitle = matchedGame?.title || slug.replace(/-/g, " ");
+    const displayMeta = [matchedGame?.year, matchedGame?.system ? String(matchedGame.system).toUpperCase() : ""]
+      .filter(Boolean)
+      .join(" • ");
+
+    const essential = document.createElement("div");
+    essential.className = "ccg-essential-track";
+    essential.innerHTML = `
+      <h2>🔥 Essential Track</h2>
+      <p class="ccg-essential-track__title"></p>
+      ${displayMeta ? `<p class="ccg-essential-track__meta">${displayMeta}</p>` : ""}
+    `;
+
+    const title = essential.querySelector(".ccg-essential-track__title");
+    if (title) {
+      const titleLink = document.createElement("a");
+      titleLink.href = getGameUrl(slug);
+      titleLink.textContent = displayTitle;
+      title.appendChild(titleLink);
+    }
+
+    const audioPlayer = window.CCGSharedMusicPlayer.createAudioPlayer({
+      src: musicSrc,
+      playerClass: "ccg-composer-essential-player",
+      wrapperClass: "ccg-essential-track__player-wrap",
+      slotClass: "ccg-essential-track__player-slot"
+    });
+
+    if (!audioPlayer) {
+      return null;
+    }
+
+    essential.appendChild(audioPlayer);
+    return essential;
   }
 
-  async function renderEssentialTrack(bucket) {
+  async function renderEssentialTrack(bucket, composer) {
     const container = document.querySelector(".ccg-composer-page");
     if (!container) {
       return;
@@ -557,7 +579,7 @@
 
     container.querySelectorAll(".ccg-essential-track").forEach((node) => node.remove());
 
-    const essential = await createEssentialTrack(bucket);
+    const essential = await createEssentialTrack(bucket, composer?.name || "");
     if (!essential) {
       return;
     }
@@ -676,11 +698,13 @@
       card.appendChild(cardShell);
 
       const musicSrc = await resolveGameMusicUrl(game.slug);
-      if (musicSrc) {
+      const playerFactory = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+        ? window.CCGSharedMusicPlayer.createAudioPlayer
+        : null;
+      if (musicSrc && playerFactory) {
         const audioWrap = document.createElement("div");
         audioWrap.className = "ccg-composer-audio-wrap";
-        const audioPlayer = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
-          ? window.CCGSharedMusicPlayer.createAudioPlayer({
+        const audioPlayer = playerFactory({
               src: musicSrc,
               playerClass: "ccg-composer-mini-player",
               wrapperClass: "ccg-composer-game-utility composer-player-row",
@@ -689,8 +713,7 @@
                 audioWrap.remove();
                 card.classList.remove("ccg-composer-games__item--has-audio");
               }
-            })
-          : null;
+            });
 
         if (audioPlayer) {
           const audioEl = audioPlayer.querySelector("audio");
@@ -946,7 +969,7 @@
 
         if (composer) {
           await renderComposerProfile(composer, bucket);
-          await renderEssentialTrack(bucket);
+          await renderEssentialTrack(bucket, composer);
           await renderComposerGames(bucket, composer.name);
           renderComposerChips(registry, stats, composer.slug);
 
@@ -961,7 +984,7 @@
             ]);
           }
         } else {
-          await renderEssentialTrack(bucket);
+          await renderEssentialTrack(bucket, composer);
           await renderComposerGames(bucket, selection.requestedName || "this composer");
           renderComposerChips(registry, stats, "");
         }
