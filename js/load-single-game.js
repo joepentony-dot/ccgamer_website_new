@@ -1037,36 +1037,35 @@ function resolveComposerSlug(name) {
     return credits >= 5 ? key.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : "";
 }
 
-function renderGameMusic(slug, container) {
-    if (!slug || !container) return;
-    if (container.dataset.ccgMusicRendered === "true") return;
+function renderGameMusic(slug, container, callbacks = {}) {
+    if (!slug || !container) return { attempted: false, rendered: false };
 
     const normalizedSlug = normalizeSlugKey(slug);
-    if (!normalizedSlug) return;
-
-    if (container && normalizedSlug && window.CCGSharedMusicPlayer) {
-        container.innerHTML = "";
-
-        window.CCGSharedMusicPlayer.render(
-            container,
-            normalizedSlug
-        );
-
-        console.log("[CCG MUSIC] Restored Omega-compatible player:", normalizedSlug);
+    if (!normalizedSlug || !window.ccgGameMusic || typeof window.ccgGameMusic.renderGameMusicPlayer !== "function") {
+        return { attempted: false, rendered: false };
     }
 
-    container.dataset.ccgMusicRendered = "true";
+    container.innerHTML = "";
+    delete container.dataset.ccgMusicRendered;
+
+    window.ccgGameMusic.renderGameMusicPlayer(container, normalizedSlug, {
+        onReady(details) {
+            container.dataset.ccgMusicRendered = "true";
+            if (typeof callbacks.onReady === "function") {
+                callbacks.onReady(details);
+            }
+        },
+        onError(details) {
+            delete container.dataset.ccgMusicRendered;
+            container.innerHTML = "";
+            if (typeof callbacks.onError === "function") {
+                callbacks.onError(details);
+            }
+        }
+    });
+
     console.log("[CCG MUSIC] Restored working player:", normalizedSlug);
-
-    const musicCard = container.closest("#game-music-card");
-    if (musicCard) {
-        musicCard.hidden = false;
-    }
-
-    const utilityHubSection = container.closest("#game-utility-hub-section");
-    if (utilityHubSection) {
-        utilityHubSection.hidden = false;
-    }
+    return { attempted: true, rendered: true };
 }
 
 function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
@@ -1082,16 +1081,12 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
     musicCard.hidden = true;
     musicTracksEl.innerHTML = "";
 
+    const playerMount = document.createElement("div");
+    playerMount.className = "ccg-game-music-player-host";
+    musicTracksEl.appendChild(playerMount);
+
     const composers = normalizeComposerNames(game);
     const hasComposerContent = composers.length > 0;
-    if (hasComposerContent) {
-        musicCard.hidden = false;
-    }
-
-    if (game?.slug) {
-        console.log("[CCG MUSIC] Rendering Omega player for:", game.slug);
-        void renderGameMusic(game.slug, musicTracksEl);
-    }
 
     if (composers.length) {
         const composerLine = document.createElement("p");
@@ -1117,12 +1112,10 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         composerLine.appendChild(composerList);
         musicTracksEl.appendChild(composerLine);
 
-        if (composers.length) {
-            const hint = document.createElement("p");
-            hint.className = "ccg-music-composer__hint";
-            hint.textContent = "Tap a composer chip to open their archive page.";
-            musicTracksEl.appendChild(hint);
-        }
+        const hint = document.createElement("p");
+        hint.className = "ccg-music-composer__hint";
+        hint.textContent = "Tap a composer chip to open their archive page.";
+        musicTracksEl.appendChild(hint);
 
         const primaryComposer = composers[0];
         const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
@@ -1155,9 +1148,48 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         }
     }
 
-    if (utilityHubSection) {
-        utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasComposerContent);
+    const finalizeMusicVisibility = () => {
+        const hasPlayer = !!playerMount.querySelector("audio");
+        const hasMetadata = !!musicTracksEl.querySelector(".ccg-music-composer, .ccg-music-related, .ccg-music-composer__hint");
+        musicCard.hidden = !(hasPlayer || hasMetadata);
+        if (utilityHubSection) {
+            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasPlayer || hasMetadata);
+        }
+    };
+
+    let renderAttempted = false;
+    if (game?.slug) {
+        console.log("[CCG MUSIC] Rendering Omega player for:", game.slug);
+        const result = renderGameMusic(game.slug, playerMount, {
+            onReady() {
+                finalizeMusicVisibility();
+            },
+            onError() {
+                const notice = document.createElement("p");
+                notice.className = "game-music-missing music-missing-text";
+                notice.textContent = "Track currently not available.";
+                if (hasComposerContent) {
+                    playerMount.appendChild(notice);
+                }
+                finalizeMusicVisibility();
+            }
+        });
+        renderAttempted = !!result.attempted;
     }
+
+    if (!renderAttempted) {
+        playerMount.remove();
+    }
+
+    window.setTimeout(() => {
+        const hasPlayer = !!playerMount.querySelector("audio");
+        if (!hasPlayer && !hasComposerContent && !renderAttempted) {
+            playerMount.remove();
+        }
+        finalizeMusicVisibility();
+    }, 250);
+
+    finalizeMusicVisibility();
 }
 
 function updatePrettyUrlAfterResolve(game) {

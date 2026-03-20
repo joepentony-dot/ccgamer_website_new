@@ -523,7 +523,12 @@
     const key = composerName.toLowerCase();
     const slug = ESSENTIAL_TRACKS[key];
 
-    if (!slug || !window.CCGSharedMusicPlayer || typeof window.CCGSharedMusicPlayer.render !== "function") {
+    if (!slug || !window.CCGSharedMusicPlayer || typeof window.CCGSharedMusicPlayer.createAudioPlayer !== "function") {
+      return null;
+    }
+
+    const musicSrc = await resolveGameMusicUrl(slug);
+    if (!musicSrc) {
       return null;
     }
 
@@ -551,15 +556,18 @@
       title.appendChild(titleLink);
     }
 
-    const playerContainer = document.createElement("div");
-    playerContainer.className = "ccg-essential-track__player-wrap ccg-essential-track__player-slot";
-    essential.appendChild(playerContainer);
+    const audioPlayer = window.CCGSharedMusicPlayer.createAudioPlayer({
+      src: musicSrc,
+      playerClass: "ccg-composer-essential-player",
+      wrapperClass: "ccg-essential-track__player-wrap",
+      slotClass: "ccg-essential-track__player-slot"
+    });
 
-    window.CCGSharedMusicPlayer.render(
-      playerContainer,
-      slug
-    );
+    if (!audioPlayer) {
+      return null;
+    }
 
+    essential.appendChild(audioPlayer);
     return essential;
   }
 
@@ -689,99 +697,79 @@
       cardShell.appendChild(gameLink);
       card.appendChild(cardShell);
 
-      if (window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.render === "function") {
+      const musicSrc = await resolveGameMusicUrl(game.slug);
+      const playerFactory = window.CCGSharedMusicPlayer && typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+        ? window.CCGSharedMusicPlayer.createAudioPlayer
+        : null;
+      if (musicSrc && playerFactory) {
         const audioWrap = document.createElement("div");
         audioWrap.className = "ccg-composer-audio-wrap";
-
-        const playerContainer = document.createElement("div");
-        playerContainer.className = "ccg-composer-game-utility composer-player-row ccg-composer-game-player-slot";
-        audioWrap.appendChild(playerContainer);
-        cardShell.appendChild(audioWrap);
-
-        window.CCGSharedMusicPlayer.render(
-          playerContainer,
-          game.slug
-        );
-
-        const bindRenderedAudio = () => {
-          const audioEl = playerContainer.querySelector("audio");
-          if (!audioEl) {
-            return false;
-          }
-
-          card.classList.add("ccg-composer-games__item--has-audio");
-
-          const syncPlayingState = (isPlaying) => {
-            card.classList.toggle("is-playing", isPlaying);
-            statusBadge.textContent = isPlaying ? (statusBadge.dataset.playingLabel || "Now playing") : (statusBadge.dataset.readyLabel || "Track ready");
-          };
-
-          audioEl.addEventListener("play", () => {
-            document.querySelectorAll(".ccg-composer-games__item.is-playing").forEach((item) => {
-              if (item !== card) {
-                item.classList.remove("is-playing");
-                const badge = item.querySelector(".ccg-composer-game-status");
-                if (badge) {
-                  badge.textContent = badge.dataset.readyLabel || "Track ready";
-                }
-                const otherAudio = item.querySelector("audio");
-                if (otherAudio && !otherAudio.paused) {
-                  otherAudio.pause();
-                }
+        const audioPlayer = playerFactory({
+              src: musicSrc,
+              playerClass: "ccg-composer-mini-player",
+              wrapperClass: "ccg-composer-game-utility composer-player-row",
+              slotClass: "ccg-composer-game-player-slot",
+              onError() {
+                audioWrap.remove();
+                card.classList.remove("ccg-composer-games__item--has-audio");
               }
             });
-            syncPlayingState(true);
-          });
-          audioEl.addEventListener("pause", () => syncPlayingState(false));
-          audioEl.addEventListener("ended", () => syncPlayingState(false));
 
-          if (hasThumb) {
-            const thumbToggle = gameLink.querySelector(".ccg-composer-game-thumb-wrap");
-            if (thumbToggle) {
-              thumbToggle.setAttribute("role", "button");
-              thumbToggle.setAttribute("tabindex", "0");
-              thumbToggle.setAttribute("aria-label", `Play or pause music sample for ${game.title || "this game"}`);
-              const togglePlayback = (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                if (audioEl.paused) {
-                  audioEl.play().catch(() => {});
-                } else {
-                  audioEl.pause();
-                }
-              };
-              thumbToggle.addEventListener("click", togglePlayback);
-              thumbToggle.addEventListener("keydown", (event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  togglePlayback(event);
+        if (audioPlayer) {
+          const audioEl = audioPlayer.querySelector("audio");
+          card.classList.add("ccg-composer-games__item--has-audio");
+          audioWrap.appendChild(audioPlayer);
+          cardShell.appendChild(audioWrap);
+
+          if (audioEl) {
+            const syncPlayingState = (isPlaying) => {
+              card.classList.toggle("is-playing", isPlaying);
+              statusBadge.textContent = isPlaying ? (statusBadge.dataset.playingLabel || "Now playing") : (statusBadge.dataset.readyLabel || "Track ready");
+            };
+
+            audioEl.addEventListener("play", () => {
+              document.querySelectorAll(".ccg-composer-games__item.is-playing").forEach((item) => {
+                if (item !== card) {
+                  item.classList.remove("is-playing");
+                  const badge = item.querySelector(".ccg-composer-game-status");
+                  if (badge) {
+                    badge.textContent = badge.dataset.readyLabel || "Track ready";
+                  }
+                  const otherAudio = item.querySelector("audio");
+                  if (otherAudio && !otherAudio.paused) {
+                    otherAudio.pause();
+                  }
                 }
               });
+              syncPlayingState(true);
+            });
+            audioEl.addEventListener("pause", () => syncPlayingState(false));
+            audioEl.addEventListener("ended", () => syncPlayingState(false));
+
+            if (hasThumb) {
+              const thumbToggle = gameLink.querySelector(".ccg-composer-game-thumb-wrap");
+              if (thumbToggle) {
+                thumbToggle.setAttribute("role", "button");
+                thumbToggle.setAttribute("tabindex", "0");
+                thumbToggle.setAttribute("aria-label", `Play or pause music sample for ${game.title || "this game"}`);
+                const togglePlayback = (event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (audioEl.paused) {
+                    audioEl.play().catch(() => {});
+                  } else {
+                    audioEl.pause();
+                  }
+                };
+                thumbToggle.addEventListener("click", togglePlayback);
+                thumbToggle.addEventListener("keydown", (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    togglePlayback(event);
+                  }
+                });
+              }
             }
           }
-
-          return true;
-        };
-
-        if (!bindRenderedAudio()) {
-          const observer = new MutationObserver(() => {
-            if (bindRenderedAudio()) {
-              observer.disconnect();
-            } else if (!playerContainer.childElementCount) {
-              audioWrap.remove();
-              card.classList.remove("ccg-composer-games__item--has-audio");
-              observer.disconnect();
-            }
-          });
-
-          observer.observe(playerContainer, { childList: true, subtree: true });
-
-          window.setTimeout(() => {
-            if (!playerContainer.querySelector("audio")) {
-              audioWrap.remove();
-              card.classList.remove("ccg-composer-games__item--has-audio");
-              observer.disconnect();
-            }
-          }, 4000);
         }
       }
 
