@@ -3,12 +3,19 @@
     window.ccgGameMusic = {};
   }
 
-  window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
-    if (!container) return;
-    if (!slug) return;
+  window.ccgGameMusic.renderGameMusicPlayer = async function (container, slug) {
+    if (!container || !slug) return;
 
     const url = `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
-    if (!url) {
+
+    try {
+      const res = await fetch(url, { method: "GET", headers: { Range: "bytes=0-1" } });
+
+      if (!(res.status === 200 || res.status === 206)) {
+        return; // file does NOT exist → no player
+      }
+
+    } catch (e) {
       return;
     }
 
@@ -19,15 +26,5 @@
         </audio>
       </div>
     `;
-
-    const audio = container.querySelector("audio");
-    if (!audio) {
-      container.innerHTML = "";
-      return;
-    }
-
-    audio.addEventListener("error", () => {
-      container.innerHTML = "";
-    }, { once: true });
   };
 })();

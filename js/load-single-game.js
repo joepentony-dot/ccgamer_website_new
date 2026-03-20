@@ -1118,21 +1118,16 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         musicCard.hidden = false;
     }
 
-    const sharedMusicContainer = document.querySelector(".game-music-container");
-    if (!sharedMusicContainer) return;
-
-    sharedMusicContainer.innerHTML = "";
+    const sharedMusicContainer = musicTracksEl;
 
     if (game?.music && game.music.length > 0) {
+        const playerWrap = document.createElement("div");
+        playerWrap.className = "ccg-game-player-wrap";
+        musicTracksEl.appendChild(playerWrap);
+
         if (window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function") {
-            window.ccgGameMusic.renderGameMusicPlayer(sharedMusicContainer, game.slug);
+            window.ccgGameMusic.renderGameMusicPlayer(playerWrap, game.slug);
         }
-    } else {
-        sharedMusicContainer.innerHTML += `
-          <div class="no-music">
-            <span>No music available for this game</span>
-          </div>
-        `;
     }
 
 
