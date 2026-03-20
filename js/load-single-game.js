@@ -1120,27 +1120,15 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
 
     const sharedMusicContainer = musicTracksEl;
 
-    const hasMusic = (
-        (game?.music && game.music.length > 0) ||
-        (Array.isArray(game?.composer) && game.composer.length > 0) ||
-        (typeof game?.composer === "string" && game.composer.trim() !== "")
-    );
+    const playerWrap = document.createElement("div");
+    playerWrap.className = "ccg-game-player-wrap";
 
-    if (hasMusic) {
-        const playerWrap = document.createElement("div");
-        playerWrap.className = "ccg-game-player-wrap";
-        musicTracksEl.appendChild(playerWrap);
+    // IMPORTANT: append AFTER composer content
+    musicTracksEl.appendChild(playerWrap);
 
-        console.log("[CCG DEBUG] Player check:", {
-            slug: game.slug,
-            music: game.music,
-            composer: game.composer,
-            hasMusic
-        });
-
-        if (window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function") {
-            window.ccgGameMusic.renderGameMusicPlayer(playerWrap, game.slug);
-        }
+    if (window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function") {
+        console.log("[CCG DEBUG] Rendering player for:", game.slug);
+        window.ccgGameMusic.renderGameMusicPlayer(playerWrap, game.slug);
     }
 
 
