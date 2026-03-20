@@ -1118,7 +1118,14 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         musicCard.hidden = false;
     }
 
-    renderGameMusic(game?.slug, musicContainer);
+    if (!game?.music || game.music.length === 0) {
+        const container = document.querySelector(".game-music-container");
+        if (container) container.innerHTML = "";
+    }
+
+    if (game?.music && game.music.length > 0) {
+        renderGameMusic(game?.slug, musicContainer);
+    }
 
 
     if (composers.length) {

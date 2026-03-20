@@ -67,7 +67,7 @@
 
 .ccg-music-tracks .ccg-game-audio-player {
     margin-top: 10px;
-    width: 260px;
+    width: 100%;
     max-width: 100%;
     filter: drop-shadow(0 0 4px rgba(0, 234, 255, 0.42));
 }
