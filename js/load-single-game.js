@@ -1044,16 +1044,37 @@ function renderGameMusic(slug, container) {
     const normalizedSlug = normalizeSlugKey(slug);
     if (!normalizedSlug) return;
 
-    if (!window.ccgGameMusic || typeof window.ccgGameMusic.renderGameMusicPlayer !== "function") {
-        return;
+    const hasFallbackRenderer =
+        window.ccgGameMusic &&
+        typeof window.ccgGameMusic.renderGameMusicPlayer === "function";
+
+    if (container && normalizedSlug) {
+        container.innerHTML = "";
+
+        if (
+            window.CCGSharedMusicPlayer &&
+            typeof window.CCGSharedMusicPlayer.createAudioPlayer === "function"
+        ) {
+            window.CCGSharedMusicPlayer.createAudioPlayer(
+                container,
+                normalizedSlug,
+                {
+                    variant: "omega",
+                    context: "game-page",
+                }
+            );
+
+            console.log("[CCG MUSIC] Using Omega shared player:", normalizedSlug);
+        } else if (hasFallbackRenderer) {
+            console.warn("[CCG MUSIC] Shared player missing, fallback used");
+            window.ccgGameMusic.renderGameMusicPlayer(
+                container,
+                normalizedSlug
+            );
+        } else {
+            return;
+        }
     }
-
-    container.innerHTML = "";
-
-    window.ccgGameMusic.renderGameMusicPlayer(
-        container,
-        normalizedSlug
-    );
 
     container.dataset.ccgMusicRendered = "true";
     console.log("[CCG MUSIC] Restored working player:", normalizedSlug);
