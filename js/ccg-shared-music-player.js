@@ -270,3 +270,74 @@
   NS._probeAudioMetadata = probeAudioMetadata;
   NS._resolveMp3Url = resolveMp3Url;
 })(window);
+
+(function (global) {
+  global.CCGSharedMusicPlayer = global.CCGSharedMusicPlayer || {};
+  const NS = global.CCGSharedMusicPlayer;
+
+  const _probeCache = new Map();
+
+  function resolveMp3Url(slug) {
+    if (typeof NS.getMp3Url === "function") return NS.getMp3Url(slug);
+    return `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
+  }
+
+  function probePlayable(url, timeoutMs = 6000) {
+    if (_probeCache.has(url)) return _probeCache.get(url);
+
+    const p = new Promise((resolve) => {
+      const a = new Audio();
+      a.preload = "metadata";
+      a.src = url;
+
+      let done = false;
+      let timeoutId = null;
+
+      const finish = (ok) => {
+        if (done) return;
+        done = true;
+        if (timeoutId) {
+          global.clearTimeout(timeoutId);
+        }
+        a.src = "";
+        resolve(ok);
+      };
+
+      a.addEventListener("loadedmetadata", () => finish(true), { once: true });
+      a.addEventListener("error", () => finish(false), { once: true });
+
+      try { a.load(); } catch (_) {}
+
+      timeoutId = global.setTimeout(() => finish(false), timeoutMs);
+    });
+
+    _probeCache.set(url, p);
+    return p;
+  }
+
+  NS.renderIfPlayableOnGamePage = async function (container, slug, opts = {}) {
+    const { logCtx = "" } = opts;
+    if (!container || !slug) return false;
+
+    const url = resolveMp3Url(slug);
+    const ok = await probePlayable(url, 6000);
+
+    if (!ok) {
+      container.innerHTML = "";
+      console.log(`[CCG MUSIC] missing/unplayable ${logCtx} slug=${slug}`);
+      return false;
+    }
+
+    container.innerHTML = "";
+    if (
+      window.ccgGameMusic &&
+      typeof window.ccgGameMusic.renderOmegaGameMusicPlayer === "function"
+    ) {
+      window.ccgGameMusic.renderOmegaGameMusicPlayer(container, slug, { logCtx });
+      console.log(`[CCG MUSIC] rendered Omega game player ${logCtx} slug=${slug}`);
+      return true;
+    }
+
+    return false;
+  };
+})(window);

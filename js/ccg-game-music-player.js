@@ -66,3 +66,60 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug, opts = {}
 
   return { wrapper, audio, status, url };
 };
+
+
+window.ccgGameMusic = window.ccgGameMusic || {};
+
+window.ccgGameMusic.renderOmegaGameMusicPlayer = function (container, slug, opts = {}) {
+  const { logCtx = "" } = opts;
+  if (!container || !slug) return;
+
+  const url = `https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/${slug}.mp3`;
+
+  container.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "ccg-omega-player ccg-omega-player--game";
+
+  const status = document.createElement("div");
+  status.className = "ccg-omega-player-status";
+  status.textContent = "● TRACK READY";
+
+  const audioWrap = document.createElement("div");
+  audioWrap.className = "ccg-omega-audio-wrap";
+
+  const audio = document.createElement("audio");
+  audio.controls = true;
+  audio.preload = "none";
+  audio.style.width = "100%";
+
+  const source = document.createElement("source");
+  source.src = url;
+  source.type = "audio/mpeg";
+  audio.appendChild(source);
+
+  audioWrap.appendChild(audio);
+  wrapper.appendChild(status);
+  wrapper.appendChild(audioWrap);
+  container.appendChild(wrapper);
+
+  audio.addEventListener("play", () => {
+    status.textContent = "● NOW PLAYING";
+    wrapper.classList.add("is-playing");
+  });
+
+  audio.addEventListener("pause", () => {
+    status.textContent = "● TRACK READY";
+    wrapper.classList.remove("is-playing");
+  });
+
+  audio.addEventListener("ended", () => {
+    status.textContent = "● TRACK READY";
+    wrapper.classList.remove("is-playing");
+  });
+
+  audio.addEventListener("error", () => {
+    container.innerHTML = "";
+    console.log(`[CCG MUSIC] omega game audio error -> cleared ${logCtx} slug=${slug}`);
+  }, { once: true });
+};
