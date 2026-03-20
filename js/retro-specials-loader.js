@@ -61,9 +61,9 @@ async function ccgLoadRetroSpecials() {
 
   return data
     .map((item, index) => {
-      const orderValue = Number(item?.sort_order ?? item?.order);
+      const orderValue = Number(item?.order);
       const slug = String(item?.slug || item?.id || '').trim();
-      const youtubeId = String(item?.youtube_video_id || item?.youtubeId || item?.youtube || '').trim();
+      const youtubeId = String(item?.youtubeId || '').trim();
       return {
         id: String(item?.id || '').trim(),
         title: String(item?.title || '').trim(),

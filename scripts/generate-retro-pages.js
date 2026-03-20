@@ -14,30 +14,24 @@ const retroSpecialsPath = path.join(repoRoot, 'data', 'retro-specials.json');
 const amigaDemoMusicPath = path.join(repoRoot, 'data', 'amiga-demo-music.json');
 
 const collectionConfig = {
-  retro_special: {
+  'retro-specials': {
     outputDir: path.join(repoRoot, 'retro-specials'),
     routePrefix: '/retro-specials',
     collectionName: 'Retro Specials',
     collectionUrl: '/games/collections/retro-specials.html'
   },
-  retro_event: {
+  'retro-events': {
     outputDir: path.join(repoRoot, 'retro-events'),
     routePrefix: '/retro-events',
     collectionName: 'Retro Events',
     collectionUrl: '/games/collections/retro-events.html'
   },
-  demo_music: {
+  'amiga-demo-music': {
     outputDir: path.join(repoRoot, 'amiga-demo-music'),
     routePrefix: '/amiga-demo-music',
     collectionName: 'Amiga Demo Music',
     collectionUrl: '/games/collections/amiga-demo-music.html'
   },
-  amiga_demo_music: {
-    outputDir: path.join(repoRoot, 'amiga-demo-music'),
-    routePrefix: '/amiga-demo-music',
-    collectionName: 'Amiga Demo Music',
-    collectionUrl: '/games/collections/amiga-demo-music.html'
-  }
 };
 
 function slugify(value) {
@@ -60,7 +54,7 @@ function readJsonArray(filePath) {
 }
 
 function resolveYoutubeId(entry) {
-  return String(entry.youtube_video_id || entry.youtubeId || entry.youtube || '').trim();
+  return String(entry.youtubeId || entry.youtube_video_id || entry.youtube || '').trim();
 }
 
 function resolveSlug(entry) {
@@ -121,7 +115,7 @@ function buildBreadcrumbSchema({ collectionName, collectionAbsoluteUrl, canonica
 }
 
 function sortByOrder(items) {
-  return [...items].sort((a, b) => (a.sortOrder - b.sortOrder) || (a.order - b.order) || (a.index - b.index));
+  return [...items].sort((a, b) => (a.order - b.order) || (a.index - b.index));
 }
 
 function toFiniteNumber(value) {
@@ -131,15 +125,18 @@ function toFiniteNumber(value) {
 
 function normaliseEntryType(rawType, fallbackType) {
   const cleaned = String(rawType || '').trim().toLowerCase();
-  if (cleaned === 'retro_special' || cleaned === 'retro_event') return cleaned;
-  if (cleaned === 'demo_music' || cleaned === 'amiga_demo_music' || fallbackType === 'demo_music') return 'demo_music';
-  return 'retro_event';
+  if (cleaned === 'retro-specials' || cleaned === 'retro-events' || cleaned === 'amiga-demo-music') return cleaned;
+  if (cleaned === 'retro_special') return 'retro-specials';
+  if (cleaned === 'retro_event') return 'retro-events';
+  if (cleaned === 'demo_music' || cleaned === 'amiga_demo_music') return 'amiga-demo-music';
+  if (fallbackType === 'retro-specials' || fallbackType === 'retro-events' || fallbackType === 'amiga-demo-music') return fallbackType;
+  return 'retro-events';
 }
 
 function collectRetroEntries() {
-  const retroEvents = readJsonArray(retroEventsPath).map((entry) => ({ ...entry, __fallbackType: 'retro_event' }));
-  const retroSpecials = readJsonArray(retroSpecialsPath).map((entry) => ({ ...entry, __fallbackType: 'retro_special' }));
-  const demoTracks = readJsonArray(amigaDemoMusicPath).map((entry) => ({ ...entry, __fallbackType: 'demo_music' }));
+  const retroEvents = readJsonArray(retroEventsPath).map((entry) => ({ ...entry, __fallbackType: 'retro-events' }));
+  const retroSpecials = readJsonArray(retroSpecialsPath).map((entry) => ({ ...entry, __fallbackType: 'retro-specials' }));
+  const demoTracks = readJsonArray(amigaDemoMusicPath).map((entry) => ({ ...entry, __fallbackType: 'amiga-demo-music' }));
   return [...retroEvents, ...retroSpecials, ...demoTracks];
 }
 
@@ -189,16 +186,15 @@ function generateRetroPages() {
       slug: resolveSlug(entry),
       youtubeId: resolveYoutubeId(entry),
       visible: entry.visible !== false && entry.published !== false,
-      sortOrder: toFiniteNumber(entry.sort_order),
       order: toFiniteNumber(entry.order),
       index
     };
   }).filter((entry) => Boolean(collectionConfig[entry.type] && entry.slug && entry.youtubeId && entry.visible));
 
   const byType = {
-    retro_special: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro_special')),
-    retro_event: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro_event')),
-    demo_music: sortByOrder(normalisedEntries.filter((entry) => entry.type === 'demo_music'))
+    'retro-specials': sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro-specials')),
+    'retro-events': sortByOrder(normalisedEntries.filter((entry) => entry.type === 'retro-events')),
+    'amiga-demo-music': sortByOrder(normalisedEntries.filter((entry) => entry.type === 'amiga-demo-music'))
   };
 
   const pageEntries = [];
@@ -206,15 +202,15 @@ function generateRetroPages() {
 
   for (const entry of normalisedEntries) {
     const config = collectionConfig[entry.type];
-    const sourceDate = entry.__fallbackType === 'demo_music'
+    const sourceDate = entry.__fallbackType === 'amiga-demo-music'
       ? demoDataMtime
-      : entry.__fallbackType === 'retro_special'
+      : entry.__fallbackType === 'retro-specials'
         ? retroSpecialsMtime
         : retroDataMtime;
     const title = String(entry.title || '').trim();
     const summary = resolveSummary(entry);
     const description = resolveDescription(entry, summary);
-    const isDemoMusic = entry.type === 'demo_music';
+    const isDemoMusic = entry.type === 'amiga-demo-music';
     const defaultSeoTitle = isDemoMusic
       ? `${title} – Amiga Demo Scene | Cheeky Commodore Gamer`
       : `${title} | ${config.collectionName} | Cheeky Commodore Gamer`;

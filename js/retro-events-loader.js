@@ -57,8 +57,8 @@ async function ccgLoadItems() {
 
   return data
     .map((item, index) => {
-      const orderValue = Number(item?.sort_order ?? item?.order);
-      const youtubeId = String(item?.youtube_video_id || item?.youtubeId || item?.youtube || '').trim();
+      const orderValue = Number(item?.order);
+      const youtubeId = String(item?.youtubeId || '').trim();
       const slug = String(item?.slug || item?.id || '').trim();
       return {
         id: String(item?.id || '').trim(),
@@ -73,7 +73,7 @@ async function ccgLoadItems() {
         type: String(item?.type || '').trim().toLowerCase()
       };
     })
-    .filter((item) => item.id && item.title && item.pageUrl && item.visible && item.type === 'retro_event')
+    .filter((item) => item.id && item.title && item.pageUrl && item.visible && item.type === 'retro-events')
     .sort((a, b) => (a.order - b.order) || (a.index - b.index));
 }
 

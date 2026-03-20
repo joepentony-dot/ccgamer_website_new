@@ -5,19 +5,15 @@
 
 function ccgGetVideoId(item) {
   return String(
-    item?.youtube_video_id ||
     item?.youtubeId ||
-    item?.youtube ||
     ''
   ).trim();
 }
 
 function ccgGetCardUrl(item) {
   const directUrl = String(
-    item?.page_url ||
     item?.pageUrl ||
     item?.video_url ||
-    item?.youtube_url ||
     item?.url ||
     ''
   ).trim();
