@@ -1109,29 +1109,16 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
     musicCard.hidden = true;
     musicTracksEl.innerHTML = "";
 
-    const musicContainer = document.createElement("div");
-    musicContainer.id = "game-music";
-    musicTracksEl.appendChild(musicContainer);
-
     const composers = normalizeComposerNames(game);
     const hasComposerContent = composers.length > 0;
     if (hasComposerContent) {
         musicCard.hidden = false;
     }
 
-    const sharedMusicContainer = musicTracksEl;
-
-    const playerWrap = document.createElement("div");
-    playerWrap.className = "ccg-game-player-wrap";
-
-    // IMPORTANT: append AFTER composer content
-    musicTracksEl.appendChild(playerWrap);
-
-    if (window.ccgGameMusic && typeof window.ccgGameMusic.renderGameMusicPlayer === "function") {
-        console.log("[CCG DEBUG] Rendering player for:", game.slug);
-        window.ccgGameMusic.renderGameMusicPlayer(playerWrap, game.slug);
+    if (game?.slug) {
+        console.log("[CCG MUSIC] Rendering Omega player for:", game.slug);
+        void renderGameMusic(game.slug, musicTracksEl);
     }
-
 
     if (composers.length) {
         const composerLine = document.createElement("p");
