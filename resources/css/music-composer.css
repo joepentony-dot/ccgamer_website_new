@@ -851,6 +851,7 @@
 
 .game-music audio {
   width: 100% !important;
+  display: block;
   min-height: 42px;
 }
 
@@ -859,15 +860,16 @@
 }
 
 .game-music-missing {
-  padding: 15px;
-  opacity: 0.7;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(0, 255, 255, 0.35);
   text-align: center;
-  border: 1px dashed rgba(0,255,255,0.3);
+  opacity: 0.85;
 }
 
 .music-missing-text {
   font-size: 0.9rem;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
 }
 
 .ccg-omega-player {
