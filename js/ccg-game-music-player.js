@@ -10,7 +10,13 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
   container.innerHTML = "";
 
   const wrapper = document.createElement("div");
-  wrapper.className = "game-music";
+  wrapper.className = "game-music omega-player";
+
+  const status = document.createElement("div");
+  status.className = "omega-player-status";
+  status.textContent = "● TRACK READY";
+
+  wrapper.appendChild(status);
 
   const audio = document.createElement("audio");
   audio.controls = true;
@@ -22,6 +28,17 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug) {
   source.type = "audio/mpeg";
 
   audio.appendChild(source);
+
+  audio.addEventListener("play", () => {
+    status.textContent = "● NOW PLAYING";
+    wrapper.classList.add("is-playing");
+  });
+
+  audio.addEventListener("pause", () => {
+    status.textContent = "● TRACK READY";
+    wrapper.classList.remove("is-playing");
+  });
+
   wrapper.appendChild(audio);
   container.appendChild(wrapper);
 
