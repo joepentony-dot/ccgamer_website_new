@@ -25,17 +25,17 @@
   const ASSET_EXISTS_CACHE = new Map();
   const COMPOSER_IMAGE_CACHE = new Map();
   const DEDICATED_COMPOSER_SLUGS = new Set(Object.keys(PROFILE_DATA));
-  const FEATURED_PRIORITY = [
-    "rob hubbard",
-    "martin galway",
-    "jeroen tel",
-    "jonathan dunn",
-    "matt gray",
-    "mark cooksey",
-    "neil brennan",
-    "richard joseph",
-    "russell lieblich"
-  ];
+  const FEATURED_COMPOSER_URLS = {
+    "allister brimble": "/music/allister-brimble/",
+    "barry leitch": "/music/barry-leitch/",
+    "ben daglish": "/music/ben-daglish/",
+    "chris hulsbeck": "/music/chris-huelsbeck/",
+    "david whittaker": "/music/david-whittaker/",
+    "fred gray": "/music/fred-gray/",
+    "martin galway": "/music/martin-galway/",
+    "rob hubbard": "/music/rob-hubbard/"
+  };
+  const FEATURED_PRIORITY = Object.keys(FEATURED_COMPOSER_URLS);
 
   function normalizeComposerKey(value) {
     if (typeof window.normalizeComposerName === "function") {
@@ -123,6 +123,7 @@
   function createComposerRegistry(games) {
     const composersFromGames = buildComposerIndex(games);
     const composerMap = new Map();
+    const profileKeyToSlug = new Map();
 
     Object.values(PROFILE_DATA).forEach((profile) => {
       const composer = {
@@ -132,10 +133,13 @@
         games: []
       };
       composerMap.set(composer.slug, composer);
+      profileKeyToSlug.set(normaliseName(composer.name), composer.slug);
+      composer.aliases.forEach((alias) => profileKeyToSlug.set(normaliseName(alias), composer.slug));
     });
 
     Object.values(composersFromGames).forEach((entry) => {
-      const slug = slugifyName(entry.slug || entry.name);
+      const normalizedName = normaliseName(entry.name);
+      const slug = profileKeyToSlug.get(normalizedName) || slugifyName(entry.slug || entry.name);
       const existing = composerMap.get(slug);
       if (existing) {
         existing.games = entry.games;
@@ -185,15 +189,31 @@
     return `${resolveSiteRoot()}music/composer.html?${params.toString()}`;
   }
 
-  function getComposerUrl(composerOrSlug, composerName) {
+  function getFeaturedComposerUrl(name) {
+    const featuredPath = FEATURED_COMPOSER_URLS[normaliseName(name)];
+    if (!featuredPath) {
+      return "";
+    }
+
+    const siteRoot = resolveSiteRoot().replace(/\/$/, "");
+    return `${siteRoot}${featuredPath}`;
+  }
+
+  function getComposerUrl(composerOrSlug, composerName, options = {}) {
     const slug = typeof composerOrSlug === "object" && composerOrSlug
       ? slugifyName(composerOrSlug.slug || composerOrSlug.name)
       : slugifyName(composerOrSlug);
     const name = typeof composerOrSlug === "object" && composerOrSlug
       ? String(composerOrSlug.name || composerName || "").trim()
       : String(composerName || "").trim();
+    const { allowDedicated = false } = options;
+    const featuredUrl = getFeaturedComposerUrl(name || composerName || composerOrSlug || slug);
 
-    if (slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
+    if (featuredUrl) {
+      return featuredUrl;
+    }
+
+    if (allowDedicated && slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
       return `${resolveSiteRoot()}music/${slug}/`;
     }
 
@@ -339,7 +359,7 @@
     const cardClass = compact ? "composer-card composer-card--compact" : "composer-card composer-card--featured";
 
     return `
-      <a href="${getComposerUrl(composer, composer.name)}" class="${cardClass}" data-slug="${composer.slug}">
+      <a href="${getComposerUrl(composer, composer.name, { allowDedicated: !compact })}" class="${cardClass}" data-slug="${composer.slug}">
         ${compact ? "" : `<div class="composer-thumb"><img src="${imagePath}" alt="${composer.name}" loading="lazy"></div>`}
         <div class="composer-info">
           <h3>${composer.name}</h3>
@@ -642,8 +662,8 @@
     const description = composer
       ? `Explore C64 and Amiga games featuring music by ${name}, with archive links back to each game page on Cheeky Commodore Gamer.`
       : `Browse the Cheeky Commodore Gamer music archive for ${name} and discover matching game soundtrack credits.`;
-    const canonical = composer && DEDICATED_COMPOSER_SLUGS.has(composer.slug)
-      ? `https://www.cheekycommodoregamer.co.uk/music/${composer.slug}/`
+    const canonical = composer
+      ? `https://www.cheekycommodoregamer.co.uk${getComposerUrl(composer, composer.name, { allowDedicated: true })}`
       : `https://www.cheekycommodoregamer.co.uk/music/composer.html?name=${encodeURIComponent(name)}`;
 
     document.title = title;
