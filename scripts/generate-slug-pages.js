@@ -128,30 +128,6 @@ function validateGamesForGeneration(games) {
     return errors;
 }
 
-function buildRedirectStubHtml({ slug, title }) {
-    const { canonicalPath, canonicalUrl, robots } = gameOutputUtils.getGameRedirectStubData(slug, SITE_ROOT);
-
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<script src="/js/analytics.js"></script>
-<meta http-equiv="refresh" content="0; url=${canonicalPath}">
-<script>
-(function(){
-window.location.replace("${canonicalPath}" + window.location.search + window.location.hash);
-})();
-</script>
-<title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
-<meta name="description" content="Redirecting to the canonical Cheeky Commodore Gamer page for ${escapeHtml(title)}.">
-<meta name="robots" content="${robots}">
-<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-</head>
-<body></body>
-</html>
-`;
-}
-
 function extractTagValue(html, pattern) {
     const match = String(html || "").match(pattern);
     return match ? match[1].trim() : "";
@@ -176,7 +152,6 @@ function getExpectedPageArtifacts(game, slug, validation) {
         platformLong,
         platformShort,
         description,
-        stubHtml: buildRedirectStubHtml({ slug, title }),
         canonicalHtml: buildCanonicalHtml({
             slug,
             game,
@@ -211,26 +186,6 @@ function getCanonicalRewriteReason(filePath, expected) {
     if (description !== expectedDescription) return "description metadata changed";
 
     if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.canonicalHtml)) {
-        return "metadata outdated";
-    }
-
-    return "";
-}
-
-function getStubRewriteReason(filePath, expected) {
-    if (!fs.existsSync(filePath)) return "missing redirect stub";
-
-    const html = fs.readFileSync(filePath, "utf8");
-    const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
-    const robots = extractTagValue(html, /<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i).toLowerCase();
-    const redirect = extractTagValue(html, /<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i);
-    const expectedRedirect = gameOutputUtils.getGameRedirectStubData(expected.slug, SITE_ROOT).redirectTarget;
-
-    if (canonical !== expected.canonicalUrl) return "canonical mismatch";
-    if (robots !== "noindex,follow") return "robots mismatch";
-    if (redirect !== expectedRedirect) return "redirect target mismatch";
-
-    if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.stubHtml)) {
         return "metadata outdated";
     }
 
@@ -435,9 +390,11 @@ function findStaleGameOutputs(activeSlugs) {
         }
         if (!entry.isFile() || !entry.name.endsWith(".html")) return;
         const slug = entry.name.replace(/\.html$/i, "");
-        if (!activeSlugs.has(slug)) {
-            stale.push({ type: "stub", slug, filePath: path.join(gamesDir, entry.name) });
+        if (activeSlugs.has(slug)) {
+            stale.push({ type: "legacy-stub", slug, filePath: path.join(gamesDir, entry.name) });
+            return;
         }
+        stale.push({ type: "stub", slug, filePath: path.join(gamesDir, entry.name) });
     });
     return stale;
 }
@@ -461,7 +418,6 @@ function planChangedGames(games) {
         const slug = normalizeSlug(game);
         const outputDir = path.join(gamesDir, slug);
         const canonicalPath = path.join(outputDir, "index.html");
-        const stubPath = path.join(gamesDir, `${slug}.html`);
         const validation = validateForGeneration(game, slug, gamesBySlug);
 
         if (validation.issues.length) {
@@ -472,18 +428,14 @@ function planChangedGames(games) {
 
         const expected = getExpectedPageArtifacts(game, slug, validation);
         const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected, slug });
-        const stubReason = getStubRewriteReason(stubPath, { ...validation, ...expected, slug });
-
-        if (!canonicalReason && !stubReason) continue;
+        if (!canonicalReason) continue;
 
         planned.push({
             game,
             slug,
             outputDir,
             canonicalPath,
-            stubPath,
             canonicalReason,
-            stubReason,
             ...validation,
             ...expected
         });
@@ -508,11 +460,6 @@ function processChangedGamesOnly(games) {
 
     for (const item of planned) {
         fs.mkdirSync(item.outputDir, { recursive: true });
-
-        if (item.stubReason && writeTextFileIfChanged(item.stubPath, item.stubHtml)) {
-            written += 1;
-            console.log(`[WRITE] games/${item.slug}.html (${item.stubReason})`);
-        }
 
         if (item.canonicalReason && writeTextFileIfChanged(item.canonicalPath, item.canonicalHtml)) {
             written += 1;
@@ -550,11 +497,9 @@ if (require.main === module) {
 
 module.exports = {
     buildCanonicalHtml,
-    buildRedirectStubHtml,
     buildDescription,
     getCanonicalRewriteReason,
     getExpectedPageArtifacts,
-    getStubRewriteReason,
     normalizeSlug,
     planChangedGames,
     processChangedGamesOnly,
