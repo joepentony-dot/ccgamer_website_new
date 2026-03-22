@@ -31,7 +31,8 @@
     <meta name="description"
           id="game-meta-description"
           content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
-    <link rel="canonical" id="game-canonical" href="/games/">
+    <meta name="robots" content="noindex,follow">
+    <link rel="canonical" id="game-canonical" href="/games/game.html">
     <script>
         (function () {
             try {
@@ -41,26 +42,34 @@
                 if (!canonical) return;
 
                 var ogUrl = document.getElementById('game-og-url');
-
+                var pathname = String(window.location.pathname || '');
                 var params = new URLSearchParams(window.location.search || '');
-                var id = params.get('id');
-                if (!id) return;
+                var slug = '';
 
-                // IDs in games.json are underscore-based (e.g. southern_belle).
-                // Share/SEO slugs are hyphen-based (e.g. southern-belle).
-                var raw = String(id).trim();
-                if (!raw) return;
+                var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
+                if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
+                    slug = String(pathMatch[1]).trim().toLowerCase();
+                }
 
-                // Convert underscore IDs to directory slugs.
-                var slug = raw.replace(/_/g, '-').toLowerCase();
+                if (!slug) {
+                    var slugParam = params.get('slug');
+                    if (slugParam) {
+                        slug = String(slugParam).trim().toLowerCase();
+                    }
+                }
 
-                // Slug should now be safe for /games/{slug}/
-                if (!/^[a-z0-9-]+$/.test(slug)) return;
+                if (!slug) {
+                    var id = params.get('id');
+                    if (id) {
+                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
+                    }
+                }
+
+                if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
 
                 var path = '/games/' + slug + '/';
                 canonical.setAttribute('href', path);
 
-                // Also set og:url for share scripts / previews inside apps.
                 if (ogUrl) {
                     var origin = window.location.origin || '';
                     ogUrl.setAttribute('content', origin ? (origin + path) : path);

@@ -604,8 +604,8 @@ function setGameRobotsDirective(content) {
 }
 
 function shouldNoindexCurrentGameRoute() {
-    const pathname = (window.location.pathname || '').toLowerCase();
-    return pathname.endsWith('/games/game.html') || pathname.endsWith('/games/game.html/');
+    const pathname = getNormalizedPathname().toLowerCase();
+    return pathname === '/games/game.html' || pathname === '/games/game.html/';
 }
 
 function buildLegacyCompareMap(legacyMap) {
@@ -1213,7 +1213,7 @@ function updatePrettyUrlAfterResolve(game) {
     if (!pretty) return;
 
     const url = new URL(pretty, window.location.origin);
-    if (window.location.pathname !== url.pathname) {
+    if (getNormalizedPathname() !== url.pathname) {
         window.history.replaceState({}, "", url.pathname);
     }
 }
