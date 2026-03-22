@@ -37,7 +37,8 @@ function buildRow(item) {
   const excerpt = truncate(item.content, 140);
   const link = document.createElement('a');
   link.className = 'auth-btn';
-  link.href = `/games/game.html?id=${encodeURIComponent(item.game_slug)}`;
+  const slug = String(item.game_slug || '').trim().replace(/_/g, '-').toLowerCase();
+  link.href = slug ? `/games/${encodeURIComponent(slug)}/` : '/games/';
   link.textContent = 'Open game';
 
   const excerptText = document.createElement('span');

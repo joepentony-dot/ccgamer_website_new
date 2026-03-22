@@ -586,6 +586,28 @@ function normalizeIdKey(value) {
         .replace(/-+/g, "_");
 }
 
+function setGameRobotsDirective(content) {
+    let robotsMeta = document.querySelector('meta[name="robots"]');
+
+    if (!content) {
+        if (robotsMeta) robotsMeta.remove();
+        return;
+    }
+
+    if (!robotsMeta) {
+        robotsMeta = document.createElement('meta');
+        robotsMeta.setAttribute('name', 'robots');
+        document.head.appendChild(robotsMeta);
+    }
+
+    robotsMeta.setAttribute('content', content);
+}
+
+function shouldNoindexCurrentGameRoute() {
+    const pathname = (window.location.pathname || '').toLowerCase();
+    return pathname.endsWith('/games/game.html') || pathname.endsWith('/games/game.html/');
+}
+
 function buildLegacyCompareMap(legacyMap) {
     const compareMap = {};
     Object.entries(legacyMap).forEach(([slug, id]) => {
@@ -1150,7 +1172,8 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
             relatedByComposer.forEach((candidate) => {
                 const link = document.createElement("a");
                 link.className = "ccg-composer-button";
-                link.href = `${root}games/${String(candidate.slug || "").trim()}.html`;
+                const candidateSlug = String(candidate.slug || "").trim();
+                link.href = candidateSlug ? `${root}games/${candidateSlug}/` : `${root}games/`;
                 link.textContent = String(candidate.title || candidate.slug || "Game");
                 list.appendChild(link);
             });
@@ -2670,6 +2693,8 @@ function updateMeta(game) {
     const canonicalLink = document.getElementById("game-canonical");
     if (canonicalLink) canonicalLink.setAttribute("href", canonicalUrl);
 
+    setGameRobotsDirective(shouldNoindexCurrentGameRoute() ? "noindex,follow" : "index,follow");
+
     const ogTitle = document.getElementById("game-og-title");
     if (ogTitle) ogTitle.setAttribute("content", title);
 
@@ -3293,6 +3318,11 @@ function detachModalKeyboardControls() {
 
 function renderGameNotFound(gameId, slug) {
     if (!resolved) return;
+
+    setGameRobotsDirective("noindex,follow");
+    const canonicalLink = document.getElementById("game-canonical");
+    if (canonicalLink) canonicalLink.setAttribute("href", "https://www.cheekycommodoregamer.co.uk/404.html");
+    document.title = "Game not found | Cheeky Commodore Gamer";
     const hero = document.querySelector(".game-hero");
     if (hero) hero.style.display = "none";
 

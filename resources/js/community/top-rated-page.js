@@ -24,7 +24,8 @@ function buildRow(item, index) {
 
   const link = document.createElement('a');
   link.className = 'auth-btn';
-  link.href = `/games/game.html?id=${encodeURIComponent(item.game_slug)}`;
+  const slug = String(item.game_slug || '').trim().replace(/_/g, '-').toLowerCase();
+  link.href = slug ? `/games/${encodeURIComponent(slug)}/` : '/games/';
   link.textContent = 'Open game';
 
   strong.appendChild(text);

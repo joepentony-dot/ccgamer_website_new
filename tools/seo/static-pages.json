@@ -1,5 +1,4 @@
 [
-  "",
   "about.html",
   "complete-index.html",
   "contact.html",
@@ -7,7 +6,6 @@
   "home.html",
   "games/collections/bpjs-indexed-games.html",
   "games/collections/cartridge-games.html",
-  "games/collections/index.html",
   "games/collections/licensed-games.html",
   "games/collections/retro-events.html",
   "games/collections/top-picks.html",
