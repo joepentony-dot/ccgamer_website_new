@@ -1,37 +1,21 @@
-# Community SEO generator
+# Community SEO
 
-This tool creates static community SEO pages from Supabase data.
+This directory no longer contains a standalone community SEO generator.
 
-## Output
-
-Running the generator writes these files:
-
-- `community/seo/top-rated.html`
-- `community/seo/most-discussed.html`
-- `community/seo/trending.html`
-- `community/seo/top-members.html`
-
-## Environment variables
-
-Set both before running:
-
-- `CCG_SUPABASE_URL`
-- `CCG_SUPABASE_ANON_KEY`
-
-If env vars are missing, the generator still writes all four pages with empty-state content.
-
-## Local command
+The previous workflow expected a script at:
 
 ```bash
-node tools/community-seo/generate-community-seo.mjs
+tools/community-seo/generate-community-seo.mjs
 ```
 
-## Optional GitHub Actions automation
+That file is not part of the current repository, and the related generated
+`community/seo/*.html` output directory is also absent.
 
-A workflow is included at `.github/workflows/community-seo.yml`.
-Add these repository secrets:
+## Current state
 
-- `CCG_SUPABASE_URL`
-- `CCG_SUPABASE_ANON_KEY`
+Community pages are served from the checked-in `community/*.html` files and the
+existing front-end modules under `resources/js/community/`.
 
-The workflow runs nightly and on manual dispatch, regenerates pages, and commits updates if content changed.
+If a static community SEO generator is needed again in the future, restore the
+generator script and any corresponding output targets before reintroducing an
+automation workflow.
