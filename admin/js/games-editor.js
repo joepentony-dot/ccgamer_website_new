@@ -736,10 +736,9 @@ function buildPackageData() {
   const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
 
   const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription });
-  const flatSeoStub = renderTemplate(state.templates.redirect, templateVars);
   const folderRedirect = renderTemplate(state.templates.landing, templateVars);
 
-  const seoValidationErrors = validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, flatSeoStub, folderRedirect });
+  const seoValidationErrors = validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, folderRedirect });
   if (seoValidationErrors.length) {
     throw new Error(seoValidationErrors.join(' | '));
   }
@@ -760,7 +759,6 @@ function buildPackageData() {
     '',
     'Copy files from this ZIP into the repo:',
     '- games/games.json',
-    `- games/${slug}.html`,
     `- games/${slug}/index.html`,
     '- sitemap-games.xml',
     '- games/games-index.json',
@@ -789,7 +787,6 @@ function buildPackageData() {
     gameEntry,
     mergedGames,
     gamesJsonOutput,
-    flatSeoStub,
     folderRedirect,
     sitemap,
     gamesIndex,
@@ -964,27 +961,18 @@ function readMetaValue(html, pattern) {
   return match ? match[1].trim() : '';
 }
 
-function validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, flatSeoStub, folderRedirect }) {
+function validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, folderRedirect }) {
   const errors = [];
-  const canonicalPath = getGameOutputUtils().getGameCanonicalPath(slug);
   const canonical = readMetaValue(folderRedirect, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
   const ogUrl = readMetaValue(folderRedirect, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
   const twitterUrl = readMetaValue(folderRedirect, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
   const description = readMetaValue(folderRedirect, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
-  const stubCanonical = readMetaValue(flatSeoStub, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
-  const stubRobots = readMetaValue(flatSeoStub, /<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i).toLowerCase();
-  const stubRedirect = readMetaValue(flatSeoStub, /<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i);
-
   if (!getGameOutputUtils().isValidGameSlug(slug)) errors.push('Slug is invalid for canonical publishing.');
   if (!String(seoDescription || '').trim()) errors.push('Required metadata missing: description.');
   if (canonical !== seoUrls.canonicalUrl) errors.push('Canonical mismatch in generated landing page.');
   if (ogUrl !== seoUrls.ogUrl) errors.push('og:url mismatch in generated landing page.');
   if (twitterUrl !== seoUrls.twitterUrl) errors.push('twitter:url mismatch in generated landing page.');
   if (!description) errors.push('Required metadata missing from generated landing page.');
-  if (stubCanonical !== seoUrls.canonicalUrl) errors.push('Redirect stub canonical mismatch.');
-  if (stubRobots !== 'noindex,follow') errors.push('Redirect stub must be noindex,follow.');
-  if (stubRedirect !== canonicalPath) errors.push('Redirect stub would be missing or point to the wrong canonical path.');
-
   return errors;
 }
 
@@ -1062,7 +1050,18 @@ function updateDerivedPreviews() {
 }
 
 function mergeGamesJson(newEntry, library) {
-  const existing = Array.isArray(library) ? library.map((item) => ({ ...item })) : [];
+  const newSlug = normalizeGameSlug(String(newEntry?.slug || '').trim(), newEntry?.title || '');
+  const newId = String(newEntry?.id || '').trim().toLowerCase();
+  const existing = (Array.isArray(library) ? library : [])
+    .filter((item) => {
+      const itemSlug = normalizeGameSlug(String(item?.slug || '').trim(), item?.title || '');
+      const itemId = String(item?.id || '').trim().toLowerCase();
+      if (newId && itemId === newId) return false;
+      if (newSlug && itemSlug === newSlug) return false;
+      return true;
+    })
+    .map((item) => ({ ...item }));
+
   existing.push(newEntry);
 
   return existing.sort((a, b) => {
@@ -1079,7 +1078,6 @@ async function downloadZip(packageData) {
 
   const zip = new window.JSZip();
   zip.file('games/games.json', packageData.gamesJsonOutput);
-  zip.file(`games/${packageData.slug}.html`, `${packageData.flatSeoStub}\n`);
   zip.file(`games/${packageData.slug}/index.html`, `${packageData.folderRedirect}\n`);
   zip.file('sitemap-games.xml', `${packageData.sitemap}\n`);
   zip.file('games/games-index.json', `${packageData.gamesIndex}\n`);
