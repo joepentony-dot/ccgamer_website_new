@@ -238,16 +238,20 @@ function validateXmlDocument(xml, expectedRootTag) {
 
 function readHtmlSeoMeta(filePath) {
   if (!fs.existsSync(filePath) || path.extname(filePath).toLowerCase() !== '.html') {
-    return { canonical: '', robots: '' };
+    return { canonical: '', robots: '', isRedirect: false };
   }
 
   const html = fs.readFileSync(filePath, 'utf8');
   const canonical = html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
   const robots = html.match(/<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i);
+  const isRedirect =
+    /<meta[^>]+http-equiv=["']refresh["']/i.test(html) ||
+    /window\.location\.(?:replace|href|assign)\s*\(/i.test(html);
 
   return {
     canonical: canonical ? canonical[1].trim() : '',
     robots: robots ? robots[1].trim() : '',
+    isRedirect,
   };
 }
 
@@ -255,6 +259,11 @@ function resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings) {
   const seoMeta = readHtmlSeoMeta(filePath);
   if (/noindex/i.test(seoMeta.robots)) {
     warnings.push(`Excluding noindex page from sitemap: ${toRepoRelative(filePath)}.`);
+    return null;
+  }
+
+  if (seoMeta.isRedirect) {
+    warnings.push(`Excluding redirect page from sitemap: ${toRepoRelative(filePath)}.`);
     return null;
   }
 
@@ -398,9 +407,14 @@ function generateGameSitemap(siteUrl, games) {
       continue;
     }
 
+    const loc = resolveCanonicalLoc(filePath, `${siteUrl}/games/${slug}/`, siteUrl, warnings);
+    if (!loc) {
+      continue;
+    }
+
     const lastmod = getGitLastMod(filePath);
     entries.push({
-      loc: `${siteUrl}/games/${slug}/`,
+      loc,
       lastmod,
       filePath,
     });
