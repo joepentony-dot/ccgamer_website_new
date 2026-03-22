@@ -60,6 +60,12 @@
 /*.webm
   Cache-Control: public, max-age=31536000, immutable
 
+/games/game.html
+  X-Robots-Tag: noindex, follow
+
+/404.html
+  X-Robots-Tag: noindex, follow
+
 /sitemap.xml
   Content-Type: application/xml; charset=utf-8
 
