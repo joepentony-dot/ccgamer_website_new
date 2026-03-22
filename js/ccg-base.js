@@ -86,7 +86,33 @@
     }
   })();
 
-  const primaryCta = document.querySelector('.game-downloads a[href*="/games/game.html?id="], .game-downloads a[href^="/games/"]');
+  const normaliseLegacyGameHref = (href) => {
+    const value = String(href || "").trim();
+    if (!value) {
+      return "";
+    }
+
+    try {
+      const parsed = new URL(value, window.location.origin);
+      if (!/\/games\/game\.html$/i.test(parsed.pathname)) {
+        return value;
+      }
+
+      const candidate = String(parsed.searchParams.get("id") || parsed.searchParams.get("slug") || "")
+        .trim()
+        .toLowerCase()
+        .replace(/_+/g, "-")
+        .replace(/[^a-z0-9-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      return candidate ? `/games/${candidate}/` : value;
+    } catch (error) {
+      return value;
+    }
+  };
+
+  const primaryCta = document.querySelector('.game-downloads a[href^="/games/"]');
   if (!primaryCta) {
     return;
   }
@@ -204,6 +230,12 @@
       const selectedSlug = String(selectedGame.slug || "").trim();
       if (selectedSlug) {
         primaryCta.setAttribute("href", `/games/${selectedSlug}/`);
+        return;
+      }
+
+      const existingHref = primaryCta.getAttribute("href");
+      if (existingHref) {
+        primaryCta.setAttribute("href", normaliseLegacyGameHref(existingHref));
       }
     })
     .catch(() => {
