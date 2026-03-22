@@ -10,6 +10,32 @@ function ccgGetVideoId(item) {
   ).trim();
 }
 
+function ccgNormaliseGameUrl(url) {
+  const value = String(url || '').trim();
+  if (!value) {
+    return '';
+  }
+
+  try {
+    const parsed = new URL(value, window.location.origin);
+    if (!/\/games\/game\.html$/i.test(parsed.pathname)) {
+      return value;
+    }
+
+    const slug = String(parsed.searchParams.get('id') || parsed.searchParams.get('slug') || '')
+      .trim()
+      .toLowerCase()
+      .replace(/_+/g, '-')
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    return slug ? `/games/${slug}/` : value;
+  } catch (error) {
+    return value;
+  }
+}
+
 function ccgGetCardUrl(item) {
   const directUrl = String(
     item?.pageUrl ||
@@ -19,7 +45,7 @@ function ccgGetCardUrl(item) {
   ).trim();
 
   if (directUrl) {
-    return directUrl;
+    return ccgNormaliseGameUrl(directUrl);
   }
 
   const youtubeId = ccgGetVideoId(item);
