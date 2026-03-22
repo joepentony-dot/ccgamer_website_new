@@ -60,6 +60,9 @@
 /*.webm
   Cache-Control: public, max-age=31536000, immutable
 
+/games/*
+  X-Robots-Tag: index, follow
+
 /games/game.html
   X-Robots-Tag: noindex, follow
 
