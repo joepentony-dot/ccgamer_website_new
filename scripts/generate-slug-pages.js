@@ -238,6 +238,22 @@ function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage,
 
     if (String(ogImage || "").trim()) schema.image = ogImage;
 
+    const videoId = String(game?.videoid || game?.youtube || "").trim();
+    if (videoId) {
+        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
+        schema.video = {
+            "@type": "VideoObject",
+            name: `${title} Gameplay Video`,
+            description,
+            thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+            embedUrl: `https://www.youtube.com/embed/${videoId}`,
+            contentUrl: watchUrl
+        };
+        if (String(year || "").trim()) {
+            schema.video.uploadDate = `${String(year).trim()}-01-01`;
+        }
+    }
+
     const ratingValue = Number(game?.ccg_rating);
     if (Number.isFinite(ratingValue)) {
         schema.aggregateRating = {
@@ -269,6 +285,8 @@ function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage,
 
 function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
     const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
+    const videoId = String(game?.videoid || game?.youtube || "").trim();
+    const hasVideo = Boolean(videoId);
 
     const schemaData = buildVideoGameSchema({
         game,
@@ -289,7 +307,7 @@ function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogIm
 <meta charset="UTF-8">
 <meta name="description" content="${escapeHtml(description)}">
 <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="${hasVideo ? "video.other" : "website"}">
 <meta property="og:site_name" content="Cheeky Commodore Gamer">
 <meta property="og:title" content="${escapeHtml(seoTitle)}">
 <meta property="og:description" content="${escapeHtml(description)}">
@@ -342,6 +360,20 @@ ${JSON.stringify(schemaData, null, 2)}
 </div>
 </div>
 </section>
+${hasVideo ? `<section class="game-section" id="watch">
+<p class="game-section__kicker">Longplay / Review</p>
+<h2 class="game-section__title">Watch the Action</h2>
+<div class="game-video">
+<iframe class="game-video__frame"
+title="${escapeHtml(title)} gameplay video"
+src="https://www.youtube.com/embed/${escapeHtml(videoId)}"
+allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen></iframe>
+<div class="game-video__actions">
+<a class="game-pill" href="https://www.youtube.com/watch?v=${escapeHtml(videoId)}" target="_blank" rel="noopener">Open on YouTube</a>
+</div>
+</div>
+</section>` : ""}
 <section class="game-section">
 <p class="game-section__kicker">Overview</p>
 <h2 class="game-section__title">Game Summary</h2>
@@ -351,7 +383,7 @@ ${JSON.stringify(schemaData, null, 2)}
 <p class="game-section__kicker">Explore</p>
 <h2 class="game-section__title">More Details</h2>
 <div class="game-downloads">
-<a class="ccg-btn ccg-btn--primary" href="/games/${escapeHtml(slug)}/">View the full interactive game page</a>
+<a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${escapeHtml(toGameId(slug))}">View the full interactive game page</a>
 <a class="ccg-btn ccg-btn--ghost" href="/games/index.html">Browse all games</a>
 </div>
 </section>

@@ -1419,6 +1419,9 @@ function renderGame(game) {
     }
 
     if (videoSection) videoSection.hidden = false;
+    if (hasVideo && videoSection && descriptionSection && descriptionSection.parentNode === videoSection.parentNode) {
+        descriptionSection.parentNode.insertBefore(videoSection, descriptionSection);
+    }
 
     /* PLAY / LISTEN / DOWNLOAD HUB */
     const utilityHubSection = document.getElementById("game-utility-hub-section");
@@ -2782,10 +2785,12 @@ function injectGameSchema(game) {
         "video": game.videoid
             ? {
                 "@type": "VideoObject",
-                "name": game.title,
+                "name": `${game.title} Gameplay Video`,
+                "description": game.description || "",
                 "thumbnailUrl": `https://img.youtube.com/vi/${game.videoid}/hqdefault.jpg`,
                 "uploadDate": game.year ? `${game.year}-01-01` : undefined,
-                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`
+                "embedUrl": `https://www.youtube.com/embed/${game.videoid}`,
+                "contentUrl": `https://www.youtube.com/watch?v=${game.videoid}`
             }
             : undefined
     };
