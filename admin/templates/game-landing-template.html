@@ -42,14 +42,18 @@
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "VideoGame",
-        "name": "{{GAME_NAME}}",
-        "description": "{{DESCRIPTION}}",
-        "datePublished": "{{YEAR}}",
-        "gamePlatform": "{{PLATFORM}}",
-        "publisher": "{{PUBLISHER}}",
-        "image": "https://www.cheekycommodoregamer.co.uk/{{THUMBNAIL}}",
-        "url": "{{CANONICAL_URL}}"{{VIDEO_SCHEMA_SUFFIX}}
+        "@graph": [
+            {
+                "@type": "VideoGame",
+                "name": "{{GAME_NAME}}",
+                "description": "{{DESCRIPTION}}",
+                "datePublished": "{{YEAR}}",
+                "gamePlatform": "{{PLATFORM}}",
+                "publisher": "{{PUBLISHER}}",
+                "image": "https://www.cheekycommodoregamer.co.uk/{{THUMBNAIL}}",
+                "url": "{{CANONICAL_URL}}"
+            }{{VIDEO_SCHEMA_GRAPH_SUFFIX}}
+        ]
     }
     </script>
 </head>
@@ -78,6 +82,7 @@
 
                 <div class="game-hero__content">
                     <h1 class="game-hero__title">{{GAME_NAME}}</h1>
+                    <p class="game-hero__lede">{{DESCRIPTION}}</p>
 
                     <div class="game-hero__meta">
                         <span class="game-meta__item">{{YEAR}}</span>
