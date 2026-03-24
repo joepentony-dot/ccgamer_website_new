@@ -522,6 +522,11 @@ function validateStep1() {
     errors.push('ID must be lowercase snake_case.');
   }
 
+  const videoId = String(state.draft.videoId || '').trim();
+  if (videoId && !/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
+    errors.push('Video ID must be a valid 11-character YouTube ID.');
+  }
+
   if (slug && state.slugSet.has(slug)) errors.push('Slug already exists in games.json.');
   if (id && state.idSet.has(id)) errors.push('ID already exists in games.json.');
 
@@ -845,17 +850,16 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
   const safeVideoId = cleanForHtml(rawVideoId);
   const safeVideoEmbed = hasVideo ? `https://www.youtube.com/embed/${safeVideoId}` : '';
   const safeVideoWatch = hasVideo ? `https://www.youtube.com/watch?v=${safeVideoId}` : '';
-  const videoSchemaSuffix = hasVideo
+  const videoSchemaGraphSuffix = hasVideo
     ? `,
-        "video": {
+            {
             "@type": "VideoObject",
             "name": "${cleanForHtml(title)} Gameplay Video",
             "description": "${cleanForHtml(seoDescription)}",
-            "thumbnailUrl": "https://img.youtube.com/vi/${safeVideoId}/hqdefault.jpg",
-            "uploadDate": "${String(year)}-01-01",
+            "thumbnailUrl": "https://i.ytimg.com/vi/${safeVideoId}/hqdefault.jpg",
             "embedUrl": "${safeVideoEmbed}",
-            "contentUrl": "${safeVideoWatch}"
-        }`
+            "url": "${cleanForHtml(seoUrls.canonicalUrl)}"
+            }`
     : '';
 
   return {
@@ -874,7 +878,7 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     VIDEO_WATCH_URL: safeVideoWatch,
     VIDEO_SECTION_CLASS: hasVideo ? '' : 'is-hidden',
     VIDEO_SECTION_HIDDEN_ATTR: hasVideo ? '' : 'hidden',
-    VIDEO_SCHEMA_SUFFIX: videoSchemaSuffix,
+    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,
     FB_APP_ID_META: buildFacebookAppIdMeta(state.siteSettings.facebookAppId)
   };
 }

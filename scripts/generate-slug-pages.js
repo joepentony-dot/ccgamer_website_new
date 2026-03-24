@@ -238,22 +238,6 @@ function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage,
 
     if (String(ogImage || "").trim()) schema.image = ogImage;
 
-    const videoId = String(game?.videoid || game?.youtube || "").trim();
-    if (videoId) {
-        const watchUrl = `https://www.youtube.com/watch?v=${videoId}`;
-        schema.video = {
-            "@type": "VideoObject",
-            name: `${title} Gameplay Video`,
-            description,
-            thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-            embedUrl: `https://www.youtube.com/embed/${videoId}`,
-            contentUrl: watchUrl
-        };
-        if (String(year || "").trim()) {
-            schema.video.uploadDate = `${String(year).trim()}-01-01`;
-        }
-    }
-
     const ratingValue = Number(game?.ccg_rating);
     if (Number.isFinite(ratingValue)) {
         schema.aggregateRating = {
@@ -283,6 +267,18 @@ function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage,
     return schema;
 }
 
+function buildVideoObjectSchema({ title, description, videoId, canonicalUrl }) {
+    if (!videoId) return null;
+    return {
+        "@type": "VideoObject",
+        name: `${title} Gameplay Video`,
+        description,
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        url: canonicalUrl
+    };
+}
+
 function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
     const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
     const videoId = String(game?.videoid || game?.youtube || "").trim();
@@ -298,6 +294,13 @@ function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogIm
         platformLong,
         publisher
     });
+    const videoObjectSchema = buildVideoObjectSchema({
+        title,
+        description,
+        videoId,
+        canonicalUrl
+    });
+    const schemaGraph = videoObjectSchema ? [schemaData, videoObjectSchema] : [schemaData];
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -332,7 +335,10 @@ function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogIm
 <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
 <script src="../js/ccg-mobile-lite.js" defer></script>
 <script type="application/ld+json">
-${JSON.stringify(schemaData, null, 2)}
+${JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": schemaGraph
+}, null, 2)}
 </script>
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
@@ -350,6 +356,7 @@ ${JSON.stringify(schemaData, null, 2)}
 </div>
 <div class="game-hero__content">
 <h1 class="game-hero__title">${escapeHtml(title)}</h1>
+<p class="game-hero__lede">${escapeHtml(description)}</p>
 <div class="game-hero__meta">
 <span class="game-meta__item">${escapeHtml(String(year))}</span>
 <span class="game-meta__sep">•</span>
