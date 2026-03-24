@@ -89,6 +89,7 @@ function resolveUploadDate(entry, fallbackDate) {
 }
 
 function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canonicalUrl, youtubeId }) {
+  const watchUrl = `https://www.youtube.com/watch?v=${youtubeId}`;
   return {
     '@context': 'https://schema.org',
     '@type': 'VideoObject',
@@ -97,6 +98,7 @@ function buildVideoSchema({ title, description, thumbnailUrl, uploadDate, canoni
     thumbnailUrl,
     uploadDate,
     embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
+    contentUrl: watchUrl,
     url: canonicalUrl
   };
 }

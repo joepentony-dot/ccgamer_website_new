@@ -840,8 +840,27 @@ async function fetchTemplate(path) {
 function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription }) {
   const utils = getGameOutputUtils();
   const seoUrls = utils.getGameSeoUrls(slug, SITE_ORIGIN);
+  const rawVideoId = String(state.draft.videoId || '').trim();
+  const hasVideo = Boolean(rawVideoId);
+  const safeVideoId = cleanForHtml(rawVideoId);
+  const safeVideoEmbed = hasVideo ? `https://www.youtube.com/embed/${safeVideoId}` : '';
+  const safeVideoWatch = hasVideo ? `https://www.youtube.com/watch?v=${safeVideoId}` : '';
+  const videoSchemaSuffix = hasVideo
+    ? `,
+        "video": {
+            "@type": "VideoObject",
+            "name": "${cleanForHtml(title)} Gameplay Video",
+            "description": "${cleanForHtml(seoDescription)}",
+            "thumbnailUrl": "https://img.youtube.com/vi/${safeVideoId}/hqdefault.jpg",
+            "uploadDate": "${String(year)}-01-01",
+            "embedUrl": "${safeVideoEmbed}",
+            "contentUrl": "${safeVideoWatch}"
+        }`
+    : '';
+
   return {
     GAME_NAME: cleanForHtml(title),
+    GAME_ID: cleanForHtml(utils.slugToGameId(slug)),
     YEAR: String(year),
     PUBLISHER: cleanForHtml(publisherForSeo),
     PLATFORM: cleanForHtml(system),
@@ -850,6 +869,12 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
     THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
     DESCRIPTION: cleanForHtml(seoDescription),
+    OG_TYPE: hasVideo ? 'video.other' : 'website',
+    VIDEO_EMBED_URL: safeVideoEmbed,
+    VIDEO_WATCH_URL: safeVideoWatch,
+    VIDEO_SECTION_CLASS: hasVideo ? '' : 'is-hidden',
+    VIDEO_SECTION_HIDDEN_ATTR: hasVideo ? '' : 'hidden',
+    VIDEO_SCHEMA_SUFFIX: videoSchemaSuffix,
     FB_APP_ID_META: buildFacebookAppIdMeta(state.siteSettings.facebookAppId)
   };
 }
@@ -1338,7 +1363,11 @@ function validateGameEntrySchema(gameEntry) {
   if (!Array.isArray(gameEntry.genres)) errors.push('genres must be an array.');
   if (!Array.isArray(gameEntry.collections)) errors.push('collections must be an array.');
   if (gameEntry.collections.includes('retro events')) errors.push('retro events cannot be written to games.json output.');
-  if (typeof gameEntry.videoid !== 'string' || !gameEntry.videoid.trim()) errors.push('videoid must be a non-empty string.');
+  if (typeof gameEntry.videoid !== 'string' || !gameEntry.videoid.trim()) {
+    errors.push('videoid must be a non-empty string.');
+  } else if (!/^[A-Za-z0-9_-]{11}$/.test(gameEntry.videoid.trim())) {
+    errors.push('videoid must be a valid 11-character YouTube video ID.');
+  }
   if (typeof gameEntry.thumbnail !== 'string' || !/^resources\/images\/thumbnails\/all\/.+\.(?:png|jpg|jpeg|webp|gif)$/i.test(gameEntry.thumbnail)) {
     errors.push('thumbnail must be resources/images/thumbnails/all/<file>.<ext>.');
   }
