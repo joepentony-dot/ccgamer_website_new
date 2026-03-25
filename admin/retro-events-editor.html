@@ -7,8 +7,9 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Retro Video Collections Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-5" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-5" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-6" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-6" rel="stylesheet" />
+
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
     .retro-card { background: rgba(10, 20, 45, 0.92); border: 1px solid #3ba3ff; border-radius: 12px; padding: 1rem; margin-bottom: 1rem; }
@@ -39,14 +40,17 @@
     .retro-preview-body { padding: .75rem; display: grid; gap: .45rem; }
     .retro-preview-title { font-weight: 700; line-height: 1.25; }
     .seo-hint { font-size: .82rem; color: #9bc6f1; margin: 0; }
+
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
       .retro-item { grid-template-columns: 1fr; }
     }
   </style>
 </head>
+
 <body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64">
   <main class="retro-editor">
+
     <section class="retro-card">
       <div class="content-switcher">
         <label>Builder Selector</label>
@@ -54,18 +58,30 @@
           <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Games</button>
           <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Amiga Demo Music / Events / Specials</button>
         </div>
-        <span class="mode-pill" aria-label="Current mode">Current mode: Non-Game Video Builder</span>
+        <span class="mode-pill">Current mode: Non-Game Video Builder</span>
       </div>
+
       <h1>Non-Game Video Builder</h1>
-      <p>This editor manages <code>/data/retro-events.json</code>, <code>/data/retro-specials.json</code>, and <code>/data/amiga-demo-music.json</code> with a simplified YouTube-first workflow.</p>
-      <p class="retro-help">Use section filters, edit cards, adjust sort order, and export updated JSON files without touching the Games editor. For deterministic local saves + auto rebuild, run <code>node scripts/admin-local-api.js</code> before using this editor.</p>
+
+      <p>This editor manages:
+        <code>/data/retro-events.json</code>,
+        <code>/data/retro-specials.json</code>,
+        <code>/data/amiga-demo-music.json</code>
+      </p>
+
+      <p class="retro-help">
+        Now using GitHub direct commit mode — no local server required.
+      </p>
+
       <p class="retro-status" data-status></p>
     </section>
 
     <section class="retro-card">
       <h2 data-form-heading>Add Retro Event</h2>
+
       <form data-form>
         <div class="retro-grid">
+
           <label>Section *
             <select data-field="type" required>
               <option value="retro_event">Retro Events</option>
@@ -73,89 +89,49 @@
               <option value="demo_music">Amiga Demo Music</option>
             </select>
           </label>
+
           <label>Title *
-            <input type="text" data-field="title" placeholder="Arcade Club Bury, Greater Manchester" required />
+            <input type="text" data-field="title" required />
           </label>
-          <label>Slug (optional)
-            <input type="text" data-field="slug" placeholder="arcade-club-bury" />
+
+          <label>Slug
+            <input type="text" data-field="slug" />
           </label>
+
           <label>YouTube URL *
-            <input type="text" data-field="youtubeUrl" placeholder="https://www.youtube.com/watch?v=6PmRNlqIdFY" required />
+            <input type="text" data-field="youtubeUrl" required />
           </label>
-          <label>YouTube Video ID *
-            <input type="text" data-field="youtubeId" placeholder="6PmRNlqIdFY" required />
+
+          <label>YouTube ID *
+            <input type="text" data-field="youtubeId" required />
           </label>
-          <label>Published / Event Date
-            <input type="date" data-field="publishedDate" />
-          </label>
-          <label>Sort Order
-            <input type="number" data-field="sortOrder" placeholder="10" />
-          </label>
-          <label class="full">Short Summary
-            <textarea data-field="summary" placeholder="One-line summary for cards and SEO snippets."></textarea>
-          </label>
-          <label class="full">Description
-            <textarea data-field="description" placeholder="Longer description used by section pages and future landing pages."></textarea>
-          </label>
-          <label class="full toggle-wrap">
-            <input type="checkbox" data-field="visible" checked />
-            Visible / Published
-          </label>
-          <label class="full toggle-wrap">
-            <input type="checkbox" data-field="membersOnly" />
-            Members Only toggle (pink sash)
-          </label>
-          <div class="full">
-            <div class="retro-grid">
-              <label>SEO Title
-                <input type="text" data-field="seoTitle" placeholder="Optional override" />
-              </label>
-              <label class="full">SEO Description
-                <textarea data-field="seoDescription" placeholder="Optional override"></textarea>
-              </label>
-            </div>
-            <p class="seo-hint">If left blank, SEO fields are generated from title and section type.</p>
-          </div>
+
         </div>
+
         <div class="retro-actions">
-          <button type="submit" class="ccg-btn ccg-btn--primary" data-action="save-event">Save / Update</button>
-          <button type="button" class="ccg-btn ccg-btn--ghost" data-action="reset-form">Clear</button>
+          <button type="submit" class="ccg-btn ccg-btn--primary">Add</button>
         </div>
+
       </form>
     </section>
 
-    <section class="retro-card retro-preview">
-      <h2>Preview card</h2>
-      <article class="retro-preview-card" data-preview-card>
-        <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg" alt="Retro video preview thumbnail" data-preview-thumb />
-        <div class="retro-preview-body">
-          <div class="retro-preview-title" data-preview-title>Retro Video Title</div>
-          <div><span class="retro-pill members" data-preview-members hidden>Members Only</span></div>
-        </div>
-      </article>
+    <section class="retro-card">
+      <h2>Entries</h2>
+
+      <ul class="retro-list" data-event-list></ul>
+
+      <div class="retro-actions">
+        <button class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save Events</button>
+        <button class="ccg-btn ccg-btn--secondary" data-action="save-specials-json">Save Specials</button>
+        <button class="ccg-btn ccg-btn--secondary" data-action="save-demo-json">Save Demo Music</button>
+      </div>
+
     </section>
 
-    <section class="retro-card">
-      <h2>Manage Entries</h2>
-      <div class="retro-grid">
-        <label>Show section
-          <select data-filter="type">
-            <option value="all">All sections</option>
-            <option value="retro_event">Retro Events</option>
-            <option value="retro_special">Retro Specials</option>
-            <option value="demo_music">Amiga Demo Music</option>
-          </select>
-        </label>
-      </div>
-      <ul class="retro-list" data-event-list></ul>
-      <div class="retro-actions">
-        <button type="button" class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save retro-events.json</button>
-        <button type="button" class="ccg-btn ccg-btn--secondary" data-action="save-specials-json">Save retro-specials.json</button>
-        <button type="button" class="ccg-btn ccg-btn--secondary" data-action="save-demo-json">Save amiga-demo-music.json</button>
-      </div>
-    </section>
   </main>
 
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-5"></script>
+  <!-- 🔥 CACHE BUSTING FIX -->
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-6"></script>
+
 </body>
 </html>
