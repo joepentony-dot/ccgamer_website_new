@@ -1,0 +1,46 @@
+name: Rebuild retro outputs on retro data change
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'data/retro-events.json'
+      - 'data/retro-specials.json'
+      - 'data/amiga-demo-music.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild-retro-assets:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Rebuild generated outputs
+        run: node scripts/rebuild-games.js
+
+      - name: Commit generated outputs
+        run: |
+          if git diff --quiet -- retro-events retro-specials amiga-demo-music sitemap.xml sitemap-games.xml sitemap-retro.xml; then
+            echo "No generated retro/sitemap changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add retro-events retro-specials amiga-demo-music sitemap.xml sitemap-games.xml sitemap-retro.xml
+          git commit -m "chore(retro): rebuild generated retro pages [skip retro-rebuild]"
+          git push origin HEAD:${GITHUB_REF_NAME}

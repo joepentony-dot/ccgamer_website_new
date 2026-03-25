@@ -149,7 +149,10 @@
                 Professional-grade CMS for <code>games.json</code>. Load data, edit entries, validate metadata, and export JSON + SEO stubs safely.
             </p>
             <div class="admin-notice">
-                Changes can now be committed directly to GitHub using your personal access token.Manual export remains available for backup workflows.
+                Games editor workflow remains export-first for now. For retro collections, use the direct GitHub commit builder.
+            </div>
+            <div class="admin-notice">
+                <a class="ccg-btn ccg-btn--primary" href="/admin/retro-events-editor.html">Open Retro Video Builder (direct GitHub commit)</a>
             </div>
         </section>
 
@@ -204,7 +207,7 @@
                         <section class="admin-step" data-step-panel="1">
                             <header class="admin-step-header">
                                 <h2>Step 1 · Load Data</h2>
-                                <p class="admin-help">Start here: Load the library first. Nothing is written to GitHub automatically. You’ll export when ready.</p>
+                                <p class="admin-help">Start here: Load the library first. This games editor remains export-first; commit exported files manually when ready.</p>
                             </header>
 
                             <details class="admin-onboarding" open>
@@ -216,7 +219,7 @@
                                     <li>Complete the editor substeps with required fields.</li>
                                     <li>Validate and resolve any errors/warnings.</li>
                                     <li>Export JSON + SEO stubs.</li>
-                                    <li>Run the publish pipeline commands.</li>
+                                    <li>Commit/push exported files and let existing workflows handle downstream generation/deploy.</li>
                                 </ol>
                             </details>
 
