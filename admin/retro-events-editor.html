@@ -7,8 +7,8 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Retro Video Collections Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-6" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-6" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-7" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-7" rel="stylesheet" />
 
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
@@ -16,7 +16,7 @@
     .retro-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
     .retro-grid .full { grid-column: 1 / -1; }
     label { display: flex; flex-direction: column; gap: .3rem; font-weight: 600; }
-    input[type="text"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
+    input[type="text"], input[type="password"], input[type="number"], input[type="date"], textarea, select { width: 100%; padding: .55rem; border-radius: 6px; border: 1px solid #6baeff; background: #07182f; color: #fff; }
     textarea { min-height: 84px; resize: vertical; }
     .toggle-wrap { display: inline-flex; align-items: center; gap: .5rem; font-weight: 700; }
     .toggle-wrap input { accent-color: #ff2a6d; }
@@ -28,18 +28,10 @@
     .retro-item { display: grid; grid-template-columns: 1fr auto; gap: .75rem; align-items: center; border: 1px solid rgba(107, 174, 255, .5); border-radius: 10px; background: rgba(6, 18, 38, .95); padding: .65rem .75rem; }
     .retro-item-title { font-weight: 700; }
     .retro-item-sub { font-size: .85rem; color: #9bc6f1; }
-    .retro-pill.members { display: inline-flex; align-items: center; font-size: .72rem; border: 1px solid rgba(255, 128, 170, .9); padding: .1rem .45rem; border-radius: 999px; background: rgba(255, 42, 109, 0.2); margin-left: .45rem; }
-    .retro-item-buttons { display: flex; gap: .45rem; flex-wrap: wrap; }
     .retro-help { color: #9bc6f1; font-size: .9rem; }
     .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
     .content-switcher label { font-weight: 700; min-width: 140px; }
     .mode-pill { display: inline-flex; align-items: center; border: 1px solid rgba(125, 211, 252, .8); border-radius: 999px; padding: .2rem .6rem; font-size: .78rem; color: #7dd3fc; }
-    .retro-preview { display: grid; gap: .75rem; }
-    .retro-preview-card { border: 1px solid rgba(107, 174, 255, .5); border-radius: 10px; background: rgba(6, 18, 38, .95); overflow: hidden; max-width: 430px; }
-    .retro-preview-card img { width: 100%; display: block; aspect-ratio: 16 / 9; object-fit: cover; }
-    .retro-preview-body { padding: .75rem; display: grid; gap: .45rem; }
-    .retro-preview-title { font-weight: 700; line-height: 1.25; }
-    .seo-hint { font-size: .82rem; color: #9bc6f1; margin: 0; }
 
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
@@ -55,7 +47,7 @@
       <div class="content-switcher">
         <label>Builder Selector</label>
         <div class="retro-actions">
-          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game">Games</button>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game" onclick="window.location.href='/admin/games-editor.html'">Games</button>
           <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Amiga Demo Music / Events / Specials</button>
         </div>
         <span class="mode-pill">Current mode: Non-Game Video Builder</span>
@@ -70,23 +62,41 @@
       </p>
 
       <p class="retro-help">
-        Now using GitHub direct commit mode — no local server required.
+        Save commits directly to GitHub (no localhost API needed).
       </p>
+
+      <div class="retro-grid">
+        <label>GitHub Owner
+          <input type="text" data-github-owner autocomplete="off" />
+        </label>
+        <label>GitHub Repo
+          <input type="text" data-github-repo autocomplete="off" />
+        </label>
+        <label>Branch
+          <input type="text" data-github-branch autocomplete="off" />
+        </label>
+        <label>GitHub Token (PAT)
+          <input type="password" data-github-token autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="retro-actions">
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="clear-token">Clear saved token</button>
+      </div>
 
       <p class="retro-status" data-status></p>
     </section>
 
     <section class="retro-card">
-      <h2 data-form-heading>Add Retro Event</h2>
+      <h2>Add Retro Entry</h2>
 
       <form data-form>
         <div class="retro-grid">
-
           <label>Section *
             <select data-field="type" required>
-              <option value="retro_event">Retro Events</option>
-              <option value="retro_special">Retro Specials</option>
-              <option value="demo_music">Amiga Demo Music</option>
+              <option value="retro-events">Retro Events</option>
+              <option value="retro-specials">Retro Specials</option>
+              <option value="amiga-demo-music">Amiga Demo Music</option>
             </select>
           </label>
 
@@ -94,44 +104,65 @@
             <input type="text" data-field="title" required />
           </label>
 
-          <label>Slug
+          <label>Slug (optional)
             <input type="text" data-field="slug" />
           </label>
 
-          <label>YouTube URL *
-            <input type="text" data-field="youtubeUrl" required />
+          <label>YouTube URL
+            <input type="text" data-field="youtubeUrl" />
           </label>
 
-          <label>YouTube ID *
-            <input type="text" data-field="youtubeId" required />
+          <label>YouTube ID
+            <input type="text" data-field="youtubeId" />
           </label>
 
+          <label class="full">Summary
+            <textarea data-field="summary"></textarea>
+          </label>
+
+          <label class="full">Description
+            <textarea data-field="description"></textarea>
+          </label>
+
+          <label class="toggle-wrap full">
+            <input type="checkbox" data-field="membersOnly" />
+            Members only
+          </label>
         </div>
 
         <div class="retro-actions">
-          <button type="submit" class="ccg-btn ccg-btn--primary">Add</button>
+          <button type="submit" class="ccg-btn ccg-btn--primary">Add Draft Item</button>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-action="reset-form">Reset Form</button>
         </div>
-
       </form>
     </section>
 
     <section class="retro-card">
       <h2>Entries</h2>
 
+      <div class="retro-grid">
+        <label>Filter by section
+          <select data-filter="type">
+            <option value="all">All sections</option>
+            <option value="retro-events">Retro Events</option>
+            <option value="retro-specials">Retro Specials</option>
+            <option value="amiga-demo-music">Amiga Demo Music</option>
+          </select>
+        </label>
+      </div>
+
       <ul class="retro-list" data-event-list></ul>
 
       <div class="retro-actions">
-        <button class="ccg-btn ccg-btn--primary" data-action="save-retro-json">Save Events</button>
-        <button class="ccg-btn ccg-btn--secondary" data-action="save-specials-json">Save Specials</button>
-        <button class="ccg-btn ccg-btn--secondary" data-action="save-demo-json">Save Demo Music</button>
+        <button class="ccg-btn ccg-btn--primary" type="button" data-action="save-retro-json">Commit retro-events.json</button>
+        <button class="ccg-btn ccg-btn--secondary" type="button" data-action="save-specials-json">Commit retro-specials.json</button>
+        <button class="ccg-btn ccg-btn--secondary" type="button" data-action="save-demo-json">Commit amiga-demo-music.json</button>
       </div>
-
     </section>
 
   </main>
 
-  <!-- 🔥 CACHE BUSTING FIX -->
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-6"></script>
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-7"></script>
 
 </body>
 </html>
