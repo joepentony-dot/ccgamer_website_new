@@ -58,12 +58,20 @@ function generateRetroSpecialPages() {
     return;
   }
 
-  items.forEach((entry) => {
+  let generatedCount = 0;
+  let skippedCount = 0;
+
+  items.forEach((entry, index) => {
     const youtubeId = resolveYoutubeId(entry);
     const slug = resolveSlug(entry);
+    const label = entry.id || entry.title || `item-${index + 1}`;
 
     if (!youtubeId || !slug) {
-      console.warn('[retro] SKIPPED (missing youtubeId or slug):', entry.id || entry.title);
+      const reasons = [];
+      if (!youtubeId) reasons.push('missing youtubeId');
+      if (!slug) reasons.push('missing slug');
+      skippedCount += 1;
+      console.warn(`[retro] SKIPPED ${label}: ${reasons.join(', ')}`);
       return;
     }
 
@@ -93,8 +101,11 @@ function generateRetroSpecialPages() {
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(outputFile, fullHtml, 'utf8');
 
-    console.log(`[retro] Generated: ${outputFile}`);
+    generatedCount += 1;
+    console.log(`[retro] Generated ${label} -> ${outputFile}`);
   });
+
+  console.log(`[retro] Completed. Generated: ${generatedCount}. Skipped: ${skippedCount}. Source: ${retroSpecialsPath}`);
 }
 
 generateRetroSpecialPages();

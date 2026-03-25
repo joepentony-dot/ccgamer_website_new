@@ -3,6 +3,7 @@ const DATA_FILES = {
   'retro-specials': '/data/retro-specials.json',
   'amiga-demo-music': '/data/amiga-demo-music.json'
 };
+const LOCAL_ADMIN_API_URL = 'http://127.0.0.1:3131/admin/api/retro-json/save';
 
 const SECTION_TYPES = {
   'retro-events': 'retro_event',
@@ -393,6 +394,18 @@ async function saveJsonFile(type) {
     .sort(compareEvents)
     .map((item) => toPersistedItem(item));
 
+  const validationErrors = validatePersistedItems(payloadItems, section);
+  if (validationErrors.length) {
+    setStatus(`Cannot save ${fileName}: ${validationErrors.join(' ')}`, true);
+    return;
+  }
+
+  const serverSaveResult = await saveViaLocalAdminApi(section, payloadItems);
+  if (serverSaveResult.saved) {
+    setStatus(serverSaveResult.message, false);
+    return;
+  }
+
   const payload = JSON.stringify(payloadItems, null, 2);
 
   if (typeof window.showSaveFilePicker === 'function') {
@@ -404,7 +417,7 @@ async function saveJsonFile(type) {
       const writable = await handle.createWritable();
       await writable.write(payload + '\n');
       await writable.close();
-      setStatus(`Saved ${fileName} using file picker.`, false);
+      setStatus(`Saved ${fileName} using file picker. Auto-rebuild requires local API: node scripts/admin-local-api.js`, false);
       return;
     } catch (error) {
       setStatus(`File picker save cancelled or failed: ${error.message}`, true);
@@ -420,21 +433,61 @@ async function saveJsonFile(type) {
   anchor.click();
   anchor.remove();
   URL.revokeObjectURL(anchor.href);
-  setStatus(`Downloaded ${fileName}. Replace ${pathLabel}, then run: node scripts/generate-retro-pages.js && node scripts/generate-sitemaps.js.`, false);
+  setStatus(`Downloaded ${fileName}. Local API unavailable, so rebuild was not auto-triggered. Start: node scripts/admin-local-api.js`, true);
+}
+
+async function saveViaLocalAdminApi(section, items) {
+  try {
+    const response = await fetch(LOCAL_ADMIN_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ section, items })
+    });
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      const details = Array.isArray(payload?.validationErrors) ? payload.validationErrors.join(' ') : (payload?.message || payload?.error || `HTTP ${response.status}`);
+      return {
+        saved: false,
+        message: `Local API save failed: ${details}`
+      };
+    }
+
+    const payload = await response.json();
+    const rebuildInfo = payload?.rebuild?.triggered
+      ? ' Rebuild trigger queued.'
+      : payload?.rebuild?.error
+        ? ` Rebuild trigger failed: ${payload.rebuild.error}`
+        : '';
+
+    return {
+      saved: true,
+      message: `Saved ${section}.json to repository data path.${rebuildInfo}`
+    };
+  } catch (error) {
+    return {
+      saved: false,
+      message: `Local API unavailable: ${error.message}`
+    };
+  }
 }
 
 function toPersistedItem(item) {
+  const youtubeId = extractYoutubeId(item.youtube_video_id || item.youtubeId || item.youtube || item.youtube_url || item.url || '');
+  const slug = slugify(item.slug || item.id || item.title || youtubeId);
+  const youtubeUrl = String(item.youtube_url || item.url || '').trim() || (youtubeId ? `https://www.youtube.com/watch?v=${encodeURIComponent(youtubeId)}` : '');
+
   const next = {
     id: item.id,
-    slug: item.slug,
+    slug,
     type: item.type,
     title: item.title,
-    youtube_url: item.youtube_url,
-    youtube_video_id: item.youtube_video_id,
-    youtubeId: item.youtube_video_id,
-    youtube: item.youtube_video_id,
-    url: item.youtube_url,
-    thumbnail: buildYouTubeThumbnail(item.youtube_video_id),
+    youtube_url: youtubeUrl,
+    youtube_video_id: youtubeId,
+    youtubeId,
+    youtube: youtubeId,
+    url: youtubeUrl,
+    thumbnail: buildYouTubeThumbnail(youtubeId),
     summary: item.summary,
     description: item.description,
     published_date: item.published_date,
@@ -462,6 +515,33 @@ function toPersistedItem(item) {
   }
 
   return next;
+}
+
+function validatePersistedItems(items, section) {
+  const errors = [];
+  const seenSlugs = new Set();
+
+  items.forEach((item, index) => {
+    const title = String(item?.title || '').trim();
+    const youtubeId = extractYoutubeId(item?.youtube_video_id || item?.youtubeId || item?.youtube || item?.youtube_url || item?.url || '');
+    const slug = slugify(item?.slug || item?.id || title || youtubeId);
+    const label = item?.id || title || `item-${index + 1}`;
+
+    if (!title) errors.push(`${label}: title is required.`);
+    if (!youtubeId) errors.push(`${label}: youtubeId is required.`);
+    if (youtubeId && !/^[A-Za-z0-9_-]{6,20}$/.test(youtubeId)) errors.push(`${label}: youtubeId format is invalid.`);
+    if (!slug) errors.push(`${label}: slug is required.`);
+    if (slug && seenSlugs.has(slug)) errors.push(`${label}: duplicate slug "${slug}".`);
+    if (slug) seenSlugs.add(slug);
+  });
+
+  if (errors.length) {
+    console.warn(`[retro-editor] Save blocked for ${section}. Validation errors: ${errors.join(' ')}`);
+  } else {
+    console.log(`[retro-editor] Validation passed for ${section} (${items.length} items).`);
+  }
+
+  return errors;
 }
 
 function resetForm() {
