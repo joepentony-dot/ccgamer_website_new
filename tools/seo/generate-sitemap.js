@@ -26,6 +26,8 @@ const DEFAULT_STATIC_PATHS = [
   'games/collections/index.html',
   'games/collections/licensed-games.html',
   'games/collections/retro-events.html',
+  'games/collections/retro-specials.html',
+  'games/collections/amiga-demo-music.html',
   'games/collections/top-picks.html',
   'games/genres/action-adventure-games.html',
   'games/genres/adventure-games.html',
@@ -441,6 +443,36 @@ function generateGameSitemap(siteUrl, games) {
   };
 }
 
+
+function collectCuratedRetroEntries(siteUrl, warnings) {
+  const roots = ['retro-events', 'retro-specials', 'amiga-demo-music'];
+  const entries = [];
+
+  for (const root of roots) {
+    const rootPath = path.join(repoRoot, root);
+    if (!fs.existsSync(rootPath) || !fs.statSync(rootPath).isDirectory()) continue;
+
+    const children = fs.readdirSync(rootPath, { withFileTypes: true });
+    for (const child of children) {
+      if (!child.isDirectory()) continue;
+      const filePath = path.join(rootPath, child.name, 'index.html');
+      if (!fs.existsSync(filePath)) continue;
+
+      const fallbackLoc = `${siteUrl}/${root}/${child.name}/`;
+      const loc = resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings);
+      if (!loc) continue;
+
+      entries.push({
+        loc,
+        lastmod: getGitLastMod(filePath),
+        filePath,
+      });
+    }
+  }
+
+  return entries;
+}
+
 function generateStaticSitemap(siteUrl, games) {
   const warnings = [];
   const staticPaths = loadStaticPaths(warnings);
@@ -473,6 +505,13 @@ function generateStaticSitemap(siteUrl, games) {
     const existing = entriesByLoc.get(loc);
     if (nextEntry.lastmod > existing.lastmod) {
       entriesByLoc.set(loc, nextEntry);
+    }
+  }
+
+  const curatedRetroEntries = collectCuratedRetroEntries(siteUrl, warnings);
+  for (const entry of curatedRetroEntries) {
+    if (!entriesByLoc.has(entry.loc) || entry.lastmod > entriesByLoc.get(entry.loc).lastmod) {
+      entriesByLoc.set(entry.loc, entry);
     }
   }
 

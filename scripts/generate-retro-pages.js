@@ -54,7 +54,7 @@ function readJsonArray(filePath) {
 }
 
 function resolveYoutubeId(entry) {
-  return String(entry.youtubeId || entry.youtube_video_id || entry.youtube || '').trim();
+  return String(entry.youtubeId || entry.youtube_video_id || entry.videoid || entry.videoId || entry.youtube || '').trim();
 }
 
 function resolveSlug(entry) {
