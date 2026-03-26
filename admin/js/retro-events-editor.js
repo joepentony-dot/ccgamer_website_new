@@ -2,6 +2,9 @@ const DEFAULT_GITHUB_OWNER = 'joepentony-dot';
 const DEFAULT_GITHUB_REPO = 'ccgamer_website_new';
 const DEFAULT_GITHUB_BRANCH = 'main';
 
+const BUILD_POLL_INTERVAL_MS = 5000;
+const BUILD_POLL_TIMEOUT_MS = 120000;
+
 const STORAGE_KEYS = {
   owner: 'ccg_retro_github_owner',
   repo: 'ccg_retro_github_repo',
@@ -15,12 +18,18 @@ const DATA_FILES = {
   'amiga-demo-music': '/data/amiga-demo-music.json'
 };
 
+const LIVE_URLS = {
+  'retro-events': 'https://www.cheekycommodoregamer.co.uk/retro-events/',
+  'retro-specials': 'https://www.cheekycommodoregamer.co.uk/retro-specials/',
+  'amiga-demo-music': 'https://www.cheekycommodoregamer.co.uk/amiga-demo-music/'
+};
+
 const TYPE_TO_SECTION = {
-  'retro_event': 'retro-events',
+  retro_event: 'retro-events',
   'retro-events': 'retro-events',
-  'retro_special': 'retro-specials',
+  retro_special: 'retro-specials',
   'retro-specials': 'retro-specials',
-  'demo_music': 'amiga-demo-music',
+  demo_music: 'amiga-demo-music',
   'amiga-demo-music': 'amiga-demo-music'
 };
 
@@ -46,7 +55,10 @@ const el = {
   githubRepo: document.querySelector('[data-github-repo]'),
   githubBranch: document.querySelector('[data-github-branch]'),
   githubToken: document.querySelector('[data-github-token]'),
-  clearToken: document.querySelector('[data-action="clear-token"]')
+  clearToken: document.querySelector('[data-action="clear-token"]'),
+  commitStatus: document.querySelector('#ccgCommitStatus'),
+  buildStatus: document.querySelector('#ccgBuildStatus'),
+  liveStatus: document.querySelector('#ccgLiveStatus')
 };
 
 const fields = {
@@ -149,8 +161,32 @@ async function saveSection(section) {
     const sha = await fetchFileSha(github.config, path);
     await putFileContent(github.config, path, payload, sha);
     setStatus(`✅ Committed ${path} to ${github.config.owner}/${github.config.repo}@${github.config.branch}.`, false);
+
+    setPipelineStatus('commit', '✅ Committed to GitHub', 'status-ok');
+    setPipelineStatus('build', '🔄 Build running...', 'status-running');
+    setPipelineStatus('live', 'Waiting for deploy...', 'status-idle');
+
+    const latestEntry = getLatestEntryForSection(section);
+    void sendDiscordNotification(latestEntry, section);
+    void sendEmailNotification(latestEntry, section);
+
+    const buildResult = await pollLatestBuildStatus(github.config);
+    if (buildResult === 'success') {
+      setPipelineStatus('build', '✅ Build complete', 'status-ok');
+      await sleep(7000);
+      await updateLiveStatus(section);
+    } else if (buildResult === 'failure') {
+      setPipelineStatus('build', '❌ Build failed', 'status-error');
+      setPipelineStatus('live', '⚠️ Live check pending', 'status-idle');
+    } else {
+      setPipelineStatus('build', '⚠️ Build status timeout', 'status-idle');
+      setPipelineStatus('live', '⚠️ Live check pending', 'status-idle');
+    }
   } catch (err) {
     setStatus(`❌ Save failed for ${path}: ${err.message}`, true);
+    setPipelineStatus('commit', '❌ Commit failed', 'status-error');
+    setPipelineStatus('build', 'No build yet', 'status-idle');
+    setPipelineStatus('live', 'Not deployed', 'status-idle');
   }
 }
 
@@ -213,6 +249,127 @@ async function putFileContent(config, path, content, sha) {
   }
 }
 
+async function pollLatestBuildStatus(config) {
+  const startedAt = Date.now();
+  while (Date.now() - startedAt < BUILD_POLL_TIMEOUT_MS) {
+    const run = await fetchLatestWorkflowRun(config);
+    if (run?.status === 'completed') {
+      return run.conclusion === 'success' ? 'success' : 'failure';
+    }
+    await sleep(BUILD_POLL_INTERVAL_MS);
+  }
+  return 'timeout';
+}
+
+async function fetchLatestWorkflowRun(config) {
+  const endpoint = `https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}/actions/runs?per_page=1`;
+  const response = await fetch(endpoint, {
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      Accept: 'application/vnd.github+json'
+    }
+  });
+
+  if (!response.ok) return null;
+
+  const payload = await response.json();
+  const run = Array.isArray(payload?.workflow_runs) ? payload.workflow_runs[0] : null;
+  return run || null;
+}
+
+async function updateLiveStatus(section) {
+  const liveUrl = LIVE_URLS[section] || LIVE_URLS['retro-events'];
+  try {
+    const response = await fetch(liveUrl, { method: 'HEAD', cache: 'no-store' });
+    if (response.status === 200) {
+      setPipelineStatus('live', '✅ Live', 'status-ok');
+      return;
+    }
+  } catch (_error) {
+    // Ignore and degrade gracefully.
+  }
+
+  setPipelineStatus('live', '⚠️ Live check pending', 'status-idle');
+}
+
+async function sendDiscordNotification(entry, section) {
+  const webhook = localStorage.getItem('ccg_discord_webhook');
+  if (!webhook || !entry) return;
+
+  const payload = {
+    content: '🆕 New retro content added!',
+    embeds: [
+      {
+        title: entry.title || 'New retro item',
+        url: buildFuturePageUrl(entry, section),
+        description: 'New entry published via CCG admin',
+        color: 5814783
+      }
+    ]
+  };
+
+  try {
+    await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (_error) {
+    // Do not block main commit flow.
+  }
+}
+
+async function sendEmailNotification(entry, section) {
+  const endpoint = localStorage.getItem('ccg_email_endpoint');
+  if (!endpoint || !entry) return;
+
+  const payload = {
+    type: 'new_content',
+    title: entry.title || 'Untitled',
+    slug: entry.slug || entry.id || '',
+    category: 'retro',
+    section
+  };
+
+  try {
+    await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (_error) {
+    // Optional hook should fail silently.
+  }
+}
+
+function buildFuturePageUrl(entry, section) {
+  const slug = entry.slug || entry.id || '';
+  const root = 'https://www.cheekycommodoregamer.co.uk';
+  if (!slug) return LIVE_URLS[section] || `${root}/retro-events/`;
+  return `${root}/${section}/${slug}/`;
+}
+
+function setPipelineStatus(kind, message, statusClass) {
+  const node = kind === 'commit' ? el.commitStatus : kind === 'build' ? el.buildStatus : el.liveStatus;
+  if (!node) return;
+
+  node.textContent = message;
+  node.classList.remove('status-idle', 'status-ok', 'status-running', 'status-error');
+  node.classList.add(statusClass);
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getLatestEntryForSection(section) {
+  const items = state.events
+    .filter((entry) => mapTypeToSection(entry?.type) === section)
+    .sort((a, b) => (Number(b?.order) || 0) - (Number(a?.order) || 0));
+
+  return items[0] || null;
+}
+
 function encodeBase64Unicode(input) {
   return btoa(unescape(encodeURIComponent(input)));
 }
@@ -226,7 +383,11 @@ function getSectionPayload(section) {
     return String(a?.title || '').localeCompare(String(b?.title || ''));
   });
 
-  return sorted.map((entry, index) => ({ ...entry, order: index }));
+  return sorted.map((entry, index) => ({
+    ...entry,
+    created_at: entry?.created_at || new Date().toISOString(),
+    order: index
+  }));
 }
 
 function mapTypeToSection(typeValue) {
@@ -258,7 +419,8 @@ function onSaveEvent(event) {
     order: getNextOrderForSection(section),
     summary: (fields.summary?.value || '').trim(),
     description: (fields.description?.value || '').trim(),
-    collection: section
+    collection: section,
+    created_at: new Date().toISOString()
   };
 
   state.events.push(newItem);
