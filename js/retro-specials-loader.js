@@ -76,6 +76,38 @@ async function ccgLoadRetroSpecials() {
       order: Number.isFinite(Number(item.order)) ? Number(item.order) : 9999,
       index
     }))
-    .filter((item) => item.slug && item.youtubeId)
+    .filter((item) => item.slug)
     .sort((a, b) => (a.order - b.order) || (a.index - b.index));
+}
+
+async function ccgRunCollection() {
+  const grid = document.getElementById('genreGamesGrid');
+  const countEl = document.getElementById('genreGamesCount');
+
+  if (!grid) return;
+
+  try {
+    const items = await ccgLoadRetroSpecials();
+
+    if (countEl) countEl.textContent = String(items.length);
+
+    grid.innerHTML = items.map(ccgBuildRetroSpecialCard).join('');
+
+    if (!items.length) {
+      grid.innerHTML = '<div class="ccg-genre-empty"><h3>No items found in this collection</h3></div>';
+    }
+
+  } catch (error) {
+    console.error('[CCG RETRO SPECIALS]', error);
+
+    if (countEl) countEl.textContent = '0';
+
+    grid.innerHTML = '<div class="ccg-genre-empty"><h3>Unable to load this collection</h3></div>';
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', ccgRunCollection, { once: true });
+} else {
+  ccgRunCollection();
 }
