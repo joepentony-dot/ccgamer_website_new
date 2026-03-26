@@ -26,22 +26,28 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm install || true
+        run: |
+          echo "[seo] Installing dependencies (best effort)..."
+          npm install || true
 
       - name: Generate sitemap
         run: |
+          echo "[seo] Generating sitemap artifacts..."
           if [ -f scripts/generate-sitemap.js ]; then
             node scripts/generate-sitemap.js
           else
-            echo "No sitemap script found, skipping"
+            echo "[seo] No sitemap script found, skipping"
           fi
 
       - name: Commit sitemap if changed
         run: |
+          echo "[seo] Checking sitemap diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
           git add sitemap.xml
           git diff --cached --quiet || git commit -m "Auto-update sitemap"
 
       - name: Push changes
-        run: git push
+        run: |
+          echo "[seo] Pushing sitemap updates (if any)..."
+          git push

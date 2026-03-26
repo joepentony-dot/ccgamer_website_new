@@ -33,13 +33,16 @@ jobs:
 
       - name: Commit generated files
         run: |
+          echo "[build-games] Checking for generated file changes..."
           if git diff --quiet; then
-            echo "No generated file changes."
+            echo "[build-games] No generated file changes."
             exit 0
           fi
 
+          echo "[build-games] Changes detected. Preparing commit..."
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add games/games-index.json games/games-search.json sitemap-games.xml games
           git commit -m "chore(games): rebuild generated game assets"
+          echo "[build-games] Pushing generated assets commit..."
           git push
