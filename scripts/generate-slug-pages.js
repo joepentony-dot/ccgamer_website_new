@@ -137,6 +137,23 @@ function normalizeHtmlForComparison(html) {
     return String(html || "").replace(/\r\n/g, "\n").trim();
 }
 
+function buildRedirectStubHtml(slug, canonicalUrl) {
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/" />
+  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
+  <meta name="robots" content="noindex,follow" />
+</head>
+<body>
+  <script>
+    location.replace("/games/${escapeHtml(slug)}/");
+  </script>
+</body>
+</html>
+`;
+}
+
 function getExpectedPageArtifacts(game, slug, validation) {
     const title = stripHtml(game.title || "Game");
     const year = stripHtml(game.year || "Unknown Year");
@@ -163,7 +180,8 @@ function getExpectedPageArtifacts(game, slug, validation) {
             publisher,
             platformLong,
             platformShort
-        })
+        }),
+        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl)
     };
 }
 
@@ -189,6 +207,15 @@ function getCanonicalRewriteReason(filePath, expected) {
         return "metadata outdated";
     }
 
+    return "";
+}
+
+function getRedirectStubRewriteReason(filePath, expectedHtml) {
+    if (!fs.existsSync(filePath)) return "missing redirect stub";
+    const current = fs.readFileSync(filePath, "utf8");
+    if (normalizeHtmlForComparison(current) !== normalizeHtmlForComparison(expectedHtml)) {
+        return "redirect stub metadata changed";
+    }
     return "";
 }
 
@@ -429,10 +456,7 @@ function findStaleGameOutputs(activeSlugs) {
         }
         if (!entry.isFile() || !entry.name.endsWith(".html")) return;
         const slug = entry.name.replace(/\.html$/i, "");
-        if (activeSlugs.has(slug)) {
-            stale.push({ type: "legacy-stub", slug, filePath: path.join(gamesDir, entry.name) });
-            return;
-        }
+        if (activeSlugs.has(slug)) return;
         stale.push({ type: "stub", slug, filePath: path.join(gamesDir, entry.name) });
     });
     return stale;
@@ -457,6 +481,7 @@ function planChangedGames(games) {
         const slug = normalizeSlug(game);
         const outputDir = path.join(gamesDir, slug);
         const canonicalPath = path.join(outputDir, "index.html");
+        const redirectStubPath = path.join(gamesDir, `${slug}.html`);
         const validation = validateForGeneration(game, slug, gamesBySlug);
 
         if (validation.issues.length) {
@@ -467,14 +492,17 @@ function planChangedGames(games) {
 
         const expected = getExpectedPageArtifacts(game, slug, validation);
         const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected, slug });
-        if (!canonicalReason) continue;
+        const redirectStubReason = getRedirectStubRewriteReason(redirectStubPath, expected.redirectStubHtml);
+        if (!canonicalReason && !redirectStubReason) continue;
 
         planned.push({
             game,
             slug,
             outputDir,
             canonicalPath,
+            redirectStubPath,
             canonicalReason,
+            redirectStubReason,
             ...validation,
             ...expected
         });
@@ -503,6 +531,12 @@ function processChangedGamesOnly(games) {
         if (item.canonicalReason && writeTextFileIfChanged(item.canonicalPath, item.canonicalHtml)) {
             written += 1;
             console.log(`[WRITE] games/${item.slug}/index.html (${item.canonicalReason})`);
+        }
+
+        if (writeTextFileIfChanged(item.redirectStubPath, item.redirectStubHtml)) {
+            written += 1;
+            const reason = item.redirectStubReason || "redirect stub";
+            console.log(`[WRITE] games/${item.slug}.html (${reason})`);
         }
     }
 
