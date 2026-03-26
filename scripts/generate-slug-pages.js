@@ -306,28 +306,59 @@ function buildVideoObjectSchema({ title, description, videoId, canonicalUrl }) {
     };
 }
 
+function buildBreadcrumbSchema({ canonicalUrl, title }) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: SITE_ROOT
+            },
+            {
+                "@type": "ListItem",
+                position: 2,
+                name: "Games",
+                item: `${SITE_ROOT}/games/`
+            },
+            {
+                "@type": "ListItem",
+                position: 3,
+                name: title,
+                item: canonicalUrl
+            }
+        ]
+    };
+}
+
 function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
-    const seoTitle = `${title} (${platformLong}) – Review, Game Info, Manual & Video`;
-    const videoId = String(game?.videoid || game?.youtube || "").trim();
+    const seoTitle = `${title} (${year}) – C64 Gameplay, Review & Guide`;
+    const metaDescription = `Play ${title} (${year}) on the Commodore 64. Watch gameplay, tips, history and download info on Cheeky Commodore Gamer.`;
+    const ogDescription = stripHtml(game?.summary || game?.title || title);
+    const thumbnailUrl = ogImage;
+    const videoId = String(game?.youtubeId || game?.videoid || game?.youtube || "").trim();
     const hasVideo = Boolean(videoId);
 
     const schemaData = buildVideoGameSchema({
         game,
         title,
-        description,
+        description: metaDescription,
         canonicalUrl,
-        ogImage,
+        ogImage: thumbnailUrl,
         year,
         platformLong,
         publisher
     });
     const videoObjectSchema = buildVideoObjectSchema({
         title,
-        description,
+        description: ogDescription || title,
         videoId,
         canonicalUrl
     });
     const schemaGraph = videoObjectSchema ? [schemaData, videoObjectSchema] : [schemaData];
+    const breadcrumbSchema = buildBreadcrumbSchema({ canonicalUrl, title });
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -335,18 +366,18 @@ function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogIm
 <title>${escapeHtml(seoTitle)}</title>
 <script src="/js/analytics.js"></script>
 <meta charset="UTF-8">
-<meta name="description" content="${escapeHtml(description)}">
+<meta name="description" content="${escapeHtml(metaDescription)}">
 <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-<meta property="og:type" content="${hasVideo ? "video.other" : "website"}">
+<meta property="og:type" content="video.other">
 <meta property="og:site_name" content="Cheeky Commodore Gamer">
-<meta property="og:title" content="${escapeHtml(seoTitle)}">
-<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:title" content="${escapeHtml(`${title} (${year}) – C64 Gameplay`)}">
+<meta property="og:description" content="${escapeHtml(ogDescription || title)}">
 <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
-<meta property="og:image" content="${escapeHtml(ogImage)}">
+<meta property="og:image" content="${escapeHtml(thumbnailUrl)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escapeHtml(seoTitle)}">
-<meta name="twitter:description" content="${escapeHtml(description)}">
-<meta name="twitter:image" content="${escapeHtml(ogImage)}">
+<meta name="twitter:description" content="${escapeHtml(metaDescription)}">
+<meta name="twitter:image" content="${escapeHtml(thumbnailUrl)}">
 <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="../favicon.ico">
@@ -366,6 +397,9 @@ ${JSON.stringify({
     "@context": "https://schema.org",
     "@graph": schemaGraph
 }, null, 2)}
+</script>
+<script type="application/ld+json">
+${JSON.stringify(breadcrumbSchema, null, 2)}
 </script>
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
