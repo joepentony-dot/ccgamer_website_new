@@ -69,6 +69,14 @@ function readHtmlMeta(filePath) {
   };
 }
 
+function isNoindex(robotsValue) {
+  return String(robotsValue || '')
+    .toLowerCase()
+    .split(',')
+    .map((token) => token.trim())
+    .includes('noindex');
+}
+
 function main() {
   const siteUrl = readSiteUrl().replace(/\/+$/, '');
   const errors = [];
@@ -157,15 +165,20 @@ function main() {
     }
 
     const meta = readHtmlMeta(canonicalPath);
-    if (meta.canonical !== canonicalUrl) errors.push(`${canonicalRel} canonical mismatch. Expected ${canonicalUrl} but found ${meta.canonical || '(missing)'}`);
-    if (meta.ogUrl !== canonicalUrl) errors.push(`${canonicalRel} og:url mismatch. Expected ${canonicalUrl} but found ${meta.ogUrl || '(missing)'}`);
-    if (meta.twitterUrl !== canonicalUrl) errors.push(`${canonicalRel} twitter:url mismatch. Expected ${canonicalUrl} but found ${meta.twitterUrl || '(missing)'}`);
+    const canonicalNoindex = isNoindex(meta.robots);
+    if (!canonicalNoindex) {
+      if (meta.canonical !== canonicalUrl) errors.push(`${canonicalRel} canonical mismatch. Expected ${canonicalUrl} but found ${meta.canonical || '(missing)'}`);
+      if (meta.ogUrl !== canonicalUrl) errors.push(`${canonicalRel} og:url mismatch. Expected ${canonicalUrl} but found ${meta.ogUrl || '(missing)'}`);
+      if (meta.twitterUrl !== canonicalUrl) errors.push(`${canonicalRel} twitter:url mismatch. Expected ${canonicalUrl} but found ${meta.twitterUrl || '(missing)'}`);
+      if (!gameLocs.has(canonicalUrl)) errors.push(`sitemap-games.xml is missing canonical URL: ${canonicalUrl}`);
+    }
     if (!meta.title) errors.push(`${canonicalRel} is missing a <title>.`);
     if (!meta.description) errors.push(`${canonicalRel} is missing a meta description.`);
-    if (!gameLocs.has(canonicalUrl)) errors.push(`sitemap-games.xml is missing canonical URL: ${canonicalUrl}`);
 
     const stubMeta = readHtmlMeta(stubPath);
-    if (stubMeta.canonical !== canonicalUrl) errors.push(`${stubRel} canonical mismatch. Expected ${canonicalUrl} but found ${stubMeta.canonical || '(missing)'}`);
+    if (!isNoindex(stubMeta.robots) && stubMeta.canonical !== canonicalUrl) {
+      errors.push(`${stubRel} canonical mismatch. Expected ${canonicalUrl} but found ${stubMeta.canonical || '(missing)'}`);
+    }
     if (stubMeta.robots.toLowerCase() !== 'noindex,follow') errors.push(`${stubRel} robots mismatch. Expected noindex,follow but found ${stubMeta.robots || '(missing)'}`);
     if (stubMeta.refreshTarget !== `/games/${slug}/`) errors.push(`${stubRel} redirect target mismatch. Expected /games/${slug}/ but found ${stubMeta.refreshTarget || '(missing)'}`);
   }

@@ -468,6 +468,20 @@ function collectCuratedRetroEntries(siteUrl, warnings) {
         filePath,
       });
     }
+
+    const rootEntries = entries.filter((entry) => entry.loc.startsWith(`${siteUrl}/${root}/`));
+    if (rootEntries.length > 0) {
+      const latestLastmod = rootEntries
+        .map((entry) => entry.lastmod)
+        .slice()
+        .sort()
+        .pop();
+      entries.push({
+        loc: `${siteUrl}/${root}/`,
+        lastmod: latestLastmod,
+        filePath: rootPath,
+      });
+    }
   }
 
   return entries;
