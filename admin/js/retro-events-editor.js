@@ -4,6 +4,7 @@ const DEFAULT_GITHUB_BRANCH = 'main';
 
 const BUILD_POLL_INTERVAL_MS = 5000;
 const BUILD_POLL_TIMEOUT_MS = 120000;
+const MAX_COMMIT_PAYLOAD_BYTES = 1024 * 1024;
 
 const STORAGE_KEYS = {
   owner: 'ccg_retro_github_owner',
@@ -155,16 +156,40 @@ async function saveSection(section) {
   }
 
   const path = `data/${section}.json`;
-  const payload = JSON.stringify(getSectionPayload(section), null, 2) + '\n';
+  const sectionPayload = getSectionPayload(section);
+  if (!Array.isArray(sectionPayload) || sectionPayload.length === 0) {
+    setStatus(`❌ Refusing to commit empty payload for ${path}.`, true);
+    setPipelineStatus('commit', '❌ Commit blocked (empty payload)', 'status-error');
+    return;
+  }
+
+  const payload = JSON.stringify(sectionPayload, null, 2) + '\n';
+  if (!payload || payload.trim() === '[]' || payload.length > MAX_COMMIT_PAYLOAD_BYTES) {
+    setStatus(`❌ Payload safety check failed for ${path}.`, true);
+    setPipelineStatus('commit', '❌ Commit blocked (payload safety)', 'status-error');
+    return;
+  }
 
   try {
-    const sha = await fetchFileSha(github.config, path);
-    await putFileContent(github.config, path, payload, sha);
+    console.log('Commit started', { section, path });
+    const fileState = await fetchFileState(github.config, path);
+
+    if (fileState.content === payload) {
+      setStatus(`ℹ️ No changes detected for ${path}; skipping commit.`, false);
+      setPipelineStatus('commit', 'ℹ️ No changes to commit', 'status-idle');
+      setPipelineStatus('build', 'No build needed', 'status-idle');
+      setPipelineStatus('live', 'No deploy needed', 'status-idle');
+      return;
+    }
+
+    await putFileContent(github.config, path, payload, fileState.sha);
+    console.log('Commit success', { section, path });
     setStatus(`✅ Committed ${path} to ${github.config.owner}/${github.config.repo}@${github.config.branch}.`, false);
 
     setPipelineStatus('commit', '✅ Committed to GitHub', 'status-ok');
     setPipelineStatus('build', '🔄 Build running...', 'status-running');
     setPipelineStatus('live', 'Waiting for deploy...', 'status-idle');
+    console.log('Build detected', { section, path });
 
     const latestEntry = getLatestEntryForSection(section);
     void sendDiscordNotification(latestEntry, section);
@@ -172,6 +197,7 @@ async function saveSection(section) {
 
     const buildResult = await pollLatestBuildStatus(github.config);
     if (buildResult === 'success') {
+      console.log('Build complete', { section, path, status: buildResult });
       setPipelineStatus('build', '✅ Build complete', 'status-ok');
       await sleep(7000);
       await updateLiveStatus(section);
@@ -203,7 +229,7 @@ function getGithubConfig() {
   return { ok: true, config: { owner, repo, branch, token } };
 }
 
-async function fetchFileSha(config, path) {
+async function fetchFileState(config, path) {
   const endpoint = `https://api.github.com/repos/${encodeURIComponent(config.owner)}/${encodeURIComponent(config.repo)}/contents/${path}?ref=${encodeURIComponent(config.branch)}`;
   const response = await fetch(endpoint, {
     headers: {
@@ -212,7 +238,7 @@ async function fetchFileSha(config, path) {
     }
   });
 
-  if (response.status === 404) return null;
+  if (response.status === 404) return { sha: null, content: '' };
 
   if (!response.ok) {
     const text = await response.text();
@@ -220,7 +246,10 @@ async function fetchFileSha(config, path) {
   }
 
   const fileData = await response.json();
-  return fileData.sha || null;
+  return {
+    sha: fileData.sha || null,
+    content: decodeBase64Unicode(fileData.content || '')
+  };
 }
 
 async function putFileContent(config, path, content, sha) {
@@ -372,6 +401,12 @@ function getLatestEntryForSection(section) {
 
 function encodeBase64Unicode(input) {
   return btoa(unescape(encodeURIComponent(input)));
+}
+
+function decodeBase64Unicode(input) {
+  const normalized = String(input || '').replace(/\s+/g, '');
+  if (!normalized) return '';
+  return decodeURIComponent(escape(atob(normalized)));
 }
 
 function getSectionPayload(section) {

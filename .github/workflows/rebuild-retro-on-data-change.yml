@@ -30,17 +30,23 @@ jobs:
           node-version: '20'
 
       - name: Rebuild generated outputs
-        run: node scripts/rebuild-games.js
+        run: |
+          echo "[rebuild-retro] Starting retro rebuild pipeline..."
+          node scripts/rebuild-games.js
+          echo "[rebuild-retro] Retro rebuild pipeline complete."
 
       - name: Commit generated outputs
         run: |
+          echo "[rebuild-retro] Checking for generated retro/sitemap changes..."
           if git diff --quiet -- retro-events retro-specials amiga-demo-music sitemap.xml sitemap-games.xml sitemap-retro.xml; then
-            echo "No generated retro/sitemap changes to commit."
+            echo "[rebuild-retro] No generated retro/sitemap changes to commit."
             exit 0
           fi
 
+          echo "[rebuild-retro] Changes detected. Preparing commit..."
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add retro-events retro-specials amiga-demo-music sitemap.xml sitemap-games.xml sitemap-retro.xml
           git commit -m "chore(retro): rebuild generated retro pages [skip retro-rebuild]"
+          echo "[rebuild-retro] Pushing generated outputs commit..."
           git push origin HEAD:${GITHUB_REF_NAME}
