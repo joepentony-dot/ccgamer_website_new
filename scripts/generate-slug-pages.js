@@ -334,8 +334,8 @@ function buildBreadcrumbSchema({ canonicalUrl, title }) {
 }
 
 function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
-    const seoTitle = `${title} (${year}) – C64 Gameplay, Review & Guide`;
-    const metaDescription = `Play ${title} (${year}) on the Commodore 64. Watch gameplay, tips, history and download info on Cheeky Commodore Gamer.`;
+    const seoTitle = `${title} (${year}) – ${platformShort} Gameplay, Review & Guide`;
+    const metaDescription = `Play ${title} (${year}) on the ${platformLong}. Watch gameplay, tips, history and download info on Cheeky Commodore Gamer.`;
     const ogDescription = stripHtml(game?.summary || game?.title || title);
     const thumbnailUrl = ogImage;
     const videoId = String(game?.youtubeId || game?.videoid || game?.youtube || "").trim();
