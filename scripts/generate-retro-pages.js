@@ -59,6 +59,19 @@ function ensurePageUrl(prefix, slug) {
   return `${prefix}${slug}/`;
 }
 
+function normalizeCreatedAt(entry) {
+  if (!entry || !entry.created_at) return null;
+  const stamp = new Date(entry.created_at);
+  if (Number.isNaN(stamp.getTime())) return null;
+  return stamp;
+}
+
+function isWithinLast7Days(dateValue) {
+  if (!dateValue) return false;
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+  return Date.now() - dateValue.getTime() <= sevenDaysMs;
+}
+
 function generateDatasetPages(config, baseTemplate, contentTemplate) {
   const items = readJsonArray(config.dataPath);
 
@@ -89,6 +102,8 @@ function generateDatasetPages(config, baseTemplate, contentTemplate) {
 
     const pageUrl = ensurePageUrl(config.pagePrefix, slug);
 
+    const createdAt = normalizeCreatedAt(entry);
+    entry.isNew = !createdAt || isWithinLast7Days(createdAt);
     entry.pageUrl = pageUrl;
     entry.youtubeId = youtubeId;
     entry.slug = slug;

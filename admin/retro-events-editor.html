@@ -32,6 +32,12 @@
     .content-switcher { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-bottom: .8rem; }
     .content-switcher label { font-weight: 700; min-width: 140px; }
     .mode-pill { display: inline-flex; align-items: center; border: 1px solid rgba(125, 211, 252, .8); border-radius: 999px; padding: .2rem .6rem; font-size: .78rem; color: #7dd3fc; }
+    .admin-status-panel { margin-top: .75rem; display: grid; gap: .35rem; }
+    .admin-status-panel .status { font-weight: 700; }
+    .status-idle { opacity: 0.6; }
+    .status-ok { color: #00ff9c; }
+    .status-running { color: #00cfff; }
+    .status-error { color: #ff4d4d; }
 
     @media (max-width: 840px) {
       .retro-grid { grid-template-columns: 1fr; }
@@ -157,6 +163,12 @@
         <button class="ccg-btn ccg-btn--primary" type="button" data-action="save-retro-json">Commit retro-events.json</button>
         <button class="ccg-btn ccg-btn--secondary" type="button" data-action="save-specials-json">Commit retro-specials.json</button>
         <button class="ccg-btn ccg-btn--secondary" type="button" data-action="save-demo-json">Commit amiga-demo-music.json</button>
+      </div>
+
+      <div class="admin-status-panel">
+        <div id="ccgCommitStatus" class="status status-idle">Idle</div>
+        <div id="ccgBuildStatus" class="status status-idle">No build yet</div>
+        <div id="ccgLiveStatus" class="status status-idle">Not deployed</div>
       </div>
     </section>
 
