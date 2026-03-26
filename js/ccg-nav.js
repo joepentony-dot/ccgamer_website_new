@@ -26,7 +26,7 @@
     REQUIRED_CSS.forEach(path => {
       const hasPath = Array.from(document.styleSheets).some(sheet => sheet.href && sheet.href.includes(path));
       if (!hasPath) {
-        console.error(`‼ MISSING SHARED CSS IMPORT: ${path}`);
+        console.warn(`Missing CSS: ${path}`);
       }
     });
   }
