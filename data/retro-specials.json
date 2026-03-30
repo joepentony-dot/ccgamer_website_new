@@ -14,7 +14,8 @@
     "seo": {
       "title": "50 Essential Commodore 64 Games – Best C64 Games Ever | Retro Special | Cheeky Commodore Gamer",
       "description": "Explore 50 essential Commodore 64 games in this Retro Special from Cheeky Commodore Gamer, covering some of the most iconic and influential C64 classics ever released."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "arcade-club-bury",
@@ -31,7 +32,8 @@
     "seo": {
       "title": "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "hardest-c64-games",
@@ -44,7 +46,8 @@
     "order": 2,
     "summary": "A look at the hardest Commodore 64 games ever made.",
     "description": "Explore the toughest C64 games ever released, known for brutal difficulty and unforgiving gameplay.",
-    "collection": "retro-specials"
+    "collection": "retro-specials",
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "guru-meditation-amiga",
@@ -61,7 +64,8 @@
     "seo": {
       "title": "Guru Meditation – Commodore Amiga Error That Became a Legend | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Guru Meditation – Commodore Amiga Error That Became a Legend on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "commodore-64-memories-1982",
@@ -78,7 +82,8 @@
     "seo": {
       "title": "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "retro-games-day-family-gaming",
@@ -95,7 +100,8 @@
     "seo": {
       "title": "Retro Games Day – Gaming with Family from Amiga to PlayStation 5 | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Retro Games Day – Gaming with Family from Amiga to PlayStation 5 on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "top-15-commodore-64-games",
@@ -112,7 +118,8 @@
     "seo": {
       "title": "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "sid-chip-story",
@@ -129,7 +136,8 @@
     "seo": {
       "title": "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "x-copy-amiga-history",
@@ -146,7 +154,8 @@
     "seo": {
       "title": "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
   },
   {
     "id": "zx-spectrum-memories-hodgy",
@@ -163,6 +172,21 @@
     "seo": {
       "title": "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy on Cheeky Commodore Gamer's Retro Specials collection."
-    }
+    },
+    "created_at": "2026-03-30T22:46:27.285Z"
+  },
+  {
+    "id": "c64-vs-zx-spectrum-the-truth-about-these-versions",
+    "slug": "c64-vs-zx-spectrum-the-truth-about-these-versions",
+    "type": "retro-specials",
+    "title": "C64 vs ZX Spectrum — The Truth About These Versions",
+    "youtubeId": "QDTysJJT9BM",
+    "thumbnail": "https://img.youtube.com/vi/QDTysJJT9BM/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 10,
+    "summary": "C64 vs ZX Spectrum — same games, very different experiences.\n\nWhile the Commodore 64 delivers stronger graphics and sound, many classic titles were originally designed on the Spectrum, meaning the gameplay often feels tighter and more natural there. This video breaks down why — and when the C64 fights back.",
+    "description": "C64 vs ZX Spectrum — why do the same games feel so different?\nComparing classic 8-bit titles side by side to reveal how design, timing, and platform origins change the experience — even when the games look similar. Discover when the Spectrum feels sharper and when the Commodore 64 takes the lead.",
+    "collection": "retro-specials",
+    "created_at": "2026-03-30T22:46:23.085Z"
   }
 ]
