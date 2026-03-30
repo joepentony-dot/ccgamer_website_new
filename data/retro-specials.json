@@ -8,7 +8,7 @@
     "thumbnail": "https://img.youtube.com/vi/QHYAdbqWzoY/hqdefault.jpg",
     "membersOnly": false,
     "order": 0,
-    "summary": "A look back at fifty essential Commodore 64 games that helped define the machine, from arcade greats to home computer classics that still stand out today.",
+    "summary": "50 essential Commodore 64 games that defined the system — the classics every C64 fan remembers.",
     "description": "Cheeky Commodore Gamer counts down fifty essential Commodore 64 games, celebrating the titles that helped shape one of the most beloved home computers of all time. Covering arcade action, adventure, racing, platformers and long-standing favourites from the C64 era, this retrospective highlights the games that remain most influential, memorable and worth revisiting today.",
     "collection": "retro-specials",
     "seo": {
@@ -26,7 +26,7 @@
     "thumbnail": "https://img.youtube.com/vi/6PmRNlqIdFY/hqdefault.jpg",
     "membersOnly": false,
     "order": 1,
-    "summary": "A visit to Arcade Club Bury, one of the UK’s biggest retro and arcade gaming venues.",
+    "summary": "Inside one of the UK’s biggest retro arcades — hundreds of machines, all free-play.",
     "description": "This Retro Special tours Arcade Club Bury in Greater Manchester and captures the scale of its free-play arcade floors. The video highlights the atmosphere, cabinet variety and why the venue is a must-visit stop for retro gaming fans.",
     "collection": "retro-specials",
     "seo": {
@@ -44,7 +44,7 @@
     "thumbnail": "https://img.youtube.com/vi/EpkUyLF-VsQ/hqdefault.jpg",
     "membersOnly": false,
     "order": 2,
-    "summary": "A look at the hardest Commodore 64 games ever made.",
+    "summary": "The toughest C64 games ever made — brutal difficulty and no mercy.",
     "description": "Explore the toughest C64 games ever released, known for brutal difficulty and unforgiving gameplay.",
     "collection": "retro-specials",
     "created_at": "2026-03-30T22:46:27.285Z"
@@ -58,7 +58,7 @@
     "thumbnail": "https://img.youtube.com/vi/qody-Yqd19o/hqdefault.jpg",
     "membersOnly": false,
     "order": 3,
-    "summary": "An explainer on the Amiga’s famous Guru Meditation error and how it became part of retro lore.",
+    "summary": "The famous Amiga error message that became part of gaming history.",
     "description": "Cheeky Commodore Gamer looks at the Guru Meditation message and why it became such an iconic part of Amiga history. The feature covers its place in user memory and how a system error turned into a lasting cultural reference.",
     "collection": "retro-specials",
     "seo": {
@@ -76,7 +76,7 @@
     "thumbnail": "https://img.youtube.com/vi/PDomaOW-1-c/hqdefault.jpg",
     "membersOnly": true,
     "order": 4,
-    "summary": "A personal Commodore 64 nostalgia piece revisiting early 1980s home computer memories.",
+    "summary": "A nostalgic look back at early Commodore 64 memories from the 1980s.",
     "description": "This Retro Special shares a family-centred look back at Commodore 64 gaming from 1982 onward. It focuses on the games, moments and feelings that made the era memorable for long-time players.",
     "collection": "retro-specials",
     "seo": {
@@ -94,7 +94,7 @@
     "thumbnail": "https://img.youtube.com/vi/uLAK4KLYkEA/hqdefault.jpg",
     "membersOnly": true,
     "order": 5,
-    "summary": "A family retro gaming day spanning systems from the Amiga era through to modern consoles.",
+    "summary": "A relaxed family gaming day mixing retro classics with modern consoles.",
     "description": "This Retro Special follows a relaxed family gaming session that connects classic and modern play styles. It highlights how retro gaming traditions continue across generations through shared game time.",
     "collection": "retro-specials",
     "seo": {
@@ -112,7 +112,7 @@
     "thumbnail": "https://img.youtube.com/vi/6IYw6wRW3-0/hqdefault.jpg",
     "membersOnly": false,
     "order": 6,
-    "summary": "A curated top-15 countdown of essential Commodore 64 games worth revisiting today.",
+    "summary": "15 must-play Commodore 64 classics that still hold up today.",
     "description": "Cheeky Commodore Gamer runs through fifteen standout C64 games in a focused retrospective format. The selection celebrates titles that remain memorable for their gameplay, personality and long-term influence in the scene.",
     "collection": "retro-specials",
     "seo": {
@@ -130,7 +130,7 @@
     "thumbnail": "https://img.youtube.com/vi/rRKBcyiWO2I/hqdefault.jpg",
     "membersOnly": false,
     "order": 7,
-    "summary": "A history feature on the Commodore 64 SID chip and its lasting role in 8-bit game music.",
+    "summary": "The iconic sound chip behind the Commodore 64’s unforgettable music.",
     "description": "This Retro Special explains why the SID chip became one of the defining sounds of home computer gaming. It explores the chip’s musical identity and why SID-driven tracks still matter to retro audiences today.",
     "collection": "retro-specials",
     "seo": {
@@ -148,7 +148,7 @@
     "thumbnail": "https://img.youtube.com/vi/2OG2tPx5gnU/hqdefault.jpg",
     "membersOnly": false,
     "order": 8,
-    "summary": "A retrospective on X-Copy and its place in Commodore Amiga disk-copying history.",
+    "summary": "The story behind X-Copy and its place in Amiga history.",
     "description": "Cheeky Commodore Gamer explores the story of X-Copy as an influential Amiga utility associated with late-1980s and early-1990s computing culture. The video frames the software within broader Amiga history and long-running community memory.",
     "collection": "retro-specials",
     "seo": {
@@ -166,7 +166,7 @@
     "thumbnail": "https://img.youtube.com/vi/1S-gaWInghY/hqdefault.jpg",
     "membersOnly": true,
     "order": 9,
-    "summary": "A nostalgic ZX Spectrum feature revisiting 8-bit memories with Hodgy.",
+    "summary": "Revisiting ZX Spectrum memories and the era that defined them.",
     "description": "This Retro Special looks back at ZX Spectrum gaming memories in a conversational, personal format. It celebrates the games, era and community sentiment that continue to shape classic home computer fandom.",
     "collection": "retro-specials",
     "seo": {
@@ -184,7 +184,7 @@
     "thumbnail": "https://img.youtube.com/vi/QDTysJJT9BM/hqdefault.jpg",
     "membersOnly": false,
     "order": 10,
-    "summary": "C64 vs ZX Spectrum — same games, very different experiences.",
+    "summary": "Same games, different machines — see how C64 and Spectrum versions really compare.",
     "description": "A side-by-side look at classic C64 and ZX Spectrum versions, comparing how design, timing and platform origins shape the gameplay experience.",
     "collection": "retro-specials",
     "created_at": "2026-03-30T22:46:23.085Z"
