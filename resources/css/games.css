@@ -330,6 +330,16 @@ body[data-ccg-mode="amiga"] {
     color: var(--ccg-soft);
 }
 
+.games-grid__more-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0 8px;
+}
+
+.games-grid__more-btn {
+    min-width: 220px;
+}
+
 
 .games-alpha {
     padding: calc(14px * var(--ui-density));

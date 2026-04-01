@@ -1522,6 +1522,8 @@ function renderGame(game) {
                 img.src = src;
                 img.alt = `${resolveCanonicalGameTitle(game)} screenshot ${i + 1}`;
                 img.className = "game-screenshot-thumb";
+                img.loading = i === 0 ? "eager" : "lazy";
+                img.decoding = "async";
                 img.addEventListener("click", () => {
                     CCG_SCREENSHOT_INDEX = i;
                     openScreenshotModal(i);
@@ -3191,6 +3193,8 @@ function renderRelatedGames(game) {
         img.alt = rel.title || "Game";
         img.loading = "lazy";
         img.decoding = "async";
+        img.width = 320;
+        img.height = 180;
 
         const title = document.createElement("span");
         title.className = "related-card__title";

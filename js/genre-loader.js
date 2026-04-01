@@ -27,9 +27,8 @@ function ccgRunGenreLoader() {
     const genreName = document.body.dataset.genre;
     const grid = document.getElementById("genreGamesGrid");
     const countEl = document.getElementById("genreGamesCount");
-    const isMobile = typeof window.matchMedia === "function"
-        ? window.matchMedia("(max-width: 820px)").matches
-        : window.innerWidth <= 820;
+    const initialBatch = 16;
+    const batchSize = 24;
 
     if (!genreName || !grid) return;
 
@@ -54,12 +53,9 @@ function ccgRunGenreLoader() {
                 console.warn("[CCG GENRE] 0 matches", { genreName, key });
             }
 
-            const cards = filtered.map(ccgBuildGameCard).join("");
-
             if (countEl) countEl.textContent = filtered.length;
-
-            if (cards) {
-                grid.innerHTML = cards;
+            if (filtered.length) {
+                renderGenreCardsInBatches(grid, filtered, { initialBatch, batchSize });
             } else {
                 grid.innerHTML = `
                     <div class="ccg-genre-empty">
@@ -81,6 +77,52 @@ function ccgRunGenreLoader() {
         loadCards();
     } else {
         window.addEventListener("ccg-card-builder-ready", loadCards, { once: true });
+    }
+}
+
+function renderGenreCardsInBatches(container, games, opts = {}) {
+    const initialBatch = Number(opts.initialBatch) > 0 ? Number(opts.initialBatch) : 16;
+    const batchSize = Number(opts.batchSize) > 0 ? Number(opts.batchSize) : 24;
+    let cursor = 0;
+    const existingControls = container.parentElement?.querySelector(".ccg-list-load-more");
+    if (existingControls) existingControls.remove();
+
+    const controls = document.createElement("div");
+    controls.className = "ccg-list-load-more";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "ccg-btn ccg-btn--secondary ccg-list-load-more__btn";
+    controls.appendChild(btn);
+
+    const updateButton = () => {
+        const remaining = games.length - cursor;
+        if (remaining <= 0) {
+            controls.remove();
+            return;
+        }
+        btn.textContent = `Load More (${remaining} remaining)`;
+    };
+
+    const appendBatch = (size) => {
+        const next = games.slice(cursor, cursor + size);
+        if (!next.length) return;
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = next.map(ccgBuildGameCard).join("");
+        const fragment = document.createDocumentFragment();
+        Array.from(wrapper.children).forEach(node => fragment.appendChild(node));
+        container.appendChild(fragment);
+        cursor += next.length;
+        updateButton();
+    };
+
+    container.innerHTML = "";
+    appendBatch(initialBatch);
+
+    if (cursor < games.length) {
+        container.insertAdjacentElement("afterend", controls);
+        btn.addEventListener("click", () => appendBatch(batchSize));
+        updateButton();
     }
 }
 
