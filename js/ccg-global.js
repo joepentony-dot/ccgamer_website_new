@@ -2177,7 +2177,8 @@ function setupFooterSignatureRotator() {
         const logoPath = getLogoPath();
         document.querySelectorAll(".ccg-brand__logo").forEach(img => {
             img.src = logoPath;
-            img.loading = img.loading || "lazy";
+            img.loading = "eager";
+            img.fetchPriority = "high";
             if (!img.alt) img.alt = "Cheeky Commodore Gamer logo";
             if (!img.decoding) img.decoding = "async";
         });

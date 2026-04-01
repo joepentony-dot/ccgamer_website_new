@@ -649,6 +649,16 @@ body[data-collection="Retro Events"] .ccg-page--collection-single .ccg-collectio
     gap: 18px;
 }
 
+.ccg-list-load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.ccg-list-load-more__btn {
+    min-width: 220px;
+}
+
 .ccg-page--genre-single .ccg-game-card,
 .ccg-page--collection-single .ccg-game-card {
     position: relative;

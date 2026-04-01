@@ -28,12 +28,15 @@ let CCG_LIBRARY_INITIALIZED = false;
 let CCG_GAMES_LOAD_PROMISE = null;
 let CCG_YEAR_FILTER_ELEMENTS = null;
 let CCG_SEARCH_CACHE = new WeakMap();
+let CCG_GRID_BATCH_STATE = new Map();
 
 const ACCORDION_STATE_KEY = "ccgAccordionState";
 const SYSTEM_FILTER_STORAGE_KEY = "ccgGamesSystemFilter";
 const THUMB_BASE_PATH = "../resources/images/thumbnails/all/";
 const THUMB_PLACEHOLDER =
     "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+const CCG_GAMES_INITIAL_BATCH = 12;
+const CCG_GAMES_BATCH_SIZE = 18;
 const CCG_PREFERS_REDUCED_MOTION = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
 );
@@ -316,6 +319,7 @@ function buildAccordion(groups) {
 
     container.innerHTML = "";
     CCG_GAME_CACHE = new Map();
+    CCG_GRID_BATCH_STATE = new Map();
     let gameIndex = 0;
 
     const letters = sortLetters(Object.keys(groups));
@@ -364,6 +368,7 @@ function buildAccordion(groups) {
     });
 
     attachAccordionEvents();
+    attachLoadMoreEvents();
     initCardLazyRender();
     initThumbLazyLoad();
 }
@@ -374,37 +379,67 @@ function renderSystemBiasHint(system) {
     return `<span class="games-accordion__hint">${label}</span>`;
 }
 
-function renderGameShells(games, gameIndexRef) {
-    return games.map(game => {
+function registerBatchState(batchId, keys, initialCount = CCG_GAMES_INITIAL_BATCH) {
+    const total = keys.length;
+    const shown = Math.min(initialCount, total);
+    CCG_GRID_BATCH_STATE.set(batchId, {
+        keys,
+        total,
+        shown,
+    });
+    return keys.slice(0, shown);
+}
+
+function renderBatchedGridMarkup(batchId, games, gameIndexRef) {
+    const keys = games.map(game => {
         const key = getGameKey(game, gameIndexRef.value++);
         CCG_GAME_CACHE.set(key, game);
-        return renderGameCardShell(key);
-    }).join("");
+        return key;
+    });
+
+    const initialKeys = registerBatchState(batchId, keys);
+    const remaining = Math.max(0, keys.length - initialKeys.length);
+    const buttonMarkup = remaining > 0
+        ? `
+            <div class="games-grid__more-wrap">
+                <button class="ccg-btn ccg-btn--secondary games-grid__more-btn"
+                        type="button"
+                        data-games-load-more="${batchId}">
+                    Load More (${remaining} remaining)
+                </button>
+            </div>
+        `
+        : "";
+
+    return `
+        <div class="games-grid" data-games-batch-grid="${batchId}">
+            ${initialKeys.map(renderGameCardShell).join("")}
+        </div>
+        ${buttonMarkup}
+    `;
 }
 
 function renderAccordionContent({ gamesForLetter, systemBuckets, hasMixedSystems, gameIndexRef }) {
     if (CCG_ACTIVE_SYSTEM_FILTER === "all" && hasMixedSystems) {
         return `
-            ${renderSystemGroup("Commodore 64", systemBuckets.C64, gameIndexRef)}
-            ${renderSystemGroup("Amiga", systemBuckets.AMIGA, gameIndexRef)}
+            ${renderSystemGroup("Commodore 64", systemBuckets.C64, gameIndexRef, "c64")}
+            ${renderSystemGroup("Amiga", systemBuckets.AMIGA, gameIndexRef, "amiga")}
         `;
     }
 
+    const batchId = `letter:${gameIndexRef.value}`;
     return `
-        <div class="games-grid">
-            ${renderGameShells(gamesForLetter, gameIndexRef)}
-        </div>
+        ${renderBatchedGridMarkup(batchId, gamesForLetter, gameIndexRef)}
     `;
 }
 
-function renderSystemGroup(label, games, gameIndexRef) {
+function renderSystemGroup(label, games, gameIndexRef, suffix) {
     if (!games.length) return "";
+    const batchId = `${suffix}:${gameIndexRef.value}`;
     return `
         <div class="games-system-group">
             <div class="games-system-group__title">${label}</div>
-            <div class="games-grid">
-                ${renderGameShells(games, gameIndexRef)}
-            </div>
+            ${renderBatchedGridMarkup(batchId, games, gameIndexRef)}
         </div>
     `;
 }
@@ -420,6 +455,73 @@ function attachAccordionEvents() {
             toggleAccordion(header.dataset.letter);
         });
     });
+}
+
+function attachLoadMoreEvents() {
+    document.querySelectorAll("[data-games-load-more]").forEach(btn => {
+        if (btn.dataset.ccgBound === "true") return;
+        btn.dataset.ccgBound = "true";
+        btn.addEventListener("click", () => {
+            loadMoreCardsForBatch(btn);
+        });
+    });
+}
+
+function loadMoreCardsForBatch(buttonEl) {
+    const batchId = buttonEl?.dataset?.gamesLoadMore;
+    if (!batchId) return;
+
+    const state = CCG_GRID_BATCH_STATE.get(batchId);
+    if (!state) return;
+
+    const grid = document.querySelector(`[data-games-batch-grid="${batchId}"]`);
+    if (!grid) return;
+
+    const nextEnd = Math.min(state.shown + CCG_GAMES_BATCH_SIZE, state.total);
+    if (nextEnd <= state.shown) return;
+
+    const nextKeys = state.keys.slice(state.shown, nextEnd);
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = nextKeys.map(renderGameCardShell).join("");
+    const cards = Array.from(wrapper.children);
+
+    cards.forEach(card => {
+        grid.appendChild(card);
+    });
+
+    state.shown = nextEnd;
+    CCG_GRID_BATCH_STATE.set(batchId, state);
+    updateLoadMoreButtonState(buttonEl, state);
+    observeNewGameCards(cards);
+}
+
+function updateLoadMoreButtonState(buttonEl, state) {
+    if (!buttonEl || !state) return;
+    const remaining = Math.max(0, state.total - state.shown);
+    if (remaining === 0) {
+        const wrap = buttonEl.closest(".games-grid__more-wrap");
+        if (wrap) wrap.remove();
+        return;
+    }
+    buttonEl.textContent = `Load More (${remaining} remaining)`;
+}
+
+function observeNewGameCards(cards) {
+    if (!Array.isArray(cards) || !cards.length) return;
+    if (isMobileLikeViewport()) {
+        cards.forEach(renderGameCardNow);
+        return;
+    }
+
+    if (cardObserver && "IntersectionObserver" in window) {
+        cards.forEach(card => {
+            if (card.classList.contains("rendered")) return;
+            cardObserver.observe(card);
+        });
+        return;
+    }
+
+    cards.forEach(renderGameCardNow);
 }
 
 /**

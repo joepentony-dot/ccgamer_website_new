@@ -48,7 +48,7 @@ function ccgBuildRetroSpecialCard(item) {
     <article class="ccg-game-card genre-card ccg-game-card--retro-event">
       <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}">
         <div class="ccg-game-card__media ccg-game-card__thumb">
-          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(title)}" loading="lazy" />
+          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(title)}" loading="lazy" decoding="async" width="480" height="360" />
         </div>
         <div class="ccg-game-card__body">
           <h3 class="ccg-game-card__title">${ccgEscapeHtml(title)}</h3>
