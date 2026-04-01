@@ -14,6 +14,10 @@ const sitemapIndexPath = path.join(repoRoot, 'sitemap.xml');
 const DEFAULT_SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
+const RETRO_SPECIAL_LEGACY_SLUGS = new Set([
+  'c64-vs-zx-spectrum-the-truth-about-these-versions',
+]);
 const DEFAULT_STATIC_PATHS = [
   '',
   'about.html',
@@ -281,6 +285,21 @@ function resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings) {
   return seoMeta.canonical.replace(/[?#].*$/, '');
 }
 
+function normalizeCanonicalUrl(loc) {
+  return String(loc || '').replace(/[?#].*$/, '');
+}
+
+function getRetroSpecialSlugFromLoc(loc, siteUrl) {
+  const prefix = `${siteUrl}/retro-specials/`;
+  if (!loc.startsWith(prefix)) return null;
+  const rest = loc.slice(prefix.length);
+  if (!rest || rest === '/') return null;
+  if (!rest.endsWith('/')) return null;
+  if (rest.includes('.html')) return null;
+  const slug = rest.slice(0, -1);
+  return slug || null;
+}
+
 function buildUrlEntry(loc, lastmod) {
   return [
     '  <url>',
@@ -447,6 +466,8 @@ function generateGameSitemap(siteUrl, games) {
 function collectCuratedRetroEntries(siteUrl, warnings) {
   const roots = ['retro-events', 'retro-specials', 'amiga-demo-music'];
   const entries = [];
+  const retroSpecialSlugs = new Set();
+  const errors = [];
 
   for (const root of roots) {
     const rootPath = path.join(repoRoot, root);
@@ -462,8 +483,45 @@ function collectCuratedRetroEntries(siteUrl, warnings) {
       const loc = resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings);
       if (!loc) continue;
 
+      const normalizedLoc = normalizeCanonicalUrl(loc);
+
+      if (root === 'retro-specials') {
+        const slug = child.name;
+
+        if (slug.length > RETRO_SPECIAL_MAX_SLUG_LENGTH) {
+          errors.push(
+            `Retro special slug exceeds max length (${RETRO_SPECIAL_MAX_SLUG_LENGTH}): "${slug}".`
+          );
+          continue;
+        }
+
+        if (RETRO_SPECIAL_LEGACY_SLUGS.has(slug)) {
+          warnings.push(`Excluding legacy retro special slug from sitemap: "${slug}".`);
+          continue;
+        }
+
+        if (normalizedLoc.includes('.html')) {
+          errors.push(`Retro special canonical URL must not be .html: "${normalizedLoc}".`);
+          continue;
+        }
+
+        const expectedLoc = `${siteUrl}/retro-specials/${slug}/`;
+        if (normalizedLoc !== expectedLoc) {
+          errors.push(
+            `Retro special canonical mismatch for "${slug}". Expected "${expectedLoc}" but got "${normalizedLoc}".`
+          );
+          continue;
+        }
+
+        if (retroSpecialSlugs.has(slug)) {
+          errors.push(`Duplicate retro special slug detected: "${slug}".`);
+          continue;
+        }
+        retroSpecialSlugs.add(slug);
+      }
+
       entries.push({
-        loc,
+        loc: normalizedLoc,
         lastmod: getGitLastMod(filePath),
         filePath,
       });
@@ -484,11 +542,12 @@ function collectCuratedRetroEntries(siteUrl, warnings) {
     }
   }
 
-  return entries;
+  return { entries, errors };
 }
 
 function generateStaticSitemap(siteUrl, games) {
   const warnings = [];
+  const errors = [];
   const staticPaths = loadStaticPaths(warnings);
   const entriesByLoc = new Map();
 
@@ -504,9 +563,10 @@ function generateStaticSitemap(siteUrl, games) {
     if (!loc) {
       continue;
     }
+    const normalizedLoc = normalizeCanonicalUrl(loc);
 
     const nextEntry = {
-      loc,
+      loc: normalizedLoc,
       lastmod: getGitLastMod(resolved.filePath),
       filePath: resolved.filePath,
     };
@@ -522,8 +582,9 @@ function generateStaticSitemap(siteUrl, games) {
     }
   }
 
-  const curatedRetroEntries = collectCuratedRetroEntries(siteUrl, warnings);
-  for (const entry of curatedRetroEntries) {
+  const curatedRetroResult = collectCuratedRetroEntries(siteUrl, warnings);
+  errors.push(...curatedRetroResult.errors);
+  for (const entry of curatedRetroResult.entries) {
     if (!entriesByLoc.has(entry.loc) || entry.lastmod > entriesByLoc.get(entry.loc).lastmod) {
       entriesByLoc.set(entry.loc, entry);
     }
@@ -538,6 +599,26 @@ function generateStaticSitemap(siteUrl, games) {
 
   const entries = [...entriesByLoc.values()];
   entries.sort((a, b) => a.loc.localeCompare(b.loc));
+
+  const duplicateLocs = entries
+    .map((entry) => entry.loc)
+    .filter((loc, index, all) => all.indexOf(loc) !== index);
+  if (duplicateLocs.length > 0) {
+    errors.push(`Duplicate URLs detected in sitemap-pages.xml: ${[...new Set(duplicateLocs)].join(', ')}`);
+  }
+
+  const retroLegacyOrHtml = entries
+    .map((entry) => entry.loc)
+    .filter((loc) => {
+      const slug = getRetroSpecialSlugFromLoc(loc, siteUrl);
+      if (slug && RETRO_SPECIAL_LEGACY_SLUGS.has(slug)) return true;
+      return loc.startsWith(`${siteUrl}/retro-specials/`) && loc.includes('.html');
+    });
+  if (retroLegacyOrHtml.length > 0) {
+    errors.push(
+      `Invalid retro-special URLs detected in sitemap-pages.xml: ${[...new Set(retroLegacyOrHtml)].join(', ')}`
+    );
+  }
 
   const urlEntries = entries.map((entry) => buildUrlEntry(entry.loc, entry.lastmod));
   const xml = [
@@ -554,6 +635,7 @@ function generateStaticSitemap(siteUrl, games) {
   return {
     entries,
     warnings,
+    errors,
     latestLastmod: getLatestLastmod(entries),
   };
 }
@@ -601,6 +683,7 @@ function main() {
   console.log('[generate-sitemap] Static URLs written:', staticResult.entries.length);
 
   const warnings = [...gameResult.warnings, ...staticResult.warnings];
+  const errors = [...gameResult.errors, ...staticResult.errors];
   if (warnings.length > 0) {
     console.log('\nWarnings:');
     for (const warning of warnings) {
@@ -608,9 +691,9 @@ function main() {
     }
   }
 
-  if (gameResult.errors.length > 0) {
+  if (errors.length > 0) {
     console.error('\nErrors:');
-    for (const error of gameResult.errors) {
+    for (const error of errors) {
       console.error(`- ${error}`);
     }
     process.exitCode = 1;
