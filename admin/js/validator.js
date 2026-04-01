@@ -440,3 +440,43 @@ export function validateExportOutputs(outputs = {}) {
 
   return { valid: errors.length === 0, errors };
 }
+
+export function validateRetroSpecialRecord(record) {
+  const errors = [];
+  const slug = String(record?.slug || '').trim();
+  const canonicalUrl = `https://www.cheekycommodoregamer.co.uk/retro-specials/${slug}/`;
+  const seo = record?.seo && typeof record.seo === 'object' ? record.seo : {};
+
+  if (!String(record?.id || '').trim()) errors.push('Retro special id is required.');
+  if (!slug) errors.push('Retro special slug is required.');
+  if (slug.length > 55) errors.push('Retro special slug must be 55 characters or fewer.');
+  if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) errors.push('Retro special slug must use lowercase kebab-case.');
+  if (String(record?.type || '').trim() !== 'retro-specials') errors.push('Retro special type must be \"retro-specials\".');
+  if (!String(record?.title || '').trim()) errors.push('Retro special title is required.');
+  if (!String(record?.youtubeId || '').trim() || !/^[A-Za-z0-9_-]{6,}$/.test(String(record.youtubeId || '').trim())) {
+    errors.push('Retro special youtubeId is required and must be valid.');
+  }
+  if (!String(record?.thumbnail || '').trim()) errors.push('Retro special thumbnail is required.');
+  if (!String(record?.summary || '').trim()) errors.push('Retro special summary is required.');
+  if (!String(record?.description || '').trim()) errors.push('Retro special description is required.');
+  if (String(record?.collection || '').trim() !== 'retro-specials') errors.push('Retro special collection must be \"retro-specials\".');
+  if (seo.title && !String(seo.title).trim()) errors.push('Retro special SEO title cannot be empty.');
+  if (seo.description && !String(seo.description).trim()) errors.push('Retro special SEO description cannot be empty.');
+  if (!seo.title && !String(record?.title || '').trim()) errors.push('Retro special SEO title fallback cannot be derived.');
+  if (!seo.description && !String(record?.description || '').trim()) errors.push('Retro special SEO description fallback cannot be derived.');
+  if (slug && !canonicalUrl.endsWith(`/${slug}/`)) errors.push('Retro special canonical fallback mismatch.');
+
+  return { valid: errors.length === 0, errors };
+}
+
+export function validateRetroSpecialHtmlOutput({ html = '', slug = '' } = {}) {
+  const errors = [];
+  const canonicalUrl = `https://www.cheekycommodoregamer.co.uk/retro-specials/${slug}/`;
+
+  if (!html.includes('class=\"retro-video-page')) errors.push('Retro special HTML must include retro-video-page root class.');
+  if (!html.includes('/resources/css/retro-video-pages.css')) errors.push('Retro special HTML must include retro-video-pages.css.');
+  if (!html.includes(`<link rel=\"canonical\" href=\"${canonicalUrl}\"`)) errors.push('Retro special canonical must match final slug.');
+  if (html.includes('/games/game.html?id=')) errors.push('Retro special HTML must not use game landing CTA links.');
+
+  return { valid: errors.length === 0, errors };
+}

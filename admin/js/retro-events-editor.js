@@ -5,6 +5,8 @@ const DEFAULT_GITHUB_BRANCH = 'main';
 const BUILD_POLL_INTERVAL_MS = 5000;
 const BUILD_POLL_TIMEOUT_MS = 120000;
 const MAX_COMMIT_PAYLOAD_BYTES = 1024 * 1024;
+const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
+const RETRO_SPECIAL_FILLER_WORDS = new Set(['the', 'about', 'these', 'this', 'a', 'an']);
 
 const STORAGE_KEYS = {
   owner: 'ccg_retro_github_owner',
@@ -441,7 +443,23 @@ function onSaveEvent(event) {
     return;
   }
 
-  const slug = toSlug((fields.slug?.value || '').trim() || title);
+  const slug = toSectionSlug((fields.slug?.value || '').trim() || title, section);
+
+  if (!slug) {
+    setStatus('Slug could not be generated. Update title/slug and try again.', true);
+    return;
+  }
+
+  if (section === 'retro-specials' && slug.length > RETRO_SPECIAL_MAX_SLUG_LENGTH) {
+    setStatus(`Retro Specials slug must be ${RETRO_SPECIAL_MAX_SLUG_LENGTH} characters or fewer.`, true);
+    return;
+  }
+
+  const duplicateSlug = state.events.some((entry) => mapTypeToSection(entry?.type) === section && String(entry?.slug || '').trim() === slug);
+  if (duplicateSlug) {
+    setStatus(`Duplicate slug in ${section}: "${slug}". Please choose a unique slug.`, true);
+    return;
+  }
 
   const newItem = {
     id: slug,
@@ -503,6 +521,7 @@ function renderEvents() {
       <div>
         <div class="retro-item-title">${escapeHtml(item.title || '(Untitled)')}</div>
         <div class="retro-item-sub">${escapeHtml(mapTypeToSection(item.type))} · order ${Number(item.order) || 0}${item.membersOnly ? ' · members only' : ''}</div>
+        <div class="retro-item-sub">Output: /${escapeHtml(mapTypeToSection(item.type))}/${escapeHtml(item.slug || '')}/</div>
       </div>
     `;
     el.list.appendChild(li);
@@ -527,7 +546,28 @@ function toSlug(value) {
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-{2,}/g, '-')
     .replace(/^-+|-+$/g, '');
+}
+
+function toSectionSlug(value, section) {
+  const normalized = toSlug(value);
+  if (section !== 'retro-specials') return normalized;
+  if (normalized.length <= RETRO_SPECIAL_MAX_SLUG_LENGTH) return normalized;
+
+  const words = normalized.split('-').filter(Boolean);
+  const filtered = words.filter((word) => !RETRO_SPECIAL_FILLER_WORDS.has(word));
+  const source = filtered.length ? filtered : words;
+  const compact = [];
+
+  for (const word of source) {
+    const candidate = compact.length ? `${compact.join('-')}-${word}` : word;
+    if (candidate.length > RETRO_SPECIAL_MAX_SLUG_LENGTH) break;
+    compact.push(word);
+  }
+
+  if (compact.length) return compact.join('-');
+  return normalized.slice(0, RETRO_SPECIAL_MAX_SLUG_LENGTH).replace(/-+$/g, '');
 }
 
 function setStatus(message, isError) {

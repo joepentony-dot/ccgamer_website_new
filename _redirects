@@ -658,3 +658,6 @@
 /games/zone-trooper/ /games/game.html?slug=zone-trooper 200!
 /games/zork-trilogy/ /games/game.html?slug=zork-trilogy 200!
 /games/zorro/ /games/game.html?slug=zorro 200!
+
+/retro-specials/c64-vs-zx-spectrum-the-truth-about-these-versions/ /retro-specials/c64-vs-zx-spectrum/ 301!
+/retro-specials/c64-vs-zx-spectrum-the-truth-about-these-versions.html /retro-specials/c64-vs-zx-spectrum/ 301!
