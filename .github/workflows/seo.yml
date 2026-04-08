@@ -1,9 +1,8 @@
 name: SEO Automation
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -11,6 +10,7 @@ permissions:
 
 jobs:
   seo:
+    if: github.event_name != 'pull_request' || (!github.event.pull_request.draft && github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
 
     env:
@@ -19,6 +19,9 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || github.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -33,21 +36,19 @@ jobs:
       - name: Generate sitemap
         run: |
           echo "[seo] Generating sitemap artifacts..."
-          if [ -f scripts/generate-sitemap.js ]; then
-            node scripts/generate-sitemap.js
-          else
-            echo "[seo] No sitemap script found, skipping"
-          fi
+          node scripts/generate-sitemaps.js
 
       - name: Commit sitemap if changed
         run: |
+          set -euo pipefail
           echo "[seo] Checking sitemap diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml
-          git diff --cached --quiet || git commit -m "Auto-update sitemap"
+          git add sitemap.xml sitemap-games.xml sitemap-music.xml sitemap-retro.xml
+          git diff --cached --quiet || git commit -m "chore(seo): auto-update sitemaps"
 
-      - name: Push changes
+      - name: Push to PR branch
+        if: github.event_name == 'pull_request'
         run: |
-          echo "[seo] Pushing sitemap updates (if any)..."
-          git push
+          set -euo pipefail
+          git push origin "HEAD:${{ github.head_ref }}"
