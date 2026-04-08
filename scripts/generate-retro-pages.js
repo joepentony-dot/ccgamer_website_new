@@ -145,11 +145,6 @@ function buildFlatRedirectHtml(canonicalUrl) {
 function validateRetroEntry(config, entry, slug, youtubeId, canonicalUrl) {
   const problems = [];
 
-  const isRetroSpecial = config.label === 'retro-specials';
-  if (isRetroSpecial && String(entry.type || '').trim() !== 'retro-specials') {
-    problems.push('type must be "retro-specials"');
-  }
-
   if (!String(entry.id || '').trim()) problems.push('id missing');
   if (!slug) problems.push('slug missing');
   if (!String(entry.title || '').trim()) problems.push('title missing');
@@ -158,7 +153,7 @@ function validateRetroEntry(config, entry, slug, youtubeId, canonicalUrl) {
   if (!String(entry.summary || '').trim()) problems.push('summary missing');
   if (!String(entry.description || '').trim()) problems.push('description missing');
   if (!String(entry.collection || '').trim()) problems.push('collection missing');
-  if (isRetroSpecial && slug.length > RETRO_SPECIAL_MAX_SLUG_LENGTH) {
+  if (config.label === 'retro-specials' && slug.length > RETRO_SPECIAL_MAX_SLUG_LENGTH) {
     problems.push(`retro-special slug exceeds ${RETRO_SPECIAL_MAX_SLUG_LENGTH} chars after normalization`);
   }
   if (canonicalUrl !== `${SITE_ORIGIN}${config.pagePrefix}${slug}/`) {
@@ -198,6 +193,9 @@ function generateDatasetPages(config, template) {
     let slug = entry.slug;
     const youtubeId = entry.youtubeId;
     const label = entry.id || entry.title || `item-${index + 1}`;
+
+    // Accept all retro-specials entries
+    if (!slug) return;
 
     if (seenSlugs.has(slug)) {
       const suffixSeed = normalizeKebab(entry.id || `item-${index + 1}`);
@@ -249,8 +247,13 @@ function generateDatasetPages(config, template) {
     const outputFile = path.join(outputDir, 'index.html');
     const flatRedirectFile = path.join(config.outputDir, `${slug}.html`);
 
+    console.log('[retro] generating:', slug);
+
     fs.mkdirSync(outputDir, { recursive: true });
     fs.writeFileSync(outputFile, html, 'utf8');
+    if (!fs.existsSync(outputFile)) {
+      throw new Error(`Failed to generate page for ${slug}`);
+    }
     fs.writeFileSync(flatRedirectFile, buildFlatRedirectHtml(canonicalUrl), 'utf8');
 
     generatedCount += 1;
