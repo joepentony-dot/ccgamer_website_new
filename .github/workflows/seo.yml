@@ -1,16 +1,15 @@
 name: SEO Automation
 
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+  pull_request:
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   seo:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     env:
@@ -19,6 +18,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -30,24 +31,18 @@ jobs:
           echo "[seo] Installing dependencies (best effort)..."
           npm install || true
 
-      - name: Generate sitemap
+      - name: Run atomic generation pipeline
         run: |
-          echo "[seo] Generating sitemap artifacts..."
-          if [ -f scripts/generate-sitemap.js ]; then
-            node scripts/generate-sitemap.js
-          else
-            echo "[seo] No sitemap script found, skipping"
-          fi
+          node scripts/generate-collection-stubs.js
+          node scripts/generate-retro-pages.js
+          node tools/seo/generate-sitemap.js
 
-      - name: Commit sitemap if changed
+      - name: Commit generated outputs
         run: |
-          echo "[seo] Checking sitemap diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml
-          git diff --cached --quiet || git commit -m "Auto-update sitemap"
+          git add .
+          git diff --cached --quiet || git commit -m "Auto-generate outputs"
 
-      - name: Push changes
-        run: |
-          echo "[seo] Pushing sitemap updates (if any)..."
-          git push
+      - name: Push changes to PR branch
+        run: git push origin HEAD:${{ github.head_ref }}

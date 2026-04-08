@@ -1,14 +1,12 @@
 name: Generate collection stubs
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    branches: [main]
     paths:
       - 'data/retro-specials.json'
       - 'data/retro-events.json'
       - 'data/amiga-demo-music.json'
-  workflow_dispatch:
 
 permissions:
   contents: write
@@ -23,32 +21,25 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
 
-      - name: Generate collection stubs
-        run: node scripts/generate-collection-stubs.js
-
-      - name: Commit newly created stubs only
+      - name: Generate stubs + pages + sitemap (atomic)
         run: |
-          set -euo pipefail
-          echo "[stubs] Detecting newly created stub files..."
-          mapfile -t NEW_FILES < <(git ls-files --others --exclude-standard -- \
-            'retro-specials/*.html' 'retro-specials/*/index.html' \
-            'retro-events/*.html' 'retro-events/*/index.html' \
-            'amiga-demo-music/*.html' 'amiga-demo-music/*/index.html')
+          node scripts/generate-collection-stubs.js
+          node scripts/generate-retro-pages.js
+          node tools/seo/generate-sitemap.js
 
-          if [ "${#NEW_FILES[@]}" -eq 0 ]; then
-            echo "[stubs] No new files to commit."
-            exit 0
-          fi
-
-          printf '%s\n' "${NEW_FILES[@]}"
+      - name: Commit generated outputs
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "${NEW_FILES[@]}"
-          git commit -m "chore(stubs): add generated collection stub pages"
-          git push
+          git add .
+          git diff --cached --quiet || git commit -m "Auto-generate outputs"
+
+      - name: Push changes to PR branch
+        run: git push origin HEAD:${{ github.head_ref }}

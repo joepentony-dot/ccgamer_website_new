@@ -21,7 +21,11 @@ function runNodeScript(scriptName) {
 function refreshChangedGamesOnly() {
   runNodeScript('build-games.js');
   runNodeScript('generate-retro-pages.js');
-  runNodeScript('generate-sitemaps.js');
+  const sitemapScript = path.join(repoRoot, 'tools', 'seo', 'generate-sitemap.js');
+  const sitemapResult = spawnSync(process.execPath, [sitemapScript], { cwd: repoRoot, stdio: 'inherit' });
+  if (sitemapResult.status !== 0) {
+    fail(`tools/seo/generate-sitemap.js failed with status ${sitemapResult.status ?? 1}.`);
+  }
   runNodeScript('verify-seo.mjs');
   console.log('[rebuild-games] Incremental refresh completed for changed/outdated game outputs only.');
 }
