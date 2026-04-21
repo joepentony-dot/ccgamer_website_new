@@ -73,6 +73,11 @@ async function initGamesLibrary() {
         // Restore without scroll jump
         restoreAccordionState({ silent: true });
 
+        const staticFallback = document.getElementById("gamesStaticFallback");
+        if (staticFallback && CCG_ALL_GAMES.length > 120) {
+            staticFallback.hidden = true;
+        }
+
     } catch (err) {
         console.error("[CCG] Games index load failed:", err);
     }
@@ -101,6 +106,31 @@ function mapSearchEntryToGame(entry) {
         music: Array.isArray(item.music) ? item.music : (item.music ? [item.music] : []),
         publisher: Array.isArray(item.publisher) ? item.publisher : (item.publisher ? [item.publisher] : []),
     });
+}
+
+
+function extractFallbackGamesFromHtml() {
+    const fallbackList = document.querySelectorAll('#gamesStaticFallback a[href]');
+    if (!fallbackList.length) return [];
+
+    const mapped = [];
+    fallbackList.forEach((link) => {
+        const href = link.getAttribute('href') || '';
+        const parts = href.split('/').filter(Boolean);
+        const slug = parts[parts.length - 1] || '';
+        if (!slug) return;
+        mapped.push(normalizeGame({
+            id: slug,
+            slug,
+            title: link.textContent.trim(),
+            sorttitle: link.textContent.trim(),
+            system: link.dataset.system || 'C64',
+            year: link.dataset.year || '',
+            genres: [],
+            collections: []
+        }));
+    });
+    return mapped;
 }
 
 async function fetchGamesDataset(root) {
@@ -138,6 +168,12 @@ async function fetchGamesDataset(root) {
         } catch (error) {
             failures.push(`${candidate.label} ${error.message}`);
         }
+    }
+
+    const fallback = extractFallbackGamesFromHtml();
+    if (fallback.length) {
+        console.warn(`[CCG] Using static fallback games list (${fallback.length}) because dataset fetch failed. ${failures.join("; ")}`);
+        return fallback;
     }
 
     throw new Error(`Failed to load game datasets. ${failures.join("; ")}`);
