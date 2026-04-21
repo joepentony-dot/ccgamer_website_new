@@ -1379,6 +1379,7 @@ function renderGame(game) {
     renderCreditsPanel(game);
     renderVerdictPanel(game);
     moveSpotlightSection();
+    renderDiscoveryLinks(game);
 
     /* VIDEO */
     const vid = resolveVideoId(game);
@@ -1610,6 +1611,36 @@ function renderGame(game) {
                 title: game?.title || null
             }
         }));
+    }
+}
+
+function slugifyBrowseToken(value) {
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+}
+
+function renderDiscoveryLinks(game) {
+    const genreWrap = document.getElementById("gameGenreLinks");
+    const collectionWrap = document.getElementById("gameCollectionLinks");
+    if (!genreWrap && !collectionWrap) return;
+
+    const genres = resolveGenres(game).map(item => String(item || "").trim()).filter(Boolean);
+    const collections = resolveCollections(game).map(item => String(item || "").trim()).filter(Boolean);
+
+    if (genreWrap) {
+        genreWrap.innerHTML = genres.slice(0, 4).map((genre) => (
+            `<a class="ccg-btn ccg-btn--secondary" href="/games/genres/${slugifyBrowseToken(genre)}-games.html">${genre} games</a>`
+        )).join("");
+    }
+
+    if (collectionWrap) {
+        collectionWrap.innerHTML = collections.slice(0, 4).map((collection) => (
+            `<a class="ccg-btn ccg-btn--ghost" href="/games/collections/${slugifyBrowseToken(collection)}.html">${collection}</a>`
+        )).join("");
     }
 }
 

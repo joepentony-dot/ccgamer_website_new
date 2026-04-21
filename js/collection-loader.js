@@ -75,7 +75,7 @@ function ccgRunCollectionLoader() {
             }
 
             if (countEl) {
-                countEl.textContent = filtered.length || staticFallbackCount;
+                countEl.textContent = filtered.length || staticFallbackCount || "Available";
             }
 
             if (typeof window.ccgSchemaCollection === "function") {

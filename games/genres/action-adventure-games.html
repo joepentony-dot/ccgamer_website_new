@@ -211,7 +211,7 @@
 
                     <div class="ccg-genre-meta">
                         <div class="ccg-genre-meta__left">
-                            <span><span id="genreGamesCount">0</span> games loaded</span>
+                            <span><span id="genreGamesCount">Loading</span> games available</span>
                         </div>
                         <div class="ccg-genre-meta__right">
                             <span>C64 &amp; Amiga coverage</span>
@@ -228,11 +228,23 @@
                     quests, this genre defined many of the most memorable experiences
                     on the Commodore 64 and Amiga.
                 </p>
+                <p class="ccg-section__intro ccg-section__intro-links">
+                    Looking for more routes? Explore <a href="../index.html">all games</a>, jump back to <a href="index.html">genre browsing</a>, or visit <a href="../collections/index.html">curated collections</a>.
+                </p>
             </section>
 
             <!-- GRID -->
             <section class="ccg-genre-main">
-                <div id="genreGamesGrid" class="ccg-genre-grid"></div>
+                <div id="genreGamesGrid" class="ccg-genre-grid">
+                    <noscript>
+                        <p class="ccg-section__intro">JavaScript is off, so use these crawlable links to keep exploring this genre.</p>
+                        <ul class="ccg-list ccg-list--fallback-links">
+                            <li><a href="../index.html">Browse all games</a></li>
+                            <li><a href="index.html">Back to all genres</a></li>
+                            <li><a href="../collections/index.html">Browse curated collections</a></li>
+                        </ul>
+                    </noscript>
+                </div>
             </section>
 
             <!-- WAYFINDING -->

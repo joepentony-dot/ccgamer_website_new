@@ -31,6 +31,7 @@ function ccgRunGenreLoader() {
     const batchSize = 24;
 
     if (!genreName || !grid) return;
+    const staticFallbackCount = grid.querySelectorAll('.ccg-game-card--fallback, a[href^="../"]').length;
 
     const loadCards = async () => {
         try {
@@ -53,14 +54,14 @@ function ccgRunGenreLoader() {
                 console.warn("[CCG GENRE] 0 matches", { genreName, key });
             }
 
-            if (countEl) countEl.textContent = filtered.length;
+            if (countEl) countEl.textContent = filtered.length || staticFallbackCount || "Available";
             if (filtered.length) {
                 renderGenreCardsInBatches(grid, filtered, { initialBatch, batchSize });
-            } else {
+            } else if (!grid.children.length) {
                 grid.innerHTML = `
                     <div class="ccg-genre-empty">
-                        <h3>No games found yet</h3>
-                        <p>We&apos;re tuning this genre — check back soon or browse all titles.</p>
+                        <h3>Games are being indexed</h3>
+                        <p>Use the links below to keep exploring while this genre refreshes.</p>
                         <div class="ccg-genre-empty__actions">
                             <a class="ccg-btn ccg-btn--primary" href="../index.html">Browse All Games</a>
                             <a class="ccg-btn ccg-btn--secondary" href="../collections/index.html">Explore Collections</a>
