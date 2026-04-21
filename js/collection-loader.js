@@ -39,6 +39,7 @@ function ccgRunCollectionLoader() {
     const countEl = document.getElementById("genreGamesCount");
     const initialBatch = 16;
     const batchSize = 24;
+    const staticFallbackCount = grid.querySelectorAll('.ccg-game-card--fallback, a[href^="../"]').length;
 
     if (!collectionName || !grid) {
         console.warn("[CCG COLLECTION] Missing data-collection or grid");
@@ -74,7 +75,7 @@ function ccgRunCollectionLoader() {
             }
 
             if (countEl) {
-                countEl.textContent = filtered.length;
+                countEl.textContent = filtered.length || staticFallbackCount;
             }
 
             if (typeof window.ccgSchemaCollection === "function") {
@@ -97,17 +98,6 @@ function ccgRunCollectionLoader() {
 
             if (filtered.length) {
                 renderCollectionCardsInBatches(grid, filtered, { initialBatch, batchSize });
-            } else {
-                grid.innerHTML = `
-                    <div class="ccg-genre-empty">
-                        <h3>No collection entries yet</h3>
-                        <p>We&apos;re refreshing this set — check back soon or browse every game.</p>
-                        <div class="ccg-genre-empty__actions">
-                            <a class="ccg-btn ccg-btn--primary" href="../index.html">Browse All Games</a>
-                            <a class="ccg-btn ccg-btn--secondary" href="../genres/index.html">Browse by Genre</a>
-                        </div>
-                    </div>
-                `;
             }
         } catch (err) {
             console.error("[CCG COLLECTION] Loader failed:", err);
