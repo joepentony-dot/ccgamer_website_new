@@ -8,9 +8,9 @@
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/amiga-demo-music/sounds-of-silents/" />
   <meta http-equiv="refresh" content="0; url=/amiga-demo-music/sounds-of-silents/" />
   <script>
-    (function () {
-      var suffix = window.location.search + window.location.hash;
-      window.location.replace("/amiga-demo-music/sounds-of-silents/" + suffix);
+    (function(){
+      var target = "/amiga-demo-music/sounds-of-silents/" + (window.location.search || '') + (window.location.hash || '');
+      window.location.replace(target);
     })();
   </script>
 </head>

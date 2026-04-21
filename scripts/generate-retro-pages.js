@@ -17,21 +17,24 @@ const DATASETS = [
     outputDir: path.join(repoRoot, 'retro-events'),
     pagePrefix: '/retro-events/',
     label: 'retro-events',
-    collectionName: 'Retro Events'
+    collectionName: 'Retro Events',
+    collectionUrl: '/games/collections/retro-events.html'
   },
   {
     dataPath: path.join(repoRoot, 'data', 'retro-specials.json'),
     outputDir: path.join(repoRoot, 'retro-specials'),
     pagePrefix: '/retro-specials/',
     label: 'retro-specials',
-    collectionName: 'Retro Specials'
+    collectionName: 'Retro Specials',
+    collectionUrl: '/games/collections/retro-specials.html'
   },
   {
     dataPath: path.join(repoRoot, 'data', 'amiga-demo-music.json'),
     outputDir: path.join(repoRoot, 'amiga-demo-music'),
     pagePrefix: '/amiga-demo-music/',
     label: 'amiga-demo-music',
-    collectionName: 'Amiga Demo Music'
+    collectionName: 'Amiga Demo Music',
+    collectionUrl: '/games/collections/amiga-demo-music.html'
   }
 ];
 
@@ -137,9 +140,17 @@ function buildRelatedItems(items, currentSlug, pagePrefix) {
   return `<section class="retro-video-page__related">\n    <h2 class="game-subtitle">More from this collection</h2>\n    <ul class="retro-video-page__related-grid">\n    ${cards}\n    </ul>\n  </section>`;
 }
 
-function buildFlatRedirectHtml(canonicalUrl) {
+function toIsoDate(value) {
+  const date = value ? new Date(value) : null;
+  if (!date || Number.isNaN(date.getTime())) return new Date().toISOString();
+  return date.toISOString();
+}
+
+function buildFlatRedirectHtml({ canonicalUrl, seoTitle, seoDescription }) {
   const pathOnly = new URL(canonicalUrl).pathname;
-  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>Redirecting…</title>\n  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />\n  <meta http-equiv="refresh" content="0; url=${escapeHtml(pathOnly)}" />\n  <script>\n    (function(){\n      var suffix = window.location.search || window.location.hash || '';\n      window.location.replace(${JSON.stringify(pathOnly)} + suffix);\n    })();\n  </script>\n</head>\n<body></body>\n</html>\n`;
+  const safeDescription = String(seoDescription || 'Redirecting to the canonical Retro Special page on Cheeky Commodore Gamer.').trim();
+  const safeTitle = String(seoTitle || 'Redirecting…').trim();
+  return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${escapeHtml(safeTitle)}</title>\n  <meta name="description" content="${escapeHtml(safeDescription)}" />\n  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />\n  <meta http-equiv="refresh" content="0; url=${escapeHtml(pathOnly)}" />\n  <script>\n    (function(){\n      var target = ${JSON.stringify(pathOnly)} + (window.location.search || '') + (window.location.hash || '');\n      window.location.replace(target);\n    })();\n  </script>\n</head>\n<body></body>\n</html>\n`;
 }
 
 function validateRetroEntry(config, entry, slug, youtubeId, canonicalUrl) {
@@ -227,11 +238,12 @@ function generateDatasetPages(config, template) {
       CANONICAL_URL: canonicalUrl,
       THUMBNAIL_URL: escapeHtml(entry.thumbnail),
       COLLECTION_LABEL: escapeHtml(config.collectionName),
-      COLLECTION_URL: '/games/collections/retro-specials.html',
+      COLLECTION_URL: escapeHtml(config.collectionUrl),
       TITLE: escapeHtml(entry.title || ''),
       SUMMARY: escapeHtml(summary),
       YOUTUBE_ID: escapeHtml(youtubeId),
       DESCRIPTION: escapeHtml(description),
+      UPLOAD_DATE: escapeHtml(toIsoDate(entry.created_at)),
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
       RELATED_ITEMS: relatedItemsHtml
     });
@@ -254,7 +266,7 @@ function generateDatasetPages(config, template) {
     if (!fs.existsSync(outputFile)) {
       throw new Error(`Failed to generate page for ${slug}`);
     }
-    fs.writeFileSync(flatRedirectFile, buildFlatRedirectHtml(canonicalUrl), 'utf8');
+    fs.writeFileSync(flatRedirectFile, buildFlatRedirectHtml({ canonicalUrl, seoTitle, seoDescription }), 'utf8');
 
     generatedCount += 1;
     console.log(`[retro] Generated ${config.label}:${label} -> ${outputFile} (new=${!createdAt || isWithinLast7Days(createdAt)})`);
