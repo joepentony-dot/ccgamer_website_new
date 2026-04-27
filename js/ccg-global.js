@@ -1181,6 +1181,8 @@ if (IS_ADMIN_PATH) {
         bubbleTimer: null,
         lastBubble: null,
         lastTapAt: 0,
+        lastTouchTapAt: 0,
+        triggerLockUntil: 0,
     };
 
     function resetLogoClickState() {
@@ -1303,6 +1305,7 @@ if (IS_ADMIN_PATH) {
                 if (!e?.target?.closest || !e.target.closest(".ccg-brand__logo")) return;
                 if (!e || e.currentTarget !== brandTarget) return;
                 if (!brandTarget.contains(e.target)) return;
+                if (e.isPrimary === false) return;
                 if (
                     e.target &&
                     e.target.closest &&
@@ -1311,10 +1314,26 @@ if (IS_ADMIN_PATH) {
                     return;
                 }
 
-                const isTouchPointer = e.pointerType === "touch" || e.pointerType === "pen";
+                const pointerType = (e.pointerType || "mouse").toLowerCase();
+                const isTouchPointer = pointerType === "touch" || pointerType === "pen";
                 const now = Date.now();
-                if (isTouchPointer && logoClickState.lastTapAt && (now - logoClickState.lastTapAt) < 300) {
+
+                // Ignore synthetic mouse/pointer events that can follow touch on some mobile browsers.
+                if (!isTouchPointer && logoClickState.lastTouchTapAt && (now - logoClickState.lastTouchTapAt) < 700) {
                     return;
+                }
+
+                // Ignore duplicate pointerdown events for the same physical tap.
+                if (logoClickState.lastTapAt && (now - logoClickState.lastTapAt) < 120) {
+                    return;
+                }
+
+                if (logoClickState.triggerLockUntil && now < logoClickState.triggerLockUntil) {
+                    return;
+                }
+
+                if (isTouchPointer) {
+                    logoClickState.lastTouchTapAt = now;
                 }
                 logoClickState.lastTapAt = now;
 
@@ -1338,13 +1357,12 @@ if (IS_ADMIN_PATH) {
                 }
 
                 if (logoClickState.count >= 3) {
+                    logoClickState.triggerLockUntil = now + 650;
                     if (logoClickState.lastBubble) {
                         logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
                     }
                     requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            openSecretModal(e);
-                        });
+                        openSecretModal(e);
                     });
                     resetLogoClickState();
                 }

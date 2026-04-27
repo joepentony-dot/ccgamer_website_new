@@ -482,9 +482,10 @@ position: fixed;
 inset: 0;
 z-index: 10065;
 display: none;
-align-items: flex-start;
+align-items: center;
 justify-content: center;
-padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+min-height: 100dvh;
+padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
 padding-right: 12px;
 padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
 padding-left: 12px;
@@ -500,11 +501,15 @@ display: flex;
 .ccg-secret-modal__content {
 width: min(100%, 640px);
 margin: 0 auto;
+max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
+overflow-y: auto;
+overscroll-behavior: contain;
+-webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 900px) {
 .ccg-secret-modal {
-align-items: flex-start;
+align-items: center;
 }
 }
 
@@ -514,9 +519,7 @@ Ensures Easter Egg menu is scrollable on small screens
 ============================================================ */
 
 .ccg-secret-modal__content {
-max-height: calc(100dvh - 96px);
-overflow-y: auto;
--webkit-overflow-scrolling: touch;
+max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 }
 
 /* Lock background scroll while modal is open */
