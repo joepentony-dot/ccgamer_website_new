@@ -479,6 +479,8 @@ SECRET MODAL OVERLAY BASE — SAFE AREA + STACKING HARDENING
 
 .ccg-secret-modal {
 position: fixed;
+overflow-y: auto;
+-webkit-overflow-scrolling: touch;
 inset: 0;
 z-index: 10065;
 display: none;
@@ -525,7 +527,7 @@ max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bo
 /* Lock background scroll while modal is open */
 body.ccg-secret-modal-open {
 overflow: hidden;
-touch-action: none;
+touch-action: auto;
 }
 
 @media (hover: hover) and (pointer: fine) {
