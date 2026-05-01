@@ -3014,8 +3014,10 @@ body.ccg-is-mobile .home-hero__bg {
 
 .ccg-secret-modal__content {
     width: min(680px, 92vw);
-    max-height: 88vh;
-    overflow: visible;
+    max-height: min(88dvh, 88vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     padding: 28px;
     position: relative;
     z-index: 1;
@@ -3129,6 +3131,7 @@ body.ccg-is-mobile .home-hero__bg {
 
 .ccg-secret-modal-open {
     overflow: hidden;
+    touch-action: auto;
 }
 
 @media (max-width: 720px) {
