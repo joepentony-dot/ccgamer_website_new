@@ -479,18 +479,19 @@ SECRET MODAL OVERLAY BASE — SAFE AREA + STACKING HARDENING
 
 .ccg-secret-modal {
 position: fixed;
-overflow-y: auto;
--webkit-overflow-scrolling: touch;
 inset: 0;
-z-index: 10065;
+z-index: 100000;
 display: none;
 align-items: center;
 justify-content: center;
-min-height: 100dvh;
-padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
-padding-right: 12px;
-padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
-padding-left: 12px;
+width: 100vw;
+height: 100vh;
+height: 100dvh;
+overflow: hidden;
+padding-top: clamp(12px, 2.5vh, 28px);
+padding-right: clamp(12px, 3vw, 28px);
+padding-bottom: calc(clamp(12px, 2.5vh, 28px) + env(safe-area-inset-bottom, 0px));
+padding-left: clamp(12px, 3vw, 28px);
 background: rgba(2, 6, 14, 0.72);
 backdrop-filter: blur(3px);
 -webkit-backdrop-filter: blur(3px);
@@ -501,40 +502,26 @@ display: flex;
 }
 
 .ccg-secret-modal__content {
+position: relative;
 width: min(100%, 640px);
-margin: 0 auto;
-max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
+max-height: calc(100vh - clamp(24px, 5vh, 56px) - env(safe-area-inset-bottom, 0px));
+max-height: calc(100dvh - clamp(24px, 5vh, 56px) - env(safe-area-inset-bottom, 0px));
 overflow-y: auto;
+overflow-x: hidden;
 overscroll-behavior: contain;
 -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 900px) {
 .ccg-secret-modal {
-align-items: center;
+padding-top: calc(clamp(10px, 2vh, 20px) + env(safe-area-inset-top, 0px));
 }
-}
-
-/* ============================================================
-SECRET MODAL — MOBILE SCROLL FIX
-Ensures Easter Egg menu is scrollable on small screens
-============================================================ */
-
-.ccg-secret-modal__content {
-max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 }
 
 /* Lock background scroll while modal is open */
+html.ccg-secret-modal-open,
 body.ccg-secret-modal-open {
 overflow: hidden;
-touch-action: auto;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    body.ccg-secret-modal-open {
-        overflow-y: auto;
-        touch-action: auto;
-    }
 }
 
 /* Subtle visual cue indicating scrollable content */
