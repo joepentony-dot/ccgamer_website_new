@@ -1144,26 +1144,52 @@ if (IS_ADMIN_PATH) {
         if (openEvent?.preventDefault) openEvent.preventDefault();
         if (openEvent?.stopPropagation) openEvent.stopPropagation();
 
+        const docEl = document.documentElement;
+        const body = document.body;
+        const scrollTop = window.scrollY || window.pageYOffset || 0;
+
         delete modal.dataset.ccgSecretModalLocked;
 
-        requestAnimationFrame(() => {
-            if (!modal) return;
-            modal.classList.add("is-open");
-            modal.setAttribute("aria-hidden", "false");
-            document.body.classList.add("ccg-secret-modal-open");
+        body.dataset.ccgSecretModalScrollTop = String(scrollTop);
+        body.style.top = `-${scrollTop}px`;
+        body.style.position = "fixed";
+        body.style.width = "100%";
+        docEl.classList.add("ccg-secret-modal-open");
+        body.classList.add("ccg-secret-modal-open");
 
-            requestAnimationFrame(() => {
-                modal.dataset.ccgSecretModalLocked = "true";
-            });
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+
+        const content = modal.querySelector(".ccg-secret-modal__content");
+        modal.scrollTop = 0;
+        if (content) {
+            content.scrollTop = 0;
+        }
+
+        requestAnimationFrame(() => {
+            modal.dataset.ccgSecretModalLocked = "true";
         });
     }
 
     function closeSecretModal() {
         if (!secretState.modal) return;
+
+        const docEl = document.documentElement;
+        const body = document.body;
+        const previousScrollTop = Number.parseInt(body.dataset.ccgSecretModalScrollTop || "0", 10) || 0;
+
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
         delete secretState.modal.dataset.ccgSecretModalLocked;
-        document.body.classList.remove("ccg-secret-modal-open");
+
+        body.classList.remove("ccg-secret-modal-open");
+        docEl.classList.remove("ccg-secret-modal-open");
+        body.style.position = "";
+        body.style.top = "";
+        body.style.width = "";
+        delete body.dataset.ccgSecretModalScrollTop;
+
+        window.scrollTo(0, previousScrollTop);
         resetSecretInputState();
     }
 
