@@ -527,6 +527,8 @@ if (IS_ADMIN_PATH) {
         inputBuffer: "",
         konamiIndex: 0,
         activeEgg: null,
+        isModalOpen: false,
+        modalOpenedAt: 0,
     };
 
     const konamiSequence = [
@@ -1121,8 +1123,10 @@ if (IS_ADMIN_PATH) {
         document.body.appendChild(modal);
         secretState.modal = modal;
         modal.addEventListener("pointerdown", event => {
+            if (!secretState.isModalOpen) return;
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
+            if ((Date.now() - secretState.modalOpenedAt) < 360) return;
             closeSecretModal();
         }, { passive: false });
 
@@ -1139,10 +1143,11 @@ if (IS_ADMIN_PATH) {
 
     function openSecretModal(openEvent) {
         const modal = buildSecretModal();
-        if (modal.classList.contains("is-open")) return;
+        if (secretState.isModalOpen || modal.classList.contains("is-open")) return;
 
         if (openEvent?.preventDefault) openEvent.preventDefault();
         if (openEvent?.stopPropagation) openEvent.stopPropagation();
+        if (openEvent?.stopImmediatePropagation) openEvent.stopImmediatePropagation();
 
         const docEl = document.documentElement;
         const body = document.body;
@@ -1159,6 +1164,8 @@ if (IS_ADMIN_PATH) {
 
         modal.classList.add("is-open");
         modal.setAttribute("aria-hidden", "false");
+        secretState.isModalOpen = true;
+        secretState.modalOpenedAt = Date.now();
 
         const content = modal.querySelector(".ccg-secret-modal__content");
         modal.scrollTop = 0;
@@ -1172,7 +1179,7 @@ if (IS_ADMIN_PATH) {
     }
 
     function closeSecretModal() {
-        if (!secretState.modal) return;
+        if (!secretState.modal || !secretState.isModalOpen) return;
 
         const docEl = document.documentElement;
         const body = document.body;
@@ -1181,6 +1188,8 @@ if (IS_ADMIN_PATH) {
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
         delete secretState.modal.dataset.ccgSecretModalLocked;
+        secretState.isModalOpen = false;
+        secretState.modalOpenedAt = 0;
 
         body.classList.remove("ccg-secret-modal-open");
         docEl.classList.remove("ccg-secret-modal-open");
