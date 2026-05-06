@@ -3005,7 +3005,9 @@ body.ccg-is-mobile .home-hero__bg {
     justify-content: center;
     background: rgba(3, 8, 14, 0.8);
     z-index: 100000;
-    padding: 24px;
+    padding: clamp(12px, 2.5vh, 24px);
+    padding-top: calc(clamp(12px, 2.5vh, 24px) + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(clamp(12px, 2.5vh, 24px) + env(safe-area-inset-bottom, 0px));
 }
 
 .ccg-secret-modal.is-open {
@@ -3014,7 +3016,7 @@ body.ccg-is-mobile .home-hero__bg {
 
 .ccg-secret-modal__content {
     width: min(680px, 92vw);
-    max-height: min(88dvh, 88vh);
+    max-height: calc(min(88dvh, 88vh) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;

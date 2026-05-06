@@ -1122,11 +1122,18 @@ if (IS_ADMIN_PATH) {
 
         document.body.appendChild(modal);
         secretState.modal = modal;
+        const content = modal.querySelector(".ccg-secret-modal__content");
+        if (content) {
+            content.addEventListener("pointerdown", event => {
+                event.stopPropagation();
+            }, { passive: true });
+        }
+
         modal.addEventListener("pointerdown", event => {
             if (!secretState.isModalOpen) return;
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
-            if ((Date.now() - secretState.modalOpenedAt) < 360) return;
+            if ((Date.now() - secretState.modalOpenedAt) < 900) return;
             closeSecretModal();
         }, { passive: false });
 
