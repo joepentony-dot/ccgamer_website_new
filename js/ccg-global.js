@@ -529,6 +529,10 @@ if (IS_ADMIN_PATH) {
         activeEgg: null,
         isModalOpen: false,
         modalOpenedAt: 0,
+        ignoreCloseUntil: 0,
+        lastOpenEventType: "",
+        lastOpenTarget: null,
+        lastLogoTriggerAt: 0,
     };
 
     const konamiSequence = [
@@ -1133,8 +1137,7 @@ if (IS_ADMIN_PATH) {
             if (!secretState.isModalOpen) return;
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
-            if ((Date.now() - secretState.modalOpenedAt) < 900) return;
-            closeSecretModal();
+            closeSecretModal({ reason: "backdrop" });
         }, { passive: false });
 
         modal.querySelectorAll("[data-ccg-secret-code]").forEach(item => {
@@ -1143,7 +1146,9 @@ if (IS_ADMIN_PATH) {
             });
         });
 
-        modal.querySelector("[data-ccg-secret-close]").addEventListener("click", closeSecretModal);
+        modal.querySelector("[data-ccg-secret-close]").addEventListener("click", () => {
+            closeSecretModal({ reason: "close-button" });
+        });
 
         return modal;
     }
@@ -1152,6 +1157,7 @@ if (IS_ADMIN_PATH) {
         const modal = buildSecretModal();
         if (secretState.isModalOpen || modal.classList.contains("is-open")) return;
 
+        const now = Date.now();
         if (openEvent?.preventDefault) openEvent.preventDefault();
         if (openEvent?.stopPropagation) openEvent.stopPropagation();
         if (openEvent?.stopImmediatePropagation) openEvent.stopImmediatePropagation();
@@ -1172,7 +1178,10 @@ if (IS_ADMIN_PATH) {
         modal.classList.add("is-open");
         modal.setAttribute("aria-hidden", "false");
         secretState.isModalOpen = true;
-        secretState.modalOpenedAt = Date.now();
+        secretState.modalOpenedAt = now;
+        secretState.ignoreCloseUntil = now + 1200;
+        secretState.lastOpenEventType = openEvent?.type || "";
+        secretState.lastOpenTarget = openEvent?.target || null;
 
         const content = modal.querySelector(".ccg-secret-modal__content");
         modal.scrollTop = 0;
@@ -1185,8 +1194,16 @@ if (IS_ADMIN_PATH) {
         });
     }
 
-    function closeSecretModal() {
+    function closeSecretModal(options = {}) {
         if (!secretState.modal || !secretState.isModalOpen) return;
+        const { restoreScroll = true, reason = "unknown", event = null } = options || {};
+        const isGuardedReason = reason === "backdrop" || reason === "document" || reason === "synthetic-click" || reason === "logo";
+        if (isGuardedReason && Date.now() < secretState.ignoreCloseUntil) {
+            return;
+        }
+        if (event?.target && secretState.lastOpenTarget && event.target === secretState.lastOpenTarget && Date.now() < secretState.ignoreCloseUntil) {
+            return;
+        }
 
         const docEl = document.documentElement;
         const body = document.body;
@@ -1197,6 +1214,10 @@ if (IS_ADMIN_PATH) {
         delete secretState.modal.dataset.ccgSecretModalLocked;
         secretState.isModalOpen = false;
         secretState.modalOpenedAt = 0;
+        secretState.ignoreCloseUntil = 0;
+        secretState.lastOpenEventType = "";
+        secretState.lastOpenTarget = null;
+        secretState.lastLogoTriggerAt = 0;
 
         body.classList.remove("ccg-secret-modal-open");
         docEl.classList.remove("ccg-secret-modal-open");
@@ -1205,7 +1226,9 @@ if (IS_ADMIN_PATH) {
         body.style.width = "";
         delete body.dataset.ccgSecretModalScrollTop;
 
-        window.scrollTo(0, previousScrollTop);
+        if (restoreScroll) {
+            window.scrollTo(0, previousScrollTop);
+        }
         resetSecretInputState();
     }
 
@@ -1399,7 +1422,8 @@ if (IS_ADMIN_PATH) {
                 }
 
                 if (logoClickState.count >= 3) {
-                    logoClickState.triggerLockUntil = now + 650;
+                    logoClickState.triggerLockUntil = now + 1200;
+                    secretState.lastLogoTriggerAt = now;
                     if (logoClickState.lastBubble) {
                         logoClickState.lastBubble.classList.remove("is-visible", "ccg-logo-bubble--swap");
                     }
