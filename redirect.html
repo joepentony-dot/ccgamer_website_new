@@ -19,11 +19,6 @@
         // construct the new structured path
         const target = "/games/" + encodeURIComponent(slug) + "/";
 
-        // inject canonical tag for search engines
-        const link = document.createElement("link");
-        link.rel = "canonical";
-        link.href = "https://www.cheekycommodoregamer.co.uk" + target;
-        document.head.appendChild(link);
 
         // perform client redirect
         window.location.replace(target);
