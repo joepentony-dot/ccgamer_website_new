@@ -31,57 +31,13 @@
     <meta name="description"
           id="game-meta-description"
           content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
-    <meta name="robots" content="index,follow">
-    <link rel="canonical" id="game-canonical" href="/games/game.html">
-    <script>
-        (function () {
-            try {
-                if (typeof URLSearchParams === 'undefined') return;
-
-                var canonical = document.getElementById('game-canonical');
-                if (!canonical) return;
-
-                var ogUrl = document.getElementById('game-og-url');
-                var pathname = String(window.location.pathname || '');
-                var params = new URLSearchParams(window.location.search || '');
-                var slug = '';
-
-                var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
-                if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
-                    slug = String(pathMatch[1]).trim().toLowerCase();
-                }
-
-                if (!slug) {
-                    var slugParam = params.get('slug');
-                    if (slugParam) {
-                        slug = String(slugParam).trim().toLowerCase();
-                    }
-                }
-
-                if (!slug) {
-                    var id = params.get('id');
-                    if (id) {
-                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
-                    }
-                }
-
-                if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
-
-                var path = '/games/' + slug + '/';
-                canonical.setAttribute('href', path);
-
-                if (ogUrl) {
-                    var origin = window.location.origin || '';
-                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
-                }
-            } catch (e) {}
-        })();
-    </script>
+    <meta name="robots" content="noindex,follow">
+    <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/">
     <meta property="og:type" content="website">
     <meta property="og:title" id="game-og-title" content="Game | Cheeky Commodore Gamer">
     <meta property="og:description" id="game-og-description" content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
     <meta property="og:image" id="game-og-image" content="">
-    <meta property="og:url" id="game-og-url" content="">
+    <meta property="og:url" id="game-og-url" content="https://www.cheekycommodoregamer.co.uk/games/">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" id="game-twitter-title" content="Game | Cheeky Commodore Gamer">
     <meta name="twitter:description" id="game-twitter-description" content="Full details for this Commodore 64 or Amiga game — including video, manual, screenshots and metadata.">
