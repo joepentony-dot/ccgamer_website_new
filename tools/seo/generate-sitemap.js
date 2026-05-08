@@ -274,19 +274,59 @@ function resolveCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings) {
   }
 
   if (!seoMeta.canonical) {
-    return fallbackLoc;
+    return normalizeSitemapCanonicalUrl(fallbackLoc, siteUrl);
   }
 
   if (!seoMeta.canonical.startsWith(siteUrl)) {
     warnings.push(`Canonical for ${toRepoRelative(filePath)} points outside ${siteUrl}; using fallback sitemap URL.`);
-    return fallbackLoc;
+    return normalizeSitemapCanonicalUrl(fallbackLoc, siteUrl);
   }
 
-  return seoMeta.canonical.replace(/[?#].*$/, '');
+  return normalizeSitemapCanonicalUrl(seoMeta.canonical, siteUrl);
 }
 
 function normalizeCanonicalUrl(loc) {
   return String(loc || '').replace(/[?#].*$/, '');
+}
+
+function resolveGameCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings) {
+  const seoMeta = readHtmlSeoMeta(filePath);
+  if (/noindex/i.test(seoMeta.robots)) {
+    warnings.push(`Excluding noindex game page from sitemap: ${toRepoRelative(filePath)}.`);
+    return null;
+  }
+
+  if (!seoMeta.canonical) {
+    return normalizeSitemapCanonicalUrl(fallbackLoc, siteUrl);
+  }
+
+  if (!seoMeta.canonical.startsWith(siteUrl)) {
+    warnings.push(`Canonical for ${toRepoRelative(filePath)} points outside ${siteUrl}; using fallback game sitemap URL.`);
+    return normalizeSitemapCanonicalUrl(fallbackLoc, siteUrl);
+  }
+
+  const normalized = normalizeSitemapCanonicalUrl(seoMeta.canonical, siteUrl);
+  if (!normalized.startsWith(`${siteUrl}/games/`) || !normalized.endsWith('/')) {
+    warnings.push(`Canonical for ${toRepoRelative(filePath)} is not a clean game URL; using fallback game sitemap URL.`);
+    return normalizeSitemapCanonicalUrl(fallbackLoc, siteUrl);
+  }
+
+  return normalized;
+}
+
+function normalizeSitemapCanonicalUrl(loc, siteUrl) {
+  const normalized = normalizeCanonicalUrl(loc);
+  if (!normalized) return '';
+
+  if (normalized === `${siteUrl}/index.html` || normalized === `${siteUrl}/home.html`) {
+    return `${siteUrl}/`;
+  }
+
+  if (normalized.startsWith(`${siteUrl}/`) && normalized.endsWith('/index.html')) {
+    return normalized.slice(0, -'index.html'.length);
+  }
+
+  return normalized;
 }
 
 function getRetroSpecialSlugFromLoc(loc, siteUrl) {
@@ -428,7 +468,8 @@ function generateGameSitemap(siteUrl, games) {
       continue;
     }
 
-    const loc = resolveCanonicalLoc(filePath, `${siteUrl}/games/${slug}/`, siteUrl, warnings);
+    const fallbackLoc = `${siteUrl}/games/${slug}/`;
+    const loc = resolveGameCanonicalLoc(filePath, fallbackLoc, siteUrl, warnings);
     if (!loc) {
       continue;
     }
@@ -571,14 +612,14 @@ function generateStaticSitemap(siteUrl, games) {
       filePath: resolved.filePath,
     };
 
-    if (!entriesByLoc.has(loc)) {
-      entriesByLoc.set(loc, nextEntry);
+    if (!entriesByLoc.has(normalizedLoc)) {
+      entriesByLoc.set(normalizedLoc, nextEntry);
       continue;
     }
 
-    const existing = entriesByLoc.get(loc);
+    const existing = entriesByLoc.get(normalizedLoc);
     if (nextEntry.lastmod > existing.lastmod) {
-      entriesByLoc.set(loc, nextEntry);
+      entriesByLoc.set(normalizedLoc, nextEntry);
     }
   }
 
