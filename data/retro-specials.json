@@ -260,5 +260,23 @@
     },
     "created_at": "2026-05-12T20:09:37.619Z",
     "order": 13
+  },
+  {
+    "id": "zzap64-gold-medals-sizzlers-1985",
+    "slug": "zzap64-gold-medals-sizzlers-1985",
+    "type": "retro-specials",
+    "title": "Every Zzap!64 Gold Medal & Sizzler of 1985 | The Best Commodore 64 Games?",
+    "youtubeId": "Qmsxol9R5j0",
+    "thumbnail": "https://img.youtube.com/vi/Qmsxol9R5j0/hqdefault.jpg",
+    "membersOnly": false,
+    "summary": "A month-by-month look at every Zzap!64 Gold Medal and Sizzler from 1985, revisiting the Commodore 64 games that Zzap believed deserved attention.",
+    "description": "This Retro Special goes back through Zzap!64’s first year and revisits every Commodore 64 game that received either a Gold Medal or Sizzler award between May and December 1985. From Elite, Dropzone and Paradroid to Way of the Exploding Fist, Frankie Goes to Hollywood, Little Computer People and Electrosound, it looks at which awards still feel justified today and which choices feel very tied to 1985.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Every Zzap!64 Gold Medal & Sizzler of 1985 | Best Commodore 64 Games | Retro Special | Cheeky Commodore Gamer",
+      "description": "A full Commodore 64 retrospective covering every Zzap!64 Gold Medal and Sizzler from 1985, from Elite and Dropzone to Paradroid, Little Computer People and more."
+    },
+    "created_at": "2026-05-13T00:00:00.000Z",
+    "order": 14
   }
 ]
