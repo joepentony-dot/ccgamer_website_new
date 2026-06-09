@@ -278,5 +278,23 @@
     },
     "created_at": "2026-05-13T00:00:00.000Z",
     "order": 14
+  },
+  {
+    "id": "zzap64-gold-medals-sizzlers-1986",
+    "slug": "zzap64-gold-medals-sizzlers-1986",
+    "type": "retro-specials",
+    "title": "Every Zzap!64 Gold Medal & Sizzler of 1986 | The Best Commodore 64 Games?",
+    "youtubeId": "FBsVTT8M9Rw",
+    "thumbnail": "https://img.youtube.com/vi/FBsVTT8M9Rw/hqdefault.jpg",
+    "membersOnly": false,
+    "summary": "Revisiting Zzap!64’s first full calendar year of Gold Medals and Sizzlers, covering every Commodore 64 game awarded in 1986 and asking whether these really were the best C64 games of the year.",
+    "description": "This Retro Special goes through Zzap!64’s first full calendar year and revisits every Commodore 64 game that received either a Gold Medal or Sizzler award in 1986. From Uridium, Mercenary, Leaderboard and Ghosts ’n Goblins to World Games, The Sentinel, Thrust, Kikstart II, International Karate, Sanxion, Spindizzy, Cauldron II, Alter Ego, Ultima IV, Green Beret, Ballblazer, Koronis Rift, The Eidolon, Revs and more, it looks at which awards still feel fully deserved today and which choices remain open for debate.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Every Zzap!64 Gold Medal & Sizzler of 1986 | Best Commodore 64 Games | Retro Special | Cheeky Commodore Gamer",
+      "description": "A full Commodore 64 retrospective covering every Zzap!64 Gold Medal and Sizzler from 1986, from Uridium, Mercenary and Leaderboard to Ghosts ’n Goblins, The Sentinel, Spindizzy, Sanxion and more."
+    },
+    "created_at": "2026-06-09T00:00:00.000Z",
+    "order": 15
   }
 ]
