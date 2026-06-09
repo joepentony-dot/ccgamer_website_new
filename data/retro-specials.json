@@ -13,9 +13,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "50 Essential Commodore 64 Games – Best C64 Games Ever | Retro Special | Cheeky Commodore Gamer",
-      "description": "Explore 50 essential Commodore 64 games in this Retro Special from Cheeky Commodore Gamer, covering some of the most iconic and influential C64 classics ever released."
+      "description": "Explore 50 essential Commodore 64 games in this Retro Special, covering iconic C64 classics that shaped one of the most beloved home computers ever."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "top-15-commodore-64-games",
+      "hardest-commodore-64-games",
+      "commodore-64-budget-games-under-3",
+      "zzap64-gold-medals-sizzlers-1987"
+    ]
   },
   {
     "id": "50-essential-amiga-games",
@@ -31,9 +37,14 @@
     "collection": "retro-specials",
     "seo": {
       "title": "50 Essential Amiga Games – Best Amiga Games Ever | Retro Special | Cheeky Commodore Gamer",
-      "description": "A celebration of 50 essential Amiga games, covering some of the most memorable and influential titles ever released."
+      "description": "Celebrate 50 essential Amiga games in this Retro Special, covering memorable arcade, strategy, adventure and simulation classics from Amiga history."
     },
-    "created_at": "2026-04-21T00:00:00.000Z"
+    "created_at": "2026-04-21T00:00:00.000Z",
+    "relatedSlugs": [
+      "x-copy-amiga-history",
+      "guru-meditation-amiga",
+      "favourite-arcade-games-c64-amiga-ports"
+    ]
   },
   {
     "id": "arcade-club-bury",
@@ -49,9 +60,14 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch Arcade Club Bury, Greater Manchester – Europe’s Largest Free-Play Arcade Visit on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Tour Arcade Club Bury in Greater Manchester in this Retro Special, exploring one of Europe’s largest free-play arcade venues and its retro machines."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "favourite-arcade-games-c64-amiga-ports",
+      "retro-games-day-family-gaming",
+      "c64-vs-zx-spectrum"
+    ]
   },
   {
     "id": "hardest-c64-games",
@@ -65,7 +81,17 @@
     "summary": "The toughest C64 games ever made — brutal difficulty and no mercy.",
     "description": "Explore the toughest C64 games ever released, known for brutal difficulty and unforgiving gameplay.",
     "collection": "retro-specials",
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games",
+      "banned-c64-games-they-didnt-want-you-to-see",
+      "commodore-64-budget-games-under-3"
+    ],
+    "seo": {
+      "title": "Hardest Commodore 64 Games Ever Made | Retro Special | Cheeky Commodore Gamer",
+      "description": "Revisit the hardest Commodore 64 games ever made in this Retro Special, from brutal arcade conversions to unforgiving C64 classics that still test players today."
+    }
   },
   {
     "id": "guru-meditation-amiga",
@@ -83,7 +109,13 @@
       "title": "Guru Meditation – Commodore Amiga Error That Became a Legend | Retro Special | Cheeky Commodore Gamer",
       "description": "Watch Guru Meditation – Commodore Amiga Error That Became a Legend on Cheeky Commodore Gamer's Retro Specials collection."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "x-copy-amiga-history",
+      "50-essential-amiga-games",
+      "sid-chip-story",
+      "commodore-64-memories-1982"
+    ]
   },
   {
     "id": "commodore-64-memories-1982",
@@ -99,9 +131,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch Memories of the Commodore 64 – A Brother’s 1982 Retro Gaming Journey on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "A nostalgic Retro Special about early Commodore 64 memories from 1982, family gaming, classic C64 moments and the era that shaped home computer players."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "sid-chip-story",
+      "zx-spectrum-memories-hodgy",
+      "retro-games-day-family-gaming",
+      "50-essential-commodore-64-games"
+    ]
   },
   {
     "id": "retro-games-day-family-gaming",
@@ -117,9 +155,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Retro Games Day – Gaming with Family from Amiga to PlayStation 5 | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch Retro Games Day – Gaming with Family from Amiga to PlayStation 5 on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Join a relaxed Retro Games Day mixing Amiga, Commodore 64 and modern consoles, with family gaming memories and cross-generational retro fun."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "commodore-64-memories-1982",
+      "arcade-club-bury",
+      "50-essential-amiga-games",
+      "50-essential-commodore-64-games"
+    ]
   },
   {
     "id": "top-15-commodore-64-games",
@@ -135,9 +179,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch TOP 15 Commodore 64 Games – Essential C64 Classics You Must Play on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Count down 15 essential Commodore 64 games in this Retro Special, highlighting must-play C64 classics that remain memorable and playable today."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "50-essential-commodore-64-games",
+      "commodore-64-budget-games-under-3",
+      "hardest-commodore-64-games",
+      "zzap64-gold-medals-sizzlers-1986"
+    ]
   },
   {
     "id": "sid-chip-story",
@@ -153,9 +203,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch The SID Chip – Commodore 64 Sound Interface Device & 8-Bit Music Revolution on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Explore the Commodore 64 SID chip story, the sound hardware behind iconic 8-bit music, game soundtracks and lasting C64 nostalgia."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "commodore-64-memories-1982",
+      "guru-meditation-amiga",
+      "50-essential-commodore-64-games",
+      "x-copy-amiga-history"
+    ]
   },
   {
     "id": "x-copy-amiga-history",
@@ -171,9 +227,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch X-Copy – The Ultimate Commodore Amiga Disk Copier Story (1988–1993) on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Discover the story of X-Copy on Commodore Amiga, the famous disk copier utility remembered by Amiga owners from the late 1980s and early 1990s."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "guru-meditation-amiga",
+      "50-essential-amiga-games",
+      "sid-chip-story",
+      "retro-games-day-family-gaming"
+    ]
   },
   {
     "id": "zx-spectrum-memories-hodgy",
@@ -189,9 +251,14 @@
     "collection": "retro-specials",
     "seo": {
       "title": "ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy | Retro Special | Cheeky Commodore Gamer",
-      "description": "Watch ZX Spectrum Memories – Rewinding 8-Bit History with Hodgy on Cheeky Commodore Gamer's Retro Specials collection."
+      "description": "Rewind ZX Spectrum memories with Hodgy in this Retro Special, looking back at 8-bit gaming culture, nostalgia and classic home computer moments."
     },
-    "created_at": "2026-03-30T22:46:27.285Z"
+    "created_at": "2026-03-30T22:46:27.285Z",
+    "relatedSlugs": [
+      "c64-vs-zx-spectrum",
+      "commodore-64-memories-1982",
+      "sid-chip-story"
+    ]
   },
   {
     "id": "c64-vs-zx-spectrum",
@@ -208,8 +275,14 @@
     "created_at": "2026-03-30T22:46:23.085Z",
     "seo": {
       "title": "C64 vs ZX Spectrum — Version Comparison | Retro Special | Cheeky Commodore Gamer",
-      "description": "Compare C64 and ZX Spectrum versions side by side in this Retro Special from Cheeky Commodore Gamer."
-    }
+      "description": "Compare C64 vs ZX Spectrum game versions in this Retro Special, examining how classic titles differed across two legendary 8-bit home computers."
+    },
+    "relatedSlugs": [
+      "zx-spectrum-memories-hodgy",
+      "favourite-arcade-games-c64-amiga-ports",
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games"
+    ]
   },
   {
     "id": "favourite-arcade-games-c64-amiga-ports",
@@ -223,7 +296,17 @@
     "summary": "A personal look at favourite 80s arcade games and how they translated to the Commodore 64 and Amiga, comparing gameplay, performance, and overall experience across platforms.",
     "description": "This video explores a selection of classic arcade games from the 1980s and examines how they were adapted for the Commodore 64 and Amiga. Featuring titles such as Dragon’s Lair, Out Run, After Burner, Space Harrier, R-Type, Golden Axe, Double Dragon, Rolling Thunder, and Street Fighter, it combines personal reflection with detailed comparison.\n\nArcade hardware delivered speed, scale, and spectacle that home systems often struggled to replicate. As a result, many of these conversions required significant changes, whether through reduced visuals, altered gameplay, or entirely different design approaches. In some cases, the Commodore 64 versions prioritised playability over accuracy, while the Amiga often aimed to preserve the look and feel of the originals.\n\nThe video highlights how each version performs, what was lost or gained in translation, and how these games hold up today. It offers insight into the challenges of porting arcade experiences to home computers and why these titles remain memorable despite their differences.",
     "collection": "retro-specials",
-    "created_at": "2026-04-08T15:57:20.349Z"
+    "created_at": "2026-04-08T15:57:20.349Z",
+    "relatedSlugs": [
+      "arcade-club-bury",
+      "c64-vs-zx-spectrum",
+      "50-essential-amiga-games",
+      "50-essential-commodore-64-games"
+    ],
+    "seo": {
+      "title": "My Favourite Arcade Games – Commodore 64 & Amiga Ports Reviewed | Retro Special | Cheeky Commodore Gamer",
+      "description": "Review favourite arcade games and their Commodore 64 and Amiga ports, comparing how classic coin-op action translated to home computers."
+    }
   },
   {
     "id": "banned-c64-games-they-didnt-want-you-to-see",
@@ -238,10 +321,16 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Banned C64 Games They Didn’t Want You To See | Retro Special | Cheeky Commodore Gamer",
-      "description": "Explore banned and controversial Commodore 64 games in this Retro Special from Cheeky Commodore Gamer, covering infamous C64 titles that pushed boundaries in the 8-bit era."
+      "description": "Explore banned and controversial C64 games in this Retro Special, revisiting the titles, themes and stories that made them notorious."
     },
     "created_at": "2026-05-12T20:09:37.619Z",
-    "order": 12
+    "order": 12,
+    "relatedSlugs": [
+      "hardest-commodore-64-games",
+      "commodore-64-budget-games-under-3",
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games"
+    ]
   },
   {
     "id": "commodore-64-budget-games-under-3",
@@ -256,10 +345,16 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Commodore 64 Budget Games Under £3 – Incredible C64 Classics | Retro Special | Cheeky Commodore Gamer",
-      "description": "Explore Commodore 64 budget games under £3, from classic 1980s and 1990s budget labels to memorable C64 releases that delivered huge value."
+      "description": "Celebrate Commodore 64 budget games under £3, covering affordable 1980s and 1990s C64 classics that delivered big fun for pocket money prices."
     },
     "created_at": "2026-05-12T20:09:37.619Z",
-    "order": 13
+    "order": 13,
+    "relatedSlugs": [
+      "top-15-commodore-64-games",
+      "50-essential-commodore-64-games",
+      "banned-c64-games-they-didnt-want-you-to-see",
+      "hardest-commodore-64-games"
+    ]
   },
   {
     "id": "zzap64-gold-medals-sizzlers-1985",
@@ -274,10 +369,16 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Every Zzap!64 Gold Medal & Sizzler of 1985 | Best Commodore 64 Games | Retro Special | Cheeky Commodore Gamer",
-      "description": "A full Commodore 64 retrospective covering every Zzap!64 Gold Medal and Sizzler from 1985, from Elite and Dropzone to Paradroid, Little Computer People and more."
+      "description": "Revisit every Zzap!64 Gold Medal and Sizzler from 1985, exploring the Commodore 64 games that defined a landmark year for C64 reviews."
     },
     "created_at": "2026-05-13T00:00:00.000Z",
-    "order": 14
+    "order": 14,
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1986",
+      "zzap64-gold-medals-sizzlers-1987",
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games"
+    ]
   },
   {
     "id": "zzap64-gold-medals-sizzlers-1986",
@@ -292,10 +393,16 @@
     "collection": "retro-specials",
     "seo": {
       "title": "Every Zzap!64 Gold Medal & Sizzler of 1986 | Best Commodore 64 Games | Retro Special | Cheeky Commodore Gamer",
-      "description": "A full Commodore 64 retrospective covering every Zzap!64 Gold Medal and Sizzler from 1986, from Uridium, Mercenary and Leaderboard to Ghosts ’n Goblins, The Sentinel, Spindizzy, Sanxion and more."
+      "description": "Explore every Zzap!64 Gold Medal and Sizzler from 1986, covering the C64 games praised during the magazine’s first full calendar year."
     },
     "created_at": "2026-06-09T00:00:00.000Z",
-    "order": 15
+    "order": 15,
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1985",
+      "zzap64-gold-medals-sizzlers-1987",
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games"
+    ]
   },
   {
     "id": "zzap64-gold-medals-sizzlers-1987",
@@ -310,9 +417,15 @@
     "collection": "retro-specials",
     "seo": {
       "title": "42 Best Commodore 64 Games of 1987? Zzap!64 Gold Medals, Sizzlers & Silver Medals",
-      "description": "Every Commodore 64 game that won a Zzap!64 Gold Medal, Sizzler or Silver Medal in 1987 — all 42 award winners revisited month by month, from The Bard’s Tale and Wizball to The Last Ninja, IK+, Maniac Mansion, SEUCK and Nebulus."
+      "description": "Revisit Zzap!64 Gold Medals, Sizzlers and Silver Medals from 1987, featuring standout Commodore 64 classics from a huge year for C64 gaming."
     },
     "created_at": "2026-06-09T00:00:00.000Z",
-    "order": 16
+    "order": 16,
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1985",
+      "zzap64-gold-medals-sizzlers-1986",
+      "50-essential-commodore-64-games",
+      "top-15-commodore-64-games"
+    ]
   }
 ]

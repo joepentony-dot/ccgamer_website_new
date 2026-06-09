@@ -13,12 +13,15 @@
     <meta property="og:description" content="{{SEO_DESCRIPTION}}" />
     <meta property="og:url" content="{{CANONICAL_URL}}" />
     <meta property="og:image" content="{{THUMBNAIL_URL}}" />
+    <meta property="og:video" content="https://www.youtube.com/embed/{{YOUTUBE_ID}}" />
+    <meta property="og:video:secure_url" content="https://www.youtube.com/embed/{{YOUTUBE_ID}}" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{SEO_TITLE}}" />
     <meta name="twitter:description" content="{{SEO_DESCRIPTION}}" />
     <meta name="twitter:image" content="{{THUMBNAIL_URL}}" />
     <meta name="twitter:url" content="{{CANONICAL_URL}}" />
+    <meta name="twitter:site" content="@CheekyC64Gamer" />
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -28,7 +31,7 @@
       "thumbnailUrl": "{{THUMBNAIL_URL}}",
       "uploadDate": "{{UPLOAD_DATE}}",
       "embedUrl": "https://www.youtube.com/embed/{{YOUTUBE_ID}}",
-      "url": "{{CANONICAL_URL}}"
+      "url": "{{CANONICAL_URL}}"{{VIDEO_DURATION_FIELD}}
     }
     </script>
     <script type="application/ld+json">

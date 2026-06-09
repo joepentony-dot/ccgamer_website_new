@@ -568,6 +568,10 @@ function collectCuratedRetroEntries(siteUrl, warnings) {
       });
     }
 
+    if (root === 'retro-specials') {
+      continue;
+    }
+
     const rootEntries = entries.filter((entry) => entry.loc.startsWith(`${siteUrl}/${root}/`));
     if (rootEntries.length > 0) {
       const latestLastmod = rootEntries
