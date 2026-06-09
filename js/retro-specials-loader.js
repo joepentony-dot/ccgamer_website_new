@@ -53,6 +53,7 @@ function ccgBuildRetroSpecialCard(item) {
         <div class="ccg-game-card__body">
           <h3 class="ccg-game-card__title">${ccgEscapeHtml(title)}</h3>
           <p class="ccg-game-card__desc">${ccgEscapeHtml(description)}</p>
+          <span class="ccg-game-card__actions"><span class="ccg-game-card__btn" aria-label="Watch ${ccgEscapeHtml(title)}">Watch special</span></span>
         </div>
       </a>
     </article>

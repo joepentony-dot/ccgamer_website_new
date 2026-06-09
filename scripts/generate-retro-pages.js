@@ -127,7 +127,22 @@ function buildSeo(entry, title, description) {
 }
 
 function buildRelatedItems(items, currentSlug, pagePrefix) {
-  const related = items.filter((item) => item.slug !== currentSlug).slice(0, 6);
+  const current = items.find((item) => item.slug === currentSlug);
+  const bySlug = new Map(items.map((item) => [item.slug, item]));
+  const requested = Array.isArray(current?.relatedSlugs) ? current.relatedSlugs : [];
+  const related = requested
+    .map((slug) => bySlug.get(String(slug || '').trim()))
+    .filter((item) => item && item.slug !== currentSlug)
+    .slice(0, 4);
+
+  if (related.length < 3) {
+    for (const item of items) {
+      if (item.slug === currentSlug || related.some((existing) => existing.slug === item.slug)) continue;
+      related.push(item);
+      if (related.length >= 4) break;
+    }
+  }
+
   if (!related.length) return '';
 
   const cards = related
@@ -148,8 +163,8 @@ function toIsoDate(value) {
 
 function buildFlatRedirectHtml({ canonicalUrl, seoTitle, seoDescription }) {
   const pathOnly = new URL(canonicalUrl).pathname;
-  const safeDescription = String(seoDescription || 'Redirecting to the canonical Retro Special page on Cheeky Commodore Gamer.').trim();
-  const safeTitle = String(seoTitle || 'Redirecting…').trim();
+  const safeDescription = String(`Redirecting to the canonical page: ${seoDescription || 'Retro Special on Cheeky Commodore Gamer.'}`).trim();
+  const safeTitle = String(`Redirecting to ${seoTitle || 'Retro Special'} | Cheeky Commodore Gamer`).trim();
   return `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8" />\n  <meta name="viewport" content="width=device-width, initial-scale=1.0" />\n  <title>${escapeHtml(safeTitle)}</title>\n  <meta name="description" content="${escapeHtml(safeDescription)}" />\n  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />\n  <meta http-equiv="refresh" content="0; url=${escapeHtml(pathOnly)}" />\n  <script>\n    (function(){\n      var target = ${JSON.stringify(pathOnly)} + (window.location.search || '') + (window.location.hash || '');\n      window.location.replace(target);\n    })();\n  </script>\n</head>\n<body></body>\n</html>\n`;
 }
 
@@ -244,6 +259,7 @@ function generateDatasetPages(config, template) {
       YOUTUBE_ID: escapeHtml(youtubeId),
       DESCRIPTION: escapeHtml(description),
       UPLOAD_DATE: escapeHtml(toIsoDate(entry.created_at)),
+      VIDEO_DURATION_FIELD: entry.duration ? `,\n      "duration": "${escapeHtml(entry.duration)}"` : '',
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
       RELATED_ITEMS: relatedItemsHtml
     });
