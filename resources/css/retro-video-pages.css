@@ -159,3 +159,32 @@
     min-width: 0;
   }
 }
+
+/* Safe responsive polish: modern ratio boxes, long-title wrapping and tighter mobile embeds. */
+.retro-video-page__video {
+  aspect-ratio: 16 / 9;
+  padding-top: 0;
+}
+
+.retro-video-page__title,
+.retro-video-page__related-title,
+.retro-video-page__summary,
+.retro-video-page__description {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .retro-video-page {
+    padding-inline: 0.75rem;
+  }
+
+  .retro-video-page__hero,
+  .retro-video-page__description-block,
+  .retro-video-page__related {
+    border-radius: 14px;
+  }
+
+  .retro-video-page__related-grid {
+    grid-template-columns: 1fr;
+  }
+}
