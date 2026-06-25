@@ -376,8 +376,8 @@
     "relatedSlugs": [
       "zzap64-gold-medals-sizzlers-1986",
       "zzap64-gold-medals-sizzlers-1987",
-      "50-essential-commodore-64-games",
-      "top-15-commodore-64-games"
+      "zzap64-gold-medals-sizzlers-1988",
+      "50-essential-commodore-64-games"
     ]
   },
   {
@@ -400,8 +400,8 @@
     "relatedSlugs": [
       "zzap64-gold-medals-sizzlers-1985",
       "zzap64-gold-medals-sizzlers-1987",
-      "50-essential-commodore-64-games",
-      "top-15-commodore-64-games"
+      "zzap64-gold-medals-sizzlers-1988",
+      "50-essential-commodore-64-games"
     ]
   },
   {
@@ -422,10 +422,34 @@
     "created_at": "2026-06-09T00:00:00.000Z",
     "order": 16,
     "relatedSlugs": [
-      "zzap64-gold-medals-sizzlers-1985",
+      "zzap64-gold-medals-sizzlers-1988",
       "zzap64-gold-medals-sizzlers-1986",
-      "50-essential-commodore-64-games",
-      "top-15-commodore-64-games"
+      "zzap64-gold-medals-sizzlers-1985",
+      "50-essential-commodore-64-games"
+    ]
+  },
+  {
+    "id": "zzap64-gold-medals-sizzlers-1988",
+    "slug": "zzap64-gold-medals-sizzlers-1988",
+    "type": "retro-specials",
+    "title": "Was 1988 the Year Zzap!64 Changed Forever? | 55 C64 & Amiga Award Winners",
+    "youtubeId": "EeNXSvcKuD4",
+    "thumbnail": "https://img.youtube.com/vi/EeNXSvcKuD4/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 17,
+    "summary": "All 55 Zzap!64 award winners from 1988 revisited month by month, covering Commodore 64 classics alongside the magazine’s rapidly expanding Amiga and 16-bit coverage.",
+    "description": "This Retro Special revisits all 55 games that received a Zzap!64 award during 1988, including Commodore 64 Sizzlers, Gold Medals and Silver Medals alongside the magazine’s expanding Amiga and 16-bit coverage. Featuring games such as Tetris, Platoon, Hunter’s Moon, Hawkeye, Armalyte, Last Ninja 2, Starglider, Rocket Ranger, Fish and Bombuzal, it follows the awards month by month and looks back at a major year of change for Zzap!64.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Zzap!64 1988 Awards – 55 Commodore 64 & Amiga Winners",
+      "description": "Revisit all 55 Zzap!64 award winners from 1988, including Commodore 64 Sizzlers, Gold Medals, Silver Medals and the magazine’s growing Amiga coverage."
+    },
+    "created_at": "2026-06-24T00:00:00.000Z",
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1987",
+      "zzap64-gold-medals-sizzlers-1986",
+      "zzap64-gold-medals-sizzlers-1985",
+      "50-essential-amiga-games"
     ]
   }
 ]
