@@ -2,6 +2,12 @@
 // Phase 3 — Global Auth Consumer (single Supabase client)
 
 import { AUTH_CONFIG, OWNER_EMAILS } from './config.js';
+import {
+  getCurrentUser as sharedGetCurrentUser,
+  loginUser,
+  sendPasswordReset as sharedSendPasswordReset,
+  updatePassword as sharedUpdatePassword
+} from '/resources/js/auth/auth-core.js';
 
 const TAG = '[CCG-AUTH]';
 const ELEVATED_ROLES = new Set(['superadmin', 'admin', 'editor']);
@@ -35,7 +41,7 @@ function isOwnerEmail(email) {
 
 function deriveRole(user) {
   if (!user) return null;
-  if (isOwnerEmail(user.email)) return 'admin';
+  if (isOwnerEmail(user.email)) return 'superadmin';
   return user.app_metadata?.role || user.user_metadata?.role || user.role || null;
 }
 
@@ -180,6 +186,48 @@ export async function refreshSessionIfNeeded() {
 
   publish(buildContext(session, 'refresh:ok'));
   return session;
+}
+
+
+function throwAuthError(error, fallbackMessage) {
+  if (!error) return;
+  const err = new Error(error.message || fallbackMessage || 'Authentication failed.');
+  err.category = error.category || 'unknown';
+  err.detail = error.detail || error.message || fallbackMessage || '';
+  err.status = error.status || null;
+  throw err;
+}
+
+export async function login(email, password) {
+  const result = await loginUser(email, password);
+  throwAuthError(result?.error, 'Sign in failed.');
+  const nextContext = await refreshContext('login');
+
+  if (!nextContext?.session?.user) {
+    throw new Error('Sign in did not return a valid session. Please try again.');
+  }
+
+  return nextContext;
+}
+
+export async function restoreSession() {
+  return refreshContext('restore');
+}
+
+export async function sendPasswordReset(email) {
+  const result = await sharedSendPasswordReset(email, AUTH_CONFIG.passwordResetRedirect);
+  throwAuthError(result?.error, 'Unable to request a password reset.');
+  return result;
+}
+
+export async function updateAdminPassword(newPassword) {
+  const result = await sharedUpdatePassword(newPassword);
+  throwAuthError(result?.error, 'Unable to update password.');
+  return result;
+}
+
+export async function getCurrentUser() {
+  return sharedGetCurrentUser();
 }
 
 export function onAuthStateChange(cb) {

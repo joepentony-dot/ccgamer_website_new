@@ -121,3 +121,12 @@ CREATE TABLE IF NOT EXISTS public.asset_snapshots (
 1. Open `/admin/asset-manager.html` as editor and verify upload-only posture.
 2. Open as admin and run scan + health + snapshot.
 3. Verify uploads create commits and preserve original + optimized files.
+
+## 12) Supabase password recovery URLs
+
+Configure these values in the Supabase Dashboard before using admin password recovery:
+
+- **Authentication → URL Configuration → Site URL:** `https://www.cheekycommodoregamer.co.uk`
+- **Authentication → URL Configuration → Redirect URLs:** `https://www.cheekycommodoregamer.co.uk/admin/reset-password.html`
+
+The admin login uses `/admin/forgot-password.html`, and reset emails must return to `/admin/reset-password.html`. Do not point admin recovery emails at the public `/auth/reset.html` page.

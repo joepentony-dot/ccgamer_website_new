@@ -3,25 +3,46 @@
    File: /admin/js/login.js
 ============================================================ */
 
-import { login, restoreSession, sendPasswordReset } from './auth.js';
+import { login, restoreSession } from './auth.js';
 
-const LOG = true;
 const TAG = '[CCG-LOGIN]';
-
-function log(...args) { if (LOG) console.log(TAG, ...args); }
 
 let form = null;
 let emailInput = null;
 let passwordInput = null;
 let submitBtn = null;
-let resetBtn = null;
+let forgotBtn = null;
 let msgEl = null;
 
 function setMessage(text, kind = 'info') {
   if (!msgEl) return;
   msgEl.textContent = text || '';
-  msgEl.dataset.kind = kind;
-  msgEl.style.opacity = text ? '1' : '0';
+  msgEl.dataset.state = kind;
+  msgEl.setAttribute('role', text ? 'status' : 'presentation');
+  msgEl.setAttribute('aria-live', kind === 'error' || kind === 'warning' ? 'assertive' : 'polite');
+}
+
+function authFailureMessage(error) {
+  const category = String(error?.category || '').toLowerCase();
+  const detail = String(error?.detail || error?.message || '').toLowerCase();
+
+  if (category === 'network' || detail.includes('failed to fetch') || detail.includes('network')) {
+    return 'Network error while contacting the authentication service. Please try again.';
+  }
+  if (category === 'rate_limit' || detail.includes('rate limit') || Number(error?.status) === 429) {
+    return 'Too many sign-in attempts. Please wait and try again.';
+  }
+  if (detail.includes('email not confirmed')) {
+    return 'Please confirm your email before logging in.';
+  }
+  if (category === 'credentials' || detail.includes('invalid login credentials')) {
+    return 'Invalid email or password.';
+  }
+  if (category === 'session') {
+    return 'Session issue detected. Please sign in again.';
+  }
+
+  return 'Sign in failed. Please check your details and try again.';
 }
 
 function showReasonMessage() {
@@ -33,53 +54,36 @@ function showReasonMessage() {
     setMessage('Session expired. Please sign in again.', 'warning');
     return;
   }
-
   if (reason === 'role') {
-    setMessage(role ? `Role "${role}" is not allowed for this page.` : 'Your role is not allowed for this page.', 'warning');
+    setMessage(role ? `Role "${role}" is not authorised for this page.` : 'Your account is not authorised for this admin area.', 'warning');
     return;
   }
-
   if (reason === 'signed_out') {
     setMessage('Signed out. Please sign in again.', 'info');
     return;
   }
-
   if (reason) {
-    setMessage(`Please sign in to continue (${reason}).`, 'info');
+    setMessage('Please sign in to continue.', 'info');
   }
 }
 
 function ensurePasswordPeek() {
   if (!passwordInput) return;
 
-  // If the HTML already provides a toggle, respect it.
-  const existing = document.querySelector('[data-action="toggle-password"]');
-  if (existing) {
-    existing.addEventListener('click', () => {
-      const next = passwordInput.type === 'password' ? 'text' : 'password';
-      passwordInput.type = next;
-      existing.textContent = next === 'password' ? 'Show' : 'Hide';
-    });
-    return;
-  }
-
-  // Otherwise, create a minimal toggle beside the password field.
-  const wrapper = passwordInput.parentElement;
-  if (!wrapper) return;
-
   const btn = document.createElement('button');
   btn.type = 'button';
   btn.className = 'ccg-auth-peek';
-  btn.textContent = 'Show';
-  btn.setAttribute('aria-label', 'Toggle password visibility');
+  btn.textContent = 'Show password';
+  btn.setAttribute('aria-label', 'Show password');
 
   btn.addEventListener('click', () => {
-    const next = passwordInput.type === 'password' ? 'text' : 'password';
-    passwordInput.type = next;
-    btn.textContent = next === 'password' ? 'Show' : 'Hide';
+    const show = passwordInput.type === 'password';
+    passwordInput.type = show ? 'text' : 'password';
+    btn.textContent = show ? 'Hide password' : 'Show password';
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
   });
 
-  wrapper.appendChild(btn);
+  passwordInput.insertAdjacentElement('afterend', btn);
 }
 
 async function onSubmit(ev) {
@@ -89,66 +93,51 @@ async function onSubmit(ev) {
   const email = (emailInput?.value || '').trim();
   const password = String(passwordInput?.value || '');
 
-  if (!email || !password) {
-    setMessage('Please enter both email and password.', 'warning');
+  if (!email) {
+    setMessage('Please enter your admin email address.', 'warning');
+    emailInput?.focus();
+    return;
+  }
+  if (!password) {
+    setMessage('Please enter your admin password.', 'warning');
+    passwordInput?.focus();
     return;
   }
 
   try {
-    submitBtn?.setAttribute('disabled', 'disabled');
+    submitBtn.disabled = true;
     setMessage('Signing in…', 'info');
 
-    const ctx = await login(email, password);
-    log('login ctx', ctx);
+    await login(email, password);
+    const restored = await restoreSession();
 
-    // Ensure session is restored in this tab (prevents “bounce back” loops).
-    await restoreSession();
+    if (!restored?.session?.user) {
+      throw new Error('Session could not be restored after sign-in.');
+    }
 
-    // Redirect
-    window.location.href = '/admin/dashboard.html';
-  } catch (e) {
-    console.error(e);
-    setMessage(e?.message ? `Sign in failed: ${e.message}` : 'Sign in failed.', 'error');
-    submitBtn?.removeAttribute('disabled');
+    window.location.assign('/admin/dashboard.html');
+  } catch (error) {
+    console.error(TAG, error);
+    setMessage(authFailureMessage(error), 'error');
+    submitBtn.disabled = false;
   }
 }
 
-async function onReset(ev) {
-  ev.preventDefault();
-  setMessage('');
-
-  const email = (emailInput?.value || '').trim();
-  if (!email) {
-    setMessage('Enter your email first, then click reset password.', 'warning');
-    return;
-  }
-
-  try {
-    resetBtn?.setAttribute('disabled', 'disabled');
-    setMessage('Sending reset email…', 'info');
-    await sendPasswordReset(email);
-    setMessage('Password reset email sent. Check your inbox.', 'success');
-  } catch (e) {
-    console.error(e);
-    setMessage(e?.message ? `Reset failed: ${e.message}` : 'Reset failed.', 'error');
-  } finally {
-    resetBtn?.removeAttribute('disabled');
-  }
-}
-
-async function init() {
-  form = document.querySelector('form');
-  emailInput = document.querySelector('input[type="email"], #email');
-  passwordInput = document.querySelector('input[type="password"], #password');
-  submitBtn = document.querySelector('button[type="submit"], #signInBtn');
-  resetBtn = document.querySelector('[data-action="reset-password"], #resetPasswordBtn');
-  msgEl = document.querySelector('[data-ccg-msg], #loginMessage');
+function init() {
+  form = document.querySelector('[data-login-form]');
+  emailInput = document.querySelector('[data-email-input]');
+  passwordInput = document.querySelector('[data-password-input]');
+  submitBtn = document.querySelector('[data-login-button]');
+  forgotBtn = document.querySelector('[data-reset-button]');
+  msgEl = document.querySelector('[data-message]');
 
   showReasonMessage();
   ensurePasswordPeek();
 
-  if (form) form.addEventListener('submit', onSubmit);
-  if (resetBtn) resetBtn.addEventListener('click', onReset);
+  form?.addEventListener('submit', onSubmit);
+  forgotBtn?.addEventListener('click', () => {
+    window.location.assign('/admin/forgot-password.html');
+  });
 }
 
 init();
