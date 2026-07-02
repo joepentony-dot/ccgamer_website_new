@@ -527,6 +527,7 @@ if (IS_ADMIN_PATH) {
         inputBuffer: "",
         konamiIndex: 0,
         activeEgg: null,
+        scrollLock: null,
     };
 
     const konamiSequence = [
@@ -1137,6 +1138,45 @@ if (IS_ADMIN_PATH) {
         return modal;
     }
 
+    function lockSecretModalScroll() {
+        if (secretState.scrollLock) return;
+
+        const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        secretState.scrollLock = {
+            scrollY,
+            bodyPosition: document.body.style.position,
+            bodyTop: document.body.style.top,
+            bodyLeft: document.body.style.left,
+            bodyRight: document.body.style.right,
+            bodyWidth: document.body.style.width,
+            bodyOverflow: document.body.style.overflow,
+            htmlOverflow: document.documentElement.style.overflow,
+        };
+
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+        document.body.style.position = "fixed";
+        document.body.style.top = `-${scrollY}px`;
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
+    }
+
+    function unlockSecretModalScroll() {
+        const lock = secretState.scrollLock;
+        if (!lock) return;
+
+        document.documentElement.style.overflow = lock.htmlOverflow;
+        document.body.style.overflow = lock.bodyOverflow;
+        document.body.style.position = lock.bodyPosition;
+        document.body.style.top = lock.bodyTop;
+        document.body.style.left = lock.bodyLeft;
+        document.body.style.right = lock.bodyRight;
+        document.body.style.width = lock.bodyWidth;
+        secretState.scrollLock = null;
+        window.scrollTo(0, lock.scrollY);
+    }
+
     function openSecretModal(openEvent) {
         const modal = buildSecretModal();
         if (modal.classList.contains("is-open")) return;
@@ -1151,6 +1191,7 @@ if (IS_ADMIN_PATH) {
             modal.classList.add("is-open");
             modal.setAttribute("aria-hidden", "false");
             document.body.classList.add("ccg-secret-modal-open");
+            lockSecretModalScroll();
 
             requestAnimationFrame(() => {
                 modal.dataset.ccgSecretModalLocked = "true";
@@ -1164,6 +1205,7 @@ if (IS_ADMIN_PATH) {
         secretState.modal.setAttribute("aria-hidden", "true");
         delete secretState.modal.dataset.ccgSecretModalLocked;
         document.body.classList.remove("ccg-secret-modal-open");
+        unlockSecretModalScroll();
         resetSecretInputState();
     }
 
