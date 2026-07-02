@@ -802,7 +802,7 @@ function buildPackageData() {
   const canonicalHtml = renderTemplate(state.templates.landing, templateVars);
   const redirectHtml = renderTemplate(state.templates.redirect, templateVars);
 
-  const seoValidationErrors = validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, canonicalHtml });
+  const seoValidationErrors = validateGeneratedSeoPackage({ slug, id, seoUrls, seoDescription: templateVars.DESCRIPTION, canonicalHtml, redirectHtml });
   if (seoValidationErrors.length) {
     throw new Error(seoValidationErrors.join(' | '));
   }
@@ -954,8 +954,10 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     CANONICAL_URL: cleanForHtml(seoUrls.canonicalUrl),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
     THUMBNAIL_FILENAME: cleanForHtml(extractFilename(imagePath)),
-    DESCRIPTION: cleanForHtml(seoDescription),
-    OG_TYPE: hasVideo ? 'video.other' : 'website',
+    DESCRIPTION: cleanForHtml(`${title} on ${normalizeSeoPlatformLabel(system)} — screenshots, manual, downloads and video.`),
+    FULL_DESCRIPTION: cleanForHtml(String(state.draft.description || seoDescription || '').trim()),
+    PLATFORM_LABEL: cleanForHtml(normalizeSeoPlatformLabel(system)),
+    OG_TYPE: 'website',
     VIDEO_EMBED_URL: safeVideoEmbed,
     VIDEO_WATCH_URL: safeVideoWatch,
     VIDEO_SECTION_CLASS: hasVideo ? '' : 'is-hidden',
@@ -1073,7 +1075,7 @@ function readMetaValue(html, pattern) {
   return match ? match[1].trim() : '';
 }
 
-function validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, canonicalHtml }) {
+function validateGeneratedSeoPackage({ slug, id, seoUrls, seoDescription, canonicalHtml, redirectHtml }) {
   const errors = [];
   const canonical = readMetaValue(canonicalHtml, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
   const ogUrl = readMetaValue(canonicalHtml, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
@@ -1084,7 +1086,22 @@ function validateGeneratedSeoPackage({ slug, seoUrls, seoDescription, canonicalH
   if (canonical !== seoUrls.canonicalUrl) errors.push('Canonical mismatch in generated landing page.');
   if (ogUrl !== seoUrls.ogUrl) errors.push('og:url mismatch in generated landing page.');
   if (twitterUrl !== seoUrls.twitterUrl) errors.push('twitter:url mismatch in generated landing page.');
+  const ogTitle = readMetaValue(canonicalHtml, /<meta[^>]+property=["']og:title["'][^>]*content=["']([^"']+)["']/i);
+  const ogImage = readMetaValue(canonicalHtml, /<meta[^>]+property=["']og:image["'][^>]*content=["']([^"']+)["']/i);
+  const twitterTitle = readMetaValue(canonicalHtml, /<meta[^>]+name=["']twitter:title["'][^>]*content=["']([^"']+)["']/i);
+  const twitterImage = readMetaValue(canonicalHtml, /<meta[^>]+name=["']twitter:image["'][^>]*content=["']([^"']+)["']/i);
+  const gameTarget = `/games/game.html?id=${id}`;
   if (!description) errors.push('Required metadata missing from generated landing page.');
+  if (!canonicalHtml.includes(`http-equiv="refresh" content="0; url=${gameTarget}"`) && !canonicalHtml.includes(`http-equiv="refresh" content="0;url=${gameTarget}"`)) errors.push('Generated landing page meta refresh target is missing.');
+  if (!canonicalHtml.includes(`location.replace("${gameTarget}")`)) errors.push('Generated landing page JavaScript redirect target is missing.');
+  if (!ogTitle || !ogImage || !twitterTitle || !twitterImage) errors.push('Required OG/Twitter metadata missing from generated landing page.');
+  if (/game-hero|<iframe|VideoGame|data-ccg-mode|data-mode=|resources\/css\/games\.css/i.test(canonicalHtml)) errors.push('Generated landing page contains duplicate standalone game layout.');
+
+  const redirect = String(redirectHtml || '');
+  if (!/noindex,follow/i.test(redirect)) errors.push('Flat redirect missing noindex,follow.');
+  if (!redirect.includes(`/games/${slug}/`)) errors.push('Flat redirect target is missing.');
+  if (!redirect.includes('window.location.search') || !redirect.includes('window.location.hash')) errors.push('Flat redirect must preserve query string and hash.');
+  if (!redirect.includes(seoUrls.canonicalUrl)) errors.push('Flat redirect canonical URL is missing.');
   return errors;
 }
 
@@ -1261,23 +1278,22 @@ function validatePackageManifest(packageData) {
   const canonicalUrl = `${SITE_ORIGIN}/games/${slug}/`;
   const canonicalHtml = String(packageData.canonicalHtml || '');
   const redirectHtml = String(packageData.redirectHtml || '');
-  const mode = String(packageData.gameEntry?.system || '').toUpperCase() === 'AMIGA' ? 'amiga' : 'c64';
   const thumbnail = String(packageData.gameEntry?.thumbnail || '');
+  const gameTarget = `/games/game.html?id=${packageData.id}`;
 
   if (!canonicalHtml.includes(canonicalUrl)) throw new Error(`Package incomplete: games/${slug}/index.html canonical URL is missing.`);
-  if (!canonicalHtml.includes(`/games/game.html?id=${packageData.id}`)) throw new Error(`Package incomplete: games/${slug}/index.html game ID link is missing.`);
+  if (!canonicalHtml.includes(gameTarget)) throw new Error(`Package incomplete: games/${slug}/index.html game ID redirect is missing.`);
   if (thumbnail && !canonicalHtml.includes(`/${thumbnail}`) && !canonicalHtml.includes(thumbnail)) throw new Error(`Package incomplete: games/${slug}/index.html thumbnail is missing.`);
-  if (!canonicalHtml.includes('application/ld+json')) throw new Error(`Package incomplete: games/${slug}/index.html JSON-LD is missing.`);
-  if (/\.\.\/resources\//.test(canonicalHtml)) throw new Error(`Package incomplete: games/${slug}/index.html contains broken ../resources paths.`);
-  if (/\.\.\/js\//.test(canonicalHtml)) throw new Error(`Package incomplete: games/${slug}/index.html contains broken ../js paths.`);
-  if (!canonicalHtml.includes(`data-ccg-mode="${mode}"`) || !canonicalHtml.includes(`data-mode="${mode}"`)) throw new Error(`Package incomplete: games/${slug}/index.html platform mode does not match ${packageData.gameEntry.system}.`);
+  if (!/http-equiv=["']refresh["'][^>]+url=\/games\/game\.html\?id=/i.test(canonicalHtml)) throw new Error(`Package incomplete: games/${slug}/index.html meta refresh is missing.`);
+  if (!canonicalHtml.includes(`location.replace("${gameTarget}")`)) throw new Error(`Package incomplete: games/${slug}/index.html JavaScript redirect is missing.`);
+  if (/game-hero|<iframe|VideoGame|data-ccg-mode|data-mode=|resources\/css\/games\.css/i.test(canonicalHtml)) throw new Error(`Package incomplete: games/${slug}/index.html contains duplicate game page content.`);
 
   if (!/noindex,follow/i.test(redirectHtml)) throw new Error(`Package incomplete: games/${slug}.html noindex,follow is missing.`);
   if (!redirectHtml.includes(`/games/${slug}/`)) throw new Error(`Package incomplete: games/${slug}.html redirect target is missing.`);
   if (!/http-equiv=["']refresh["']/i.test(redirectHtml)) throw new Error(`Package incomplete: games/${slug}.html meta refresh is missing.`);
-  if (!redirectHtml.includes('location.replace')) throw new Error(`Package incomplete: games/${slug}.html JavaScript redirect is missing.`);
-  if (!/<a\s+[^>]*href=["']\/games\//i.test(redirectHtml)) throw new Error(`Package incomplete: games/${slug}.html fallback link is missing.`);
-  if (redirectHtml.includes('game-hero__title') || redirectHtml.includes('VideoGame')) throw new Error(`Package incomplete: games/${slug}.html contains duplicate game page content.`);
+  if (!redirectHtml.includes('window.location.search') || !redirectHtml.includes('window.location.hash')) throw new Error(`Package incomplete: games/${slug}.html query/hash preservation is missing.`);
+  if (!redirectHtml.includes(canonicalUrl)) throw new Error(`Package incomplete: games/${slug}.html canonical URL is missing.`);
+  if (redirectHtml.includes('/games/game.html') || redirectHtml.includes('game-hero__title') || redirectHtml.includes('VideoGame')) throw new Error(`Package incomplete: games/${slug}.html contains duplicate game page content.`);
   return true;
 }
 

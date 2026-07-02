@@ -12027,6 +12027,26 @@
     "year": 1984
   },
   {
+    "title": "Zeewolf",
+    "slug": "zeewolf",
+    "publisher": [
+      "Empire Software"
+    ],
+    "genre": [
+      "shooting"
+    ],
+    "genres": [
+      "shooting"
+    ],
+    "composer": [
+      "Allister Brimble"
+    ],
+    "music": [
+      "zeewolf.mp3"
+    ],
+    "year": 1994
+  },
+  {
     "title": "Zenji",
     "slug": "zenji",
     "publisher": [
