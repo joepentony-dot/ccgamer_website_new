@@ -44,6 +44,8 @@
     .radio-group { display: grid; gap: .45rem; }
     .radio-option { display: flex; align-items: center; gap: .45rem; font-weight: 500; }
     .radio-option input { width: auto; }
+    .thumbnail-option-panel { border: 1px solid rgba(251, 191, 36, .65); border-radius: 8px; padding: .75rem; background: rgba(120, 53, 15, .16); }
+    .thumbnail-warning { color: #fde68a; font-weight: 700; }
     .add-category-row { display: grid; grid-template-columns: 1fr auto; gap: .5rem; margin-top: .5rem; }
     .add-category-row button { white-space: nowrap; }
     [hidden] { display: none !important; }
@@ -162,12 +164,25 @@
         </label>
         <label>Thumbnail Path (string only)<input data-field="thumbnail" placeholder="southern-belle.jpg or resources/images/thumbnails/all/southern-belle.jpg" /></label>
         <label>3D Box Path (string only)<input data-field="box3d" placeholder="southern-belle or resources/images/games/boxes-3d/southern-belle.webp" /></label>
+        <div class="full thumbnail-option-panel">
+          <label>Local thumbnail file (optional)
+            <input type="file" data-thumbnail-file accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" />
+          </label>
+          <p class="hint">Selected files stay in browser memory only and are bundled into the ZIP at the final thumbnail path.</p>
+        </div>
+        <label class="full radio-option thumbnail-option-panel">
+          <input type="checkbox" data-field="manualThumbnailUpload" />
+          <span>I will upload this thumbnail manually with the package</span>
+        </label>
         <label class="full">External Reference Links (optional, one URL per line)<textarea rows="4" data-field="externalLinks" placeholder="https://www.lemon64.com/...
 https://www.mobygames.com/..."></textarea></label>
       </div>
       <div class="preview-box">
-        <p><strong>Thumbnail storage path:</strong> <code data-preview-thumbnail-path></code></p>
+        <p><strong>Final thumbnail path:</strong> <code data-preview-thumbnail-path></code></p>
         <p class="hint" data-preview-thumbnail-status></p>
+        <p class="hint" data-preview-thumbnail-live-status></p>
+        <p class="hint" data-preview-thumbnail-bundle-status></p>
+        <p class="hint thumbnail-warning" data-preview-thumbnail-manual-status></p>
         <p class="hint" data-preview-music-status></p>
       </div>
       <ul class="error-list" data-errors-step2 hidden></ul>
@@ -246,6 +261,6 @@ https://www.mobygames.com/..."></textarea></label>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/games-editor.js?v=admin-stable-20260207"></script>
+  <script type="module" src="/admin/js/games-editor.js?v=thumbnail-export-20260702"></script>
 </body>
 </html>
