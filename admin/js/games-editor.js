@@ -1,3 +1,5 @@
+import { ensureRole, startAccessMonitor } from './guard.js';
+
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const FILENAME_ONLY_STORAGE_KEY = 'ccg-games-editor-filename-only-mode';
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
@@ -126,6 +128,9 @@ const el = {
 init();
 
 async function init() {
+  const access = await ensureRole(['editor', 'admin', 'superadmin']);
+  if (!access) return;
+  await startAccessMonitor();
   hydrateFilenameOnlyModePreference();
   bindEvents();
   await Promise.all([loadGameOutputUtils(), loadLibrary(), loadTemplates(), loadSiteSettings()]);

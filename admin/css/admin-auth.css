@@ -151,3 +151,22 @@
     align-items: flex-start;
   }
 }
+
+.admin-auth-message[data-state='warning'],
+[data-admin-status][data-state='warning'] {
+  color: #ffe08a;
+}
+
+.ccg-auth-peek,
+.admin-auth-link {
+  justify-self: start;
+}
+
+.ccg-auth-peek {
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: rgba(2, 9, 20, 0.72);
+  color: var(--admin-text);
+  cursor: pointer;
+  padding: 0.45rem 0.65rem;
+}
