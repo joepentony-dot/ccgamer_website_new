@@ -29128,6 +29128,55 @@
     "_ccg_migrated": false
   },
   {
+    "system": "AMIGA",
+    "id": "zeewolf",
+    "slug": "zeewolf",
+    "title": "Zeewolf",
+    "sorttitle": "Zeewolf",
+    "year": 1994,
+    "genres": [
+      "shooting"
+    ],
+    "collections": [],
+    "videoid": "iFDaeYjZnsc",
+    "thumbnail": "resources/images/thumbnails/all/zeewolf.jpg",
+    "music": [
+      "zeewolf.mp3"
+    ],
+    "pdf": "https://drive.google.com/file/d/1bM5XVV1AGtwToG5ti-fqkq8CfanNmgzL/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/1nNjQ4gA6FWuOGeEsHommWMy50dSRNf6E/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemonamiga.com/game/zeewolf"
+    ],
+    "description": "A 3D helicopter combat game mixing fast action with tactical missions, hostage rescues and vehicle transport across 32 increasingly difficult operations.",
+    "ccg_rating": 8,
+    "ccg_rating_reason": "A hugely enjoyable and absorbing helicopter combat game with varied missions and plenty of depth, held back slightly by awkward controls and slowdown on older Amigas.",
+    "credits": {
+      "publisher": [
+        "Empire Software"
+      ],
+      "developer": [
+        "Binary Asylum"
+      ],
+      "producer": "",
+      "coder": [
+        "Andy Wilton",
+        "Jim Gardner"
+      ],
+      "graphics": [
+        "Paul Kidby"
+      ],
+      "musician": [
+        "Allister Brimble"
+      ],
+      "re_releaser": []
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
     "system": "C64",
     "id": "zenji",
     "slug": "zenji",
