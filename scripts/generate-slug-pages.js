@@ -137,19 +137,28 @@ function normalizeHtmlForComparison(html) {
     return String(html || "").replace(/\r\n/g, "\n").trim();
 }
 
-function buildRedirectStubHtml(slug, canonicalUrl) {
+function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description = "") {
     return `<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/" />
-  <link rel="canonical" href="${escapeHtml(canonicalUrl)}" />
-  <meta name="robots" content="noindex,follow" />
+<meta charset="UTF-8">
+<script src="/js/analytics.js"></script>
+<meta name="robots" content="noindex,follow">
+<meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/">
+<script>
+(function(){
+  window.location.replace(
+    "/games/${escapeHtml(slug)}/" +
+    window.location.search +
+    window.location.hash
+  );
+})();
+</script>
+<title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
+<meta name="description" content="${escapeHtml(description)}">
+<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
 </head>
-<body>
-  <script>
-    location.replace("/games/${escapeHtml(slug)}/");
-  </script>
-</body>
+<body></body>
 </html>
 `;
 }
@@ -181,7 +190,7 @@ function getExpectedPageArtifacts(game, slug, validation) {
             platformLong,
             platformShort
         }),
-        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl)
+        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl, title, description)
     };
 }
 
@@ -333,137 +342,53 @@ function buildBreadcrumbSchema({ canonicalUrl, title }) {
     };
 }
 
-function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage, year, publisher, platformLong, platformShort }) {
-    const seoTitle = `${title} (${year}) – ${platformShort} Gameplay, Review & Guide`;
-    const metaDescription = `Play ${title} (${year}) on the ${platformLong}. Watch gameplay, tips, history and download info on Cheeky Commodore Gamer.`;
-    const ogDescription = stripHtml(game?.summary || game?.title || title);
-    const thumbnailUrl = ogImage;
-    const videoId = String(game?.youtubeId || game?.videoid || game?.youtube || "").trim();
-    const hasVideo = Boolean(videoId);
-
-    const schemaData = buildVideoGameSchema({
-        game,
-        title,
-        description: metaDescription,
-        canonicalUrl,
-        ogImage: thumbnailUrl,
-        year,
-        platformLong,
-        publisher
-    });
-    const videoObjectSchema = buildVideoObjectSchema({
-        title,
-        description: ogDescription || title,
-        videoId,
-        canonicalUrl
-    });
-    const schemaGraph = videoObjectSchema ? [schemaData, videoObjectSchema] : [schemaData];
-    const breadcrumbSchema = buildBreadcrumbSchema({ canonicalUrl, title });
+function buildCanonicalHtml({ slug, game, title, canonicalUrl, ogImage, platformLong }) {
+    const gameId = String(game?.id || toGameId(slug)).trim();
+    const metaDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
+    const target = `/games/game.html?id=${gameId}`;
 
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
-<title>${escapeHtml(seoTitle)}</title>
-<script src="/js/analytics.js"></script>
-<meta charset="UTF-8">
-<meta name="description" content="${escapeHtml(metaDescription)}">
-<link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-<meta property="og:type" content="video.other">
-<meta property="og:site_name" content="Cheeky Commodore Gamer">
-<meta property="og:title" content="${escapeHtml(`${title} (${year}) – C64 Gameplay`)}">
-<meta property="og:description" content="${escapeHtml(ogDescription || title)}">
-<meta property="og:url" content="${escapeHtml(canonicalUrl)}">
-<meta property="og:image" content="${escapeHtml(thumbnailUrl)}">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="${escapeHtml(seoTitle)}">
-<meta name="twitter:description" content="${escapeHtml(metaDescription)}">
-<meta name="twitter:image" content="${escapeHtml(thumbnailUrl)}">
-<meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="../favicon.ico">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../resources/css/ccg-master.css">
-<link rel="stylesheet" href="../resources/css/ccg-mode.css">
-<link rel="stylesheet" href="../resources/css/ccg-effects.css">
-<link rel="stylesheet" href="../resources/css/ccg-anim.css">
-<link rel="stylesheet" href="../resources/css/ccg-overlays.css">
-<link rel="stylesheet" href="../resources/css/ccg-cards.css">
-<link rel="stylesheet" href="../resources/css/games.css">
-<link rel="stylesheet" href="../resources/css/ccg-footer.css">
-<link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css">
-<script src="../js/ccg-mobile-lite.js" defer></script>
-<script type="application/ld+json">
-${JSON.stringify({
-    "@context": "https://schema.org",
-    "@graph": schemaGraph
-}, null, 2)}
-</script>
-<script type="application/ld+json">
-${JSON.stringify(breadcrumbSchema, null, 2)}
-</script>
+    <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
+    <meta name="description" content="${escapeHtml(metaDescription)}">
+    <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Cheeky Commodore Gamer">
+    <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
+    <meta property="og:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
+    <meta property="og:description" content="${escapeHtml(metaDescription)}">
+    <meta property="og:image" content="${escapeHtml(ogImage)}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
+    <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
+    <meta name="twitter:image" content="${escapeHtml(ogImage)}">
+    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
+<meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/js/analytics.js"></script>
+    <meta http-equiv="refresh" content="0; url=${escapeHtml(target)}">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("${escapeHtml(target)}");
+            }
+        })();
+    </script>
 </head>
-<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
-<div class="ccg-bg" aria-hidden="true">
-<div class="ccg-bg-starfield"></div>
-<div class="ccg-bg-grid"></div>
-<div class="ccg-bg-crt-overlay"></div>
-</div>
-<div class="ccg-page">
-<main class="ccg-main">
-<section class="game-hero">
-<div class="game-hero__inner">
-<div class="game-hero__media">
-<img class="game-hero__thumb" src="../resources/images/thumbnails/all/${escapeHtml(path.basename(ogImage))}" alt="${escapeHtml(title)} cover" loading="lazy" width="460" height="215">
-</div>
-<div class="game-hero__content">
-<h1 class="game-hero__title">${escapeHtml(title)}</h1>
-<p class="game-hero__lede">${escapeHtml(description)}</p>
-<div class="game-hero__meta">
-<span class="game-meta__item">${escapeHtml(String(year))}</span>
-<span class="game-meta__sep">•</span>
-<span class="game-meta__item">${escapeHtml(platformShort)}</span>
-<span class="game-meta__sep">•</span>
-<span class="game-meta__item">${escapeHtml(publisher)}</span>
-</div>
-</div>
-</div>
-</section>
-${hasVideo ? `<section class="game-section" id="watch">
-<p class="game-section__kicker">Longplay / Review</p>
-<h2 class="game-section__title">Watch the Action</h2>
-<div class="game-video">
-<iframe class="game-video__frame"
-title="${escapeHtml(title)} gameplay video"
-src="https://www.youtube.com/embed/${escapeHtml(videoId)}"
-allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; web-share"
-allowfullscreen></iframe>
-<div class="game-video__actions">
-<a class="game-pill" href="https://www.youtube.com/watch?v=${escapeHtml(videoId)}" target="_blank" rel="noopener">Open on YouTube</a>
-</div>
-</div>
-</section>` : ""}
-<section class="game-section">
-<p class="game-section__kicker">Overview</p>
-<h2 class="game-section__title">Game Summary</h2>
-<div class="game-description">${escapeHtml(description)}</div>
-</section>
-<section class="game-section">
-<p class="game-section__kicker">Explore</p>
-<h2 class="game-section__title">More Details</h2>
-<div class="game-downloads">
-<a class="ccg-btn ccg-btn--primary" href="/games/game.html?id=${escapeHtml(toGameId(slug))}">View the full interactive game page</a>
-<a class="ccg-btn ccg-btn--ghost" href="/games/index.html">Browse all games</a>
-</div>
-</section>
-</main>
-<footer class="ccg-footer">
-<p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer. Not affiliated with Commodore, Amiga or publishers.</p>
-</footer>
-</div>
-<script src="../js/ccg-base.js" defer></script>
-<script src="../resources/js/ccg-share.js" defer></script>
-<script data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
-</body>
+<body></body>
 </html>
 `;
 }
