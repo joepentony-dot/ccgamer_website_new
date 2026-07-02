@@ -165,18 +165,11 @@ function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description =
 
 function getExpectedPageArtifacts(game, slug, validation) {
     const title = stripHtml(game.title || "Game");
-    const year = stripHtml(game.year || "Unknown Year");
-    const publisher = stripHtml(game.publisher || game.developer || "Unknown Publisher");
     const platformLong = detectPlatform(game);
-    const platformShort = normalizePlatformShort(game);
-    const description = buildDescription(game, title, platformLong);
+    const description = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
 
     return {
         title,
-        year,
-        publisher,
-        platformLong,
-        platformShort,
         description,
         canonicalHtml: buildCanonicalHtml({
             slug,
@@ -184,11 +177,7 @@ function getExpectedPageArtifacts(game, slug, validation) {
             title,
             description,
             canonicalUrl: validation.canonicalUrl,
-            ogImage: validation.ogImage,
-            year,
-            publisher,
-            platformLong,
-            platformShort
+            ogImage: validation.ogImage
         }),
         redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl, title, description)
     };
@@ -196,26 +185,10 @@ function getExpectedPageArtifacts(game, slug, validation) {
 
 function getCanonicalRewriteReason(filePath, expected) {
     if (!fs.existsSync(filePath)) return "missing canonical page";
-
     const html = fs.readFileSync(filePath, "utf8");
-    const canonical = extractTagValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
-    const ogUrl = extractTagValue(html, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
-    const twitterUrl = extractTagValue(html, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
-    const title = extractTagValue(html, /<title>([^<]*)<\/title>/i);
-    const description = extractTagValue(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
-    const expectedTitle = extractTagValue(expected.canonicalHtml, /<title>([^<]*)<\/title>/i);
-    const expectedDescription = extractTagValue(expected.canonicalHtml, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
-
-    if (canonical !== expected.canonicalUrl) return "canonical mismatch";
-    if (ogUrl !== expected.canonicalUrl) return "og:url mismatch";
-    if (twitterUrl !== expected.canonicalUrl) return "twitter:url mismatch";
-    if (title !== expectedTitle) return "title metadata changed";
-    if (description !== expectedDescription) return "description metadata changed";
-
     if (normalizeHtmlForComparison(html) !== normalizeHtmlForComparison(expected.canonicalHtml)) {
-        return "metadata outdated";
+        return "canonical wrapper changed";
     }
-
     return "";
 }
 

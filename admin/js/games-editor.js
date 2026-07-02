@@ -113,6 +113,7 @@ const el = {
   previewThumbnailStatus: document.querySelector('[data-preview-thumbnail-status]'),
   previewThumbnailLiveStatus: document.querySelector('[data-preview-thumbnail-live-status]'),
   previewThumbnailBundleStatus: document.querySelector('[data-preview-thumbnail-bundle-status]'),
+  previewThumbnailManifest: document.querySelector('[data-preview-thumbnail-manifest]'),
   previewThumbnailManualStatus: document.querySelector('[data-preview-thumbnail-manual-status]'),
   thumbnailFileInput: document.querySelector('[data-thumbnail-file]'),
   previewMusicStatus: document.querySelector('[data-preview-music-status]'),
@@ -494,6 +495,10 @@ function renderStep() {
           ? 'games/games.json (complete deployment package with full merged file)'
           : 'games/games.json (new entry only array)';
       }
+      if (el.previewThumbnailManifest) {
+        const packaged = packageData.thumbnailPackaging?.mode === 'local';
+        el.previewThumbnailManifest.textContent = `${packageData.gameEntry.thumbnail} (${packaged ? 'bundled local thumbnail' : 'manual/live thumbnail; not bundled'})`;
+      }
     }
   }
 }
@@ -796,11 +801,11 @@ function buildPackageData() {
 
   const publisherForSeo = credits.publisher?.[0] || 'Cheeky Commodore Gamer';
   const imagePath = gameEntry.thumbnail || 'resources/images/thumbnails/all/default.jpg';
-  const imageUrl = imagePath.startsWith('http') ? imagePath : `${SITE_ORIGIN}/${imagePath.replace(/^\/+/, '')}`;
-
-  const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription });
-  const canonicalHtml = renderTemplate(state.templates.landing, templateVars);
-  const redirectHtml = renderTemplate(state.templates.redirect, templateVars);
+  const platformLabel = normalizeSeoPlatformLabel(system);
+  const wrapperDescription = `${title} on ${platformLabel} — screenshots, manual, downloads and video.`;
+  const templateVars = buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePath, seoDescription: wrapperDescription });
+  const canonicalWrapperHtml = renderTemplate(state.templates.landing, templateVars);
+  const legacyRedirectHtml = renderTemplate(state.templates.redirect, templateVars);
 
   const seoValidationErrors = validateGeneratedSeoPackage({ slug, id, seoUrls, seoDescription: templateVars.DESCRIPTION, canonicalHtml, redirectHtml });
   if (seoValidationErrors.length) {
@@ -824,14 +829,13 @@ function buildPackageData() {
     '',
     'Copy files from this ZIP into the repo:',
     '- games/games.json',
-    `- games/${slug}/index.html`,
-    `- games/${slug}.html`,
-    '- sitemap-games.xml',
-    '- sitemap.xml',
     '- games/games-index.json',
     '- games/games-search.json',
-    '- games-index.json search browse data',
-    '- games-search.json site search data',
+    `- games/${slug}.html (legacy redirect to /games/${slug}/)`,
+    `- games/${slug}/index.html (canonical SEO wrapper)`,
+    '- sitemap-games.xml',
+    '- sitemap.xml',
+    '- README.txt',
     '',
     'games.json instructions:',
     '- If you exported FULL games.json: replace /games/games.json in the repo with this file.',
@@ -843,12 +847,19 @@ function buildPackageData() {
     '',
     'Full export includes:',
     '- full merged games.json',
-    '- canonical nested game page',
-    '- flat legacy redirect',
+    '- games/<slug>.html legacy redirect',
+    '- games/<slug>/index.html canonical SEO wrapper',
     '- game index data',
     '- search data',
     '- games sitemap',
     '- root sitemap index',
+    '',
+    'Route architecture:',
+    '- games/<slug>.html is the legacy redirect.',
+    '- games/<slug>/index.html is the canonical SEO wrapper.',
+    '- games/game.html displays the game using games/games.json.',
+    '- Both wrapper files are included in this ZIP.',
+    '- No manual HTML creation is required.',
     '',
     'sitemap-games.xml and sitemap.xml:',
     '- Upload as-is with no post-processing required.'
@@ -871,8 +882,8 @@ function buildPackageData() {
     gameEntry,
     mergedGames,
     gamesJsonOutput,
-    canonicalHtml,
-    redirectHtml,
+    canonicalWrapperHtml,
+    legacyRedirectHtml,
     sitemapGames,
     sitemapIndex,
     gamesIndex,
@@ -950,6 +961,7 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     YEAR: String(year),
     PUBLISHER: cleanForHtml(publisherForSeo),
     PLATFORM: cleanForHtml(system),
+    PLATFORM_LABEL: cleanForHtml(normalizeSeoPlatformLabel(system)),
     SLUG: cleanForHtml(slug),
     CANONICAL_URL: cleanForHtml(seoUrls.canonicalUrl),
     THUMBNAIL: cleanForHtml(imagePath).replace(/^\/+/, ''),
@@ -1077,10 +1089,13 @@ function readMetaValue(html, pattern) {
 
 function validateGeneratedSeoPackage({ slug, id, seoUrls, seoDescription, canonicalHtml, redirectHtml }) {
   const errors = [];
-  const canonical = readMetaValue(canonicalHtml, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
-  const ogUrl = readMetaValue(canonicalHtml, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
-  const twitterUrl = readMetaValue(canonicalHtml, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
-  const description = readMetaValue(canonicalHtml, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
+  const nested = String(canonicalWrapperHtml || '');
+  const flat = String(legacyRedirectHtml || '');
+  const canonical = readMetaValue(nested, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+  const ogUrl = readMetaValue(nested, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
+  const twitterUrl = readMetaValue(nested, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
+  const description = readMetaValue(nested, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
+  const imageUrl = String(imagePath || '').startsWith('http') ? String(imagePath || '') : `${SITE_ORIGIN}/${String(imagePath || '').replace(/^\/+/, '')}`;
   if (!getGameOutputUtils().isValidGameSlug(slug)) errors.push('Slug is invalid for canonical publishing.');
   if (!String(seoDescription || '').trim()) errors.push('Required metadata missing: description.');
   if (canonical !== seoUrls.canonicalUrl) errors.push('Canonical mismatch in generated landing page.');
@@ -1262,8 +1277,8 @@ function getRequiredPackagePaths(packageData) {
 function validatePackageManifest(packageData) {
   const requiredValues = [
     ['gamesJsonOutput', 'games/games.json'],
-    ['canonicalHtml', `games/${packageData.slug}/index.html`],
-    ['redirectHtml', `games/${packageData.slug}.html`],
+    ['canonicalWrapperHtml', `games/${packageData.slug}/index.html`],
+    ['legacyRedirectHtml', `games/${packageData.slug}.html`],
     ['gamesIndex', 'games/games-index.json'],
     ['gamesSearch', 'games/games-search.json'],
     ['sitemapGames', 'sitemap-games.xml'],
@@ -1308,16 +1323,15 @@ async function downloadZip(packageData) {
     throw new Error('JSZip is not available.');
   }
 
+  validatePackageManifest(packageData);
   const zip = new window.JSZip();
   zip.file('games/games.json', packageData.gamesJsonOutput);
-  validatePackageManifest(packageData);
-
-  zip.file(`games/${packageData.slug}/index.html`, `${packageData.canonicalHtml}\n`);
-  zip.file(`games/${packageData.slug}.html`, `${packageData.redirectHtml}\n`);
-  zip.file('sitemap-games.xml', `${packageData.sitemapGames}\n`);
-  zip.file('sitemap.xml', `${packageData.sitemapIndex}\n`);
   zip.file('games/games-index.json', `${packageData.gamesIndex}\n`);
   zip.file('games/games-search.json', `${packageData.gamesSearch}\n`);
+  zip.file(`games/${packageData.slug}.html`, `${packageData.legacyRedirectHtml}\n`);
+  zip.file(`games/${packageData.slug}/index.html`, `${packageData.canonicalWrapperHtml}\n`);
+  zip.file('sitemap-games.xml', `${packageData.sitemapGames}\n`);
+  zip.file('sitemap.xml', `${packageData.sitemapIndex}\n`);
   zip.file('README.txt', `${packageData.readme}\n`);
   if (packageData.thumbnailPackaging?.mode === 'local' && packageData.thumbnailPackaging.file) {
     zip.file(packageData.gameEntry.thumbnail, packageData.thumbnailPackaging.file);
