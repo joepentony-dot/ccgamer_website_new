@@ -4,6 +4,7 @@ const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const FILENAME_ONLY_STORAGE_KEY = 'ccg-games-editor-filename-only-mode';
 const THUMBNAIL_BASE_PATH = 'resources/images/thumbnails/all/';
 const BOX3D_BASE_PATH = 'resources/images/games/boxes-3d/';
+const SUPPORTED_THUMBNAIL_EXTENSIONS = ['png', 'jpg', 'jpeg', 'webp'];
 const LANDING_TEMPLATE_PATH = '/admin/templates/game-landing-template.html';
 const REDIRECT_TEMPLATE_PATH = '/admin/templates/game-redirect-template.html';
 const GAME_OUTPUT_UTILS_PATH = '/scripts/game-output-utils.js';
@@ -56,7 +57,8 @@ const EMPTY_DRAFT = {
   filenameOnlyMode: true,
   jsonExportMode: 'full',
   notifyMembers: false,
-  sendTestEmail: false
+  sendTestEmail: false,
+  manualThumbnailUpload: false
 };
 
 const state = {
@@ -75,6 +77,8 @@ const state = {
     redirect: ''
   },
   thumbnailCheck: 'idle',
+  thumbnailLiveExists: null,
+  localThumbnailFile: null,
   musicCheck: 'idle',
   slugManuallyEdited: false,
   siteSettings: {
@@ -105,6 +109,10 @@ const el = {
   previewSlug: document.querySelector('[data-preview-slug]'),
   previewThumbnailPath: document.querySelector('[data-preview-thumbnail-path]'),
   previewThumbnailStatus: document.querySelector('[data-preview-thumbnail-status]'),
+  previewThumbnailLiveStatus: document.querySelector('[data-preview-thumbnail-live-status]'),
+  previewThumbnailBundleStatus: document.querySelector('[data-preview-thumbnail-bundle-status]'),
+  previewThumbnailManualStatus: document.querySelector('[data-preview-thumbnail-manual-status]'),
+  thumbnailFileInput: document.querySelector('[data-thumbnail-file]'),
   previewMusicStatus: document.querySelector('[data-preview-music-status]'),
   previewLandingUrl: document.querySelector('[data-preview-landing-url]'),
   previewRedirectTarget: document.querySelector('[data-preview-redirect-target]'),
@@ -157,6 +165,10 @@ function bindEvents() {
       if (field.dataset.field === 'filenameOnlyMode') {
         window.localStorage.setItem(FILENAME_ONLY_STORAGE_KEY, String(field.checked));
         renderWarnings(el.step2Warnings, validateStep2Warnings());
+      }
+      if (field.dataset.field === 'manualThumbnailUpload' && field.checked) {
+        state.localThumbnailFile = null;
+        if (el.thumbnailFileInput) el.thumbnailFileInput.value = '';
       }
       updateStep1UiState();
       updateDerivedPreviews();
@@ -230,6 +242,13 @@ function bindEvents() {
     field.addEventListener('input', handleFieldInput);
     field.addEventListener('change', handleFieldInput);
     field.addEventListener('keyup', handleFieldInput);
+  });
+
+  el.thumbnailFileInput?.addEventListener('change', () => {
+    state.localThumbnailFile = el.thumbnailFileInput.files?.[0] || null;
+    if (state.localThumbnailFile) state.draft.manualThumbnailUpload = false;
+    setFieldChecked('manualThumbnailUpload', false);
+    updateDerivedPreviews();
   });
 
   el.newCategoryButton?.addEventListener('click', () => {
@@ -312,9 +331,11 @@ function bindEvents() {
     try {
       const requiredFileCheck = await validateRequiredFiles();
       if (!requiredFileCheck.ok) {
+        updateDerivedPreviews();
         setDownloadStatus(requiredFileCheck.message, true);
         return;
       }
+      updateDerivedPreviews();
 
       const packageData = buildPackageData();
       await downloadZip(packageData);
@@ -570,8 +591,17 @@ function validateStep1() {
 
 function validateStep2() {
   const errors = [];
+  const thumbnailPath = normalizeThumbnailPath(state.draft.thumbnail, normalizeGameSlug(String(state.draft.slug || '').trim(), state.draft.title));
   if (!String(state.draft.thumbnail || '').trim()) {
     errors.push('Thumbnail is required.');
+  } else {
+    const pathError = validateThumbnailPathFormat(thumbnailPath);
+    if (pathError) errors.push(pathError);
+  }
+
+  if (state.localThumbnailFile) {
+    const fileError = validateLocalThumbnailFile(state.localThumbnailFile, thumbnailPath);
+    if (fileError) errors.push(fileError);
   }
 
   parseLines(state.draft.disk).forEach((url) => {
@@ -601,13 +631,33 @@ async function validateRequiredFiles() {
   const slug = normalizeGameSlug(String(state.draft.slug || '').trim(), state.draft.title);
   if (!slug) return { ok: false, message: 'Slug is required before file validation.' };
 
-  const thumbnailUrl = `/resources/images/thumbnails/all/${slug}.jpg`;
-  const thumbnailOk = await fileExists(thumbnailUrl);
-  if (!thumbnailOk) {
-    return { ok: false, message: `Missing required thumbnail: ${thumbnailUrl}` };
+  const thumbnailPath = normalizeThumbnailPath(state.draft.thumbnail, slug);
+  const pathError = validateThumbnailPathFormat(thumbnailPath);
+  if (pathError) return { ok: false, message: pathError };
+
+  if (state.localThumbnailFile) {
+    const fileError = validateLocalThumbnailFile(state.localThumbnailFile, thumbnailPath);
+    if (fileError) return { ok: false, message: fileError };
+    state.thumbnailLiveExists = false;
+    return { ok: true, mode: 'local', message: `Thumbnail will be bundled at ${thumbnailPath}.` };
   }
 
-  return { ok: true };
+  if (state.draft.manualThumbnailUpload) {
+    state.thumbnailLiveExists = false;
+    return { ok: true, mode: 'manual', message: `Manual thumbnail upload confirmed for ${thumbnailPath}.` };
+  }
+
+  const thumbnailUrl = `/${thumbnailPath}`;
+  const thumbnailOk = await fileExists(thumbnailUrl);
+  state.thumbnailLiveExists = thumbnailOk;
+  if (!thumbnailOk) {
+    return {
+      ok: false,
+      message: `Missing required thumbnail: ${thumbnailUrl}. Select a local thumbnail file or check “I will upload this thumbnail manually with the package” to continue.`
+    };
+  }
+
+  return { ok: true, mode: 'live', message: `Existing live thumbnail found at ${thumbnailUrl}.` };
 }
 
 function validateStep2Warnings() {
@@ -616,15 +666,15 @@ function validateStep2Warnings() {
   const box3dRaw = String(state.draft.box3d || '').trim();
 
   if (state.draft.filenameOnlyMode) {
-    if (thumbnailRaw && !isLikelyFullPath(thumbnailRaw) && !/\.(?:png|jpe?g)$/i.test(thumbnailRaw)) {
-      warnings.push('Thumbnail filename should include .png, .jpg, or .jpeg in filename-only mode.');
+    if (thumbnailRaw && !isLikelyFullPath(thumbnailRaw) && !/\.(?:png|jpe?g|webp)$/i.test(thumbnailRaw)) {
+      warnings.push('Thumbnail filename should include .png, .jpg, .jpeg, or .webp in filename-only mode.');
     }
 
     if (box3dRaw && !isLikelyFullPath(box3dRaw) && /\.[a-z0-9]+$/i.test(box3dRaw) && !/\.webp$/i.test(box3dRaw)) {
       warnings.push('3D box filename uses a non-.webp extension; .webp is recommended in filename-only mode.');
     }
   } else {
-    if (thumbnailRaw && !/\.(?:png|jpe?g|webp|gif)$/i.test(thumbnailRaw)) {
+    if (thumbnailRaw && !/\.(?:png|jpe?g|webp)$/i.test(thumbnailRaw)) {
       warnings.push('Thumbnail path appears to be missing an extension.');
     }
 
@@ -763,7 +813,7 @@ function buildPackageData() {
   const gamesIndex = buildGamesIndex(mergedGames);
   const gamesSearch = buildGamesSearch(mergedGames);
 
-  const readme = [
+  const readmeLines = [
     'CCG Game Package',
     '================',
     '',
@@ -787,7 +837,16 @@ function buildPackageData() {
     'sitemap-games.xml:',
     '- Full upload-ready sitemap generated directly from games.json.',
     '- Upload as-is with no post-processing required.'
-  ].join('\n');
+  ];
+
+  const thumbnailPackaging = getThumbnailPackagingInfo(gameEntry.thumbnail);
+  if (thumbnailPackaging.mode === 'manual') {
+    readmeLines.push('', 'Required manual file:', gameEntry.thumbnail, 'Upload this file to the repository before deploying the game entry.');
+  } else if (thumbnailPackaging.mode === 'local') {
+    readmeLines.push('', 'Bundled thumbnail:', gameEntry.thumbnail, 'This ZIP includes the selected thumbnail at the exact games.json destination.');
+  }
+
+  const readme = readmeLines.join('\n');
 
   return {
     slug,
@@ -802,7 +861,8 @@ function buildPackageData() {
     gamesIndex,
     gamesSearch,
     readme,
-    normalizedBox3dPath
+    normalizedBox3dPath,
+    thumbnailPackaging
   };
 }
 
@@ -1076,7 +1136,18 @@ function updateDerivedPreviews() {
   if (el.previewLandingUrl) el.previewLandingUrl.textContent = canonicalPath;
   if (el.previewRedirectTarget) el.previewRedirectTarget.textContent = canonicalPath;
   if (el.previewThumbnailStatus) {
-    el.previewThumbnailStatus.textContent = thumbnailPath ? `Will store: ${thumbnailPath}` : 'No thumbnail set.';
+    el.previewThumbnailStatus.textContent = thumbnailPath ? `Final path: ${thumbnailPath}` : 'No thumbnail set.';
+  }
+  const packaging = getThumbnailPackagingInfo(thumbnailPath);
+  if (el.previewThumbnailLiveStatus) {
+    const liveText = state.thumbnailLiveExists === true ? 'Already live: yes' : state.thumbnailLiveExists === false ? 'Already live: no or not checked for this mode' : 'Already live: will be checked during export unless bundled/manual.';
+    el.previewThumbnailLiveStatus.textContent = thumbnailPath ? liveText : '';
+  }
+  if (el.previewThumbnailBundleStatus) {
+    el.previewThumbnailBundleStatus.textContent = thumbnailPath ? `Bundled in ZIP: ${packaging.mode === 'local' ? 'yes' : 'no'}` : '';
+  }
+  if (el.previewThumbnailManualStatus) {
+    el.previewThumbnailManualStatus.textContent = thumbnailPath && packaging.mode === 'manual' ? `Manual upload required before deployment: ${thumbnailPath}` : '';
   }
   if (el.previewMusicStatus) {
     el.previewMusicStatus.textContent = slug ? `Auto-detect on page: /resources/audio/games/${slug}.mp3` : 'Music auto-detection requires a slug.';
@@ -1117,6 +1188,9 @@ async function downloadZip(packageData) {
   zip.file('games/games-index.json', `${packageData.gamesIndex}\n`);
   zip.file('games/games-search.json', `${packageData.gamesSearch}\n`);
   zip.file('README.txt', `${packageData.readme}\n`);
+  if (packageData.thumbnailPackaging?.mode === 'local' && packageData.thumbnailPackaging.file) {
+    zip.file(packageData.gameEntry.thumbnail, packageData.thumbnailPackaging.file);
+  }
 
   const blob = await zip.generateAsync({ type: 'blob' });
   const url = URL.createObjectURL(blob);
@@ -1245,6 +1319,14 @@ function setFieldValue(fieldName, value) {
   const field = document.querySelector(`[data-field="${fieldName}"]`);
   if (field && field.value !== value) {
     field.value = value;
+  }
+}
+
+function setFieldChecked(fieldName, checked) {
+  state.draft[fieldName] = Boolean(checked);
+  const field = document.querySelector(`[data-field="${fieldName}"]`);
+  if (field && field.type === 'checkbox') {
+    field.checked = Boolean(checked);
   }
 }
 
@@ -1377,8 +1459,8 @@ function validateGameEntrySchema(gameEntry) {
   } else if (!/^[A-Za-z0-9_-]{11}$/.test(gameEntry.videoid.trim())) {
     errors.push('videoid must be a valid 11-character YouTube video ID.');
   }
-  if (typeof gameEntry.thumbnail !== 'string' || !/^resources\/images\/thumbnails\/all\/.+\.(?:png|jpg|jpeg|webp|gif)$/i.test(gameEntry.thumbnail)) {
-    errors.push('thumbnail must be resources/images/thumbnails/all/<file>.<ext>.');
+  if (typeof gameEntry.thumbnail !== 'string' || !/^resources\/images\/thumbnails\/all\/.+\.(?:png|jpg|jpeg|webp)$/i.test(gameEntry.thumbnail)) {
+    errors.push('thumbnail must be resources/images/thumbnails/all/<file>.<ext> using png, jpg, jpeg, or webp.');
   }
   if ('music' in gameEntry) {
     if (!Array.isArray(gameEntry.music)) {
@@ -1415,11 +1497,52 @@ function normalizeThumbnailPath(rawValue, slug) {
   if (!value) return `${THUMBNAIL_BASE_PATH}${slug}.png`;
 
   if (state.draft.filenameOnlyMode && !isLikelyFullPath(value)) {
-    const filename = value.replace(/^\/+/, '');
+    const filename = value.replace(/^\/+/, '').toLowerCase();
     return `${THUMBNAIL_BASE_PATH}${filename}`;
   }
 
-  return value.replace(/^\/+/, '');
+  return value.replace(/^\/+/, '').replace(/([^/]+)$/, (filename) => filename.toLowerCase());
+}
+
+function getThumbnailExtension(path) {
+  return String(path || '').trim().split('.').pop().toLowerCase();
+}
+
+function validateThumbnailPathFormat(path) {
+  const normalized = String(path || '').trim();
+  if (!/^resources\/images\/thumbnails\/all\/[^/]+\.[a-z0-9]+$/i.test(normalized)) {
+    return 'Thumbnail must be resources/images/thumbnails/all/<file>.<ext>.';
+  }
+  const extension = getThumbnailExtension(normalized);
+  if (!SUPPORTED_THUMBNAIL_EXTENSIONS.includes(extension)) {
+    return 'Thumbnail extension must be .png, .jpg, .jpeg, or .webp.';
+  }
+  return '';
+}
+
+function validateLocalThumbnailFile(file, thumbnailPath) {
+  if (!file) return '';
+  const fileExtension = getThumbnailExtension(file.name);
+  const pathExtension = getThumbnailExtension(thumbnailPath);
+  if (!SUPPORTED_THUMBNAIL_EXTENSIONS.includes(fileExtension)) {
+    return 'Local thumbnail file must be PNG, JPG, JPEG, or WEBP.';
+  }
+  if (fileExtension !== pathExtension) {
+    return `Local thumbnail extension .${fileExtension} must match final thumbnail path .${pathExtension}.`;
+  }
+  const fileName = String(file.name || '').trim().toLowerCase();
+  const pathName = String(thumbnailPath || '').trim().split('/').pop().toLowerCase();
+  if (fileName && pathName && fileName !== pathName) {
+    return `Local thumbnail filename ${file.name} must match final thumbnail filename ${thumbnailPath.split('/').pop()}.`;
+  }
+  return '';
+}
+
+function getThumbnailPackagingInfo(thumbnailPath) {
+  if (!thumbnailPath) return { mode: 'none', file: null };
+  if (state.localThumbnailFile) return { mode: 'local', file: state.localThumbnailFile };
+  if (state.draft.manualThumbnailUpload) return { mode: 'manual', file: null };
+  return { mode: 'live', file: null };
 }
 
 function normalizeBox3dPath(rawValue, slug) {
