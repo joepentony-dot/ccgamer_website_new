@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{GAME_NAME}} | Cheeky Commodore Gamer</title>
-    <meta name="description" content="{{DESCRIPTION}}">
-    <link rel="canonical" href="{{CANONICAL_URL}}">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Cheeky Commodore Gamer">
-    <meta property="og:url" content="{{CANONICAL_URL}}">
-    <meta property="og:title" content="{{GAME_NAME}} | Cheeky Commodore Gamer">
-    <meta property="og:description" content="{{DESCRIPTION}}">
-    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/{{THUMBNAIL_FILENAME}}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-{{FB_APP_ID_META}}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{GAME_NAME}} | Cheeky Commodore Gamer">
-    <meta name="twitter:description" content="{{DESCRIPTION}}">
-    <meta name="twitter:url" content="{{CANONICAL_URL}}">
-<meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/{{THUMBNAIL_FILENAME}}">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/js/analytics.js"></script>
+    <title>{{GAME_NAME}} redirect | Cheeky Commodore Gamer</title>
     <meta name="robots" content="noindex,follow">
+    <meta name="description" content="Redirecting to {{GAME_NAME}} on Cheeky Commodore Gamer.">
+    <link rel="canonical" href="{{CANONICAL_URL}}">
+    <meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
+    <script src="/js/analytics.js"></script>
+    <script>
+    (function () {
+      var suffix = window.location.search + window.location.hash;
+      window.location.replace("/games/{{SLUG}}/" + suffix);
+    })();
+    </script>
 </head>
-<body></body>
+<body>
+    <p>Redirecting to <a href="/games/{{SLUG}}/">{{GAME_NAME}}</a>.</p>
+</body>
 </html>
