@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{{GAME_NAME}} redirect | Cheeky Commodore Gamer</title>
-    <meta name="robots" content="noindex,follow">
-    <meta name="description" content="Redirecting to {{GAME_NAME}} on Cheeky Commodore Gamer.">
-    <link rel="canonical" href="{{CANONICAL_URL}}">
-    <meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
-    <script src="/js/analytics.js"></script>
-    <script>
-    (function () {
-      var suffix = window.location.search + window.location.hash;
-      window.location.replace("/games/{{SLUG}}/" + suffix);
-    })();
-    </script>
+<meta charset="UTF-8">
+<script src="/js/analytics.js"></script>
+<meta name="robots" content="noindex,follow">
+<meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
+<script>
+(function(){
+window.location.replace("/games/{{SLUG}}/" + window.location.search + window.location.hash);
+})();
+</script>
+<title>{{GAME_NAME}} | Cheeky Commodore Gamer</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{CANONICAL_URL}}">
 </head>
-<body>
-    <p>Redirecting to <a href="/games/{{SLUG}}/">{{GAME_NAME}}</a>.</p>
-</body>
+<body></body>
 </html>
