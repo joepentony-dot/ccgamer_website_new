@@ -480,11 +480,17 @@ SECRET MODAL OVERLAY BASE — SAFE AREA + STACKING HARDENING
 .ccg-secret-modal {
 position: fixed;
 inset: 0;
-z-index: 10065;
+z-index: 100000;
 display: none;
 align-items: center;
 justify-content: center;
-min-height: 100dvh;
+box-sizing: border-box;
+width: 100vw;
+height: 100vh;
+height: 100dvh;
+max-height: 100vh;
+max-height: 100dvh;
+overflow: hidden;
 padding-top: calc(env(safe-area-inset-top, 0px) + 12px);
 padding-right: 12px;
 padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
@@ -499,8 +505,10 @@ display: flex;
 }
 
 .ccg-secret-modal__content {
+box-sizing: border-box;
 width: min(100%, 640px);
 margin: 0 auto;
+max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 overflow-y: auto;
 overscroll-behavior: contain;
@@ -519,6 +527,7 @@ Ensures Easter Egg menu is scrollable on small screens
 ============================================================ */
 
 .ccg-secret-modal__content {
+max-height: calc(100vh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 24px);
 }
 
@@ -526,13 +535,6 @@ max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bo
 body.ccg-secret-modal-open {
 overflow: hidden;
 touch-action: none;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    body.ccg-secret-modal-open {
-        overflow-y: auto;
-        touch-action: auto;
-    }
 }
 
 /* Subtle visual cue indicating scrollable content */
