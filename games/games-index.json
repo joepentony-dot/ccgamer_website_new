@@ -8651,6 +8651,18 @@
     ]
   },
   {
+    "slug": "zeewolf",
+    "title": "Zeewolf",
+    "sorttitle": "Zeewolf",
+    "year": 1994,
+    "system": "AMIGA",
+    "thumbnail": "resources/images/thumbnails/all/zeewolf.jpg",
+    "genres": [
+      "shooting"
+    ],
+    "collections": []
+  },
+  {
     "slug": "zenji",
     "title": "Zenji",
     "sorttitle": "Zenji",

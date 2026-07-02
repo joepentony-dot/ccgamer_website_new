@@ -7,11 +7,15 @@
 <meta http-equiv="refresh" content="0; url=/games/{{SLUG}}/">
 <script>
 (function(){
-window.location.replace("/games/{{SLUG}}/" + window.location.search + window.location.hash);
+  window.location.replace(
+    "/games/{{SLUG}}/" +
+    window.location.search +
+    window.location.hash
+  );
 })();
 </script>
 <title>{{GAME_NAME}} | Cheeky Commodore Gamer</title>
-<meta name="description" content="{{DESCRIPTION}}">
+<meta name="description" content="{{FULL_DESCRIPTION}}">
 <link rel="canonical" href="{{CANONICAL_URL}}">
 </head>
 <body></body>

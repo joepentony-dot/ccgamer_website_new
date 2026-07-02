@@ -137,7 +137,7 @@ function normalizeHtmlForComparison(html) {
     return String(html || "").replace(/\r\n/g, "\n").trim();
 }
 
-function buildRedirectStubHtml(slug, canonicalUrl, description, title) {
+function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description = "") {
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -147,58 +147,16 @@ function buildRedirectStubHtml(slug, canonicalUrl, description, title) {
 <meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/">
 <script>
 (function(){
-window.location.replace("/games/${escapeHtml(slug)}/" + window.location.search + window.location.hash);
+  window.location.replace(
+    "/games/${escapeHtml(slug)}/" +
+    window.location.search +
+    window.location.hash
+  );
 })();
 </script>
 <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
 <meta name="description" content="${escapeHtml(description)}">
 <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-</head>
-<body></body>
-</html>
-`;
-}
-
-function buildCanonicalHtml({ slug, game, title, description, canonicalUrl, ogImage }) {
-    const gameId = escapeHtml(String(game?.id || toGameId(slug)).trim() || toGameId(slug));
-    return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
-    <meta name="description" content="${escapeHtml(description)}">
-    <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Cheeky Commodore Gamer">
-    <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
-    <meta property="og:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
-    <meta property="og:description" content="${escapeHtml(description)}">
-    <meta property="og:image" content="${escapeHtml(ogImage)}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
-    <meta name="twitter:description" content="${escapeHtml(description)}">
-    <meta name="twitter:image" content="${escapeHtml(ogImage)}">
-    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/js/analytics.js"></script>
-    <meta http-equiv="refresh" content="0; url=/games/game.html?id=${gameId}">
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-        }
-    </style>
-    <script>
-        (function () {
-            if (typeof window !== "undefined") {
-                window.location.replace("/games/game.html?id=${gameId}");
-            }
-        })();
-    </script>
 </head>
 <body></body>
 </html>
@@ -221,7 +179,7 @@ function getExpectedPageArtifacts(game, slug, validation) {
             canonicalUrl: validation.canonicalUrl,
             ogImage: validation.ogImage
         }),
-        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl, description, title)
+        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl, title, description)
     };
 }
 
@@ -241,6 +199,171 @@ function getRedirectStubRewriteReason(filePath, expectedHtml) {
         return "redirect stub metadata changed";
     }
     return "";
+}
+
+function toTokenList(value) {
+    if (Array.isArray(value)) {
+        return value.map(item => String(item || "").trim()).filter(Boolean);
+    }
+    return String(value || "")
+        .split(",")
+        .map(item => item.trim())
+        .filter(Boolean);
+}
+
+function firstNonEmpty(values) {
+    for (const value of values) {
+        const text = String(value || "").trim();
+        if (text) return text;
+    }
+    return "";
+}
+
+function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage, year, platformLong, publisher }) {
+    const schema = {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        name: title,
+        description,
+        url: canonicalUrl
+    };
+
+    if (String(year || "").trim()) schema.datePublished = String(year).trim();
+    if (String(platformLong || "").trim()) schema.gamePlatform = String(platformLong).trim();
+
+    const genres = toTokenList(game?.genres);
+    if (genres.length === 1) schema.genre = genres[0];
+    if (genres.length > 1) schema.genre = genres;
+
+    const publisherName = firstNonEmpty([
+        ...(Array.isArray(game?.credits?.publisher) ? game.credits.publisher : [game?.credits?.publisher]),
+        game?.publisher,
+        publisher
+    ]);
+    if (publisherName) {
+        schema.publisher = { "@type": "Organization", name: publisherName };
+        schema.author = { "@type": "Organization", name: publisherName };
+    }
+
+    if (String(ogImage || "").trim()) schema.image = ogImage;
+
+    const ratingValue = Number(game?.ccg_rating);
+    if (Number.isFinite(ratingValue)) {
+        schema.aggregateRating = {
+            "@type": "AggregateRating",
+            ratingValue: String(ratingValue),
+            bestRating: "10",
+            ratingCount: "1"
+        };
+    }
+
+    const ratingReason = String(game?.ccg_rating_reason || "").trim();
+    if (ratingReason) {
+        schema.review = {
+            "@type": "Review",
+            reviewBody: ratingReason,
+            reviewRating: Number.isFinite(ratingValue)
+                ? {
+                    "@type": "Rating",
+                    ratingValue: String(ratingValue),
+                    bestRating: "10"
+                }
+                : undefined
+        };
+        if (!schema.review.reviewRating) delete schema.review.reviewRating;
+    }
+
+    return schema;
+}
+
+function buildVideoObjectSchema({ title, description, videoId, canonicalUrl }) {
+    if (!videoId) return null;
+    return {
+        "@type": "VideoObject",
+        name: `${title} Gameplay Video`,
+        description,
+        thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        embedUrl: `https://www.youtube.com/embed/${videoId}`,
+        url: canonicalUrl
+    };
+}
+
+function buildBreadcrumbSchema({ canonicalUrl, title }) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: SITE_ROOT
+            },
+            {
+                "@type": "ListItem",
+                position: 2,
+                name: "Games",
+                item: `${SITE_ROOT}/games/`
+            },
+            {
+                "@type": "ListItem",
+                position: 3,
+                name: title,
+                item: canonicalUrl
+            }
+        ]
+    };
+}
+
+function buildCanonicalHtml({ slug, game, title, canonicalUrl, ogImage, platformLong }) {
+    const gameId = String(game?.id || toGameId(slug)).trim();
+    const metaDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
+    const target = `/games/game.html?id=${gameId}`;
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
+    <meta name="description" content="${escapeHtml(metaDescription)}">
+    <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Cheeky Commodore Gamer">
+    <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
+    <meta property="og:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
+    <meta property="og:description" content="${escapeHtml(metaDescription)}">
+    <meta property="og:image" content="${escapeHtml(ogImage)}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
+    <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
+    <meta name="twitter:image" content="${escapeHtml(ogImage)}">
+    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
+<meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/js/analytics.js"></script>
+    <meta http-equiv="refresh" content="0; url=${escapeHtml(target)}">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        (function () {
+            if (typeof window !== "undefined") {
+                window.location.replace("${escapeHtml(target)}");
+            }
+        })();
+    </script>
+</head>
+<body></body>
+</html>
+`;
 }
 
 function writeTextFileIfChanged(filePath, content) {
