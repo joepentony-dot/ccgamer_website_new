@@ -8216,6 +8216,53 @@
   },
   {
     "system": "C64",
+    "id": "elidon",
+    "slug": "elidon",
+    "title": "Elidon",
+    "sorttitle": "Elidon",
+    "year": 1985,
+    "genres": [
+      "action adventure",
+      "miscellaneous"
+    ],
+    "collections": [],
+    "videoid": "rd5ItTu0y1g",
+    "thumbnail": "resources/images/thumbnails/all/elidon.jpg",
+    "music": [
+      "elidon.mp3"
+    ],
+    "pdf": "https://drive.google.com/file/d/10EOcB0UxQAefpTUIXRSskkJn_xGhOMMo/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/18ZRpH0pE2MkLmfhwdsc_KTrUifzuS6r6/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/elidon"
+    ],
+    "description": "Elidon is a 1985 Commodore 64 fantasy adventure by Orpheus, combining multi-screen exploration, item collection and atmospheric fairy-tale action.",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "Atmospheric and visually appealing, but the sprawling exploration can become slow and confusing.",
+    "credits": {
+      "publisher": [
+        "Orpheus"
+      ],
+      "developer": [],
+      "producer": "",
+      "coder": [
+        "Brian Brunswick"
+      ],
+      "graphics": [
+        "John B. Marshall"
+      ],
+      "musician": [
+        "Jon Maskill"
+      ],
+      "re_releaser": []
+    },
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "elite",
     "slug": "elite",
     "title": "Elite",

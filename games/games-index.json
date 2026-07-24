@@ -2415,6 +2415,19 @@
     ]
   },
   {
+    "slug": "elidon",
+    "title": "Elidon",
+    "sorttitle": "Elidon",
+    "year": 1985,
+    "system": "C64",
+    "thumbnail": "resources/images/thumbnails/all/elidon.jpg",
+    "genres": [
+      "action adventure",
+      "miscellaneous"
+    ],
+    "collections": []
+  },
+  {
     "slug": "elite",
     "title": "Elite",
     "sorttitle": "Elite",
