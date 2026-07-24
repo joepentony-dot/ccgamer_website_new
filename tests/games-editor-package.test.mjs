@@ -34,14 +34,25 @@ function countOccurrences(text, needle) {
   return (String(text).match(new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length;
 }
 
-const canonicalHtml = render(readFileSync('admin/templates/game-landing-template.html', 'utf8'), vars);
-const redirectHtml = render(readFileSync('admin/templates/game-redirect-template.html', 'utf8'), vars);
+const canonicalWrapperHtml = render(readFileSync('admin/templates/game-landing-template.html', 'utf8'), vars);
+const legacyRedirectHtml = render(readFileSync('admin/templates/game-redirect-template.html', 'utf8'), vars);
+const builderSource = readFileSync('admin/js/games-editor.js', 'utf8');
+const buildPackageDataSource = builderSource.match(/function buildPackageData\(\) \{[\s\S]*?\n\}\n+async function loadTemplates/)?.[0] || '';
+const validatePackageManifestSource = builderSource.match(/function validatePackageManifest\(packageData\) \{[\s\S]*?\n\}/)?.[0] || '';
+
+// Regression coverage for the browser-side package flow: generated values must retain
+// the same names through validation, the manifest, and ZIP creation.
+assert.match(buildPackageDataSource, /validateGeneratedSeoPackage\(\{[\s\S]*?canonicalWrapperHtml,[\s\S]*?legacyRedirectHtml,[\s\S]*?imagePath,[\s\S]*?title/);
+assert.doesNotMatch(buildPackageDataSource, /\bcanonicalHtml\b|\bredirectHtml\b/);
+assert.match(validatePackageManifestSource, /packageData\.canonicalWrapperHtml/);
+assert.match(validatePackageManifestSource, /packageData\.legacyRedirectHtml/);
+assert.doesNotMatch(validatePackageManifestSource, /packageData\.(?:canonicalHtml|redirectHtml)/);
 const files = new Map([
   ['games/games.json', JSON.stringify([{ id: 'zeewolf', slug: 'zeewolf', title: 'Zeewolf', system: 'AMIGA' }])],
   ['games/games-index.json', JSON.stringify([{ slug: 'zeewolf', title: 'Zeewolf' }])],
   ['games/games-search.json', JSON.stringify([{ slug: 'zeewolf', title: 'Zeewolf' }])],
-  ['games/zeewolf.html', redirectHtml],
-  ['games/zeewolf/index.html', canonicalHtml],
+  ['games/zeewolf.html', legacyRedirectHtml],
+  ['games/zeewolf/index.html', canonicalWrapperHtml],
   ['sitemap-games.xml', `<urlset><url><loc>${SITE_ORIGIN}/games/zeewolf/</loc></url></urlset>`],
   ['sitemap.xml', `<sitemapindex><sitemap><loc>${SITE_ORIGIN}/sitemap-pages.xml</loc><lastmod>2026-05-13</lastmod></sitemap><sitemap><loc>${SITE_ORIGIN}/sitemap-games.xml</loc><lastmod>${today}</lastmod></sitemap></sitemapindex>`],
   ['README.txt', 'full merged games.json\ncanonical nested game page\nflat legacy redirect\ngame index data\nsearch data\ngames sitemap\nroot sitemap index']
@@ -63,21 +74,21 @@ assert.ok(existsSync('games/zeewolf.html'), 'games/zeewolf.html exists');
 assert.match(readFileSync('games/zeewolf/index.html', 'utf8'), /\/games\/game\.html\?id=zeewolf/);
 assert.match(readFileSync('games/zeewolf.html', 'utf8'), /\/games\/zeewolf\//);
 
-assert.match(canonicalHtml, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
-assert.match(canonicalHtml, /<meta http-equiv="refresh" content="0; url=\/games\/game\.html\?id=zeewolf">/);
-assert.match(canonicalHtml, /window\.location\.replace\("\/games\/game\.html\?id=zeewolf"\)/);
-assert.match(canonicalHtml, /<meta property="og:type" content="website">/);
-assert.match(canonicalHtml, /<meta property="og:title" content="Zeewolf \| Cheeky Commodore Gamer">/);
-assert.match(canonicalHtml, /<meta property="og:image" content="https:\/\/www\.cheekycommodoregamer\.co\.uk\/resources\/images\/thumbnails\/all\/zeewolf\.jpg">/);
-assert.match(canonicalHtml, /<meta name="twitter:title" content="Zeewolf \| Cheeky Commodore Gamer">/);
-assert.match(canonicalHtml, /<meta name="twitter:url" content="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
-assert.doesNotMatch(canonicalHtml, /game-hero|<iframe|data-ccg-mode|data-mode=|VideoGame|resources\/css\/games\.css/i);
+assert.match(canonicalWrapperHtml, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
+assert.match(canonicalWrapperHtml, /<meta http-equiv="refresh" content="0; url=\/games\/game\.html\?id=zeewolf">/);
+assert.match(canonicalWrapperHtml, /window\.location\.replace\("\/games\/game\.html\?id=zeewolf"\)/);
+assert.match(canonicalWrapperHtml, /<meta property="og:type" content="website">/);
+assert.match(canonicalWrapperHtml, /<meta property="og:title" content="Zeewolf \| Cheeky Commodore Gamer">/);
+assert.match(canonicalWrapperHtml, /<meta property="og:image" content="https:\/\/www\.cheekycommodoregamer\.co\.uk\/resources\/images\/thumbnails\/all\/zeewolf\.jpg">/);
+assert.match(canonicalWrapperHtml, /<meta name="twitter:title" content="Zeewolf \| Cheeky Commodore Gamer">/);
+assert.match(canonicalWrapperHtml, /<meta name="twitter:url" content="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
+assert.doesNotMatch(canonicalWrapperHtml, /game-hero|<iframe|data-ccg-mode|data-mode=|VideoGame|resources\/css\/games\.css/i);
 
-assert.match(redirectHtml, /noindex,follow/i);
-assert.match(redirectHtml, /<meta http-equiv="refresh" content="0; url=\/games\/zeewolf\/">/);
-assert.match(redirectHtml, /"\/games\/zeewolf\/" \+\s+window\.location\.search \+\s+window\.location\.hash/);
-assert.match(redirectHtml, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
-assert.doesNotMatch(redirectHtml, /\/games\/game\.html|game-hero|<iframe|VideoGame/i);
+assert.match(legacyRedirectHtml, /noindex,follow/i);
+assert.match(legacyRedirectHtml, /<meta http-equiv="refresh" content="0; url=\/games\/zeewolf\/">/);
+assert.match(legacyRedirectHtml, /"\/games\/zeewolf\/" \+\s+window\.location\.search \+\s+window\.location\.hash/);
+assert.match(legacyRedirectHtml, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
+assert.doesNotMatch(legacyRedirectHtml, /\/games\/game\.html|game-hero|<iframe|VideoGame/i);
 
 const games = JSON.parse(readFileSync('games/games.json', 'utf8'));
 const zeewolfEntries = games.filter((game) => game.id === 'zeewolf' || game.slug === 'zeewolf');
