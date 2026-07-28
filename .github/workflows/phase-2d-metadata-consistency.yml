@@ -1,0 +1,152 @@
+name: Phase 2D Metadata Consistency
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase2d_metadata_consistency.py"
+      - "scripts/validate_social_metadata.py"
+      - ".github/workflows/phase-2d-metadata-consistency.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-2d-metadata-consistency-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate Phase 2D tooling
+        run: |
+          python -m py_compile scripts/phase2d_metadata_consistency.py
+          python -m py_compile scripts/validate_social_metadata.py
+          python -m py_compile scripts/phase0_site_audit.py
+
+      - name: Apply Phase 2D corrections
+        run: python scripts/phase2d_metadata_consistency.py
+
+      - name: Reserve untracked workflow for trusted commit
+        run: |
+          if git ls-files --error-unmatch .github/workflows/social-metadata-validation.yml >/dev/null 2>&1; then
+            echo "Permanent workflow is already tracked."
+          else
+            rm -f .github/workflows/social-metadata-validation.yml
+          fi
+
+      - name: Validate corrected social metadata
+        run: python scripts/validate_social_metadata.py --allow-deferred-homepage
+
+      - name: Verify Phase 2D results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("docs/seo-baseline/phase-2d-metadata-consistency.json").read_text(encoding="utf-8")
+          )
+          summary = report["summary"]
+          already_fixed = bool(report.get("already_fixed_at_start"))
+          expected = {
+              "metadata_issues_baseline": 9,
+              "metadata_issues_after": 2,
+              "actionable_issues_fixed": 7,
+              "pages_corrected": 0 if already_fixed else 4,
+              "deferred_homepage_issues": 2,
+              "protected_file_changes": 0,
+              "permanent_validation_gate_added": False if already_fixed else True,
+          }
+          failures = {
+              key: {"expected": value, "actual": summary.get(key)}
+              for key, value in expected.items()
+              if summary.get(key) != value
+          }
+          if failures:
+              raise SystemExit(f"Unexpected Phase 2D results: {failures}")
+          print({**summary, "already_fixed_at_start": already_fixed})
+          PY
+
+      - name: Upload detailed Phase 2D evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-2d-metadata-consistency-json
+          path: docs/seo-baseline/phase-2d-metadata-consistency.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Remove compiler bytecode before scope check
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact generated file scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          allowed = {
+              "docs/seo-baseline/phase-2d-metadata-consistency.md",
+              "emulation.html",
+              "games/collections/amiga-demo-music.html",
+              "games/collections/retro-events.html",
+              "games/collections/retro-specials.html",
+          }
+          temporary = {"docs/seo-baseline/phase-2d-metadata-consistency.json"}
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          actual = set()
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              actual.add(path)
+
+          persistent = actual - temporary
+          unexpected = sorted(persistent - allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected generated files: {unexpected}")
+          if persistent and persistent != allowed:
+              missing = sorted(allowed - persistent)
+              raise SystemExit(f"Partial generated scope. Missing expected files: {missing}")
+
+          Path("/tmp/phase2d-commit-files.txt").write_text(
+              "\n".join(sorted(persistent)) + ("\n" if persistent else ""),
+              encoding="utf-8",
+          )
+          print(f"Validated Phase 2D scope across {len(persistent)} persistent changes.")
+          PY
+
+      - name: Remove temporary JSON evidence
+        run: rm docs/seo-baseline/phase-2d-metadata-consistency.json
+
+      - name: Commit Phase 2D corrections when required
+        run: |
+          if [ ! -s /tmp/phase2d-commit-files.txt ]; then
+            echo "Phase 2D output is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          xargs -d '\n' git add -- < /tmp/phase2d-commit-files.txt
+          git commit -m "Align social metadata consistency"
+          git push
