@@ -70,7 +70,7 @@ jobs:
       - name: Apply featured publisher logos
         run: node scripts/apply-publisher-logos.js
 
-      - name: Report publisher logo output
+      - name: Verify publisher logo output
         shell: bash
         run: |
           test -s games/publishers/index.html
@@ -85,23 +85,30 @@ jobs:
           } = require("./scripts/publisher-utils");
 
           const html = fs.readFileSync("games/publishers/index.html", "utf8");
-          const expected = FEATURED_PUBLISHERS
-            .map((name) => ({ name, slug: slugifyPublisher(name) }))
-            .filter(({ slug }) => fs.existsSync(path.join("resources", "images", "publishers", `${slug}.png`)));
-          const found = expected.filter(({ slug }) => (
-            html.includes(`data-publisher-logo="${slug}"`)
-            && html.includes(`/resources/images/publishers/${slug}.png`)
-          ));
-          const missing = expected.filter(({ slug }) => !found.some((item) => item.slug === slug));
-          const markupCount = (html.match(/data-publisher-logo=/g) || []).length;
-          const report = { expected, found, missing, markupCount };
+          const standardSlugs = FEATURED_PUBLISHERS.map(slugifyPublisher);
+          const extraSlugs = ["microprose-software"];
+          const expectedSlugs = Array.from(new Set([...standardSlugs, ...extraSlugs]))
+            .filter((slug) => fs.existsSync(path.join("resources", "images", "publishers", `${slug}.png`)));
 
-          fs.writeFileSync(
-            "games/publishers/logo-report.json",
-            `${JSON.stringify(report, null, 2)}\n`,
-            "utf8"
-          );
-          console.log(`[publisher-logos] Expected ${expected.length}; found ${found.length}; wrappers ${markupCount}.`);
+          if (!expectedSlugs.length) {
+            throw new Error("No featured publisher logo files were found.");
+          }
+
+          expectedSlugs.forEach((slug) => {
+            if (!html.includes(`data-publisher-logo="${slug}"`)) {
+              throw new Error(`Missing generated logo wrapper for ${slug}.`);
+            }
+            if (!html.includes(`/resources/images/publishers/${slug}.png`)) {
+              throw new Error(`Missing generated image reference for ${slug}.`);
+            }
+          });
+
+          const markupCount = (html.match(/data-publisher-logo=/g) || []).length;
+          if (markupCount !== expectedSlugs.length) {
+            throw new Error(`Expected ${expectedSlugs.length} featured logo wrappers but found ${markupCount}.`);
+          }
+
+          console.log(`[publisher-logos] Verified ${expectedSlugs.length} featured publisher logos.`);
           NODE
 
       - name: Rebuild sitemaps
