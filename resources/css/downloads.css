@@ -1,9 +1,8 @@
 /* ============================================================
-   CCG GAME DOWNLOADS ARCHIVE
+   CCG GAME DOWNLOADS ARCHIVE — COMPACT ACCORDION
    ------------------------------------------------------------
-   Scoped to /games/downloads/ so existing game, genre,
-   collection, publisher and home-page thumbnail rules remain
-   untouched.
+   Fully scoped to /games/downloads/. Existing game, genre,
+   collection, publisher and home-page card rules are untouched.
 ============================================================ */
 
 .ccg-downloads-page {
@@ -38,14 +37,12 @@ body[data-mode="amiga"].ccg-downloads-page {
 .ccg-downloads-hero {
     position: relative;
     overflow: hidden;
-    padding: clamp(28px, 5vw, 64px);
+    padding: clamp(28px, 5vw, 58px);
     border: 1px solid var(--ccg-downloads-border);
     background:
         linear-gradient(135deg, var(--ccg-downloads-accent-soft), transparent 42%),
         linear-gradient(180deg, rgba(8, 17, 35, 0.96), rgba(3, 8, 20, 0.96));
-    box-shadow:
-        0 24px 70px rgba(0, 0, 0, 0.42),
-        inset 0 0 42px rgba(89, 210, 255, 0.06);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), inset 0 0 42px rgba(89, 210, 255, 0.06);
 }
 
 .ccg-downloads-hero::after {
@@ -57,8 +54,7 @@ body[data-mode="amiga"].ccg-downloads-page {
     background: radial-gradient(circle, var(--ccg-downloads-accent-soft), transparent 68%);
 }
 
-.ccg-downloads-hero__kicker,
-.ccg-downloads-section__kicker {
+.ccg-downloads-hero__kicker {
     margin: 0 0 10px;
     color: var(--ccg-downloads-accent);
     font-family: "Orbitron", sans-serif;
@@ -75,7 +71,7 @@ body[data-mode="amiga"].ccg-downloads-page {
     max-width: 900px;
     color: var(--ccg-downloads-text);
     font-family: "Orbitron", sans-serif;
-    font-size: clamp(2.25rem, 6vw, 5rem);
+    font-size: clamp(2.1rem, 6vw, 4.7rem);
     line-height: 1.02;
     text-shadow: 0 0 26px var(--ccg-downloads-accent-soft);
 }
@@ -84,10 +80,10 @@ body[data-mode="amiga"].ccg-downloads-page {
     position: relative;
     z-index: 1;
     max-width: 920px;
-    margin: 22px 0 0;
+    margin: 20px 0 0;
     color: var(--ccg-downloads-muted);
-    font-size: clamp(1rem, 1.8vw, 1.2rem);
-    line-height: 1.75;
+    font-size: clamp(1rem, 1.8vw, 1.16rem);
+    line-height: 1.7;
 }
 
 .ccg-downloads-hero__stats {
@@ -96,15 +92,15 @@ body[data-mode="amiga"].ccg-downloads-page {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 26px;
+    margin-top: 24px;
 }
 
 .ccg-downloads-hero__stats span {
-    padding: 9px 13px;
+    padding: 8px 12px;
     border: 1px solid var(--ccg-downloads-border);
     background: rgba(0, 0, 0, 0.28);
     color: var(--ccg-downloads-muted);
-    font-size: 0.88rem;
+    font-size: 0.86rem;
 }
 
 .ccg-downloads-hero__stats strong {
@@ -256,8 +252,8 @@ body[data-mode="amiga"].ccg-downloads-page {
 .ccg-downloads-notice,
 .ccg-downloads-rights,
 .ccg-downloads-wayfinding {
-    margin: 0 0 28px;
-    padding: clamp(20px, 3vw, 30px);
+    margin: 0 0 24px;
+    padding: clamp(18px, 3vw, 26px);
     border: 1px solid var(--ccg-downloads-border);
     background: var(--ccg-downloads-panel);
 }
@@ -265,145 +261,155 @@ body[data-mode="amiga"].ccg-downloads-page {
 .ccg-downloads-notice h2,
 .ccg-downloads-rights h2,
 .ccg-downloads-wayfinding h2 {
-    margin: 0 0 10px;
+    margin: 0 0 9px;
     color: var(--ccg-downloads-text);
     font-family: "Orbitron", sans-serif;
-    font-size: clamp(1.2rem, 2vw, 1.65rem);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
 }
 
 .ccg-downloads-notice p,
 .ccg-downloads-rights p {
     margin: 0;
     color: var(--ccg-downloads-muted);
-    line-height: 1.72;
+    line-height: 1.65;
 }
 
 .ccg-downloads-archive {
     display: grid;
-    gap: 32px;
+    gap: 10px;
 }
 
 .ccg-downloads-letter {
     scroll-margin-top: 110px;
+    border: 1px solid var(--ccg-downloads-border);
+    background: rgba(4, 10, 24, 0.88);
 }
 
 .ccg-downloads-letter__heading {
+    position: relative;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid var(--ccg-downloads-border);
+    min-height: 66px;
+    padding: 13px 58px 13px 20px;
+    color: var(--ccg-downloads-text);
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.ccg-downloads-letter__heading::-webkit-details-marker {
+    display: none;
+}
+
+.ccg-downloads-letter__heading::after {
+    content: "+";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    color: var(--ccg-downloads-accent);
+    font-family: "Orbitron", sans-serif;
+    font-size: 1.7rem;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+.ccg-downloads-letter[open] > .ccg-downloads-letter__heading::after {
+    content: "−";
+}
+
+.ccg-downloads-letter__heading:hover,
+.ccg-downloads-letter__heading:focus-visible,
+.ccg-downloads-letter[open] > .ccg-downloads-letter__heading {
+    background: var(--ccg-downloads-accent-soft);
+    outline: none;
 }
 
 .ccg-downloads-letter__heading h2 {
     margin: 0;
     color: var(--ccg-downloads-accent);
     font-family: "Orbitron", sans-serif;
-    font-size: clamp(1.7rem, 4vw, 2.7rem);
+    font-size: clamp(1.4rem, 3vw, 2rem);
 }
 
-.ccg-downloads-letter__heading span {
+.ccg-downloads-letter__count {
     color: var(--ccg-downloads-muted);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+}
+
+.ccg-downloads-letter__panel {
+    padding: 16px;
+    border-top: 1px solid var(--ccg-downloads-border);
 }
 
 .ccg-downloads-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 12px;
 }
 
 .ccg-download-card {
-    display: flex;
+    display: grid;
+    grid-template-columns: 128px minmax(0, 1fr);
     min-width: 0;
-    flex-direction: column;
     overflow: hidden;
-    border: 1px solid var(--ccg-downloads-border);
+    border: 1px solid rgba(119, 224, 255, 0.24);
     background: var(--ccg-downloads-panel-strong);
-    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
-    transition:
-        transform 160ms ease,
-        border-color 160ms ease,
-        box-shadow 160ms ease;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .ccg-download-card:hover,
 .ccg-download-card:focus-within {
     border-color: var(--ccg-downloads-accent);
-    box-shadow:
-        0 18px 42px rgba(0, 0, 0, 0.42),
-        0 0 24px var(--ccg-downloads-accent-soft);
-    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38), 0 0 18px var(--ccg-downloads-accent-soft);
 }
 
-/* Thumbnail context isolation: applies only to download archive cards. */
+/* Thumbnail context isolation: download archive only. */
 .ccg-download-card__image {
-    position: relative;
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 9;
+    width: 128px;
+    min-height: 100%;
     overflow: hidden;
     background: #02050d;
 }
 
 .ccg-download-card__image img {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 128px;
+    height: 96px;
     max-width: none;
     object-fit: cover;
     object-position: center;
-    transition: transform 220ms ease;
-}
-
-.ccg-download-card:hover .ccg-download-card__image img,
-.ccg-download-card:focus-within .ccg-download-card__image img {
-    transform: scale(1.035);
-}
-
-.ccg-download-card__available {
-    position: absolute;
-    right: 9px;
-    bottom: 9px;
-    padding: 6px 9px;
-    border: 1px solid var(--ccg-downloads-accent);
-    background: rgba(0, 0, 0, 0.78);
-    color: var(--ccg-downloads-text);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
 }
 
 .ccg-download-card__body {
     display: flex;
-    flex: 1;
+    min-width: 0;
     flex-direction: column;
-    padding: 16px;
+    padding: 12px;
 }
 
 .ccg-download-card__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 11px;
+    gap: 5px;
+    margin-bottom: 7px;
 }
 
 .ccg-download-card__meta span {
-    padding: 4px 7px;
+    padding: 3px 6px;
     border: 1px solid rgba(175, 222, 244, 0.2);
     color: var(--ccg-downloads-muted);
-    font-size: 0.72rem;
+    font-size: 0.64rem;
     text-transform: uppercase;
 }
 
 .ccg-download-card__title {
     margin: 0;
     font-family: "Orbitron", sans-serif;
-    font-size: 1.02rem;
-    line-height: 1.35;
+    font-size: 0.94rem;
+    line-height: 1.3;
 }
 
 .ccg-download-card__title a {
@@ -417,16 +423,31 @@ body[data-mode="amiga"].ccg-downloads-page {
 }
 
 .ccg-download-card__publisher {
-    margin: 9px 0 16px;
+    margin: 6px 0 10px;
     color: var(--ccg-downloads-muted);
-    font-size: 0.86rem;
-    line-height: 1.45;
+    font-size: 0.76rem;
+    line-height: 1.35;
 }
 
-.ccg-download-card__action {
-    width: 100%;
+.ccg-download-card__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
     margin-top: auto;
+}
+
+.ccg-download-card__actions .ccg-btn {
+    min-width: 0;
+    min-height: 38px;
+    padding: 8px 9px;
+    font-size: 0.7rem;
+    line-height: 1.2;
     text-align: center;
+    white-space: normal;
+}
+
+.ccg-download-card__download:nth-last-child(n + 3) {
+    grid-column: 1 / -1;
 }
 
 .ccg-downloads-empty {
@@ -439,7 +460,7 @@ body[data-mode="amiga"].ccg-downloads-page {
 }
 
 .ccg-downloads-rights {
-    margin-top: 34px;
+    margin-top: 28px;
 }
 
 .ccg-downloads-wayfinding {
@@ -458,9 +479,9 @@ body[data-mode="amiga"].ccg-downloads-page {
 
 @media (max-width: 1050px) {
     .ccg-downloads-tools {
-        grid-template-columns: 1fr;
         position: relative;
         top: auto;
+        grid-template-columns: 1fr;
     }
 
     .ccg-downloads-visible-count {
@@ -497,35 +518,28 @@ body[data-mode="amiga"].ccg-downloads-page {
     }
 
     .ccg-downloads-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 12px;
+        grid-template-columns: 1fr;
     }
 
-    .ccg-download-card__body {
-        padding: 12px;
+    .ccg-download-card {
+        grid-template-columns: 104px minmax(0, 1fr);
     }
 
-    .ccg-download-card__meta {
-        gap: 4px;
+    .ccg-download-card__image {
+        width: 104px;
     }
 
-    .ccg-download-card__meta span {
-        font-size: 0.64rem;
+    .ccg-download-card__image img {
+        width: 104px;
+        height: 78px;
     }
 
-    .ccg-download-card__title {
-        font-size: 0.88rem;
+    .ccg-download-card__actions {
+        grid-template-columns: 1fr;
     }
 
-    .ccg-download-card__publisher {
-        font-size: 0.76rem;
-    }
-
-    .ccg-download-card__available {
-        right: 6px;
-        bottom: 6px;
-        padding: 5px 7px;
-        font-size: 0.62rem;
+    .ccg-download-card__download:nth-last-child(n + 3) {
+        grid-column: auto;
     }
 }
 
@@ -544,7 +558,25 @@ body[data-mode="amiga"].ccg-downloads-page {
         min-height: 32px;
     }
 
-    .ccg-downloads-grid {
-        grid-template-columns: 1fr;
+    .ccg-downloads-letter__heading {
+        min-height: 58px;
+        padding-left: 15px;
+    }
+
+    .ccg-downloads-letter__panel {
+        padding: 10px;
+    }
+
+    .ccg-download-card {
+        grid-template-columns: 90px minmax(0, 1fr);
+    }
+
+    .ccg-download-card__image {
+        width: 90px;
+    }
+
+    .ccg-download-card__image img {
+        width: 90px;
+        height: 68px;
     }
 }

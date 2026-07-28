@@ -10,7 +10,6 @@
   const NAV_PRIMARY = [
     ['Home', 'https://www.cheekycommodoregamer.co.uk/home.html'],
     ['Browse Games', 'https://www.cheekycommodoregamer.co.uk/games/index.html'],
-    ['Game Downloads', 'https://www.cheekycommodoregamer.co.uk/games/downloads/'],
     ['Browse by Genre', 'https://www.cheekycommodoregamer.co.uk/games/genres/index.html'],
     ['Publishers', 'https://www.cheekycommodoregamer.co.uk/games/publishers/'],
     ['Collections', 'https://www.cheekycommodoregamer.co.uk/games/collections/index.html'],
@@ -119,6 +118,24 @@
     )).join('');
   }
 
+  function addGamesDownloadsShortcut() {
+    const page = document.querySelector('.ccg-page--games-index');
+    const stats = page?.querySelector('.games-hero__stats');
+    if (!stats || page.querySelector('[data-games-downloads-shortcut]')) return;
+
+    const shortcut = document.createElement('div');
+    shortcut.className = 'games-hero__stats';
+    shortcut.setAttribute('data-games-downloads-shortcut', 'true');
+
+    const link = document.createElement('a');
+    link.className = 'ccg-btn ccg-btn--secondary';
+    link.href = 'https://www.cheekycommodoregamer.co.uk/games/downloads/';
+    link.textContent = 'Game Downloads A–Z';
+    shortcut.appendChild(link);
+
+    stats.insertAdjacentElement('afterend', shortcut);
+  }
+
   function normalizeButtons() {
     document.querySelectorAll('.ccg-btn').forEach(btn => {
       btn.style.borderRadius = '0px';
@@ -214,6 +231,7 @@
     ensureRequiredCSS();
     rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
     rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
+    addGamesDownloadsShortcut();
     document.querySelectorAll('.ccg-socials-fallback').forEach(el => {
       el.style.display = 'none';
     });
