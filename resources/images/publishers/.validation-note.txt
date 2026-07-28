@@ -1,7 +1,0 @@
-Featured publisher logo replacement validation:
-- activision.png: valid PNG, 233 x 66, RGBA
-- electronic-arts.png: valid PNG, 320 x 103, RGBA
-- codemasters.png: valid PNG, 233 x 103, transparency-preserving optimised PNG
-- ocean-software.png: valid PNG, 262 x 88, RGBA
-
-This temporary validation note should not be committed.
