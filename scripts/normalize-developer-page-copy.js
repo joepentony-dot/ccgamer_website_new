@@ -9,6 +9,8 @@ const repoRoot = path.resolve(__dirname, "..");
 const developersDir = path.join(repoRoot, "games", "developers");
 const metadataPath = path.join(developersDir, "developers.json");
 
+// Keep generated descriptions neutral and grammatically valid for both
+// personal names and company names without trying to infer entity type.
 function escapeRegExp(value) {
     return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
