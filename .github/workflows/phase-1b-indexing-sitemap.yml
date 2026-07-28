@@ -1,0 +1,161 @@
+name: Phase 1B Indexing and Sitemap
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase1b_indexing_sitemap.py"
+      - ".github/workflows/phase-1b-indexing-sitemap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-1b-indexing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate correction scripts
+        run: |
+          python -m py_compile scripts/phase0_site_audit.py
+          python -m py_compile scripts/phase1b_indexing_sitemap.py
+          node --check tools/seo/generate-sitemap.js
+
+      - name: Apply Phase 1B corrections
+        run: python scripts/phase1b_indexing_sitemap.py
+
+      - name: Verify Phase 1B report
+        shell: bash
+        run: |
+          test -s docs/seo-baseline/phase-1b-indexing-sitemap.md
+          test -s docs/seo-baseline/phase-1b-indexing-sitemap.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("docs/seo-baseline/phase-1b-indexing-sitemap.json").read_text(encoding="utf-8"))
+          summary = report["summary"]
+          expected = {
+              "canonical_collisions_before": 1,
+              "canonical_collisions_after": 1,
+              "missing_canonicals_before": 9,
+              "missing_canonicals_after": 0,
+              "sitemap_omissions_before": 26,
+              "sitemap_omissions_after": 0,
+              "utility_shells_noindexed": 12,
+              "legacy_game_aliases_consolidated": 11,
+              "public_pages_added_to_sitemap": 3,
+              "remaining_internal_alias_links": 0,
+              "protected_files_unchanged": 6,
+          }
+          if summary != expected:
+              raise SystemExit(f"Unexpected Phase 1B summary:\n{json.dumps(summary, indent=2)}")
+          if not all(report["sitemap_validation"].values()):
+              raise SystemExit("One or more public sitemap pages are absent")
+          for alias, checks in report["alias_validation"].items():
+              for key, value in checks.items():
+                  if key != "target" and value is not True:
+                      raise SystemExit(f"Alias validation failed for {alias}: {key}")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Verify public output
+        shell: bash
+        run: |
+          grep -Fq '<meta name="robots" content="noindex,follow">' games/game.html
+          grep -Fq '<meta name="robots" content="noindex,follow">' music/composer.html
+          grep -Fq '<meta name="robots" content="noindex,follow">' redirect.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/community/"' community/index.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/composers/"' music/composers/index.html
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/community/</loc>' sitemap-pages.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/music/composers/</loc>' sitemap-pages.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/quiz/pack-6.html</loc>' sitemap-pages.xml
+
+      - name: Upload detailed Phase 1B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-1b-indexing-sitemap-json
+          path: docs/seo-baseline/phase-1b-indexing-sitemap.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove compiler bytecode before scope check
+        shell: bash
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact generated file scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          report_path = Path("docs/seo-baseline/phase-1b-indexing-sitemap.json")
+          report = json.loads(report_path.read_text(encoding="utf-8"))
+          allowed = set(report["changed_files"])
+          temporary = {
+              "docs/seo-baseline/phase-0-baseline.json",
+              "docs/seo-baseline/phase-1b-indexing-sitemap.json",
+          }
+          tracked = set(filter(None, subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()))
+          untracked = set(filter(None, subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()))
+          actual = tracked | untracked
+          unexpected = sorted(actual - allowed - temporary)
+          missing = sorted(allowed - actual)
+          if unexpected or missing:
+              raise SystemExit(
+                  f"Unexpected generated files: {unexpected}\nExpected changed files absent: {missing}"
+              )
+          Path("/tmp/phase1b-commit-files.txt").write_text("\n".join(sorted(allowed)) + "\n", encoding="utf-8")
+          print(f"Validated {len(allowed)} commit files")
+          PY
+
+      - name: Remove temporary audit files
+        shell: bash
+        run: |
+          rm -f docs/seo-baseline/phase-0-baseline.json
+          rm -f docs/seo-baseline/phase-1b-indexing-sitemap.json
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Commit Phase 1B corrections
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          while IFS= read -r file; do
+            [ -n "$file" ] && git add -- "$file"
+          done < /tmp/phase1b-commit-files.txt
+
+          if git diff --cached --quiet; then
+            echo "Phase 1B output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 1B indexing and sitemap corrections"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
