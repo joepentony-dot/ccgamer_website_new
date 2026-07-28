@@ -82,10 +82,9 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          allowed = {
-              "docs/seo-baseline/phase-3a-people-archives.md",
-              "docs/seo-baseline/phase-3a-people-archives.json",
-          }
+          markdown = "docs/seo-baseline/phase-3a-people-archives.md"
+          evidence = "docs/seo-baseline/phase-3a-people-archives.json"
+          allowed = {markdown, evidence}
           output = subprocess.check_output(
               ["git", "status", "--porcelain", "--untracked-files=all"],
               text=True,
@@ -97,25 +96,32 @@ jobs:
                   path = path.split(" -> ", 1)[1]
               actual.add(path)
           unexpected = sorted(actual - allowed)
-          missing = sorted(allowed - actual)
-          if unexpected or missing:
-              raise SystemExit(
-                  f"Unexpected audit changes: {unexpected}\nExpected report files absent: {missing}"
-              )
+          if unexpected:
+              raise SystemExit(f"Unexpected audit changes: {unexpected}")
+          if evidence not in actual:
+              raise SystemExit("Detailed JSON evidence was not generated")
+          commit_files = [markdown] if markdown in actual else []
           Path("/tmp/phase3a-report-file.txt").write_text(
-              "docs/seo-baseline/phase-3a-people-archives.md\n",
+              "\n".join(commit_files) + ("\n" if commit_files else ""),
               encoding="utf-8",
           )
-          print("Validated read-only Phase 3A scope.")
+          print(
+              "Validated read-only Phase 3A scope; "
+              + ("Markdown report requires commit." if commit_files else "Markdown report is already current.")
+          )
           PY
 
       - name: Remove temporary JSON evidence
         run: rm docs/seo-baseline/phase-3a-people-archives.json
 
-      - name: Commit Phase 3A report
+      - name: Commit Phase 3A report when required
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          xargs -d '\n' git add -- < /tmp/phase3a-report-file.txt
-          git commit -m "Add Phase 3A people archive review"
-          git push
+          if [ -s /tmp/phase3a-report-file.txt ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            xargs -d '\n' git add -- < /tmp/phase3a-report-file.txt
+            git commit -m "Add Phase 3A people archive review"
+            git push
+          else
+            echo "Phase 3A report is already current."
+          fi
