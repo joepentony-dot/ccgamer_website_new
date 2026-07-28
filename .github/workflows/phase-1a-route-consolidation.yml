@@ -1,0 +1,178 @@
+name: Phase 1A Route Consolidation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase1a_consolidate_routes.py"
+      - ".github/workflows/phase-1a-route-consolidation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-1a-routes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate consolidation script
+        run: |
+          python -m py_compile scripts/phase0_site_audit.py
+          python -m py_compile scripts/phase1a_consolidate_routes.py
+
+      - name: Apply reviewed route consolidation
+        run: python scripts/phase1a_consolidate_routes.py
+
+      - name: Validate generator syntax and redirect output
+        shell: bash
+        run: |
+          node --check scripts/build-games.js
+          node --check scripts/generate-retro-pages.js
+          node - <<'NODE'
+          const build = require('./scripts/build-games.js');
+          const html = build.renderComposerRedirectPage({ name: 'Test Composer', slug: 'test-composer' });
+          const required = [
+            '<meta name="robots" content="noindex,follow">',
+            'url=/music/test-composer/',
+            'window.location.search + window.location.hash',
+            'https://www.cheekycommodoregamer.co.uk/music/test-composer/'
+          ];
+          const missing = required.filter((value) => !html.includes(value));
+          if (missing.length) throw new Error(`Composer redirect output missing: ${missing.join(', ')}`);
+          NODE
+
+      - name: Verify consolidation report
+        shell: bash
+        run: |
+          test -s docs/seo-baseline/phase-1a-route-consolidation.md
+          test -s docs/seo-baseline/phase-1a-route-consolidation.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path('docs/seo-baseline/phase-1a-route-consolidation.json').read_text(encoding='utf-8')
+          )
+          summary = report['summary']
+          expected = {
+              'phase1_review_collision_groups': 58,
+              'matched_route_pairs': 57,
+              'post_consolidation_collision_groups': 1,
+              'canonical_owner_pages_unchanged': 57,
+              'redirect_stubs_validated': 57,
+              'remaining_internal_alias_links': 0,
+          }
+          errors = {
+              key: {'expected': value, 'actual': summary.get(key)}
+              for key, value in expected.items()
+              if summary.get(key) != value
+          }
+          if errors:
+              raise SystemExit(f'Phase 1A validation mismatch: {errors}')
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Remove temporary audit files
+        shell: bash
+        run: |
+          rm -rf tmp/phase-1a-audit
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact file-change scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          report_path = Path('docs/seo-baseline/phase-1a-route-consolidation.json')
+          report = json.loads(report_path.read_text(encoding='utf-8'))
+          expected = set(report['summary'].get('changed_files', []))
+
+          tracked = set(filter(None, subprocess.check_output(
+              ['git', 'diff', '--name-only'], text=True
+          ).splitlines()))
+          untracked = set(filter(None, subprocess.check_output(
+              ['git', 'ls-files', '--others', '--exclude-standard'], text=True
+          ).splitlines()))
+          untracked.discard(report_path.as_posix())
+          actual = tracked | untracked
+
+          protected = {
+              'index.html',
+              'home.html',
+              'complete-index.html',
+              'resources/css/intro.css',
+              'js/index-intro.js',
+              'games/games.json',
+          }
+          touched_protected = sorted(actual & protected)
+          if touched_protected:
+              raise SystemExit(f'Protected files changed: {touched_protected}')
+          if actual != expected:
+              raise SystemExit(
+                  'Unexpected Phase 1A file scope. '
+                  f'Missing: {sorted(expected - actual)}; extra: {sorted(actual - expected)}'
+              )
+          print(f'Validated {len(actual)} changed repository files.')
+          PY
+
+      - name: Upload detailed consolidation evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-1a-route-consolidation-json
+          path: docs/seo-baseline/phase-1a-route-consolidation.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Preserve commit file list outside repository
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('docs/seo-baseline/phase-1a-route-consolidation.json').read_text(encoding='utf-8'))
+          Path('/tmp/phase1a-files.txt').write_text(
+              '\n'.join(report['summary'].get('changed_files', [])) + '\n',
+              encoding='utf-8'
+          )
+          PY
+          rm -f docs/seo-baseline/phase-1a-route-consolidation.json
+
+      - name: Commit consolidated routes
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          while IFS= read -r path; do
+            [ -n "$path" ] && git add -- "$path"
+          done < /tmp/phase1a-files.txt
+
+          if git diff --cached --quiet; then
+            echo "Phase 1A routes are already consolidated."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Consolidate matched canonical routes"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
