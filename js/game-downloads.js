@@ -17,12 +17,45 @@
         const emptyState = document.getElementById("downloadEmptyState");
         const systemButtons = Array.from(document.querySelectorAll("[data-download-system]"));
         const cards = Array.from(document.querySelectorAll("[data-download-card]"));
-        const sections = Array.from(document.querySelectorAll("[data-download-section]"));
+        const sections = Array.from(document.querySelectorAll("details[data-download-section]"));
         const letterLinks = Array.from(document.querySelectorAll("[data-download-letter-link]"));
 
-        if (!archive || !searchInput || !visibleCount || !cards.length) return;
+        if (!archive || !searchInput || !visibleCount || !cards.length || !sections.length) return;
 
         let activeSystem = "all";
+        let applyingAccordionState = false;
+
+        function loadSectionImages(section) {
+            if (!section) return;
+            section.querySelectorAll("img[data-src]").forEach((image) => {
+                const source = image.dataset.src;
+                if (!source) return;
+                image.src = source;
+                image.removeAttribute("data-src");
+            });
+        }
+
+        function closeOtherSections(current) {
+            if (applyingAccordionState) return;
+            applyingAccordionState = true;
+            sections.forEach((section) => {
+                if (section !== current && section.open) section.open = false;
+            });
+            applyingAccordionState = false;
+        }
+
+        function openSection(section, options = {}) {
+            if (!section || section.hidden) return;
+            closeOtherSections(section);
+            section.open = true;
+            loadSectionImages(section);
+
+            if (options.scroll) {
+                requestAnimationFrame(() => {
+                    section.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
+            }
+        }
 
         function updateLetterLinks() {
             const availableLetters = new Set(
@@ -39,9 +72,11 @@
             });
         }
 
-        function applyFilters() {
+        function applyFilters(options = {}) {
             const query = normalize(searchInput.value);
+            const filtersActive = Boolean(query) || activeSystem !== "all";
             let shown = 0;
+            let firstVisibleSection = null;
 
             cards.forEach((card) => {
                 const cardSystem = normalize(card.dataset.system);
@@ -59,19 +94,39 @@
                 const visibleSectionCards = sectionCards.filter((card) => !card.hidden);
                 section.hidden = visibleSectionCards.length === 0;
 
-                const countLabel = section.querySelector(".ccg-downloads-letter__heading span");
+                const countLabel = section.querySelector(".ccg-downloads-letter__count");
                 if (countLabel) {
                     countLabel.textContent = `${visibleSectionCards.length} ${visibleSectionCards.length === 1 ? "game" : "games"}`;
                 }
+
+                if (!section.hidden && !firstVisibleSection) firstVisibleSection = section;
             });
 
             visibleCount.textContent = String(shown);
             if (emptyState) emptyState.hidden = shown !== 0;
             archive.hidden = shown === 0;
             updateLetterLinks();
+
+            if (filtersActive && firstVisibleSection) {
+                openSection(firstVisibleSection, { scroll: options.scrollToResults === true });
+            } else if (!filtersActive && options.preserveOpen !== true) {
+                sections.forEach((section) => {
+                    section.open = false;
+                });
+            }
         }
 
-        searchInput.addEventListener("input", applyFilters);
+        sections.forEach((section) => {
+            section.addEventListener("toggle", function () {
+                if (!section.open || applyingAccordionState) return;
+                closeOtherSections(section);
+                loadSectionImages(section);
+            });
+        });
+
+        searchInput.addEventListener("input", function () {
+            applyFilters({ scrollToResults: false });
+        });
 
         if (clearButton) {
             clearButton.addEventListener("click", function () {
@@ -91,28 +146,31 @@
                     candidate.setAttribute("aria-pressed", active ? "true" : "false");
                 });
 
-                applyFilters();
+                applyFilters({ scrollToResults: activeSystem !== "all" });
             });
         });
 
         letterLinks.forEach((link) => {
             link.addEventListener("click", function (event) {
-                if (link.classList.contains("is-unavailable")) {
-                    event.preventDefault();
-                    return;
-                }
+                event.preventDefault();
+                if (link.classList.contains("is-unavailable")) return;
 
                 const targetId = link.getAttribute("href");
                 const target = targetId ? document.querySelector(targetId) : null;
                 if (!target || target.hidden) return;
 
-                event.preventDefault();
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
+                openSection(target, { scroll: true });
                 window.history.replaceState(null, "", targetId);
             });
         });
 
-        applyFilters();
+        applyFilters({ preserveOpen: true });
+
+        const initialHash = window.location.hash;
+        const initialSection = initialHash ? document.querySelector(initialHash) : null;
+        if (initialSection && initialSection.matches("details[data-download-section]")) {
+            openSection(initialSection, { scroll: false });
+        }
     }
 
     if (document.readyState === "loading") {
