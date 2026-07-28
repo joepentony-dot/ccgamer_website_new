@@ -8,6 +8,7 @@ on:
       - "games/games.json"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
+      - "scripts/update-downloads-static-pages.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -21,6 +22,7 @@ on:
       - "games/games.json"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
+      - "scripts/update-downloads-static-pages.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -62,11 +64,15 @@ jobs:
         run: |
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
+          node --check scripts/update-downloads-static-pages.js
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
 
       - name: Generate game downloads archive
         run: node scripts/generate-downloads-page.js
+
+      - name: Preserve static page sources
+        run: node scripts/update-downloads-static-pages.js
 
       - name: Add downloads URL to pages sitemap
         run: node scripts/update-downloads-sitemap.js
@@ -79,6 +85,7 @@ jobs:
           grep -q 'data-download-card' games/downloads/index.html
           grep -q 'View Game &amp; Download' games/downloads/index.html
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
+          node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
