@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "home.html"
+      - "games/index.html"
+      - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
@@ -20,6 +23,9 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "home.html"
+      - "games/index.html"
+      - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
@@ -62,11 +68,15 @@ jobs:
 
       - name: Validate downloads source files
         run: |
+          node --check scripts/ensure-downloads-discovery-links.js
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
           node --check scripts/update-downloads-static-pages.js
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
+
+      - name: Add static downloads discovery links
+        run: node scripts/ensure-downloads-discovery-links.js
 
       - name: Generate game downloads archive
         run: node scripts/generate-downloads-page.js
@@ -77,10 +87,14 @@ jobs:
       - name: Add downloads URL to pages sitemap
         run: node scripts/update-downloads-sitemap.js
 
-      - name: Verify compact accordion archive
+      - name: Verify downloads discovery and accordion archive
         shell: bash
         run: |
           test -s games/downloads/index.html
+          grep -q 'data-home-downloads-card="true"' home.html
+          grep -q 'href="/games/downloads/"' home.html
+          grep -q 'data-games-downloads-shortcut="true"' games/index.html
+          grep -q 'href="/games/downloads/"' games/index.html
           grep -q 'id="downloadSearchInput"' games/downloads/index.html
           grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
           grep -q 'data-src=' games/downloads/index.html
@@ -94,20 +108,20 @@ jobs:
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
 
-      - name: Commit generated downloads and sitemap outputs
+      - name: Commit generated downloads, discovery and sitemap outputs
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add games/downloads tools/seo/static-pages.json sitemap-pages.xml
+          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap-pages.xml
 
           if git diff --cached --quiet; then
-            echo "Game downloads archive is already current."
+            echo "Game downloads archive and discovery links are already current."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Refresh compact game downloads archive"
+          git commit -m "Refresh game downloads discovery links"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           git push origin "HEAD:${TARGET_BRANCH}"
