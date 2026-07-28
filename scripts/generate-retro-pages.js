@@ -53,6 +53,10 @@ function escapeHtml(value) {
     .replaceAll("'", '&#39;');
 }
 
+function escapeJsonTemplateValue(value) {
+  return JSON.stringify(escapeHtml(value)).slice(1, -1);
+}
+
 function normalizeKebab(value) {
   return String(value || '')
     .toLowerCase()
@@ -251,15 +255,24 @@ function generateDatasetPages(config, template) {
       SEO_TITLE: escapeHtml(seoTitle),
       SEO_DESCRIPTION: escapeHtml(seoDescription),
       CANONICAL_URL: canonicalUrl,
+      CANONICAL_URL_JSON: escapeJsonTemplateValue(canonicalUrl),
       THUMBNAIL_URL: escapeHtml(entry.thumbnail),
+      THUMBNAIL_URL_JSON: escapeJsonTemplateValue(entry.thumbnail),
       COLLECTION_LABEL: escapeHtml(config.collectionName),
+      COLLECTION_LABEL_JSON: escapeJsonTemplateValue(config.collectionName),
       COLLECTION_URL: escapeHtml(config.collectionUrl),
+      COLLECTION_URL_JSON: escapeJsonTemplateValue(`${SITE_ORIGIN}${config.collectionUrl}`),
       TITLE: escapeHtml(entry.title || ''),
+      TITLE_JSON: escapeJsonTemplateValue(entry.title || ''),
       SUMMARY: escapeHtml(summary),
       YOUTUBE_ID: escapeHtml(youtubeId),
+      EMBED_URL_JSON: escapeJsonTemplateValue(`https://www.youtube.com/embed/${youtubeId}`),
       DESCRIPTION: escapeHtml(description),
-      UPLOAD_DATE: escapeHtml(toIsoDate(entry.created_at)),
-      VIDEO_DURATION_FIELD: entry.duration ? `,\n      "duration": "${escapeHtml(entry.duration)}"` : '',
+      DESCRIPTION_JSON: escapeJsonTemplateValue(description),
+      UPLOAD_DATE_JSON: escapeJsonTemplateValue(toIsoDate(entry.created_at)),
+      VIDEO_DURATION_FIELD: entry.duration
+        ? `,\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`
+        : '',
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
       RELATED_ITEMS: relatedItemsHtml
     });
