@@ -12,6 +12,7 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
+      - "scripts/generate-sitemaps.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -29,6 +30,7 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
+      - "scripts/generate-sitemaps.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -55,16 +57,12 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
+          show-progress: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-
-      - name: Restore base pages sitemap for pull requests
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: git checkout origin/main -- sitemap-pages.xml
 
       - name: Validate downloads source files
         run: |
@@ -72,6 +70,7 @@ jobs:
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
           node --check scripts/update-downloads-static-pages.js
+          node --check scripts/generate-sitemaps.js
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
 
@@ -84,7 +83,10 @@ jobs:
       - name: Preserve static page sources
         run: node scripts/update-downloads-static-pages.js
 
-      - name: Add downloads URL to pages sitemap
+      - name: Rebuild shared sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Refresh downloads sitemap date
         run: node scripts/update-downloads-sitemap.js
 
       - name: Verify downloads discovery and accordion archive
@@ -105,6 +107,27 @@ jobs:
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
+      - name: Verify shared archive registrations survive
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const pages = JSON.parse(fs.readFileSync("tools/seo/static-pages.json", "utf8"));
+          const sitemap = fs.readFileSync("sitemap-pages.xml", "utf8");
+          const developerEntries = pages.filter((entry) => (
+            typeof entry === "string" &&
+            /^games\/developers\/(?:index\.html|[^/]+\/index\.html)$/.test(entry)
+          ));
+
+          for (const entry of developerEntries) {
+            const url = `https://www.cheekycommodoregamer.co.uk/${entry.replace(/index\.html$/, "")}`;
+            if (!sitemap.includes(`<loc>${url}</loc>`)) {
+              throw new Error(`Shared developer sitemap entry was lost: ${url}`);
+            }
+          }
+
+          console.log(`[downloads] Preserved ${developerEntries.length} developer sitemap registrations.`);
+          NODE
+
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
 
@@ -112,7 +135,7 @@ jobs:
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap-pages.xml
+          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
 
           if git diff --cached --quiet; then
             echo "Game downloads archive and discovery links are already current."
