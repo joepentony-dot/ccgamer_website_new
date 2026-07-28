@@ -37,6 +37,21 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Preserve legacy charset indentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/phase2c_static_game_schema.py")
+          text = path.read_text(encoding="utf-8")
+          old = '        const charset = /<meta charset=(["\'])UTF-8\\1\\s*\\\/>/i;'
+          new = '        const charset = /^[ \\t]*<meta charset=(["\'])UTF-8\\1\\s*\\\/>[ \\t]*$/im;'
+          if old in text and new not in text:
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          elif new not in text:
+              raise SystemExit("Unexpected charset-injection rule state")
+          PY
+
       - name: Validate Phase 2C tooling
         run: |
           python -m py_compile scripts/phase2c_static_game_schema.py
@@ -101,6 +116,7 @@ jobs:
           games = json.loads(Path("games/games.json").read_text(encoding="utf-8"))
           slugs = [str(game.get("slug") or "").strip() for game in games]
           allowed = {
+              "scripts/phase2c_static_game_schema.py",
               "scripts/generate-slug-pages.js",
               "docs/seo-baseline/phase-2c-static-game-schema.md",
           }
