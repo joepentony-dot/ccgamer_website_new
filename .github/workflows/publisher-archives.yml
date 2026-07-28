@@ -4,10 +4,18 @@ on:
   push:
     branches:
       - main
-      - "agent/**"
     paths:
       - "games/games.json"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
+      - "data/publisher-playlists.json"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
       - "data/publisher-playlists.json"
   workflow_dispatch:
 
@@ -43,6 +51,7 @@ jobs:
         run: node scripts/validate-sitemaps.js
 
       - name: Commit generated publisher and sitemap outputs
+        if: github.event_name == 'push'
         shell: bash
         run: |
           git add games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
