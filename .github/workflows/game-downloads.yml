@@ -77,13 +77,17 @@ jobs:
       - name: Add downloads URL to pages sitemap
         run: node scripts/update-downloads-sitemap.js
 
-      - name: Verify generated archive
+      - name: Verify compact accordion archive
         shell: bash
         run: |
           test -s games/downloads/index.html
           grep -q 'id="downloadSearchInput"' games/downloads/index.html
-          grep -q 'data-download-card' games/downloads/index.html
-          grep -q 'View Game &amp; Download' games/downloads/index.html
+          grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
+          grep -q 'data-src=' games/downloads/index.html
+          grep -q 'data-direct-download' games/downloads/index.html
+          grep -q '>Download Game<' games/downloads/index.html
+          grep -q '>Game Page<' games/downloads/index.html
+          ! grep -q 'View Game &amp; Download' games/downloads/index.html
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
@@ -103,7 +107,7 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Refresh generated game downloads archive"
+          git commit -m "Refresh compact game downloads archive"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           git push origin "HEAD:${TARGET_BRANCH}"
