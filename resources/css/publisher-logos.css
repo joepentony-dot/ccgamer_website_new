@@ -1,8 +1,9 @@
 /* ============================================================
-   CCG FEATURED PUBLISHER LOGOS
+   CCG PUBLISHER LOGOS & WAYFINDING
    ------------------------------------------------------------
-   Isolated to the Featured Publishers grid. Existing publisher,
-   home, genre, collection and game-card image rules are untouched.
+   Isolated to publisher archive contexts. Existing home, genre,
+   collection, standard publisher-card and game-thumbnail rules
+   remain untouched.
 ============================================================ */
 
 .ccg-publisher-grid--featured .ccg-publisher-card--has-logo {
@@ -23,7 +24,8 @@
     background: transparent;
 }
 
-.ccg-publisher-card__logo[hidden] {
+.ccg-publisher-card__logo[hidden],
+.ccg-publisher-page-logo[hidden] {
     display: none;
 }
 
@@ -36,6 +38,81 @@
     object-fit: contain;
     object-position: center;
     filter: none;
+}
+
+/* Individual publisher-page identity. */
+.ccg-publisher-single .ccg-publisher-page-logo {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(460px, 100%);
+    min-height: 118px;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 4px 0 22px;
+    padding: 0;
+}
+
+.ccg-publisher-single .ccg-publisher-page-logo img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(100%, 420px);
+    max-height: 108px;
+    object-fit: contain;
+    object-position: left center;
+    filter: none;
+}
+
+/* Keep the breadcrumb row aligned with the publisher-page content. */
+.ccg-publisher-single .ccg-publisher-breadcrumbs {
+    width: 100%;
+    min-height: 48px;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 0;
+    padding: 12px 2px;
+    line-height: 1.4;
+}
+
+.ccg-publisher-single .ccg-publisher-breadcrumbs a,
+.ccg-publisher-single .ccg-publisher-breadcrumbs span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+}
+
+.ccg-publisher-single .ccg-publisher-breadcrumbs > span[aria-hidden="true"] {
+    opacity: 0.52;
+}
+
+.ccg-publisher-single .ccg-publisher-breadcrumbs [aria-current="page"] {
+    opacity: 0.82;
+}
+
+.ccg-publisher-back-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 9px;
+    margin: 4px 0 22px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(5, 8, 18, 0.72);
+    color: inherit;
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-decoration: none;
+    transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.ccg-publisher-back-link:hover,
+.ccg-publisher-back-link:focus-visible {
+    transform: translateY(-2px);
+    border-color: currentColor;
+    background: rgba(5, 8, 18, 0.9);
 }
 
 @media (max-width: 760px) {
@@ -51,5 +128,34 @@
 
     .ccg-publisher-card__logo img {
         max-height: 80px;
+    }
+
+    .ccg-publisher-single .ccg-publisher-page-logo {
+        min-height: 96px;
+        margin-bottom: 18px;
+    }
+
+    .ccg-publisher-single .ccg-publisher-page-logo img {
+        max-width: min(100%, 340px);
+        max-height: 88px;
+    }
+
+    .ccg-publisher-single .ccg-publisher-breadcrumbs {
+        gap: 7px;
+        padding-inline: 0;
+        font-size: 0.86rem;
+    }
+
+    .ccg-publisher-back-link {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-publisher-back-link {
+        transition: none;
     }
 }
