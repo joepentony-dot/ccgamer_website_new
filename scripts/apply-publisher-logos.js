@@ -31,17 +31,23 @@ function htmlEscape(value) {
         .replace(/'/g, "&#39;");
 }
 
+function getSectionBounds(html) {
+    const featuredStart = html.indexOf('id="featured-publishers-title"');
+    const allPublishersStart = html.indexOf('id="all-publishers-title"');
+
+    if (featuredStart === -1 || allPublishersStart === -1 || featuredStart >= allPublishersStart) {
+        fail("Could not locate the Featured Publishers section.");
+    }
+
+    return { featuredStart, allPublishersStart };
+}
+
 if (!fs.existsSync(publisherIndexPath)) {
     fail("Publisher index does not exist. Run generate-publisher-pages.js first.");
 }
 
 let html = fs.readFileSync(publisherIndexPath, "utf8");
-const featuredStart = html.indexOf('id="featured-publishers-title"');
-const allPublishersStart = html.indexOf('id="all-publishers-title"');
-
-if (featuredStart === -1 || allPublishersStart === -1 || featuredStart >= allPublishersStart) {
-    fail("Could not locate the Featured Publishers section.");
-}
+getSectionBounds(html);
 
 if (!html.includes(`href="${stylesheetHref}"`)) {
     const marker = '<link rel="stylesheet" href="/resources/css/publishers.css">';
@@ -62,6 +68,7 @@ FEATURED_PUBLISHERS.forEach((publisherName) => {
         return;
     }
 
+    const { featuredStart, allPublishersStart } = getSectionBounds(html);
     const hrefMarker = `href="/games/publishers/${slug}/"`;
     const hrefIndex = html.indexOf(hrefMarker, featuredStart);
     if (hrefIndex === -1 || hrefIndex >= allPublishersStart) return;
