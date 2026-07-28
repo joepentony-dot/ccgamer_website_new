@@ -200,6 +200,34 @@ function renderComposerPage(entry) {
 </html>`;
 }
 
+function renderComposerRedirectPage(entry) {
+  const profile = FEATURED_PROFILE_DATA[entry.slug];
+  const title = profile?.seoTitle || `${entry.name} — C64 & Amiga Music Composer | Cheeky Commodore Gamer`;
+  const description = profile?.metaDescription || `Explore C64 and Amiga games featuring music by ${entry.name}, with archive links back to each game page on Cheeky Commodore Gamer.`;
+  const canonicalPath = `/music/${entry.slug}/`;
+  const canonicalUrl = `https://www.cheekycommodoregamer.co.uk${canonicalPath}`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/js/analytics.js"></script>
+<meta name="robots" content="noindex,follow">
+<meta http-equiv="refresh" content="0; url=${htmlEscape(canonicalPath)}">
+<script>
+(function(){
+window.location.replace(${JSON.stringify(canonicalPath)} + window.location.search + window.location.hash);
+})();
+</script>
+<title>${htmlEscape(title)}</title>
+<meta name="description" content="${htmlEscape(description)}">
+<link rel="canonical" href="${htmlEscape(canonicalUrl)}">
+</head>
+<body></body>
+</html>`;
+}
+
 function renderMusicIndexPage() {
   return `<!DOCTYPE html>
 <html lang="en" data-ccg-page="music-hub">
@@ -254,10 +282,14 @@ function renderMusicIndexPage() {
 function cleanStaleComposerPages(composerEntries) {
   const musicDir = "music";
   if (!fs.existsSync(musicDir)) return;
+  const activeSlugs = new Set(composerEntries.map((entry) => entry.slug));
   const activeFiles = new Set(composerEntries.map((entry) => `${entry.slug}.html`));
   fs.readdirSync(musicDir, { withFileTypes: true }).forEach((entry) => {
     if (entry.name === "index.html" || entry.name === "composer.html" || entry.name === ".music-data.hash") return;
-    if (entry.isDirectory()) return fs.rmSync(path.join(musicDir, entry.name), { recursive: true, force: true });
+    if (entry.isDirectory()) {
+      if (activeSlugs.has(entry.name)) return;
+      return fs.rmSync(path.join(musicDir, entry.name), { recursive: true, force: true });
+    }
     if (!entry.isFile() || !entry.name.endsWith(".html")) return;
     if (activeFiles.has(entry.name)) return;
     fs.rmSync(path.join(musicDir, entry.name), { force: true });
@@ -305,7 +337,9 @@ function main() {
 
   if (musicHash !== previousMusicHash) {
     composerEntries.forEach((entry) => {
-      if (writeFileIfChanged(path.join('music', `${entry.slug}.html`), renderComposerPage(entry))) musicWrites += 1;
+      const canonicalFile = path.join('music', entry.slug, 'index.html');
+      if (!fs.existsSync(canonicalFile) && writeFileIfChanged(canonicalFile, renderComposerPage(entry))) musicWrites += 1;
+      if (writeFileIfChanged(path.join('music', `${entry.slug}.html`), renderComposerRedirectPage(entry))) musicWrites += 1;
     });
     cleanStaleComposerPages(composerEntries);
     if (writeFileIfChanged(path.join('music', 'index.html'), renderMusicIndexPage())) musicWrites += 1;
@@ -330,5 +364,6 @@ module.exports = {
   buildGamesSearchData,
   cleanStaleComposerPages,
   renderComposerPage,
+  renderComposerRedirectPage,
   renderMusicIndexPage
 };
