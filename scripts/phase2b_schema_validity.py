@@ -15,6 +15,7 @@ JSON_REPORT = OUTPUT_DIR / "phase-2b-schema-validity.json"
 MD_REPORT = OUTPUT_DIR / "phase-2b-schema-validity.md"
 INVALID_PAGE = "retro-specials/favourite-arcade-games-c64-amiga-ports/index.html"
 EMPTY_PAGE = "games/game.html"
+GENERATED_ROOTS = ("retro-events", "retro-specials", "amiga-demo-music")
 
 TEMPLATE = ROOT / "admin/templates/retro-video-template.html"
 GENERATOR = ROOT / "scripts/generate-retro-pages.js"
@@ -124,6 +125,11 @@ def apply_generator() -> bool:
     text, did_change = replace_state(text, old_upload, new_upload, "upload-date mapping")
     changed = changed or did_change
 
+    old_duration = '      VIDEO_DURATION_FIELD: entry.duration ? `,\\n      "duration": "${escapeHtml(entry.duration)}"` : \'\','
+    new_duration = '      VIDEO_DURATION_FIELD: entry.duration\n        ? `,\\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`\n        : \'\','
+    text, did_change = replace_state(text, old_duration, new_duration, "duration mapping")
+    changed = changed or did_change
+
     return write(GENERATOR, text) or changed
 
 
@@ -140,6 +146,12 @@ def apply_game_placeholder() -> tuple[bool, bool]:
 
 def run(*parts: str) -> None:
     subprocess.run(list(parts), cwd=ROOT, check=True)
+
+
+def restore_unrelated_generated_output(corrected_target: str) -> None:
+    run("git", "restore", "--source=HEAD", "--", *GENERATED_ROOTS)
+    run("git", "clean", "-fd", "--", *GENERATED_ROOTS)
+    (ROOT / INVALID_PAGE).write_text(corrected_target, encoding="utf-8")
 
 
 def files(items: list[dict]) -> list[str]:
@@ -166,6 +178,9 @@ def main() -> None:
 
     run("node", "--check", "scripts/generate-retro-pages.js")
     run("node", "scripts/generate-retro-pages.js")
+
+    corrected_target = (ROOT / INVALID_PAGE).read_text(encoding="utf-8")
+    restore_unrelated_generated_output(corrected_target)
 
     after = audit_structured_data()
     failures = (
@@ -234,7 +249,7 @@ Phase 2B repairs the two syntax-level findings from the merged Phase 2A review a
 
 ## Permanent validation
 
-`scripts/validate_structured_data.py` rejects invalid or empty JSON-LD, unresolved template tokens and critical `VideoObject`, `BreadcrumbList` or `VideoGame` field errors. The permanent workflow also regenerates retro pages and rejects stale generated output.
+`scripts/validate_structured_data.py` rejects invalid or empty JSON-LD, unresolved template tokens and critical `VideoObject`, `BreadcrumbList` or `VideoGame` field errors. The permanent workflow validates both committed pages and a full temporary retro-page regeneration without committing unrelated generated output.
 
 ## Explicit exclusions
 
