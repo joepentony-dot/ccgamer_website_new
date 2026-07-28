@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "scripts/phase0_site_audit.py"
+      - "scripts/phase0_public_site_audit.py"
       - ".github/workflows/phase-0-seo-audit.yml"
   workflow_dispatch:
 
@@ -34,11 +35,13 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate audit script
-        run: python -m py_compile scripts/phase0_site_audit.py
+      - name: Validate audit scripts
+        run: |
+          python -m py_compile scripts/phase0_site_audit.py
+          python -m py_compile scripts/phase0_public_site_audit.py
 
-      - name: Generate repository baseline
-        run: python scripts/phase0_site_audit.py
+      - name: Generate public-site baseline
+        run: python scripts/phase0_public_site_audit.py
 
       - name: Verify report outputs
         shell: bash
