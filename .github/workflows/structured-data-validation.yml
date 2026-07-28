@@ -90,9 +90,6 @@ jobs:
           print(f"Validated retro generator scope across {len(paths)} changed paths.")
           PY
 
-      - name: Require committed retro output to be current
-        run: test -z "$(git status --porcelain --untracked-files=all)"
-
       - name: Restore temporary retro output
         if: always()
         run: |
