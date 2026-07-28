@@ -12,7 +12,6 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
-      - "scripts/generate-sitemaps.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -30,7 +29,6 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
-      - "scripts/generate-sitemaps.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -70,7 +68,6 @@ jobs:
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
           node --check scripts/update-downloads-static-pages.js
-          node --check scripts/generate-sitemaps.js
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
 
@@ -83,10 +80,7 @@ jobs:
       - name: Preserve static page sources
         run: node scripts/update-downloads-static-pages.js
 
-      - name: Rebuild shared sitemaps
-        run: node scripts/generate-sitemaps.js
-
-      - name: Refresh downloads sitemap date
+      - name: Refresh downloads URL in pages sitemap
         run: node scripts/update-downloads-sitemap.js
 
       - name: Verify downloads discovery and accordion archive
@@ -131,11 +125,40 @@ jobs:
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
 
+      - name: Confirm bounded downloads scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              paths.append(path)
+
+          allowed = {
+              "home.html",
+              "games/index.html",
+              "games/downloads/index.html",
+              "tools/seo/static-pages.json",
+              "sitemap-pages.xml",
+          }
+          unexpected = sorted(path for path in paths if path not in allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected downloads workflow paths: {unexpected}")
+          print(f"Validated {len(paths)} downloads workflow paths.")
+          PY
+
       - name: Commit generated downloads, discovery and sitemap outputs
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap-pages.xml
 
           if git diff --cached --quiet; then
             echo "Game downloads archive and discovery links are already current."
