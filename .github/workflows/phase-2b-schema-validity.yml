@@ -1,0 +1,158 @@
+name: Phase 2B Schema Validity
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase2b_schema_validity.py"
+      - "scripts/validate_structured_data.py"
+      - ".github/workflows/phase-2b-schema-validity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-2b-schema-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate correction tooling
+        run: |
+          python -m py_compile scripts/phase2b_schema_validity.py
+          python -m py_compile scripts/validate_structured_data.py
+          node --check scripts/generate-retro-pages.js
+
+      - name: Apply Phase 2B corrections
+        run: python scripts/phase2b_schema_validity.py
+
+      - name: Run permanent structured-data validator
+        run: |
+          python scripts/validate_structured_data.py \
+            --json-output docs/seo-baseline/phase-2b-validator.json
+
+      - name: Verify Phase 2B report
+        run: |
+          test -s docs/seo-baseline/phase-2b-schema-validity.md
+          test -s docs/seo-baseline/phase-2b-schema-validity.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("docs/seo-baseline/phase-2b-schema-validity.json").read_text(encoding="utf-8"))
+          summary = report["summary"]
+          required_zero = (
+              "invalid_jsonld_after",
+              "empty_jsonld_after",
+              "unresolved_template_blocks_after",
+              "critical_structural_issues_after",
+          )
+          failures = {key: summary.get(key) for key in required_zero if summary.get(key) != 0}
+          if failures:
+              raise SystemExit(f"Unexpected Phase 2B result: {failures}")
+          if summary.get("public_html_pages_validated", 0) < 1600:
+              raise SystemExit("Public HTML validation scope is unexpectedly small")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Verify protected files remain unchanged
+        run: |
+          git diff --exit-code -- \
+            index.html \
+            home.html \
+            complete-index.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json
+
+      - name: Upload detailed Phase 2B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-2b-schema-validity-json
+          path: |
+            docs/seo-baseline/phase-2b-schema-validity.json
+            docs/seo-baseline/phase-2b-validator.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove compiler bytecode before scope check
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact generated file scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          allowed = {
+              "admin/templates/retro-video-template.html",
+              "docs/seo-baseline/phase-2b-schema-validity.md",
+              "games/game.html",
+              "js/load-single-game.js",
+              "retro-specials/favourite-arcade-games-c64-amiga-ports/index.html",
+              "scripts/generate-retro-pages.js",
+          }
+          temporary = {
+              "docs/seo-baseline/phase-2b-schema-validity.json",
+              "docs/seo-baseline/phase-2b-validator.json",
+          }
+          tracked = set(filter(None, subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()))
+          untracked = set(filter(None, subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()))
+          actual = tracked | untracked
+          unexpected = sorted(actual - allowed - temporary)
+          missing = sorted(allowed - actual)
+          if unexpected or missing:
+              raise SystemExit(
+                  f"Unexpected generated files: {unexpected}\nExpected changed files absent: {missing}"
+              )
+          Path("/tmp/phase2b-commit-files.txt").write_text(
+              "\n".join(sorted(allowed)) + "\n", encoding="utf-8"
+          )
+          print(f"Validated {len(allowed)} commit files")
+          PY
+
+      - name: Remove temporary JSON evidence
+        run: |
+          rm -f docs/seo-baseline/phase-2b-schema-validity.json
+          rm -f docs/seo-baseline/phase-2b-validator.json
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Commit Phase 2B corrections
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          while IFS= read -r file; do
+            [ -n "$file" ] && git add -- "$file"
+          done < /tmp/phase2b-commit-files.txt
+
+          if git diff --cached --quiet; then
+            echo "Phase 2B output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 2B schema validity corrections"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
