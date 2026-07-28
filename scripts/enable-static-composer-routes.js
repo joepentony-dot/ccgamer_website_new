@@ -32,7 +32,7 @@ function main() {
     const fromComposers = Array.isArray(game.composers) ? game.composers : [];
     const fromComposer = typeof game.composer === "string" ? [game.composer] : [];
     const fromLegacyMusicNames = Array.isArray(game.music)
-      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\\.(mp3|ogg|wav|flac)$/i.test(item))
+      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac)$/i.test(item))
       : [];
 
     return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
@@ -61,7 +61,7 @@ function main() {
     const fromComposers = toComposerList(game.composers);
     const fromComposer = toComposerList(game.composer);
     const fromLegacyMusicNames = Array.isArray(game.music)
-      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\\.(mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i.test(item))
+      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i.test(item))
       : [];
 
     return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
@@ -86,7 +86,7 @@ function main() {
     }
 
     if (allowDedicated && slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
-      return \`${resolveSiteRoot()}music/\${slug}/\`;
+      return \`\${resolveSiteRoot()}music/\${slug}/\`;
     }
 
     return getFallbackComposerUrl(name || composerName || composerOrSlug || slug);
@@ -108,7 +108,7 @@ function main() {
     }
 
     if (slug && (knownComposer || allowDedicated || DEDICATED_COMPOSER_SLUGS.has(slug))) {
-      return \`${resolveSiteRoot()}music/\${slug}/\`;
+      return \`\${resolveSiteRoot()}music/\${slug}/\`;
     }
 
     return getFallbackComposerUrl(name || composerName || composerOrSlug || slug);
