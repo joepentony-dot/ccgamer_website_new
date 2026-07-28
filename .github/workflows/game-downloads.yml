@@ -1,0 +1,109 @@
+name: Refresh Game Downloads Archive
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "scripts/generate-downloads-page.js"
+      - "scripts/update-downloads-sitemap.js"
+      - "scripts/update-downloads-static-pages.js"
+      - "scripts/publisher-utils.js"
+      - "scripts/rebuild-games.js"
+      - "resources/css/downloads.css"
+      - "js/game-downloads.js"
+      - "js/ccg-nav.js"
+      - ".github/workflows/game-downloads.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "scripts/generate-downloads-page.js"
+      - "scripts/update-downloads-sitemap.js"
+      - "scripts/update-downloads-static-pages.js"
+      - "scripts/publisher-utils.js"
+      - "scripts/rebuild-games.js"
+      - "resources/css/downloads.css"
+      - "js/game-downloads.js"
+      - "js/ccg-nav.js"
+      - ".github/workflows/game-downloads.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-downloads-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Restore base pages sitemap for pull requests
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: git checkout origin/main -- sitemap-pages.xml
+
+      - name: Validate downloads source files
+        run: |
+          node --check scripts/generate-downloads-page.js
+          node --check scripts/update-downloads-sitemap.js
+          node --check scripts/update-downloads-static-pages.js
+          node --check js/game-downloads.js
+          node --check js/ccg-nav.js
+
+      - name: Generate game downloads archive
+        run: node scripts/generate-downloads-page.js
+
+      - name: Preserve static page sources
+        run: node scripts/update-downloads-static-pages.js
+
+      - name: Add downloads URL to pages sitemap
+        run: node scripts/update-downloads-sitemap.js
+
+      - name: Verify generated archive
+        shell: bash
+        run: |
+          test -s games/downloads/index.html
+          grep -q 'id="downloadSearchInput"' games/downloads/index.html
+          grep -q 'data-download-card' games/downloads/index.html
+          grep -q 'View Game &amp; Download' games/downloads/index.html
+          test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
+          node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Commit generated downloads and sitemap outputs
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add games/downloads tools/seo/static-pages.json sitemap-pages.xml
+
+          if git diff --cached --quiet; then
+            echo "Game downloads archive is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh generated game downloads archive"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"
