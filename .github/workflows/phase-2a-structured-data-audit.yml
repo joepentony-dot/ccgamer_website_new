@@ -1,0 +1,122 @@
+name: Phase 2A Structured Data Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase2a_structured_data_audit.py"
+      - ".github/workflows/phase-2a-structured-data-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-2a-structured-data-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate audit script
+        run: python -m py_compile scripts/phase2a_structured_data_audit.py
+
+      - name: Generate Phase 2A audit
+        run: python scripts/phase2a_structured_data_audit.py
+
+      - name: Verify audit outputs
+        shell: bash
+        run: |
+          test -s docs/seo-baseline/phase-2a-structured-data.md
+          test -s docs/seo-baseline/phase-2a-structured-data.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("docs/seo-baseline/phase-2a-structured-data.json").read_text(encoding="utf-8"))
+          summary = report["summary"]
+          generator = report["generator_findings"]
+
+          if summary["html_pages_audited"] < 1000:
+              raise SystemExit("Phase 2A public HTML scope is unexpectedly small")
+          if summary["indexable_pages"] < 500:
+              raise SystemExit("Phase 2A indexable-page scope is unexpectedly small")
+          if summary["indexable_game_pages"] < 600:
+              raise SystemExit("Phase 2A canonical game-page scope is unexpectedly small")
+          for key in (
+              "defines_video_game_builder",
+              "defines_video_object_builder",
+              "defines_breadcrumb_builder",
+          ):
+              if generator[key] is not True:
+                  raise SystemExit(f"Expected generator capability missing: {key}")
+          if generator["video_game_builder_call_count"] < 1:
+              raise SystemExit("VideoGame builder could not be inventoried")
+          if generator["video_object_builder_call_count"] < 1:
+              raise SystemExit("VideoObject builder could not be inventoried")
+          if generator["breadcrumb_builder_call_count"] < 1:
+              raise SystemExit("Breadcrumb builder could not be inventoried")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload detailed Phase 2A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-2a-structured-data-json
+          path: docs/seo-baseline/phase-2a-structured-data.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Confirm read-only file scope
+        shell: bash
+        run: |
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          python - <<'PY'
+          import subprocess
+
+          allowed = {"docs/seo-baseline/phase-2a-structured-data.md"}
+          temporary = {"docs/seo-baseline/phase-2a-structured-data.json"}
+          tracked = set(filter(None, subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()))
+          untracked = set(filter(None, subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()))
+          actual = tracked | untracked
+          unexpected = sorted(actual - allowed - temporary)
+          missing = sorted(allowed - actual)
+          if unexpected or missing:
+              raise SystemExit(
+                  f"Unexpected audit files: {unexpected}\nExpected report absent: {missing}"
+              )
+          print("Phase 2A changed-file scope is restricted to the concise Markdown report.")
+          PY
+
+      - name: Remove temporary JSON inventory
+        run: rm -f docs/seo-baseline/phase-2a-structured-data.json
+
+      - name: Commit Phase 2A report
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add docs/seo-baseline/phase-2a-structured-data.md
+          if git diff --cached --quiet; then
+            echo "Phase 2A report is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add Phase 2A structured-data review"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
