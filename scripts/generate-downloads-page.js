@@ -18,6 +18,7 @@ const gamesJsonPath = path.join(repoRoot, "games", "games.json");
 const downloadsDir = path.join(repoRoot, "games", "downloads");
 const outputPath = path.join(downloadsDir, "index.html");
 const staticPagesPath = path.join(repoRoot, "tools", "seo", "static-pages.json");
+const LAZY_IMAGE_PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
 
 function fail(message) {
     console.error(`[downloads] ${message}`);
@@ -35,8 +36,8 @@ function htmlEscape(value) {
 
 function jsonForHtml(value) {
     return JSON.stringify(value, null, 2)
-        .replace(/</g, "\\u003c")
-        .replace(/-->/g, "--\\u003e");
+        .replace(/</g, "\u003c")
+        .replace(/-->/g, "--\u003e");
 }
 
 function readJson(filePath, fallback) {
@@ -76,6 +77,39 @@ function normalizeDownloadLinks(value) {
         });
 }
 
+function extractGoogleDriveId(url) {
+    const value = String(url || "");
+    const pathMatch = value.match(/\/file\/d\/([A-Za-z0-9_-]+)/i);
+    if (pathMatch) return pathMatch[1];
+
+    const idMatch = value.match(/[?&]id=([A-Za-z0-9_-]+)/i);
+    return idMatch ? idMatch[1] : "";
+}
+
+function toDirectDownloadUrl(value) {
+    const url = String(value || "").trim();
+    if (!url) return "";
+
+    if (/drive\.google\.com|drive\.usercontent\.google\.com/i.test(url)) {
+        const fileId = extractGoogleDriveId(url);
+        if (fileId) {
+            return `https://drive.google.com/uc?export=download&id=${encodeURIComponent(fileId)}`;
+        }
+    }
+
+    if (/dropbox\.com/i.test(url)) {
+        try {
+            const parsed = new URL(url);
+            parsed.searchParams.set("dl", "1");
+            return parsed.toString();
+        } catch (error) {
+            return url.replace(/([?&])dl=0(?:&|$)/i, "$1dl=1");
+        }
+    }
+
+    return url;
+}
+
 function getThumbnailUrl(rawValue) {
     const raw = String(rawValue || "").trim();
     if (!raw) return "/resources/images/og/c64_neon.png";
@@ -93,7 +127,9 @@ function getDownloadRecords(games) {
         .map((game) => {
             const slug = String(game?.slug || "").trim();
             const title = String(game?.title || "").trim();
-            const links = normalizeDownloadLinks(game?.disk);
+            const links = normalizeDownloadLinks(game?.disk)
+                .map(toDirectDownloadUrl)
+                .filter(Boolean);
             if (!slug || !title || !links.length) return null;
 
             const yearValue = Number(game?.year);
@@ -110,6 +146,7 @@ function getDownloadRecords(games) {
                 publishers,
                 publisherText: publishers.join(", "),
                 thumbnail: getThumbnailUrl(game?.thumbnail),
+                links,
                 downloadCount: links.length,
                 letter: getLetter(title)
             };
@@ -204,9 +241,7 @@ function renderHeader() {
                 aria-expanded="false"
                 aria-controls="ccg-primary-nav"
                 data-ccg-nav-toggle>
-            <span class="ccg-nav-toggle__bars" aria-hidden="true">
-                <span></span><span></span><span></span>
-            </span>
+            <span class="ccg-nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
             <span class="ccg-nav-toggle__label">Menu</span>
         </button>
 
@@ -215,17 +250,12 @@ function renderHeader() {
                 <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
                     <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
                     <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="/games/downloads/" class="ccg-nav__link">Game Downloads</a></li>
                     <li><a href="/games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
                     <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
                     <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
                 </ul>
                 <div class="ccg-nav__more">
-                    <button class="ccg-nav__more-toggle"
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="ccg-more-menu"
-                            data-ccg-more-toggle>
+                    <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>
                         More <span aria-hidden="true">▾</span>
                     </button>
                     <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
@@ -242,17 +272,13 @@ function renderHeader() {
 
         <div class="ccg-header-actions">
             <div class="ccg-mode-hint">Try different modes</div>
-            <button class="ccg-mode-toggle"
-                    type="button"
-                    aria-label="Toggle between C64 and Amiga modes"
-                    data-ccg-mode-toggle>
+            <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
                 <span class="ccg-mode-toggle__pill">
                     <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
                     <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
                     <span class="ccg-mode-toggle__thumb"></span>
                 </span>
             </button>
-
             <div class="ccg-header-socials" aria-label="Social links">
                 <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
                 <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
@@ -269,19 +295,12 @@ function renderHeader() {
         <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <div class="ccg-nav-drawer__header">
                 <span class="ccg-nav-drawer__title">Navigate</span>
-                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
-                    <span aria-hidden="true">✕</span>
-                </button>
+                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close><span aria-hidden="true">✕</span></button>
             </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
-                <div class="ccg-nav-drawer__label">Primary</div>
-            </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
-                <div class="ccg-nav-drawer__label">Explore more</div>
-            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary><div class="ccg-nav-drawer__label">Primary</div></div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary><div class="ccg-nav-drawer__label">Explore more</div></div>
         </div>
     </div>
-
     <div class="ccg-header-neon-strip"></div>
 </header>`;
 }
@@ -304,44 +323,54 @@ function renderScripts() {
 <script src="/js/ccg-auth.js" defer></script>
 <script src="/js/ccg-mode.js" defer></script>
 <script src="/js/game-downloads.js" defer></script>
-<script
-    data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
-    async
-    src="https://gc.zgo.at/count.js"></script>`;
+<script data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>`;
+}
+
+function renderDownloadActions(game) {
+    const downloadButtons = game.links.map((url, index) => {
+        const label = index === 0 ? "Download Game" : `Download Game ${index + 1}`;
+        return `<a class="ccg-btn ccg-btn--primary ccg-download-card__download"
+                   href="${htmlEscape(url)}"
+                   target="_blank"
+                   rel="nofollow external noopener"
+                   download
+                   data-direct-download>${htmlEscape(label)}</a>`;
+    }).join("\n");
+
+    return `<div class="ccg-download-card__actions">
+        ${downloadButtons}
+        <a class="ccg-btn ccg-btn--secondary ccg-download-card__page" href="/games/${htmlEscape(game.slug)}/">Game Page</a>
+    </div>`;
 }
 
 function renderDownloadCard(game) {
     const year = game.year ? String(game.year) : "Year unknown";
     const publisher = game.publisherText || "Publisher not listed";
-    const searchText = [game.title, publisher, game.system, year]
-        .join(" ")
-        .toLowerCase();
+    const searchText = [game.title, publisher, game.system, year].join(" ").toLowerCase();
 
     return `<article class="ccg-download-card"
              data-download-card
              data-system="${htmlEscape(game.system.toLowerCase())}"
              data-letter="${htmlEscape(game.letter)}"
              data-search="${htmlEscape(searchText)}">
-        <a class="ccg-download-card__image" href="/games/${htmlEscape(game.slug)}/" aria-label="Open ${htmlEscape(game.title)} game page">
-            <img src="${htmlEscape(game.thumbnail)}"
+        <div class="ccg-download-card__image">
+            <img src="${LAZY_IMAGE_PLACEHOLDER}"
+                 data-src="${htmlEscape(game.thumbnail)}"
                  alt="${htmlEscape(game.title)} game thumbnail"
+                 width="160"
+                 height="120"
                  loading="lazy"
                  decoding="async">
-            <span class="ccg-download-card__available">Download available</span>
-        </a>
+        </div>
         <div class="ccg-download-card__body">
             <div class="ccg-download-card__meta">
                 <span>${htmlEscape(game.system)}</span>
                 <span>${htmlEscape(year)}</span>
                 <span>${game.downloadCount} ${game.downloadCount === 1 ? "file" : "files"}</span>
             </div>
-            <h3 class="ccg-download-card__title">
-                <a href="/games/${htmlEscape(game.slug)}/">${htmlEscape(game.title)}</a>
-            </h3>
+            <h3 class="ccg-download-card__title"><a href="/games/${htmlEscape(game.slug)}/">${htmlEscape(game.title)}</a></h3>
             <p class="ccg-download-card__publisher">${htmlEscape(publisher)}</p>
-            <a class="ccg-btn ccg-btn--primary ccg-download-card__action" href="/games/${htmlEscape(game.slug)}/">
-                View Game &amp; Download
-            </a>
+            ${renderDownloadActions(game)}
         </div>
     </article>`;
 }
@@ -349,7 +378,7 @@ function renderDownloadCard(game) {
 function renderDownloadsPage(games) {
     const canonicalUrl = `${SITE_ORIGIN}/games/downloads/`;
     const title = "C64 & Amiga Game Downloads A–Z | Cheeky Commodore Gamer";
-    const description = "Browse C64 and Amiga games with downloads available in the Cheeky Commodore Gamer archive. Search the A–Z list by title, publisher, platform or year.";
+    const description = "Browse and download C64 and Amiga games from a searchable A–Z archive, with compact thumbnails, publisher details and links to every game page.";
     const c64Count = games.filter((game) => game.system === "C64").length;
     const amigaCount = games.filter((game) => game.system === "Amiga").length;
     const fileCount = games.reduce((total, game) => total + game.downloadCount, 0);
@@ -360,9 +389,7 @@ function renderDownloadsPage(games) {
         groups.get(game.letter).push(game);
     });
 
-    const orderedLetters = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
-        .filter((letter) => groups.has(letter));
-
+    const orderedLetters = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"].filter((letter) => groups.has(letter));
     const schema = {
         "@context": "https://schema.org",
         "@graph": [
@@ -371,33 +398,14 @@ function renderDownloadsPage(games) {
                 name: "C64 & Amiga Game Downloads A–Z",
                 description,
                 url: canonicalUrl,
-                isPartOf: {
-                    "@type": "WebSite",
-                    name: "Cheeky Commodore Gamer",
-                    url: SITE_ORIGIN
-                }
+                isPartOf: { "@type": "WebSite", name: "Cheeky Commodore Gamer", url: SITE_ORIGIN }
             },
             {
                 "@type": "BreadcrumbList",
                 itemListElement: [
-                    {
-                        "@type": "ListItem",
-                        position: 1,
-                        name: "Home",
-                        item: `${SITE_ORIGIN}/`
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 2,
-                        name: "Games",
-                        item: `${SITE_ORIGIN}/games/`
-                    },
-                    {
-                        "@type": "ListItem",
-                        position: 3,
-                        name: "Game Downloads",
-                        item: canonicalUrl
-                    }
+                    { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_ORIGIN}/` },
+                    { "@type": "ListItem", position: 2, name: "Games", item: `${SITE_ORIGIN}/games/` },
+                    { "@type": "ListItem", position: 3, name: "Game Downloads", item: canonicalUrl }
                 ]
             },
             {
@@ -421,15 +429,17 @@ function renderDownloadsPage(games) {
     const sections = orderedLetters.map((letter) => {
         const sectionId = letter === "#" ? "numbers" : letter.toLowerCase();
         const sectionGames = groups.get(letter) || [];
-        return `<section class="ccg-downloads-letter" id="downloads-${sectionId}" data-download-section data-letter="${htmlEscape(letter)}" aria-labelledby="downloads-heading-${sectionId}">
-            <div class="ccg-downloads-letter__heading">
-                <h2 id="downloads-heading-${sectionId}">${htmlEscape(letter)}</h2>
-                <span>${sectionGames.length} ${sectionGames.length === 1 ? "game" : "games"}</span>
+        return `<details class="ccg-downloads-letter" id="downloads-${sectionId}" data-download-section data-letter="${htmlEscape(letter)}">
+            <summary class="ccg-downloads-letter__heading">
+                <h2>${htmlEscape(letter)}</h2>
+                <span class="ccg-downloads-letter__count">${sectionGames.length} ${sectionGames.length === 1 ? "game" : "games"}</span>
+            </summary>
+            <div class="ccg-downloads-letter__panel">
+                <div class="ccg-downloads-grid">
+                    ${sectionGames.map(renderDownloadCard).join("\n")}
+                </div>
             </div>
-            <div class="ccg-downloads-grid">
-                ${sectionGames.map(renderDownloadCard).join("\n")}
-            </div>
-        </section>`;
+        </details>`;
     }).join("\n");
 
     return `<!DOCTYPE html>
@@ -450,7 +460,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 <p class="ccg-downloads-hero__kicker">Download archive · C64 &amp; Amiga</p>
                 <h1 class="ccg-downloads-hero__title">Game Downloads A–Z</h1>
                 <p class="ccg-downloads-hero__intro">
-                    Search every C64 and Amiga title in the CCG archive that currently has a download available. Open a game card to view its full information, video, manual and download options.
+                    Choose a letter or search the archive. Each letter opens as a compact accordion, with direct game downloads and a separate link to the full game page.
                 </p>
                 <div class="ccg-downloads-hero__stats">
                     <span><strong>${games.length}</strong> downloadable games</span>
@@ -461,9 +471,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
             </section>
 
             <nav class="ccg-downloads-breadcrumbs" aria-label="Breadcrumb">
-                <a href="/games/">Games</a>
-                <span aria-hidden="true">›</span>
-                <span aria-current="page">Game Downloads</span>
+                <a href="/games/">Games</a><span aria-hidden="true">›</span><span aria-current="page">Game Downloads</span>
             </nav>
 
             <section class="ccg-downloads-tools" aria-label="Search and filter downloadable games">
@@ -472,38 +480,27 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <input id="downloadSearchInput" type="search" placeholder="Search by game, publisher, platform or year…" autocomplete="off">
                     <button id="downloadSearchClear" type="button" aria-label="Clear download search">×</button>
                 </div>
-
                 <div class="ccg-downloads-filter" role="group" aria-label="Filter downloadable games by system">
                     <button type="button" class="ccg-btn ccg-btn--secondary is-active" data-download-system="all" aria-pressed="true">All Games</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-download-system="c64" aria-pressed="false">Commodore 64</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-download-system="amiga" aria-pressed="false">Amiga</button>
                 </div>
-
                 <p class="ccg-downloads-visible-count"><strong id="downloadVisibleCount">${games.length}</strong> games shown</p>
             </section>
 
-            <nav class="ccg-downloads-alpha" aria-label="Jump to games by letter">
-                ${alphabet}
-            </nav>
+            <nav class="ccg-downloads-alpha" aria-label="Open games by letter">${alphabet}</nav>
 
             <section class="ccg-downloads-notice" aria-labelledby="downloads-notice-title">
-                <h2 id="downloads-notice-title">How this archive works</h2>
-                <p>
-                    This page is generated from the existing download links in the main CCG game database. It lists only games that currently have at least one download recorded, and it updates automatically as games are added or amended.
-                </p>
+                <h2 id="downloads-notice-title">Choose a letter</h2>
+                <p>The archive starts collapsed so hundreds of thumbnails are not loaded together. Open one letter at a time, or use search to jump to the first matching section.</p>
             </section>
 
-            <div class="ccg-downloads-archive" id="downloadArchive">
-                ${sections}
-            </div>
-
+            <div class="ccg-downloads-archive" id="downloadArchive">${sections}</div>
             <p class="ccg-downloads-empty" id="downloadEmptyState" hidden>No downloadable games match that search.</p>
 
             <section class="ccg-downloads-rights" aria-labelledby="downloads-rights-title">
                 <h2 id="downloads-rights-title">Preservation and rights</h2>
-                <p>
-                    Game files remain the property of their respective rights holders. The archive links are presented for retro-computing preservation, research and personal use. Please contact Cheeky Commodore Gamer regarding any link that requires review.
-                </p>
+                <p>Game files remain the property of their respective rights holders. The archive links are presented for retro-computing preservation, research and personal use. Please contact Cheeky Commodore Gamer regarding any link that requires review.</p>
             </section>
 
             <section class="ccg-downloads-wayfinding" aria-labelledby="downloads-explore-title">
@@ -534,7 +531,8 @@ function updateStaticPages() {
     const seen = new Set();
     const deduped = next.filter((entry) => {
         const normalized = entry.trim();
-        if (!normalized || seen.has(normalized)) return false;
+        if (entry !== "" && !normalized) return false;
+        if (seen.has(normalized)) return false;
         seen.add(normalized);
         return true;
     });
@@ -546,48 +544,37 @@ function validateGeneratedPage(html, games) {
     const problems = [];
     const canonicalUrl = `${SITE_ORIGIN}/games/downloads/`;
 
-    if (!html.includes(`<link rel="canonical" href="${canonicalUrl}">`)) {
-        problems.push("missing canonical URL");
-    }
-    if (!html.includes("<title>C64 &amp; Amiga Game Downloads A–Z | Cheeky Commodore Gamer</title>")) {
-        problems.push("missing expected SEO title");
-    }
-    if (!html.includes('meta name="robots" content="index,follow"')) {
-        problems.push("missing index,follow robots directive");
-    }
-    if (!html.includes('id="downloadSearchInput"')) {
-        problems.push("missing search input");
-    }
+    if (!html.includes(`<link rel="canonical" href="${canonicalUrl}">`)) problems.push("missing canonical URL");
+    if (!html.includes("<title>C64 &amp; Amiga Game Downloads A–Z | Cheeky Commodore Gamer</title>")) problems.push("missing expected SEO title");
+    if (!html.includes('meta name="robots" content="index,follow"')) problems.push("missing index,follow robots directive");
+    if (!html.includes('id="downloadSearchInput"')) problems.push("missing search input");
+    if (!html.includes("<details class=\"ccg-downloads-letter\"")) problems.push("missing accordion sections");
+    if (!html.includes("Download Game")) problems.push("missing direct download actions");
+    if (!html.includes("Game Page")) problems.push("missing game page actions");
+    if (!html.includes("data-src=")) problems.push("missing deferred thumbnail loading");
 
     games.forEach((game) => {
-        if (!html.includes(`href="/games/${game.slug}/"`)) {
-            problems.push(`missing crawlable game link: ${game.slug}`);
-        }
+        if (!html.includes(`href="/games/${game.slug}/"`)) problems.push(`missing crawlable game link: ${game.slug}`);
+        game.links.forEach((url) => {
+            if (!html.includes(`href="${htmlEscape(url)}"`)) problems.push(`missing download link: ${game.slug}`);
+        });
     });
 
     return problems;
 }
 
 function main() {
-    if (!fs.existsSync(gamesJsonPath)) {
-        fail(`Missing games source: ${path.relative(repoRoot, gamesJsonPath)}`);
-    }
+    if (!fs.existsSync(gamesJsonPath)) fail(`Missing games source: ${path.relative(repoRoot, gamesJsonPath)}`);
 
     const sourceGames = readJson(gamesJsonPath, []);
-    if (!Array.isArray(sourceGames) || !sourceGames.length) {
-        fail("games/games.json must contain a non-empty top-level array.");
-    }
+    if (!Array.isArray(sourceGames) || !sourceGames.length) fail("games/games.json must contain a non-empty top-level array.");
 
     const downloadableGames = getDownloadRecords(sourceGames);
-    if (!downloadableGames.length) {
-        fail("No games with download links were found in games/games.json.");
-    }
+    if (!downloadableGames.length) fail("No games with download links were found in games/games.json.");
 
     const html = renderDownloadsPage(downloadableGames);
     const problems = validateGeneratedPage(html, downloadableGames);
-    if (problems.length) {
-        fail(`Generated page validation failed: ${problems.join("; ")}`);
-    }
+    if (problems.length) fail(`Generated page validation failed: ${problems.join("; ")}`);
 
     const pageChanged = writeFileIfChanged(outputPath, html);
     const staticPagesChanged = updateStaticPages();
@@ -602,14 +589,14 @@ function main() {
     console.log(`[downloads] Static pages config changed: ${staticPagesChanged ? "yes" : "no"}`);
 }
 
-if (require.main === module) {
-    main();
-}
+if (require.main === module) main();
 
 module.exports = {
+    extractGoogleDriveId,
     getDownloadRecords,
     normalizeDownloadLinks,
     renderDownloadsPage,
+    toDirectDownloadUrl,
     updateStaticPages,
     validateGeneratedPage
 };
