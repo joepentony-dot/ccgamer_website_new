@@ -43,13 +43,15 @@ jobs:
           from pathlib import Path
 
           path = Path("scripts/phase2c_static_game_schema.py")
-          text = path.read_text(encoding="utf-8")
-          old = '        const charset = /<meta charset=(["\'])UTF-8\\1\\s*\\\/>/i;'
-          new = '        const charset = /^[ \\t]*<meta charset=(["\'])UTF-8\\1\\s*\\\/>[ \\t]*$/im;'
-          if old in text and new not in text:
-              path.write_text(text.replace(old, new, 1), encoding="utf-8")
-          elif new not in text:
-              raise SystemExit("Unexpected charset-injection rule state")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          matches = [
+              index for index, line in enumerate(lines)
+              if "const charset = /<meta charset=" in line
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Unexpected charset rule count: {len(matches)}")
+          lines[matches[0]] = r'''        const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;'''
+          path.write_text("\n".join(lines) + "\n", encoding="utf-8")
           PY
 
       - name: Validate Phase 2C tooling
