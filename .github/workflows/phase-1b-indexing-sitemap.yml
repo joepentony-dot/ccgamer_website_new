@@ -103,6 +103,10 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Remove compiler bytecode before scope check
+        shell: bash
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
       - name: Confirm exact generated file scope
         shell: bash
         run: |
