@@ -37,15 +37,22 @@ function main() {
     current.forEach((entry) => {
         if (typeof entry !== "string") return;
         const normalized = entry.trim();
-        if (!normalized || normalized === DOWNLOAD_PAGE || seen.has(normalized)) return;
+        if (!normalized || seen.has(normalized)) return;
         seen.add(normalized);
         next.push(normalized);
     });
 
-    next.push(DOWNLOAD_PAGE);
-    fs.writeFileSync(staticPagesPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
+    if (!seen.has(DOWNLOAD_PAGE)) {
+        next.push(DOWNLOAD_PAGE);
+    }
 
-    console.log("[downloads-static-pages] Preserved the root entry and registered games/downloads/index.html.");
+    const output = `${JSON.stringify(next, null, 2)}\n`;
+    const previous = fs.readFileSync(staticPagesPath, "utf8");
+    if (previous !== output) {
+        fs.writeFileSync(staticPagesPath, output, "utf8");
+    }
+
+    console.log("[downloads-static-pages] Preserved shared archive order and registered games/downloads/index.html.");
 }
 
 main();
