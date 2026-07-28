@@ -1,17 +1,5 @@
 [
   {
-    "name": "2 Logos",
-    "slug": "2-logos",
-    "count": 4,
-    "c64Count": 1,
-    "amigaCount": 3,
-    "firstYear": 1989,
-    "lastYear": 1995,
-    "indexable": true,
-    "playlist": "",
-    "url": "/games/publishers/2-logos/"
-  },
-  {
     "name": "21st Century Entertainment",
     "slug": "21st-century-entertainment",
     "count": 1,
@@ -22,18 +10,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/21st-century-entertainment/"
-  },
-  {
-    "name": "3 Logos",
-    "slug": "3-logos",
-    "count": 5,
-    "c64Count": 0,
-    "amigaCount": 5,
-    "firstYear": 1993,
-    "lastYear": 1995,
-    "indexable": true,
-    "playlist": "",
-    "url": "/games/publishers/3-logos/"
   },
   {
     "name": "64 Tape Computing",
