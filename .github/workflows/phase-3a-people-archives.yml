@@ -1,0 +1,127 @@
+name: Phase 3A People Archive Review
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase3a_people_archives_audit.py"
+      - ".github/workflows/phase-3a-people-archives.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-3a-people-archives-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate audit syntax
+        run: python -m py_compile scripts/phase3a_people_archives_audit.py
+
+      - name: Run Phase 3A archive audit
+        run: python scripts/phase3a_people_archives_audit.py
+
+      - name: Verify audit results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("docs/seo-baseline/phase-3a-people-archives.json").read_text(encoding="utf-8")
+          )
+          summary = report["summary"]
+          failures = []
+          if summary.get("game_records") != 651:
+              failures.append(f"Expected 651 game records, found {summary.get('game_records')}")
+          if int(summary.get("unique_developer_entities", 0)) < 1:
+              failures.append("No explicit developer entities were detected")
+          if int(summary.get("unique_composer_entities", 0)) < 1:
+              failures.append("No composer entities were detected")
+          if report.get("composer_hub") is None:
+              failures.append("Composer hub was not detected")
+          if report.get("composer_fallback") is None:
+              failures.append("Composer fallback shell was not detected")
+          if failures:
+              raise SystemExit("\n".join(failures))
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload detailed Phase 3A evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-3a-people-archives-json
+          path: docs/seo-baseline/phase-3a-people-archives.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Remove compiler bytecode before scope check
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm read-only public scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          markdown = "docs/seo-baseline/phase-3a-people-archives.md"
+          evidence = "docs/seo-baseline/phase-3a-people-archives.json"
+          allowed = {markdown, evidence}
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          actual = set()
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              actual.add(path)
+          unexpected = sorted(actual - allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected audit changes: {unexpected}")
+          if evidence not in actual:
+              raise SystemExit("Detailed JSON evidence was not generated")
+          commit_files = [markdown] if markdown in actual else []
+          Path("/tmp/phase3a-report-file.txt").write_text(
+              "\n".join(commit_files) + ("\n" if commit_files else ""),
+              encoding="utf-8",
+          )
+          print(
+              "Validated read-only Phase 3A scope; "
+              + ("Markdown report requires commit." if commit_files else "Markdown report is already current.")
+          )
+          PY
+
+      - name: Remove temporary JSON evidence
+        run: rm docs/seo-baseline/phase-3a-people-archives.json
+
+      - name: Commit Phase 3A report when required
+        run: |
+          if [ -s /tmp/phase3a-report-file.txt ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            xargs -d '\n' git add -- < /tmp/phase3a-report-file.txt
+            git commit -m "Add Phase 3A people archive review"
+            git push
+          else
+            echo "Phase 3A report is already current."
+          fi
