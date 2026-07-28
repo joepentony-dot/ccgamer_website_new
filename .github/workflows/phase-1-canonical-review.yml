@@ -1,0 +1,118 @@
+name: Phase 1 Canonical Review
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase1_canonical_review.py"
+      - ".github/workflows/phase-1-canonical-review.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-1-canonical-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate review scripts
+        run: |
+          python -m py_compile scripts/phase0_site_audit.py
+          python -m py_compile scripts/phase1_canonical_review.py
+
+      - name: Generate Phase 1 review
+        run: python scripts/phase1_canonical_review.py
+
+      - name: Verify review output
+        shell: bash
+        run: |
+          test -s docs/seo-baseline/phase-1-canonical-review.md
+          test -s docs/seo-baseline/phase-1-canonical-review.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("docs/seo-baseline/phase-1-canonical-review.json").read_text(encoding="utf-8")
+          )
+          summary = report.get("summary", {})
+          required = {
+              "canonical_collision_groups",
+              "collision_pages",
+              "high_risk_groups",
+              "indexable_pages_missing_canonicals",
+          }
+          missing = sorted(required.difference(summary))
+          if missing:
+              raise SystemExit(f"Phase 1 summary is missing keys: {missing}")
+          if summary["canonical_collision_groups"] < 1:
+              raise SystemExit("No canonical collision groups were classified")
+          if len(report.get("groups", [])) != summary["canonical_collision_groups"]:
+              raise SystemExit("Collision group count does not match the report summary")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload detailed review evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-1-canonical-review-json
+          path: docs/seo-baseline/phase-1-canonical-review.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove temporary generated files
+        shell: bash
+        run: |
+          rm -f docs/seo-baseline/phase-0-baseline.json
+          rm -f docs/seo-baseline/phase-1-canonical-review.json
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm review is non-destructive
+        shell: bash
+        run: |
+          ALLOWED='docs/seo-baseline/phase-1-canonical-review.md'
+          UNEXPECTED_TRACKED="$(git diff --name-only | grep -v -x "$ALLOWED" || true)"
+          UNEXPECTED_UNTRACKED="$(git ls-files --others --exclude-standard | grep -v -x "$ALLOWED" || true)"
+
+          if [ -n "$UNEXPECTED_TRACKED" ] || [ -n "$UNEXPECTED_UNTRACKED" ]; then
+            echo "Unexpected tracked changes:"
+            printf '%s\n' "$UNEXPECTED_TRACKED"
+            echo "Unexpected untracked files:"
+            printf '%s\n' "$UNEXPECTED_UNTRACKED"
+            exit 1
+          fi
+
+      - name: Commit Phase 1 review summary
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add docs/seo-baseline/phase-1-canonical-review.md
+
+          if git diff --cached --quiet; then
+            echo "Phase 1 review is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 1 canonical review"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
