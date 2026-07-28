@@ -14,7 +14,6 @@ on:
       - "data/publisher-playlists.json"
       - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
-      - "tmp/publisher-logos.zip"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
@@ -29,7 +28,6 @@ on:
       - "data/publisher-playlists.json"
       - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
-      - "tmp/publisher-logos.zip"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
 
@@ -55,16 +53,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
-
-      - name: Install supplied publisher logos
-        shell: bash
-        run: |
-          if [ -f tmp/publisher-logos.zip ]; then
-            mkdir -p resources/images/publishers
-            unzip -jo tmp/publisher-logos.zip -d resources/images/publishers
-            rm tmp/publisher-logos.zip
-          fi
+          node-version: "24"
 
       - name: Validate publisher scripts
         run: |
@@ -86,10 +75,39 @@ jobs:
           test -s games/publishers/index.html
           grep -q '/resources/css/publisher-logos.css' games/publishers/index.html
 
-          LOGO_COUNT="$(find resources/images/publishers -maxdepth 1 -type f -name '*.png' 2>/dev/null | wc -l | tr -d ' ')"
-          MARKUP_COUNT="$(grep -o 'data-publisher-logo=' games/publishers/index.html | wc -l | tr -d ' ')"
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const {
+            FEATURED_PUBLISHERS,
+            slugifyPublisher
+          } = require("./scripts/publisher-utils");
 
-          test "$LOGO_COUNT" -eq "$MARKUP_COUNT"
+          const html = fs.readFileSync("games/publishers/index.html", "utf8");
+          const expected = FEATURED_PUBLISHERS
+            .map((name) => ({ name, slug: slugifyPublisher(name) }))
+            .filter(({ slug }) => fs.existsSync(path.join("resources", "images", "publishers", `${slug}.png`)));
+
+          if (!expected.length) {
+            throw new Error("No featured publisher logo files were found.");
+          }
+
+          expected.forEach(({ name, slug }) => {
+            if (!html.includes(`data-publisher-logo="${slug}"`)) {
+              throw new Error(`Missing generated logo wrapper for ${name}.`);
+            }
+            if (!html.includes(`/resources/images/publishers/${slug}.png`)) {
+              throw new Error(`Missing generated image reference for ${name}.`);
+            }
+          });
+
+          const markupCount = (html.match(/data-publisher-logo=/g) || []).length;
+          if (markupCount !== expected.length) {
+            throw new Error(`Expected ${expected.length} featured logo wrappers but found ${markupCount}.`);
+          }
+
+          console.log(`[publisher-logos] Verified ${expected.length} featured publisher logos.`);
+          NODE
 
       - name: Rebuild sitemaps
         run: node scripts/generate-sitemaps.js
@@ -102,7 +120,6 @@ jobs:
         shell: bash
         run: |
           git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
-          git add -A tmp/publisher-logos.zip
 
           if git diff --cached --quiet; then
             echo "Publisher archives are already current."
@@ -114,4 +131,4 @@ jobs:
           git commit -m "Refresh generated publisher archives"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          git push origin "HEAD:${TARGET_BRANCH>"
