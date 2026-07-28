@@ -1,0 +1,170 @@
+{
+  "_instructions": "Curated factual profiles for major publisher archive pages. Keep claims concise, independently sourced and written in original wording. Other publishers receive archive-derived copy from games.json.",
+  "ocean-software": {
+    "founded": "1983",
+    "founders": ["David Ward", "Jon Woods"],
+    "location": "Manchester, England",
+    "focus": "Licensed film and television games, arcade conversions and original home-computer releases",
+    "history": [
+      "Ocean Software was founded in Manchester in 1983 by David Ward and Jon Woods after beginning as Spectrum Games. The company changed its name as it expanded beyond the ZX Spectrum market and became one of the most recognisable British software publishers of the 1980s.",
+      "Ocean built a large catalogue around film, television and arcade licences, while also publishing original games. It acquired the Imagine name in 1984 and used the label for many conversions and other releases. The company later became part of Infogrames during the 1990s."
+    ],
+    "sources": [
+      {"label": "Centre for Computing History", "url": "https://www.computinghistory.org.uk/pages/cache/FULL-57894.htm"},
+      {"label": "Time Extension: Ocean's Manchester history", "url": "https://www.timeextension.com/features/sacred-spaces-ocean-softwares-central-street-hq-manchester-england"}
+    ]
+  },
+  "mastertronic": {
+    "founded": "1983",
+    "founders": ["Frank Herman", "Martin Alper", "Terry Medway", "Alan Sharam"],
+    "location": "London, England",
+    "focus": "Budget-priced home-computer software and wide retail distribution",
+    "history": [
+      "The business that became Mastertronic was formed in London at the end of 1983 and began trading in 1984. Its central idea was to sell computer games at budget prices, with the best-known early range retailing at £1.99.",
+      "Mastertronic used an unusually broad distribution network that placed games in newsagents, service stations and other outlets as well as specialist shops. The company expanded through labels including M.A.D. and later merged with Virgin, while also becoming closely involved in Sega's European distribution."
+    ],
+    "sources": [
+      {"label": "Mastertronic Collectors Archive", "url": "https://mastertronic.co.uk/a-history-of-mastertronic/"},
+      {"label": "Centre for Computing History", "url": "https://www.computinghistory.org.uk/det/63933/Mastertronic/"}
+    ]
+  },
+  "firebird": {
+    "founded": "1984",
+    "founders": [],
+    "location": "United Kingdom",
+    "focus": "Full-price and budget software published through British Telecom's Telecomsoft division",
+    "history": [
+      "Firebird was created in 1984 as a publishing label of Telecomsoft, the software division established by British Telecom. Its catalogue covered major 8-bit and 16-bit home computers, including the Commodore 64 and Amiga.",
+      "The label operated across different price levels, including Firebird Gold and Firebird Silver, and secured important releases such as conversions of Elite. Telecomsoft's games business, including Firebird and Rainbird, was sold to MicroProse in 1989."
+    ],
+    "sources": [
+      {"label": "The Bird Sanctuary", "url": "https://birdsanctuary.co.uk/history-firebird-software/"},
+      {"label": "Play It Again digital heritage archive", "url": "https://ourdigitalheritage.org/hostedArchives/playitagain/companies/firebird/index.html"}
+    ]
+  },
+  "us-gold": {
+    "founded": "1984",
+    "founders": ["Geoff Brown"],
+    "location": "Birmingham, England",
+    "focus": "Importing, licensing and publishing American and arcade games for European home computers",
+    "history": [
+      "US Gold was founded in Birmingham in 1984 by Geoff Brown as the publishing division of the CentreSoft distribution business. Its early strategy was to bring successful American software to the United Kingdom and wider European market.",
+      "The company became strongly associated with licensed arcade conversions and multi-format releases across the Commodore 64, ZX Spectrum, Amstrad CPC, Atari ST and Amiga. It later became part of the CentreGold group, whose assets were acquired during the formation of Eidos."
+    ],
+    "sources": [
+      {"label": "MobyGames company history", "url": "https://www.mobygames.com/company/587/us-gold-ltd/"},
+      {"label": "Classic Gaming Network archive", "url": "https://www.classic-gaming.net/company/84/"}
+    ]
+  },
+  "codemasters": {
+    "founded": "1986",
+    "founders": ["David Darling", "Richard Darling"],
+    "location": "England",
+    "focus": "Budget home-computer games, character-led series and later racing games",
+    "history": [
+      "Codemasters was founded in 1986 by brothers David and Richard Darling after their earlier success producing budget games for Mastertronic. The company established itself with inexpensive releases designed for the major British home computers.",
+      "Early Commodore titles included sports games and the Dizzy series, followed by console and 16-bit successes such as Micro Machines. In later decades Codemasters became particularly associated with racing games and is now part of Electronic Arts."
+    ],
+    "sources": [
+      {"label": "Codemasters official studio history", "url": "https://www.ea.com/ea-studios/codemasters/studio"},
+      {"label": "The Codemasters Archive", "url": "https://thecodemastersarchive.co.uk/history/"}
+    ]
+  },
+  "system-3": {
+    "founded": "1982",
+    "founders": ["Mark Cale"],
+    "location": "United Kingdom",
+    "focus": "Original action games and long-running Commodore franchises",
+    "history": [
+      "System 3 was formed in 1982 by Mark Cale and developed into one of the longest-running independent British game publishers from the early home-computer period.",
+      "Its Commodore identity is closely linked with series including International Karate and The Last Ninja. The company combined publishing with game development and continued to work with its established catalogue on later platforms."
+    ],
+    "sources": [
+      {"label": "System 3 official history", "url": "https://shop.system3.com/"}
+    ]
+  },
+  "activision": {
+    "founded": "1979",
+    "founders": [],
+    "location": "California, United States",
+    "focus": "Independent game publishing across consoles and home computers",
+    "history": [
+      "Activision was established in California in 1979 by former Atari programmers and became an important early independent publisher of games made for another company's hardware.",
+      "Its Commodore 64 catalogue combined original computer releases with conversions and licensed publishing. The Activision name continued through several corporate changes and later became part of Activision Blizzard and Microsoft."
+    ],
+    "sources": [
+      {"label": "Activision SEC company filing", "url": "https://www.sec.gov/Archives/edgar/data/718877/000091205701521517/a2052327z10-k.htm"},
+      {"label": "The New Yorker: early independent publishing", "url": "https://www.newyorker.com/books/under-review/sid-meier-and-the-meaning-of-civilization"}
+    ]
+  },
+  "electronic-arts": {
+    "founded": "1982",
+    "founders": ["Trip Hawkins"],
+    "location": "California, United States",
+    "focus": "Creator-led computer games, sports titles and international publishing",
+    "history": [
+      "Electronic Arts was founded in 1982 by Trip Hawkins. The company initially placed unusual emphasis on presenting game designers and programmers as creative artists, using packaging and promotion that gave individual creators greater visibility.",
+      "EA published a broad range of Commodore software, including construction sets, role-playing games, simulations and sports titles. It later developed into one of the world's largest game publishers and remains headquartered in California."
+    ],
+    "sources": [
+      {"label": "Electronic Arts official company information", "url": "https://www.ea.com/en-gb/about"},
+      {"label": "The New Yorker: Electronic Arts origins", "url": "https://www.newyorker.com/magazine/2006/11/06/game-master"}
+    ]
+  },
+  "psygnosis": {
+    "founded": "1984",
+    "founders": ["Ian Hetherington", "Jonathan Ellis"],
+    "location": "Liverpool, England",
+    "focus": "Premium 16-bit presentation, original games and third-party publishing",
+    "history": [
+      "Psygnosis was founded in Liverpool in 1984 by figures associated with the former Imagine Software business. Its owl branding, elaborate cover artwork and premium packaging gave the company a distinctive identity during the 16-bit era.",
+      "The publisher became closely associated with the Amiga through games including Shadow of the Beast and Lemmings. Sony acquired Psygnosis in 1993, and the operation later became known as Studio Liverpool."
+    ],
+    "sources": [
+      {"label": "Science Museum Group Collection", "url": "https://collection.sciencemuseumgroup.org.uk/people/cp133529/psygnosis"},
+      {"label": "MCV/Develop: Studio Liverpool history", "url": "https://mcvuk.com/business-news/publishing/a-brief-history-sony-studio-liverpool/"}
+    ]
+  },
+  "elite": {
+    "founded": "1984",
+    "founders": ["Brian Wilcox", "Steve Wilcox"],
+    "location": "England",
+    "focus": "Licensed arcade conversions and home-computer publishing",
+    "history": [
+      "Elite Systems was incorporated in England in 1984 by Brian Wilcox and Steve Wilcox. It began as a developer and publisher for the ZX Spectrum and Commodore 64 before expanding to other computers and consoles.",
+      "Elite became particularly associated with licensed conversions of arcade games and television properties. Its catalogue included home versions of major coin-op titles, while the company later moved into handheld and mobile development."
+    ],
+    "sources": [
+      {"label": "Elite Systems official corporate profile", "url": "https://www.elite-systems.co.uk/elite/htdocs/corporate_profile.php"},
+      {"label": "Elite Systems news archive", "url": "https://www.elite-systems.co.uk/elite/htdocs/newsarchive.php?show=35"}
+    ]
+  },
+  "gremlin-graphics": {
+    "founded": "1984",
+    "founders": ["Ian Stewart", "Kevin Norburn"],
+    "location": "Sheffield, England",
+    "focus": "Original British home-computer games and later 16-bit and console publishing",
+    "history": [
+      "Gremlin Graphics grew from the Just Micro computer shop in Sheffield and was formed in 1984 by Ian Stewart and Kevin Norburn. The shop became a meeting point for local programmers, musicians and artists who helped establish the software label.",
+      "Gremlin published numerous Commodore 64 and Amiga games before adopting the Gremlin Interactive name in the 1990s. The business expanded through series including Lotus, Zool and Premier Manager and was acquired by Infogrames in 1999."
+    ],
+    "sources": [
+      {"label": "A Gremlin in the Works", "url": "https://agremlinintheworks.co.uk/"},
+      {"label": "MobyGames: Gremlin company history", "url": "https://www.mobygames.com/company/114/infogrames-studios-limited/"}
+    ]
+  },
+  "microprose": {
+    "founded": "1982",
+    "founders": ["Sid Meier", "Bill Stealey"],
+    "location": "United States",
+    "focus": "Flight simulations, military games and strategy titles",
+    "history": [
+      "MicroProse was founded in 1982 by game designer Sid Meier and former military pilot Bill Stealey. The company initially established its reputation through detailed flight and combat simulations.",
+      "Its catalogue broadened into strategy and exploration games, with titles carrying Sid Meier's name becoming a major part of the brand. MicroProse acquired the Firebird and Rainbird labels in 1989 and was itself acquired by Spectrum HoloByte in 1993."
+    ],
+    "sources": [
+      {"label": "Sid Meier's Civilization history archive", "url": "https://civhistory.com/"},
+      {"label": "MobyGames: MicroProse history", "url": "https://www.mobygames.com/company/10/microprose-software-inc/history/"}
+    ]
+  }
+}
