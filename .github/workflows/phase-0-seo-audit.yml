@@ -1,0 +1,100 @@
+name: Phase 0 SEO Baseline
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase0_site_audit.py"
+      - ".github/workflows/phase-0-seo-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-0-seo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate audit script
+        run: python -m py_compile scripts/phase0_site_audit.py
+
+      - name: Generate repository baseline
+        run: python scripts/phase0_site_audit.py
+
+      - name: Verify report outputs
+        shell: bash
+        run: |
+          test -s docs/seo-baseline/phase-0-baseline.md
+          test -s docs/seo-baseline/phase-0-baseline.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("docs/seo-baseline/phase-0-baseline.json").read_text(encoding="utf-8"))
+          summary = report.get("summary", {})
+          required = {
+              "html_pages",
+              "indexable_pages",
+              "duplicate_indexable_canonical_groups",
+              "broken_internal_links",
+              "missing_local_assets",
+          }
+          missing = sorted(required.difference(summary))
+          if missing:
+              raise SystemExit(f"Baseline summary is missing keys: {missing}")
+          if summary["html_pages"] < 1:
+              raise SystemExit("No HTML pages were audited")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Confirm audit is non-destructive
+        shell: bash
+        run: |
+          CHANGED="$(git status --short | awk '{print $2}')"
+          if [ -n "$CHANGED" ]; then
+            while IFS= read -r path; do
+              case "$path" in
+                docs/seo-baseline/phase-0-baseline.md|docs/seo-baseline/phase-0-baseline.json)
+                  ;;
+                *)
+                  echo "Unexpected file changed by read-only audit: $path"
+                  exit 1
+                  ;;
+              esac
+            done <<< "$CHANGED"
+          fi
+
+      - name: Commit generated baseline
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add docs/seo-baseline/phase-0-baseline.md docs/seo-baseline/phase-0-baseline.json
+
+          if git diff --cached --quiet; then
+            echo "Phase 0 reports are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 0 SEO baseline"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
