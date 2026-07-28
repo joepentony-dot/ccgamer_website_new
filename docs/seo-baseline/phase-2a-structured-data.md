@@ -6,19 +6,19 @@ This is a read-only repository audit. It does not alter public pages, game data,
 
 | Check | Count |
 |---|---:|
-| Public HTML pages audited | **1690** |
-| Indexable pages | **854** |
-| Typed JSON-LD objects | **670** |
+| Public HTML pages audited | **1679** |
+| Indexable pages | **844** |
+| Typed JSON-LD objects | **669** |
 | Invalid JSON-LD blocks | **1** |
 | Empty JSON-LD placeholders | **1** |
-| Critical schema issues | **1** |
-| Schema warnings | **1** |
-| Metadata consistency issues | **15** |
+| Critical schema issues | **0** |
+| Schema warnings | **0** |
+| Metadata consistency issues | **9** |
 | Pages containing VideoObject | **36** |
 | VideoObject required-property gaps | **0** |
 | Breadcrumb critical issues | **0** |
-| Indexable canonical game pages | **655** |
-| Canonical game pages with static JSON-LD | **2** |
+| Indexable canonical game pages | **651** |
+| Canonical game pages with static JSON-LD | **0** |
 
 ## Schema type inventory
 
@@ -26,7 +26,7 @@ This is a read-only repository audit. It does not alter public pages, game data,
 - `CollectionPage`: **198**
 - `ItemList`: **195**
 - `VideoObject`: **36**
-- `VideoGame`: **6**
+- `VideoGame`: **5**
 
 ## Generator findings
 
@@ -64,7 +64,7 @@ VideoObject markup must not invent upload dates or durations. Records lacking th
 
 ### Critical schema issues
 
-- `templates/game-template.html` — VideoGame url is not an absolute HTTP(S) URL
+None detected.
 
 ### Metadata consistency issues
 
@@ -77,12 +77,6 @@ VideoObject markup must not invent upload dates or durations. Records lacking th
 - `games/collections/retro-specials.html` — og:title differs from HTML title
 - `home.html` — og:title differs from HTML title
 - `home.html` — og:description differs from meta description
-- `scripts/templates/retro-video-page-template.html` — canonical is not an absolute HTTP(S) URL
-- `scripts/templates/retro-video-page-template.html` — og:image is not an absolute HTTP(S) URL
-- `templates/base-omega.html` — canonical is not an absolute HTTP(S) URL
-- `templates/game-template.html` — canonical is not an absolute HTTP(S) URL
-- `templates/retro-page-template.html` — canonical is not an absolute HTTP(S) URL
-- `templates/retro-page-template.html` — og:image is not an absolute HTTP(S) URL
 
 ## Explicit exclusions
 
