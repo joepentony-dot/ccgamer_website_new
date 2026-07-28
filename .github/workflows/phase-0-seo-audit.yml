@@ -1,5 +1,6 @@
 name: Phase 0 SEO Baseline
 
+# Audit-only workflow: no public site files are written.
 on:
   pull_request:
     branches:
