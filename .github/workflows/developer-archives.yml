@@ -1,0 +1,221 @@
+name: Refresh Developer Archives
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "games/index.html"
+      - "games/developers/**"
+      - "js/developer-pages.js"
+      - "resources/css/developers.css"
+      - "scripts/developer-utils.js"
+      - "scripts/generate-developer-pages.js"
+      - "scripts/ensure-developer-discovery-link.js"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/developer-archives.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "games/index.html"
+      - "games/developers/**"
+      - "js/developer-pages.js"
+      - "resources/css/developers.css"
+      - "scripts/developer-utils.js"
+      - "scripts/generate-developer-pages.js"
+      - "scripts/ensure-developer-discovery-link.js"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/developer-archives.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: developer-archives-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > /tmp/phase3b-protected.sha256
+
+      - name: Validate Phase 3B scripts
+        run: |
+          node --check scripts/developer-utils.js
+          node --check scripts/generate-developer-pages.js
+          node --check scripts/ensure-developer-discovery-link.js
+          node --check js/developer-pages.js
+
+      - name: Generate developer archives
+        run: node scripts/generate-developer-pages.js
+
+      - name: Add Browse Games discovery link
+        run: node scripts/ensure-developer-discovery-link.js
+
+      - name: Rebuild sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Validate developer archive output
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const { buildDeveloperGroups } = require("./scripts/developer-utils");
+          const { INDEXABLE_MIN_GAMES } = require("./scripts/generate-developer-pages");
+
+          const SITE = "https://www.cheekycommodoregamer.co.uk";
+          const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
+          const groups = buildDeveloperGroups(games);
+          const metadata = JSON.parse(fs.readFileSync("games/developers/developers.json", "utf8"));
+          const staticPages = JSON.parse(fs.readFileSync("tools/seo/static-pages.json", "utf8"));
+          const sitemapPages = fs.readFileSync("sitemap-pages.xml", "utf8");
+          const hub = fs.readFileSync("games/developers/index.html", "utf8");
+          const browseGames = fs.readFileSync("games/index.html", "utf8");
+          const problems = [];
+
+          if (groups.length !== 35) problems.push(`Expected 35 developer groups, found ${groups.length}`);
+          if (metadata.length !== groups.length) problems.push("Developer metadata count does not match generated groups");
+          if (!browseGames.includes('data-games-developers-shortcut="true"') || !browseGames.includes('href="/games/developers/"')) {
+            problems.push("Browse Games developer discovery link is missing");
+          }
+          if (!hub.includes('rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/developers/"')) {
+            problems.push("Developer hub canonical is missing");
+          }
+          if (!hub.includes('name="robots" content="index,follow"')) {
+            problems.push("Developer hub is not indexable");
+          }
+
+          const hubEntry = "games/developers/index.html";
+          if (!staticPages.includes(hubEntry)) problems.push("Developer hub missing from static pages config");
+          if (!sitemapPages.includes(`${SITE}/games/developers/`)) problems.push("Developer hub missing from sitemap-pages.xml");
+
+          for (const group of groups) {
+            const file = path.join("games", "developers", group.slug, "index.html");
+            if (!fs.existsSync(file)) {
+              problems.push(`Missing developer page: ${group.slug}`);
+              continue;
+            }
+            const html = fs.readFileSync(file, "utf8");
+            const canonical = `${SITE}/games/developers/${group.slug}/`;
+            const staticEntry = `games/developers/${group.slug}/index.html`;
+            const indexable = group.count >= INDEXABLE_MIN_GAMES;
+
+            if (!hub.includes(`href="/games/developers/${group.slug}/"`)) {
+              problems.push(`Hub missing link to ${group.slug}`);
+            }
+            if (!html.includes(`rel="canonical" href="${canonical}"`)) {
+              problems.push(`Canonical mismatch for ${group.slug}`);
+            }
+            if (!html.includes(`name="robots" content="${indexable ? "index,follow" : "noindex,follow"}"`)) {
+              problems.push(`Robots mismatch for ${group.slug}`);
+            }
+            if (staticPages.includes(staticEntry) !== indexable) {
+              problems.push(`Static pages membership mismatch for ${group.slug}`);
+            }
+            if (sitemapPages.includes(canonical) !== indexable) {
+              problems.push(`Sitemap membership mismatch for ${group.slug}`);
+            }
+            for (const game of group.games) {
+              if (!html.includes(`href="/games/${game.slug}/"`)) {
+                problems.push(`${group.slug} missing game link: ${game.slug}`);
+              }
+            }
+          }
+
+          const infogrames = groups.find((group) => group.slug === "infogrames");
+          if (!infogrames || infogrames.name !== "Infogrames" || infogrames.count !== 3) {
+            problems.push("Inforgrames route-layer normalization did not produce the expected Infogrames group");
+          }
+          if (groups.some((group) => group.slug === "inforgrames")) {
+            problems.push("Misspelled inforgrames route was generated");
+          }
+
+          if (problems.length) {
+            throw new Error(problems.join("\n"));
+          }
+
+          console.log(JSON.stringify({
+            gameRecords: games.length,
+            developerRoutes: groups.length,
+            indexableRoutes: groups.filter((group) => group.count >= INDEXABLE_MIN_GAMES).length,
+            noindexRoutes: groups.filter((group) => group.count < INDEXABLE_MIN_GAMES).length
+          }, null, 2));
+          NODE
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check /tmp/phase3b-protected.sha256
+
+      - name: Confirm bounded generated scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              paths.append(path)
+
+          allowed_exact = {
+              "docs/seo-baseline/phase-3b-developer-archives.md",
+              "games/index.html",
+              "sitemap.xml",
+              "sitemap-games.xml",
+              "sitemap-pages.xml",
+              "tools/seo/static-pages.json",
+          }
+          unexpected = sorted(
+              path for path in paths
+              if path not in allowed_exact and not path.startswith("games/developers/")
+          )
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 3B generated paths: {unexpected}")
+          print(f"Validated {len(paths)} generated Phase 3B paths.")
+          PY
+
+      - name: Commit generated developer and sitemap outputs
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add games/developers games/index.html tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml docs/seo-baseline/phase-3b-developer-archives.md
+
+          if git diff --cached --quiet; then
+            echo "Developer archives are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 3B developer archives"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"
