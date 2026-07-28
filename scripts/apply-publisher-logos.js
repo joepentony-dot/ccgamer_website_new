@@ -9,7 +9,8 @@ const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
     : path.resolve(__dirname, "..");
 
-const publisherIndexPath = path.join(repoRoot, "games", "publishers", "index.html");
+const publishersDir = path.join(repoRoot, "games", "publishers");
+const publisherIndexPath = path.join(publishersDir, "index.html");
 const publisherImagesDir = path.join(repoRoot, "resources", "images", "publishers");
 const stylesheetHref = "/resources/css/publisher-logos.css";
 
@@ -29,6 +30,17 @@ function htmlEscape(value) {
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#39;");
+}
+
+function ensureStylesheet(html) {
+    if (html.includes(`href="${stylesheetHref}"`)) return html;
+
+    const marker = '<link rel="stylesheet" href="/resources/css/publishers.css">';
+    if (!html.includes(marker)) {
+        fail("Could not locate the publisher stylesheet marker.");
+    }
+
+    return html.replace(marker, `${marker}\n    <link rel="stylesheet" href="${stylesheetHref}">`);
 }
 
 function getSectionBounds(html) {
@@ -143,32 +155,82 @@ function addLogoToFeaturedCard(html, slug) {
     return { html: nextHtml, installed: true };
 }
 
+function addLogoToPublisherHero(html, slug) {
+    if (html.includes(`data-publisher-page-logo="${slug}"`)) return html;
+
+    const imagePath = path.join(publisherImagesDir, `${slug}.png`);
+    if (!fs.existsSync(imagePath)) return html;
+
+    const titleMarker = '<h1 class="ccg-publishers-hero__title">';
+    const titleIndex = html.indexOf(titleMarker);
+    if (titleIndex === -1) {
+        console.warn(`[publisher-logos] No publisher hero title found for ${slug}; skipping page logo.`);
+        return html;
+    }
+
+    const logoMarkup = `                <div class="ccg-publisher-page-logo" data-publisher-page-logo="${htmlEscape(slug)}" aria-hidden="true">\n                    <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                         alt=""\n                         loading="eager"\n                         decoding="async"\n                         onerror="this.parentElement.hidden=true;">\n                </div>\n`;
+
+    return html.slice(0, titleIndex) + logoMarkup + html.slice(titleIndex);
+}
+
+function addPublisherBackLink(html) {
+    if (html.includes('class="ccg-publisher-back-link"')) return html;
+
+    const breadcrumbStart = html.indexOf('<nav class="ccg-publisher-breadcrumbs"');
+    if (breadcrumbStart === -1) return html;
+
+    const breadcrumbEnd = html.indexOf("</nav>", breadcrumbStart);
+    if (breadcrumbEnd === -1) return html;
+
+    const insertionPoint = breadcrumbEnd + "</nav>".length;
+    const backLink = `\n\n            <a class="ccg-publisher-back-link" href="/games/publishers/">\n                <span aria-hidden="true">←</span> Back to All Publishers\n            </a>`;
+
+    return html.slice(0, insertionPoint) + backLink + html.slice(insertionPoint);
+}
+
+function enhancePublisherPage(filePath, slug) {
+    let html = fs.readFileSync(filePath, "utf8");
+    const original = html;
+
+    html = ensureStylesheet(html);
+    html = addLogoToPublisherHero(html, slug);
+    html = addPublisherBackLink(html);
+
+    if (html !== original) fs.writeFileSync(filePath, html, "utf8");
+    return html !== original;
+}
+
 if (!fs.existsSync(publisherIndexPath)) {
     fail("Publisher index does not exist. Run generate-publisher-pages.js first.");
 }
 
-let html = fs.readFileSync(publisherIndexPath, "utf8");
-getSectionBounds(html);
-
-if (!html.includes(`href="${stylesheetHref}"`)) {
-    const marker = '<link rel="stylesheet" href="/resources/css/publishers.css">';
-    if (!html.includes(marker)) {
-        fail("Could not locate the publisher stylesheet marker.");
-    }
-    html = html.replace(marker, `${marker}\n    <link rel="stylesheet" href="${stylesheetHref}">`);
-}
+let indexHtml = fs.readFileSync(publisherIndexPath, "utf8");
+getSectionBounds(indexHtml);
+indexHtml = ensureStylesheet(indexHtml);
 
 EXTRA_FEATURED_PUBLISHER_SLUGS.forEach((slug) => {
     const imagePath = path.join(publisherImagesDir, `${slug}.png`);
-    if (fs.existsSync(imagePath)) html = promotePublisherCard(html, slug);
+    if (fs.existsSync(imagePath)) indexHtml = promotePublisherCard(indexHtml, slug);
 });
 
-let installed = 0;
-getLogoSlugs().forEach((slug) => {
-    const result = addLogoToFeaturedCard(html, slug);
-    html = result.html;
-    if (result.installed) installed += 1;
+let featuredInstalled = 0;
+const logoSlugs = getLogoSlugs();
+logoSlugs.forEach((slug) => {
+    const result = addLogoToFeaturedCard(indexHtml, slug);
+    indexHtml = result.html;
+    if (result.installed) featuredInstalled += 1;
 });
 
-fs.writeFileSync(publisherIndexPath, html, "utf8");
-console.log(`[publisher-logos] Applied ${installed} featured publisher logo${installed === 1 ? "" : "s"}.`);
+fs.writeFileSync(publisherIndexPath, indexHtml, "utf8");
+
+let publisherPagesEnhanced = 0;
+fs.readdirSync(publishersDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .forEach((entry) => {
+        const pagePath = path.join(publishersDir, entry.name, "index.html");
+        if (!fs.existsSync(pagePath)) return;
+        if (enhancePublisherPage(pagePath, entry.name)) publisherPagesEnhanced += 1;
+    });
+
+console.log(`[publisher-logos] Applied ${featuredInstalled} featured publisher logo${featuredInstalled === 1 ? "" : "s"}.`);
+console.log(`[publisher-logos] Enhanced ${publisherPagesEnhanced} individual publisher page${publisherPagesEnhanced === 1 ? "" : "s"}.`);
