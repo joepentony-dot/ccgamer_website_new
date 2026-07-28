@@ -66,6 +66,10 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
+      - name: Remove temporary Python cache
+        shell: bash
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
       - name: Confirm audit is non-destructive
         shell: bash
         run: |
