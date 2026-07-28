@@ -11,6 +11,7 @@
     ['Home', 'https://www.cheekycommodoregamer.co.uk/home.html'],
     ['Browse Games', 'https://www.cheekycommodoregamer.co.uk/games/index.html'],
     ['Browse by Genre', 'https://www.cheekycommodoregamer.co.uk/games/genres/index.html'],
+    ['Publishers', 'https://www.cheekycommodoregamer.co.uk/games/publishers/'],
     ['Collections', 'https://www.cheekycommodoregamer.co.uk/games/collections/index.html'],
     ['Music Hub', 'https://www.cheekycommodoregamer.co.uk/music/index.html']
   ];
