@@ -1,0 +1,40 @@
+name: Social Metadata Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**/*.html"
+      - "scripts/validate_social_metadata.py"
+      - ".github/workflows/social-metadata-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: social-metadata-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate tooling syntax
+        run: python -m py_compile scripts/validate_social_metadata.py scripts/phase0_site_audit.py
+
+      - name: Validate public social metadata
+        run: python scripts/validate_social_metadata.py --allow-deferred-homepage
