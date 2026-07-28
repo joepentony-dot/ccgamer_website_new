@@ -1,36 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="/js/analytics.js"></script>
-    <meta charset="UTF-8" />
-    <title>Redirecting…</title>
-
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/h-e-r-o/" />
-
-        <meta http-equiv="refresh" content="0; url=/games/game.html?id=h-e-r-o">
-
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            opacity: 0;
-            overflow: hidden;
-        }
-    </style>
-
-    <script>
-        (function () {
-            try {
-                window.location.replace("/games/game.html?id=h-e-r-o");
-            } catch (e) {
-                window.location.href = "/games/game.html?id=h-e-r-o";
-            }
-        })();
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="/js/analytics.js"></script>
+<meta name="robots" content="noindex,follow">
+<meta http-equiv="refresh" content="0; url=/games/hero/">
+<script>
+(function(){
+window.location.replace("/games/hero/" + window.location.search + window.location.hash);
+})();
+</script>
+<title>H.E.R.O. | Cheeky Commodore Gamer</title>
+<meta name="description" content="H.E.R.O. is a Commodore 64 arcade action game where you descend into caverns using a jetpack, bombs, and a laser. Fuel management and careful movement are essential to progress.">
+<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/hero/">
 </head>
-<body>
-</body>
+<body></body>
 </html>
