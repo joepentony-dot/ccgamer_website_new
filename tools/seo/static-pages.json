@@ -36,7 +36,6 @@
   "quiz/quiz.html",
   "quiz/pack-6.html",
   "viewer/manual.html",
-  "games/downloads/index.html",
   "games/publishers/index.html",
   "games/publishers/64-tape-computing/index.html",
   "games/publishers/aackosoft/index.html",
@@ -133,5 +132,18 @@
   "games/publishers/virgin-games/index.html",
   "games/publishers/virgin-mastertronic/index.html",
   "games/publishers/zafiro-software-division/index.html",
-  "games/publishers/zeppelin-games/index.html"
+  "games/publishers/zeppelin-games/index.html",
+  "games/downloads/index.html",
+  "games/developers/index.html",
+  "games/developers/broderbund/index.html",
+  "games/developers/capcom/index.html",
+  "games/developers/delphine-software/index.html",
+  "games/developers/infogrames/index.html",
+  "games/developers/konami/index.html",
+  "games/developers/lucasfilm-games/index.html",
+  "games/developers/mastertronic/index.html",
+  "games/developers/ocean/index.html",
+  "games/developers/reaktor-software/index.html",
+  "games/developers/sensible-software/index.html",
+  "games/developers/us-gold/index.html"
 ]

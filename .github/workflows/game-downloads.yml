@@ -55,16 +55,12 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
+          show-progress: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "24"
-
-      - name: Restore base pages sitemap for pull requests
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: git checkout origin/main -- sitemap-pages.xml
 
       - name: Validate downloads source files
         run: |
@@ -84,7 +80,7 @@ jobs:
       - name: Preserve static page sources
         run: node scripts/update-downloads-static-pages.js
 
-      - name: Add downloads URL to pages sitemap
+      - name: Refresh downloads URL in pages sitemap
         run: node scripts/update-downloads-sitemap.js
 
       - name: Verify downloads discovery and accordion archive
@@ -105,8 +101,58 @@ jobs:
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
+      - name: Verify shared archive registrations survive
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const pages = JSON.parse(fs.readFileSync("tools/seo/static-pages.json", "utf8"));
+          const sitemap = fs.readFileSync("sitemap-pages.xml", "utf8");
+          const developerEntries = pages.filter((entry) => (
+            typeof entry === "string" &&
+            /^games\/developers\/(?:index\.html|[^/]+\/index\.html)$/.test(entry)
+          ));
+
+          for (const entry of developerEntries) {
+            const url = `https://www.cheekycommodoregamer.co.uk/${entry.replace(/index\.html$/, "")}`;
+            if (!sitemap.includes(`<loc>${url}</loc>`)) {
+              throw new Error(`Shared developer sitemap entry was lost: ${url}`);
+            }
+          }
+
+          console.log(`[downloads] Preserved ${developerEntries.length} developer sitemap registrations.`);
+          NODE
+
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
+
+      - name: Confirm bounded downloads scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              paths.append(path)
+
+          allowed = {
+              "home.html",
+              "games/index.html",
+              "games/downloads/index.html",
+              "tools/seo/static-pages.json",
+              "sitemap-pages.xml",
+          }
+          unexpected = sorted(path for path in paths if path not in allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected downloads workflow paths: {unexpected}")
+          print(f"Validated {len(paths)} downloads workflow paths.")
+          PY
 
       - name: Commit generated downloads, discovery and sitemap outputs
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
