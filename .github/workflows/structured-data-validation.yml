@@ -7,8 +7,11 @@ on:
     paths:
       - "**/*.html"
       - "data/*.json"
+      - "games/games.json"
       - "admin/templates/retro-video-template.html"
       - "scripts/generate-retro-pages.js"
+      - "scripts/generate-slug-pages.js"
+      - "scripts/game-output-utils.js"
       - "scripts/validate_structured_data.py"
       - "scripts/phase2a_structured_data_audit.py"
       - ".github/workflows/structured-data-validation.yml"
@@ -47,6 +50,7 @@ jobs:
           python -m py_compile scripts/validate_structured_data.py
           python -m py_compile scripts/phase2a_structured_data_audit.py
           node --check scripts/generate-retro-pages.js
+          node --check scripts/generate-slug-pages.js
 
       - name: Validate committed structured data
         run: python scripts/validate_structured_data.py
@@ -54,15 +58,10 @@ jobs:
       - name: Regenerate retro pages for validation
         run: node scripts/generate-retro-pages.js
 
-      - name: Validate regenerated structured data
+      - name: Validate regenerated retro structured data
         run: python scripts/validate_structured_data.py
 
-      - name: Remove compiler bytecode before scope check
-        if: always()
-        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
-
-      - name: Confirm generator writes only expected roots
-        if: always()
+      - name: Confirm retro generator scope
         run: |
           python - <<'PY'
           import subprocess
@@ -82,17 +81,69 @@ jobs:
               if " -> " in path:
                   path = path.split(" -> ", 1)[1]
               paths.append(path)
-          unexpected = sorted(
-              path for path in paths if not path.startswith(allowed_prefixes)
-          )
+          unexpected = sorted(path for path in paths if not path.startswith(allowed_prefixes))
           if unexpected:
-              raise SystemExit(f"Generator changed unexpected paths: {unexpected}")
-          print(f"Validated generator scope across {len(paths)} changed paths.")
+              raise SystemExit(f"Retro generator changed unexpected paths: {unexpected}")
+          print(f"Validated retro generator scope across {len(paths)} changed paths.")
           PY
 
-      - name: Restore temporary generated output
+      - name: Require committed retro output to be current
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Restore temporary retro output
         if: always()
         run: |
           git restore --source=HEAD -- retro-events retro-specials amiga-demo-music
           git clean -fd -- retro-events retro-specials amiga-demo-music
-          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Regenerate canonical game pages for validation
+        run: node scripts/generate-slug-pages.js
+
+      - name: Validate regenerated game structured data
+        run: python scripts/validate_structured_data.py
+
+      - name: Confirm game generator scope
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          games = json.loads(Path("games/games.json").read_text(encoding="utf-8"))
+          slugs = {str(game.get("slug") or "").strip() for game in games}
+          slugs.discard("")
+          allowed = {f"games/{slug}/index.html" for slug in slugs}
+          allowed.update(f"games/{slug}.html" for slug in slugs)
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              paths.append(path)
+          unexpected = sorted(set(paths) - allowed)
+          if unexpected:
+              raise SystemExit(f"Game generator changed unexpected paths: {unexpected}")
+          print(f"Validated game generator scope across {len(paths)} changed paths.")
+          PY
+
+      - name: Require committed game output to be current
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Restore temporary game output
+        if: always()
+        run: |
+          git restore --source=HEAD -- games
+          git clean -fd -- games
+
+      - name: Remove compiler bytecode
+        if: always()
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Require clean validation workspace
+        if: always()
+        run: test -z "$(git status --porcelain --untracked-files=all)"
