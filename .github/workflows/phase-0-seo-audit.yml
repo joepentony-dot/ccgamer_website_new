@@ -69,9 +69,19 @@ jobs:
           print(json.dumps(summary, indent=2))
           PY
 
-      - name: Remove temporary Python cache
+      - name: Upload detailed audit inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-0-seo-baseline-json
+          path: docs/seo-baseline/phase-0-baseline.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove temporary audit files
         shell: bash
-        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+        run: |
+          rm docs/seo-baseline/phase-0-baseline.json
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Confirm audit is non-destructive
         shell: bash
@@ -80,7 +90,7 @@ jobs:
           if [ -n "$CHANGED" ]; then
             while IFS= read -r path; do
               case "$path" in
-                docs/seo-baseline/phase-0-baseline.md|docs/seo-baseline/phase-0-baseline.json)
+                docs/seo-baseline/phase-0-baseline.md)
                   ;;
                 *)
                   echo "Unexpected file changed by read-only audit: $path"
@@ -90,14 +100,14 @@ jobs:
             done <<< "$CHANGED"
           fi
 
-      - name: Commit generated baseline
+      - name: Commit generated baseline summary
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add docs/seo-baseline/phase-0-baseline.md docs/seo-baseline/phase-0-baseline.json
+          git add docs/seo-baseline/phase-0-baseline.md
 
           if git diff --cached --quiet; then
-            echo "Phase 0 reports are already current."
+            echo "Phase 0 summary is already current."
             exit 0
           fi
 
