@@ -1,8 +1,10 @@
 {
   "scripts": {
     "admin:api": "node scripts/admin-local-api.js",
+    "generate:publishers": "node scripts/generate-publisher-pages.js",
+    "rebuild:games": "node scripts/rebuild-games.js",
     "generate:sitemaps": "node scripts/generate-sitemaps.js",
     "validate:sitemaps": "node scripts/validate-sitemaps.js",
-    "build:sitemaps": "npm run generate:sitemaps && npm run validate:sitemaps"
+    "build:sitemaps": "npm run generate:publishers && npm run generate:sitemaps && npm run validate:sitemaps"
   }
 }

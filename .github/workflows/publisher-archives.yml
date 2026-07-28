@@ -1,0 +1,67 @@
+name: Refresh Publisher Archives
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
+      - "data/publisher-playlists.json"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
+      - "data/publisher-playlists.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publisher-archives-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate publisher archives
+        run: node scripts/generate-publisher-pages.js
+
+      - name: Rebuild sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Commit generated publisher and sitemap outputs
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          git add games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+
+          if git diff --cached --quiet; then
+            echo "Publisher archives are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh generated publisher archives"
+          git push

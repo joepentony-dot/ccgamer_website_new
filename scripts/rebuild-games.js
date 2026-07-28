@@ -20,10 +20,11 @@ function runNodeScript(scriptName) {
 
 function refreshChangedGamesOnly() {
   runNodeScript('build-games.js');
+  runNodeScript('generate-publisher-pages.js');
   runNodeScript('generate-retro-pages.js');
   runNodeScript('generate-sitemaps.js');
   runNodeScript('verify-seo.mjs');
-  console.log('[rebuild-games] Incremental refresh completed for changed/outdated game outputs only.');
+  console.log('[rebuild-games] Incremental refresh completed, including publisher archives and SEO outputs.');
 }
 
 refreshChangedGamesOnly();
