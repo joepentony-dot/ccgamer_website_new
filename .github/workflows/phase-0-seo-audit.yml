@@ -86,18 +86,16 @@ jobs:
       - name: Confirm audit is non-destructive
         shell: bash
         run: |
-          CHANGED="$(git status --short --untracked-files=all | awk '{print $2}')"
-          if [ -n "$CHANGED" ]; then
-            while IFS= read -r path; do
-              case "$path" in
-                docs/seo-baseline/phase-0-baseline.md)
-                  ;;
-                *)
-                  echo "Unexpected file changed by read-only audit: $path"
-                  exit 1
-                  ;;
-              esac
-            done <<< "$CHANGED"
+          ALLOWED="docs/seo-baseline/phase-0-baseline.md"
+          UNEXPECTED_TRACKED="$(git diff --name-only | grep -v -x "$ALLOWED" || true)"
+          UNEXPECTED_UNTRACKED="$(git ls-files --others --exclude-standard | grep -v -x "$ALLOWED" || true)"
+
+          if [ -n "$UNEXPECTED_TRACKED" ] || [ -n "$UNEXPECTED_UNTRACKED" ]; then
+            echo "Unexpected tracked changes:"
+            printf '%s\n' "$UNEXPECTED_TRACKED"
+            echo "Unexpected untracked files:"
+            printf '%s\n' "$UNEXPECTED_UNTRACKED"
+            exit 1
           fi
 
       - name: Commit generated baseline summary
