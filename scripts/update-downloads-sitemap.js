@@ -4,10 +4,12 @@
 
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
 const sitemapPath = path.join(repoRoot, "sitemap-pages.xml");
 const downloadsPagePath = path.join(repoRoot, "games", "downloads", "index.html");
+const downloadsPageRelative = "games/downloads/index.html";
 const DOWNLOAD_URL = "https://www.cheekycommodoregamer.co.uk/games/downloads/";
 
 function fail(message) {
@@ -19,7 +21,29 @@ function pageLastModified() {
     if (!fs.existsSync(downloadsPagePath)) {
         fail("Missing generated games/downloads/index.html.");
     }
-    return fs.statSync(downloadsPagePath).mtime.toISOString().slice(0, 10);
+
+    try {
+        execFileSync("git", ["diff", "--quiet", "--", downloadsPageRelative], {
+            cwd: repoRoot,
+            stdio: "ignore"
+        });
+
+        const committedDate = execFileSync(
+            "git",
+            ["log", "-1", "--format=%cI", "--", downloadsPageRelative],
+            {
+                cwd: repoRoot,
+                encoding: "utf8",
+                stdio: ["ignore", "pipe", "ignore"]
+            }
+        ).trim();
+
+        if (committedDate) return committedDate.slice(0, 10);
+    } catch (error) {
+        // A changed or newly generated page should use today's date.
+    }
+
+    return new Date().toISOString().slice(0, 10);
 }
 
 function main() {
