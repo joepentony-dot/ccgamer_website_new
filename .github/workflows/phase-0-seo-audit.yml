@@ -80,15 +80,15 @@ jobs:
       - name: Remove temporary audit files
         shell: bash
         run: |
-          rm docs/seo-baseline/phase-0-baseline.json
+          rm -f docs/seo-baseline/phase-0-baseline.json
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Confirm audit is non-destructive
         shell: bash
         run: |
-          ALLOWED="docs/seo-baseline/phase-0-baseline.md"
-          UNEXPECTED_TRACKED="$(git diff --name-only | grep -v -x "$ALLOWED" || true)"
-          UNEXPECTED_UNTRACKED="$(git ls-files --others --exclude-standard | grep -v -x "$ALLOWED" || true)"
+          ALLOWED_PATTERN='^docs/seo-baseline/phase-0-baseline\.(md|json)$'
+          UNEXPECTED_TRACKED="$(git diff --name-only | grep -E -v "$ALLOWED_PATTERN" || true)"
+          UNEXPECTED_UNTRACKED="$(git ls-files --others --exclude-standard | grep -E -v "$ALLOWED_PATTERN" || true)"
 
           if [ -n "$UNEXPECTED_TRACKED" ] || [ -n "$UNEXPECTED_UNTRACKED" ]; then
             echo "Unexpected tracked changes:"
