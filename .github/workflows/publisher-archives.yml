@@ -6,8 +6,10 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
@@ -15,8 +17,10 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
@@ -45,6 +49,12 @@ jobs:
         with:
           node-version: "20"
 
+      - name: Validate publisher credit link script
+        run: node --check js/ccg-nav.js
+
+      - name: Remove known invalid publisher labels
+        run: node scripts/remove-invalid-publisher-labels.js
+
       - name: Generate publisher archives
         run: node scripts/generate-publisher-pages.js
 
@@ -58,7 +68,7 @@ jobs:
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+          git add games/games.json games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
 
           if git diff --cached --quiet; then
             echo "Publisher archives are already current."
