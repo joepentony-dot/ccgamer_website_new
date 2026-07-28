@@ -7,8 +7,11 @@ on:
     paths:
       - "games/games.json"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/enrich-publisher-pages.js"
       - "scripts/publisher-utils.js"
       - "data/publisher-playlists.json"
+      - "data/publisher-profiles.json"
+      - "resources/css/publisher-profiles.css"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
@@ -16,8 +19,11 @@ on:
     paths:
       - "games/games.json"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/enrich-publisher-pages.js"
       - "scripts/publisher-utils.js"
       - "data/publisher-playlists.json"
+      - "data/publisher-profiles.json"
+      - "resources/css/publisher-profiles.css"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
 
@@ -48,6 +54,9 @@ jobs:
       - name: Generate publisher archives
         run: node scripts/generate-publisher-pages.js
 
+      - name: Add factual publisher SEO
+        run: node scripts/enrich-publisher-pages.js
+
       - name: Rebuild sitemaps
         run: node scripts/generate-sitemaps.js
 
@@ -66,7 +75,7 @@ jobs:
           fi
 
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
           git commit -m "Refresh generated publisher archives"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
