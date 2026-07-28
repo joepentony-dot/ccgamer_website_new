@@ -225,6 +225,7 @@
     <link rel="stylesheet" href="/resources/css/ccg-footer.css">
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="/resources/css/publishers.css">
+    <link rel="stylesheet" href="/resources/css/publisher-logos.css">
 
     <script src="/js/analytics.js"></script>
     <script src="/js/ccg-mobile-lite.js" defer></script>
@@ -345,7 +346,14 @@
         <main class="ccg-main ccg-publishers-main">
             <section class="ccg-publishers-hero ccg-publisher-hero">
                 <p class="ccg-publishers-hero__kicker">Publisher archive · C64 &amp; Amiga</p>
-                <h1 class="ccg-publishers-hero__title">Firebird Games</h1>
+                                <div class="ccg-publisher-page-logo" data-publisher-page-logo="firebird" aria-hidden="true">
+                    <img src="/resources/images/publishers/firebird.png"
+                         alt=""
+                         loading="eager"
+                         decoding="async"
+                         onerror="this.parentElement.hidden=true;">
+                </div>
+<h1 class="ccg-publishers-hero__title">Firebird Games</h1>
                 <p class="ccg-publishers-hero__intro">
                     Browse every Firebird title currently catalogued by Cheeky Commodore Gamer. New games are added here automatically when their publisher credit is present in the main game database.
                 </p>
@@ -364,6 +372,10 @@
                 <span aria-hidden="true">›</span>
                 <span aria-current="page">Firebird</span>
             </nav>
+
+            <a class="ccg-publisher-back-link" href="/games/publishers/">
+                <span aria-hidden="true">←</span> Back to All Publishers
+            </a>
 
             
 
