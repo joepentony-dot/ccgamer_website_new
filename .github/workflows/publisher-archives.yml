@@ -9,8 +9,12 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/apply-publisher-logos.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
+      - "tmp/publisher-logos.zip"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
@@ -20,8 +24,12 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/apply-publisher-logos.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
+      - "tmp/publisher-logos.zip"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
 
@@ -49,14 +57,39 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Validate publisher credit link script
-        run: node --check js/ccg-nav.js
+      - name: Install supplied publisher logos
+        shell: bash
+        run: |
+          if [ -f tmp/publisher-logos.zip ]; then
+            mkdir -p resources/images/publishers
+            unzip -jo tmp/publisher-logos.zip -d resources/images/publishers
+            rm tmp/publisher-logos.zip
+          fi
+
+      - name: Validate publisher scripts
+        run: |
+          node --check js/ccg-nav.js
+          node --check scripts/apply-publisher-logos.js
 
       - name: Remove known invalid publisher labels
         run: node scripts/remove-invalid-publisher-labels.js
 
       - name: Generate publisher archives
         run: node scripts/generate-publisher-pages.js
+
+      - name: Apply featured publisher logos
+        run: node scripts/apply-publisher-logos.js
+
+      - name: Verify publisher logo output
+        shell: bash
+        run: |
+          test -s games/publishers/index.html
+          grep -q '/resources/css/publisher-logos.css' games/publishers/index.html
+
+          LOGO_COUNT="$(find resources/images/publishers -maxdepth 1 -type f -name '*.png' 2>/dev/null | wc -l | tr -d ' ')"
+          MARKUP_COUNT="$(grep -o 'data-publisher-logo=' games/publishers/index.html | wc -l | tr -d ' ')"
+
+          test "$LOGO_COUNT" -eq "$MARKUP_COUNT"
 
       - name: Rebuild sitemaps
         run: node scripts/generate-sitemaps.js
@@ -68,7 +101,8 @@ jobs:
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add games/games.json games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+          git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+          git add -A tmp/publisher-logos.zip
 
           if git diff --cached --quiet; then
             echo "Publisher archives are already current."
