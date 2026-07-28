@@ -43,6 +43,9 @@ jobs:
       - name: Apply Phase 2D corrections
         run: python scripts/phase2d_metadata_consistency.py
 
+      - name: Reserve permanent workflow for trusted commit
+        run: rm .github/workflows/social-metadata-validation.yml
+
       - name: Validate corrected social metadata
         run: python scripts/validate_social_metadata.py --allow-deferred-homepage
 
@@ -93,7 +96,6 @@ jobs:
           from pathlib import Path
 
           allowed = {
-              ".github/workflows/social-metadata-validation.yml",
               "docs/seo-baseline/phase-2d-metadata-consistency.md",
               "emulation.html",
               "games/collections/amiga-demo-music.html",
