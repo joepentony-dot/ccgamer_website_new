@@ -37,21 +37,6 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Preserve existing wrapper metadata wording
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path("scripts/phase2c_static_game_schema.py")
-          text = path.read_text(encoding="utf-8")
-          old = '    const metaPlatform = platformLong === "Amiga" ? "Amiga" : "Commodore";'
-          new = '    const metaPlatform = "Commodore";'
-          if old in text and new not in text:
-              path.write_text(text.replace(old, new, 1), encoding="utf-8")
-          elif new not in text:
-              raise SystemExit("Unexpected Phase 2C metadata-preservation state")
-          PY
-
       - name: Validate Phase 2C tooling
         run: |
           python -m py_compile scripts/phase2c_static_game_schema.py
@@ -81,7 +66,7 @@ jobs:
               "breadcrumb_objects_before": 0,
               "breadcrumb_objects_after": 651,
               "video_object_objects_added": 0,
-              "metadata_changes": 0,
+              "non_schema_wrapper_changes": 0,
               "legacy_redirect_changes": 0,
               "protected_file_changes": 0,
           }
@@ -116,7 +101,6 @@ jobs:
           games = json.loads(Path("games/games.json").read_text(encoding="utf-8"))
           slugs = [str(game.get("slug") or "").strip() for game in games]
           allowed = {
-              "scripts/phase2c_static_game_schema.py",
               "scripts/generate-slug-pages.js",
               "docs/seo-baseline/phase-2c-static-game-schema.md",
           }
