@@ -31,15 +31,6 @@ function htmlEscape(value) {
         .replace(/'/g, "&#39;");
 }
 
-function decodeBasicEntities(value) {
-    return String(value || "")
-        .replace(/&amp;/g, "&")
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
-}
-
 function getSectionBounds(html) {
     const featuredStart = html.indexOf('id="featured-publishers-title"');
     const allPublishersStart = html.indexOf('id="all-publishers-title"');
@@ -142,9 +133,7 @@ function addLogoToFeaturedCard(html, slug) {
             "ccg-publisher-card--featured ccg-publisher-card--has-logo"
         );
 
-    const nameMatch = card.html.match(/<span class="ccg-publisher-card__name">([^<]+)<\/span>/);
-    const publisherName = decodeBasicEntities(nameMatch?.[1] || slug.replace(/-/g, " "));
-    const logoMarkup = `\n            <span class="ccg-publisher-card__logo" data-publisher-logo="${htmlEscape(slug)}">\n                <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                     alt="${htmlEscape(publisherName)} publisher logo"\n                     loading="lazy"\n                     decoding="async">\n            </span>`;
+    const logoMarkup = `\n            <span class="ccg-publisher-card__logo" data-publisher-logo="${htmlEscape(slug)}" aria-hidden="true">\n                <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                     alt=""\n                     loading="lazy"\n                     decoding="async"\n                     onerror="this.parentElement.hidden=true;this.closest('.ccg-publisher-card')?.classList.remove('ccg-publisher-card--has-logo');">\n            </span>`;
 
     const nextHtml = html.slice(0, card.anchorStart)
         + enhancedOpeningTag
