@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
       - "scripts/remove-invalid-publisher-labels.js"
@@ -16,6 +17,7 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
       - "scripts/remove-invalid-publisher-labels.js"
@@ -46,6 +48,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      - name: Validate publisher credit link script
+        run: node --check js/ccg-nav.js
 
       - name: Remove known invalid publisher labels
         run: node scripts/remove-invalid-publisher-labels.js
