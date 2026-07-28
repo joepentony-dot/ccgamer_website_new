@@ -1,7 +1,7 @@
 {
   "scripts": {
     "admin:api": "node scripts/admin-local-api.js",
-    "generate:publishers": "node scripts/generate-publisher-pages.js",
+    "generate:publishers": "node scripts/generate-publisher-pages.js && node scripts/enrich-publisher-pages.js",
     "rebuild:games": "node scripts/rebuild-games.js",
     "generate:sitemaps": "node scripts/generate-sitemaps.js",
     "validate:sitemaps": "node scripts/validate-sitemaps.js",
