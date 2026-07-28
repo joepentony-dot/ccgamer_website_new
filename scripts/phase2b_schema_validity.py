@@ -124,13 +124,6 @@ def apply_generator() -> bool:
     text, did_change = replace_state(text, old_upload, new_upload, "upload-date mapping")
     changed = changed or did_change
 
-    old_duration = r'''      VIDEO_DURATION_FIELD: entry.duration ? `,\n      "duration": "${escapeHtml(entry.duration)}"` : ','''
-    new_duration = r'''      VIDEO_DURATION_FIELD: entry.duration
-        ? `,\n      "duration": "${escapeJsonTemplateValue(entry.duration)}"`
-        : ','''
-    text, did_change = replace_state(text, old_duration, new_duration, "duration mapping")
-    changed = changed or did_change
-
     return write(GENERATOR, text) or changed
 
 
