@@ -307,7 +307,7 @@ function serializeSchemaForHtml(schema) {
         if (existingSchema.test(current)) {
             return current.replace(existingSchema, schemaScript);
         }
-        const charset = /<meta charset=(["'])UTF-8\1\s*\/>/i;
+        const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;
         if (charset.test(current)) {
             return current.replace(charset, `${schemaScript}\n$&`);
         }
