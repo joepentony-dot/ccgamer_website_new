@@ -9,8 +9,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/apply-publisher-logos.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
@@ -20,8 +23,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/apply-publisher-logos.js"
       - "scripts/remove-invalid-publisher-labels.js"
       - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
 
@@ -42,15 +48,18 @@ jobs:
         with:
           repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
           ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
+          fetch-depth: 1
+          show-progress: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
-      - name: Validate publisher credit link script
-        run: node --check js/ccg-nav.js
+      - name: Validate publisher scripts
+        run: |
+          node --check js/ccg-nav.js
+          node --check scripts/apply-publisher-logos.js
 
       - name: Remove known invalid publisher labels
         run: node scripts/remove-invalid-publisher-labels.js
@@ -58,7 +67,89 @@ jobs:
       - name: Generate publisher archives
         run: node scripts/generate-publisher-pages.js
 
+      - name: Apply featured publisher logos
+        run: node scripts/apply-publisher-logos.js
+
+      - name: Verify publisher logo output
+        shell: bash
+        run: |
+          test -s games/publishers/index.html
+          grep -q '/resources/css/publisher-logos.css' games/publishers/index.html
+
+          for logo in resources/images/publishers/*.png; do
+            file "$logo" | grep -q 'PNG image data'
+          done
+
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const {
+            FEATURED_PUBLISHERS,
+            slugifyPublisher
+          } = require("./scripts/publisher-utils");
+
+          const html = fs.readFileSync("games/publishers/index.html", "utf8");
+          const standardSlugs = FEATURED_PUBLISHERS.map(slugifyPublisher);
+          const extraSlugs = ["microprose-software"];
+          const expectedSlugs = Array.from(new Set([...standardSlugs, ...extraSlugs]))
+            .filter((slug) => fs.existsSync(path.join("resources", "images", "publishers", `${slug}.png`)));
+
+          if (!expectedSlugs.length) {
+            throw new Error("No featured publisher logo files were found.");
+          }
+
+          expectedSlugs.forEach((slug) => {
+            if (!html.includes(`data-publisher-logo="${slug}"`)) {
+              throw new Error(`Missing generated logo wrapper for ${slug}.`);
+            }
+            if (!html.includes(`/resources/images/publishers/${slug}.png`)) {
+              throw new Error(`Missing generated image reference for ${slug}.`);
+            }
+          });
+
+          const markupCount = (html.match(/data-publisher-logo=/g) || []).length;
+          if (markupCount !== expectedSlugs.length) {
+            throw new Error(`Expected ${expectedSlugs.length} featured logo wrappers but found ${markupCount}.`);
+          }
+
+          console.log(`[publisher-logos] Verified ${expectedSlugs.length} featured publisher logos.`);
+          NODE
+
+      - name: Detect sitemap-impacting changes
+        id: sitemap-impact
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          CHANGED_FILES="$(git diff --name-only "$BASE_SHA" HEAD)"
+          printf '%s\n' "$CHANGED_FILES"
+
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(games/games\.json|scripts/generate-publisher-pages\.js|scripts/publisher-utils\.js|scripts/remove-invalid-publisher-labels\.js|data/publisher-playlists\.json)$'; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "refresh=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Rebuild sitemaps
+        if: steps.sitemap-impact.outputs.refresh == 'true'
         run: node scripts/generate-sitemaps.js
 
       - name: Validate sitemaps
@@ -68,7 +159,7 @@ jobs:
         if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
-          git add games/games.json games/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+          git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
 
           if git diff --cached --quiet; then
             echo "Publisher archives are already current."
