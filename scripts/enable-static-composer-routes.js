@@ -8,39 +8,21 @@ const path = require("path");
 const repoRoot = path.resolve(__dirname, "..");
 const targetPath = path.join(repoRoot, "js", "music-composer-pages.js");
 
-function replaceOnce(text, before, after, label) {
-    if (text.includes(after)) return text;
-    const occurrences = text.split(before).length - 1;
-    if (occurrences !== 1) {
-        throw new Error(`Expected one ${label} block, found ${occurrences}.`);
+function replaceBounded(text, startMarker, endMarker, replacement, label) {
+    const start = text.indexOf(startMarker);
+    const end = text.indexOf(endMarker, start + startMarker.length);
+    if (start < 0 || end < 0 || end <= start) {
+        throw new Error(`Could not locate bounded ${label} block.`);
     }
-    return text.replace(before, after);
+    return `${text.slice(0, start)}${replacement}${text.slice(end)}`;
 }
 
 function main() {
     const current = fs.readFileSync(targetPath, "utf8");
     let next = current;
 
-    const oldExtraction = `  function getComposerNamesFromGame(game) {
-    if (!game || typeof game !== "object") {
-      return [];
-    }
-
-    const credits = game.credits && typeof game.credits === "object" ? game.credits : null;
-    const fromCredits = credits && Array.isArray(credits.musician) ? credits.musician : [];
-    const fromMusicBy = Array.isArray(game.musicBy) ? game.musicBy : [];
-    const fromComposers = Array.isArray(game.composers) ? game.composers : [];
-    const fromComposer = typeof game.composer === "string" ? [game.composer] : [];
-    const fromLegacyMusicNames = Array.isArray(game.music)
-      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac)$/i.test(item))
-      : [];
-
-    return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
-      .map((name) => getCanonicalComposerName(name))
-      .filter(Boolean);
-  }`;
-
-    const newExtraction = `  function toComposerList(value) {
+    if (!next.includes("  function toComposerList(value) {")) {
+        const extraction = `  function toComposerList(value) {
     if (Array.isArray(value)) {
       return value;
     }
@@ -61,38 +43,26 @@ function main() {
     const fromComposers = toComposerList(game.composers);
     const fromComposer = toComposerList(game.composer);
     const fromLegacyMusicNames = Array.isArray(game.music)
-      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i.test(item))
+      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\\.(mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i.test(item))
       : [];
 
     return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
       .map((name) => getCanonicalComposerName(name))
       .filter(Boolean);
-  }`;
+  }
 
-    next = replaceOnce(next, oldExtraction, newExtraction, "composer extraction");
-
-    const oldRouting = `  function getComposerUrl(composerOrSlug, composerName, options = {}) {
-    const slug = typeof composerOrSlug === "object" && composerOrSlug
-      ? slugifyName(composerOrSlug.slug || composerOrSlug.name)
-      : slugifyName(composerOrSlug);
-    const name = typeof composerOrSlug === "object" && composerOrSlug
-      ? String(composerOrSlug.name || composerName || "").trim()
-      : String(composerName || "").trim();
-    const { allowDedicated = false } = options;
-    const featuredUrl = getFeaturedComposerUrl(name || composerName || composerOrSlug || slug);
-
-    if (featuredUrl) {
-      return featuredUrl;
+`;
+        next = replaceBounded(
+            next,
+            "  function getComposerNamesFromGame(game) {",
+            "  function buildComposerIndex(games) {",
+            extraction,
+            "composer extraction"
+        );
     }
 
-    if (allowDedicated && slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
-      return \`\${resolveSiteRoot()}music/\${slug}/\`;
-    }
-
-    return getFallbackComposerUrl(name || composerName || composerOrSlug || slug);
-  }`;
-
-    const newRouting = `  function getComposerUrl(composerOrSlug, composerName, options = {}) {
+    if (!next.includes("knownComposer || allowDedicated || DEDICATED_COMPOSER_SLUGS.has(slug)")) {
+        const routing = `  function getComposerUrl(composerOrSlug, composerName, options = {}) {
     const knownComposer = typeof composerOrSlug === "object" && composerOrSlug;
     const slug = knownComposer
       ? slugifyName(composerOrSlug.slug || composerOrSlug.name)
@@ -112,9 +82,17 @@ function main() {
     }
 
     return getFallbackComposerUrl(name || composerName || composerOrSlug || slug);
-  }`;
+  }
 
-    next = replaceOnce(next, oldRouting, newRouting, "composer routing");
+`;
+        next = replaceBounded(
+            next,
+            "  function getComposerUrl(composerOrSlug, composerName, options = {}) {",
+            "  function getComposerImageCandidates(slug) {",
+            routing,
+            "composer routing"
+        );
+    }
 
     if (next !== current) {
         fs.writeFileSync(targetPath, next, "utf8");
