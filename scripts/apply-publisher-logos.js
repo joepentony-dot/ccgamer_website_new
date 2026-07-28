@@ -31,13 +31,8 @@ function htmlEscape(value) {
         .replace(/'/g, "&#39;");
 }
 
-function decodeBasicEntities(value) {
-    return String(value || "")
-        .replace(/&amp;/g, "&")
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">");
+function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getSectionBounds(html) {
@@ -123,18 +118,14 @@ function getLogoSlugs() {
 }
 
 function addLogoToFeaturedCard(html, slug) {
-    if (html.includes(`data-publisher-logo="${slug}"`)) return { html, installed: true };
-
     const { featuredStart, allPublishersStart } = getSectionBounds(html);
     const card = findPublisherCard(html, slug, featuredStart, allPublishersStart);
     if (!card) return { html, installed: false };
 
-    const openingTagEnd = html.indexOf(">", card.hrefIndex);
-    if (openingTagEnd === -1 || openingTagEnd >= card.anchorEnd) {
-        return { html, installed: false };
-    }
+    const openingTagEnd = card.html.indexOf(">");
+    if (openingTagEnd === -1) return { html, installed: false };
 
-    const openingTag = html.slice(card.anchorStart, openingTagEnd + 1);
+    const openingTag = card.html.slice(0, openingTagEnd + 1);
     const enhancedOpeningTag = openingTag.includes("ccg-publisher-card--has-logo")
         ? openingTag
         : openingTag.replace(
@@ -142,14 +133,30 @@ function addLogoToFeaturedCard(html, slug) {
             "ccg-publisher-card--featured ccg-publisher-card--has-logo"
         );
 
-    const nameMatch = card.html.match(/<span class="ccg-publisher-card__name">([^<]+)<\/span>/);
-    const publisherName = decodeBasicEntities(nameMatch?.[1] || slug.replace(/-/g, " "));
-    const logoMarkup = `\n            <span class="ccg-publisher-card__logo" data-publisher-logo="${htmlEscape(slug)}">\n                <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                     alt="${htmlEscape(publisherName)} publisher logo"\n                     loading="lazy"\n                     decoding="async">\n            </span>`;
+    const logoMarkup = `
+            <span class="ccg-publisher-card__logo" data-publisher-logo="${htmlEscape(slug)}">
+                <img src="/resources/images/publishers/${htmlEscape(slug)}.png"
+                     alt=""
+                     aria-hidden="true"
+                     loading="lazy"
+                     decoding="async"
+                     onerror="this.parentElement.hidden=true;this.parentElement.parentElement.classList.remove('ccg-publisher-card--has-logo');this.remove();">
+            </span>`;
+
+    const existingLogoPattern = new RegExp(
+        `\\s*<span class="ccg-publisher-card__logo" data-publisher-logo="${escapeRegExp(slug)}">[\\s\\S]*?<\\/span>`
+    );
+
+    let updatedCard = card.html.replace(openingTag, enhancedOpeningTag);
+    if (existingLogoPattern.test(updatedCard)) {
+        updatedCard = updatedCard.replace(existingLogoPattern, logoMarkup);
+    } else {
+        updatedCard = updatedCard.replace(enhancedOpeningTag, enhancedOpeningTag + logoMarkup);
+    }
 
     const nextHtml = html.slice(0, card.anchorStart)
-        + enhancedOpeningTag
-        + logoMarkup
-        + html.slice(openingTagEnd + 1);
+        + updatedCard
+        + html.slice(card.anchorEnd);
 
     return { html: nextHtml, installed: true };
 }
