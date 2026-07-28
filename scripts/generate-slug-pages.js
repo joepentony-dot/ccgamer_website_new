@@ -11,6 +11,7 @@ const gamesDir = path.join(repoRoot, "games");
 const gamesJsonPath = path.join(gamesDir, "games.json");
 const thumbnailsDir = path.join(repoRoot, "resources", "images", "thumbnails", "all");
 const RESERVED_GAME_DIRS = new Set(["collections", "genres"]);
+const REMOVE_STALE_GAME_OUTPUTS = process.env.CCG_REMOVE_STALE_GAME_OUTPUTS === "1";
 
 function toGameId(slug) {
     return gameOutputUtils.slugToGameId(slug).replace(/-/g, "_");
@@ -163,23 +164,34 @@ function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description =
 `;
 }
 
-function getExpectedPageArtifacts(game, slug, validation) {
+function getExpectedPageArtifacts(game, slug, validation, canonicalPath) {
     const title = stripHtml(game.title || "Game");
     const platformLong = detectPlatform(game);
-    const description = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
+    const schemaDescription = buildDescription(game, title, platformLong);
+    const existingHtml = fs.existsSync(canonicalPath)
+        ? fs.readFileSync(canonicalPath, "utf8")
+        : "";
+    const fallbackDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
 
     return {
         title,
-        description,
+        description: fallbackDescription,
         canonicalHtml: buildCanonicalHtml({
             slug,
             game,
             title,
-            description,
+            schemaDescription,
             canonicalUrl: validation.canonicalUrl,
-            ogImage: validation.ogImage
+            ogImage: validation.ogImage,
+            platformLong,
+            existingHtml
         }),
-        redirectStubHtml: buildRedirectStubHtml(slug, validation.canonicalUrl, title, description)
+        redirectStubHtml: buildRedirectStubHtml(
+            slug,
+            validation.canonicalUrl,
+            title,
+            fallbackDescription
+        )
     };
 }
 
@@ -192,12 +204,8 @@ function getCanonicalRewriteReason(filePath, expected) {
     return "";
 }
 
-function getRedirectStubRewriteReason(filePath, expectedHtml) {
+function getRedirectStubRewriteReason(filePath, _expectedHtml) {
     if (!fs.existsSync(filePath)) return "missing redirect stub";
-    const current = fs.readFileSync(filePath, "utf8");
-    if (normalizeHtmlForComparison(current) !== normalizeHtmlForComparison(expectedHtml)) {
-        return "redirect stub metadata changed";
-    }
     return "";
 }
 
@@ -219,10 +227,18 @@ function firstNonEmpty(values) {
     return "";
 }
 
-function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage, year, platformLong, publisher }) {
+function buildVideoGameSchema({
+    game,
+    title,
+    description,
+    canonicalUrl,
+    ogImage,
+    year,
+    platformLong
+}) {
     const schema = {
-        "@context": "https://schema.org",
         "@type": "VideoGame",
+        "@id": `${canonicalUrl}#game`,
         name: title,
         description,
         url: canonicalUrl
@@ -236,43 +252,19 @@ function buildVideoGameSchema({ game, title, description, canonicalUrl, ogImage,
     if (genres.length > 1) schema.genre = genres;
 
     const publisherName = firstNonEmpty([
-        ...(Array.isArray(game?.credits?.publisher) ? game.credits.publisher : [game?.credits?.publisher]),
-        game?.publisher,
-        publisher
+        ...(Array.isArray(game?.credits?.publisher)
+            ? game.credits.publisher
+            : [game?.credits?.publisher]),
+        game?.publisher
     ]);
     if (publisherName) {
-        schema.publisher = { "@type": "Organization", name: publisherName };
-        schema.author = { "@type": "Organization", name: publisherName };
+        schema.publisher = {
+            "@type": "Organization",
+            name: publisherName
+        };
     }
 
     if (String(ogImage || "").trim()) schema.image = ogImage;
-
-    const ratingValue = Number(game?.ccg_rating);
-    if (Number.isFinite(ratingValue)) {
-        schema.aggregateRating = {
-            "@type": "AggregateRating",
-            ratingValue: String(ratingValue),
-            bestRating: "10",
-            ratingCount: "1"
-        };
-    }
-
-    const ratingReason = String(game?.ccg_rating_reason || "").trim();
-    if (ratingReason) {
-        schema.review = {
-            "@type": "Review",
-            reviewBody: ratingReason,
-            reviewRating: Number.isFinite(ratingValue)
-                ? {
-                    "@type": "Rating",
-                    ratingValue: String(ratingValue),
-                    bestRating: "10"
-                }
-                : undefined
-        };
-        if (!schema.review.reviewRating) delete schema.review.reviewRating;
-    }
-
     return schema;
 }
 
@@ -290,8 +282,8 @@ function buildVideoObjectSchema({ title, description, videoId, canonicalUrl }) {
 
 function buildBreadcrumbSchema({ canonicalUrl, title }) {
     return {
-        "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "@id": `${canonicalUrl}#breadcrumb`,
         itemListElement: [
             {
                 "@type": "ListItem",
@@ -315,11 +307,60 @@ function buildBreadcrumbSchema({ canonicalUrl, title }) {
     };
 }
 
-function buildCanonicalHtml({ slug, game, title, canonicalUrl, ogImage, platformLong }) {
-    const gameId = String(game?.id || toGameId(slug)).trim();
-    const metaDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
-    const target = `/games/game.html?id=${gameId}`;
+function buildGameSchemaGraph(args) {
+    return {
+        "@context": "https://schema.org",
+        "@graph": [
+            buildVideoGameSchema(args),
+            buildBreadcrumbSchema(args)
+        ]
+    };
+}
 
+function serializeSchemaForHtml(schema) {
+    return JSON.stringify(schema)
+        .replace(/</g, "\\u003c")
+        .replace(/\u2028/g, "\\u2028")
+        .replace(/\u2029/g, "\\u2029");
+}
+
+function buildCanonicalHtml({
+    slug,
+    game,
+    title,
+    schemaDescription,
+    canonicalUrl,
+    ogImage,
+    platformLong,
+    existingHtml
+}) {
+    const gameId = String(game?.id || toGameId(slug)).trim();
+    const target = `/games/game.html?id=${gameId}`;
+    const schemaJson = serializeSchemaForHtml(buildGameSchemaGraph({
+        game,
+        title,
+        description: schemaDescription,
+        canonicalUrl,
+        ogImage,
+        year: game?.year,
+        platformLong
+    }));
+    const schemaScript = `    <script type="application/ld+json" data-ccg-schema="game-graph">${schemaJson}</script>`;
+    const current = String(existingHtml || "");
+
+    if (current.trim()) {
+        const existingSchema = /^[ \t]*<script\b(?=[^>]*type\s*=\s*(["'])application\/ld\+json\1)(?=[^>]*data-ccg-schema\s*=\s*(["'])game-graph\2)[^>]*>.*?<\/script>[ \t]*$/im;
+        if (existingSchema.test(current)) {
+            return current.replace(existingSchema, schemaScript);
+        }
+        const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;
+        if (charset.test(current)) {
+            return current.replace(charset, `${schemaScript}\n$&`);
+        }
+        return current.replace(/<\/head>/i, `${schemaScript}\n</head>`);
+    }
+
+    const metaDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -337,7 +378,8 @@ function buildCanonicalHtml({ slug, game, title, canonicalUrl, ogImage, platform
     <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
     <meta name="twitter:image" content="${escapeHtml(ogImage)}">
     <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
-<meta charset="UTF-8" />
+${schemaScript}
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="/js/analytics.js"></script>
     <meta http-equiv="refresh" content="0; url=${escapeHtml(target)}">
@@ -422,7 +464,7 @@ function planChangedGames(games) {
             throw error;
         }
 
-        const expected = getExpectedPageArtifacts(game, slug, validation);
+        const expected = getExpectedPageArtifacts(game, slug, validation, canonicalPath);
         const canonicalReason = getCanonicalRewriteReason(canonicalPath, { ...validation, ...expected, slug });
         const redirectStubReason = getRedirectStubRewriteReason(redirectStubPath, expected.redirectStubHtml);
         if (!canonicalReason && !redirectStubReason) continue;
@@ -442,7 +484,7 @@ function planChangedGames(games) {
 
     return {
         planned,
-        stale: findStaleGameOutputs(new Set(gamesBySlug.keys()))
+        stale: REMOVE_STALE_GAME_OUTPUTS ? findStaleGameOutputs(new Set(gamesBySlug.keys())) : []
     };
 }
 
@@ -465,7 +507,7 @@ function processChangedGamesOnly(games) {
             console.log(`[WRITE] games/${item.slug}/index.html (${item.canonicalReason})`);
         }
 
-        if (writeTextFileIfChanged(item.redirectStubPath, item.redirectStubHtml)) {
+        if (item.redirectStubReason && writeTextFileIfChanged(item.redirectStubPath, item.redirectStubHtml)) {
             written += 1;
             const reason = item.redirectStubReason || "redirect stub";
             console.log(`[WRITE] games/${item.slug}.html (${reason})`);

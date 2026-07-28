@@ -1,0 +1,162 @@
+name: Phase 2C Static Game Schema
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-2c-static-game-schema.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-2c-static-game-schema-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Preserve legacy charset indentation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/phase2c_static_game_schema.py")
+          lines = path.read_text(encoding="utf-8").splitlines()
+          matches = [
+              index for index, line in enumerate(lines)
+              if "const charset = /<meta charset=" in line
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Unexpected charset rule count: {len(matches)}")
+          lines[matches[0]] = r'''        const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;'''
+          path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+      - name: Validate Phase 2C tooling
+        run: |
+          python -m py_compile scripts/phase2c_static_game_schema.py
+          python -m py_compile scripts/validate_structured_data.py
+          node --check scripts/generate-slug-pages.js
+
+      - name: Apply Phase 2C schema generation
+        run: python scripts/phase2c_static_game_schema.py
+
+      - name: Validate final structured data
+        run: python scripts/validate_structured_data.py
+
+      - name: Verify Phase 2C results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("docs/seo-baseline/phase-2c-static-game-schema.json").read_text(encoding="utf-8")
+          )
+          summary = report["summary"]
+          expected = {
+              "canonical_game_pages": 651,
+              "video_game_objects_before": 0,
+              "video_game_objects_after": 651,
+              "breadcrumb_objects_before": 0,
+              "breadcrumb_objects_after": 651,
+              "video_object_objects_added": 0,
+              "non_schema_wrapper_changes": 0,
+              "legacy_redirect_changes": 0,
+              "protected_file_changes": 0,
+          }
+          failures = {
+              key: {"expected": value, "actual": summary.get(key)}
+              for key, value in expected.items()
+              if summary.get(key) != value
+          }
+          if failures:
+              raise SystemExit(f"Unexpected Phase 2C results: {failures}")
+          print(summary)
+          PY
+
+      - name: Upload detailed Phase 2C evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-2c-static-game-schema-json
+          path: docs/seo-baseline/phase-2c-static-game-schema.json
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Remove compiler bytecode before scope check
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact generated file scope
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          games = json.loads(Path("games/games.json").read_text(encoding="utf-8"))
+          slugs = [str(game.get("slug") or "").strip() for game in games]
+          allowed = {
+              "scripts/phase2c_static_game_schema.py",
+              "scripts/generate-slug-pages.js",
+              "docs/seo-baseline/phase-2c-static-game-schema.md",
+          }
+          allowed.update(f"games/{slug}/index.html" for slug in slugs)
+          temporary = {"docs/seo-baseline/phase-2c-static-game-schema.json"}
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          actual = set()
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              actual.add(path)
+
+          unexpected = sorted(actual - allowed - temporary)
+          missing = sorted(allowed - actual)
+          if unexpected or missing:
+              raise SystemExit(
+                  f"Unexpected generated files: {unexpected}\nExpected generated files absent: {missing[:30]}"
+              )
+
+          Path("/tmp/phase2c-commit-files.txt").write_text(
+              "\n".join(sorted(allowed)) + "\n",
+              encoding="utf-8",
+          )
+          print(f"Validated exact Phase 2C scope across {len(allowed)} files.")
+          PY
+
+      - name: Remove temporary JSON evidence
+        run: rm docs/seo-baseline/phase-2c-static-game-schema.json
+
+      - name: Commit Phase 2C generated output
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          xargs -d '\n' git add -- < /tmp/phase2c-commit-files.txt
+          git commit -m "Generate static game and breadcrumb schema"
+          git push
