@@ -131,4 +131,4 @@ jobs:
           git commit -m "Refresh generated publisher archives"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin "HEAD:${TARGET_BRANCH>"
+          git push origin "HEAD:${TARGET_BRANCH}"
