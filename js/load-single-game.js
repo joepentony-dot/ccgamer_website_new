@@ -2839,6 +2839,8 @@ function injectGameSchema(game) {
 
     const fallback = document.getElementById('ccg-schema-fallback');
     if (fallback) {
+        fallback.type = 'application/ld+json';
+        fallback.removeAttribute('data-schema-placeholder');
         fallback.textContent = JSON.stringify(schema);
         return;
     }

@@ -26,12 +26,12 @@
     {
       "@context": "https://schema.org",
       "@type": "VideoObject",
-      "name": "{{TITLE}}",
-      "description": "{{DESCRIPTION}}",
-      "thumbnailUrl": "{{THUMBNAIL_URL}}",
-      "uploadDate": "{{UPLOAD_DATE}}",
-      "embedUrl": "https://www.youtube.com/embed/{{YOUTUBE_ID}}",
-      "url": "{{CANONICAL_URL}}"{{VIDEO_DURATION_FIELD}}
+      "name": "{{TITLE_JSON}}",
+      "description": "{{DESCRIPTION_JSON}}",
+      "thumbnailUrl": "{{THUMBNAIL_URL_JSON}}",
+      "uploadDate": "{{UPLOAD_DATE_JSON}}",
+      "embedUrl": "{{EMBED_URL_JSON}}",
+      "url": "{{CANONICAL_URL_JSON}}"{{VIDEO_DURATION_FIELD}}
     }
     </script>
     <script type="application/ld+json">
@@ -54,14 +54,14 @@
         {
           "@type": "ListItem",
           "position": 3,
-          "name": "{{COLLECTION_LABEL}}",
-          "item": "https://www.cheekycommodoregamer.co.uk{{COLLECTION_URL}}"
+          "name": "{{COLLECTION_LABEL_JSON}}",
+          "item": "{{COLLECTION_URL_JSON}}"
         },
         {
           "@type": "ListItem",
           "position": 4,
-          "name": "{{TITLE}}",
-          "item": "{{CANONICAL_URL}}"
+          "name": "{{TITLE_JSON}}",
+          "item": "{{CANONICAL_URL_JSON}}"
         }
       ]
     }
