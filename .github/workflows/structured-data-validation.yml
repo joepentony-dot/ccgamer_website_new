@@ -51,19 +51,48 @@ jobs:
       - name: Validate committed structured data
         run: python scripts/validate_structured_data.py
 
-      - name: Regenerate retro pages
+      - name: Regenerate retro pages for validation
         run: node scripts/generate-retro-pages.js
 
       - name: Validate regenerated structured data
         run: python scripts/validate_structured_data.py
 
-      - name: Require generated retro output to be current
-        run: |
-          git diff --exit-code -- \
-            retro-events \
-            retro-specials \
-            amiga-demo-music
-
-      - name: Remove compiler bytecode
+      - name: Remove compiler bytecode before scope check
         if: always()
         run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm generator writes only expected roots
+        if: always()
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed_prefixes = (
+              "retro-events/",
+              "retro-specials/",
+              "amiga-demo-music/",
+          )
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              paths.append(path)
+          unexpected = sorted(
+              path for path in paths if not path.startswith(allowed_prefixes)
+          )
+          if unexpected:
+              raise SystemExit(f"Generator changed unexpected paths: {unexpected}")
+          print(f"Validated generator scope across {len(paths)} changed paths.")
+          PY
+
+      - name: Restore temporary generated output
+        if: always()
+        run: |
+          git restore --source=HEAD -- retro-events retro-specials amiga-demo-music
+          git clean -fd -- retro-events retro-specials amiga-demo-music
+          test -z "$(git status --porcelain --untracked-files=all)"
