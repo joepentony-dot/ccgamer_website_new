@@ -6,21 +6,21 @@ This report is generated from the current repository without changing public pag
 
 | Check | Count |
 |---|---:|
-| HTML pages audited | **1690** |
-| Indexable pages | **934** |
-| Noindex pages | **756** |
-| Indexable pages with duplicate titles | **53** |
-| Indexable pages with duplicate meta descriptions | **42** |
-| Canonical URLs claimed by multiple indexable pages | **59** |
-| Indexable pages missing titles | **3** |
-| Indexable pages missing meta descriptions | **27** |
-| Indexable pages missing canonicals | **12** |
-| Indexable pages without exactly one H1 | **706** |
-| Indexable pages with no detected incoming link | **108** |
-| Indexable pages absent from sitemaps | **37** |
+| HTML pages audited | **1678** |
+| Indexable pages | **923** |
+| Noindex pages | **755** |
+| Indexable pages with duplicate titles | **51** |
+| Indexable pages with duplicate meta descriptions | **40** |
+| Canonical URLs claimed by multiple indexable pages | **58** |
+| Indexable pages missing titles | **0** |
+| Indexable pages missing meta descriptions | **21** |
+| Indexable pages missing canonicals | **9** |
+| Indexable pages without exactly one H1 | **702** |
+| Indexable pages with no detected incoming link | **97** |
+| Indexable pages absent from sitemaps | **26** |
 | Sitemap URLs that canonicalise elsewhere | **0** |
-| Broken internal links | **4** |
-| Missing local assets | **4** |
+| Broken internal links | **0** |
+| Missing local assets | **0** |
 | Invalid JSON-LD blocks | **2** |
 | Images missing an alt attribute | **0** |
 
@@ -49,10 +49,7 @@ This report is generated from the current repository without changing public pag
 
 ### Broken internal links
 
-- `scripts/templates/retro-video-page-template.html` → `__COLLECTION_URL__`
-- `templates/game-template.html` → `/games/{{SLUG}}/`
-- `templates/retro-video-content.html` → `{{collection_url}}`
-- `templates/retro-video-content.html` → `{{youtube_watch_url}}`
+None detected.
 
 ### Indexable orphan-page candidates
 
@@ -80,8 +77,8 @@ This report is generated from the current repository without changing public pag
 - `games/ivan-ironman-stewart-s-super-off-road/index.html`
 - `games/jimmy-white-s-whirlwind-snooker/index.html`
 - `games/m-u-l-e/index.html`
-- `index_temp.html`
-- …and 83 more in the JSON report
+- `music/allister-brimble/index.html`
+- …and 72 more in the JSON report
 
 ### Indexable pages missing from sitemaps
 
@@ -106,18 +103,15 @@ This report is generated from the current repository without changing public pag
 - `games/ivan-ironman-stewart-s-super-off-road/index.html`
 - `games/jimmy-white-s-whirlwind-snooker/index.html`
 - `games/m-u-l-e/index.html`
-- `index_temp.html`
 - `music/composer.html`
 - `music/composers/index.html`
 - `quiz/pack-6.html`
-- …and 12 more in the JSON report
+- `quiz/quiz-admin.html`
+- …and 1 more in the JSON report
 
 ### Missing local assets
 
-- `index_temp.html` → `resources/audio/c64_speech_stayawhile.mp3`
-- `resources/quiz.html` → `../css/engine.css`
-- `resources/quiz.html` → `css/main.css`
-- `resources/quiz.html` → `../js/engine.js`
+None detected.
 
 ## Repository and PR housekeeping
 
