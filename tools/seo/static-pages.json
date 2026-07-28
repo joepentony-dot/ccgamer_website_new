@@ -33,7 +33,6 @@
   "quiz/index.html",
   "quiz/quiz.html",
   "viewer/manual.html",
-  "games/downloads/index.html",
   "games/publishers/index.html",
   "games/publishers/64-tape-computing/index.html",
   "games/publishers/aackosoft/index.html",
@@ -130,5 +129,6 @@
   "games/publishers/virgin-games/index.html",
   "games/publishers/virgin-mastertronic/index.html",
   "games/publishers/zafiro-software-division/index.html",
-  "games/publishers/zeppelin-games/index.html"
+  "games/publishers/zeppelin-games/index.html",
+  "games/downloads/index.html"
 ]
