@@ -1,0 +1,97 @@
+{
+  "expected": [
+    {
+      "name": "Mastertronic",
+      "slug": "mastertronic"
+    },
+    {
+      "name": "Firebird",
+      "slug": "firebird"
+    },
+    {
+      "name": "US Gold",
+      "slug": "us-gold"
+    },
+    {
+      "name": "Codemasters",
+      "slug": "codemasters"
+    },
+    {
+      "name": "System 3",
+      "slug": "system-3"
+    },
+    {
+      "name": "Activision",
+      "slug": "activision"
+    },
+    {
+      "name": "Electronic Arts",
+      "slug": "electronic-arts"
+    },
+    {
+      "name": "Psygnosis",
+      "slug": "psygnosis"
+    },
+    {
+      "name": "Elite",
+      "slug": "elite"
+    },
+    {
+      "name": "Gremlin Graphics",
+      "slug": "gremlin-graphics"
+    },
+    {
+      "name": "MicroProse",
+      "slug": "microprose"
+    }
+  ],
+  "found": [
+    {
+      "name": "Mastertronic",
+      "slug": "mastertronic"
+    },
+    {
+      "name": "Firebird",
+      "slug": "firebird"
+    },
+    {
+      "name": "US Gold",
+      "slug": "us-gold"
+    },
+    {
+      "name": "Codemasters",
+      "slug": "codemasters"
+    },
+    {
+      "name": "System 3",
+      "slug": "system-3"
+    },
+    {
+      "name": "Activision",
+      "slug": "activision"
+    },
+    {
+      "name": "Electronic Arts",
+      "slug": "electronic-arts"
+    },
+    {
+      "name": "Psygnosis",
+      "slug": "psygnosis"
+    },
+    {
+      "name": "Elite",
+      "slug": "elite"
+    },
+    {
+      "name": "Gremlin Graphics",
+      "slug": "gremlin-graphics"
+    }
+  ],
+  "missing": [
+    {
+      "name": "MicroProse",
+      "slug": "microprose"
+    }
+  ],
+  "markupCount": 10
+}
