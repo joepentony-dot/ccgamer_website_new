@@ -1,77 +1,169 @@
-name: Phase 4B Year and Platform Archives
+name: Phase 4C Year and Platform Discovery
 
 on:
   push:
     branches:
-      - feature/phase-4b-year-platform-archives
+      - main
+      - feature/phase-4c-year-platform-discovery
     paths:
       - ".github/workflows/year-platform-archives.yml"
       - "scripts/generate-year-platform-pages.js"
+      - "scripts/integrate-year-platform-discovery.js"
+      - "scripts/validate-year-platform-discovery.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/preserve-sitemap-lastmods.js"
+      - "scripts/validate-sitemaps.js"
+      - "tools/seo/generate-sitemap.js"
+      - "tools/seo/static-pages.json"
       - "games/games.json"
-  pull_request:
-    paths:
-      - ".github/workflows/year-platform-archives.yml"
-      - "scripts/generate-year-platform-pages.js"
-      - "games/games.json"
+      - "games/index.html"
       - "games/archive-navigation.json"
       - "games/years/**"
       - "games/platforms/**"
       - "resources/css/year-platform-archives.css"
       - "js/year-platform-archives.js"
-      - "docs/seo-baseline/phase-4b-year-platform-archives.md"
+      - "sitemap.xml"
+      - "sitemap-pages.xml"
+      - "sitemap-games.xml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/year-platform-archives.yml"
+      - "scripts/generate-year-platform-pages.js"
+      - "scripts/integrate-year-platform-discovery.js"
+      - "scripts/validate-year-platform-discovery.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/preserve-sitemap-lastmods.js"
+      - "scripts/validate-sitemaps.js"
+      - "tools/seo/generate-sitemap.js"
+      - "tools/seo/static-pages.json"
+      - "games/games.json"
+      - "games/index.html"
+      - "games/archive-navigation.json"
+      - "games/years/**"
+      - "games/platforms/**"
+      - "resources/css/year-platform-archives.css"
+      - "js/year-platform-archives.js"
+      - "sitemap.xml"
+      - "sitemap-pages.xml"
+      - "sitemap-games.xml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: phase-4b-year-platform-${{ github.ref }}
-  cancel-in-progress: false
+  group: phase-4c-year-platform-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  generate-and-validate:
+  generate-integrate-and-validate:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out source branch
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
+          show-progress: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
 
-      - name: Generate year and platform archives
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > /tmp/phase4c-protected.sha256
+
+      - name: Snapshot registry and sitemap baseline
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          mkdir -p /tmp/phase4c-baseline
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
+
+          if [ -n "$BASE_SHA" ] && [ "$BASE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            git show "$BASE_SHA:tools/seo/static-pages.json" > /tmp/phase4c-baseline/static-pages.json
+            git show "$BASE_SHA:sitemap.xml" > /tmp/phase4c-baseline/sitemap.xml
+            git show "$BASE_SHA:sitemap-pages.xml" > /tmp/phase4c-baseline/sitemap-pages.xml
+            git show "$BASE_SHA:sitemap-games.xml" > /tmp/phase4c-baseline/sitemap-games.xml
+          else
+            cp tools/seo/static-pages.json /tmp/phase4c-baseline/static-pages.json
+            cp sitemap.xml sitemap-pages.xml sitemap-games.xml /tmp/phase4c-baseline/
+          fi
+
+      - name: Validate archive and sitemap scripts
+        run: |
+          node --check scripts/generate-year-platform-pages.js
+          node --check scripts/integrate-year-platform-discovery.js
+          node --check scripts/validate-year-platform-discovery.js
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/preserve-sitemap-lastmods.js
+          node --check scripts/validate-sitemaps.js
+          node --check tools/seo/generate-sitemap.js
+          node --check js/year-platform-archives.js
+
+      - name: Regenerate Phase 4B archive foundations
         run: node scripts/generate-year-platform-pages.js
+
+      - name: Apply Phase 4C discovery integration
+        run: node scripts/integrate-year-platform-discovery.js
+
+      - name: Rebuild sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Preserve historical sitemap modification dates
+        run: node scripts/preserve-sitemap-lastmods.js /tmp/phase4c-baseline
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Validate Phase 4C discovery output
+        run: |
+          node scripts/validate-year-platform-discovery.js \
+            --baseline-static-pages /tmp/phase4c-baseline/static-pages.json \
+            --baseline-sitemap-pages /tmp/phase4c-baseline/sitemap-pages.xml
 
       - name: Verify deterministic regeneration
         shell: bash
         run: |
-          git diff --binary > "$RUNNER_TEMP/phase4b-first.diff"
+          git diff --binary > "$RUNNER_TEMP/phase4c-first.diff"
+
           node scripts/generate-year-platform-pages.js
-          git diff --binary > "$RUNNER_TEMP/phase4b-second.diff"
-          cmp "$RUNNER_TEMP/phase4b-first.diff" "$RUNNER_TEMP/phase4b-second.diff"
+          node scripts/integrate-year-platform-discovery.js
+          node scripts/generate-sitemaps.js
+          node scripts/preserve-sitemap-lastmods.js /tmp/phase4c-baseline
+          node scripts/validate-sitemaps.js
+          node scripts/validate-year-platform-discovery.js \
+            --baseline-static-pages /tmp/phase4c-baseline/static-pages.json \
+            --baseline-sitemap-pages /tmp/phase4c-baseline/sitemap-pages.xml
+
+          git diff --binary > "$RUNNER_TEMP/phase4c-second.diff"
+          cmp "$RUNNER_TEMP/phase4c-first.diff" "$RUNNER_TEMP/phase4c-second.diff"
           git diff --check
 
-      - name: Validate generated route inventory
-        shell: bash
-        run: |
-          test -f games/years/index.html
-          test -f games/platforms/index.html
-          test -f games/platforms/c64/index.html
-          test -f games/platforms/amiga/index.html
-          test "$(find games/years -mindepth 2 -maxdepth 2 -name index.html | wc -l | tr -d ' ')" = "15"
-          grep -Fq '<meta name="robots" content="noindex,follow">' games/years/2023/index.html
-          grep -Fq '<meta name="robots" content="index,follow">' games/years/1982/index.html
-          grep -Fq '"gameCount": 651' games/archive-navigation.json
-          grep -Fq '"count": 552' games/archive-navigation.json
-          grep -Fq '"count": 99' games/archive-navigation.json
-          test "$(grep -Rho 'href="/games/[^"?]*/"' games/years/[0-9]*/index.html | wc -l | tr -d ' ')" -ge "651"
-          test "$(grep -Rho 'href="/games/[^"?]*/"' games/platforms/*/index.html | wc -l | tr -d ' ')" -ge "651"
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check /tmp/phase4c-protected.sha256
 
-      - name: Confirm protected files remain unchanged
+      - name: Confirm no protected branch changes
+        if: github.event_name != 'push' || github.ref_name != 'main'
         shell: bash
         run: |
           git diff --exit-code origin/main -- \
@@ -81,36 +173,90 @@ jobs:
             js/index-intro.js \
             games/games.json
 
+      - name: Confirm bounded generated scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              changed_path = line[3:]
+              if " -> " in changed_path:
+                  changed_path = changed_path.split(" -> ", 1)[1]
+              paths.append(changed_path)
+
+          allowed_exact = {
+              "docs/seo-baseline/phase-4b-year-platform-archives.md",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
+              "games/archive-navigation.json",
+              "games/index.html",
+              "js/year-platform-archives.js",
+              "resources/css/year-platform-archives.css",
+              "sitemap.xml",
+              "sitemap-games.xml",
+              "sitemap-pages.xml",
+              "tools/seo/static-pages.json",
+          }
+          unexpected = sorted(
+              changed_path for changed_path in paths
+              if changed_path not in allowed_exact
+              and not changed_path.startswith("games/years/")
+              and not changed_path.startswith("games/platforms/")
+          )
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 4C generated paths: {unexpected}")
+          print(f"Validated {len(paths)} generated Phase 4C paths.")
+          PY
+
       - name: Require committed generated output on pull requests
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
           git diff --exit-code -- \
+            games/index.html \
             games/archive-navigation.json \
             games/years \
             games/platforms \
             resources/css/year-platform-archives.css \
             js/year-platform-archives.js \
-            docs/seo-baseline/phase-4b-year-platform-archives.md
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md
 
-      - name: Commit generated output to the feature branch
+      - name: Commit generated Phase 4C output
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           git add \
+            games/index.html \
             games/archive-navigation.json \
             games/years \
             games/platforms \
             resources/css/year-platform-archives.css \
             js/year-platform-archives.js \
-            docs/seo-baseline/phase-4b-year-platform-archives.md
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md
 
           if git diff --cached --quiet; then
-            echo "Generated output is already current."
+            echo "Phase 4C discovery output is already current."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Generate Phase 4B year and platform archives"
-          git push
+          git commit -m "Integrate Phase 4C year and platform discovery"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"
