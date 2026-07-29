@@ -1,0 +1,332 @@
+name: Game Catalogue Publishing
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "resources/images/thumbnails/all/**"
+      - "resources/images/games/boxes-3d/**"
+      - "resources/audio/games/**"
+      - "admin/games-editor.html"
+      - "admin/GAMES_EDITOR.md"
+      - "admin/js/games-editor.js"
+      - "admin/templates/game-landing-template.html"
+      - "admin/templates/game-redirect-template.html"
+      - "scripts/admin-local-api.js"
+      - "scripts/build-games.js"
+      - "scripts/rebuild-games.js"
+      - "scripts/generate-slug-pages.js"
+      - "scripts/generate-year-platform-pages.js"
+      - "scripts/integrate-year-platform-discovery.js"
+      - "scripts/validate-year-platform-discovery.js"
+      - "scripts/validate-game-catalogue.js"
+      - "scripts/validate-game-publishing-link-audit.py"
+      - "scripts/phase6b_games_editor_transaction.py"
+      - "scripts/apply-phase6b-reliable-publishing.py"
+      - "scripts/apply-phase6b-workflow-convergence.py"
+      - "tests/games-editor-package.test.mjs"
+      - "package.json"
+      - ".github/workflows/game-catalogue-publishing.yml"
+      - ".github/workflows/publisher-archives.yml"
+      - ".github/workflows/developer-archives.yml"
+      - ".github/workflows/composer-archives.yml"
+      - ".github/workflows/game-downloads.yml"
+      - ".github/workflows/year-platform-archives.yml"
+      - ".github/workflows/phase-6a-games-editor-publishing-audit.yml"
+      - "docs/seo-baseline/phase-6b-reliable-games-editor.md"
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "resources/images/thumbnails/all/**"
+      - "resources/images/games/boxes-3d/**"
+      - "resources/audio/games/**"
+      - "scripts/rebuild-games.js"
+      - "scripts/validate-game-catalogue.js"
+      - ".github/workflows/game-catalogue-publishing.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-catalogue-publishing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Resolve and snapshot base state
+        id: baseline
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="HEAD^"
+          fi
+          git fetch --no-tags --depth=1 origin "$BASE_SHA" || true
+          BASE_SHA="$(git rev-parse "$BASE_SHA")"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+
+          mkdir -p /tmp/game-catalogue-baseline
+          git show "$BASE_SHA:games/games.json" > /tmp/game-catalogue-baseline/games.json
+          git show "$BASE_SHA:tools/seo/static-pages.json" > /tmp/game-catalogue-baseline/static-pages.json
+          git show "$BASE_SHA:sitemap.xml" > /tmp/game-catalogue-baseline/sitemap.xml
+          git show "$BASE_SHA:sitemap-pages.xml" > /tmp/game-catalogue-baseline/sitemap-pages.xml
+          git show "$BASE_SHA:sitemap-games.xml" > /tmp/game-catalogue-baseline/sitemap-games.xml
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            > /tmp/game-catalogue-protected.sha256
+
+      - name: Apply Phase 6B publishing corrections
+        run: |
+          python scripts/apply-phase6b-reliable-publishing.py
+          python scripts/apply-phase6b-workflow-convergence.py
+
+      - name: Validate publishing tooling syntax
+        run: |
+          python -m py_compile \
+            scripts/apply-phase6b-reliable-publishing.py \
+            scripts/apply-phase6b-workflow-convergence.py \
+            scripts/phase6b_games_editor_transaction.py \
+            scripts/validate-game-publishing-link-audit.py \
+            scripts/phase5a_internal_link_audit.py \
+            scripts/validate_structured_data.py
+          node --check scripts/admin-local-api.js
+          node --check scripts/build-games.js
+          node --check scripts/rebuild-games.js
+          node --check scripts/generate-slug-pages.js
+          node --check scripts/generate-year-platform-pages.js
+          node --check scripts/integrate-year-platform-discovery.js
+          node --check scripts/validate-year-platform-discovery.js
+          node --check scripts/validate-game-catalogue.js
+          node --check admin/js/games-editor.js
+          node --check tests/games-editor-package.test.mjs
+
+      - name: Validate browser deployment package
+        run: npm run test:games-editor
+
+      - name: Run authoritative publishing command
+        env:
+          CCG_BASELINE_DIR: /tmp/game-catalogue-baseline
+        run: npm run rebuild:games
+
+      - name: Run disposable C64 and Amiga transactions
+        run: |
+          python scripts/phase6b_games_editor_transaction.py \
+            --json-output "$RUNNER_TEMP/phase-6b-games-editor-evidence.json" \
+            --report-output docs/seo-baseline/phase-6b-reliable-games-editor.md
+
+      - name: Verify Phase 6B transaction evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          evidence = json.loads(Path("${{ runner.temp }}/phase-6b-games-editor-evidence.json").read_text(encoding="utf-8"))
+          if evidence.get("verdict") != "ready":
+              raise SystemExit(f"Phase 6B verdict is not ready: {evidence.get('verdict')}")
+          if not evidence.get("protected_hashes_unchanged"):
+              raise SystemExit("Phase 6B transaction changed protected files.")
+          transactions = evidence.get("transactions", [])
+          if [item.get("variant") for item in transactions] != ["c64", "amiga"]:
+              raise SystemExit("Phase 6B evidence does not contain the expected C64 and Amiga transactions.")
+          for item in transactions:
+              failed = [name for name, passed in item.get("checks", {}).items() if not passed]
+              if failed:
+                  raise SystemExit(f"{item.get('variant')} transaction failed checks: {failed}")
+          print({
+              "verdict": evidence["verdict"],
+              "baseline_games": evidence["baseline_game_count"],
+              "transactions": {item["variant"]: f"{item['passed']}/{item['total']}" for item in transactions},
+          })
+          PY
+
+      - name: Verify deterministic repeat generation
+        shell: bash
+        env:
+          CCG_BASELINE_DIR: /tmp/game-catalogue-baseline
+        run: |
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          git diff --binary HEAD > "$RUNNER_TEMP/game-publish-first.diff"
+          npm run rebuild:games
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          git diff --binary HEAD > "$RUNNER_TEMP/game-publish-second.diff"
+          cmp "$RUNNER_TEMP/game-publish-first.diff" "$RUNNER_TEMP/game-publish-second.diff"
+          git diff --check
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check /tmp/game-catalogue-protected.sha256
+
+      - name: Confirm Phase 6B source catalogue is unchanged
+        if: github.head_ref == 'audit/phase-6b-reliable-games-editor'
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.baseline.outputs.base_sha }}
+        run: |
+          git diff --quiet "$BASE_SHA" -- games/games.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          baseline = json.loads(Path('/tmp/game-catalogue-baseline/games.json').read_text(encoding='utf-8'))
+          current = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          if current != baseline:
+              raise SystemExit('Phase 6B changed an existing games.json record.')
+          print(f'Confirmed {len(current)} existing game records unchanged.')
+          PY
+
+      - name: Confirm existing canonical game routes are unchanged
+        if: github.head_ref == 'audit/phase-6b-reliable-games-editor'
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.baseline.outputs.base_sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          games = json.loads(Path('/tmp/game-catalogue-baseline/games.json').read_text(encoding='utf-8'))
+          changed = set(subprocess.check_output(
+              ['git', 'diff', '--name-only', '${{ steps.baseline.outputs.base_sha }}'], text=True
+          ).splitlines())
+          protected_routes = {
+              path
+              for game in games
+              for path in (f"games/{game['slug']}/index.html", f"games/{game['slug']}.html")
+          }
+          unexpected = sorted(changed & protected_routes)
+          if unexpected:
+              raise SystemExit(f'Existing canonical or redirect routes changed unexpectedly: {unexpected[:20]}')
+          print(f'Confirmed {len(protected_routes)} existing wrapper and redirect paths unchanged.')
+          PY
+
+      - name: Confirm exact Phase 6B scope
+        if: github.head_ref == 'audit/phase-6b-reliable-games-editor'
+        shell: bash
+        env:
+          BASE_SHA: ${{ steps.baseline.outputs.base_sha }}
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          explicit = {
+              '.github/workflows/game-catalogue-publishing.yml',
+              '.github/workflows/publisher-archives.yml',
+              '.github/workflows/developer-archives.yml',
+              '.github/workflows/composer-archives.yml',
+              '.github/workflows/game-downloads.yml',
+              '.github/workflows/year-platform-archives.yml',
+              '.github/workflows/phase-6a-games-editor-publishing-audit.yml',
+              'admin/GAMES_EDITOR.md',
+              'admin/games-editor.html',
+              'admin/js/games-editor.js',
+              'admin/templates/game-landing-template.html',
+              'package.json',
+              'scripts/admin-local-api.js',
+              'scripts/apply-phase6b-reliable-publishing.py',
+              'scripts/apply-phase6b-workflow-convergence.py',
+              'scripts/build-games.js',
+              'scripts/rebuild-games.js',
+              'scripts/generate-year-platform-pages.js',
+              'scripts/integrate-year-platform-discovery.js',
+              'scripts/validate-year-platform-discovery.js',
+              'scripts/validate-game-catalogue.js',
+              'scripts/validate-game-publishing-link-audit.py',
+              'scripts/phase6b_games_editor_transaction.py',
+              'tests/games-editor-package.test.mjs',
+              'games/games-index.json',
+              'games/games-search.json',
+              'games/index.html',
+              'games/archive-navigation.json',
+              'tools/seo/static-pages.json',
+              'sitemap.xml',
+              'sitemap-pages.xml',
+              'sitemap-games.xml',
+              'resources/css/year-platform-archives.css',
+              'js/year-platform-archives.js',
+          }
+          prefixes = (
+              'games/publishers/',
+              'games/developers/',
+              'games/years/',
+              'games/platforms/',
+              'games/downloads/',
+              'music/',
+              'docs/seo-baseline/',
+          )
+          base = '${{ steps.baseline.outputs.base_sha }}'
+          tracked = subprocess.check_output(['git', 'diff', '--name-only', base], text=True).splitlines()
+          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in explicit and not path.startswith(prefixes)]
+          if unexpected:
+              raise SystemExit(f'Unexpected Phase 6B paths: {unexpected}')
+          forbidden = {'index.html', 'home.html', 'resources/css/intro.css', 'js/index-intro.js', 'games/games.json'}
+          touched_forbidden = sorted(set(changed) & forbidden)
+          if touched_forbidden:
+              raise SystemExit(f'Protected Phase 6B paths changed: {touched_forbidden}')
+          print(f'Validated Phase 6B scope across {len(changed)} paths.')
+          PY
+
+      - name: Upload detailed publishing evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-6b-games-editor-publishing-evidence
+          path: ${{ runner.temp }}/phase-6b-games-editor-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove compiler cache
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Commit generated and validated publishing output
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Game catalogue publishing output is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply reliable game catalogue publishing"
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"
