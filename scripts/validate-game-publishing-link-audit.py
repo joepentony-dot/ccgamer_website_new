@@ -6,6 +6,25 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from urllib.parse import urlparse
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def physical_candidates(route: str) -> list[Path]:
+    parsed = urlparse(str(route or ""))
+    clean = parsed.path.lstrip("/")
+    if not clean:
+        return [ROOT / "index.html", ROOT / "home.html"]
+    path = ROOT / clean
+    candidates = [path]
+    if clean.endswith("/"):
+        candidates.append(path / "index.html")
+        candidates.append(ROOT / f"{clean.rstrip('/')}.html")
+    elif not Path(clean).suffix:
+        candidates.append(path / "index.html")
+        candidates.append(ROOT / f"{clean}.html")
+    return list(dict.fromkeys(candidates))
 
 
 def main() -> None:
@@ -44,7 +63,21 @@ def main() -> None:
         )[:20]
         diagnostic = {
             "failures": failures,
-            "broken_edge_examples": broken,
+            "public_html_files_on_disk": len(list(ROOT.rglob("*.html"))),
+            "top_level_composer_pages_on_disk": len(list((ROOT / "music").glob("*/index.html"))),
+            "broken_edge_examples": [
+                {
+                    **edge,
+                    "physical_candidates": [
+                        {
+                            "path": candidate.relative_to(ROOT).as_posix(),
+                            "exists": candidate.exists(),
+                        }
+                        for candidate in physical_candidates(edge.get("target", ""))
+                    ],
+                }
+                for edge in broken
+            ],
             "minimum_discovery_examples": [
                 {
                     "slug": item.get("slug"),
