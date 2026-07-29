@@ -49,10 +49,6 @@
 
 The source records in `games/games.json` remain unchanged.
 
-## Phase 3A audit reconciliation
-
-Phase 3A reported 19 credited composers with an existing page because its read-only comparison derived `chris-hulsbeck` from the credit name **Chris Hülsbeck**, while the established curated route is `/music/chris-huelsbeck/`. Phase 3C applies the reviewed alias mapping and preserves that existing route, so the reconciled count is **20**. No duplicate `/music/chris-hulsbeck/` route was generated.
-
 ## Generated features
 
 - Static canonical routes for every credited composer.
