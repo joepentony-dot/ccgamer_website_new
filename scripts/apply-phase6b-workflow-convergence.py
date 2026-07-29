@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "validate-year-platform-discovery.js"
 INTEGRATOR = ROOT / "scripts" / "integrate-year-platform-discovery.js"
+TRANSACTION = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
 LEGACY_WORKFLOWS = [
     ".github/workflows/publisher-archives.yml",
     ".github/workflows/developer-archives.yml",
@@ -156,6 +157,30 @@ def patch_integrator_copy() -> bool:
     return write_if_changed(INTEGRATOR, source)
 
 
+def patch_transaction_diagnostics() -> bool:
+    source = TRANSACTION.read_text(encoding="utf-8")
+    old = """    if not all_checks:
+        failed = {
+            result["variant"]: [name for name, passed in result["checks"].items() if not passed]
+            for result in transactions
+        }
+        raise SystemExit(f"Phase 6B publishing transaction failed: {failed}")
+"""
+    new = """    if not all_checks:
+        for result in transactions:
+            if not result["command"].get("passed"):
+                print(f"\\n--- {result['variant'].upper()} AUTHORITATIVE COMMAND OUTPUT ---")
+                print(result["command"].get("output_tail", ""))
+                print(f"--- END {result['variant'].upper()} OUTPUT ---\\n")
+        failed = {
+            result["variant"]: [name for name, passed in result["checks"].items() if not passed]
+            for result in transactions
+        }
+        raise SystemExit(f"Phase 6B publishing transaction failed: {failed}")
+"""
+    return write_if_changed(TRANSACTION, replace_once(source, old, new, "transaction diagnostics"))
+
+
 def patch_workflow(relative: str) -> bool:
     path = ROOT / relative
     source = path.read_text(encoding="utf-8")
@@ -176,6 +201,8 @@ def main() -> None:
         changed.append(VALIDATOR.relative_to(ROOT).as_posix())
     if patch_integrator_copy():
         changed.append(INTEGRATOR.relative_to(ROOT).as_posix())
+    if patch_transaction_diagnostics():
+        changed.append(TRANSACTION.relative_to(ROOT).as_posix())
     for relative in LEGACY_WORKFLOWS:
         if patch_workflow(relative):
             changed.append(relative)
