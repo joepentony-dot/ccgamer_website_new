@@ -1,0 +1,69 @@
+name: Phase 6B Determinism Debug
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-6b-determinism-debug.yml"
+      - "scripts/apply-phase6b-reliable-publishing.py"
+      - "scripts/apply-phase6b-workflow-convergence.py"
+      - "scripts/rebuild-games.js"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: phase-6b-determinism-debug-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Snapshot main baseline
+        run: |
+          mkdir -p /tmp/game-catalogue-baseline
+          git show origin/main:games/games.json > /tmp/game-catalogue-baseline/games.json
+          git show origin/main:tools/seo/static-pages.json > /tmp/game-catalogue-baseline/static-pages.json
+          git show origin/main:sitemap.xml > /tmp/game-catalogue-baseline/sitemap.xml
+          git show origin/main:sitemap-pages.xml > /tmp/game-catalogue-baseline/sitemap-pages.xml
+          git show origin/main:sitemap-games.xml > /tmp/game-catalogue-baseline/sitemap-games.xml
+
+      - name: Apply Phase 6B patches
+        run: |
+          python scripts/apply-phase6b-reliable-publishing.py
+          python scripts/apply-phase6b-workflow-convergence.py
+
+      - name: Compare two publishing passes
+        env:
+          CCG_BASELINE_DIR: /tmp/game-catalogue-baseline
+        run: |
+          npm run rebuild:games
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          git diff --binary HEAD > "$RUNNER_TEMP/first.diff"
+          npm run rebuild:games
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          git diff --binary HEAD > "$RUNNER_TEMP/second.diff"
+          if cmp -s "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"; then
+            echo "Repeat generation is deterministic."
+            exit 0
+          fi
+          echo "Changed paths after the second pass:"
+          diff -u "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff" | sed -n '1,500p'
+          exit 1
