@@ -305,9 +305,17 @@ def validate(before_path: Path, after_path: Path, report_path: Path, evidence_pa
         "delayed_refreshes_zero": a["delayed_refreshes"] == 0,
     }
     failures = [name for name, passed in checks.items() if not passed]
-    evidence = {"before": b, "after": a, "removed": {"analytics_tags": b["analytics_tags"] - a["analytics_tags"], "pages_with_assets": b["pages_with_assets"] - a["pages_with_assets"]}, "checks": checks, "failures": failures, "remaining": after["examples"]}
-    evidence_path.parent.mkdir(parents=True, exist_ok=True)
-    evidence_path.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+    evidence = {
+        "before": b,
+        "after": a,
+        "removed": {
+            "analytics_tags": b["analytics_tags"] - a["analytics_tags"],
+            "pages_with_assets": b["pages_with_assets"] - a["pages_with_assets"],
+        },
+        "checks": checks,
+        "failures": failures,
+        "remaining": after["examples"],
+    }
     report = f"""# Phase 7F Redirect-Route Performance Review
 
 ## Verdict
@@ -360,8 +368,33 @@ Phase 7F removes the analytics request from verified `noindex` redirect shells w
 - `index.html`, `home.html`, `resources/css/intro.css`, `js/index-intro.js` and `games/games.json` unchanged
 - no CSS source file, game record, thumbnail or route is renamed or removed
 """
-    report_path.parent.mkdir(parents=True, exist_ok=True)
-    report_path.write_text(report, encoding="utf-8")
+
+    existing_after: dict[str, Any] | None = None
+    if evidence_path.exists():
+        try:
+            existing_payload = json.loads(evidence_path.read_text(encoding="utf-8"))
+            candidate = existing_payload.get("after")
+            if isinstance(candidate, dict):
+                existing_after = candidate
+        except (OSError, json.JSONDecodeError):
+            existing_after = None
+
+    preserve_existing = (
+        not failures
+        and b["analytics_tags"] == 0
+        and b["source_templates_with_analytics"] == 0
+        and report_path.exists()
+        and existing_after == a
+    )
+
+    if preserve_existing:
+        print("[phase7f] Existing historical report and evidence preserved on clean rerun.")
+    else:
+        evidence_path.parent.mkdir(parents=True, exist_ok=True)
+        evidence_path.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(report, encoding="utf-8")
+
     if failures:
         raise SystemExit("Phase 7F validation failed: " + ", ".join(failures))
     print(json.dumps({"passed": len(checks), "total": len(checks)}, indent=2))
