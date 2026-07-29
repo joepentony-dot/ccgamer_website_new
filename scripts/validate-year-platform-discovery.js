@@ -578,6 +578,7 @@ function main() {
         canonicalGameRoutes,
         registeredArchiveRoutes: expectedStaticEntries.length,
         noindexYearRoutes: years.filter((group) => !group.indexable).length,
+        noindexYearRoutes: years.filter((group) => !group.indexable).length,
         preservedForeignRegistryEntries: staticPages.filter((entry) => !isOwnedArchiveEntry(entry)).length,
         sitemapArchiveUrls: expectedUrls.length,
         noindexYearExcluded: 2023
