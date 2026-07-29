@@ -11,6 +11,7 @@ on:
       - "scripts/validate-games-source.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
+      - "scripts/generate-composer-pages.js"
       - "scripts/generate-year-platform-pages.js"
       - "scripts/validate-year-platform-discovery.js"
       - "admin/games-editor.html"
@@ -83,6 +84,7 @@ jobs:
           node --check scripts/validate-games-source.js
           node --check scripts/rebuild-games.js
           node --check scripts/build-games.js
+          node --check scripts/generate-composer-pages.js
           node --check scripts/generate-year-platform-pages.js
           node --check scripts/validate-year-platform-discovery.js
           node --check admin/js/games-editor.js
@@ -158,8 +160,10 @@ jobs:
               "scripts/validate-games-source.js",
               "scripts/rebuild-games.js",
               "scripts/build-games.js",
+              "scripts/generate-composer-pages.js",
               "scripts/generate-year-platform-pages.js",
               "scripts/validate-year-platform-discovery.js",
+              "docs/seo-baseline/phase-3c-composer-archives.md",
               "docs/seo-baseline/phase-4b-year-platform-archives.md",
               "docs/seo-baseline/phase-4c-year-platform-discovery.md",
               "docs/seo-baseline/phase-4d-year-platform-validation.md",
@@ -196,8 +200,10 @@ jobs:
             scripts/validate-games-source.js \
             scripts/rebuild-games.js \
             scripts/build-games.js \
+            scripts/generate-composer-pages.js \
             scripts/generate-year-platform-pages.js \
             scripts/validate-year-platform-discovery.js \
+            docs/seo-baseline/phase-3c-composer-archives.md \
             docs/seo-baseline/phase-4b-year-platform-archives.md \
             docs/seo-baseline/phase-4c-year-platform-discovery.md \
             docs/seo-baseline/phase-4d-year-platform-validation.md \
