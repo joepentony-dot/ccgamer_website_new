@@ -120,14 +120,259 @@
   ],
   "missing_year_slugs": [],
   "unsupported_platform_records": [],
-  "existing_year_pages": [],
-  "existing_platform_pages": [],
+  "existing_year_pages": [
+    {
+      "file": "games/years/1982/index.html",
+      "route": "/games/years/1982/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1982/",
+      "canonical_path": "/games/years/1982/",
+      "title": "1982 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1982 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1982
+    },
+    {
+      "file": "games/years/1983/index.html",
+      "route": "/games/years/1983/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1983/",
+      "canonical_path": "/games/years/1983/",
+      "title": "1983 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1983 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1983
+    },
+    {
+      "file": "games/years/1984/index.html",
+      "route": "/games/years/1984/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1984/",
+      "canonical_path": "/games/years/1984/",
+      "title": "1984 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1984 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1984
+    },
+    {
+      "file": "games/years/1985/index.html",
+      "route": "/games/years/1985/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1985/",
+      "canonical_path": "/games/years/1985/",
+      "title": "1985 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1985 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1985
+    },
+    {
+      "file": "games/years/1986/index.html",
+      "route": "/games/years/1986/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1986/",
+      "canonical_path": "/games/years/1986/",
+      "title": "1986 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1986 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1986
+    },
+    {
+      "file": "games/years/1987/index.html",
+      "route": "/games/years/1987/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1987/",
+      "canonical_path": "/games/years/1987/",
+      "title": "1987 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1987 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1987
+    },
+    {
+      "file": "games/years/1988/index.html",
+      "route": "/games/years/1988/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1988/",
+      "canonical_path": "/games/years/1988/",
+      "title": "1988 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1988 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1988
+    },
+    {
+      "file": "games/years/1989/index.html",
+      "route": "/games/years/1989/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1989/",
+      "canonical_path": "/games/years/1989/",
+      "title": "1989 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1989 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1989
+    },
+    {
+      "file": "games/years/1990/index.html",
+      "route": "/games/years/1990/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1990/",
+      "canonical_path": "/games/years/1990/",
+      "title": "1990 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1990 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1990
+    },
+    {
+      "file": "games/years/1991/index.html",
+      "route": "/games/years/1991/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1991/",
+      "canonical_path": "/games/years/1991/",
+      "title": "1991 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1991 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1991
+    },
+    {
+      "file": "games/years/1992/index.html",
+      "route": "/games/years/1992/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1992/",
+      "canonical_path": "/games/years/1992/",
+      "title": "1992 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1992 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1992
+    },
+    {
+      "file": "games/years/1993/index.html",
+      "route": "/games/years/1993/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1993/",
+      "canonical_path": "/games/years/1993/",
+      "title": "1993 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1993 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1993
+    },
+    {
+      "file": "games/years/1994/index.html",
+      "route": "/games/years/1994/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1994/",
+      "canonical_path": "/games/years/1994/",
+      "title": "1994 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1994 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1994
+    },
+    {
+      "file": "games/years/1995/index.html",
+      "route": "/games/years/1995/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/1995/",
+      "canonical_path": "/games/years/1995/",
+      "title": "1995 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "1995 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 1995
+    },
+    {
+      "file": "games/years/2023/index.html",
+      "route": "/games/years/2023/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/years/2023/",
+      "canonical_path": "/games/years/2023/",
+      "title": "2023 C64 & Amiga Games | Cheeky Commodore Gamer",
+      "h1": "2023 Games",
+      "robots": "noindex,follow",
+      "indexable": false,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "year": 2023
+    }
+  ],
+  "existing_platform_pages": [
+    {
+      "file": "games/platforms/amiga/index.html",
+      "route": "/games/platforms/amiga/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/platforms/amiga/",
+      "canonical_path": "/games/platforms/amiga/",
+      "title": "Amiga Games Archive | Cheeky Commodore Gamer",
+      "h1": "Amiga Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "platform": "Amiga"
+    },
+    {
+      "file": "games/platforms/c64/index.html",
+      "route": "/games/platforms/c64/",
+      "canonical": "https://www.cheekycommodoregamer.co.uk/games/platforms/c64/",
+      "canonical_path": "/games/platforms/c64/",
+      "title": "Commodore 64 Games Archive | Cheeky Commodore Gamer",
+      "h1": "Commodore 64 Games",
+      "robots": "index,follow",
+      "indexable": true,
+      "in_sitemap": false,
+      "in_static_registry": false,
+      "platform": "C64"
+    }
+  ],
   "links": {
-    "static_year_links": {},
-    "static_platform_links": {},
+    "static_year_links": {
+      "1982": 1,
+      "1983": 1,
+      "1984": 1,
+      "1985": 1,
+      "1986": 1,
+      "1987": 1,
+      "1988": 1,
+      "1989": 1,
+      "1990": 1,
+      "1991": 1,
+      "1992": 1,
+      "1993": 1,
+      "1994": 1,
+      "1995": 1,
+      "2023": 1
+    },
+    "static_platform_links": {
+      "C64": 1,
+      "Amiga": 1
+    },
     "query_year_links": {},
     "query_platform_links": {},
-    "top_static_link_sources": {}
+    "top_static_link_sources": {
+      "games/years/index.html": 15,
+      "games/platforms/index.html": 2
+    }
   },
   "filter_capabilities": {
     "files_checked": [
@@ -255,27 +500,8 @@
     "platform_filter_detected": false
   },
   "recommendations": {
-    "years_without_static_route": [
-      1982,
-      1983,
-      1984,
-      1985,
-      1986,
-      1987,
-      1988,
-      1989,
-      1990,
-      1991,
-      1992,
-      1993,
-      1994,
-      1995,
-      2023
-    ],
-    "platforms_without_static_route": [
-      "C64",
-      "Amiga"
-    ],
+    "years_without_static_route": [],
+    "platforms_without_static_route": [],
     "suggested_year_route_count": 15,
     "suggested_platform_route_count": 2
   }

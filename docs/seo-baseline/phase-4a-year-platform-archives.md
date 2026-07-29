@@ -11,8 +11,8 @@
 | C64 records | **552** |
 | Amiga records | **99** |
 | Other or missing platform records | **0** |
-| Existing static year archive pages | **0** |
-| Existing static platform archive pages | **0** |
+| Existing static year archive pages | **15** |
+| Existing static platform archive pages | **2** |
 
 ## Release-year coverage
 
@@ -34,14 +34,14 @@
 | 1995 | 4 | 0 | 4 |
 | 2023 | 1 | 1 | 0 |
 
-Years represented in the game data without a detected static year archive: **1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 2023**.
+Years represented in the game data without a detected static year archive: **None**.
 
 ## Existing route findings
 
-- Static year archive pages detected: **0**
-- Static platform archive pages detected: **0**
-- Static links to year archives: **0**
-- Static links to platform archives: **0**
+- Static year archive pages detected: **15**
+- Static platform archive pages detected: **2**
+- Static links to year archives: **15**
+- Static links to platform archives: **2**
 - Query-string year links: **0**
 - Query-string platform links: **0**
 - Year filter control detected on the current browse surface: **Yes**
