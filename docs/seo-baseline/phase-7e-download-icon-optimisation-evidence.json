@@ -1,0 +1,80 @@
+{
+  "phase": "7E",
+  "correction": "download-icon-optimisation",
+  "target": "resources/images/icons/download.PNG",
+  "display_css_pixels": 17.6,
+  "before": {
+    "bytes": 5849957,
+    "megabytes": 5.578953742980957,
+    "width": 4000,
+    "height": 4000,
+    "mode": "RGBA",
+    "has_transparency": true,
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "b4e37e1afc9d9363fb4c2a79ddd53573f64be933e31369c71ec66f04dcd78724"
+  },
+  "after": {
+    "bytes": 54151,
+    "kilobytes": 52.8818359375,
+    "width": 256,
+    "height": 256,
+    "mode": "RGBA",
+    "has_transparency": true,
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "sha256": "fd7a408f9dd28914f471561eb05ee89f9f56bd5e968c5bf90fc5e9699db5ca67"
+  },
+  "reduction": {
+    "bytes_saved": 5795806,
+    "percent": 99.07433507630911
+  },
+  "display_quality": {
+    "18": {
+      "mean_absolute_error_rgba": [
+        1.814815,
+        0.225309,
+        0.660494,
+        0.083333
+      ],
+      "max_absolute_error_rgba": [
+        255,
+        8,
+        128,
+        1
+      ]
+    },
+    "36": {
+      "mean_absolute_error_rgba": [
+        0.425926,
+        0.981481,
+        0.809414,
+        0.054784
+      ],
+      "max_absolute_error_rgba": [
+        85,
+        255,
+        255,
+        2
+      ]
+    },
+    "64": {
+      "mean_absolute_error_rgba": [
+        0.749512,
+        0.939697,
+        0.911133,
+        0.080322
+      ],
+      "max_absolute_error_rgba": [
+        128,
+        128,
+        255,
+        3
+      ]
+    }
+  }
+}
