@@ -1,6 +1,7 @@
 /* ============================================================
    CCG PACMAN TOUCH CONTROLS
    Mobile-only controls for the local PACMAN Easter egg iframe.
+   The parent overlay retains focus on its visible Exit control.
 ============================================================ */
 
 .ccg-pacman-controls {
