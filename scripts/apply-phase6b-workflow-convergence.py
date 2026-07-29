@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 VALIDATOR = ROOT / "scripts" / "validate-year-platform-discovery.js"
 INTEGRATOR = ROOT / "scripts" / "integrate-year-platform-discovery.js"
+COMPOSER_GENERATOR = ROOT / "scripts" / "generate-composer-pages.js"
 TRANSACTION = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
 LEGACY_WORKFLOWS = [
     ".github/workflows/publisher-archives.yml",
@@ -157,6 +158,24 @@ def patch_integrator_copy() -> bool:
     return write_if_changed(INTEGRATOR, source)
 
 
+def patch_composer_cleanup() -> bool:
+    source = COMPOSER_GENERATOR.read_text(encoding="utf-8")
+    old = """function removeStaleGeneratedPages(previousMetadata, currentRoutes) {
+    const currentGenerated = new Set(currentRoutes.filter((route) => route.generated).map((route) => route.slug));
+    let removed = 0;
+    (Array.isArray(previousMetadata) ? previousMetadata : []).forEach((entry) => {
+        if (!entry || !entry.generated || !entry.slug || currentGenerated.has(entry.slug)) return;
+"""
+    new = """function removeStaleGeneratedPages(previousMetadata, currentRoutes) {
+    const currentRouteSlugs = new Set(currentRoutes.map((route) => route.slug).filter(Boolean));
+    let removed = 0;
+    (Array.isArray(previousMetadata) ? previousMetadata : []).forEach((entry) => {
+        if (!entry || !entry.generated || !entry.slug || currentRouteSlugs.has(entry.slug)) return;
+"""
+    source = replace_once(source, old, new, "composer stale-route protection")
+    return write_if_changed(COMPOSER_GENERATOR, source)
+
+
 def patch_transaction_diagnostics() -> bool:
     source = TRANSACTION.read_text(encoding="utf-8")
     source = source.replace('"output_tail": output[-12000:]', '"output_tail": output[-60000:]')
@@ -205,6 +224,8 @@ def main() -> None:
         changed.append(VALIDATOR.relative_to(ROOT).as_posix())
     if patch_integrator_copy():
         changed.append(INTEGRATOR.relative_to(ROOT).as_posix())
+    if patch_composer_cleanup():
+        changed.append(COMPOSER_GENERATOR.relative_to(ROOT).as_posix())
     if patch_transaction_diagnostics():
         changed.append(TRANSACTION.relative_to(ROOT).as_posix())
     for relative in LEGACY_WORKFLOWS:
