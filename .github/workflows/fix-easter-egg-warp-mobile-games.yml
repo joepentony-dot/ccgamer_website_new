@@ -59,12 +59,14 @@ jobs:
 
           path = Path('js/ccg-global.js')
           text = path.read_text(encoding='utf-8')
-          auto_focus = '''        frame.addEventListener("load", () => {
-              if (!usesMobileEasterEggControls()) {
-                  frame.focus({ preventScroll: true });
-              }
-          }, { once: true });
-'''
+          auto_focus = "\n".join([
+              '        frame.addEventListener("load", () => {',
+              '            if (!usesMobileEasterEggControls()) {',
+              '                frame.focus({ preventScroll: true });',
+              '            }',
+              '        }, { once: true });',
+              '',
+          ])
           count = text.count(auto_focus)
           if count == 1:
               path.write_text(text.replace(auto_focus, '', 1), encoding='utf-8')
