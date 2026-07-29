@@ -1,0 +1,219 @@
+name: Phase 7E Download Icon Optimisation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-7e-download-icon-optimisation.yml"
+      - "scripts/apply-phase7e-download-icon-optimisation.py"
+      - "resources/images/icons/download.PNG"
+      - "docs/seo-baseline/phase-7e-download-icon-optimisation.md"
+      - "docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-7e-download-icon-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  optimise-download-icon:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out Phase 7E correction branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+
+      - name: Validate optimiser source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("scripts/apply-phase7e-download-icon-optimisation.py")
+          compile(path.read_text(encoding="utf-8"), str(path), "exec")
+          print("Phase 7E download icon optimiser compiles.")
+          PY
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            js/load-single-game.js \
+            resources/css/games.css \
+            > "$RUNNER_TEMP/phase7e-protected.sha256"
+
+      - name: Record all other raster image hashes
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path.cwd()
+          runner_temp = Path(os.environ["RUNNER_TEMP"])
+          target = "resources/images/icons/download.PNG"
+          extensions = {".png", ".jpg", ".jpeg", ".webp"}
+          manifest = {}
+          for path in sorted(root.rglob("*")):
+              if not path.is_file() or path.suffix.lower() not in extensions:
+                  continue
+              relative = path.relative_to(root).as_posix()
+              if relative == target or relative.startswith(".git/"):
+                  continue
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              manifest[relative] = digest
+          (runner_temp / "phase7e-other-images-before.json").write_text(
+              json.dumps(manifest, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print(f"Recorded {len(manifest)} non-target raster image hashes.")
+          PY
+
+      - name: Optimise download icon
+        run: |
+          python scripts/apply-phase7e-download-icon-optimisation.py apply \
+            --report docs/seo-baseline/phase-7e-download-icon-optimisation.md \
+            --evidence docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json \
+            --artifact-dir "$RUNNER_TEMP/phase7e-download-icon-artifacts"
+
+      - name: Validate corrected image and evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from PIL import Image
+
+          image_path = Path("resources/images/icons/download.PNG")
+          evidence_path = Path("docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json")
+          evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+          with Image.open(image_path) as image:
+              image.load()
+              if image.size != (256, 256):
+                  raise SystemExit(f"Unexpected corrected dimensions: {image.size}")
+              if image.mode not in {"RGBA", "LA", "P"}:
+                  raise SystemExit(f"Unexpected corrected PNG mode: {image.mode}")
+          if evidence.get("phase") != "7E":
+              raise SystemExit("Invalid Phase 7E evidence identity")
+          if float(evidence["reduction"]["percent"]) < 90:
+              raise SystemExit("Download icon reduction did not reach 90%")
+          if int(evidence["after"]["bytes"]) > 350000:
+              raise SystemExit("Corrected download icon remains too large")
+          print(json.dumps(evidence, indent=2))
+          PY
+          git diff --check
+
+      - name: Confirm all other raster images are unchanged
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path.cwd()
+          runner_temp = Path(os.environ["RUNNER_TEMP"])
+          target = "resources/images/icons/download.PNG"
+          extensions = {".png", ".jpg", ".jpeg", ".webp"}
+          manifest = {}
+          for path in sorted(root.rglob("*")):
+              if not path.is_file() or path.suffix.lower() not in extensions:
+                  continue
+              relative = path.relative_to(root).as_posix()
+              if relative == target or relative.startswith(".git/"):
+                  continue
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              manifest[relative] = digest
+          after_path = runner_temp / "phase7e-other-images-after.json"
+          after_path.write_text(
+              json.dumps(manifest, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          before = (runner_temp / "phase7e-other-images-before.json").read_text(encoding="utf-8")
+          after = after_path.read_text(encoding="utf-8")
+          if before != after:
+              raise SystemExit("A non-target raster image changed during Phase 7E correction")
+          print(f"Validated {len(manifest)} unchanged non-target raster images.")
+          PY
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase7e-protected.sha256"
+
+      - name: Confirm exact correction scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-7e-download-icon-optimisation.yml",
+              "scripts/apply-phase7e-download-icon-optimisation.py",
+              "resources/images/icons/download.PNG",
+              "docs/seo-baseline/phase-7e-download-icon-optimisation.md",
+              "docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 7E correction paths: {unexpected}")
+          if "resources/images/icons/download.PNG" not in changed:
+              raise SystemExit("The target download icon was not changed")
+          print(f"Validated exact Phase 7E correction scope ({len(changed)} files).")
+          PY
+
+      - name: Upload visual comparison and evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-7e-download-icon-optimisation
+          path: |
+            ${{ runner.temp }}/phase7e-download-icon-artifacts/
+            docs/seo-baseline/phase-7e-download-icon-optimisation.md
+            docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit bounded correction to PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            resources/images/icons/download.PNG \
+            docs/seo-baseline/phase-7e-download-icon-optimisation.md \
+            docs/seo-baseline/phase-7e-download-icon-optimisation-evidence.json
+          if git diff --cached --quiet; then
+            echo "No generated correction changes to commit."
+            exit 0
+          fi
+          git commit -m "Optimise Phase 7E download icon [skip ci]"
+          git push origin "HEAD:${{ github.head_ref }}"
+
+      - name: Publish correction summary
+        run: cat docs/seo-baseline/phase-7e-download-icon-optimisation.md >> "$GITHUB_STEP_SUMMARY"
