@@ -1,0 +1,116 @@
+name: Phase 4B Year and Platform Archives
+
+on:
+  push:
+    branches:
+      - feature/phase-4b-year-platform-archives
+    paths:
+      - ".github/workflows/year-platform-archives.yml"
+      - "scripts/generate-year-platform-pages.js"
+      - "games/games.json"
+  pull_request:
+    paths:
+      - ".github/workflows/year-platform-archives.yml"
+      - "scripts/generate-year-platform-pages.js"
+      - "games/games.json"
+      - "games/archive-navigation.json"
+      - "games/years/**"
+      - "games/platforms/**"
+      - "resources/css/year-platform-archives.css"
+      - "js/year-platform-archives.js"
+      - "docs/seo-baseline/phase-4b-year-platform-archives.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-4b-year-platform-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate year and platform archives
+        run: node scripts/generate-year-platform-pages.js
+
+      - name: Verify deterministic regeneration
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/phase4b-first.diff"
+          node scripts/generate-year-platform-pages.js
+          git diff --binary > "$RUNNER_TEMP/phase4b-second.diff"
+          cmp "$RUNNER_TEMP/phase4b-first.diff" "$RUNNER_TEMP/phase4b-second.diff"
+          git diff --check
+
+      - name: Validate generated route inventory
+        shell: bash
+        run: |
+          test -f games/years/index.html
+          test -f games/platforms/index.html
+          test -f games/platforms/c64/index.html
+          test -f games/platforms/amiga/index.html
+          test "$(find games/years -mindepth 2 -maxdepth 2 -name index.html | wc -l | tr -d ' ')" = "15"
+          grep -Fq '<meta name="robots" content="noindex,follow">' games/years/2023/index.html
+          grep -Fq '<meta name="robots" content="index,follow">' games/years/1982/index.html
+          grep -Fq '"gameCount": 651' games/archive-navigation.json
+          grep -Fq '"count": 552' games/archive-navigation.json
+          grep -Fq '"count": 99' games/archive-navigation.json
+          test "$(grep -Rho 'href="/games/[^"?]*/"' games/years/[0-9]*/index.html | wc -l | tr -d ' ')" -ge "651"
+          test "$(grep -Rho 'href="/games/[^"?]*/"' games/platforms/*/index.html | wc -l | tr -d ' ')" -ge "651"
+
+      - name: Confirm protected files remain unchanged
+        shell: bash
+        run: |
+          git diff --exit-code origin/main -- \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json
+
+      - name: Require committed generated output on pull requests
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          git diff --exit-code -- \
+            games/archive-navigation.json \
+            games/years \
+            games/platforms \
+            resources/css/year-platform-archives.css \
+            js/year-platform-archives.js \
+            docs/seo-baseline/phase-4b-year-platform-archives.md
+
+      - name: Commit generated output to the feature branch
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          git add \
+            games/archive-navigation.json \
+            games/years \
+            games/platforms \
+            resources/css/year-platform-archives.css \
+            js/year-platform-archives.js \
+            docs/seo-baseline/phase-4b-year-platform-archives.md
+
+          if git diff --cached --quiet; then
+            echo "Generated output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 4B year and platform archives"
+          git push
