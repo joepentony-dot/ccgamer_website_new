@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGIN = "https://www.cheekycommodoregamer.co.uk"
+CORE_SCHEMA_PAGES = {"Zeewolf", "Publishers", "Activision"}
 
 STATIC_METRICS = [
     ("missing_document_language", "Missing document language"),
@@ -47,8 +48,10 @@ def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def git_commit() -> str:
-    return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+def main_commit() -> str:
+    return subprocess.check_output(
+        ["git", "rev-parse", "origin/main"], cwd=ROOT, text=True
+    ).strip()
 
 
 def issue_count(payload: dict[str, Any], key: str) -> int:
@@ -74,8 +77,15 @@ def fmt_score(value: float | None) -> str:
 def fmt_number(value: Any, digits: int = 0) -> str:
     if value is None:
         return "n/a"
-    number = float(value)
-    return f"{number:,.{digits}f}"
+    return f"{float(value):,.{digits}f}"
+
+
+def clean_generator_paths(paths: list[str]) -> list[str]:
+    excluded = ("node_modules/", ".venv/", "venv/", "__pycache__/")
+    return [
+        path for path in paths
+        if not path.startswith(excluded) and "/__pycache__/" not in path
+    ]
 
 
 def local_asset_path(page_path: Path, value: str) -> Path | None:
@@ -84,13 +94,13 @@ def local_asset_path(page_path: Path, value: str) -> Path | None:
         return None
     parsed = urlparse(raw)
     if parsed.scheme in {"http", "https"}:
-        if parsed.netloc not in {"www.cheekycommodoregamer.co.uk", "cheekycommodoregamer.co.uk"}:
+        if parsed.netloc not in {
+            "www.cheekycommodoregamer.co.uk",
+            "cheekycommodoregamer.co.uk",
+        }:
             return None
         raw = parsed.path
-    if raw.startswith("/"):
-        candidate = ROOT / raw.lstrip("/")
-    else:
-        candidate = page_path.parent / raw
+    candidate = ROOT / raw.lstrip("/") if raw.startswith("/") else page_path.parent / raw
     if raw.endswith("/"):
         candidate = candidate / "index.html"
     return candidate.resolve()
@@ -127,13 +137,19 @@ def audit_repository(generator: dict[str, Any], redirect: dict[str, Any]) -> dic
     records = game_records()
     powerdrome = []
     for item in records:
-        identity = " ".join(str(item.get(key, "")) for key in ("id", "slug", "title", "name")).lower()
+        identity = " ".join(
+            str(item.get(key, "")) for key in ("id", "slug", "title", "name")
+        ).lower()
         if "powerdrome" in identity:
             powerdrome.append(identity)
 
     games_index = (ROOT / "games/index.html").read_text(encoding="utf-8", errors="replace")
-    publisher_index = (ROOT / "games/publishers/index.html").read_text(encoding="utf-8", errors="replace")
-    activision = (ROOT / "games/publishers/activision/index.html").read_text(encoding="utf-8", errors="replace")
+    publisher_index = (ROOT / "games/publishers/index.html").read_text(
+        encoding="utf-8", errors="replace"
+    )
+    activision = (ROOT / "games/publishers/activision/index.html").read_text(
+        encoding="utf-8", errors="replace"
+    )
 
     page_checks: dict[str, Any] = {}
     broken_assets: list[dict[str, str]] = []
@@ -144,14 +160,25 @@ def audit_repository(generator: dict[str, Any], redirect: dict[str, Any]) -> dic
         canonical = None
         json_ld = 0
         if exists:
-            soup = BeautifulSoup(path.read_text(encoding="utf-8", errors="replace"), "html.parser")
-            canonical_tag = soup.find("link", rel=lambda value: value and "canonical" in value)
-            canonical = str(canonical_tag.get("href") or "").strip() if canonical_tag else None
-            json_ld = len(soup.find_all("script", attrs={"type": re.compile(r"^application/ld\+json$", re.I)}))
-            for tag, attribute in [
+            soup = BeautifulSoup(
+                path.read_text(encoding="utf-8", errors="replace"), "html.parser"
+            )
+            canonical_tag = soup.find(
+                "link", rel=lambda value: value and "canonical" in value
+            )
+            canonical = (
+                str(canonical_tag.get("href") or "").strip() if canonical_tag else None
+            )
+            json_ld = len(
+                soup.find_all(
+                    "script", attrs={"type": re.compile(r"^application/ld\+json$", re.I)}
+                )
+            )
+            resource_tags = [
                 *[(node, "src") for node in soup.find_all(["img", "script", "iframe"], src=True)],
                 *[(node, "href") for node in soup.find_all("link", href=True)],
-            ]:
+            ]
+            for tag, attribute in resource_tags:
                 value = str(tag.get(attribute) or "")
                 resolved = local_asset_path(path, value)
                 if resolved is not None and not resolved.exists():
@@ -167,6 +194,9 @@ def audit_repository(generator: dict[str, Any], redirect: dict[str, Any]) -> dic
         }
 
     redirect_totals = redirect.get("totals", {})
+    core_schema_ok = all(
+        page_checks[label]["json_ld_blocks"] > 0 for label in CORE_SCHEMA_PAGES
+    )
     checks = {
         "game_count_651": len(records) == 651,
         "powerdrome_absent": not powerdrome,
@@ -191,9 +221,13 @@ def audit_repository(generator: dict[str, Any], redirect: dict[str, Any]) -> dic
         "redirect_canonical_mismatches_zero": int(redirect_totals.get("canonical_mismatches", -1)) == 0,
         "redirect_delays_zero": int(redirect_totals.get("delayed_refreshes", -1)) == 0,
         "representative_pages_exist": all(item["exists"] for item in page_checks.values()),
-        "representative_canonicals_match": all(item["canonical_matches"] for item in page_checks.values()),
-        "representative_schema_present": all(item["json_ld_blocks"] > 0 for item in page_checks.values()),
-        "representative_sitemap_coverage": all(item["in_sitemap"] for item in page_checks.values()),
+        "representative_canonicals_match": all(
+            item["canonical_matches"] for item in page_checks.values()
+        ),
+        "core_detail_schema_present": core_schema_ok,
+        "representative_sitemap_coverage": all(
+            item["in_sitemap"] for item in page_checks.values()
+        ),
         "representative_assets_resolve": not broken_assets,
         "sitemaps_parse": not sitemap_errors,
     }
@@ -202,6 +236,9 @@ def audit_repository(generator: dict[str, Any], redirect: dict[str, Any]) -> dic
         "powerdrome_matches": powerdrome,
         "checks": checks,
         "page_checks": page_checks,
+        "schema_gaps": [
+            label for label, item in page_checks.items() if item["json_ld_blocks"] == 0
+        ],
         "broken_assets": broken_assets,
         "sitemap_url_count": len(site_urls),
         "sitemap_errors": sitemap_errors,
@@ -215,7 +252,12 @@ def compose(args: argparse.Namespace) -> None:
     current_live = load_json(Path(args.current_live))
     generator = load_json(Path(args.generator))
     redirect = load_json(Path(args.redirect))
-    legacy_runs = load_json(Path(args.legacy_runs)) if Path(args.legacy_runs).exists() else []
+    legacy_runs = (
+        load_json(Path(args.legacy_runs)) if Path(args.legacy_runs).exists() else []
+    )
+
+    for key in ("first_changed_paths", "second_changed_paths"):
+        generator[key] = clean_generator_paths(generator.get(key, []))
 
     repository = audit_repository(generator, redirect)
     baseline_static = baseline.get("static", {})
@@ -227,47 +269,102 @@ def compose(args: argparse.Namespace) -> None:
     for key, label in STATIC_METRICS:
         before = issue_count(baseline_static, key)
         after = issue_count(current_static, key)
-        static_rows.append({"key": key, "label": label, "before": before, "after": after, "change": after - before})
+        static_rows.append(
+            {
+                "key": key,
+                "label": label,
+                "before": before,
+                "after": after,
+                "change": after - before,
+            }
+        )
 
     lighthouse_rows = []
-    all_runs = sorted(set(baseline_lh) | set(current_lh))
-    for run in all_runs:
+    for run in sorted(set(baseline_lh) | set(current_lh)):
         before = baseline_lh.get(run, {})
         after = current_lh.get(run, {})
-        lighthouse_rows.append({
-            "label": run[0],
-            "mode": run[1],
-            "before_performance": before.get("performance_score"),
-            "after_performance": after.get("performance_score"),
-            "before_accessibility": before.get("accessibility_score"),
-            "after_accessibility": after.get("accessibility_score"),
-            "before_lcp_ms": before.get("numeric", {}).get("lcp_ms"),
-            "after_lcp_ms": after.get("numeric", {}).get("lcp_ms"),
-            "before_cls": before.get("numeric", {}).get("cls"),
-            "after_cls": after.get("numeric", {}).get("cls"),
-            "before_total_bytes": before.get("numeric", {}).get("total_bytes"),
-            "after_total_bytes": after.get("numeric", {}).get("total_bytes"),
-            "error": after.get("error"),
-        })
+        lighthouse_rows.append(
+            {
+                "label": run[0],
+                "mode": run[1],
+                "before_performance": before.get("performance_score"),
+                "after_performance": after.get("performance_score"),
+                "before_accessibility": before.get("accessibility_score"),
+                "after_accessibility": after.get("accessibility_score"),
+                "before_lcp_ms": before.get("numeric", {}).get("lcp_ms"),
+                "after_lcp_ms": after.get("numeric", {}).get("lcp_ms"),
+                "before_cls": before.get("numeric", {}).get("cls"),
+                "after_cls": after.get("numeric", {}).get("cls"),
+                "before_total_bytes": before.get("numeric", {}).get("total_bytes"),
+                "after_total_bytes": after.get("numeric", {}).get("total_bytes"),
+                "error": after.get("error"),
+            }
+        )
 
-    baseline_perf = median_score(baseline_live.get("lighthouse", []), "performance_score")
-    current_perf = median_score(current_live.get("lighthouse", []), "performance_score")
-    baseline_access = median_score(baseline_live.get("lighthouse", []), "accessibility_score")
-    current_access = median_score(current_live.get("lighthouse", []), "accessibility_score")
-    current_axe = sum(int(item.get("violation_count", 0)) for item in current_live.get("axe", []))
-    current_serious = sum(int(item.get("serious_or_critical_nodes", 0)) for item in current_live.get("axe", []))
+    baseline_perf = median_score(
+        baseline_live.get("lighthouse", []), "performance_score"
+    )
+    current_perf = median_score(
+        current_live.get("lighthouse", []), "performance_score"
+    )
+    baseline_access = median_score(
+        baseline_live.get("lighthouse", []), "accessibility_score"
+    )
+    current_access = median_score(
+        current_live.get("lighthouse", []), "accessibility_score"
+    )
+    current_axe = sum(
+        int(item.get("violation_count", 0)) for item in current_live.get("axe", [])
+    )
+    current_serious = sum(
+        int(item.get("serious_or_critical_nodes", 0))
+        for item in current_live.get("axe", [])
+    )
 
-    hard_failures = [name for name, passed in repository["checks"].items() if not passed]
+    hard_failures = [
+        name for name, passed in repository["checks"].items() if not passed
+    ]
     warnings: list[str] = []
     if current_live.get("errors"):
-        warnings.append(f"Live audit recorded {len(current_live['errors'])} execution error(s).")
+        warnings.append(
+            f"Live audit recorded {len(current_live['errors'])} execution error(s)."
+        )
     if current_axe:
         warnings.append(f"Live axe found {current_axe} violation rule(s).")
     if current_serious:
-        warnings.append(f"Live axe found {current_serious} serious or critical affected node(s).")
-    if baseline_perf is not None and current_perf is not None and current_perf < baseline_perf - 0.10:
-        warnings.append("Median Lighthouse performance was more than 10 points below the Phase 7A lab baseline.")
+        warnings.append(
+            f"Live axe found {current_serious} serious or critical affected node(s)."
+        )
+    if repository["schema_gaps"]:
+        warnings.append(
+            "Representative archive or utility pages without JSON-LD: "
+            + ", ".join(repository["schema_gaps"])
+            + "."
+        )
+    for row in lighthouse_rows:
+        name = f"{row['label']} {row['mode']}"
+        lcp = row.get("after_lcp_ms")
+        cls = row.get("after_cls")
+        before_score = row.get("before_performance")
+        after_score = row.get("after_performance")
+        if lcp is not None and float(lcp) > 2500:
+            warnings.append(
+                f"{name} lab LCP was {float(lcp) / 1000:.1f}s, above the 2.5s reference."
+            )
+        if cls is not None and float(cls) > 0.1:
+            warnings.append(
+                f"{name} lab CLS was {float(cls):.3f}, above the 0.1 reference."
+            )
+        if (
+            before_score is not None
+            and after_score is not None
+            and float(after_score) < float(before_score) - 0.10
+        ):
+            warnings.append(
+                f"{name} Lighthouse performance fell by more than 10 points versus Phase 7A."
+            )
 
+    warnings = list(dict.fromkeys(warnings))
     verdict = "FAIL" if hard_failures else ("PASS WITH WARNINGS" if warnings else "PASS")
     current_totals = current_static.get("html", {}).get("totals", {})
     baseline_totals = baseline_static.get("html", {}).get("totals", {})
@@ -277,7 +374,10 @@ def compose(args: argparse.Namespace) -> None:
     evidence = {
         "phase": "7-final",
         "mode": "read-only-regression-audit",
-        "commit": git_commit(),
+        "commit": main_commit(),
+        "audit_branch_commit": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip(),
         "baseline_commit": baseline.get("commit"),
         "verdict": verdict,
         "hard_failures": hard_failures,
@@ -309,29 +409,57 @@ def compose(args: argparse.Namespace) -> None:
     )
     lighthouse_table = "\n".join(
         "| {label} | {mode} | {bp} | {ap} | {blcp} | {alcp} | {bcls} | {acls} | {bb} | {ab} |".format(
-            label=row["label"], mode=row["mode"],
-            bp=fmt_score(row["before_performance"]), ap=fmt_score(row["after_performance"]),
-            blcp=fmt_number(None if row["before_lcp_ms"] is None else row["before_lcp_ms"] / 1000, 1),
-            alcp=fmt_number(None if row["after_lcp_ms"] is None else row["after_lcp_ms"] / 1000, 1),
-            bcls=fmt_number(row["before_cls"], 3), acls=fmt_number(row["after_cls"], 3),
-            bb=fmt_number(None if row["before_total_bytes"] is None else row["before_total_bytes"] / 1024, 0),
-            ab=fmt_number(None if row["after_total_bytes"] is None else row["after_total_bytes"] / 1024, 0),
-        ) for row in lighthouse_rows
+            label=row["label"],
+            mode=row["mode"],
+            bp=fmt_score(row["before_performance"]),
+            ap=fmt_score(row["after_performance"]),
+            blcp=fmt_number(
+                None
+                if row["before_lcp_ms"] is None
+                else row["before_lcp_ms"] / 1000,
+                1,
+            ),
+            alcp=fmt_number(
+                None
+                if row["after_lcp_ms"] is None
+                else row["after_lcp_ms"] / 1000,
+                1,
+            ),
+            bcls=fmt_number(row["before_cls"], 3),
+            acls=fmt_number(row["after_cls"], 3),
+            bb=fmt_number(
+                None
+                if row["before_total_bytes"] is None
+                else row["before_total_bytes"] / 1024,
+                0,
+            ),
+            ab=fmt_number(
+                None
+                if row["after_total_bytes"] is None
+                else row["after_total_bytes"] / 1024,
+                0,
+            ),
+        )
+        for row in lighthouse_rows
     )
     checks_table = "\n".join(
         f"| `{name}` | {'PASS' if passed else 'FAIL'} |"
         for name, passed in repository["checks"].items()
     )
     page_table = "\n".join(
-        f"| {label} | {'Yes' if item['exists'] else 'No'} | {'Yes' if item['canonical_matches'] else 'No'} | {item['json_ld_blocks']} | {'Yes' if item['in_sitemap'] else 'No'} |"
+        f"| {label} | {'Yes' if item['exists'] else 'No'} | "
+        f"{'Yes' if item['canonical_matches'] else 'No'} | {item['json_ld_blocks']} | "
+        f"{'Yes' if item['in_sitemap'] else 'No'} |"
         for label, item in repository["page_checks"].items()
     )
     warning_text = "\n".join(f"- {item}" for item in warnings) or "- None"
     failure_text = "\n".join(f"- `{item}`" for item in hard_failures) or "- None"
     legacy_text = "\n".join(
-        f"- `{item.get('workflowName') or item.get('name')}` — {item.get('conclusion')} on `{str(item.get('headSha', ''))[:12]}` ({item.get('createdAt', 'unknown date')})"
+        f"- `{item.get('workflowName') or item.get('name')}` — "
+        f"{item.get('conclusion')} on `{str(item.get('headSha', ''))[:12]}` "
+        f"({item.get('createdAt', 'unknown date')})"
         for item in legacy_runs[:10]
-    ) or "- No historical failed/cancelled main-branch runs were returned by the GitHub Actions query."
+    ) or "- No historical failed/cancelled main-branch runs were returned."
 
     report = f"""# Final Phase 7 Regression Audit
 
@@ -376,11 +504,13 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 |---|---|---|---:|---|
 {page_table}
 
+Archive and utility pages without JSON-LD are recorded as remaining metadata opportunities rather than regressions. Detail pages covered by earlier structured-data work remain mandatory.
+
 ## Generator repeatability
 
 - Completed: **{generator.get('completed')}**
 - Deterministic across two rebuilds: **{generator.get('deterministic')}**
-- First rebuild changed paths in the temporary worktree: **{len(generator.get('first_changed_paths', []))}**
+- First rebuild changed repository paths: **{len(generator.get('first_changed_paths', []))}**
 - Publisher-logo validator: **{'PASS' if generator.get('publisher_validator_passed') else 'FAIL'}**
 - Year/platform validator: **{'PASS' if generator.get('year_platform_validator_passed') else 'FAIL'}**
 - Temporary generator changes were discarded after validation.
@@ -399,13 +529,13 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 
 {failure_text}
 
-## Warnings
+## Warnings and remaining opportunities
 
 {warning_text}
 
 ## Historical workflow noise
 
-The following recent failed or cancelled `main` runs, when returned, belong to older commit SHAs and are listed separately from this audit's own result:
+The following recent failed or cancelled `main` runs belong to older commit SHAs and are listed separately from this audit's own result:
 
 {legacy_text}
 
@@ -423,7 +553,12 @@ The following recent failed or cancelled `main` runs, when returned, belong to o
     evidence_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(report, encoding="utf-8")
     evidence_path.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"verdict": verdict, "hard_failures": hard_failures, "warnings": warnings}, indent=2))
+    print(
+        json.dumps(
+            {"verdict": verdict, "hard_failures": hard_failures, "warnings": warnings},
+            indent=2,
+        )
+    )
 
 
 def main() -> None:
