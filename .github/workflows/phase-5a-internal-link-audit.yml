@@ -1,5 +1,6 @@
 name: Phase 5A Internal Linking and Orphan Page Audit
 
+# Final settled-head validation trigger; the audit remains read-only.
 # Read-only public-site audit. Only the concise Markdown report may be committed.
 on:
   pull_request:
