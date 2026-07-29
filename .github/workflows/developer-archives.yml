@@ -241,7 +241,7 @@ jobs:
           PY
 
       - name: Commit generated developer and sitemap outputs
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           git add games/developers games/index.html tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml docs/seo-baseline/phase-3b-developer-archives.md
