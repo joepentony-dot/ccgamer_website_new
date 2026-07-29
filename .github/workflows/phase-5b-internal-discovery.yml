@@ -25,6 +25,7 @@ on:
       - "tools/seo/static-pages.json"
       - "tools/seo/generate-sitemap.js"
       - "sitemap-pages.xml"
+      - "docs/seo-baseline/phase-4c-year-platform-discovery.md"
       - "docs/seo-baseline/phase-4d-year-platform-validation.md"
       - "docs/seo-baseline/phase-5b-internal-discovery.md"
   workflow_dispatch:
@@ -189,6 +190,7 @@ jobs:
               "scripts/apply-phase5b-phase4d-compatibility.py",
               "scripts/validate-phase5b-discovery-corrections.py",
               "scripts/validate-year-platform-discovery.js",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
               "docs/seo-baseline/phase-4d-year-platform-validation.md",
               "docs/seo-baseline/phase-5b-internal-discovery.md",
               "games/index.html",
@@ -225,6 +227,7 @@ jobs:
             tools/seo/static-pages.json \
             tools/seo/generate-sitemap.js \
             sitemap-pages.xml \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md \
             docs/seo-baseline/phase-4d-year-platform-validation.md \
             docs/seo-baseline/phase-5b-internal-discovery.md
 
