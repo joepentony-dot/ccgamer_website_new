@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T23:32:53.453Z",
+  "generatedAt": "2026-07-29T23:35:30.543Z",
   "verdict": "PASS",
   "testedCases": 3,
   "failedChecks": [],
@@ -13,9 +13,9 @@
       "hasTouch": true,
       "pointerType": "touch",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBefore": 4286,
-      "scrollAfterBackdropClose": 4286,
-      "scrollAfterButtonClose": 4286,
+      "scrollBefore": 4267,
+      "scrollAfterBackdropClose": 4267,
+      "scrollAfterButtonClose": 4267,
       "checks": {
         "stableAfterResidualEvents": true,
         "accidentalResultAbsent": true,
@@ -37,9 +37,9 @@
       "hasTouch": false,
       "pointerType": "mouse",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBefore": 3290,
-      "scrollAfterBackdropClose": 3290,
-      "scrollAfterButtonClose": 3290,
+      "scrollBefore": 3344,
+      "scrollAfterBackdropClose": 3344,
+      "scrollAfterButtonClose": 3344,
       "checks": {
         "stableAfterResidualEvents": true,
         "accidentalResultAbsent": true,
