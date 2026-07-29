@@ -189,6 +189,7 @@ async function runCase(browser, testCase) {
 
   await page.locator('.ccg-egg-overlay__exit').click();
   await page.locator('.ccg-egg-overlay').waitFor({ state: 'detached', timeout: 5000 });
+  await page.waitForTimeout(800);
 
   await triggerTripleClick(page);
   await page.evaluate(() => {
