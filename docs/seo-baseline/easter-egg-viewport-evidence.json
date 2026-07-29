@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T22:26:56.882Z",
+  "generatedAt": "2026-07-29T23:32:36.304Z",
   "verdict": "PASS",
   "testedCases": 5,
   "failedChecks": [],
@@ -96,12 +96,12 @@
       },
       "resultFrameMetrics": {
         "rect": {
-          "top": 42.203125,
+          "top": 8,
           "left": 8,
           "right": 382,
-          "bottom": 801.796875,
+          "bottom": 836,
           "width": 374,
-          "height": 759.59375
+          "height": 828
         },
         "visible": {
           "top": 0,
@@ -117,10 +117,10 @@
       },
       "exitMetrics": {
         "rect": {
-          "top": 53.203125,
+          "top": 19,
           "left": 19,
           "right": 371,
-          "bottom": 95.203125,
+          "bottom": 61,
           "width": 352,
           "height": 42
         },
@@ -138,8 +138,8 @@
       },
       "resultState": {
         "exitIsFocused": true,
-        "mediaClientHeight": 684,
-        "mediaScrollHeight": 684,
+        "mediaClientHeight": 752,
+        "mediaScrollHeight": 752,
         "bodyOverflow": "hidden auto"
       },
       "directResultMetrics": {
@@ -197,8 +197,8 @@
       "hasTouch": true,
       "page": "home.html",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBeforeOpen": 4494,
-      "scrollAfterClose": 4494,
+      "scrollBeforeOpen": 4552,
+      "scrollAfterClose": 4552,
       "menuMetrics": {
         "rect": {
           "top": 8,
@@ -242,7 +242,7 @@
         "withinVisibleViewport": true
       },
       "menuState": {
-        "scrollY": 4494,
+        "scrollY": 4552,
         "contentScrollTop": 0,
         "contentClientHeight": 622,
         "contentScrollHeight": 1055,
@@ -281,12 +281,12 @@
       },
       "resultFrameMetrics": {
         "rect": {
-          "top": 32,
+          "top": 8,
           "left": 8,
           "right": 352,
-          "bottom": 608,
+          "bottom": 632,
           "width": 344,
-          "height": 576
+          "height": 624
         },
         "visible": {
           "top": 0,
@@ -302,10 +302,10 @@
       },
       "exitMetrics": {
         "rect": {
-          "top": 43,
+          "top": 19,
           "left": 19,
           "right": 341,
-          "bottom": 85,
+          "bottom": 61,
           "width": 322,
           "height": 42
         },
@@ -323,8 +323,8 @@
       },
       "resultState": {
         "exitIsFocused": true,
-        "mediaClientHeight": 500,
-        "mediaScrollHeight": 500,
+        "mediaClientHeight": 548,
+        "mediaScrollHeight": 548,
         "bodyOverflow": "hidden auto"
       },
       "directResultMetrics": {
@@ -467,10 +467,10 @@
       "resultFrameMetrics": {
         "rect": {
           "top": 8,
-          "left": 8,
-          "right": 836,
+          "left": 162,
+          "right": 682,
           "bottom": 382,
-          "width": 828,
+          "width": 520,
           "height": 374
         },
         "visible": {
@@ -488,10 +488,10 @@
       "exitMetrics": {
         "rect": {
           "top": 27,
-          "left": 27,
-          "right": 817,
+          "left": 181,
+          "right": 663,
           "bottom": 69,
-          "width": 790,
+          "width": 482,
           "height": 42
         },
         "visible": {
@@ -592,10 +592,10 @@
       },
       "closeMetrics": {
         "rect": {
-          "top": 97.203125,
+          "top": 97.20703125,
           "left": 372,
           "right": 572.15625,
-          "bottom": 139.203125,
+          "bottom": 139.20703125,
           "width": 200.15625,
           "height": 42
         },
@@ -652,10 +652,10 @@
       "resultFrameMetrics": {
         "rect": {
           "top": 38.40625,
-          "left": 83,
-          "right": 1283,
+          "left": 423,
+          "right": 943,
           "bottom": 729.59375,
-          "width": 1200,
+          "width": 520,
           "height": 691.1875
         },
         "visible": {
@@ -672,11 +672,11 @@
       },
       "exitMetrics": {
         "rect": {
-          "top": 56.60376739501953,
-          "left": 102,
-          "right": 1264,
-          "bottom": 98.60376739501953,
-          "width": 1162,
+          "top": 56.44568634033203,
+          "left": 442,
+          "right": 924,
+          "bottom": 98.44568634033203,
+          "width": 482,
           "height": 42
         },
         "visible": {
@@ -836,12 +836,12 @@
       },
       "resultFrameMetrics": {
         "rect": {
-          "top": 42.203125,
+          "top": 8,
           "left": 8,
           "right": 382,
-          "bottom": 801.796875,
+          "bottom": 836,
           "width": 374,
-          "height": 759.59375
+          "height": 828
         },
         "visible": {
           "top": 0,
@@ -857,10 +857,10 @@
       },
       "exitMetrics": {
         "rect": {
-          "top": 53.203125,
+          "top": 19,
           "left": 19,
           "right": 371,
-          "bottom": 95.203125,
+          "bottom": 61,
           "width": 352,
           "height": 42
         },
@@ -878,8 +878,8 @@
       },
       "resultState": {
         "exitIsFocused": true,
-        "mediaClientHeight": 684,
-        "mediaScrollHeight": 684,
+        "mediaClientHeight": 752,
+        "mediaScrollHeight": 752,
         "bodyOverflow": "hidden auto"
       },
       "directResultMetrics": {
