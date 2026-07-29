@@ -5,7 +5,6 @@ on:
     branches:
       - main
     paths:
-      - "games/games.json"
       - "music/index.html"
       - "music/composer.html"
       - "music/composers/**"
@@ -22,7 +21,6 @@ on:
     branches:
       - main
     paths:
-      - "games/games.json"
       - "music/index.html"
       - "music/composer.html"
       - "music/composers/**"
