@@ -157,6 +157,9 @@ jobs:
           expected = {
               '.github/workflows/fix-easter-egg-viewport.yml',
               '.github/workflows/fix-easter-egg-warp-mobile-games.yml',
+              'docs/seo-baseline/easter-egg-third-click-evidence.json',
+              'docs/seo-baseline/easter-egg-viewport-evidence.json',
+              'docs/seo-baseline/easter-egg-viewport-validation.md',
               'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
               'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
               'js/ccg-global.js',
