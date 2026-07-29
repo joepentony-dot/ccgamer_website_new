@@ -2,6 +2,7 @@
 
 "use strict";
 
+const fs = require("fs");
 const os = require("os");
 const path = require("path");
 const { spawnSync } = require("child_process");
@@ -10,7 +11,9 @@ const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
 const pythonCommand = process.env.PYTHON || "python";
-const baselineDir = String(process.env.CCG_BASELINE_DIR || "").trim();
+const suppliedBaselineDir = String(process.env.CCG_BASELINE_DIR || "").trim();
+let baselineDir = suppliedBaselineDir ? path.resolve(suppliedBaselineDir) : "";
+let temporaryBaselineDir = "";
 
 function fail(message) {
   console.error(`[rebuild-games] ${message}`);
@@ -44,7 +47,30 @@ function pythonScript(scriptName, args = [], options = {}) {
 }
 
 function baselineFile(name) {
-  return baselineDir ? path.join(path.resolve(baselineDir), name) : "";
+  return baselineDir ? path.join(baselineDir, name) : "";
+}
+
+function ensureBaselineSnapshot() {
+  if (baselineDir) return;
+  temporaryBaselineDir = fs.mkdtempSync(path.join(os.tmpdir(), "ccg-game-publish-baseline-"));
+  baselineDir = temporaryBaselineDir;
+  const mappings = [
+    ["games/games.json", "games.json"],
+    ["tools/seo/static-pages.json", "static-pages.json"],
+    ["sitemap.xml", "sitemap.xml"],
+    ["sitemap-pages.xml", "sitemap-pages.xml"],
+    ["sitemap-games.xml", "sitemap-games.xml"],
+  ];
+  mappings.forEach(([relative, name]) => {
+    const source = path.join(repoRoot, relative);
+    if (!fs.existsSync(source)) fail(`Cannot snapshot missing publishing baseline: ${relative}`);
+    fs.copyFileSync(source, path.join(baselineDir, name));
+  });
+  console.log(`[rebuild-games] Created local publishing baseline: ${baselineDir}`);
+}
+
+function cleanupBaselineSnapshot() {
+  if (temporaryBaselineDir) fs.rmSync(temporaryBaselineDir, { recursive: true, force: true });
 }
 
 function validateSourceCatalogue() {
@@ -87,6 +113,7 @@ function validateInternalLinks() {
 }
 
 function publishGames() {
+  ensureBaselineSnapshot();
   validateSourceCatalogue();
 
   nodeScript("build-games.js", [], {
@@ -102,6 +129,7 @@ function publishGames() {
   nodeScript("generate-downloads-page.js", [], { label: "Generate downloads archive" });
   nodeScript("update-downloads-static-pages.js", [], { label: "Update downloads registry entries" });
   nodeScript("generate-sitemaps.js", [], { label: "Generate all sitemaps" });
+  nodeScript("preserve-sitemap-lastmods.js", [baselineDir], { label: "Preserve historical sitemap modification dates" });
 
   nodeScript("validate-game-catalogue.js", [], { label: "Validate generated game catalogue outputs" });
   nodeScript("validate-sitemaps.js", [], { label: "Validate generated sitemaps" });
@@ -113,4 +141,8 @@ function publishGames() {
   console.log("\n[rebuild-games] Full game publishing pipeline completed successfully.");
 }
 
-publishGames();
+try {
+  publishGames();
+} finally {
+  cleanupBaselineSnapshot();
+}
