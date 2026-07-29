@@ -54,6 +54,14 @@ function rectMatches(left, right) {
   return ['x', 'y', 'width', 'height'].every((key) => closeEnough(left[key], right[key]));
 }
 
+function normalizedStyle(style) {
+  if (!style) return null;
+  return {
+    ...style,
+    backgroundImage: style.backgroundImage.replace(/http:\/\/127\.0\.0\.1:\d+/g, 'LOCAL_ORIGIN'),
+  };
+}
+
 function hash(buffer) {
   return crypto.createHash('sha256').update(buffer).digest('hex');
 }
@@ -244,15 +252,15 @@ function summarizeBrowser(browser) {
   };
 }
 
-function buildChecks(browser, browserSummary, lighthouse) {
+function buildChecks(browser, browserSummary, lighthouseResult) {
   const baselineFirst = browser.baseline.c64[0];
   const candidateFirst = browser.candidate.c64[0];
   const candidateAmiga = browser.candidate.amiga[0];
   const candidatePreloads = candidateFirst.preloads.filter((item) => item.href?.includes('/hero/'));
   const baselineStart = browserSummary.baseline.c64ResourceStartMedianMs;
   const candidateStart = browserSummary.candidate.c64ResourceStartMedianMs;
-  const baselineLcp = median(lighthouse.baseline.map((run) => run.lcpMs));
-  const candidateLcp = median(lighthouse.candidate.map((run) => run.lcpMs));
+  const baselineLcp = median(lighthouseResult.baseline.map((run) => run.lcpMs));
+  const candidateLcp = median(lighthouseResult.candidate.map((run) => run.lcpMs));
 
   const checks = {
     candidate_has_two_mode_safe_hero_preloads:
@@ -269,8 +277,8 @@ function buildChecks(browser, browserSummary, lighthouse) {
       rectMatches(baselineFirst.frameRect, candidateFirst.frameRect) &&
       rectMatches(baselineFirst.titleRect, candidateFirst.titleRect),
     hero_computed_styles_preserved:
-      JSON.stringify(baselineFirst.c64Style) === JSON.stringify(candidateFirst.c64Style) &&
-      JSON.stringify(baselineFirst.amigaStyle) === JSON.stringify(candidateFirst.amigaStyle),
+      JSON.stringify(normalizedStyle(baselineFirst.c64Style)) === JSON.stringify(normalizedStyle(candidateFirst.c64Style)) &&
+      JSON.stringify(normalizedStyle(baselineFirst.amigaStyle)) === JSON.stringify(normalizedStyle(candidateFirst.amigaStyle)),
     lighthouse_lcp_not_regressed:
       Number.isFinite(baselineLcp) && Number.isFinite(candidateLcp) && candidateLcp <= baselineLcp + 1000,
   };
@@ -312,7 +320,7 @@ function markdown(payload) {
     '',
     '## Safety',
     '',
-    '- The homepage hero dimensions and computed background styles match the baseline.',
+    '- The homepage hero dimensions and computed background styles match the baseline after normalising only the localhost measurement origin.',
     '- Saved C64 and Amiga modes remain intact.',
     '- Full browser screenshots and Lighthouse JSON files are retained as workflow artifacts.',
   ];
