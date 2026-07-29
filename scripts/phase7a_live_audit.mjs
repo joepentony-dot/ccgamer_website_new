@@ -5,6 +5,7 @@ import process from 'node:process';
 import { chromium } from 'playwright-core';
 import axe from 'axe-core';
 import lighthouse from 'lighthouse';
+import desktopConfig from 'lighthouse/core/config/lr-desktop-config.js';
 import * as chromeLauncher from 'chrome-launcher';
 
 function parseArgs() {
@@ -146,14 +147,18 @@ async function runLighthouse(chromePath, rawDir, errors) {
           output: 'json',
           logLevel: 'error',
           onlyCategories: ['performance', 'accessibility'],
-          formFactor: desktop ? 'desktop' : 'mobile',
-          screenEmulation: desktop
-            ? { mobile: false, width: 1350, height: 940, deviceScaleFactor: 1, disabled: false }
-            : { mobile: true, width: 390, height: 844, deviceScaleFactor: 1, disabled: false },
-          throttlingMethod: 'simulate',
           maxWaitForLoad: 60000,
         };
-        const runner = await lighthouse(item.url, flags);
+        const config = desktop
+          ? {
+              ...desktopConfig,
+              settings: {
+                ...desktopConfig.settings,
+                onlyCategories: ['performance', 'accessibility'],
+              },
+            }
+          : undefined;
+        const runner = await lighthouse(item.url, flags, config);
         const lhr = runner.lhr;
         const rawPath = path.join(rawDir, `${slug(item.label)}-${item.mode}.json`);
         fs.writeFileSync(rawPath, JSON.stringify(lhr, null, 2));
