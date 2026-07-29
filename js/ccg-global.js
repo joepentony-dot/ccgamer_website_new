@@ -1035,11 +1035,6 @@ if (IS_ADMIN_PATH) {
         const pacmanScreen = document.createElement("div");
         pacmanScreen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--pacman";
         const frame = createScreenFrame(getEasterEggAsset("pacman.html"));
-        frame.addEventListener("load", () => {
-            if (!usesMobileEasterEggControls()) {
-                frame.focus({ preventScroll: true });
-            }
-        }, { once: true });
         pacmanScreen.appendChild(frame);
         openEasterEggOverlay(pacmanScreen, { media: [frame], className: "ccg-egg-overlay--pacman" });
     }
