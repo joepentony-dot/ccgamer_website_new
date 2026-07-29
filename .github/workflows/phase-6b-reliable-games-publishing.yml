@@ -112,26 +112,36 @@ jobs:
           git diff --check
 
       - name: Run synthetic C64 and Amiga transactions
+        shell: bash
         run: |
+          set +e
           python scripts/phase6b_games_editor_transaction.py \
             --json-output "$RUNNER_TEMP/phase-6b-evidence.json" \
             --report-output docs/seo-baseline/phase-6b-reliable-games-publishing.md
+          status=$?
+          echo "Phase 6B transaction evidence:"
+          cat "$RUNNER_TEMP/phase-6b-evidence.json" || true
+          exit "$status"
 
       - name: Upload Phase 6B evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: phase-6b-reliable-games-publishing-evidence
           path: ${{ runner.temp }}/phase-6b-evidence.json
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 30
 
       - name: Remove Python cache
+        if: always()
         run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Confirm protected files are unchanged
+        if: always()
         run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
 
       - name: Confirm no real synthetic record exists
+        if: always()
         shell: bash
         run: |
           ! grep -R "phase6b-synthetic" games/games.json games/games-index.json games/games-search.json
