@@ -190,6 +190,21 @@ async function runCase(browser, testCase) {
   await page.locator('.ccg-egg-overlay__exit').click();
   await page.locator('.ccg-egg-overlay').waitFor({ state: 'detached', timeout: 5000 });
 
+  await triggerTripleClick(page);
+  await page.evaluate(() => {
+    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');
+    if (!bsod) throw new Error('BSOD result trigger not found');
+    bsod.click();
+  });
+  await page.locator('.ccg-bsod').waitFor({ state: 'visible', timeout: 5000 });
+  await page.waitForTimeout(150);
+
+  const directResultMetrics = await viewportMetrics(page, '.ccg-bsod');
+  const directResultScreenshot = path.join(screenshotsDir, `${testCase.name}-direct-result.png`);
+  await page.screenshot({ path: directResultScreenshot, fullPage: false });
+  await page.locator('.ccg-bsod').click({ position: { x: 8, y: 8 } });
+  await page.locator('.ccg-bsod').waitFor({ state: 'detached', timeout: 5000 });
+
   const checks = {
     menuWithinVisibleViewport: Boolean(menuMetrics?.withinVisibleViewport),
     closeWithinVisibleViewport: Boolean(closeMetrics?.withinVisibleViewport),
@@ -207,6 +222,7 @@ async function runCase(browser, testCase) {
     resultExitWithinVisibleViewport: Boolean(exitMetrics?.withinVisibleViewport),
     resultExitReceivesFocus: resultState.exitIsFocused,
     resultMediaHasUsableHeight: Number(resultState.mediaClientHeight) >= 120,
+    directResultWithinVisibleViewport: Boolean(directResultMetrics?.withinVisibleViewport),
   };
 
   await context.close();
@@ -225,11 +241,13 @@ async function runCase(browser, testCase) {
     resultFrameMetrics,
     exitMetrics,
     resultState,
+    directResultMetrics,
     checks,
     passed: Object.values(checks).every(Boolean),
     screenshots: {
       menu: menuScreenshot,
       result: resultScreenshot,
+      directResult: directResultScreenshot,
     },
   };
 }
@@ -273,7 +291,7 @@ const rows = results.map(result => {
   return `| ${result.name} | ${result.width}×${result.height} | ${result.passed ? 'PASS' : 'FAIL'} | ${menuHeight} | ${frameHeight} |`;
 }).join('\n');
 
-const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu and a representative Easter egg result were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, result frame and result exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
+const report = `# Easter Egg Viewport Positioning Validation\n\n## Verdict\n\n**${evidence.verdict}**\n\nThe three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.\n\n| Case | Viewport | Result | Menu height | Result frame height |\n|---|---:|---:|---:|---:|\n${rows}\n\n## Required behaviour\n\n- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.\n- Long menus scroll internally with the close control remaining visible.\n- Every reopen begins at the top of the command list.\n- Opening and closing does not move the underlying page.\n- The body is no longer changed to fixed positioning or touch-action none.\n- Keyboard focus moves to the active close/exit control.\n\n## Failed checks\n\n${failedChecks.length ? failedChecks.map(item => `- ${item}`).join('\n') : '- None'}\n`;
 
 fs.writeFileSync(path.resolve(args.report), report);
 console.log(JSON.stringify({ verdict: evidence.verdict, testedCases: results.length, failedChecks }, null, 2));
