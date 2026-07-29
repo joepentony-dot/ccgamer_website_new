@@ -1,0 +1,282 @@
+{
+  "summary": {
+    "game_records": 651,
+    "games_with_year": 651,
+    "games_missing_year": 0,
+    "distinct_years": 15,
+    "earliest_year": 1982,
+    "latest_year": 2023
+  },
+  "platform_counts": {
+    "C64": 552,
+    "Amiga": 99
+  },
+  "year_counts": [
+    {
+      "year": 1982,
+      "total": 10,
+      "c64": 10,
+      "amiga": 0,
+      "other": 0
+    },
+    {
+      "year": 1983,
+      "total": 43,
+      "c64": 43,
+      "amiga": 0,
+      "other": 0
+    },
+    {
+      "year": 1984,
+      "total": 94,
+      "c64": 94,
+      "amiga": 0,
+      "other": 0
+    },
+    {
+      "year": 1985,
+      "total": 96,
+      "c64": 96,
+      "amiga": 0,
+      "other": 0
+    },
+    {
+      "year": 1986,
+      "total": 82,
+      "c64": 82,
+      "amiga": 0,
+      "other": 0
+    },
+    {
+      "year": 1987,
+      "total": 85,
+      "c64": 83,
+      "amiga": 2,
+      "other": 0
+    },
+    {
+      "year": 1988,
+      "total": 50,
+      "c64": 46,
+      "amiga": 4,
+      "other": 0
+    },
+    {
+      "year": 1989,
+      "total": 49,
+      "c64": 40,
+      "amiga": 9,
+      "other": 0
+    },
+    {
+      "year": 1990,
+      "total": 44,
+      "c64": 31,
+      "amiga": 13,
+      "other": 0
+    },
+    {
+      "year": 1991,
+      "total": 37,
+      "c64": 18,
+      "amiga": 19,
+      "other": 0
+    },
+    {
+      "year": 1992,
+      "total": 29,
+      "c64": 8,
+      "amiga": 21,
+      "other": 0
+    },
+    {
+      "year": 1993,
+      "total": 15,
+      "c64": 0,
+      "amiga": 15,
+      "other": 0
+    },
+    {
+      "year": 1994,
+      "total": 12,
+      "c64": 0,
+      "amiga": 12,
+      "other": 0
+    },
+    {
+      "year": 1995,
+      "total": 4,
+      "c64": 0,
+      "amiga": 4,
+      "other": 0
+    },
+    {
+      "year": 2023,
+      "total": 1,
+      "c64": 1,
+      "amiga": 0,
+      "other": 0
+    }
+  ],
+  "missing_year_slugs": [],
+  "unsupported_platform_records": [],
+  "existing_year_pages": [],
+  "existing_platform_pages": [],
+  "links": {
+    "static_year_links": {},
+    "static_platform_links": {},
+    "query_year_links": {},
+    "query_platform_links": {},
+    "top_static_link_sources": {}
+  },
+  "filter_capabilities": {
+    "files_checked": [
+      {
+        "file": "complete-index.html",
+        "mentions_year": true,
+        "mentions_platform_or_system": true,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "games/index.html",
+        "mentions_year": true,
+        "mentions_platform_or_system": true,
+        "has_year_control": true,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/analytics.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-auth.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-community-auth.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-global.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": true,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-mobile-lite.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-mode-engine.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-mode.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-nav-core.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-nav.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": true,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-schema.js",
+        "mentions_year": true,
+        "mentions_platform_or_system": true,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-supabase-client.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-supabase-config.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/games-library.js",
+        "mentions_year": true,
+        "mentions_platform_or_system": true,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "resources/js/ccg-performance.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "resources/js/ccg-year-filter.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      }
+    ],
+    "year_filter_detected": true,
+    "platform_filter_detected": false
+  },
+  "recommendations": {
+    "years_without_static_route": [
+      1982,
+      1983,
+      1984,
+      1985,
+      1986,
+      1987,
+      1988,
+      1989,
+      1990,
+      1991,
+      1992,
+      1993,
+      1994,
+      1995,
+      2023
+    ],
+    "platforms_without_static_route": [
+      "C64",
+      "Amiga"
+    ],
+    "suggested_year_route_count": 15,
+    "suggested_platform_route_count": 2
+  }
+}
