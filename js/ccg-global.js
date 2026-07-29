@@ -804,6 +804,13 @@ if (IS_ADMIN_PATH) {
         return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     }
 
+    /* CCG WARP AND MOBILE EASTER EGG GAME REPAIR */
+    function usesMobileEasterEggControls() {
+        const coarsePointer = typeof window.matchMedia === "function"
+            && window.matchMedia("(pointer: coarse)").matches;
+        return window.innerWidth <= 900 || (coarsePointer && window.innerWidth <= 1100);
+    }
+
     function createAudioElement(src) {
         const audio = document.createElement("audio");
         audio.className = "ccg-egg-overlay__audio-media";
@@ -873,16 +880,168 @@ if (IS_ADMIN_PATH) {
     }
 
     function triggerWarp() {
+        const overlay = createOverlay("ccg-warp-overlay", `
+            <canvas class="ccg-warp-overlay__canvas" aria-hidden="true"></canvas>
+            <div class="ccg-warp-overlay__label">WARP DRIVE ENGAGED</div>
+        `);
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.setAttribute("aria-label", "Warp drive Easter egg");
+        overlay.tabIndex = -1;
+
+        const canvas = overlay.querySelector(".ccg-warp-overlay__canvas");
+        const context = canvas?.getContext("2d");
+        const page = document.querySelector(".ccg-page");
+        const reduceMotion = prefersReducedMotion();
+        const viewportCleanup = bindOverlayToVisualViewport(overlay);
+        const stars = [];
+        let width = 1;
+        let height = 1;
+        let centreX = 0.5;
+        let centreY = 0.5;
+        let maximumDistance = 1;
+        let animationFrame = 0;
+        let closeTimer = 0;
+        let pageAnimation = null;
+        let removed = false;
+        let previousTime = performance.now();
+
+        const resetStar = (star, initial = false) => {
+            star.angle = Math.random() * Math.PI * 2;
+            star.distance = initial ? Math.random() * maximumDistance : Math.random() * 24;
+            star.speed = 0.12 + Math.random() * 0.34;
+            star.length = 10 + Math.random() * 34;
+            star.brightness = 0.42 + Math.random() * 0.58;
+        };
+
+        const resize = () => {
+            if (!canvas || !context) return;
+            const ratio = Math.min(window.devicePixelRatio || 1, 2);
+            width = Math.max(1, overlay.clientWidth || window.innerWidth);
+            height = Math.max(1, overlay.clientHeight || window.innerHeight);
+            centreX = width / 2;
+            centreY = height / 2;
+            maximumDistance = Math.hypot(width, height) * 0.62;
+            canvas.width = Math.round(width * ratio);
+            canvas.height = Math.round(height * ratio);
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
+            context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+            const targetCount = reduceMotion ? 64 : Math.min(180, Math.max(96, Math.round(width / 7)));
+            while (stars.length < targetCount) {
+                const star = {};
+                resetStar(star, true);
+                stars.push(star);
+            }
+            if (stars.length > targetCount) stars.length = targetCount;
+        };
+
+        const draw = (now, advance = true) => {
+            if (!context) return;
+            const elapsed = Math.min(42, Math.max(8, now - previousTime));
+            previousTime = now;
+
+            context.fillStyle = reduceMotion ? "#030611" : "rgba(3, 6, 17, 0.42)";
+            context.fillRect(0, 0, width, height);
+
+            const glow = context.createRadialGradient(centreX, centreY, 0, centreX, centreY, maximumDistance * 0.82);
+            glow.addColorStop(0, "rgba(125, 247, 255, 0.32)");
+            glow.addColorStop(0.18, "rgba(77, 131, 255, 0.12)");
+            glow.addColorStop(1, "rgba(2, 4, 12, 0)");
+            context.fillStyle = glow;
+            context.fillRect(0, 0, width, height);
+
+            stars.forEach(star => {
+                if (advance) {
+                    const acceleration = 1 + (star.distance / maximumDistance) * 5.2;
+                    star.distance += star.speed * elapsed * acceleration;
+                    if (star.distance > maximumDistance) resetStar(star, false);
+                }
+
+                const stretch = star.length * (1 + (star.distance / maximumDistance) * 5);
+                const startDistance = Math.max(0, star.distance - stretch);
+                const cosine = Math.cos(star.angle);
+                const sine = Math.sin(star.angle);
+                const startX = centreX + cosine * startDistance;
+                const startY = centreY + sine * startDistance;
+                const endX = centreX + cosine * star.distance;
+                const endY = centreY + sine * star.distance;
+                const alpha = Math.min(1, star.brightness * (0.35 + star.distance / maximumDistance));
+
+                context.beginPath();
+                context.moveTo(startX, startY);
+                context.lineTo(endX, endY);
+                context.lineWidth = 0.8 + (star.distance / maximumDistance) * 2.6;
+                context.strokeStyle = `rgba(170, 235, 255, ${alpha})`;
+                context.stroke();
+            });
+        };
+
+        const closeWarp = () => {
+            if (removed) return;
+            removed = true;
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+            if (closeTimer) clearTimeout(closeTimer);
+            if (pageAnimation) pageAnimation.cancel();
+            window.removeEventListener("resize", resize);
+            document.removeEventListener("keydown", handleKeydown);
+            viewportCleanup();
+            document.body.classList.remove("ccg-warp");
+            overlay.remove();
+        };
+
+        const handleKeydown = event => {
+            if (event.key === "Escape") closeWarp();
+        };
+
+        overlay.addEventListener("pointerdown", closeWarp, { once: true });
+        document.addEventListener("keydown", handleKeydown);
+        window.addEventListener("resize", resize, { passive: true });
         document.body.classList.add("ccg-warp");
-        setTimeout(() => document.body.classList.remove("ccg-warp"), 5200);
+        resize();
+
+        if (reduceMotion) {
+            draw(performance.now(), false);
+            closeTimer = window.setTimeout(closeWarp, 1800);
+        } else {
+            requestAnimationFrame(() => {
+                const cssAnimationName = page ? getComputedStyle(page).animationName : "none";
+                if ((!cssAnimationName || cssAnimationName === "none") && page?.animate) {
+                    pageAnimation = page.animate([
+                        { transform: "scale(1) rotate(0deg)", opacity: 1 },
+                        { transform: "scale(0.28) rotate(300deg)", opacity: 0.42, offset: 0.5 },
+                        { transform: "scale(1) rotate(360deg)", opacity: 1 },
+                    ], {
+                        duration: 5000,
+                        easing: "cubic-bezier(0.45, 0, 0.2, 1)",
+                    });
+                }
+            });
+
+            const tick = now => {
+                if (removed) return;
+                draw(now, true);
+                animationFrame = requestAnimationFrame(tick);
+            };
+            animationFrame = requestAnimationFrame(tick);
+            closeTimer = window.setTimeout(closeWarp, 5200);
+        }
+
+        requestAnimationFrame(() => overlay.focus({ preventScroll: true }));
     }
 
     function triggerPacman() {
         const pacmanScreen = document.createElement("div");
-        pacmanScreen.className = "ccg-egg-overlay__screen";
+        pacmanScreen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--pacman";
         const frame = createScreenFrame(getEasterEggAsset("pacman.html"));
+        frame.addEventListener("load", () => {
+            if (!usesMobileEasterEggControls()) {
+                frame.focus({ preventScroll: true });
+            }
+        }, { once: true });
         pacmanScreen.appendChild(frame);
-        openEasterEggOverlay(pacmanScreen, { media: [frame], className: "ccg-egg-overlay--square" });
+        openEasterEggOverlay(pacmanScreen, { media: [frame], className: "ccg-egg-overlay--pacman" });
     }
 
     function triggerBoing() {
@@ -951,11 +1110,25 @@ if (IS_ADMIN_PATH) {
     }
 
     function triggerInvaders() {
+        if (usesMobileEasterEggControls()) {
+            const desktopOnly = document.createElement("div");
+            desktopOnly.className = "ccg-egg-overlay__desktop-only";
+            desktopOnly.innerHTML = `
+                <strong>AVAILABLE ON DESKTOP ONLY</strong>
+                <span>SPACE INVADERS REQUIRES KEYBOARD CONTROLS.</span>
+            `;
+            openEasterEggOverlay(desktopOnly, { className: "ccg-egg-overlay--desktop-only" });
+            return;
+        }
+
         const invadersScreen = document.createElement("div");
-        invadersScreen.className = "ccg-egg-overlay__screen";
+        invadersScreen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--invaders";
         const frame = createScreenFrame("https://dwmkerr.github.io/spaceinvaders/");
+        frame.addEventListener("load", () => {
+            requestAnimationFrame(() => frame.focus({ preventScroll: true }));
+        }, { once: true });
         invadersScreen.appendChild(frame);
-        openEasterEggOverlay(invadersScreen, { media: [frame], className: "ccg-egg-overlay--square" });
+        openEasterEggOverlay(invadersScreen, { media: [frame], className: "ccg-egg-overlay--invaders" });
     }
 
     function triggerKonami() {

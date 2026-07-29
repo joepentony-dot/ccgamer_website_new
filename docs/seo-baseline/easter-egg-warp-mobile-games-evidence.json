@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-07-29T23:12:22.036Z",
+  "verdict": "PASS",
+  "failedChecks": [],
+  "results": [
+    {
+      "name": "mobile",
+      "checks": {
+        "mobileWarpVisible": true,
+        "mobileWarpPaintedDespiteLiteMode": true,
+        "mobileWarpWithinViewport": true,
+        "mobilePacmanControlsAppear": true,
+        "mobilePacmanTouchLayoutActive": true,
+        "mobilePacmanControlsDispatchKeys": true,
+        "mobilePacmanWithinViewport": true,
+        "mobileInvadersShowsDesktopNotice": true,
+        "mobileInvadersDoesNotLoadKeyboardGame": true
+      },
+      "details": {
+        "mobileWarp": {
+          "mobileLite": true,
+          "bodyWarpClass": true,
+          "canvasWidth": 390,
+          "canvasHeight": 844,
+          "hasPaint": true,
+          "rect": {
+            "top": 0,
+            "left": 0,
+            "right": 390,
+            "bottom": 844
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          }
+        },
+        "mobilePacman": {
+          "controlsVisible": true,
+          "controlCount": 5,
+          "touchClass": true,
+          "mediaRect": {
+            "top": 71,
+            "left": 19,
+            "right": 371,
+            "bottom": 825
+          },
+          "viewport": {
+            "width": 390,
+            "height": 844
+          },
+          "dispatchedKeys": [
+            39,
+            78
+          ]
+        },
+        "mobileInvaders": {
+          "message": "AVAILABLE ON DESKTOP ONLY",
+          "iframeCount": 0
+        }
+      }
+    },
+    {
+      "name": "desktop",
+      "checks": {
+        "desktopWarpVisible": true,
+        "desktopWarpPainted": true,
+        "desktopInvadersLoadsIframe": true,
+        "desktopInvadersUsesDedicatedCentredLayout": true,
+        "desktopInvadersWithinViewport": true,
+        "desktopInvadersScreenCentredWithinMedia": true
+      },
+      "details": {
+        "desktopWarp": {
+          "width": 1366,
+          "height": 768,
+          "hasPaint": true
+        },
+        "desktopInvaders": {
+          "iframePresent": true,
+          "iframeSource": "https://dwmkerr.github.io/spaceinvaders/",
+          "mediaRect": {
+            "top": 115.40625,
+            "left": 286.203125,
+            "right": 1079.78125,
+            "bottom": 710.59375,
+            "width": 793.578125,
+            "height": 595.1875
+          },
+          "screenRect": {
+            "top": 128.40625,
+            "left": 299.203125,
+            "right": 1066.78125,
+            "bottom": 697.59375
+          },
+          "viewport": {
+            "width": 1366,
+            "height": 768
+          },
+          "justifySelf": "center",
+          "alignSelf": "center",
+          "aspectRatio": "4 / 3",
+          "screenInsets": {
+            "left": 13,
+            "right": 13,
+            "top": 13,
+            "bottom": 13
+          }
+        }
+      }
+    }
+  ]
+}

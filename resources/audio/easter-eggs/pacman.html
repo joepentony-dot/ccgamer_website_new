@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 	<title>Maintenance - Moota.co</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<link rel="stylesheet" href="/resources/css/pacman-touch.css">
 	<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/resources/audio/easter-eggs/pacman.html">
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Permanent+Marker">
 	<style type="text/css">
@@ -45,6 +47,19 @@
 	<h1>Maintenance</h1>
 	<p style="text-align:center;">Sedang migrasi server dan upgrade engine 23:00 s/d 05:00. Mohon doanya :)</p>
 	<div id="pacman"></div>
+
+	<!-- CCG PACMAN TOUCH CONTROLS -->
+	<div class="ccg-pacman-controls" data-ccg-pacman-controls hidden aria-label="Pac-Man touch controls">
+		<div class="ccg-pacman-controls__label">TOUCH CONTROLS</div>
+		<div class="ccg-pacman-dpad" aria-label="Directional pad">
+			<button type="button" class="ccg-pacman-control ccg-pacman-control--up" data-pacman-key-code="38" data-pacman-key="ArrowUp" data-pacman-code="ArrowUp" aria-label="Move up">▲</button>
+			<button type="button" class="ccg-pacman-control ccg-pacman-control--left" data-pacman-key-code="37" data-pacman-key="ArrowLeft" data-pacman-code="ArrowLeft" aria-label="Move left">◀</button>
+			<button type="button" class="ccg-pacman-control ccg-pacman-control--centre" tabindex="-1" aria-hidden="true">●</button>
+			<button type="button" class="ccg-pacman-control ccg-pacman-control--right" data-pacman-key-code="39" data-pacman-key="ArrowRight" data-pacman-code="ArrowRight" aria-label="Move right">▶</button>
+			<button type="button" class="ccg-pacman-control ccg-pacman-control--down" data-pacman-key-code="40" data-pacman-key="ArrowDown" data-pacman-code="ArrowDown" aria-label="Move down">▼</button>
+		</div>
+		<button type="button" class="ccg-pacman-start" data-pacman-key-code="78" data-pacman-key="n" data-pacman-code="KeyN">START / NEW GAME</button>
+	</div>
 
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -1350,5 +1365,63 @@ $(function(){
 
 
 	</script>
+
+	<script>
+	(function () {
+		"use strict";
+
+		var touchCapable = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+		touchCapable = touchCapable || navigator.maxTouchPoints > 0 || window.innerWidth <= 900;
+		if (!touchCapable) return;
+
+		var controls = document.querySelector("[data-ccg-pacman-controls]");
+		if (!controls) return;
+
+		document.documentElement.classList.add("ccg-pacman-touch");
+		controls.hidden = false;
+
+		function dispatchGameKey(button) {
+			var keyCode = Number(button.getAttribute("data-pacman-key-code"));
+			var key = button.getAttribute("data-pacman-key") || "";
+			var code = button.getAttribute("data-pacman-code") || key;
+			if (!keyCode) return;
+
+			function makeEvent(type) {
+				var event = new KeyboardEvent(type, {
+					key: key,
+					code: code,
+					bubbles: true,
+					cancelable: true
+				});
+				try {
+					Object.defineProperty(event, "keyCode", { get: function () { return keyCode; } });
+					Object.defineProperty(event, "which", { get: function () { return keyCode; } });
+				} catch (error) {}
+				return event;
+			}
+
+			document.dispatchEvent(makeEvent("keydown"));
+			window.setTimeout(function () {
+				document.dispatchEvent(makeEvent("keyup"));
+			}, 70);
+		}
+
+		controls.addEventListener("pointerdown", function (event) {
+			var button = event.target.closest("[data-pacman-key-code]");
+			if (!button) return;
+			event.preventDefault();
+			event.stopPropagation();
+			dispatchGameKey(button);
+		}, { passive: false });
+
+		controls.addEventListener("click", function (event) {
+			if (event.detail !== 0) return;
+			var button = event.target.closest("[data-pacman-key-code]");
+			if (!button) return;
+			dispatchGameKey(button);
+		});
+	}());
+	</script>
+
 </body>
 </html>
