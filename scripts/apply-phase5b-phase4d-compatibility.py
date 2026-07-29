@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Apply the bounded Phase 5B compatibility update to the Phase 4D validator."""
 
-# Final app-authored validation trigger; generated output is unchanged by this comment.
+# Settled-head app validation trigger; generated output is unchanged by this comment.
 
 from __future__ import annotations
 
