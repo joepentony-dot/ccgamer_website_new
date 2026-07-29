@@ -256,16 +256,26 @@ async function testDesktop(browser) {
     };
   });
   const media = details.desktopInvaders.mediaRect;
+  const screen = details.desktopInvaders.screenRect;
   const horizontalOffset = media ? Math.abs(((media.left + media.right) / 2) - (details.desktopInvaders.viewport.width / 2)) : Infinity;
+  const screenInsets = media && screen ? {
+    left: screen.left - media.left,
+    right: media.right - screen.right,
+    top: screen.top - media.top,
+    bottom: media.bottom - screen.bottom,
+  } : null;
+  details.desktopInvaders.screenInsets = screenInsets;
   checks.desktopInvadersLoadsIframe = details.desktopInvaders.iframePresent
     && details.desktopInvaders.iframeSource.includes('dwmkerr.github.io/spaceinvaders');
   checks.desktopInvadersUsesDedicatedCentredLayout = horizontalOffset <= 3
     && details.desktopInvaders.justifySelf === 'center'
     && details.desktopInvaders.alignSelf === 'center';
   checks.desktopInvadersWithinViewport = withinViewport(media, details.desktopInvaders.viewport);
-  checks.desktopInvadersScreenFillsMedia = Boolean(media && details.desktopInvaders.screenRect)
-    && Math.abs(media.left - details.desktopInvaders.screenRect.left) <= 2
-    && Math.abs(media.right - details.desktopInvaders.screenRect.right) <= 2;
+  checks.desktopInvadersScreenCentredWithinMedia = Boolean(screenInsets)
+    && screenInsets.left >= 0
+    && screenInsets.top >= 0
+    && Math.abs(screenInsets.left - screenInsets.right) <= 2
+    && Math.abs(screenInsets.top - screenInsets.bottom) <= 2;
   await page.screenshot({ path: path.join(screenshotsDir, 'desktop-invaders-centred.png'), fullPage: false });
   await closeResult(page);
 
