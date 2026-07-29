@@ -2,6 +2,8 @@
 
 "use strict";
 
+// Final settled-head validation trigger; no generated output depends on this comment.
+
 const fs = require("fs");
 const path = require("path");
 const {
