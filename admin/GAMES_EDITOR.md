@@ -8,7 +8,7 @@ The Game Builder creates a reviewed deployment package. The repository command b
 node scripts/rebuild-games.js
 ```
 
-Do not treat the ZIP's generated archive or sitemap files as final until this command has completed successfully. Phase 6B validates this same command against disposable C64 and Amiga additions before editor-publishing changes can be approved.
+Do not treat the ZIP's generated archive or sitemap files as final until this command has completed successfully. Phase 6B validates this same command against disposable C64 and Amiga additions before editor-publishing changes can be approved. Repeating the command without changing source data must produce no additional generated diff.
 
 ## Before adding a game
 
