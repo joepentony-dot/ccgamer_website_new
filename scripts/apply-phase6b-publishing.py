@@ -38,12 +38,7 @@ def replace_once(content: str, old: str, new: str, label: str) -> str:
 def update_build_games() -> bool:
     path = "scripts/build-games.js"
     source = read(path)
-    source = replace_once(
-        source,
-        "  runSeoVerification();\n",
-        "",
-        "remove premature SEO verification",
-    )
+    source = replace_once(source, "  runSeoVerification();\n", "", "remove premature SEO verification")
     source = source.replace(
         "function runSeoVerification() {\n  const result = spawnSync(process.execPath, [path.join(__dirname, 'verify-seo.mjs')], { cwd: path.join(__dirname, '..'), stdio: 'inherit' });\n  if (result.status !== 0) {\n    throw new Error(`verify-seo.mjs failed with status ${result.status ?? 1}`);\n  }\n}\n\n",
         "",
@@ -94,9 +89,7 @@ function runNodeScript(scriptName, args = []) {
     stdio: "inherit",
     env: { ...process.env, CCG_REPO_ROOT: repoRoot },
   });
-  if (result.status !== 0) {
-    fail(`${scriptName} failed with status ${result.status ?? 1}.`);
-  }
+  if (result.status !== 0) fail(`${scriptName} failed with status ${result.status ?? 1}.`);
 }
 
 function main() {
@@ -179,18 +172,9 @@ def update_year_validator() -> bool:
 ''',
         "replace hardcoded noindex sitemap year",
     )
-    source = source.replace(
-        "| Noindex year excluded | **2023** |",
-        "| Noindex year routes excluded | **${summary.noindexYearRoutes}** |",
-    )
-    source = source.replace(
-        "- Exact route uniqueness across both hubs, all 15 year routes and both platform routes.",
-        "- Exact route uniqueness across both hubs, every represented year route and both platform routes.",
-    )
-    source = source.replace(
-        "- Exact source-data membership checks for all 651 year links, 552 C64 links and 99 Amiga links.",
-        "- Exact source-data membership checks using totals derived from the current games database.",
-    )
+    source = source.replace("| Noindex year excluded | **2023** |", "| Noindex year routes excluded | **${summary.noindexYearRoutes}** |")
+    source = source.replace("- Exact route uniqueness across both hubs, all 15 year routes and both platform routes.", "- Exact route uniqueness across both hubs, every represented year route and both platform routes.")
+    source = source.replace("- Exact source-data membership checks for all 651 year links, 552 C64 links and 99 Amiga links.", "- Exact source-data membership checks using totals derived from the current games database.")
     source = source.replace(
         "        registeredArchiveRoutes: expectedStaticEntries.length,\n",
         "        registeredArchiveRoutes: expectedStaticEntries.length,\n        noindexYearRoutes: years.filter((group) => !group.indexable).length,\n",
@@ -223,6 +207,66 @@ def update_editor() -> bool:
         "if (/game-hero|<iframe|VideoGame|data-ccg-mode|data-mode=|resources\\/css\\/games\\.css/i.test(canonicalWrapperHtml))",
         "if (/game-hero|<iframe|data-ccg-mode|data-mode=|resources\\/css\\/games\\.css/i.test(canonicalWrapperHtml))",
     )
+    schema_anchor = '''  const videoSchemaGraphSuffix = hasVideo
+    ? `,
+            {
+            "@type": "VideoObject",
+            "name": "${cleanForHtml(title)} Gameplay Video",
+            "description": "${cleanForHtml(seoDescription)}",
+            "thumbnailUrl": "https://i.ytimg.com/vi/${safeVideoId}/hqdefault.jpg",
+            "embedUrl": "${safeVideoEmbed}",
+            "url": "${cleanForHtml(seoUrls.canonicalUrl)}"
+            }`
+    : '';
+
+  return {
+'''
+    schema_replacement = schema_anchor.replace(
+        "\n  return {\n",
+        '''
+  const publisherName = String(publisherForSeo || '').trim();
+  const genres = Array.isArray(state.draft.genres) ? state.draft.genres.filter(Boolean) : [];
+  const gameNode = {
+    "@type": "VideoGame",
+    "@id": `${seoUrls.canonicalUrl}#game`,
+    name: title,
+    description: String(state.draft.description || seoDescription || '').trim(),
+    url: seoUrls.canonicalUrl,
+    datePublished: String(year),
+    gamePlatform: normalizeSeoPlatformLabel(system),
+    image: `${SITE_ORIGIN}/${String(imagePath || '').replace(/^\\/+/, '')}`
+  };
+  if (genres.length === 1) gameNode.genre = genres[0];
+  if (genres.length > 1) gameNode.genre = genres;
+  if (publisherName) gameNode.publisher = { "@type": "Organization", name: publisherName };
+  const gameSchemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      gameNode,
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${seoUrls.canonicalUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: SITE_ORIGIN },
+          { "@type": "ListItem", position: 2, name: "Games", item: `${SITE_ORIGIN}/games/` },
+          { "@type": "ListItem", position: 3, name: title, item: seoUrls.canonicalUrl }
+        ]
+      }
+    ]
+  }).replace(/</g, "\\u003c");
+
+  return {
+''',
+    )
+    source = replace_once(source, schema_anchor, schema_replacement, "add editor schema graph")
+    source = replace_once(
+        source,
+        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n",
+        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n    GAME_SCHEMA_JSON: gameSchemaJson,\n",
+        "add editor schema template variable",
+    )
+    source = source.replace("'- node scripts/build-games.js',\n    '- node scripts/generate-sitemaps.js',", "'- node scripts/rebuild-games.js',")
+    source = source.replace("'- Upload as-is with no post-processing required.'", "'- These files are provisional package outputs; the authoritative rebuild command regenerates and validates all sitemaps.'")
     return write(path, source)
 
 
@@ -251,8 +295,7 @@ def update_template() -> bool:
     path = "admin/templates/game-landing-template.html"
     source = read(path)
     marker = '    <meta name="twitter:url" content="{{CANONICAL_URL}}">\n'
-    schema = '''    <script type="application/ld+json" data-ccg-schema="game-graph">{{GAME_SCHEMA_JSON}}</script>
-'''
+    schema = '    <script type="application/ld+json" data-ccg-schema="game-graph">{{GAME_SCHEMA_JSON}}</script>\n'
     if "{{GAME_SCHEMA_JSON}}" not in source:
         source = replace_once(source, marker, marker + schema, "add package schema placeholder")
     return write(path, source)
