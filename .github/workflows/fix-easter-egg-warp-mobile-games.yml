@@ -52,7 +52,24 @@ jobs:
             > "$RUNNER_TEMP/easter-games-protected-before.sha256"
 
       - name: Apply bounded Easter egg game repairs
-        run: python scripts/apply-easter-egg-warp-mobile-games-fix.py
+        run: |
+          python scripts/apply-easter-egg-warp-mobile-games-fix.py
+          python - <<'PY'
+          import subprocess
+          from pathlib import Path
+
+          relative_path = 'resources/audio/easter-eggs/pacman.html'
+          path = Path(relative_path)
+          baseline = subprocess.check_output(['git', 'show', f'origin/main:{relative_path}'])
+          current = path.read_bytes()
+          normalized = current.replace(b'\r\n', b'\n')
+          desired = normalized.replace(b'\n', b'\r\n') if b'\r\n' in baseline else normalized
+          if current != desired:
+              path.write_bytes(desired)
+              print('Restored PACMAN source line-ending style from main.')
+          else:
+              print('PACMAN source line endings already match main.')
+          PY
 
       - name: Validate JavaScript syntax
         run: node --check js/ccg-global.js
