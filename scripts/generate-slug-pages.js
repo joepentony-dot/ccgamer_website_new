@@ -143,7 +143,7 @@ function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description =
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script src="/js/analytics.js"></script>
+<script src="/js/analytics.js" defer></script>
 <meta name="robots" content="noindex,follow">
 <meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/">
 <script>
@@ -381,7 +381,7 @@ function buildCanonicalHtml({
 ${schemaScript}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/js/analytics.js"></script>
+    <script src="/js/analytics.js" defer></script>
     <meta http-equiv="refresh" content="0; url=${escapeHtml(target)}">
 
     <style>

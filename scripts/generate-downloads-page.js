@@ -210,7 +210,7 @@ ${jsonForHtml(schema)}
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="/resources/css/downloads.css">
 
-    <script src="/js/analytics.js"></script>
+    <script src="/js/analytics.js" defer></script>
     <script src="/js/ccg-mobile-lite.js" defer></script>
 </head>`;
 }
