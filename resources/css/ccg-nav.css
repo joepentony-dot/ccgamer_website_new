@@ -451,3 +451,35 @@ button.ccg-nav-toggle.ccg-btn-ghost:not(:hover):not(:focus-visible):not(:active)
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
 }
+
+/* ============================================================
+   PHASE 7B — KEYBOARD SKIP NAVIGATION
+   ============================================================ */
+.ccg-skip-link {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    z-index: 2147483647;
+    transform: translate(-50%, -160%);
+    padding: 12px 18px;
+    border: 2px solid var(--ccg-nav-focus-core);
+    background: rgba(2, 6, 14, 0.98);
+    color: #fff;
+    font: 700 0.95rem/1.2 system-ui, sans-serif;
+    text-decoration: none;
+    box-shadow: 0 0 0 3px rgba(2, 6, 14, 0.9), 0 0 18px var(--ccg-nav-focus-halo);
+    transition: transform 120ms ease;
+}
+
+.ccg-skip-link:focus,
+.ccg-skip-link:focus-visible {
+    transform: translate(-50%, max(12px, env(safe-area-inset-top)));
+    outline: 2px solid var(--ccg-nav-focus-core);
+    outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-skip-link {
+        transition: none;
+    }
+}

@@ -20,22 +20,43 @@
             margin-top: 20px;
             border-radius: 6px;
         }
+        .quiz-page-title {
+            font-size: 1.17em;
+            margin-block: 1em;
+        }
+
+        .quiz-skip-link {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            z-index: 10000;
+            transform: translate(-50%, -160%);
+            padding: 10px 16px;
+            background: #000;
+            color: #fff;
+            border: 2px solid var(--c64-light-blue);
+        }
+
+        .quiz-skip-link:focus {
+            transform: translate(-50%, 10px);
+        }
     </style>
 </head>
 
 <body>
+    <a class="quiz-skip-link" href="#main-content">Skip to main content</a>
 
     <canvas id="starfield"></canvas>
     <div class="crt-overlay"></div>
 
-    <div class="container">
+    <main class="container" id="main-content" tabindex="-1">
 
         <!-- HEADER -->
         <div class="commodore-header">
             <img src="https://raw.githubusercontent.com/joepentony-dot/website-images/main/CCGAMER%20LOGO.png"
                  alt="Quiz Logo"
                  style="max-width:150px; image-rendering:pixelated;">
-            <h3>**** RETRO QUIZ ****</h3>
+            <h1 class="quiz-page-title">**** RETRO QUIZ ****</h1>
             <p>Test your Commodore 64 & Amiga knowledge!</p>
         </div>
 
@@ -53,7 +74,7 @@
             <a href="../games/index.html" class="btn-retro">BROWSE GAMES</a>
         </div>
 
-    </div>
+    </main>
 
     <!-- QUIZ LOGIC (YOU WILL ADD YOUR QUIZ JS LATER) -->
     <script>
