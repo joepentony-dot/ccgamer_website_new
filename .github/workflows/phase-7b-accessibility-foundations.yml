@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/phase-7b-accessibility-foundations.yml"
       - "scripts/apply-phase7b-accessibility.py"
+      - "scripts/run-phase7b-apply.py"
       - "scripts/phase7b_live_check.mjs"
   workflow_dispatch:
 
@@ -64,10 +65,11 @@ jobs:
       - name: Validate Phase 7B tooling
         run: |
           python -m py_compile scripts/apply-phase7b-accessibility.py
+          python -m py_compile scripts/run-phase7b-apply.py
           node --check scripts/phase7b_live_check.mjs
 
       - name: Apply bounded accessibility corrections
-        run: python scripts/apply-phase7b-accessibility.py apply
+        run: python scripts/run-phase7b-apply.py
 
       - name: Run updated repository static audit
         run: |
@@ -137,6 +139,7 @@ jobs:
           allowed = {
               ".github/workflows/phase-7b-accessibility-foundations.yml",
               "scripts/apply-phase7b-accessibility.py",
+              "scripts/run-phase7b-apply.py",
               "scripts/phase7b_live_check.mjs",
               "docs/seo-baseline/phase-7b-accessibility-foundations.md",
               "docs/seo-baseline/phase-7b-accessibility-foundations-evidence.json",
