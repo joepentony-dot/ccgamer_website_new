@@ -36,7 +36,27 @@ def main() -> None:
         failures["minimum_archive_routes_per_game"] = minimum_routes
 
     if failures:
-        raise SystemExit(f"Game publishing link audit failed: {failures}")
+        broken = payload.get("link_issues", {}).get("broken_edges", [])[:20]
+        discovery = payload.get("game_discovery", [])
+        weakest = sorted(
+            discovery,
+            key=lambda item: (item.get("archive_route_count", 0), item.get("slug", "")),
+        )[:20]
+        diagnostic = {
+            "failures": failures,
+            "broken_edge_examples": broken,
+            "minimum_discovery_examples": [
+                {
+                    "slug": item.get("slug"),
+                    "archive_route_count": item.get("archive_route_count"),
+                    "discovery_dimensions": item.get("discovery_dimensions"),
+                    "archive_routes": item.get("archive_routes"),
+                }
+                for item in weakest
+                if item.get("archive_route_count") == minimum_routes
+            ],
+        }
+        raise SystemExit(f"Game publishing link audit failed: {json.dumps(diagnostic, ensure_ascii=False)}")
 
     print(json.dumps({
         "canonical_games": expected_games,
