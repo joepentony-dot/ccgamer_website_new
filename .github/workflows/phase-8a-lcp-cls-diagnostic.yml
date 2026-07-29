@@ -1,0 +1,166 @@
+name: Phase 8A LCP and Layout Shift Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-8a-lcp-cls-diagnostic.yml"
+      - "scripts/phase8a_lcp_cls_diagnostic.mjs"
+      - "scripts/phase8a_lcp_cls_report.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-8a-lcp-cls-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  diagnose-lcp-cls:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out Phase 8A audit branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase8a-protected.sha256"
+
+      - name: Install diagnostic dependencies
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts \
+            lighthouse@13.4.1 \
+            chrome-launcher@1.2.1 \
+            playwright-core@1.61.1
+          google-chrome --version
+
+      - name: Validate Phase 8A tooling
+        run: |
+          node --check scripts/phase8a_lcp_cls_diagnostic.mjs
+          python -m py_compile scripts/phase8a_lcp_cls_report.py
+
+      - name: Capture LCP, request and layout-shift evidence
+        run: |
+          mkdir -p "$RUNNER_TEMP/phase8a-raw"
+          node scripts/phase8a_lcp_cls_diagnostic.mjs \
+            --output "$RUNNER_TEMP/phase8a-diagnostic.json" \
+            --raw-dir "$RUNNER_TEMP/phase8a-raw"
+
+      - name: Compose Phase 8A report
+        run: |
+          python scripts/phase8a_lcp_cls_report.py \
+            --diagnostic "$RUNNER_TEMP/phase8a-diagnostic.json" \
+            --main-sha "$(git rev-parse origin/main)" \
+            --report docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md \
+            --evidence docs/seo-baseline/phase-8a-lcp-cls-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md
+          test -s docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md
+          test -s docs/seo-baseline/phase-8a-lcp-cls-evidence.json
+          git diff --check
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase8a-protected.sha256"
+
+      - name: Remove temporary dependencies and caches
+        run: |
+          rm -rf node_modules
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact read-only scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-8a-lcp-cls-diagnostic.yml",
+              "scripts/phase8a_lcp_cls_diagnostic.mjs",
+              "scripts/phase8a_lcp_cls_report.py",
+              "docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md",
+              "docs/seo-baseline/phase-8a-lcp-cls-evidence.json",
+          }
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 8A audit paths: {unexpected}")
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the Phase 8A audit diff.")
+          print(f"Validated Phase 8A read-only scope ({len(changed)} files).")
+          PY
+
+      - name: Upload raw Phase 8A evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-8a-lcp-cls-diagnostic
+          path: |
+            ${{ runner.temp }}/phase8a-diagnostic.json
+            ${{ runner.temp }}/phase8a-raw
+            docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md
+            docs/seo-baseline/phase-8a-lcp-cls-evidence.json
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Commit generated report to PR branch
+        if: success() && github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md \
+            docs/seo-baseline/phase-8a-lcp-cls-evidence.json
+          if git diff --cached --quiet; then
+            echo "Phase 8A report already current."
+          else
+            git commit -m "Add Phase 8A LCP and CLS evidence"
+            git push origin "HEAD:${{ github.head_ref }}"
+          fi
+
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          if test -s docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md; then
+            cat docs/seo-baseline/phase-8a-lcp-cls-diagnostic.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Phase 8A report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
