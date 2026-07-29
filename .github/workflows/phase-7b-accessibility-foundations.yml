@@ -137,6 +137,7 @@ jobs:
           import subprocess
 
           allowed = {
+              ".github/workflows/phase-6b-reliable-games-publishing.yml",
               ".github/workflows/phase-7b-accessibility-foundations.yml",
               "scripts/apply-phase7b-accessibility.py",
               "scripts/run-phase7b-apply.py",
