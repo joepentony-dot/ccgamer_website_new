@@ -1,0 +1,168 @@
+name: Phase 7A Performance and Accessibility Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-7a-performance-accessibility-audit.yml"
+      - "scripts/phase7a_static_performance_accessibility_audit.py"
+      - "scripts/phase7a_live_audit.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-7a-performance-accessibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    steps:
+      - name: Check out audit branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase7a-protected.sha256"
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            beautifulsoup4==4.13.4 \
+            pillow==11.3.0
+          npm install --no-save --package-lock=false --ignore-scripts \
+            lighthouse@13.4.1 \
+            chrome-launcher@1.2.1 \
+            playwright-core@1.61.1 \
+            axe-core@4.12.1
+          google-chrome --version
+
+      - name: Validate audit tooling
+        run: |
+          python -m py_compile scripts/phase7a_static_performance_accessibility_audit.py
+          node --check scripts/phase7a_live_audit.mjs
+
+      - name: Run repository-wide static audit
+        run: |
+          python scripts/phase7a_static_performance_accessibility_audit.py scan \
+            --output "$RUNNER_TEMP/phase-7a-static.json"
+
+      - name: Run representative live browser audit
+        run: |
+          mkdir -p "$RUNNER_TEMP/phase-7a-lighthouse"
+          node scripts/phase7a_live_audit.mjs \
+            --output "$RUNNER_TEMP/phase-7a-live.json" \
+            --raw-dir "$RUNNER_TEMP/phase-7a-lighthouse"
+
+      - name: Compose Phase 7A report
+        run: |
+          python scripts/phase7a_static_performance_accessibility_audit.py compose \
+            --static "$RUNNER_TEMP/phase-7a-static.json" \
+            --live "$RUNNER_TEMP/phase-7a-live.json" \
+            --report docs/seo-baseline/phase-7a-performance-accessibility-audit.md \
+            --evidence docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-7a-performance-accessibility-audit.md
+          test -s docs/seo-baseline/phase-7a-performance-accessibility-audit.md
+          test -s docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
+
+      - name: Upload detailed evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-7a-performance-accessibility-evidence
+          path: |
+            ${{ runner.temp }}/phase-7a-static.json
+            ${{ runner.temp }}/phase-7a-live.json
+            ${{ runner.temp }}/phase-7a-lighthouse/*.json
+            docs/seo-baseline/phase-7a-performance-accessibility-audit.md
+            docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase7a-protected.sha256"
+
+      - name: Remove temporary dependencies and caches
+        run: |
+          rm -rf node_modules
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm audit-only changed scope
+        shell: bash
+        run: |
+          git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-7a-performance-accessibility-audit.yml",
+              "scripts/phase7a_static_performance_accessibility_audit.py",
+              "scripts/phase7a_live_audit.mjs",
+              "docs/seo-baseline/phase-7a-performance-accessibility-audit.md",
+              "docs/seo-baseline/phase-7a-performance-accessibility-evidence.json",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 7A paths: {unexpected}")
+
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the Phase 7A diff.")
+          print(f"Validated Phase 7A audit-only scope ({len(changed)} files).")
+          PY
+          git diff --check
+
+      - name: Commit audit report and evidence summary
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git add \
+            docs/seo-baseline/phase-7a-performance-accessibility-audit.md \
+            docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
+
+          if git diff --cached --quiet; then
+            echo "Phase 7A report is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record Phase 7A performance and accessibility audit"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
