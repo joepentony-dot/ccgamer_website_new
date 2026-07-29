@@ -59,6 +59,7 @@ jobs:
       - name: Validate Phase 7F tooling
         run: |
           python -m py_compile scripts/apply-phase7f-redirect-route-performance.py
+          rm -rf scripts/__pycache__
           node --check scripts/rebuild-games.js
 
       - name: Record redirect baseline
