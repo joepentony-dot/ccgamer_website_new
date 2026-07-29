@@ -67,7 +67,6 @@
           "width": "1500",
           "height": "1032"
         },
-        "layout_shift_score": 0.031190337144268995,
         "axe_violation_count": 0,
         "serious_or_critical_nodes": 0,
         "passed": true
@@ -80,7 +79,6 @@
         "sized_media_count": 46,
         "unsized_target_media": 0,
         "archive_image_count": 46,
-        "layout_shift_score": 0.03965919109982095,
         "axe_violation_count": 0,
         "serious_or_critical_nodes": 0,
         "passed": true
@@ -93,7 +91,6 @@
         "sized_media_count": 2,
         "unsized_target_media": 0,
         "archive_image_count": 2,
-        "layout_shift_score": 0.056551151638019354,
         "axe_violation_count": 0,
         "serious_or_critical_nodes": 0,
         "passed": true
@@ -106,7 +103,6 @@
         "sized_media_count": 49,
         "unsized_target_media": 0,
         "archive_image_count": 49,
-        "layout_shift_score": 0.04071371677669829,
         "axe_violation_count": 0,
         "serious_or_critical_nodes": 0,
         "passed": true
@@ -119,7 +115,6 @@
         "sized_media_count": 99,
         "unsized_target_media": 0,
         "archive_image_count": 99,
-        "layout_shift_score": 0.047236999652713586,
         "axe_violation_count": 0,
         "serious_or_critical_nodes": 0,
         "passed": true

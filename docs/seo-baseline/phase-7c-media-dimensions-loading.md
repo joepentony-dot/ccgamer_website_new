@@ -34,15 +34,15 @@ Every targeted archive card now declares `width="320"`, `height="180"`, `loading
 
 ## Browser validation
 
-| Route | HTTP | Sized target media | Unsized target media | Serious/critical axe nodes | Layout-shift evidence |
-|---|---:|---:|---:|---:|---:|
-| Game: Zeewolf | 200 | 3 | 0 | 0 | 0.0312 |
-| Publisher: Ocean Software | 200 | 46 | 0 | 0 | 0.0397 |
-| Developer: Ocean | 200 | 2 | 0 | 0 | 0.0566 |
-| Year: 1989 | 200 | 49 | 0 | 0 | 0.0407 |
-| Platform: Amiga | 200 | 99 | 0 | 0 | 0.0472 |
+| Route | HTTP | Sized target media | Unsized target media | Serious/critical axe nodes |
+|---|---:|---:|---:|---:|
+| Game: Zeewolf | 200 | 3 | 0 | 0 |
+| Publisher: Ocean Software | 200 | 46 | 0 | 0 |
+| Developer: Ocean | 200 | 2 | 0 | 0 |
+| Year: 1989 | 200 | 49 | 0 | 0 |
+| Platform: Amiga | 200 | 99 | 0 | 0 |
 
-Layout-shift values are local lab evidence, not production Core Web Vitals field data.
+Raw local layout-shift observations are retained in the downloadable workflow artifact rather than committed, because the values naturally vary between browser runs. They are lab evidence, not production Core Web Vitals field data.
 
 ## Deliberate limits
 
