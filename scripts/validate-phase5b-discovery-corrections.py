@@ -168,7 +168,7 @@ def validate_phase5a_evidence(evidence: dict) -> dict:
         if route in orphan_routes:
             raise SystemExit(f"Resolved Phase 5A candidate remains orphaned: {route}")
 
-    hub_checks = {item.get("hub"): item for item in evidence.get("hub_checks", [])}
+    hub_checks = {item.get("hub"): item for item in evidence.get("hub_parent_checks", [])}
     publisher = hub_checks.get(PUBLISHER_ROUTE)
     if not publisher or "/games/" not in publisher.get("linked_from", []):
         raise SystemExit("Publisher hub is still not linked from Browse Games.")
