@@ -5,6 +5,7 @@
     "chris hülsbeck": "Chris Hülsbeck"
   };
 
+  // Keep these route-normalisation rules aligned with scripts/composer-utils.js.
   function normalizeComposerName(name) {
     if (!name) return "";
 
