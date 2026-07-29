@@ -1,0 +1,247 @@
+name: Phase 6C Controlled Powerdrome Addition
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-6c-powerdrome-addition.yml"
+      - "scripts/phase6c_add_powerdrome.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-6c-powerdrome-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  add-build-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Phase 6C branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected files and source baseline
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            > "$RUNNER_TEMP/phase6c-protected.sha256"
+          git show origin/main:games/games.json > "$RUNNER_TEMP/games-baseline.json"
+
+      - name: Validate Phase 6C tooling
+        run: |
+          python -m py_compile scripts/phase6c_add_powerdrome.py
+          node --check scripts/rebuild-games.js
+          node --check scripts/validate-games-source.js
+
+      - name: Prepare temporary owner-review thumbnail
+        shell: bash
+        run: |
+          mkdir -p resources/images/thumbnails/all
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://i.ytimg.com/vi/99PGHzA1SyU/hqdefault.jpg" \
+            --output resources/images/thumbnails/all/powerdrome_phase6c.jpg
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("resources/images/thumbnails/all/powerdrome_phase6c.jpg")
+          data = path.read_bytes()
+          if len(data) < 1000 or not data.startswith(b"\xff\xd8\xff"):
+              raise SystemExit("Temporary Powerdrome review asset is not a usable JPEG.")
+          print(f"Temporary review thumbnail: {len(data)} bytes")
+          PY
+
+      - name: Insert reviewed Powerdrome source record
+        run: |
+          python scripts/phase6c_add_powerdrome.py \
+            --apply \
+            --baseline "$RUNNER_TEMP/games-baseline.json" \
+            --evidence "$RUNNER_TEMP/phase-6c-insertion.json"
+
+      - name: Run authoritative publishing command
+        run: |
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+
+      - name: Verify deterministic repeat generation
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/phase6c-first.diff"
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          git diff --binary > "$RUNNER_TEMP/phase6c-second.diff"
+          if ! cmp -s "$RUNNER_TEMP/phase6c-first.diff" "$RUNNER_TEMP/phase6c-second.diff"; then
+            echo "Phase 6C repeat-generation mismatch:"
+            diff -u "$RUNNER_TEMP/phase6c-first.diff" "$RUNNER_TEMP/phase6c-second.diff" || true
+            exit 1
+          fi
+          git diff --check
+
+      - name: Rerun complete internal-link audit
+        run: |
+          python scripts/phase5a_internal_link_audit.py \
+            --json-output "$RUNNER_TEMP/phase-6c-link-evidence.json" \
+            --report-output "$RUNNER_TEMP/phase-6c-link-report.md"
+
+      - name: Validate Powerdrome publication outputs
+        run: |
+          python scripts/phase6c_add_powerdrome.py \
+            --validate \
+            --baseline "$RUNNER_TEMP/games-baseline.json" \
+            --link-evidence "$RUNNER_TEMP/phase-6c-link-evidence.json" \
+            --evidence "$RUNNER_TEMP/phase-6c-evidence.json" \
+            --report docs/seo-baseline/phase-6c-powerdrome-addition.md
+
+      - name: Upload Phase 6C evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-6c-powerdrome-evidence
+          path: |
+            ${{ runner.temp }}/phase-6c-insertion.json
+            ${{ runner.temp }}/phase-6c-evidence.json
+            ${{ runner.temp }}/phase-6c-link-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase6c-protected.sha256"
+
+      - name: Confirm exact controlled scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed_exact = {
+              ".github/workflows/phase-6c-powerdrome-addition.yml",
+              "scripts/phase6c_add_powerdrome.py",
+              "docs/seo-baseline/phase-6c-powerdrome-addition.md",
+              "games/games.json",
+              "games/games-index.json",
+              "games/games-search.json",
+              "games/index.html",
+              "games/archive-navigation.json",
+              "games/powerdrome.html",
+              "games/powerdrome/index.html",
+              "games/downloads/index.html",
+              "games/years/1989/index.html",
+              "games/platforms/amiga/index.html",
+              "resources/images/thumbnails/all/powerdrome_phase6c.jpg",
+              "js/developer-pages.js",
+              "js/music-composer-pages.js",
+              "data/composer-credits.json",
+              "tools/seo/static-pages.json",
+              "sitemap.xml",
+              "sitemap-pages.xml",
+              "sitemap-games.xml",
+              "docs/seo-baseline/phase-3b-developer-archives.md",
+              "docs/seo-baseline/phase-3c-composer-archives.md",
+              "docs/seo-baseline/phase-4b-year-platform-archives.md",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
+              "docs/seo-baseline/phase-4d-year-platform-validation.md",
+              "docs/seo-baseline/phase-6b-reliable-games-publishing.md",
+          }
+          allowed_prefixes = (
+              "games/publishers/",
+              "games/developers/",
+          )
+          changed = sorted(set(subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()) | set(subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()))
+
+          unexpected = [
+              path for path in changed
+              if path not in allowed_exact and not path.startswith(allowed_prefixes)
+          ]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 6C paths: {unexpected}")
+
+          protected_public = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+          }
+          if protected_public.intersection(changed):
+              raise SystemExit("A protected public file entered the Phase 6C diff.")
+
+          existing_game_pages = []
+          for path in changed:
+              if not path.startswith("games/"):
+                  continue
+              relative = path.removeprefix("games/")
+              if relative in {"powerdrome.html", "powerdrome/index.html"}:
+                  continue
+              if relative.startswith(("publishers/", "developers/", "years/", "platforms/", "downloads/")):
+                  continue
+              if relative in {"games.json", "games-index.json", "games-search.json", "index.html", "archive-navigation.json"}:
+                  continue
+              if relative.endswith(".html") or relative.endswith("/index.html"):
+                  existing_game_pages.append(path)
+          if existing_game_pages:
+              raise SystemExit(f"Existing canonical game pages changed: {existing_game_pages}")
+
+          print(f"Validated controlled Phase 6C scope ({len(changed)} files).")
+          PY
+
+      - name: Remove Python cache
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Commit controlled source and generated output
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add \
+            games \
+            music \
+            data \
+            js \
+            resources/images/thumbnails/all/powerdrome_phase6c.jpg \
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml \
+            docs/seo-baseline/phase-6c-powerdrome-addition.md \
+            docs/seo-baseline/phase-3b-developer-archives.md \
+            docs/seo-baseline/phase-3c-composer-archives.md \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md \
+            docs/seo-baseline/phase-4d-year-platform-validation.md \
+            docs/seo-baseline/phase-6b-reliable-games-publishing.md
+
+          git reset -- index.html home.html resources/css/intro.css js/index-intro.js
+
+          if git diff --cached --quiet; then
+            echo "Phase 6C output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Add controlled Powerdrome game record"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
