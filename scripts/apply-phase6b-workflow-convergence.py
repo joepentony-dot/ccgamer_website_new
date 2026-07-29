@@ -159,6 +159,7 @@ def patch_integrator_copy() -> bool:
 
 def patch_transaction_diagnostics() -> bool:
     source = TRANSACTION.read_text(encoding="utf-8")
+    source = source.replace('"output_tail": output[-12000:]', '"output_tail": output[-60000:]')
     old = """    if not all_checks:
         failed = {
             result["variant"]: [name for name, passed in result["checks"].items() if not passed]
@@ -169,16 +170,17 @@ def patch_transaction_diagnostics() -> bool:
     new = """    if not all_checks:
         for result in transactions:
             if not result["command"].get("passed"):
-                print(f"\\n--- {result['variant'].upper()} AUTHORITATIVE COMMAND OUTPUT ---")
+                print(f"\n--- {result['variant'].upper()} AUTHORITATIVE COMMAND OUTPUT ---")
                 print(result["command"].get("output_tail", ""))
-                print(f"--- END {result['variant'].upper()} OUTPUT ---\\n")
+                print(f"--- END {result['variant'].upper()} OUTPUT ---\n")
         failed = {
             result["variant"]: [name for name, passed in result["checks"].items() if not passed]
             for result in transactions
         }
         raise SystemExit(f"Phase 6B publishing transaction failed: {failed}")
 """
-    return write_if_changed(TRANSACTION, replace_once(source, old, new, "transaction diagnostics"))
+    source = replace_once(source, old, new, "transaction diagnostics")
+    return write_if_changed(TRANSACTION, source)
 
 
 def patch_workflow(relative: str) -> bool:
