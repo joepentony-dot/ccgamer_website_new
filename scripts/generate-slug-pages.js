@@ -143,7 +143,6 @@ function buildRedirectStubHtml(slug, canonicalUrl, title = "Game", description =
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<script src="/js/analytics.js" defer></script>
 <meta name="robots" content="noindex,follow">
 <meta http-equiv="refresh" content="0; url=/games/${escapeHtml(slug)}/">
 <script>
