@@ -1,43 +1,12 @@
 name: Phase 6A Games Editor Publishing Audit
 
-# Final app-authored validation trigger; the audit remains read-only.
-
+# Historical read-only audit retained for deliberate manual verification.
+# Phase 6B is the current catalogue-growth and editor-publishing gate.
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/phase-6a-games-editor-publishing-audit.yml"
-      - "scripts/phase6a_games_editor_publishing_audit.py"
-      - "admin/GAMES_EDITOR.md"
-      - "admin/games-editor.html"
-      - "admin/games-json-editor.html"
-      - "admin/js/games-editor.js"
-      - "admin/js/games-api.js"
-      - "admin/templates/game-landing-template.html"
-      - "admin/templates/game-redirect-template.html"
-      - "scripts/admin-local-api.js"
-      - "scripts/rebuild-games.js"
-      - "scripts/build-games.js"
-      - "scripts/generate-slug-pages.js"
-      - "scripts/generate-publisher-pages.js"
-      - "scripts/generate-developer-pages.js"
-      - "scripts/generate-composer-pages.js"
-      - "scripts/generate-year-platform-pages.js"
-      - "scripts/integrate-year-platform-discovery.js"
-      - "scripts/generate-downloads-page.js"
-      - "scripts/update-downloads-static-pages.js"
-      - "scripts/generate-sitemaps.js"
-      - "scripts/validate-sitemaps.js"
-      - "scripts/validate-year-platform-discovery.js"
-      - "tests/games-editor-package.test.mjs"
-      - "package.json"
-      - "games/games.json"
-      - "docs/seo-baseline/phase-6a-games-editor-publishing-audit.md"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: phase-6a-games-editor-${{ github.ref }}
@@ -48,12 +17,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out source branch
+      - name: Check out selected branch
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
+          fetch-depth: 1
           show-progress: false
 
       - name: Set up Python
@@ -75,7 +42,7 @@ jobs:
             resources/css/intro.css \
             js/index-intro.js \
             games/games.json \
-            > /tmp/phase6a-protected.sha256
+            > "$RUNNER_TEMP/phase6a-protected.sha256"
 
       - name: Validate audit tooling
         run: python -m py_compile scripts/phase6a_games_editor_publishing_audit.py
@@ -84,18 +51,20 @@ jobs:
         run: |
           python scripts/phase6a_games_editor_publishing_audit.py \
             --json-output "$RUNNER_TEMP/phase-6a-games-editor-evidence.json" \
-            --report-output docs/seo-baseline/phase-6a-games-editor-publishing-audit.md
+            --report-output "$RUNNER_TEMP/phase-6a-games-editor-report.md"
 
       - name: Verify audit evidence
         shell: bash
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
 
-          evidence = json.loads(Path("${{ runner.temp }}/phase-6a-games-editor-evidence.json").read_text())
+          temp = Path(os.environ["RUNNER_TEMP"])
+          evidence = json.loads((temp / "phase-6a-games-editor-evidence.json").read_text())
           real_games = json.loads(Path("games/games.json").read_text())
-          required = [
+          required = {
               "baseline_game_count",
               "source_inspection",
               "existing_package_test",
@@ -103,8 +72,8 @@ jobs:
               "blockers",
               "verdict",
               "protected_hashes_unchanged",
-          ]
-          missing = [key for key in required if key not in evidence]
+          }
+          missing = sorted(required.difference(evidence))
           if missing:
               raise SystemExit(f"Missing Phase 6A evidence keys: {missing}")
           if evidence["baseline_game_count"] != len(real_games):
@@ -128,7 +97,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: phase-6a-games-editor-publishing-evidence
-          path: ${{ runner.temp }}/phase-6a-games-editor-evidence.json
+          path: |
+            ${{ runner.temp }}/phase-6a-games-editor-evidence.json
+            ${{ runner.temp }}/phase-6a-games-editor-report.md
           if-no-files-found: error
           retention-days: 30
 
@@ -136,42 +107,9 @@ jobs:
         run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Confirm protected files are unchanged
-        run: sha256sum --check /tmp/phase6a-protected.sha256
+        run: sha256sum --check "$RUNNER_TEMP/phase6a-protected.sha256"
 
-      - name: Confirm exact read-only audit scope
-        shell: bash
+      - name: Confirm audit is read only
         run: |
-          python - <<'PY'
-          import subprocess
-
-          allowed = {
-              ".github/workflows/phase-6a-games-editor-publishing-audit.yml",
-              "scripts/phase6a_games_editor_publishing_audit.py",
-              "docs/seo-baseline/phase-6a-games-editor-publishing-audit.md",
-          }
-          tracked = subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
-          ).splitlines()
-          untracked = subprocess.check_output(
-              ["git", "ls-files", "--others", "--exclude-standard"], text=True
-          ).splitlines()
-          changed = sorted({*tracked, *untracked})
-          unexpected = sorted(set(changed).difference(allowed))
-          if unexpected:
-              raise SystemExit(f"Unexpected Phase 6A paths: {unexpected}")
-          print(f"Validated Phase 6A scope: {changed}")
-          PY
-
-      - name: Commit concise Phase 6A report
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
-        shell: bash
-        run: |
-          git add docs/seo-baseline/phase-6a-games-editor-publishing-audit.md
-          if git diff --cached --quiet; then
-            echo "Phase 6A report is already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Record Phase 6A games editor publishing audit"
-          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          git diff --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
