@@ -87,6 +87,7 @@ jobs:
             --live "$RUNNER_TEMP/phase-7a-live.json" \
             --report docs/seo-baseline/phase-7a-performance-accessibility-audit.md \
             --evidence docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-7a-performance-accessibility-audit.md
           test -s docs/seo-baseline/phase-7a-performance-accessibility-audit.md
           test -s docs/seo-baseline/phase-7a-performance-accessibility-evidence.json
 
