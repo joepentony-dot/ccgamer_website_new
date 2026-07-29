@@ -39,7 +39,7 @@ Every targeted archive card now declares `width="320"`, `height="180"`, `loading
 | Game: Zeewolf | 200 | 3 | 0 | 0 | 0.0312 |
 | Publisher: Ocean Software | 200 | 46 | 0 | 0 | 0.0397 |
 | Developer: Ocean | 200 | 2 | 0 | 0 | 0.0566 |
-| Year: 1989 | 200 | 49 | 0 | 0 | 0.0319 |
+| Year: 1989 | 200 | 49 | 0 | 0 | 0.0407 |
 | Platform: Amiga | 200 | 99 | 0 | 0 | 0.0472 |
 
 Layout-shift values are local lab evidence, not production Core Web Vitals field data.
