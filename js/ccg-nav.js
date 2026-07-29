@@ -110,6 +110,37 @@
     });
   }
 
+  function ensureSkipLink() {
+    if (document.querySelector('.ccg-skip-link')) return;
+
+    const main = document.querySelector('main, [role="main"]');
+    if (!main) return;
+
+    if (!main.id) main.id = 'ccg-main-content';
+
+    const skipLink = document.createElement('a');
+    skipLink.className = 'ccg-skip-link';
+    skipLink.href = `#${main.id}`;
+    skipLink.textContent = 'Skip to main content';
+    skipLink.setAttribute('data-ccg-skip-link', 'true');
+
+    skipLink.addEventListener('click', function () {
+      const hadTabindex = main.hasAttribute('tabindex');
+      if (!hadTabindex) main.setAttribute('tabindex', '-1');
+
+      window.setTimeout(function () {
+        main.focus({ preventScroll: true });
+        if (!hadTabindex) {
+          main.addEventListener('blur', function () {
+            main.removeAttribute('tabindex');
+          }, { once: true });
+        }
+      }, 0);
+    });
+
+    document.body.insertBefore(skipLink, document.body.firstChild);
+  }
+
   function rebuildList(selector, links) {
     const list = document.querySelector(selector);
     if (!list) return;
@@ -229,6 +260,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     ensureRequiredCSS();
+    ensureSkipLink();
     rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
     rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
     addGamesDownloadsShortcut();

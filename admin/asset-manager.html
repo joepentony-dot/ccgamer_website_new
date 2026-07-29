@@ -61,7 +61,7 @@
         <div class="asset-controls">
           <button class="ccg-btn ccg-btn--primary" type="button" data-refresh-index>Scan + Index</button>
           <button class="ccg-btn ccg-btn--ghost" type="button" data-run-health>Health Check</button>
-          <input type="search" placeholder="Search by filename/path" data-asset-search />
+          <input type="search" placeholder="Search by filename/path" aria-label="Search indexed assets" data-asset-search />
         </div>
         <ul class="asset-index-list" data-asset-list></ul>
       </div>
@@ -94,7 +94,7 @@
         <h2>Filename + Path Normaliser</h2>
         <p class="asset-muted">No forced renames. Suggestions only.</p>
         <div class="normaliser-controls">
-          <input type="text" data-filename-input placeholder="Paste filename or path" />
+          <input type="text" data-filename-input aria-label="Filename or asset path to normalise" placeholder="Paste filename or path" />
           <button class="ccg-btn ccg-btn--ghost" type="button" data-suggest-name>Suggest</button>
         </div>
         <p class="normaliser-output" data-normaliser-output>Awaiting input…</p>
@@ -118,8 +118,8 @@
         <h2>Game Linking</h2>
         <p class="asset-muted">Attach asset paths to games.json records with validation before commit.</p>
         <div class="linking-controls">
-          <input type="text" data-game-id placeholder="Game slug (e.g. monkey-island)" />
-          <input type="text" data-asset-path placeholder="Asset path (e.g. resources/images/games/boxes-3d/monkey-island.webp)" />
+          <input type="text" data-game-id aria-label="Game slug for asset linking" placeholder="Game slug (e.g. monkey-island)" />
+          <input type="text" data-asset-path aria-label="Asset path to link to the selected game" placeholder="Asset path (e.g. resources/images/games/boxes-3d/monkey-island.webp)" />
           <button class="ccg-btn ccg-btn--primary" type="button" data-validate-link>Validate + Prepare Insert</button>
         </div>
         <pre class="linking-result" data-linking-result>Waiting for game + path input.</pre>

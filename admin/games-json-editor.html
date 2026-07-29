@@ -172,7 +172,7 @@
   <header>
     <div><strong>Games JSON Full Editor & Audit</strong> <span class="message">(offline, memory-only, no auto-save)</span></div>
     <div class="load-controls">
-      <input id="fileInput" type="file" accept="application/json,.json" />
+      <input id="fileInput" type="file" accept="application/json,.json" aria-label="Load games JSON file" />
       <div id="dropzone" class="dropzone">Drop games.json here</div>
       <span id="fileInfo" class="message">No file loaded.</span>
     </div>
@@ -189,10 +189,10 @@
   <div class="shell">
     <aside>
       <div class="panel-head">
-        <input id="searchInput" type="search" placeholder="Search title / id / slug" style="width:100%;" disabled />
+        <input id="searchInput" type="search" placeholder="Search title / id / slug" aria-label="Search games by title, ID or slug" style="width:100%;" disabled />
       </div>
       <div class="panel-head">
-        <select id="sortSelect" style="width:100%;" disabled>
+        <select id="sortSelect" aria-label="Sort games" style="width:100%;" disabled>
           <option value="input">Input order</option>
           <option value="title">Title A→Z</option>
           <option value="yearAsc">Year ↑</option>

@@ -4,7 +4,7 @@
     window.ccgIsEditableTarget = function ccgIsEditableTarget(target) {
       if (!target) return false;
       const tag = (target.tagName || '').toLowerCase();
-      return tag === 'input' || tag === 'textarea' || target.isContentEditable === true;
+      return tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable === true;
     };
   }
 
