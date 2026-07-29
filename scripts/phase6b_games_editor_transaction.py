@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -168,6 +169,11 @@ def files_containing(root: Path, directory: str, needle: str) -> list[str]:
     return sorted(matches)
 
 
+
+def count_anchor_href(html: str, href: str) -> int:
+    pattern = re.compile(r'<a\b[^>]*\bhref=["\']' + re.escape(href) + r'["\']', re.I | re.S)
+    return len(pattern.findall(html))
+
 def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
     temp_root = Path(tempfile.mkdtemp(prefix=f"ccg-{variant['key']}-"))
     sandbox = temp_root / "repo"
@@ -177,6 +183,15 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
         command_log.append(add)
         if not add["passed"]:
             return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
+
+        for script_name in [
+            "scripts/apply-phase6b-publishing.py",
+            "scripts/phase6b-remove-build-games-composer-owner.py",
+        ]:
+            prepare = run([sys.executable, script_name], sandbox)
+            command_log.append(prepare)
+            if not prepare["passed"]:
+                return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
 
         games_path = sandbox / "games" / "games.json"
         games = json.loads(read(games_path))
@@ -217,8 +232,8 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
             "publisher_archive_once": len(files_containing(sandbox, "games/publishers", href)) == 1,
             "developer_archive_once": len(files_containing(sandbox, "games/developers", href)) == 1,
             "composer_archive_once": len(files_containing(sandbox, "music", href)) >= 1,
-            "year_archive_once": year_html.count(href) == 1,
-            "platform_archive_once": platform_html.count(href) == 1,
+            "year_archive_once": count_anchor_href(year_html, href) == 1,
+            "platform_archive_once": count_anchor_href(platform_html, href) == 1,
             "downloads_archive_once": downloads_html.count(slug) >= 1,
             "sitemap_once": sitemap_games.count(canonical_url) == 1,
         }
@@ -312,7 +327,7 @@ The real catalogue remained at **{evidence['baseline_game_count']} games**. Synt
 2. Generate game wrappers, redirects, index and search data.
 3. Generate publisher, developer and composer archives.
 4. Generate and integrate year and platform archives.
-5. Generate downloads and retro outputs.
+5. Generate downloads and update archive registration.
 6. Generate all sitemaps.
 7. Validate sitemaps, SEO and year/platform membership.
 

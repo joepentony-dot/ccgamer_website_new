@@ -1,7 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const crypto = require("crypto");
-const { spawnSync } = require("child_process");
 const gameOutputUtils = require("./game-output-utils");
 const { processChangedGamesOnly } = require("./generate-slug-pages");
 const games = require("../games/games.json");
@@ -318,40 +316,16 @@ function buildGamesSearchData(gamesList) {
   }));
 }
 
-function runSeoVerification() {
-  const result = spawnSync(process.execPath, [path.join(__dirname, 'verify-seo.mjs')], { cwd: path.join(__dirname, '..'), stdio: 'inherit' });
-  if (result.status !== 0) {
-    throw new Error(`verify-seo.mjs failed with status ${result.status ?? 1}`);
-  }
-}
-
 function main() {
-  const indexChanged = writeFileIfChanged('games/games-index.json', `${JSON.stringify(buildGamesIndexData(games), null, 2)}\n`);
-  const searchChanged = writeFileIfChanged('games/games-search.json', `${JSON.stringify(buildGamesSearchData(games), null, 2)}\n`);
-
-  const composerEntries = buildComposerEntries(games);
-  const musicHash = crypto.createHash('sha256').update(JSON.stringify(composerEntries)).digest('hex');
-  const musicHashPath = path.join('music', '.music-data.hash');
-  const previousMusicHash = fs.existsSync(musicHashPath) ? fs.readFileSync(musicHashPath, 'utf8').trim() : '';
-  let musicWrites = 0;
-
-  if (musicHash !== previousMusicHash) {
-    composerEntries.forEach((entry) => {
-      const canonicalFile = path.join('music', entry.slug, 'index.html');
-      if (!fs.existsSync(canonicalFile) && writeFileIfChanged(canonicalFile, renderComposerPage(entry))) musicWrites += 1;
-      if (writeFileIfChanged(path.join('music', `${entry.slug}.html`), renderComposerRedirectPage(entry))) musicWrites += 1;
-    });
-    cleanStaleComposerPages(composerEntries);
-    if (writeFileIfChanged(path.join('music', 'index.html'), renderMusicIndexPage())) musicWrites += 1;
-    if (writeFileIfChanged(musicHashPath, `${musicHash}\n`)) musicWrites += 1;
-  }
+  const indexChanged = writeFileIfChanged('games/games-index.json', `${JSON.stringify(buildGamesIndexData(games), null, 2)}
+`);
+  const searchChanged = writeFileIfChanged('games/games-search.json', `${JSON.stringify(buildGamesSearchData(games), null, 2)}
+`);
 
   const pageResult = processChangedGamesOnly(games);
   console.log(`[DATA] games-index.json ${indexChanged ? 'updated' : 'unchanged'}`);
   console.log(`[DATA] games-search.json ${searchChanged ? 'updated' : 'unchanged'}`);
-  console.log(`[DATA] music pages written: ${musicWrites}`);
   console.log(`[DATA] game pages processed incrementally: ${pageResult.planned}`);
-  runSeoVerification();
 }
 
 if (require.main === module) {

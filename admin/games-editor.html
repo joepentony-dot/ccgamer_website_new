@@ -67,7 +67,7 @@
       <p>4-step wizard: add one game entry with locked templates, validate it, and download one deployment ZIP.</p>
       <p>
         <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-library">Fetch live games.json</button>
-        <button type="button" class="ccg-btn ccg-btn--ghost" data-action="rebuild-all">Rebuild All Game Pages</button>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-action="rebuild-all">Show Publishing Command</button>
       </p>
       <p class="status" data-top-status>Loading existing games…</p>
       <p class="status" data-rebuild-status></p>
@@ -98,8 +98,9 @@
           <label for="lemonUrl">Lemon64 URL</label>
           <div class="actions">
             <input type="text" id="lemonUrl" data-field="lemonUrl" placeholder="https://www.lemon64.com/game/tusker" />
-            <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-lemon" onclick="fetchLemonData()">Auto Fill</button>
+            <button type="button" class="ccg-btn ccg-btn--ghost" data-action="fetch-lemon" onclick="fetchLemonData()">Auto Fill from Lemon64</button>
           </div>
+          <p class="hint">Lemon64 can assist with title, year, publisher and credits, but imported facts must be reviewed before export.</p>
         </div>
         <div class="full">
           <label>Genres *</label>
