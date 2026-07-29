@@ -1,3 +1,4 @@
+# Final Phase 4C validation trigger after generated workflows have settled.
 name: Phase 4C Year and Platform Discovery
 
 on:
