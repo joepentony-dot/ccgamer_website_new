@@ -69,7 +69,7 @@ def transform_single_tag(text: str, pattern: re.Pattern[str], transform: Callabl
 def apply_generator_card_dimensions(relative: str) -> bool:
     text = read_text(relative)
     pattern = re.compile(
-        r"<img\b(?=[^>]*getThumbnailUrl\(game\.thumbnail\))(?=[^>]*loading=\"lazy\")(?=[^>]*decoding=\"async\")[^>]*>",
+        r'<img\b(?=[^>]*alt="\$\{htmlEscape\(game\.title\)\} cover art")(?=[^>]*loading="lazy")(?=[^>]*decoding="async")[^>]*>',
         re.I | re.S,
     )
     matches = list(pattern.finditer(text))
@@ -141,8 +141,17 @@ def apply_runtime_media_guards() -> bool:
     if marker in text:
         return False
 
-    old = """            heroThumb.src = thumb;\n            heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;\n"""
-    new = """            heroThumb.src = thumb;\n            heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;\n            heroThumb.loading = \"eager\";\n            heroThumb.decoding = \"async\";\n            heroThumb.fetchPriority = \"high\";\n            heroThumb.width = 320;\n            heroThumb.height = 180;\n"""
+    old = """            heroThumb.src = thumb;
+            heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
+"""
+    new = """            heroThumb.src = thumb;
+            heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
+            heroThumb.loading = "eager";
+            heroThumb.decoding = "async";
+            heroThumb.fetchPriority = "high";
+            heroThumb.width = 320;
+            heroThumb.height = 180;
+"""
     if text.count(old) != 1:
         raise SystemExit("js/load-single-game.js: expected one hero assignment block")
     write_text(relative, text.replace(old, new, 1))
