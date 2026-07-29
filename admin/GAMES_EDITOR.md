@@ -1,62 +1,139 @@
-# CCG Games JSON Editor
+# CCG Games Editor and Publishing Workflow
 
-## Setup
-1. Deploy `/admin/edge-functions/games-json-proxy/index.ts` as Supabase Edge Function named `games-json-proxy`.
-2. Set edge function secrets:
-   - `GH_REPO_OWNER`
-   - `GH_REPO_NAME`
-   - `GH_REPO_BRANCH`
-   - `GH_TOKEN` (repo write scope)
-   - `SUPABASE_URL`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-3. Run `admin/games-editor-supabase.sql`.
-4. Ensure `user_roles` contains `editor`, `admin`, or `superadmin`.
-5. Open `/admin/games-editor.html`.
+## Authoritative workflow
 
-## Permissions
-- **editor**: view + edit in browser only, no save.
-- **admin**: edit + save.
-- **superadmin**: edit + save + restore backups.
+The Game Builder creates a reviewed deployment package. The repository command below is the authoritative publishing step:
 
-## Workflow
-1. Filter/search and select record.
-2. Edit in modal with live preview.
-3. Use **Diff** to inspect JSON changes.
-4. Save pipeline runs: validate -> backup -> commit -> deployment confirmation message.
+```bash
+node scripts/rebuild-games.js
+```
 
-## Recovery
-- Backups are stored in `games_json_backups` before each save.
-- Last 20 backups are retained automatically.
-- Superadmins can click **Restore** on a backup item.
+Do not treat the ZIP's generated archive or sitemap files as final until this command has completed successfully.
 
-## Troubleshooting
-- `Missing CSRF token`: clear session storage and refresh.
-- `Invalid auth session`: re-login via `/admin/login.html`.
-- `Role cannot save`: role is editor.
-- `GitHub API failed`: check token, repo path, and branch settings.
+## Before adding a game
 
-## Best practices
-- Keep slugs stable to avoid URL regressions.
-- Resolve warnings for missing file paths before save.
-- Use meaningful commit messages (auto-generated, but editable in API payload if needed).
-- Review diff output on every bulk edit.
+Check the historical information manually. The editor validates structure, paths and duplicate IDs/slugs, but it does not independently prove that a release year, publisher, developer, composer or other credit is historically accurate.
 
-## Test plan
-- Auth gate checks for unauthenticated user.
-- Role enforcement for editor/admin/superadmin.
-- Record validation errors block save.
-- Backup creation and trim-to-20 verified in Supabase.
-- Restore path only available to superadmin.
-- 1000 record pagination remains responsive with table/card toggles.
+Required information:
 
-## Regression checks
-- Existing `/admin/dashboard.html`, login, and legacy manager remain unchanged.
-- `games/games.json` key order preserved by save transformer.
+- title
+- C64 or Amiga system
+- release year
+- unique slug
+- unique ID
+- at least one supported genre
+- description
+- valid 11-character YouTube video ID
+- publisher
+- thumbnail path and thumbnail file
+- CCG rating
 
-## Performance impact
-- Initial load uses one games payload + one repo tree payload.
-- UI renders paginated slices (25 per page) to avoid full DOM cost.
+Optional information includes collections, manual URL, disk/download links, music files, developer, programmer, graphics and musician credits.
 
-## Lighthouse notes
-- Admin page is noindex and internal; still supports responsive layout and semantic controls.
-- Further improvement: add code-split chunking if admin bundle grows.
+## Lemon64 Auto Fill
+
+Lemon64 Auto Fill is an assisted import for C64 records. It may populate:
+
+- title
+- release year
+- publisher
+- programmer
+- musician
+- graphics
+- a recognised genre
+
+The imported information remains editable. Review every imported value against the Lemon64 page and any other source you trust before exporting. The helper must not be treated as an automatic factual guarantee.
+
+## File naming
+
+- Thumbnail: `resources/images/thumbnails/all/<slug>.<png|jpg|jpeg|webp>`
+- Optional 3D box: `resources/images/games/boxes-3d/<slug>.webp`
+- Optional game audio: `resources/audio/games/<slug>.mp3` or the explicitly recorded filenames
+- Manuals and downloads must use the final URLs intended for the public game record
+
+Keep the slug stable after publication because it owns the canonical URL at `/games/<slug>/`.
+
+## Publishing a new game
+
+1. Open `/admin/games-editor.html` and use **Fetch live games.json**.
+2. Enter the game details and resolve every validation error.
+3. Use Lemon64 Auto Fill only as an optional starting point, then check the imported facts.
+4. Confirm the thumbnail exists or include it in the ZIP.
+5. Export the **full** deployment package.
+6. Place the package files into the repository, including the updated `games/games.json` and required assets.
+7. From the repository root, run:
+
+   ```bash
+   node scripts/rebuild-games.js
+   ```
+
+8. Review the complete generated diff.
+9. Commit the source record, assets and generated output to a branch.
+10. Open a pull request and wait for the central publishing workflow and read-only validators to pass.
+11. Merge only after validation succeeds.
+
+## What the publishing command generates
+
+The authoritative command validates and regenerates, in order:
+
+1. game source integrity
+2. canonical wrappers and legacy redirects
+3. game index and search data
+4. `VideoGame` and `BreadcrumbList` structured data
+5. publisher archives
+6. developer archives
+7. composer archives
+8. year archives
+9. platform archives
+10. archive discovery integration
+11. downloads archive
+12. retro outputs
+13. page and game sitemaps
+14. root sitemap index
+15. sitemap, SEO and year/platform validation
+
+Expected totals are derived from the current `games/games.json`. The validators still reject duplicate IDs/slugs, unsupported platforms, catalogue loss below the protected baseline, missing archive membership, missing canonical routes and malformed output.
+
+## Save and deployment modes
+
+### Full deployment ZIP — recommended editor output
+
+Use this when adding a game. It contains the complete merged game database plus the provisional wrapper, redirect, search/index and sitemap files. The repository rebuild command remains mandatory.
+
+### Entry-only JSON — manual fallback
+
+Use only when you deliberately want to merge one object into `games/games.json` by hand. Maintain the existing key order and sorting discipline, then run the authoritative command.
+
+### Supabase/GitHub save
+
+The Supabase proxy can commit `games/games.json` after role, validation and backup checks. It does not replace the complete publishing command. The resulting GitHub change must still pass the central publishing workflow before merge.
+
+### Browser/local download API
+
+Client-download tools create local files only. They do not update the repository or regenerate the public archive by themselves.
+
+## Recognising success
+
+A successful publish ends with:
+
+```text
+[rebuild-games] Complete publishing chain passed
+```
+
+The pull request must also show a successful **Reliable Games Publishing** workflow. The new game should appear once in its canonical wrapper, legacy redirect, search data, publisher, developer, composer, year, platform, downloads archive when applicable and game sitemap.
+
+## When validation fails
+
+- Read the first failing command in the terminal or workflow log.
+- Correct the source field, missing asset or generated inconsistency.
+- Run `node scripts/rebuild-games.js` again.
+- Do not manually suppress a validator or change expected totals to force a pass.
+- Do not merge a game addition while the central publishing workflow is failing.
+
+## Permissions and recovery
+
+- `editor`: view and edit in browser; saving depends on the configured route.
+- `admin`: save where the Supabase/GitHub route is configured.
+- `superadmin`: save and restore configured backups.
+
+Supabase backups are retained before direct JSON saves where that deployment is enabled. Repository history and pull requests remain the final recovery path for generated publishing output.
