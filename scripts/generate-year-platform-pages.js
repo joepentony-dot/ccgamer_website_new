@@ -451,7 +451,7 @@ function renderGameCard(game) {
        data-game-system="${htmlEscape(game.platform)}"
        data-game-year="${game.year}">
         <span class="ccg-archive-game-card__image">
-            <img src="${htmlEscape(game.thumbnail)}" alt="${htmlEscape(game.title)} cover art" loading="lazy" decoding="async">
+            <img src="${htmlEscape(game.thumbnail)}" alt="${htmlEscape(game.title)} cover art" loading="lazy" decoding="async" width="320" height="180">
         </span>
         <span class="ccg-archive-game-card__body">
             <span class="ccg-archive-game-card__title">${htmlEscape(game.title)}</span>

@@ -1353,6 +1353,11 @@ function renderGame(game) {
         if (heroThumb) {
             heroThumb.src = thumb;
             heroThumb.alt = `${resolveCanonicalGameTitle(game)} cover art`;
+            heroThumb.loading = "eager";
+            heroThumb.decoding = "async";
+            heroThumb.fetchPriority = "high";
+            heroThumb.width = 320;
+            heroThumb.height = 180;
         }
         if (heroTitle) heroTitle.textContent = resolveCanonicalGameTitle(game);
         renderHeroMeta(game);

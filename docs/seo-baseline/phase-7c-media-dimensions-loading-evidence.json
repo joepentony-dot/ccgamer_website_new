@@ -1,0 +1,154 @@
+{
+  "baseline_missing_image_dimensions": 29493,
+  "current_missing_image_dimensions": 27376,
+  "dimension_issues_removed": 2117,
+  "baseline_iframes_not_lazy": 23,
+  "current_iframes_not_lazy": 22,
+  "archive_cards": {
+    "total": 2116,
+    "by_family": {
+      "games/publishers": 750,
+      "games/developers": 64,
+      "games/years": 651,
+      "games/platforms": 651
+    },
+    "failures": []
+  },
+  "markup": {
+    "hero": {
+      "loading": "eager",
+      "decoding": "async",
+      "fetchpriority": "high",
+      "width": "320",
+      "height": "180"
+    },
+    "iframe": {
+      "loading": "lazy",
+      "width": "560",
+      "height": "315",
+      "title": "Game video"
+    },
+    "logo": {
+      "loading": "eager",
+      "decoding": "async",
+      "width": "1500",
+      "height": "1032"
+    },
+    "runtime_guard": true,
+    "phase6b_pr_writer_disabled": true
+  },
+  "live": {
+    "base_url": "http://127.0.0.1:4173",
+    "chrome_path": "/usr/bin/google-chrome",
+    "axe_version": "4.12.1",
+    "routes": [
+      {
+        "label": "Game: Zeewolf",
+        "path": "/games/game.html?id=zeewolf",
+        "type": "game",
+        "status": 200,
+        "sized_media_count": 3,
+        "unsized_target_media": 0,
+        "hero": {
+          "loading": "eager",
+          "decoding": "async",
+          "fetchpriority": "high",
+          "width": "320",
+          "height": "180"
+        },
+        "iframe": {
+          "loading": "lazy",
+          "width": "560",
+          "height": "315",
+          "title": "Game video"
+        },
+        "logo": {
+          "loading": "eager",
+          "width": "1500",
+          "height": "1032"
+        },
+        "layout_shift_score": 0.031190337144268995,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Publisher: Ocean Software",
+        "path": "/games/publishers/ocean-software/",
+        "type": "archive",
+        "status": 200,
+        "sized_media_count": 46,
+        "unsized_target_media": 0,
+        "archive_image_count": 46,
+        "layout_shift_score": 0.03965919109982095,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Developer: Ocean",
+        "path": "/games/developers/ocean/",
+        "type": "archive",
+        "status": 200,
+        "sized_media_count": 2,
+        "unsized_target_media": 0,
+        "archive_image_count": 2,
+        "layout_shift_score": 0.056551151638019354,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Year: 1989",
+        "path": "/games/years/1989/",
+        "type": "archive",
+        "status": 200,
+        "sized_media_count": 49,
+        "unsized_target_media": 0,
+        "archive_image_count": 49,
+        "layout_shift_score": 0.03185586223913204,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Platform: Amiga",
+        "path": "/games/platforms/amiga/",
+        "type": "archive",
+        "status": 200,
+        "sized_media_count": 99,
+        "unsized_target_media": 0,
+        "archive_image_count": 99,
+        "layout_shift_score": 0.047236999652713586,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      }
+    ],
+    "serious_or_critical_nodes": 0,
+    "passed": true
+  },
+  "checks": {
+    "archive_cards_found": true,
+    "archive_cards_all_sized": true,
+    "repository_dimension_count_reduced": true,
+    "at_least_1500_dimension_issues_removed": true,
+    "iframe_lazy_count_reduced": true,
+    "hero_eager": true,
+    "hero_async_decode": true,
+    "hero_high_priority": true,
+    "hero_dimensions": true,
+    "video_iframe_lazy": true,
+    "video_iframe_dimensions": true,
+    "video_iframe_titled": true,
+    "header_logo_eager": true,
+    "header_logo_dimensions_preserved": true,
+    "runtime_hero_guard": true,
+    "phase6b_read_only_on_pr": true,
+    "browser_routes_pass": true,
+    "browser_serious_critical_zero": true
+  },
+  "passed": 18,
+  "total": 18,
+  "failures": []
+}
