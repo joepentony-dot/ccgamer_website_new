@@ -15,7 +15,7 @@
 
 ## Discovery integration
 
-- Added bounded Browse Games links to `/games/years/` and `/games/platforms/`.
+- Added bounded Browse Games links to `/games/years/` and `/games/genres/`.
 - Added previous-year and next-year navigation across every represented release year.
 - Added direct C64 and Amiga cross-links where those systems are represented on a year route.
 - Added a direct cross-link between the C64 and Amiga platform archives.

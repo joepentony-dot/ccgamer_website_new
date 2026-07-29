@@ -124,17 +124,18 @@ function renderBrowseShortcut() {
 
                 <div class="games-hero__stats" data-games-archive-shortcuts="true">
                     <a class="ccg-btn ccg-btn--secondary" href="/games/years/">Browse by Year</a>
-                    <a class="ccg-btn ccg-btn--secondary" href="/games/platforms/">Browse by Platform</a>
-                    <span>Explore the game archive through dedicated release-year and Commodore platform pages.</span>
+                    <a class="ccg-btn ccg-btn--secondary" href="/games/genres/">Browse by Genre</a>
+                    <span>Explore the game archive through dedicated release-year pages and the complete genre library.</span>
                 </div>`;
 }
 
 function ensureBrowseGamesShortcuts(html) {
+    const existingBlock = /\s*<div class="games-hero__stats" data-games-archive-shortcuts="true">[\s\S]*?<\/div>/;
     if (html.includes(BROWSE_MARKER)) {
-        if (!html.includes('href="/games/years/"') || !html.includes('href="/games/platforms/"')) {
-            fail("The Browse Games archive shortcut block is incomplete.");
+        if (!existingBlock.test(html)) {
+            fail("The Browse Games archive shortcut block could not be isolated.");
         }
-        return html;
+        return html.replace(existingBlock, renderBrowseShortcut());
     }
 
     const developerBlock = /(\s*<div class="games-hero__stats" data-games-developers-shortcut="true">[\s\S]*?<\/div>)/;
@@ -246,7 +247,7 @@ function buildReport(metadata, registryResult) {
 
 ## Discovery integration
 
-- Added bounded Browse Games links to \`/games/years/\` and \`/games/platforms/\`.
+- Added bounded Browse Games links to \`/games/years/\` and \`/games/genres/\`.
 - Added previous-year and next-year navigation across every represented release year.
 - Added direct C64 and Amiga cross-links where those systems are represented on a year route.
 - Added a direct cross-link between the C64 and Amiga platform archives.

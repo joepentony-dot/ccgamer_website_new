@@ -196,6 +196,7 @@ function enhancePublisherPage(filePath, slug) {
     html = addLogoToPublisherHero(html, slug);
     html = addPublisherBackLink(html);
 
+    html = html.replace(/[ \t]+$/gm, "");
     if (html !== original) fs.writeFileSync(filePath, html, "utf8");
     return html !== original;
 }
@@ -221,6 +222,7 @@ logoSlugs.forEach((slug) => {
     if (result.installed) featuredInstalled += 1;
 });
 
+indexHtml = indexHtml.replace(/[ \t]+$/gm, "");
 fs.writeFileSync(publisherIndexPath, indexHtml, "utf8");
 
 let publisherPagesEnhanced = 0;

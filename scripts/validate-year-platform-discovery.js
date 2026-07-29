@@ -302,7 +302,7 @@ function buildReport(summary) {
 ## Requirements already satisfied before Phase 4D
 
 - Static year and platform routes were generated deterministically.
-- Browse Games contained one bounded year/platform discovery block.
+- Browse Games contained one bounded year/genre discovery block.
 - Previous-year and next-year links followed the represented-year sequence.
 - Relevant platform cross-links, static registry entries and sitemap entries were present.
 - The 2023 route used \`noindex,follow\` and was excluded from indexable discovery files.
@@ -373,7 +373,7 @@ function main() {
         problems.push("Browse Games must contain exactly one archive shortcut block");
     }
     if (countAnchorHref(browseGames, "/games/years/") !== 1) problems.push("Browse Games must contain exactly one year-hub link");
-    if (countAnchorHref(browseGames, "/games/platforms/") !== 1) problems.push("Browse Games must contain exactly one platform-hub link");
+    if (countAnchorHref(browseGames, "/games/genres/") !== 2) problems.push("Browse Games must contain the genre shortcut and crawlable genre fallback link");
 
     const staticDuplicates = staticPages.filter((entry, index, all) => all.indexOf(entry) !== index);
     if (staticDuplicates.length) problems.push(`Duplicate static registry entries: ${[...new Set(staticDuplicates)].join(", ")}`);
