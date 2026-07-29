@@ -1,0 +1,321 @@
+{
+  "phase": "7E",
+  "correction": "affiliate-image-optimisation",
+  "max_edge": 800,
+  "summary": {
+    "files": 5,
+    "before_bytes": 5657447,
+    "after_bytes": 2706580,
+    "before_megabytes": 5.39536190032959,
+    "after_megabytes": 2.581195831298828,
+    "bytes_saved": 2950867,
+    "reduction_percent": 52.158986
+  },
+  "images": [
+    {
+      "path": "resources/images/affiliate/a500-mini.png",
+      "before": {
+        "bytes": 1602878,
+        "width": 1500,
+        "height": 1149,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "e605c187f2dcbc006a8976f272dc5428cbdd01f6c67fbf8c11a11f187ed480f1"
+      },
+      "after": {
+        "bytes": 688076,
+        "width": 800,
+        "height": 613,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "2aeaeaf6912b6153047bfe4f37803c18b56ac2b836b1b668cfd04d99e08cecec"
+      },
+      "reduction": {
+        "bytes_saved": 914802,
+        "percent": 57.072466
+      },
+      "display_quality": {
+        "240x180": {
+          "mean_absolute_error_rgba": [
+            0.162963,
+            0.154606,
+            0.163796,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            5,
+            5,
+            5,
+            0
+          ]
+        },
+        "480x360": {
+          "mean_absolute_error_rgba": [
+            0.24327,
+            0.237772,
+            0.238177,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            10,
+            9,
+            9,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "path": "resources/images/affiliate/c64-maxi.png",
+      "before": {
+        "bytes": 1400692,
+        "width": 1500,
+        "height": 980,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "8cd1a431654bb342a8bc03ce863476c23d52a201bbd72572360fa1b47151307f"
+      },
+      "after": {
+        "bytes": 550176,
+        "width": 800,
+        "height": 523,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "332b8cd1d6451febfb090a4c9189f9ff31fb71c0eef76238865ccac3420ecf26"
+      },
+      "reduction": {
+        "bytes_saved": 850516,
+        "percent": 60.721129
+      },
+      "display_quality": {
+        "240x180": {
+          "mean_absolute_error_rgba": [
+            0.173773,
+            0.194491,
+            0.187963,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            7,
+            7,
+            7,
+            0
+          ]
+        },
+        "480x360": {
+          "mean_absolute_error_rgba": [
+            0.243796,
+            0.257257,
+            0.251528,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            17,
+            17,
+            17,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "path": "resources/images/affiliate/joystick-clear.png",
+      "before": {
+        "bytes": 1281309,
+        "width": 1282,
+        "height": 1306,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "22df673d5f9477e6ebad8c4ec31b3e9f665fe118be0e731ecf18335d6864c5a9"
+      },
+      "after": {
+        "bytes": 682573,
+        "width": 785,
+        "height": 800,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "ea3f56b1834a152ec28f8da31190490f0e0034f78925071f72d71ec8c1de24d8"
+      },
+      "reduction": {
+        "bytes_saved": 598736,
+        "percent": 46.728463
+      },
+      "display_quality": {
+        "240x180": {
+          "mean_absolute_error_rgba": [
+            0.073542,
+            0.075671,
+            0.081782,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            4,
+            3,
+            4,
+            0
+          ]
+        },
+        "480x360": {
+          "mean_absolute_error_rgba": [
+            0.111782,
+            0.109734,
+            0.113848,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            5,
+            5,
+            6,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "path": "resources/images/affiliate/gamepad-white.png",
+      "before": {
+        "bytes": 825979,
+        "width": 1439,
+        "height": 1223,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "5156e6ee84b2ec40584987335714ee2039549bc0475781fa5df476719ec38489"
+      },
+      "after": {
+        "bytes": 391784,
+        "width": 800,
+        "height": 680,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "f31e4db3a8238b4ccbc73849315929a1327dd5c356612d8c99be3931cb573acb"
+      },
+      "reduction": {
+        "bytes_saved": 434195,
+        "percent": 52.567317
+      },
+      "display_quality": {
+        "240x180": {
+          "mean_absolute_error_rgba": [
+            0.090625,
+            0.087778,
+            0.087801,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            5,
+            4,
+            4,
+            0
+          ]
+        },
+        "480x360": {
+          "mean_absolute_error_rgba": [
+            0.123131,
+            0.121834,
+            0.118449,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            10,
+            9,
+            8,
+            0
+          ]
+        }
+      }
+    },
+    {
+      "path": "resources/images/affiliate/gamepad-black.png",
+      "before": {
+        "bytes": 546589,
+        "width": 1101,
+        "height": 933,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b2bf990f47d3453e2ac0342fae5d29ba4301eac3ec8d2b6693ea2498d96faff2"
+      },
+      "after": {
+        "bytes": 393971,
+        "width": 800,
+        "height": 678,
+        "mode": "RGBA",
+        "has_transparency": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "bd497b35f0c7554c998b8b1d88697b1bc094a003eb4bf58277353f9eb883cf05"
+      },
+      "reduction": {
+        "bytes_saved": 152618,
+        "percent": 27.921894
+      },
+      "display_quality": {
+        "240x180": {
+          "mean_absolute_error_rgba": [
+            0.10375,
+            0.098171,
+            0.09956,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            5,
+            5,
+            6,
+            0
+          ]
+        },
+        "480x360": {
+          "mean_absolute_error_rgba": [
+            0.138802,
+            0.134091,
+            0.132442,
+            0.0
+          ],
+          "max_absolute_error_rgba": [
+            9,
+            9,
+            9,
+            0
+          ]
+        }
+      }
+    }
+  ]
+}
