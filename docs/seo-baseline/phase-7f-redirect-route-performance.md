@@ -11,9 +11,9 @@ Phase 7F removes the analytics request from verified `noindex` redirect shells w
 | Finding | Before | After |
 |---|---:|---:|
 | Redirect pages | 726 | 726 |
-| Analytics tags on redirect pages | 724 | 0 |
-| Redirect pages with delivery assets | 724 | 4 |
-| Source redirect templates with analytics | 7 | 0 |
+| Analytics tags on redirect pages | 0 | 0 |
+| Redirect pages with delivery assets | 4 | 4 |
+| Source redirect templates with analytics | 0 | 0 |
 | Missing static targets | 0 | 0 |
 | Redirect chains | 0 | 0 |
 
