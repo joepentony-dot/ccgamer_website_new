@@ -12,6 +12,9 @@ as curated on one run, removed as stale, then regenerated on the next run.
 The game-publishing command must not regenerate unrelated Retro Events, Retro
 Specials or Amiga demo pages, because that generator derives media dates from
 the current filesystem time and makes repeat game rebuilds non-deterministic.
+
+Disposable synthetic worktrees are detached from the committed PR head, so they
+must apply the same bounded Phase 6B transformations before testing publishing.
 """
 
 from __future__ import annotations
@@ -23,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BUILD_TARGET = ROOT / "scripts" / "build-games.js"
 REBUILD_TARGET = ROOT / "scripts" / "rebuild-games.js"
 COMPOSER_TARGET = ROOT / "scripts" / "generate-composer-pages.js"
+TRANSACTION_TARGET = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
 
 
 def update_build_games() -> None:
@@ -93,10 +97,44 @@ def update_rebuild_games() -> None:
         print("scripts/rebuild-games.js already excludes unrelated retro pages.")
 
 
+def update_transaction() -> None:
+    source = TRANSACTION_TARGET.read_text(encoding="utf-8")
+    if "import sys\n" not in source:
+        source = source.replace("import subprocess\n", "import subprocess\nimport sys\n", 1)
+
+    old = '''        if not add["passed"]:
+            return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
+
+        games_path = sandbox / "games" / "games.json"
+'''
+    new = '''        if not add["passed"]:
+            return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
+
+        for script_name in [
+            "scripts/apply-phase6b-publishing.py",
+            "scripts/phase6b-remove-build-games-composer-owner.py",
+        ]:
+            prepare = run([sys.executable, script_name], sandbox)
+            command_log.append(prepare)
+            if not prepare["passed"]:
+                return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
+
+        games_path = sandbox / "games" / "games.json"
+'''
+    if new in source:
+        print("Synthetic transaction already prepares detached worktrees.")
+        return
+    if source.count(old) != 1:
+        raise SystemExit("Could not isolate synthetic worktree preparation point.")
+    TRANSACTION_TARGET.write_text(source.replace(old, new, 1), encoding="utf-8")
+    print("Added bounded Phase 6B preparation to synthetic worktrees.")
+
+
 def main() -> None:
     update_build_games()
     update_composer_generator()
     update_rebuild_games()
+    update_transaction()
 
 
 if __name__ == "__main__":
