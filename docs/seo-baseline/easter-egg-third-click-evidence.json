@@ -1,0 +1,80 @@
+{
+  "generatedAt": "2026-07-29T22:27:14.276Z",
+  "verdict": "PASS",
+  "testedCases": 3,
+  "failedChecks": [],
+  "results": [
+    {
+      "name": "home-phone-touch",
+      "page": "home.html",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "pointerType": "touch",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBefore": 4267,
+      "scrollAfterBackdropClose": 4267,
+      "scrollAfterButtonClose": 4267,
+      "checks": {
+        "stableAfterResidualEvents": true,
+        "accidentalResultAbsent": true,
+        "remainsOpenAfterShieldExpires": true,
+        "backdropClosesAfterShield": true,
+        "closeButtonClosesAfterShield": true,
+        "backdropClosePreservesScroll": true,
+        "buttonClosePreservesScroll": true
+      },
+      "passed": true,
+      "screenshot": "/home/runner/work/_temp/easter-third-click-screenshots/home-phone-touch-stable-menu.png"
+    },
+    {
+      "name": "home-desktop-mouse",
+      "page": "home.html",
+      "width": 1366,
+      "height": 768,
+      "isMobile": false,
+      "hasTouch": false,
+      "pointerType": "mouse",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBefore": 3363,
+      "scrollAfterBackdropClose": 3363,
+      "scrollAfterButtonClose": 3363,
+      "checks": {
+        "stableAfterResidualEvents": true,
+        "accidentalResultAbsent": true,
+        "remainsOpenAfterShieldExpires": true,
+        "backdropClosesAfterShield": true,
+        "closeButtonClosesAfterShield": true,
+        "backdropClosePreservesScroll": true,
+        "buttonClosePreservesScroll": true
+      },
+      "passed": true,
+      "screenshot": "/home/runner/work/_temp/easter-third-click-screenshots/home-desktop-mouse-stable-menu.png"
+    },
+    {
+      "name": "games-phone-touch",
+      "page": "games/index.html",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "pointerType": "touch",
+      "url": "http://127.0.0.1:4173/games/index.html",
+      "scrollBefore": 4565,
+      "scrollAfterBackdropClose": 4565,
+      "scrollAfterButtonClose": 4565,
+      "checks": {
+        "stableAfterResidualEvents": true,
+        "accidentalResultAbsent": true,
+        "remainsOpenAfterShieldExpires": true,
+        "backdropClosesAfterShield": true,
+        "closeButtonClosesAfterShield": true,
+        "backdropClosePreservesScroll": true,
+        "buttonClosePreservesScroll": true
+      },
+      "passed": true,
+      "screenshot": "/home/runner/work/_temp/easter-third-click-screenshots/games-phone-touch-stable-menu.png"
+    }
+  ]
+}
