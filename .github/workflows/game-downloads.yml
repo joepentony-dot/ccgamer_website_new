@@ -5,7 +5,6 @@ on:
     branches:
       - main
     paths:
-      - "games/games.json"
       - "home.html"
       - "games/index.html"
       - "scripts/ensure-downloads-discovery-links.js"
@@ -22,7 +21,6 @@ on:
     branches:
       - main
     paths:
-      - "games/games.json"
       - "home.html"
       - "games/index.html"
       - "scripts/ensure-downloads-discovery-links.js"
