@@ -91,6 +91,7 @@ function selectGameRoutes() {
   return uniqueBy(selected, (game) => game.slug).map((game) => ({
     label: `Game: ${game.title}`,
     url: `https://www.cheekycommodoregamer.co.uk/games/${game.slug}/`,
+    audit_url: `https://www.cheekycommodoregamer.co.uk/games/game.html?id=${encodeURIComponent(game.slug)}`,
     family: 'game',
     metadata: game,
   }));
@@ -110,12 +111,12 @@ function compact(value, depth = 0) {
   if (value == null || typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
-  if (depth >= 4) return '[truncated]';
-  if (Array.isArray(value)) return value.slice(0, 12).map((item) => compact(item, depth + 1));
+  if (depth >= 7) return '[truncated]';
+  if (Array.isArray(value)) return value.slice(0, 25).map((item) => compact(item, depth + 1));
   if (typeof value === 'object') {
     const allowed = [
       'type', 'url', 'label', 'description', 'displayValue', 'numericValue', 'score', 'value',
-      'phase', 'timing', 'wastedBytes', 'wastedMs', 'totalBytes', 'transferSize', 'resourceSize',
+      'phase', 'subpart', 'cause', 'priorityHinted', 'requestDiscoverable', 'eagerlyLoaded', 'extra', 'nodeLabel', 'boundingRect', 'lhId', 'key', 'timing', 'wastedBytes', 'wastedMs', 'totalBytes', 'transferSize', 'resourceSize',
       'duration', 'startTime', 'endTime', 'requestStartTime', 'node', 'source', 'selector', 'snippet',
       'path', 'protocol', 'origin', 'entity', 'subItems', 'items', 'headings', 'debugData',
     ];
@@ -247,7 +248,8 @@ async function runBrowserDiagnostic(chromePath, routes, rawDir) {
 
       const started = Date.now();
       try {
-        const response = await page.goto(route.url, { waitUntil: 'domcontentloaded', timeout: 90000 });
+        const testedUrl = route.audit_url || route.url;
+        const response = await page.goto(testedUrl, { waitUntil: 'domcontentloaded', timeout: 90000 });
         await page.waitForLoadState('load', { timeout: 60000 }).catch(() => {});
         await page.evaluate(() => document.fonts?.ready).catch(() => {});
         await page.waitForTimeout(10000);
@@ -320,6 +322,7 @@ async function runBrowserDiagnostic(chromePath, routes, rawDir) {
         results.push({
           ...route,
           status: response?.status() ?? null,
+          tested_url: testedUrl,
           final_url: page.url(),
           elapsed_ms: Date.now() - started,
           lcp: latestLcp,
@@ -385,7 +388,8 @@ async function runLighthouse(chromePath, routes, rawDir) {
   try {
     for (const route of routes) {
       try {
-        const runner = await lighthouse(route.url, {
+        const testedUrl = route.audit_url || route.url;
+        const runner = await lighthouse(testedUrl, {
           port: chrome.port,
           output: 'json',
           logLevel: 'error',
@@ -398,6 +402,7 @@ async function runLighthouse(chromePath, routes, rawDir) {
         const audits = lhr.audits;
         results.push({
           ...route,
+          tested_url: testedUrl,
           final_url: lhr.finalDisplayedUrl || lhr.finalUrl,
           performance_score: lhr.categories.performance?.score ?? null,
           metrics: {
