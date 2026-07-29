@@ -1,0 +1,933 @@
+{
+  "generatedAt": "2026-07-29T22:05:03.795Z",
+  "verdict": "PASS",
+  "testedCases": 5,
+  "failedChecks": [],
+  "results": [
+    {
+      "name": "phone-portrait",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "page": "home.html",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBeforeOpen": 4267,
+      "scrollAfterClose": 4267,
+      "menuMetrics": {
+        "rect": {
+          "top": 8,
+          "left": 8,
+          "right": 382,
+          "bottom": 836,
+          "width": 374,
+          "height": 828
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "closeMetrics": {
+        "rect": {
+          "top": 39,
+          "left": 25,
+          "right": 225.15625,
+          "bottom": 81,
+          "width": 200.15625,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "menuState": {
+        "scrollY": 4267,
+        "contentScrollTop": 0,
+        "contentClientHeight": 826,
+        "contentScrollHeight": 1055,
+        "closeIsFocused": true,
+        "bodyPosition": "relative",
+        "bodyTouchAction": "auto",
+        "ariaHidden": "false"
+      },
+      "scrollCheck": {
+        "scrollable": true,
+        "scrolled": true,
+        "closeWithinViewport": true,
+        "scrollTop": 229
+      },
+      "reopenedScrollTop": 0,
+      "resultOverlayMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "resultFrameMetrics": {
+        "rect": {
+          "top": 42.203125,
+          "left": 8,
+          "right": 382,
+          "bottom": 801.796875,
+          "width": 374,
+          "height": 759.59375
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "exitMetrics": {
+        "rect": {
+          "top": 53.203125,
+          "left": 19,
+          "right": 371,
+          "bottom": 95.203125,
+          "width": 352,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "resultState": {
+        "exitIsFocused": true,
+        "mediaClientHeight": 684,
+        "mediaScrollHeight": 684,
+        "bodyOverflow": "hidden auto"
+      },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "checks": {
+        "menuWithinVisibleViewport": true,
+        "closeWithinVisibleViewport": true,
+        "menuStartsAtTop": true,
+        "menuCanScroll": true,
+        "stickyCloseRemainsVisible": true,
+        "scrollPositionPreservedWhileOpen": true,
+        "scrollPositionRestoredAfterClose": true,
+        "bodyIsNotRepositioned": true,
+        "touchPanningNotDisabledOnBody": true,
+        "closeReceivesFocus": true,
+        "reopenedMenuResetsToTop": true,
+        "resultOverlayWithinVisibleViewport": true,
+        "resultFrameWithinVisibleViewport": true,
+        "resultExitWithinVisibleViewport": true,
+        "resultExitReceivesFocus": true,
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
+      },
+      "passed": true,
+      "screenshots": {
+        "menu": "/home/runner/work/_temp/easter-screenshots/phone-portrait-menu.png",
+        "result": "/home/runner/work/_temp/easter-screenshots/phone-portrait-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/phone-portrait-direct-result.png"
+      }
+    },
+    {
+      "name": "small-phone",
+      "width": 360,
+      "height": 640,
+      "isMobile": true,
+      "hasTouch": true,
+      "page": "home.html",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBeforeOpen": 4494,
+      "scrollAfterClose": 4494,
+      "menuMetrics": {
+        "rect": {
+          "top": 8,
+          "left": 8,
+          "right": 352,
+          "bottom": 632,
+          "width": 344,
+          "height": 624
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "closeMetrics": {
+        "rect": {
+          "top": 39,
+          "left": 25,
+          "right": 225.15625,
+          "bottom": 81,
+          "width": 200.15625,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "menuState": {
+        "scrollY": 4494,
+        "contentScrollTop": 0,
+        "contentClientHeight": 622,
+        "contentScrollHeight": 1055,
+        "closeIsFocused": true,
+        "bodyPosition": "relative",
+        "bodyTouchAction": "auto",
+        "ariaHidden": "false"
+      },
+      "scrollCheck": {
+        "scrollable": true,
+        "scrolled": true,
+        "closeWithinViewport": true,
+        "scrollTop": 433
+      },
+      "reopenedScrollTop": 0,
+      "resultOverlayMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 360,
+          "bottom": 640,
+          "width": 360,
+          "height": 640
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "resultFrameMetrics": {
+        "rect": {
+          "top": 32,
+          "left": 8,
+          "right": 352,
+          "bottom": 608,
+          "width": 344,
+          "height": 576
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "exitMetrics": {
+        "rect": {
+          "top": 43,
+          "left": 19,
+          "right": 341,
+          "bottom": 85,
+          "width": 322,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "resultState": {
+        "exitIsFocused": true,
+        "mediaClientHeight": 500,
+        "mediaScrollHeight": 500,
+        "bodyOverflow": "hidden auto"
+      },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 360,
+          "bottom": 640,
+          "width": 360,
+          "height": 640
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
+      "checks": {
+        "menuWithinVisibleViewport": true,
+        "closeWithinVisibleViewport": true,
+        "menuStartsAtTop": true,
+        "menuCanScroll": true,
+        "stickyCloseRemainsVisible": true,
+        "scrollPositionPreservedWhileOpen": true,
+        "scrollPositionRestoredAfterClose": true,
+        "bodyIsNotRepositioned": true,
+        "touchPanningNotDisabledOnBody": true,
+        "closeReceivesFocus": true,
+        "reopenedMenuResetsToTop": true,
+        "resultOverlayWithinVisibleViewport": true,
+        "resultFrameWithinVisibleViewport": true,
+        "resultExitWithinVisibleViewport": true,
+        "resultExitReceivesFocus": true,
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
+      },
+      "passed": true,
+      "screenshots": {
+        "menu": "/home/runner/work/_temp/easter-screenshots/small-phone-menu.png",
+        "result": "/home/runner/work/_temp/easter-screenshots/small-phone-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/small-phone-direct-result.png"
+      }
+    },
+    {
+      "name": "phone-landscape",
+      "width": 844,
+      "height": 390,
+      "isMobile": true,
+      "hasTouch": true,
+      "page": "home.html",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBeforeOpen": 3315,
+      "scrollAfterClose": 3315,
+      "menuMetrics": {
+        "rect": {
+          "top": 8,
+          "left": 82,
+          "right": 762,
+          "bottom": 382,
+          "width": 680,
+          "height": 374
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "closeMetrics": {
+        "rect": {
+          "top": 29,
+          "left": 99,
+          "right": 299.15625,
+          "bottom": 71,
+          "width": 200.15625,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "menuState": {
+        "scrollY": 3315,
+        "contentScrollTop": 0,
+        "contentClientHeight": 372,
+        "contentScrollHeight": 490,
+        "closeIsFocused": true,
+        "bodyPosition": "relative",
+        "bodyTouchAction": "auto",
+        "ariaHidden": "false"
+      },
+      "scrollCheck": {
+        "scrollable": true,
+        "scrolled": true,
+        "closeWithinViewport": true,
+        "scrollTop": 118
+      },
+      "reopenedScrollTop": 0,
+      "resultOverlayMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 844,
+          "bottom": 390,
+          "width": 844,
+          "height": 390
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "resultFrameMetrics": {
+        "rect": {
+          "top": 8,
+          "left": 8,
+          "right": 836,
+          "bottom": 382,
+          "width": 828,
+          "height": 374
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "exitMetrics": {
+        "rect": {
+          "top": 27,
+          "left": 27,
+          "right": 817,
+          "bottom": 69,
+          "width": 790,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "resultState": {
+        "exitIsFocused": true,
+        "mediaClientHeight": 276,
+        "mediaScrollHeight": 276,
+        "bodyOverflow": "hidden auto"
+      },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 844,
+          "bottom": 390,
+          "width": 844,
+          "height": 390
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
+      "checks": {
+        "menuWithinVisibleViewport": true,
+        "closeWithinVisibleViewport": true,
+        "menuStartsAtTop": true,
+        "menuCanScroll": true,
+        "stickyCloseRemainsVisible": true,
+        "scrollPositionPreservedWhileOpen": true,
+        "scrollPositionRestoredAfterClose": true,
+        "bodyIsNotRepositioned": true,
+        "touchPanningNotDisabledOnBody": true,
+        "closeReceivesFocus": true,
+        "reopenedMenuResetsToTop": true,
+        "resultOverlayWithinVisibleViewport": true,
+        "resultFrameWithinVisibleViewport": true,
+        "resultExitWithinVisibleViewport": true,
+        "resultExitReceivesFocus": true,
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
+      },
+      "passed": true,
+      "screenshots": {
+        "menu": "/home/runner/work/_temp/easter-screenshots/phone-landscape-menu.png",
+        "result": "/home/runner/work/_temp/easter-screenshots/phone-landscape-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/phone-landscape-direct-result.png"
+      }
+    },
+    {
+      "name": "desktop",
+      "width": 1366,
+      "height": 768,
+      "isMobile": false,
+      "hasTouch": false,
+      "page": "home.html",
+      "url": "http://127.0.0.1:4173/home.html",
+      "scrollBeforeOpen": 3290,
+      "scrollAfterClose": 3290,
+      "menuMetrics": {
+        "rect": {
+          "top": 49.203125,
+          "left": 343,
+          "right": 1023,
+          "bottom": 718.796875,
+          "width": 680,
+          "height": 669.59375
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "closeMetrics": {
+        "rect": {
+          "top": 97.2070541381836,
+          "left": 372,
+          "right": 572.15625,
+          "bottom": 139.20706176757812,
+          "width": 200.15625,
+          "height": 42.00000762939453
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "menuState": {
+        "scrollY": 3290,
+        "contentScrollTop": 0,
+        "contentClientHeight": 668,
+        "contentScrollHeight": 668,
+        "closeIsFocused": true,
+        "bodyPosition": "relative",
+        "bodyTouchAction": "auto",
+        "ariaHidden": "false"
+      },
+      "scrollCheck": {
+        "scrollable": false,
+        "scrolled": true,
+        "closeWithinViewport": true,
+        "scrollTop": 0
+      },
+      "reopenedScrollTop": 0,
+      "resultOverlayMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1366,
+          "bottom": 768,
+          "width": 1366,
+          "height": 768
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "resultFrameMetrics": {
+        "rect": {
+          "top": 38.40625,
+          "left": 83,
+          "right": 1283,
+          "bottom": 729.59375,
+          "width": 1200,
+          "height": 691.1875
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "exitMetrics": {
+        "rect": {
+          "top": 56.481346130371094,
+          "left": 102,
+          "right": 1264,
+          "bottom": 98.4813461303711,
+          "width": 1162,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "resultState": {
+        "exitIsFocused": true,
+        "mediaClientHeight": 593,
+        "mediaScrollHeight": 593,
+        "bodyOverflow": "hidden auto"
+      },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1366,
+          "bottom": 768,
+          "width": 1366,
+          "height": 768
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
+      "checks": {
+        "menuWithinVisibleViewport": true,
+        "closeWithinVisibleViewport": true,
+        "menuStartsAtTop": true,
+        "menuCanScroll": true,
+        "stickyCloseRemainsVisible": true,
+        "scrollPositionPreservedWhileOpen": true,
+        "scrollPositionRestoredAfterClose": true,
+        "bodyIsNotRepositioned": true,
+        "touchPanningNotDisabledOnBody": true,
+        "closeReceivesFocus": true,
+        "reopenedMenuResetsToTop": true,
+        "resultOverlayWithinVisibleViewport": true,
+        "resultFrameWithinVisibleViewport": true,
+        "resultExitWithinVisibleViewport": true,
+        "resultExitReceivesFocus": true,
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
+      },
+      "passed": true,
+      "screenshots": {
+        "menu": "/home/runner/work/_temp/easter-screenshots/desktop-menu.png",
+        "result": "/home/runner/work/_temp/easter-screenshots/desktop-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/desktop-direct-result.png"
+      }
+    },
+    {
+      "name": "games-phone",
+      "width": 390,
+      "height": 844,
+      "isMobile": true,
+      "hasTouch": true,
+      "page": "games/index.html",
+      "url": "http://127.0.0.1:4173/games/index.html",
+      "scrollBeforeOpen": 4565,
+      "scrollAfterClose": 4565,
+      "menuMetrics": {
+        "rect": {
+          "top": 8,
+          "left": 8,
+          "right": 382,
+          "bottom": 836,
+          "width": 374,
+          "height": 828
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "closeMetrics": {
+        "rect": {
+          "top": 39,
+          "left": 25,
+          "right": 225.15625,
+          "bottom": 81,
+          "width": 200.15625,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "menuState": {
+        "scrollY": 4565,
+        "contentScrollTop": 0,
+        "contentClientHeight": 826,
+        "contentScrollHeight": 1055,
+        "closeIsFocused": true,
+        "bodyPosition": "relative",
+        "bodyTouchAction": "auto",
+        "ariaHidden": "false"
+      },
+      "scrollCheck": {
+        "scrollable": true,
+        "scrolled": true,
+        "closeWithinViewport": true,
+        "scrollTop": 229
+      },
+      "reopenedScrollTop": 0,
+      "resultOverlayMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "resultFrameMetrics": {
+        "rect": {
+          "top": 42.203125,
+          "left": 8,
+          "right": 382,
+          "bottom": 801.796875,
+          "width": 374,
+          "height": 759.59375
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "exitMetrics": {
+        "rect": {
+          "top": 53.203125,
+          "left": 19,
+          "right": 371,
+          "bottom": 95.203125,
+          "width": 352,
+          "height": 42
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "resultState": {
+        "exitIsFocused": true,
+        "mediaClientHeight": 684,
+        "mediaScrollHeight": 684,
+        "bodyOverflow": "hidden auto"
+      },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
+      "checks": {
+        "menuWithinVisibleViewport": true,
+        "closeWithinVisibleViewport": true,
+        "menuStartsAtTop": true,
+        "menuCanScroll": true,
+        "stickyCloseRemainsVisible": true,
+        "scrollPositionPreservedWhileOpen": true,
+        "scrollPositionRestoredAfterClose": true,
+        "bodyIsNotRepositioned": true,
+        "touchPanningNotDisabledOnBody": true,
+        "closeReceivesFocus": true,
+        "reopenedMenuResetsToTop": true,
+        "resultOverlayWithinVisibleViewport": true,
+        "resultFrameWithinVisibleViewport": true,
+        "resultExitWithinVisibleViewport": true,
+        "resultExitReceivesFocus": true,
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
+      },
+      "passed": true,
+      "screenshots": {
+        "menu": "/home/runner/work/_temp/easter-screenshots/games-phone-menu.png",
+        "result": "/home/runner/work/_temp/easter-screenshots/games-phone-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/games-phone-direct-result.png"
+      }
+    }
+  ]
+}

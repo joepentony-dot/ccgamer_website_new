@@ -528,6 +528,9 @@ if (IS_ADMIN_PATH) {
         konamiIndex: 0,
         activeEgg: null,
         scrollLock: null,
+        lastFocusedElement: null,
+        modalViewportCleanup: null,
+        backdropUnlockTimer: null,
     };
 
     const konamiSequence = [
@@ -575,6 +578,76 @@ if (IS_ADMIN_PATH) {
         return overlay;
     }
 
+    /* CCG EASTER EGG VISUAL VIEWPORT HARDENING */
+    function bindOverlayToVisualViewport(overlay) {
+        if (!overlay) return () => {};
+
+        let correctionFrame = 0;
+
+        const sync = () => {
+            const viewport = window.visualViewport;
+            const desiredTop = viewport ? viewport.offsetTop : 0;
+            const desiredLeft = viewport ? viewport.offsetLeft : 0;
+            const width = viewport ? viewport.width : window.innerWidth;
+            const height = viewport ? viewport.height : window.innerHeight;
+
+            overlay.style.top = `${Math.max(0, desiredTop)}px`;
+            overlay.style.left = `${Math.max(0, desiredLeft)}px`;
+            overlay.style.right = "auto";
+            overlay.style.bottom = "auto";
+            overlay.style.width = `${Math.max(1, width)}px`;
+            overlay.style.height = `${Math.max(1, height)}px`;
+
+            if (overlay.getClientRects().length) {
+                const rect = overlay.getBoundingClientRect();
+                const correctedTop = desiredTop + (desiredTop - rect.top);
+                const correctedLeft = desiredLeft + (desiredLeft - rect.left);
+
+                if (Math.abs(rect.top - desiredTop) > 0.5) {
+                    overlay.style.top = `${Math.max(0, correctedTop)}px`;
+                }
+                if (Math.abs(rect.left - desiredLeft) > 0.5) {
+                    overlay.style.left = `${Math.max(0, correctedLeft)}px`;
+                }
+            }
+        };
+
+        const scheduleVisibleSync = () => {
+            if (correctionFrame) cancelAnimationFrame(correctionFrame);
+            correctionFrame = requestAnimationFrame(() => {
+                correctionFrame = requestAnimationFrame(() => {
+                    correctionFrame = 0;
+                    sync();
+                });
+            });
+        };
+
+        const listeners = [];
+        const bind = (target, eventName) => {
+            if (!target?.addEventListener) return;
+            target.addEventListener(eventName, sync, { passive: true });
+            listeners.push([target, eventName]);
+        };
+
+        bind(window, "resize");
+        bind(window, "orientationchange");
+        bind(window, "scroll");
+        bind(window.visualViewport, "resize");
+        bind(window.visualViewport, "scroll");
+        sync();
+        scheduleVisibleSync();
+
+        return () => {
+            if (correctionFrame) cancelAnimationFrame(correctionFrame);
+            listeners.forEach(([target, eventName]) => {
+                target.removeEventListener(eventName, sync);
+            });
+            ["top", "left", "right", "bottom", "width", "height"].forEach(property => {
+                overlay.style.removeProperty(property);
+            });
+        };
+    }
+
     function getEasterEggAsset(filename) {
         const root = getSiteRoot();
         const prefix = root.endsWith("/") ? root : `${root}/`;
@@ -601,7 +674,7 @@ if (IS_ADMIN_PATH) {
     function stopActiveEasterEgg() {
         if (!secretState.activeEgg) return;
 
-        const { overlay, media, escHandler, closeHandler, exitButton, cleanup, autoCloseTimer } = secretState.activeEgg;
+        const { overlay, media, escHandler, closeHandler, exitButton, cleanup, autoCloseTimer, viewportCleanup, lastFocusedElement } = secretState.activeEgg;
 
         if (escHandler) {
             document.removeEventListener("keydown", escHandler);
@@ -623,19 +696,36 @@ if (IS_ADMIN_PATH) {
             cleanup();
         }
 
+        if (typeof viewportCleanup === "function") {
+            viewportCleanup();
+        }
+
         if (overlay) {
             overlay.remove();
         }
 
         document.body.classList.remove("ccg-egg-open");
         secretState.activeEgg = null;
+
+        if (lastFocusedElement?.isConnected && typeof lastFocusedElement.focus === "function") {
+            requestAnimationFrame(() => {
+                lastFocusedElement.focus({ preventScroll: true });
+            });
+        }
     }
 
     function openEasterEggOverlay(content, options = {}) {
         stopActiveEasterEgg();
 
+        const lastFocusedElement = secretState.lastFocusedElement
+            || (document.activeElement instanceof HTMLElement ? document.activeElement : null);
+        secretState.lastFocusedElement = null;
+
         const overlay = createOverlay("ccg-egg-overlay");
         overlay.classList.add("ccg-egg-overlay--letterbox");
+        overlay.setAttribute("role", "dialog");
+        overlay.setAttribute("aria-modal", "true");
+        overlay.setAttribute("aria-label", "CCG Easter egg result");
         if (options.className) {
             options.className.split(" ").forEach(className => {
                 if (className) overlay.classList.add(className);
@@ -643,7 +733,7 @@ if (IS_ADMIN_PATH) {
         }
 
         overlay.innerHTML = `
-            <div class="ccg-egg-overlay__frame">
+            <div class="ccg-egg-overlay__frame" tabindex="-1">
                 <button class="ccg-btn ccg-btn--ghost ccg-egg-overlay__exit" type="button">Exit to CCGAMER Website</button>
                 <div class="ccg-egg-overlay__media"></div>
             </div>
@@ -676,6 +766,7 @@ if (IS_ADMIN_PATH) {
         document.addEventListener("keydown", escHandler);
 
         document.body.classList.add("ccg-egg-open");
+        const viewportCleanup = bindOverlayToVisualViewport(overlay);
 
         secretState.activeEgg = {
             overlay,
@@ -685,7 +776,13 @@ if (IS_ADMIN_PATH) {
             exitButton,
             cleanup: options.cleanup || null,
             autoCloseTimer: options.autoCloseTimer || null,
+            viewportCleanup,
+            lastFocusedElement,
         };
+
+        requestAnimationFrame(() => {
+            exitButton?.focus({ preventScroll: true });
+        });
 
         return overlay;
     }
@@ -725,6 +822,7 @@ if (IS_ADMIN_PATH) {
         return frame;
     }
 
+    /* CCG DIRECT EASTER EGG VIEWPORT BINDING */
     function triggerC64Reset() {
         const reset = createOverlay("ccg-c64-reset", `
             <div class="ccg-c64-reset__screen">
@@ -733,8 +831,12 @@ if (IS_ADMIN_PATH) {
                 <p class="ccg-c64-reset__ready">READY<span class="ccg-c64-reset__cursor"></span></p>
             </div>
         `);
+        const viewportCleanup = bindOverlayToVisualViewport(reset);
         setTimeout(() => reset.classList.add("is-active"), 30);
-        setTimeout(() => reset.remove(), 3200);
+        setTimeout(() => {
+            viewportCleanup();
+            reset.remove();
+        }, 3200);
     }
 
     function triggerPressPlay() {
@@ -747,6 +849,8 @@ if (IS_ADMIN_PATH) {
             <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
             <p>Press any key to continue...</p>
         `);
+        const viewportCleanup = bindOverlayToVisualViewport(bsod);
+        let isRemoved = false;
         const remove = (event) => {
             // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
             // Prevents quiz/hotkey logic from blocking form typing
@@ -758,6 +862,9 @@ if (IS_ADMIN_PATH) {
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
+            if (isRemoved) return;
+            isRemoved = true;
+            viewportCleanup();
             bsod.remove();
         };
         bsod.addEventListener("click", remove);
@@ -1089,7 +1196,7 @@ if (IS_ADMIN_PATH) {
         modal.className = "ccg-secret-modal";
         modal.setAttribute("aria-hidden", "true");
         modal.innerHTML = `
-            <div class="ccg-secret-modal__content" role="dialog" aria-label="Secret system commands">
+            <div class="ccg-secret-modal__content" role="dialog" aria-modal="true" aria-label="Secret system commands" tabindex="-1">
                 <div class="ccg-secret-modal__actions">
                     <button class="ccg-btn ccg-btn--ghost ccg-secret-btn" type="button" data-ccg-secret-close>CLOSE EASTER EGGS</button>
                 </div>
@@ -1141,25 +1248,28 @@ if (IS_ADMIN_PATH) {
     function lockSecretModalScroll() {
         if (secretState.scrollLock) return;
 
+        const scrollX = window.scrollX || document.documentElement.scrollLeft || 0;
         const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        const scrollbarGap = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+        const computedPaddingRight = Number.parseFloat(window.getComputedStyle(document.body).paddingRight) || 0;
+
         secretState.scrollLock = {
+            scrollX,
             scrollY,
-            bodyPosition: document.body.style.position,
-            bodyTop: document.body.style.top,
-            bodyLeft: document.body.style.left,
-            bodyRight: document.body.style.right,
-            bodyWidth: document.body.style.width,
             bodyOverflow: document.body.style.overflow,
+            bodyPaddingRight: document.body.style.paddingRight,
+            bodyOverscrollBehavior: document.body.style.overscrollBehavior,
             htmlOverflow: document.documentElement.style.overflow,
+            htmlOverscrollBehavior: document.documentElement.style.overscrollBehavior,
         };
 
         document.documentElement.style.overflow = "hidden";
+        document.documentElement.style.overscrollBehavior = "none";
         document.body.style.overflow = "hidden";
-        document.body.style.position = "fixed";
-        document.body.style.top = `-${scrollY}px`;
-        document.body.style.left = "0";
-        document.body.style.right = "0";
-        document.body.style.width = "100%";
+        document.body.style.overscrollBehavior = "none";
+        if (scrollbarGap > 0) {
+            document.body.style.paddingRight = `${computedPaddingRight + scrollbarGap}px`;
+        }
     }
 
     function unlockSecretModalScroll() {
@@ -1167,14 +1277,12 @@ if (IS_ADMIN_PATH) {
         if (!lock) return;
 
         document.documentElement.style.overflow = lock.htmlOverflow;
+        document.documentElement.style.overscrollBehavior = lock.htmlOverscrollBehavior;
         document.body.style.overflow = lock.bodyOverflow;
-        document.body.style.position = lock.bodyPosition;
-        document.body.style.top = lock.bodyTop;
-        document.body.style.left = lock.bodyLeft;
-        document.body.style.right = lock.bodyRight;
-        document.body.style.width = lock.bodyWidth;
+        document.body.style.paddingRight = lock.bodyPaddingRight;
+        document.body.style.overscrollBehavior = lock.bodyOverscrollBehavior;
         secretState.scrollLock = null;
-        window.scrollTo(0, lock.scrollY);
+        window.scrollTo({ left: lock.scrollX, top: lock.scrollY, behavior: "auto" });
     }
 
     function openSecretModal(openEvent) {
@@ -1184,7 +1292,24 @@ if (IS_ADMIN_PATH) {
         if (openEvent?.preventDefault) openEvent.preventDefault();
         if (openEvent?.stopPropagation) openEvent.stopPropagation();
 
+        secretState.lastFocusedElement = document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+
+        if (typeof secretState.modalViewportCleanup === "function") {
+            secretState.modalViewportCleanup();
+        }
+        secretState.modalViewportCleanup = bindOverlayToVisualViewport(modal);
+
+        const content = modal.querySelector(".ccg-secret-modal__content");
+        const closeButton = modal.querySelector("[data-ccg-secret-close]");
+        if (content) content.scrollTop = 0;
+
         delete modal.dataset.ccgSecretModalLocked;
+        if (secretState.backdropUnlockTimer) {
+            clearTimeout(secretState.backdropUnlockTimer);
+            secretState.backdropUnlockTimer = null;
+        }
 
         requestAnimationFrame(() => {
             if (!modal) return;
@@ -1194,19 +1319,45 @@ if (IS_ADMIN_PATH) {
             lockSecretModalScroll();
 
             requestAnimationFrame(() => {
-                modal.dataset.ccgSecretModalLocked = "true";
+                if (content) content.scrollTop = 0;
+                closeButton?.focus({ preventScroll: true });
             });
+
+            secretState.backdropUnlockTimer = setTimeout(() => {
+                modal.dataset.ccgSecretModalLocked = "true";
+                secretState.backdropUnlockTimer = null;
+            }, 900);
         });
     }
 
     function closeSecretModal() {
         if (!secretState.modal) return;
+
+        const previousFocus = secretState.lastFocusedElement;
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
         delete secretState.modal.dataset.ccgSecretModalLocked;
+
+        if (secretState.backdropUnlockTimer) {
+            clearTimeout(secretState.backdropUnlockTimer);
+            secretState.backdropUnlockTimer = null;
+        }
+        if (typeof secretState.modalViewportCleanup === "function") {
+            secretState.modalViewportCleanup();
+            secretState.modalViewportCleanup = null;
+        }
+
         document.body.classList.remove("ccg-secret-modal-open");
         unlockSecretModalScroll();
         resetSecretInputState();
+
+        requestAnimationFrame(() => {
+            if (secretState.activeEgg) return;
+            if (previousFocus?.isConnected && typeof previousFocus.focus === "function") {
+                previousFocus.focus({ preventScroll: true });
+                secretState.lastFocusedElement = null;
+            }
+        });
     }
 
     function resetSecretInputState() {
