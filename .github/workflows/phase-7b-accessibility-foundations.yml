@@ -1,0 +1,214 @@
+name: Phase 7B Accessibility Foundations
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-7b-accessibility-foundations.yml"
+      - "scripts/apply-phase7b-accessibility.py"
+      - "scripts/phase7b_live_check.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-7b-accessibility-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  accessibility-foundations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    steps:
+      - name: Check out Phase 7B branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase7b-protected.sha256"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            beautifulsoup4==4.13.4 \
+            pillow==11.3.0
+          npm install --no-save --package-lock=false --ignore-scripts \
+            playwright-core@1.61.1 \
+            axe-core@4.12.1
+          google-chrome --version
+
+      - name: Validate Phase 7B tooling
+        run: |
+          python -m py_compile scripts/apply-phase7b-accessibility.py
+          node --check scripts/phase7b_live_check.mjs
+
+      - name: Apply bounded accessibility corrections
+        run: python scripts/apply-phase7b-accessibility.py apply
+
+      - name: Run updated repository static audit
+        run: |
+          python scripts/phase7a_static_performance_accessibility_audit.py scan \
+            --output "$RUNNER_TEMP/phase-7b-static.json"
+
+      - name: Start local static server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/phase7b-server.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/phase7b-server.pid"
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/about.html > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/phase7b-server.log"
+          exit 1
+
+      - name: Run browser keyboard and axe checks
+        run: |
+          node scripts/phase7b_live_check.mjs \
+            --base-url http://127.0.0.1:4173 \
+            --output "$RUNNER_TEMP/phase-7b-live.json"
+
+      - name: Validate corrections and compose report
+        run: |
+          python scripts/apply-phase7b-accessibility.py validate \
+            --static "$RUNNER_TEMP/phase-7b-static.json" \
+            --live "$RUNNER_TEMP/phase-7b-live.json" \
+            --report docs/seo-baseline/phase-7b-accessibility-foundations.md \
+            --evidence docs/seo-baseline/phase-7b-accessibility-foundations-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-7b-accessibility-foundations.md
+          git diff --check
+
+      - name: Upload detailed Phase 7B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-7b-accessibility-foundations-evidence
+          path: |
+            ${{ runner.temp }}/phase-7b-static.json
+            ${{ runner.temp }}/phase-7b-live.json
+            ${{ runner.temp }}/phase7b-server.log
+            docs/seo-baseline/phase-7b-accessibility-foundations.md
+            docs/seo-baseline/phase-7b-accessibility-foundations-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase7b-protected.sha256"
+
+      - name: Remove temporary dependencies and caches
+        run: |
+          if test -f "$RUNNER_TEMP/phase7b-server.pid"; then
+            kill "$(cat "$RUNNER_TEMP/phase7b-server.pid")" 2>/dev/null || true
+          fi
+          rm -rf node_modules
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact Phase 7B scope
+        shell: bash
+        run: |
+          git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-7b-accessibility-foundations.yml",
+              "scripts/apply-phase7b-accessibility.py",
+              "scripts/phase7b_live_check.mjs",
+              "docs/seo-baseline/phase-7b-accessibility-foundations.md",
+              "docs/seo-baseline/phase-7b-accessibility-foundations-evidence.json",
+              "js/ccg-nav.js",
+              "resources/css/ccg-nav.css",
+              "admin/js/input-harden.js",
+              "admin/asset-manager.html",
+              "admin/games-editor.html",
+              "admin/games-json-editor.html",
+              "admin/announce.html",
+              "games/game.html",
+              "resources/audio/easter-eggs/pacman.html",
+              "emulation.html",
+              "resources/emulation-guide.html",
+              "games/collections/index.html",
+              "games/collections/amiga-demo-music.html",
+              "resources/quiz.html",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 7B paths: {unexpected}")
+
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the Phase 7B diff.")
+
+          print(f"Validated Phase 7B scope ({len(changed)} files).")
+          PY
+          git diff --check
+
+      - name: Commit validated Phase 7B output
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git add \
+            js/ccg-nav.js \
+            resources/css/ccg-nav.css \
+            admin/js/input-harden.js \
+            admin/asset-manager.html \
+            admin/games-editor.html \
+            admin/games-json-editor.html \
+            admin/announce.html \
+            games/game.html \
+            resources/audio/easter-eggs/pacman.html \
+            emulation.html \
+            resources/emulation-guide.html \
+            games/collections/index.html \
+            games/collections/amiga-demo-music.html \
+            resources/quiz.html \
+            docs/seo-baseline/phase-7b-accessibility-foundations.md \
+            docs/seo-baseline/phase-7b-accessibility-foundations-evidence.json
+
+          git reset -- index.html home.html resources/css/intro.css js/index-intro.js games/games.json
+
+          if git diff --cached --quiet; then
+            echo "Phase 7B output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 7B accessibility foundations"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
