@@ -15,13 +15,24 @@ const COMPOSER_ALIASES = new Map([
     ["chris hülsbeck", "Chris Hülsbeck"]
 ]);
 
-function normalizeComposerKey(value) {
+function transliterateComposerText(value) {
     return String(value ?? "")
+        .toLowerCase()
+        .replace(/ø/g, "o")
+        .replace(/ł/g, "l")
+        .replace(/[đð]/g, "d")
+        .replace(/þ/g, "th")
+        .replace(/æ/g, "ae")
+        .replace(/œ/g, "oe")
+        .replace(/ß/g, "ss");
+}
+
+function normalizeComposerKey(value) {
+    return transliterateComposerText(value)
         .trim()
         .replace(/\s+/g, " ")
         .replace(/[’‘]/g, "'")
         .replace(/&/g, " and ")
-        .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
         .replace(/[^a-z0-9]+/g, " ")
@@ -40,15 +51,7 @@ function canonicalizeComposerName(value) {
 function slugifyComposer(value) {
     const canonical = canonicalizeComposerName(value);
     if (!canonical) return "";
-    return canonical
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/&/g, " and ")
-        .toLowerCase()
-        .replace(/['’]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/-{2,}/g, "-")
-        .replace(/^-+|-+$/g, "");
+    return normalizeComposerKey(canonical).replace(/\s+/g, "-");
 }
 
 function toList(value) {
@@ -167,5 +170,6 @@ module.exports = {
     getComposerNames,
     normalizeComposerKey,
     normalizeSystem,
-    slugifyComposer
+    slugifyComposer,
+    transliterateComposerText
 };
