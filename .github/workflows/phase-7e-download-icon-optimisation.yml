@@ -70,9 +70,11 @@ jobs:
           python - <<'PY'
           import hashlib
           import json
+          import os
           from pathlib import Path
 
           root = Path.cwd()
+          runner_temp = Path(os.environ["RUNNER_TEMP"])
           target = "resources/images/icons/download.PNG"
           extensions = {".png", ".jpg", ".jpeg", ".webp"}
           manifest = {}
@@ -84,7 +86,7 @@ jobs:
                   continue
               digest = hashlib.sha256(path.read_bytes()).hexdigest()
               manifest[relative] = digest
-          Path("$RUNNER_TEMP/phase7e-other-images-before.json").write_text(
+          (runner_temp / "phase7e-other-images-before.json").write_text(
               json.dumps(manifest, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
@@ -129,9 +131,11 @@ jobs:
           python - <<'PY'
           import hashlib
           import json
+          import os
           from pathlib import Path
 
           root = Path.cwd()
+          runner_temp = Path(os.environ["RUNNER_TEMP"])
           target = "resources/images/icons/download.PNG"
           extensions = {".png", ".jpg", ".jpeg", ".webp"}
           manifest = {}
@@ -143,12 +147,12 @@ jobs:
                   continue
               digest = hashlib.sha256(path.read_bytes()).hexdigest()
               manifest[relative] = digest
-          after_path = Path("$RUNNER_TEMP/phase7e-other-images-after.json")
+          after_path = runner_temp / "phase7e-other-images-after.json"
           after_path.write_text(
               json.dumps(manifest, sort_keys=True, indent=2) + "\n",
               encoding="utf-8",
           )
-          before = Path("$RUNNER_TEMP/phase7e-other-images-before.json").read_text(encoding="utf-8")
+          before = (runner_temp / "phase7e-other-images-before.json").read_text(encoding="utf-8")
           after = after_path.read_text(encoding="utf-8")
           if before != after:
               raise SystemExit("A non-target raster image changed during Phase 7E correction")
