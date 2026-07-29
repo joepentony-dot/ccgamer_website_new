@@ -5,9 +5,13 @@ The dedicated generate-composer-pages.js script owns all composer routes. Keepin
 an older five-credit composer cleanup inside build-games.js makes consecutive
 rebuilds alternate between deleting and restoring valid composer pages.
 
-The game-publishing command also must not regenerate unrelated Retro Events,
-Retro Specials or Amiga demo pages, because that generator derives media dates
-from the current filesystem time and makes repeat game rebuilds non-deterministic.
+Generated composer pages must also be excluded from the generator's scan for
+hand-maintained existing pages. Otherwise all generated routes are reclassified
+as curated on one run, removed as stale, then regenerated on the next run.
+
+The game-publishing command must not regenerate unrelated Retro Events, Retro
+Specials or Amiga demo pages, because that generator derives media dates from
+the current filesystem time and makes repeat game rebuilds non-deterministic.
 """
 
 from __future__ import annotations
@@ -18,6 +22,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 BUILD_TARGET = ROOT / "scripts" / "build-games.js"
 REBUILD_TARGET = ROOT / "scripts" / "rebuild-games.js"
+COMPOSER_TARGET = ROOT / "scripts" / "generate-composer-pages.js"
 
 
 def update_build_games() -> None:
@@ -60,6 +65,24 @@ if (require.main === module)'''
         print("scripts/build-games.js already delegates composer pages exclusively.")
 
 
+def update_composer_generator() -> None:
+    source = COMPOSER_TARGET.read_text(encoding="utf-8")
+    old = '''        const html = fs.readFileSync(filePath, "utf8");
+        if (!/data-ccg-page\\s*=\\s*(["'])music-composer\\1/i.test(html)) continue;
+'''
+    new = '''        const html = fs.readFileSync(filePath, "utf8");
+        if (/data-generated-composer\\s*=\\s*(["'])true\\1/i.test(html)) continue;
+        if (!/data-ccg-page\\s*=\\s*(["'])music-composer\\1/i.test(html)) continue;
+'''
+    if new in source:
+        print("generate-composer-pages.js already distinguishes generated routes.")
+        return
+    if source.count(old) != 1:
+        raise SystemExit("Could not isolate composer existing-page scan.")
+    COMPOSER_TARGET.write_text(source.replace(old, new, 1), encoding="utf-8")
+    print("Excluded generated composer routes from curated-page detection.")
+
+
 def update_rebuild_games() -> None:
     source = REBUILD_TARGET.read_text(encoding="utf-8")
     updated = source.replace('  ["generate-retro-pages.js"],\n', "")
@@ -72,6 +95,7 @@ def update_rebuild_games() -> None:
 
 def main() -> None:
     update_build_games()
+    update_composer_generator()
     update_rebuild_games()
 
 
