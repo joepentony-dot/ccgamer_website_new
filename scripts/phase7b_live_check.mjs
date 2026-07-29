@@ -142,6 +142,7 @@ async function main() {
       (sum, route) => sum + (route.serious_or_critical_nodes || 0),
       0,
     );
+    // Do not include run time or commit SHA: committed evidence must be repeatable.
     const payload = {
       base_url: args.baseUrl,
       chrome_path: chromePath,
