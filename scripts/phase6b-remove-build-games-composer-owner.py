@@ -1,20 +1,9 @@
 #!/usr/bin/env python3
-"""Normalize ownership and scope for the Phase 6B publishing chain.
+"""Normalize ownership, scope and idempotency for the Phase 6B chain.
 
-The dedicated generate-composer-pages.js script owns all composer routes. Keeping
-an older five-credit composer cleanup inside build-games.js makes consecutive
-rebuilds alternate between deleting and restoring valid composer pages.
-
-Generated composer pages must also be excluded from the generator's scan for
-hand-maintained existing pages. Otherwise all generated routes are reclassified
-as curated on one run, removed as stale, then regenerated on the next run.
-
-The game-publishing command must not regenerate unrelated Retro Events, Retro
-Specials or Amiga demo pages, because that generator derives media dates from
-the current filesystem time and makes repeat game rebuilds non-deterministic.
-
-Disposable synthetic worktrees are detached from the committed PR head, so they
-must apply the same bounded Phase 6B transformations before testing publishing.
+The dedicated composer generator owns all composer routes. The authoritative game
+publisher excludes unrelated retro-page generation, uses data-derived archive
+validation and must produce the same output on every repeated run.
 """
 
 from __future__ import annotations
@@ -23,16 +12,102 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+APPLY_TARGET = ROOT / "scripts" / "apply-phase6b-publishing.py"
 BUILD_TARGET = ROOT / "scripts" / "build-games.js"
 REBUILD_TARGET = ROOT / "scripts" / "rebuild-games.js"
 COMPOSER_TARGET = ROOT / "scripts" / "generate-composer-pages.js"
 VALIDATOR_TARGET = ROOT / "scripts" / "validate-year-platform-discovery.js"
+EDITOR_TARGET = ROOT / "admin" / "js" / "games-editor.js"
 TRANSACTION_TARGET = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
+
+GAME_SCHEMA_LINE = "    GAME_SCHEMA_JSON: gameSchemaJson,\n"
+NOINDEX_YEAR_LINE = "        noindexYearRoutes: years.filter((group) => !group.indexable).length,\n"
+
+
+def update_apply_idempotency() -> None:
+    source = APPLY_TARGET.read_text(encoding="utf-8")
+    original = source
+
+    old_noindex = '''    source = source.replace(
+        "        registeredArchiveRoutes: expectedStaticEntries.length,\\n",
+        "        registeredArchiveRoutes: expectedStaticEntries.length,\\n        noindexYearRoutes: years.filter((group) => !group.indexable).length,\\n",
+    )
+'''
+    new_noindex = '''    noindex_summary_line = "        noindexYearRoutes: years.filter((group) => !group.indexable).length,\\n"
+    source = re.sub(
+        r"(?:        noindexYearRoutes: years\\.filter\\(\\(group\\) => !group\\.indexable\\)\\.length,\\n)+",
+        noindex_summary_line,
+        source,
+    )
+    if noindex_summary_line not in source:
+        source = source.replace(
+            "        registeredArchiveRoutes: expectedStaticEntries.length,\\n",
+            "        registeredArchiveRoutes: expectedStaticEntries.length,\\n" + noindex_summary_line,
+            1,
+        )
+'''
+    if old_noindex in source:
+        source = source.replace(old_noindex, new_noindex, 1)
+    elif new_noindex not in source:
+        raise SystemExit("Could not verify idempotent noindex-year transformation.")
+
+    old_schema = '''    source = replace_once(
+        source,
+        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\\n",
+        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\\n    GAME_SCHEMA_JSON: gameSchemaJson,\\n",
+        "add editor schema template variable",
+    )
+'''
+    new_schema = '''    schema_var_line = "    GAME_SCHEMA_JSON: gameSchemaJson,\\n"
+    source = re.sub(
+        r"(?:    GAME_SCHEMA_JSON: gameSchemaJson,\\n)+",
+        schema_var_line,
+        source,
+    )
+    if schema_var_line not in source:
+        source = replace_once(
+            source,
+            "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\\n",
+            "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\\n" + schema_var_line,
+            "add editor schema template variable",
+        )
+'''
+    if old_schema in source:
+        source = source.replace(old_schema, new_schema, 1)
+    elif new_schema not in source:
+        raise SystemExit("Could not verify idempotent editor-schema transformation.")
+
+    if source != original:
+        APPLY_TARGET.write_text(source, encoding="utf-8")
+        print("Made scripts/apply-phase6b-publishing.py idempotent.")
+    else:
+        print("Phase 6B application script is already idempotent.")
+
+
+def normalize_generated_keys() -> None:
+    editor = EDITOR_TARGET.read_text(encoding="utf-8")
+    normalized_editor = re.sub(
+        r"(?:    GAME_SCHEMA_JSON: gameSchemaJson,\n)+",
+        GAME_SCHEMA_LINE,
+        editor,
+    )
+    if normalized_editor != editor:
+        EDITOR_TARGET.write_text(normalized_editor, encoding="utf-8")
+        print("Collapsed duplicate GAME_SCHEMA_JSON template keys.")
+
+    validator = VALIDATOR_TARGET.read_text(encoding="utf-8")
+    normalized_validator = re.sub(
+        r"(?:        noindexYearRoutes: years\.filter\(\(group\) => !group\.indexable\)\.length,\n)+",
+        NOINDEX_YEAR_LINE,
+        validator,
+    )
+    if normalized_validator != validator:
+        VALIDATOR_TARGET.write_text(normalized_validator, encoding="utf-8")
+        print("Collapsed duplicate noindexYearRoutes summary keys.")
 
 
 def update_build_games() -> None:
     source = BUILD_TARGET.read_text(encoding="utf-8")
-
     source = source.replace('const crypto = require("crypto");\n', "")
     source = source.replace('const { spawnSync } = require("child_process");\n', "")
     source = re.sub(
@@ -54,7 +129,6 @@ def update_build_games() -> None:
 }
 
 if (require.main === module)'''
-
     pattern = re.compile(
         r"function main\(\) \{.*?\n\}\n\nif \(require\.main === module\)",
         re.S,
@@ -62,7 +136,6 @@ if (require.main === module)'''
     updated, count = pattern.subn(replacement, source, count=1)
     if count != 1:
         raise SystemExit("Could not isolate build-games.js main function.")
-
     if updated != source:
         BUILD_TARGET.write_text(updated, encoding="utf-8")
         print("Removed legacy composer-page ownership from scripts/build-games.js")
@@ -146,10 +219,15 @@ def update_year_platform_validator() -> None:
         "- Stable-order checks for registry entries and sitemap URLs owned by other workflows.",
         "- Exact membership checks for registry entries and sitemap URLs owned by other workflows; Phase 6B separately enforces deterministic current ordering.",
     )
+    source = re.sub(
+        r"(?:        noindexYearRoutes: years\.filter\(\(group\) => !group\.indexable\)\.length,\n)+",
+        NOINDEX_YEAR_LINE,
+        source,
+    )
 
     if source != original:
         VALIDATOR_TARGET.write_text(source, encoding="utf-8")
-        print("Updated Phase 4D validation for current-data totals and intentional Phase 6B ordering.")
+        print("Updated Phase 4D validation for current totals, ordering and unique summary keys.")
     else:
         print("Phase 4D validation already supports Phase 6B catalogue growth and ordering.")
 
@@ -217,12 +295,13 @@ def count_anchor_href(html: str, href: str) -> int:
         "5. Generate downloads and retro outputs.",
         "5. Generate downloads and update archive registration.",
     )
-
     TRANSACTION_TARGET.write_text(source, encoding="utf-8")
     print("Prepared synthetic worktrees and structural archive-link checks.")
 
 
 def main() -> None:
+    update_apply_idempotency()
+    normalize_generated_keys()
     update_build_games()
     update_composer_generator()
     update_year_platform_validator()
