@@ -9,7 +9,8 @@
 | Indexable year routes registered | **14** |
 | Archive hubs registered | **2** |
 | Platform routes registered | **2** |
-| Total archive entries appended to static registry | **18** |
+| Total archive entries managed in static registry | **18** |
+| New archive entries appended this run | **0** |
 | Existing non-archive registry entries preserved in order | **231** |
 
 ## Discovery integration
@@ -23,7 +24,7 @@
 
 - Registered both archive hubs, both platform routes and the 14 indexable year routes.
 - Kept `/games/years/2023/` out of the static registry and sitemap while it remains `noindex,follow`.
-- Preserved every non-year/platform static registry entry in its existing order.
+- Preserved every existing valid registry entry in place and appended only missing year/platform entries.
 
 ## Permanent safeguards
 
@@ -31,6 +32,7 @@
 - Phase 4C reapplies discovery links after generated pages are rebuilt.
 - Validation checks registry membership, sitemap membership, route cross-links and foreign-entry order.
 - Existing publisher, developer, composer, download, retro, genre, collection and core registry entries are not rewritten by the Phase 4C integration script.
+- Existing valid year/platform entries are not removed and re-appended, preventing registry-order ping-pong with other archive workflows.
 
 ## Explicit exclusions
 
