@@ -143,7 +143,6 @@ async function main() {
       0,
     );
     const payload = {
-      generated_at: new Date().toISOString(),
       base_url: args.baseUrl,
       chrome_path: chromePath,
       axe_version: axe.version,
