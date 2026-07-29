@@ -11,6 +11,7 @@ const repoRoot = process.env.CCG_REPO_ROOT
 
 const integrationPath = path.join(repoRoot, "scripts", "integrate-year-platform-discovery.js");
 const validationPath = path.join(repoRoot, "scripts", "validate-year-platform-discovery.js");
+const publisherLogosPath = path.join(repoRoot, "scripts", "apply-publisher-logos.js");
 
 function fail(message) {
   console.error(`[priority-discovery-fix] ${message}`);
@@ -109,8 +110,23 @@ validation = replaceExact(
   "Phase 4D report navigation copy"
 );
 
+let publisherLogos = fs.readFileSync(publisherLogosPath, "utf8");
+publisherLogos = replaceExact(
+  publisherLogos,
+  '    if (html !== original) fs.writeFileSync(filePath, html, "utf8");\n    return html !== original;',
+  '    html = html.replace(/[ \\t]+$/gm, "");\n    if (html !== original) fs.writeFileSync(filePath, html, "utf8");\n    return html !== original;',
+  "Publisher page whitespace normalisation"
+);
+publisherLogos = replaceExact(
+  publisherLogos,
+  'fs.writeFileSync(publisherIndexPath, indexHtml, "utf8");',
+  'indexHtml = indexHtml.replace(/[ \\t]+$/gm, "");\nfs.writeFileSync(publisherIndexPath, indexHtml, "utf8");',
+  "Publisher index whitespace normalisation"
+);
+
 const changed = [];
 if (writeIfChanged(integrationPath, integration)) changed.push(path.relative(repoRoot, integrationPath));
 if (writeIfChanged(validationPath, validation)) changed.push(path.relative(repoRoot, validationPath));
+if (writeIfChanged(publisherLogosPath, publisherLogos)) changed.push(path.relative(repoRoot, publisherLogosPath));
 
 console.log(`[priority-discovery-fix] Updated ${changed.length} source file${changed.length === 1 ? "" : "s"}.`);
