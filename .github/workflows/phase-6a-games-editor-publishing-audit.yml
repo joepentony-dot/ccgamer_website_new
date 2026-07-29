@@ -1,5 +1,7 @@
 name: Phase 6A Games Editor Publishing Audit
 
+# Final app-authored validation trigger; the audit remains read-only.
+
 on:
   pull_request:
     branches:
