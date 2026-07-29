@@ -4,7 +4,7 @@
 
 **PASS**
 
-The three-click command menu and a representative Easter egg result were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.
+The three-click command menu, a shared framed result and the direct BSOD overlay were tested from a scrolled page position across phone portrait, small phone, phone landscape, desktop and the Games index.
 
 | Case | Viewport | Result | Menu height | Result frame height |
 |---|---:|---:|---:|---:|
@@ -16,7 +16,7 @@ The three-click command menu and a representative Easter egg result were tested 
 
 ## Required behaviour
 
-- Menu panel, close button, result frame and result exit button remain inside the visible viewport.
+- Menu panel, close button, framed result, direct result and exit button remain inside the visible viewport.
 - Long menus scroll internally with the close control remaining visible.
 - Every reopen begins at the top of the command list.
 - Opening and closing does not move the underlying page.

@@ -822,6 +822,7 @@ if (IS_ADMIN_PATH) {
         return frame;
     }
 
+    /* CCG DIRECT EASTER EGG VIEWPORT BINDING */
     function triggerC64Reset() {
         const reset = createOverlay("ccg-c64-reset", `
             <div class="ccg-c64-reset__screen">
@@ -830,8 +831,12 @@ if (IS_ADMIN_PATH) {
                 <p class="ccg-c64-reset__ready">READY<span class="ccg-c64-reset__cursor"></span></p>
             </div>
         `);
+        const viewportCleanup = bindOverlayToVisualViewport(reset);
         setTimeout(() => reset.classList.add("is-active"), 30);
-        setTimeout(() => reset.remove(), 3200);
+        setTimeout(() => {
+            viewportCleanup();
+            reset.remove();
+        }, 3200);
     }
 
     function triggerPressPlay() {
@@ -844,6 +849,8 @@ if (IS_ADMIN_PATH) {
             <p>A fatal exception 0E has occurred at 0028:C0011E36 in VXD VMM(01) + 00010E36.</p>
             <p>Press any key to continue...</p>
         `);
+        const viewportCleanup = bindOverlayToVisualViewport(bsod);
+        let isRemoved = false;
         const remove = (event) => {
             // ADMIN INPUT SAFETY LOCK — DO NOT REMOVE
             // Prevents quiz/hotkey logic from blocking form typing
@@ -855,6 +862,9 @@ if (IS_ADMIN_PATH) {
             if (event && event.target && event.target.closest && event.target.closest('input, textarea, [contenteditable="true"], [contenteditable=""], [contenteditable]')) {
                 return;
             }
+            if (isRemoved) return;
+            isRemoved = true;
+            viewportCleanup();
             bsod.remove();
         };
         bsod.addEventListener("click", remove);

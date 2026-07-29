@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T21:54:11.095Z",
+  "generatedAt": "2026-07-29T22:05:03.795Z",
   "verdict": "PASS",
   "testedCases": 5,
   "failedChecks": [],
@@ -12,8 +12,8 @@
       "hasTouch": true,
       "page": "home.html",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBeforeOpen": 4296,
-      "scrollAfterClose": 4296,
+      "scrollBeforeOpen": 4267,
+      "scrollAfterClose": 4267,
       "menuMetrics": {
         "rect": {
           "top": 8,
@@ -57,7 +57,7 @@
         "withinVisibleViewport": true
       },
       "menuState": {
-        "scrollY": 4296,
+        "scrollY": 4267,
         "contentScrollTop": 0,
         "contentClientHeight": 826,
         "contentScrollHeight": 1055,
@@ -142,6 +142,27 @@
         "mediaScrollHeight": 684,
         "bodyOverflow": "hidden auto"
       },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
       "checks": {
         "menuWithinVisibleViewport": true,
         "closeWithinVisibleViewport": true,
@@ -158,12 +179,14 @@
         "resultFrameWithinVisibleViewport": true,
         "resultExitWithinVisibleViewport": true,
         "resultExitReceivesFocus": true,
-        "resultMediaHasUsableHeight": true
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
       },
       "passed": true,
       "screenshots": {
         "menu": "/home/runner/work/_temp/easter-screenshots/phone-portrait-menu.png",
-        "result": "/home/runner/work/_temp/easter-screenshots/phone-portrait-result.png"
+        "result": "/home/runner/work/_temp/easter-screenshots/phone-portrait-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/phone-portrait-direct-result.png"
       }
     },
     {
@@ -174,8 +197,8 @@
       "hasTouch": true,
       "page": "home.html",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBeforeOpen": 4542,
-      "scrollAfterClose": 4542,
+      "scrollBeforeOpen": 4494,
+      "scrollAfterClose": 4494,
       "menuMetrics": {
         "rect": {
           "top": 8,
@@ -219,7 +242,7 @@
         "withinVisibleViewport": true
       },
       "menuState": {
-        "scrollY": 4542,
+        "scrollY": 4494,
         "contentScrollTop": 0,
         "contentClientHeight": 622,
         "contentScrollHeight": 1055,
@@ -304,6 +327,27 @@
         "mediaScrollHeight": 500,
         "bodyOverflow": "hidden auto"
       },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 360,
+          "bottom": 640,
+          "width": 360,
+          "height": 640
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 360,
+          "height": 640,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 360,
+          "bottom": 640
+        },
+        "withinVisibleViewport": true
+      },
       "checks": {
         "menuWithinVisibleViewport": true,
         "closeWithinVisibleViewport": true,
@@ -320,12 +364,14 @@
         "resultFrameWithinVisibleViewport": true,
         "resultExitWithinVisibleViewport": true,
         "resultExitReceivesFocus": true,
-        "resultMediaHasUsableHeight": true
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
       },
       "passed": true,
       "screenshots": {
         "menu": "/home/runner/work/_temp/easter-screenshots/small-phone-menu.png",
-        "result": "/home/runner/work/_temp/easter-screenshots/small-phone-result.png"
+        "result": "/home/runner/work/_temp/easter-screenshots/small-phone-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/small-phone-direct-result.png"
       }
     },
     {
@@ -336,8 +382,8 @@
       "hasTouch": true,
       "page": "home.html",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBeforeOpen": 3296,
-      "scrollAfterClose": 3296,
+      "scrollBeforeOpen": 3315,
+      "scrollAfterClose": 3315,
       "menuMetrics": {
         "rect": {
           "top": 8,
@@ -381,7 +427,7 @@
         "withinVisibleViewport": true
       },
       "menuState": {
-        "scrollY": 3296,
+        "scrollY": 3315,
         "contentScrollTop": 0,
         "contentClientHeight": 372,
         "contentScrollHeight": 490,
@@ -466,6 +512,27 @@
         "mediaScrollHeight": 276,
         "bodyOverflow": "hidden auto"
       },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 844,
+          "bottom": 390,
+          "width": 844,
+          "height": 390
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 844,
+          "height": 390,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 844,
+          "bottom": 390
+        },
+        "withinVisibleViewport": true
+      },
       "checks": {
         "menuWithinVisibleViewport": true,
         "closeWithinVisibleViewport": true,
@@ -482,12 +549,14 @@
         "resultFrameWithinVisibleViewport": true,
         "resultExitWithinVisibleViewport": true,
         "resultExitReceivesFocus": true,
-        "resultMediaHasUsableHeight": true
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
       },
       "passed": true,
       "screenshots": {
         "menu": "/home/runner/work/_temp/easter-screenshots/phone-landscape-menu.png",
-        "result": "/home/runner/work/_temp/easter-screenshots/phone-landscape-result.png"
+        "result": "/home/runner/work/_temp/easter-screenshots/phone-landscape-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/phone-landscape-direct-result.png"
       }
     },
     {
@@ -523,12 +592,12 @@
       },
       "closeMetrics": {
         "rect": {
-          "top": 97.203125,
+          "top": 97.2070541381836,
           "left": 372,
           "right": 572.15625,
-          "bottom": 139.203125,
+          "bottom": 139.20706176757812,
           "width": 200.15625,
-          "height": 42
+          "height": 42.00000762939453
         },
         "visible": {
           "top": 0,
@@ -603,10 +672,10 @@
       },
       "exitMetrics": {
         "rect": {
-          "top": 56.60356140136719,
+          "top": 56.481346130371094,
           "left": 102,
           "right": 1264,
-          "bottom": 98.60356140136719,
+          "bottom": 98.4813461303711,
           "width": 1162,
           "height": 42
         },
@@ -628,6 +697,27 @@
         "mediaScrollHeight": 593,
         "bodyOverflow": "hidden auto"
       },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 1366,
+          "bottom": 768,
+          "width": 1366,
+          "height": 768
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 1366,
+          "height": 768,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 1366,
+          "bottom": 768
+        },
+        "withinVisibleViewport": true
+      },
       "checks": {
         "menuWithinVisibleViewport": true,
         "closeWithinVisibleViewport": true,
@@ -644,12 +734,14 @@
         "resultFrameWithinVisibleViewport": true,
         "resultExitWithinVisibleViewport": true,
         "resultExitReceivesFocus": true,
-        "resultMediaHasUsableHeight": true
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
       },
       "passed": true,
       "screenshots": {
         "menu": "/home/runner/work/_temp/easter-screenshots/desktop-menu.png",
-        "result": "/home/runner/work/_temp/easter-screenshots/desktop-result.png"
+        "result": "/home/runner/work/_temp/easter-screenshots/desktop-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/desktop-direct-result.png"
       }
     },
     {
@@ -790,6 +882,27 @@
         "mediaScrollHeight": 684,
         "bodyOverflow": "hidden auto"
       },
+      "directResultMetrics": {
+        "rect": {
+          "top": 0,
+          "left": 0,
+          "right": 390,
+          "bottom": 844,
+          "width": 390,
+          "height": 844
+        },
+        "visible": {
+          "top": 0,
+          "left": 0,
+          "width": 390,
+          "height": 844,
+          "layoutOffsetTop": 0,
+          "layoutOffsetLeft": 0,
+          "right": 390,
+          "bottom": 844
+        },
+        "withinVisibleViewport": true
+      },
       "checks": {
         "menuWithinVisibleViewport": true,
         "closeWithinVisibleViewport": true,
@@ -806,12 +919,14 @@
         "resultFrameWithinVisibleViewport": true,
         "resultExitWithinVisibleViewport": true,
         "resultExitReceivesFocus": true,
-        "resultMediaHasUsableHeight": true
+        "resultMediaHasUsableHeight": true,
+        "directResultWithinVisibleViewport": true
       },
       "passed": true,
       "screenshots": {
         "menu": "/home/runner/work/_temp/easter-screenshots/games-phone-menu.png",
-        "result": "/home/runner/work/_temp/easter-screenshots/games-phone-result.png"
+        "result": "/home/runner/work/_temp/easter-screenshots/games-phone-result.png",
+        "directResult": "/home/runner/work/_temp/easter-screenshots/games-phone-direct-result.png"
       }
     }
   ]
