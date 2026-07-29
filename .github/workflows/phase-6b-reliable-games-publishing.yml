@@ -1,0 +1,198 @@
+name: Phase 6B Reliable Games Editor Publishing
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/apply-phase6b-publishing.py"
+      - "scripts/phase6b_games_editor_transaction.py"
+      - "scripts/validate-games-source.js"
+      - "scripts/rebuild-games.js"
+      - "scripts/build-games.js"
+      - "scripts/generate-year-platform-pages.js"
+      - "scripts/validate-year-platform-discovery.js"
+      - "admin/games-editor.html"
+      - "admin/js/games-editor.js"
+      - "admin/templates/game-landing-template.html"
+      - "admin/GAMES_EDITOR.md"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/phase-6b-reliable-games-publishing.yml"
+      - ".github/workflows/publisher-archives.yml"
+      - ".github/workflows/developer-archives.yml"
+      - ".github/workflows/composer-archives.yml"
+      - ".github/workflows/game-downloads.yml"
+      - ".github/workflows/year-platform-archives.yml"
+      - "docs/seo-baseline/phase-6b-reliable-games-publishing.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-6b-reliable-games-publishing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Apply bounded Phase 6B changes
+        run: python scripts/apply-phase6b-publishing.py
+
+      - name: Validate syntax
+        run: |
+          python -m py_compile scripts/apply-phase6b-publishing.py
+          python -m py_compile scripts/phase6b_games_editor_transaction.py
+          node --check scripts/validate-games-source.js
+          node --check scripts/rebuild-games.js
+          node --check scripts/build-games.js
+          node --check scripts/generate-year-platform-pages.js
+          node --check scripts/validate-year-platform-discovery.js
+          node --check admin/js/games-editor.js
+
+      - name: Run existing editor package regression
+        run: node --test tests/games-editor-package.test.mjs
+
+      - name: Run current catalogue publishing chain
+        run: node scripts/rebuild-games.js
+
+      - name: Verify deterministic current-catalogue output
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/first.diff"
+          node scripts/rebuild-games.js
+          git diff --binary > "$RUNNER_TEMP/second.diff"
+          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+          git diff --check
+
+      - name: Run synthetic C64 and Amiga transactions
+        run: |
+          python scripts/phase6b_games_editor_transaction.py \
+            --json-output "$RUNNER_TEMP/phase-6b-evidence.json" \
+            --report-output docs/seo-baseline/phase-6b-reliable-games-publishing.md
+
+      - name: Upload Phase 6B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-6b-reliable-games-publishing-evidence
+          path: ${{ runner.temp }}/phase-6b-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove Python cache
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Confirm no real synthetic record exists
+        shell: bash
+        run: |
+          ! grep -R "phase6b-synthetic" games/games.json games/games-index.json games/games-search.json
+
+      - name: Confirm exact Phase 6B scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/games-publishing.yml",
+              ".github/workflows/phase-6b-reliable-games-publishing.yml",
+              ".github/workflows/publisher-archives.yml",
+              ".github/workflows/developer-archives.yml",
+              ".github/workflows/composer-archives.yml",
+              ".github/workflows/game-downloads.yml",
+              ".github/workflows/year-platform-archives.yml",
+              "admin/GAMES_EDITOR.md",
+              "admin/games-editor.html",
+              "admin/js/games-editor.js",
+              "admin/templates/game-landing-template.html",
+              "scripts/apply-phase6b-publishing.py",
+              "scripts/phase6b_games_editor_transaction.py",
+              "scripts/validate-games-source.js",
+              "scripts/rebuild-games.js",
+              "scripts/build-games.js",
+              "scripts/generate-year-platform-pages.js",
+              "scripts/validate-year-platform-discovery.js",
+              "docs/seo-baseline/phase-4b-year-platform-archives.md",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
+              "docs/seo-baseline/phase-4d-year-platform-validation.md",
+              "docs/seo-baseline/phase-6b-reliable-games-publishing.md",
+          }
+          tracked = subprocess.check_output(["git", "diff", "--name-only", "origin/main"], text=True).splitlines()
+          untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = sorted(set(changed).difference(allowed))
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 6B paths: {unexpected}")
+          print(f"Validated Phase 6B scope ({len(changed)} files): {changed}")
+          PY
+
+      - name: Commit generated Phase 6B output
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add \
+            .github/workflows/games-publishing.yml \
+            .github/workflows/phase-6b-reliable-games-publishing.yml \
+            .github/workflows/publisher-archives.yml \
+            .github/workflows/developer-archives.yml \
+            .github/workflows/composer-archives.yml \
+            .github/workflows/game-downloads.yml \
+            .github/workflows/year-platform-archives.yml \
+            admin/GAMES_EDITOR.md \
+            admin/games-editor.html \
+            admin/js/games-editor.js \
+            admin/templates/game-landing-template.html \
+            scripts/apply-phase6b-publishing.py \
+            scripts/phase6b_games_editor_transaction.py \
+            scripts/validate-games-source.js \
+            scripts/rebuild-games.js \
+            scripts/build-games.js \
+            scripts/generate-year-platform-pages.js \
+            scripts/validate-year-platform-discovery.js \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md \
+            docs/seo-baseline/phase-4d-year-platform-validation.md \
+            docs/seo-baseline/phase-6b-reliable-games-publishing.md
+
+          if git diff --cached --quiet; then
+            echo "Phase 6B output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 6B reliable game publishing"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
