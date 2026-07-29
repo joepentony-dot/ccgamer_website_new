@@ -463,7 +463,7 @@ function renderGameCard(game) {
             <img src="${htmlEscape(thumb)}"
                  alt="${htmlEscape(game.title)} cover art"
                  loading="lazy"
-                 decoding="async">
+                 decoding="async" width="320" height="180">
         </span>
         <span class="ccg-publisher-game-card__body">
             <span class="ccg-publisher-game-card__title">${htmlEscape(game.title)}</span>

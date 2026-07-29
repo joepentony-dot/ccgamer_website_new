@@ -418,7 +418,7 @@ function renderGameCard(game) {
           data-game-title="${htmlEscape(game.title.toLowerCase())}"
           data-system="${htmlEscape(system.toLowerCase())}">
         <span class="ccg-developer-game-card__image">
-            <img src="${htmlEscape(thumb)}" alt="${htmlEscape(game.title)} cover art" loading="lazy" decoding="async">
+            <img src="${htmlEscape(thumb)}" alt="${htmlEscape(game.title)} cover art" loading="lazy" decoding="async" width="320" height="180">
         </span>
         <span class="ccg-developer-game-card__body">
             <span class="ccg-developer-game-card__title">${htmlEscape(game.title)}</span>

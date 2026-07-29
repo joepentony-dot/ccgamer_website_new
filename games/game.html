@@ -141,7 +141,7 @@
             <img src="../resources/images/ccgamer-logo.png"
                  alt="Cheeky Commodore Gamer logo"
                  class="ccg-brand__logo"
-                 loading="lazy" width="1500" height="1032" srcset="../resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px">
+                 loading="eager" width="1500" height="1032" srcset="../resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px" decoding="async">
 
             <div class="ccg-brand__text">
                 <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
@@ -261,7 +261,7 @@
                     <img id="gameHeroThumb"
                          class="game-hero__thumb"
                          alt=""
-                         loading="lazy">
+                         loading="eager" decoding="async" fetchpriority="high" width="320" height="180">
                 </div>
 
                 <div class="game-hero__content">
@@ -354,7 +354,7 @@
                         class="game-video__frame"
                         title="Game video"
                         allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen></iframe>
+                        allowfullscreen loading="lazy" width="560" height="315"></iframe>
 
                 <div class="game-video__actions">
                     <a id="gameVideoBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Open on YouTube</a>

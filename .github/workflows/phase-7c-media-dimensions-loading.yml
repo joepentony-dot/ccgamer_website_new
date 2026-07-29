@@ -1,0 +1,253 @@
+name: Phase 7C Media Dimensions and Loading
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-7c-media-dimensions-loading.yml"
+      - "scripts/apply-phase7c-media.py"
+      - "scripts/phase7c_live_check.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-7c-media-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  media-dimensions-loading:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+
+    steps:
+      - name: Check out Phase 7C branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase7c-protected.sha256"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            beautifulsoup4==4.13.4 \
+            pillow==11.3.0
+          npm install --no-save --package-lock=false --ignore-scripts \
+            playwright-core@1.61.1 \
+            axe-core@4.12.1
+          google-chrome --version
+
+      - name: Validate Phase 7C tooling
+        run: |
+          python -m py_compile scripts/apply-phase7c-media.py
+          node --check scripts/phase7c_live_check.mjs
+          node --check scripts/rebuild-games.js
+
+      - name: Apply bounded media corrections
+        run: python scripts/apply-phase7c-media.py apply
+
+      - name: Run authoritative game publishing command
+        run: |
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+
+      - name: Verify deterministic repeat generation
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/phase7c-first.diff"
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          git diff --binary > "$RUNNER_TEMP/phase7c-second.diff"
+          if ! cmp -s "$RUNNER_TEMP/phase7c-first.diff" "$RUNNER_TEMP/phase7c-second.diff"; then
+            echo "Phase 7C repeat-generation mismatch:"
+            diff -u "$RUNNER_TEMP/phase7c-first.diff" "$RUNNER_TEMP/phase7c-second.diff" || true
+            exit 1
+          fi
+          git diff --check
+
+      - name: Run updated repository static audit
+        run: |
+          python scripts/phase7a_static_performance_accessibility_audit.py scan \
+            --output "$RUNNER_TEMP/phase-7c-static.json"
+
+      - name: Start local static server
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/phase7c-server.log" 2>&1 &
+          echo $! > "$RUNNER_TEMP/phase7c-server.pid"
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4173/games/game.html?id=zeewolf > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat "$RUNNER_TEMP/phase7c-server.log"
+          exit 1
+
+      - name: Run browser media and accessibility checks
+        run: |
+          node scripts/phase7c_live_check.mjs \
+            --base-url http://127.0.0.1:4173 \
+            --output "$RUNNER_TEMP/phase-7c-live.json"
+
+      - name: Validate corrections and compose report
+        run: |
+          python scripts/apply-phase7c-media.py validate \
+            --static "$RUNNER_TEMP/phase-7c-static.json" \
+            --live "$RUNNER_TEMP/phase-7c-live.json" \
+            --report docs/seo-baseline/phase-7c-media-dimensions-loading.md \
+            --evidence docs/seo-baseline/phase-7c-media-dimensions-loading-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-7c-media-dimensions-loading.md
+          git diff --check
+
+      - name: Upload detailed Phase 7C evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-7c-media-dimensions-loading-evidence
+          path: |
+            ${{ runner.temp }}/phase-7c-static.json
+            ${{ runner.temp }}/phase-7c-live.json
+            ${{ runner.temp }}/phase7c-server.log
+            docs/seo-baseline/phase-7c-media-dimensions-loading.md
+            docs/seo-baseline/phase-7c-media-dimensions-loading-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase7c-protected.sha256"
+
+      - name: Remove temporary dependencies and caches
+        run: |
+          if test -f "$RUNNER_TEMP/phase7c-server.pid"; then
+            kill "$(cat "$RUNNER_TEMP/phase7c-server.pid")" 2>/dev/null || true
+          fi
+          rm -rf node_modules
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact Phase 7C scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed_exact = {
+              ".github/workflows/phase-6b-reliable-games-publishing.yml",
+              ".github/workflows/phase-7c-media-dimensions-loading.yml",
+              "scripts/apply-phase7c-media.py",
+              "scripts/phase7c_live_check.mjs",
+              "scripts/generate-publisher-pages.js",
+              "scripts/generate-developer-pages.js",
+              "scripts/generate-year-platform-pages.js",
+              "games/game.html",
+              "js/load-single-game.js",
+              "docs/seo-baseline/phase-7c-media-dimensions-loading.md",
+              "docs/seo-baseline/phase-7c-media-dimensions-loading-evidence.json",
+              "docs/seo-baseline/phase-3b-developer-archives.md",
+              "docs/seo-baseline/phase-4b-year-platform-archives.md",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
+              "docs/seo-baseline/phase-4d-year-platform-validation.md",
+              "docs/seo-baseline/phase-6b-reliable-games-publishing.md",
+              "games/archive-navigation.json",
+              "tools/seo/static-pages.json",
+              "sitemap.xml",
+              "sitemap-pages.xml",
+              "sitemap-games.xml",
+          }
+          allowed_prefixes = (
+              "games/publishers/",
+              "games/developers/",
+              "games/years/",
+              "games/platforms/",
+          )
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [
+              path for path in changed
+              if path not in allowed_exact and not path.startswith(allowed_prefixes)
+          ]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 7C paths: {unexpected}")
+
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the Phase 7C diff.")
+
+          print(f"Validated Phase 7C scope ({len(changed)} files).")
+          PY
+          git diff --check
+
+      - name: Commit validated Phase 7C output
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git add \
+            .github/workflows/phase-6b-reliable-games-publishing.yml \
+            scripts/generate-publisher-pages.js \
+            scripts/generate-developer-pages.js \
+            scripts/generate-year-platform-pages.js \
+            games/game.html \
+            js/load-single-game.js \
+            games/publishers \
+            games/developers \
+            games/years \
+            games/platforms \
+            docs/seo-baseline/phase-7c-media-dimensions-loading.md \
+            docs/seo-baseline/phase-7c-media-dimensions-loading-evidence.json \
+            docs/seo-baseline/phase-3b-developer-archives.md \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md \
+            docs/seo-baseline/phase-4d-year-platform-validation.md \
+            docs/seo-baseline/phase-6b-reliable-games-publishing.md \
+            games/archive-navigation.json \
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml
+
+          git reset -- index.html home.html resources/css/intro.css js/index-intro.js games/games.json
+
+          if git diff --cached --quiet; then
+            echo "Phase 7C output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 7C media dimensions and loading"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
