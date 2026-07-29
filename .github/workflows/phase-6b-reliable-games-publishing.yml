@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "scripts/apply-phase6b-publishing.py"
+      - "scripts/phase6b-remove-build-games-composer-owner.py"
       - "scripts/phase6b_games_editor_transaction.py"
       - "scripts/validate-games-source.js"
       - "scripts/rebuild-games.js"
@@ -70,11 +71,14 @@ jobs:
             > "$RUNNER_TEMP/protected.sha256"
 
       - name: Apply bounded Phase 6B changes
-        run: python scripts/apply-phase6b-publishing.py
+        run: |
+          python scripts/apply-phase6b-publishing.py
+          python scripts/phase6b-remove-build-games-composer-owner.py
 
       - name: Validate syntax
         run: |
           python -m py_compile scripts/apply-phase6b-publishing.py
+          python -m py_compile scripts/phase6b-remove-build-games-composer-owner.py
           python -m py_compile scripts/phase6b_games_editor_transaction.py
           node --check scripts/validate-games-source.js
           node --check scripts/rebuild-games.js
@@ -149,6 +153,7 @@ jobs:
               "admin/js/games-editor.js",
               "admin/templates/game-landing-template.html",
               "scripts/apply-phase6b-publishing.py",
+              "scripts/phase6b-remove-build-games-composer-owner.py",
               "scripts/phase6b_games_editor_transaction.py",
               "scripts/validate-games-source.js",
               "scripts/rebuild-games.js",
@@ -186,6 +191,7 @@ jobs:
             admin/js/games-editor.js \
             admin/templates/game-landing-template.html \
             scripts/apply-phase6b-publishing.py \
+            scripts/phase6b-remove-build-games-composer-owner.py \
             scripts/phase6b_games_editor_transaction.py \
             scripts/validate-games-source.js \
             scripts/rebuild-games.js \
