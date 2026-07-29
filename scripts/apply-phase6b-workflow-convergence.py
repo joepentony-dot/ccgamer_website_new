@@ -59,6 +59,17 @@ function comparePreservedSubsequence(current, baseline, label, problems) {
         problems.push(`${label} lost or reordered baseline values near position ${cursor + 1}: ${missing.join(", ")}`);
     }
 }
+
+function isGamePublishingRegistryEntry(entry) {
+    const value = String(entry || "").replace(/^\/+/, "");
+    return /^(?:games\/(?:publishers|developers|downloads|years|platforms)\/|music\/)/.test(value);
+}
+
+function isGamePublishingSitemapUrl(url) {
+    const value = String(url || "");
+    return /\/games\/(?:publishers|developers|downloads|years|platforms)\//.test(value)
+        || /\/music\//.test(value);
+}
 """
     source = replace_once(source, compare_anchor, compare_block, "preserved-subsequence helper")
 
@@ -77,10 +88,14 @@ function comparePreservedSubsequence(current, baseline, label, problems) {
     new_registry = """function validateBaselineRegistry(current, baseline, problems) {
     const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
     const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
-    const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
-    const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
+    const expectedUnrelated = baselineForeign.filter((entry) =>
+        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !isGamePublishingRegistryEntry(entry)
+    );
+    const currentUnrelated = currentForeign.filter((entry) =>
+        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !isGamePublishingRegistryEntry(entry)
+    );
 
-    comparePreservedSubsequence(comparableCurrent, expectedForeign, "Non-year/platform registry order", problems);
+    comparePreservedSubsequence(currentUnrelated, expectedUnrelated, "Unrelated registry order", problems);
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
         problems.push(`Phase 5B noindex utility remains in the static registry: ${PHASE5B_EXCLUDED_REGISTRY_ENTRY}`);
     }
@@ -103,10 +118,14 @@ function comparePreservedSubsequence(current, baseline, label, problems) {
     new_sitemap = """function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
-    const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
-    const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
+    let expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
+    let comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
 
-    comparePreservedSubsequence(comparableCurrent, expectedLocs, `${label} URL order`, problems);
+    if (label === "sitemap-pages.xml") {
+        expectedLocs = expectedLocs.filter((url) => !isGamePublishingSitemapUrl(url));
+        comparableCurrent = comparableCurrent.filter((url) => !isGamePublishingSitemapUrl(url));
+    }
+    comparePreservedSubsequence(comparableCurrent, expectedLocs, `${label} preserved URL order`, problems);
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
         problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
     }
@@ -115,7 +134,7 @@ function comparePreservedSubsequence(current, baseline, label, problems) {
     source = replace_once(source, old_sitemap, new_sitemap, "growth-safe sitemap baseline")
     source = source.replace(
         "- Stable-order checks for registry entries and sitemap URLs owned by other workflows.",
-        "- Baseline registry and sitemap entries must remain present in their original relative order; legitimate new generated routes may be added.",
+        "- Truly unrelated baseline registry and sitemap entries must remain present in their original relative order; game-owned archive routes are regenerated and validated from source data.",
     )
     return write_if_changed(VALIDATOR, source)
 
