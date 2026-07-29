@@ -1,0 +1,143 @@
+{
+  "before": {
+    "redirect_pages": 726,
+    "static_pages": 726,
+    "dynamic_pages": 0,
+    "analytics_tags": 724,
+    "pages_with_assets": 724,
+    "asset_tags": 784,
+    "missing_targets": 0,
+    "external_targets": 0,
+    "redirect_chains": 0,
+    "target_mismatches": 0,
+    "canonical_mismatches": 0,
+    "delayed_refreshes": 0,
+    "source_templates": 8,
+    "source_templates_with_analytics": 7
+  },
+  "after": {
+    "redirect_pages": 726,
+    "static_pages": 726,
+    "dynamic_pages": 0,
+    "analytics_tags": 0,
+    "pages_with_assets": 4,
+    "asset_tags": 60,
+    "missing_targets": 0,
+    "external_targets": 0,
+    "redirect_chains": 0,
+    "target_mismatches": 0,
+    "canonical_mismatches": 0,
+    "delayed_refreshes": 0,
+    "source_templates": 8,
+    "source_templates_with_analytics": 0
+  },
+  "removed": {
+    "analytics_tags": 724,
+    "pages_with_assets": 720
+  },
+  "checks": {
+    "route_map_unchanged": true,
+    "page_count_unchanged": true,
+    "analytics_zero": true,
+    "source_templates_analytics_zero": true,
+    "chains_zero": true,
+    "missing_targets_zero": true,
+    "external_targets_zero": true,
+    "target_mismatches_zero": true,
+    "canonical_mismatches_zero": true,
+    "delayed_refreshes_zero": true
+  },
+  "failures": [],
+  "remaining": {
+    "missing": [],
+    "external": [],
+    "chains": [],
+    "targets": [],
+    "canonicals": [],
+    "delays": [],
+    "analytics": [],
+    "assets": [
+      {
+        "path": "games/super-cars-ii.html",
+        "assets": [
+          "script:../js/ccg-mobile-lite.js",
+          "script:../js/ccg-base.js",
+          "script:../resources/js/ccg-share.js",
+          "script:/js/ccg-schema.js",
+          "link:https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap",
+          "link:../resources/css/ccg-master.css",
+          "link:../resources/css/ccg-mode.css",
+          "link:../resources/css/ccg-effects.css",
+          "link:../resources/css/ccg-anim.css",
+          "link:../resources/css/ccg-overlays.css",
+          "link:../resources/css/ccg-cards.css",
+          "link:../resources/css/games.css",
+          "link:../resources/css/ccg-footer.css",
+          "link:../resources/css/ccg-mobile-lite.css",
+          "img:../resources/images/thumbnails/all/super_cars_ii.png"
+        ]
+      },
+      {
+        "path": "games/turrican-ii-the-final-fight.html",
+        "assets": [
+          "script:../js/ccg-mobile-lite.js",
+          "script:../js/ccg-base.js",
+          "script:../resources/js/ccg-share.js",
+          "script:/js/ccg-schema.js",
+          "link:https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap",
+          "link:../resources/css/ccg-master.css",
+          "link:../resources/css/ccg-mode.css",
+          "link:../resources/css/ccg-effects.css",
+          "link:../resources/css/ccg-anim.css",
+          "link:../resources/css/ccg-overlays.css",
+          "link:../resources/css/ccg-cards.css",
+          "link:../resources/css/games.css",
+          "link:../resources/css/ccg-footer.css",
+          "link:../resources/css/ccg-mobile-lite.css",
+          "img:../resources/images/thumbnails/all/turrican_ii_the_final_fight.jpg"
+        ]
+      },
+      {
+        "path": "games/ultima-i-the-first-age-of-darkness.html",
+        "assets": [
+          "script:../js/ccg-mobile-lite.js",
+          "script:../js/ccg-base.js",
+          "script:../resources/js/ccg-share.js",
+          "script:/js/ccg-schema.js",
+          "link:https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap",
+          "link:../resources/css/ccg-master.css",
+          "link:../resources/css/ccg-mode.css",
+          "link:../resources/css/ccg-effects.css",
+          "link:../resources/css/ccg-anim.css",
+          "link:../resources/css/ccg-overlays.css",
+          "link:../resources/css/ccg-cards.css",
+          "link:../resources/css/games.css",
+          "link:../resources/css/ccg-footer.css",
+          "link:../resources/css/ccg-mobile-lite.css",
+          "img:../resources/images/thumbnails/all/ultima_i_the_first_age_of_darkness.jpg"
+        ]
+      },
+      {
+        "path": "games/who-dares-wins-ii.html",
+        "assets": [
+          "script:../js/ccg-mobile-lite.js",
+          "script:../js/ccg-base.js",
+          "script:../resources/js/ccg-share.js",
+          "script:/js/ccg-schema.js",
+          "link:https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap",
+          "link:../resources/css/ccg-master.css",
+          "link:../resources/css/ccg-mode.css",
+          "link:../resources/css/ccg-effects.css",
+          "link:../resources/css/ccg-anim.css",
+          "link:../resources/css/ccg-overlays.css",
+          "link:../resources/css/ccg-cards.css",
+          "link:../resources/css/games.css",
+          "link:../resources/css/ccg-footer.css",
+          "link:../resources/css/ccg-mobile-lite.css",
+          "img:../resources/images/thumbnails/all/who_dares_wins_ii.jpg"
+        ]
+      }
+    ],
+    "source_analytics": []
+  }
+}

@@ -139,7 +139,6 @@ def redirect_stub(pair: dict) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="/js/analytics.js"></script>
 <meta name="robots" content="noindex,follow">
 <meta http-equiv="refresh" content="0; url={html.escape(canonical_path, quote=True)}">
 <script>
@@ -195,7 +194,6 @@ def composer_redirect_function() -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="/js/analytics.js"></script>
 <meta name="robots" content="noindex,follow">
 <meta http-equiv="refresh" content="0; url=${htmlEscape(canonicalPath)}">
 <script>
