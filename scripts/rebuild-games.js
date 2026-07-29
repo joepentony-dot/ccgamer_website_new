@@ -13,6 +13,8 @@ const steps = [
   ["validate-games-source.js"],
   ["build-games.js"],
   ["generate-publisher-pages.js"],
+  ["apply-publisher-logos.js"],
+  ["validate-publisher-logo-output.js"],
   ["generate-developer-pages.js"],
   ["generate-composer-pages.js"],
   ["generate-year-platform-pages.js"],
