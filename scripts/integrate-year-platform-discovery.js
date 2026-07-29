@@ -83,7 +83,14 @@ function updateStaticPages(metadata) {
 
     const foreignBefore = current.filter((entry) => !isOwnedArchiveEntry(entry));
     const expectedOwned = buildExpectedStaticEntries(metadata);
-    const next = [...foreignBefore, ...expectedOwned];
+    const expectedOwnedSet = new Set(expectedOwned);
+
+    // Keep all existing valid entries exactly where they are. Remove only stale
+    // year/platform entries owned by this workflow, then append missing owned
+    // entries in their stable expected order.
+    const next = current.filter((entry) => !isOwnedArchiveEntry(entry) || expectedOwnedSet.has(entry));
+    const missingOwned = expectedOwned.filter((entry) => !next.includes(entry));
+    next.push(...missingOwned);
 
     const foreignAfter = next.filter((entry) => !isOwnedArchiveEntry(entry));
     if (JSON.stringify(foreignAfter) !== JSON.stringify(foreignBefore)) {
@@ -99,10 +106,16 @@ function updateStaticPages(metadata) {
         fail(`Duplicate static-page entries detected: ${[...new Set(duplicates)].join(", ")}`);
     }
 
+    const ownedAfter = next.filter(isOwnedArchiveEntry);
+    if (JSON.stringify(ownedAfter) !== JSON.stringify(expectedOwned)) {
+        fail("Year/platform registry entries are not in their stable expected order.");
+    }
+
     return {
         changed: writeFileIfChanged(staticPagesPath, `${JSON.stringify(next, null, 2)}\n`),
         foreignCount: foreignBefore.length,
-        archiveCount: expectedOwned.length
+        archiveCount: expectedOwned.length,
+        appendedCount: missingOwned.length
     };
 }
 
@@ -164,7 +177,7 @@ function directPlatformLinks(yearGroup) {
     if (Number(yearGroup.amigaCount) > 0) {
         links.push('<a class="ccg-btn ccg-btn--secondary" href="/games/platforms/amiga/">Amiga Games</a>');
     }
-    return links.join("\n                    ");
+    return links.map((link) => `                    ${link}`).join("\n");
 }
 
 function integrateYearPage(html, years, index) {
@@ -227,7 +240,8 @@ function buildReport(metadata, registryResult) {
 | Indexable year routes registered | **${indexableYears.length}** |
 | Archive hubs registered | **2** |
 | Platform routes registered | **${(metadata.platforms || []).length}** |
-| Total archive entries appended to static registry | **${registryResult.archiveCount}** |
+| Total archive entries managed in static registry | **${registryResult.archiveCount}** |
+| New archive entries appended this run | **${registryResult.appendedCount}** |
 | Existing non-archive registry entries preserved in order | **${registryResult.foreignCount}** |
 
 ## Discovery integration
@@ -241,7 +255,7 @@ function buildReport(metadata, registryResult) {
 
 - Registered both archive hubs, both platform routes and the ${indexableYears.length} indexable year routes.
 - Kept \`/games/years/2023/\` out of the static registry and sitemap while it remains \`noindex,follow\`.
-- Preserved every non-year/platform static registry entry in its existing order.
+- Preserved every existing valid registry entry in place and appended only missing year/platform entries.
 
 ## Permanent safeguards
 
@@ -249,6 +263,7 @@ function buildReport(metadata, registryResult) {
 - Phase 4C reapplies discovery links after generated pages are rebuilt.
 - Validation checks registry membership, sitemap membership, route cross-links and foreign-entry order.
 - Existing publisher, developer, composer, download, retro, genre, collection and core registry entries are not rewritten by the Phase 4C integration script.
+- Existing valid year/platform entries are not removed and re-appended, preventing registry-order ping-pong with other archive workflows.
 
 ## Explicit exclusions
 
@@ -298,7 +313,8 @@ function main() {
     if (writeFileIfChanged(reportPath, buildReport(metadata, registryResult))) writes += 1;
 
     console.log(`[year-platform-discovery] Release years integrated: ${years.length}`);
-    console.log(`[year-platform-discovery] Indexable archive entries registered: ${registryResult.archiveCount}`);
+    console.log(`[year-platform-discovery] Indexable archive entries managed: ${registryResult.archiveCount}`);
+    console.log(`[year-platform-discovery] Missing archive entries appended: ${registryResult.appendedCount}`);
     console.log(`[year-platform-discovery] Existing registry entries preserved: ${registryResult.foreignCount}`);
     console.log(`[year-platform-discovery] Files changed: ${writes}`);
 }
