@@ -1,8 +1,8 @@
 # Phase 7A Performance and Accessibility Audit
 
-**Audit type:** repository-wide static analysis plus representative live browser checks  
-**Audited commit:** `7f59064a369860bcffd1ce88c7eb617b73defa8c`  
-**Standard target:** WCAG 2.2 Level AA  
+**Audit type:** repository-wide static analysis plus representative live browser checks
+**Audited commit:** `4163b51e62d5b94a21ecb9b47dc6d7eb418fb823`
+**Standard target:** WCAG 2.2 Level AA
 **Performance reference:** Core Web Vitals good thresholds are LCP ≤ 2.5 s, INP ≤ 200 ms and CLS ≤ 0.1 at the 75th percentile. Lighthouse is lab data and does not supply field INP.
 
 ## Verdict
@@ -16,7 +16,7 @@ The site already contains focus styling, reduced-motion handling, semantic landm
 - Indexable public HTML files: **1573**
 - Client-side redirect shells: **1383**
 - Repository assets scanned: **1666**
-- Median Lighthouse performance score: **66**
+- Median Lighthouse performance score: **60**
 - Median Lighthouse accessibility score: **100**
 - Live axe violations across representative routes: **0**
 
@@ -52,13 +52,13 @@ The site already contains focus styling, reduced-motion handling, semantic landm
 
 | Route | Mode | Performance | Accessibility | LCP | CLS | TBT | Transfer size |
 |---|---|---:|---:|---:|---:|---:|---:|
-| Home | mobile | 66 | 100 | 8.9 s | 0.117 | 140 ms | Total size was 2,338 KiB |
-| Games | mobile | 78 | 100 | 3.3 s | 0.198 | 130 ms | Total size was 768 KiB |
-| Game: Zeewolf | mobile | 67 | 100 | 16.8 s | 0.087 | 150 ms | Total size was 11,518 KiB |
-| Genres | mobile | 56 | 100 | 7.5 s | 0.315 | 110 ms | Total size was 2,867 KiB |
-| Quiz | mobile | 79 | 100 | 3.5 s | 0.185 | 0 ms | Total size was 394 KiB |
-| Home | desktop | 39 | 100 | 6.6 s | 0.219 | 270 ms | Total size was 1,049 KiB |
-| Games | desktop | 29 | 100 | 7.2 s | 0.305 | 310 ms | Total size was 768 KiB |
+| Home | mobile | 58 | 100 | 9.1 s | 0 | 190 ms | Total size was 3,221 KiB |
+| Games | mobile | 60 | 100 | 7.6 s | 0 | 190 ms | Total size was 768 KiB |
+| Game: Zeewolf | mobile | 58 | 100 | 16.2 s | 0 | 0 ms | Total size was 11,120 KiB |
+| Genres | mobile | 58 | 100 | 14.0 s | 0 | 130 ms | Total size was 2,867 KiB |
+| Quiz | mobile | 75 | 100 | 4.9 s | 0 | 40 ms | Total size was 295 KiB |
+| Home | desktop | 86 | 100 | 1.3 s | 0.212 | 10 ms | Total size was 1,306 KiB |
+| Games | desktop | 75 | 100 | 1.5 s | 0.306 | 150 ms | Total size was 769 KiB |
 
 ## Live axe results
 

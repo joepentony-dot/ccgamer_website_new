@@ -1,17 +1,17 @@
 {
-  "commit": "7f59064a369860bcffd1ce88c7eb617b73defa8c",
+  "commit": "4163b51e62d5b94a21ecb9b47dc6d7eb418fb823",
   "summary": {
     "html_files": 2647,
     "public_html": 2620,
     "indexable_public_html": 1573,
     "client_redirect_shells": 1383,
-    "median_lighthouse_performance": 0.66,
+    "median_lighthouse_performance": 0.6,
     "median_lighthouse_accessibility": 1,
     "axe_violations": 0,
     "axe_serious_or_critical_nodes": 0
   },
   "static": {
-    "commit": "7f59064a369860bcffd1ce88c7eb617b73defa8c",
+    "commit": "4163b51e62d5b94a21ecb9b47dc6d7eb418fb823",
     "root": "/home/runner/work/ccgamer_website_new/ccgamer_website_new",
     "html": {
       "totals": {
@@ -2682,7 +2682,7 @@
     }
   },
   "live": {
-    "generated_at": "2026-07-29T14:06:14.342Z",
+    "generated_at": "2026-07-29T14:25:20.301Z",
     "chrome_path": "/usr/bin/google-chrome",
     "axe_version": "4.12.1",
     "routes": [
@@ -2734,10 +2734,12 @@
       {
         "label": "Home",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
-        "error": "page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://www.cheekycommodoregamer.co.uk/home.html\", waiting until \"networkidle\"\n",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "status": 200,
         "violation_count": 0,
         "affected_nodes": 0,
         "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
         "top_violations": []
       },
       {
@@ -2813,20 +2815,20 @@
         "mode": "mobile",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
         "final_url": "https://www.cheekycommodoregamer.co.uk/home.html",
-        "performance_score": 0.66,
+        "performance_score": 0.58,
         "accessibility_score": 1,
-        "fcp_display": "2.6 s",
-        "lcp_display": "8.9 s",
-        "cls_display": "0.117",
-        "tbt_display": "140 ms",
-        "speed_index_display": "3.0 s",
-        "total_bytes_display": "Total size was 2,338 KiB",
+        "fcp_display": "3.9 s",
+        "lcp_display": "9.1 s",
+        "cls_display": "0",
+        "tbt_display": "190 ms",
+        "speed_index_display": "7.2 s",
+        "total_bytes_display": "Total size was 3,221 KiB",
         "numeric": {
-          "fcp_ms": 2552.868,
-          "lcp_ms": 8917.48,
-          "cls": 0.11690659953614514,
-          "tbt_ms": 137,
-          "total_bytes": 2394480
+          "fcp_ms": 3901.4100000000003,
+          "lcp_ms": 9089.045999999998,
+          "cls": 0,
+          "tbt_ms": 194.5,
+          "total_bytes": 3298398
         },
         "opportunities": [
           {
@@ -2844,7 +2846,7 @@
           {
             "id": "unused-javascript",
             "score": 0,
-            "displayValue": "Est savings of 111 KiB",
+            "displayValue": "Est savings of 112 KiB",
             "details": null
           },
           {
@@ -2891,20 +2893,20 @@
         "mode": "mobile",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/games/",
         "final_url": "https://www.cheekycommodoregamer.co.uk/games/",
-        "performance_score": 0.78,
+        "performance_score": 0.6,
         "accessibility_score": 1,
-        "fcp_display": "2.5 s",
-        "lcp_display": "3.3 s",
-        "cls_display": "0.198",
-        "tbt_display": "130 ms",
-        "speed_index_display": "2.5 s",
+        "fcp_display": "4.1 s",
+        "lcp_display": "7.6 s",
+        "cls_display": "0",
+        "tbt_display": "190 ms",
+        "speed_index_display": "5.6 s",
         "total_bytes_display": "Total size was 768 KiB",
         "numeric": {
-          "fcp_ms": 2487.1126500000005,
-          "lcp_ms": 3318.9729000000007,
-          "cls": 0.19773991883115952,
-          "tbt_ms": 134.5,
-          "total_bytes": 786733
+          "fcp_ms": 4082.01465,
+          "lcp_ms": 7636.822,
+          "cls": 0,
+          "tbt_ms": 194,
+          "total_bytes": 786673
         },
         "opportunities": [
           {
@@ -2921,8 +2923,8 @@
           },
           {
             "id": "unused-javascript",
-            "score": 0.5,
-            "displayValue": "Est savings of 114 KiB",
+            "score": 0,
+            "displayValue": "Est savings of 113 KiB",
             "details": null
           },
           {
@@ -2958,7 +2960,7 @@
           {
             "id": "mainthread-work-breakdown",
             "score": 1,
-            "displayValue": "1.9 s",
+            "displayValue": "1.8 s",
             "details": null
           }
         ],
@@ -2969,20 +2971,20 @@
         "mode": "mobile",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
         "final_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
-        "performance_score": 0.67,
+        "performance_score": 0.58,
         "accessibility_score": 1,
-        "fcp_display": "2.6 s",
-        "lcp_display": "16.8 s",
-        "cls_display": "0.087",
-        "tbt_display": "150 ms",
-        "speed_index_display": "2.6 s",
-        "total_bytes_display": "Total size was 11,518 KiB",
+        "fcp_display": "7.4 s",
+        "lcp_display": "16.2 s",
+        "cls_display": "0",
+        "tbt_display": "0 ms",
+        "speed_index_display": "7.4 s",
+        "total_bytes_display": "Total size was 11,120 KiB",
         "numeric": {
-          "fcp_ms": 2634.2217,
-          "lcp_ms": 16771.562149999998,
-          "cls": 0.08741500270291633,
-          "tbt_ms": 154,
-          "total_bytes": 11793999
+          "fcp_ms": 7409.268099999999,
+          "lcp_ms": 16177.2661,
+          "cls": 0,
+          "tbt_ms": 0,
+          "total_bytes": 11386802
         },
         "opportunities": [
           {
@@ -3000,7 +3002,7 @@
           {
             "id": "unused-javascript",
             "score": 0,
-            "displayValue": "Est savings of 44 KiB",
+            "displayValue": "Est savings of 175 KiB",
             "details": null
           },
           {
@@ -3035,8 +3037,8 @@
           },
           {
             "id": "mainthread-work-breakdown",
-            "score": 0,
-            "displayValue": "2.1 s",
+            "score": 0.5,
+            "displayValue": "2.7 s",
             "details": null
           }
         ],
@@ -3047,20 +3049,20 @@
         "mode": "mobile",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
         "final_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
-        "performance_score": 0.56,
+        "performance_score": 0.58,
         "accessibility_score": 1,
-        "fcp_display": "2.6 s",
-        "lcp_display": "7.5 s",
-        "cls_display": "0.315",
-        "tbt_display": "110 ms",
-        "speed_index_display": "2.8 s",
+        "fcp_display": "3.9 s",
+        "lcp_display": "14.0 s",
+        "cls_display": "0",
+        "tbt_display": "130 ms",
+        "speed_index_display": "8.3 s",
         "total_bytes_display": "Total size was 2,867 KiB",
         "numeric": {
-          "fcp_ms": 2625.2448999999997,
-          "lcp_ms": 7523.340299999998,
-          "cls": 0.31524179792989865,
-          "tbt_ms": 107,
-          "total_bytes": 2936213
+          "fcp_ms": 3911.3542,
+          "lcp_ms": 14023.02895,
+          "cls": 0,
+          "tbt_ms": 127,
+          "total_bytes": 2936250
         },
         "opportunities": [
           {
@@ -3114,7 +3116,7 @@
           {
             "id": "mainthread-work-breakdown",
             "score": 1,
-            "displayValue": "1.4 s",
+            "displayValue": "1.0 s",
             "details": null
           }
         ],
@@ -3125,20 +3127,20 @@
         "mode": "mobile",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
         "final_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
-        "performance_score": 0.79,
+        "performance_score": 0.75,
         "accessibility_score": 1,
-        "fcp_display": "2.5 s",
-        "lcp_display": "3.5 s",
-        "cls_display": "0.185",
-        "tbt_display": "0 ms",
-        "speed_index_display": "2.5 s",
-        "total_bytes_display": "Total size was 394 KiB",
+        "fcp_display": "2.6 s",
+        "lcp_display": "4.9 s",
+        "cls_display": "0",
+        "tbt_display": "40 ms",
+        "speed_index_display": "5.0 s",
+        "total_bytes_display": "Total size was 295 KiB",
         "numeric": {
-          "fcp_ms": 2474.9473999999996,
-          "lcp_ms": 3468.8957999999993,
-          "cls": 0.18508288943448759,
-          "tbt_ms": 0,
-          "total_bytes": 403560
+          "fcp_ms": 2609.2661,
+          "lcp_ms": 4938.3748,
+          "cls": 0,
+          "tbt_ms": 41,
+          "total_bytes": 301916
         },
         "opportunities": [
           {
@@ -3155,7 +3157,7 @@
           },
           {
             "id": "unused-javascript",
-            "score": 0.5,
+            "score": 0,
             "displayValue": "Est savings of 44 KiB",
             "details": null
           },
@@ -3192,7 +3194,7 @@
           {
             "id": "mainthread-work-breakdown",
             "score": 1,
-            "displayValue": "0.8 s",
+            "displayValue": "0.7 s",
             "details": null
           }
         ],
@@ -3203,20 +3205,20 @@
         "mode": "desktop",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
         "final_url": "https://www.cheekycommodoregamer.co.uk/home.html",
-        "performance_score": 0.39,
+        "performance_score": 0.86,
         "accessibility_score": 1,
-        "fcp_display": "2.6 s",
-        "lcp_display": "6.6 s",
-        "cls_display": "0.219",
-        "tbt_display": "270 ms",
-        "speed_index_display": "2.6 s",
-        "total_bytes_display": "Total size was 1,049 KiB",
+        "fcp_display": "0.7 s",
+        "lcp_display": "1.3 s",
+        "cls_display": "0.212",
+        "tbt_display": "10 ms",
+        "speed_index_display": "0.9 s",
+        "total_bytes_display": "Total size was 1,306 KiB",
         "numeric": {
-          "fcp_ms": 2615.6368000000007,
-          "lcp_ms": 6574.8277,
-          "cls": 0.21915689519416254,
-          "tbt_ms": 271.5,
-          "total_bytes": 1074651
+          "fcp_ms": 707.5786,
+          "lcp_ms": 1296.4420499999999,
+          "cls": 0.21169420862699836,
+          "tbt_ms": 12,
+          "total_bytes": 1337324
         },
         "opportunities": [
           {
@@ -3269,8 +3271,8 @@
           },
           {
             "id": "mainthread-work-breakdown",
-            "score": 0,
-            "displayValue": "3.4 s",
+            "score": 1,
+            "displayValue": "1.1 s",
             "details": null
           }
         ],
@@ -3281,20 +3283,20 @@
         "mode": "desktop",
         "requested_url": "https://www.cheekycommodoregamer.co.uk/games/",
         "final_url": "https://www.cheekycommodoregamer.co.uk/games/",
-        "performance_score": 0.29,
+        "performance_score": 0.75,
         "accessibility_score": 1,
-        "fcp_display": "3.9 s",
-        "lcp_display": "7.2 s",
-        "cls_display": "0.305",
-        "tbt_display": "310 ms",
-        "speed_index_display": "3.9 s",
-        "total_bytes_display": "Total size was 768 KiB",
+        "fcp_display": "0.9 s",
+        "lcp_display": "1.5 s",
+        "cls_display": "0.306",
+        "tbt_display": "150 ms",
+        "speed_index_display": "1.0 s",
+        "total_bytes_display": "Total size was 769 KiB",
         "numeric": {
-          "fcp_ms": 3851.8031,
-          "lcp_ms": 7236.2205,
-          "cls": 0.30545391290412033,
-          "tbt_ms": 305,
-          "total_bytes": 786607
+          "fcp_ms": 923.3480176571454,
+          "lcp_ms": 1474.3009698642886,
+          "cls": 0.3055550347954575,
+          "tbt_ms": 154,
+          "total_bytes": 787024
         },
         "opportunities": [
           {
@@ -3347,16 +3349,14 @@
           },
           {
             "id": "mainthread-work-breakdown",
-            "score": 0,
-            "displayValue": "2.5 s",
+            "score": 1,
+            "displayValue": "1.2 s",
             "details": null
           }
         ],
         "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/games-desktop.json"
       }
     ],
-    "errors": [
-      "axe Home: page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://www.cheekycommodoregamer.co.uk/home.html\", waiting until \"networkidle\"\n"
-    ]
+    "errors": []
   }
 }
