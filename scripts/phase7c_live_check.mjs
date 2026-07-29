@@ -7,6 +7,7 @@ import axe from 'axe-core';
 
 // Evidence deliberately omits volatile timestamps so repeat runs converge.
 // Settled-head validation must not create a follow-up evidence commit.
+// Raw layout-shift values remain available only in the workflow artifact.
 function parseArgs() {
   const args = process.argv.slice(2);
   const result = {};
