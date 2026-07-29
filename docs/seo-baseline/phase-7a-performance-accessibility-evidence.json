@@ -1,0 +1,3362 @@
+{
+  "commit": "7f59064a369860bcffd1ce88c7eb617b73defa8c",
+  "summary": {
+    "html_files": 2647,
+    "public_html": 2620,
+    "indexable_public_html": 1573,
+    "client_redirect_shells": 1383,
+    "median_lighthouse_performance": 0.66,
+    "median_lighthouse_accessibility": 1,
+    "axe_violations": 0,
+    "axe_serious_or_critical_nodes": 0
+  },
+  "static": {
+    "commit": "7f59064a369860bcffd1ce88c7eb617b73defa8c",
+    "root": "/home/runner/work/ccgamer_website_new/ccgamer_website_new",
+    "html": {
+      "totals": {
+        "html_files": 2647,
+        "public_html": 2620,
+        "client_redirect_shells": 1383,
+        "links": 127606,
+        "stylesheet_references": 12632,
+        "script_references": 14041,
+        "head_blocking_scripts": 2319,
+        "indexable_public_html": 1573,
+        "images": 62623,
+        "iframes": 44,
+        "buttons": 12051,
+        "lazy_images": 12281,
+        "form_controls": 443,
+        "images_empty_alt": 5747
+      },
+      "families": {
+        "other": 660,
+        "admin": 20,
+        "amiga-demo": 20,
+        "game-wrapper": 663,
+        "games": 658,
+        "collection": 8,
+        "developer": 36,
+        "genre": 16,
+        "platform": 3,
+        "publisher": 194,
+        "year": 16,
+        "home-entry": 2,
+        "music": 292,
+        "quiz": 4,
+        "retro-event": 16,
+        "retro-special": 39
+      },
+      "issues": {
+        "head_script_without_defer_or_async": {
+          "count": 2319,
+          "examples": [
+            {
+              "path": "404.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "about.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "admin/admin.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/admin.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/dashboard.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/dashboard.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/help.html",
+              "detail": "/admin/js/admin-input-firewall.js"
+            },
+            {
+              "path": "admin/js/_backup_2026-02-working/games-editor.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/js/_backup_2026-02-working/games-editor.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/login.html",
+              "detail": "/admin/js/input-harden.js?v=20260207-01"
+            },
+            {
+              "path": "admin/login.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=20260207-01"
+            },
+            {
+              "path": "admin/publish.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/publish.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/quiz-manager.html",
+              "detail": "/admin/js/input-harden.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/quiz-manager.html",
+              "detail": "/admin/js/admin-input-firewall.js?v=admin-stable-20260207"
+            },
+            {
+              "path": "admin/templates/game-landing-template.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "admin/templates/game-redirect-template.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/9-fingers-spaceballs.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/crionics-hardwired.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/cryonics-neverwhere.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/desert-dream-kefrens.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/enigma-phenomena.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/jesus-on-es.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/odyssey-alzatraz.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/red-sector-folow-me.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/sounds-of-silents.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "amiga-demo-music/state-of-the-art.html",
+              "detail": "/js/analytics.js"
+            },
+            {
+              "path": "auth/forgot.html",
+              "detail": "/js/analytics.js"
+            }
+          ]
+        },
+        "missing_skip_link": {
+          "count": 921,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/9-fingers-spaceballs/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/crionics-hardwired/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/cryonics-neverwhere/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/desert-dream-kefrens/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/enigma-phenomena/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/jesus-on-es/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/odyssey-alzatraz/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/red-sector-folow-me/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/sounds-of-silents/index.html",
+              "detail": ""
+            },
+            {
+              "path": "amiga-demo-music/state-of-the-art/index.html",
+              "detail": ""
+            },
+            {
+              "path": "auth/forgot.html",
+              "detail": ""
+            },
+            {
+              "path": "auth/register.html",
+              "detail": ""
+            },
+            {
+              "path": "auth/reset.html",
+              "detail": ""
+            },
+            {
+              "path": "community/index.html",
+              "detail": ""
+            },
+            {
+              "path": "complete-index.html",
+              "detail": ""
+            },
+            {
+              "path": "contact.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01b284f3367fc25021a09f246a5a6541c7dccf13.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/03f86fca5c9bbf7f80ca9735701171b50285a14a.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/04109da17bca956090e8ff97c2e5bbe36808a52b.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/048f8a4d64726685b64cd3c66179edc6fd028daa.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/04f126c544a328fe73572584f6a918c202d0b86d.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/05bc8182cf5461ef3f2e0e9a3dc032ca08cab9a9.html",
+              "detail": ""
+            }
+          ]
+        },
+        "image_missing_intrinsic_dimensions": {
+          "count": 29493,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOE_MICHELLE.jpg"
+            },
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOEJONATHAN2.jpg"
+            },
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOEJONATHAN3.jpg"
+            },
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOEJONATHAN4.jpg"
+            },
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOEJONATHAN5.jpg"
+            },
+            {
+              "path": "about.html",
+              "detail": "resources/images/aboutme/JOE_MARTYN.jpg"
+            },
+            {
+              "path": "admin/admin.html",
+              "detail": "adminBox3dPreview"
+            },
+            {
+              "path": "admin/announce.html",
+              "detail": "announceThumb"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": ""
+            },
+            {
+              "path": "admin/js/_backup_2026-02-working/games-editor.html",
+              "detail": ""
+            },
+            {
+              "path": "admin/js/_backup_2026-02-working/games-editor.html",
+              "detail": ""
+            },
+            {
+              "path": "admin/js/_backup_2026-02-working/games-editor.html",
+              "detail": ""
+            },
+            {
+              "path": "community/profile.html",
+              "detail": "/favicon.ico"
+            },
+            {
+              "path": "community/public-profile.html",
+              "detail": "/favicon.ico"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/logos/logo.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/stripes-left.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/mushroom.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/navigation/heroes/4.gif?rand=40"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/stripes-right.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/c64-flash.gif"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/themes/lemon64/sign-in.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/cloanto/box.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_01.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_02.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_03.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_04.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_05.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_06.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_07.png"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "/assets/images/games/screens/human_race/human_race_08.png"
+            }
+          ]
+        },
+        "iframe_not_lazy_loaded": {
+          "count": 23,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": "https://drive.google.com/file/d/1dtw9gMzwhP9n9wlQwrxyQhq4IO75sfgT/preview"
+            },
+            {
+              "path": "admin/templates/retro-video-template.html",
+              "detail": "https://www.youtube.com/embed/{{YOUTUBE_ID}}"
+            },
+            {
+              "path": "games/game.html",
+              "detail": ""
+            },
+            {
+              "path": "retro-specials/50-essential-amiga-games/index.html",
+              "detail": "https://www.youtube.com/embed/PwYUnlhPfbA"
+            },
+            {
+              "path": "retro-specials/50-essential-commodore-64-games/index.html",
+              "detail": "https://www.youtube.com/embed/QHYAdbqWzoY"
+            },
+            {
+              "path": "retro-specials/arcade-club-bury/index.html",
+              "detail": "https://www.youtube.com/embed/6PmRNlqIdFY"
+            },
+            {
+              "path": "retro-specials/banned-c64-games-they-didnt-want-you-to-see/index.html",
+              "detail": "https://www.youtube.com/embed/ujl4c2-3fUY"
+            },
+            {
+              "path": "retro-specials/c64-vs-zx-spectrum/index.html",
+              "detail": "https://www.youtube.com/embed/QDTysJJT9BM"
+            },
+            {
+              "path": "retro-specials/commodore-64-budget-games-under-3/index.html",
+              "detail": "https://www.youtube.com/embed/T_WmUbbiD8E"
+            },
+            {
+              "path": "retro-specials/commodore-64-memories-1982/index.html",
+              "detail": "https://www.youtube.com/embed/PDomaOW-1-c"
+            },
+            {
+              "path": "retro-specials/favourite-arcade-games-c64-amiga-ports/index.html",
+              "detail": "https://www.youtube.com/embed/EuiU6Tc_RN0"
+            },
+            {
+              "path": "retro-specials/guru-meditation-amiga/index.html",
+              "detail": "https://www.youtube.com/embed/qody-Yqd19o"
+            },
+            {
+              "path": "retro-specials/hardest-commodore-64-games/index.html",
+              "detail": "https://www.youtube.com/embed/EpkUyLF-VsQ"
+            },
+            {
+              "path": "retro-specials/retro-games-day-family-gaming/index.html",
+              "detail": "https://www.youtube.com/embed/uLAK4KLYkEA"
+            },
+            {
+              "path": "retro-specials/sid-chip-story/index.html",
+              "detail": "https://www.youtube.com/embed/rRKBcyiWO2I"
+            },
+            {
+              "path": "retro-specials/top-15-commodore-64-games/index.html",
+              "detail": "https://www.youtube.com/embed/6IYw6wRW3-0"
+            },
+            {
+              "path": "retro-specials/x-copy-amiga-history/index.html",
+              "detail": "https://www.youtube.com/embed/2OG2tPx5gnU"
+            },
+            {
+              "path": "retro-specials/zx-spectrum-memories-hodgy/index.html",
+              "detail": "https://www.youtube.com/embed/1S-gaWInghY"
+            },
+            {
+              "path": "retro-specials/zzap64-gold-medals-sizzlers-1985/index.html",
+              "detail": "https://www.youtube.com/embed/Qmsxol9R5j0"
+            },
+            {
+              "path": "retro-specials/zzap64-gold-medals-sizzlers-1986/index.html",
+              "detail": "https://www.youtube.com/embed/FBsVTT8M9Rw"
+            },
+            {
+              "path": "retro-specials/zzap64-gold-medals-sizzlers-1987/index.html",
+              "detail": "https://www.youtube.com/embed/4iOuSVWC_FA"
+            },
+            {
+              "path": "retro-specials/zzap64-gold-medals-sizzlers-1988/index.html",
+              "detail": "https://www.youtube.com/embed/EeNXSvcKuD4"
+            },
+            {
+              "path": "templates/retro-video-content.html",
+              "detail": "https://www.youtube.com/embed/{{youtube_id}}"
+            }
+          ]
+        },
+        "high_stylesheet_count": {
+          "count": 962,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": "17"
+            },
+            {
+              "path": "admin/admin.html",
+              "detail": "13"
+            },
+            {
+              "path": "admin/quiz-manager.html",
+              "detail": "13"
+            },
+            {
+              "path": "admin/templates/retro-video-template.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/9-fingers-spaceballs/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/crionics-hardwired/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/cryonics-neverwhere/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/desert-dream-kefrens/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/enigma-phenomena/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/jesus-on-es/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/odyssey-alzatraz/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/red-sector-folow-me/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/sounds-of-silents/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "amiga-demo-music/state-of-the-art/index.html",
+              "detail": "11"
+            },
+            {
+              "path": "complete-index.html",
+              "detail": "11"
+            },
+            {
+              "path": "contact.html",
+              "detail": "16"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01b284f3367fc25021a09f246a5a6541c7dccf13.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/03f86fca5c9bbf7f80ca9735701171b50285a14a.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/04109da17bca956090e8ff97c2e5bbe36808a52b.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/048f8a4d64726685b64cd3c66179edc6fd028daa.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/04f126c544a328fe73572584f6a918c202d0b86d.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/05bc8182cf5461ef3f2e0e9a3dc032ca08cab9a9.html",
+              "detail": "11"
+            },
+            {
+              "path": "data/lemon-cache/0672772638776c7413870e1e39b415fe488efd20.html",
+              "detail": "12"
+            }
+          ]
+        },
+        "high_script_count": {
+          "count": 556,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": "16"
+            },
+            {
+              "path": "admin/admin.html",
+              "detail": "13"
+            },
+            {
+              "path": "contact.html",
+              "detail": "16"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01b284f3367fc25021a09f246a5a6541c7dccf13.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/03f86fca5c9bbf7f80ca9735701171b50285a14a.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/04109da17bca956090e8ff97c2e5bbe36808a52b.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/048f8a4d64726685b64cd3c66179edc6fd028daa.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/04f126c544a328fe73572584f6a918c202d0b86d.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0672772638776c7413870e1e39b415fe488efd20.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/077f35a4f78ef4ee4dd7367dd0324ab11f0bad58.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/07f093e6493da691e0fe42d3a397d08cf77f40a0.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/08adfa3b0bbc4367b02c350fff960c17396584ae.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0ae0b0b400e25d4f1b81cf7960b6ea1c4c77ae5c.html",
+              "detail": "13"
+            },
+            {
+              "path": "data/lemon-cache/0b8512d335d228c38edf897d1c71a4d4eef32ebc.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0be96d5c103ae9b7a19e2cf0aa44f62cb01ca506.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0c0d9cd188a7307cd597a9fa3a7dd310f3c76ae7.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0c305e1a3013cddabf488916c16f8e162eb3a84d.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0d051bda89f10ddb6243c4042620f7c0d08b12b3.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0da16d7293d97b8388131c3171da85d0ce30d236.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0dd8393cc34db897bd691a38e868cb5493a8a153.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0e69647b6a684f749eb8e7e089d6e1d503583d88.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0ea351c3a070f0b26a004b043b726abe02d77eaf.html",
+              "detail": "12"
+            },
+            {
+              "path": "data/lemon-cache/0f35a39fd5a68de03199f901f4bd30883b393bfd.html",
+              "detail": "12"
+            }
+          ]
+        },
+        "duplicate_stylesheet_reference": {
+          "count": 5,
+          "examples": [
+            {
+              "path": "about.html",
+              "detail": "/resources/css/ccg-buttons.css"
+            },
+            {
+              "path": "about.html",
+              "detail": "/resources/css/ccg-mode.css"
+            },
+            {
+              "path": "contact.html",
+              "detail": "/resources/css/ccg-mode.css"
+            },
+            {
+              "path": "emulation.html",
+              "detail": "/resources/css/ccg-mode.css"
+            },
+            {
+              "path": "home.html",
+              "detail": "/resources/css/ccg-mode.css"
+            }
+          ]
+        },
+        "image_missing_alt_attribute": {
+          "count": 1,
+          "examples": [
+            {
+              "path": "admin/announce.html",
+              "detail": "announceThumb"
+            }
+          ]
+        },
+        "form_control_missing_label": {
+          "count": 8,
+          "examples": [
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "input"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "input"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "input"
+            },
+            {
+              "path": "admin/asset-manager.html",
+              "detail": "input"
+            },
+            {
+              "path": "admin/games-editor.html",
+              "detail": "input"
+            },
+            {
+              "path": "admin/games-json-editor.html",
+              "detail": "fileInput"
+            },
+            {
+              "path": "admin/games-json-editor.html",
+              "detail": "searchInput"
+            },
+            {
+              "path": "admin/games-json-editor.html",
+              "detail": "sortSelect"
+            }
+          ]
+        },
+        "missing_main_landmark": {
+          "count": 633,
+          "examples": [
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01b284f3367fc25021a09f246a5a6541c7dccf13.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/03f86fca5c9bbf7f80ca9735701171b50285a14a.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/04109da17bca956090e8ff97c2e5bbe36808a52b.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/048f8a4d64726685b64cd3c66179edc6fd028daa.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/04f126c544a328fe73572584f6a918c202d0b86d.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/05bc8182cf5461ef3f2e0e9a3dc032ca08cab9a9.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0672772638776c7413870e1e39b415fe488efd20.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/077f35a4f78ef4ee4dd7367dd0324ab11f0bad58.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/079838ce81376a31284f0d98199e393159e979c5.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/07f093e6493da691e0fe42d3a397d08cf77f40a0.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/08647dc25c79fc4c3930734d5f9d413c8fe45c1b.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0876ddc51ba4ede56b3212fa328093429847dc95.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/08adfa3b0bbc4367b02c350fff960c17396584ae.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0ae0b0b400e25d4f1b81cf7960b6ea1c4c77ae5c.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0b8512d335d228c38edf897d1c71a4d4eef32ebc.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0be96d5c103ae9b7a19e2cf0aa44f62cb01ca506.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0c0d9cd188a7307cd597a9fa3a7dd310f3c76ae7.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0c305e1a3013cddabf488916c16f8e162eb3a84d.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0ce1bd0f6755991edca74d3abf022bb7f8636bbe.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0d051bda89f10ddb6243c4042620f7c0d08b12b3.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0da16d7293d97b8388131c3171da85d0ce30d236.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0dd8393cc34db897bd691a38e868cb5493a8a153.html",
+              "detail": ""
+            },
+            {
+              "path": "data/lemon-cache/0e69647b6a684f749eb8e7e089d6e1d503583d88.html",
+              "detail": ""
+            }
+          ]
+        },
+        "aria_hidden_focusable": {
+          "count": 2629,
+          "examples": [
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/008f16c375cb9b6f790a89642571d1f35a626058.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01303e1ce8560ddf9262b8cec8d0f2d3fc16fd6c.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/0137164a8651cd40e9be26cdcf8659f1b6a19168.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b1573f45e62b002ae7403e6d852e9ecf47861e.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01b284f3367fc25021a09f246a5a6541c7dccf13.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/01ce335dd0fda70f72ff10ec967ee9951ed1f14d.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/02a1c01d4de83631c9b6a018a6d791f1617a7ecf.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03e2f694e65dd55c779dbe0ea9a808a3542779f9.html",
+              "detail": "a"
+            },
+            {
+              "path": "data/lemon-cache/03f86fca5c9bbf7f80ca9735701171b50285a14a.html",
+              "detail": "a"
+            }
+          ]
+        },
+        "duplicate_id": {
+          "count": 3,
+          "examples": [
+            {
+              "path": "emulation.html",
+              "detail": "top"
+            },
+            {
+              "path": "index_temp.html",
+              "detail": "skip-intro"
+            },
+            {
+              "path": "resources/emulation-guide.html",
+              "detail": "top"
+            }
+          ]
+        },
+        "missing_viewport": {
+          "count": 654,
+          "examples": [
+            {
+              "path": "games/1942.html",
+              "detail": ""
+            },
+            {
+              "path": "games/20-tons.html",
+              "detail": ""
+            },
+            {
+              "path": "games/720-degrees.html",
+              "detail": ""
+            },
+            {
+              "path": "games/a-nightmare-on-elm-street.html",
+              "detail": ""
+            },
+            {
+              "path": "games/a-question-of-sport.html",
+              "detail": ""
+            },
+            {
+              "path": "games/accolades-comics.html",
+              "detail": ""
+            },
+            {
+              "path": "games/ace-of-aces.html",
+              "detail": ""
+            },
+            {
+              "path": "games/action-biker.html",
+              "detail": ""
+            },
+            {
+              "path": "games/action-service.html",
+              "detail": ""
+            },
+            {
+              "path": "games/after-burner.html",
+              "detail": ""
+            },
+            {
+              "path": "games/agony.html",
+              "detail": ""
+            },
+            {
+              "path": "games/airborne-ranger.html",
+              "detail": ""
+            },
+            {
+              "path": "games/airwolf.html",
+              "detail": ""
+            },
+            {
+              "path": "games/aladdin.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alcatraz.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alcazar-the-forgotten-fortress.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alien-breed.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alien.html",
+              "detail": ""
+            },
+            {
+              "path": "games/aliens-the-computer-game.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alleykat.html",
+              "detail": ""
+            },
+            {
+              "path": "games/alter-ego.html",
+              "detail": ""
+            },
+            {
+              "path": "games/american-3d-pool.html",
+              "detail": ""
+            },
+            {
+              "path": "games/android-2.html",
+              "detail": ""
+            },
+            {
+              "path": "games/android-nim.html",
+              "detail": ""
+            },
+            {
+              "path": "games/andy-capp.html",
+              "detail": ""
+            },
+            {
+              "path": "games/another-world.html",
+              "detail": ""
+            },
+            {
+              "path": "games/ant-attack.html",
+              "detail": ""
+            },
+            {
+              "path": "games/antheads-it-came-from-the-desert-2.html",
+              "detail": ""
+            },
+            {
+              "path": "games/apocalypse.html",
+              "detail": ""
+            },
+            {
+              "path": "games/apollo-18-mission-to-the-moon.html",
+              "detail": ""
+            }
+          ]
+        },
+        "multiple_h1": {
+          "count": 2,
+          "examples": [
+            {
+              "path": "games/collections/amiga-demo-music.html",
+              "detail": "2"
+            },
+            {
+              "path": "games/collections/index.html",
+              "detail": "2"
+            }
+          ]
+        },
+        "iframe_missing_title": {
+          "count": 1,
+          "examples": [
+            {
+              "path": "games/game.html",
+              "detail": ""
+            }
+          ]
+        },
+        "missing_h1": {
+          "count": 2,
+          "examples": [
+            {
+              "path": "index_temp.html",
+              "detail": ""
+            },
+            {
+              "path": "resources/quiz.html",
+              "detail": ""
+            }
+          ]
+        },
+        "missing_document_language": {
+          "count": 1,
+          "examples": [
+            {
+              "path": "resources/audio/easter-eggs/pacman.html",
+              "detail": ""
+            }
+          ]
+        }
+      },
+      "third_party_origins": {
+        "https://www.cheekycommodoregamer.co.uk": 1978,
+        "https://cdn.jsdelivr.net": 1887,
+        "https://img.youtube.com": 1845,
+        "https://www.googletagmanager.com": 629,
+        "https://cdnjs.buymeacoffee.com": 629,
+        "https://www.lemon64.com": 532,
+        "https://gc.zgo.at": 283,
+        "https://www.lemonamiga.com": 97,
+        "https://fonts.googleapis.com": 78,
+        "https://www.youtube.com": 40,
+        "https://cdnjs.cloudflare.com": 6,
+        "https://fonts.gstatic.com": 5,
+        "https://unpkg.com": 3,
+        "https://drive.google.com": 1,
+        "https://raw.githubusercontent.com": 1
+      },
+      "heaviest_pages_by_references": [
+        {
+          "path": "games/game.html",
+          "family": "games",
+          "public": true,
+          "noindex": true,
+          "redirect_shell": false,
+          "stylesheets": 16,
+          "scripts": 21,
+          "images": 3,
+          "iframes": 3
+        },
+        {
+          "path": "home.html",
+          "family": "home-entry",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 17,
+          "scripts": 17,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "about.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 17,
+          "scripts": 16,
+          "images": 14,
+          "iframes": 1
+        },
+        {
+          "path": "contact.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 16,
+          "scripts": 16,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "quiz/quiz.html",
+          "family": "quiz",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 17,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "games/index.html",
+          "family": "games",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 16,
+          "scripts": 15,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "emulation.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 16,
+          "scripts": 14,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/strategy-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/sports-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/shooting-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/role-playing-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/racing-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/quiz-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/puzzle-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/platform-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/miscellaneous.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/horror-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/fighting-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/casino-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/arcade-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/adventure-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/action-adventure-games.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/top-picks.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 25,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/retro-specials.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 20,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/retro-events.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/licensed-games.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 25,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/index.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 14,
+          "images": 8,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/cartridge-games.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 25,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/bpjs-indexed-games.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 25,
+          "iframes": 0
+        },
+        {
+          "path": "games/collections/amiga-demo-music.html",
+          "family": "collection",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 14,
+          "scripts": 15,
+          "images": 1,
+          "iframes": 0
+        },
+        {
+          "path": "games/genres/index.html",
+          "family": "genre",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 15,
+          "scripts": 13,
+          "images": 16,
+          "iframes": 0
+        },
+        {
+          "path": "admin/admin.html",
+          "family": "admin",
+          "public": false,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 13,
+          "scripts": 13,
+          "images": 2,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/f6a337744029d97282d680d09e4cbea463768ccb.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 116,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/e8f65c38756aea89d2d198f2bc99b853fff50f79.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 102,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/d4f115960d603a9989337540d2753fc8c9da9d2f.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 239,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/cea6acbe7e5807b6e2134cc261010e67d3e2a019.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 159,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/c31a11fe6b3ea12ee9f985738f706cdf95306370.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 111,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/a2ba97a2ae3562944b7a1505d5aeda6ead81a09b.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 68,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/a11c658467698f4f740d34e9311707b22deac7d5.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 65,
+          "iframes": 0
+        },
+        {
+          "path": "data/lemon-cache/a0bf51e63770696710f4455d9f122791a27e6334.html",
+          "family": "other",
+          "public": true,
+          "noindex": false,
+          "redirect_shell": false,
+          "stylesheets": 12,
+          "scripts": 13,
+          "images": 70,
+          "iframes": 0
+        }
+      ]
+    },
+    "code_assets": {
+      "css": {
+        "files": 52,
+        "bytes": 718059,
+        "imports": 1,
+        "outline_suppression_rules": 44,
+        "files_with_focus_visible": 28,
+        "files_with_reduced_motion": 16,
+        "font_face_blocks": 1
+      },
+      "javascript": {
+        "files": 137,
+        "bytes": 1564458
+      },
+      "assets": {
+        "files": 1666,
+        "bytes": 177407115,
+        "ext_.png": 338,
+        "ext_.jpg": 472,
+        "ext_.svg": 18,
+        "ext_.mp4": 9,
+        "ext_.mp3": 114,
+        "ext_.webp": 715
+      },
+      "issues": {
+        "outline_suppression_present": {
+          "count": 15,
+          "examples": [
+            {
+              "path": "admin/css/games-editor.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/ccg-cards.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/ccg-effects.css",
+              "detail": "5"
+            },
+            {
+              "path": "resources/css/ccg-footer.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/ccg-master.css",
+              "detail": "4"
+            },
+            {
+              "path": "resources/css/ccg-nav.css",
+              "detail": "3"
+            },
+            {
+              "path": "resources/css/contact.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/developers.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/downloads.css",
+              "detail": "2"
+            },
+            {
+              "path": "resources/css/games.css",
+              "detail": "14"
+            },
+            {
+              "path": "resources/css/home.css",
+              "detail": "6"
+            },
+            {
+              "path": "resources/css/music-composer.css",
+              "detail": "2"
+            },
+            {
+              "path": "resources/css/publishers.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/quiz.css",
+              "detail": "1"
+            },
+            {
+              "path": "resources/css/year-platform-archives.css",
+              "detail": "1"
+            }
+          ]
+        },
+        "css_over_100kb": {
+          "count": 1,
+          "examples": [
+            {
+              "path": "resources/css/ccg-master.css",
+              "detail": "103379"
+            }
+          ]
+        },
+        "css_import_usage": {
+          "count": 1,
+          "examples": [
+            {
+              "path": "resources/css/ccg-master.css",
+              "detail": "1"
+            }
+          ]
+        }
+      },
+      "large_assets_over_500kb": [
+        {
+          "path": "resources/audio/easter-eggs/party.mp4",
+          "bytes": 22376758,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/icons/download.PNG",
+          "bytes": 5849957,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/heman.mp4",
+          "bytes": 5039371,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/audio/easter-eggs/press-play.mp4",
+          "bytes": 4158356,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/audio/easter-eggs/boing.mp4",
+          "bytes": 2485392,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/affiliate/a500-mini.png",
+          "bytes": 1602878,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/images/affiliate/c64-maxi.png",
+          "bytes": 1400692,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/matrix.mp4",
+          "bytes": 1378123,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/affiliate/joystick-clear.png",
+          "bytes": 1281309,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/vhs.mp4",
+          "bytes": 880711,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/affiliate/gamepad-white.png",
+          "bytes": 825979,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/images/email/ccg-email-banner.png",
+          "bytes": 788355,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/images/genres/miscellaneous.png",
+          "bytes": 662336,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/images/affiliate/gamepad-black.png",
+          "bytes": 546589,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/zx-clive.jpg",
+          "bytes": 523490,
+          "extension": ".jpg"
+        },
+        {
+          "path": "resources/audio/easter-eggs/konami-code.mp4",
+          "bytes": 500856,
+          "extension": ".mp4"
+        }
+      ],
+      "assets_over_1mb": [
+        {
+          "path": "resources/audio/easter-eggs/party.mp4",
+          "bytes": 22376758,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/icons/download.PNG",
+          "bytes": 5849957,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/heman.mp4",
+          "bytes": 5039371,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/audio/easter-eggs/press-play.mp4",
+          "bytes": 4158356,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/audio/easter-eggs/boing.mp4",
+          "bytes": 2485392,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/affiliate/a500-mini.png",
+          "bytes": 1602878,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/images/affiliate/c64-maxi.png",
+          "bytes": 1400692,
+          "extension": ".png"
+        },
+        {
+          "path": "resources/audio/easter-eggs/matrix.mp4",
+          "bytes": 1378123,
+          "extension": ".mp4"
+        },
+        {
+          "path": "resources/images/affiliate/joystick-clear.png",
+          "bytes": 1281309,
+          "extension": ".png"
+        }
+      ],
+      "largest_image_dimensions": [
+        {
+          "path": "resources/images/icons/download.PNG",
+          "bytes": 5849957,
+          "width": 4000,
+          "height": 4000,
+          "megapixels": 16.0
+        },
+        {
+          "path": "resources/images/affiliate/a500-mini.png",
+          "bytes": 1602878,
+          "width": 1500,
+          "height": 1149,
+          "megapixels": 1.72
+        },
+        {
+          "path": "resources/images/affiliate/c64-maxi.png",
+          "bytes": 1400692,
+          "width": 1500,
+          "height": 980,
+          "megapixels": 1.47
+        },
+        {
+          "path": "resources/images/affiliate/joystick-clear.png",
+          "bytes": 1281309,
+          "width": 1282,
+          "height": 1306,
+          "megapixels": 1.67
+        },
+        {
+          "path": "resources/images/affiliate/gamepad-white.png",
+          "bytes": 825979,
+          "width": 1439,
+          "height": 1223,
+          "megapixels": 1.76
+        },
+        {
+          "path": "resources/images/email/ccg-email-banner.png",
+          "bytes": 788355,
+          "width": 1429,
+          "height": 506,
+          "megapixels": 0.72
+        },
+        {
+          "path": "resources/images/genres/miscellaneous.png",
+          "bytes": 662336,
+          "width": 1024,
+          "height": 474,
+          "megapixels": 0.49
+        },
+        {
+          "path": "resources/images/affiliate/gamepad-black.png",
+          "bytes": 546589,
+          "width": 1101,
+          "height": 933,
+          "megapixels": 1.03
+        },
+        {
+          "path": "resources/audio/easter-eggs/zx-clive.jpg",
+          "bytes": 523490,
+          "width": 2560,
+          "height": 1872,
+          "megapixels": 4.79
+        },
+        {
+          "path": "resources/images/affiliate/usb-mouse.png",
+          "bytes": 457640,
+          "width": 1225,
+          "height": 849,
+          "megapixels": 1.04
+        },
+        {
+          "path": "resources/images/affiliate/joystick-black.png",
+          "bytes": 445664,
+          "width": 850,
+          "height": 1077,
+          "megapixels": 0.92
+        },
+        {
+          "path": "resources/images/games/boxes-3d/super-cars-2.webp",
+          "bytes": 356050,
+          "width": 1400,
+          "height": 2049,
+          "megapixels": 2.87
+        },
+        {
+          "path": "resources/images/games/boxes-3d/simon-the-sorcerer.webp",
+          "bytes": 332316,
+          "width": 1400,
+          "height": 2049,
+          "megapixels": 2.87
+        },
+        {
+          "path": "quiz/images/pack-6/sword-of-fargoal-answer.webp",
+          "bytes": 313550,
+          "width": 1153,
+          "height": 1723,
+          "megapixels": 1.99
+        },
+        {
+          "path": "resources/images/games/boxes-3d/another-world.webp",
+          "bytes": 310908,
+          "width": 1404,
+          "height": 2054,
+          "megapixels": 2.88
+        },
+        {
+          "path": "resources/images/composers/allister-brimble.jpg",
+          "bytes": 298896,
+          "width": 2560,
+          "height": 2495,
+          "megapixels": 6.39
+        },
+        {
+          "path": "resources/images/games/boxes-3d/battle-chess.webp",
+          "bytes": 285190,
+          "width": 1400,
+          "height": 2049,
+          "megapixels": 2.87
+        },
+        {
+          "path": "resources/images/games/boxes-3d/fright-night.webp",
+          "bytes": 270952,
+          "width": 824,
+          "height": 1235,
+          "megapixels": 1.02
+        },
+        {
+          "path": "quiz/images/pack-6/forbidden-forest.webp",
+          "bytes": 264142,
+          "width": 1024,
+          "height": 1536,
+          "megapixels": 1.57
+        },
+        {
+          "path": "quiz/images/pack-6/defender-of-the-crown.webp",
+          "bytes": 252860,
+          "width": 699,
+          "height": 1024,
+          "megapixels": 0.72
+        },
+        {
+          "path": "resources/images/games/boxes-3d/cadaver.webp",
+          "bytes": 252556,
+          "width": 1416,
+          "height": 2099,
+          "megapixels": 2.97
+        },
+        {
+          "path": "resources/images/thumbnails/all/the_settlers_new.png",
+          "bytes": 237301,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/north-south.webp",
+          "bytes": 236846,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/pinball-dreams.webp",
+          "bytes": 225874,
+          "width": 1396,
+          "height": 2042,
+          "megapixels": 2.85
+        },
+        {
+          "path": "quiz/images/pack-6/forbidden-forest-answer.webp",
+          "bytes": 223750,
+          "width": 820,
+          "height": 1244,
+          "megapixels": 1.02
+        },
+        {
+          "path": "resources/images/games/boxes-3d/speedball-2-brutal-deluxe.webp",
+          "bytes": 212690,
+          "width": 1400,
+          "height": 2045,
+          "megapixels": 2.86
+        },
+        {
+          "path": "resources/images/thumbnails/all/the_immortal_new.png",
+          "bytes": 210683,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/three_stooges.png",
+          "bytes": 206296,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/defender-of-the-crown.webp",
+          "bytes": 201948,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "quiz/images/pack-6/defender-of-the-crown-answer.webp",
+          "bytes": 201948,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/toki.webp",
+          "bytes": 201372,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/composers/matt-furniss.png",
+          "bytes": 200268,
+          "width": 440,
+          "height": 440,
+          "megapixels": 0.19
+        },
+        {
+          "path": "resources/images/games/boxes-3d/narc.webp",
+          "bytes": 199956,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/golden-axe.webp",
+          "bytes": 199814,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/darkseed.png",
+          "bytes": 199445,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/vendetta.webp",
+          "bytes": 198378,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/teenage-mutant-hero-turtles.webp",
+          "bytes": 193328,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/schizofrenia_new.png",
+          "bytes": 190207,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/the-lost-patrol.webp",
+          "bytes": 188070,
+          "width": 1396,
+          "height": 2042,
+          "megapixels": 2.85
+        },
+        {
+          "path": "resources/images/games/boxes-3d/switchblade.webp",
+          "bytes": 188068,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/POSTER_PASTER.png",
+          "bytes": 187441,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/civilization.png",
+          "bytes": 187399,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/indiana-jones-and-the-fate-of-atlantis.webp",
+          "bytes": 187248,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/collections/amiga-demo-music.png",
+          "bytes": 186233,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/entombed.webp",
+          "bytes": 184978,
+          "width": 828,
+          "height": 1250,
+          "megapixels": 1.03
+        },
+        {
+          "path": "resources/images/games/boxes-3d/nippon-safes-inc.webp",
+          "bytes": 183960,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/eye_of_the_beholder_2_new.png",
+          "bytes": 182845,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/flimbos_quest.png",
+          "bytes": 182697,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/genres/sports.png",
+          "bytes": 182169,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/prince_clumsy_new.png",
+          "bytes": 180281,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/floor-13.webp",
+          "bytes": 180176,
+          "width": 852,
+          "height": 1246,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/monkey_island_2.png",
+          "bytes": 180047,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/composers/rob-hubbard.jpg",
+          "bytes": 179858,
+          "width": 960,
+          "height": 964,
+          "megapixels": 0.93
+        },
+        {
+          "path": "resources/images/thumbnails/all/street_fighter_new.png",
+          "bytes": 179327,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/gemstone-warrior.webp",
+          "bytes": 178940,
+          "width": 820,
+          "height": 1244,
+          "megapixels": 1.02
+        },
+        {
+          "path": "resources/images/games/boxes-3d/the-wombles.webp",
+          "bytes": 175682,
+          "width": 941,
+          "height": 1341,
+          "megapixels": 1.26
+        },
+        {
+          "path": "resources/images/games/boxes-3d/black-tiger.webp",
+          "bytes": 175406,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/rainbow-islands.webp",
+          "bytes": 175028,
+          "width": 851,
+          "height": 1246,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/the_wombles.jpg",
+          "bytes": 174005,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/total-carnage.webp",
+          "bytes": 173458,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/SHINOBI.png",
+          "bytes": 173382,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/mega-lo-mania.webp",
+          "bytes": 173372,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/composers/russell-lieblich.png",
+          "bytes": 171216,
+          "width": 478,
+          "height": 600,
+          "megapixels": 0.29
+        },
+        {
+          "path": "resources/images/thumbnails/all/indy_last_crusade_c64_new.png",
+          "bytes": 170211,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/ikari_warriors_new.png",
+          "bytes": 170153,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/shadow-dancer.webp",
+          "bytes": 169962,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/the-staff-of-karnath.webp",
+          "bytes": 169344,
+          "width": 826,
+          "height": 1248,
+          "megapixels": 1.03
+        },
+        {
+          "path": "resources/images/thumbnails/all/aladdin.png",
+          "bytes": 169044,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/curse-of-ra.webp",
+          "bytes": 168812,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/rodland.webp",
+          "bytes": 167984,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/the-hitchhikers-guide-to-the-galaxy.webp",
+          "bytes": 166726,
+          "width": 821,
+          "height": 1242,
+          "megapixels": 1.02
+        },
+        {
+          "path": "resources/images/games/boxes-3d/simcity.webp",
+          "bytes": 166330,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "quiz/images/pack-6/hero.webp",
+          "bytes": 166294,
+          "width": 1024,
+          "height": 1536,
+          "megapixels": 1.57
+        },
+        {
+          "path": "resources/images/games/boxes-3d/green-beret.webp",
+          "bytes": 166212,
+          "width": 928,
+          "height": 1470,
+          "megapixels": 1.36
+        },
+        {
+          "path": "resources/images/thumbnails/all/lemmings_new.png",
+          "bytes": 166001,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/indiana-jones-and-the-last-crusade-the-action-game.webp",
+          "bytes": 165458,
+          "width": 850,
+          "height": 1246,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/swiv.webp",
+          "bytes": 165380,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/future_wars.png",
+          "bytes": 164815,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/blade-runner.webp",
+          "bytes": 164158,
+          "width": 804,
+          "height": 1238,
+          "megapixels": 1.0
+        },
+        {
+          "path": "resources/images/games/boxes-3d/escape-from-the-planet-of-the-robot-monsters.webp",
+          "bytes": 163406,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/collections/retro-specials.png",
+          "bytes": 163072,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/composers/chris-huelsbeck.jpg",
+          "bytes": 162437,
+          "width": 960,
+          "height": 1242,
+          "megapixels": 1.19
+        },
+        {
+          "path": "resources/images/thumbnails/all/new_zealand_story_new.png",
+          "bytes": 161605,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/lemmings.webp",
+          "bytes": 161012,
+          "width": 812,
+          "height": 1243,
+          "megapixels": 1.01
+        },
+        {
+          "path": "resources/images/games/boxes-3d/psycho-santa.webp",
+          "bytes": 160450,
+          "width": 900,
+          "height": 1171,
+          "megapixels": 1.05
+        },
+        {
+          "path": "resources/images/games/boxes-3d/rocket-ranger.webp",
+          "bytes": 159464,
+          "width": 823,
+          "height": 1246,
+          "megapixels": 1.03
+        },
+        {
+          "path": "resources/images/thumbnails/all/kobyashi_naru.png",
+          "bytes": 159164,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/danny-sullivans-indy-heat.webp",
+          "bytes": 158558,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/thumbnails/all/20_tons_new.png",
+          "bytes": 157418,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/ivan-ironman-stewarts-super-off-road.webp",
+          "bytes": 156940,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/collections/retro-events.png",
+          "bytes": 156672,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/nosferatu.png",
+          "bytes": 155780,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/thumbnails/all/laser_squad.png",
+          "bytes": 154048,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/power-drift.webp",
+          "bytes": 154022,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "quiz/images/pack-6/spy-hunter.webp",
+          "bytes": 153448,
+          "width": 1024,
+          "height": 1536,
+          "megapixels": 1.57
+        },
+        {
+          "path": "resources/images/thumbnails/all/star_wars_droids_new.png",
+          "bytes": 151793,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/genres/racing.png",
+          "bytes": 151783,
+          "width": 460,
+          "height": 215,
+          "megapixels": 0.1
+        },
+        {
+          "path": "resources/images/games/boxes-3d/a-question-of-sport.webp",
+          "bytes": 151432,
+          "width": 850,
+          "height": 1244,
+          "megapixels": 1.06
+        },
+        {
+          "path": "resources/images/games/boxes-3d/congo-bongo.webp",
+          "bytes": 150588,
+          "width": 804,
+          "height": 1238,
+          "megapixels": 1.0
+        },
+        {
+          "path": "resources/images/games/boxes-3d/the-human-race.webp",
+          "bytes": 150390,
+          "width": 928,
+          "height": 1470,
+          "megapixels": 1.36
+        }
+      ]
+    }
+  },
+  "live": {
+    "generated_at": "2026-07-29T14:06:14.342Z",
+    "chrome_path": "/usr/bin/google-chrome",
+    "axe_version": "4.12.1",
+    "routes": [
+      {
+        "label": "Entry",
+        "url": "https://www.cheekycommodoregamer.co.uk/"
+      },
+      {
+        "label": "Home",
+        "url": "https://www.cheekycommodoregamer.co.uk/home.html"
+      },
+      {
+        "label": "Games",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/"
+      },
+      {
+        "label": "Game: Zeewolf",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/"
+      },
+      {
+        "label": "Genres",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/genres/"
+      },
+      {
+        "label": "Publishers",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/"
+      },
+      {
+        "label": "Music",
+        "url": "https://www.cheekycommodoregamer.co.uk/music/"
+      },
+      {
+        "label": "Quiz",
+        "url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html"
+      }
+    ],
+    "axe": [
+      {
+        "label": "Entry",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
+        "top_violations": []
+      },
+      {
+        "label": "Home",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "error": "page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://www.cheekycommodoregamer.co.uk/home.html\", waiting until \"networkidle\"\n",
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "top_violations": []
+      },
+      {
+        "label": "Games",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
+        "top_violations": []
+      },
+      {
+        "label": "Game: Zeewolf",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
+        "top_violations": []
+      },
+      {
+        "label": "Genres",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 3,
+        "top_violations": []
+      },
+      {
+        "label": "Publishers",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
+        "top_violations": []
+      },
+      {
+        "label": "Music",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/music/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/music/",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 1,
+        "top_violations": []
+      },
+      {
+        "label": "Quiz",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
+        "status": 200,
+        "violation_count": 0,
+        "affected_nodes": 0,
+        "serious_or_critical_nodes": 0,
+        "incomplete_count": 2,
+        "top_violations": []
+      }
+    ],
+    "lighthouse": [
+      {
+        "label": "Home",
+        "mode": "mobile",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "performance_score": 0.66,
+        "accessibility_score": 1,
+        "fcp_display": "2.6 s",
+        "lcp_display": "8.9 s",
+        "cls_display": "0.117",
+        "tbt_display": "140 ms",
+        "speed_index_display": "3.0 s",
+        "total_bytes_display": "Total size was 2,338 KiB",
+        "numeric": {
+          "fcp_ms": 2552.868,
+          "lcp_ms": 8917.48,
+          "cls": 0.11690659953614514,
+          "tbt_ms": 137,
+          "total_bytes": 2394480
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 13 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0,
+            "displayValue": "Est savings of 111 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 1,
+            "displayValue": "1.6 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/home-mobile.json"
+      },
+      {
+        "label": "Games",
+        "mode": "mobile",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "performance_score": 0.78,
+        "accessibility_score": 1,
+        "fcp_display": "2.5 s",
+        "lcp_display": "3.3 s",
+        "cls_display": "0.198",
+        "tbt_display": "130 ms",
+        "speed_index_display": "2.5 s",
+        "total_bytes_display": "Total size was 768 KiB",
+        "numeric": {
+          "fcp_ms": 2487.1126500000005,
+          "lcp_ms": 3318.9729000000007,
+          "cls": 0.19773991883115952,
+          "tbt_ms": 134.5,
+          "total_bytes": 786733
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 24 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0.5,
+            "displayValue": "Est savings of 114 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 1,
+            "displayValue": "1.9 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/games-mobile.json"
+      },
+      {
+        "label": "Game: Zeewolf",
+        "mode": "mobile",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/zeewolf/",
+        "performance_score": 0.67,
+        "accessibility_score": 1,
+        "fcp_display": "2.6 s",
+        "lcp_display": "16.8 s",
+        "cls_display": "0.087",
+        "tbt_display": "150 ms",
+        "speed_index_display": "2.6 s",
+        "total_bytes_display": "Total size was 11,518 KiB",
+        "numeric": {
+          "fcp_ms": 2634.2217,
+          "lcp_ms": 16771.562149999998,
+          "cls": 0.08741500270291633,
+          "tbt_ms": 154,
+          "total_bytes": 11793999
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 14 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0,
+            "displayValue": "Est savings of 44 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 0.5,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 0,
+            "displayValue": "2.1 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/game-zeewolf-mobile.json"
+      },
+      {
+        "label": "Genres",
+        "mode": "mobile",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/genres/",
+        "performance_score": 0.56,
+        "accessibility_score": 1,
+        "fcp_display": "2.6 s",
+        "lcp_display": "7.5 s",
+        "cls_display": "0.315",
+        "tbt_display": "110 ms",
+        "speed_index_display": "2.8 s",
+        "total_bytes_display": "Total size was 2,867 KiB",
+        "numeric": {
+          "fcp_ms": 2625.2448999999997,
+          "lcp_ms": 7523.340299999998,
+          "cls": 0.31524179792989865,
+          "tbt_ms": 107,
+          "total_bytes": 2936213
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 13 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0,
+            "displayValue": "Est savings of 113 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 1,
+            "displayValue": "1.4 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/genres-mobile.json"
+      },
+      {
+        "label": "Quiz",
+        "mode": "mobile",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/quiz/quiz.html",
+        "performance_score": 0.79,
+        "accessibility_score": 1,
+        "fcp_display": "2.5 s",
+        "lcp_display": "3.5 s",
+        "cls_display": "0.185",
+        "tbt_display": "0 ms",
+        "speed_index_display": "2.5 s",
+        "total_bytes_display": "Total size was 394 KiB",
+        "numeric": {
+          "fcp_ms": 2474.9473999999996,
+          "lcp_ms": 3468.8957999999993,
+          "cls": 0.18508288943448759,
+          "tbt_ms": 0,
+          "total_bytes": 403560
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 14 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0.5,
+            "displayValue": "Est savings of 44 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 1,
+            "displayValue": "0.8 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/quiz-mobile.json"
+      },
+      {
+        "label": "Home",
+        "mode": "desktop",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/home.html",
+        "performance_score": 0.39,
+        "accessibility_score": 1,
+        "fcp_display": "2.6 s",
+        "lcp_display": "6.6 s",
+        "cls_display": "0.219",
+        "tbt_display": "270 ms",
+        "speed_index_display": "2.6 s",
+        "total_bytes_display": "Total size was 1,049 KiB",
+        "numeric": {
+          "fcp_ms": 2615.6368000000007,
+          "lcp_ms": 6574.8277,
+          "cls": 0.21915689519416254,
+          "tbt_ms": 271.5,
+          "total_bytes": 1074651
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 14 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0,
+            "displayValue": "Est savings of 113 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 0,
+            "displayValue": "3.4 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/home-desktop.json"
+      },
+      {
+        "label": "Games",
+        "mode": "desktop",
+        "requested_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "final_url": "https://www.cheekycommodoregamer.co.uk/games/",
+        "performance_score": 0.29,
+        "accessibility_score": 1,
+        "fcp_display": "3.9 s",
+        "lcp_display": "7.2 s",
+        "cls_display": "0.305",
+        "tbt_display": "310 ms",
+        "speed_index_display": "3.9 s",
+        "total_bytes_display": "Total size was 768 KiB",
+        "numeric": {
+          "fcp_ms": 3851.8031,
+          "lcp_ms": 7236.2205,
+          "cls": 0.30545391290412033,
+          "tbt_ms": 305,
+          "total_bytes": 786607
+        },
+        "opportunities": [
+          {
+            "id": "render-blocking-resources",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unused-css-rules",
+            "score": 0,
+            "displayValue": "Est savings of 24 KiB",
+            "details": null
+          },
+          {
+            "id": "unused-javascript",
+            "score": 0,
+            "displayValue": "Est savings of 113 KiB",
+            "details": null
+          },
+          {
+            "id": "offscreen-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "uses-responsive-images",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "unsized-images",
+            "score": 1,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "font-display",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "third-party-summary",
+            "score": null,
+            "displayValue": null,
+            "details": null
+          },
+          {
+            "id": "mainthread-work-breakdown",
+            "score": 0,
+            "displayValue": "2.5 s",
+            "details": null
+          }
+        ],
+        "raw_file": "/home/runner/work/_temp/phase-7a-lighthouse/games-desktop.json"
+      }
+    ],
+    "errors": [
+      "axe Home: page.goto: Timeout 60000ms exceeded.\nCall log:\n  - navigating to \"https://www.cheekycommodoregamer.co.uk/home.html\", waiting until \"networkidle\"\n"
+    ]
+  }
+}
