@@ -19,6 +19,8 @@ on:
       - "admin/templates/game-landing-template.html"
       - "admin/GAMES_EDITOR.md"
       - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/phase-5b-internal-discovery.yml"
+      - ".github/workflows/phase-6a-games-editor-publishing-audit.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
       - ".github/workflows/publisher-archives.yml"
       - ".github/workflows/developer-archives.yml"
@@ -162,6 +164,8 @@ jobs:
 
           allowed_exact = {
               ".github/workflows/games-publishing.yml",
+              ".github/workflows/phase-5b-internal-discovery.yml",
+              ".github/workflows/phase-6a-games-editor-publishing-audit.yml",
               ".github/workflows/phase-6b-reliable-games-publishing.yml",
               ".github/workflows/publisher-archives.yml",
               ".github/workflows/developer-archives.yml",
