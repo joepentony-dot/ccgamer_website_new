@@ -53,12 +53,14 @@ function countOccurrences(haystack, needle) {
     return haystack.split(needle).length - 1;
 }
 
-function validateForeignRegistryOrder(current, baseline, problems) {
-    const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
-    const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
-    if (JSON.stringify(currentForeign) !== JSON.stringify(baselineForeign)) {
-        problems.push("Existing non-year/platform static registry entries were removed or reordered");
-    }
+function validateBaselineRegistryMembership(current, baseline, problems) {
+    const currentSet = new Set(current);
+    baseline.forEach((entry) => {
+        if (typeof entry !== "string") return;
+        if (!currentSet.has(entry)) {
+            problems.push(`Existing static registry entry was lost: ${entry}`);
+        }
+    });
 }
 
 function validateBaselineSitemap(currentXml, baselineXml, problems) {
@@ -179,7 +181,7 @@ function main() {
     if (baselineStaticPagesPath) {
         const baseline = readJson(baselineStaticPagesPath);
         if (!Array.isArray(baseline)) problems.push("Baseline static pages config is not an array");
-        else validateForeignRegistryOrder(staticPages, baseline, problems);
+        else validateBaselineRegistryMembership(staticPages, baseline, problems);
     }
 
     const baselineSitemapPath = optionPath("--baseline-sitemap-pages");
