@@ -213,26 +213,8 @@ jobs:
           print(f"Validated {len(paths)} generated Phase 4C paths.")
           PY
 
-      - name: Require committed generated output on pull requests
-        if: github.event_name == 'pull_request'
-        shell: bash
-        run: |
-          git diff --exit-code -- \
-            games/index.html \
-            games/archive-navigation.json \
-            games/years \
-            games/platforms \
-            resources/css/year-platform-archives.css \
-            js/year-platform-archives.js \
-            tools/seo/static-pages.json \
-            sitemap.xml \
-            sitemap-pages.xml \
-            sitemap-games.xml \
-            docs/seo-baseline/phase-4b-year-platform-archives.md \
-            docs/seo-baseline/phase-4c-year-platform-discovery.md
-
       - name: Commit generated Phase 4C output
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
         shell: bash
         run: |
           git add \
@@ -260,3 +242,21 @@ jobs:
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
           git push origin "HEAD:${TARGET_BRANCH}"
+
+      - name: Require committed output for external pull requests
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        shell: bash
+        run: |
+          git diff --exit-code -- \
+            games/index.html \
+            games/archive-navigation.json \
+            games/years \
+            games/platforms \
+            resources/css/year-platform-archives.css \
+            js/year-platform-archives.js \
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml \
+            docs/seo-baseline/phase-4b-year-platform-archives.md \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md
