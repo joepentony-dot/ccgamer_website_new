@@ -1,0 +1,165 @@
+{
+  "before": {
+    "head_scripts_without_defer_or_async": 2319,
+    "duplicate_stylesheet_references": 5,
+    "pages_with_at_least_10_stylesheets": 962,
+    "pages_with_at_least_12_scripts": 556,
+    "eligible_blocking_analytics": 1673
+  },
+  "after": {
+    "head_scripts_without_defer_or_async": 646,
+    "duplicate_stylesheet_references": 1,
+    "pages_with_at_least_10_stylesheets": 962,
+    "pages_with_at_least_12_scripts": 556,
+    "eligible_blocking_analytics": 0,
+    "eligible_deferred_analytics": 1712,
+    "eligible_exact_duplicate_stylesheet_tags": 0
+  },
+  "removed": {
+    "head_blocking_occurrences": 1673,
+    "duplicate_stylesheet_reference_occurrences": 4
+  },
+  "remaining_duplicate_stylesheet_examples": [
+    {
+      "path": "home.html",
+      "hrefs": [
+        "/resources/css/ccg-mode.css"
+      ],
+      "exact_duplicate_tags": 1
+    }
+  ],
+  "generator_sources": {
+    "analytics_tags": 7,
+    "deferred_tags": 7,
+    "blocking_files": []
+  },
+  "live": {
+    "base_url": "http://127.0.0.1:4173",
+    "chrome_path": "/usr/bin/google-chrome",
+    "axe_version": "4.12.1",
+    "routes": [
+      {
+        "label": "404 page",
+        "path": "/404.html",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "About",
+        "path": "/about.html",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Games",
+        "path": "/games/index.html",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Game: Zeewolf",
+        "path": "/games/game.html?id=zeewolf",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Publisher: Ocean Software",
+        "path": "/games/publishers/ocean-software/",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Year: 1989",
+        "path": "/games/years/1989/",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Quiz",
+        "path": "/quiz/quiz.html",
+        "status": 200,
+        "analytics_tags": 0,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      },
+      {
+        "label": "Login",
+        "path": "/auth/login.html",
+        "status": 200,
+        "analytics_tags": 1,
+        "analytics_nonblocking": true,
+        "analytics_loader_executed": true,
+        "duplicate_stylesheet_hrefs": 0,
+        "body_has_content": true,
+        "axe_violation_count": 0,
+        "serious_or_critical_nodes": 0,
+        "passed": true
+      }
+    ],
+    "serious_or_critical_nodes": 0,
+    "passed": true
+  },
+  "checks": {
+    "repository_head_blocking_reduced": true,
+    "at_least_1000_head_blocking_occurrences_removed": true,
+    "eligible_analytics_blocking_zero": true,
+    "eligible_analytics_deferred_present": true,
+    "all_generator_analytics_literals_deferred": true,
+    "exact_duplicate_stylesheet_tags_removed": true,
+    "stylesheet_duplicate_count_not_increased": true,
+    "high_stylesheet_page_count_not_increased": true,
+    "high_script_page_count_not_increased": true,
+    "browser_routes_pass": true,
+    "browser_serious_critical_zero": true
+  },
+  "passed": 11,
+  "total": 11,
+  "failures": []
+}
