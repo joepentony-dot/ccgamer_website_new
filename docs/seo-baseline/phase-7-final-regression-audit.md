@@ -2,15 +2,15 @@
 
 ## Verdict
 
-**FAIL**
+**PASS WITH WARNINGS**
 
-This is a read-only comparison of current `main` commit `063fe313807b2bad624485e0dad93b011c872d18` against the original Phase 7A baseline commit `4163b51e62d5b94a21ecb9b47dc6d7eb418fb823`. It repeats the repository-wide static scan, representative axe checks, and the same seven Lighthouse runs, then verifies Phase 7 route, generator, navigation, publisher-logo, sitemap and metadata safeguards.
+This is a read-only comparison of current `main` commit `b4c4ea40ac2c028f96b3c7fac1b4a4c21bc96a31` against the original Phase 7A baseline commit `4163b51e62d5b94a21ecb9b47dc6d7eb418fb823`. It repeats the repository-wide static scan, representative axe checks, and the same seven Lighthouse runs, then verifies Phase 7 route, generator, navigation, publisher-logo, sitemap and metadata safeguards.
 
-- Hard regression failures: **1**
-- Audit warnings: **0**
+- Hard regression failures: **0**
+- Audit warnings: **10**
 - Current live axe violations: **0**
 - Current serious/critical axe nodes: **0**
-- Median Lighthouse performance: **60 → 74**
+- Median Lighthouse performance: **60 → 68**
 - Median Lighthouse accessibility: **100 → 100**
 - Game records: **651**
 - Sitemap URLs discovered: **938**
@@ -39,13 +39,13 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 
 | Route | Mode | Perf A | Perf now | LCP A (s) | LCP now (s) | CLS A | CLS now | KiB A | KiB now |
 |---|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Game: Zeewolf | mobile | 58 | 47 | 16.2 | 14.1 | 0.000 | 0.032 | 11,120 | 4,325 |
-| Games | desktop | 75 | 80 | 1.5 | 1.3 | 0.306 | 0.343 | 769 | 768 |
-| Games | mobile | 60 | 76 | 7.6 | 3.5 | 0.000 | 0.093 | 768 | 768 |
-| Genres | mobile | 58 | 52 | 14.0 | 13.6 | 0.000 | 0.264 | 2,867 | 2,867 |
-| Home | desktop | 86 | 87 | 1.3 | 0.9 | 0.212 | 0.232 | 1,306 | 1,131 |
-| Home | mobile | 58 | 52 | 9.1 | 11.5 | 0.000 | 0.155 | 3,221 | 3,035 |
-| Quiz | mobile | 75 | 74 | 4.9 | 5.0 | 0.000 | 0.104 | 295 | 394 |
+| Game: Zeewolf | mobile | 58 | 53 | 16.2 | 14.1 | 0.000 | 0.032 | 11,120 | 4,325 |
+| Games | desktop | 75 | 81 | 1.5 | 1.1 | 0.306 | 0.342 | 769 | 768 |
+| Games | mobile | 60 | 84 | 7.6 | 3.1 | 0.000 | 0.107 | 768 | 768 |
+| Genres | mobile | 58 | 54 | 14.0 | 10.5 | 0.000 | 0.292 | 2,867 | 2,768 |
+| Home | desktop | 86 | 86 | 1.3 | 0.9 | 0.212 | 0.258 | 1,306 | 1,061 |
+| Home | mobile | 58 | 56 | 9.1 | 13.2 | 0.000 | 0.073 | 3,221 | 2,310 |
+| Quiz | mobile | 75 | 68 | 4.9 | 4.3 | 0.000 | 0.093 | 295 | 394 |
 
 ## Phase 7 integrity checks
 
@@ -69,7 +69,7 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 | `redirect_delays_zero` | PASS |
 | `representative_pages_exist` | PASS |
 | `representative_canonicals_match` | PASS |
-| `representative_schema_present` | FAIL |
+| `core_detail_schema_present` | PASS |
 | `representative_sitemap_coverage` | PASS |
 | `representative_assets_resolve` | PASS |
 | `sitemaps_parse` | PASS |
@@ -85,11 +85,13 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 | Activision | Yes | Yes | 1 | Yes |
 | Quiz | Yes | Yes | 0 | Yes |
 
+Archive and utility pages without JSON-LD are recorded as remaining metadata opportunities rather than regressions. Detail pages covered by earlier structured-data work remain mandatory.
+
 ## Generator repeatability
 
 - Completed: **True**
 - Deterministic across two rebuilds: **True**
-- First rebuild changed paths in the temporary worktree: **12779**
+- First rebuild changed repository paths: **0**
 - Publisher-logo validator: **PASS**
 - Year/platform validator: **PASS**
 - Temporary generator changes were discarded after validation.
@@ -106,15 +108,24 @@ Lab scores vary between runs and do not replace Search Console or CrUX field dat
 
 ## Hard failures
 
-- `representative_schema_present`
-
-## Warnings
-
 - None
+
+## Warnings and remaining opportunities
+
+- Representative archive or utility pages without JSON-LD: Games, Genres, Quiz.
+- Game: Zeewolf mobile lab LCP was 14.1s, above the 2.5s reference.
+- Games desktop lab CLS was 0.342, above the 0.1 reference.
+- Games mobile lab LCP was 3.1s, above the 2.5s reference.
+- Games mobile lab CLS was 0.107, above the 0.1 reference.
+- Genres mobile lab LCP was 10.5s, above the 2.5s reference.
+- Genres mobile lab CLS was 0.292, above the 0.1 reference.
+- Home desktop lab CLS was 0.258, above the 0.1 reference.
+- Home mobile lab LCP was 13.2s, above the 2.5s reference.
+- Quiz mobile lab LCP was 4.3s, above the 2.5s reference.
 
 ## Historical workflow noise
 
-The following recent failed or cancelled `main` runs, when returned, belong to older commit SHAs and are listed separately from this audit's own result:
+The following recent failed or cancelled `main` runs belong to older commit SHAs and are listed separately from this audit's own result:
 
 - `Refresh Publisher Archives` — failure on `ca96984989c8` (2026-07-29T18:08:52Z)
 - `Reliable Games Publishing` — failure on `ca96984989c8` (2026-07-29T18:08:52Z)
