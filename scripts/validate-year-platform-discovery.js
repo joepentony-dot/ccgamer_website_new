@@ -31,6 +31,8 @@ const sitemapGamesPath = path.join(repoRoot, "sitemap-games.xml");
 const sitemapIndexPath = path.join(repoRoot, "sitemap.xml");
 const phase4cReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4c-year-platform-discovery.md");
 const phase4dReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4d-year-platform-validation.md");
+const PHASE5B_EXCLUDED_REGISTRY_ENTRY = "viewer/manual.html";
+const PHASE5B_EXCLUDED_SITEMAP_URL = `${SITE_ORIGIN}/viewer/manual.html`;
 
 function readRequired(filePath) {
     if (!fs.existsSync(filePath)) {
@@ -252,13 +254,25 @@ function validateCanonicalGameRoutes(games, problems) {
 function validateBaselineRegistry(current, baseline, problems) {
     const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
     const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
-    compareExactList(currentForeign, baselineForeign, "Non-year/platform registry order", problems);
+    const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
+    const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
+
+    compareExactList(comparableCurrent, expectedForeign, "Non-year/platform registry order", problems);
+    if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
+        problems.push(`Phase 5B noindex utility remains in the static registry: ${PHASE5B_EXCLUDED_REGISTRY_ENTRY}`);
+    }
 }
 
 function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
-    compareExactList(currentLocs, baselineLocs, `${label} URL order`, problems);
+    const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
+    const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
+
+    compareExactList(comparableCurrent, expectedLocs, `${label} URL order`, problems);
+    if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
+        problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
+    }
 }
 
 function buildReport(summary) {
@@ -298,6 +312,7 @@ function buildReport(summary) {
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
 - Stable-order checks for registry entries and sitemap URLs owned by other workflows.
+- Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
 

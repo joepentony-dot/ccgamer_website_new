@@ -1,0 +1,242 @@
+name: Phase 5B Low-Risk Internal Discovery Corrections
+
+# Bounded correction workflow. Public changes are limited to four reviewed pages,
+# static sitemap registration, generated sitemap-pages and Phase 4D compatibility.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/apply-phase5b-discovery-corrections.py"
+      - "scripts/apply-phase5b-phase4d-compatibility.py"
+      - "scripts/validate-phase5b-discovery-corrections.py"
+      - "scripts/phase5a_internal_link_audit.py"
+      - "scripts/validate-year-platform-discovery.js"
+      - ".github/workflows/phase-5b-internal-discovery.yml"
+      - ".github/workflows/year-platform-archives.yml"
+      - "games/index.html"
+      - "quiz/quiz.html"
+      - "quiz/pack-6.html"
+      - "quiz/quiz-data.json"
+      - "games/collections/retro-events.html"
+      - "data/retro-events.json"
+      - "retro-events/yorkshire-amiga-group-meetup/index.html"
+      - "viewer/manual.html"
+      - "tools/seo/static-pages.json"
+      - "tools/seo/generate-sitemap.js"
+      - "sitemap-pages.xml"
+      - "docs/seo-baseline/phase-4c-year-platform-discovery.md"
+      - "docs/seo-baseline/phase-4d-year-platform-validation.md"
+      - "docs/seo-baseline/phase-5b-internal-discovery.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-5b-internal-discovery-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  correct-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > /tmp/phase5b-protected.sha256
+
+      - name: Snapshot registry and sitemaps
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p /tmp/phase5b-baseline
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="origin/main"
+          else
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          fi
+          git show "$BASE_SHA:tools/seo/static-pages.json" > /tmp/phase5b-baseline/static-pages.json
+          git show "$BASE_SHA:sitemap.xml" > /tmp/phase5b-baseline/sitemap.xml
+          git show "$BASE_SHA:sitemap-pages.xml" > /tmp/phase5b-baseline/sitemap-pages.xml
+          git show "$BASE_SHA:sitemap-games.xml" > /tmp/phase5b-baseline/sitemap-games.xml
+
+      - name: Validate correction tooling
+        run: |
+          python -m py_compile scripts/apply-phase5b-discovery-corrections.py
+          python -m py_compile scripts/apply-phase5b-phase4d-compatibility.py
+          python -m py_compile scripts/validate-phase5b-discovery-corrections.py
+          python -m py_compile scripts/phase5a_internal_link_audit.py
+          node --check tools/seo/generate-sitemap.js
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/preserve-sitemap-lastmods.js
+          node --check scripts/validate-sitemaps.js
+
+      - name: Apply bounded Phase 5B corrections
+        run: |
+          python scripts/apply-phase5b-discovery-corrections.py
+          python scripts/apply-phase5b-phase4d-compatibility.py
+          node --check scripts/validate-year-platform-discovery.js
+
+      - name: Rebuild and validate sitemaps
+        run: |
+          node scripts/generate-sitemaps.js
+          node scripts/preserve-sitemap-lastmods.js /tmp/phase5b-baseline
+          node scripts/validate-sitemaps.js
+
+      - name: Rerun Phase 5A internal-link audit
+        run: |
+          python scripts/phase5a_internal_link_audit.py \
+            --json-output "$RUNNER_TEMP/phase-5b-link-evidence.json" \
+            --report-output "$RUNNER_TEMP/phase-5b-phase5a-report.md"
+
+      - name: Validate Phase 5B decisions and results
+        run: |
+          python scripts/validate-phase5b-discovery-corrections.py \
+            --baseline-static-pages /tmp/phase5b-baseline/static-pages.json \
+            --baseline-sitemap-pages /tmp/phase5b-baseline/sitemap-pages.xml \
+            --phase5a-json "$RUNNER_TEMP/phase-5b-link-evidence.json" \
+            --write-report docs/seo-baseline/phase-5b-internal-discovery.md
+
+      - name: Validate Phase 4D compatibility
+        run: |
+          node scripts/validate-year-platform-discovery.js \
+            --baseline-static-pages /tmp/phase5b-baseline/static-pages.json \
+            --baseline-sitemap-index /tmp/phase5b-baseline/sitemap.xml \
+            --baseline-sitemap-pages /tmp/phase5b-baseline/sitemap-pages.xml \
+            --baseline-sitemap-games /tmp/phase5b-baseline/sitemap-games.xml \
+            --write-report docs/seo-baseline/phase-4d-year-platform-validation.md
+
+      - name: Verify deterministic regeneration
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/phase5b-first.diff"
+
+          python scripts/apply-phase5b-discovery-corrections.py
+          python scripts/apply-phase5b-phase4d-compatibility.py
+          node scripts/generate-sitemaps.js
+          node scripts/preserve-sitemap-lastmods.js /tmp/phase5b-baseline
+          node scripts/validate-sitemaps.js
+          python scripts/phase5a_internal_link_audit.py \
+            --json-output "$RUNNER_TEMP/phase-5b-link-evidence.json" \
+            --report-output "$RUNNER_TEMP/phase-5b-phase5a-report.md"
+          python scripts/validate-phase5b-discovery-corrections.py \
+            --baseline-static-pages /tmp/phase5b-baseline/static-pages.json \
+            --baseline-sitemap-pages /tmp/phase5b-baseline/sitemap-pages.xml \
+            --phase5a-json "$RUNNER_TEMP/phase-5b-link-evidence.json" \
+            --write-report docs/seo-baseline/phase-5b-internal-discovery.md
+          node scripts/validate-year-platform-discovery.js \
+            --baseline-static-pages /tmp/phase5b-baseline/static-pages.json \
+            --baseline-sitemap-index /tmp/phase5b-baseline/sitemap.xml \
+            --baseline-sitemap-pages /tmp/phase5b-baseline/sitemap-pages.xml \
+            --baseline-sitemap-games /tmp/phase5b-baseline/sitemap-games.xml \
+            --write-report docs/seo-baseline/phase-4d-year-platform-validation.md
+
+          git diff --binary > "$RUNNER_TEMP/phase5b-second.diff"
+          cmp "$RUNNER_TEMP/phase5b-first.diff" "$RUNNER_TEMP/phase5b-second.diff"
+          git diff --check
+
+      - name: Upload Phase 5B link evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-5b-internal-discovery-evidence
+          path: ${{ runner.temp }}/phase-5b-link-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove Python cache
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check /tmp/phase5b-protected.sha256
+
+      - name: Confirm exact Phase 5B scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-5b-internal-discovery.yml",
+              ".github/workflows/year-platform-archives.yml",
+              "scripts/apply-phase5b-discovery-corrections.py",
+              "scripts/apply-phase5b-phase4d-compatibility.py",
+              "scripts/validate-phase5b-discovery-corrections.py",
+              "scripts/validate-year-platform-discovery.js",
+              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
+              "docs/seo-baseline/phase-4d-year-platform-validation.md",
+              "docs/seo-baseline/phase-5b-internal-discovery.md",
+              "games/index.html",
+              "quiz/quiz.html",
+              "games/collections/retro-events.html",
+              "viewer/manual.html",
+              "tools/seo/static-pages.json",
+              "tools/seo/generate-sitemap.js",
+              "sitemap-pages.xml",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = sorted(set(changed).difference(allowed))
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 5B paths: {unexpected}")
+          print(f"Validated Phase 5B scope: {changed}")
+          PY
+
+      - name: Commit generated Phase 5B output
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add \
+            scripts/validate-year-platform-discovery.js \
+            games/index.html \
+            quiz/quiz.html \
+            games/collections/retro-events.html \
+            viewer/manual.html \
+            tools/seo/static-pages.json \
+            tools/seo/generate-sitemap.js \
+            sitemap-pages.xml \
+            docs/seo-baseline/phase-4c-year-platform-discovery.md \
+            docs/seo-baseline/phase-4d-year-platform-validation.md \
+            docs/seo-baseline/phase-5b-internal-discovery.md
+
+          if git diff --cached --quiet; then
+            echo "Phase 5B output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 5B internal discovery corrections"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"

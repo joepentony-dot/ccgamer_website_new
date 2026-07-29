@@ -12,7 +12,7 @@
 | Amiga platform memberships validated | **99** |
 | Existing canonical game targets validated | **651** |
 | Indexable archive routes in registry and sitemap | **18** |
-| Existing non-archive registry entries preserved in order | **231** |
+| Existing non-archive registry entries preserved in order | **230** |
 | Noindex year excluded | **2023** |
 
 ## Requirements already satisfied before Phase 4D
@@ -34,6 +34,7 @@
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
 - Stable-order checks for registry entries and sitemap URLs owned by other workflows.
+- Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
 
