@@ -55,6 +55,26 @@ jobs:
         run: |
           python scripts/apply-easter-egg-warp-mobile-games-fix.py
           python - <<'PY'
+          from pathlib import Path
+
+          path = Path('js/ccg-global.js')
+          text = path.read_text(encoding='utf-8')
+          auto_focus = '''        frame.addEventListener("load", () => {
+              if (!usesMobileEasterEggControls()) {
+                  frame.focus({ preventScroll: true });
+              }
+          }, { once: true });
+'''
+          count = text.count(auto_focus)
+          if count == 1:
+              path.write_text(text.replace(auto_focus, '', 1), encoding='utf-8')
+              print('Removed PACMAN iframe auto-focus so the visible Exit control retains focus.')
+          elif count == 0:
+              print('PACMAN iframe auto-focus is already absent.')
+          else:
+              raise SystemExit(f'Expected at most one PACMAN auto-focus block, found {count}')
+          PY
+          python - <<'PY'
           import subprocess
           from pathlib import Path
 
