@@ -9,7 +9,9 @@ on:
       - 'resources/css/pacman-touch.css'
       - 'resources/audio/easter-eggs/pacman.html'
       - 'scripts/apply-easter-egg-warp-mobile-games-fix.py'
+      - 'scripts/apply-pacman-self-contained-runtime-fix.py'
       - 'scripts/test-easter-egg-warp-mobile-games.mjs'
+      - 'scripts/test-pacman-mobile-render.mjs'
       - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
       - '.github/workflows/fix-easter-egg-viewport.yml'
   workflow_dispatch:
@@ -20,7 +22,7 @@ permissions:
 jobs:
   validate-easter-egg-games:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
 
     steps:
       - name: Check out fix branch
@@ -55,6 +57,7 @@ jobs:
       - name: Apply bounded Easter egg game repairs
         run: |
           python scripts/apply-easter-egg-warp-mobile-games-fix.py
+          python scripts/apply-pacman-self-contained-runtime-fix.py
           python - <<'PY'
           from pathlib import Path
 
@@ -97,11 +100,16 @@ jobs:
       - name: Validate JavaScript syntax
         run: node --check js/ccg-global.js
 
-      - name: Confirm PACMAN touch assets
+      - name: Confirm PACMAN local runtime and touch assets
         run: |
           test -f resources/css/pacman-touch.css
           grep -q 'CCG PACMAN TOUCH CONTROLS' resources/audio/easter-eggs/pacman.html
+          grep -q 'CCG PACMAN SELF-CONTAINED RUNTIME' resources/audio/easter-eggs/pacman.html
           grep -q 'data-pacman-key-code="78"' resources/audio/easter-eggs/pacman.html
+          if grep -q 'cdnjs.cloudflare.com\|raw.githubusercontent.com/daleharvey\|jquery.min.js\|modernizr.min.js' resources/audio/easter-eggs/pacman.html; then
+            echo 'PACMAN still contains an external runtime dependency.'
+            exit 1
+          fi
 
       - name: Confirm catalogue integrity
         run: |
@@ -132,7 +140,7 @@ jobs:
           cat "$RUNNER_TEMP/easter-games-http.log"
           exit 1
 
-      - name: Test WARP, PACMAN and INVADERS
+      - name: Test WARP, PACMAN controls and INVADERS
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: |
@@ -142,6 +150,16 @@ jobs:
             --output docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json \
             --report docs/seo-baseline/easter-egg-warp-mobile-games-validation.md \
             --screenshots "$RUNNER_TEMP/easter-games-screenshots"
+
+      - name: Test rendered PACMAN mobile game
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: |
+          node scripts/test-pacman-mobile-render.mjs \
+            --base-url http://127.0.0.1:4173/ \
+            --output docs/seo-baseline/pacman-mobile-render-evidence.json \
+            --report docs/seo-baseline/pacman-mobile-render-validation.md \
+            --screenshot "$RUNNER_TEMP/easter-games-screenshots/mobile-pacman-rendered.png"
 
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/easter-games-protected-before.sha256"
@@ -162,12 +180,16 @@ jobs:
               'docs/seo-baseline/easter-egg-viewport-validation.md',
               'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
               'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
+              'docs/seo-baseline/pacman-mobile-render-evidence.json',
+              'docs/seo-baseline/pacman-mobile-render-validation.md',
               'js/ccg-global.js',
               'resources/audio/easter-eggs/pacman.html',
               'resources/css/ccg-overlays.css',
               'resources/css/pacman-touch.css',
               'scripts/apply-easter-egg-warp-mobile-games-fix.py',
+              'scripts/apply-pacman-self-contained-runtime-fix.py',
               'scripts/test-easter-egg-warp-mobile-games.mjs',
+              'scripts/test-pacman-mobile-render.mjs',
           }
           tracked_output = subprocess.check_output(
               ['git', 'diff', '--name-only', 'origin/main'],
@@ -198,6 +220,8 @@ jobs:
           path: |
             docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json
             docs/seo-baseline/easter-egg-warp-mobile-games-validation.md
+            docs/seo-baseline/pacman-mobile-render-evidence.json
+            docs/seo-baseline/pacman-mobile-render-validation.md
             ${{ runner.temp }}/easter-games-screenshots
           if-no-files-found: warn
           retention-days: 30
@@ -213,14 +237,16 @@ jobs:
             resources/css/ccg-overlays.css \
             resources/css/pacman-touch.css \
             docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json \
-            docs/seo-baseline/easter-egg-warp-mobile-games-validation.md
+            docs/seo-baseline/easter-egg-warp-mobile-games-validation.md \
+            docs/seo-baseline/pacman-mobile-render-evidence.json \
+            docs/seo-baseline/pacman-mobile-render-validation.md
           if git diff --cached --quiet; then
             echo 'No generated changes to commit.'
           else
             git commit -m 'Fix WARP and mobile Easter egg games'
             branch="${{ github.head_ref || github.ref_name }}"
             git fetch origin "$branch"
-            git rebase "origin/$branch"
+            git rebase --autostash "origin/$branch"
             git push origin HEAD:"$branch"
           fi
 
@@ -229,6 +255,7 @@ jobs:
         run: |
           if [ -f docs/seo-baseline/easter-egg-warp-mobile-games-validation.md ]; then
             cat docs/seo-baseline/easter-egg-warp-mobile-games-validation.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo 'Easter egg game report was not generated.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f docs/seo-baseline/pacman-mobile-render-validation.md ]; then
+            cat docs/seo-baseline/pacman-mobile-render-validation.md >> "$GITHUB_STEP_SUMMARY"
           fi
