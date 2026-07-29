@@ -238,10 +238,21 @@ def inspect_markup() -> dict[str, Any]:
     }
 
 
+def deterministic_live_evidence(live: dict[str, Any]) -> dict[str, Any]:
+    committed = dict(live)
+    committed["routes"] = []
+    for item in live.get("routes", []):
+        route = dict(item)
+        route.pop("layout_shift_score", None)
+        committed["routes"].append(route)
+    return committed
+
+
 def validate(static_path: Path, live_path: Path, report_path: Path, evidence_path: Path) -> dict[str, Any]:
     baseline = json.loads(BASELINE_EVIDENCE.read_text(encoding="utf-8"))
     static = json.loads(static_path.read_text(encoding="utf-8"))
     live = json.loads(live_path.read_text(encoding="utf-8"))
+    committed_live = deterministic_live_evidence(live)
     archive = archive_card_evidence()
     markup = inspect_markup()
 
@@ -279,7 +290,7 @@ def validate(static_path: Path, live_path: Path, report_path: Path, evidence_pat
         "current_iframes_not_lazy": current_iframes,
         "archive_cards": archive,
         "markup": markup,
-        "live": live,
+        "live": committed_live,
         "checks": checks,
         "passed": len(checks) - len(failures),
         "total": len(checks),
@@ -293,8 +304,8 @@ def validate(static_path: Path, live_path: Path, report_path: Path, evidence_pat
         for family, count in archive["by_family"].items()
     )
     route_rows = "\n".join(
-        f"| {item.get('label')} | {item.get('status')} | {item.get('sized_media_count', 0)} | {item.get('unsized_target_media', 0)} | {item.get('serious_or_critical_nodes', 0)} | {item.get('layout_shift_score', 0):.4f} |"
-        for item in live.get("routes", [])
+        f"| {item.get('label')} | {item.get('status')} | {item.get('sized_media_count', 0)} | {item.get('unsized_target_media', 0)} | {item.get('serious_or_critical_nodes', 0)} |"
+        for item in committed_live.get("routes", [])
     )
 
     report = f"""# Phase 7C Media Dimensions and Loading
@@ -330,11 +341,11 @@ Every targeted archive card now declares `width="320"`, `height="180"`, `loading
 
 ## Browser validation
 
-| Route | HTTP | Sized target media | Unsized target media | Serious/critical axe nodes | Layout-shift evidence |
-|---|---:|---:|---:|---:|---:|
+| Route | HTTP | Sized target media | Unsized target media | Serious/critical axe nodes |
+|---|---:|---:|---:|---:|
 {route_rows}
 
-Layout-shift values are local lab evidence, not production Core Web Vitals field data.
+Raw local layout-shift observations are retained in the downloadable workflow artifact rather than committed, because the values naturally vary between browser runs. They are lab evidence, not production Core Web Vitals field data.
 
 ## Deliberate limits
 
