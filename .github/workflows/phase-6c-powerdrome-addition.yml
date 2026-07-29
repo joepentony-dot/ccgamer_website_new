@@ -129,6 +129,9 @@ jobs:
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/phase6c-protected.sha256"
 
+      - name: Remove Python cache before scope validation
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
       - name: Confirm exact controlled scope
         shell: bash
         run: |
@@ -138,6 +141,7 @@ jobs:
           allowed_exact = {
               ".github/workflows/phase-6c-powerdrome-addition.yml",
               "scripts/phase6c_add_powerdrome.py",
+              "docs/seo-baseline/phase-6c-powerdrome-intake.md",
               "docs/seo-baseline/phase-6c-powerdrome-addition.md",
               "games/games.json",
               "games/games-index.json",
@@ -147,7 +151,9 @@ jobs:
               "games/powerdrome.html",
               "games/powerdrome/index.html",
               "games/downloads/index.html",
+              "games/years/index.html",
               "games/years/1989/index.html",
+              "games/platforms/index.html",
               "games/platforms/amiga/index.html",
               "resources/images/thumbnails/all/powerdrome_phase6c.jpg",
               "js/developer-pages.js",
@@ -164,30 +170,16 @@ jobs:
               "docs/seo-baseline/phase-4d-year-platform-validation.md",
               "docs/seo-baseline/phase-6b-reliable-games-publishing.md",
           }
-          allowed_prefixes = (
-              "games/publishers/",
-              "games/developers/",
-          )
-          changed = sorted(set(subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
-          ).splitlines()) | set(subprocess.check_output(
-              ["git", "ls-files", "--others", "--exclude-standard"], text=True
-          ).splitlines()))
-
-          unexpected = [
-              path for path in changed
-              if path not in allowed_exact and not path.startswith(allowed_prefixes)
-          ]
+          allowed_prefixes = ("games/publishers/", "games/developers/")
+          tracked = subprocess.check_output(["git", "diff", "--name-only", "origin/main"], text=True).splitlines()
+          untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed_exact and not path.startswith(allowed_prefixes)]
           if unexpected:
               raise SystemExit(f"Unexpected Phase 6C paths: {unexpected}")
 
-          protected_public = {
-              "index.html",
-              "home.html",
-              "resources/css/intro.css",
-              "js/index-intro.js",
-          }
-          if protected_public.intersection(changed):
+          protected = {"index.html", "home.html", "resources/css/intro.css", "js/index-intro.js"}
+          if protected.intersection(changed):
               raise SystemExit("A protected public file entered the Phase 6C diff.")
 
           existing_game_pages = []
@@ -208,9 +200,6 @@ jobs:
 
           print(f"Validated controlled Phase 6C scope ({len(changed)} files).")
           PY
-
-      - name: Remove Python cache
-        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
 
       - name: Commit controlled source and generated output
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
