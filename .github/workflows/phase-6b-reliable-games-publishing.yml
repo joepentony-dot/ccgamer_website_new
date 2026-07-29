@@ -214,13 +214,6 @@ jobs:
         shell: bash
         run: |
           git add \
-            .github/workflows/games-publishing.yml \
-            .github/workflows/phase-6b-reliable-games-publishing.yml \
-            .github/workflows/publisher-archives.yml \
-            .github/workflows/developer-archives.yml \
-            .github/workflows/composer-archives.yml \
-            .github/workflows/game-downloads.yml \
-            .github/workflows/year-platform-archives.yml \
             admin/GAMES_EDITOR.md \
             admin/games-editor.html \
             admin/js/games-editor.js \
