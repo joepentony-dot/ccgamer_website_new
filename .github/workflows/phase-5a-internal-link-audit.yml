@@ -1,0 +1,149 @@
+name: Phase 5A Internal Linking and Orphan Page Audit
+
+# Final settled-head validation trigger; the audit remains read-only.
+# Read-only public-site audit. Only the concise Markdown report may be committed.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/phase5a_internal_link_audit.py"
+      - ".github/workflows/phase-5a-internal-link-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-5a-internal-links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record public-file hashes
+        shell: bash
+        run: |
+          git ls-files -z -- '*.html' '*.css' '*.js' 'games/games.json' \
+            | sort -z \
+            | xargs -0 sha256sum \
+            > /tmp/phase5a-public.sha256
+
+      - name: Validate audit tooling
+        run: python -m py_compile scripts/phase5a_internal_link_audit.py
+
+      - name: Run Phase 5A audit
+        run: |
+          python scripts/phase5a_internal_link_audit.py \
+            --json-output "$RUNNER_TEMP/phase-5a-internal-link-evidence.json" \
+            --report-output docs/seo-baseline/phase-5a-internal-link-audit.md
+
+      - name: Verify audit outputs
+        shell: bash
+        run: |
+          test -s "$RUNNER_TEMP/phase-5a-internal-link-evidence.json"
+          test -s docs/seo-baseline/phase-5a-internal-link-audit.md
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          evidence = json.loads(
+              Path(os.environ["RUNNER_TEMP"], "phase-5a-internal-link-evidence.json")
+              .read_text(encoding="utf-8")
+          )
+          summary = evidence.get("summary", {})
+          required = {
+              "public_html_pages",
+              "indexable_pages",
+              "orphan_indexable_pages",
+              "weakly_linked_indexable_pages",
+              "broken_internal_link_edges",
+              "intentional_canonical_game_wrapper_redirect_destinations",
+              "other_redirect_destination_count",
+              "noindex_destination_count",
+              "canonical_game_pages_expected",
+              "canonical_game_pages_missing",
+              "games_without_meaningful_static_discovery",
+          }
+          missing = sorted(required.difference(summary))
+          if missing:
+              raise SystemExit(f"Phase 5A summary is missing keys: {missing}")
+          if summary["public_html_pages"] < 1000:
+              raise SystemExit("Phase 5A public HTML scope is unexpectedly small")
+          if summary["canonical_game_pages_expected"] != 651:
+              raise SystemExit(
+                  f"Expected 651 canonical game records, found {summary['canonical_game_pages_expected']}"
+              )
+          if evidence.get("sitemap_errors"):
+              raise SystemExit(f"Sitemap parse errors: {evidence['sitemap_errors']}")
+          print(json.dumps(summary, indent=2))
+          PY
+
+      - name: Upload detailed link graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-5a-internal-link-evidence
+          path: ${{ runner.temp }}/phase-5a-internal-link-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Remove Python cache
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm public files are unchanged
+        run: sha256sum --check /tmp/phase5a-public.sha256
+
+      - name: Confirm exact audit scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-5a-internal-link-audit.yml",
+              "scripts/phase5a_internal_link_audit.py",
+              "docs/seo-baseline/phase-5a-internal-link-audit.md",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          unexpected = sorted({*tracked, *untracked}.difference(allowed))
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 5A paths: {unexpected}")
+          print(f"Validated Phase 5A scope: {sorted({*tracked, *untracked})}")
+          PY
+
+      - name: Commit concise Phase 5A report
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add docs/seo-baseline/phase-5a-internal-link-audit.md
+
+          if git diff --cached --quiet; then
+            echo "Phase 5A report is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 5A internal linking audit"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
