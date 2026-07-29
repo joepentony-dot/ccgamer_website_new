@@ -7,6 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+# This wrapper is intentionally retained for settled-head and future repeat checks.
 ROOT = Path(__file__).resolve().parents[1]
 PACMAN_PATH = "resources/audio/easter-eggs/pacman.html"
 
