@@ -89,14 +89,14 @@ jobs:
       - name: Run current catalogue publishing chain
         run: |
           node scripts/rebuild-games.js
-          git checkout -- seo-audit-report.md
+          rm -f seo-audit-report.md
 
       - name: Verify deterministic current-catalogue output
         shell: bash
         run: |
           git diff --binary > "$RUNNER_TEMP/first.diff"
           node scripts/rebuild-games.js
-          git checkout -- seo-audit-report.md
+          rm -f seo-audit-report.md
           git diff --binary > "$RUNNER_TEMP/second.diff"
           cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
           git diff --check
