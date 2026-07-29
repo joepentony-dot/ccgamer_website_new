@@ -81,6 +81,9 @@ function validateInternalLinks() {
     "--json-output", jsonOutput,
     "--report-output", reportOutput,
   ], { label: "Audit generated internal links" });
+  pythonScript("validate-game-publishing-link-audit.py", [jsonOutput], {
+    label: "Reject game publishing link regressions",
+  });
 }
 
 function publishGames() {
@@ -98,7 +101,6 @@ function publishGames() {
   nodeScript("integrate-year-platform-discovery.js", [], { label: "Integrate year and platform discovery" });
   nodeScript("generate-downloads-page.js", [], { label: "Generate downloads archive" });
   nodeScript("update-downloads-static-pages.js", [], { label: "Update downloads registry entries" });
-  nodeScript("generate-retro-pages.js", [], { label: "Refresh data-driven retro pages" });
   nodeScript("generate-sitemaps.js", [], { label: "Generate all sitemaps" });
 
   nodeScript("validate-game-catalogue.js", [], { label: "Validate generated game catalogue outputs" });
