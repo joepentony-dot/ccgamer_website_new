@@ -1,0 +1,316 @@
+name: Refresh Composer Archives
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "music/index.html"
+      - "music/composer.html"
+      - "music/composers/**"
+      - "music/*/index.html"
+      - "js/music-composer-pages.js"
+      - "js/music-composer-utils.js"
+      - "scripts/composer-utils.js"
+      - "scripts/generate-composer-pages.js"
+      - "scripts/enable-static-composer-routes.js"
+      - "scripts/preserve-sitemap-lastmods.js"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/composer-archives.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "music/index.html"
+      - "music/composer.html"
+      - "music/composers/**"
+      - "music/*/index.html"
+      - "js/music-composer-pages.js"
+      - "js/music-composer-utils.js"
+      - "scripts/composer-utils.js"
+      - "scripts/generate-composer-pages.js"
+      - "scripts/enable-static-composer-routes.js"
+      - "scripts/preserve-sitemap-lastmods.js"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/composer-archives.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: composer-archives-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json music/composer.html > /tmp/phase3c-protected.sha256
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const crypto = require("crypto");
+          const records = [];
+          for (const entry of fs.readdirSync("music", { withFileTypes: true })) {
+            if (!entry.isDirectory() || entry.name === "composers") continue;
+            const file = path.join("music", entry.name, "index.html");
+            if (!fs.existsSync(file)) continue;
+            const html = fs.readFileSync(file, "utf8");
+            if (!/data-ccg-page\s*=\s*(["'])music-composer\1/i.test(html)) continue;
+            records.push({
+              file,
+              sha256: crypto.createHash("sha256").update(html).digest("hex")
+            });
+          }
+          fs.writeFileSync("/tmp/phase3c-existing-composers.json", JSON.stringify(records, null, 2));
+          console.log(`Protected ${records.length} existing composer pages.`);
+          NODE
+
+      - name: Snapshot baseline sitemaps
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          mkdir -p /tmp/phase3c-sitemap-baseline
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
+
+          if [ -n "$BASE_SHA" ] && [ "$BASE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            git fetch --no-tags --depth=1 origin "$BASE_SHA"
+            for file in sitemap.xml sitemap-pages.xml sitemap-games.xml; do
+              git show "$BASE_SHA:$file" > "/tmp/phase3c-sitemap-baseline/$file"
+            done
+          else
+            cp sitemap.xml sitemap-pages.xml sitemap-games.xml /tmp/phase3c-sitemap-baseline/
+          fi
+
+      - name: Validate Phase 3C scripts
+        run: |
+          node --check scripts/composer-utils.js
+          node --check scripts/generate-composer-pages.js
+          node --check scripts/enable-static-composer-routes.js
+          node --check scripts/preserve-sitemap-lastmods.js
+          node --check js/music-composer-pages.js
+
+      - name: Enable static composer routing
+        run: node scripts/enable-static-composer-routes.js
+
+      - name: Generate composer archives
+        run: node scripts/generate-composer-pages.js
+
+      - name: Rebuild sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Preserve historical sitemap modification dates
+        run: node scripts/preserve-sitemap-lastmods.js /tmp/phase3c-sitemap-baseline
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Validate composer archive output
+        run: |
+          node <<'NODE'
+          const fs = require("fs");
+          const path = require("path");
+          const { buildComposerGroups, normalizeComposerKey } = require("./scripts/composer-utils");
+          const { INDEXABLE_MIN_GAMES } = require("./scripts/generate-composer-pages");
+
+          const SITE = "https://www.cheekycommodoregamer.co.uk";
+          const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
+          const groups = buildComposerGroups(games);
+          const metadata = JSON.parse(fs.readFileSync("music/composers/composers.json", "utf8"));
+          const staticPages = JSON.parse(fs.readFileSync("tools/seo/static-pages.json", "utf8"));
+          const sitemap = fs.readFileSync("sitemap-pages.xml", "utf8");
+          const hub = fs.readFileSync("music/composers/index.html", "utf8");
+          const musicHub = fs.readFileSync("music/index.html", "utf8");
+          const fallback = fs.readFileSync("music/composer.html", "utf8");
+          const client = fs.readFileSync("js/music-composer-pages.js", "utf8");
+          const problems = [];
+
+          const creditedMetadata = metadata.filter((entry) => entry.credited);
+          if (creditedMetadata.length !== groups.length) {
+            problems.push(`Credited metadata count ${creditedMetadata.length} does not match source groups ${groups.length}`);
+          }
+          if (!fallback.includes('name="robots" content="noindex,follow"')) {
+            problems.push("Query-string fallback is no longer noindex,follow");
+          }
+          if (!client.includes("knownComposer || allowDedicated || DEDICATED_COMPOSER_SLUGS.has(slug)")) {
+            problems.push("Known composer records do not route to static pages");
+          }
+          if (!hub.includes('data-static-composer-fallback="true"') || !musicHub.includes('data-static-composer-fallback="true"')) {
+            problems.push("Static composer fallbacks are missing from one or both music hubs");
+          }
+          if (!hub.includes('name="robots" content="index,follow"') || !musicHub.includes('name="robots" content="index,follow"')) {
+            problems.push("A music hub is not explicitly indexable");
+          }
+
+          const sourceByKey = new Map(groups.map((group) => [normalizeComposerKey(group.name), group]));
+          for (const entry of metadata) {
+            const file = path.join("music", entry.slug, "index.html");
+            const canonical = `${SITE}/music/${entry.slug}/`;
+            const staticEntry = `music/${entry.slug}/index.html`;
+            if (!fs.existsSync(file)) {
+              problems.push(`Missing composer route: ${entry.slug}`);
+              continue;
+            }
+            const html = fs.readFileSync(file, "utf8");
+            if (!html.includes(`rel="canonical" href="${canonical}"`)) {
+              problems.push(`Canonical mismatch: ${entry.slug}`);
+            }
+            if (!hub.includes(`href="/music/${entry.slug}/"`) || !musicHub.includes(`href="/music/${entry.slug}/"`)) {
+              problems.push(`Static hub link missing: ${entry.slug}`);
+            }
+            if (staticPages.includes(staticEntry) !== Boolean(entry.indexable)) {
+              problems.push(`Static-page membership mismatch: ${entry.slug}`);
+            }
+            if (sitemap.includes(`<loc>${canonical}</loc>`) !== Boolean(entry.indexable)) {
+              problems.push(`Sitemap membership mismatch: ${entry.slug}`);
+            }
+
+            if (entry.generated) {
+              const expectedIndexable = entry.count >= INDEXABLE_MIN_GAMES;
+              if (!html.includes('data-generated-composer="true"')) {
+                problems.push(`Generated marker missing: ${entry.slug}`);
+              }
+              if (!html.includes(`name="robots" content="${expectedIndexable ? "index,follow" : "noindex,follow"}"`)) {
+                problems.push(`Generated robots mismatch: ${entry.slug}`);
+              }
+              const source = sourceByKey.get(normalizeComposerKey(entry.name));
+              if (!source) {
+                problems.push(`Generated route has no source group: ${entry.slug}`);
+              } else {
+                for (const game of source.games) {
+                  if (!html.includes(`href="/games/${game.slug}/"`)) {
+                    problems.push(`${entry.slug} missing static game link: ${game.slug}`);
+                  }
+                }
+              }
+            } else if (html.includes('data-generated-composer="true"')) {
+              problems.push(`Existing page was replaced by generated output: ${entry.slug}`);
+            }
+          }
+
+          const chris = metadata.find((entry) => entry.name === "Chris Hülsbeck");
+          if (!chris || chris.slug !== "chris-huelsbeck") {
+            problems.push("Chris Hülsbeck alias normalization did not retain the existing route");
+          }
+          if (fs.existsSync("music/chris-hulsbeck/index.html")) {
+            problems.push("Duplicate Chris Hulsbeck route was generated");
+          }
+
+          if (problems.length) throw new Error(problems.join("\n"));
+          console.log(JSON.stringify({
+            gameRecords: games.length,
+            creditedComposerEntities: groups.length,
+            staticComposerRoutes: metadata.length,
+            generatedRoutes: metadata.filter((entry) => entry.generated).length,
+            indexableRoutes: metadata.filter((entry) => entry.indexable).length,
+            noindexRoutes: metadata.filter((entry) => !entry.indexable).length
+          }, null, 2));
+          NODE
+
+      - name: Confirm protected files are unchanged
+        run: |
+          sha256sum --check /tmp/phase3c-protected.sha256
+          node <<'NODE'
+          const fs = require("fs");
+          const crypto = require("crypto");
+          const records = JSON.parse(fs.readFileSync("/tmp/phase3c-existing-composers.json", "utf8"));
+          const problems = [];
+          for (const record of records) {
+            if (!fs.existsSync(record.file)) {
+              problems.push(`Existing composer page was removed: ${record.file}`);
+              continue;
+            }
+            const current = fs.readFileSync(record.file);
+            const digest = crypto.createHash("sha256").update(current).digest("hex");
+            if (digest !== record.sha256) problems.push(`Existing composer page changed: ${record.file}`);
+          }
+          if (problems.length) throw new Error(problems.join("\n"));
+          console.log(`Verified ${records.length} existing composer pages byte-for-byte.`);
+          NODE
+
+      - name: Confirm bounded generated scope
+        run: |
+          python - <<'PY'
+          import pathlib
+          import subprocess
+
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          paths = []
+          for line in output.splitlines():
+              item = line[3:]
+              if " -> " in item:
+                  item = item.split(" -> ", 1)[1]
+              paths.append(item)
+
+          allowed_exact = {
+              "docs/seo-baseline/phase-3c-composer-archives.md",
+              "js/music-composer-pages.js",
+              "music/index.html",
+              "music/composers/index.html",
+              "music/composers/composers.json",
+              "sitemap.xml",
+              "sitemap-games.xml",
+              "sitemap-pages.xml",
+              "tools/seo/static-pages.json",
+          }
+          unexpected = []
+          for item in paths:
+              if item in allowed_exact:
+                  continue
+              path = pathlib.Path(item)
+              if len(path.parts) == 3 and path.parts[0] == "music" and path.parts[2] == "index.html":
+                  text = path.read_text(encoding="utf-8", errors="ignore") if path.exists() else ""
+                  if 'data-generated-composer="true"' in text:
+                      continue
+              unexpected.append(item)
+
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 3C generated paths: {sorted(unexpected)}")
+          print(f"Validated {len(paths)} generated Phase 3C paths.")
+          PY
+
+      - name: Commit generated composer and sitemap outputs
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add js/music-composer-pages.js music tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml docs/seo-baseline/phase-3c-composer-archives.md
+
+          if git diff --cached --quiet; then
+            echo "Composer archives are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate Phase 3C composer archives"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"

@@ -87,18 +87,28 @@
     return normalizeComposerKey(value);
   }
 
+  function toComposerList(value) {
+    if (Array.isArray(value)) {
+      return value;
+    }
+    if (typeof value === "string" && value.trim()) {
+      return [value];
+    }
+    return [];
+  }
+
   function getComposerNamesFromGame(game) {
     if (!game || typeof game !== "object") {
       return [];
     }
 
     const credits = game.credits && typeof game.credits === "object" ? game.credits : null;
-    const fromCredits = credits && Array.isArray(credits.musician) ? credits.musician : [];
-    const fromMusicBy = Array.isArray(game.musicBy) ? game.musicBy : [];
-    const fromComposers = Array.isArray(game.composers) ? game.composers : [];
-    const fromComposer = typeof game.composer === "string" ? [game.composer] : [];
+    const fromCredits = toComposerList(credits?.musician);
+    const fromMusicBy = toComposerList(game.musicBy);
+    const fromComposers = toComposerList(game.composers);
+    const fromComposer = toComposerList(game.composer);
     const fromLegacyMusicNames = Array.isArray(game.music)
-      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac)$/i.test(item))
+      ? game.music.filter((item) => typeof item === "string" && /[a-zA-Z]/.test(item) && !/\.(mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i.test(item))
       : [];
 
     return [...fromCredits, ...fromMusicBy, ...fromComposers, ...fromComposer, ...fromLegacyMusicNames]
@@ -219,10 +229,11 @@
   }
 
   function getComposerUrl(composerOrSlug, composerName, options = {}) {
-    const slug = typeof composerOrSlug === "object" && composerOrSlug
+    const knownComposer = typeof composerOrSlug === "object" && composerOrSlug;
+    const slug = knownComposer
       ? slugifyName(composerOrSlug.slug || composerOrSlug.name)
       : slugifyName(composerOrSlug);
-    const name = typeof composerOrSlug === "object" && composerOrSlug
+    const name = knownComposer
       ? String(composerOrSlug.name || composerName || "").trim()
       : String(composerName || "").trim();
     const { allowDedicated = false } = options;
@@ -232,7 +243,7 @@
       return featuredUrl;
     }
 
-    if (allowDedicated && slug && DEDICATED_COMPOSER_SLUGS.has(slug)) {
+    if (slug && (knownComposer || allowDedicated || DEDICATED_COMPOSER_SLUGS.has(slug))) {
       return `${resolveSiteRoot()}music/${slug}/`;
     }
 
