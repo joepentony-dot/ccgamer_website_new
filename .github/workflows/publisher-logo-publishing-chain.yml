@@ -1,0 +1,139 @@
+name: Publisher Logo Publishing Chain
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/rebuild-games.js"
+      - "scripts/apply-publisher-logos.js"
+      - "scripts/validate-publisher-logo-output.js"
+      - "scripts/generate-publisher-pages.js"
+      - "resources/images/publishers/**"
+      - ".github/workflows/publisher-logo-publishing-chain.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publisher-logo-chain-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/publisher-logo-protected.sha256"
+
+      - name: Validate scripts
+        run: |
+          node --check scripts/rebuild-games.js
+          node --check scripts/apply-publisher-logos.js
+          node --check scripts/validate-publisher-logo-output.js
+
+      - name: Record missing logo markup before rebuild
+        shell: bash
+        run: |
+          BEFORE_INDEX="$(grep -c 'data-publisher-logo=' games/publishers/index.html || true)"
+          BEFORE_PAGES="$(grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null | wc -l | tr -d ' ')"
+          echo "before_index=$BEFORE_INDEX" >> "$GITHUB_ENV"
+          echo "before_pages=$BEFORE_PAGES" >> "$GITHUB_ENV"
+          echo "Publisher logo markup before rebuild: index=$BEFORE_INDEX pages=$BEFORE_PAGES"
+
+      - name: Run authoritative rebuild
+        run: |
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+
+      - name: Validate publisher logo output
+        run: node scripts/validate-publisher-logo-output.js
+
+      - name: Verify deterministic repeat
+        shell: bash
+        run: |
+          git diff --binary > "$RUNNER_TEMP/publisher-logo-first.diff"
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          git diff --binary > "$RUNNER_TEMP/publisher-logo-second.diff"
+          cmp "$RUNNER_TEMP/publisher-logo-first.diff" "$RUNNER_TEMP/publisher-logo-second.diff"
+          git diff --check
+
+      - name: Confirm logo markup was restored
+        shell: bash
+        run: |
+          AFTER_INDEX="$(grep -c 'data-publisher-logo=' games/publishers/index.html || true)"
+          AFTER_PAGES="$(grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null | wc -l | tr -d ' ')"
+          echo "Publisher logo markup after rebuild: index=$AFTER_INDEX pages=$AFTER_PAGES"
+          test "$AFTER_INDEX" -gt 0
+          test "$AFTER_PAGES" -gt 0
+          if test "$before_index" -eq 0; then
+            test "$AFTER_INDEX" -gt "$before_index"
+          fi
+          if test "$before_pages" -eq 0; then
+            test "$AFTER_PAGES" -gt "$before_pages"
+          fi
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/publisher-logo-protected.sha256"
+
+      - name: Confirm generated scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          changed = subprocess.check_output(
+              ["git", "diff", "--name-only"], text=True
+          ).splitlines()
+          unexpected = [
+              path for path in changed
+              if not (
+                  path.startswith("games/publishers/")
+                  or path in {
+                      "games/archive-navigation.json",
+                      "tools/seo/static-pages.json",
+                      "sitemap.xml",
+                      "sitemap-pages.xml",
+                      "sitemap-games.xml",
+                  }
+                  or path.startswith("docs/seo-baseline/")
+              )
+          ]
+          if unexpected:
+              raise SystemExit(f"Unexpected generated paths: {unexpected}")
+          if protected.intersection(changed):
+              raise SystemExit("A protected file changed during publisher-logo validation.")
+          print(f"Validated generated publisher-logo scope ({len(changed)} files).")
+          PY
+          git diff --check
