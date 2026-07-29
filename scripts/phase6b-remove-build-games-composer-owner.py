@@ -90,11 +90,13 @@ def update_composer_generator() -> None:
 
 def update_year_platform_validator() -> None:
     source = VALIDATOR_TARGET.read_text(encoding="utf-8")
-    old = '''    if (yearMembershipLinks !== 651) problems.push(`Year membership total is ${yearMembershipLinks}; expected 651`);
+    original = source
+
+    fixed_totals = '''    if (yearMembershipLinks !== 651) problems.push(`Year membership total is ${yearMembershipLinks}; expected 651`);
     if (platformLinkTotals.get("c64") !== 552) problems.push(`C64 membership total is ${platformLinkTotals.get("c64")}; expected 552`);
     if (platformLinkTotals.get("amiga") !== 99) problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected 99`);
 '''
-    new = '''    const expectedYearMembershipLinks = archiveData.games.length;
+    dynamic_totals = '''    const expectedYearMembershipLinks = archiveData.games.length;
     const expectedC64MembershipLinks = platforms.find((group) => group.key === "c64")?.games.length || 0;
     const expectedAmigaMembershipLinks = platforms.find((group) => group.key === "amiga")?.games.length || 0;
     if (yearMembershipLinks !== expectedYearMembershipLinks) {
@@ -107,13 +109,49 @@ def update_year_platform_validator() -> None:
         problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected ${expectedAmigaMembershipLinks}`);
     }
 '''
-    if new in source:
-        print("Year/platform membership validation already uses current data.")
-        return
-    if source.count(old) != 1:
-        raise SystemExit("Could not isolate fixed year/platform membership totals.")
-    VALIDATOR_TARGET.write_text(source.replace(old, new, 1), encoding="utf-8")
-    print("Replaced fixed year/platform membership totals with current-data totals.")
+    if fixed_totals in source:
+        source = source.replace(fixed_totals, dynamic_totals, 1)
+    elif dynamic_totals not in source:
+        raise SystemExit("Could not verify year/platform membership validation.")
+
+    ordered_registry = '''    compareExactList(comparableCurrent, expectedForeign, "Non-year/platform registry order", problems);
+'''
+    membership_registry = '''    const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
+    const unexpectedForeign = comparableCurrent.filter((entry) => !expectedForeign.includes(entry));
+    if (missingForeign.length) problems.push(`Non-year/platform registry entries missing: ${missingForeign.join(", ")}`);
+    if (unexpectedForeign.length) problems.push(`Unexpected non-year/platform registry entries: ${unexpectedForeign.join(", ")}`);
+'''
+    if ordered_registry in source:
+        source = source.replace(ordered_registry, membership_registry, 1)
+    elif membership_registry not in source:
+        raise SystemExit("Could not verify foreign registry membership validation.")
+
+    ordered_sitemap = '''    compareExactList(comparableCurrent, expectedLocs, `${label} URL order`, problems);
+'''
+    membership_sitemap = '''    const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
+    const unexpectedLocs = comparableCurrent.filter((url) => !expectedLocs.includes(url));
+    if (missingLocs.length) problems.push(`${label} URLs missing: ${missingLocs.join(", ")}`);
+    if (unexpectedLocs.length) problems.push(`Unexpected ${label} URLs: ${unexpectedLocs.join(", ")}`);
+'''
+    if ordered_sitemap in source:
+        source = source.replace(ordered_sitemap, membership_sitemap, 1)
+    elif membership_sitemap not in source:
+        raise SystemExit("Could not verify foreign sitemap membership validation.")
+
+    source = source.replace(
+        "| Existing non-archive registry entries preserved in order |",
+        "| Existing non-archive registry entries preserved by exact membership |",
+    )
+    source = source.replace(
+        "- Stable-order checks for registry entries and sitemap URLs owned by other workflows.",
+        "- Exact membership checks for registry entries and sitemap URLs owned by other workflows; Phase 6B separately enforces deterministic current ordering.",
+    )
+
+    if source != original:
+        VALIDATOR_TARGET.write_text(source, encoding="utf-8")
+        print("Updated Phase 4D validation for current-data totals and intentional Phase 6B ordering.")
+    else:
+        print("Phase 4D validation already supports Phase 6B catalogue growth and ordering.")
 
 
 def update_rebuild_games() -> None:
