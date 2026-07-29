@@ -531,6 +531,7 @@ if (IS_ADMIN_PATH) {
         lastFocusedElement: null,
         modalViewportCleanup: null,
         backdropUnlockTimer: null,
+        dismissLockUntil: 0,
     };
 
     const konamiSequence = [
@@ -1228,6 +1229,23 @@ if (IS_ADMIN_PATH) {
 
         document.body.appendChild(modal);
         secretState.modal = modal;
+
+        /* CCG EASTER EGG THIRD CLICK STABILITY */
+        const blockOpeningGesture = event => {
+            if (!modal.classList.contains("is-open")) return false;
+            if (Date.now() >= secretState.dismissLockUntil) return false;
+
+            if (event?.preventDefault) event.preventDefault();
+            if (event?.stopImmediatePropagation) event.stopImmediatePropagation();
+            return true;
+        };
+
+        ["pointerdown", "pointerup", "mousedown", "mouseup", "touchend", "click"].forEach(eventName => {
+            modal.addEventListener(eventName, event => {
+                blockOpeningGesture(event);
+            }, { capture: true, passive: false });
+        });
+
         modal.addEventListener("pointerdown", event => {
             if (event.target !== modal) return;
             if (!modal.dataset.ccgSecretModalLocked) return;
@@ -1306,6 +1324,7 @@ if (IS_ADMIN_PATH) {
         if (content) content.scrollTop = 0;
 
         delete modal.dataset.ccgSecretModalLocked;
+        secretState.dismissLockUntil = Date.now() + 1000;
         if (secretState.backdropUnlockTimer) {
             clearTimeout(secretState.backdropUnlockTimer);
             secretState.backdropUnlockTimer = null;
@@ -1325,8 +1344,9 @@ if (IS_ADMIN_PATH) {
 
             secretState.backdropUnlockTimer = setTimeout(() => {
                 modal.dataset.ccgSecretModalLocked = "true";
+                secretState.dismissLockUntil = 0;
                 secretState.backdropUnlockTimer = null;
-            }, 900);
+            }, 1000);
         });
     }
 
@@ -1337,6 +1357,7 @@ if (IS_ADMIN_PATH) {
         secretState.modal.classList.remove("is-open");
         secretState.modal.setAttribute("aria-hidden", "true");
         delete secretState.modal.dataset.ccgSecretModalLocked;
+        secretState.dismissLockUntil = 0;
 
         if (secretState.backdropUnlockTimer) {
             clearTimeout(secretState.backdropUnlockTimer);
