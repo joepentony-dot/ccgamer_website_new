@@ -8,7 +8,8 @@
 
 The repository is ready to move from architecture repair into measured optimisation work.
 
-- Open pull requests after cleanup: **0**
+- Stale or legacy open pull requests after cleanup: **0**
+- The Phase 6D documentation PR is the only intended active PR after this report is opened.
 - Real games in `games/games.json`: **651**
 - Powerdrome published or retained in `main`: **No**
 - Games Editor publishing readiness: **READY**
