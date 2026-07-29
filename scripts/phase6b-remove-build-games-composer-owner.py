@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BUILD_TARGET = ROOT / "scripts" / "build-games.js"
 REBUILD_TARGET = ROOT / "scripts" / "rebuild-games.js"
 COMPOSER_TARGET = ROOT / "scripts" / "generate-composer-pages.js"
+VALIDATOR_TARGET = ROOT / "scripts" / "validate-year-platform-discovery.js"
 TRANSACTION_TARGET = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
 
 
@@ -87,6 +88,34 @@ def update_composer_generator() -> None:
     print("Excluded generated composer routes from curated-page detection.")
 
 
+def update_year_platform_validator() -> None:
+    source = VALIDATOR_TARGET.read_text(encoding="utf-8")
+    old = '''    if (yearMembershipLinks !== 651) problems.push(`Year membership total is ${yearMembershipLinks}; expected 651`);
+    if (platformLinkTotals.get("c64") !== 552) problems.push(`C64 membership total is ${platformLinkTotals.get("c64")}; expected 552`);
+    if (platformLinkTotals.get("amiga") !== 99) problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected 99`);
+'''
+    new = '''    const expectedYearMembershipLinks = archiveData.games.length;
+    const expectedC64MembershipLinks = platforms.find((group) => group.key === "c64")?.games.length || 0;
+    const expectedAmigaMembershipLinks = platforms.find((group) => group.key === "amiga")?.games.length || 0;
+    if (yearMembershipLinks !== expectedYearMembershipLinks) {
+        problems.push(`Year membership total is ${yearMembershipLinks}; expected ${expectedYearMembershipLinks}`);
+    }
+    if (platformLinkTotals.get("c64") !== expectedC64MembershipLinks) {
+        problems.push(`C64 membership total is ${platformLinkTotals.get("c64")}; expected ${expectedC64MembershipLinks}`);
+    }
+    if (platformLinkTotals.get("amiga") !== expectedAmigaMembershipLinks) {
+        problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected ${expectedAmigaMembershipLinks}`);
+    }
+'''
+    if new in source:
+        print("Year/platform membership validation already uses current data.")
+        return
+    if source.count(old) != 1:
+        raise SystemExit("Could not isolate fixed year/platform membership totals.")
+    VALIDATOR_TARGET.write_text(source.replace(old, new, 1), encoding="utf-8")
+    print("Replaced fixed year/platform membership totals with current-data totals.")
+
+
 def update_rebuild_games() -> None:
     source = REBUILD_TARGET.read_text(encoding="utf-8")
     updated = source.replace('  ["generate-retro-pages.js"],\n', "")
@@ -133,6 +162,7 @@ def update_transaction() -> None:
 def main() -> None:
     update_build_games()
     update_composer_generator()
+    update_year_platform_validator()
     update_rebuild_games()
     update_transaction()
 
