@@ -52,11 +52,13 @@ def restore_original_newlines(newline_styles: dict[str, bytes]) -> None:
 
 
 def patch_pacman_bytes(original: bytes) -> None:
-    old = b"<html>"
-    new = b'<html lang="en">'
-    if original.count(old) != 1:
-        raise SystemExit("Expected exactly one Pac-Man <html> opening tag.")
-    (ROOT / PACMAN_PATH).write_bytes(original.replace(old, new, 1))
+    if original.count(b"<html>\r\n") == 1:
+        updated = original.replace(b"<html>\r\n", b'<html lang="en">\n', 1)
+    elif original.count(b"<html>\n") == 1:
+        updated = original.replace(b"<html>\n", b'<html lang="en">\n', 1)
+    else:
+        raise SystemExit("Expected exactly one Pac-Man <html> opening line.")
+    (ROOT / PACMAN_PATH).write_bytes(updated)
 
 
 def main() -> None:
