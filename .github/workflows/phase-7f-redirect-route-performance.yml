@@ -7,6 +7,8 @@ on:
     paths:
       - ".github/workflows/phase-7f-redirect-route-performance.yml"
       - "scripts/apply-phase7f-redirect-route-performance.py"
+      - "docs/seo-baseline/phase-7f-redirect-route-performance.md"
+      - "docs/seo-baseline/phase-7f-redirect-route-performance-evidence.json"
   workflow_dispatch:
 
 permissions:
