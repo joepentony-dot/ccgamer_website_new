@@ -1,0 +1,961 @@
+{
+  "phase": "8B",
+  "generatedAt": "2026-07-29T21:03:34.034Z",
+  "methodology": "Local baseline and candidate worktrees; 390x844 cold mobile browser runs with 4x CPU slowdown and throttled network; two Lighthouse mobile runs per variant.",
+  "browser": {
+    "baseline": {
+      "c64": [
+        {
+          "finalUrl": "http://127.0.0.1:4173/home.html?phase8b=baseline-c64-1",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 3447.899999999994,
+            "duration": 1442.300000000003,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "css"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 3448.0999999999985,
+            "duration": 1999.699999999997,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "css"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4904,
+              "renderTime": 4904,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/baseline-c64-1-hero.png",
+            "sha256": "21f67631472d674062bb333409f48f55bbca68a02970f9708b2cdd533e710dea"
+          },
+          "status": 200
+        },
+        {
+          "finalUrl": "http://127.0.0.1:4173/home.html?phase8b=baseline-c64-2",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 3721.7000000000044,
+            "duration": 1068.5999999999913,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "css"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 3722.5000000000073,
+            "duration": 1753.5999999999913,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "css"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4812,
+              "renderTime": 4812,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/baseline-c64-2-hero.png",
+            "sha256": "21f67631472d674062bb333409f48f55bbca68a02970f9708b2cdd533e710dea"
+          },
+          "status": 200
+        },
+        {
+          "finalUrl": "http://127.0.0.1:4173/home.html?phase8b=baseline-c64-3",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 3727.699999999997,
+            "duration": 1183.6000000000058,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "css"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 3728.399999999994,
+            "duration": 1655,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "css"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4932,
+              "renderTime": 4932,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/baseline-c64-3-hero.png",
+            "sha256": "7280575b0a8be93dfa8da6b46c91165dfa9980db336dbdaf0d7a3e74db595872"
+          },
+          "status": 200
+        }
+      ],
+      "amiga": [
+        {
+          "finalUrl": "http://127.0.0.1:4173/home.html?phase8b=baseline-amiga-1",
+          "htmlMode": "amiga",
+          "bodyMode": "amiga",
+          "heroMode": "amiga",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "(min-width: 1024px)",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 3706.300000000003,
+            "duration": 1320.300000000003,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "css"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 3707.199999999997,
+            "duration": 1647.9000000000087,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "css"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4173/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 5236,
+              "renderTime": 5236,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4173/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.22685780593888566
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/baseline-amiga-1-hero.png",
+            "sha256": "5ef146b1a2faf75a2f704ea027ff66222fd179e63f9fa000e92de383f68a9a9a"
+          },
+          "status": 200
+        }
+      ]
+    },
+    "candidate": {
+      "c64": [
+        {
+          "finalUrl": "http://127.0.0.1:4174/home.html?phase8b=candidate-c64-1",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 194.79999999998836,
+            "duration": 923.3000000000029,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "link"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 195.59999999999127,
+            "duration": 1523.699999999997,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "link"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4716,
+              "renderTime": 4716,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/candidate-c64-1-hero.png",
+            "sha256": "0699720c7d11600e82fe232998a4eba94fa82c1dbd7e78044a889d2a242eb844"
+          },
+          "status": 200
+        },
+        {
+          "finalUrl": "http://127.0.0.1:4174/home.html?phase8b=candidate-c64-2",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 192.89999999999418,
+            "duration": 921.7000000000116,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "link"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 193,
+            "duration": 1514.800000000003,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "link"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4668,
+              "renderTime": 4668,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/candidate-c64-2-hero.png",
+            "sha256": "b16067d1f5c5ec7cf8df46a4c748953a75e5690248eb1076f6e46f74cad41481"
+          },
+          "status": 200
+        },
+        {
+          "finalUrl": "http://127.0.0.1:4174/home.html?phase8b=candidate-c64-3",
+          "htmlMode": "c64",
+          "bodyMode": "c64",
+          "heroMode": "c64",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 186.89999999999418,
+            "duration": 932.6000000000058,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "link"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 187.1999999999971,
+            "duration": 1497.5999999999913,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "link"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4712,
+              "renderTime": 4712,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.18258771029221876
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/candidate-c64-3-hero.png",
+            "sha256": "21f67631472d674062bb333409f48f55bbca68a02970f9708b2cdd533e710dea"
+          },
+          "status": 200
+        }
+      ],
+      "amiga": [
+        {
+          "finalUrl": "http://127.0.0.1:4174/home.html?phase8b=candidate-amiga-1",
+          "htmlMode": "amiga",
+          "bodyMode": "amiga",
+          "heroMode": "amiga",
+          "preloads": [
+            {
+              "href": "resources/images/hero/ccg-hero-c64.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/hero/ccg-hero-amiga.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            },
+            {
+              "href": "resources/images/ccgamer-logo.png",
+              "media": "",
+              "fetchPriority": "high",
+              "type": "image/png"
+            }
+          ],
+          "c64Resource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png",
+            "startTime": 187.70000000001164,
+            "duration": 910.7000000000116,
+            "transferSize": 25820,
+            "decodedBodySize": 25520,
+            "initiatorType": "link"
+          },
+          "amigaResource": {
+            "name": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png",
+            "startTime": 188.40000000002328,
+            "duration": 1525.3999999999942,
+            "transferSize": 47778,
+            "decodedBodySize": 47478,
+            "initiatorType": "link"
+          },
+          "heroRect": {
+            "x": 16,
+            "y": 435.1875,
+            "width": 358,
+            "height": 660.84375
+          },
+          "frameRect": {
+            "x": 16,
+            "y": 453.1875,
+            "width": 358,
+            "height": 636.84375
+          },
+          "titleRect": {
+            "x": 51,
+            "y": 565.328125,
+            "width": 288,
+            "height": 84.421875
+          },
+          "c64Style": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.2",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "amigaStyle": {
+            "backgroundImage": "linear-gradient(rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.65)), image-set(url(\"http://127.0.0.1:4174/resources/images/hero/ccg-hero-amiga.png\") 1dppx type(\"image/png\"))",
+            "opacity": "0.76",
+            "visibility": "visible",
+            "display": "block"
+          },
+          "vitals": {
+            "lcp": {
+              "startTime": 4680,
+              "renderTime": 4680,
+              "loadTime": 0,
+              "size": 136398,
+              "tag": "div",
+              "id": null,
+              "className": "home-hero__bg home-hero__bg--c64",
+              "url": "http://127.0.0.1:4174/resources/images/hero/ccg-hero-c64.png"
+            },
+            "cls": 0.22685780593888566
+          },
+          "screenshot": {
+            "path": "/home/runner/work/_temp/phase8b-raw/candidate-amiga-1-hero.png",
+            "sha256": "33ae4be9f38310f3b8149faf50c477790339a8caa4aa18dee45b957c1c8526fd"
+          },
+          "status": 200
+        }
+      ]
+    }
+  },
+  "lighthouse": {
+    "baseline": [
+      {
+        "run": 1,
+        "performanceScore": 0.47,
+        "lcpMs": 18817.26135,
+        "cls": 0.10860535759199322,
+        "totalBytes": 3507621,
+        "lcpDiscovery": {
+          "type": "list",
+          "items": [
+            {
+              "type": "checklist",
+              "items": {
+                "priorityHinted": {
+                  "label": "fetchpriority=high should be applied",
+                  "value": false
+                },
+                "requestDiscoverable": {
+                  "label": "Request is discoverable in initial document",
+                  "value": false
+                },
+                "eagerlyLoaded": {
+                  "label": "LCP resources should not use loading=lazy",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "node",
+              "lhId": "page-5-DIV",
+              "path": "1,HTML,1,BODY,3,DIV,3,MAIN,1,SECTION,0,DIV,0,DIV",
+              "selector": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg",
+              "boundingRect": {
+                "top": 447,
+                "bottom": 1096,
+                "left": 12,
+                "right": 400,
+                "width": 388,
+                "height": 650
+              },
+              "snippet": "<div class=\"home-hero__bg home-hero__bg--c64\" aria-hidden=\"true\">",
+              "nodeLabel": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg"
+            }
+          ]
+        },
+        "rawPath": "/home/runner/work/_temp/phase8b-raw/baseline-lighthouse-1.json"
+      },
+      {
+        "run": 2,
+        "performanceScore": 0.42,
+        "lcpMs": 19062.2725,
+        "cls": 0.1551479112981291,
+        "totalBytes": 3687887,
+        "lcpDiscovery": {
+          "type": "list",
+          "items": [
+            {
+              "type": "checklist",
+              "items": {
+                "priorityHinted": {
+                  "label": "fetchpriority=high should be applied",
+                  "value": false
+                },
+                "requestDiscoverable": {
+                  "label": "Request is discoverable in initial document",
+                  "value": false
+                },
+                "eagerlyLoaded": {
+                  "label": "LCP resources should not use loading=lazy",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "node",
+              "lhId": "page-6-DIV",
+              "path": "1,HTML,1,BODY,3,DIV,3,MAIN,1,SECTION,0,DIV,0,DIV",
+              "selector": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg",
+              "boundingRect": {
+                "top": 447,
+                "bottom": 1096,
+                "left": 12,
+                "right": 400,
+                "width": 388,
+                "height": 650
+              },
+              "snippet": "<div class=\"home-hero__bg home-hero__bg--c64\" aria-hidden=\"true\">",
+              "nodeLabel": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg"
+            }
+          ]
+        },
+        "rawPath": "/home/runner/work/_temp/phase8b-raw/baseline-lighthouse-2.json"
+      }
+    ],
+    "candidate": [
+      {
+        "run": 1,
+        "performanceScore": 0.42,
+        "lcpMs": 19922.986675,
+        "cls": 0.1551479112981291,
+        "totalBytes": 4007914,
+        "lcpDiscovery": {
+          "type": "list",
+          "items": [
+            {
+              "type": "checklist",
+              "items": {
+                "priorityHinted": {
+                  "label": "fetchpriority=high applied",
+                  "value": true
+                },
+                "requestDiscoverable": {
+                  "label": "Request is discoverable in initial document",
+                  "value": true
+                },
+                "eagerlyLoaded": {
+                  "label": "LCP resources should not use loading=lazy",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "node",
+              "lhId": "page-6-DIV",
+              "path": "1,HTML,1,BODY,3,DIV,3,MAIN,1,SECTION,0,DIV,0,DIV",
+              "selector": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg",
+              "boundingRect": {
+                "top": 447,
+                "bottom": 1096,
+                "left": 12,
+                "right": 400,
+                "width": 388,
+                "height": 650
+              },
+              "snippet": "<div class=\"home-hero__bg home-hero__bg--c64\" aria-hidden=\"true\">",
+              "nodeLabel": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg"
+            }
+          ]
+        },
+        "rawPath": "/home/runner/work/_temp/phase8b-raw/candidate-lighthouse-1.json"
+      },
+      {
+        "run": 2,
+        "performanceScore": 0.42,
+        "lcpMs": 19931.03645,
+        "cls": 0.1551479112981291,
+        "totalBytes": 3996584,
+        "lcpDiscovery": {
+          "type": "list",
+          "items": [
+            {
+              "type": "checklist",
+              "items": {
+                "priorityHinted": {
+                  "label": "fetchpriority=high applied",
+                  "value": true
+                },
+                "requestDiscoverable": {
+                  "label": "Request is discoverable in initial document",
+                  "value": true
+                },
+                "eagerlyLoaded": {
+                  "label": "LCP resources should not use loading=lazy",
+                  "value": true
+                }
+              }
+            },
+            {
+              "type": "node",
+              "lhId": "page-6-DIV",
+              "path": "1,HTML,1,BODY,3,DIV,3,MAIN,1,SECTION,0,DIV,0,DIV",
+              "selector": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg",
+              "boundingRect": {
+                "top": 447,
+                "bottom": 1096,
+                "left": 12,
+                "right": 400,
+                "width": 388,
+                "height": 650
+              },
+              "snippet": "<div class=\"home-hero__bg home-hero__bg--c64\" aria-hidden=\"true\">",
+              "nodeLabel": "main#ccg-main-content > section.home-hero > div.home-hero__frame > div.home-hero__bg"
+            }
+          ]
+        },
+        "rawPath": "/home/runner/work/_temp/phase8b-raw/candidate-lighthouse-2.json"
+      }
+    ]
+  },
+  "summary": {
+    "baseline": {
+      "c64ResourceStartMedianMs": 3721.7,
+      "c64ObservedLcpMedianMs": 4904,
+      "c64ObservedClsMedian": 0.1826,
+      "c64Runs": 3,
+      "amigaRuns": 1
+    },
+    "candidate": {
+      "c64ResourceStartMedianMs": 192.9,
+      "c64ObservedLcpMedianMs": 4712,
+      "c64ObservedClsMedian": 0.1826,
+      "c64Runs": 3,
+      "amigaRuns": 1
+    }
+  },
+  "validation": {
+    "checks": {
+      "candidate_has_two_mode_safe_hero_preloads": true,
+      "c64_request_starts_earlier": true,
+      "c64_request_starts_within_500ms": true,
+      "c64_mode_preserved": true,
+      "amiga_mode_preserved": true,
+      "hero_geometry_preserved": true,
+      "hero_computed_styles_preserved": true,
+      "lighthouse_lcp_not_regressed": true
+    },
+    "baselineLighthouseMedianLcpMs": 18939.77,
+    "candidateLighthouseMedianLcpMs": 19927.01,
+    "passed": true
+  },
+  "verdict": "PASS"
+}

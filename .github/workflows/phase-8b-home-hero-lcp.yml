@@ -1,0 +1,214 @@
+name: Phase 8B Home Hero LCP Correction
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "home.html"
+      - ".github/workflows/phase-8b-home-hero-lcp.yml"
+      - "scripts/apply-phase8b-home-hero-preload.py"
+      - "scripts/phase8b_home_hero_lcp_diagnostic.mjs"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-8b-home-hero-lcp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-home-hero-lcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out Phase 8B branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            resources/css/home.css \
+            resources/css/home-debug.css \
+            js/ccg-mode-engine.js \
+            js/ccg-mobile-lite.js \
+            > "$RUNNER_TEMP/phase8b-protected.sha256"
+
+      - name: Install validation dependencies
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts \
+            lighthouse@13.4.1 \
+            chrome-launcher@1.2.1 \
+            playwright-core@1.61.1
+          google-chrome --version
+
+      - name: Validate Phase 8B tooling
+        run: |
+          python -m py_compile scripts/apply-phase8b-home-hero-preload.py
+          node --check scripts/phase8b_home_hero_lcp_diagnostic.mjs
+
+      - name: Create untouched main worktree
+        run: git worktree add --detach "$RUNNER_TEMP/phase8b-main" origin/main
+
+      - name: Apply bounded homepage correction
+        run: python scripts/apply-phase8b-home-hero-preload.py
+
+      - name: Confirm exact home.html edit
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          diff = subprocess.check_output(
+              ["git", "diff", "--unified=0", "origin/main", "--", "home.html"],
+              text=True,
+          )
+          removed = [
+              '-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" media="(min-width: 1024px)" fetchpriority="high" type="image/png">',
+              '-    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" media="(min-width: 1024px)" fetchpriority="high" type="image/png">',
+          ]
+          added = [
+              '+    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high" type="image/png">',
+              '+    <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high" type="image/png">',
+          ]
+          for line in removed + added:
+              if diff.count(line) != 1:
+                  raise SystemExit(f"Expected exact Phase 8B diff line once: {line}")
+          changed = [line for line in diff.splitlines() if line.startswith(('+', '-')) and not line.startswith(('+++', '---'))]
+          if sorted(changed) != sorted(removed + added):
+              raise SystemExit(f"Unexpected home.html changes: {changed}")
+          print("Validated exact two-line homepage preload correction.")
+          PY
+
+      - name: Measure baseline and candidate
+        run: |
+          mkdir -p "$RUNNER_TEMP/phase8b-raw"
+          python -m http.server 4173 --bind 127.0.0.1 --directory "$RUNNER_TEMP/phase8b-main" >"$RUNNER_TEMP/phase8b-main-server.log" 2>&1 &
+          BASE_PID=$!
+          python -m http.server 4174 --bind 127.0.0.1 --directory "$GITHUB_WORKSPACE" >"$RUNNER_TEMP/phase8b-candidate-server.log" 2>&1 &
+          CANDIDATE_PID=$!
+          trap 'kill "$BASE_PID" "$CANDIDATE_PID" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/home.html >/dev/null && curl -fsS http://127.0.0.1:4174/home.html >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/home.html >/dev/null
+          curl -fsS http://127.0.0.1:4174/home.html >/dev/null
+          node scripts/phase8b_home_hero_lcp_diagnostic.mjs \
+            --baseline-url http://127.0.0.1:4173 \
+            --candidate-url http://127.0.0.1:4174 \
+            --output docs/seo-baseline/phase-8b-home-hero-lcp-evidence.json \
+            --report docs/seo-baseline/phase-8b-home-hero-lcp.md \
+            --raw-dir "$RUNNER_TEMP/phase8b-raw"
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase8b-protected.sha256"
+
+      - name: Remove temporary dependencies and worktree
+        run: |
+          rm -rf node_modules
+          git worktree remove --force "$RUNNER_TEMP/phase8b-main"
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact Phase 8B scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-8b-home-hero-lcp.yml",
+              "scripts/apply-phase8b-home-hero-preload.py",
+              "scripts/phase8b_home_hero_lcp_diagnostic.mjs",
+              "home.html",
+              "docs/seo-baseline/phase-8b-home-hero-lcp.md",
+              "docs/seo-baseline/phase-8b-home-hero-lcp-evidence.json",
+          }
+          protected = {
+              "index.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+              "resources/css/home.css",
+              "resources/css/home-debug.css",
+              "js/ccg-mode-engine.js",
+              "js/ccg-mobile-lite.js",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 8B paths: {unexpected}")
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the Phase 8B diff.")
+          if "home.html" not in changed:
+              raise SystemExit("The authorised home.html correction is missing.")
+          print(f"Validated bounded Phase 8B scope ({len(changed)} files).")
+          PY
+          git diff --check
+
+      - name: Upload Phase 8B evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-8b-home-hero-lcp
+          path: |
+            docs/seo-baseline/phase-8b-home-hero-lcp.md
+            docs/seo-baseline/phase-8b-home-hero-lcp-evidence.json
+            ${{ runner.temp }}/phase8b-raw
+            ${{ runner.temp }}/phase8b-main-server.log
+            ${{ runner.temp }}/phase8b-candidate-server.log
+          retention-days: 30
+
+      - name: Commit correction and evidence to PR branch
+        if: github.event_name == 'pull_request'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            home.html \
+            docs/seo-baseline/phase-8b-home-hero-lcp.md \
+            docs/seo-baseline/phase-8b-home-hero-lcp-evidence.json
+          if git diff --cached --quiet; then
+            echo "No generated Phase 8B changes to commit."
+          else
+            git commit -m "Apply Phase 8B homepage hero preload correction"
+            git push origin "HEAD:${{ github.head_ref }}"
+          fi
+
+      - name: Publish Phase 8B summary
+        if: always()
+        run: |
+          if [ -f docs/seo-baseline/phase-8b-home-hero-lcp.md ]; then
+            cat docs/seo-baseline/phase-8b-home-hero-lcp.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Phase 8B report was not generated." >> "$GITHUB_STEP_SUMMARY"
+          fi
