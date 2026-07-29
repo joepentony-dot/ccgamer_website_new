@@ -131,12 +131,12 @@ def update_transaction() -> None:
     if "import sys\n" not in source:
         source = source.replace("import subprocess\n", "import subprocess\nimport sys\n", 1)
 
-    old = '''        if not add["passed"]:
+    prepare_old = '''        if not add["passed"]:
             return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
 
         games_path = sandbox / "games" / "games.json"
 '''
-    new = '''        if not add["passed"]:
+    prepare_new = '''        if not add["passed"]:
             return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
 
         for script_name in [
@@ -150,13 +150,38 @@ def update_transaction() -> None:
 
         games_path = sandbox / "games" / "games.json"
 '''
-    if new in source:
-        print("Synthetic transaction already prepares detached worktrees.")
-        return
-    if source.count(old) != 1:
-        raise SystemExit("Could not isolate synthetic worktree preparation point.")
-    TRANSACTION_TARGET.write_text(source.replace(old, new, 1), encoding="utf-8")
-    print("Added bounded Phase 6B preparation to synthetic worktrees.")
+    if prepare_new not in source:
+        if source.count(prepare_old) != 1:
+            raise SystemExit("Could not isolate synthetic worktree preparation point.")
+        source = source.replace(prepare_old, prepare_new, 1)
+
+    anchor_function = '''
+
+def count_anchor_href(html: str, href: str) -> int:
+    pattern = re.compile(r'<a\\b[^>]*\\bhref=["\\\']' + re.escape(href) + r'["\\\']', re.I | re.S)
+    return len(pattern.findall(html))
+'''
+    if "def count_anchor_href(" not in source:
+        marker = "\ndef run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:\n"
+        if source.count(marker) != 1:
+            raise SystemExit("Could not place structural anchor counter.")
+        source = source.replace(marker, anchor_function + marker, 1)
+
+    source = source.replace(
+        '"year_archive_once": year_html.count(href) == 1,',
+        '"year_archive_once": count_anchor_href(year_html, href) == 1,',
+    )
+    source = source.replace(
+        '"platform_archive_once": platform_html.count(href) == 1,',
+        '"platform_archive_once": count_anchor_href(platform_html, href) == 1,',
+    )
+    source = source.replace(
+        "5. Generate downloads and retro outputs.",
+        "5. Generate downloads and update archive registration.",
+    )
+
+    TRANSACTION_TARGET.write_text(source, encoding="utf-8")
+    print("Prepared synthetic worktrees and structural archive-link checks.")
 
 
 def main() -> None:
