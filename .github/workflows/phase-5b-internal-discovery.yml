@@ -1,7 +1,7 @@
 name: Phase 5B Low-Risk Internal Discovery Corrections
 
 # Bounded correction workflow. Public changes are limited to four reviewed pages,
-# static sitemap registration and the generated sitemap-pages file.
+# static sitemap registration, generated sitemap-pages and Phase 4D compatibility.
 on:
   pull_request:
     branches:
@@ -11,6 +11,7 @@ on:
       - "scripts/validate-phase5b-discovery-corrections.py"
       - "scripts/phase5a_internal_link_audit.py"
       - ".github/workflows/phase-5b-internal-discovery.yml"
+      - ".github/workflows/year-platform-archives.yml"
       - "games/index.html"
       - "quiz/quiz.html"
       - "quiz/pack-6.html"
@@ -22,6 +23,7 @@ on:
       - "tools/seo/static-pages.json"
       - "tools/seo/generate-sitemap.js"
       - "sitemap-pages.xml"
+      - "docs/seo-baseline/phase-4d-year-platform-validation.md"
       - "docs/seo-baseline/phase-5b-internal-discovery.md"
   workflow_dispatch:
 
@@ -160,8 +162,10 @@ jobs:
 
           allowed = {
               ".github/workflows/phase-5b-internal-discovery.yml",
+              ".github/workflows/year-platform-archives.yml",
               "scripts/apply-phase5b-discovery-corrections.py",
               "scripts/validate-phase5b-discovery-corrections.py",
+              "docs/seo-baseline/phase-4d-year-platform-validation.md",
               "docs/seo-baseline/phase-5b-internal-discovery.md",
               "games/index.html",
               "quiz/quiz.html",
