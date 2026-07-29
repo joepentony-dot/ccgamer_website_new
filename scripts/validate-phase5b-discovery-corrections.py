@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Validate the bounded Phase 5B internal-discovery corrections."""
 
+# Final settled-head validation trigger; no generated output depends on this comment.
+
 from __future__ import annotations
 
 import argparse
