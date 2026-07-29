@@ -32,9 +32,9 @@ def fmt_bytes(value):
         return "n/a"
     value = float(value)
     if value >= 1024 * 1024:
-        return f"{value / (1024 * 1024):.2f MiB"
+        return f"{value / (1024 * 1024):.2f} MiB"
     if value >= 1024:
-        return f"{value / 1024:.1f KiB"
+        return f"{value / 1024:.1f} KiB"
     return f"{int(value)} B"
 
 
