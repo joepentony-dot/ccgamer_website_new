@@ -3,9 +3,9 @@
     "redirect_pages": 726,
     "static_pages": 726,
     "dynamic_pages": 0,
-    "analytics_tags": 0,
-    "pages_with_assets": 4,
-    "asset_tags": 60,
+    "analytics_tags": 724,
+    "pages_with_assets": 724,
+    "asset_tags": 784,
     "missing_targets": 0,
     "external_targets": 0,
     "redirect_chains": 0,
@@ -13,7 +13,7 @@
     "canonical_mismatches": 0,
     "delayed_refreshes": 0,
     "source_templates": 8,
-    "source_templates_with_analytics": 0
+    "source_templates_with_analytics": 7
   },
   "after": {
     "redirect_pages": 726,
@@ -32,8 +32,8 @@
     "source_templates_with_analytics": 0
   },
   "removed": {
-    "analytics_tags": 0,
-    "pages_with_assets": 0
+    "analytics_tags": 724,
+    "pages_with_assets": 720
   },
   "checks": {
     "route_map_unchanged": true,
