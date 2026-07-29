@@ -1007,6 +1007,7 @@ function buildTemplateVars({ slug, title, year, system, publisherForSeo, imagePa
     VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,
     GAME_SCHEMA_JSON: gameSchemaJson,
     GAME_SCHEMA_JSON: gameSchemaJson,
+    GAME_SCHEMA_JSON: gameSchemaJson,
     MODE: String(system || '').trim().toUpperCase() === 'AMIGA' ? 'amiga' : 'c64',
     FB_APP_ID_META: buildFacebookAppIdMeta(state.siteSettings.facebookAppId)
   };
