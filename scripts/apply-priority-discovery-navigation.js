@@ -99,7 +99,7 @@ let validation = fs.readFileSync(validationPath, "utf8");
 validation = replaceExact(
   validation,
   'if (countAnchorHref(browseGames, "/games/platforms/") !== 1) problems.push("Browse Games must contain exactly one platform-hub link");',
-  'if (countAnchorHref(browseGames, "/games/genres/") !== 1) problems.push("Browse Games must contain exactly one genre-hub link");',
+  'if (countAnchorHref(browseGames, "/games/genres/") !== 2) problems.push("Browse Games must contain the genre shortcut and crawlable genre fallback link");',
   "Browse Games validation"
 );
 validation = replaceExact(
