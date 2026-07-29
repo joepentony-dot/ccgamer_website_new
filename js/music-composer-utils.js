@@ -10,10 +10,18 @@
 
     return String(name)
       .toLowerCase()
-      .replace(/ü/g, "u")
-      .replace(/ä/g, "a")
-      .replace(/ö/g, "o")
-      .replace(/[^a-z0-9 ]/g, "")
+      .replace(/ø/g, "o")
+      .replace(/ł/g, "l")
+      .replace(/[đð]/g, "d")
+      .replace(/þ/g, "th")
+      .replace(/æ/g, "ae")
+      .replace(/œ/g, "oe")
+      .replace(/ß/g, "ss")
+      .replace(/[’‘]/g, "'")
+      .replace(/&/g, " and ")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
