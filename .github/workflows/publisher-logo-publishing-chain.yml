@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           BEFORE_INDEX="$(grep -c 'data-publisher-logo=' games/publishers/index.html || true)"
-          BEFORE_PAGES="$(grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null | wc -l | tr -d ' ')"
+          BEFORE_PAGES="$( (grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null || true) | wc -l | tr -d ' ')"
           echo "before_index=$BEFORE_INDEX" >> "$GITHUB_ENV"
           echo "before_pages=$BEFORE_PAGES" >> "$GITHUB_ENV"
           echo "Publisher logo markup before rebuild: index=$BEFORE_INDEX pages=$BEFORE_PAGES"
@@ -86,7 +86,7 @@ jobs:
         shell: bash
         run: |
           AFTER_INDEX="$(grep -c 'data-publisher-logo=' games/publishers/index.html || true)"
-          AFTER_PAGES="$(grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null | wc -l | tr -d ' ')"
+          AFTER_PAGES="$( (grep -Rsl 'data-publisher-page-logo=' games/publishers/*/index.html 2>/dev/null || true) | wc -l | tr -d ' ')"
           echo "Publisher logo markup after rebuild: index=$AFTER_INDEX pages=$AFTER_PAGES"
           test "$AFTER_INDEX" -gt 0
           test "$AFTER_PAGES" -gt 0
