@@ -90,8 +90,8 @@ const newEnsure = `function ensureBrowseGamesShortcuts(html) {
 integration = replaceExact(integration, oldEnsure, newEnsure, "Browse shortcut integration");
 integration = replaceExact(
   integration,
-  "- Added bounded Browse Games links to `/games/years/` and `/games/platforms/`.",
-  "- Added bounded Browse Games links to `/games/years/` and `/games/genres/`.",
+  "- Added bounded Browse Games links to \\`/games/years/\\` and \\`/games/platforms/\\`.",
+  "- Added bounded Browse Games links to \\`/games/years/\\` and \\`/games/genres/\\`.",
   "Phase 4C report navigation copy"
 );
 
