@@ -1,0 +1,162 @@
+name: Phase 4A Year and Platform Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/games.json"
+      - "games/index.html"
+      - "complete-index.html"
+      - "games/**/*.html"
+      - "js/**/*.js"
+      - "scripts/phase4a_year_platform_audit.py"
+      - "sitemap*.xml"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/phase-4a-year-platform-audit.yml"
+  push:
+    branches:
+      - main
+      - audit/phase-4a-year-platform-archives
+    paths:
+      - "games/games.json"
+      - "games/index.html"
+      - "complete-index.html"
+      - "games/**/*.html"
+      - "js/**/*.js"
+      - "scripts/phase4a_year_platform_audit.py"
+      - "sitemap*.xml"
+      - "tools/seo/static-pages.json"
+      - ".github/workflows/phase-4a-year-platform-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase-4a-year-platform-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > /tmp/phase4a-protected.sha256
+
+      - name: Validate audit syntax
+        run: python -m py_compile scripts/phase4a_year_platform_audit.py
+
+      - name: Run read-only archive audit
+        run: python scripts/phase4a_year_platform_audit.py
+
+      - name: Verify audit results
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("docs/seo-baseline/phase-4a-year-platform-archives.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          summary = data["summary"]
+          problems = []
+
+          if summary["game_records"] <= 0:
+              problems.append("No game records were audited")
+          if summary["games_with_year"] + summary["games_missing_year"] != summary["game_records"]:
+              problems.append("Year record totals do not reconcile")
+          if sum(data["platform_counts"].values()) != summary["game_records"]:
+              problems.append("Platform record totals do not reconcile")
+          if summary["distinct_years"] != len(data["year_counts"]):
+              problems.append("Distinct-year count does not match year table")
+          if not isinstance(data["recommendations"]["years_without_static_route"], list):
+              problems.append("Missing year-route recommendation list")
+          if not Path("docs/seo-baseline/phase-4a-year-platform-archives.md").exists():
+              problems.append("Markdown audit report is missing")
+
+          if problems:
+              raise SystemExit("\n".join(problems))
+
+          print(json.dumps({
+              "game_records": summary["game_records"],
+              "distinct_years": summary["distinct_years"],
+              "existing_year_pages": len(data["existing_year_pages"]),
+              "existing_platform_pages": len(data["existing_platform_pages"]),
+              "missing_year_routes": len(data["recommendations"]["years_without_static_route"]),
+              "missing_platform_routes": data["recommendations"]["platforms_without_static_route"],
+          }, indent=2))
+          PY
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check /tmp/phase4a-protected.sha256
+
+      - name: Remove Python bytecode
+        shell: bash
+        run: find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm read-only audit scope
+        shell: bash
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              "docs/seo-baseline/phase-4a-year-platform-archives.json",
+              "docs/seo-baseline/phase-4a-year-platform-archives.md",
+          }
+          output = subprocess.check_output(
+              ["git", "status", "--porcelain", "--untracked-files=all"],
+              text=True,
+          )
+          changed = set()
+          for line in output.splitlines():
+              path = line[3:]
+              if " -> " in path:
+                  path = path.split(" -> ", 1)[1]
+              changed.add(path)
+          unexpected = sorted(changed - allowed)
+          if unexpected:
+              raise SystemExit(f"Unexpected Phase 4A changes: {unexpected}")
+          print(f"Validated read-only audit scope: {sorted(changed)}")
+          PY
+
+      - name: Upload detailed audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-4a-year-platform-audit
+          path: docs/seo-baseline/phase-4a-year-platform-archives.json
+          retention-days: 30
+
+      - name: Commit current audit reports
+        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        shell: bash
+        run: |
+          git add docs/seo-baseline/phase-4a-year-platform-archives.json docs/seo-baseline/phase-4a-year-platform-archives.md
+
+          if git diff --cached --quiet; then
+            echo "Phase 4A audit reports are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record Phase 4A year and platform audit"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git push origin "HEAD:${TARGET_BRANCH}"
