@@ -4343,3 +4343,209 @@ body.ccg-crt::before {
         flex-wrap: wrap;
     }
 }
+
+/* ============================================================
+   CCG EASTER EGG VIEWPORT CONTRACT — AUTHORITATIVE
+   Keeps the three-click menu and every result within the visible
+   browser viewport, including short phones and landscape mode.
+============================================================ */
+.ccg-secret-modal,
+.ccg-egg-overlay {
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding:
+        calc(env(safe-area-inset-top, 0px) + clamp(8px, 2vmin, 18px))
+        calc(env(safe-area-inset-right, 0px) + clamp(8px, 2vmin, 18px))
+        calc(env(safe-area-inset-bottom, 0px) + clamp(8px, 2vmin, 18px))
+        calc(env(safe-area-inset-left, 0px) + clamp(8px, 2vmin, 18px));
+}
+
+.ccg-secret-modal__content {
+    box-sizing: border-box;
+    width: min(680px, 100%);
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 0;
+    margin: 0 auto;
+    padding: clamp(16px, 4vw, 28px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scrollbar-gutter: stable;
+    scroll-padding-top: 72px;
+}
+
+.ccg-secret-modal__actions {
+    position: sticky;
+    top: 0;
+    z-index: 6;
+    margin: calc(clamp(16px, 4vw, 28px) * -1) calc(clamp(16px, 4vw, 28px) * -1) 18px;
+    padding: clamp(14px, 3vw, 20px) clamp(16px, 4vw, 28px) 12px;
+    background: linear-gradient(180deg, rgba(8, 14, 25, 0.99) 72%, rgba(8, 14, 25, 0));
+}
+
+.ccg-secret-btn {
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+}
+
+.ccg-secret-list {
+    columns: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 16px;
+}
+
+.ccg-secret-list li {
+    min-width: 0;
+    margin-bottom: 0;
+    break-inside: avoid;
+}
+
+body.ccg-secret-modal-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: auto;
+}
+
+.ccg-egg-overlay__frame {
+    box-sizing: border-box;
+    width: min(1200px, 100%);
+    height: min(90vh, 900px);
+    height: min(90dvh, 900px);
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 auto;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.ccg-egg-overlay__exit {
+    position: relative;
+    z-index: 5;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+}
+
+.ccg-egg-overlay__media {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0 auto;
+    aspect-ratio: auto;
+    overflow: hidden;
+}
+
+.ccg-egg-overlay--square .ccg-egg-overlay__media {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 0;
+    aspect-ratio: 1 / 1;
+    justify-self: center;
+}
+
+.ccg-egg-overlay--vertical .ccg-egg-overlay__media {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    min-height: 0;
+    aspect-ratio: 9 / 16;
+    justify-self: center;
+}
+
+.ccg-egg-overlay--party .ccg-egg-overlay__media {
+    min-height: 0;
+    max-height: 100%;
+}
+
+body.ccg-egg-open {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
+
+@media (max-width: 720px) {
+    .ccg-secret-list {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-secret-modal__content {
+        border-radius: 16px;
+    }
+
+    .ccg-egg-overlay__frame {
+        gap: 10px;
+        padding: 10px;
+        border-radius: 16px;
+    }
+
+    .ccg-egg-overlay__exit {
+        width: 100%;
+        align-self: stretch;
+        padding: 9px 12px;
+        font-size: 0.72rem;
+        letter-spacing: 0.07em;
+    }
+
+    .ccg-egg-overlay__media {
+        padding: 6px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-height: 520px) {
+    .ccg-secret-modal__content {
+        padding: 12px 16px 16px;
+    }
+
+    .ccg-secret-modal__actions {
+        margin: -12px -16px 10px;
+        padding: 8px 16px 8px;
+    }
+
+    .ccg-secret-modal__content h2 {
+        margin-bottom: 4px;
+        font-size: 1rem;
+    }
+
+    .ccg-secret-modal__hint {
+        margin-bottom: 10px;
+        font-size: 0.78rem;
+    }
+
+    .ccg-secret-list {
+        gap: 5px 10px;
+    }
+
+    .ccg-secret-list li {
+        padding: 6px 10px;
+        font-size: 0.74rem;
+    }
+
+    .ccg-egg-overlay__frame {
+        height: 100%;
+    }
+}
+
