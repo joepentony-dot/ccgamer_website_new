@@ -11,7 +11,10 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const result = {};
   for (let index = 0; index < args.length; index += 2) {
-    result[args[index].replace(/^--/, '')] = args[index + 1];
+    const key = args[index]
+      .replace(/^--/, '')
+      .replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    result[key] = args[index + 1];
   }
   if (!result.output || !result.rawDir) {
     throw new Error('Usage: --output FILE --raw-dir DIR');
