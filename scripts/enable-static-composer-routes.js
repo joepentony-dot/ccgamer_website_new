@@ -4,9 +4,13 @@
 
 const fs = require("fs");
 const path = require("path");
+const vm = require("vm");
+const { buildComposerGroups } = require("./composer-utils");
 
 const repoRoot = path.resolve(__dirname, "..");
 const targetPath = path.join(repoRoot, "js", "music-composer-pages.js");
+const browserUtilsPath = path.join(repoRoot, "js", "music-composer-utils.js");
+const gamesPath = path.join(repoRoot, "games", "games.json");
 const musicDir = path.join(repoRoot, "music");
 
 function replaceBounded(text, startMarker, endMarker, replacement, label) {
@@ -35,7 +39,34 @@ function removeGeneratedComposerPages() {
     console.log(`[composer-routes] Removed ${removed} generated pages before deterministic rebuild.`);
 }
 
+function validateCrossRuntimeSlugs() {
+    const sandbox = { window: {} };
+    vm.runInNewContext(fs.readFileSync(browserUtilsPath, "utf8"), sandbox, {
+        filename: "js/music-composer-utils.js"
+    });
+
+    const normalize = sandbox.window.normalizeComposerName;
+    const canonicalize = sandbox.window.getCanonicalComposer;
+    if (typeof normalize !== "function" || typeof canonicalize !== "function") {
+        throw new Error("Browser composer normalisation utilities did not initialise.");
+    }
+
+    const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+    const mismatches = [];
+    for (const group of buildComposerGroups(games)) {
+        const browserSlug = normalize(canonicalize(group.name)).replace(/\s+/g, "-");
+        if (browserSlug !== group.slug) {
+            mismatches.push(`${group.name}: generator=${group.slug}, browser=${browserSlug}`);
+        }
+    }
+    if (mismatches.length) {
+        throw new Error(`Composer slug mismatch across runtimes:\n${mismatches.join("\n")}`);
+    }
+    console.log(`[composer-routes] Verified ${buildComposerGroups(games).length} browser and generator slugs.`);
+}
+
 function main() {
+    validateCrossRuntimeSlugs();
     removeGeneratedComposerPages();
 
     const current = fs.readFileSync(targetPath, "utf8");
