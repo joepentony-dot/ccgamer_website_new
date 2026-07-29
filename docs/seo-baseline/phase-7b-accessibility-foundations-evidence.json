@@ -47,7 +47,6 @@
   "failures": [],
   "unlabelled_controls": [],
   "live": {
-    "generated_at": "2026-07-29T15:19:43.349Z",
     "base_url": "http://127.0.0.1:4173",
     "chrome_path": "/usr/bin/google-chrome",
     "axe_version": "4.12.1",
