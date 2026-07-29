@@ -207,7 +207,10 @@ jobs:
             echo 'No generated changes to commit.'
           else
             git commit -m 'Validate Easter egg viewport positioning'
-            git push origin HEAD:${{ github.head_ref || github.ref_name }}
+            branch="${{ github.head_ref || github.ref_name }}"
+            git fetch origin "$branch"
+            git rebase "origin/$branch"
+            git push origin HEAD:"$branch"
           fi
 
       - name: Publish summary
