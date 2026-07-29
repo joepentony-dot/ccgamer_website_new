@@ -12,11 +12,12 @@ This is a read-only audit of static internal discovery after Phases 0–4. Publi
 | Weakly linked indexable pages | **129** |
 | Sitemap-only indexable pages | **3** |
 | Pages linked only from archive families | **833** |
-| Broken internal link edges | **559** |
-| Redirect destinations receiving internal links | **651** |
+| Broken internal link edges | **0** |
+| Intentional canonical game-wrapper redirect destinations | **651** |
+| Other redirect destinations receiving internal links | **0** |
 | Noindex destinations receiving internal links | **313** |
-| Noncanonical alias destinations receiving internal links | **0** |
-| Breadcrumb or adjacent-navigation issues | **273** |
+| Noncanonical alias destinations receiving internal links | **1** |
+| Breadcrumb or adjacent-navigation issues | **272** |
 
 ## Canonical game discovery
 
@@ -51,7 +52,7 @@ This is a read-only audit of static internal discovery after Phases 0–4. Publi
 
 - Phase 0 indexable pages: **923**; Phase 5A: **936**.
 - Phase 0 orphan candidates: **97**; Phase 5A unique-source orphans: **3**.
-- Phase 0 broken internal links: **0**; Phase 5A broken static link edges: **559**.
+- Phase 0 broken internal links: **0**; Phase 5A broken static link edges: **0**.
 - The orphan figures are directional rather than identical because Phase 5A counts unique source pages.
 
 ## Priority samples
@@ -92,34 +93,39 @@ This is a read-only audit of static internal discovery after Phases 0–4. Publi
 - `/retro-events/yorkshire-amiga-group-meetup/` — retro-event — 0 incoming source page(s)
 - `/viewer/manual.html` — other-public — 0 incoming source page(s)
 
-### Broken, redirect, noindex and alias link samples
+### Actionable broken, redirect, noindex and alias samples
 
-- **broken**: `404.html` → `/home.html`
-- **broken**: `about.html` → `/home.html`
-- **broken**: `community/profile.html` → `/auth/forgot.html`
-- **broken**: `community/profile.html` → `/home.html`
-- **broken**: `complete-index.html` → `/home.html`
-- **broken**: `contact.html` → `/home.html`
-- **broken**: `emulation.html` → `/home.html`
-- **broken**: `games/collections/amiga-demo-music.html` → `/home.html`
-- **broken**: `games/collections/bpjs-indexed-games.html` → `/home.html`
-- **broken**: `games/collections/cartridge-games.html` → `/home.html`
-- **broken**: `games/collections/index.html` → `/home.html`
-- **broken**: `games/collections/licensed-games.html` → `/home.html`
-- **broken**: `games/collections/retro-events.html` → `/home.html`
-- **broken**: `games/collections/retro-specials.html` → `/home.html`
-- **broken**: `games/collections/top-picks.html` → `/home.html`
-- **broken**: `games/developers/argus-press-software/index.html` → `/home.html`
-- **broken**: `games/developers/ariolasoft/index.html` → `/home.html`
-- **broken**: `games/developers/binary-asylum/index.html` → `/home.html`
-- **broken**: `games/developers/broderbund/index.html` → `/home.html`
-- **broken**: `games/developers/capcom/index.html` → `/home.html`
-- **broken**: `games/developers/datasoft/index.html` → `/home.html`
-- **broken**: `games/developers/david-h-schroeder/index.html` → `/home.html`
-- **broken**: `games/developers/delphine-software/index.html` → `/home.html`
-- **broken**: `games/developers/disney/index.html` → `/home.html`
-- **broken**: `games/developers/dro-soft-spain/index.html` → `/home.html`
-- …and 4335 more in the JSON artifact
+- **noindex**: `community/activity.html` → `/community/profile.html`
+- **noindex**: `community/admin.html` → `/community/profile.html`
+- **noindex**: `community/index.html` → `/community/activity.html`
+- **noindex**: `community/index.html` → `/community/latest-comments.html`
+- **noindex**: `community/index.html` → `/community/profile.html`
+- **noindex**: `community/index.html` → `/community/public-profile.html`
+- **noindex**: `community/index.html` → `/community/top-rated.html`
+- **noindex**: `community/public-profile.html` → `/community/profile.html`
+- **noindex**: `games/developers/index.html` → `/games/developers/argus-press-software/`
+- **noindex**: `games/developers/index.html` → `/games/developers/ariolasoft/`
+- **noindex**: `games/developers/index.html` → `/games/developers/binary-asylum/`
+- **noindex**: `games/developers/index.html` → `/games/developers/datasoft/`
+- **noindex**: `games/developers/index.html` → `/games/developers/david-h-schroeder/`
+- **noindex**: `games/developers/index.html` → `/games/developers/disney/`
+- **noindex**: `games/developers/index.html` → `/games/developers/dro-soft-spain/`
+- **noindex**: `games/developers/index.html` → `/games/developers/elite/`
+- **noindex**: `games/developers/index.html` → `/games/developers/enigma-variations/`
+- **noindex**: `games/developers/index.html` → `/games/developers/erbe-software-spain/`
+- **noindex**: `games/developers/index.html` → `/games/developers/firebird/`
+- **noindex**: `games/developers/index.html` → `/games/developers/gremlin-graphics/`
+- **noindex**: `games/developers/index.html` → `/games/developers/hewson/`
+- **noindex**: `games/developers/index.html` → `/games/developers/infocom/`
+- **noindex**: `games/developers/index.html` → `/games/developers/mogul-communications/`
+- **noindex**: `games/developers/index.html` → `/games/developers/probe-software/`
+- **noindex**: `games/developers/index.html` → `/games/developers/psygnosis/`
+- …and 1036 more in the JSON artifact
+
+## Redirect interpretation
+
+- **651** canonical game routes deliberately forward to the dynamic game shell while retaining their own canonical and schema.
+- **0** other redirect destinations receive static internal links and should be reviewed separately.
 
 ## Hub and parent discovery checks
 
@@ -140,10 +146,10 @@ This is a read-only audit of static internal discovery after Phases 0–4. Publi
 
 ## Recommended correction batches
 
-1. **Highest value, low risk:** correct broken links and links to redirects, noindex pages or noncanonical aliases in tightly scoped route-family batches.
+1. **Highest value, low risk:** correct confirmed broken links and links to noncanonical aliases or non-game redirect pages in tightly scoped route-family batches.
 2. **High value, low-to-medium risk:** add missing parent-to-hub links and static discovery for genuine sitemap-only indexable pages.
 3. **Medium risk:** strengthen orphan and one-source pages using existing archive hubs rather than new global-navigation changes.
-4. **Targeted game discovery:** review any game with one or zero discovery dimensions and connect it only through verified source metadata.
+4. **Noindex review:** separate intentional thin-archive links from accidental links to utility or private pages before changing anything.
 5. **Copy refinement:** replace vague anchor labels only where the destination is ambiguous; do not bulk-rewrite established navigation.
 
 ## Safety and scope
