@@ -221,6 +221,7 @@ logoSlugs.forEach((slug) => {
     if (result.installed) featuredInstalled += 1;
 });
 
+indexHtml = indexHtml.replace(/[\t ]+$/gm, "");
 fs.writeFileSync(publisherIndexPath, indexHtml, "utf8");
 
 let publisherPagesEnhanced = 0;
