@@ -18,6 +18,7 @@ function replaceBounded(text, startMarker, endMarker, replacement, label) {
     return `${text.slice(0, start)}${replacement}${text.slice(end)}`;
 }
 
+// Generated pages are removed first so discovery only classifies hand-maintained composer pages as curated.
 function removeGeneratedComposerPages() {
     let removed = 0;
     for (const entry of fs.readdirSync(musicDir, { withFileTypes: true })) {
