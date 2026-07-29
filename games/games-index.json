@@ -2574,6 +2574,12 @@
     "thumbnail": "resources/images/thumbnails/all/power_drift.jpg"
   },
   {
+    "slug": "powerdrome",
+    "title": "Powerdrome",
+    "year": 1989,
+    "thumbnail": "resources/images/thumbnails/all/powerdrome_phase6c.jpg"
+  },
+  {
     "slug": "predator",
     "title": "Predator",
     "year": 1988,

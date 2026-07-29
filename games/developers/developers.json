@@ -231,6 +231,17 @@
     "url": "/games/developers/mastertronic/"
   },
   {
+    "name": "Michael Powell",
+    "slug": "michael-powell",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "indexable": false,
+    "url": "/games/developers/michael-powell/"
+  },
+  {
     "name": "Mogul Communications",
     "slug": "mogul-communications",
     "count": 1,

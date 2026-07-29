@@ -19345,7 +19345,43 @@
     "_ccg_enforced": false,
     "_ccg_migrated": false
   },
-  {
+    {
+    "system": "AMIGA",
+    "id": "powerdrome",
+    "slug": "powerdrome",
+    "title": "Powerdrome",
+    "sorttitle": "Powerdrome",
+    "year": 1989,
+    "genres": [
+      "racing"
+    ],
+    "collections": [],
+    "videoid": "",
+    "thumbnail": "resources/images/thumbnails/all/powerdrome_phase6c.jpg",
+    "pdf": "",
+    "disk": [],
+    "lemon": [],
+    "description": "Powerdrome is a futuristic first-person racing game released for the Commodore Amiga in 1989 by Electronic Arts. Designed and programmed by Michael Powell, it places the player inside an anti-gravity craft that pitches and rolls through demanding 3D circuits. Its high speed and aircraft-style handling reward careful control rather than simply holding the accelerator down.",
+    "ccg_rating": 0,
+    "ccg_rating_reason": "Awaiting a dedicated Cheeky Commodore Gamer review; 0 is an unrated placeholder, not a verdict.",
+    "credits": {
+      "publisher": [
+        "Electronic Arts"
+      ],
+      "producer": "",
+      "coder": [
+        "Michael Powell"
+      ],
+      "graphics": [],
+      "musician": [],
+      "re_releaser": [],
+      "developer": "Michael Powell"
+    },
+    "developer": "Michael Powell",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+{
     "system": "C64",
     "id": "predator",
     "slug": "predator",
