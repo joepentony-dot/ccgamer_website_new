@@ -39,6 +39,7 @@ function removeGeneratedComposerPages() {
     console.log(`[composer-routes] Removed ${removed} generated pages before deterministic rebuild.`);
 }
 
+// Every credited name must resolve to the same stable route in Node and in the browser utility.
 function validateCrossRuntimeSlugs() {
     const sandbox = { window: {} };
     vm.runInNewContext(fs.readFileSync(browserUtilsPath, "utf8"), sandbox, {
@@ -52,8 +53,9 @@ function validateCrossRuntimeSlugs() {
     }
 
     const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+    const groups = buildComposerGroups(games);
     const mismatches = [];
-    for (const group of buildComposerGroups(games)) {
+    for (const group of groups) {
         const browserSlug = normalize(canonicalize(group.name)).replace(/\s+/g, "-");
         if (browserSlug !== group.slug) {
             mismatches.push(`${group.name}: generator=${group.slug}, browser=${browserSlug}`);
@@ -62,7 +64,7 @@ function validateCrossRuntimeSlugs() {
     if (mismatches.length) {
         throw new Error(`Composer slug mismatch across runtimes:\n${mismatches.join("\n")}`);
     }
-    console.log(`[composer-routes] Verified ${buildComposerGroups(games).length} browser and generator slugs.`);
+    console.log(`[composer-routes] Verified ${groups.length} browser and generator slugs.`);
 }
 
 function main() {
