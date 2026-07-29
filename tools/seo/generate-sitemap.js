@@ -52,7 +52,6 @@ const DEFAULT_STATIC_PATHS = [
   'games/index.html',
   'quiz/index.html',
   'quiz/quiz.html',
-  'viewer/manual.html',
 ];
 const MIN_ARCHIVE_CREDITS = 5;
 const FEATURED_COMPOSERS = [
