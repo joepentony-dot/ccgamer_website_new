@@ -96,6 +96,7 @@ function findExistingComposerPages() {
         const filePath = path.join(musicDir, entry.name, "index.html");
         if (!fs.existsSync(filePath)) continue;
         const html = fs.readFileSync(filePath, "utf8");
+        if (/data-generated-composer\s*=\s*(["'])true\1/i.test(html)) continue;
         if (!/data-ccg-page\s*=\s*(["'])music-composer\1/i.test(html)) continue;
 
         const name = extractAttribute(html, "data-composer-name");

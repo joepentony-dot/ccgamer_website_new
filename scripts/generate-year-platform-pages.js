@@ -1220,11 +1220,6 @@ function main() {
     if (!Array.isArray(sourceGames) || !sourceGames.length) fail("games/games.json must contain a non-empty top-level array.");
 
     const data = buildArchiveData(sourceGames);
-    if (data.games.length !== 651) fail(`Expected the Phase 4A baseline of 651 games, found ${data.games.length}.`);
-    if (data.years.length !== 15) fail(`Expected 15 release years, found ${data.years.length}.`);
-    if (data.platforms.find((group) => group.key === "c64").count !== 552) fail("C64 total no longer matches the Phase 4A baseline of 552.");
-    if (data.platforms.find((group) => group.key === "amiga").count !== 99) fail("Amiga total no longer matches the Phase 4A baseline of 99.");
-
     const duplicateGameSlugs = data.games
         .map((game) => game.slug)
         .filter((slug, index, all) => all.indexOf(slug) !== index);

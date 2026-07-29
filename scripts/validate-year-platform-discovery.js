@@ -257,7 +257,10 @@ function validateBaselineRegistry(current, baseline, problems) {
     const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
     const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
 
-    compareExactList(comparableCurrent, expectedForeign, "Non-year/platform registry order", problems);
+    const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
+    const unexpectedForeign = comparableCurrent.filter((entry) => !expectedForeign.includes(entry));
+    if (missingForeign.length) problems.push(`Non-year/platform registry entries missing: ${missingForeign.join(", ")}`);
+    if (unexpectedForeign.length) problems.push(`Unexpected non-year/platform registry entries: ${unexpectedForeign.join(", ")}`);
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
         problems.push(`Phase 5B noindex utility remains in the static registry: ${PHASE5B_EXCLUDED_REGISTRY_ENTRY}`);
     }
@@ -269,7 +272,10 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
     const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
 
-    compareExactList(comparableCurrent, expectedLocs, `${label} URL order`, problems);
+    const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
+    const unexpectedLocs = comparableCurrent.filter((url) => !expectedLocs.includes(url));
+    if (missingLocs.length) problems.push(`${label} URLs missing: ${missingLocs.join(", ")}`);
+    if (unexpectedLocs.length) problems.push(`Unexpected ${label} URLs: ${unexpectedLocs.join(", ")}`);
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
         problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
     }
@@ -290,8 +296,8 @@ function buildReport(summary) {
 | Amiga platform memberships validated | **${summary.amigaMembershipLinks}** |
 | Existing canonical game targets validated | **${summary.canonicalGameRoutes}** |
 | Indexable archive routes in registry and sitemap | **${summary.registeredArchiveRoutes}** |
-| Existing non-archive registry entries preserved in order | **${summary.preservedForeignRegistryEntries}** |
-| Noindex year excluded | **2023** |
+| Existing non-archive registry entries preserved by exact membership | **${summary.preservedForeignRegistryEntries}** |
+| Noindex year routes excluded | **${summary.noindexYearRoutes}** |
 
 ## Requirements already satisfied before Phase 4D
 
@@ -304,14 +310,14 @@ function buildReport(summary) {
 
 ## Safeguards added or strengthened in Phase 4D
 
-- Exact route uniqueness across both hubs, all 15 year routes and both platform routes.
+- Exact route uniqueness across both hubs, every represented year route and both platform routes.
 - Exactly one correct canonical and robots directive on every archive page.
 - Structural validation of CollectionPage, BreadcrumbList and ItemList JSON-LD on every archive page.
-- Exact source-data membership checks for all 651 year links, 552 C64 links and 99 Amiga links.
+- Exact source-data membership checks using totals derived from the current games database.
 - Validation that every archive game target exists and is its own canonical game route.
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
-- Stable-order checks for registry entries and sitemap URLs owned by other workflows.
+- Exact membership checks for registry entries and sitemap URLs owned by other workflows; Phase 6B separately enforces deterministic current ordering.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
@@ -360,9 +366,8 @@ function main() {
     if (duplicateRoutes.length) problems.push(`Duplicate archive routes: ${[...new Set(duplicateRoutes)].join(", ")}`);
     if (new Set(years.map((group) => group.year)).size !== years.length) problems.push("Duplicate release years detected");
     if (new Set(platforms.map((group) => group.key)).size !== platforms.length) problems.push("Duplicate platform keys detected");
-    if (years.length !== 15) problems.push(`Expected 15 represented years, found ${years.length}`);
     if (platforms.length !== 2) problems.push(`Expected two platform routes, found ${platforms.length}`);
-    if (archiveData.games.length !== 651) problems.push(`Expected 651 games, found ${archiveData.games.length}`);
+    if (archiveData.games.length < 651) problems.push(`Game total fell below the protected Phase 6A baseline: ${archiveData.games.length}`);
 
     if (countOccurrences(browseGames, BROWSE_MARKER) !== 1) {
         problems.push("Browse Games must contain exactly one archive shortcut block");
@@ -379,8 +384,12 @@ function main() {
     const ownedEntries = staticPages.filter(isOwnedArchiveEntry);
     compareExactList(ownedEntries, expectedStaticEntries, "Owned year/platform registry entries", problems);
 
-    const noindexEntry = "games/years/2023/index.html";
-    if (staticPages.includes(noindexEntry)) problems.push("The noindex 2023 route is present in the static registry");
+    const noindexEntries = years
+        .filter((group) => !group.indexable)
+        .map((group) => `games/years/${group.year}/index.html`);
+    noindexEntries.forEach((entry) => {
+        if (staticPages.includes(entry)) problems.push(`Noindex year route is present in the static registry: ${entry}`);
+    });
 
     const sitemapPagesLocs = extractLocs(sitemapPages);
     const sitemapGamesLocs = extractLocs(sitemapGames);
@@ -395,13 +404,17 @@ function main() {
         if (sitemapIndexLocs.includes(url)) problems.push(`Archive URL is incorrectly present in sitemap.xml: ${url}`);
     });
 
-    const noindexUrl = `${SITE_ORIGIN}/games/years/2023/`;
+    const noindexUrls = years
+        .filter((group) => !group.indexable)
+        .map((group) => `${SITE_ORIGIN}${group.url}`);
     [
         ["sitemap.xml", sitemapIndexLocs],
         ["sitemap-pages.xml", sitemapPagesLocs],
         ["sitemap-games.xml", sitemapGamesLocs]
     ].forEach(([label, urls]) => {
-        if (urls.includes(noindexUrl)) problems.push(`The noindex 2023 route is present in ${label}`);
+        noindexUrls.forEach((url) => {
+            if (urls.includes(url)) problems.push(`Noindex year route is present in ${label}: ${url}`);
+        });
     });
 
     if (sitemapIndexLocs.filter((url) => url === `${SITE_ORIGIN}/sitemap-pages.xml`).length !== 1) {
@@ -523,9 +536,18 @@ function main() {
         }
     });
 
-    if (yearMembershipLinks !== 651) problems.push(`Year membership total is ${yearMembershipLinks}; expected 651`);
-    if (platformLinkTotals.get("c64") !== 552) problems.push(`C64 membership total is ${platformLinkTotals.get("c64")}; expected 552`);
-    if (platformLinkTotals.get("amiga") !== 99) problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected 99`);
+    const expectedYearMembershipLinks = archiveData.games.length;
+    const expectedC64MembershipLinks = platforms.find((group) => group.key === "c64")?.games.length || 0;
+    const expectedAmigaMembershipLinks = platforms.find((group) => group.key === "amiga")?.games.length || 0;
+    if (yearMembershipLinks !== expectedYearMembershipLinks) {
+        problems.push(`Year membership total is ${yearMembershipLinks}; expected ${expectedYearMembershipLinks}`);
+    }
+    if (platformLinkTotals.get("c64") !== expectedC64MembershipLinks) {
+        problems.push(`C64 membership total is ${platformLinkTotals.get("c64")}; expected ${expectedC64MembershipLinks}`);
+    }
+    if (platformLinkTotals.get("amiga") !== expectedAmigaMembershipLinks) {
+        problems.push(`Amiga membership total is ${platformLinkTotals.get("amiga")}; expected ${expectedAmigaMembershipLinks}`);
+    }
 
     const canonicalGameRoutes = validateCanonicalGameRoutes(archiveData.games, problems);
 
@@ -561,6 +583,7 @@ function main() {
         amigaMembershipLinks: platformLinkTotals.get("amiga"),
         canonicalGameRoutes,
         registeredArchiveRoutes: expectedStaticEntries.length,
+        noindexYearRoutes: years.filter((group) => !group.indexable).length,
         preservedForeignRegistryEntries: staticPages.filter((entry) => !isOwnedArchiveEntry(entry)).length,
         sitemapArchiveUrls: expectedUrls.length,
         noindexYearExcluded: 2023
