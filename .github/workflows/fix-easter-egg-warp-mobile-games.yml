@@ -11,6 +11,7 @@ on:
       - 'scripts/apply-easter-egg-warp-mobile-games-fix.py'
       - 'scripts/test-easter-egg-warp-mobile-games.mjs'
       - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
+      - '.github/workflows/fix-easter-egg-viewport.yml'
   workflow_dispatch:
 
 permissions:
@@ -154,6 +155,7 @@ jobs:
           python - <<'PY'
           import subprocess
           expected = {
+              '.github/workflows/fix-easter-egg-viewport.yml',
               '.github/workflows/fix-easter-egg-warp-mobile-games.yml',
               'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
               'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
