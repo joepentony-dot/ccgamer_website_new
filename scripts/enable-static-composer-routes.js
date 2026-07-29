@@ -7,6 +7,7 @@ const path = require("path");
 
 const repoRoot = path.resolve(__dirname, "..");
 const targetPath = path.join(repoRoot, "js", "music-composer-pages.js");
+const musicDir = path.join(repoRoot, "music");
 
 function replaceBounded(text, startMarker, endMarker, replacement, label) {
     const start = text.indexOf(startMarker);
@@ -17,7 +18,25 @@ function replaceBounded(text, startMarker, endMarker, replacement, label) {
     return `${text.slice(0, start)}${replacement}${text.slice(end)}`;
 }
 
+function removeGeneratedComposerPages() {
+    let removed = 0;
+    for (const entry of fs.readdirSync(musicDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || entry.name === "composers") continue;
+        const filePath = path.join(musicDir, entry.name, "index.html");
+        if (!fs.existsSync(filePath)) continue;
+        const html = fs.readFileSync(filePath, "utf8");
+        if (!html.includes('data-generated-composer="true"')) continue;
+        fs.unlinkSync(filePath);
+        const directory = path.dirname(filePath);
+        if (!fs.readdirSync(directory).length) fs.rmdirSync(directory);
+        removed += 1;
+    }
+    console.log(`[composer-routes] Removed ${removed} generated pages before deterministic rebuild.`);
+}
+
 function main() {
+    removeGeneratedComposerPages();
+
     const current = fs.readFileSync(targetPath, "utf8");
     let next = current;
 
