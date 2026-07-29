@@ -60,13 +60,15 @@ async function viewportMetrics(page, selector) {
     const rect = element.getBoundingClientRect();
     const viewport = window.visualViewport;
     const visible = {
-      top: viewport ? viewport.offsetTop : 0,
-      left: viewport ? viewport.offsetLeft : 0,
+      top: 0,
+      left: 0,
       width: viewport ? viewport.width : window.innerWidth,
       height: viewport ? viewport.height : window.innerHeight,
+      layoutOffsetTop: viewport ? viewport.offsetTop : 0,
+      layoutOffsetLeft: viewport ? viewport.offsetLeft : 0,
     };
-    visible.right = visible.left + visible.width;
-    visible.bottom = visible.top + visible.height;
+    visible.right = visible.width;
+    visible.bottom = visible.height;
     return {
       rect: {
         top: rect.top,
@@ -143,13 +145,11 @@ async function runCase(browser, testCase) {
     const scrollable = content.scrollHeight > content.clientHeight + 1;
     if (scrollable) content.scrollTop = content.scrollHeight;
     const rect = close.getBoundingClientRect();
-    const viewport = window.visualViewport;
-    const top = viewport ? viewport.offsetTop : 0;
-    const bottom = top + (viewport ? viewport.height : window.innerHeight);
+    const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     return {
       scrollable,
       scrolled: !scrollable || content.scrollTop > 0,
-      closeWithinViewport: rect.top >= top - 2 && rect.bottom <= bottom + 2,
+      closeWithinViewport: rect.top >= -2 && rect.bottom <= viewportHeight + 2,
       scrollTop: content.scrollTop,
     };
   });
