@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+PACMAN_PATH = "resources/audio/easter-eggs/pacman.html"
 
 EXPECTED_MARKERS = {
     "js/ccg-nav.js": ["data-ccg-skip-link", "ensureSkipLink();"],
@@ -15,7 +16,7 @@ EXPECTED_MARKERS = {
     "admin/js/input-harden.js": ["tag === 'select'"],
     "admin/announce.html": ['alt="Selected announcement thumbnail preview"'],
     "games/game.html": ['title="Screenshot viewer"'],
-    "resources/audio/easter-eggs/pacman.html": ['<html lang="en">'],
+    PACMAN_PATH: ['<html lang="en">'],
     "resources/quiz.html": ['class="quiz-skip-link"', '<main class="container" id="main-content"'],
 }
 
@@ -28,7 +29,6 @@ TRANSFORMED_FILES = [
     "admin/games-json-editor.html",
     "admin/announce.html",
     "games/game.html",
-    "resources/audio/easter-eggs/pacman.html",
     "emulation.html",
     "resources/emulation-guide.html",
     "games/collections/index.html",
@@ -51,6 +51,14 @@ def restore_original_newlines(newline_styles: dict[str, bytes]) -> None:
         path.write_bytes(data.replace(b"\n", b"\r\n"))
 
 
+def patch_pacman_bytes(original: bytes) -> None:
+    old = b"<html>"
+    new = b'<html lang="en">'
+    if original.count(old) != 1:
+        raise SystemExit("Expected exactly one Pac-Man <html> opening tag.")
+    (ROOT / PACMAN_PATH).write_bytes(original.replace(old, new, 1))
+
+
 def main() -> None:
     states = {path: present(path, markers) for path, markers in EXPECTED_MARKERS.items()}
     if all(states.values()):
@@ -68,6 +76,7 @@ def main() -> None:
     for relative_path in TRANSFORMED_FILES:
         data = (ROOT / relative_path).read_bytes()
         newline_styles[relative_path] = b"\r\n" if b"\r\n" in data else b"\n"
+    pacman_original = (ROOT / PACMAN_PATH).read_bytes()
 
     subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "apply-phase7b-accessibility.py"), "apply"],
@@ -75,6 +84,7 @@ def main() -> None:
         check=True,
     )
     restore_original_newlines(newline_styles)
+    patch_pacman_bytes(pacman_original)
 
 
 if __name__ == "__main__":
