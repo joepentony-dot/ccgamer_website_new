@@ -1,4 +1,4 @@
-# Phase 4D permanent archive validation and deterministic regeneration.
+# Final Phase 4D settled-head validation trigger; no generated output depends on this comment.
 name: Phase 4D Permanent Year and Platform Validation
 
 on:
