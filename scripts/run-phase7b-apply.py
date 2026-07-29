@@ -19,10 +19,36 @@ EXPECTED_MARKERS = {
     "resources/quiz.html": ['class="quiz-skip-link"', '<main class="container" id="main-content"'],
 }
 
+TRANSFORMED_FILES = [
+    "js/ccg-nav.js",
+    "resources/css/ccg-nav.css",
+    "admin/js/input-harden.js",
+    "admin/asset-manager.html",
+    "admin/games-editor.html",
+    "admin/games-json-editor.html",
+    "admin/announce.html",
+    "games/game.html",
+    "resources/audio/easter-eggs/pacman.html",
+    "emulation.html",
+    "resources/emulation-guide.html",
+    "games/collections/index.html",
+    "games/collections/amiga-demo-music.html",
+    "resources/quiz.html",
+]
+
 
 def present(path: str, markers: list[str]) -> bool:
-    text = (ROOT / path).read_text(encoding="utf-8")
+    text = (ROOT / path).read_bytes().decode("utf-8")
     return all(marker in text for marker in markers)
+
+
+def restore_original_newlines(newline_styles: dict[str, bytes]) -> None:
+    for relative_path, newline in newline_styles.items():
+        if newline != b"\r\n":
+            continue
+        path = ROOT / relative_path
+        data = path.read_bytes().replace(b"\r\n", b"\n")
+        path.write_bytes(data.replace(b"\n", b"\r\n"))
 
 
 def main() -> None:
@@ -38,11 +64,17 @@ def main() -> None:
             f"Applied markers: {partial}; missing markers: {missing}"
         )
 
+    newline_styles = {}
+    for relative_path in TRANSFORMED_FILES:
+        data = (ROOT / relative_path).read_bytes()
+        newline_styles[relative_path] = b"\r\n" if b"\r\n" in data else b"\n"
+
     subprocess.run(
         [sys.executable, str(ROOT / "scripts" / "apply-phase7b-accessibility.py"), "apply"],
         cwd=ROOT,
         check=True,
     )
+    restore_original_newlines(newline_styles)
 
 
 if __name__ == "__main__":
