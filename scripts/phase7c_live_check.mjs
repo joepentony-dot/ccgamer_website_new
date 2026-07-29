@@ -6,6 +6,7 @@ import { chromium } from 'playwright-core';
 import axe from 'axe-core';
 
 // Evidence deliberately omits volatile timestamps so repeat runs converge.
+// Settled-head validation must not create a follow-up evidence commit.
 function parseArgs() {
   const args = process.argv.slice(2);
   const result = {};
