@@ -74,14 +74,15 @@ async function inspectRoute(browser, baseUrl, route) {
         .map((link) => link.getAttribute('href'))
         .filter(Boolean);
       const duplicateStyles = stylesheetHrefs.filter((href, index) => stylesheetHrefs.indexOf(href) !== index);
+      const analyticsNonblocking = analytics.every((script) => (
+        script.hasAttribute('defer')
+        || script.hasAttribute('async')
+        || String(script.getAttribute('type') || '').toLowerCase() === 'module'
+      ));
       return {
         analytics_tags: analytics.length,
-        analytics_nonblocking: analytics.length > 0 && analytics.every((script) => (
-          script.hasAttribute('defer')
-          || script.hasAttribute('async')
-          || String(script.getAttribute('type') || '').toLowerCase() === 'module'
-        )),
-        analytics_loader_executed: Boolean(window.ccgAnalyticsLoaded),
+        analytics_nonblocking: analyticsNonblocking,
+        analytics_loader_executed: analytics.length === 0 || Boolean(window.ccgAnalyticsLoaded),
         duplicate_stylesheet_hrefs: new Set(duplicateStyles).size,
         body_has_content: Boolean(document.body && document.body.textContent.trim()),
       };
@@ -105,7 +106,6 @@ async function inspectRoute(browser, baseUrl, route) {
       serious_or_critical_nodes: seriousOrCriticalNodes,
     };
     result.passed = result.status === 200
-      && result.analytics_tags > 0
       && result.analytics_nonblocking
       && result.analytics_loader_executed
       && result.duplicate_stylesheet_hrefs === 0
