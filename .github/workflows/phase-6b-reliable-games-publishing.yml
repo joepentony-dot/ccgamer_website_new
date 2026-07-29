@@ -98,7 +98,11 @@ jobs:
           node scripts/rebuild-games.js
           rm -f seo-audit-report.md
           git diff --binary > "$RUNNER_TEMP/second.diff"
-          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+          if ! cmp -s "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"; then
+            echo "Deterministic rebuild mismatch:"
+            diff -u "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff" || true
+            exit 1
+          fi
           git diff --check
 
       - name: Run synthetic C64 and Amiga transactions
