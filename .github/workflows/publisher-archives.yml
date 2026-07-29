@@ -154,7 +154,7 @@ jobs:
         run: node scripts/validate-sitemaps.js
 
       - name: Commit generated publisher and sitemap outputs
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
