@@ -5,6 +5,7 @@ import process from 'node:process';
 import { chromium } from 'playwright-core';
 import axe from 'axe-core';
 
+// Evidence deliberately omits volatile timestamps so repeat runs converge.
 function parseArgs() {
   const args = process.argv.slice(2);
   const result = {};
