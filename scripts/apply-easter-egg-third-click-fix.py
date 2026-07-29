@@ -5,7 +5,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 JS_PATH = ROOT / "js" / "ccg-global.js"
-MARKER = "CCG EASTER EGG THIRD CLICK STABILITY"
+TEST_PATH = ROOT / "scripts" / "test-easter-egg-viewport.mjs"
+JS_MARKER = "CCG EASTER EGG THIRD CLICK STABILITY"
+TEST_MARKER = "CCG EASTER EGG DISMISSAL ARM TEST COMPATIBILITY"
 
 
 def replace_once(text: str, old: str, new: str, label: str) -> str:
@@ -15,10 +17,10 @@ def replace_once(text: str, old: str, new: str, label: str) -> str:
     return text.replace(old, new, 1)
 
 
-def main() -> None:
+def patch_js() -> None:
     text = JS_PATH.read_text(encoding="utf-8")
-    if MARKER in text:
-        print("Third-click stability correction already applied.")
+    if JS_MARKER in text:
+        print("Third-click JavaScript correction already applied.")
         return
 
     text = replace_once(
@@ -57,6 +59,49 @@ def main() -> None:
 
     JS_PATH.write_text(text, encoding="utf-8")
     print("Applied third-click stability correction to js/ccg-global.js.")
+
+
+def patch_viewport_test() -> None:
+    text = TEST_PATH.read_text(encoding="utf-8")
+    if TEST_MARKER in text:
+        print("Viewport test dismissal-arm compatibility already applied.")
+        return
+
+    text = replace_once(
+        text,
+        '''  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });\n}\n\nasync function viewportMetrics(page, selector) {''',
+        '''  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });\n}\n\n/* CCG EASTER EGG DISMISSAL ARM TEST COMPATIBILITY */\nasync function waitForDismissalArmed(page) {\n  await page.waitForFunction(\n    () => document.querySelector('.ccg-secret-modal')?.dataset.ccgSecretModalLocked === 'true',\n    null,\n    { timeout: 5000 },\n  );\n}\n\nasync function viewportMetrics(page, selector) {''',
+        "viewport test dismissal helper",
+    )
+
+    text = replace_once(
+        text,
+        '''  await page.locator('[data-ccg-secret-close]').click();\n  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });''',
+        '''  await waitForDismissalArmed(page);\n  await page.locator('[data-ccg-secret-close]').click();\n  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });''',
+        "viewport test initial close",
+    )
+
+    text = replace_once(
+        text,
+        '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');''',
+        '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n  await waitForDismissalArmed(page);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');''',
+        "viewport test PACMAN activation",
+    )
+
+    text = replace_once(
+        text,
+        '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');''',
+        '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await waitForDismissalArmed(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');''',
+        "viewport test BSOD activation",
+    )
+
+    TEST_PATH.write_text(text, encoding="utf-8")
+    print("Updated viewport test for the one-second dismissal shield.")
+
+
+def main() -> None:
+    patch_js()
+    patch_viewport_test()
 
 
 if __name__ == "__main__":
