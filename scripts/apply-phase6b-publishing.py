@@ -175,10 +175,18 @@ def update_year_validator() -> bool:
     source = source.replace("| Noindex year excluded | **2023** |", "| Noindex year routes excluded | **${summary.noindexYearRoutes}** |")
     source = source.replace("- Exact route uniqueness across both hubs, all 15 year routes and both platform routes.", "- Exact route uniqueness across both hubs, every represented year route and both platform routes.")
     source = source.replace("- Exact source-data membership checks for all 651 year links, 552 C64 links and 99 Amiga links.", "- Exact source-data membership checks using totals derived from the current games database.")
-    source = source.replace(
-        "        registeredArchiveRoutes: expectedStaticEntries.length,\n",
-        "        registeredArchiveRoutes: expectedStaticEntries.length,\n        noindexYearRoutes: years.filter((group) => !group.indexable).length,\n",
+    noindex_summary_line = "        noindexYearRoutes: years.filter((group) => !group.indexable).length,\n"
+    source = re.sub(
+        r"(?:        noindexYearRoutes: years\.filter\(\(group\) => !group\.indexable\)\.length,\n)+",
+        noindex_summary_line,
+        source,
     )
+    if noindex_summary_line not in source:
+        source = source.replace(
+            "        registeredArchiveRoutes: expectedStaticEntries.length,\n",
+            "        registeredArchiveRoutes: expectedStaticEntries.length,\n" + noindex_summary_line,
+            1,
+        )
     return write(path, source)
 
 
@@ -259,12 +267,19 @@ def update_editor() -> bool:
 ''',
     )
     source = replace_once(source, schema_anchor, schema_replacement, "add editor schema graph")
-    source = replace_once(
+    schema_var_line = "    GAME_SCHEMA_JSON: gameSchemaJson,\n"
+    source = re.sub(
+        r"(?:    GAME_SCHEMA_JSON: gameSchemaJson,\n)+",
+        schema_var_line,
         source,
-        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n",
-        "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n    GAME_SCHEMA_JSON: gameSchemaJson,\n",
-        "add editor schema template variable",
     )
+    if schema_var_line not in source:
+        source = replace_once(
+            source,
+            "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n",
+            "    VIDEO_SCHEMA_GRAPH_SUFFIX: videoSchemaGraphSuffix,\n" + schema_var_line,
+            "add editor schema template variable",
+        )
     source = source.replace("'- node scripts/build-games.js',\n    '- node scripts/generate-sitemaps.js',", "'- node scripts/rebuild-games.js',")
     source = source.replace("'- Upload as-is with no post-processing required.'", "'- These files are provisional package outputs; the authoritative rebuild command regenerates and validates all sitemaps.'")
     return write(path, source)
