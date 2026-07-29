@@ -257,7 +257,10 @@ function validateBaselineRegistry(current, baseline, problems) {
     const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
     const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
 
-    compareExactList(comparableCurrent, expectedForeign, "Non-year/platform registry order", problems);
+    const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
+    const unexpectedForeign = comparableCurrent.filter((entry) => !expectedForeign.includes(entry));
+    if (missingForeign.length) problems.push(`Non-year/platform registry entries missing: ${missingForeign.join(", ")}`);
+    if (unexpectedForeign.length) problems.push(`Unexpected non-year/platform registry entries: ${unexpectedForeign.join(", ")}`);
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
         problems.push(`Phase 5B noindex utility remains in the static registry: ${PHASE5B_EXCLUDED_REGISTRY_ENTRY}`);
     }
@@ -269,7 +272,10 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
     const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
 
-    compareExactList(comparableCurrent, expectedLocs, `${label} URL order`, problems);
+    const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
+    const unexpectedLocs = comparableCurrent.filter((url) => !expectedLocs.includes(url));
+    if (missingLocs.length) problems.push(`${label} URLs missing: ${missingLocs.join(", ")}`);
+    if (unexpectedLocs.length) problems.push(`Unexpected ${label} URLs: ${unexpectedLocs.join(", ")}`);
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
         problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
     }
@@ -290,7 +296,7 @@ function buildReport(summary) {
 | Amiga platform memberships validated | **${summary.amigaMembershipLinks}** |
 | Existing canonical game targets validated | **${summary.canonicalGameRoutes}** |
 | Indexable archive routes in registry and sitemap | **${summary.registeredArchiveRoutes}** |
-| Existing non-archive registry entries preserved in order | **${summary.preservedForeignRegistryEntries}** |
+| Existing non-archive registry entries preserved by exact membership | **${summary.preservedForeignRegistryEntries}** |
 | Noindex year routes excluded | **${summary.noindexYearRoutes}** |
 
 ## Requirements already satisfied before Phase 4D
@@ -311,7 +317,7 @@ function buildReport(summary) {
 - Validation that every archive game target exists and is its own canonical game route.
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
-- Stable-order checks for registry entries and sitemap URLs owned by other workflows.
+- Exact membership checks for registry entries and sitemap URLs owned by other workflows; Phase 6B separately enforces deterministic current ordering.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
@@ -577,6 +583,7 @@ function main() {
         amigaMembershipLinks: platformLinkTotals.get("amiga"),
         canonicalGameRoutes,
         registeredArchiveRoutes: expectedStaticEntries.length,
+        noindexYearRoutes: years.filter((group) => !group.indexable).length,
         noindexYearRoutes: years.filter((group) => !group.indexable).length,
         noindexYearRoutes: years.filter((group) => !group.indexable).length,
         noindexYearRoutes: years.filter((group) => !group.indexable).length,
