@@ -1,0 +1,295 @@
+name: Final Phase 7 Regression Audit
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/phase-7-final-regression-audit.yml"
+      - "scripts/phase7_final_regression_audit.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: phase-7-final-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  final-regression-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+
+    steps:
+      - name: Check out final audit branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Fetch main baseline
+        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase7-final-protected.sha256"
+
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --disable-pip-version-check \
+            beautifulsoup4==4.13.4 \
+            pillow==11.3.0
+          npm install --no-save --package-lock=false --ignore-scripts \
+            lighthouse@13.4.1 \
+            chrome-launcher@1.2.1 \
+            playwright-core@1.61.1 \
+            axe-core@4.12.1
+          google-chrome --version
+
+      - name: Validate audit tooling
+        run: |
+          python -m py_compile \
+            scripts/phase7a_static_performance_accessibility_audit.py \
+            scripts/apply-phase7f-redirect-route-performance.py \
+            scripts/phase7_final_regression_audit.py
+          node --check scripts/phase7a_live_audit.mjs
+          node --check scripts/rebuild-games.js
+          node --check scripts/validate-publisher-logo-output.js
+          node --check scripts/validate-year-platform-discovery.js
+
+      - name: Run repository-wide static audit
+        run: |
+          python scripts/phase7a_static_performance_accessibility_audit.py scan \
+            --output "$RUNNER_TEMP/phase-7-final-static.json"
+
+      - name: Run representative live browser audit
+        run: |
+          mkdir -p "$RUNNER_TEMP/phase-7-final-lighthouse"
+          node scripts/phase7a_live_audit.mjs \
+            --output "$RUNNER_TEMP/phase-7-final-live.json" \
+            --raw-dir "$RUNNER_TEMP/phase-7-final-lighthouse"
+
+      - name: Inspect redirect-route integrity
+        run: |
+          python scripts/apply-phase7f-redirect-route-performance.py inspect \
+            --output "$RUNNER_TEMP/phase-7-final-redirect.json"
+
+      - name: Verify deterministic authoritative rebuild
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          root = Path.cwd()
+          output = Path(os.environ["RUNNER_TEMP"]) / "phase-7-final-generator.json"
+          result = {
+              "completed": False,
+              "deterministic": False,
+              "publisher_validator_passed": False,
+              "year_platform_validator_passed": False,
+              "genre_shortcut_present": False,
+              "visible_platform_shortcut_absent": False,
+              "first_changed_paths": [],
+              "second_changed_paths": [],
+              "error": None,
+          }
+
+          def changed_paths():
+              tracked = subprocess.check_output(
+                  ["git", "diff", "--name-only"], cwd=root, text=True
+              ).splitlines()
+              untracked = subprocess.check_output(
+                  ["git", "ls-files", "--others", "--exclude-standard"],
+                  cwd=root,
+                  text=True,
+              ).splitlines()
+              return sorted({*tracked, *untracked})
+
+          def rebuild():
+              subprocess.run(["node", "scripts/rebuild-games.js"], cwd=root, check=True)
+              (root / "seo-audit-report.md").unlink(missing_ok=True)
+              return subprocess.check_output(["git", "diff", "--binary"], cwd=root)
+
+          try:
+              first = rebuild()
+              result["first_changed_paths"] = changed_paths()
+              second = rebuild()
+              result["second_changed_paths"] = changed_paths()
+              result["deterministic"] = first == second
+
+              subprocess.run(
+                  ["node", "scripts/validate-publisher-logo-output.js"],
+                  cwd=root,
+                  check=True,
+              )
+              result["publisher_validator_passed"] = True
+              subprocess.run(
+                  ["node", "scripts/validate-year-platform-discovery.js"],
+                  cwd=root,
+                  check=True,
+              )
+              result["year_platform_validator_passed"] = True
+
+              games_index = (root / "games/index.html").read_text(
+                  encoding="utf-8", errors="replace"
+              )
+              result["genre_shortcut_present"] = (
+                  'href="/games/genres/">Browse by Genre</a>' in games_index
+              )
+              result["visible_platform_shortcut_absent"] = (
+                  ">Browse by Platform</a>" not in games_index
+              )
+              result["completed"] = True
+          except Exception as error:
+              result["error"] = f"{type(error).__name__}: {error}"
+          finally:
+              subprocess.run(["git", "reset", "--hard", "HEAD"], cwd=root, check=True)
+              subprocess.run(["git", "clean", "-fd"], cwd=root, check=True)
+              output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+
+          print(json.dumps(result, indent=2))
+          PY
+
+      - name: Record historical workflow noise
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run list --branch main --limit 50 \
+            --json databaseId,name,workflowName,conclusion,status,headSha,createdAt,url,event \
+            > "$RUNNER_TEMP/phase-7-main-runs-raw.json" \
+            || echo '[]' > "$RUNNER_TEMP/phase-7-main-runs-raw.json"
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          temp = Path(os.environ["RUNNER_TEMP"])
+          raw = json.loads((temp / "phase-7-main-runs-raw.json").read_text(encoding="utf-8"))
+          current_main = subprocess.check_output(
+              ["git", "rev-parse", "origin/main"], text=True
+          ).strip()
+          stale = [
+              item for item in raw
+              if item.get("conclusion") in {"failure", "cancelled", "timed_out"}
+              and item.get("headSha") != current_main
+          ]
+          (temp / "phase-7-final-legacy-runs.json").write_text(
+              json.dumps(stale, indent=2) + "\n", encoding="utf-8"
+          )
+          print(f"Recorded {len(stale)} historical failed/cancelled runs.")
+          PY
+
+      - name: Compose final Phase 7 report
+        run: |
+          python scripts/phase7_final_regression_audit.py \
+            --baseline docs/seo-baseline/phase-7a-performance-accessibility-evidence.json \
+            --current-static "$RUNNER_TEMP/phase-7-final-static.json" \
+            --current-live "$RUNNER_TEMP/phase-7-final-live.json" \
+            --generator "$RUNNER_TEMP/phase-7-final-generator.json" \
+            --redirect "$RUNNER_TEMP/phase-7-final-redirect.json" \
+            --legacy-runs "$RUNNER_TEMP/phase-7-final-legacy-runs.json" \
+            --report docs/seo-baseline/phase-7-final-regression-audit.md \
+            --evidence docs/seo-baseline/phase-7-final-regression-evidence.json
+          sed -i 's/[[:space:]]\+$//' docs/seo-baseline/phase-7-final-regression-audit.md
+          test -s docs/seo-baseline/phase-7-final-regression-audit.md
+          test -s docs/seo-baseline/phase-7-final-regression-evidence.json
+          git diff --check
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/phase7-final-protected.sha256"
+
+      - name: Remove temporary dependencies and caches
+        run: |
+          rm -rf node_modules
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+
+      - name: Confirm exact read-only scope
+        run: |
+          python - <<'PY'
+          import subprocess
+
+          allowed = {
+              ".github/workflows/phase-7-final-regression-audit.yml",
+              "scripts/phase7_final_regression_audit.py",
+              "docs/seo-baseline/phase-7-final-regression-audit.md",
+              "docs/seo-baseline/phase-7-final-regression-evidence.json",
+          }
+          protected = {
+              "index.html",
+              "home.html",
+              "resources/css/intro.css",
+              "js/index-intro.js",
+              "games/games.json",
+          }
+          tracked = subprocess.check_output(
+              ["git", "diff", "--name-only", "origin/main"], text=True
+          ).splitlines()
+          untracked = subprocess.check_output(
+              ["git", "ls-files", "--others", "--exclude-standard"], text=True
+          ).splitlines()
+          changed = sorted({*tracked, *untracked})
+          unexpected = [path for path in changed if path not in allowed]
+          if unexpected:
+              raise SystemExit(f"Unexpected final Phase 7 audit paths: {unexpected}")
+          if protected.intersection(changed):
+              raise SystemExit("A protected file entered the final Phase 7 audit diff.")
+          print(f"Validated final Phase 7 read-only scope ({len(changed)} files).")
+          PY
+          git diff --check
+
+      - name: Upload final Phase 7 evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase-7-final-regression-audit
+          path: |
+            ${{ runner.temp }}/phase-7-final-static.json
+            ${{ runner.temp }}/phase-7-final-live.json
+            ${{ runner.temp }}/phase-7-final-lighthouse/*.json
+            ${{ runner.temp }}/phase-7-final-generator.json
+            ${{ runner.temp }}/phase-7-final-redirect.json
+            ${{ runner.temp }}/phase-7-final-legacy-runs.json
+            docs/seo-baseline/phase-7-final-regression-audit.md
+            docs/seo-baseline/phase-7-final-regression-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit audit report and evidence
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git add \
+            docs/seo-baseline/phase-7-final-regression-audit.md \
+            docs/seo-baseline/phase-7-final-regression-evidence.json
+          if git diff --cached --quiet; then
+            echo "Final Phase 7 audit report is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record final Phase 7 regression audit [skip ci]"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
+
+      - name: Publish audit summary
+        run: cat docs/seo-baseline/phase-7-final-regression-audit.md >> "$GITHUB_STEP_SUMMARY"
