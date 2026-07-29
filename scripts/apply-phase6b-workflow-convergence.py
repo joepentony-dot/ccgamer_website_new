@@ -170,9 +170,11 @@ def patch_transaction_diagnostics() -> bool:
     new = """    if not all_checks:
         for result in transactions:
             if not result["command"].get("passed"):
-                print(f"\n--- {result['variant'].upper()} AUTHORITATIVE COMMAND OUTPUT ---")
+                print()
+                print(f"--- {result['variant'].upper()} AUTHORITATIVE COMMAND OUTPUT ---")
                 print(result["command"].get("output_tail", ""))
-                print(f"--- END {result['variant'].upper()} OUTPUT ---\n")
+                print(f"--- END {result['variant'].upper()} OUTPUT ---")
+                print()
         failed = {
             result["variant"]: [name for name, passed in result["checks"].items() if not passed]
             for result in transactions
