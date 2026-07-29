@@ -130,8 +130,8 @@
       "h1": "1982 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1982
     },
     {
@@ -143,8 +143,8 @@
       "h1": "1983 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1983
     },
     {
@@ -156,8 +156,8 @@
       "h1": "1984 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1984
     },
     {
@@ -169,8 +169,8 @@
       "h1": "1985 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1985
     },
     {
@@ -182,8 +182,8 @@
       "h1": "1986 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1986
     },
     {
@@ -195,8 +195,8 @@
       "h1": "1987 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1987
     },
     {
@@ -208,8 +208,8 @@
       "h1": "1988 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1988
     },
     {
@@ -221,8 +221,8 @@
       "h1": "1989 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1989
     },
     {
@@ -234,8 +234,8 @@
       "h1": "1990 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1990
     },
     {
@@ -247,8 +247,8 @@
       "h1": "1991 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1991
     },
     {
@@ -260,8 +260,8 @@
       "h1": "1992 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1992
     },
     {
@@ -273,8 +273,8 @@
       "h1": "1993 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1993
     },
     {
@@ -286,8 +286,8 @@
       "h1": "1994 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1994
     },
     {
@@ -299,8 +299,8 @@
       "h1": "1995 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "year": 1995
     },
     {
@@ -327,8 +327,8 @@
       "h1": "Amiga Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "platform": "Amiga"
     },
     {
@@ -340,38 +340,55 @@
       "h1": "Commodore 64 Games",
       "robots": "index,follow",
       "indexable": true,
-      "in_sitemap": false,
-      "in_static_registry": false,
+      "in_sitemap": true,
+      "in_static_registry": true,
       "platform": "C64"
     }
   ],
   "links": {
     "static_year_links": {
-      "1982": 1,
-      "1983": 1,
-      "1984": 1,
-      "1985": 1,
-      "1986": 1,
-      "1987": 1,
-      "1988": 1,
-      "1989": 1,
-      "1990": 1,
-      "1991": 1,
-      "1992": 1,
-      "1993": 1,
-      "1994": 1,
-      "1995": 1,
-      "2023": 1
+      "1982": 2,
+      "1983": 3,
+      "1984": 3,
+      "1985": 3,
+      "1986": 3,
+      "1987": 3,
+      "1988": 3,
+      "1989": 3,
+      "1990": 3,
+      "1991": 3,
+      "1992": 3,
+      "1993": 3,
+      "1994": 3,
+      "1995": 3,
+      "2023": 2
     },
     "static_platform_links": {
-      "C64": 1,
-      "Amiga": 1
+      "C64": 14,
+      "Amiga": 11
     },
     "query_year_links": {},
     "query_platform_links": {},
     "top_static_link_sources": {
       "games/years/index.html": 15,
-      "games/platforms/index.html": 2
+      "games/years/1990/index.html": 4,
+      "games/years/1988/index.html": 4,
+      "games/years/1991/index.html": 4,
+      "games/years/1987/index.html": 4,
+      "games/years/1992/index.html": 4,
+      "games/years/1989/index.html": 4,
+      "games/years/1995/index.html": 3,
+      "games/years/1985/index.html": 3,
+      "games/years/1986/index.html": 3,
+      "games/years/1983/index.html": 3,
+      "games/years/1984/index.html": 3,
+      "games/years/1993/index.html": 3,
+      "games/years/1994/index.html": 3,
+      "games/platforms/index.html": 2,
+      "games/years/1982/index.html": 2,
+      "games/years/2023/index.html": 2,
+      "games/platforms/amiga/index.html": 1,
+      "games/platforms/c64/index.html": 1
     }
   },
   "filter_capabilities": {
