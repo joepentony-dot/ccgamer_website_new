@@ -86,11 +86,11 @@ The authoritative command validates and regenerates, in order:
 8. year archives
 9. platform archives
 10. archive discovery integration
-11. downloads archive
-12. retro outputs
-13. page and game sitemaps
-14. root sitemap index
-15. sitemap, SEO and year/platform validation
+11. downloads archive and static-page registration
+12. page and game sitemaps
+13. root sitemap index, sitemap validation, SEO validation and year/platform validation
+
+Retro Events, Retro Specials and Amiga demo pages are deliberately outside this game-publishing command because they have their own source data and generators.
 
 Expected totals are derived from the current `games/games.json`. The validators still reject duplicate IDs/slugs, unsupported platforms, catalogue loss below the protected baseline, missing archive membership, missing canonical routes and malformed output.
 
