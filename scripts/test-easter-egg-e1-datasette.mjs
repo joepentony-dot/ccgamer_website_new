@@ -161,8 +161,11 @@ async function runCase(browser, testCase) {
     await page.waitForFunction(() => document.querySelector('.ccg-datasette')?.dataset.ccgDatasetteState === 'success', null, { timeout: 7000 });
 
     const rewardVisible = await page.locator('[data-datasette-reward]').isVisible();
+    await page.waitForTimeout(testCase.reducedMotion === 'reduce' ? 150 : 650);
     const rewardHref = await page.locator('[data-datasette-game-link]').getAttribute('href');
     const rewardTitle = (await page.locator('[data-datasette-game-title]').textContent())?.trim() || '';
+    const rewardTitleState = await elementViewportState(page, '[data-datasette-game-title]');
+    const rewardLinkState = await elementViewportState(page, '[data-datasette-game-link]');
     const successCanvas = await canvasMetrics(page);
     const successScreenshot = path.join(screenshotsDir, `${testCase.name}-datasette-success.png`);
     await page.screenshot({ path: successScreenshot, fullPage: false });
@@ -196,6 +199,8 @@ async function runCase(browser, testCase) {
         soundCanBeDisabled: soundOffState === 'false',
         loaderCompletesAtTarget: rewardVisible,
         rewardHasGameTitle: rewardTitle.length > 1,
+        rewardTitleVisibleWithoutManualScroll: Boolean(rewardTitleState?.withinViewport),
+        rewardLaunchVisibleWithoutManualScroll: Boolean(rewardLinkState?.withinViewport),
         rewardUsesCanonicalGameRoute: /^\/games\/[a-z0-9][a-z0-9-]*\/$/.test(new URL(rewardHref, args.baseUrl).pathname),
         successCanvasStillDrawn: successCanvas.colouredPixels > 500,
         scrollPositionRestored: Math.abs(scrollAfter - scrollBefore) <= 2,
@@ -217,6 +222,8 @@ async function runCase(browser, testCase) {
         counterAfterRewind,
         rewardHref,
         rewardTitle,
+        rewardTitleState,
+        rewardLinkState,
         checks,
         passed: Object.values(checks).every(Boolean),
         screenshot: successScreenshot,

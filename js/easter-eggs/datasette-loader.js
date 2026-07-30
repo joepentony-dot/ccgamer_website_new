@@ -323,7 +323,12 @@ export async function createDatasetteExperience(options = {}) {
             gameMeta.textContent = "Browse all games";
             gameLink.href = `${siteRoot}games/index.html`;
         }
-        gameLink.focus({ preventScroll: true });
+        /* CCG DATASETTE REWARD VISIBILITY */
+        requestAnimationFrame(() => {
+            if (destroyed) return;
+            reward.scrollIntoView({ block: "center", inline: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+            requestAnimationFrame(() => gameLink.focus({ preventScroll: true }));
+        });
     }
 
     function resetExperience() {
