@@ -9,6 +9,7 @@ on:
       - 'resources/css/easter-eggs-basic.css'
       - 'scripts/apply-easter-egg-e2-basic-console.py'
       - 'scripts/test-easter-egg-e2-basic-console.mjs'
+      - 'scripts/test-easter-egg-viewport.mjs'
       - '.github/workflows/easter-egg-e2-basic-console.yml'
   workflow_dispatch:
 
@@ -92,7 +93,8 @@ jobs:
             'docs/seo-baseline/easter-egg-e2-basic-evidence.json',
             'docs/seo-baseline/easter-egg-e2-basic-validation.md',
             'js/ccg-global.js','js/easter-eggs/basic-console.js','resources/css/easter-eggs-basic.css',
-            'scripts/apply-easter-egg-e2-basic-console.py','scripts/test-easter-egg-e2-basic-console.mjs'
+            'scripts/apply-easter-egg-e2-basic-console.py','scripts/test-easter-egg-e2-basic-console.mjs',
+            'scripts/test-easter-egg-viewport.mjs'
           }
           tracked=set(filter(None,subprocess.check_output(['git','diff','--name-only','origin/main'],text=True).splitlines()))
           untracked=set(filter(None,subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()))
