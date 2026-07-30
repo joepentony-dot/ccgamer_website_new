@@ -133,8 +133,9 @@ button {
 
 .ccg-invaders__stage {
     position: relative;
-    width: min(100%, 720px);
-    height: 100%;
+    height: min(100%, 760px);
+    width: auto;
+    max-width: 100%;
     max-height: 760px;
     aspect-ratio: 720 / 760;
     min-height: 0;
@@ -256,10 +257,12 @@ button {
 
     .ccg-invaders__stage {
         width: min(100%, 620px);
+        height: auto;
+        max-height: 100%;
     }
 }
 
-@media (pointer: coarse), (max-width: 900px) {
+@media (pointer: coarse) {
     .ccg-invaders__touch {
         display: grid;
     }
