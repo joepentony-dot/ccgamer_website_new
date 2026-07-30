@@ -158,7 +158,7 @@ jobs:
 
       - name: Remove temporary dependencies
         if: always()
-        run: rm -rf node_modules
+        run: rm -rf node_modules scripts/__pycache__
 
       - name: Confirm exact Phase E1 scope
         run: |
