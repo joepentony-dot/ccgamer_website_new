@@ -13,15 +13,17 @@ on:
       - 'scripts/apply-easter-egg-direct-overlay-fix.py'
       - 'scripts/apply-easter-egg-third-click-fix.py'
       - 'scripts/apply-easter-egg-warp-mobile-games-fix.py'
+      - 'scripts/apply-pacman-self-contained-runtime-fix.py'
       - 'scripts/test-easter-egg-viewport.mjs'
       - 'scripts/test-easter-egg-third-click-stability.mjs'
       - 'scripts/test-easter-egg-warp-mobile-games.mjs'
+      - 'scripts/test-pacman-mobile-render.mjs'
       - '.github/workflows/fix-easter-egg-viewport.yml'
       - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate-easter-egg-viewport:
@@ -139,6 +141,8 @@ jobs:
               'docs/seo-baseline/easter-egg-third-click-validation.md',
               'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
               'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
+              'docs/seo-baseline/pacman-mobile-render-evidence.json',
+              'docs/seo-baseline/pacman-mobile-render-validation.md',
               'js/ccg-global.js',
               'resources/audio/easter-eggs/pacman.html',
               'resources/css/ccg-master.css',
@@ -148,9 +152,11 @@ jobs:
               'scripts/apply-easter-egg-direct-overlay-fix.py',
               'scripts/apply-easter-egg-third-click-fix.py',
               'scripts/apply-easter-egg-warp-mobile-games-fix.py',
+              'scripts/apply-pacman-self-contained-runtime-fix.py',
               'scripts/test-easter-egg-viewport.mjs',
               'scripts/test-easter-egg-third-click-stability.mjs',
               'scripts/test-easter-egg-warp-mobile-games.mjs',
+              'scripts/test-pacman-mobile-render.mjs',
           }
           tracked_output = subprocess.check_output(
               ['git', 'diff', '--name-only', 'origin/main'],
