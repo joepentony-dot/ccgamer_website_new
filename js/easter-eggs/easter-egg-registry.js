@@ -11,7 +11,7 @@ export const EASTER_EGG_REGISTRY = Object.freeze([
     { code: "sonic", label: "SONIC", category: "audio", desktop: true, mobile: true, reducedMotion: "limited-animation", runtime: "local" },
     { code: "warp", label: "WARP", category: "system", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local" },
     { code: "party", label: "PARTY", category: "video", desktop: true, mobile: true, reducedMotion: "manual-play", runtime: "local" },
-    { code: "zxspectrum", label: "ZX SPECTRUM", category: "computer", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "external" },
+    { code: "zxspectrum", label: "ZX SPECTRUM", category: "computer", desktop: true, mobile: true, reducedMotion: "supported", runtime: "local", phase: "E6" },
     { code: "pacman", label: "PACMAN", category: "game", desktop: true, mobile: true, reducedMotion: "game-controlled", runtime: "local", phase: "E5" },
     { code: "boing", label: "BOING", category: "amiga", desktop: true, mobile: true, reducedMotion: "manual-play", runtime: "local" },
     { code: "matrix", label: "MATRIX", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },

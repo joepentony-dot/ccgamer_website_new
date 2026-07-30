@@ -1177,44 +1177,11 @@ if (IS_ADMIN_PATH) {
     function triggerZX() {
         const screen = document.createElement("div");
         screen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--zx";
-
-        const frame = createScreenFrame("https://jsspeccy.zxdemo.org/", "ccg-egg-overlay__iframe");
+        const frame = createScreenFrame(getEasterEggAsset("zx-spectrum.html"), "ccg-egg-overlay__iframe");
         screen.appendChild(frame);
-
-        const interrupt = document.createElement("div");
-        interrupt.className = "ccg-egg-overlay__interrupt";
-        interrupt.innerHTML = `
-            <img src="${getEasterEggAsset("zx-clive.jpg")}" alt="ZX Spectrum interruption screen" />
-        `;
-        screen.appendChild(interrupt);
-
-        const audio = createAudioElement(getEasterEggAsset("no_i_dont_think_sp.mp3"));
-        audio.autoplay = false;
-        screen.appendChild(audio);
-
-        const interruptTimers = {
-            start: null,
-            end: null,
-        };
-
-        const startInterrupt = () => {
-            screen.classList.add("is-interrupt");
-            audio.currentTime = 0;
-            audio.play().catch(() => {});
-            interruptTimers.end = setTimeout(() => {
-                stopActiveEasterEgg();
-            }, 5000);
-        };
-
-        interruptTimers.start = setTimeout(startInterrupt, 10000);
-
         openEasterEggOverlay(screen, {
-            media: [frame, audio],
-            className: "ccg-egg-overlay--square",
-            cleanup: () => {
-                if (interruptTimers.start) clearTimeout(interruptTimers.start);
-                if (interruptTimers.end) clearTimeout(interruptTimers.end);
-            },
+            media: [frame],
+            className: "ccg-egg-overlay--square ccg-egg-overlay--zx-local",
         });
     }
 
