@@ -12,9 +12,18 @@ if 'CCG EASTER EGG E2 BASIC CONSOLE' not in text:
             left: window.scrollX || document.documentElement.scrollLeft || 0,
             top: window.scrollY || document.documentElement.scrollTop || 0,
         };
-        const restoreScroll = () => requestAnimationFrame(() => requestAnimationFrame(() => {
-            window.scrollTo({ left: returnScroll.left, top: returnScroll.top, behavior: "auto" });
-        }));
+        let scrollRestoreTimers = [];
+        const restoreScroll = () => {
+            const apply = () => window.scrollTo({
+                left: returnScroll.left,
+                top: returnScroll.top,
+                behavior: "auto",
+            });
+            apply();
+            requestAnimationFrame(() => requestAnimationFrame(apply));
+            scrollRestoreTimers.forEach(timer => window.clearTimeout(timer));
+            scrollRestoreTimers = [80, 180].map(delay => window.setTimeout(apply, delay));
+        };
 
         const styleId = "ccg-easter-egg-basic-css";
         if (!document.getElementById(styleId)) {
