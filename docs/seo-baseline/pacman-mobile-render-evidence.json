@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-07-30T00:07:01.544Z",
+  "verdict": "PASS",
+  "failedChecks": [],
+  "checks": {
+    "localRuntimeReady": true,
+    "canvasHasPlayableDimensions": true,
+    "mazeCanvasContainsColour": true,
+    "mazeCanvasContainsBrightPixels": true,
+    "canvasWithinIframeViewport": true,
+    "touchControlsWithinIframeViewport": true,
+    "startButtonWithinIframeViewport": true,
+    "noExternalRuntimeScripts": true
+  },
+  "metrics": {
+    "readyState": "true",
+    "canvasWidth": 330,
+    "canvasHeight": 412,
+    "colouredPixels": 23068,
+    "brightPixels": 19696,
+    "canvasRect": {
+      "top": 6,
+      "left": 6,
+      "right": 336,
+      "bottom": 418
+    },
+    "controlsRect": {
+      "top": 422,
+      "left": 0,
+      "right": 342,
+      "bottom": 687
+    },
+    "startRect": {
+      "top": 623,
+      "left": 61,
+      "right": 281,
+      "bottom": 677
+    },
+    "viewport": {
+      "width": 342,
+      "height": 744
+    },
+    "documentScrollHeight": 744,
+    "externalRuntimeScripts": []
+  }
+}

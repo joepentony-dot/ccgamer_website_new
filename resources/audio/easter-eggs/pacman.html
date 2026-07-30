@@ -5,7 +5,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 	<link rel="stylesheet" href="/resources/css/pacman-touch.css">
 	<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/resources/audio/easter-eggs/pacman.html">
-	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Permanent+Marker">
 	<style type="text/css">
 		body {
 			background-color: black;
@@ -61,8 +60,6 @@
 		<button type="button" class="ccg-pacman-start" data-pacman-key-code="78" data-pacman-key="n" data-pacman-code="KeyN">START / NEW GAME</button>
 	</div>
 
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 	<script type="text/javascript">
 		/*jslint browser: true, undef: true, eqeqeq: true, nomen: true, white: true */
 /*global window: false, document: false */
@@ -818,11 +815,15 @@ Pacman.Audio = function(game) {
     };
 
     function play(name) { 
-        if (!game.soundDisabled()) {
+        var file = files[name];
+        if (!game.soundDisabled() && file) {
             endEvents[name] = function() { ended(name); };
             playing.push(name);
-            files[name].addEventListener("ended", endEvents[name], true);
-            files[name].play();
+            file.addEventListener("ended", endEvents[name], true);
+            var playPromise = file.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(function () {});
+            }
         }
     };
 
@@ -1138,18 +1139,10 @@ var PACMAN = (function () {
         map.draw(ctx);
         dialog("Loading ...");
 
-        var extension = Modernizr.audio.ogg ? 'ogg' : 'mp3';
-
-        var audio_files = [
-            ["start", root + "audio/opening_song." + extension],
-            ["die", root + "audio/die." + extension],
-            ["eatghost", root + "audio/eatghost." + extension],
-            ["eatpill", root + "audio/eatpill." + extension],
-            ["eating", root + "audio/eating.short." + extension],
-            ["eating2", root + "audio/eating.short." + extension]
-        ];
-
-        load(audio_files, function() { loaded(); });
+        /* CCG PACMAN SELF-CONTAINED RUNTIME */
+        // The embedded game must start without third-party scripts or remote audio.
+        // Pacman.Audio safely ignores unavailable sounds while gameplay remains local.
+        loaded();
     };
 
     function load(arr, callback) { 
@@ -1351,17 +1344,34 @@ Object.prototype.clone = function () {
     return newObj;
 };
 
-$(function(){
-  var el = document.getElementById("pacman");
+(function initialiseLocalPacman() {
+  "use strict";
 
-  if (Modernizr.canvas && Modernizr.localstorage && 
-      Modernizr.audio && (Modernizr.audio.ogg || Modernizr.audio.mp3)) {
-    window.setTimeout(function () { PACMAN.init(el, "https://raw.githubusercontent.com/daleharvey/pacman/master/"); }, 0);
-  } else { 
-    el.innerHTML = "Sorry, needs a decent browser<br /><small>" + 
-      "(firefox 3.6+, Chrome 4+, Opera 10+ and Safari 4+)</small>";
+  function start() {
+    var el = document.getElementById("pacman"),
+        canvas = document.createElement("canvas");
+
+    if (el && canvas.getContext && typeof window.localStorage !== "undefined") {
+      try {
+        PACMAN.init(el, "");
+        document.documentElement.setAttribute("data-ccg-pacman-ready", "true");
+      } catch (error) {
+        console.error("PACMAN failed to initialise", error);
+        el.innerHTML = "PACMAN COULD NOT START";
+        document.documentElement.setAttribute("data-ccg-pacman-ready", "error");
+      }
+    } else if (el) {
+      el.innerHTML = "PACMAN REQUIRES CANVAS SUPPORT";
+      document.documentElement.setAttribute("data-ccg-pacman-ready", "unsupported");
+    }
   }
-});
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start, { once: true });
+  } else {
+    start();
+  }
+}());
 
 
 	</script>
