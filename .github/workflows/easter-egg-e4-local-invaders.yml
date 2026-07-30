@@ -13,6 +13,7 @@ on:
       - 'scripts/test-easter-egg-e4-invaders.mjs'
       - 'scripts/test-easter-egg-viewport.mjs'
       - 'scripts/test-easter-egg-third-click-stability.mjs'
+      - '.github/workflows/easter-egg-e3-framework-hardening.yml'
       - '.github/workflows/easter-egg-e4-local-invaders.yml'
   workflow_dispatch:
 
@@ -102,6 +103,7 @@ jobs:
           python - <<'PY'
           import subprocess
           allowed={
+            '.github/workflows/easter-egg-e3-framework-hardening.yml',
             '.github/workflows/easter-egg-e4-local-invaders.yml',
             'docs/seo-baseline/easter-egg-e4-invaders-evidence.json',
             'docs/seo-baseline/easter-egg-e4-invaders-validation.md',
