@@ -6,10 +6,8 @@ on:
     paths:
       - 'js/ccg-global.js'
       - 'js/easter-eggs/easter-egg-registry.js'
-      - 'js/easter-eggs/pacman-game.js'
       - 'resources/css/ccg-overlays.css'
       - 'resources/css/pacman-touch.css'
-      - 'resources/css/easter-eggs-pacman.css'
       - 'resources/audio/easter-eggs/pacman.html'
       - 'resources/audio/easter-eggs/invaders.html'
       - 'scripts/test-easter-egg-warp-mobile-games.mjs'
@@ -52,20 +50,23 @@ jobs:
         run: |
           node --check js/ccg-global.js
           node --check js/easter-eggs/easter-egg-registry.js
-          node --check js/easter-eggs/pacman-game.js
+          node --check scripts/test-easter-egg-e5-pacman.mjs
           test -f resources/audio/easter-eggs/pacman.html
-          test -f resources/css/easter-eggs-pacman.css
+          test -f resources/css/pacman-touch.css
           test -f resources/audio/easter-eggs/invaders.html
-          grep -q 'data-ccg-pacman-canvas' resources/audio/easter-eggs/pacman.html
+          grep -q 'Pacman.Ghost = function' resources/audio/easter-eggs/pacman.html
+          grep -q 'data-pacman-key-code="38"' resources/audio/easter-eggs/pacman.html
+          grep -q 'START / NEW GAME' resources/audio/easter-eggs/pacman.html
           grep -q 'phase: "E5"' js/easter-eggs/easter-egg-registry.js
           grep -q 'phase: "E4"' js/easter-eggs/easter-egg-registry.js
           grep -q 'triggerWarp' js/ccg-global.js
           grep -q 'getEasterEggAsset("pacman.html")' js/ccg-global.js
           grep -q 'getEasterEggAsset("invaders.html")' js/ccg-global.js
+          node scripts/test-easter-egg-e5-pacman.mjs
 
       - name: Confirm local runtimes contain no retired dependencies
         run: |
-          if grep -q 'cdnjs.cloudflare.com\|raw.githubusercontent.com/daleharvey\|jquery.min.js\|modernizr.min.js' resources/audio/easter-eggs/pacman.html; then
+          if grep -q 'cdnjs.cloudflare.com\|raw.githubusercontent.com\|jquery.min.js\|modernizr.min.js' resources/audio/easter-eggs/pacman.html; then
             echo 'PACMAN contains a retired external runtime dependency.'
             exit 1
           fi
@@ -92,5 +93,4 @@ jobs:
         run: |
           echo '## Easter Egg Game Compatibility' >> "$GITHUB_STEP_SUMMARY"
           echo '' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Validated WARP integration plus the current E4 Invaders and E5 Pac-Man local runtimes.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Legacy Pac-Man patch scripts are no longer applied to the E5 replacement.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Validated WARP integration plus E4 Invaders and the restored original E5 Pac-Man runtime.' >> "$GITHUB_STEP_SUMMARY"
