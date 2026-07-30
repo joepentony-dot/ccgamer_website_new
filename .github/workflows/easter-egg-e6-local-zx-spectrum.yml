@@ -1,0 +1,83 @@
+name: Easter Egg E6 Local ZX Spectrum
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/ccg-global.js'
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'js/easter-eggs/zx-spectrum.js'
+      - 'resources/audio/easter-eggs/zx-spectrum.html'
+      - 'resources/css/easter-eggs-zx-spectrum.css'
+      - 'scripts/apply-easter-egg-e6-zx-spectrum.py'
+      - '.github/workflows/easter-egg-e6-local-zx-spectrum.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-local-zx-spectrum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Record protected hashes
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e6-protected.sha256"
+
+      - name: Apply bounded E6 integration
+        run: python scripts/apply-easter-egg-e6-zx-spectrum.py
+
+      - name: Validate local E6 assets
+        run: |
+          node --check js/ccg-global.js
+          node --check js/easter-eggs/easter-egg-registry.js
+          node --check js/easter-eggs/zx-spectrum.js
+          test -f resources/audio/easter-eggs/zx-spectrum.html
+          test -f resources/css/easter-eggs-zx-spectrum.css
+          grep -q 'getEasterEggAsset("zx-spectrum.html")' js/ccg-global.js
+          grep -q 'runtime: "local", phase: "E6"' js/easter-eggs/easter-egg-registry.js
+          grep -q 'data-zx-spectrum' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-action="load"' resources/audio/easter-eggs/zx-spectrum.html
+          ! grep -q 'jsspeccy.zxdemo.org' js/ccg-global.js
+          ! grep -q 'https://' resources/audio/easter-eggs/zx-spectrum.html
+          ! grep -q 'https://' js/easter-eggs/zx-spectrum.js
+
+      - name: Confirm catalogue integrity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games=json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games)==651, len(games)
+          print('Catalogue integrity passed: 651 games.')
+          PY
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e6-protected.sha256"
+
+      - name: Commit tested integration
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/ccg-global.js js/easter-eggs/easter-egg-registry.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Integrate local ZX Spectrum Easter egg'
+            git push origin HEAD:${{ github.head_ref || github.ref_name }}
+          fi
