@@ -1,0 +1,108 @@
+name: Easter Egg E3 Framework Hardening
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'scripts/test-easter-egg-e3-registry.mjs'
+      - 'scripts/test-easter-egg-viewport.mjs'
+      - 'scripts/test-easter-egg-third-click-stability.mjs'
+      - '.github/workflows/easter-egg-e3-framework-hardening.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-easter-egg-framework:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Fetch main baseline
+        run: git fetch origin main --depth=1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/e3-protected.sha256"
+
+      - name: Validate JavaScript and registry coverage
+        run: |
+          node --check js/easter-eggs/easter-egg-registry.js
+          node --check scripts/test-easter-egg-e3-registry.mjs
+          node scripts/test-easter-egg-e3-registry.mjs
+
+      - name: Install browser dependency
+        run: npm install --no-save --no-package-lock playwright-core@1.58.2
+
+      - name: Start local website
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/e3-http.log" 2>&1 &
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/e3-http.log"
+          exit 1
+
+      - name: Re-run viewport regression suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-viewport.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e3-viewport.json" --report "$RUNNER_TEMP/e3-viewport.md" --screenshots "$RUNNER_TEMP/e3-viewport-shots"
+
+      - name: Re-run third-click stability suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-third-click-stability.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e3-third-click.json" --report "$RUNNER_TEMP/e3-third-click.md" --screenshots "$RUNNER_TEMP/e3-third-click-shots"
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e3-protected.sha256"
+
+      - name: Confirm bounded E3 scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          required={
+            '.github/workflows/easter-egg-e3-framework-hardening.yml',
+            'js/easter-eggs/easter-egg-registry.js',
+            'scripts/test-easter-egg-e3-registry.mjs',
+          }
+          actual=set(filter(None, subprocess.check_output(
+              ['git','diff','--name-only','origin/main'], text=True
+          ).splitlines()))
+          missing=required-actual
+          if missing:
+              print('Missing', sorted(missing))
+              print('Actual', sorted(actual))
+              raise SystemExit('Missing required E3 files')
+          unrelated=actual-required
+          if unrelated:
+              print('Ignoring unrelated later-phase files:', sorted(unrelated))
+          print('Bounded E3 scope passed.')
+          PY
+
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules
+
+      - name: Upload regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: easter-egg-e3-framework-hardening
+          path: |
+            ${{ runner.temp }}/e3-viewport.json
+            ${{ runner.temp }}/e3-viewport.md
+            ${{ runner.temp }}/e3-viewport-shots
+            ${{ runner.temp }}/e3-third-click.json
+            ${{ runner.temp }}/e3-third-click.md
+            ${{ runner.temp }}/e3-third-click-shots
+          retention-days: 30
