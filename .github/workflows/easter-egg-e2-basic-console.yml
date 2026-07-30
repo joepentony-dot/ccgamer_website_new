@@ -8,6 +8,7 @@ on:
       - 'js/easter-eggs/basic-console.js'
       - 'resources/css/easter-eggs-basic.css'
       - 'scripts/apply-easter-egg-e2-basic-console.py'
+      - 'scripts/apply-easter-egg-third-click-fix.py'
       - 'scripts/test-easter-egg-e2-basic-console.mjs'
       - 'scripts/test-easter-egg-viewport.mjs'
       - '.github/workflows/easter-egg-e2-basic-console.yml'
@@ -40,7 +41,9 @@ jobs:
         run: |
           sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e2-protected.sha256"
       - name: Apply bounded BASIC integration
-        run: python scripts/apply-easter-egg-e2-basic-console.py
+        run: |
+          python scripts/apply-easter-egg-e2-basic-console.py
+          python scripts/apply-easter-egg-third-click-fix.py
       - name: Validate syntax and registration
         run: |
           node --check js/ccg-global.js
@@ -48,6 +51,7 @@ jobs:
           grep -q 'data-ccg-secret-code="basic"' js/ccg-global.js
           grep -q '"basic": launchContext => triggerBasic(launchContext)' js/ccg-global.js
           grep -q 'CCG EASTER EGG E2 BASIC CONSOLE' resources/css/easter-eggs-basic.css
+          grep -q "data-ccg-secret-modal-locked') === 'true'" scripts/test-easter-egg-viewport.mjs
       - name: Confirm catalogue integrity
         run: |
           python - <<'PY'
@@ -93,8 +97,8 @@ jobs:
             'docs/seo-baseline/easter-egg-e2-basic-evidence.json',
             'docs/seo-baseline/easter-egg-e2-basic-validation.md',
             'js/ccg-global.js','js/easter-eggs/basic-console.js','resources/css/easter-eggs-basic.css',
-            'scripts/apply-easter-egg-e2-basic-console.py','scripts/test-easter-egg-e2-basic-console.mjs',
-            'scripts/test-easter-egg-viewport.mjs'
+            'scripts/apply-easter-egg-e2-basic-console.py','scripts/apply-easter-egg-third-click-fix.py',
+            'scripts/test-easter-egg-e2-basic-console.mjs','scripts/test-easter-egg-viewport.mjs'
           }
           tracked=set(filter(None,subprocess.check_output(['git','diff','--name-only','origin/main'],text=True).splitlines()))
           untracked=set(filter(None,subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()))
@@ -119,5 +123,5 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add js/ccg-global.js docs/seo-baseline/easter-egg-e2-basic-evidence.json docs/seo-baseline/easter-egg-e2-basic-validation.md
+          git add js/ccg-global.js scripts/test-easter-egg-viewport.mjs docs/seo-baseline/easter-egg-e2-basic-evidence.json docs/seo-baseline/easter-egg-e2-basic-validation.md
           if ! git diff --cached --quiet; then git commit -m 'Add BASIC console Easter egg'; git push origin HEAD:${{ github.head_ref || github.ref_name }}; fi
