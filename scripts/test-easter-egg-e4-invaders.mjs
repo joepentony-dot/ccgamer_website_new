@@ -21,7 +21,8 @@ const results = [];
 for (const item of cases) {
   const context = await browser.newContext({ viewport: item.viewport, isMobile: item.mobile, hasTouch: item.mobile });
   const page = await context.newPage();
-  await page.goto(`${baseURL}home.html`, { waitUntil: 'networkidle' });
+  await page.goto(`${baseURL}home.html`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.waitForSelector('.ccg-brand__logo', { state: 'visible', timeout: 15000 });
   await page.evaluate(() => window.scrollTo(0, Math.min(800, document.documentElement.scrollHeight - innerHeight - 100)));
   const startScroll = await page.evaluate(() => scrollY);
   await page.evaluate(async mobile => {
