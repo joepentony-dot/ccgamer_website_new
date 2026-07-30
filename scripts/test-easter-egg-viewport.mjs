@@ -53,6 +53,13 @@ async function triggerTripleClick(page) {
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });
 }
 
+async function waitForSecretModalUnlock(page) {
+  await page.waitForFunction(() => {
+    const modal = document.querySelector('.ccg-secret-modal.is-open');
+    return Boolean(modal) && modal.getAttribute('data-ccg-secret-modal-locked') !== 'true';
+  }, null, { timeout: 5000 });
+}
+
 async function viewportMetrics(page, selector) {
   return page.evaluate(targetSelector => {
     const element = document.querySelector(targetSelector);
@@ -154,6 +161,7 @@ async function runCase(browser, testCase) {
     };
   });
 
+  await waitForSecretModalUnlock(page);
   await page.locator('[data-ccg-secret-close]').click();
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });
   await page.waitForTimeout(1000);
