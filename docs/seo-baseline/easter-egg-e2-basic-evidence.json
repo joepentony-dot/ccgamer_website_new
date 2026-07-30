@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-07-30T12:04:27.365Z",
+  "verdict": "PASS",
+  "failedChecks": [],
+  "results": [
+    {
+      "name": "mobile",
+      "metrics": {
+        "startScroll": 800,
+        "endScroll": 800,
+        "scrollDelta": 0
+      },
+      "checks": {
+        "menuHasBasic": true,
+        "contained": true,
+        "listWorks": true,
+        "pokeWorks": true,
+        "syntaxError": true,
+        "rewardVisible": true,
+        "rewardCanonical": true,
+        "scrollRestored": true
+      }
+    },
+    {
+      "name": "short-mobile",
+      "metrics": {
+        "startScroll": 800,
+        "endScroll": 800,
+        "scrollDelta": 0
+      },
+      "checks": {
+        "menuHasBasic": true,
+        "contained": true,
+        "listWorks": true,
+        "pokeWorks": true,
+        "syntaxError": true,
+        "rewardVisible": true,
+        "rewardCanonical": true,
+        "scrollRestored": true
+      }
+    },
+    {
+      "name": "desktop",
+      "metrics": {
+        "startScroll": 800,
+        "endScroll": 800,
+        "scrollDelta": 0
+      },
+      "checks": {
+        "menuHasBasic": true,
+        "contained": true,
+        "listWorks": true,
+        "pokeWorks": true,
+        "syntaxError": true,
+        "rewardVisible": true,
+        "rewardCanonical": true,
+        "scrollRestored": true
+      }
+    }
+  ]
+}
