@@ -7,14 +7,13 @@ text = path.read_text(encoding='utf-8')
 if 'CCG EASTER EGG E2 BASIC CONSOLE' not in text:
     marker = '    function triggerWarp() {'
     block = '''    /* CCG EASTER EGG E2 BASIC CONSOLE */
-    async function triggerBasic() {
-        const modalScrollLock = secretState.scrollLock;
+    async function triggerBasic(launchContext = null) {
         const returnScroll = {
-            left: Number.isFinite(modalScrollLock?.scrollX)
-                ? modalScrollLock.scrollX
+            left: Number.isFinite(launchContext?.scrollX)
+                ? launchContext.scrollX
                 : (window.scrollX || document.documentElement.scrollLeft || 0),
-            top: Number.isFinite(modalScrollLock?.scrollY)
-                ? modalScrollLock.scrollY
+            top: Number.isFinite(launchContext?.scrollY)
+                ? launchContext.scrollY
                 : (window.scrollY || document.documentElement.scrollTop || 0),
         };
         let scrollRestoreTimers = [];
@@ -79,17 +78,47 @@ if 'CCG EASTER EGG E2 BASIC CONSOLE' not in text:
         raise SystemExit('triggerWarp marker not found')
     text = text.replace(marker, block + marker, 1)
 
-if '"basic": () => triggerBasic(),' not in text:
+if '"basic": launchContext => triggerBasic(launchContext),' not in text:
     marker = '        "load": () => triggerLoad(),\n'
     if marker not in text:
         raise SystemExit('LOAD cheat marker not found')
-    text = text.replace(marker, marker + '        "basic": () => triggerBasic(),\n', 1)
+    text = text.replace(marker, marker + '        "basic": launchContext => triggerBasic(launchContext),\n', 1)
 
 if 'data-ccg-secret-code="basic"' not in text:
     marker = '                    <li data-ccg-secret-code="load">LOAD</li>\n'
     if marker not in text:
         raise SystemExit('LOAD menu marker not found')
     text = text.replace(marker, marker + '                    <li data-ccg-secret-code="basic">BASIC</li>\n', 1)
+
+if 'CCG BASIC PRE-CLOSE SCROLL BOOKMARK' not in text:
+    old = '''    function triggerCheat(code) {
+        const normalized = normalizeCode(code);
+        if (cheats[normalized]) {
+            closeSecretModal();
+            stopActiveEasterEgg();
+            cheats[normalized]();
+        }
+    }
+'''
+    new = '''    function triggerCheat(code) {
+        const normalized = normalizeCode(code);
+        if (cheats[normalized]) {
+            /* CCG BASIC PRE-CLOSE SCROLL BOOKMARK */
+            const launchContext = normalized === "basic" && secretState.scrollLock
+                ? {
+                    scrollX: secretState.scrollLock.scrollX,
+                    scrollY: secretState.scrollLock.scrollY,
+                }
+                : null;
+            closeSecretModal();
+            stopActiveEasterEgg();
+            cheats[normalized](launchContext);
+        }
+    }
+'''
+    if old not in text:
+        raise SystemExit('triggerCheat block not found')
+    text = text.replace(old, new, 1)
 
 path.write_text(text, encoding='utf-8')
 print('Applied Phase E2 BASIC console integration.')
