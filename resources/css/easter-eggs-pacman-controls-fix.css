@@ -1,0 +1,17 @@
+/* CCG PAC-MAN CONTROL RESTORATION */
+.ccg-pacman__touch {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ccg-pacman__touch button {
+    min-height: 52px;
+    touch-action: manipulation;
+    user-select: none;
+}
+
+@media (max-height: 700px) {
+    .ccg-pacman__touch button {
+        min-height: 38px;
+    }
+}
