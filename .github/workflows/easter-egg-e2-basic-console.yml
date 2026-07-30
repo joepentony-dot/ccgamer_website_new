@@ -45,7 +45,7 @@ jobs:
           node --check js/ccg-global.js
           node --check js/easter-eggs/basic-console.js
           grep -q 'data-ccg-secret-code="basic"' js/ccg-global.js
-          grep -q '"basic": () => triggerBasic()' js/ccg-global.js
+          grep -q '"basic": launchContext => triggerBasic(launchContext)' js/ccg-global.js
           grep -q 'CCG EASTER EGG E2 BASIC CONSOLE' resources/css/easter-eggs-basic.css
       - name: Confirm catalogue integrity
         run: |
