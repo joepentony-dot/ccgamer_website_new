@@ -8,9 +8,14 @@ if 'CCG EASTER EGG E2 BASIC CONSOLE' not in text:
     marker = '    function triggerWarp() {'
     block = '''    /* CCG EASTER EGG E2 BASIC CONSOLE */
     async function triggerBasic() {
+        const modalScrollLock = secretState.scrollLock;
         const returnScroll = {
-            left: window.scrollX || document.documentElement.scrollLeft || 0,
-            top: window.scrollY || document.documentElement.scrollTop || 0,
+            left: Number.isFinite(modalScrollLock?.scrollX)
+                ? modalScrollLock.scrollX
+                : (window.scrollX || document.documentElement.scrollLeft || 0),
+            top: Number.isFinite(modalScrollLock?.scrollY)
+                ? modalScrollLock.scrollY
+                : (window.scrollY || document.documentElement.scrollTop || 0),
         };
         let scrollRestoreTimers = [];
         const restoreScroll = () => {
