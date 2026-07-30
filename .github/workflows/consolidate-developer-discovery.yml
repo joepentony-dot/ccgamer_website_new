@@ -1,0 +1,63 @@
+name: Consolidate Developer Discovery
+
+on:
+  push:
+    branches:
+      - feature/easter-egg-e4-local-invaders
+      - feature/consolidate-developer-discovery-into-publishers
+    paths:
+      - 'scripts/consolidate-developer-discovery.js'
+      - '.github/workflows/consolidate-developer-discovery.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  consolidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Record protected hashes
+        run: sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/developer-consolidation-protected.sha256"
+
+      - name: Consolidate discovery under publishers
+        run: node scripts/consolidate-developer-discovery.js
+
+      - name: Validate requested removal
+        run: |
+          test ! -f games/developers/index.html
+          test ! -f .github/workflows/developer-archives.yml
+          ! grep -q 'href="/games/developers/"' games/index.html
+          ! grep -q 'Browse by Developer' games/index.html
+          grep -q 'href="/games/publishers/"' games/index.html
+          grep -q 'data-games-publishers-shortcut="true"' games/index.html
+          ! grep -q 'games/developers/index.html' tools/seo/static-pages.json
+          ! grep -q '<loc>https://www.cheekycommodoregamer.co.uk/games/developers/</loc>' sitemap.xml
+          ! grep -q '<loc>https://www.cheekycommodoregamer.co.uk/games/developers/</loc>' sitemap-pages.xml
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/developer-consolidation-protected.sha256"
+
+      - name: Commit consolidation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'Developer discovery is already consolidated.'
+            exit 0
+          fi
+          git commit -m 'Consolidate developer discovery under publishers'
+          git push origin HEAD:${{ github.ref_name }}
