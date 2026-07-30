@@ -66,27 +66,20 @@ jobs:
       - name: Confirm protected files unchanged
         run: sha256sum --check "$RUNNER_TEMP/e3-protected.sha256"
 
-      - name: Confirm bounded E3 scope
+      - name: Confirm E3 framework files remain present
         run: |
           python - <<'PY'
-          import subprocess
+          from pathlib import Path
           required={
             '.github/workflows/easter-egg-e3-framework-hardening.yml',
             'js/easter-eggs/easter-egg-registry.js',
             'scripts/test-easter-egg-e3-registry.mjs',
           }
-          actual=set(filter(None, subprocess.check_output(
-              ['git','diff','--name-only','origin/main'], text=True
-          ).splitlines()))
-          missing=required-actual
+          missing=sorted(path for path in required if not Path(path).is_file())
           if missing:
-              print('Missing', sorted(missing))
-              print('Actual', sorted(actual))
-              raise SystemExit('Missing required E3 files')
-          unrelated=actual-required
-          if unrelated:
-              print('Ignoring unrelated later-phase files:', sorted(unrelated))
-          print('Bounded E3 scope passed.')
+              print('Missing', missing)
+              raise SystemExit('Missing required E3 framework files')
+          print('E3 framework presence check passed.')
           PY
 
       - name: Remove temporary dependencies

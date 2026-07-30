@@ -15,7 +15,7 @@ export const EASTER_EGG_REGISTRY = Object.freeze([
     { code: "pacman", label: "PACMAN", category: "game", desktop: true, mobile: true, reducedMotion: "game-controlled", runtime: "local" },
     { code: "boing", label: "BOING", category: "amiga", desktop: true, mobile: true, reducedMotion: "manual-play", runtime: "local" },
     { code: "matrix", label: "MATRIX", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },
-    { code: "invaders", label: "INVADERS", category: "game", desktop: true, mobile: false, reducedMotion: "game-controlled", runtime: "external" },
+    { code: "invaders", label: "INVADERS", category: "game", desktop: true, mobile: true, reducedMotion: "game-controlled", runtime: "local", phase: "E4" },
     { code: "heman", label: "HE-MAN", category: "video", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },
     { code: "lemmings", label: "LEMMINGS", category: "amiga", desktop: true, mobile: true, reducedMotion: "media-controls", runtime: "local" },
     { code: "cheeky", label: "CHEEKY", category: "hidden", desktop: true, mobile: true, reducedMotion: "audio-only", runtime: "external-redirect", hidden: true },

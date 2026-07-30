@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-07-30T14:37:02.945Z",
+  "verdict": "PASS",
+  "failedChecks": [],
+  "results": [
+    {
+      "name": "mobile",
+      "metrics": {
+        "centreDelta": 0,
+        "stageRatio": 0.9473978214318964
+      },
+      "checks": {
+        "localFrame": true,
+        "noExternalRuntime": true,
+        "touchControlsMatchPlatform": true,
+        "startVisible": true,
+        "initialScore": true,
+        "initialLives": true,
+        "canvasContained": true,
+        "playfieldCentred": true,
+        "aspectRatioPreserved": true,
+        "hasControls": true,
+        "scrollRestored": true
+      }
+    },
+    {
+      "name": "short-mobile",
+      "metrics": {
+        "centreDelta": 0.0078125,
+        "stageRatio": 0.947389129335057
+      },
+      "checks": {
+        "localFrame": true,
+        "noExternalRuntime": true,
+        "touchControlsMatchPlatform": true,
+        "startVisible": true,
+        "initialScore": true,
+        "initialLives": true,
+        "canvasContained": true,
+        "playfieldCentred": true,
+        "aspectRatioPreserved": true,
+        "hasControls": true,
+        "scrollRestored": true
+      }
+    },
+    {
+      "name": "desktop",
+      "metrics": {
+        "centreDelta": 0,
+        "stageRatio": 0.9473775843307943
+      },
+      "checks": {
+        "localFrame": true,
+        "noExternalRuntime": true,
+        "touchControlsMatchPlatform": true,
+        "startVisible": true,
+        "initialScore": true,
+        "initialLives": true,
+        "canvasContained": true,
+        "playfieldCentred": true,
+        "aspectRatioPreserved": true,
+        "hasControls": true,
+        "scrollRestored": true
+      }
+    }
+  ]
+}

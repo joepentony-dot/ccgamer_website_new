@@ -1,0 +1,142 @@
+name: Easter Egg E4 Local Invaders
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/ccg-global.js'
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'js/easter-eggs/invaders-game.js'
+      - 'resources/audio/easter-eggs/invaders.html'
+      - 'resources/css/easter-eggs-invaders.css'
+      - 'scripts/apply-easter-egg-e4-invaders.py'
+      - 'scripts/test-easter-egg-e4-invaders.mjs'
+      - 'scripts/test-easter-egg-viewport.mjs'
+      - 'scripts/test-easter-egg-third-click-stability.mjs'
+      - '.github/workflows/easter-egg-e3-framework-hardening.yml'
+      - '.github/workflows/easter-egg-e4-local-invaders.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-local-invaders:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+      - name: Fetch main baseline
+        run: git fetch origin main --depth=1
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e4-protected.sha256"
+      - name: Apply bounded Invaders integration
+        run: python scripts/apply-easter-egg-e4-invaders.py
+      - name: Validate syntax and local assets
+        run: |
+          node --check js/ccg-global.js
+          node --check js/easter-eggs/invaders-game.js
+          node --check js/easter-eggs/easter-egg-registry.js
+          node --check scripts/test-easter-egg-e4-invaders.mjs
+          grep -q 'CCG EASTER EGG E4 LOCAL INVADERS' js/ccg-global.js
+          grep -q 'getEasterEggAsset("invaders.html")' js/ccg-global.js
+          grep -q 'mobile: true.*runtime: "local".*phase: "E4"' js/easter-eggs/easter-egg-registry.js
+          test -f resources/audio/easter-eggs/invaders.html
+          test -f resources/css/easter-eggs-invaders.css
+      - name: Confirm no external Invaders runtime remains
+        run: |
+          ! grep -q 'dwmkerr.github.io/spaceinvaders' js/ccg-global.js
+          ! grep -q 'AVAILABLE ON DESKTOP ONLY' js/ccg-global.js
+      - name: Confirm catalogue integrity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games=json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games)==651, len(games)
+          assert not any(str(g.get('slug','')).strip().lower()=='powerdrome' for g in games)
+          print('Catalogue integrity passed: 651 games; Powerdrome absent.')
+          PY
+      - name: Install browser dependency
+        run: npm install --no-save --no-package-lock playwright-core@1.58.2
+      - name: Start local website
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/e4-http.log" 2>&1 &
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/e4-http.log"; exit 1
+      - name: Test local Invaders on desktop and mobile
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: |
+          mkdir -p docs/seo-baseline
+          node scripts/test-easter-egg-e4-invaders.mjs --base-url http://127.0.0.1:4173/ --output docs/seo-baseline/easter-egg-e4-invaders-evidence.json --report docs/seo-baseline/easter-egg-e4-invaders-validation.md
+      - name: Re-run E3 registry regression
+        run: node scripts/test-easter-egg-e3-registry.mjs
+      - name: Re-run established viewport suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-viewport.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e4-viewport.json" --report "$RUNNER_TEMP/e4-viewport.md" --screenshots "$RUNNER_TEMP/e4-viewport-shots"
+      - name: Re-run third-click stability suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-third-click-stability.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e4-third.json" --report "$RUNNER_TEMP/e4-third.md" --screenshots "$RUNNER_TEMP/e4-third-shots"
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e4-protected.sha256"
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules scripts/__pycache__
+      - name: Confirm exact Phase E4 scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          allowed={
+            '.github/workflows/easter-egg-e3-framework-hardening.yml',
+            '.github/workflows/easter-egg-e4-local-invaders.yml',
+            'docs/seo-baseline/easter-egg-e4-invaders-evidence.json',
+            'docs/seo-baseline/easter-egg-e4-invaders-validation.md',
+            'js/ccg-global.js','js/easter-eggs/easter-egg-registry.js','js/easter-eggs/invaders-game.js',
+            'resources/audio/easter-eggs/invaders.html','resources/css/easter-eggs-invaders.css',
+            'scripts/apply-easter-egg-e4-invaders.py','scripts/test-easter-egg-e4-invaders.mjs'
+          }
+          tracked=set(filter(None,subprocess.check_output(['git','diff','--name-only','origin/main'],text=True).splitlines()))
+          untracked=set(filter(None,subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()))
+          actual=tracked|untracked
+          unexpected=actual-allowed
+          missing=allowed-actual
+          if unexpected:
+            print('Unexpected',sorted(unexpected)); raise SystemExit('Unexpected Phase E4 files')
+          if missing:
+            print('Missing',sorted(missing)); raise SystemExit('Missing required Phase E4 files')
+          print('Exact Phase E4 scope passed.')
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: easter-egg-e4-local-invaders
+          path: |
+            docs/seo-baseline/easter-egg-e4-invaders-evidence.json
+            docs/seo-baseline/easter-egg-e4-invaders-validation.md
+            ${{ runner.temp }}/e4-viewport-shots
+            ${{ runner.temp }}/e4-third-shots
+          retention-days: 30
+      - name: Commit tested integration
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/ccg-global.js docs/seo-baseline/easter-egg-e4-invaders-evidence.json docs/seo-baseline/easter-egg-e4-invaders-validation.md
+          if ! git diff --cached --quiet; then git commit -m 'Integrate local Invaders Easter egg'; git push origin HEAD:${{ github.head_ref || github.ref_name }}; fi
