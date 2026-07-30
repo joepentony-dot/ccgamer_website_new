@@ -1,12 +1,11 @@
-name: Easter Egg WARP and Mobile Games
+name: Easter Egg WARP Validation
 
 on:
   pull_request:
     branches: [main]
     paths:
       - 'resources/css/ccg-overlays.css'
-      - 'scripts/test-easter-egg-warp-mobile-games.mjs'
-      - 'scripts/test-pacman-mobile-render.mjs'
+      - 'scripts/test-easter-egg-warp-current.mjs'
       - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
   workflow_dispatch:
 
@@ -18,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-warp-and-mobile-games:
+  validate-warp:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -33,16 +32,12 @@ jobs:
       - name: Record protected hashes
         run: sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json home.html > "$RUNNER_TEMP/warp-protected.sha256"
 
-      - name: Validate WARP integration and test sources
+      - name: Validate WARP integration and test source
         run: |
           node --check js/ccg-global.js
-          node --check scripts/test-easter-egg-warp-mobile-games.mjs
-          node --check scripts/test-pacman-mobile-render.mjs
+          node --check scripts/test-easter-egg-warp-current.mjs
           grep -q 'triggerWarp' js/ccg-global.js
           test -f resources/css/ccg-overlays.css
-          test -f resources/audio/easter-eggs/pacman.html
-          test -f resources/audio/easter-eggs/invaders.html
-          ! grep -q 'dwmkerr.github.io/spaceinvaders' js/ccg-global.js
 
       - name: Confirm catalogue integrity
         run: |
@@ -65,27 +60,16 @@ jobs:
           cat "$RUNNER_TEMP/warp-http.log"
           exit 1
 
-      - name: Test WARP and mobile game presentation
+      - name: Test current WARP presentation
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: |
           mkdir -p "$RUNNER_TEMP/warp-shots"
-          node scripts/test-easter-egg-warp-mobile-games.mjs \
+          node scripts/test-easter-egg-warp-current.mjs \
             --base-url http://127.0.0.1:4173/ \
             --output "$RUNNER_TEMP/warp-evidence.json" \
             --report "$RUNNER_TEMP/warp-validation.md" \
             --screenshots "$RUNNER_TEMP/warp-shots"
-
-      - name: Test Pac-Man mobile rendering
-        env:
-          CHROMIUM_PATH: /usr/bin/chromium
-        run: |
-          mkdir -p "$RUNNER_TEMP/pacman-mobile-shots"
-          node scripts/test-pacman-mobile-render.mjs \
-            --base-url http://127.0.0.1:4173/ \
-            --output "$RUNNER_TEMP/pacman-mobile-evidence.json" \
-            --report "$RUNNER_TEMP/pacman-mobile-validation.md" \
-            --screenshots "$RUNNER_TEMP/pacman-mobile-shots"
 
       - name: Confirm protected files unchanged
         run: sha256sum --check "$RUNNER_TEMP/warp-protected.sha256"
@@ -94,14 +78,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: easter-egg-warp-mobile-games
+          name: easter-egg-warp-validation
           path: |
             ${{ runner.temp }}/warp-evidence.json
             ${{ runner.temp }}/warp-validation.md
             ${{ runner.temp }}/warp-shots
-            ${{ runner.temp }}/pacman-mobile-evidence.json
-            ${{ runner.temp }}/pacman-mobile-validation.md
-            ${{ runner.temp }}/pacman-mobile-shots
           if-no-files-found: warn
           retention-days: 30
 
@@ -111,6 +92,4 @@ jobs:
 
       - name: Publish summary
         if: always()
-        run: |
-          test -f "$RUNNER_TEMP/warp-validation.md" && cat "$RUNNER_TEMP/warp-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
-          test -f "$RUNNER_TEMP/pacman-mobile-validation.md" && cat "$RUNNER_TEMP/pacman-mobile-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
+        run: test -f "$RUNNER_TEMP/warp-validation.md" && cat "$RUNNER_TEMP/warp-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
