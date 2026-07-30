@@ -1,0 +1,121 @@
+name: Easter Egg E2 BASIC Console
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/ccg-global.js'
+      - 'js/easter-eggs/basic-console.js'
+      - 'resources/css/easter-eggs-basic.css'
+      - 'scripts/apply-easter-egg-e2-basic-console.py'
+      - 'scripts/test-easter-egg-e2-basic-console.mjs'
+      - '.github/workflows/easter-egg-e2-basic-console.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate-basic-console:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+      - name: Fetch main baseline
+        run: git fetch origin main --depth=1
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e2-protected.sha256"
+      - name: Apply bounded BASIC integration
+        run: python scripts/apply-easter-egg-e2-basic-console.py
+      - name: Validate syntax and registration
+        run: |
+          node --check js/ccg-global.js
+          node --check js/easter-eggs/basic-console.js
+          grep -q 'data-ccg-secret-code="basic"' js/ccg-global.js
+          grep -q '"basic": () => triggerBasic()' js/ccg-global.js
+          grep -q 'CCG EASTER EGG E2 BASIC CONSOLE' resources/css/easter-eggs-basic.css
+      - name: Confirm catalogue integrity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games=json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games)==651, len(games)
+          assert not any(str(g.get('slug','')).strip().lower()=='powerdrome' for g in games)
+          print('Catalogue integrity passed: 651 games; Powerdrome absent.')
+          PY
+      - name: Install browser dependency
+        run: npm install --no-save --no-package-lock playwright-core@1.58.2
+      - name: Start local website
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/e2-http.log" 2>&1 &
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/e2-http.log"; exit 1
+      - name: Test BASIC console
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: |
+          mkdir -p docs/seo-baseline
+          node scripts/test-easter-egg-e2-basic-console.mjs --base-url http://127.0.0.1:4173/ --output docs/seo-baseline/easter-egg-e2-basic-evidence.json --report docs/seo-baseline/easter-egg-e2-basic-validation.md
+      - name: Re-run established viewport suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-viewport.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e2-viewport.json" --report "$RUNNER_TEMP/e2-viewport.md" --screenshots "$RUNNER_TEMP/e2-viewport-shots"
+      - name: Re-run third-click stability suite
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: node scripts/test-easter-egg-third-click-stability.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e2-third.json" --report "$RUNNER_TEMP/e2-third.md" --screenshots "$RUNNER_TEMP/e2-third-shots"
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e2-protected.sha256"
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules scripts/__pycache__
+      - name: Confirm exact Phase E2 scope
+        run: |
+          python - <<'PY'
+          import subprocess
+          expected={
+            '.github/workflows/easter-egg-e2-basic-console.yml',
+            'docs/seo-baseline/easter-egg-e2-basic-evidence.json',
+            'docs/seo-baseline/easter-egg-e2-basic-validation.md',
+            'js/ccg-global.js','js/easter-eggs/basic-console.js','resources/css/easter-eggs-basic.css',
+            'scripts/apply-easter-egg-e2-basic-console.py','scripts/test-easter-egg-e2-basic-console.mjs'
+          }
+          tracked=set(filter(None,subprocess.check_output(['git','diff','--name-only','origin/main'],text=True).splitlines()))
+          untracked=set(filter(None,subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()))
+          actual=tracked|untracked
+          if actual!=expected:
+            print('Expected',sorted(expected)); print('Actual',sorted(actual)); raise SystemExit('Unexpected Phase E2 scope')
+          print('Exact Phase E2 scope passed.')
+          PY
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: easter-egg-e2-basic-console
+          path: |
+            docs/seo-baseline/easter-egg-e2-basic-evidence.json
+            docs/seo-baseline/easter-egg-e2-basic-validation.md
+            ${{ runner.temp }}/e2-viewport-shots
+            ${{ runner.temp }}/e2-third-shots
+          retention-days: 30
+      - name: Commit tested integration
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add js/ccg-global.js docs/seo-baseline/easter-egg-e2-basic-evidence.json docs/seo-baseline/easter-egg-e2-basic-validation.md
+          if ! git diff --cached --quiet; then git commit -m 'Add BASIC console Easter egg'; git push origin HEAD:${{ github.head_ref || github.ref_name }}; fi
