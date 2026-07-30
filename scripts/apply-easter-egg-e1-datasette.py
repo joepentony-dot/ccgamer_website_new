@@ -23,12 +23,27 @@ def main() -> None:
 
     trigger_load = '''    /* CCG EASTER EGG E1 DATASETTE LOADER */
     async function triggerLoad() {
+        const returnScroll = {
+            left: window.scrollX || document.documentElement.scrollLeft || 0,
+            top: window.scrollY || document.documentElement.scrollTop || 0,
+        };
+        const restoreScroll = () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    window.scrollTo({ left: returnScroll.left, top: returnScroll.top, behavior: "auto" });
+                });
+            });
+        };
+
         const loading = document.createElement("div");
         loading.className = "ccg-egg-overlay__audio";
         loading.innerHTML = "<span>INITIALISING DATASETTE...</span>";
 
         const overlay = openEasterEggOverlay(loading, { className: "ccg-egg-overlay--datasette" });
         overlay.dataset.ccgDatasetteModule = "loading";
+        if (secretState.activeEgg?.overlay === overlay) {
+            secretState.activeEgg.cleanup = restoreScroll;
+        }
 
         try {
             const moduleUrl = new URL(`${getSiteRoot()}js/easter-eggs/datasette-loader.js`, window.location.origin).href;
@@ -46,7 +61,10 @@ def main() -> None:
             const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
             if (!mediaContainer) throw new Error("Datasette media container was not created");
             mediaContainer.replaceChildren(experience.content);
-            secretState.activeEgg.cleanup = experience.cleanup;
+            secretState.activeEgg.cleanup = () => {
+                experience.cleanup?.();
+                restoreScroll();
+            };
             overlay.dataset.ccgDatasetteModule = "ready";
             requestAnimationFrame(() => experience.focus?.());
         } catch (error) {
