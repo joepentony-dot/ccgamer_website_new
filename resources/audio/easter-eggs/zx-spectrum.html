@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex,nofollow">
+    <title>CCG Local ZX Spectrum Easter Egg</title>
+    <link rel="stylesheet" href="../../../css/easter-eggs-zx-spectrum.css">
+</head>
+<body>
+    <main class="zx" data-zx-spectrum>
+        <section class="zx__computer" aria-label="Local ZX Spectrum display">
+            <header class="zx__header">
+                <span>ZX SPECTRUM 48K</span>
+                <strong>CCG INTERRUPTION</strong>
+            </header>
+            <div class="zx__screen" tabindex="0" aria-label="ZX Spectrum BASIC screen">
+                <div class="zx__border" aria-hidden="true"></div>
+                <div class="zx__paper">
+                    <p>© 1982 Sinclair Research Ltd</p>
+                    <p class="zx__line">0 OK, 0:1</p>
+                    <p class="zx__prompt"><span class="zx__cursor">K</span></p>
+                    <div class="zx__message" data-zx-message hidden>
+                        <strong>R Tape loading error, 0:1</strong>
+                        <span>NO, I DON'T THINK SO.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="zx__controls">
+                <button type="button" data-zx-action="load">LOAD ""</button>
+                <button type="button" data-zx-action="run">RUN</button>
+                <button type="button" data-zx-action="reset">RESET</button>
+                <button type="button" data-zx-action="sound" aria-pressed="true">SOUND: ON</button>
+            </div>
+            <p class="zx__hint">Press L to load, R to run, Esc to reset. This version is fully local.</p>
+        </section>
+    </main>
+    <script src="../../../../js/easter-eggs/zx-spectrum.js"></script>
+</body>
+</html>
