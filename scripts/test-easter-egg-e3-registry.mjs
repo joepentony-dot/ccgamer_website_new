@@ -3,14 +3,18 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import {
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const registryPath = path.join(ROOT, "js/easter-eggs/easter-egg-registry.js");
+const registrySource = fs.readFileSync(registryPath, "utf8");
+const registryUrl = `data:text/javascript;base64,${Buffer.from(registrySource, "utf8").toString("base64")}`;
+const {
     EASTER_EGG_REGISTRY,
     EASTER_EGG_BY_CODE,
     getEasterEggMetadata,
     listEasterEggs,
-} from "../js/easter-eggs/easter-egg-registry.js";
+} = await import(registryUrl);
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const globalSource = fs.readFileSync(path.join(ROOT, "js/ccg-global.js"), "utf8");
 
 const expectedCodes = [
