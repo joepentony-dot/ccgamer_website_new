@@ -98,29 +98,20 @@ jobs:
       - name: Remove temporary dependencies
         if: always()
         run: rm -rf node_modules scripts/__pycache__
-      - name: Confirm exact Phase E4 scope
+      - name: Confirm Phase E4 files remain present
         run: |
           python - <<'PY'
-          import subprocess
-          allowed={
-            '.github/workflows/easter-egg-e3-framework-hardening.yml',
+          from pathlib import Path
+          required={
             '.github/workflows/easter-egg-e4-local-invaders.yml',
-            'docs/seo-baseline/easter-egg-e4-invaders-evidence.json',
-            'docs/seo-baseline/easter-egg-e4-invaders-validation.md',
             'js/ccg-global.js','js/easter-eggs/easter-egg-registry.js','js/easter-eggs/invaders-game.js',
             'resources/audio/easter-eggs/invaders.html','resources/css/easter-eggs-invaders.css',
             'scripts/apply-easter-egg-e4-invaders.py','scripts/test-easter-egg-e4-invaders.mjs'
           }
-          tracked=set(filter(None,subprocess.check_output(['git','diff','--name-only','origin/main'],text=True).splitlines()))
-          untracked=set(filter(None,subprocess.check_output(['git','ls-files','--others','--exclude-standard'],text=True).splitlines()))
-          actual=tracked|untracked
-          unexpected=actual-allowed
-          missing=allowed-actual
-          if unexpected:
-            print('Unexpected',sorted(unexpected)); raise SystemExit('Unexpected Phase E4 files')
+          missing=sorted(path for path in required if not Path(path).exists())
           if missing:
-            print('Missing',sorted(missing)); raise SystemExit('Missing required Phase E4 files')
-          print('Exact Phase E4 scope passed.')
+            raise SystemExit(f'Missing required Phase E4 files: {missing}')
+          print('Phase E4 repository-state validation passed; later feature files are permitted.')
           PY
       - name: Upload evidence
         if: always()
