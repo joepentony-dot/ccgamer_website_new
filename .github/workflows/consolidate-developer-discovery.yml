@@ -3,8 +3,13 @@ name: Consolidate Developer Discovery
 on:
   push:
     branches:
-      - feature/easter-egg-e4-local-invaders
       - feature/consolidate-developer-discovery-into-publishers
+    paths:
+      - 'scripts/consolidate-developer-discovery.js'
+      - '.github/workflows/consolidate-developer-discovery.yml'
+  pull_request:
+    branches:
+      - main
     paths:
       - 'scripts/consolidate-developer-discovery.js'
       - '.github/workflows/consolidate-developer-discovery.yml'
@@ -21,7 +26,7 @@ jobs:
       - name: Check out branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Set up Node.js
@@ -51,6 +56,7 @@ jobs:
         run: sha256sum --check "$RUNNER_TEMP/developer-consolidation-protected.sha256"
 
       - name: Commit consolidation
+        if: github.actor != 'github-actions[bot]'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
@@ -60,4 +66,4 @@ jobs:
             exit 0
           fi
           git commit -m 'Consolidate developer discovery under publishers'
-          git push origin HEAD:${{ github.ref_name }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
