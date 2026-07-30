@@ -49,8 +49,23 @@ for (const item of cases) {
   const reward = await page.locator('.ccg-basic-console__launch').evaluate(a => ({ visible: !!(a.offsetWidth && a.offsetHeight), href: a.getAttribute('href') || '' }));
   await page.locator('.ccg-egg-overlay__exit').click();
   await page.waitForTimeout(250);
-  const restored = Math.abs((await page.evaluate(() => scrollY)) - startScroll) <= 2;
-  results.push({ name: item.name, checks: { menuHasBasic, contained, listWorks, pokeWorks, syntaxError, rewardVisible: reward.visible, rewardCanonical: /^\/games\/[^/]+\/$/.test(new URL(reward.href, baseURL).pathname), scrollRestored: restored } });
+  const endScroll = await page.evaluate(() => scrollY);
+  const scrollDelta = endScroll - startScroll;
+  const restored = Math.abs(scrollDelta) <= 2;
+  results.push({
+    name: item.name,
+    metrics: { startScroll, endScroll, scrollDelta },
+    checks: {
+      menuHasBasic,
+      contained,
+      listWorks,
+      pokeWorks,
+      syntaxError,
+      rewardVisible: reward.visible,
+      rewardCanonical: /^\/games\/[^/]+\/$/.test(new URL(reward.href, baseURL).pathname),
+      scrollRestored: restored,
+    },
+  });
   await context.close();
 }
 await browser.close();
@@ -59,5 +74,5 @@ const evidence = { generatedAt: new Date().toISOString(), verdict: failedChecks.
 fs.mkdirSync(new URL('../docs/seo-baseline/', import.meta.url), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(evidence, null, 2));
 fs.writeFileSync(reportPath, `# BASIC Console Validation\n\n**${evidence.verdict}**\n\n${failedChecks.length ? failedChecks.map(x => `- FAIL — ${x}`).join('\n') : '- All mobile and desktop checks passed.'}\n`);
-console.log(JSON.stringify({ verdict: evidence.verdict, failedChecks }, null, 2));
+console.log(JSON.stringify({ verdict: evidence.verdict, failedChecks, scrollMetrics: results.map(({ name, metrics }) => ({ name, ...metrics })) }, null, 2));
 if (failedChecks.length) process.exit(1);
