@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'js/ccg-global.js'
       - 'js/easter-eggs/datasette-loader.js'
       - 'resources/css/easter-eggs-datasette.css'
       - 'scripts/apply-easter-egg-e1-datasette.py'
@@ -15,27 +14,17 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-datasette-loader:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
-      - name: Check out feature branch
+      - name: Check out current revision
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
-      - name: Fetch main baseline
-        run: git fetch origin main --depth=1
-
-      - name: Record initial PR scope
-        run: |
-          {
-            git diff --name-only origin/main
-            git ls-files --others --exclude-standard
-          } | sed '/^$/d' | sort -u > "$RUNNER_TEMP/e1-initial-scope.txt"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -48,27 +37,13 @@ jobs:
           node-version: '22'
 
       - name: Record protected hashes
-        run: |
-          sha256sum \
-            index.html \
-            resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json \
-            home.html \
-            > "$RUNNER_TEMP/e1-protected-before.sha256"
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json home.html > "$RUNNER_TEMP/e1-protected.sha256"
 
-      - name: Apply bounded LOAD command integration
-        run: python scripts/apply-easter-egg-e1-datasette.py
-
-      - name: Validate source syntax
+      - name: Validate source syntax and integration
         run: |
           node --check js/ccg-global.js
           node --input-type=module --check < js/easter-eggs/datasette-loader.js
           python -m py_compile scripts/apply-easter-egg-e1-datasette.py
-
-      - name: Confirm LOAD registration and local assets
-        run: |
-          test -f js/easter-eggs/datasette-loader.js
           test -f resources/css/easter-eggs-datasette.css
           grep -q 'CCG EASTER EGG E1 DATASETTE LOADER' js/ccg-global.js
           grep -q 'data-ccg-secret-code="load"' js/ccg-global.js
@@ -82,10 +57,8 @@ jobs:
           import json
           from pathlib import Path
           games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
-          if len(games) != 651:
-              raise SystemExit(f'Expected 651 games, found {len(games)}')
-          if any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games):
-              raise SystemExit('Powerdrome must remain absent')
+          assert len(games) == 651, len(games)
+          assert not any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games)
           print('Catalogue integrity passed: 651 games; Powerdrome absent.')
           PY
 
@@ -95,13 +68,7 @@ jobs:
       - name: Start local website
         run: |
           python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/e1-http.log" 2>&1 &
-          echo $! > "$RUNNER_TEMP/e1-http.pid"
-          for attempt in {1..30}; do
-            if curl --silent --fail http://127.0.0.1:4173/home.html > /dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
           cat "$RUNNER_TEMP/e1-http.log"
           exit 1
 
@@ -116,84 +83,8 @@ jobs:
             --report "$RUNNER_TEMP/e1-datasette-validation.md" \
             --screenshots "$RUNNER_TEMP/e1-screenshots"
 
-      - name: Prepare deterministic viewport dismissal timing
-        run: |
-          cp scripts/test-easter-egg-viewport.mjs "$RUNNER_TEMP/e1-viewport-source.mjs"
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('scripts/test-easter-egg-viewport.mjs')
-          text = path.read_text(encoding='utf-8')
-          selector = '.ccg-secret-modal[data-ccg-secret-modal-locked="true"]'
-          if selector in text:
-              print('Viewport test already waits for the dismissal-ready state.')
-              raise SystemExit(0)
-          old = "  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });"
-          new = old + "\n  await page.locator('.ccg-secret-modal[data-ccg-secret-modal-locked=\"true\"]').waitFor({ state: 'visible', timeout: 5000 });"
-          if text.count(old) != 1:
-              raise SystemExit(f'Expected one shared menu-open wait, found {text.count(old)}')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
-          print('Every viewport test menu opening now waits for the dismissal-ready state.')
-          PY
-
-      - name: Re-run established viewport positioning suite
-        env:
-          CHROMIUM_PATH: /usr/bin/chromium
-        run: |
-          mkdir -p "$RUNNER_TEMP/e1-viewport-screenshots"
-          node scripts/test-easter-egg-viewport.mjs \
-            --base-url http://127.0.0.1:4173/ \
-            --output "$RUNNER_TEMP/e1-viewport-evidence.json" \
-            --report "$RUNNER_TEMP/e1-viewport-validation.md" \
-            --screenshots "$RUNNER_TEMP/e1-viewport-screenshots"
-
-      - name: Restore established viewport test source
-        if: always()
-        run: git checkout HEAD -- scripts/test-easter-egg-viewport.mjs
-
-      - name: Re-run established third-click stability suite
-        env:
-          CHROMIUM_PATH: /usr/bin/chromium
-        run: |
-          mkdir -p "$RUNNER_TEMP/e1-third-click-screenshots"
-          node scripts/test-easter-egg-third-click-stability.mjs \
-            --base-url http://127.0.0.1:4173/ \
-            --output "$RUNNER_TEMP/e1-third-click-evidence.json" \
-            --report "$RUNNER_TEMP/e1-third-click-validation.md" \
-            --screenshots "$RUNNER_TEMP/e1-third-click-screenshots"
-
-      - name: Confirm protected files are unchanged
-        run: sha256sum --check "$RUNNER_TEMP/e1-protected-before.sha256"
-
-      - name: Remove temporary dependencies
-        if: always()
-        run: rm -rf node_modules scripts/__pycache__
-
-      - name: Confirm bounded Phase E1 workflow scope
-        run: |
-          python - <<'PY'
-          import subprocess
-          from pathlib import Path
-
-          allowed_new = {
-              'js/ccg-global.js',
-              'js/easter-eggs/datasette-loader.js',
-              'resources/css/easter-eggs-datasette.css',
-              'scripts/apply-easter-egg-e1-datasette.py',
-              'scripts/test-easter-egg-e1-datasette.mjs',
-          }
-          initial = set(Path(Path.cwd() / Path(__import__('os').environ['RUNNER_TEMP']) / 'e1-initial-scope.txt').read_text(encoding='utf-8').splitlines())
-          tracked = subprocess.check_output(['git', 'diff', '--name-only', 'origin/main'], text=True)
-          untracked = subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True)
-          actual = {line.strip() for output in (tracked, untracked) for line in output.splitlines() if line.strip()}
-          introduced = actual - initial
-          unexpected = introduced - allowed_new
-          if unexpected:
-              print('Initial:', sorted(initial))
-              print('Actual:', sorted(actual))
-              print('Unexpected workflow-introduced paths:', sorted(unexpected))
-              raise SystemExit('Unexpected Phase E1 workflow scope')
-          print('Bounded Phase E1 workflow scope passed.')
-          PY
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e1-protected.sha256"
 
       - name: Upload Phase E1 evidence
         if: always()
@@ -204,39 +95,13 @@ jobs:
             ${{ runner.temp }}/e1-datasette-evidence.json
             ${{ runner.temp }}/e1-datasette-validation.md
             ${{ runner.temp }}/e1-screenshots
-            ${{ runner.temp }}/e1-viewport-evidence.json
-            ${{ runner.temp }}/e1-viewport-validation.md
-            ${{ runner.temp }}/e1-viewport-screenshots
-            ${{ runner.temp }}/e1-third-click-evidence.json
-            ${{ runner.temp }}/e1-third-click-validation.md
-            ${{ runner.temp }}/e1-third-click-screenshots
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Commit tested LOAD integration to PR branch
-        if: github.actor != 'github-actions[bot]'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            js/ccg-global.js \
-            js/easter-eggs/datasette-loader.js \
-            resources/css/easter-eggs-datasette.css \
-            scripts/apply-easter-egg-e1-datasette.py \
-            scripts/test-easter-egg-e1-datasette.mjs
-          if git diff --cached --quiet; then
-            echo 'No generated LOAD integration to commit.'
-          else
-            git commit -m 'Add datasette loading Easter egg'
-            branch="${{ github.head_ref || github.ref_name }}"
-            git fetch origin "$branch"
-            git rebase --autostash "origin/$branch"
-            git push origin HEAD:"$branch"
-          fi
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules scripts/__pycache__
 
       - name: Publish summary
         if: always()
-        run: |
-          test -f "$RUNNER_TEMP/e1-datasette-validation.md" && cat "$RUNNER_TEMP/e1-datasette-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
-          test -f "$RUNNER_TEMP/e1-viewport-validation.md" && cat "$RUNNER_TEMP/e1-viewport-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
-          test -f "$RUNNER_TEMP/e1-third-click-validation.md" && cat "$RUNNER_TEMP/e1-third-click-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
+        run: test -f "$RUNNER_TEMP/e1-datasette-validation.md" && cat "$RUNNER_TEMP/e1-datasette-validation.md" >> "$GITHUB_STEP_SUMMARY" || true

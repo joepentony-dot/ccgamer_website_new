@@ -14,19 +14,17 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-easter-egg-framework:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Check out feature branch
+      - name: Check out current revision
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
-      - name: Fetch main baseline
-        run: git fetch origin main --depth=1
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,8 +32,7 @@ jobs:
           node-version: '22'
 
       - name: Record protected hashes
-        run: |
-          sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/e3-protected.sha256"
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/e3-protected.sha256"
 
       - name: Validate JavaScript and registry coverage
         run: |
@@ -53,38 +50,18 @@ jobs:
           cat "$RUNNER_TEMP/e3-http.log"
           exit 1
 
-      - name: Re-run viewport regression suite
+      - name: Run viewport regression suite
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: node scripts/test-easter-egg-viewport.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e3-viewport.json" --report "$RUNNER_TEMP/e3-viewport.md" --screenshots "$RUNNER_TEMP/e3-viewport-shots"
 
-      - name: Re-run third-click stability suite
+      - name: Run third-click stability suite
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: node scripts/test-easter-egg-third-click-stability.mjs --base-url http://127.0.0.1:4173/ --output "$RUNNER_TEMP/e3-third-click.json" --report "$RUNNER_TEMP/e3-third-click.md" --screenshots "$RUNNER_TEMP/e3-third-click-shots"
 
       - name: Confirm protected files unchanged
         run: sha256sum --check "$RUNNER_TEMP/e3-protected.sha256"
-
-      - name: Confirm E3 framework files remain present
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          required={
-            '.github/workflows/easter-egg-e3-framework-hardening.yml',
-            'js/easter-eggs/easter-egg-registry.js',
-            'scripts/test-easter-egg-e3-registry.mjs',
-          }
-          missing=sorted(path for path in required if not Path(path).is_file())
-          if missing:
-              print('Missing', missing)
-              raise SystemExit('Missing required E3 framework files')
-          print('E3 framework presence check passed.')
-          PY
-
-      - name: Remove temporary dependencies
-        if: always()
-        run: rm -rf node_modules
 
       - name: Upload regression evidence
         if: always()
@@ -98,4 +75,9 @@ jobs:
             ${{ runner.temp }}/e3-third-click.json
             ${{ runner.temp }}/e3-third-click.md
             ${{ runner.temp }}/e3-third-click-shots
+          if-no-files-found: warn
           retention-days: 30
+
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules

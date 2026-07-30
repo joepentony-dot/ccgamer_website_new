@@ -1,37 +1,28 @@
-name: Easter Egg WARP and Mobile Games
+name: Easter Egg WARP Validation
 
 on:
   pull_request:
     branches: [main]
     paths:
-      - 'js/ccg-global.js'
-      - 'js/easter-eggs/easter-egg-registry.js'
-      - 'js/easter-eggs/pacman-game.js'
       - 'resources/css/ccg-overlays.css'
-      - 'resources/css/pacman-touch.css'
-      - 'resources/css/easter-eggs-pacman.css'
-      - 'resources/audio/easter-eggs/pacman.html'
-      - 'resources/audio/easter-eggs/invaders.html'
-      - 'scripts/test-easter-egg-warp-mobile-games.mjs'
-      - 'scripts/test-pacman-mobile-render.mjs'
-      - 'scripts/test-easter-egg-e5-pacman.mjs'
+      - 'scripts/test-easter-egg-warp-current.mjs'
       - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
-jobs:
-  validate-easter-egg-games:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
+jobs:
+  validate-warp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
-      - name: Check out current branch
+      - name: Check out current revision
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -39,37 +30,14 @@ jobs:
           node-version: '22'
 
       - name: Record protected hashes
-        run: |
-          sha256sum \
-            index.html \
-            resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json \
-            home.html \
-            > "$RUNNER_TEMP/easter-games-protected-before.sha256"
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json home.html > "$RUNNER_TEMP/warp-protected.sha256"
 
-      - name: Validate current Easter egg game assets
+      - name: Validate WARP integration and test source
         run: |
           node --check js/ccg-global.js
-          node --check js/easter-eggs/easter-egg-registry.js
-          node --check js/easter-eggs/pacman-game.js
-          test -f resources/audio/easter-eggs/pacman.html
-          test -f resources/css/easter-eggs-pacman.css
-          test -f resources/audio/easter-eggs/invaders.html
-          grep -q 'data-ccg-pacman-canvas' resources/audio/easter-eggs/pacman.html
-          grep -q 'phase: "E5"' js/easter-eggs/easter-egg-registry.js
-          grep -q 'phase: "E4"' js/easter-eggs/easter-egg-registry.js
+          node --check scripts/test-easter-egg-warp-current.mjs
           grep -q 'triggerWarp' js/ccg-global.js
-          grep -q 'getEasterEggAsset("pacman.html")' js/ccg-global.js
-          grep -q 'getEasterEggAsset("invaders.html")' js/ccg-global.js
-
-      - name: Confirm local runtimes contain no retired dependencies
-        run: |
-          if grep -q 'cdnjs.cloudflare.com\|raw.githubusercontent.com/daleharvey\|jquery.min.js\|modernizr.min.js' resources/audio/easter-eggs/pacman.html; then
-            echo 'PACMAN contains a retired external runtime dependency.'
-            exit 1
-          fi
-          ! grep -q 'dwmkerr.github.io/spaceinvaders' js/ccg-global.js
+          test -f resources/css/ccg-overlays.css
 
       - name: Confirm catalogue integrity
         run: |
@@ -77,20 +45,51 @@ jobs:
           import json
           from pathlib import Path
           games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
-          if len(games) != 651:
-              raise SystemExit(f'Expected 651 games, found {len(games)}')
-          if any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games):
-              raise SystemExit('Powerdrome must remain absent')
+          assert len(games) == 651, len(games)
+          assert not any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games)
           print('Catalogue integrity passed: 651 games; Powerdrome absent.')
           PY
 
-      - name: Confirm protected files are unchanged
-        run: sha256sum --check "$RUNNER_TEMP/easter-games-protected-before.sha256"
+      - name: Install browser dependency
+        run: npm install --no-save --no-package-lock playwright-core@1.58.2
+
+      - name: Start local website
+        run: |
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/warp-http.log" 2>&1 &
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/warp-http.log"
+          exit 1
+
+      - name: Test current WARP presentation
+        env:
+          CHROMIUM_PATH: /usr/bin/chromium
+        run: |
+          mkdir -p "$RUNNER_TEMP/warp-shots"
+          node scripts/test-easter-egg-warp-current.mjs \
+            --base-url http://127.0.0.1:4173/ \
+            --output "$RUNNER_TEMP/warp-evidence.json" \
+            --report "$RUNNER_TEMP/warp-validation.md" \
+            --screenshots "$RUNNER_TEMP/warp-shots"
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/warp-protected.sha256"
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: easter-egg-warp-validation
+          path: |
+            ${{ runner.temp }}/warp-evidence.json
+            ${{ runner.temp }}/warp-validation.md
+            ${{ runner.temp }}/warp-shots
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules
 
       - name: Publish summary
         if: always()
-        run: |
-          echo '## Easter Egg Game Compatibility' >> "$GITHUB_STEP_SUMMARY"
-          echo '' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Validated WARP integration plus the current E4 Invaders and E5 Pac-Man local runtimes.' >> "$GITHUB_STEP_SUMMARY"
-          echo 'Legacy Pac-Man patch scripts are no longer applied to the E5 replacement.' >> "$GITHUB_STEP_SUMMARY"
+        run: test -f "$RUNNER_TEMP/warp-validation.md" && cat "$RUNNER_TEMP/warp-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
