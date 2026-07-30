@@ -4,46 +4,27 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'js/ccg-global.js'
       - 'resources/css/ccg-master.css'
       - 'resources/css/ccg-overlays.css'
-      - 'resources/css/pacman-touch.css'
-      - 'resources/audio/easter-eggs/pacman.html'
-      - 'scripts/apply-easter-egg-viewport-fix.py'
-      - 'scripts/apply-easter-egg-direct-overlay-fix.py'
-      - 'scripts/apply-easter-egg-third-click-fix.py'
-      - 'scripts/apply-easter-egg-warp-mobile-games-fix.py'
-      - 'scripts/apply-pacman-self-contained-runtime-fix.py'
       - 'scripts/test-easter-egg-viewport.mjs'
       - 'scripts/test-easter-egg-third-click-stability.mjs'
-      - 'scripts/test-easter-egg-warp-mobile-games.mjs'
-      - 'scripts/test-pacman-mobile-render.mjs'
       - '.github/workflows/fix-easter-egg-viewport.yml'
-      - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-easter-egg-viewport:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-
     steps:
-      - name: Check out fix branch
+      - name: Check out current revision
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
-      - name: Fetch main baseline
-        run: git fetch origin main --depth=1
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -51,23 +32,13 @@ jobs:
           node-version: '22'
 
       - name: Record protected hashes
-        run: |
-          sha256sum \
-            index.html \
-            resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json \
-            home.html \
-            > "$RUNNER_TEMP/easter-protected-before.sha256"
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js games/games.json home.html > "$RUNNER_TEMP/viewport-protected.sha256"
 
-      - name: Apply bounded Easter egg corrections
+      - name: Validate JavaScript and test sources
         run: |
-          python scripts/apply-easter-egg-viewport-fix.py
-          python scripts/apply-easter-egg-direct-overlay-fix.py
-          python scripts/apply-easter-egg-third-click-fix.py
-
-      - name: Validate JavaScript syntax
-        run: node --check js/ccg-global.js
+          node --check js/ccg-global.js
+          node --check scripts/test-easter-egg-viewport.mjs
+          node --check scripts/test-easter-egg-third-click-stability.mjs
 
       - name: Confirm catalogue integrity
         run: |
@@ -75,10 +46,8 @@ jobs:
           import json
           from pathlib import Path
           games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
-          if len(games) != 651:
-              raise SystemExit(f'Expected 651 games, found {len(games)}')
-          if any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games):
-              raise SystemExit('Powerdrome must remain absent')
+          assert len(games) == 651, len(games)
+          assert not any(str(game.get('slug', '')).strip().lower() == 'powerdrome' for game in games)
           print('Catalogue integrity passed: 651 games; Powerdrome absent.')
           PY
 
@@ -87,122 +56,57 @@ jobs:
 
       - name: Start local website
         run: |
-          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/easter-http.log" 2>&1 &
-          echo $! > "$RUNNER_TEMP/easter-http.pid"
-          for attempt in {1..30}; do
-            if curl --silent --fail http://127.0.0.1:4173/home.html > /dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat "$RUNNER_TEMP/easter-http.log"
+          python -m http.server 4173 --bind 127.0.0.1 > "$RUNNER_TEMP/viewport-http.log" 2>&1 &
+          for attempt in {1..30}; do curl -sf http://127.0.0.1:4173/home.html >/dev/null && exit 0; sleep 1; done
+          cat "$RUNNER_TEMP/viewport-http.log"
           exit 1
 
       - name: Test portrait, landscape and desktop positioning
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: |
-          mkdir -p docs/seo-baseline "$RUNNER_TEMP/easter-screenshots"
+          mkdir -p "$RUNNER_TEMP/viewport-shots"
           node scripts/test-easter-egg-viewport.mjs \
             --base-url http://127.0.0.1:4173/ \
-            --output docs/seo-baseline/easter-egg-viewport-evidence.json \
-            --report docs/seo-baseline/easter-egg-viewport-validation.md \
-            --screenshots "$RUNNER_TEMP/easter-screenshots"
+            --output "$RUNNER_TEMP/viewport-evidence.json" \
+            --report "$RUNNER_TEMP/viewport-validation.md" \
+            --screenshots "$RUNNER_TEMP/viewport-shots"
 
       - name: Test third-click menu stability
         env:
           CHROMIUM_PATH: /usr/bin/chromium
         run: |
-          mkdir -p docs/seo-baseline "$RUNNER_TEMP/easter-third-click-screenshots"
+          mkdir -p "$RUNNER_TEMP/third-click-shots"
           node scripts/test-easter-egg-third-click-stability.mjs \
             --base-url http://127.0.0.1:4173/ \
-            --output docs/seo-baseline/easter-egg-third-click-evidence.json \
-            --report docs/seo-baseline/easter-egg-third-click-validation.md \
-            --screenshots "$RUNNER_TEMP/easter-third-click-screenshots"
+            --output "$RUNNER_TEMP/third-click-evidence.json" \
+            --report "$RUNNER_TEMP/third-click-validation.md" \
+            --screenshots "$RUNNER_TEMP/third-click-shots"
 
-      - name: Confirm protected files are unchanged
-        run: sha256sum --check "$RUNNER_TEMP/easter-protected-before.sha256"
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/viewport-protected.sha256"
 
-      - name: Remove temporary dependencies
-        if: always()
-        run: rm -rf node_modules
-
-      - name: Confirm bounded fix scope
-        run: |
-          python - <<'PY'
-          import subprocess
-
-          allowed = {
-              '.github/workflows/fix-easter-egg-viewport.yml',
-              '.github/workflows/fix-easter-egg-warp-mobile-games.yml',
-              'docs/seo-baseline/easter-egg-viewport-evidence.json',
-              'docs/seo-baseline/easter-egg-viewport-validation.md',
-              'docs/seo-baseline/easter-egg-third-click-evidence.json',
-              'docs/seo-baseline/easter-egg-third-click-validation.md',
-              'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
-              'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
-              'docs/seo-baseline/pacman-mobile-render-evidence.json',
-              'docs/seo-baseline/pacman-mobile-render-validation.md',
-              'js/ccg-global.js',
-              'resources/audio/easter-eggs/pacman.html',
-              'resources/css/ccg-master.css',
-              'resources/css/ccg-overlays.css',
-              'resources/css/pacman-touch.css',
-              'scripts/apply-easter-egg-viewport-fix.py',
-              'scripts/apply-easter-egg-direct-overlay-fix.py',
-              'scripts/apply-easter-egg-third-click-fix.py',
-              'scripts/apply-easter-egg-warp-mobile-games-fix.py',
-              'scripts/apply-pacman-self-contained-runtime-fix.py',
-              'scripts/test-easter-egg-viewport.mjs',
-              'scripts/test-easter-egg-third-click-stability.mjs',
-              'scripts/test-easter-egg-warp-mobile-games.mjs',
-              'scripts/test-pacman-mobile-render.mjs',
-          }
-          tracked_output = subprocess.check_output(
-              ['git', 'diff', '--name-only', 'origin/main'],
-              text=True,
-          )
-          untracked_output = subprocess.check_output(
-              ['git', 'ls-files', '--others', '--exclude-standard'],
-              text=True,
-          )
-          actual = {
-              line.strip()
-              for output in (tracked_output, untracked_output)
-              for line in output.splitlines()
-              if line.strip()
-          }
-          unexpected = actual - allowed
-          if unexpected:
-              print('Ignoring unrelated feature files:', sorted(unexpected))
-          print('Easter egg files in scope:', sorted(actual & allowed))
-          print('Bounded Easter egg repair scope passed.')
-          PY
-
-      - name: Upload Easter egg evidence
+      - name: Upload viewport evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: easter-egg-viewport-and-third-click-stability
           path: |
-            docs/seo-baseline/easter-egg-viewport-evidence.json
-            docs/seo-baseline/easter-egg-viewport-validation.md
-            docs/seo-baseline/easter-egg-third-click-evidence.json
-            docs/seo-baseline/easter-egg-third-click-validation.md
-            ${{ runner.temp }}/easter-screenshots
-            ${{ runner.temp }}/easter-third-click-screenshots
+            ${{ runner.temp }}/viewport-evidence.json
+            ${{ runner.temp }}/viewport-validation.md
+            ${{ runner.temp }}/viewport-shots
+            ${{ runner.temp }}/third-click-evidence.json
+            ${{ runner.temp }}/third-click-validation.md
+            ${{ runner.temp }}/third-click-shots
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Retain viewport evidence as workflow artifact
-        run: echo 'Viewport and third-click evidence is retained in the uploaded artifact; this validation workflow does not write to the PR branch.'
+      - name: Remove temporary dependencies
+        if: always()
+        run: rm -rf node_modules
 
       - name: Publish summary
         if: always()
         run: |
-          if [ -f docs/seo-baseline/easter-egg-viewport-validation.md ]; then
-            cat docs/seo-baseline/easter-egg-viewport-validation.md >> "$GITHUB_STEP_SUMMARY"
-          fi
-          if [ -f docs/seo-baseline/easter-egg-third-click-validation.md ]; then
-            cat docs/seo-baseline/easter-egg-third-click-validation.md >> "$GITHUB_STEP_SUMMARY"
-          fi
+          test -f "$RUNNER_TEMP/viewport-validation.md" && cat "$RUNNER_TEMP/viewport-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
+          test -f "$RUNNER_TEMP/third-click-validation.md" && cat "$RUNNER_TEMP/third-click-validation.md" >> "$GITHUB_STEP_SUMMARY" || true
