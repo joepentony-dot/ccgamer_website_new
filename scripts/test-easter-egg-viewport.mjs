@@ -54,6 +54,10 @@ async function triggerTripleClick(page) {
 }
 
 async function waitForSecretModalUnlock(page) {
+  // The modal deliberately ignores dismissals during its initial 900ms
+  // safety window. Wait beyond that window before checking the lock state
+  // so a briefly absent attribute cannot be mistaken for an unlocked modal.
+  await page.waitForTimeout(1100);
   await page.waitForFunction(() => {
     const modal = document.querySelector('.ccg-secret-modal.is-open');
     return Boolean(modal) && modal.getAttribute('data-ccg-secret-modal-locked') !== 'true';
