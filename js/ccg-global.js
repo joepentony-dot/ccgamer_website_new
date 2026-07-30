@@ -1228,21 +1228,11 @@ if (IS_ADMIN_PATH) {
         openEasterEggOverlay(mediaWrap, { media: [video, audio] });
     }
 
+    /* CCG EASTER EGG E4 LOCAL INVADERS */
     function triggerInvaders() {
-        if (usesMobileEasterEggControls()) {
-            const desktopOnly = document.createElement("div");
-            desktopOnly.className = "ccg-egg-overlay__desktop-only";
-            desktopOnly.innerHTML = `
-                <strong>AVAILABLE ON DESKTOP ONLY</strong>
-                <span>SPACE INVADERS REQUIRES KEYBOARD CONTROLS.</span>
-            `;
-            openEasterEggOverlay(desktopOnly, { className: "ccg-egg-overlay--desktop-only" });
-            return;
-        }
-
         const invadersScreen = document.createElement("div");
         invadersScreen.className = "ccg-egg-overlay__screen ccg-egg-overlay__screen--invaders";
-        const frame = createScreenFrame("https://dwmkerr.github.io/spaceinvaders/");
+        const frame = createScreenFrame(getEasterEggAsset("invaders.html"));
         frame.addEventListener("load", () => {
             requestAnimationFrame(() => frame.focus({ preventScroll: true }));
         }, { once: true });
