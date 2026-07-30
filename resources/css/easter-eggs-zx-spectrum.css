@@ -21,16 +21,13 @@ body {
     min-height: 100dvh;
     padding: clamp(8px, 2vw, 22px);
     overflow: hidden;
-    background:
-        radial-gradient(circle at 50% 12%, rgba(255,255,255,.08), transparent 36%),
-        #050505;
+    background: radial-gradient(circle at 50% 12%, rgba(255,255,255,.08), transparent 36%), #050505;
 }
 
 button { font: inherit; }
 
 .zx {
     width: min(100%, 940px);
-    max-height: calc(100vh - 16px);
     max-height: calc(100dvh - 16px);
 }
 
@@ -94,140 +91,110 @@ button { font: inherit; }
     margin: 0 auto;
     overflow: hidden;
     outline: none;
-    background: #d7d7d7;
+    background: #000;
     box-shadow: 0 0 0 3px #000, 0 0 28px rgba(70,215,255,.2);
 }
 
-.zx__border {
-    position: absolute;
-    inset: 0;
-    background: #d7d7d7;
-}
-
-.zx__screen.is-pilot .zx__border {
-    background: repeating-linear-gradient(135deg, #00b7d7 0 13px, #d4002f 13px 26px);
-    animation: zx-pilot .18s steps(2, end) infinite;
-}
-
-.zx__screen.is-data .zx__border {
-    background: repeating-linear-gradient(135deg, #1746d1 0 11px, #f4df32 11px 22px);
-    animation: zx-data .12s steps(2, end) infinite;
-}
-
-.zx__paper {
-    position: absolute;
-    inset: 9.5%;
-    z-index: 1;
-    overflow: hidden;
-    padding: clamp(12px, 3vw, 30px);
-    color: #111;
-    background: #f3f3f3;
-    font-size: clamp(.72rem, 2vw, 1.22rem);
-    line-height: 1.42;
-}
-
-.zx__paper p { margin: 0 0 .55em; }
-
-.zx__boot,
-.zx__basic,
+.zx__stage,
+.zx__team,
+.zx__reveal,
 .zx__final {
     position: absolute;
     inset: 0;
-    padding: inherit;
 }
 
-.zx__boot p:first-child,
-.zx__boot p:nth-child(2) {
-    font-weight: 700;
-    letter-spacing: .04em;
-}
+.zx__stage[hidden],
+.zx__team[hidden],
+.zx__reveal[hidden],
+.zx__final[hidden] { display: none; }
 
-.zx__status { margin-top: 1.2em !important; }
-
-.zx__checks {
-    margin-top: 1em;
-    white-space: pre-line;
-}
-
-.zx__basic-line { margin-top: 1.8em !important; }
-
-.zx__prompt { margin-top: .4em !important; }
-
-.zx__cursor {
-    display: inline-grid;
-    place-items: center;
-    width: 1.1em;
-    color: #fff;
-    background: #111;
-    animation: zx-cursor .72s steps(1, end) infinite;
-}
-
-.zx__program { margin-top: 2.4em !important; }
-
-.zx__loading-copy { font-weight: 700; }
-
-.zx__reveal {
-    position: absolute;
-    inset: 0;
+.zx__stage {
     display: grid;
-    grid-template-columns: 1fr;
     place-items: center;
+    background: #000;
+}
+
+.zx__stage img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+}
+
+.zx__team,
+.zx__final {
+    display: grid;
+    place-content: center;
+    padding: clamp(18px, 5vw, 48px);
+    text-align: center;
     color: #fff;
     background: #050505;
 }
 
-.zx__reveal[hidden],
-.zx__final[hidden],
-.zx__basic[hidden],
-.zx__boot[hidden] { display: none; }
+.zx__team p {
+    margin: 0;
+    color: #ffe900;
+    font-size: clamp(1.25rem, 5vw, 3.4rem);
+    font-weight: 700;
+    letter-spacing: .04em;
+}
+
+.zx__reveal {
+    display: grid;
+    place-items: center;
+    padding: clamp(14px, 3vw, 30px);
+    color: #fff;
+    background: #050505;
+}
 
 .zx__reveal img {
-    width: 100%;
-    height: 100%;
+    display: block;
+    width: min(100%, 620px);
+    height: min(78%, 430px);
     object-fit: contain;
+    object-position: center;
     filter: contrast(1.04) saturate(.95);
 }
 
 .zx__reveal-copy {
     position: absolute;
-    inset: auto 0 8%;
+    inset: auto 0 5%;
     display: grid;
-    gap: .2em;
+    gap: .15em;
     padding: .55em .7em;
     text-align: center;
     text-shadow: 0 3px 12px #000, 0 0 5px #000;
 }
 
 .zx__reveal-copy strong {
-    font-size: clamp(1.2rem, 4.8vw, 2.8rem);
+    font-size: clamp(1.15rem, 4vw, 2.5rem);
 }
 
 .zx__reveal-copy span {
     color: #ffe900;
-    font-size: clamp(1rem, 3.4vw, 2rem);
+    font-size: clamp(.95rem, 3vw, 1.8rem);
     font-weight: 700;
 }
 
 .zx__final {
-    display: grid;
-    place-content: center;
     gap: .8em;
-    text-align: center;
-    color: #fff;
-    background: #050505;
 }
 
-.zx__final strong { color: #8adfff; }
-.zx__final span { color: #ffe900; }
+.zx__final strong {
+    color: #8adfff;
+    font-size: clamp(1.2rem, 4vw, 2.7rem);
+}
+
+.zx__final span {
+    color: #ffe900;
+    font-size: clamp(.8rem, 2.2vw, 1.35rem);
+}
 
 .zx__footer {
     margin-top: 12px;
     font-size: clamp(.64rem, 1.5vw, .86rem);
 }
-
-@keyframes zx-pilot { to { background-position: 26px 0; } }
-@keyframes zx-data { to { background-position: 22px 0; } }
-@keyframes zx-cursor { 50% { opacity: 0; } }
 
 @media (max-width: 620px) {
     body { padding: 6px; }
@@ -238,8 +205,9 @@ button { font: inherit; }
     .zx__toolbar span { font-size: .7em; }
     .zx__toolbar button,
     .zx__footer button { min-height: 32px; padding: 5px 8px; }
-    .zx__paper { inset: 8.5%; padding: clamp(9px, 3vw, 16px); }
     .zx__footer { margin-top: 8px; }
+    .zx__reveal { padding: 10px; }
+    .zx__reveal img { height: 75%; }
 }
 
 @media (max-height: 560px) and (orientation: landscape) {
@@ -248,10 +216,6 @@ button { font: inherit; }
     .zx__emulator { padding: 6px 10px; }
     .zx__toolbar,
     .zx__footer { margin: 4px 0; }
-    .zx__screen { width: min(76vh, 680px); width: min(76dvh, 680px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .zx__border,
-    .zx__cursor { animation: none !important; }
+    .zx__screen { width: min(76dvh, 680px); }
+    .zx__reveal img { height: 72%; }
 }
