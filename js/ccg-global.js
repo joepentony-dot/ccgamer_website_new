@@ -879,6 +879,63 @@ if (IS_ADMIN_PATH) {
         document.addEventListener("keydown", remove, { once: true });
     }
 
+    /* CCG EASTER EGG E1 DATASETTE LOADER */
+    async function triggerLoad() {
+        const returnScroll = {
+            left: window.scrollX || document.documentElement.scrollLeft || 0,
+            top: window.scrollY || document.documentElement.scrollTop || 0,
+        };
+        const restoreScroll = () => {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    window.scrollTo({ left: returnScroll.left, top: returnScroll.top, behavior: "auto" });
+                });
+            });
+        };
+
+        const loading = document.createElement("div");
+        loading.className = "ccg-egg-overlay__audio";
+        loading.innerHTML = "<span>INITIALISING DATASETTE...</span>";
+
+        const overlay = openEasterEggOverlay(loading, { className: "ccg-egg-overlay--datasette" });
+        overlay.dataset.ccgDatasetteModule = "loading";
+        if (secretState.activeEgg?.overlay === overlay) {
+            secretState.activeEgg.cleanup = restoreScroll;
+        }
+
+        try {
+            const moduleUrl = new URL(`${getSiteRoot()}js/easter-eggs/datasette-loader.js`, window.location.origin).href;
+            const module = await import(moduleUrl);
+            const experience = await module.createDatasetteExperience({
+                siteRoot: getSiteRoot(),
+                prefersReducedMotion: prefersReducedMotion(),
+            });
+
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) {
+                experience.cleanup?.();
+                return;
+            }
+
+            const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
+            if (!mediaContainer) throw new Error("Datasette media container was not created");
+            mediaContainer.replaceChildren(experience.content);
+            secretState.activeEgg.cleanup = () => {
+                experience.cleanup?.();
+                restoreScroll();
+            };
+            overlay.dataset.ccgDatasetteModule = "ready";
+            requestAnimationFrame(() => experience.focus?.());
+        } catch (error) {
+            console.error("[CCG] Datasette Easter egg failed", error);
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) return;
+            loading.innerHTML = `
+                <span>DATASETTE FAILED TO START.</span>
+                <a class="ccg-btn ccg-btn--ghost" href="${getSiteRoot()}games/index.html">OPEN GAMES ARCHIVE</a>
+            `;
+            overlay.dataset.ccgDatasetteModule = "error";
+        }
+    }
+
     function triggerWarp() {
         const overlay = createOverlay("ccg-warp-overlay", `
             <canvas class="ccg-warp-overlay__canvas" aria-hidden="true"></canvas>
@@ -1140,6 +1197,7 @@ if (IS_ADMIN_PATH) {
             openEasterEggOverlay(screen, { media: [frame], className: "ccg-egg-overlay--square" });
         },
         "pressplay": () => triggerPressPlay(),
+        "load": () => triggerLoad(),
         "vhs": () => {
             const video = createVideoElement(getEasterEggAsset("vhs.mp4"));
             openEasterEggOverlay(video, { media: [video] });
@@ -1374,6 +1432,7 @@ if (IS_ADMIN_PATH) {
                 <ul class="ccg-secret-list">
                     <li data-ccg-secret-code="sys64738">SYS64738</li>
                     <li data-ccg-secret-code="pressplay">PRESS PLAY</li>
+                    <li data-ccg-secret-code="load">LOAD</li>
                     <li data-ccg-secret-code="vhs">VHS</li>
                     <li data-ccg-secret-code="terminator">TERMINATOR</li>
                     <li data-ccg-secret-code="bsod">BSOD</li>
