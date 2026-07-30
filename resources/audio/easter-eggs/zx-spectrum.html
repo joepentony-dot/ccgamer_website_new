@@ -9,32 +9,59 @@
 </head>
 <body>
     <main class="zx" data-zx-spectrum>
-        <section class="zx__computer" aria-label="Local ZX Spectrum display">
-            <header class="zx__header">
-                <span>ZX SPECTRUM 48K</span>
-                <strong>CCG INTERRUPTION</strong>
+        <section class="zx__emulator" aria-label="ZX Spectrum 48K emulator">
+            <header class="zx__toolbar">
+                <div>
+                    <strong>ZX SPECTRUM 48K</strong>
+                    <span>LOCAL EMULATOR</span>
+                </div>
+                <button type="button" data-zx-action="sound" aria-pressed="true">SOUND: ON</button>
             </header>
-            <div class="zx__screen" tabindex="0" aria-label="ZX Spectrum BASIC screen">
+
+            <div class="zx__screen" tabindex="0" aria-live="polite">
                 <div class="zx__border" aria-hidden="true"></div>
+
                 <div class="zx__paper">
-                    <p>© 1982 Sinclair Research Ltd</p>
-                    <p class="zx__line">0 OK, 0:1</p>
-                    <p class="zx__prompt"><span class="zx__cursor">K</span></p>
-                    <div class="zx__message" data-zx-message hidden>
-                        <strong>R Tape loading error, 0:1</strong>
-                        <span>NO, I DON'T THINK SO.</span>
+                    <div class="zx__boot" data-zx-boot>
+                        <p>CHEEKY COMMODORE GAMER</p>
+                        <p>ZX SPECTRUM MODE</p>
+                        <p class="zx__status" data-zx-status>INITIALISING...</p>
+                        <div class="zx__checks" data-zx-checks></div>
+                    </div>
+
+                    <div class="zx__basic" data-zx-basic hidden>
+                        <p>© 1982 Sinclair Research Ltd</p>
+                        <p class="zx__basic-line">48K BASIC</p>
+                        <p>OK</p>
+                        <p class="zx__prompt"><span class="zx__cursor">K</span></p>
+                        <p class="zx__program" data-zx-program hidden>Program: CHEEKY_EMULATOR</p>
+                        <p class="zx__loading-copy" data-zx-loading-copy hidden>Loading...</p>
+                    </div>
+
+                    <div class="zx__reveal" data-zx-reveal hidden>
+                        <img src="zx-clive.jpg" alt="Sir Clive Sinclair">
+                        <div class="zx__reveal-copy">
+                            <strong>NO...</strong>
+                            <span>I DON'T THINK SO.</span>
+                        </div>
+                    </div>
+
+                    <div class="zx__final" data-zx-final hidden>
+                        <p>Nice try.</p>
+                        <strong>THIS IS CHEEKY COMMODORE GAMER.</strong>
+                        <span>WE'RE COMMODORE AROUND HERE.</span>
                     </div>
                 </div>
             </div>
-            <div class="zx__controls">
-                <button type="button" data-zx-action="load">LOAD ""</button>
-                <button type="button" data-zx-action="run">RUN</button>
-                <button type="button" data-zx-action="reset">RESET</button>
-                <button type="button" data-zx-action="sound" aria-pressed="true">SOUND: ON</button>
-            </div>
-            <p class="zx__hint">Press L to load, R to run, Esc to reset. This version is fully local.</p>
+
+            <footer class="zx__footer">
+                <span data-zx-footer>ROM READY</span>
+                <button type="button" data-zx-action="restart">RESTART</button>
+            </footer>
         </section>
     </main>
+
+    <audio data-zx-voice preload="auto" src="no_i_dont_think_sp.mp3"></audio>
     <script src="../../../../js/easter-eggs/zx-spectrum.js"></script>
 </body>
 </html>
