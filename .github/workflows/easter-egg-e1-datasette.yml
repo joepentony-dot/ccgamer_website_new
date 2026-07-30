@@ -50,9 +50,6 @@ jobs:
             home.html \
             > "$RUNNER_TEMP/e1-protected-before.sha256"
 
-      - name: Build Phase E1 source files
-        run: python scripts/build-e1-payload.py
-
       - name: Apply bounded LOAD command integration
         run: python scripts/apply-easter-egg-e1-datasette.py
 
@@ -140,7 +137,7 @@ jobs:
 
       - name: Restore established viewport test source
         if: always()
-        run: git checkout origin/main -- scripts/test-easter-egg-viewport.mjs
+        run: git checkout HEAD -- scripts/test-easter-egg-viewport.mjs
 
       - name: Re-run established third-click stability suite
         env:
@@ -210,7 +207,12 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add \
+            js/ccg-global.js \
+            js/easter-eggs/datasette-loader.js \
+            resources/css/easter-eggs-datasette.css \
+            scripts/apply-easter-egg-e1-datasette.py \
+            scripts/test-easter-egg-e1-datasette.mjs
           if git diff --cached --quiet; then
             echo 'No generated LOAD integration to commit.'
           else
