@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="robots" content="noindex,nofollow">
+    <title>CCG Local ZX Spectrum Easter Egg</title>
+    <link rel="stylesheet" href="../../../css/easter-eggs-zx-spectrum.css">
+</head>
+<body>
+    <main class="zx" data-zx-spectrum>
+        <section class="zx__emulator" aria-label="ZX Spectrum 48K emulator">
+            <header class="zx__toolbar">
+                <div>
+                    <strong>ZX SPECTRUM 48K</strong>
+                    <span>LOCAL EMULATOR</span>
+                </div>
+                <button type="button" data-zx-action="sound" aria-pressed="true">SOUND: ON</button>
+            </header>
+
+            <div class="zx__screen" tabindex="0" aria-live="polite">
+                <div class="zx__border" aria-hidden="true"></div>
+
+                <div class="zx__paper">
+                    <div class="zx__boot" data-zx-boot>
+                        <p>CHEEKY COMMODORE GAMER</p>
+                        <p>ZX SPECTRUM MODE</p>
+                        <p class="zx__status" data-zx-status>INITIALISING...</p>
+                        <div class="zx__checks" data-zx-checks></div>
+                    </div>
+
+                    <div class="zx__basic" data-zx-basic hidden>
+                        <p>© 1982 Sinclair Research Ltd</p>
+                        <p class="zx__basic-line">48K BASIC</p>
+                        <p>OK</p>
+                        <p class="zx__prompt"><span class="zx__cursor">K</span></p>
+                        <p class="zx__program" data-zx-program hidden>Program: CHEEKY_EMULATOR</p>
+                        <p class="zx__loading-copy" data-zx-loading-copy hidden>Loading...</p>
+                    </div>
+
+                    <div class="zx__reveal" data-zx-reveal hidden>
+                        <img src="zx-clive.jpg" alt="Sir Clive Sinclair">
+                        <div class="zx__reveal-copy">
+                            <strong>NO...</strong>
+                            <span>I DON'T THINK SO.</span>
+                        </div>
+                    </div>
+
+                    <div class="zx__final" data-zx-final hidden>
+                        <p>Nice try.</p>
+                        <strong>THIS IS CHEEKY COMMODORE GAMER.</strong>
+                        <span>WE'RE COMMODORE AROUND HERE.</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="zx__footer">
+                <span data-zx-footer>ROM READY</span>
+                <button type="button" data-zx-action="restart">RESTART</button>
+            </footer>
+        </section>
+    </main>
+
+    <audio data-zx-voice preload="auto" src="no_i_dont_think_sp.mp3"></audio>
+    <script src="../../../../js/easter-eggs/zx-spectrum.js"></script>
+</body>
+</html>

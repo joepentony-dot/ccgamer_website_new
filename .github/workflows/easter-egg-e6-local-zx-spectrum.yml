@@ -1,0 +1,83 @@
+name: Easter Egg E6 Local ZX Spectrum
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'js/ccg-global.js'
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'js/easter-eggs/zx-spectrum.js'
+      - 'resources/audio/easter-eggs/zx-spectrum.html'
+      - 'resources/css/easter-eggs-zx-spectrum.css'
+      - 'scripts/apply-easter-egg-e6-zx-spectrum.py'
+      - '.github/workflows/easter-egg-e6-local-zx-spectrum.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-local-zx-spectrum:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out submitted revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Record protected hashes
+        run: sha256sum index.html resources/css/intro.css js/index-intro.js home.html games/games.json > "$RUNNER_TEMP/e6-protected.sha256"
+
+      - name: Confirm bounded integration is already applied
+        run: |
+          python scripts/apply-easter-egg-e6-zx-spectrum.py
+          git diff --exit-code -- js/ccg-global.js js/easter-eggs/easter-egg-registry.js
+
+      - name: Validate local E6 assets
+        run: |
+          node --check js/ccg-global.js
+          node --check js/easter-eggs/easter-egg-registry.js
+          node --check js/easter-eggs/zx-spectrum.js
+          test -f resources/audio/easter-eggs/zx-spectrum.html
+          test -f resources/css/easter-eggs-zx-spectrum.css
+          test -f resources/audio/easter-eggs/zx-clive.jpg
+          test -f resources/audio/easter-eggs/no_i_dont_think_sp.mp3
+          grep -q 'getEasterEggAsset("zx-spectrum.html")' js/ccg-global.js
+          grep -q 'runtime: "local", phase: "E6"' js/easter-eggs/easter-egg-registry.js
+          grep -q 'data-zx-spectrum' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-action="restart"' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-action="sound"' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-reveal' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'zx-clive.jpg' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'no_i_dont_think_sp.mp3' resources/audio/easter-eggs/zx-spectrum.html
+          ! grep -q 'jsspeccy.zxdemo.org' js/ccg-global.js
+          ! grep -q 'https://' resources/audio/easter-eggs/zx-spectrum.html
+          ! grep -q 'https://' js/easter-eggs/zx-spectrum.js
+
+      - name: Confirm catalogue integrity
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games) == 651, len(games)
+          print('Catalogue integrity passed: 651 games.')
+          PY
+
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e6-protected.sha256"
