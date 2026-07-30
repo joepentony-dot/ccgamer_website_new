@@ -74,7 +74,7 @@ jobs:
           grep -q 'src="zx_2.gif"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'zx-clive.jpg' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'no_i_dont_think_sp.mp3' resources/audio/easter-eggs/zx-spectrum.html
-          grep -q 'WE’RE TEAM COMMODORE HERE' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q "WE'RE TEAM COMMODORE HERE" resources/audio/easter-eggs/zx-spectrum.html
           grep -q '}, 5000);' js/easter-eggs/zx-spectrum.js
           grep -q '}, 10000);' js/easter-eggs/zx-spectrum.js
           grep -q 'later(showClive, 11600);' js/easter-eggs/zx-spectrum.js
