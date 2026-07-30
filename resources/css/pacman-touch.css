@@ -48,12 +48,14 @@ html.ccg-pacman-touch #pacman canvas {
 }
 
 html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
+    box-sizing: border-box;
     display: grid;
     grid-template-columns: minmax(170px, 220px) minmax(112px, 150px);
     align-items: center;
     justify-content: center;
     gap: 12px;
     width: min(100%, 390px);
+    max-width: 100%;
     margin: 0 auto;
     padding: 8px 8px max(10px, env(safe-area-inset-bottom, 0px));
     color: #d7f7ff;
@@ -82,6 +84,7 @@ html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
 
 .ccg-pacman-control,
 .ccg-pacman-start {
+    box-sizing: border-box;
     appearance: none;
     -webkit-appearance: none;
     border: 1px solid rgba(126, 252, 255, 0.62);
