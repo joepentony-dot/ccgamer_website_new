@@ -148,7 +148,7 @@ jobs:
 
       - name: Restore established viewport test source
         if: always()
-        run: cp "$RUNNER_TEMP/e1-viewport-source.mjs" scripts/test-easter-egg-viewport.mjs
+        run: git checkout HEAD -- scripts/test-easter-egg-viewport.mjs
 
       - name: Re-run established third-click stability suite
         env:
@@ -212,6 +212,27 @@ jobs:
             ${{ runner.temp }}/e1-third-click-screenshots
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Commit tested LOAD integration to PR branch
+        if: github.actor != 'github-actions[bot]'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            js/ccg-global.js \
+            js/easter-eggs/datasette-loader.js \
+            resources/css/easter-eggs-datasette.css \
+            scripts/apply-easter-egg-e1-datasette.py \
+            scripts/test-easter-egg-e1-datasette.mjs
+          if git diff --cached --quiet; then
+            echo 'No generated LOAD integration to commit.'
+          else
+            git commit -m 'Add datasette loading Easter egg'
+            branch="${{ github.head_ref || github.ref_name }}"
+            git fetch origin "$branch"
+            git rebase --autostash "origin/$branch"
+            git push origin HEAD:"$branch"
+          fi
 
       - name: Publish summary
         if: always()
