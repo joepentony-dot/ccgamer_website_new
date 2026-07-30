@@ -8,32 +8,63 @@
 </head>
 <body>
     <main class="ccg-invaders" aria-label="CCG Invaders game">
-        <header class="ccg-invaders__header">
-            <div><span>SCORE</span><strong data-score>000000</strong></div>
-            <h1>CCG INVADERS</h1>
-            <div><span>LIVES</span><strong data-lives>3</strong></div>
-        </header>
+        <section class="ccg-invaders__cabinet">
+            <header class="ccg-invaders__header">
+                <div class="ccg-invaders__stat">
+                    <span>SCORE</span>
+                    <strong data-score>000000</strong>
+                </div>
+                <div class="ccg-invaders__title">
+                    <span>SPACE</span>
+                    <h1>CCG INVADERS</h1>
+                </div>
+                <div class="ccg-invaders__stat ccg-invaders__stat--right">
+                    <span>LIVES</span>
+                    <strong data-lives>3</strong>
+                </div>
+            </header>
 
-        <section class="ccg-invaders__stage">
-            <canvas width="720" height="760" aria-label="Space Invaders play area" data-canvas></canvas>
-            <div class="ccg-invaders__message" data-message>
-                <strong>DEFEND THE COMMODORE ARCHIVE</strong>
-                <span>ARROW KEYS OR A / D TO MOVE · SPACE TO FIRE</span>
-                <button type="button" data-start>START GAME</button>
+            <div class="ccg-invaders__play-row">
+                <aside class="ccg-invaders__help" aria-label="Keyboard controls">
+                    <strong>CONTROLS</strong>
+                    <span>← / A&nbsp;&nbsp;MOVE LEFT</span>
+                    <span>→ / D&nbsp;&nbsp;MOVE RIGHT</span>
+                    <span>SPACE&nbsp;&nbsp;FIRE</span>
+                    <span>P&nbsp;&nbsp;PAUSE</span>
+                    <span>R&nbsp;&nbsp;RESTART</span>
+                </aside>
+
+                <section class="ccg-invaders__stage">
+                    <canvas width="720" height="760" aria-label="Space Invaders play area" data-canvas></canvas>
+                    <div class="ccg-invaders__message" data-message>
+                        <strong>DEFEND THE COMMODORE ARCHIVE</strong>
+                        <span>ARROW KEYS OR A / D TO MOVE · SPACE TO FIRE</span>
+                        <button type="button" data-start>START GAME</button>
+                    </div>
+                </section>
+
+                <aside class="ccg-invaders__status" aria-label="Mission information">
+                    <strong>MISSION</strong>
+                    <span>DESTROY EVERY WAVE</span>
+                    <span>PROTECT THE ARCHIVE</span>
+                    <span>DO NOT LET THEM LAND</span>
+                </aside>
             </div>
+
+            <div class="ccg-invaders__toolbar" aria-label="Game controls">
+                <button type="button" data-pause>PAUSE</button>
+                <button type="button" data-restart>RESTART</button>
+                <button type="button" data-sound aria-pressed="true">SOUND ON</button>
+            </div>
+
+            <div class="ccg-invaders__touch" aria-label="Touch controls">
+                <button type="button" data-control="left" aria-label="Move left">◀</button>
+                <button type="button" class="ccg-invaders__fire" data-control="fire" aria-label="Fire">FIRE</button>
+                <button type="button" data-control="right" aria-label="Move right">▶</button>
+            </div>
+
+            <p class="ccg-invaders__footer">MOVE, FIRE, PAUSE OR RESTART AT ANY TIME. THE PLAYFIELD NOW REMAINS CENTRED AT EVERY SCREEN SIZE.</p>
         </section>
-
-        <div class="ccg-invaders__toolbar" aria-label="Game controls">
-            <button type="button" data-pause>PAUSE</button>
-            <button type="button" data-restart>RESTART</button>
-            <button type="button" data-sound aria-pressed="true">SOUND ON</button>
-        </div>
-
-        <div class="ccg-invaders__touch" aria-label="Touch controls">
-            <button type="button" data-control="left" aria-label="Move left">◀</button>
-            <button type="button" class="ccg-invaders__fire" data-control="fire" aria-label="Fire">FIRE</button>
-            <button type="button" data-control="right" aria-label="Move right">▶</button>
-        </div>
     </main>
     <script type="module" src="../../../js/easter-eggs/invaders-game.js"></script>
 </body>
