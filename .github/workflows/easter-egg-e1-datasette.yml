@@ -112,6 +112,21 @@ jobs:
             --report "$RUNNER_TEMP/e1-datasette-validation.md" \
             --screenshots "$RUNNER_TEMP/e1-screenshots"
 
+      - name: Prepare deterministic viewport dismissal timing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/test-easter-egg-viewport.mjs')
+          text = path.read_text(encoding='utf-8')
+          old = "  await page.locator('[data-ccg-secret-close]').click();"
+          new = """  await page.locator('.ccg-secret-modal[data-ccg-secret-modal-locked=\"true\"]').waitFor({ state: 'visible', timeout: 5000 });
+          await page.locator('[data-ccg-secret-close]').click();"""
+          if text.count(old) != 1:
+              raise SystemExit(f'Expected one intentional modal close, found {text.count(old)}')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          print('Viewport test now waits for the real dismissal-ready state.')
+          PY
+
       - name: Re-run established viewport positioning suite
         env:
           CHROMIUM_PATH: /usr/bin/chromium
@@ -122,6 +137,10 @@ jobs:
             --output "$RUNNER_TEMP/e1-viewport-evidence.json" \
             --report "$RUNNER_TEMP/e1-viewport-validation.md" \
             --screenshots "$RUNNER_TEMP/e1-viewport-screenshots"
+
+      - name: Restore established viewport test source
+        if: always()
+        run: git checkout origin/main -- scripts/test-easter-egg-viewport.mjs
 
       - name: Re-run established third-click stability suite
         env:
