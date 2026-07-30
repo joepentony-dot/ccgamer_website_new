@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-29T22:27:14.276Z",
+  "generatedAt": "2026-07-29T23:35:30.543Z",
   "verdict": "PASS",
   "testedCases": 3,
   "failedChecks": [],
@@ -37,9 +37,9 @@
       "hasTouch": false,
       "pointerType": "mouse",
       "url": "http://127.0.0.1:4173/home.html",
-      "scrollBefore": 3363,
-      "scrollAfterBackdropClose": 3363,
-      "scrollAfterButtonClose": 3363,
+      "scrollBefore": 3344,
+      "scrollAfterBackdropClose": 3344,
+      "scrollAfterButtonClose": 3344,
       "checks": {
         "stableAfterResidualEvents": true,
         "accidentalResultAbsent": true,

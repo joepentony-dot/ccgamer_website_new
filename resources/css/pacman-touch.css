@@ -1,0 +1,161 @@
+/* ============================================================
+   CCG PACMAN TOUCH CONTROLS
+   Mobile-only controls for the local PACMAN Easter egg iframe.
+   The parent overlay retains focus on its visible Exit control.
+============================================================ */
+
+.ccg-pacman-controls {
+    display: none;
+}
+
+.ccg-pacman-controls[hidden] {
+    display: none !important;
+}
+
+html.ccg-pacman-touch,
+html.ccg-pacman-touch body {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: #000;
+}
+
+html.ccg-pacman-touch body > h1,
+html.ccg-pacman-touch body > p,
+html.ccg-pacman-touch #shim {
+    display: none !important;
+}
+
+html.ccg-pacman-touch #pacman {
+    width: min(382px, calc(100vw - 12px));
+    height: auto;
+    min-height: 0;
+    margin: 6px auto 4px;
+    border-radius: 4px;
+}
+
+html.ccg-pacman-touch #pacman canvas {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+}
+
+html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(170px, 220px) minmax(112px, 150px);
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: min(100%, 390px);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 8px 8px max(10px, env(safe-area-inset-bottom, 0px));
+    color: #d7f7ff;
+    font-family: system-ui, sans-serif;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.ccg-pacman-controls__label {
+    grid-column: 1 / -1;
+    color: #7efcff;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-align: center;
+}
+
+.ccg-pacman-dpad {
+    display: grid;
+    grid-template-columns: repeat(3, 52px);
+    grid-template-rows: repeat(3, 52px);
+    justify-content: center;
+    gap: 4px;
+}
+
+.ccg-pacman-control,
+.ccg-pacman-start {
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid rgba(126, 252, 255, 0.62);
+    background: linear-gradient(145deg, #14243a, #070d18);
+    color: #f4fbff;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 0 12px rgba(60, 209, 255, 0.22);
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.ccg-pacman-control {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    font-size: 1.2rem;
+}
+
+.ccg-pacman-control:active,
+.ccg-pacman-start:active {
+    transform: translateY(1px) scale(0.96);
+    background: linear-gradient(145deg, #214466, #0a1424);
+}
+
+.ccg-pacman-control--up {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.ccg-pacman-control--left {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.ccg-pacman-control--centre {
+    grid-column: 2;
+    grid-row: 2;
+    border-color: rgba(126, 252, 255, 0.22);
+    color: rgba(126, 252, 255, 0.42);
+    pointer-events: none;
+}
+
+.ccg-pacman-control--right {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.ccg-pacman-control--down {
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.ccg-pacman-start {
+    min-height: 54px;
+    padding: 10px 12px;
+    border-radius: 999px;
+    color: #ffef74;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    line-height: 1.25;
+}
+
+@media (max-width: 380px) {
+    html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .ccg-pacman-start {
+        width: min(220px, 100%);
+        margin: 0 auto;
+    }
+}

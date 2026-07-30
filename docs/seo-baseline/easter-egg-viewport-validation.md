@@ -8,11 +8,11 @@ The three-click command menu, a shared framed result and the direct BSOD overlay
 
 | Case | Viewport | Result | Menu height | Result frame height |
 |---|---:|---:|---:|---:|
-| phone-portrait | 390×844 | PASS | 828 | 759.59 |
-| small-phone | 360×640 | PASS | 624 | 576 |
+| phone-portrait | 390×844 | PASS | 828 | 828 |
+| small-phone | 360×640 | PASS | 624 | 624 |
 | phone-landscape | 844×390 | PASS | 374 | 374 |
 | desktop | 1366×768 | PASS | 669.59 | 691.19 |
-| games-phone | 390×844 | PASS | 828 | 759.59 |
+| games-phone | 390×844 | PASS | 828 | 828 |
 
 ## Required behaviour
 

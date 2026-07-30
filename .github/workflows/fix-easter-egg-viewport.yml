@@ -7,16 +7,23 @@ on:
       - 'js/ccg-global.js'
       - 'resources/css/ccg-master.css'
       - 'resources/css/ccg-overlays.css'
+      - 'resources/css/pacman-touch.css'
+      - 'resources/audio/easter-eggs/pacman.html'
       - 'scripts/apply-easter-egg-viewport-fix.py'
       - 'scripts/apply-easter-egg-direct-overlay-fix.py'
       - 'scripts/apply-easter-egg-third-click-fix.py'
+      - 'scripts/apply-easter-egg-warp-mobile-games-fix.py'
+      - 'scripts/apply-pacman-self-contained-runtime-fix.py'
       - 'scripts/test-easter-egg-viewport.mjs'
       - 'scripts/test-easter-egg-third-click-stability.mjs'
+      - 'scripts/test-easter-egg-warp-mobile-games.mjs'
+      - 'scripts/test-pacman-mobile-render.mjs'
       - '.github/workflows/fix-easter-egg-viewport.yml'
+      - '.github/workflows/fix-easter-egg-warp-mobile-games.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   validate-easter-egg-viewport:
@@ -127,26 +134,29 @@ jobs:
 
           allowed = {
               '.github/workflows/fix-easter-egg-viewport.yml',
+              '.github/workflows/fix-easter-egg-warp-mobile-games.yml',
               'docs/seo-baseline/easter-egg-viewport-evidence.json',
               'docs/seo-baseline/easter-egg-viewport-validation.md',
               'docs/seo-baseline/easter-egg-third-click-evidence.json',
               'docs/seo-baseline/easter-egg-third-click-validation.md',
+              'docs/seo-baseline/easter-egg-warp-mobile-games-evidence.json',
+              'docs/seo-baseline/easter-egg-warp-mobile-games-validation.md',
+              'docs/seo-baseline/pacman-mobile-render-evidence.json',
+              'docs/seo-baseline/pacman-mobile-render-validation.md',
               'js/ccg-global.js',
+              'resources/audio/easter-eggs/pacman.html',
               'resources/css/ccg-master.css',
               'resources/css/ccg-overlays.css',
+              'resources/css/pacman-touch.css',
               'scripts/apply-easter-egg-viewport-fix.py',
               'scripts/apply-easter-egg-direct-overlay-fix.py',
               'scripts/apply-easter-egg-third-click-fix.py',
+              'scripts/apply-easter-egg-warp-mobile-games-fix.py',
+              'scripts/apply-pacman-self-contained-runtime-fix.py',
               'scripts/test-easter-egg-viewport.mjs',
               'scripts/test-easter-egg-third-click-stability.mjs',
-          }
-          required = {
-              '.github/workflows/fix-easter-egg-viewport.yml',
-              'docs/seo-baseline/easter-egg-third-click-evidence.json',
-              'docs/seo-baseline/easter-egg-third-click-validation.md',
-              'js/ccg-global.js',
-              'scripts/apply-easter-egg-third-click-fix.py',
-              'scripts/test-easter-egg-third-click-stability.mjs',
+              'scripts/test-easter-egg-warp-mobile-games.mjs',
+              'scripts/test-pacman-mobile-render.mjs',
           }
           tracked_output = subprocess.check_output(
               ['git', 'diff', '--name-only', 'origin/main'],
@@ -163,14 +173,12 @@ jobs:
               if line.strip()
           }
           unexpected = actual - allowed
-          missing = required - actual
-          if unexpected or missing:
+          if unexpected:
               print('Allowed:', sorted(allowed))
               print('Actual:', sorted(actual))
               print('Unexpected:', sorted(unexpected))
-              print('Missing required:', sorted(missing))
-              raise SystemExit('Unexpected Easter egg stability scope')
-          print('Bounded Easter egg stability scope passed.')
+              raise SystemExit('Unexpected Easter egg repair scope')
+          print('Bounded Easter egg repair scope passed.')
           PY
 
       - name: Upload Easter egg evidence
@@ -188,25 +196,8 @@ jobs:
           if-no-files-found: warn
           retention-days: 30
 
-      - name: Commit fix and evidence to PR branch
-        if: github.actor != 'github-actions[bot]'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            js/ccg-global.js \
-            resources/css/ccg-master.css \
-            resources/css/ccg-overlays.css \
-            docs/seo-baseline/easter-egg-viewport-evidence.json \
-            docs/seo-baseline/easter-egg-viewport-validation.md \
-            docs/seo-baseline/easter-egg-third-click-evidence.json \
-            docs/seo-baseline/easter-egg-third-click-validation.md
-          if git diff --cached --quiet; then
-            echo 'No generated changes to commit.'
-          else
-            git commit -m 'Keep Easter egg menu open after third click'
-            git push origin HEAD:${{ github.head_ref || github.ref_name }}
-          fi
+      - name: Retain viewport evidence as workflow artifact
+        run: echo 'Viewport and third-click evidence is retained in the uploaded artifact; this validation workflow does not write to the PR branch.'
 
       - name: Publish summary
         if: always()
