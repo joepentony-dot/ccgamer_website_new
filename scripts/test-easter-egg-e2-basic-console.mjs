@@ -23,8 +23,22 @@ for (const item of cases) {
   await page.goto(`${baseURL}home.html`, { waitUntil: 'networkidle' });
   await page.evaluate(() => window.scrollTo(0, Math.min(800, document.documentElement.scrollHeight - innerHeight - 100)));
   const startScroll = await page.evaluate(() => scrollY);
-  const logo = page.locator('[data-ccg-header] img, .ccg-logo img, .ccg-logo').first();
-  for (let i = 0; i < 3; i += 1) { await logo.click({ force: true }); await page.waitForTimeout(180); }
+  await page.evaluate(async mobile => {
+    const brand = document.querySelector('.ccg-brand');
+    const logo = brand?.querySelector('.ccg-brand__logo');
+    if (!brand || !logo) throw new Error('CCG brand logo not found');
+    for (let index = 0; index < 3; index += 1) {
+      logo.dispatchEvent(new PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        isPrimary: true,
+        pointerId: 1,
+        pointerType: mobile ? 'touch' : 'mouse',
+      }));
+      await new Promise(resolve => setTimeout(resolve, 180));
+    }
+  }, item.mobile);
   await page.waitForSelector('.ccg-secret-modal.is-open');
   await page.waitForTimeout(1050);
   const menuHasBasic = await page.locator('[data-ccg-secret-code="basic"]').isVisible();
@@ -48,7 +62,7 @@ for (const item of cases) {
   await page.waitForSelector('.ccg-basic-console__launch', { timeout: 10000 });
   const reward = await page.locator('.ccg-basic-console__launch').evaluate(a => ({ visible: !!(a.offsetWidth && a.offsetHeight), href: a.getAttribute('href') || '' }));
   await page.locator('.ccg-egg-overlay__exit').click();
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(300);
   const endScroll = await page.evaluate(() => scrollY);
   const scrollDelta = endScroll - startScroll;
   const restored = Math.abs(scrollDelta) <= 2;
