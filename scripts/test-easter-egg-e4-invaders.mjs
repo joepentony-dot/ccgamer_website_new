@@ -46,20 +46,27 @@ for (const item of cases) {
   await game.locator('[data-canvas]').waitFor({ state: 'visible' });
   const touchVisible = await game.locator('.ccg-invaders__touch').evaluate(el => getComputedStyle(el).display !== 'none');
   const startVisible = await game.locator('[data-start]').isVisible();
+  const geometry = await game.locator('.ccg-invaders__stage').evaluate(el => {
+    const r = el.getBoundingClientRect();
+    const centreDelta = Math.abs((r.left + r.width / 2) - (innerWidth / 2));
+    return {
+      contained: r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1,
+      centred: centreDelta <= 2,
+      centreDelta,
+      ratio: r.width / r.height,
+    };
+  });
   await game.locator('[data-start]').click();
   await page.waitForTimeout(250);
   const score = await game.locator('[data-score]').textContent();
   const lives = await game.locator('[data-lives]').textContent();
-  const canvasContained = await game.locator('[data-canvas]').evaluate(el => {
-    const r = el.getBoundingClientRect();
-    return r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1;
-  });
   const hasControls = await game.locator('[data-pause], [data-restart], [data-sound]').count() === 3;
   await page.locator('.ccg-egg-overlay__exit').click();
   await page.waitForTimeout(300);
   const endScroll = await page.evaluate(() => scrollY);
   results.push({
     name: item.name,
+    metrics: { centreDelta: geometry.centreDelta, stageRatio: geometry.ratio },
     checks: {
       localFrame: Boolean(frameURL && frameURL.includes('/resources/audio/easter-eggs/invaders.html')),
       noExternalRuntime: Boolean(frameURL && !frameURL.startsWith('http')),
@@ -67,7 +74,9 @@ for (const item of cases) {
       startVisible,
       initialScore: score === '000000',
       initialLives: lives === '3',
-      canvasContained,
+      canvasContained: geometry.contained,
+      playfieldCentred: geometry.centred,
+      aspectRatioPreserved: Math.abs(geometry.ratio - (720 / 760)) <= 0.02,
       hasControls,
       scrollRestored: Math.abs(endScroll - startScroll) <= 2,
     },
@@ -79,6 +88,6 @@ const failedChecks = results.flatMap(result => Object.entries(result.checks).fil
 const evidence = { generatedAt: new Date().toISOString(), verdict: failedChecks.length ? 'FAIL' : 'PASS', failedChecks, results };
 fs.mkdirSync(new URL('../docs/seo-baseline/', import.meta.url), { recursive: true });
 fs.writeFileSync(outputPath, JSON.stringify(evidence, null, 2));
-fs.writeFileSync(reportPath, `# E4 Local Invaders Validation\n\n**${evidence.verdict}**\n\n${failedChecks.length ? failedChecks.map(x => `- FAIL — ${x}`).join('\n') : '- Local Invaders passed desktop, mobile and short-mobile checks.'}\n`);
-console.log(JSON.stringify({ verdict: evidence.verdict, failedChecks }, null, 2));
+fs.writeFileSync(reportPath, `# E4 Local Invaders Validation\n\n**${evidence.verdict}**\n\n${failedChecks.length ? failedChecks.map(x => `- FAIL — ${x}`).join('\n') : '- Local Invaders passed centred desktop, mobile and short-mobile checks.'}\n`);
+console.log(JSON.stringify({ verdict: evidence.verdict, failedChecks, metrics: results.map(({ name, metrics }) => ({ name, ...metrics })) }, null, 2));
 if (failedChecks.length) process.exit(1);
