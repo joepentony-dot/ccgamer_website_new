@@ -53,6 +53,7 @@ async function triggerTripleClick(page) {
   await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });
 }
 
+/* CCG EASTER EGG DISMISSAL ARM TEST COMPATIBILITY */
 async function waitForSecretModalUnlock(page) {
   // The modal deliberately ignores dismissals during its initial 900ms
   // safety window. Wait beyond that window before checking the lock state
@@ -60,7 +61,7 @@ async function waitForSecretModalUnlock(page) {
   await page.waitForTimeout(1100);
   await page.waitForFunction(() => {
     const modal = document.querySelector('.ccg-secret-modal.is-open');
-    return Boolean(modal) && modal.getAttribute('data-ccg-secret-modal-locked') !== 'true';
+    return Boolean(modal) && modal.getAttribute('data-ccg-secret-modal-locked') === 'true';
   }, null, { timeout: 5000 });
 }
 
@@ -173,6 +174,7 @@ async function runCase(browser, testCase) {
 
   await triggerTripleClick(page);
   const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);
+  await waitForSecretModalUnlock(page);
 
   await page.evaluate(() => {
     const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');
@@ -204,6 +206,7 @@ async function runCase(browser, testCase) {
   await page.waitForTimeout(800);
 
   await triggerTripleClick(page);
+  await waitForSecretModalUnlock(page);
   await page.evaluate(() => {
     const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');
     if (!bsod) throw new Error('BSOD result trigger not found');

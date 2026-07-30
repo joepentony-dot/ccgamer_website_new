@@ -936,6 +936,73 @@ if (IS_ADMIN_PATH) {
         }
     }
 
+    /* CCG EASTER EGG E2 BASIC CONSOLE */
+    async function triggerBasic(launchContext = null) {
+        const returnScroll = {
+            left: Number.isFinite(launchContext?.scrollX)
+                ? launchContext.scrollX
+                : (window.scrollX || document.documentElement.scrollLeft || 0),
+            top: Number.isFinite(launchContext?.scrollY)
+                ? launchContext.scrollY
+                : (window.scrollY || document.documentElement.scrollTop || 0),
+        };
+        let scrollRestoreTimers = [];
+        const restoreScroll = () => {
+            const apply = () => window.scrollTo({
+                left: returnScroll.left,
+                top: returnScroll.top,
+                behavior: "auto",
+            });
+            apply();
+            requestAnimationFrame(() => requestAnimationFrame(apply));
+            scrollRestoreTimers.forEach(timer => window.clearTimeout(timer));
+            scrollRestoreTimers = [80, 180].map(delay => window.setTimeout(apply, delay));
+        };
+
+        const styleId = "ccg-easter-egg-basic-css";
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement("link");
+            style.id = styleId;
+            style.rel = "stylesheet";
+            style.href = `${getSiteRoot()}resources/css/easter-eggs-basic.css`;
+            document.head.appendChild(style);
+        }
+
+        const loading = document.createElement("div");
+        loading.className = "ccg-egg-overlay__audio";
+        loading.innerHTML = "<span>BOOTING C64 BASIC...</span>";
+        const overlay = openEasterEggOverlay(loading, { className: "ccg-egg-overlay--basic" });
+        overlay.dataset.ccgBasicModule = "loading";
+        if (secretState.activeEgg?.overlay === overlay) secretState.activeEgg.cleanup = restoreScroll;
+
+        try {
+            const moduleUrl = new URL(`${getSiteRoot()}js/easter-eggs/basic-console.js`, window.location.origin).href;
+            const module = await import(moduleUrl);
+            const experience = module.createBasicConsoleExperience({
+                siteRoot: getSiteRoot(),
+                prefersReducedMotion: prefersReducedMotion(),
+            });
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) {
+                experience.cleanup?.();
+                return;
+            }
+            const mediaContainer = overlay.querySelector(".ccg-egg-overlay__media");
+            if (!mediaContainer) throw new Error("BASIC media container was not created");
+            mediaContainer.replaceChildren(experience.content);
+            secretState.activeEgg.cleanup = () => {
+                experience.cleanup?.();
+                restoreScroll();
+            };
+            overlay.dataset.ccgBasicModule = "ready";
+            requestAnimationFrame(() => experience.focus?.());
+        } catch (error) {
+            console.error("[CCG] BASIC Easter egg failed", error);
+            if (!secretState.activeEgg || secretState.activeEgg.overlay !== overlay) return;
+            loading.innerHTML = "<span>?BASIC LOAD ERROR</span>";
+            overlay.dataset.ccgBasicModule = "error";
+        }
+    }
+
     function triggerWarp() {
         const overlay = createOverlay("ccg-warp-overlay", `
             <canvas class="ccg-warp-overlay__canvas" aria-hidden="true"></canvas>
@@ -1198,6 +1265,7 @@ if (IS_ADMIN_PATH) {
         },
         "pressplay": () => triggerPressPlay(),
         "load": () => triggerLoad(),
+        "basic": launchContext => triggerBasic(launchContext),
         "vhs": () => {
             const video = createVideoElement(getEasterEggAsset("vhs.mp4"));
             openEasterEggOverlay(video, { media: [video] });
@@ -1356,9 +1424,16 @@ if (IS_ADMIN_PATH) {
     function triggerCheat(code) {
         const normalized = normalizeCode(code);
         if (cheats[normalized]) {
+            /* CCG BASIC PRE-CLOSE SCROLL BOOKMARK */
+            const launchContext = normalized === "basic" && secretState.scrollLock
+                ? {
+                    scrollX: secretState.scrollLock.scrollX,
+                    scrollY: secretState.scrollLock.scrollY,
+                }
+                : null;
             closeSecretModal();
             stopActiveEasterEgg();
-            cheats[normalized]();
+            cheats[normalized](launchContext);
         }
     }
 
@@ -1433,6 +1508,7 @@ if (IS_ADMIN_PATH) {
                     <li data-ccg-secret-code="sys64738">SYS64738</li>
                     <li data-ccg-secret-code="pressplay">PRESS PLAY</li>
                     <li data-ccg-secret-code="load">LOAD</li>
+                    <li data-ccg-secret-code="basic">BASIC</li>
                     <li data-ccg-secret-code="vhs">VHS</li>
                     <li data-ccg-secret-code="terminator">TERMINATOR</li>
                     <li data-ccg-secret-code="bsod">BSOD</li>
