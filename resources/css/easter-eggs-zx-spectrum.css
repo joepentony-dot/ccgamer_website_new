@@ -1,0 +1,149 @@
+/* CCG EASTER EGG E6 — LOCAL ZX SPECTRUM */
+:root {
+    color-scheme: dark;
+    font-family: "Courier New", monospace;
+    background: #050505;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    min-height: 100%;
+    margin: 0;
+}
+
+body {
+    display: grid;
+    place-items: center;
+    padding: clamp(10px, 2vw, 24px);
+    background:
+        radial-gradient(circle at 50% 10%, rgba(255,255,255,.08), transparent 32%),
+        #050505;
+}
+
+button { font: inherit; }
+
+.zx {
+    width: min(100%, 900px);
+}
+
+.zx__computer {
+    padding: clamp(14px, 2.5vw, 28px);
+    border: 2px solid #353535;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #242424, #090909 70%);
+    box-shadow: 0 22px 60px rgba(0,0,0,.65), inset 0 1px rgba(255,255,255,.08);
+}
+
+.zx__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+    color: #f4f4f4;
+    letter-spacing: .08em;
+    font-size: clamp(.72rem, 1.7vw, 1rem);
+}
+
+.zx__header strong { color: #46d7ff; }
+
+.zx__screen {
+    position: relative;
+    width: min(100%, 720px);
+    aspect-ratio: 4 / 3;
+    margin: 0 auto;
+    overflow: hidden;
+    outline: none;
+    background: #d7d7d7;
+    box-shadow: 0 0 0 3px #000, 0 0 28px rgba(70,215,255,.25);
+}
+
+.zx__border {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(135deg, #0055ff 0 14px, #f1e84b 14px 28px);
+    animation: zx-border .24s steps(2, end) infinite;
+}
+
+.zx__screen:not(.is-loading) .zx__border { animation: none; background: #d7d7d7; }
+
+.zx__paper {
+    position: absolute;
+    inset: 10%;
+    z-index: 1;
+    padding: clamp(12px, 3vw, 30px);
+    color: #111;
+    background: #f3f3f3;
+    font-size: clamp(.78rem, 2.1vw, 1.25rem);
+    line-height: 1.45;
+}
+
+.zx__line { margin-top: 2rem; }
+
+.zx__prompt { margin: 0; }
+
+.zx__cursor {
+    display: inline-grid;
+    place-items: center;
+    width: 1.1em;
+    color: #fff;
+    background: #111;
+    animation: zx-cursor .75s steps(1, end) infinite;
+}
+
+.zx__message {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: 14px;
+    padding: 24px;
+    text-align: center;
+    color: #fff;
+    background: #111;
+}
+
+.zx__message[hidden] { display: none; }
+.zx__message span { color: #ffea00; font-size: 1.25em; }
+
+.zx__controls {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.zx__controls button {
+    min-height: 48px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    color: #fff;
+    background: #161616;
+    cursor: pointer;
+}
+
+.zx__controls button:hover,
+.zx__controls button:focus-visible {
+    border-color: #46d7ff;
+    box-shadow: 0 0 14px rgba(70,215,255,.35);
+}
+
+.zx__hint {
+    margin: 14px 0 0;
+    text-align: center;
+    color: #aaa;
+    font-size: .82rem;
+}
+
+@keyframes zx-border { to { background-position: 28px 0; } }
+@keyframes zx-cursor { 50% { opacity: 0; } }
+
+@media (max-width: 620px) {
+    .zx__header { align-items: center; flex-direction: column; text-align: center; }
+    .zx__controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .zx__paper { inset: 9%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .zx__border, .zx__cursor { animation: none; }
+}
