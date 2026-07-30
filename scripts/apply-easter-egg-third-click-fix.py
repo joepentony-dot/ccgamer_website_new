@@ -63,6 +63,42 @@ def patch_js() -> None:
 
 def patch_viewport_test() -> None:
     text = TEST_PATH.read_text(encoding="utf-8")
+
+    if "async function waitForSecretModalUnlock(page)" in text:
+        changed = False
+        wrong = "modal.getAttribute('data-ccg-secret-modal-locked') !== 'true'"
+        right = "modal.getAttribute('data-ccg-secret-modal-locked') === 'true'"
+        if wrong in text:
+            text = text.replace(wrong, right, 1)
+            changed = True
+
+        if TEST_MARKER not in text:
+            text = text.replace(
+                "async function waitForSecretModalUnlock(page) {",
+                f"/* {TEST_MARKER} */\nasync function waitForSecretModalUnlock(page) {{",
+                1,
+            )
+            changed = True
+
+        pacman_anchor = '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');'''
+        pacman_replacement = '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n  await waitForSecretModalUnlock(page);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');'''
+        if pacman_anchor in text:
+            text = text.replace(pacman_anchor, pacman_replacement, 1)
+            changed = True
+
+        bsod_anchor = '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');'''
+        bsod_replacement = '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await waitForSecretModalUnlock(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');'''
+        if bsod_anchor in text:
+            text = text.replace(bsod_anchor, bsod_replacement, 1)
+            changed = True
+
+        if changed:
+            TEST_PATH.write_text(text, encoding="utf-8")
+            print("Updated existing viewport dismissal helper and activation waits.")
+        else:
+            print("Viewport test dismissal-arm compatibility already applied.")
+        return
+
     if TEST_MARKER in text:
         print("Viewport test dismissal-arm compatibility already applied.")
         return
@@ -70,28 +106,28 @@ def patch_viewport_test() -> None:
     text = replace_once(
         text,
         '''  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });\n}\n\nasync function viewportMetrics(page, selector) {''',
-        '''  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });\n}\n\n/* CCG EASTER EGG DISMISSAL ARM TEST COMPATIBILITY */\nasync function waitForDismissalArmed(page) {\n  await page.waitForFunction(\n    () => document.querySelector('.ccg-secret-modal')?.dataset.ccgSecretModalLocked === 'true',\n    null,\n    { timeout: 5000 },\n  );\n}\n\nasync function viewportMetrics(page, selector) {''',
+        '''  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'visible', timeout: 5000 });\n}\n\n/* CCG EASTER EGG DISMISSAL ARM TEST COMPATIBILITY */\nasync function waitForSecretModalUnlock(page) {\n  await page.waitForFunction(\n    () => document.querySelector('.ccg-secret-modal')?.dataset.ccgSecretModalLocked === 'true',\n    null,\n    { timeout: 5000 },\n  );\n}\n\nasync function viewportMetrics(page, selector) {''',
         "viewport test dismissal helper",
     )
 
     text = replace_once(
         text,
         '''  await page.locator('[data-ccg-secret-close]').click();\n  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });''',
-        '''  await waitForDismissalArmed(page);\n  await page.locator('[data-ccg-secret-close]').click();\n  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });''',
+        '''  await waitForSecretModalUnlock(page);\n  await page.locator('[data-ccg-secret-close]').click();\n  await page.locator('.ccg-secret-modal.is-open').waitFor({ state: 'hidden', timeout: 5000 });''',
         "viewport test initial close",
     )
 
     text = replace_once(
         text,
         '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');''',
-        '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n  await waitForDismissalArmed(page);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');''',
+        '''  await triggerTripleClick(page);\n  const reopenedScrollTop = await page.evaluate(() => document.querySelector('.ccg-secret-modal__content')?.scrollTop ?? null);\n  await waitForSecretModalUnlock(page);\n\n  await page.evaluate(() => {\n    const pacman = document.querySelector('[data-ccg-secret-code="pacman"]');''',
         "viewport test PACMAN activation",
     )
 
     text = replace_once(
         text,
         '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');''',
-        '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await waitForDismissalArmed(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');''',
+        '''  await page.waitForTimeout(800);\n\n  await triggerTripleClick(page);\n  await waitForSecretModalUnlock(page);\n  await page.evaluate(() => {\n    const bsod = document.querySelector('[data-ccg-secret-code="bsod"]');''',
         "viewport test BSOD activation",
     )
 
