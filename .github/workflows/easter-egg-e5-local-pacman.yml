@@ -1,0 +1,38 @@
+name: Easter Egg E5 Local Pac-Man
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'resources/audio/easter-eggs/pacman.html'
+      - 'resources/css/easter-eggs-pacman.css'
+      - 'js/easter-eggs/pacman-game.js'
+      - 'js/easter-eggs/easter-egg-registry.js'
+      - 'scripts/test-easter-egg-e5-pacman.mjs'
+      - '.github/workflows/easter-egg-e5-local-pacman.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-local-pacman:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Record protected hashes
+        run: sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/e5-protected.sha256"
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/easter-eggs/pacman-game.js
+          node --check scripts/test-easter-egg-e5-pacman.mjs
+      - name: Validate local Pac-Man
+        run: node scripts/test-easter-egg-e5-pacman.mjs
+      - name: Confirm protected files unchanged
+        run: sha256sum --check "$RUNNER_TEMP/e5-protected.sha256"
