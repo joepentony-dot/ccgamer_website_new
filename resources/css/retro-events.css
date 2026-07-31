@@ -32,6 +32,16 @@
 }
 
 /* ---------------------------------------------------------
+   Retro Specials social buttons
+   Match the square inner-page treatment without changing
+   social icons elsewhere on the website.
+--------------------------------------------------------- */
+
+body[data-collection="Retro Specials"] .ccg-header-socials a {
+    border-radius: 3px !important;
+}
+
+/* ---------------------------------------------------------
    Hero META pill (FINAL FIX – lifted above overlay)
 --------------------------------------------------------- */
 
@@ -81,6 +91,40 @@
     min-height: 100%;
 }
 
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
+    height: 34%;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent, rgba(1, 7, 18, 0.62));
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img {
+    transition: transform 0.24s ease, filter 0.24s ease;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__media img,
+.ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__media img {
+    transform: scale(1.025);
+    filter: saturate(1.06) contrast(1.03);
+}
+
 .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__body {
     display: flex;
     flex-direction: column;
@@ -92,6 +136,58 @@
     font-family: "Roboto Condensed", "Roboto", sans-serif;
     font-size: clamp(0.96rem, 2vw, 1.08rem);
     line-height: 1.25;
+}
+
+.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__desc {
+    overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------
+   Members-only thumbnail sash and access notice
+--------------------------------------------------------- */
+
+.ccg-page--collection-single
+.ccg-game-card--retro-event
+.ccg-collection-sash--members {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    display: block;
+    padding: 0.58rem 0.75rem;
+    border-top: 1px solid rgba(255, 235, 248, 0.78);
+    background:
+        linear-gradient(90deg, rgba(148, 9, 72, 0.97), rgba(238, 40, 118, 0.96), rgba(148, 9, 72, 0.97));
+    box-shadow:
+        0 -8px 24px rgba(0, 0, 0, 0.42),
+        0 0 20px rgba(255, 52, 137, 0.48);
+    color: #ffffff;
+    font: 800 clamp(0.68rem, 1.7vw, 0.82rem)/1.15 "Orbitron", sans-serif;
+    letter-spacing: 0.14em;
+    text-align: center;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    text-transform: uppercase;
+}
+
+.ccg-page--collection-single
+.ccg-game-card--retro-event
+.ccg-game-card__access {
+    margin: 0;
+    padding: 0.68rem 0.75rem;
+    border: 1px solid rgba(255, 108, 173, 0.42);
+    border-left: 4px solid rgba(255, 68, 148, 0.95);
+    border-radius: 6px;
+    background: rgba(105, 9, 54, 0.3);
+    color: rgba(255, 239, 248, 0.96);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.ccg-page--collection-single
+.ccg-game-card--retro-event
+.ccg-game-card__access strong {
+    color: #ffffff;
 }
 
 /* ---------------------------------------------------------
@@ -180,22 +276,18 @@
         left: 8px;
         padding: 0.25rem 0.45rem;
     }
+
+    .ccg-page--collection-single
+    .ccg-game-card--retro-event
+    .ccg-collection-sash--members {
+        padding: 0.52rem 0.6rem;
+        letter-spacing: 0.11em;
+    }
 }
+
 /* ---------------------------------------------------------
    Retro collection card CTA polish (Omega-safe)
 --------------------------------------------------------- */
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__link {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    color: inherit;
-    text-decoration: none;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__desc {
-    overflow-wrap: anywhere;
-}
 
 .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__actions {
     display: flex;
@@ -226,6 +318,17 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+.ccg-page--collection-single
+.ccg-game-card--retro-event[data-members-only="true"]
+.ccg-game-card__btn {
+    border-color: rgba(255, 141, 191, 0.78);
+    background: linear-gradient(135deg, rgba(144, 20, 82, 0.94), rgba(220, 45, 126, 0.86));
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.45),
+        0 0 18px rgba(255, 70, 150, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
 .ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__btn,
 .ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__btn {
     transform: translateY(-1px);
@@ -236,10 +339,37 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.26);
 }
 
+.ccg-page--collection-single
+.ccg-game-card--retro-event[data-members-only="true"]:hover
+.ccg-game-card__btn,
+.ccg-page--collection-single
+.ccg-game-card--retro-event[data-members-only="true"]:focus-within
+.ccg-game-card__btn {
+    border-color: rgba(255, 221, 237, 0.96);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.52),
+        0 0 24px rgba(255, 70, 150, 0.48),
+        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
 @media (max-width: 560px) {
     .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__btn {
         min-height: 48px;
         padding-inline: 0.8rem;
         font-size: 0.74rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img,
+    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__btn {
+        transition: none;
+    }
+
+    .ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__media img,
+    .ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__media img,
+    .ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__btn,
+    .ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__btn {
+        transform: none;
     }
 }

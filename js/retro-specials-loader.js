@@ -2,6 +2,8 @@
    RETRO SPECIALS COLLECTION LOADER (LOCKED + HARDENED)
 ============================================================ */
 
+const CCG_RETRO_SPECIALS_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
+
 function ccgEscapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -28,11 +30,25 @@ function ccgResolveYoutubeId(item) {
   ).trim();
 }
 
+function ccgIsMembersOnly(item) {
+  const value = item?.membersOnly;
+
+  return value === true ||
+    value === 1 ||
+    String(value || '').trim().toLowerCase() === 'true' ||
+    String(value || '').trim().toLowerCase() === 'members';
+}
+
 function ccgGetRetroSpecialPath(slug) {
   return slug ? `/retro-specials/${encodeURIComponent(slug)}/` : '';
 }
 
-function ccgBuildRetroSpecialCard(item) {
+function ccgGetRetroSpecialThumbnail(item, youtubeId) {
+  const supplied = String(item?.thumbnail || '').trim();
+  return supplied || ccgGetYouTubeThumbUrl(youtubeId);
+}
+
+function ccgBuildRetroSpecialCard(item, index = 0) {
   const youtubeId = ccgResolveYoutubeId(item);
   const slug = String(item?.slug || item?.id || '').trim();
 
@@ -41,23 +57,84 @@ function ccgBuildRetroSpecialCard(item) {
   const pageUrl = ccgGetRetroSpecialPath(slug);
   const title = String(item?.title || '').trim();
   const description = String(item?.summary || item?.description || '').trim();
-
-  const thumb = ccgGetYouTubeThumbUrl(youtubeId);
+  const membersOnly = ccgIsMembersOnly(item);
+  const thumb = ccgGetRetroSpecialThumbnail(item, youtubeId);
+  const accessLabel = membersOnly ? ' (members-only video)' : '';
+  const loading = index < 2 ? 'eager' : 'lazy';
+  const fetchPriority = index === 0 ? ' fetchpriority="high"' : '';
+  const membersSash = membersOnly
+    ? '<span class="ccg-collection-sash ccg-collection-sash--members" aria-hidden="true">Members only</span>'
+    : '';
+  const membersNotice = membersOnly
+    ? '<p class="ccg-game-card__access"><strong>Members only:</strong> YouTube channel membership is required to watch this video.</p>'
+    : '';
+  const buttonText = membersOnly ? 'View members-only special' : 'Watch special';
 
   return `
-    <article class="ccg-game-card genre-card ccg-game-card--retro-event">
-      <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}">
+    <article class="ccg-game-card genre-card ccg-game-card--retro-event" data-members-only="${membersOnly}">
+      <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}" aria-label="Open ${ccgEscapeHtml(title + accessLabel)}">
         <div class="ccg-game-card__media ccg-game-card__thumb">
-          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(title)}" loading="lazy" decoding="async" width="480" height="360" />
+          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(`${title} – Retro Specials video thumbnail${accessLabel}`)}" loading="${loading}" decoding="async"${fetchPriority} width="480" height="360" />
+          ${membersSash}
         </div>
         <div class="ccg-game-card__body">
           <h3 class="ccg-game-card__title">${ccgEscapeHtml(title)}</h3>
           <p class="ccg-game-card__desc">${ccgEscapeHtml(description)}</p>
-          <span class="ccg-game-card__actions"><span class="ccg-game-card__btn" aria-label="Watch ${ccgEscapeHtml(title)}">Watch special</span></span>
+          ${membersNotice}
+          <span class="ccg-game-card__actions"><span class="ccg-game-card__btn" aria-hidden="true">${ccgEscapeHtml(buttonText)}</span></span>
         </div>
       </a>
     </article>
   `;
+}
+
+function ccgInjectRetroSpecialStructuredData(items) {
+  const existing = document.getElementById('ccg-retro-specials-item-list');
+  if (existing) existing.remove();
+
+  const itemListElement = items
+    .map((item, index) => {
+      const youtubeId = ccgResolveYoutubeId(item);
+      const slug = String(item?.slug || item?.id || '').trim();
+      const title = String(item?.title || '').trim();
+
+      if (!youtubeId || !slug || !title) return null;
+
+      const description = String(item?.summary || item?.description || '').trim();
+      const thumbnail = ccgGetRetroSpecialThumbnail(item, youtubeId);
+      const pagePath = ccgGetRetroSpecialPath(slug);
+
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+          '@type': 'VideoObject',
+          name: title,
+          description,
+          thumbnailUrl: [thumbnail],
+          embedUrl: `https://www.youtube.com/embed/${youtubeId}`,
+          url: `${CCG_RETRO_SPECIALS_ORIGIN}${pagePath}`,
+          isAccessibleForFree: !ccgIsMembersOnly(item)
+        }
+      };
+    })
+    .filter(Boolean);
+
+  if (!itemListElement.length) return;
+
+  const script = document.createElement('script');
+  script.id = 'ccg-retro-specials-item-list';
+  script.type = 'application/ld+json';
+  script.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Cheeky Commodore Gamer Retro Specials',
+    numberOfItems: itemListElement.length,
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    itemListElement
+  });
+
+  document.head.appendChild(script);
 }
 
 async function ccgLoadRetroSpecials() {
@@ -93,6 +170,7 @@ async function ccgRunCollection() {
     if (countEl) countEl.textContent = String(items.length);
 
     grid.innerHTML = items.map(ccgBuildRetroSpecialCard).join('');
+    ccgInjectRetroSpecialStructuredData(items);
 
     if (!items.length) {
       grid.innerHTML = '<div class="ccg-genre-empty"><h3>No items found in this collection</h3></div>';
