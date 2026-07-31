@@ -8,6 +8,7 @@ on:
       - 'js/easter-eggs/easter-egg-registry.js'
       - 'js/easter-eggs/zx-spectrum.js'
       - 'resources/audio/easter-eggs/zx-spectrum.html'
+      - 'resources/audio/easter-eggs/no_i_dont_think_so.mp3'
       - 'resources/audio/easter-eggs/zx_1.gif'
       - 'resources/audio/easter-eggs/zx_2.gif'
       - 'resources/css/easter-eggs-zx-spectrum.css'
@@ -58,7 +59,8 @@ jobs:
           test -f resources/audio/easter-eggs/zx-spectrum.html
           test -f resources/css/easter-eggs-zx-spectrum.css
           test -f resources/audio/easter-eggs/zx-clive.jpg
-          test -f resources/audio/easter-eggs/no_i_dont_think_sp.mp3
+          test -f resources/audio/easter-eggs/no_i_dont_think_so.mp3
+          test ! -e resources/audio/easter-eggs/no_i_dont_think_sp.mp3
           test -f resources/audio/easter-eggs/zx_1.gif
           test -f resources/audio/easter-eggs/zx_2.gif
           grep -q 'getEasterEggAsset("zx-spectrum.html")' js/ccg-global.js
@@ -73,7 +75,8 @@ jobs:
           grep -q 'src="zx_1.gif"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'src="zx_2.gif"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'zx-clive.jpg' resources/audio/easter-eggs/zx-spectrum.html
-          grep -q 'no_i_dont_think_sp.mp3' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'no_i_dont_think_so.mp3' resources/audio/easter-eggs/zx-spectrum.html
+          ! grep -q 'no_i_dont_think_sp.mp3' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'href="../../css/easter-eggs-zx-spectrum.css"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'src="../../../js/easter-eggs/zx-spectrum.js"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q "WE'RE TEAM COMMODORE HERE" resources/audio/easter-eggs/zx-spectrum.html
@@ -82,7 +85,8 @@ jobs:
           grep -q 'later(showClive, 11600);' js/easter-eggs/zx-spectrum.js
           grep -q 'later(closeEasterEgg, 17800);' js/easter-eggs/zx-spectrum.js
           grep -q 'context.decodeAudioData' js/easter-eggs/zx-spectrum.js
-          grep -q 'const playVoice = async' js/easter-eggs/zx-spectrum.js
+          grep -q 'const scheduleVoiceForReveal' js/easter-eggs/zx-spectrum.js
+          grep -q 'source.start(context.currentTime' js/easter-eggs/zx-spectrum.js
           grep -q 'object-fit: contain' resources/css/easter-eggs-zx-spectrum.css
           ! grep -q 'jsspeccy.zxdemo.org' js/ccg-global.js
           ! grep -q 'https://' resources/audio/easter-eggs/zx-spectrum.html
@@ -96,16 +100,23 @@ jobs:
           html = Path('resources/audio/easter-eggs/zx-spectrum.html').read_text(encoding='utf-8')
           script = Path('js/easter-eggs/zx-spectrum.js').read_text(encoding='utf-8')
           styles = Path('resources/css/easter-eggs-zx-spectrum.css').read_text(encoding='utf-8')
+          audio = Path('resources/audio/easter-eggs/no_i_dont_think_so.mp3').read_bytes()
           compact_script = ''.join(script.split())
 
           assert 'href="../../css/easter-eggs-zx-spectrum.css"' in html
           assert 'src="../../../js/easter-eggs/zx-spectrum.js"' in html
+          assert 'src="no_i_dont_think_so.mp3"' in html
+          assert 'no_i_dont_think_sp.mp3' not in html
           assert 'later(()=>{stopTapeSound();loaderOne.hidden=true;' in compact_script
+          assert 'scheduleVoiceForReveal(runId)' in script
+          assert 'source.start(context.currentTime + Math.max(0, startDelaySeconds));' in script
           assert 'else if (!loaderOne.hidden || !loaderTwo.hidden)' not in script
           assert 'context.decodeAudioData' in script
+          assert len(audio) > 1024
+          assert audio.startswith(b'ID3') or (audio[0] == 0xFF and audio[1] & 0xE0 == 0xE0)
           assert 'overflow: hidden;' in styles
           assert 'object-fit: contain;' in styles
-          print('E6 presentation and audio safeguards passed.')
+          print('E6 presentation and Sir Clive audio safeguards passed.')
           PY
 
       - name: Confirm GIF signatures

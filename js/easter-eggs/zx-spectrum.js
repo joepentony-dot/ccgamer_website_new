@@ -14,13 +14,19 @@
     const voice = root.querySelector("[data-zx-voice]");
     const soundButton = root.querySelector('[data-zx-action="sound"]');
 
+    const CLIVE_REVEAL_DELAY_MS = 11600;
+
     let timers = [];
     let soundEnabled = true;
     let audioContext = null;
     let tapeNodes = null;
     let voiceBuffer = null;
     let voiceBufferPromise = null;
+    let voiceSchedulePromise = null;
     let voiceSource = null;
+    let voiceArmed = false;
+    let sequenceStartedAt = 0;
+    let sequenceRunId = 0;
 
     const later = (callback, delay) => {
         const timer = window.setTimeout(callback, delay);
@@ -56,16 +62,20 @@
         tapeNodes = null;
     };
 
+    const stopVoiceSource = () => {
+        if (!voiceSource) return;
+        try {
+            voiceSource.stop();
+        } catch (_) {}
+        try {
+            voiceSource.disconnect();
+        } catch (_) {}
+        voiceSource = null;
+    };
+
     const stopVoice = () => {
-        if (voiceSource) {
-            try {
-                voiceSource.stop();
-            } catch (_) {}
-            try {
-                voiceSource.disconnect();
-            } catch (_) {}
-            voiceSource = null;
-        }
+        stopVoiceSource();
+        voiceArmed = false;
 
         if (voice) {
             voice.pause();
@@ -73,15 +83,21 @@
         }
     };
 
+    const getVoiceUrl = () => {
+        const source = voice?.getAttribute("src");
+        if (!source) return "";
+        return new URL(source, document.baseURI).href;
+    };
+
     const loadVoiceBuffer = () => {
         if (voiceBuffer) return Promise.resolve(voiceBuffer);
         if (voiceBufferPromise) return voiceBufferPromise;
 
         const context = getAudioContext();
-        const sourceUrl = voice?.currentSrc || voice?.getAttribute("src");
+        const sourceUrl = getVoiceUrl();
         if (!context || !sourceUrl) return Promise.resolve(null);
 
-        voiceBufferPromise = fetch(sourceUrl)
+        voiceBufferPromise = fetch(sourceUrl, { cache: "force-cache" })
             .then(response => {
                 if (!response.ok) throw new Error(`Voice audio failed: ${response.status}`);
                 return response.arrayBuffer();
@@ -91,14 +107,68 @@
                 voiceBuffer = buffer;
                 return buffer;
             })
-            .catch(() => null);
+            .catch(error => {
+                voiceBufferPromise = null;
+                console.warn("[CCG E6] Sir Clive audio preload failed.", error);
+                return null;
+            });
 
         return voiceBufferPromise;
     };
 
+    const createVoiceSource = (context, buffer, startDelaySeconds = 0) => {
+        stopVoiceSource();
+
+        const source = context.createBufferSource();
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.addEventListener("ended", () => {
+            if (voiceSource === source) {
+                voiceSource = null;
+                voiceArmed = false;
+            }
+        }, { once: true });
+        source.start(context.currentTime + Math.max(0, startDelaySeconds));
+        voiceSource = source;
+        voiceArmed = true;
+    };
+
+    const scheduleVoiceForReveal = runId => {
+        if (!soundEnabled || voiceArmed) return Promise.resolve(voiceArmed);
+        if (voiceSchedulePromise) return voiceSchedulePromise;
+
+        voiceSchedulePromise = (async () => {
+            const context = getAudioContext();
+            const buffer = await loadVoiceBuffer();
+
+            if (
+                runId !== sequenceRunId ||
+                !soundEnabled ||
+                voiceArmed ||
+                !context ||
+                !buffer
+            ) {
+                return false;
+            }
+
+            if (context.state === "suspended") {
+                await context.resume().catch(() => {});
+            }
+            if (context.state !== "running") return false;
+
+            const elapsedMs = performance.now() - sequenceStartedAt;
+            const remainingSeconds = Math.max(0, CLIVE_REVEAL_DELAY_MS - elapsedMs) / 1000;
+            createVoiceSource(context, buffer, remainingSeconds);
+            return true;
+        })().finally(() => {
+            voiceSchedulePromise = null;
+        });
+
+        return voiceSchedulePromise;
+    };
+
     const playVoice = async () => {
-        stopVoice();
-        if (!soundEnabled) return;
+        if (!soundEnabled || voiceArmed) return;
 
         const context = getAudioContext();
         const buffer = await loadVoiceBuffer();
@@ -107,23 +177,20 @@
             if (context.state === "suspended") {
                 await context.resume().catch(() => {});
             }
-
             if (context.state === "running") {
-                const source = context.createBufferSource();
-                source.buffer = buffer;
-                source.connect(context.destination);
-                source.addEventListener("ended", () => {
-                    if (voiceSource === source) voiceSource = null;
-                }, { once: true });
-                source.start(0);
-                voiceSource = source;
+                createVoiceSource(context, buffer);
                 return;
             }
         }
 
-        if (voice && soundEnabled) {
+        if (!voice || !soundEnabled) return;
+
+        try {
             voice.currentTime = 0;
-            voice.play().catch(() => {});
+            await voice.play();
+            voiceArmed = true;
+        } catch (error) {
+            console.warn("[CCG E6] Sir Clive audio playback was blocked.", error);
         }
     };
 
@@ -168,6 +235,7 @@
     };
 
     const closeEasterEgg = () => {
+        sequenceRunId += 1;
         stopTapeSound();
         stopVoice();
         window.parent.postMessage({ type: "ccg-easter-egg-close" }, window.location.origin);
@@ -178,7 +246,10 @@
         hideAll();
         reveal.hidden = false;
         footer.textContent = "ZX SPECTRUM OVERRULED";
-        void playVoice();
+
+        if (!voiceArmed) {
+            void playVoice();
+        }
     };
 
     const startSequence = () => {
@@ -186,11 +257,14 @@
         stopTapeSound();
         stopVoice();
 
+        const runId = ++sequenceRunId;
+        sequenceStartedAt = performance.now();
+
         hideAll();
         loaderOne.hidden = false;
         footer.textContent = "LOADING FROM TAPE...";
         startTapeSound();
-        void loadVoiceBuffer();
+        void scheduleVoiceForReveal(runId);
 
         later(() => {
             stopTapeSound();
@@ -225,11 +299,19 @@
         if (!soundEnabled) {
             stopTapeSound();
             stopVoice();
-        } else if (!loaderOne.hidden) {
+            return;
+        }
+
+        if (!loaderOne.hidden) {
             startTapeSound();
-            void loadVoiceBuffer();
-        } else if (!reveal.hidden) {
+        }
+
+        if (!finalCard.hidden) return;
+
+        if (!reveal.hidden) {
             void playVoice();
+        } else {
+            void scheduleVoiceForReveal(sequenceRunId);
         }
     };
 
@@ -245,8 +327,14 @@
         if (context?.state === "suspended") {
             context.resume().catch(() => {});
         }
-        void loadVoiceBuffer();
+        void scheduleVoiceForReveal(sequenceRunId);
     }, { once: true });
+
+    if (voice) {
+        voice.addEventListener("ended", () => {
+            voiceArmed = false;
+        });
+    }
 
     document.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === "r" || event.key === "R") startSequence();
@@ -254,6 +342,7 @@
     });
 
     window.addEventListener("pagehide", () => {
+        sequenceRunId += 1;
         clearTimers();
         stopTapeSound();
         stopVoice();
