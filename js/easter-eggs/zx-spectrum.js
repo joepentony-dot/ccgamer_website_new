@@ -11,7 +11,7 @@
     const reveal = root.querySelector("[data-zx-reveal]");
     const finalCard = root.querySelector("[data-zx-final]");
     const footer = root.querySelector("[data-zx-footer]");
-    const voice = root.querySelector("[data-zx-voice]");
+    const voice = document.querySelector("[data-zx-voice]");
     const soundButton = root.querySelector('[data-zx-action="sound"]');
 
     const CLIVE_REVEAL_DELAY_MS = 11600;
