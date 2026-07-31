@@ -4,85 +4,131 @@
 
 const fs = require("fs");
 const path = require("path");
-const {
-  FEATURED_PUBLISHERS,
-  slugifyPublisher,
-} = require("./publisher-utils");
 
 const repoRoot = process.env.CCG_REPO_ROOT
-  ? path.resolve(process.env.CCG_REPO_ROOT)
-  : path.resolve(__dirname, "..");
+    ? path.resolve(process.env.CCG_REPO_ROOT)
+    : path.resolve(__dirname, "..");
+
 const publishersDir = path.join(repoRoot, "games", "publishers");
 const publisherIndexPath = path.join(publishersDir, "index.html");
 const publisherImagesDir = path.join(repoRoot, "resources", "images", "publishers");
-const EXTRA_FEATURED_PUBLISHER_SLUGS = ["microprose-software"];
+const SUPPORTED_EXTENSIONS = [".webp", ".png", ".svg", ".jpg", ".jpeg"];
 
 function fail(message) {
-  console.error(`[publisher-logo-validation] ${message}`);
-  process.exit(1);
+    console.error(`[publisher-logo-validation] ${message}`);
+    process.exit(1);
 }
 
 function read(filePath) {
-  return fs.readFileSync(filePath, "utf8");
+    return fs.readFileSync(filePath, "utf8");
+}
+
+function countMatches(value, pattern) {
+    return (value.match(pattern) || []).length;
+}
+
+function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getLogoAssets() {
+    const assets = new Map();
+
+    fs.readdirSync(publisherImagesDir)
+        .filter((fileName) => SUPPORTED_EXTENSIONS.includes(path.extname(fileName).toLowerCase()))
+        .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }))
+        .forEach((fileName) => {
+            const extension = path.extname(fileName).toLowerCase();
+            const slug = path.basename(fileName, extension);
+            if (!slug || slug.startsWith("_")) return;
+
+            const current = assets.get(slug);
+            if (!current || SUPPORTED_EXTENSIONS.indexOf(extension) < SUPPORTED_EXTENSIONS.indexOf(current.extension)) {
+                assets.set(slug, { slug, fileName, extension });
+            }
+        });
+
+    return Array.from(assets.values()).sort((a, b) => (
+        a.slug.localeCompare(b.slug, "en", { sensitivity: "base" })
+    ));
 }
 
 if (!fs.existsSync(publisherIndexPath)) {
-  fail("Publisher index is missing.");
+    fail("Publisher index is missing.");
 }
 if (!fs.existsSync(publisherImagesDir)) {
-  fail("Publisher image directory is missing.");
+    fail("Publisher image directory is missing.");
 }
 
-const logoSlugs = fs.readdirSync(publisherImagesDir)
-  .filter((fileName) => fileName.toLowerCase().endsWith(".png"))
-  .map((fileName) => path.basename(fileName, path.extname(fileName)))
-  .filter(Boolean)
-  .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
-
-if (!logoSlugs.length) {
-  fail("No publisher PNG logos were found.");
+const logoAssets = getLogoAssets();
+if (!logoAssets.length) {
+    fail("No supported publisher logo files were found.");
 }
 
 const indexHtml = read(publisherIndexPath);
 if (!indexHtml.includes('/resources/css/publisher-logos.css')) {
-  fail("Publisher logo stylesheet is missing from the publisher index.");
+    fail("Publisher logo stylesheet is missing from the publisher index.");
 }
 
-const expectedFeaturedSlugs = Array.from(new Set([
-  ...FEATURED_PUBLISHERS.map(slugifyPublisher),
-  ...EXTRA_FEATURED_PUBLISHER_SLUGS,
-])).filter((slug) => logoSlugs.includes(slug));
+const missingIndexLogos = [];
+const wrongIndexLogoCounts = [];
 
-const missingFeatured = expectedFeaturedSlugs.filter((slug) => (
-  !indexHtml.includes(`data-publisher-logo="${slug}"`)
-  || !indexHtml.includes(`/resources/images/publishers/${slug}.png`)
-));
-if (missingFeatured.length) {
-  fail(`Featured publisher logos missing from index: ${missingFeatured.join(", ")}`);
+for (const asset of logoAssets) {
+    const hrefPattern = new RegExp(
+        `href="/games/publishers/${escapeRegExp(asset.slug)}/"`,
+        "g"
+    );
+    const expectedCardCount = countMatches(indexHtml, hrefPattern);
+    if (!expectedCardCount) continue;
+
+    const wrapperPattern = new RegExp(
+        `data-publisher-logo="${escapeRegExp(asset.slug)}"`,
+        "g"
+    );
+    const actualLogoCount = countMatches(indexHtml, wrapperPattern);
+    const expectedPath = `/resources/images/publishers/${asset.fileName}`;
+
+    if (!indexHtml.includes(expectedPath)) {
+        missingIndexLogos.push(asset.slug);
+        continue;
+    }
+
+    if (actualLogoCount !== expectedCardCount) {
+        wrongIndexLogoCounts.push(
+            `${asset.slug} expected ${expectedCardCount}, found ${actualLogoCount}`
+        );
+    }
 }
 
-const indexLogoCount = (indexHtml.match(/data-publisher-logo=/g) || []).length;
-if (indexLogoCount !== expectedFeaturedSlugs.length) {
-  fail(`Expected ${expectedFeaturedSlugs.length} featured logo wrappers but found ${indexLogoCount}.`);
+if (missingIndexLogos.length) {
+    fail(`Publisher card logos missing from index: ${missingIndexLogos.join(", ")}`);
+}
+if (wrongIndexLogoCounts.length) {
+    fail(`Publisher card logo counts do not match: ${wrongIndexLogoCounts.join("; ")}`);
 }
 
 const missingPageLogos = [];
 let publisherPagesWithLogos = 0;
-for (const slug of logoSlugs) {
-  const pagePath = path.join(publishersDir, slug, "index.html");
-  if (!fs.existsSync(pagePath)) continue;
-  const pageHtml = read(pagePath);
-  const hasLogo = pageHtml.includes(`data-publisher-page-logo="${slug}"`)
-    && pageHtml.includes(`/resources/images/publishers/${slug}.png`);
-  if (!hasLogo) {
-    missingPageLogos.push(slug);
-    continue;
-  }
-  publisherPagesWithLogos += 1;
+
+for (const asset of logoAssets) {
+    const pagePath = path.join(publishersDir, asset.slug, "index.html");
+    if (!fs.existsSync(pagePath)) continue;
+
+    const pageHtml = read(pagePath);
+    const expectedPath = `/resources/images/publishers/${asset.fileName}`;
+    const hasLogo = pageHtml.includes(`data-publisher-page-logo="${asset.slug}"`)
+        && pageHtml.includes(expectedPath);
+
+    if (!hasLogo) {
+        missingPageLogos.push(asset.slug);
+        continue;
+    }
+
+    publisherPagesWithLogos += 1;
 }
 
 if (missingPageLogos.length) {
-  fail(`Publisher page logos missing: ${missingPageLogos.join(", ")}`);
+    fail(`Publisher page logos missing: ${missingPageLogos.join(", ")}`);
 }
 
 const { steps } = require("./rebuild-games");
@@ -90,10 +136,14 @@ const stepNames = steps.map(([scriptName]) => scriptName);
 const generateIndex = stepNames.indexOf("generate-publisher-pages.js");
 const applyIndex = stepNames.indexOf("apply-publisher-logos.js");
 const validateIndex = stepNames.indexOf("validate-publisher-logo-output.js");
+
 if (generateIndex === -1 || applyIndex !== generateIndex + 1 || validateIndex !== applyIndex + 1) {
-  fail("Publisher generate/apply/validate steps are not consecutive in the authoritative rebuild.");
+    fail("Publisher generate/apply/validate steps are not consecutive in the authoritative rebuild.");
 }
 
-console.log(`[publisher-logo-validation] ${expectedFeaturedSlugs.length} featured logos verified.`);
+const indexLogoCount = countMatches(indexHtml, /data-publisher-logo=/g);
+
+console.log(`[publisher-logo-validation] ${logoAssets.length} supported logo assets found.`);
+console.log(`[publisher-logo-validation] ${indexLogoCount} publisher card logo placements verified.`);
 console.log(`[publisher-logo-validation] ${publisherPagesWithLogos} individual publisher page logos verified.`);
 console.log("[publisher-logo-validation] Authoritative rebuild order verified.");
