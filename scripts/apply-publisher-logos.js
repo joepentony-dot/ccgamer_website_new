@@ -13,6 +13,7 @@ const publishersDir = path.join(repoRoot, "games", "publishers");
 const publisherIndexPath = path.join(publishersDir, "index.html");
 const publisherImagesDir = path.join(repoRoot, "resources", "images", "publishers");
 const stylesheetHref = "/resources/css/publisher-logos.css";
+const SUPPORTED_EXTENSIONS = [".webp", ".png", ".svg", ".jpg", ".jpeg"];
 
 // The game database uses this full archive name and route. Promote its
 // existing All Publishers card into Featured Publishers when its logo exists.
@@ -67,7 +68,7 @@ function getFeaturedGridBounds(html) {
     return { gridStart, gridEnd, featuredStart, allPublishersStart };
 }
 
-function findPublisherCard(html, slug, searchStart, searchEnd) {
+function findPublisherCard(html, slug, searchStart = 0, searchEnd = html.length) {
     const hrefMarker = `href="/games/publishers/${slug}/"`;
     const hrefIndex = html.indexOf(hrefMarker, searchStart);
     if (hrefIndex === -1 || hrefIndex >= searchEnd) return null;
@@ -115,60 +116,118 @@ function promotePublisherCard(html, slug) {
         + html.slice(bounds.gridEnd);
 }
 
-function getLogoSlugs() {
+function getLogoAssets() {
     if (!fs.existsSync(publisherImagesDir)) return [];
 
-    return fs.readdirSync(publisherImagesDir)
-        .filter((fileName) => fileName.toLowerCase().endsWith(".png"))
-        .map((fileName) => path.basename(fileName, path.extname(fileName)))
-        .filter(Boolean)
+    const files = fs.readdirSync(publisherImagesDir)
+        .filter((fileName) => SUPPORTED_EXTENSIONS.includes(path.extname(fileName).toLowerCase()))
         .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
+
+    const assets = new Map();
+    files.forEach((fileName) => {
+        const extension = path.extname(fileName).toLowerCase();
+        const slug = path.basename(fileName, extension);
+        if (!slug || slug.startsWith("_")) return;
+
+        const current = assets.get(slug);
+        if (!current || SUPPORTED_EXTENSIONS.indexOf(extension) < SUPPORTED_EXTENSIONS.indexOf(current.extension)) {
+            assets.set(slug, { slug, fileName, extension });
+        }
+    });
+
+    return Array.from(assets.values()).sort((a, b) => (
+        a.slug.localeCompare(b.slug, "en", { sensitivity: "base" })
+    ));
 }
 
-function addLogoToFeaturedCard(html, slug) {
-    if (html.includes(`data-publisher-logo="${slug}"`)) return { html, installed: true };
+function ensureHasLogoClass(openingTag) {
+    if (openingTag.includes("ccg-publisher-card--has-logo")) return openingTag;
 
-    const { featuredStart, allPublishersStart } = getSectionBounds(html);
-    const card = findPublisherCard(html, slug, featuredStart, allPublishersStart);
-    if (!card) return { html, installed: false };
+    return openingTag.replace(
+        /class="([^"]*\bccg-publisher-card\b[^"]*)"/,
+        (match, classNames) => `class="${classNames.trim()} ccg-publisher-card--has-logo"`
+    );
+}
 
-    const openingTagEnd = html.indexOf(">", card.hrefIndex);
-    if (openingTagEnd === -1 || openingTagEnd >= card.anchorEnd) {
-        return { html, installed: false };
+function cardLogoMarkup(asset) {
+    const slug = htmlEscape(asset.slug);
+    const fileName = htmlEscape(asset.fileName);
+
+    return `
+            <span class="ccg-publisher-card__logo" data-publisher-logo="${slug}" aria-hidden="true">
+                <img src="/resources/images/publishers/${fileName}"
+                     alt=""
+                     loading="lazy"
+                     decoding="async"
+                     onerror="this.parentElement.hidden=true;this.closest('.ccg-publisher-card')?.classList.remove('ccg-publisher-card--has-logo');">
+            </span>`;
+}
+
+function addLogoToPublisherCards(html, asset) {
+    const hrefMarker = `href="/games/publishers/${asset.slug}/"`;
+    let cursor = 0;
+    let installed = 0;
+
+    while (cursor < html.length) {
+        const hrefIndex = html.indexOf(hrefMarker, cursor);
+        if (hrefIndex === -1) break;
+
+        const anchorStart = html.lastIndexOf("<a ", hrefIndex);
+        const anchorEndMarker = html.indexOf("</a>", hrefIndex);
+        if (anchorStart === -1 || anchorEndMarker === -1) break;
+
+        const anchorEnd = anchorEndMarker + 4;
+        const cardHtml = html.slice(anchorStart, anchorEnd);
+        if (!cardHtml.includes("ccg-publisher-card")) {
+            cursor = anchorEnd;
+            continue;
+        }
+
+        if (cardHtml.includes(`data-publisher-logo="${asset.slug}"`)) {
+            cursor = anchorEnd;
+            continue;
+        }
+
+        const openingTagEnd = html.indexOf(">", anchorStart);
+        if (openingTagEnd === -1 || openingTagEnd >= anchorEnd) {
+            cursor = anchorEnd;
+            continue;
+        }
+
+        const openingTag = html.slice(anchorStart, openingTagEnd + 1);
+        const enhancedOpeningTag = ensureHasLogoClass(openingTag);
+        const logoMarkup = cardLogoMarkup(asset);
+
+        html = html.slice(0, anchorStart)
+            + enhancedOpeningTag
+            + logoMarkup
+            + html.slice(openingTagEnd + 1);
+
+        installed += 1;
+        cursor = anchorEnd + (enhancedOpeningTag.length - openingTag.length) + logoMarkup.length;
     }
 
-    const openingTag = html.slice(card.anchorStart, openingTagEnd + 1);
-    const enhancedOpeningTag = openingTag.includes("ccg-publisher-card--has-logo")
-        ? openingTag
-        : openingTag.replace(
-            "ccg-publisher-card--featured",
-            "ccg-publisher-card--featured ccg-publisher-card--has-logo"
-        );
-
-    const logoMarkup = `\n            <span class="ccg-publisher-card__logo" data-publisher-logo="${htmlEscape(slug)}" aria-hidden="true">\n                <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                     alt=""\n                     loading="lazy"\n                     decoding="async"\n                     onerror="this.parentElement.hidden=true;this.closest('.ccg-publisher-card')?.classList.remove('ccg-publisher-card--has-logo');">\n            </span>`;
-
-    const nextHtml = html.slice(0, card.anchorStart)
-        + enhancedOpeningTag
-        + logoMarkup
-        + html.slice(openingTagEnd + 1);
-
-    return { html: nextHtml, installed: true };
+    return { html, installed };
 }
 
-function addLogoToPublisherHero(html, slug) {
-    if (html.includes(`data-publisher-page-logo="${slug}"`)) return html;
-
-    const imagePath = path.join(publisherImagesDir, `${slug}.png`);
-    if (!fs.existsSync(imagePath)) return html;
+function addLogoToPublisherHero(html, asset) {
+    if (!asset || html.includes(`data-publisher-page-logo="${asset.slug}"`)) return html;
 
     const titleMarker = '<h1 class="ccg-publishers-hero__title">';
     const titleIndex = html.indexOf(titleMarker);
     if (titleIndex === -1) {
-        console.warn(`[publisher-logos] No publisher hero title found for ${slug}; skipping page logo.`);
+        console.warn(`[publisher-logos] No publisher hero title found for ${asset.slug}; skipping page logo.`);
         return html;
     }
 
-    const logoMarkup = `                <div class="ccg-publisher-page-logo" data-publisher-page-logo="${htmlEscape(slug)}" aria-hidden="true">\n                    <img src="/resources/images/publishers/${htmlEscape(slug)}.png"\n                         alt=""\n                         loading="eager"\n                         decoding="async"\n                         onerror="this.parentElement.hidden=true;">\n                </div>\n`;
+    const logoMarkup = `                <div class="ccg-publisher-page-logo" data-publisher-page-logo="${htmlEscape(asset.slug)}" aria-hidden="true">
+                    <img src="/resources/images/publishers/${htmlEscape(asset.fileName)}"
+                         alt=""
+                         loading="eager"
+                         decoding="async"
+                         onerror="this.parentElement.hidden=true;">
+                </div>
+`;
 
     return html.slice(0, titleIndex) + logoMarkup + html.slice(titleIndex);
 }
@@ -183,17 +242,21 @@ function addPublisherBackLink(html) {
     if (breadcrumbEnd === -1) return html;
 
     const insertionPoint = breadcrumbEnd + "</nav>".length;
-    const backLink = `\n\n            <a class="ccg-publisher-back-link" href="/games/publishers/">\n                <span aria-hidden="true">←</span> Back to All Publishers\n            </a>`;
+    const backLink = `
+
+            <a class="ccg-publisher-back-link" href="/games/publishers/">
+                <span aria-hidden="true">←</span> Back to All Publishers
+            </a>`;
 
     return html.slice(0, insertionPoint) + backLink + html.slice(insertionPoint);
 }
 
-function enhancePublisherPage(filePath, slug) {
+function enhancePublisherPage(filePath, slug, asset) {
     let html = fs.readFileSync(filePath, "utf8");
     const original = html;
 
     html = ensureStylesheet(html);
-    html = addLogoToPublisherHero(html, slug);
+    html = addLogoToPublisherHero(html, asset);
     html = addPublisherBackLink(html);
 
     html = html.replace(/[ \t]+$/gm, "");
@@ -209,30 +272,37 @@ let indexHtml = fs.readFileSync(publisherIndexPath, "utf8");
 getSectionBounds(indexHtml);
 indexHtml = ensureStylesheet(indexHtml);
 
+const logoAssets = getLogoAssets();
+const assetsBySlug = new Map(logoAssets.map((asset) => [asset.slug, asset]));
+
 EXTRA_FEATURED_PUBLISHER_SLUGS.forEach((slug) => {
-    const imagePath = path.join(publisherImagesDir, `${slug}.png`);
-    if (fs.existsSync(imagePath)) indexHtml = promotePublisherCard(indexHtml, slug);
+    if (assetsBySlug.has(slug)) indexHtml = promotePublisherCard(indexHtml, slug);
 });
 
-let featuredInstalled = 0;
-const logoSlugs = getLogoSlugs();
-logoSlugs.forEach((slug) => {
-    const result = addLogoToFeaturedCard(indexHtml, slug);
+let cardLogosInstalled = 0;
+logoAssets.forEach((asset) => {
+    const result = addLogoToPublisherCards(indexHtml, asset);
     indexHtml = result.html;
-    if (result.installed) featuredInstalled += 1;
+    cardLogosInstalled += result.installed;
 });
 
 indexHtml = indexHtml.replace(/[ \t]+$/gm, "");
 fs.writeFileSync(publisherIndexPath, indexHtml, "utf8");
 
 let publisherPagesEnhanced = 0;
+let publisherPageLogosAvailable = 0;
 fs.readdirSync(publishersDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .forEach((entry) => {
         const pagePath = path.join(publishersDir, entry.name, "index.html");
         if (!fs.existsSync(pagePath)) return;
-        if (enhancePublisherPage(pagePath, entry.name)) publisherPagesEnhanced += 1;
+
+        const asset = assetsBySlug.get(entry.name);
+        if (asset) publisherPageLogosAvailable += 1;
+        if (enhancePublisherPage(pagePath, entry.name, asset)) publisherPagesEnhanced += 1;
     });
 
-console.log(`[publisher-logos] Applied ${featuredInstalled} featured publisher logo${featuredInstalled === 1 ? "" : "s"}.`);
-console.log(`[publisher-logos] Enhanced ${publisherPagesEnhanced} individual publisher page${publisherPagesEnhanced === 1 ? "" : "s"}.`);
+console.log(`[publisher-logos] Found ${logoAssets.length} publisher logo asset${logoAssets.length === 1 ? "" : "s"}.`);
+console.log(`[publisher-logos] Added ${cardLogosInstalled} publisher card logo${cardLogosInstalled === 1 ? "" : "s"} across featured and full grids.`);
+console.log(`[publisher-logos] ${publisherPageLogosAvailable} individual publisher page${publisherPageLogosAvailable === 1 ? " has" : "s have"} a matching logo.`);
+console.log(`[publisher-logos] Enhanced ${publisherPagesEnhanced} publisher page${publisherPagesEnhanced === 1 ? "" : "s"} with logo styling or wayfinding.`);
