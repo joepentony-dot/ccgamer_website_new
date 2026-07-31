@@ -1,10 +1,15 @@
 name: Apply Easter Egg Fit Fixes
 
 on:
-  push:
-    branches:
-      - fix/easter-egg-fit-basic-pacman-invaders
+  pull_request:
+    branches: [main]
     paths:
+      - 'resources/css/easter-eggs-datasette.css'
+      - 'js/easter-eggs/basic-console.js'
+      - 'resources/css/easter-eggs-basic.css'
+      - 'resources/audio/easter-eggs/pacman.html'
+      - 'resources/css/pacman-touch.css'
+      - 'resources/css/easter-eggs-invaders.css'
       - 'scripts/apply-easter-egg-fit-fixes.py'
       - '.github/workflows/apply-easter-egg-fit-fixes.yml'
   workflow_dispatch:
@@ -18,10 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out fix branch
+      - name: Check out pull request branch
         uses: actions/checkout@v4
         with:
-          ref: fix/easter-egg-fit-basic-pacman-invaders
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -45,4 +50,4 @@ jobs:
             exit 0
           fi
           git commit -m "Fit Pac-Man controller and restore local sound"
-          git push origin HEAD:fix/easter-egg-fit-basic-pacman-invaders
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
