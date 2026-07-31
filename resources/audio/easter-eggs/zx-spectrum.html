@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="robots" content="noindex,nofollow">
     <title>CCG Local ZX Spectrum Easter Egg</title>
-    <link rel="stylesheet" href="../../../css/easter-eggs-zx-spectrum.css">
+    <link rel="stylesheet" href="../../css/easter-eggs-zx-spectrum.css">
 </head>
 <body>
     <main class="zx" data-zx-spectrum>
@@ -18,7 +18,7 @@
                 <button type="button" data-zx-action="sound" aria-pressed="true">SOUND: ON</button>
             </header>
 
-            <div class="zx__screen" tabindex="0" aria-live="polite">
+            <div class="zx__screen" tabindex="0" aria-live="polite" aria-atomic="true">
                 <div class="zx__stage" data-zx-loader-one>
                     <img src="zx_1.gif" alt="ZX Spectrum tape loading screen">
                 </div>
@@ -52,7 +52,7 @@
         </section>
     </main>
 
-    <audio data-zx-voice preload="auto" src="no_i_dont_think_sp.mp3"></audio>
-    <script src="../../../../js/easter-eggs/zx-spectrum.js"></script>
+    <audio data-zx-voice preload="auto" playsinline src="no_i_dont_think_sp.mp3"></audio>
+    <script src="../../../js/easter-eggs/zx-spectrum.js"></script>
 </body>
 </html>
