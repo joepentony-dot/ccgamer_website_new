@@ -143,6 +143,7 @@ jobs:
               "data/publisher-logo-sources.json",
               "resources/css/publisher-logos.css",
               "games/index.html",
+              "games/developers/index.html",
               "games/archive-navigation.json",
               "tools/seo/static-pages.json",
               "sitemap.xml",
