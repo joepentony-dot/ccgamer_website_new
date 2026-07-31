@@ -1,0 +1,48 @@
+name: Apply Easter Egg Fit Fixes
+
+on:
+  push:
+    branches:
+      - fix/easter-egg-fit-basic-pacman-invaders
+    paths:
+      - 'scripts/apply-easter-egg-fit-fixes.py'
+      - '.github/workflows/apply-easter-egg-fit-fixes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-pacman-patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out fix branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/easter-egg-fit-basic-pacman-invaders
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply bounded Pac-Man patch
+        run: |
+          python scripts/apply-easter-egg-fit-fixes.py
+          python scripts/apply-easter-egg-fit-fixes.py --check
+          git diff --check
+
+      - name: Commit generated Pac-Man file
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add resources/audio/easter-eggs/pacman.html
+          if git diff --cached --quiet; then
+            echo "Pac-Man patch already committed."
+            exit 0
+          fi
+          git commit -m "Fit Pac-Man controller and restore local sound"
+          git push origin HEAD:fix/easter-egg-fit-basic-pacman-invaders
