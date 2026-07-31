@@ -32,12 +32,13 @@
 }
 
 /* ---------------------------------------------------------
-   Retro Specials social buttons
+   Retro collection social buttons
    Match the square inner-page treatment without changing
    social icons elsewhere on the website.
 --------------------------------------------------------- */
 
-body[data-collection="Retro Specials"] .ccg-header-socials a {
+body[data-collection="Retro Specials"] .ccg-header-socials a,
+body[data-collection="Retro Events"] .ccg-header-socials a {
     border-radius: 3px !important;
 }
 
