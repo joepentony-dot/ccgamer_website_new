@@ -18,6 +18,9 @@
     let soundEnabled = true;
     let audioContext = null;
     let tapeNodes = null;
+    let voiceBuffer = null;
+    let voiceBufferPromise = null;
+    let voiceSource = null;
 
     const later = (callback, delay) => {
         const timer = window.setTimeout(callback, delay);
@@ -34,7 +37,9 @@
         if (!soundEnabled) return null;
         try {
             audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
-            if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+            if (audioContext.state === "suspended") {
+                audioContext.resume().catch(() => {});
+            }
             return audioContext;
         } catch (_) {
             return null;
@@ -49,6 +54,77 @@
             tapeNodes.chatter.stop();
         } catch (_) {}
         tapeNodes = null;
+    };
+
+    const stopVoice = () => {
+        if (voiceSource) {
+            try {
+                voiceSource.stop();
+            } catch (_) {}
+            try {
+                voiceSource.disconnect();
+            } catch (_) {}
+            voiceSource = null;
+        }
+
+        if (voice) {
+            voice.pause();
+            voice.currentTime = 0;
+        }
+    };
+
+    const loadVoiceBuffer = () => {
+        if (voiceBuffer) return Promise.resolve(voiceBuffer);
+        if (voiceBufferPromise) return voiceBufferPromise;
+
+        const context = getAudioContext();
+        const sourceUrl = voice?.currentSrc || voice?.getAttribute("src");
+        if (!context || !sourceUrl) return Promise.resolve(null);
+
+        voiceBufferPromise = fetch(sourceUrl)
+            .then(response => {
+                if (!response.ok) throw new Error(`Voice audio failed: ${response.status}`);
+                return response.arrayBuffer();
+            })
+            .then(arrayBuffer => context.decodeAudioData(arrayBuffer.slice(0)))
+            .then(buffer => {
+                voiceBuffer = buffer;
+                return buffer;
+            })
+            .catch(() => null);
+
+        return voiceBufferPromise;
+    };
+
+    const playVoice = async () => {
+        stopVoice();
+        if (!soundEnabled) return;
+
+        const context = getAudioContext();
+        const buffer = await loadVoiceBuffer();
+
+        if (context && buffer && soundEnabled) {
+            if (context.state === "suspended") {
+                await context.resume().catch(() => {});
+            }
+
+            if (context.state === "running") {
+                const source = context.createBufferSource();
+                source.buffer = buffer;
+                source.connect(context.destination);
+                source.addEventListener("ended", () => {
+                    if (voiceSource === source) voiceSource = null;
+                }, { once: true });
+                source.start(0);
+                voiceSource = source;
+                return;
+            }
+        }
+
+        if (voice && soundEnabled) {
+            voice.currentTime = 0;
+            voice.play().catch(() => {});
+        }
     };
 
     const startTapeSound = () => {
@@ -93,41 +169,37 @@
 
     const closeEasterEgg = () => {
         stopTapeSound();
+        stopVoice();
         window.parent.postMessage({ type: "ccg-easter-egg-close" }, window.location.origin);
     };
 
     const showClive = () => {
+        stopTapeSound();
         hideAll();
         reveal.hidden = false;
         footer.textContent = "ZX SPECTRUM OVERRULED";
-
-        if (soundEnabled && voice) {
-            voice.currentTime = 0;
-            voice.play().catch(() => {});
-        }
+        void playVoice();
     };
 
     const startSequence = () => {
         clearTimers();
         stopTapeSound();
-        if (voice) {
-            voice.pause();
-            voice.currentTime = 0;
-        }
+        stopVoice();
 
         hideAll();
         loaderOne.hidden = false;
         footer.textContent = "LOADING FROM TAPE...";
         startTapeSound();
+        void loadVoiceBuffer();
 
         later(() => {
+            stopTapeSound();
             loaderOne.hidden = true;
             loaderTwo.hidden = false;
             footer.textContent = "PROGRAM LOADED";
         }, 5000);
 
         later(() => {
-            stopTapeSound();
             hideAll();
             teamCard.hidden = false;
             footer.textContent = "SYSTEM CHECK";
@@ -136,6 +208,7 @@
         later(showClive, 11600);
 
         later(() => {
+            stopVoice();
             hideAll();
             finalCard.hidden = false;
             footer.textContent = "COMMODORE MODE RESTORED";
@@ -151,9 +224,12 @@
 
         if (!soundEnabled) {
             stopTapeSound();
-            if (voice) voice.pause();
-        } else if (!loaderOne.hidden || !loaderTwo.hidden) {
+            stopVoice();
+        } else if (!loaderOne.hidden) {
             startTapeSound();
+            void loadVoiceBuffer();
+        } else if (!reveal.hidden) {
+            void playVoice();
         }
     };
 
@@ -164,6 +240,14 @@
         if (button.dataset.zxAction === "sound") toggleSound();
     });
 
+    root.addEventListener("pointerdown", () => {
+        const context = getAudioContext();
+        if (context?.state === "suspended") {
+            context.resume().catch(() => {});
+        }
+        void loadVoiceBuffer();
+    }, { once: true });
+
     document.addEventListener("keydown", event => {
         if (event.key === "Enter" || event.key === "r" || event.key === "R") startSequence();
         if (event.key === "Escape") closeEasterEgg();
@@ -172,6 +256,7 @@
     window.addEventListener("pagehide", () => {
         clearTimers();
         stopTapeSound();
+        stopVoice();
     }, { once: true });
 
     later(startSequence, 250);
