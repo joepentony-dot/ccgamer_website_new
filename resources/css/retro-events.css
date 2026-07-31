@@ -38,7 +38,8 @@
 --------------------------------------------------------- */
 
 body[data-collection="Retro Specials"] .ccg-header-socials a,
-body[data-collection="Retro Events"] .ccg-header-socials a {
+body[data-collection="Retro Events"] .ccg-header-socials a,
+body[data-collection="Amiga Demo Music"] .ccg-header-socials a {
     border-radius: 3px !important;
 }
 
