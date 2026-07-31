@@ -83,3 +83,517 @@ html.ccg-mobile-lite .home-support-cta {
 html.ccg-mobile-lite .ccg-main--home {
     padding-top: 12px !important;
 }
+
+/* ============================================================
+   MAIN NAVIGATION PAGES — LOWER-DENSITY VISUAL PASS
+   Scoped to the primary public pages only.
+============================================================ */
+
+:is(
+    html[data-ccg-page="home"],
+    html[data-ccg-page="games-index"],
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"],
+    html[data-ccg-page="quiz"],
+    html[data-ccg-page="contact"]
+) .ccg-header-socials a {
+    border-radius: 3px !important;
+}
+
+:is(
+    html[data-ccg-page="home"],
+    html[data-ccg-page="games-index"],
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"],
+    html[data-ccg-page="quiz"],
+    html[data-ccg-page="contact"]
+) .ccg-main {
+    padding-top: clamp(6px, 1vw, 12px);
+}
+
+:is(
+    html[data-ccg-page="home"],
+    html[data-ccg-page="games-index"],
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"],
+    html[data-ccg-page="quiz"],
+    html[data-ccg-page="contact"]
+) .ccg-omega-divider {
+    min-height: 8px;
+    margin-block: clamp(10px, 1.5vw, 18px);
+    opacity: 0.58;
+}
+
+:is(
+    html[data-ccg-page="home"],
+    html[data-ccg-page="games-index"],
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"],
+    html[data-ccg-page="quiz"],
+    html[data-ccg-page="contact"]
+) :is(.ccg-card, .quiz-panel, .contact-panel) {
+    box-shadow:
+        0 12px 26px rgba(0, 0, 0, 0.42),
+        0 0 14px rgba(var(--accent-rgb), 0.12);
+}
+
+/* Home */
+html[data-ccg-page="home"] .ccg-main--home {
+    padding: 6px clamp(10px, 2vw, 22px) 20px;
+}
+
+html[data-ccg-page="home"] .home-hero {
+    margin: 0 auto clamp(10px, 1.5vw, 16px);
+}
+
+html[data-ccg-page="home"] .home-hero__frame {
+    min-height: auto !important;
+}
+
+html[data-ccg-page="home"] .home-hero__content {
+    padding: clamp(18px, 3vw, 34px);
+}
+
+html[data-ccg-page="home"] .home-hero__layout {
+    gap: clamp(16px, 2.5vw, 28px);
+}
+
+html[data-ccg-page="home"] .home-hero__title {
+    margin-block: 8px 10px;
+    font-size: clamp(1.55rem, 4.2vw, 3rem);
+    line-height: 1.04;
+}
+
+html[data-ccg-page="home"] .home-hero__tagline {
+    margin-bottom: 14px;
+    max-width: 58ch;
+    line-height: 1.55;
+}
+
+html[data-ccg-page="home"] .home-hero__actions,
+html[data-ccg-page="home"] .home-discovery-strip {
+    gap: 8px;
+}
+
+html[data-ccg-page="home"] .home-hero__cta,
+html[data-ccg-page="home"] .home-random-cta,
+html[data-ccg-page="home"] .home-discovery-strip__link {
+    min-height: 42px;
+    padding: 0.62rem 0.85rem;
+}
+
+html[data-ccg-page="home"] .home-section {
+    margin: 0;
+    padding: clamp(10px, 1.8vw, 18px) 0;
+}
+
+html[data-ccg-page="home"] .home-section__header {
+    margin-bottom: 12px;
+}
+
+html[data-ccg-page="home"] .home-highlights-grid,
+html[data-ccg-page="home"] .home-video-grid {
+    gap: clamp(10px, 1.5vw, 14px);
+}
+
+html[data-ccg-page="home"] .home-highlight-card .ccg-card__body,
+html[data-ccg-page="home"] .home-video-card .ccg-card__body {
+    padding: clamp(0.75rem, 1.5vw, 0.95rem);
+}
+
+html[data-ccg-page="home"] .home-featured-videos {
+    margin-top: 16px;
+    padding: clamp(12px, 2vw, 18px);
+}
+
+html[data-ccg-page="home"] .home-bottom-cta,
+html[data-ccg-page="home"] .home-visitor-callout {
+    margin: 0;
+    padding: clamp(14px, 2.2vw, 22px);
+}
+
+html[data-ccg-page="home"] .home-bottom-cta__content,
+html[data-ccg-page="home"] .home-visitor-callout__inner {
+    gap: 0.7rem;
+}
+
+html[data-ccg-page="home"] .home-bottom-cta__headline {
+    margin-block: 0;
+    font-size: clamp(1.2rem, 2.7vw, 1.8rem);
+}
+
+html[data-ccg-page="home"] .home-bottom-cta__copy {
+    margin-block: 0;
+    max-width: 72ch;
+}
+
+html[data-ccg-page="home"] .home-cta-upgrade {
+    gap: 12px;
+    margin: 0;
+    padding: 0 0 12px;
+}
+
+html[data-ccg-page="home"] .home-cta-upgrade .cta-card {
+    padding: clamp(12px, 2vw, 18px);
+}
+
+html[data-ccg-page="home"] .home-cta-upgrade .cta-text {
+    margin: 0;
+}
+
+/* Browse all games */
+html[data-ccg-page="games-index"] .games-main {
+    padding: 6px clamp(10px, 2vw, 24px) 22px;
+}
+
+html[data-ccg-page="games-index"] .games-hero {
+    margin: 0 auto 12px;
+    padding: clamp(16px, 2.7vw, 28px);
+}
+
+html[data-ccg-page="games-index"] .games-hero__inner {
+    gap: 0.65rem;
+}
+
+html[data-ccg-page="games-index"] .games-hero__subtitle {
+    margin-bottom: 4px;
+}
+
+html[data-ccg-page="games-index"] .games-hero__stats {
+    margin-top: 7px;
+    padding: 8px 10px;
+}
+
+html[data-ccg-page="games-index"] :is(
+    [data-games-downloads-shortcut],
+    [data-games-publishers-shortcut],
+    [data-games-archive-shortcuts]
+) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+html[data-ccg-page="games-index"] :is(
+    [data-games-downloads-shortcut],
+    [data-games-publishers-shortcut],
+    [data-games-archive-shortcuts]
+) .ccg-btn {
+    min-height: 40px;
+    padding: 0.58rem 0.78rem;
+}
+
+html[data-ccg-page="games-index"] .games-tools {
+    gap: 12px;
+    padding: clamp(12px, 2vw, 18px);
+}
+
+html[data-ccg-page="games-index"] .games-filter {
+    gap: 11px;
+    padding: 12px;
+}
+
+html[data-ccg-page="games-index"] :is(
+    .games-filter__controls,
+    .games-filter__range-toggle,
+    .games-filter__year-row
+) {
+    gap: 8px;
+}
+
+html[data-ccg-page="games-index"] .games-filter__btn,
+html[data-ccg-page="games-index"] .games-filter__range-btn {
+    min-height: 40px;
+    padding: 0.55rem 0.72rem;
+}
+
+html[data-ccg-page="games-index"] .games-library {
+    padding-top: 10px;
+}
+
+/* Genre and collection hubs */
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) :is(.ccg-genres-hero, .ccg-collections-hero) {
+    padding: 8px clamp(10px, 2vw, 20px) 0;
+}
+
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) :is(.ccg-hero--genres, .ccg-hero--collections) {
+    min-height: auto !important;
+}
+
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) :is(.ccg-hero-inner--genres, .ccg-hero-inner--collections) {
+    padding: clamp(22px, 4vw, 42px) clamp(16px, 3vw, 30px);
+}
+
+html[data-ccg-page="genres-index"] .ccg-genres-intro,
+html[data-ccg-page="collections-index"] .ccg-collection-intro {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: clamp(12px, 2vw, 18px);
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-intro h2 {
+    margin: 0 0 8px;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-intro p {
+    margin: 0.45rem 0;
+}
+
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) .ccg-genre-grid {
+    gap: clamp(10px, 1.6vw, 16px);
+    padding: 0 clamp(10px, 2vw, 20px) 18px;
+}
+
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) .ccg-genre-card {
+    border-radius: 10px;
+}
+
+:is(
+    html[data-ccg-page="genres-index"],
+    html[data-ccg-page="collections-index"]
+) .ccg-genre-card span {
+    padding: 0.62rem 0.72rem;
+}
+
+/* Quiz */
+html[data-ccg-page="quiz"] .ccg-hero--quiz {
+    margin: 6px auto 12px;
+    padding: clamp(14px, 2.2vw, 22px);
+}
+
+html[data-ccg-page="quiz"] .quiz-hero-grid {
+    gap: clamp(14px, 2vw, 22px);
+}
+
+html[data-ccg-page="quiz"] .quiz-panel {
+    padding: clamp(12px, 2vw, 18px);
+}
+
+html[data-ccg-page="quiz"] .quiz-panel--intro {
+    margin-top: 10px;
+}
+
+html[data-ccg-page="quiz"] .quiz-howto-list {
+    gap: 4px;
+    margin-block: 8px;
+}
+
+html[data-ccg-page="quiz"] .quiz-hero-controls {
+    gap: 10px;
+    margin-top: 12px;
+}
+
+html[data-ccg-page="quiz"] .quiz-pack-list,
+html[data-ccg-page="quiz"] .quiz-hero-buttons,
+html[data-ccg-page="quiz"] .quiz-hero-meta {
+    gap: 8px;
+}
+
+html[data-ccg-page="quiz"] .quiz-meta-chip {
+    padding: 8px 10px;
+}
+
+html[data-ccg-page="quiz"] .quiz-section {
+    padding: 10px 0 20px;
+}
+
+html[data-ccg-page="quiz"] .quiz-layout {
+    gap: 14px;
+}
+
+/* Contact */
+html[data-ccg-page="contact"] .contact-shell {
+    gap: clamp(14px, 2vw, 20px);
+    padding-bottom: 20px;
+}
+
+html[data-ccg-page="contact"] .contact-hero {
+    padding: clamp(18px, 3vw, 30px);
+}
+
+html[data-ccg-page="contact"] .contact-lede {
+    margin-bottom: 10px;
+}
+
+html[data-ccg-page="contact"] .contact-pill-row {
+    gap: 7px;
+    margin-top: 10px;
+}
+
+html[data-ccg-page="contact"] .contact-pill {
+    padding: 0.38rem 0.65rem;
+}
+
+html[data-ccg-page="contact"] .contact-grid {
+    gap: 14px;
+}
+
+html[data-ccg-page="contact"] .contact-panel {
+    padding: clamp(14px, 2vw, 20px);
+}
+
+html[data-ccg-page="contact"] .contact-panel__header {
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+}
+
+html[data-ccg-page="contact"] .contact-form {
+    gap: 12px;
+}
+
+html[data-ccg-page="contact"] .contact-field {
+    gap: 5px;
+}
+
+html[data-ccg-page="contact"] :is(
+    .contact-field input,
+    .contact-field textarea
+) {
+    padding: 0.68rem 0.78rem;
+}
+
+html[data-ccg-page="contact"] .contact-callout {
+    padding: 14px;
+}
+
+@media (max-width: 760px) {
+    html[data-ccg-page="home"] .ccg-main--home,
+    html[data-ccg-page="games-index"] .games-main {
+        padding-inline: 9px;
+    }
+
+    html[data-ccg-page="home"] .home-hero__content {
+        padding: 16px 13px;
+    }
+
+    html[data-ccg-page="home"] .home-hero__layout {
+        gap: 14px;
+    }
+
+    html[data-ccg-page="home"] .home-hero__actions {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="home"] .home-hero__cta,
+    html[data-ccg-page="home"] .home-random-cta {
+        width: 100%;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos,
+    html[data-ccg-page="home"] .home-bottom-cta,
+    html[data-ccg-page="home"] .home-visitor-callout {
+        padding: 12px;
+    }
+
+    html[data-ccg-page="games-index"] :is(
+        [data-games-downloads-shortcut],
+        [data-games-publishers-shortcut],
+        [data-games-archive-shortcuts]
+    ) {
+        align-items: stretch;
+    }
+
+    html[data-ccg-page="games-index"] :is(
+        [data-games-downloads-shortcut],
+        [data-games-publishers-shortcut],
+        [data-games-archive-shortcuts]
+    ) .ccg-btn {
+        width: 100%;
+    }
+
+    html[data-ccg-page="games-index"] .games-tools,
+    html[data-ccg-page="games-index"] .games-filter,
+    html[data-ccg-page="quiz"] .ccg-hero--quiz,
+    html[data-ccg-page="quiz"] .quiz-panel,
+    html[data-ccg-page="contact"] .contact-panel {
+        padding: 12px;
+    }
+
+    :is(
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"]
+    ) :is(.ccg-hero-inner--genres, .ccg-hero-inner--collections) {
+        padding: 22px 14px;
+    }
+
+    :is(
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"]
+    ) .ccg-genre-grid {
+        gap: 10px;
+        padding-inline: 9px;
+    }
+
+    html[data-ccg-page="quiz"] .quiz-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="contact"] .contact-hero {
+        padding: 18px 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    :is(
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"]
+    ) .ccg-genre-grid {
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="home"] .home-highlights-grid,
+    html[data-ccg-page="home"] .home-video-grid,
+    html[data-ccg-page="home"] .home-cta-upgrade {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :is(
+        html[data-ccg-page="home"],
+        html[data-ccg-page="games-index"],
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"],
+        html[data-ccg-page="quiz"],
+        html[data-ccg-page="contact"]
+    ) *,
+    :is(
+        html[data-ccg-page="home"],
+        html[data-ccg-page="games-index"],
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"],
+        html[data-ccg-page="quiz"],
+        html[data-ccg-page="contact"]
+    ) *::before,
+    :is(
+        html[data-ccg-page="home"],
+        html[data-ccg-page="games-index"],
+        html[data-ccg-page="genres-index"],
+        html[data-ccg-page="collections-index"],
+        html[data-ccg-page="quiz"],
+        html[data-ccg-page="contact"]
+    ) *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}
