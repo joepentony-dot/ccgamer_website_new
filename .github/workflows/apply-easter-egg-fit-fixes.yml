@@ -1,4 +1,4 @@
-name: Apply Easter Egg Fit Fixes
+name: Easter Egg Fit Regression
 
 on:
   pull_request:
@@ -15,18 +15,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  apply-pacman-patch:
-    if: github.actor != 'github-actions[bot]'
+  validate-easter-egg-fit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check out pull request branch
+      - name: Check out submitted revision
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -34,50 +32,68 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Apply bounded Pac-Man and BASIC fixes
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate syntax and bounded Pac-Man patch
+        run: |
+          node --check js/easter-eggs/basic-console.js
+          python scripts/apply-easter-egg-fit-fixes.py --check
+
+      - name: Validate requested fit and feature safeguards
         run: |
           python - <<'PY'
-          import importlib.util
           from pathlib import Path
 
-          script_path = Path('scripts/apply-easter-egg-fit-fixes.py')
-          spec = importlib.util.spec_from_file_location('ccg_fit_patch', script_path)
-          module = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(module)
+          datasette = Path('resources/css/easter-eggs-datasette.css').read_text(encoding='utf-8')
+          basic_js = Path('js/easter-eggs/basic-console.js').read_text(encoding='utf-8')
+          basic_css = Path('resources/css/easter-eggs-basic.css').read_text(encoding='utf-8')
+          pacman = Path('resources/audio/easter-eggs/pacman.html').read_text(encoding='utf-8')
+          pacman_css = Path('resources/css/pacman-touch.css').read_text(encoding='utf-8')
+          invaders = Path('resources/css/easter-eggs-invaders.css').read_text(encoding='utf-8')
 
-          pacman = Path('resources/audio/easter-eggs/pacman.html')
-          raw = pacman.read_bytes()
-          had_crlf = b'\r\n' in raw
-          text = raw.decode('utf-8').replace('\r\n', '\n')
-          updated = module.patch(text)
-          module.validate(updated)
-          if had_crlf:
-              updated = updated.replace('\n', '\r\n')
-          pacman.write_bytes(updated.encode('utf-8'))
+          assert 'grid-template-areas:' in datasette
+          assert '"screen deck"' in datasette
+          assert '.ccg-egg-overlay--datasette .ccg-egg-overlay__media' in datasette
+          assert 'overflow: hidden;' in datasette
+          assert 'height: 100%;' in datasette
 
-          basic = Path('js/easter-eggs/basic-console.js')
-          basic_text = basic.read_text(encoding='utf-8')
-          old = "[40, 'FOR I=1 TO 5:PRINT I:NEXT'],"
-          new = "[40, 'PRINT \"5 QUICK COMMANDS READY\"'],"
-          if old in basic_text:
-              basic_text = basic_text.replace(old, new, 1)
-              basic.write_text(basic_text, encoding='utf-8')
-          elif new not in basic_text:
-              raise SystemExit('BASIC demo line marker was not found')
+          assert '10 PRINT CHR$(205.5+RND(1)); : GOTO 10' in basic_js
+          assert 'FOR I=1 TO 10:PRINT I:NEXT' in basic_js
+          assert 'POKE 53280,N' in basic_js
+          assert 'PRINT RND(1)' in basic_js
+          assert 'LOAD"*",8,1' in basic_js
+          assert 'SYS 64738' in basic_js
+          assert '[40, \'PRINT "5 QUICK COMMANDS READY"\'],' in basic_js
+          assert 'grid-template-rows: minmax(0, 1fr) auto;' in basic_css
+          assert '.ccg-basic-console__keys' in basic_css
 
-          print('Applied bounded Pac-Man patch and corrected BASIC demo program.')
+          assert 'CCG PACMAN LOCAL SYNTH AUDIO' in pacman
+          assert 'CCG PACMAN ALWAYS-VISIBLE CONTROLLER' in pacman
+          assert 'class="ccg-pacman-sound"' in pacman
+          assert 'data-ccg-pacman-audio' in pacman
+          assert 'html.ccg-pacman-touch body' in pacman_css
+          assert 'overflow: hidden !important;' in pacman_css
+          assert 'grid-template-columns: minmax(0, 1fr) clamp(164px, 25vw, 214px);' in pacman_css
+
+          assert 'aspect-ratio: 720 / 760;' in invaders
+          assert '.ccg-invaders__stage' in invaders
+          assert 'height: 100%;' in invaders
+          assert '.ccg-invaders__help,' in invaders
+          assert 'display: none;' in invaders
+
+          print('LOAD, BASIC, Pac-Man and Invaders fit safeguards passed.')
           PY
-          python scripts/apply-easter-egg-fit-fixes.py --check
-          node --check js/easter-eggs/basic-console.js
 
-      - name: Commit generated files
+      - name: Confirm catalogue and protected files
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resources/audio/easter-eggs/pacman.html js/easter-eggs/basic-console.js
-          if git diff --cached --quiet; then
-            echo "Generated fixes already committed."
-            exit 0
-          fi
-          git commit -m "Fit Pac-Man controls, sound and BASIC demo"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games) == 651, len(games)
+          print('Catalogue integrity passed: 651 games.')
+          PY
+          git diff --quiet origin/main...HEAD -- index.html resources/css/intro.css js/index-intro.js home.html games/games.json
