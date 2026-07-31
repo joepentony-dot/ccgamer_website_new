@@ -1,8 +1,22 @@
 /* ============================================================
-   CCG PACMAN TOUCH CONTROLS
-   Mobile-only controls for the local PACMAN Easter egg iframe.
-   The parent overlay retains focus on its visible Exit control.
+   CCG PACMAN LOCAL CONTROLS
+   The full maze and controller remain visible inside the iframe.
 ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    background: #000;
+}
 
 .ccg-pacman-controls {
     display: none;
@@ -15,14 +29,23 @@
 html.ccg-pacman-touch,
 html.ccg-pacman-touch body {
     box-sizing: border-box;
-    width: 100%;
-    min-width: 0;
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 6px !important;
+    overflow: hidden !important;
     background: #000;
+}
+
+html.ccg-pacman-touch body {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) clamp(164px, 25vw, 214px);
+    grid-template-rows: minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+    gap: clamp(6px, 1.4vw, 14px);
 }
 
 html.ccg-pacman-touch body > h1,
@@ -32,65 +55,81 @@ html.ccg-pacman-touch #shim {
 }
 
 html.ccg-pacman-touch #pacman {
-    width: min(382px, calc(100vw - 12px));
-    height: auto;
-    min-height: 0;
-    margin: 6px auto 4px;
-    border-radius: 4px;
+    grid-column: 1;
+    width: min(382px, calc(100vw - 196px), calc((100dvh - 18px) / 1.235)) !important;
+    height: auto !important;
+    min-width: 210px;
+    min-height: 0 !important;
+    margin: 0 !important;
+    align-self: center;
+    justify-self: center;
+    overflow: hidden;
+    border: 1px solid rgba(0, 204, 255, .22);
+    border-radius: 5px !important;
+    box-shadow: 0 0 22px rgba(0, 121, 255, .16);
 }
 
 html.ccg-pacman-touch #pacman canvas {
     display: block;
-    width: 100%;
+    width: 100% !important;
     max-width: 100%;
-    height: auto;
+    height: auto !important;
     margin: 0 auto;
+    image-rendering: auto;
 }
 
 html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
+    grid-column: 2;
     box-sizing: border-box;
+    width: 100%;
+    max-width: 214px;
+    min-width: 0;
+    margin: 0;
+    padding: clamp(7px, 1.5vw, 12px);
     display: grid;
-    grid-template-columns: minmax(170px, 220px) minmax(112px, 150px);
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: min(100%, 390px);
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 8px 8px max(10px, env(safe-area-inset-bottom, 0px));
+    grid-template-columns: 1fr;
+    justify-items: center;
+    align-content: center;
+    gap: 9px;
     color: #d7f7ff;
     font-family: system-ui, sans-serif;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(58, 204, 255, .12), transparent 58%),
+        rgba(4, 10, 20, .94);
+    border: 1px solid rgba(126, 252, 255, .35);
+    border-radius: 16px;
+    box-shadow: inset 0 0 18px rgba(38, 196, 255, .06), 0 0 18px rgba(38, 196, 255, .08);
     touch-action: manipulation;
     user-select: none;
     -webkit-user-select: none;
 }
 
 .ccg-pacman-controls__label {
-    grid-column: 1 / -1;
     color: #7efcff;
-    font-size: 0.7rem;
+    font-size: clamp(.58rem, 1.4vw, .7rem);
     font-weight: 800;
-    letter-spacing: 0.16em;
+    letter-spacing: .14em;
     text-align: center;
 }
 
 .ccg-pacman-dpad {
     display: grid;
-    grid-template-columns: repeat(3, 52px);
-    grid-template-rows: repeat(3, 52px);
+    grid-template-columns: repeat(3, clamp(38px, 5.4vw, 48px));
+    grid-template-rows: repeat(3, clamp(38px, 5.4vw, 48px));
     justify-content: center;
     gap: 4px;
 }
 
 .ccg-pacman-control,
-.ccg-pacman-start {
+.ccg-pacman-start,
+.ccg-pacman-sound {
     box-sizing: border-box;
     appearance: none;
     -webkit-appearance: none;
-    border: 1px solid rgba(126, 252, 255, 0.62);
+    border: 1px solid rgba(126, 252, 255, .62);
     background: linear-gradient(145deg, #14243a, #070d18);
     color: #f4fbff;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05), 0 0 12px rgba(60, 209, 255, 0.22);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.05), 0 0 12px rgba(60, 209, 255, .18);
     font: inherit;
     font-weight: 800;
     cursor: pointer;
@@ -98,16 +137,24 @@ html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
 }
 
 .ccg-pacman-control {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    font-size: 1.2rem;
+    width: clamp(38px, 5.4vw, 48px);
+    height: clamp(38px, 5.4vw, 48px);
+    border-radius: 11px;
+    font-size: 1.05rem;
 }
 
 .ccg-pacman-control:active,
-.ccg-pacman-start:active {
-    transform: translateY(1px) scale(0.96);
+.ccg-pacman-start:active,
+.ccg-pacman-sound:active {
+    transform: translateY(1px) scale(.96);
     background: linear-gradient(145deg, #214466, #0a1424);
+}
+
+.ccg-pacman-control:focus-visible,
+.ccg-pacman-start:focus-visible,
+.ccg-pacman-sound:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
 }
 
 .ccg-pacman-control--up {
@@ -123,8 +170,8 @@ html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
 .ccg-pacman-control--centre {
     grid-column: 2;
     grid-row: 2;
-    border-color: rgba(126, 252, 255, 0.22);
-    color: rgba(126, 252, 255, 0.42);
+    border-color: rgba(126, 252, 255, .22);
+    color: rgba(126, 252, 255, .42);
     pointer-events: none;
 }
 
@@ -138,24 +185,133 @@ html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
     grid-row: 3;
 }
 
-.ccg-pacman-start {
-    min-height: 54px;
-    padding: 10px 12px;
+.ccg-pacman-start,
+.ccg-pacman-sound {
+    width: 100%;
+    min-height: 42px;
+    padding: 7px 9px;
     border-radius: 999px;
-    color: #ffef74;
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    line-height: 1.25;
+    font-size: clamp(.58rem, 1.3vw, .7rem);
+    letter-spacing: .055em;
+    line-height: 1.18;
 }
 
-@media (max-width: 380px) {
+.ccg-pacman-start {
+    color: #ffef74;
+    border-color: rgba(255, 232, 88, .64);
+}
+
+.ccg-pacman-sound {
+    color: #aef8c7;
+    border-color: rgba(98, 255, 158, .54);
+}
+
+@media (max-width: 620px), (orientation: portrait) {
+    html.ccg-pacman-touch body {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr) auto;
+        gap: 5px;
+        padding: 4px !important;
+    }
+
+    html.ccg-pacman-touch #pacman {
+        grid-column: 1;
+        grid-row: 1;
+        width: min(382px, calc(100vw - 8px), calc((100dvh - 144px) / 1.235)) !important;
+        min-width: 0;
+    }
+
     html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
-        grid-template-columns: 1fr;
-        gap: 8px;
+        grid-column: 1;
+        grid-row: 2;
+        width: min(100%, 390px);
+        max-width: 390px;
+        padding: 5px 7px;
+        display: grid;
+        grid-template-columns: auto minmax(104px, 1fr);
+        grid-template-rows: auto auto;
+        align-items: center;
+        gap: 5px 9px;
+        border-radius: 12px;
+    }
+
+    .ccg-pacman-controls__label {
+        grid-column: 1 / -1;
+        line-height: 1;
+    }
+
+    .ccg-pacman-dpad {
+        grid-column: 1;
+        grid-row: 2 / 4;
+        grid-template-columns: repeat(3, 34px);
+        grid-template-rows: repeat(3, 34px);
+        gap: 2px;
+    }
+
+    .ccg-pacman-control {
+        width: 34px;
+        height: 34px;
+        border-radius: 8px;
+        font-size: .88rem;
+    }
+
+    .ccg-pacman-start,
+    .ccg-pacman-sound {
+        grid-column: 2;
+        min-height: 38px;
+        padding: 5px 7px;
     }
 
     .ccg-pacman-start {
-        width: min(220px, 100%);
-        margin: 0 auto;
+        grid-row: 2;
+    }
+
+    .ccg-pacman-sound {
+        grid-row: 3;
+    }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+    html.ccg-pacman-touch body {
+        grid-template-columns: minmax(0, 1fr) 150px;
+        grid-template-rows: minmax(0, 1fr);
+        padding: 3px !important;
+        gap: 4px;
+    }
+
+    html.ccg-pacman-touch #pacman {
+        grid-column: 1;
+        grid-row: 1;
+        width: min(382px, calc(100vw - 158px), calc((100dvh - 6px) / 1.235)) !important;
+    }
+
+    html.ccg-pacman-touch .ccg-pacman-controls:not([hidden]) {
+        grid-column: 2;
+        grid-row: 1;
+        width: 150px;
+        padding: 4px;
+        gap: 4px;
+    }
+
+    .ccg-pacman-controls__label {
+        display: none;
+    }
+
+    .ccg-pacman-dpad {
+        grid-template-columns: repeat(3, 34px);
+        grid-template-rows: repeat(3, 34px);
+        gap: 2px;
+    }
+
+    .ccg-pacman-control {
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+    }
+
+    .ccg-pacman-start,
+    .ccg-pacman-sound {
+        min-height: 32px;
+        padding: 3px 5px;
     }
 }

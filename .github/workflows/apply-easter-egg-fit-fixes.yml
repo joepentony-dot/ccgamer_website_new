@@ -1,0 +1,99 @@
+name: Easter Egg Fit Regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'resources/css/easter-eggs-datasette.css'
+      - 'js/easter-eggs/basic-console.js'
+      - 'resources/css/easter-eggs-basic.css'
+      - 'resources/audio/easter-eggs/pacman.html'
+      - 'resources/css/pacman-touch.css'
+      - 'resources/css/easter-eggs-invaders.css'
+      - 'scripts/apply-easter-egg-fit-fixes.py'
+      - '.github/workflows/apply-easter-egg-fit-fixes.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-easter-egg-fit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out submitted revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate syntax and bounded Pac-Man patch
+        run: |
+          node --check js/easter-eggs/basic-console.js
+          python scripts/apply-easter-egg-fit-fixes.py --check
+
+      - name: Validate requested fit and feature safeguards
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          datasette = Path('resources/css/easter-eggs-datasette.css').read_text(encoding='utf-8')
+          basic_js = Path('js/easter-eggs/basic-console.js').read_text(encoding='utf-8')
+          basic_css = Path('resources/css/easter-eggs-basic.css').read_text(encoding='utf-8')
+          pacman = Path('resources/audio/easter-eggs/pacman.html').read_text(encoding='utf-8')
+          pacman_css = Path('resources/css/pacman-touch.css').read_text(encoding='utf-8')
+          invaders = Path('resources/css/easter-eggs-invaders.css').read_text(encoding='utf-8')
+
+          assert 'grid-template-areas:' in datasette
+          assert '"screen deck"' in datasette
+          assert '.ccg-egg-overlay--datasette .ccg-egg-overlay__media' in datasette
+          assert 'overflow: hidden;' in datasette
+          assert 'height: 100%;' in datasette
+
+          assert '10 PRINT CHR$(205.5+RND(1)); : GOTO 10' in basic_js
+          assert 'FOR I=1 TO 10:PRINT I:NEXT' in basic_js
+          assert 'POKE 53280,N' in basic_js
+          assert 'PRINT RND(1)' in basic_js
+          assert 'LOAD"*",8,1' in basic_js
+          assert 'SYS 64738' in basic_js
+          assert '[40, \'PRINT "5 QUICK COMMANDS READY"\'],' in basic_js
+          assert 'grid-template-rows: minmax(0, 1fr) auto;' in basic_css
+          assert '.ccg-basic-console__keys' in basic_css
+
+          assert 'CCG PACMAN LOCAL SYNTH AUDIO' in pacman
+          assert 'CCG PACMAN ALWAYS-VISIBLE CONTROLLER' in pacman
+          assert 'class="ccg-pacman-sound"' in pacman
+          assert 'data-ccg-pacman-audio' in pacman
+          assert 'html.ccg-pacman-touch body' in pacman_css
+          assert 'overflow: hidden !important;' in pacman_css
+          assert 'grid-template-columns: minmax(0, 1fr) clamp(164px, 25vw, 214px);' in pacman_css
+
+          assert 'aspect-ratio: 720 / 760;' in invaders
+          assert '.ccg-invaders__stage' in invaders
+          assert 'height: 100%;' in invaders
+          assert '.ccg-invaders__help,' in invaders
+          assert 'display: none;' in invaders
+
+          print('LOAD, BASIC, Pac-Man and Invaders fit safeguards passed.')
+          PY
+
+      - name: Confirm catalogue and protected files
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          games = json.loads(Path('games/games.json').read_text(encoding='utf-8'))
+          assert len(games) == 651, len(games)
+          print('Catalogue integrity passed: 651 games.')
+          PY
+          git diff --quiet origin/main...HEAD -- index.html resources/css/intro.css js/index-intro.js home.html games/games.json
