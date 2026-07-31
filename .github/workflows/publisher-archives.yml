@@ -37,6 +37,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: publisher-archives-${{ github.ref }}
@@ -127,6 +128,8 @@ jobs:
       - name: Commit generated publisher and sitemap outputs
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
 
@@ -140,4 +143,20 @@ jobs:
           git commit -m "Refresh generated publisher archives"
 
           TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          if git push origin "HEAD:${TARGET_BRANCH}"; then
+            exit 0
+          fi
+
+          if [ "$TARGET_BRANCH" != "main" ]; then
+            echo "Could not push generated output to ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          GENERATED_BRANCH="automation/publisher-archives-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/${GENERATED_BRANCH}"
+
+          gh pr create \
+            --base main \
+            --head "${GENERATED_BRANCH}" \
+            --title "Refresh generated publisher archives" \
+            --body "Automatically generated publisher archive output after publisher logo assets were added directly to main."
