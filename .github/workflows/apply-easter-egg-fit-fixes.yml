@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Apply bounded Pac-Man patch
+      - name: Apply bounded Pac-Man and BASIC fixes
         run: |
           python - <<'PY'
           import importlib.util
@@ -54,19 +54,30 @@ jobs:
           if had_crlf:
               updated = updated.replace('\n', '\r\n')
           pacman.write_bytes(updated.encode('utf-8'))
-          print('Applied bounded Pac-Man patch with original line endings preserved.')
+
+          basic = Path('js/easter-eggs/basic-console.js')
+          basic_text = basic.read_text(encoding='utf-8')
+          old = "[40, 'FOR I=1 TO 5:PRINT I:NEXT'],"
+          new = "[40, 'PRINT \"5 QUICK COMMANDS READY\"'],"
+          if old in basic_text:
+              basic_text = basic_text.replace(old, new, 1)
+              basic.write_text(basic_text, encoding='utf-8')
+          elif new not in basic_text:
+              raise SystemExit('BASIC demo line marker was not found')
+
+          print('Applied bounded Pac-Man patch and corrected BASIC demo program.')
           PY
           python scripts/apply-easter-egg-fit-fixes.py --check
-          git diff --check -- resources/audio/easter-eggs/pacman.html
+          node --check js/easter-eggs/basic-console.js
 
-      - name: Commit generated Pac-Man file
+      - name: Commit generated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add resources/audio/easter-eggs/pacman.html
+          git add resources/audio/easter-eggs/pacman.html js/easter-eggs/basic-console.js
           if git diff --cached --quiet; then
-            echo "Pac-Man patch already committed."
+            echo "Generated fixes already committed."
             exit 0
           fi
-          git commit -m "Fit Pac-Man controller and restore local sound"
+          git commit -m "Fit Pac-Man controls, sound and BASIC demo"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
