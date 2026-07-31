@@ -8,6 +8,8 @@ on:
       - 'js/easter-eggs/easter-egg-registry.js'
       - 'js/easter-eggs/zx-spectrum.js'
       - 'resources/audio/easter-eggs/zx-spectrum.html'
+      - 'resources/audio/easter-eggs/zx_1.gif'
+      - 'resources/audio/easter-eggs/zx_2.gif'
       - 'resources/css/easter-eggs-zx-spectrum.css'
       - 'scripts/apply-easter-egg-e6-zx-spectrum.py'
       - '.github/workflows/easter-egg-e6-local-zx-spectrum.yml'
@@ -48,7 +50,7 @@ jobs:
           python scripts/apply-easter-egg-e6-zx-spectrum.py
           git diff --exit-code -- js/ccg-global.js js/easter-eggs/easter-egg-registry.js
 
-      - name: Validate local E6 assets
+      - name: Validate local E6 assets and sequence
         run: |
           node --check js/ccg-global.js
           node --check js/easter-eggs/easter-egg-registry.js
@@ -57,17 +59,40 @@ jobs:
           test -f resources/css/easter-eggs-zx-spectrum.css
           test -f resources/audio/easter-eggs/zx-clive.jpg
           test -f resources/audio/easter-eggs/no_i_dont_think_sp.mp3
+          test -f resources/audio/easter-eggs/zx_1.gif
+          test -f resources/audio/easter-eggs/zx_2.gif
           grep -q 'getEasterEggAsset("zx-spectrum.html")' js/ccg-global.js
           grep -q 'runtime: "local", phase: "E6"' js/easter-eggs/easter-egg-registry.js
           grep -q 'data-zx-spectrum' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'data-zx-action="restart"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'data-zx-action="sound"' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-loader-one' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-loader-two' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'data-zx-team' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'data-zx-reveal' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'src="zx_1.gif"' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q 'src="zx_2.gif"' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'zx-clive.jpg' resources/audio/easter-eggs/zx-spectrum.html
           grep -q 'no_i_dont_think_sp.mp3' resources/audio/easter-eggs/zx-spectrum.html
+          grep -q "WE'RE TEAM COMMODORE HERE" resources/audio/easter-eggs/zx-spectrum.html
+          grep -q '}, 5000);' js/easter-eggs/zx-spectrum.js
+          grep -q '}, 10000);' js/easter-eggs/zx-spectrum.js
+          grep -q 'later(showClive, 11600);' js/easter-eggs/zx-spectrum.js
+          grep -q 'later(closeEasterEgg, 17800);' js/easter-eggs/zx-spectrum.js
           ! grep -q 'jsspeccy.zxdemo.org' js/ccg-global.js
           ! grep -q 'https://' resources/audio/easter-eggs/zx-spectrum.html
           ! grep -q 'https://' js/easter-eggs/zx-spectrum.js
+
+      - name: Confirm GIF signatures
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('zx_1.gif', 'zx_2.gif'):
+              path = Path('resources/audio/easter-eggs') / name
+              signature = path.read_bytes()[:6]
+              assert signature in (b'GIF87a', b'GIF89a'), (name, signature)
+              print(f'{name}: valid GIF signature')
+          PY
 
       - name: Confirm catalogue integrity
         run: |

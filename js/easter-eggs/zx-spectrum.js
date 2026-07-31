@@ -5,13 +5,9 @@
     const root = document.querySelector("[data-zx-spectrum]");
     if (!root) return;
 
-    const screen = root.querySelector(".zx__screen");
-    const boot = root.querySelector("[data-zx-boot]");
-    const checks = root.querySelector("[data-zx-checks]");
-    const status = root.querySelector("[data-zx-status]");
-    const basic = root.querySelector("[data-zx-basic]");
-    const program = root.querySelector("[data-zx-program]");
-    const loadingCopy = root.querySelector("[data-zx-loading-copy]");
+    const loaderOne = root.querySelector("[data-zx-loader-one]");
+    const loaderTwo = root.querySelector("[data-zx-loader-two]");
+    const teamCard = root.querySelector("[data-zx-team]");
     const reveal = root.querySelector("[data-zx-reveal]");
     const finalCard = root.querySelector("[data-zx-final]");
     const footer = root.querySelector("[data-zx-footer]");
@@ -21,7 +17,7 @@
     let timers = [];
     let soundEnabled = true;
     let audioContext = null;
-    let loadingNoise = null;
+    let tapeNodes = null;
 
     const later = (callback, delay) => {
         const timer = window.setTimeout(callback, delay);
@@ -34,7 +30,7 @@
         timers = [];
     };
 
-    const context = () => {
+    const getAudioContext = () => {
         if (!soundEnabled) return null;
         try {
             audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
@@ -45,185 +41,119 @@
         }
     };
 
-    const tone = (frequency, duration = 0.07, gainValue = 0.025) => {
-        const ctx = context();
-        if (!ctx) return;
-        const oscillator = ctx.createOscillator();
-        const gain = ctx.createGain();
-        oscillator.type = "square";
-        oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
-        gain.gain.setValueAtTime(gainValue, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        oscillator.connect(gain).connect(ctx.destination);
-        oscillator.start();
-        oscillator.stop(ctx.currentTime + duration);
-    };
-
-    const stopLoadingNoise = () => {
-        if (!loadingNoise) return;
+    const stopTapeSound = () => {
+        if (!tapeNodes) return;
         try {
-            loadingNoise.oscillator.stop();
-            loadingNoise.modulator.stop();
+            tapeNodes.carrier.stop();
+            tapeNodes.modulator.stop();
+            tapeNodes.chatter.stop();
         } catch (_) {}
-        loadingNoise = null;
+        tapeNodes = null;
     };
 
-    const startLoadingNoise = () => {
-        stopLoadingNoise();
-        const ctx = context();
-        if (!ctx) return;
+    const startTapeSound = () => {
+        stopTapeSound();
+        const context = getAudioContext();
+        if (!context) return;
 
-        const oscillator = ctx.createOscillator();
-        const modulator = ctx.createOscillator();
-        const modGain = ctx.createGain();
-        const gain = ctx.createGain();
+        const carrier = context.createOscillator();
+        const modulator = context.createOscillator();
+        const chatter = context.createOscillator();
+        const modGain = context.createGain();
+        const chatterGain = context.createGain();
+        const output = context.createGain();
 
-        oscillator.type = "square";
-        oscillator.frequency.value = 1240;
+        carrier.type = "square";
+        carrier.frequency.value = 1250;
         modulator.type = "square";
-        modulator.frequency.value = 27;
-        modGain.gain.value = 430;
-        gain.gain.value = 0.018;
+        modulator.frequency.value = 24;
+        modGain.gain.value = 390;
+        chatter.type = "square";
+        chatter.frequency.value = 2050;
+        chatterGain.gain.value = 0.006;
+        output.gain.value = 0.022;
 
-        modulator.connect(modGain).connect(oscillator.frequency);
-        oscillator.connect(gain).connect(ctx.destination);
-        oscillator.start();
+        modulator.connect(modGain).connect(carrier.frequency);
+        carrier.connect(output).connect(context.destination);
+        chatter.connect(chatterGain).connect(context.destination);
+
+        carrier.start();
         modulator.start();
-        loadingNoise = { oscillator, modulator };
-    };
-
-    const setStage = stage => {
-        screen.classList.remove("is-pilot", "is-data");
-        if (stage) screen.classList.add(stage);
+        chatter.start();
+        tapeNodes = { carrier, modulator, chatter };
     };
 
     const hideAll = () => {
-        boot.hidden = true;
-        basic.hidden = true;
+        loaderOne.hidden = true;
+        loaderTwo.hidden = true;
+        teamCard.hidden = true;
         reveal.hidden = true;
         finalCard.hidden = true;
-        program.hidden = true;
-        loadingCopy.hidden = true;
     };
 
     const closeEasterEgg = () => {
+        stopTapeSound();
         window.parent.postMessage({ type: "ccg-easter-egg-close" }, window.location.origin);
     };
 
-    const showReveal = () => {
-        stopLoadingNoise();
-        setStage("");
+    const showClive = () => {
         hideAll();
         reveal.hidden = false;
-        footer.textContent = "EMULATION INTERRUPTED";
-        tone(165, 0.18, 0.035);
+        footer.textContent = "ZX SPECTRUM OVERRULED";
 
         if (soundEnabled && voice) {
             voice.currentTime = 0;
             voice.play().catch(() => {});
         }
-
-        later(() => {
-            reveal.hidden = true;
-            finalCard.hidden = false;
-            footer.textContent = "COMMODORE MODE RESTORED";
-        }, 3100);
-
-        later(closeEasterEgg, 6100);
-    };
-
-    const beginTapeLoad = () => {
-        status.textContent = "ROM READY";
-        boot.hidden = true;
-        basic.hidden = false;
-        program.hidden = false;
-        loadingCopy.hidden = false;
-        footer.textContent = "TAPE INPUT: CHEEKY_EMULATOR";
-        setStage("is-pilot");
-        startLoadingNoise();
-
-        later(() => {
-            setStage("is-data");
-            footer.textContent = "LOADING SNAPSHOT...";
-        }, 1900);
-
-        later(() => {
-            loadingCopy.textContent = "Loading BASIC...";
-        }, 3000);
-
-        later(() => {
-            loadingCopy.textContent = "Loading ROM...";
-        }, 3850);
-
-        later(() => {
-            loadingCopy.textContent = "Loading Interface...";
-        }, 4650);
-
-        later(() => {
-            loadingCopy.textContent = "Please wait...";
-        }, 5350);
-
-        later(showReveal, 6400);
     };
 
     const startSequence = () => {
         clearTimers();
-        stopLoadingNoise();
+        stopTapeSound();
         if (voice) {
             voice.pause();
             voice.currentTime = 0;
         }
 
-        setStage("");
         hideAll();
-        boot.hidden = false;
-        checks.textContent = "";
-        status.textContent = "INITIALISING...";
-        footer.textContent = "ROM READY";
-
-        const checkLines = [
-            "Checking ROM........OK",
-            "Checking RAM........OK",
-            "Initialising ULA....OK",
-            "Loading Keyboard....OK",
-            "Loading Tape I/O....OK",
-            "Mounting Emulator...OK"
-        ];
-
-        checkLines.forEach((line, index) => {
-            later(() => {
-                checks.textContent += `${line}\n`;
-                tone(520 + (index * 35), 0.045);
-            }, 650 + (index * 420));
-        });
+        loaderOne.hidden = false;
+        footer.textContent = "LOADING FROM TAPE...";
+        startTapeSound();
 
         later(() => {
-            status.textContent = "ZX SPECTRUM 48K READY";
-            tone(880, 0.09);
-        }, 3300);
+            loaderOne.hidden = true;
+            loaderTwo.hidden = false;
+            footer.textContent = "PROGRAM LOADED";
+        }, 5000);
+
+        later(() => {
+            stopTapeSound();
+            hideAll();
+            teamCard.hidden = false;
+            footer.textContent = "SYSTEM CHECK";
+        }, 10000);
+
+        later(showClive, 11600);
 
         later(() => {
             hideAll();
-            basic.hidden = false;
-            footer.textContent = "48K BASIC — OK";
-            tone(660, 0.06);
-        }, 4050);
+            finalCard.hidden = false;
+            footer.textContent = "COMMODORE MODE RESTORED";
+        }, 15100);
 
-        later(beginTapeLoad, 5250);
+        later(closeEasterEgg, 17800);
     };
 
     const toggleSound = () => {
         soundEnabled = !soundEnabled;
         soundButton.setAttribute("aria-pressed", String(soundEnabled));
         soundButton.textContent = `SOUND: ${soundEnabled ? "ON" : "OFF"}`;
+
         if (!soundEnabled) {
-            stopLoadingNoise();
+            stopTapeSound();
             if (voice) voice.pause();
-        } else {
-            tone(700, 0.05);
-            if (screen.classList.contains("is-pilot") || screen.classList.contains("is-data")) {
-                startLoadingNoise();
-            }
+        } else if (!loaderOne.hidden || !loaderTwo.hidden) {
+            startTapeSound();
         }
     };
 
@@ -241,9 +171,8 @@
 
     window.addEventListener("pagehide", () => {
         clearTimers();
-        stopLoadingNoise();
+        stopTapeSound();
     }, { once: true });
 
-    screen.focus({ preventScroll: true });
     later(startSequence, 250);
 })();
