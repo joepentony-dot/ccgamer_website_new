@@ -6,13 +6,17 @@ on:
       - main
     paths:
       - ".github/workflows/priority-genre-navigation-publisher-logos.yml"
+      - ".github/workflows/publisher-archives.yml"
       - "scripts/rebuild-games.js"
       - "scripts/apply-priority-discovery-navigation.js"
+      - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
       - "scripts/validate-publisher-logo-output.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
       - "scripts/generate-publisher-pages.js"
+      - "data/publisher-logo-sources.json"
+      - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
   workflow_dispatch:
 
@@ -43,7 +47,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Record protected hashes
         run: |
@@ -59,8 +63,14 @@ jobs:
         run: |
           node --check scripts/rebuild-games.js
           node --check scripts/apply-priority-discovery-navigation.js
+          node --check scripts/fetch-publisher-logos.js
           node --check scripts/apply-publisher-logos.js
           node --check scripts/validate-publisher-logo-output.js
+
+      - name: Fetch vetted publisher logos
+        env:
+          CCG_PUBLISHER_LOGOS_STRICT: "0"
+        run: node scripts/fetch-publisher-logos.js
 
       - name: Apply permanent discovery source correction
         run: |
@@ -84,11 +94,11 @@ jobs:
 
           grep -q 'href="/resources/css/publisher-logos.css"' games/publishers/index.html
           grep -q 'data-publisher-logo="activision"' games/publishers/index.html
-          grep -q 'src="/resources/images/publishers/activision.png"' games/publishers/index.html
+          grep -Eq 'src="/resources/images/publishers/activision\.(webp|png|svg|jpg|jpeg)"' games/publishers/index.html
 
           grep -q 'href="/resources/css/publisher-logos.css"' games/publishers/activision/index.html
           grep -q 'data-publisher-page-logo="activision"' games/publishers/activision/index.html
-          grep -q 'src="/resources/images/publishers/activision.png"' games/publishers/activision/index.html
+          grep -Eq 'src="/resources/images/publishers/activision\.(webp|png|svg|jpg|jpeg)"' games/publishers/activision/index.html
 
       - name: Verify deterministic repeat generation
         shell: bash
@@ -122,12 +132,16 @@ jobs:
           }
           allowed_exact = {
               ".github/workflows/priority-genre-navigation-publisher-logos.yml",
+              ".github/workflows/publisher-archives.yml",
               "scripts/rebuild-games.js",
               "scripts/apply-priority-discovery-navigation.js",
+              "scripts/fetch-publisher-logos.js",
               "scripts/apply-publisher-logos.js",
               "scripts/validate-publisher-logo-output.js",
               "scripts/integrate-year-platform-discovery.js",
               "scripts/validate-year-platform-discovery.js",
+              "data/publisher-logo-sources.json",
+              "resources/css/publisher-logos.css",
               "games/index.html",
               "games/archive-navigation.json",
               "tools/seo/static-pages.json",
@@ -137,6 +151,10 @@ jobs:
               "docs/seo-baseline/phase-4c-year-platform-discovery.md",
               "docs/seo-baseline/phase-4d-year-platform-validation.md",
           }
+          allowed_prefixes = (
+              "games/publishers/",
+              "resources/images/publishers/",
+          )
 
           tracked = subprocess.check_output(
               ["git", "diff", "--name-only", "origin/main"], text=True
@@ -150,10 +168,7 @@ jobs:
           for path in changed:
               if path in allowed_exact:
                   continue
-              if path.startswith("games/publishers/"):
-                  continue
-              if path in protected or path.endswith(".css"):
-                  unexpected.append(path)
+              if path.startswith(allowed_prefixes):
                   continue
               unexpected.append(path)
 
@@ -161,8 +176,6 @@ jobs:
               raise SystemExit(f"Unexpected priority-fix paths: {unexpected}")
           if protected.intersection(changed):
               raise SystemExit("A protected file entered the priority-fix diff.")
-          if any(path.endswith(".css") for path in changed):
-              raise SystemExit("The priority fix must not modify CSS source files.")
 
           print(f"Validated priority correction scope ({len(changed)} files).")
           PY
@@ -171,7 +184,7 @@ jobs:
       - name: Commit validated output
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
         run: |
-          git add -u
+          git add -A
           git reset -- \
             index.html \
             home.html \
@@ -186,5 +199,5 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Apply genre navigation and restore publisher logos"
+          git commit -m "Apply publisher logo library"
           git push origin "HEAD:${GITHUB_HEAD_REF}"
