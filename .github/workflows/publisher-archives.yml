@@ -8,8 +8,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
+      - "scripts/validate-publisher-logo-output.js"
       - "scripts/remove-invalid-publisher-labels.js"
+      - "data/publisher-logo-sources.json"
       - "data/publisher-playlists.json"
       - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
@@ -21,8 +24,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/publisher-utils.js"
+      - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
+      - "scripts/validate-publisher-logo-output.js"
       - "scripts/remove-invalid-publisher-labels.js"
+      - "data/publisher-logo-sources.json"
       - "data/publisher-playlists.json"
       - "resources/css/publisher-logos.css"
       - "resources/images/publishers/**"
@@ -57,7 +63,14 @@ jobs:
       - name: Validate publisher scripts
         run: |
           node --check js/ccg-nav.js
+          node --check scripts/fetch-publisher-logos.js
           node --check scripts/apply-publisher-logos.js
+          node --check scripts/validate-publisher-logo-output.js
+
+      - name: Fetch vetted publisher logos
+        env:
+          CCG_PUBLISHER_LOGOS_STRICT: "0"
+        run: node scripts/fetch-publisher-logos.js
 
       - name: Remove known invalid publisher labels
         run: node scripts/remove-invalid-publisher-labels.js
@@ -65,53 +78,11 @@ jobs:
       - name: Generate publisher archives
         run: node scripts/generate-publisher-pages.js
 
-      - name: Apply featured publisher logos
+      - name: Apply publisher logos
         run: node scripts/apply-publisher-logos.js
 
       - name: Verify publisher logo output
-        shell: bash
-        run: |
-          test -s games/publishers/index.html
-          grep -q '/resources/css/publisher-logos.css' games/publishers/index.html
-
-          for logo in resources/images/publishers/*.png; do
-            file "$logo" | grep -q 'PNG image data'
-          done
-
-          node <<'NODE'
-          const fs = require("fs");
-          const path = require("path");
-          const {
-            FEATURED_PUBLISHERS,
-            slugifyPublisher
-          } = require("./scripts/publisher-utils");
-
-          const html = fs.readFileSync("games/publishers/index.html", "utf8");
-          const standardSlugs = FEATURED_PUBLISHERS.map(slugifyPublisher);
-          const extraSlugs = ["microprose-software"];
-          const expectedSlugs = Array.from(new Set([...standardSlugs, ...extraSlugs]))
-            .filter((slug) => fs.existsSync(path.join("resources", "images", "publishers", `${slug}.png`)));
-
-          if (!expectedSlugs.length) {
-            throw new Error("No featured publisher logo files were found.");
-          }
-
-          expectedSlugs.forEach((slug) => {
-            if (!html.includes(`data-publisher-logo="${slug}"`)) {
-              throw new Error(`Missing generated logo wrapper for ${slug}.`);
-            }
-            if (!html.includes(`/resources/images/publishers/${slug}.png`)) {
-              throw new Error(`Missing generated image reference for ${slug}.`);
-            }
-          });
-
-          const markupCount = (html.match(/data-publisher-logo=/g) || []).length;
-          if (markupCount !== expectedSlugs.length) {
-            throw new Error(`Expected ${expectedSlugs.length} featured logo wrappers but found ${markupCount}.`);
-          }
-
-          console.log(`[publisher-logos] Verified ${expectedSlugs.length} featured publisher logos.`);
-          NODE
+        run: node scripts/validate-publisher-logo-output.js
 
       - name: Detect sitemap-impacting changes
         id: sitemap-impact

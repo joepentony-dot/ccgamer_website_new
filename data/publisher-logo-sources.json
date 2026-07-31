@@ -1,0 +1,65 @@
+{
+  "notes": [
+    "Only explicitly reviewed Wikimedia Commons files are downloaded.",
+    "Existing local publisher logo files are never overwritten unless CCG_REFRESH_PUBLISHER_LOGOS=1 is set.",
+    "Logos may remain protected as trademarks even when the underlying file is a public-domain text or geometric logo."
+  ],
+  "sources": [
+    {
+      "slug": "ocean-software",
+      "publisher": "Ocean Software",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Ocean Software.jpg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Ocean_Software.jpg",
+      "license": "Public-domain text logo; trademarked"
+    },
+    {
+      "slug": "codemasters",
+      "publisher": "Codemasters",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Codemasters logo 2007 text-only.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Codemasters_logo_2007_text-only.svg",
+      "license": "Public-domain text logo; trademarked"
+    },
+    {
+      "slug": "system-3",
+      "publisher": "System 3",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:SYSTEM-3 Logo.png",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:SYSTEM-3_Logo.png",
+      "license": "Public-domain text and geometric logo; trademarked"
+    },
+    {
+      "slug": "electronic-arts",
+      "publisher": "Electronic Arts",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Electronic Arts logo.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Electronic_Arts_logo.svg",
+      "license": "Public-domain simple logo; trademarked"
+    },
+    {
+      "slug": "activision",
+      "publisher": "Activision",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Activision.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Activision.svg",
+      "license": "Public-domain text logo; trademarked"
+    },
+    {
+      "slug": "konami",
+      "publisher": "Konami",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Konami-1981.svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Konami-1981.svg",
+      "license": "Creative Commons file; trademarked"
+    },
+    {
+      "slug": "taito",
+      "publisher": "Taito",
+      "provider": "wikimedia-commons",
+      "fileTitle": "File:Taito logo (old).svg",
+      "sourcePage": "https://commons.wikimedia.org/wiki/File:Taito_logo_(old).svg",
+      "license": "Public-domain text logo; trademarked"
+    }
+  ]
+}
