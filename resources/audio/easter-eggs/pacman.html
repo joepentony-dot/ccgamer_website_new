@@ -58,6 +58,7 @@
 			<button type="button" class="ccg-pacman-control ccg-pacman-control--down" data-pacman-key-code="40" data-pacman-key="ArrowDown" data-pacman-code="ArrowDown" aria-label="Move down">▼</button>
 		</div>
 		<button type="button" class="ccg-pacman-start" data-pacman-key-code="78" data-pacman-key="n" data-pacman-code="KeyN">START / NEW GAME</button>
+		<button type="button" class="ccg-pacman-sound" data-pacman-key-code="83" data-pacman-key="s" data-pacman-code="KeyS">SOUND (S)</button>
 	</div>
 
 	<script type="text/javascript">
@@ -763,82 +764,114 @@ Pacman.Map = function (size) {
 };
 
 Pacman.Audio = function(game) {
-    
-    var files          = [], 
-        endEvents      = [],
-        progressEvents = [],
-        playing        = [];
-    
-    function load(name, path, cb) { 
+    /* CCG PACMAN LOCAL SYNTH AUDIO */
+    var context = null,
+        active = [];
 
-        var f = files[name] = document.createElement("audio");
-
-        progressEvents[name] = function(event) { progress(event, name, cb); };
-        
-        f.addEventListener("canplaythrough", progressEvents[name], true);
-        f.setAttribute("preload", "true");
-        f.setAttribute("autobuffer", "true");
-        f.setAttribute("src", path);
-        f.pause();        
-    };
-
-    function progress(event, name, callback) { 
-        if (event.loaded === event.total && typeof callback === "function") {
-            callback();
-            files[name].removeEventListener("canplaythrough", 
-                                            progressEvents[name], true);
+    function audioContext() {
+        var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        if (!context) {
+            context = new AudioContextClass();
+            document.documentElement.setAttribute("data-ccg-pacman-audio", "synth");
         }
-    };
+        if (context.state === "suspended") {
+            var resumePromise = context.resume();
+            if (resumePromise && typeof resumePromise.catch === "function") {
+                resumePromise.catch(function () {});
+            }
+        }
+        return context;
+    }
+
+    function forget(node) {
+        active = active.filter(function (item) { return item !== node; });
+    }
+
+    function tone(startFrequency, endFrequency, duration, type, volume, delay) {
+        if (game.soundDisabled()) return;
+        var ctx = audioContext();
+        if (!ctx) return;
+
+        var start = ctx.currentTime + (delay || 0),
+            oscillator = ctx.createOscillator(),
+            gain = ctx.createGain();
+
+        oscillator.type = type || "square";
+        oscillator.frequency.setValueAtTime(Math.max(20, startFrequency), start);
+        oscillator.frequency.exponentialRampToValueAtTime(Math.max(20, endFrequency || startFrequency), start + duration);
+        gain.gain.setValueAtTime(0.0001, start);
+        gain.gain.exponentialRampToValueAtTime(volume || 0.035, start + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.addEventListener("ended", function () {
+            forget(oscillator);
+            try { oscillator.disconnect(); } catch (error) {}
+            try { gain.disconnect(); } catch (error) {}
+        }, { once: true });
+        oscillator.start(start);
+        oscillator.stop(start + duration + 0.02);
+        active.push(oscillator);
+    }
+
+    function stopActive() {
+        active.forEach(function (oscillator) {
+            try { oscillator.stop(); } catch (error) {}
+        });
+        active = [];
+    }
+
+    function load(name, path, callback) {
+        if (typeof callback === "function") {
+            window.setTimeout(callback, 0);
+        }
+    }
+
+    function play(name) {
+        if (game.soundDisabled()) return;
+        switch (name) {
+        case "start":
+            tone(196, 196, 0.09, "square", 0.035, 0);
+            tone(247, 247, 0.09, "square", 0.035, 0.1);
+            tone(330, 330, 0.09, "square", 0.04, 0.2);
+            tone(494, 494, 0.18, "square", 0.045, 0.3);
+            break;
+        case "die":
+            tone(520, 70, 0.72, "sawtooth", 0.055, 0);
+            tone(260, 45, 0.72, "square", 0.025, 0.02);
+            break;
+        case "eatghost":
+            tone(620, 1480, 0.23, "square", 0.045, 0);
+            tone(780, 1760, 0.2, "square", 0.025, 0.04);
+            break;
+        case "eatpill":
+            tone(260, 760, 0.12, "square", 0.032, 0);
+            break;
+        case "eating2":
+            tone(215, 165, 0.045, "square", 0.018, 0);
+            break;
+        case "eating":
+        default:
+            tone(165, 215, 0.045, "square", 0.018, 0);
+            break;
+        }
+    }
 
     function disableSound() {
-        for (var i = 0; i < playing.length; i++) {
-            files[playing[i]].pause();
-            files[playing[i]].currentTime = 0;
+        stopActive();
+    }
+
+    function pause() {
+        if (context && context.state === "running") {
+            context.suspend().catch(function () {});
         }
-        playing = [];
-    };
+    }
 
-    function ended(name) { 
+    function resume() {
+        audioContext();
+    }
 
-        var i, tmp = [], found = false;
-
-        files[name].removeEventListener("ended", endEvents[name], true);
-
-        for (i = 0; i < playing.length; i++) {
-            if (!found && playing[i]) { 
-                found = true;
-            } else { 
-                tmp.push(playing[i]);
-            }
-        }
-        playing = tmp;
-    };
-
-    function play(name) { 
-        var file = files[name];
-        if (!game.soundDisabled() && file) {
-            endEvents[name] = function() { ended(name); };
-            playing.push(name);
-            file.addEventListener("ended", endEvents[name], true);
-            var playPromise = file.play();
-            if (playPromise && typeof playPromise.catch === "function") {
-                playPromise.catch(function () {});
-            }
-        }
-    };
-
-    function pause() { 
-        for (var i = 0; i < playing.length; i++) {
-            files[playing[i]].pause();
-        }
-    };
-    
-    function resume() { 
-        for (var i = 0; i < playing.length; i++) {
-            files[playing[i]].play();
-        }        
-    };
-    
     return {
         "disableSound" : disableSound,
         "load"         : load,
@@ -1380,14 +1413,12 @@ Object.prototype.clone = function () {
 	(function () {
 		"use strict";
 
-		var touchCapable = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
-		touchCapable = touchCapable || navigator.maxTouchPoints > 0 || window.innerWidth <= 900;
-		if (!touchCapable) return;
-
+		/* CCG PACMAN ALWAYS-VISIBLE CONTROLLER */
 		var controls = document.querySelector("[data-ccg-pacman-controls]");
 		if (!controls) return;
 
 		document.documentElement.classList.add("ccg-pacman-touch");
+		document.documentElement.setAttribute("data-ccg-pacman-controller", "visible");
 		controls.hidden = false;
 
 		function dispatchGameKey(button) {

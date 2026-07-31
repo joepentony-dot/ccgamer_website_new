@@ -38,7 +38,7 @@ export function createBasicConsoleExperience({ siteRoot = "/", prefersReducedMot
         [10, 'PRINT CHR$(147)'],
         [20, 'PRINT "CHEEKY COMMODORE GAMER"'],
         [30, 'PRINT "651 GAMES READY"'],
-        [40, 'FOR I=1 TO 5:PRINT I:NEXT'],
+        [40, 'PRINT "5 QUICK COMMANDS READY"'],
         [50, 'PRINT "STAY RETRO"']
     ]);
 
