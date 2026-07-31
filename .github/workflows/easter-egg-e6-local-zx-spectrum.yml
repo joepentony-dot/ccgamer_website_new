@@ -96,12 +96,11 @@ jobs:
           html = Path('resources/audio/easter-eggs/zx-spectrum.html').read_text(encoding='utf-8')
           script = Path('js/easter-eggs/zx-spectrum.js').read_text(encoding='utf-8')
           styles = Path('resources/css/easter-eggs-zx-spectrum.css').read_text(encoding='utf-8')
+          compact_script = ''.join(script.split())
 
           assert 'href="../../css/easter-eggs-zx-spectrum.css"' in html
           assert 'src="../../../js/easter-eggs/zx-spectrum.js"' in html
-          assert '''later(() => {
-            stopTapeSound();
-            loaderOne.hidden = true;''' in script
+          assert 'later(()=>{stopTapeSound();loaderOne.hidden=true;' in compact_script
           assert 'else if (!loaderOne.hidden || !loaderTwo.hidden)' not in script
           assert 'context.decodeAudioData' in script
           assert 'overflow: hidden;' in styles
