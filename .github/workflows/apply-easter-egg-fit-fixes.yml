@@ -36,9 +36,28 @@ jobs:
 
       - name: Apply bounded Pac-Man patch
         run: |
-          python scripts/apply-easter-egg-fit-fixes.py
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          script_path = Path('scripts/apply-easter-egg-fit-fixes.py')
+          spec = importlib.util.spec_from_file_location('ccg_fit_patch', script_path)
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          pacman = Path('resources/audio/easter-eggs/pacman.html')
+          raw = pacman.read_bytes()
+          had_crlf = b'\r\n' in raw
+          text = raw.decode('utf-8').replace('\r\n', '\n')
+          updated = module.patch(text)
+          module.validate(updated)
+          if had_crlf:
+              updated = updated.replace('\n', '\r\n')
+          pacman.write_bytes(updated.encode('utf-8'))
+          print('Applied bounded Pac-Man patch with original line endings preserved.')
+          PY
           python scripts/apply-easter-egg-fit-fixes.py --check
-          git diff --check
+          git diff --check -- resources/audio/easter-eggs/pacman.html
 
       - name: Commit generated Pac-Man file
         run: |
