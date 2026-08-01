@@ -146,12 +146,12 @@
   {
     "name": "American Action",
     "slug": "american-action",
-    "count": 2,
-    "c64Count": 2,
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": true,
+    "indexable": false,
     "playlist": "",
     "url": "/games/publishers/american-action/"
   },
@@ -540,26 +540,14 @@
     "url": "/games/publishers/cyberdreams/"
   },
   {
-    "name": "D3m Software",
-    "slug": "d3m-software",
+    "name": "Data East",
+    "slug": "data-east",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/d3m-software/"
-  },
-  {
-    "name": "Data East",
-    "slug": "data-east",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
     "firstYear": 1985,
-    "lastYear": 1988,
-    "indexable": true,
+    "lastYear": 1985,
+    "indexable": false,
     "playlist": "",
     "url": "/games/publishers/data-east/"
   },
@@ -674,12 +662,12 @@
   {
     "name": "ECP",
     "slug": "ecp",
-    "count": 2,
-    "c64Count": 2,
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": true,
+    "indexable": false,
     "playlist": "",
     "url": "/games/publishers/ecp/"
   },
@@ -790,18 +778,6 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/epyx/"
-  },
-  {
-    "name": "ERBE Software",
-    "slug": "erbe-software",
-    "count": 6,
-    "c64Count": 6,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1991,
-    "indexable": true,
-    "playlist": "",
-    "url": "/games/publishers/erbe-software/"
   },
   {
     "name": "Firebird",
@@ -934,18 +910,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/gremlin-interactive/"
-  },
-  {
-    "name": "Handic Software",
-    "slug": "handic-software",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/handic-software/"
   },
   {
     "name": "Happy Software",
@@ -1632,30 +1596,6 @@
     "url": "/games/publishers/psygnosis/"
   },
   {
-    "name": "Pylator",
-    "slug": "pylator",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/pylator/"
-  },
-  {
-    "name": "Quick Soft",
-    "slug": "quick-soft",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/quick-soft/"
-  },
-  {
     "name": "Quicksilva",
     "slug": "quicksilva",
     "count": 5,
@@ -1764,18 +1704,6 @@
     "url": "/games/publishers/roflow-computer-software/"
   },
   {
-    "name": "Rushware",
-    "slug": "rushware",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/rushware/"
-  },
-  {
     "name": "Satchel Software",
     "slug": "satchel-software",
     "count": 1,
@@ -1788,22 +1716,10 @@
     "url": "/games/publishers/satchel-software/"
   },
   {
-    "name": "Scandomatic",
-    "slug": "scandomatic",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/scandomatic/"
-  },
-  {
     "name": "Sega",
     "slug": "sega",
-    "count": 7,
-    "c64Count": 7,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1990,
@@ -2234,8 +2150,8 @@
   {
     "name": "US Gold",
     "slug": "us-gold",
-    "count": 46,
-    "c64Count": 39,
+    "count": 44,
+    "c64Count": 37,
     "amigaCount": 7,
     "firstYear": 1982,
     "lastYear": 1992,
