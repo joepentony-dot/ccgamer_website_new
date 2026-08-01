@@ -391,26 +391,21 @@
             const isEditable = tag === "input" || tag === "textarea" || event.target?.isContentEditable === true;
             if (isEditable) return;
 
-            if (isEditableEvent(event)) {
-                return;
-            }
-            if (!document.body.classList.contains("ccg-quiz-pack-6") &&
-                !(event.target && event.target.closest && event.target.closest(".quiz-container"))) {
-                return;
-            }
+            if (isEditableEvent(event)) return;
+            if (!document.body.classList.contains("ccg-quiz-pack-6")) return;
             if (location.pathname.startsWith("/admin/")) return;
             if (!elements.gameGrid && !document.querySelector(".hangman-game-grid")) return;
-            if (event.ctrlKey || event.metaKey || event.altKey) return;
+            if (event.ctrlKey || event.metaKey || event.altKey || event.repeat) return;
             if (state.isOver) return;
+
             const key = event.key;
-            if (!key || key.length !== 1) return;
-            if (!/[a-z]/i.test(key)) return;
+            if (!key || key.length !== 1 || !/[a-z]/i.test(key)) return;
             handleGuess(key);
         };
 
-        quizRoot.addEventListener("keydown", keyHandler);
+        document.addEventListener("keydown", keyHandler);
         window.addEventListener("beforeunload", () => {
-            quizRoot.removeEventListener("keydown", keyHandler);
+            document.removeEventListener("keydown", keyHandler);
         }, { once: true });
     }
 
