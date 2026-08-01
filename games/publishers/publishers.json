@@ -96,18 +96,6 @@
     "url": "/games/publishers/activision/"
   },
   {
-    "name": "Advantage*Artworx",
-    "slug": "advantage-artworx",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/advantage-artworx/"
-  },
-  {
     "name": "Adventure Soft",
     "slug": "adventure-soft",
     "count": 1,
@@ -540,30 +528,6 @@
     "url": "/games/publishers/cyberdreams/"
   },
   {
-    "name": "Data East",
-    "slug": "data-east",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/data-east/"
-  },
-  {
-    "name": "Datacompaniet",
-    "slug": "datacompaniet",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/datacompaniet/"
-  },
-  {
     "name": "Datamost",
     "slug": "datamost",
     "count": 2,
@@ -624,18 +588,6 @@
     "url": "/games/publishers/domark/"
   },
   {
-    "name": "Dro Soft",
-    "slug": "dro-soft",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/dro-soft/"
-  },
-  {
     "name": "Durell Software",
     "slug": "durell-software",
     "count": 3,
@@ -658,18 +610,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/dynabyte/"
-  },
-  {
-    "name": "ECP",
-    "slug": "ecp",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/ecp/"
   },
   {
     "name": "Electric Dreams",
@@ -708,26 +648,14 @@
     "url": "/games/publishers/elite/"
   },
   {
-    "name": "Empire Interactive",
-    "slug": "empire-interactive",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/empire-interactive/"
-  },
-  {
     "name": "Empire Software",
     "slug": "empire-software",
-    "count": 1,
+    "count": 2,
     "c64Count": 0,
-    "amigaCount": 1,
+    "amigaCount": 2,
     "firstYear": 1994,
     "lastYear": 1994,
-    "indexable": false,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/empire-software/"
   },
@@ -1358,8 +1286,8 @@
   {
     "name": "Mindscape",
     "slug": "mindscape",
-    "count": 13,
-    "c64Count": 10,
+    "count": 12,
+    "c64Count": 9,
     "amigaCount": 3,
     "firstYear": 1984,
     "lastYear": 1993,
@@ -2150,8 +2078,8 @@
   {
     "name": "US Gold",
     "slug": "us-gold",
-    "count": 44,
-    "c64Count": 37,
+    "count": 45,
+    "c64Count": 38,
     "amigaCount": 7,
     "firstYear": 1982,
     "lastYear": 1992,
@@ -2210,8 +2138,8 @@
   {
     "name": "Zafiro Software Division",
     "slug": "zafiro-software-division",
-    "count": 3,
-    "c64Count": 3,
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1986,
