@@ -68,6 +68,12 @@
     max-height: 86px;
 }
 
+/* The supplied Microsphere artwork contains unusually wide transparent margins. */
+.ccg-publisher-card__logo[data-publisher-logo="microsphere"] img {
+    transform: scale(3.15);
+    transform-origin: center;
+}
+
 .ccg-publisher-card--has-logo .ccg-publisher-card__name {
     margin-top: auto;
 }
@@ -106,6 +112,11 @@
     object-fit: contain;
     object-position: left center;
     filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.42));
+}
+
+.ccg-publisher-single .ccg-publisher-page-logo[data-publisher-page-logo="microsphere"] img {
+    transform: scale(2.55);
+    transform-origin: left center;
 }
 
 /* Keep the breadcrumb row aligned with the publisher-page content. */
@@ -188,6 +199,10 @@
         max-height: 66px;
     }
 
+    .ccg-publisher-card__logo[data-publisher-logo="microsphere"] img {
+        transform: scale(2.8);
+    }
+
     .ccg-publisher-single .ccg-publisher-page-logo {
         min-height: 92px;
         margin-bottom: 16px;
@@ -197,6 +212,10 @@
     .ccg-publisher-single .ccg-publisher-page-logo img {
         max-width: min(100%, 330px);
         max-height: 70px;
+    }
+
+    .ccg-publisher-single .ccg-publisher-page-logo[data-publisher-page-logo="microsphere"] img {
+        transform: scale(2.25);
     }
 
     .ccg-publisher-single .ccg-publisher-breadcrumbs {
