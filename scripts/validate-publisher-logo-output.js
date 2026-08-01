@@ -70,16 +70,22 @@ if (!indexHtml.includes('/resources/css/publisher-logos.css')) {
     fail("Publisher logo stylesheet is missing from the publisher index.");
 }
 
+const unmatchedLogoAssets = [];
 const missingIndexLogos = [];
 const wrongIndexLogoCounts = [];
 
 for (const asset of logoAssets) {
+    const pagePath = path.join(publishersDir, asset.slug, "index.html");
     const hrefPattern = new RegExp(
         `href="/games/publishers/${escapeRegExp(asset.slug)}/"`,
         "g"
     );
     const expectedCardCount = countMatches(indexHtml, hrefPattern);
-    if (!expectedCardCount) continue;
+
+    if (!fs.existsSync(pagePath) || !expectedCardCount) {
+        unmatchedLogoAssets.push(`${asset.fileName} -> ${asset.slug}`);
+        continue;
+    }
 
     const wrapperPattern = new RegExp(
         `data-publisher-logo="${escapeRegExp(asset.slug)}"`,
@@ -100,6 +106,12 @@ for (const asset of logoAssets) {
     }
 }
 
+if (unmatchedLogoAssets.length) {
+    fail(
+        "Publisher logo files do not match a generated publisher route: "
+        + unmatchedLogoAssets.join("; ")
+    );
+}
 if (missingIndexLogos.length) {
     fail(`Publisher card logos missing from index: ${missingIndexLogos.join(", ")}`);
 }
@@ -112,8 +124,6 @@ let publisherPagesWithLogos = 0;
 
 for (const asset of logoAssets) {
     const pagePath = path.join(publishersDir, asset.slug, "index.html");
-    if (!fs.existsSync(pagePath)) continue;
-
     const pageHtml = read(pagePath);
     const expectedPath = `/resources/images/publishers/${asset.fileName}`;
     const hasLogo = pageHtml.includes(`data-publisher-page-logo="${asset.slug}"`)
@@ -144,6 +154,7 @@ if (generateIndex === -1 || applyIndex !== generateIndex + 1 || validateIndex !=
 const indexLogoCount = countMatches(indexHtml, /data-publisher-logo=/g);
 
 console.log(`[publisher-logo-validation] ${logoAssets.length} supported logo assets found.`);
+console.log(`[publisher-logo-validation] ${logoAssets.length} logo assets match generated publisher routes.`);
 console.log(`[publisher-logo-validation] ${indexLogoCount} publisher card logo placements verified.`);
 console.log(`[publisher-logo-validation] ${publisherPagesWithLogos} individual publisher page logos verified.`);
 console.log("[publisher-logo-validation] Authoritative rebuild order verified.");
