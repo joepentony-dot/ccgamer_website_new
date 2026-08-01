@@ -86,8 +86,8 @@
   {
     "name": "Activision",
     "slug": "activision",
-    "count": 33,
-    "c64Count": 32,
+    "count": 34,
+    "c64Count": 33,
     "amigaCount": 1,
     "firstYear": 1984,
     "lastYear": 1991,
@@ -254,10 +254,10 @@
   {
     "name": "Beyond",
     "slug": "beyond",
-    "count": 3,
-    "c64Count": 3,
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1984,
+    "firstYear": 1985,
     "lastYear": 1986,
     "indexable": true,
     "playlist": "",
@@ -684,18 +684,6 @@
     "url": "/games/publishers/enigma-variations/"
   },
   {
-    "name": "Entertainment USA",
-    "slug": "entertainment-usa",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/entertainment-usa/"
-  },
-  {
     "name": "Epyx",
     "slug": "epyx",
     "count": 18,
@@ -744,30 +732,6 @@
     "url": "/games/publishers/gamebusters/"
   },
   {
-    "name": "Gamestar",
-    "slug": "gamestar",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/gamestar/"
-  },
-  {
-    "name": "GameTek",
-    "slug": "gametek",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/gametek/"
-  },
-  {
     "name": "Gargoyle Games",
     "slug": "gargoyle-games",
     "count": 1,
@@ -804,18 +768,6 @@
     "url": "/games/publishers/grandslam/"
   },
   {
-    "name": "Green Valley Publishing",
-    "slug": "green-valley-publishing",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/green-valley-publishing/"
-  },
-  {
     "name": "Gremlin Graphics",
     "slug": "gremlin-graphics",
     "count": 16,
@@ -838,18 +790,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/gremlin-interactive/"
-  },
-  {
-    "name": "Happy Software",
-    "slug": "happy-software",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/happy-software/"
   },
   {
     "name": "Hewson",
@@ -2090,12 +2030,12 @@
   {
     "name": "VIFI International",
     "slug": "vifi-international",
-    "count": 2,
-    "c64Count": 2,
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1986,
     "lastYear": 1986,
-    "indexable": true,
+    "indexable": false,
     "playlist": "",
     "url": "/games/publishers/vifi-international/"
   },
