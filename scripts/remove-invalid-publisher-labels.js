@@ -22,22 +22,28 @@ const INVALID_PUBLISHERS = new Set([
     "gamestar",
     "gametek",
     "green valley publishing",
-    "happy software"
+    "happy software",
+    "kids!",
+    "mastertronic plus",
+    "mcm software"
 ]);
 
 const PUBLISHER_OVERRIDES = new Map([
     ["android-nim", ["64 Tape Computing"]],
     ["batman-the-caped-crusader", ["Ocean Software"]],
     ["championship-wrestling", ["Epyx"]],
+    ["donald-ducks-playground", ["Sierra On-Line"]],
     ["double-dare", ["Alternative Software"]],
     ["dreamweb", ["Empire Software"]],
     ["face-off", ["Activision"]],
     ["falcon-patrol", ["Virgin Games"]],
     ["herberts-dummy-run", ["Mikro-Gen"]],
+    ["ikari-warriors", ["Elite"]],
     ["kung-fu-master", ["US Gold"]],
     ["mr-robot-and-his-robot-factory", ["Datamost"]],
     ["ninja", ["Mastertronic"]],
     ["paperboy", ["Elite"]],
+    ["psycho-hopper", ["Mastertronic"]],
     ["raging-beast", ["Firebird"]],
     ["rebel", ["Virgin Games"]],
     ["tapper", ["US Gold"]],
