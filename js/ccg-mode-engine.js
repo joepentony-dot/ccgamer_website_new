@@ -8,8 +8,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const rootElement = document.documentElement;
     const toggle = document.querySelector("[data-ccg-mode-toggle]");
     const hero = document.querySelector(".home-hero");
-    const AMIGA_STYLESHEET_ID = "ccg-amiga-mode-styles";
-    const AMIGA_STYLESHEET_PATH = "/resources/css/ccg-amiga-mode.css";
+    const AMIGA_STYLESHEETS = [
+        {
+            id: "ccg-amiga-mode-styles",
+            path: "/resources/css/ccg-amiga-mode.css",
+            label: "Amiga visual layer"
+        },
+        {
+            id: "ccg-amiga-mobile-fix-styles",
+            path: "/resources/css/ccg-amiga-mobile-fix.css",
+            label: "Amiga mobile performance layer"
+        }
+    ];
     let lastMode = root.getAttribute("data-ccg-mode") || rootElement.getAttribute("data-ccg-mode") || null;
     let lastTouchToggle = 0;
     let modeChangeTimer = 0;
@@ -18,17 +28,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const heroModeLabel = document.querySelector('[data-ccg-mode-label]');
     const heroBadgeLabel = document.querySelector('[data-ccg-hero-mode-label]');
 
-    function ensureAmigaStyles() {
-        if (document.getElementById(AMIGA_STYLESHEET_ID)) return;
+    function ensureStylesheet({ id, path, label }) {
+        if (document.getElementById(id)) return;
 
         const stylesheet = document.createElement("link");
-        stylesheet.id = AMIGA_STYLESHEET_ID;
+        stylesheet.id = id;
         stylesheet.rel = "stylesheet";
-        stylesheet.href = AMIGA_STYLESHEET_PATH;
+        stylesheet.href = path;
         stylesheet.addEventListener("error", () => {
-            console.warn("ccg-mode-engine.js: Amiga visual layer could not be loaded.");
+            console.warn(`ccg-mode-engine.js: ${label} could not be loaded.`);
         }, { once: true });
         document.head.appendChild(stylesheet);
+    }
+
+    function ensureAmigaStyles() {
+        AMIGA_STYLESHEETS.forEach(ensureStylesheet);
     }
 
     function ensureAmigaChrome() {
