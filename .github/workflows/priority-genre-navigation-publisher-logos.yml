@@ -12,6 +12,7 @@ on:
       - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
       - "scripts/validate-publisher-logo-output.js"
+      - "scripts/remove-invalid-publisher-labels.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
       - "scripts/generate-publisher-pages.js"
@@ -66,6 +67,7 @@ jobs:
           node --check scripts/fetch-publisher-logos.js
           node --check scripts/apply-publisher-logos.js
           node --check scripts/validate-publisher-logo-output.js
+          node --check scripts/remove-invalid-publisher-labels.js
 
       - name: Fetch vetted publisher logos
         env:
@@ -138,6 +140,7 @@ jobs:
               "scripts/fetch-publisher-logos.js",
               "scripts/apply-publisher-logos.js",
               "scripts/validate-publisher-logo-output.js",
+              "scripts/remove-invalid-publisher-labels.js",
               "scripts/integrate-year-platform-discovery.js",
               "scripts/validate-year-platform-discovery.js",
               "data/publisher-logo-sources.json",
