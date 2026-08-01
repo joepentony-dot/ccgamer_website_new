@@ -949,9 +949,7 @@
     "title": "Batman: The Caped Crusader",
     "slug": "batman-the-caped-crusader",
     "publisher": [
-      "Data East",
-      "Erbe Software",
-      "Ocean"
+      "Ocean Software"
     ],
     "genre": [
       "action-adventure"
@@ -2083,15 +2081,7 @@
     "title": "Championship Wrestling",
     "slug": "championship-wrestling",
     "publisher": [
-      "D3m Software",
-      "Ecp",
-      "Epyx",
-      "Erbe Software",
-      "Pylator",
-      "Quick Soft",
-      "Rushware",
-      "Scandomatic",
-      "Us Gold"
+      "Epyx"
     ],
     "genre": [
       "sports"
@@ -4442,10 +4432,7 @@
     "title": "The Goonies",
     "slug": "the-goonies",
     "publisher": [
-      "American Action",
-      "Datasoft",
-      "Erbe Software",
-      "Us Gold"
+      "Datasoft"
     ],
     "genre": [
       "arcade",
@@ -4931,7 +4918,6 @@
     "title": "Herbert's Dummy Run",
     "slug": "herberts-dummy-run",
     "publisher": [
-      "Erbe Software",
       "Mikro-Gen"
     ],
     "genre": [
@@ -10581,9 +10567,6 @@
     "title": "Tapper",
     "slug": "tapper",
     "publisher": [
-      "Erbe Software",
-      "Handic Software",
-      "Sega",
       "Us Gold"
     ],
     "genre": [
@@ -11877,8 +11860,7 @@
     "title": "WWF Wrestlemania",
     "slug": "wwf-wrestlemania",
     "publisher": [
-      "Erbe Software",
-      "Ocean"
+      "Ocean Software"
     ],
     "genre": [
       "fighting"
