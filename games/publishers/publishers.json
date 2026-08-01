@@ -936,18 +936,6 @@
     "url": "/games/publishers/interdisc/"
   },
   {
-    "name": "Kids!",
-    "slug": "kids",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/kids/"
-  },
-  {
     "name": "Konami",
     "slug": "konami",
     "count": 3,
@@ -1034,26 +1022,14 @@
   {
     "name": "Mastertronic",
     "slug": "mastertronic",
-    "count": 21,
-    "c64Count": 21,
+    "count": 22,
+    "c64Count": 22,
     "amigaCount": 0,
     "firstYear": 1984,
-    "lastYear": 1988,
+    "lastYear": 1989,
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/mastertronic/"
-  },
-  {
-    "name": "Mastertronic Plus",
-    "slug": "mastertronic-plus",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/mastertronic-plus/"
   },
   {
     "name": "MC Lothlorien",
@@ -1066,18 +1042,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/mc-lothlorien/"
-  },
-  {
-    "name": "MCM Software",
-    "slug": "mcm-software",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/mcm-software/"
   },
   {
     "name": "Melbourne House",
