@@ -83,3 +83,58 @@
         width: auto;
     }
 }
+
+/* ============================================================
+   HOME LAYOUT CORRECTIONS
+   ------------------------------------------------------------
+   • Overrides the late broad section-spacing rule in home.css
+   • Keeps the visitor callout centred within the home content
+   • Reduces empty vertical space without affecting other pages
+============================================================ */
+
+html[data-ccg-page="home"] .ccg-main--home > section {
+    margin-block: clamp(18px, 2.5vw, 30px) !important;
+}
+
+html[data-ccg-page="home"] .home-visitor-callout {
+    width: min(100%, 1020px);
+    max-width: 1020px;
+    margin: clamp(14px, 2vw, 24px) auto !important;
+    padding-block: 0;
+    align-self: center;
+    justify-self: center;
+    box-sizing: border-box;
+}
+
+html[data-ccg-page="home"] .home-visitor-callout__inner {
+    width: 100%;
+    margin-inline: auto;
+    padding-block: clamp(14px, 2vw, 22px);
+    text-align: center;
+}
+
+html[data-ccg-page="home"] .home-visitor-callout__kicker,
+html[data-ccg-page="home"] .home-visitor-callout__headline {
+    width: 100%;
+    margin-inline: auto;
+    text-align: center;
+}
+
+html[data-ccg-page="home"] .ccg-omega-divider {
+    margin-block: clamp(12px, 2vw, 22px);
+}
+
+@media (max-width: 768px) {
+    html[data-ccg-page="home"] .ccg-main--home > section {
+        margin-block: 18px !important;
+    }
+
+    html[data-ccg-page="home"] .home-visitor-callout {
+        width: 100%;
+        margin-block: 14px !important;
+    }
+
+    html[data-ccg-page="home"] .home-visitor-callout__inner {
+        padding-block: 14px;
+    }
+}
