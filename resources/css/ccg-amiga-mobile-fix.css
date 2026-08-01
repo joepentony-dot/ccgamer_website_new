@@ -1,0 +1,262 @@
+/* ============================================================
+   CCG AMIGA MOBILE PERFORMANCE + CONTRAST FIX
+   ------------------------------------------------------------
+   • Mobile/coarse-pointer overrides only
+   • Removes costly fixed/animated effects while scrolling
+   • Strengthens drawer and mode-selector readability
+   • C64 mode remains untouched
+============================================================ */
+
+@media (max-width: 960px), (pointer: coarse) {
+    /* ========================================================
+       MOBILE SCROLL PERFORMANCE
+    ======================================================== */
+
+    html[data-ccg-mode="amiga"],
+    body[data-ccg-mode="amiga"] {
+        background-attachment: scroll !important;
+        overscroll-behavior-y: auto;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-bg {
+        position: absolute !important;
+        inset: 0 !important;
+        min-height: 100vh;
+        background:
+            radial-gradient(circle at 78% 12%, rgba(255, 79, 189, 0.12), transparent 34%),
+            radial-gradient(circle at 16% 30%, rgba(88, 232, 255, 0.08), transparent 38%),
+            linear-gradient(155deg, #151b27 0%, #090b11 52%, #11101d 100%) !important;
+        transform: none !important;
+        filter: none !important;
+        will-change: auto !important;
+        contain: paint;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-bg::after,
+    body[data-ccg-mode="amiga"] .ccg-bg::after {
+        background: linear-gradient(115deg,
+            rgba(88, 232, 255, 0.04),
+            transparent 34%,
+            rgba(154, 92, 255, 0.05) 62%,
+            rgba(255, 79, 189, 0.06) 82%,
+            transparent 100%) !important;
+        opacity: 1 !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-bg-grid,
+    body[data-ccg-mode="amiga"] .ccg-amiga-chrome,
+    body[data-ccg-mode="amiga"] .home-hero__scanlines {
+        display: none !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-bg-starfield,
+    body[data-ccg-mode="amiga"] .ccg-bg-starfield::before,
+    body[data-ccg-mode="amiga"] .ccg-bg-starfield::after,
+    body[data-ccg-mode="amiga"] .home-hero__visual-glow,
+    body[data-ccg-mode="amiga"] .home-hero__visual-overlay,
+    body[data-ccg-mode="amiga"] .home-bottom-cta__beam,
+    body[data-ccg-mode="amiga"] .home-visitor-callout__beam {
+        animation: none !important;
+        transform: none !important;
+        filter: none !important;
+        will-change: auto !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-bg-starfield {
+        opacity: 0.22 !important;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__crt-overlay {
+        opacity: 0.28 !important;
+        mix-blend-mode: normal !important;
+        filter: none !important;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__bg--amiga {
+        filter: brightness(0.72) saturate(1.02) !important;
+        transform: none !important;
+        will-change: auto !important;
+    }
+
+    html[data-ccg-mode="amiga"] .game-hero__title,
+    html[data-ccg-mode="amiga"] .ccg-card,
+    body[data-ccg-mode="amiga"] .game-hero__title,
+    body[data-ccg-mode="amiga"] .ccg-card,
+    html.ccg-mode-entering-amiga body[data-ccg-mode="amiga"] .ccg-page {
+        animation: none !important;
+    }
+
+    body[data-ccg-mode="amiga"] {
+        --amiga-bevel:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.42),
+            inset -1px -1px 0 rgba(5, 8, 13, 0.72),
+            3px 3px 0 rgba(4, 6, 10, 0.54);
+        --amiga-bevel-small:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+            inset -1px -1px 0 rgba(5, 8, 13, 0.72),
+            2px 2px 0 rgba(4, 6, 10, 0.48);
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-header,
+    body[data-ccg-mode="amiga"] .home-hero__frame,
+    body[data-ccg-mode="amiga"] .home-hero__visual-plate,
+    body[data-ccg-mode="amiga"] .ccg-footer,
+    body[data-ccg-mode="amiga"] :is(
+        .ccg-card,
+        .ccg-game-card,
+        .game-card,
+        .ccg-genre-tile,
+        .ccg-feature-card,
+        .home-highlight-card,
+        .home-video-card,
+        .home-featured-videos,
+        .game-section,
+        .related-carousel,
+        .collection-card,
+        .genre-card,
+        .year-card,
+        .platform-card,
+        .cta-card,
+        .home-bottom-cta__content,
+        .home-visitor-callout__inner
+    ) {
+        box-shadow: var(--amiga-bevel) !important;
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        will-change: auto !important;
+    }
+
+    body[data-ccg-mode="amiga"] :is(
+        .ccg-card,
+        .ccg-game-card,
+        .game-card,
+        .ccg-genre-tile,
+        .ccg-feature-card,
+        .home-highlight-card,
+        .home-video-card,
+        .collection-card,
+        .genre-card,
+        .year-card,
+        .platform-card
+    ):hover {
+        transform: none !important;
+        box-shadow: var(--amiga-bevel) !important;
+    }
+
+    body[data-ccg-mode="amiga"] :is(
+        .ccg-btn,
+        .ccg-button,
+        .home-random-cta,
+        .home-discovery-strip__link,
+        .game-pill,
+        .ccg-nav__link,
+        .ccg-nav__more-toggle,
+        .ccg-nav-toggle,
+        .ccg-nav-drawer__close
+    ) {
+        transition: background-color 120ms ease, color 120ms ease !important;
+        filter: none !important;
+        will-change: auto !important;
+    }
+
+    html.ccg-perf-paused body[data-ccg-mode="amiga"] *,
+    html.ccg-perf-paused body[data-ccg-mode="amiga"] *::before,
+    html.ccg-perf-paused body[data-ccg-mode="amiga"] *::after {
+        animation-play-state: paused !important;
+    }
+
+    /* ========================================================
+       MOBILE DRAWER — STRONGER TEXT CONTRAST
+    ======================================================== */
+
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__panel {
+        background: linear-gradient(180deg, rgba(18, 23, 34, 0.99), rgba(8, 11, 18, 0.995)) !important;
+        box-shadow:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.18),
+            inset -1px -1px 0 rgba(0, 0, 0, 0.82),
+            3px 0 0 rgba(4, 6, 10, 0.7) !important;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__title,
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__label {
+        color: #f8faff !important;
+        opacity: 1 !important;
+        font-weight: 800 !important;
+        text-shadow: 0 2px 2px #05070d, 0 0 8px rgba(88, 232, 255, 0.24) !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__section .ccg-nav__link,
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__section a {
+        color: #07101f !important;
+        opacity: 1 !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.035em !important;
+        text-shadow:
+            0 1px 0 rgba(255, 255, 255, 0.95),
+            0 0 1px rgba(0, 0, 0, 0.72) !important;
+        -webkit-text-stroke: 0.2px rgba(4, 8, 16, 0.55);
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__close {
+        color: #050a14 !important;
+        opacity: 1 !important;
+        text-shadow: 0 1px 0 #ffffff !important;
+    }
+
+    /* ========================================================
+       MODE SELECTOR — BOTH LABELS REMAIN LEGIBLE
+    ======================================================== */
+
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__label {
+        color: #08101e !important;
+        opacity: 1 !important;
+        font-size: 0.68rem !important;
+        font-weight: 900 !important;
+        letter-spacing: 0.08em !important;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92) !important;
+        filter: none !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__label--c64 {
+        color: #071426 !important;
+        background: rgba(239, 243, 249, 0.66) !important;
+        box-shadow: inset 0 0 0 1px rgba(28, 42, 62, 0.38) !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__label--amiga {
+        color: #100a18 !important;
+        background: linear-gradient(135deg, #f3f5f8, #bbc3cf) !important;
+        box-shadow:
+            inset 0 0 0 1px rgba(32, 40, 54, 0.48),
+            0 0 8px rgba(255, 79, 189, 0.24) !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-mode-hint {
+        color: #f1f5ff !important;
+        opacity: 0.9 !important;
+        font-weight: 800 !important;
+        text-shadow: 0 2px 3px rgba(0, 0, 0, 0.96) !important;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__mode-pill,
+    body[data-ccg-mode="amiga"] .home-hero__badge {
+        color: #07101f !important;
+        opacity: 1 !important;
+        font-weight: 900 !important;
+        text-shadow: 0 1px 0 rgba(255, 255, 255, 0.95) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-ccg-mode="amiga"] *,
+    body[data-ccg-mode="amiga"] *::before,
+    body[data-ccg-mode="amiga"] *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

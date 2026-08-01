@@ -1,0 +1,616 @@
+/* ============================================================
+   CCG AMIGA MODE — 16-BIT WORKBENCH EXPERIENCE
+   Amiga-only visual layer. C64 mode is untouched.
+============================================================ */
+
+html[data-ccg-mode="amiga"],
+body[data-ccg-mode="amiga"] {
+    --amiga-grey-light: #e7eaf0;
+    --amiga-grey: #aeb6c2;
+    --amiga-grey-mid: #788494;
+    --amiga-grey-dark: #303946;
+    --amiga-blue: #315b88;
+    --amiga-magenta: #ff4fbd;
+    --amiga-purple: #9a5cff;
+    --amiga-cyan: #58e8ff;
+    --amiga-orange: #ff8a3d;
+    --amiga-gold: #ffd65a;
+    --amiga-panel: linear-gradient(155deg, rgba(49, 58, 72, 0.98), rgba(14, 17, 25, 0.99));
+    --amiga-titlebar: linear-gradient(90deg, #315b88 0%, #474f91 36%, #7f3f86 70%, #b83f83 100%);
+    --amiga-bevel:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.52),
+        inset -2px -2px 0 rgba(5, 8, 13, 0.78),
+        5px 5px 0 rgba(4, 6, 10, 0.72),
+        0 18px 44px rgba(0, 0, 0, 0.52);
+    --amiga-bevel-small:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.5),
+        inset -1px -1px 0 rgba(5, 8, 13, 0.78),
+        3px 3px 0 rgba(4, 6, 10, 0.66);
+}
+
+/* Decorative desktop layer created by ccg-mode-engine.js */
+.ccg-amiga-chrome {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 420ms ease, visibility 0s linear 420ms;
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-chrome,
+body[data-ccg-mode="amiga"] .ccg-amiga-chrome {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.ccg-amiga-chrome__copper {
+    position: absolute;
+    inset: clamp(118px, 16vh, 190px) -12vw auto;
+    height: clamp(180px, 30vh, 330px);
+    transform: rotate(-3deg) scale(1.08);
+    background: linear-gradient(180deg,
+        transparent 0 5%,
+        rgba(88, 232, 255, 0.18) 5% 8%,
+        transparent 8% 15%,
+        rgba(154, 92, 255, 0.2) 15% 20%,
+        transparent 20% 28%,
+        rgba(255, 79, 189, 0.24) 28% 36%,
+        transparent 36% 46%,
+        rgba(255, 138, 61, 0.2) 46% 51%,
+        rgba(255, 214, 90, 0.14) 51% 55%,
+        transparent 55% 66%,
+        rgba(88, 232, 255, 0.13) 66% 72%,
+        transparent 72% 100%);
+    filter: blur(1px);
+    opacity: 0.76;
+    mix-blend-mode: screen;
+    animation: ccgAmigaCopperDrift 15s ease-in-out infinite alternate;
+}
+
+.ccg-amiga-chrome__checker {
+    position: absolute;
+    left: -4vw;
+    right: -4vw;
+    bottom: clamp(54px, 9vh, 105px);
+    height: 30px;
+    transform: rotate(1.25deg);
+    border-block: 1px solid rgba(231, 234, 240, 0.28);
+    background: conic-gradient(
+        from 90deg,
+        rgba(231, 234, 240, 0.28) 25%,
+        rgba(26, 31, 42, 0.42) 0 50%,
+        rgba(231, 234, 240, 0.28) 0 75%,
+        rgba(26, 31, 42, 0.42) 0
+    ) 0 0 / 30px 30px;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.48), 0 0 28px rgba(255, 79, 189, 0.14);
+    opacity: 0.64;
+}
+
+.ccg-amiga-chrome__boing {
+    position: absolute;
+    top: clamp(154px, 21vh, 265px);
+    right: clamp(18px, 4vw, 72px);
+    width: clamp(58px, 6vw, 88px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 2px solid rgba(240, 244, 250, 0.62);
+    background:
+        radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.95) 0 7%, transparent 8%),
+        conic-gradient(#f4f5f8 0 12.5%, #d94557 12.5% 25%, #f4f5f8 25% 37.5%, #d94557 37.5% 50%, #f4f5f8 50% 62.5%, #d94557 62.5% 75%, #f4f5f8 75% 87.5%, #d94557 87.5% 100%);
+    box-shadow:
+        inset -14px -18px 20px rgba(35, 12, 28, 0.42),
+        inset 8px 8px 14px rgba(255, 255, 255, 0.22),
+        8px 10px 0 rgba(5, 7, 12, 0.42),
+        0 0 30px rgba(255, 79, 189, 0.32);
+    opacity: 0.82;
+    animation: ccgAmigaBoingFloat 5.4s ease-in-out infinite;
+}
+
+.ccg-amiga-chrome__status {
+    position: absolute;
+    left: clamp(12px, 2vw, 30px);
+    bottom: clamp(12px, 2.5vh, 30px);
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 11px 5px 8px;
+    border: 2px solid var(--amiga-grey-mid);
+    border-top-color: var(--amiga-grey-light);
+    border-left-color: var(--amiga-grey-light);
+    background: linear-gradient(180deg, #cdd2da, #8e99a8);
+    color: #172033;
+    font: 700 0.63rem/1.1 system-ui, sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    box-shadow: var(--amiga-bevel-small);
+    opacity: 0.78;
+}
+
+.ccg-amiga-chrome__drive-light {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #ff476f;
+    border: 1px solid #5e182b;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.55), 0 0 8px rgba(255, 71, 111, 0.8);
+    animation: ccgAmigaDriveLight 3.8s steps(1, end) infinite;
+}
+
+body[data-ccg-mode="amiga"] {
+    background-color: #090b12;
+    background-image:
+        radial-gradient(circle at 78% 16%, rgba(255, 79, 189, 0.18), transparent 34%),
+        radial-gradient(circle at 18% 34%, rgba(88, 232, 255, 0.12), transparent 38%),
+        linear-gradient(155deg, #171d2a 0%, #090b11 48%, #11101d 100%);
+    background-attachment: fixed;
+}
+
+body[data-ccg-mode="amiga"] .ccg-page,
+body[data-ccg-mode="amiga"] .ccg-main,
+body[data-ccg-mode="amiga"] .ccg-header,
+body[data-ccg-mode="amiga"] .ccg-footer {
+    position: relative;
+    z-index: 2;
+}
+
+body[data-ccg-mode="amiga"] .ccg-bg {
+    background:
+        linear-gradient(180deg, rgba(16, 21, 33, 0.82), rgba(5, 7, 12, 0.94)),
+        radial-gradient(circle at 80% 18%, rgba(255, 79, 189, 0.18), transparent 42%),
+        radial-gradient(circle at 15% 38%, rgba(88, 232, 255, 0.13), transparent 44%);
+}
+
+html[data-ccg-mode="amiga"] .ccg-bg::after,
+body[data-ccg-mode="amiga"] .ccg-bg::after {
+    background:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px),
+        linear-gradient(115deg, rgba(88, 232, 255, 0.07), transparent 28%, rgba(154, 92, 255, 0.09) 52%, rgba(255, 79, 189, 0.1) 72%, transparent 100%);
+    opacity: 1;
+}
+
+body[data-ccg-mode="amiga"] .ccg-bg-grid {
+    opacity: 0.24;
+    background-image:
+        linear-gradient(rgba(130, 159, 196, 0.16) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(130, 159, 196, 0.12) 1px, transparent 1px);
+    background-size: 48px 48px;
+    transform: perspective(680px) rotateX(62deg) translateY(18%);
+    transform-origin: center bottom;
+    mask-image: linear-gradient(to bottom, transparent 6%, #000 52%, #000 100%);
+}
+
+/* Workbench-style header and navigation */
+body[data-ccg-mode="amiga"] .ccg-header {
+    border-bottom: 3px solid #141a24;
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(80, 91, 108, 0.98), rgba(23, 28, 39, 0.99));
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.42),
+        inset 0 -2px 0 rgba(4, 6, 10, 0.8),
+        0 10px 0 rgba(4, 6, 10, 0.32),
+        0 20px 42px rgba(0, 0, 0, 0.58);
+}
+
+html[data-ccg-page="home"] body[data-ccg-mode="amiga"] .ccg-header-inner::before {
+    border-radius: 3px;
+    border: 2px solid var(--amiga-grey-mid);
+    border-top-color: var(--amiga-grey-light);
+    border-left-color: var(--amiga-grey-light);
+    background:
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 5px),
+        linear-gradient(180deg, rgba(79, 90, 108, 0.98), rgba(25, 30, 41, 0.99));
+    box-shadow: var(--amiga-bevel);
+}
+
+body[data-ccg-mode="amiga"] .ccg-brand__kicker {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid #778394;
+    border-top-color: #d8dde5;
+    border-left-color: #d8dde5;
+    background: linear-gradient(180deg, #c5cbd4, #7d8998);
+    color: #141b29;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.48);
+    box-shadow: var(--amiga-bevel-small);
+}
+
+body[data-ccg-mode="amiga"] .ccg-brand__neon-cheeky,
+body[data-ccg-mode="amiga"] .ccg-brand__neon-sub {
+    color: #f3f5f8;
+    text-shadow: 2px 2px 0 #263d5e, -2px 0 0 rgba(255, 79, 189, 0.58), 0 0 12px rgba(88, 232, 255, 0.2);
+}
+
+body[data-ccg-mode="amiga"] .ccg-nav__link,
+body[data-ccg-mode="amiga"] .ccg-nav__more-toggle,
+body[data-ccg-mode="amiga"] .ccg-nav-toggle,
+body[data-ccg-mode="amiga"] .ccg-nav-drawer__close {
+    border-radius: 1px !important;
+    border: 2px solid #717d8e !important;
+    border-top-color: #e4e8ee !important;
+    border-left-color: #e4e8ee !important;
+    border-right-color: #2c3440 !important;
+    border-bottom-color: #2c3440 !important;
+    background: linear-gradient(180deg, #b9c0ca, #768394) !important;
+    color: #121a29 !important;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.56) !important;
+    box-shadow: var(--amiga-bevel-small) !important;
+    filter: none !important;
+}
+
+body[data-ccg-mode="amiga"] .ccg-nav__link:hover,
+body[data-ccg-mode="amiga"] .ccg-nav__more-toggle:hover,
+body[data-ccg-mode="amiga"] .ccg-nav-toggle:hover,
+body[data-ccg-mode="amiga"] .ccg-nav__link--active {
+    background: linear-gradient(180deg, #d6dbe3, #919cab) !important;
+    color: #2c2140 !important;
+    box-shadow: var(--amiga-bevel-small), 0 0 15px rgba(255, 79, 189, 0.3) !important;
+    transform: translate(-1px, -1px);
+}
+
+body[data-ccg-mode="amiga"] .ccg-nav__link::after {
+    bottom: 1px;
+    height: 3px;
+    background: var(--amiga-titlebar);
+    box-shadow: none;
+}
+
+body[data-ccg-mode="amiga"] .ccg-header-neon-strip {
+    height: 6px;
+    background: linear-gradient(90deg,
+        var(--amiga-cyan) 0 16%,
+        var(--amiga-purple) 16% 40%,
+        var(--amiga-magenta) 40% 66%,
+        var(--amiga-orange) 66% 82%,
+        var(--amiga-gold) 82% 100%);
+    box-shadow: 0 2px 0 rgba(5, 7, 12, 0.85), 0 0 16px rgba(255, 79, 189, 0.35);
+}
+
+/* Home hero becomes an Amiga display window */
+body[data-ccg-mode="amiga"] .home-hero {
+    padding-top: clamp(18px, 2.6vw, 34px);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__frame {
+    position: relative;
+    overflow: visible;
+    border-radius: 3px;
+    border: 3px solid #748193;
+    border-top-color: #ecf0f5;
+    border-left-color: #ecf0f5;
+    border-right-color: #252d39;
+    border-bottom-color: #252d39;
+    background: linear-gradient(180deg, rgba(47, 57, 73, 0.86), rgba(10, 13, 20, 0.96));
+    box-shadow: var(--amiga-bevel), 0 0 42px rgba(154, 92, 255, 0.2), 0 0 66px rgba(255, 79, 189, 0.13);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__frame::before {
+    content: "CCG WORKBENCH · 16-BIT COMMODORE MODE";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    top: 7px;
+    z-index: 8;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    padding: 2px 58px 2px 12px;
+    border: 1px solid #172033;
+    background: var(--amiga-titlebar);
+    color: #fff;
+    font: 800 clamp(0.56rem, 0.8vw, 0.72rem)/1.2 system-ui, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0 rgba(21, 25, 40, 0.72);
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.34), inset -1px -1px 0 rgba(15, 18, 28, 0.52);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__frame::after {
+    content: "■  □";
+    position: absolute;
+    top: 11px;
+    right: 17px;
+    z-index: 9;
+    padding: 1px 5px;
+    border: 1px solid #20283a;
+    background: linear-gradient(180deg, #dfe3e9, #8d98a8);
+    color: #20283a;
+    font: 800 0.7rem/1.2 monospace;
+    letter-spacing: 0.2em;
+    box-shadow: var(--amiga-bevel-small);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__content {
+    position: relative;
+    z-index: 3;
+    padding-top: clamp(28px, 4vw, 46px);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__bg--amiga {
+    opacity: 0.92;
+    filter: saturate(1.08) contrast(1.04) brightness(0.74);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__bg--c64 {
+    opacity: 0;
+}
+
+body[data-ccg-mode="amiga"] .home-hero__scanlines {
+    opacity: 0.28;
+    background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(236, 240, 245, 0.07) 3px 4px);
+    mix-blend-mode: soft-light;
+}
+
+body[data-ccg-mode="amiga"] .home-hero__crt-overlay {
+    opacity: 0.72;
+    background:
+        linear-gradient(110deg, rgba(88, 232, 255, 0.09), transparent 28%),
+        linear-gradient(160deg, transparent 36%, rgba(154, 92, 255, 0.13) 58%, rgba(255, 79, 189, 0.14) 78%, transparent 94%);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__mode-pill,
+body[data-ccg-mode="amiga"] .home-hero__badge {
+    border-radius: 1px;
+    border: 2px solid #748091;
+    border-top-color: #e4e8ee;
+    border-left-color: #e4e8ee;
+    background: linear-gradient(180deg, #c6ccd5, #828e9e);
+    color: #172033;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.6);
+    box-shadow: var(--amiga-bevel-small);
+}
+
+body[data-ccg-mode="amiga"] .home-hero__title {
+    color: #f4f6f9;
+    letter-spacing: 0.075em;
+    text-shadow: 3px 3px 0 #20334e, -2px 0 0 rgba(255, 79, 189, 0.7), 0 0 15px rgba(88, 232, 255, 0.26);
+    filter: none;
+}
+
+body[data-ccg-mode="amiga"] .home-hero__visual-plate {
+    border-radius: 2px;
+    border: 3px solid #717d8e;
+    border-top-color: #e5e9ef;
+    border-left-color: #e5e9ef;
+    border-right-color: #232b36;
+    border-bottom-color: #232b36;
+    background: linear-gradient(145deg, #4c5869, #141923);
+    box-shadow: var(--amiga-bevel);
+}
+
+/* Raised Amiga gadgets */
+body[data-ccg-mode="amiga"] .ccg-btn,
+body[data-ccg-mode="amiga"] .ccg-button,
+body[data-ccg-mode="amiga"] .home-random-cta,
+body[data-ccg-mode="amiga"] .home-discovery-strip__link,
+body[data-ccg-mode="amiga"] .game-pill,
+body[data-ccg-mode="amiga"] .admin-btn,
+body[data-ccg-mode="amiga"] input[type="button"],
+body[data-ccg-mode="amiga"] input[type="submit"] {
+    border-radius: 1px !important;
+    border: 2px solid #748091 !important;
+    border-top-color: #eef1f5 !important;
+    border-left-color: #eef1f5 !important;
+    border-right-color: #27303c !important;
+    border-bottom-color: #27303c !important;
+    background: linear-gradient(180deg, #c9cfd8, #7e8a9a) !important;
+    color: #121a29 !important;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.62) !important;
+    box-shadow: var(--amiga-bevel-small) !important;
+    filter: none !important;
+}
+
+body[data-ccg-mode="amiga"] .ccg-btn:hover,
+body[data-ccg-mode="amiga"] .ccg-button:hover,
+body[data-ccg-mode="amiga"] .home-random-cta:hover,
+body[data-ccg-mode="amiga"] .home-discovery-strip__link:hover {
+    background:
+        linear-gradient(90deg, rgba(88, 232, 255, 0.18), rgba(255, 79, 189, 0.22)),
+        linear-gradient(180deg, #dce1e8, #929dac) !important;
+    color: #281d3c !important;
+    box-shadow: var(--amiga-bevel-small), 0 0 16px rgba(255, 79, 189, 0.26) !important;
+    transform: translate(-1px, -1px);
+}
+
+/* Cards and panels become Workbench windows */
+body[data-ccg-mode="amiga"] :is(
+    .ccg-card,
+    .ccg-game-card,
+    .game-card,
+    .ccg-genre-tile,
+    .ccg-feature-card,
+    .home-highlight-card,
+    .home-video-card,
+    .home-featured-videos,
+    .game-section,
+    .admin-panel,
+    .related-carousel,
+    .ccg-modal-content,
+    .collection-card,
+    .genre-card,
+    .year-card,
+    .platform-card,
+    .cta-card,
+    .home-bottom-cta__content,
+    .home-visitor-callout__inner
+) {
+    border-radius: 2px !important;
+    border: 2px solid #697587 !important;
+    border-top-color: #dfe4eb !important;
+    border-left-color: #dfe4eb !important;
+    border-right-color: #222a35 !important;
+    border-bottom-color: #222a35 !important;
+    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 4px), var(--amiga-panel) !important;
+    box-shadow: var(--amiga-bevel) !important;
+    filter: none;
+}
+
+body[data-ccg-mode="amiga"] :is(
+    .ccg-card,
+    .ccg-game-card,
+    .game-card,
+    .ccg-genre-tile,
+    .ccg-feature-card,
+    .home-highlight-card,
+    .home-video-card,
+    .collection-card,
+    .genre-card,
+    .year-card,
+    .platform-card
+):hover {
+    box-shadow:
+        inset 2px 2px 0 rgba(255, 255, 255, 0.56),
+        inset -2px -2px 0 rgba(5, 8, 13, 0.8),
+        7px 7px 0 rgba(4, 6, 10, 0.74),
+        0 22px 48px rgba(0, 0, 0, 0.58),
+        0 0 20px rgba(255, 79, 189, 0.18) !important;
+    transform: translate(-2px, -2px);
+}
+
+body[data-ccg-mode="amiga"] :is(
+    .ccg-card__title,
+    .home-featured-videos__title,
+    .home-section__title,
+    .game-section__title,
+    .collection-title,
+    .genre-title,
+    .year-title,
+    .platform-title,
+    .ccg-modal-title,
+    .ccg-nav-drawer__title
+) {
+    display: block;
+    padding: 6px 10px;
+    border: 1px solid rgba(11, 15, 24, 0.9);
+    background: var(--amiga-titlebar);
+    color: #f8f9fb !important;
+    letter-spacing: 0.09em;
+    text-shadow: 2px 2px 0 rgba(11, 14, 22, 0.72) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.26), inset -1px -1px 0 rgba(11, 14, 22, 0.44);
+}
+
+body[data-ccg-mode="amiga"] .home-section__divider,
+body[data-ccg-mode="amiga"] .ccg-header-neon-strip {
+    background: linear-gradient(90deg, var(--amiga-cyan), var(--amiga-purple), var(--amiga-magenta), var(--amiga-orange), var(--amiga-gold));
+}
+
+body[data-ccg-mode="amiga"] .ccg-omega-divider {
+    min-height: 18px;
+    background: conic-gradient(
+        from 90deg,
+        rgba(222, 227, 235, 0.38) 25%,
+        rgba(26, 32, 43, 0.62) 0 50%,
+        rgba(222, 227, 235, 0.38) 0 75%,
+        rgba(26, 32, 43, 0.62) 0
+    ) 0 0 / 18px 18px;
+    border-block: 1px solid rgba(235, 239, 245, 0.45);
+    box-shadow: 0 0 16px rgba(154, 92, 255, 0.14);
+}
+
+body[data-ccg-mode="amiga"] .ccg-omega-core {
+    display: none;
+}
+
+body[data-ccg-mode="amiga"] .ccg-footer {
+    border: 2px solid #697587;
+    border-top-color: #dfe4eb;
+    border-left-color: #dfe4eb;
+    border-right-color: #232b36;
+    border-bottom-color: #232b36;
+    border-radius: 2px;
+    background: linear-gradient(180deg, rgba(68, 79, 95, 0.98), rgba(20, 25, 35, 0.99));
+    box-shadow: var(--amiga-bevel);
+}
+
+/* Screen-build transition */
+html.ccg-mode-entering-amiga body[data-ccg-mode="amiga"] .ccg-page {
+    animation: ccgAmigaScreenBuild 620ms steps(9, end) both;
+}
+
+html.ccg-mode-entering-amiga .ccg-amiga-chrome__copper {
+    animation: ccgAmigaCopperReveal 640ms steps(8, end) both, ccgAmigaCopperDrift 15s 640ms ease-in-out infinite alternate;
+}
+
+@keyframes ccgAmigaScreenBuild {
+    0% { opacity: 0.4; clip-path: inset(0 0 88% 0); }
+    48% { opacity: 0.86; clip-path: inset(0 0 34% 0); }
+    100% { opacity: 1; clip-path: inset(0); }
+}
+
+@keyframes ccgAmigaCopperReveal {
+    0% { opacity: 0; transform: rotate(-3deg) scale(1.08) translateX(-16%); }
+    100% { opacity: 0.76; transform: rotate(-3deg) scale(1.08) translateX(0); }
+}
+
+@keyframes ccgAmigaCopperDrift {
+    0% { transform: rotate(-3deg) scale(1.08) translate3d(-1.5%, -2%, 0); }
+    100% { transform: rotate(-1deg) scale(1.12) translate3d(1.5%, 2%, 0); }
+}
+
+@keyframes ccgAmigaBoingFloat {
+    0%, 100% { transform: translate3d(0, 0, 0) rotate(-5deg); }
+    50% { transform: translate3d(-8px, 15px, 0) rotate(8deg); }
+}
+
+@keyframes ccgAmigaDriveLight {
+    0%, 8%, 16%, 64%, 72%, 100% { opacity: 0.95; }
+    9%, 15%, 65%, 71% { opacity: 0.28; }
+}
+
+@media (max-width: 960px) {
+    .ccg-amiga-chrome__boing {
+        width: 56px;
+        right: 14px;
+        top: 132px;
+        opacity: 0.54;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__frame::before {
+        content: "CCG WORKBENCH · 16-BIT MODE";
+        letter-spacing: 0.1em;
+    }
+}
+
+@media (max-width: 680px) {
+    .ccg-amiga-chrome__boing,
+    .ccg-amiga-chrome__status {
+        display: none;
+    }
+
+    .ccg-amiga-chrome__copper {
+        top: 130px;
+        height: 200px;
+        opacity: 0.48;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__frame::before {
+        left: 5px;
+        right: 5px;
+        top: 5px;
+        min-height: 21px;
+        font-size: 0.5rem;
+    }
+
+    body[data-ccg-mode="amiga"] .home-hero__content {
+        padding-top: 30px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-amiga-chrome__copper,
+    .ccg-amiga-chrome__boing,
+    .ccg-amiga-chrome__drive-light,
+    html.ccg-mode-entering-amiga body[data-ccg-mode="amiga"] .ccg-page {
+        animation: none !important;
+    }
+}
+
+@media (forced-colors: active) {
+    .ccg-amiga-chrome {
+        display: none;
+    }
+}
