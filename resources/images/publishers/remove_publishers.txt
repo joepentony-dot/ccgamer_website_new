@@ -1,0 +1,10 @@
+Remove these publisher entries completely from the generated publishers section:
+
+- Macmillan
+- Ozisoft
+- Peaksoft
+- Reston Publishing Company
+- Roflow Computer Software
+- Titus
+
+Keep Titus Software. Arachnophobia must be assigned to Titus Software before Titus is removed.
