@@ -190,3 +190,5 @@ function main() {
 }
 
 main();
+
+// Trigger the one-time correction workflow after the workflow file exists on this branch.
