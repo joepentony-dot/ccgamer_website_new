@@ -1282,7 +1282,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Titus"
+        "Titus Software"
       ],
       "producer": "",
       "coder": [
@@ -1295,7 +1295,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Titus Software"
   },
   {
     "system": "C64",
@@ -3089,8 +3090,7 @@
     "ccg_rating_reason": "Great animation, a tough challenge",
     "credits": {
       "publisher": [
-        "Interdisc",
-        "Roflow Computer Software"
+        "Interdisc"
       ],
       "producer": "",
       "coder": [
@@ -3109,7 +3109,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Interdisc"
   },
   {
     "system": "AMIGA",
@@ -10571,9 +10572,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Mastertronic",
-        "Mind Games",
-        "OziSoft"
+        "Argus Press Software"
       ],
       "producer": "",
       "coder": [
@@ -10593,7 +10592,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Argus Press Software"
   },
   {
     "system": "AMIGA",
@@ -16738,7 +16738,7 @@
     "ccg_rating_reason": "One of my earliest gaming memories!",
     "credits": {
       "publisher": [
-        "Reston Publishing Company"
+        "Big Five Software"
       ],
       "producer": "",
       "coder": [],
@@ -16749,7 +16749,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Big Five Software"
   },
   {
     "system": "AMIGA",
@@ -19163,7 +19164,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Macmillan"
+        "Piranha"
       ],
       "producer": "",
       "coder": [],
@@ -19176,7 +19177,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": true
+    "_ccg_migrated": true,
+    "publisher": "Piranha"
   },
   {
     "system": "AMIGA",
@@ -23526,7 +23528,7 @@
     "ccg_rating_reason": "Basic, yet addictive, football management game",
     "credits": {
       "publisher": [
-        "Peaksoft"
+        "Alternative Software"
       ],
       "producer": "",
       "coder": [
@@ -23541,7 +23543,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Alternative Software"
   },
   {
     "system": "C64",
@@ -26153,10 +26156,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Epyx",
-        "Gremlin Graphics",
-        "Melbourne House",
-        "OziSoft"
+        "Gremlin Graphics"
       ],
       "producer": "",
       "coder": [
@@ -26175,7 +26175,8 @@
     },
     "developer": "",
     "_ccg_enforced": false,
-    "_ccg_migrated": false
+    "_ccg_migrated": false,
+    "publisher": "Gremlin Graphics"
   },
   {
     "system": "AMIGA",
