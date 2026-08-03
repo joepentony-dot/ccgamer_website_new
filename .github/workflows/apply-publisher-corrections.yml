@@ -1,0 +1,137 @@
+name: Apply Publisher Corrections
+
+on:
+  push:
+    branches:
+      - codex/correct-publisher-assignments
+    paths:
+      - "scripts/apply-publisher-corrections.js"
+      - ".github/workflows/apply-publisher-corrections.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-publisher-corrections-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  correct-and-rebuild:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/correct-publisher-assignments
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate correction script
+        run: node --check scripts/apply-publisher-corrections.js
+
+      - name: Apply publisher assignments
+        run: node scripts/apply-publisher-corrections.js
+
+      - name: Remove retired publisher assets and temporary instruction files
+        shell: bash
+        run: |
+          rm -f \
+            resources/images/publishers/macmillan.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/ozisoft.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/peaksoft.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/reston-publishing-company.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/roflow-computer-software.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/titus.{png,webp,jpg,jpeg,svg} \
+            resources/images/publishers/game_publisher_changes.csv \
+            resources/images/publishers/remove_publishers.txt
+
+      - name: Rebuild game and publisher outputs
+        run: npm run rebuild:games
+
+      - name: Verify requested publisher corrections
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const { buildPublisherGroups, getPublisherNames } = require('./scripts/publisher-utils');
+
+          const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
+          const expected = new Map([
+            ['popeye-c64-popeye-donpriestley', 'Piranha'],
+            ['give-my-regards-to-broad-street', 'Argus Press Software'],
+            ['thing-on-a-spring', 'Gremlin Graphics'],
+            ['soccer-boss', 'Alternative Software'],
+            ['miner-2049er', 'Big Five Software'],
+            ['black-knight', 'Interdisc'],
+            ['arachnophobia', 'Titus Software'],
+          ]);
+          const removedSlugs = [
+            'macmillan',
+            'ozisoft',
+            'peaksoft',
+            'reston-publishing-company',
+            'roflow-computer-software',
+            'titus',
+          ];
+
+          const problems = [];
+          for (const [slug, publisher] of expected) {
+            const game = games.find((entry) => entry.slug === slug);
+            if (!game) {
+              problems.push(`Missing game record: ${slug}`);
+              continue;
+            }
+            const publishers = getPublisherNames(game);
+            if (publishers.length !== 1 || publishers[0] !== publisher) {
+              problems.push(`${slug}: expected only ${publisher}, found ${publishers.join(' | ') || '(none)'}`);
+            }
+          }
+
+          const groups = buildPublisherGroups(games);
+          const groupSlugs = new Set(groups.map((group) => group.slug));
+          for (const slug of removedSlugs) {
+            if (groupSlugs.has(slug)) problems.push(`Retired publisher group still generated: ${slug}`);
+            if (fs.existsSync(path.join('games', 'publishers', slug))) {
+              problems.push(`Retired publisher directory still exists: games/publishers/${slug}`);
+            }
+          }
+
+          if (!groupSlugs.has('titus-software')) {
+            problems.push('Titus Software publisher group is missing.');
+          }
+
+          if (problems.length) {
+            console.error(problems.join('\n'));
+            process.exit(1);
+          }
+
+          console.log('Publisher correction validation passed.');
+          NODE
+
+      - name: Remove one-time automation files
+        shell: bash
+        run: |
+          git rm -f scripts/apply-publisher-corrections.js
+          git rm -f .github/workflows/apply-publisher-corrections.yml
+
+      - name: Commit corrected source and generated outputs
+        shell: bash
+        run: |
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No publisher corrections were produced."
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Correct publisher assignments and regenerate archives"
+          git push origin HEAD:codex/correct-publisher-assignments
