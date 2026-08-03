@@ -451,5 +451,29 @@
       "zzap64-gold-medals-sizzlers-1985",
       "50-essential-amiga-games"
     ]
+  },
+  {
+    "id": "zzap64-gold-medals-sizzlers-1989",
+    "slug": "zzap64-gold-medals-sizzlers-1989",
+    "type": "retro-specials",
+    "title": "Did Zzap!64 Go Too Far in 1989? 70 C64 & Amiga Award Winners",
+    "youtubeId": "l15ptEz8kng",
+    "thumbnail": "https://img.youtube.com/vi/l15ptEz8kng/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 18,
+    "summary": "All 70 games recognised by Zzap!64 during 1989 revisited month by month, covering 79 C64 and Amiga Gold Medals, Sizzlers and Silver Medals.",
+    "description": "This Retro Special revisits all 70 games recognised by Zzap!64 during 1989, following 79 separate awards month by month across the Commodore 64 and Amiga. With 62 Sizzlers, 9 Silver Medals and 8 Gold Medals, the video looks back at major releases, budget reissues, games where the C64 outscored the Amiga and several ratings still open for debate. It also follows a year of changing staff, changing presentation and increasingly prominent Amiga coverage in the magazine.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "Zzap!64 1989 Awards – 70 Commodore 64 & Amiga Winners",
+      "description": "Revisit 70 Zzap!64 award-winning games from 1989, covering 79 Commodore 64 and Amiga Gold Medals, Sizzlers and Silver Medals month by month."
+    },
+    "created_at": "2026-08-03T00:00:00.000Z",
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1988",
+      "zzap64-gold-medals-sizzlers-1987",
+      "zzap64-gold-medals-sizzlers-1986",
+      "zzap64-gold-medals-sizzlers-1985"
+    ]
   }
 ]
