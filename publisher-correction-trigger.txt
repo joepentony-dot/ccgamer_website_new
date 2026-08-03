@@ -1,0 +1,1 @@
+Trigger publisher correction workflow after branch workflow installation.
