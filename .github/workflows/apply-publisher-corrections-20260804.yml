@@ -182,3 +182,5 @@ jobs:
           fi
           git commit -m "Apply publisher corrections and logo batch"
           git push origin HEAD:fix/publisher-corrections-20260804
+
+# Synchronize the open PR after the main workflow fix.
