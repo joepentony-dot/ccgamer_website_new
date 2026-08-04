@@ -34,7 +34,7 @@ jobs:
         run: |
           set -euo pipefail
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
-          sha256sum resources/images/publishers/mastertronic.webp > "$RUNNER_TEMP/mastertronic.sha256"
+          sha256sum resources/images/publishers/mastertronic.svg > "$RUNNER_TEMP/mastertronic.sha256"
 
       - name: Restore supplied publisher logo assets
         shell: bash
