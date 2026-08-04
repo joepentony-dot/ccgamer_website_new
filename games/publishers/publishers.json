@@ -122,10 +122,10 @@
   {
     "name": "Alternative Software",
     "slug": "alternative-software",
-    "count": 3,
-    "c64Count": 3,
+    "count": 4,
+    "c64Count": 4,
     "amigaCount": 0,
-    "firstYear": 1988,
+    "firstYear": 1984,
     "lastYear": 1992,
     "indexable": true,
     "playlist": "",
@@ -170,8 +170,8 @@
   {
     "name": "Argus Press Software",
     "slug": "argus-press-software",
-    "count": 2,
-    "c64Count": 2,
+    "count": 3,
+    "c64Count": 3,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1987,
@@ -262,6 +262,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/beyond/"
+  },
+  {
+    "name": "Big Five Software",
+    "slug": "big-five-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/big-five-software/"
   },
   {
     "name": "Black Legend",
@@ -686,8 +698,8 @@
   {
     "name": "Epyx",
     "slug": "epyx",
-    "count": 18,
-    "c64Count": 18,
+    "count": 17,
+    "c64Count": 17,
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1987,
@@ -984,18 +996,6 @@
     "url": "/games/publishers/lucasfilm-games/"
   },
   {
-    "name": "Macmillan",
-    "slug": "macmillan",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/macmillan/"
-  },
-  {
     "name": "MAD (Mastertronic)",
     "slug": "mad-mastertronic",
     "count": 6,
@@ -1022,8 +1022,8 @@
   {
     "name": "Mastertronic",
     "slug": "mastertronic",
-    "count": 22,
-    "c64Count": 22,
+    "count": 21,
+    "c64Count": 21,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1989,
@@ -1046,8 +1046,8 @@
   {
     "name": "Melbourne House",
     "slug": "melbourne-house",
-    "count": 8,
-    "c64Count": 8,
+    "count": 7,
+    "c64Count": 7,
     "amigaCount": 0,
     "firstYear": 1985,
     "lastYear": 1987,
@@ -1178,12 +1178,12 @@
   {
     "name": "Mind Games",
     "slug": "mind-games",
-    "count": 2,
-    "c64Count": 2,
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
     "firstYear": 1984,
-    "lastYear": 1985,
-    "indexable": true,
+    "lastYear": 1984,
+    "indexable": false,
     "playlist": "",
     "url": "/games/publishers/mind-games/"
   },
@@ -1332,18 +1332,6 @@
     "url": "/games/publishers/orpheus/"
   },
   {
-    "name": "OziSoft",
-    "slug": "ozisoft",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "indexable": true,
-    "playlist": "",
-    "url": "/games/publishers/ozisoft/"
-  },
-  {
     "name": "Palace Software",
     "slug": "palace-software",
     "count": 7,
@@ -1380,22 +1368,10 @@
     "url": "/games/publishers/parker-brothers/"
   },
   {
-    "name": "Peaksoft",
-    "slug": "peaksoft",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/peaksoft/"
-  },
-  {
     "name": "Piranha",
     "slug": "piranha",
-    "count": 5,
-    "c64Count": 5,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
     "firstYear": 1986,
     "lastYear": 1988,
@@ -1510,30 +1486,6 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/renegade/"
-  },
-  {
-    "name": "Reston Publishing Company",
-    "slug": "reston-publishing-company",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/reston-publishing-company/"
-  },
-  {
-    "name": "Roflow Computer Software",
-    "slug": "roflow-computer-software",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/roflow-computer-software/"
   },
   {
     "name": "Satchel Software",
@@ -1884,26 +1836,14 @@
     "url": "/games/publishers/timeworks/"
   },
   {
-    "name": "Titus",
-    "slug": "titus",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/titus/"
-  },
-  {
     "name": "Titus Software",
     "slug": "titus-software",
-    "count": 1,
-    "c64Count": 0,
+    "count": 2,
+    "c64Count": 1,
     "amigaCount": 1,
     "firstYear": 1990,
-    "lastYear": 1990,
-    "indexable": false,
+    "lastYear": 1991,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/titus-software/"
   },
