@@ -1,186 +1,162 @@
-name: Apply staged publisher corrections
+name: Refresh Publisher Archives
 
 on:
   push:
     branches:
       - main
     paths:
+      - "js/ccg-nav.js"
+      - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
+      - "scripts/fetch-publisher-logos.js"
+      - "scripts/apply-publisher-logos.js"
+      - "scripts/validate-publisher-logo-output.js"
+      - "scripts/remove-invalid-publisher-labels.js"
+      - "data/publisher-logo-sources.json"
+      - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
     branches:
       - main
+    paths:
+      - "js/ccg-nav.js"
+      - "scripts/generate-publisher-pages.js"
+      - "scripts/publisher-utils.js"
+      - "scripts/fetch-publisher-logos.js"
+      - "scripts/apply-publisher-logos.js"
+      - "scripts/validate-publisher-logo-output.js"
+      - "scripts/remove-invalid-publisher-labels.js"
+      - "data/publisher-logo-sources.json"
+      - "data/publisher-playlists.json"
+      - "resources/css/publisher-logos.css"
+      - "resources/images/publishers/**"
+      - ".github/workflows/publisher-archives.yml"
+  workflow_dispatch:
 
 permissions:
   contents: write
+  pull-requests: write
+
+concurrency:
+  group: publisher-archives-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  apply:
+  refresh:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out main and retain the normal workflow
+      - name: Check out source branch
         uses: actions/checkout@v4
         with:
-          ref: main
-          fetch-depth: 5
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
 
-      - name: Save normal publisher workflow
-        shell: bash
-        run: |
-          git show dc94d483f994c50af01e26c8ed74817256ee6e60:.github/workflows/publisher-archives.yml > "$RUNNER_TEMP/publisher-archives.yml"
-
-      - name: Check out staged correction branch
-        shell: bash
-        run: |
-          git fetch origin fix/publisher-corrections-20260804
-          git checkout -B fix/publisher-corrections-20260804 origin/fix/publisher-corrections-20260804
-
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: "24"
 
-      - name: Record protected hashes
+      - name: Validate publisher scripts
         run: |
-          sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
+          node --check js/ccg-nav.js
+          node --check scripts/fetch-publisher-logos.js
+          node --check scripts/apply-publisher-logos.js
+          node --check scripts/validate-publisher-logo-output.js
 
-      - name: Install logos and correct game publishers
+      - name: Fetch vetted publisher logos
+        env:
+          CCG_PUBLISHER_LOGOS_STRICT: "0"
+        run: node scripts/fetch-publisher-logos.js
+
+      - name: Remove known invalid publisher labels
+        run: node scripts/remove-invalid-publisher-labels.js
+
+      - name: Generate publisher archives
+        run: node scripts/generate-publisher-pages.js
+
+      - name: Apply publisher logos
+        run: node scripts/apply-publisher-logos.js
+
+      - name: Verify publisher logo output
+        run: node scripts/validate-publisher-logo-output.js
+
+      - name: Detect sitemap-impacting changes
+        id: sitemap-impact
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
         run: |
-          set -euo pipefail
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-          cat .ccg-tmp/publisher-logo-mini.b64.part-* \
-            | base64 --decode > "$RUNNER_TEMP/publisher-logos.zip"
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
 
-          unzip -o "$RUNNER_TEMP/publisher-logos.zip" \
-            -d resources/images/publishers/
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
-          for slug in \
-            timeworks tv-games tynesoft ubi-soft ultimate \
-            vifi-international virgin-games virgin-mastertronic \
-            windham-classics zeppelin-games atarisoft \
-            hodder-and-stoughton hudson-soft satchel-software thalamus
-          do
-            rm -f \
-              "resources/images/publishers/${slug}.png" \
-              "resources/images/publishers/${slug}.svg" \
-              "resources/images/publishers/${slug}.jpg" \
-              "resources/images/publishers/${slug}.jpeg"
-          done
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          CHANGED_FILES="$(git diff --name-only "$BASE_SHA" HEAD)"
+          printf '%s\n' "$CHANGED_FILES"
 
-          node <<'NODE'
-          const fs = require("fs");
-          const path = "games/games.json";
-          const games = JSON.parse(fs.readFileSync(path, "utf8"));
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(scripts/generate-publisher-pages\.js|scripts/publisher-utils\.js|scripts/remove-invalid-publisher-labels\.js|data/publisher-playlists\.json)$'; then
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "refresh=false" >> "$GITHUB_OUTPUT"
+          fi
 
-          const retired = new Set([
-            "Starcade",
-            "System 4 Software",
-            "UK Gold",
-            "Zafiro Software Division"
-          ]);
+      - name: Rebuild sitemaps
+        if: steps.sitemap-impact.outputs.refresh == 'true'
+        run: node scripts/generate-sitemaps.js
 
-          function publishersFor(game) {
-            game.credits ||= {};
-            const value = game.credits.publisher;
-            const names = Array.isArray(value) ? value : value ? [value] : [];
-            game.credits.publisher = names
-              .map((name) => String(name).trim())
-              .filter((name) => name && !retired.has(name));
-            return game.credits.publisher;
-          }
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
 
-          function getGame(slug) {
-            const game = games.find((entry) => entry.slug === slug);
-            if (!game) throw new Error(`Missing game: ${slug}`);
-            publishersFor(game);
-            return game;
-          }
-
-          function ensurePublisher(game, name) {
-            if (!game.credits.publisher.includes(name)) {
-              game.credits.publisher.push(name);
-            }
-          }
-
-          for (const game of games) {
-            if (game.credits) publishersFor(game);
-          }
-
-          const up = getGame("up-up-and-away");
-          ensurePublisher(up, "Argus Press");
-          if (typeof up.description === "string") {
-            up.description = up.description.replace("from Starcade", "from Argus Press");
-          }
-
-          ensurePublisher(getGame("ninja-rabbits"), "MicroValue");
-          ensurePublisher(getGame("dropzone"), "US Gold");
-          ensurePublisher(getGame("nosferatu-the-vampyre"), "Piranha");
-          ensurePublisher(getGame("airwolf"), "Elite");
-
-          const expected = new Map([
-            ["up-up-and-away", ["Argus Press"]],
-            ["ninja-rabbits", ["MicroValue"]],
-            ["dropzone", ["US Gold"]],
-            ["nosferatu-the-vampyre", ["Piranha"]],
-            ["airwolf", ["Elite"]]
-          ]);
-
-          for (const [slug, required] of expected) {
-            const game = getGame(slug);
-            for (const publisher of required) {
-              if (!game.credits.publisher.includes(publisher)) {
-                throw new Error(`${slug} is missing ${publisher}`);
-              }
-            }
-          }
-
-          const leftovers = [];
-          for (const game of games) {
-            for (const publisher of publishersFor(game)) {
-              if (retired.has(publisher)) leftovers.push(`${game.slug}: ${publisher}`);
-            }
-          }
-          if (leftovers.length) {
-            throw new Error(`Retired publisher labels remain: ${leftovers.join(", ")}`);
-          }
-
-          fs.writeFileSync(path, `${JSON.stringify(games, null, 2)}\n`);
-          NODE
-
-          node scripts/rebuild-games.js
-          rm -f seo-audit-report.md
-          node scripts/validate-publisher-logo-output.js
-
-      - name: Verify corrected output
+      - name: Commit generated publisher and sitemap outputs
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
-          test ! -e games/publishers/starcade
-          test ! -e games/publishers/system-4-software
-          test ! -e games/publishers/uk-gold
-          test ! -e games/publishers/zafiro-software-division
-          sha256sum --check "$RUNNER_TEMP/protected.sha256"
-          git diff --check
+          git add games/games.json games/publishers resources/images/publishers tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
 
-      - name: Commit clean correction branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf .ccg-tmp
-          rm -f .github/workflows/apply-publisher-corrections-20260804.yml
+          if git diff --cached --quiet; then
+            echo "Publisher archives are already current."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Apply publisher corrections and logo batch"
-          git push origin HEAD:fix/publisher-corrections-20260804
+          git commit -m "Refresh generated publisher archives"
 
-      - name: Restore main after staging
-        shell: bash
-        run: |
-          set -euo pipefail
-          git checkout main
-          cp "$RUNNER_TEMP/publisher-archives.yml" .github/workflows/publisher-archives.yml
-          rm -rf .ccg-tmp
-          rm -f .github/workflows/apply-publisher-corrections-20260804.yml
-          git add -A
-          git commit -m "Restore publisher archive workflow after staged correction"
-          git push origin HEAD:main
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          if git push origin "HEAD:${TARGET_BRANCH}"; then
+            exit 0
+          fi
+
+          if [ "$TARGET_BRANCH" != "main" ]; then
+            echo "Could not push generated output to ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          GENERATED_BRANCH="automation/publisher-archives-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/${GENERATED_BRANCH}"
+
+          gh pr create \
+            --base main \
+            --head "${GENERATED_BRANCH}" \
+            --title "Refresh generated publisher archives" \
+            --body "Automatically generated publisher archive output after publisher logo assets were added directly to main."
