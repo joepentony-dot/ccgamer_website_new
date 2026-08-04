@@ -168,22 +168,10 @@
     "url": "/games/publishers/anco/"
   },
   {
-    "name": "Argus Press",
-    "slug": "argus-press",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/argus-press/"
-  },
-  {
     "name": "Argus Press Software",
     "slug": "argus-press-software",
-    "count": 3,
-    "c64Count": 3,
+    "count": 4,
+    "c64Count": 4,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1987,
