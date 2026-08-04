@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - ".github/workflows/publisher-archives.yml"
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -23,7 +26,7 @@ jobs:
       - name: Save normal publisher workflow
         shell: bash
         run: |
-          git show HEAD^:.github/workflows/publisher-archives.yml > "$RUNNER_TEMP/publisher-archives.yml"
+          git show dc94d483f994c50af01e26c8ed74817256ee6e60:.github/workflows/publisher-archives.yml > "$RUNNER_TEMP/publisher-archives.yml"
 
       - name: Check out staged correction branch
         shell: bash
