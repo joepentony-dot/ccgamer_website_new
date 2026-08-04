@@ -36,7 +36,7 @@ jobs:
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
           sha256sum resources/images/publishers/mastertronic.svg > "$RUNNER_TEMP/mastertronic.sha256"
 
-      - name: Restore supplied publisher logo assets
+      - name: Recover supplied publisher logo assets
         shell: bash
         run: |
           set -euo pipefail
@@ -56,21 +56,18 @@ jobs:
           import io
           import os
           import re
+          import struct
           import zipfile
           from pathlib import Path
 
           temp = Path(os.environ["RUNNER_TEMP"])
           source = temp / "publisher-logo-archive.b64"
           destination = temp / "publisher-logos.zip"
-          raw = source.read_text(encoding="utf-8", errors="ignore")
-          cleaned = re.sub(r"[^A-Za-z0-9+/=]", "", raw)
-          cleaned = cleaned.rstrip("=")
-          cleaned += "=" * (-len(cleaned) % 4)
-
-          try:
-              decoded = base64.b64decode(cleaned, validate=False)
-          except binascii.Error as error:
-              raise SystemExit(f"Could not decode publisher logo archive: {error}")
+          compact = re.sub(
+              r"[^A-Za-z0-9+/=]",
+              "",
+              source.read_text(encoding="utf-8", errors="ignore"),
+          )
 
           required = {
               "atarisoft.webp",
@@ -90,21 +87,68 @@ jobs:
               "zeppelin-games.webp",
           }
 
-          try:
-              with zipfile.ZipFile(io.BytesIO(decoded)) as archive:
-                  names = set(archive.namelist())
-                  missing = sorted(required - names)
-                  if missing:
-                      raise SystemExit(
-                          "Decoded logo archive is missing: " + ", ".join(missing)
-                      )
-                  bad = archive.testzip()
-                  if bad:
-                      raise SystemExit(f"Decoded logo archive contains a damaged file: {bad}")
-          except zipfile.BadZipFile as error:
-              raise SystemExit(f"Decoded publisher logo archive is not a valid ZIP: {error}")
+          def decode_text(text):
+              text = text.rstrip("=")
+              text += "=" * (-len(text) % 4)
+              try:
+                  return base64.b64decode(text, validate=False)
+              except (binascii.Error, ValueError):
+                  return None
 
-          destination.write_bytes(decoded)
+          def is_required_zip(data):
+              if not data or not data.startswith(b"PK"):
+                  return False
+              try:
+                  with zipfile.ZipFile(io.BytesIO(data)) as archive:
+                      names = set(archive.namelist())
+                      return required.issubset(names) and archive.testzip() is None
+              except zipfile.BadZipFile:
+                  return False
+
+          starts = {0}
+          starts.update(match.start() for match in re.finditer(r"UEsDB", compact))
+          ends = {len(compact)}
+          ends.update(match.end() for match in re.finditer(r"=+", compact))
+
+          recovered = None
+          for start in sorted(starts):
+              for end in sorted(value for value in ends if value > start):
+                  candidate = decode_text(compact[start:end])
+                  if is_required_zip(candidate):
+                      recovered = candidate
+                      break
+              if recovered is not None:
+                  break
+
+          if recovered is None:
+              decoded = decode_text(compact.replace("=", ""))
+              if decoded:
+                  local_headers = [
+                      match.start() for match in re.finditer(b"PK\x03\x04", decoded)
+                  ]
+                  end_records = [
+                      match.start() for match in re.finditer(b"PK\x05\x06", decoded)
+                  ]
+                  for start in local_headers:
+                      for record in end_records:
+                          if record < start or record + 22 > len(decoded):
+                              continue
+                          comment_length = struct.unpack_from("<H", decoded, record + 20)[0]
+                          end = record + 22 + comment_length
+                          candidate = decoded[start:end]
+                          if is_required_zip(candidate):
+                              recovered = candidate
+                              break
+                      if recovered is not None:
+                          break
+
+          if recovered is None:
+              raise SystemExit(
+                  "Could not recover a valid 15-file publisher logo ZIP from the staged data."
+              )
+
+          destination.write_bytes(recovered)
+          print(f"Recovered verified publisher logo ZIP: {len(recovered)} bytes")
           PY
 
           for slug in \
