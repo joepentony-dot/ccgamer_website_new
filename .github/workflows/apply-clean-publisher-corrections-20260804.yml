@@ -54,12 +54,14 @@ jobs:
           import base64
           import binascii
           import io
+          import os
           import re
           import zipfile
           from pathlib import Path
 
-          source = Path("$RUNNER_TEMP/publisher-logo-archive.b64")
-          destination = Path("$RUNNER_TEMP/publisher-logos.zip")
+          temp = Path(os.environ["RUNNER_TEMP"])
+          source = temp / "publisher-logo-archive.b64"
+          destination = temp / "publisher-logos.zip"
           raw = source.read_text(encoding="utf-8", errors="ignore")
           cleaned = re.sub(r"[^A-Za-z0-9+/=]", "", raw)
           cleaned = cleaned.rstrip("=")
