@@ -74,50 +74,6 @@
     transform-origin: center;
 }
 
-/*
-   Mastertronic uses the exact supplied 600 x 240 PNG. The previously generated
-   SVG wrapper fails in some browsers, so the PNG is rendered as an isolated
-   fallback while old generated markup is still cached or awaiting regeneration.
-*/
-.ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
-    min-height: 226px;
-    justify-content: flex-start;
-    overflow: hidden;
-}
-
-.ccg-publisher-grid--featured .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
-    min-height: 258px;
-}
-
-.ccg-publisher-card__logo[data-publisher-logo="mastertronic"],
-.ccg-publisher-card__logo[data-publisher-logo="mastertronic"][hidden],
-.ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"],
-.ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"][hidden] {
-    display: flex !important;
-}
-
-.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]::before,
-.ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"]::before {
-    content: "";
-    position: absolute;
-    z-index: 1;
-    inset: 13px 16px;
-    background: url("/resources/images/publishers/mastertronic.png") center / contain no-repeat;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.38));
-    pointer-events: none;
-}
-
-.ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"]::before {
-    inset: 14px 18px;
-    background-position: left center;
-    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.42));
-}
-
-.ccg-publisher-card__logo[data-publisher-logo="mastertronic"] img,
-.ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"] img {
-    visibility: hidden;
-}
-
 .ccg-publisher-card--has-logo .ccg-publisher-card__name {
     margin-top: auto;
 }
@@ -222,21 +178,11 @@
     .ccg-publisher-grid--featured .ccg-publisher-card--has-logo {
         min-height: 246px;
     }
-
-    .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
-        min-height: 218px;
-    }
-
-    .ccg-publisher-grid--featured .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
-        min-height: 246px;
-    }
 }
 
 @media (max-width: 760px) {
     .ccg-publisher-card--has-logo,
-    .ccg-publisher-grid--featured .ccg-publisher-card--has-logo,
-    .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]),
-    .ccg-publisher-grid--featured .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
+    .ccg-publisher-grid--featured .ccg-publisher-card--has-logo {
         min-height: 214px;
     }
 
@@ -272,14 +218,6 @@
         transform: scale(2.25);
     }
 
-    .ccg-publisher-card__logo[data-publisher-logo="mastertronic"]::before {
-        inset: 11px 13px;
-    }
-
-    .ccg-publisher-page-logo[data-publisher-page-logo="mastertronic"]::before {
-        inset: 12px 14px;
-    }
-
     .ccg-publisher-single .ccg-publisher-breadcrumbs {
         gap: 7px;
         padding-inline: 0;
@@ -296,9 +234,7 @@
 
 @media (max-width: 500px) {
     .ccg-publisher-card--has-logo,
-    .ccg-publisher-grid--featured .ccg-publisher-card--has-logo,
-    .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]),
-    .ccg-publisher-grid--featured .ccg-publisher-card:has(.ccg-publisher-card__logo[data-publisher-logo="mastertronic"]) {
+    .ccg-publisher-grid--featured .ccg-publisher-card--has-logo {
         min-height: 204px;
     }
 
