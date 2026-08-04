@@ -1,0 +1,184 @@
+name: Apply publisher corrections 2026-08-04
+
+on:
+  push:
+    branches:
+      - main
+      - fix/publisher-corrections-20260804
+    paths:
+      - ".github/workflows/apply-publisher-corrections-20260804.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/publisher-corrections-20260804
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Install logos and update game publishers
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat .ccg-tmp/publisher-logo-mini.b64.part-* \
+            | base64 --decode > "$RUNNER_TEMP/publisher-logos.zip"
+
+          unzip -o "$RUNNER_TEMP/publisher-logos.zip" \
+            -d resources/images/publishers/
+
+          for slug in \
+            timeworks tv-games tynesoft ubi-soft ultimate \
+            vifi-international virgin-games virgin-mastertronic \
+            windham-classics zeppelin-games atarisoft \
+            hodder-and-stoughton hudson-soft satchel-software thalamus
+          do
+            rm -f \
+              "resources/images/publishers/${slug}.png" \
+              "resources/images/publishers/${slug}.svg" \
+              "resources/images/publishers/${slug}.jpg" \
+              "resources/images/publishers/${slug}.jpeg"
+          done
+
+          node <<'NODE'
+          const fs = require("fs");
+          const path = "games/games.json";
+          const games = JSON.parse(fs.readFileSync(path, "utf8"));
+
+          const retired = new Set([
+            "Starcade",
+            "System 4 Software",
+            "UK Gold",
+            "Zafiro Software Division"
+          ]);
+
+          function getGame(slug) {
+            const game = games.find((entry) => entry.slug === slug);
+            if (!game) throw new Error(`Missing game: ${slug}`);
+            game.credits ||= {};
+            const current = Array.isArray(game.credits.publisher)
+              ? game.credits.publisher
+              : game.credits.publisher
+                ? [game.credits.publisher]
+                : [];
+            game.credits.publisher = current
+              .map((name) => String(name).trim())
+              .filter((name) => name && !retired.has(name));
+            return game;
+          }
+
+          function ensurePublisher(game, name) {
+            if (!game.credits.publisher.includes(name)) {
+              game.credits.publisher.push(name);
+            }
+          }
+
+          for (const game of games) {
+            if (!game.credits) continue;
+            const value = game.credits.publisher;
+            const names = Array.isArray(value) ? value : value ? [value] : [];
+            game.credits.publisher = names
+              .map((name) => String(name).trim())
+              .filter((name) => name && !retired.has(name));
+          }
+
+          const up = getGame("up-up-and-away");
+          ensurePublisher(up, "Argus Press");
+          if (typeof up.description === "string") {
+            up.description = up.description.replace(
+              "from Starcade",
+              "from Argus Press"
+            );
+          }
+
+          ensurePublisher(getGame("ninja-rabbits"), "MicroValue");
+          ensurePublisher(getGame("dropzone"), "US Gold");
+          ensurePublisher(getGame("nosferatu-the-vampyre"), "Piranha");
+          ensurePublisher(getGame("airwolf"), "Elite");
+
+          const expected = new Map([
+            ["up-up-and-away", ["Argus Press"]],
+            ["ninja-rabbits", ["MicroValue"]],
+            ["dropzone", ["US Gold"]],
+            ["nosferatu-the-vampyre", ["Piranha"]],
+            ["airwolf", ["Elite"]]
+          ]);
+
+          for (const [slug, publishers] of expected) {
+            const game = getGame(slug);
+            for (const publisher of publishers) {
+              if (!game.credits.publisher.includes(publisher)) {
+                throw new Error(`${slug} is missing ${publisher}`);
+              }
+            }
+          }
+
+          const leftovers = [];
+          for (const game of games) {
+            const names = Array.isArray(game?.credits?.publisher)
+              ? game.credits.publisher
+              : game?.credits?.publisher
+                ? [game.credits.publisher]
+                : [];
+            for (const name of names) {
+              if (retired.has(String(name).trim())) {
+                leftovers.push(`${game.slug}: ${name}`);
+              }
+            }
+          }
+
+          if (leftovers.length) {
+            throw new Error(
+              `Retired publisher labels remain: ${leftovers.join(", ")}`
+            );
+          }
+
+          fs.writeFileSync(path, `${JSON.stringify(games, null, 2)}\n`);
+          NODE
+
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          node scripts/validate-publisher-logo-output.js
+
+      - name: Verify removals and protected files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e games/publishers/starcade
+          test ! -e games/publishers/system-4-software
+          test ! -e games/publishers/uk-gold
+          test ! -e games/publishers/zafiro-software-division
+          sha256sum --check "$RUNNER_TEMP/protected.sha256"
+          git diff --check
+
+      - name: Remove temporary automation
+        shell: bash
+        run: |
+          rm -rf .ccg-tmp
+          rm -f .github/workflows/apply-publisher-corrections-20260804.yml
+
+      - name: Commit final publisher corrections
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 1
+          fi
+          git commit -m "Apply publisher corrections and logo batch"
+          git push origin HEAD:fix/publisher-corrections-20260804
