@@ -1,0 +1,208 @@
+name: Apply clean publisher corrections 2026-08-04
+
+on:
+  push:
+    branches:
+      - fix/publisher-corrections-clean-20260804
+    paths:
+      - ".github/workflows/apply-clean-publisher-corrections-20260804.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out clean correction branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/publisher-corrections-clean-20260804
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Record protected file and Mastertronic hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
+          sha256sum resources/images/publishers/mastertronic.webp > "$RUNNER_TEMP/mastertronic.sha256"
+
+      - name: Restore supplied publisher logo assets
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch origin fix/publisher-corrections-20260804
+
+          : > "$RUNNER_TEMP/publisher-logo-archive.b64"
+          for part in 00 01 02 03 04 05 06 07; do
+            git show "origin/fix/publisher-corrections-20260804:.ccg-tmp/publisher-logo-mini.b64.part-${part}" \
+              >> "$RUNNER_TEMP/publisher-logo-archive.b64"
+          done
+
+          base64 --decode "$RUNNER_TEMP/publisher-logo-archive.b64" \
+            > "$RUNNER_TEMP/publisher-logos.zip"
+
+          for slug in \
+            atarisoft hodder-and-stoughton hudson-soft satchel-software \
+            thalamus timeworks tv-games tynesoft ubi-soft ultimate \
+            vifi-international virgin-games virgin-mastertronic \
+            windham-classics zeppelin-games
+          do
+            rm -f \
+              "resources/images/publishers/${slug}.png" \
+              "resources/images/publishers/${slug}.svg" \
+              "resources/images/publishers/${slug}.jpg" \
+              "resources/images/publishers/${slug}.jpeg" \
+              "resources/images/publishers/${slug}.webp"
+          done
+
+          unzip -o "$RUNNER_TEMP/publisher-logos.zip" \
+            -d resources/images/publishers/
+
+      - name: Correct publisher assignments
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          node <<'NODE'
+          const fs = require("fs");
+          const path = "games/games.json";
+          const games = JSON.parse(fs.readFileSync(path, "utf8"));
+
+          const retired = new Set([
+            "Starcade",
+            "System 4 Software",
+            "UK Gold",
+            "Zafiro Software Division"
+          ]);
+
+          function normalizePublishers(game) {
+            game.credits ||= {};
+            const value = game.credits.publisher;
+            const names = Array.isArray(value) ? value : value ? [value] : [];
+            game.credits.publisher = names
+              .map((name) => String(name).trim())
+              .filter((name) => name && !retired.has(name));
+            return game.credits.publisher;
+          }
+
+          function getGame(slug) {
+            const game = games.find((entry) => entry.slug === slug);
+            if (!game) throw new Error(`Missing game: ${slug}`);
+            normalizePublishers(game);
+            return game;
+          }
+
+          function ensurePublisher(game, publisher) {
+            if (!game.credits.publisher.includes(publisher)) {
+              game.credits.publisher.push(publisher);
+            }
+          }
+
+          for (const game of games) {
+            if (game.credits) normalizePublishers(game);
+          }
+
+          const upUpAndAway = getGame("up-up-and-away");
+          ensurePublisher(upUpAndAway, "Argus Press");
+          if (typeof upUpAndAway.description === "string") {
+            upUpAndAway.description = upUpAndAway.description.replace(
+              "from Starcade",
+              "from Argus Press"
+            );
+          }
+
+          ensurePublisher(getGame("ninja-rabbits"), "MicroValue");
+          ensurePublisher(getGame("dropzone"), "US Gold");
+          ensurePublisher(getGame("nosferatu-the-vampyre"), "Piranha");
+          ensurePublisher(getGame("airwolf"), "Elite");
+
+          const expected = new Map([
+            ["up-up-and-away", "Argus Press"],
+            ["ninja-rabbits", "MicroValue"],
+            ["dropzone", "US Gold"],
+            ["nosferatu-the-vampyre", "Piranha"],
+            ["airwolf", "Elite"]
+          ]);
+
+          for (const [slug, publisher] of expected) {
+            const game = getGame(slug);
+            if (!game.credits.publisher.includes(publisher)) {
+              throw new Error(`${slug} is missing ${publisher}`);
+            }
+          }
+
+          const leftovers = [];
+          for (const game of games) {
+            for (const publisher of normalizePublishers(game)) {
+              if (retired.has(publisher)) {
+                leftovers.push(`${game.slug}: ${publisher}`);
+              }
+            }
+          }
+
+          if (leftovers.length) {
+            throw new Error(
+              `Retired publisher labels remain: ${leftovers.join(", ")}`
+            );
+          }
+
+          fs.writeFileSync(path, `${JSON.stringify(games, null, 2)}\n`);
+          NODE
+
+      - name: Rebuild and validate the website data
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          node scripts/validate-publisher-logo-output.js
+
+      - name: Verify requested output and protected files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for slug in \
+            atarisoft hodder-and-stoughton hudson-soft satchel-software \
+            thalamus timeworks tv-games tynesoft ubi-soft ultimate \
+            vifi-international virgin-games virgin-mastertronic \
+            windham-classics zeppelin-games
+          do
+            test -s "resources/images/publishers/${slug}.webp"
+          done
+
+          test ! -e games/publishers/starcade
+          test ! -e games/publishers/system-4-software
+          test ! -e games/publishers/uk-gold
+          test ! -e games/publishers/zafiro-software-division
+
+          sha256sum --check "$RUNNER_TEMP/protected.sha256"
+          sha256sum --check "$RUNNER_TEMP/mastertronic.sha256"
+          git diff --check
+
+      - name: Remove the one-time workflow and commit clean output
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          rm -f .github/workflows/apply-clean-publisher-corrections-20260804.yml
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No publisher corrections were generated."
+            exit 1
+          fi
+
+          git commit -m "Correct publisher assignments and add logo batch"
+          git push origin HEAD:fix/publisher-corrections-clean-20260804
