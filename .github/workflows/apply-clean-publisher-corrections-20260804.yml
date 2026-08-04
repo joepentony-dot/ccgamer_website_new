@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: fix/publisher-corrections-clean-20260804
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -41,7 +41,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          git fetch origin fix/publisher-corrections-20260804
+          git fetch --depth=1 origin \
+            fix/publisher-corrections-20260804:refs/remotes/origin/fix/publisher-corrections-20260804
 
           : > "$RUNNER_TEMP/publisher-logo-archive.b64"
           for part in 00 01 02 03 04 05 06 07; do
@@ -49,8 +50,60 @@ jobs:
               >> "$RUNNER_TEMP/publisher-logo-archive.b64"
           done
 
-          base64 --decode "$RUNNER_TEMP/publisher-logo-archive.b64" \
-            > "$RUNNER_TEMP/publisher-logos.zip"
+          python <<'PY'
+          import base64
+          import binascii
+          import io
+          import re
+          import zipfile
+          from pathlib import Path
+
+          source = Path("$RUNNER_TEMP/publisher-logo-archive.b64")
+          destination = Path("$RUNNER_TEMP/publisher-logos.zip")
+          raw = source.read_text(encoding="utf-8", errors="ignore")
+          cleaned = re.sub(r"[^A-Za-z0-9+/=]", "", raw)
+          cleaned = cleaned.rstrip("=")
+          cleaned += "=" * (-len(cleaned) % 4)
+
+          try:
+              decoded = base64.b64decode(cleaned, validate=False)
+          except binascii.Error as error:
+              raise SystemExit(f"Could not decode publisher logo archive: {error}")
+
+          required = {
+              "atarisoft.webp",
+              "hodder-and-stoughton.webp",
+              "hudson-soft.webp",
+              "satchel-software.webp",
+              "thalamus.webp",
+              "timeworks.webp",
+              "tv-games.webp",
+              "tynesoft.webp",
+              "ubi-soft.webp",
+              "ultimate.webp",
+              "vifi-international.webp",
+              "virgin-games.webp",
+              "virgin-mastertronic.webp",
+              "windham-classics.webp",
+              "zeppelin-games.webp",
+          }
+
+          try:
+              with zipfile.ZipFile(io.BytesIO(decoded)) as archive:
+                  names = set(archive.namelist())
+                  missing = sorted(required - names)
+                  if missing:
+                      raise SystemExit(
+                          "Decoded logo archive is missing: " + ", ".join(missing)
+                      )
+                  bad = archive.testzip()
+                  if bad:
+                      raise SystemExit(f"Decoded logo archive contains a damaged file: {bad}")
+          except zipfile.BadZipFile as error:
+              raise SystemExit(f"Decoded publisher logo archive is not a valid ZIP: {error}")
+
+          destination.write_bytes(decoded)
+          PY
 
           for slug in \
             atarisoft hodder-and-stoughton hudson-soft satchel-software \
