@@ -3,6 +3,7 @@ name: Apply publisher corrections 2026-08-04
 on:
   push:
     branches:
+      - main
       - fix/publisher-corrections-20260804
     paths:
       - ".github/workflows/apply-publisher-corrections-20260804.yml"
@@ -181,5 +182,3 @@ jobs:
           fi
           git commit -m "Apply publisher corrections and logo batch"
           git push origin HEAD:fix/publisher-corrections-20260804
-
-# Touch this existing branch workflow to trigger its one-time push run.
