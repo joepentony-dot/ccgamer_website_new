@@ -181,3 +181,5 @@ jobs:
           fi
           git commit -m "Apply publisher corrections and logo batch"
           git push origin HEAD:fix/publisher-corrections-20260804
+
+# Touch this existing branch workflow to trigger its one-time push run.
