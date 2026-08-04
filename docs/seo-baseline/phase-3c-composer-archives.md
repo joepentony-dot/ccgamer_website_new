@@ -13,7 +13,7 @@
 | Single-game generated noindex routes | **186** |
 | Total static composer routes | **269** |
 | Linked game-credit relationships | **571** |
-| Generated pages written in this run | **2** |
+| Generated pages written in this run | **0** |
 | Stale generated pages removed | **0** |
 
 ## Indexing policy

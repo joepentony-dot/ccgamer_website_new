@@ -501,8 +501,7 @@
     "credits": {
       "publisher": [
         "Aackosoft",
-        "Elite",
-        "Zafiro Software Division"
+        "Elite"
       ],
       "producer": "",
       "coder": [],
@@ -7833,7 +7832,7 @@
     "ccg_rating_reason": "Archer Maclean's brilliance shines through with this one",
     "credits": {
       "publisher": [
-        "UK Gold"
+        "US Gold"
       ],
       "producer": "Arena Graphics",
       "coder": [
@@ -18052,8 +18051,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "MicroValue",
-        "System 4 Software"
+        "MicroValue"
       ],
       "producer": "",
       "coder": [
@@ -18239,8 +18237,7 @@
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
-        "Piranha",
-        "Zafiro Software Division"
+        "Piranha"
       ],
       "producer": "",
       "coder": [],
@@ -27701,12 +27698,12 @@
     "lemon": [
       "https://www.lemon64.com/game/up-up-and-away"
     ],
-    "description": "Up Up And Away is a 1984 Commodore 64 arcade game from Starcade that centres on vertical movement, obstacle avoidance, and precision control.",
+    "description": "Up Up And Away is a 1984 Commodore 64 arcade game from Argus Press that centres on vertical movement, obstacle avoidance, and precision control.",
     "ccg_rating": 6,
     "ccg_rating_reason": "One of those games you'll definitely enjoy for 5 or so minutes, but nothing more",
     "credits": {
       "publisher": [
-        "Starcade"
+        "Argus Press"
       ],
       "producer": "",
       "coder": [

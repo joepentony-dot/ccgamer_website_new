@@ -168,6 +168,18 @@
     "url": "/games/publishers/anco/"
   },
   {
+    "name": "Argus Press",
+    "slug": "argus-press",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/argus-press/"
+  },
+  {
     "name": "Argus Press Software",
     "slug": "argus-press-software",
     "count": 3,
@@ -1584,18 +1596,6 @@
     "url": "/games/publishers/spinnaker-software/"
   },
   {
-    "name": "Starcade",
-    "slug": "starcade",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/starcade/"
-  },
-  {
     "name": "State Soft",
     "slug": "state-soft",
     "count": 2,
@@ -1678,18 +1678,6 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/system-3/"
-  },
-  {
-    "name": "System 4 Software",
-    "slug": "system-4-software",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/system-4-software/"
   },
   {
     "name": "Taito",
@@ -1896,18 +1884,6 @@
     "url": "/games/publishers/ubi-soft/"
   },
   {
-    "name": "UK Gold",
-    "slug": "uk-gold",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "indexable": false,
-    "playlist": "",
-    "url": "/games/publishers/uk-gold/"
-  },
-  {
     "name": "Ultimate",
     "slug": "ultimate",
     "count": 5,
@@ -1922,8 +1898,8 @@
   {
     "name": "US Gold",
     "slug": "us-gold",
-    "count": 45,
-    "c64Count": 38,
+    "count": 46,
+    "c64Count": 39,
     "amigaCount": 7,
     "firstYear": 1982,
     "lastYear": 1992,
@@ -1978,18 +1954,6 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/windham-classics/"
-  },
-  {
-    "name": "Zafiro Software Division",
-    "slug": "zafiro-software-division",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1986,
-    "indexable": true,
-    "playlist": "",
-    "url": "/games/publishers/zafiro-software-division/"
   },
   {
     "name": "Zeppelin Games",
