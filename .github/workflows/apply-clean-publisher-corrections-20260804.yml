@@ -5,10 +5,7 @@ on:
     branches:
       - fix/publisher-corrections-clean-20260804
     paths:
-      - ".github/workflows/apply-clean-publisher-corrections-20260804.yml"
-  pull_request:
-    branches:
-      - main
+      - "publisher_logos_20260804.zip"
 
 permissions:
   contents: write
@@ -36,39 +33,17 @@ jobs:
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
           sha256sum resources/images/publishers/mastertronic.svg > "$RUNNER_TEMP/mastertronic.sha256"
 
-      - name: Recover supplied publisher logo assets
+      - name: Validate and extract supplied publisher logo ZIP
         shell: bash
         run: |
           set -euo pipefail
-
-          git fetch --depth=1 origin \
-            fix/publisher-corrections-20260804:refs/remotes/origin/fix/publisher-corrections-20260804
-
-          : > "$RUNNER_TEMP/publisher-logo-archive.b64"
-          for part in 00 01 02 03 04 05 06 07; do
-            git show "origin/fix/publisher-corrections-20260804:.ccg-tmp/publisher-logo-mini.b64.part-${part}" \
-              >> "$RUNNER_TEMP/publisher-logo-archive.b64"
-          done
+          test -s publisher_logos_20260804.zip
 
           python <<'PY'
-          import base64
-          import binascii
-          import io
-          import os
-          import re
-          import struct
           import zipfile
           from pathlib import Path
 
-          temp = Path(os.environ["RUNNER_TEMP"])
-          source = temp / "publisher-logo-archive.b64"
-          destination = temp / "publisher-logos.zip"
-          compact = re.sub(
-              r"[^A-Za-z0-9+/=]",
-              "",
-              source.read_text(encoding="utf-8", errors="ignore"),
-          )
-
+          archive_path = Path("publisher_logos_20260804.zip")
           required = {
               "atarisoft.webp",
               "hodder-and-stoughton.webp",
@@ -87,68 +62,17 @@ jobs:
               "zeppelin-games.webp",
           }
 
-          def decode_text(text):
-              text = text.rstrip("=")
-              text += "=" * (-len(text) % 4)
-              try:
-                  return base64.b64decode(text, validate=False)
-              except (binascii.Error, ValueError):
-                  return None
-
-          def is_required_zip(data):
-              if not data or not data.startswith(b"PK"):
-                  return False
-              try:
-                  with zipfile.ZipFile(io.BytesIO(data)) as archive:
-                      names = set(archive.namelist())
-                      return required.issubset(names) and archive.testzip() is None
-              except zipfile.BadZipFile:
-                  return False
-
-          starts = {0}
-          starts.update(match.start() for match in re.finditer(r"UEsDB", compact))
-          ends = {len(compact)}
-          ends.update(match.end() for match in re.finditer(r"=+", compact))
-
-          recovered = None
-          for start in sorted(starts):
-              for end in sorted(value for value in ends if value > start):
-                  candidate = decode_text(compact[start:end])
-                  if is_required_zip(candidate):
-                      recovered = candidate
-                      break
-              if recovered is not None:
-                  break
-
-          if recovered is None:
-              decoded = decode_text(compact.replace("=", ""))
-              if decoded:
-                  local_headers = [
-                      match.start() for match in re.finditer(b"PK\x03\x04", decoded)
-                  ]
-                  end_records = [
-                      match.start() for match in re.finditer(b"PK\x05\x06", decoded)
-                  ]
-                  for start in local_headers:
-                      for record in end_records:
-                          if record < start or record + 22 > len(decoded):
-                              continue
-                          comment_length = struct.unpack_from("<H", decoded, record + 20)[0]
-                          end = record + 22 + comment_length
-                          candidate = decoded[start:end]
-                          if is_required_zip(candidate):
-                              recovered = candidate
-                              break
-                      if recovered is not None:
-                          break
-
-          if recovered is None:
-              raise SystemExit(
-                  "Could not recover a valid 15-file publisher logo ZIP from the staged data."
-              )
-
-          destination.write_bytes(recovered)
-          print(f"Recovered verified publisher logo ZIP: {len(recovered)} bytes")
+          with zipfile.ZipFile(archive_path) as archive:
+              names = set(archive.namelist())
+              missing = sorted(required - names)
+              unexpected = sorted(names - required)
+              if missing:
+                  raise SystemExit("ZIP is missing: " + ", ".join(missing))
+              if unexpected:
+                  raise SystemExit("ZIP contains unexpected files: " + ", ".join(unexpected))
+              damaged = archive.testzip()
+              if damaged:
+                  raise SystemExit(f"ZIP contains a damaged file: {damaged}")
           PY
 
           for slug in \
@@ -165,8 +89,7 @@ jobs:
               "resources/images/publishers/${slug}.webp"
           done
 
-          unzip -o "$RUNNER_TEMP/publisher-logos.zip" \
-            -d resources/images/publishers/
+          unzip -o publisher_logos_20260804.zip -d resources/images/publishers/
 
       - name: Correct publisher assignments
         shell: bash
@@ -290,12 +213,12 @@ jobs:
           sha256sum --check "$RUNNER_TEMP/mastertronic.sha256"
           git diff --check
 
-      - name: Remove the one-time workflow and commit clean output
+      - name: Commit clean publisher output
         shell: bash
         run: |
           set -euo pipefail
 
-          rm -f .github/workflows/apply-clean-publisher-corrections-20260804.yml
+          rm -f publisher_logos_20260804.zip
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
