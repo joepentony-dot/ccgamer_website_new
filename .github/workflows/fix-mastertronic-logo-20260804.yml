@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: fix/mastertronic-broken-image-20260804
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Record protected file hashes
         shell: bash
@@ -26,14 +26,10 @@ jobs:
           set -euo pipefail
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
 
-      - name: Restore exact uploaded Mastertronic PNG
+      - name: Validate restored Mastertronic PNG
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin bdf5492a28e557a3e1dfd2b0f6bd8418ef88fc82
-          git show bdf5492a28e557a3e1dfd2b0f6bd8418ef88fc82:mastertronic.png \
-            > resources/images/publishers/mastertronic.png
-
           python <<'PY'
           from pathlib import Path
           import struct
@@ -41,7 +37,7 @@ jobs:
           path = Path("resources/images/publishers/mastertronic.png")
           data = path.read_bytes()
           if data[:8] != b"\x89PNG\r\n\x1a\n":
-              raise SystemExit("Recovered Mastertronic asset is not a PNG")
+              raise SystemExit("Mastertronic asset is not a PNG")
           width, height = struct.unpack(">II", data[16:24])
           if (width, height) != (600, 240):
               raise SystemExit(f"Unexpected Mastertronic dimensions: {width}x{height}")
@@ -55,8 +51,8 @@ jobs:
           rm -f resources/images/publishers/mastertronic.svg
           rm -f resources/images/publishers/mastertronic.webp
 
-          mapfile -t files < <(git grep -l 'mastertronic\.svg' || true)
-          for file in "${files[@]}"; do
+          mapfile -t svg_files < <(git grep -l 'mastertronic\.svg' || true)
+          for file in "${svg_files[@]}"; do
             sed -i 's#mastertronic\.svg#mastertronic.png#g' "$file"
           done
 
@@ -65,7 +61,7 @@ jobs:
             sed -i 's#mastertronic\.webp#mastertronic.png#g' "$file"
           done
 
-      - name: Validate publisher logo output
+      - name: Validate corrected output
         shell: bash
         run: |
           set -euo pipefail
