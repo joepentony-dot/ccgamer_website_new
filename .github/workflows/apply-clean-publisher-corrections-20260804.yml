@@ -5,7 +5,9 @@ on:
     branches:
       - fix/publisher-corrections-clean-20260804
     paths:
-      - "publisher_logos_20260804.zip"
+      - ".github/workflows/apply-clean-publisher-corrections-20260804.yml"
+      - "*.webp"
+      - "*.png"
 
 permissions:
   contents: write
@@ -19,10 +21,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: fix/publisher-corrections-clean-20260804
-          fetch-depth: 1
+          fetch-depth: 2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Fetch clean main reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main:refs/remotes/origin/main
+
+      - uses: actions/setup-node@v4
         with:
           node-version: "24"
 
@@ -33,18 +40,15 @@ jobs:
           sha256sum index.html home.html resources/css/intro.css js/index-intro.js > "$RUNNER_TEMP/protected.sha256"
           sha256sum resources/images/publishers/mastertronic.svg > "$RUNNER_TEMP/mastertronic.sha256"
 
-      - name: Validate and extract supplied publisher logo ZIP
+      - name: Validate and install individually uploaded logos
         shell: bash
         run: |
           set -euo pipefail
-          test -s publisher_logos_20260804.zip
 
           python <<'PY'
-          import zipfile
           from pathlib import Path
 
-          archive_path = Path("publisher_logos_20260804.zip")
-          required = {
+          required = [
               "atarisoft.webp",
               "hodder-and-stoughton.webp",
               "hudson-soft.webp",
@@ -60,20 +64,20 @@ jobs:
               "virgin-mastertronic.webp",
               "windham-classics.webp",
               "zeppelin-games.webp",
-          }
+          ]
 
-          with zipfile.ZipFile(archive_path) as archive:
-              names = set(archive.namelist())
-              missing = sorted(required - names)
-              unexpected = sorted(names - required)
-              if missing:
-                  raise SystemExit("ZIP is missing: " + ", ".join(missing))
-              if unexpected:
-                  raise SystemExit("ZIP contains unexpected files: " + ", ".join(unexpected))
-              damaged = archive.testzip()
-              if damaged:
-                  raise SystemExit(f"ZIP contains a damaged file: {damaged}")
+          for filename in required:
+              path = Path(filename)
+              if not path.is_file() or path.stat().st_size < 16:
+                  raise SystemExit(f"Missing or empty uploaded logo: {filename}")
+              data = path.read_bytes()[:12]
+              if data[:4] != b"RIFF" or data[8:12] != b"WEBP":
+                  raise SystemExit(f"Uploaded file is not a valid WebP: {filename}")
+
+          print(f"Validated {len(required)} individually uploaded WebP logos.")
           PY
+
+          mkdir -p resources/images/publishers
 
           for slug in \
             atarisoft hodder-and-stoughton hudson-soft satchel-software \
@@ -87,9 +91,48 @@ jobs:
               "resources/images/publishers/${slug}.jpg" \
               "resources/images/publishers/${slug}.jpeg" \
               "resources/images/publishers/${slug}.webp"
+
+            mv "${slug}.webp" "resources/images/publishers/${slug}.webp"
           done
 
-          unzip -o publisher_logos_20260804.zip -d resources/images/publishers/
+      - name: Remove accidental root-level uploads safely
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          restore_or_remove() {
+            local file="$1"
+            if git cat-file -e "origin/main:${file}" 2>/dev/null; then
+              git checkout origin/main -- "$file"
+            else
+              rm -f -- "$file"
+            fi
+          }
+
+          for file in \
+            64-supersoft.png atarisoft.png big-five-software.png \
+            mastertronic.png melbourne-house.png muse-software.png \
+            new-world-computing.png nexus.png origin.png orpheus.png \
+            palace-software.png pandora.png rabbit.png rack-hewson.png \
+            rack-it.png rainbird.png rainbow-arts.png renegade.png sci.png \
+            simulmondo.png software-projects.png sparklers.png \
+            spinnaker-software.png storm.png superior-software.png \
+            synapse-software.png task-set.png team17.png tengen.png \
+            terminal-software.png the-edge.png the-one.png \
+            thor-computer-software.png tikkurila.png titus-software.png tronic.png
+          do
+            restore_or_remove "$file"
+          done
+
+          for file in \
+            atarisoft.webp hodder-and-stoughton.webp hudson-soft.webp \
+            satchel-software.webp thalamus.webp timeworks.webp tv-games.webp \
+            tynesoft.webp ubi-soft.webp ultimate.webp vifi-international.webp \
+            virgin-games.webp virgin-mastertronic.webp windham-classics.webp \
+            zeppelin-games.webp
+          do
+            restore_or_remove "$file"
+          done
 
       - name: Correct publisher assignments
         shell: bash
@@ -182,7 +225,7 @@ jobs:
           fs.writeFileSync(path, `${JSON.stringify(games, null, 2)}\n`);
           NODE
 
-      - name: Rebuild and validate the website data
+      - name: Rebuild and validate website data
         shell: bash
         run: |
           set -euo pipefail
@@ -218,7 +261,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          rm -f publisher_logos_20260804.zip
+          rm -f .github/workflows/apply-clean-publisher-corrections-20260804.yml
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
