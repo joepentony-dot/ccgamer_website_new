@@ -6,6 +6,9 @@ on:
       - fix/publisher-corrections-clean-20260804
     paths:
       - ".github/workflows/apply-clean-publisher-corrections-20260804.yml"
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
