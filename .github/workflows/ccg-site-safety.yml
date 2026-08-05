@@ -25,6 +25,7 @@ on:
       - "scripts/audit-member-community.js"
       - "scripts/audit-member-safety-loyalty.js"
       - "scripts/audit-admin-master-data-gate.js"
+      - "scripts/audit-member-custom-collections.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -65,6 +66,7 @@ jobs:
           node --check js/ccg-personal-library-controls.js
           node --check js/ccg-member-library-sync-loader.js
           node --check js/ccg-member-community-loader.js
+          node --check js/ccg-member-custom-collections-loader.js
           node --check js/ccg-member-loyalty-loader.js
           node --check js/ccg-member-data-safety.js
           node --check js/ccg-zzap64-matcher.js
@@ -77,6 +79,7 @@ jobs:
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
           node --check resources/js/auth/member-community.js
+          node --check resources/js/auth/member-custom-collections.js
           node --check resources/js/auth/member-loyalty-badges.js
           node --check resources/js/auth/public-member.js
           node --check scripts/audit-legacy-game-routes.js
@@ -89,6 +92,7 @@ jobs:
           node --check scripts/audit-member-community.js
           node --check scripts/audit-member-safety-loyalty.js
           node --check scripts/audit-admin-master-data-gate.js
+          node --check scripts/audit-member-custom-collections.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -122,6 +126,9 @@ jobs:
 
       - name: Run Admin Master Data Gate audit
         run: node scripts/audit-admin-master-data-gate.js
+
+      - name: Run Member Custom Collections audit
+        run: node scripts/audit-member-custom-collections.js
 
       - name: Confirm audits made no repository changes
         run: |

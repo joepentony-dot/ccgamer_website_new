@@ -1,0 +1,153 @@
+/* CCG MEMBER HUB — PRIVATE CUSTOM COLLECTIONS */
+
+.ccg-personal-library__custom {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.ccg-personal-library__custom-title {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.ccg-personal-library__custom-controls {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.8fr) minmax(180px, 1fr) auto;
+  gap: 8px;
+}
+
+.ccg-personal-library__custom-controls :is(select, input) {
+  min-width: 0;
+}
+
+.ccg-personal-library__custom-memberships,
+.member-custom-collections__tabs,
+.member-custom-collections__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ccg-personal-library__custom-chip,
+.member-custom-collections__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.34);
+  background: rgba(0, 0, 0, 0.24);
+  color: inherit;
+  padding: 7px 9px;
+}
+
+.ccg-personal-library__custom-chip button {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font: inherit;
+}
+
+.member-custom-collections {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.member-custom-collections__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.member-custom-collections__title,
+.member-custom-collections__active-title {
+  margin: 0;
+}
+
+.member-custom-collections__intro,
+.member-custom-collections__empty,
+.member-custom-collections__status {
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.5;
+}
+
+.member-custom-collections__tab {
+  cursor: pointer;
+}
+
+.member-custom-collections__tab.is-active {
+  border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.82);
+  background: rgba(var(--accent-rgb, 0, 221, 255), 0.15);
+}
+
+.member-custom-collections__tab-count {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+}
+
+.member-custom-collections__manager {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.member-custom-collections__rename {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 8px;
+}
+
+.member-custom-collections__games {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member-custom-collections__game {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.member-custom-collections__game a {
+  color: var(--auth-text, #f5f8ff);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.member-custom-collections__game-meta {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.86rem;
+}
+
+@media (max-width: 700px) {
+  .ccg-personal-library__custom-controls,
+  .member-custom-collections__rename {
+    grid-template-columns: 1fr;
+  }
+
+  .member-custom-collections__header,
+  .member-custom-collections__game {
+    grid-template-columns: 1fr;
+  }
+
+  .member-custom-collections__header {
+    display: grid;
+  }
+}
