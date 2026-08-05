@@ -11,6 +11,7 @@ Do Not Override
     "use strict";
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
+    const GLOBAL_SEARCH_SCRIPT = "/js/ccg-global-search.js";
 
     function isNavPillCandidate(el) {
         if (!(el instanceof HTMLElement)) return false;
@@ -72,6 +73,15 @@ Do Not Override
             .forEach(hardenPill);
     }
 
+    function loadGlobalSearchModule() {
+        if (document.querySelector(`script[src="${GLOBAL_SEARCH_SCRIPT}"]`)) return;
+        const script = document.createElement("script");
+        script.src = GLOBAL_SEARCH_SCRIPT;
+        script.defer = true;
+        script.setAttribute("data-ccg-global-search-loader", "true");
+        document.body.appendChild(script);
+    }
+
     function queueApply() {
         window.requestAnimationFrame(applyNavGlowPatch);
     }
@@ -117,6 +127,7 @@ Do Not Override
     function initUnifiedNavCore() {
         applyNavGlowPatch();
         bindStateReapply();
+        loadGlobalSearchModule();
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
