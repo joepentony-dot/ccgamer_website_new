@@ -1,0 +1,115 @@
+/* ============================================================
+   CCG PUBLIC MEMBER PROFILE — PHASE 9
+   Owner-preview notice, profile actions and detailed badge cards.
+============================================================ */
+
+.public-member-preview-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(255, 211, 105, 0.55);
+  background: rgba(63, 43, 8, 0.78);
+  color: rgba(255, 244, 211, 0.92);
+}
+
+.public-member-preview-notice strong {
+  flex: 0 0 auto;
+  color: #ffe29a;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.76rem;
+}
+
+.public-member-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.public-member-badges {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.public-member-badge.public-member-badge--detailed {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  min-width: 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(96, 225, 178, 0.5);
+  background: linear-gradient(145deg, rgba(7, 35, 39, 0.82), rgba(6, 19, 34, 0.92));
+  color: rgba(238, 249, 255, 0.88);
+  white-space: normal;
+}
+
+.public-member-badge__mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(96, 225, 178, 0.7);
+  color: #a7ffd5;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.public-member-badge__body {
+  min-width: 0;
+}
+
+.public-member-badge__title {
+  display: block;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.public-member-badge__description {
+  margin: 0.35rem 0 0;
+  color: rgba(224, 239, 248, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.public-member-badge__meta {
+  display: block;
+  margin-top: 0.5rem;
+  color: #9cf7c7;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+html[data-ccg-mode="amiga"] .public-member-badge.public-member-badge--detailed,
+body[data-ccg-mode="amiga"] .public-member-badge.public-member-badge--detailed {
+  border-color: rgba(255, 105, 211, 0.55);
+  background: linear-gradient(145deg, rgba(52, 12, 54, 0.82), rgba(14, 16, 37, 0.92));
+}
+
+html[data-ccg-mode="amiga"] .public-member-badge__mark,
+body[data-ccg-mode="amiga"] .public-member-badge__mark {
+  border-color: rgba(255, 105, 211, 0.72);
+  color: #ffb1e8;
+}
+
+@media (max-width: 900px) {
+  .public-member-badges {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .public-member-preview-notice {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .public-member-badges {
+    grid-template-columns: 1fr;
+  }
+}
