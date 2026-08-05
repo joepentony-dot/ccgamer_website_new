@@ -1,0 +1,112 @@
+name: Refresh Sitemaps
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tools/seo/static-pages.json"
+      - "tools/seo/generate-sitemap.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - "scripts/ensure-feature-sitemap-pages.js"
+      - "games/compare/index.html"
+      - "games/discover/index.html"
+      - "zzap64/index.html"
+      - ".github/workflows/sitemaps.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "tools/seo/static-pages.json"
+      - "tools/seo/generate-sitemap.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - "scripts/ensure-feature-sitemap-pages.js"
+      - "games/compare/index.html"
+      - "games/discover/index.html"
+      - "zzap64/index.html"
+      - ".github/workflows/sitemaps.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sitemaps-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate sitemap scripts
+        run: |
+          node --check scripts/ensure-feature-sitemap-pages.js
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/validate-sitemaps.js
+          node --check tools/seo/generate-sitemap.js
+
+      - name: Generate sitemaps
+        run: node scripts/generate-sitemaps.js
+
+      - name: Validate sitemaps
+        run: node scripts/validate-sitemaps.js
+
+      - name: Confirm feature archive coverage
+        run: |
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/compare/</loc>' sitemap-pages.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/games/discover/</loc>' sitemap-pages.xml
+          grep -Fq '<loc>https://www.cheekycommodoregamer.co.uk/zzap64/</loc>' sitemap-pages.xml
+
+      - name: Commit generated sitemap output
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add tools/seo/static-pages.json sitemap.xml sitemap-pages.xml sitemap-games.xml
+
+          if git diff --cached --quiet; then
+            echo "Sitemaps are already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Refresh generated sitemaps"
+
+          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          if git push origin "HEAD:${TARGET_BRANCH}"; then
+            exit 0
+          fi
+
+          if [ "$TARGET_BRANCH" != "main" ]; then
+            echo "Could not push generated sitemap output to ${TARGET_BRANCH}."
+            exit 1
+          fi
+
+          GENERATED_BRANCH="automation/sitemaps-${GITHUB_RUN_ID}"
+          git push origin "HEAD:refs/heads/${GENERATED_BRANCH}"
+
+          gh pr create \
+            --base main \
+            --head "${GENERATED_BRANCH}" \
+            --title "Refresh generated sitemaps" \
+            --body "Automatically generated sitemap output after SEO page coverage changed on main."
