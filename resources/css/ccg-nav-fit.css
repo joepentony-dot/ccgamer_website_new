@@ -137,46 +137,6 @@
         padding: 7px 9px !important;
         font-size: 0.7rem !important;
     }
-
-    /* Keep the C64 and Amiga positions mathematically identical on mobile. */
-    .ccg-header .ccg-mode-toggle {
-        width: clamp(214px, 52vw, 270px) !important;
-        max-width: calc(100vw - 32px) !important;
-        margin-inline: auto !important;
-    }
-
-    .ccg-header .ccg-mode-toggle__pill {
-        box-sizing: border-box !important;
-        width: 100% !important;
-        min-width: 0 !important;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    }
-
-    .ccg-header .ccg-mode-toggle__label {
-        box-sizing: border-box !important;
-        min-width: 0 !important;
-        padding-inline: 6px !important;
-        white-space: nowrap !important;
-    }
-
-    .ccg-header .ccg-mode-toggle__thumb {
-        inset: 4px auto 4px 4px !important;
-        left: 4px !important;
-        width: calc(50% - 7px) !important;
-        transform: none !important;
-    }
-
-    body[data-ccg-mode="amiga"] .ccg-header .ccg-mode-toggle__thumb,
-    html[data-ccg-mode="amiga"] body .ccg-header .ccg-mode-toggle__thumb {
-        left: calc(50% + 3px) !important;
-        transform: none !important;
-    }
-
-    body[data-ccg-mode="c64"] .ccg-header .ccg-mode-toggle__thumb,
-    html[data-ccg-mode="c64"] body .ccg-header .ccg-mode-toggle__thumb {
-        left: 4px !important;
-        transform: none !important;
-    }
 }
 
 @media (max-width: 620px) {
@@ -186,14 +146,5 @@
 
     .ccg-header .ccg-profile-link__label {
         font-size: 0.62rem;
-    }
-
-    .ccg-header .ccg-mode-toggle {
-        width: min(246px, calc(100vw - 28px)) !important;
-    }
-
-    .ccg-header .ccg-mode-toggle__label {
-        font-size: 0.54rem !important;
-        letter-spacing: 0.07em !important;
     }
 }
