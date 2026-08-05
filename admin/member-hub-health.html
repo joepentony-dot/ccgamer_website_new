@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" data-member-hub-health-gate="pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Member Hub Health</title>
+  <script>
+    document.documentElement.dataset.memberHubHealthGate = 'pending';
+  </script>
+
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/member-hub-health-admin.css?v=phase12-20260806" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
+  <main class="omega-admin-shell ccg-admin-panel member-health" data-admin-shell>
+    <header class="member-health__header">
+      <div>
+        <p class="member-health__kicker">Deployment verification</p>
+        <h1>Member Hub Health</h1>
+        <p>Checks the live Supabase project for the tables, safeguards and functions required by Member Hub Phases 2–12. This report reads database structure only and does not expose member records.</p>
+      </div>
+      <div class="member-health__header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/dashboard.html">Admin dashboard</a>
+        <button class="ccg-btn ccg-btn--primary" type="button" id="memberHealthRefresh">Run health check</button>
+      </div>
+    </header>
+
+    <p class="admin-status" data-admin-status>Checking administrator session…</p>
+    <p class="admin-status" id="memberHealthStatus" data-state="info" aria-live="polite"></p>
+
+    <section class="member-health__summary" aria-label="Member Hub health summary">
+      <article class="member-health__summary-card">
+        <strong id="memberHealthReadyCount">0</strong>
+        <span>Ready</span>
+      </article>
+      <article class="member-health__summary-card">
+        <strong id="memberHealthMissingCount">0</strong>
+        <span>Missing</span>
+      </article>
+      <article class="member-health__summary-card">
+        <strong id="memberHealthPercent">0%</strong>
+        <span>Deployment coverage</span>
+      </article>
+    </section>
+
+    <section class="member-health__missing" id="memberHealthMissingPanel" hidden aria-labelledby="memberHealthMissingTitle">
+      <div>
+        <h2 id="memberHealthMissingTitle">Required migration files</h2>
+        <p>Run these files through Supabase SQL Editor in the order shown. Files already applied safely use idempotent statements.</p>
+      </div>
+      <button class="ccg-btn ccg-btn--ghost" type="button" id="memberHealthCopyMigrations">Copy migration list</button>
+      <ol id="memberHealthMigrationList"></ol>
+    </section>
+
+    <section class="member-health__report" aria-labelledby="memberHealthReportTitle">
+      <div class="member-health__section-heading">
+        <h2 id="memberHealthReportTitle">Live database components</h2>
+        <span id="memberHealthCheckedAt">Not checked yet</span>
+      </div>
+      <div class="member-health__groups" id="memberHealthGroups"></div>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/member-hub-health.js?v=phase12-20260806"></script>
+</body>
+</html>
