@@ -1,0 +1,38 @@
+name: CCG Performance Foundations
+
+on:
+  pull_request:
+    paths:
+      - "resources/js/ccg-performance.js"
+      - "resources/css/ccg-performance-foundations.css"
+      - "scripts/audit-performance-foundations.js"
+      - "docs/seo-baseline/phase-13-performance-foundations.md"
+      - ".github/workflows/ccg-performance-foundations.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  performance-foundations:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check resources/js/ccg-performance.js
+          node --check scripts/audit-performance-foundations.js
+
+      - name: Run performance foundations audit
+        run: node scripts/audit-performance-foundations.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
