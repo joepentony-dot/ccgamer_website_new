@@ -77,9 +77,10 @@
         const label = readableProfileText(identity);
 
         if (identity && label) {
-            identity.textContent = label;
-            identity.setAttribute("aria-label", `Open ${label}`);
-            identity.title = "Open your profile";
+            if (String(identity.textContent || "").trim() !== label) identity.textContent = label;
+            const ariaLabel = `Open ${label}`;
+            if (identity.getAttribute("aria-label") !== ariaLabel) identity.setAttribute("aria-label", ariaLabel);
+            if (identity.title !== "Open your profile") identity.title = "Open your profile";
             identity.classList.add("ccg-community-profile-btn");
         }
 
@@ -95,16 +96,24 @@
             }
 
             if (!identity || !label) {
-                slot.hidden = true;
-                slot.textContent = "";
+                if (!slot.hidden) slot.hidden = true;
+                if (slot.childNodes.length) slot.textContent = "";
                 return;
             }
 
-            slot.hidden = false;
-            slot.innerHTML = "";
+            const href = identity.getAttribute("href") || "/community/profile.html";
+            const existingLink = slot.querySelector(".ccg-drawer-profile-link");
+            const alreadyCurrent = existingLink
+                && existingLink.getAttribute("href") === href
+                && String(existingLink.textContent || "").trim() === label;
+
+            if (slot.hidden) slot.hidden = false;
+            if (alreadyCurrent) return;
+
+            slot.textContent = "";
             const link = document.createElement("a");
             link.className = "ccg-drawer-profile-link";
-            link.href = identity.getAttribute("href") || "/community/profile.html";
+            link.href = href;
             link.textContent = label;
             link.setAttribute("aria-label", `Open ${label}`);
             slot.appendChild(link);
