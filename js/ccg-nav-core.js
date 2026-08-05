@@ -22,7 +22,8 @@ Do Not Override
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
-        { src: "/js/ccg-personal-library-controls.js", marker: "data-ccg-personal-library-loader" }
+        { src: "/js/ccg-personal-library-controls.js", marker: "data-ccg-personal-library-loader" },
+        { src: "/js/zzap64-awards-logo-styles.js", marker: "data-ccg-zzap-logo-styles-loader" }
     ];
 
     function isNavPillCandidate(el) {
