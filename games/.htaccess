@@ -1,5 +1,13 @@
 RewriteEngine On
 
+# Canonicalise explicit archive-index requests before file handling.
+RewriteCond %{THE_REQUEST} \s/+games/index\.html(?:[?\s]) [NC]
+RewriteRule ^index\.html$ /games/ [R=301,L,NE]
+
+# Canonicalise old flat game pages while leaving the shared handler alone.
+RewriteCond %{THE_REQUEST} \s/+games/[^?\s]+\.html(?:[?\s]) [NC]
+RewriteRule ^(?!game\.html$|index\.html$)([^./]+)\.html$ /games/$1/ [R=301,L,NE]
+
 # Allow existing files/directories to resolve normally.
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
