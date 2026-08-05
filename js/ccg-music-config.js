@@ -2,6 +2,7 @@
   "use strict";
 
   const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
+  const MUSIC_NAVIGATION_SCRIPT = "/js/ccg-music-navigation.js";
 
   const urlCache = new Map();
   let missingConfigWarningShown = false;
@@ -64,6 +65,25 @@
     return finalUrl;
   }
 
+  function ensureMusicNavigation() {
+    if (window.CCG_MUSIC_NAVIGATION_READY) return;
+    const exists = Array.from(document.scripts).some((script) => {
+      const source = script.getAttribute("src") || "";
+      try {
+        return new URL(source, window.location.origin).pathname === MUSIC_NAVIGATION_SCRIPT;
+      } catch (error) {
+        return source === MUSIC_NAVIGATION_SCRIPT;
+      }
+    });
+    if (exists) return;
+
+    const script = document.createElement("script");
+    script.src = MUSIC_NAVIGATION_SCRIPT;
+    script.defer = true;
+    script.dataset.ccgMusicNavigationLoader = "true";
+    document.body.appendChild(script);
+  }
+
   getConfig();
 
   window.CCGMusic = Object.assign({}, window.CCGMusic || {}, {
@@ -73,4 +93,10 @@
       return buildUrl(getConfig().MUSIC_BASE_URL, slug);
     }
   });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureMusicNavigation, { once: true });
+  } else {
+    ensureMusicNavigation();
+  }
 })();
