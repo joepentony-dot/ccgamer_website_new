@@ -1,0 +1,17 @@
+/* CCG MEMBER HUB — SAFE MEMBER EXPORTS */
+
+.member-data-safety-note {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.member-data-safety-note strong {
+  color: var(--auth-primary, #9ad4ff);
+}
+
+#downloadMemberProfileCsv {
+  min-width: 220px;
+}

@@ -1,0 +1,126 @@
+/* CCG MEMBER HUB — MONTHLY LOYALTY BADGE */
+
+.member-loyalty-badge {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.42fr) minmax(0, 1fr);
+  gap: 22px;
+  margin: 0 0 18px;
+  padding: 18px;
+  border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.42);
+  background:
+    linear-gradient(135deg, rgba(var(--accent-rgb, 0, 221, 255), 0.14), transparent 48%),
+    rgba(4, 9, 23, 0.82);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.member-loyalty-badge__mark {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 172px;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.26);
+  text-align: center;
+}
+
+.member-loyalty-badge__eyebrow {
+  margin: 0 0 8px;
+  color: rgba(255, 255, 255, 0.72);
+  font: 700 0.68rem/1.4 "Orbitron", sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.member-loyalty-badge__month {
+  color: rgb(var(--accent-rgb, 0, 221, 255));
+  font: 800 clamp(2rem, 6vw, 3.8rem)/1 "Orbitron", sans-serif;
+  text-shadow: 0 0 20px rgba(var(--accent-rgb, 0, 221, 255), 0.32);
+}
+
+.member-loyalty-badge__month-label {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.84rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.member-loyalty-badge__content {
+  display: grid;
+  align-content: center;
+  gap: 10px;
+}
+
+.member-loyalty-badge__title {
+  margin: 0;
+  color: var(--auth-text, #f5f8ff);
+  font: 700 clamp(1.15rem, 2vw, 1.55rem)/1.3 "Orbitron", sans-serif;
+}
+
+.member-loyalty-badge__message,
+.member-loyalty-badge__next,
+.member-loyalty-badge__status {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.55;
+}
+
+.member-loyalty-badge__progress {
+  overflow: hidden;
+  height: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.member-loyalty-badge__progress span {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(var(--accent-rgb, 0, 221, 255), 0.68), rgb(var(--accent-rgb, 0, 221, 255)));
+  transition: width 220ms ease-out;
+}
+
+.member-loyalty-badge__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 3px;
+}
+
+.member-loyalty-badge__actions .auth-btn,
+.member-loyalty-badge__actions a {
+  width: auto;
+  min-width: 145px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.member-loyalty-badge__status[data-state="success"] {
+  color: #8fe0b3;
+}
+
+.member-loyalty-badge__status[data-state="error"] {
+  color: #ff9b9b;
+}
+
+@media (max-width: 720px) {
+  .member-loyalty-badge {
+    grid-template-columns: 1fr;
+  }
+
+  .member-loyalty-badge__mark {
+    min-height: 140px;
+  }
+
+  .member-loyalty-badge__actions .auth-btn,
+  .member-loyalty-badge__actions a {
+    flex: 1 1 180px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-loyalty-badge__progress span {
+    transition: none;
+  }
+}

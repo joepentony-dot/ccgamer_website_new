@@ -23,6 +23,7 @@ on:
       - "scripts/audit-collections-index.js"
       - "scripts/audit-member-hub.js"
       - "scripts/audit-member-community.js"
+      - "scripts/audit-member-safety-loyalty.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -63,6 +64,8 @@ jobs:
           node --check js/ccg-personal-library-controls.js
           node --check js/ccg-member-library-sync-loader.js
           node --check js/ccg-member-community-loader.js
+          node --check js/ccg-member-loyalty-loader.js
+          node --check js/ccg-member-data-safety.js
           node --check js/ccg-zzap64-matcher.js
           node --check js/zzap64-awards-logo-styles.js
           node --check js/ccg-game-badges.js
@@ -72,6 +75,7 @@ jobs:
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
           node --check resources/js/auth/member-community.js
+          node --check resources/js/auth/member-loyalty-badges.js
           node --check resources/js/auth/public-member.js
           node --check scripts/audit-legacy-game-routes.js
           node --check scripts/audit-music-navigation.js
@@ -81,6 +85,7 @@ jobs:
           node --check scripts/audit-collections-index.js
           node --check scripts/audit-member-hub.js
           node --check scripts/audit-member-community.js
+          node --check scripts/audit-member-safety-loyalty.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -108,6 +113,9 @@ jobs:
 
       - name: Run Member Community audit
         run: node scripts/audit-member-community.js
+
+      - name: Run Member Safety and Loyalty audit
+        run: node scripts/audit-member-safety-loyalty.js
 
       - name: Confirm audits made no repository changes
         run: |
