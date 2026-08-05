@@ -8,6 +8,7 @@ on:
       - "**/*.css"
       - "**/*.json"
       - "**/*.xml"
+      - "**/*.webp"
       - "_redirects"
       - "_headers"
       - "**/.htaccess"
@@ -53,6 +54,8 @@ jobs:
           node --check js/ccg-amiga-identity.js
           node --check js/ccg-recent-content.js
           node --check js/ccg-personal-library-controls.js
+          node --check js/ccg-zzap64-matcher.js
+          node --check js/zzap64-awards-logo-styles.js
           node --check js/game-discovery.js
           node --check js/zzap64-awards.js
           node --check resources/js/auth/profile-lists.js

@@ -1,0 +1,110 @@
+/* ============================================================
+   ZZAP!64 ARCHIVE — AWARD AND PLATFORM LOGOS
+   Loaded only by the Zzap!64 awards archive script.
+============================================================ */
+
+.zzap-award-card {
+    min-height: 270px;
+}
+
+.zzap-award-card__award-mark {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 9px;
+}
+
+.zzap-award-card__award-logo {
+    display: block;
+    flex: 0 0 auto;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .46));
+}
+
+.zzap-award-card__award-logo--gold {
+    width: auto;
+    height: 68px;
+}
+
+.zzap-award-card__award-logo--sizzler {
+    width: 74px;
+    height: auto;
+}
+
+.zzap-award-card__award-label {
+    max-width: 112px;
+    font: 700 .58rem/1.35 "Orbitron", sans-serif;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .78;
+}
+
+.zzap-award-card__bottom {
+    display: flex;
+    min-width: 0;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.zzap-award-card__platform {
+    display: inline-flex;
+    flex: 0 0 auto;
+    max-width: 108px;
+    min-height: 34px;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 7px;
+    border: 1px solid rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, .92);
+}
+
+.zzap-award-card__platform img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 34px;
+    object-fit: contain;
+}
+
+.zzap-award-card__platform--c64 {
+    min-height: 26px;
+    background: rgba(15, 14, 12, .92);
+}
+
+.zzap-award-card__platform--c64 img {
+    max-height: 18px;
+}
+
+.zzap-award-card[data-game-linked="true"] .zzap-award-card__game-name {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb, 0, 221, 255), .28);
+}
+
+@media (max-width: 760px) {
+    .zzap-award-card {
+        min-height: 250px;
+    }
+
+    .zzap-award-card__award-logo--gold {
+        height: 58px;
+    }
+
+    .zzap-award-card__award-logo--sizzler {
+        width: 66px;
+    }
+
+    .zzap-award-card__platform {
+        max-width: 96px;
+    }
+}
+
+@media (max-width: 520px) {
+    .zzap-award-card {
+        min-height: 0;
+    }
+
+    .zzap-award-card__bottom {
+        align-items: flex-start;
+    }
+}
