@@ -1,0 +1,175 @@
+/* ============================================================
+   CCG NAVIGATION FIT + MOBILE MODE ALIGNMENT
+   ------------------------------------------------------------
+   Bounded fixes for desktop navigation overflow, profile labels,
+   injected music headers and the mobile C64/Amiga mode control.
+============================================================ */
+
+/* Never crop the public header navigation when more links are added. */
+.ccg-header .ccg-nav,
+.ccg-header .ccg-nav__bar,
+.ccg-header .ccg-nav__list {
+    contain: none !important;
+    overflow: visible !important;
+}
+
+.ccg-header .ccg-auth-slot .ccg-btn-auth,
+.ccg-header .ccg-community-profile-btn {
+    max-width: min(100%, 260px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ccg-drawer-profile-slot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    margin: 0 16px 14px;
+    padding: 12px;
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    background: rgba(4, 10, 20, 0.78);
+    box-shadow: inset 0 0 12px rgba(var(--accent-rgb), 0.08);
+}
+
+.ccg-drawer-profile-slot[hidden] {
+    display: none !important;
+}
+
+.ccg-drawer-profile-link {
+    display: block;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid rgba(var(--accent-rgb), 0.5);
+    color: #fff;
+    font: 700 0.78rem/1.25 "Orbitron", system-ui, sans-serif;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background: rgba(var(--accent-rgb), 0.1);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.16);
+}
+
+.ccg-drawer-profile-link:hover,
+.ccg-drawer-profile-link:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.9);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.32);
+}
+
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav {
+        display: flex !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+        gap: clamp(5px, 0.55vw, 10px) !important;
+    }
+
+    .ccg-header .ccg-nav__bar {
+        display: contents !important;
+    }
+
+    .ccg-header .ccg-nav__list {
+        min-width: 0 !important;
+        flex: 0 1 auto !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-wrap: nowrap !important;
+        gap: clamp(4px, 0.45vw, 8px) !important;
+    }
+
+    .ccg-header .ccg-nav__link,
+    .ccg-header .ccg-nav__more-toggle {
+        min-height: 38px !important;
+        padding: 8px clamp(9px, 0.7vw, 13px) !important;
+        font-size: clamp(0.7rem, 0.72vw, 0.82rem) !important;
+        line-height: 1.1 !important;
+        letter-spacing: clamp(0.025em, 0.06vw, 0.07em) !important;
+        white-space: nowrap !important;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav-fit--compact {
+        gap: 4px !important;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav-fit--compact .ccg-nav__list {
+        gap: 3px !important;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav-fit--compact .ccg-nav__link,
+    .ccg-header .ccg-nav.ccg-nav-fit--compact .ccg-nav__more-toggle {
+        min-height: 34px !important;
+        padding: 6px 8px !important;
+        font-size: 0.66rem !important;
+        letter-spacing: 0.02em !important;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav-fit--wrapped {
+        flex-wrap: wrap !important;
+        row-gap: 6px !important;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav-fit--wrapped .ccg-nav__list--primary,
+    .ccg-header .ccg-nav.ccg-nav-fit--wrapped .ccg-nav__list--secondary {
+        flex: 0 0 100% !important;
+        width: 100% !important;
+    }
+}
+
+/* The mode thumb uses explicit left positions so both modes align identically. */
+@media (max-width: 1199px) {
+    .ccg-header .ccg-mode-toggle {
+        width: clamp(214px, 52vw, 270px) !important;
+        max-width: calc(100vw - 32px) !important;
+        margin-inline: auto !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__pill {
+        box-sizing: border-box !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__label {
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+        padding-inline: 6px !important;
+        white-space: nowrap !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__thumb {
+        inset: 4px auto 4px 4px !important;
+        width: calc(50% - 7px) !important;
+        transform: none !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-header .ccg-mode-toggle__thumb,
+    html[data-ccg-mode="amiga"] body .ccg-header .ccg-mode-toggle__thumb {
+        left: calc(50% + 3px) !important;
+        transform: none !important;
+    }
+
+    body[data-ccg-mode="c64"] .ccg-header .ccg-mode-toggle__thumb,
+    html[data-ccg-mode="c64"] body .ccg-header .ccg-mode-toggle__thumb {
+        left: 4px !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 520px) {
+    .ccg-header .ccg-mode-toggle {
+        width: min(246px, calc(100vw - 28px)) !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__label {
+        font-size: 0.54rem !important;
+        letter-spacing: 0.07em !important;
+    }
+}
