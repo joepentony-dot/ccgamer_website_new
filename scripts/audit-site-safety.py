@@ -41,7 +41,7 @@ ASSET_BUDGETS = {
     ".png": 8_000_000, ".jpg": 8_000_000, ".jpeg": 8_000_000,
     ".webp": 8_000_000, ".gif": 8_000_000, ".mp3": 15_000_000, ".mp4": 35_000_000,
 }
-CONFLICT_LINE = re.compile(r"^(?:<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
+CONFLICT_LINE = re.compile(r"^(?:<<<<<<< .+|=======|>>>>>>> .+)$", re.MULTILINE)
 
 
 def relative(path: Path) -> str:
