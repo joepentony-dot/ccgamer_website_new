@@ -168,6 +168,14 @@
     button.dataset.ccgAuthBound = 'true';
   }
 
+  function makeButton(tagName, className, id, text) {
+    const element = document.createElement(tagName);
+    element.className = className;
+    element.id = id;
+    element.textContent = text;
+    return element;
+  }
+
   function renderHeaderAuth() {
     const actions = document.querySelector('.ccg-header-actions');
     if (!actions) return;
@@ -181,18 +189,29 @@
     }
 
     const auth = window.CCG_AUTH || { loggedIn: false, username: '' };
+    slot.textContent = '';
 
     if (auth.loggedIn) {
       const username = auth.username || '@member';
-      slot.innerHTML = '' +
-        '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">' + username + '</a>' +
-        '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout" data-logout>Logout</button>';
-      bindLogout(slot.querySelector('#ccg-auth-logout'));
+      const profileLabel = 'Profile: ' + username;
+      const identity = makeButton('a', 'ccg-btn ccg-btn-auth ccg-community-profile-btn', 'ccg-auth-identity', profileLabel);
+      identity.href = '/community/profile.html';
+      identity.title = 'Open your profile';
+      identity.setAttribute('aria-label', 'Open ' + profileLabel);
+
+      const logout = makeButton('button', 'ccg-btn ccg-btn-auth', 'ccg-auth-logout', 'Logout');
+      logout.type = 'button';
+      logout.setAttribute('data-logout', '');
+
+      slot.append(identity, logout);
+      bindLogout(logout);
       return;
     }
 
-    slot.innerHTML = '<button type="button" class="ccg-btn ccg-btn-auth" id="join-login">Join / Login</button>';
-    bindAuthModalTrigger(slot.querySelector('#join-login'));
+    const join = makeButton('button', 'ccg-btn ccg-btn-auth', 'join-login', 'Join / Login');
+    join.type = 'button';
+    slot.appendChild(join);
+    bindAuthModalTrigger(join);
   }
 
   async function refreshUi() {
