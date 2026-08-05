@@ -1,9 +1,9 @@
 /* ============================================================
    CCG ZZAP!64 AWARDS ARCHIVE
    ------------------------------------------------------------
-   Loads verified year data, matches awards to the game archive,
-   sorts results alphabetically and keeps future game additions
-   linkable without editing the award records again.
+   Loads verified year data, matches awards against games.json,
+   displays award/platform artwork and keeps future game additions
+   linkable without editing the archive records again.
 ============================================================ */
 
 (function () {
@@ -13,6 +13,13 @@
     window.CCG_ZZAP64_AWARDS_READY = true;
 
     const YEARS = [1985, 1986, 1987, 1988, 1989];
+    const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
+    const ASSETS = Object.freeze({
+        gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
+        sizzler: "/resources/images/zzap64/zzap64-sizzler.webp",
+        c64: "/resources/images/platforms/commodore-64-logo.webp",
+        amiga: "/resources/images/platforms/commodore-amiga-logo.webp"
+    });
     const YEAR_META = {
         1985: { label: "The year Zzap!64 began", page: "/retro-specials/zzap64-gold-medals-sizzlers-1985/" },
         1986: { label: "The first full calendar year", page: "/retro-specials/zzap64-gold-medals-sizzlers-1986/" },
@@ -25,40 +32,12 @@
         "July", "August", "September", "October", "November", "December"
     ];
     const AWARD_ORDER = ["Gold Medal", "Sizzler", "Silver Medal"];
-    const TITLE_ALIAS_GROUPS = [
-        ["super pipeline", "super pipeline ii", "super pipeline 2"],
-        ["gremlins", "gremlins the adventure"],
-        ["rockfords riot", "boulder dash ii rockfords revenge", "boulder dash 2 rockfords revenge"],
-        ["spy vs spy ii", "spy vs spy ii the island caper", "spy vs spy 2 the island caper"],
-        ["graphic adventure creator", "gac"],
-        ["shoot em up construction kit", "seuck"],
-        ["international karate plus", "international karate +", "ik+"],
-        ["federation of free traders", "foft"],
-        ["the duel test drive ii", "test drive ii the duel", "test drive 2 the duel"],
-        ["cybernoid ii", "cybernoid ii the revenge", "cybernoid 2 the revenge"],
-        ["last ninja 2", "last ninja ii"],
-        ["impossible mission 2", "impossible mission ii"],
-        ["summer games 2", "summer games ii"],
-        ["pitstop 2", "pitstop ii"],
-        ["beach head 2", "beach head ii"],
-        ["who dares wins 2", "who dares wins ii"],
-        ["f 16 combat pilot", "f16 combat pilot"],
-        ["b 24 flight simulator", "b24 flight simulator"],
-        ["r i s k", "risk"],
-        ["a p b", "apb"],
-        ["r type", "rtype"],
-        ["pac mania", "pacmania"],
-        ["led storm", "l e d storm"],
-        ["m u l e", "mule"],
-        ["ghosts n goblins", "ghosts and goblins"],
-        ["north and south", "north south"],
-        ["return of the mutant camels", "revenge of the mutant camels ii", "revenge of the mutant camels 2"]
-    ];
 
     const state = {
         entries: [],
         games: [],
-        gamesByTitle: new Map(),
+        gameIndex: null,
+        matcher: null,
         query: "",
         year: "all",
         system: "all",
@@ -75,42 +54,32 @@
         })[character]);
     }
 
-    function normalizeText(value) {
-        return String(value || "")
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[’‘`]/g, "'")
-            .replace(/&/g, " and ")
-            .replace(/\+/g, " plus ")
-            .replace(/[^a-z0-9]+/g, " ")
-            .replace(/\s+/g, " ")
-            .trim();
-    }
+    function ensureScript(src) {
+        if (src === MATCHER_PATH && window.CCGZzap64Matcher) return Promise.resolve();
+        const existing = document.querySelector(`script[src="${src}"]`);
+        if (existing) {
+            return new Promise((resolve, reject) => {
+                if (src === MATCHER_PATH && window.CCGZzap64Matcher) {
+                    resolve();
+                    return;
+                }
+                existing.addEventListener("load", resolve, { once: true });
+                existing.addEventListener("error", reject, { once: true });
+            });
+        }
 
-    const titleAliases = (() => {
-        const map = new Map();
-        TITLE_ALIAS_GROUPS.forEach((group) => {
-            const canonical = normalizeText(group[0]);
-            group.forEach((title) => map.set(normalizeText(title), canonical));
+        return new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.defer = true;
+            script.addEventListener("load", resolve, { once: true });
+            script.addEventListener("error", reject, { once: true });
+            document.head.appendChild(script);
         });
-        return map;
-    })();
-
-    function titleKey(value) {
-        const normalized = normalizeText(value).replace(/^(the|a|an)\s+/, "");
-        return titleAliases.get(normalized) || normalized;
-    }
-
-    function systemKey(value) {
-        const normalized = normalizeText(value);
-        if (normalized.includes("amiga")) return "amiga";
-        if (normalized === "c64" || normalized.includes("commodore 64")) return "c64";
-        return normalized;
     }
 
     function normalizeAward(value) {
-        const normalized = normalizeText(value);
+        const normalized = state.matcher.normalizeText(value);
         if (normalized.includes("gold")) return "Gold Medal";
         if (normalized.includes("silver")) return "Silver Medal";
         return "Sizzler";
@@ -144,39 +113,12 @@
         };
     }
 
-    function buildGameIndex() {
-        state.gamesByTitle = new Map();
-
-        state.games.forEach((game) => {
-            const candidates = [game?.title, game?.sorttitle, game?.name, game?.slug, game?.id].filter(Boolean);
-            candidates.forEach((candidate) => {
-                const key = titleKey(candidate);
-                if (!key) return;
-                const bucket = state.gamesByTitle.get(key) || [];
-                if (!bucket.includes(game)) bucket.push(game);
-                state.gamesByTitle.set(key, bucket);
-            });
-        });
-    }
-
     function findGame(entry) {
-        const matches = state.gamesByTitle.get(titleKey(entry.title)) || [];
-        if (!matches.length) return null;
-
-        const requestedSystem = systemKey(entry.system);
-        const exactSystem = matches.find((game) => systemKey(game.system || game.platform) === requestedSystem);
-        if (exactSystem) return exactSystem;
-
-        return matches.length === 1 ? matches[0] : null;
-    }
-
-    function gameHref(game) {
-        const slug = String(game?.slug || game?.id || "").trim().replace(/^\/+|\/+$/g, "");
-        return slug ? `/games/${encodeURIComponent(slug)}/` : "";
+        return state.matcher.findGame(entry, state.gameIndex);
     }
 
     function sortTitle(value) {
-        return normalizeText(value).replace(/^(the|a|an)\s+/, "");
+        return state.matcher.canonicalTitle(value);
     }
 
     function compareEntriesAlphabetically(a, b) {
@@ -184,25 +126,26 @@
             || String(a.title).localeCompare(String(b.title), "en-GB", { numeric: true })
             || Number(a.year) - Number(b.year)
             || MONTH_ORDER.indexOf(a.month) - MONTH_ORDER.indexOf(b.month)
-            || systemKey(a.system).localeCompare(systemKey(b.system))
+            || state.matcher.systemKey(a.system).localeCompare(state.matcher.systemKey(b.system))
             || AWARD_ORDER.indexOf(a.award) - AWARD_ORDER.indexOf(b.award);
     }
 
     function filteredEntries() {
-        const query = normalizeText(state.query);
+        const query = state.matcher.normalizeText(state.query);
 
         return state.entries.filter((entry) => {
-            const queryMatch = !query || query.split(" ").filter(Boolean).every((term) => normalizeText([
+            const haystack = state.matcher.normalizeText([
                 entry.title,
                 entry.month,
                 entry.year,
                 entry.award,
                 entry.system,
                 entry.score === null ? "not scored" : entry.score
-            ].join(" ")).includes(term));
+            ].join(" "));
+            const queryMatch = !query || query.split(" ").filter(Boolean).every((term) => haystack.includes(term));
             const yearMatch = state.year === "all" || String(entry.year) === state.year;
-            const systemMatch = state.system === "all" || systemKey(entry.system) === state.system;
-            const awardMatch = state.award === "all" || normalizeText(entry.award) === state.award;
+            const systemMatch = state.system === "all" || state.matcher.systemKey(entry.system) === state.system;
+            const awardMatch = state.award === "all" || state.matcher.normalizeText(entry.award) === state.award;
             return queryMatch && yearMatch && systemMatch && awardMatch;
         }).sort(compareEntriesAlphabetically);
     }
@@ -227,8 +170,26 @@
         });
     }
 
+    function awardArtwork(entry) {
+        if (entry.award === "Gold Medal") {
+            return `<img class="zzap-award-card__award-logo zzap-award-card__award-logo--gold" src="${ASSETS.gold}" alt="Zzap!64 Gold Medal award" width="64" height="108" loading="lazy" decoding="async">`;
+        }
+        if (entry.award === "Sizzler") {
+            return `<img class="zzap-award-card__award-logo zzap-award-card__award-logo--sizzler" src="${ASSETS.sizzler}" alt="Zzap!64 Sizzler award" width="96" height="72" loading="lazy" decoding="async">`;
+        }
+        return `<span class="zzap-award-card__badge">${escapeHtml(entry.award)}</span>`;
+    }
+
+    function platformArtwork(entry) {
+        const system = state.matcher.systemKey(entry.system);
+        if (system === "amiga") {
+            return `<span class="zzap-award-card__platform zzap-award-card__platform--amiga"><img src="${ASSETS.amiga}" alt="Commodore Amiga" width="170" height="63" loading="lazy" decoding="async"></span>`;
+        }
+        return `<span class="zzap-award-card__platform zzap-award-card__platform--c64"><img src="${ASSETS.c64}" alt="Commodore 64" width="180" height="18" loading="lazy" decoding="async"></span>`;
+    }
+
     function renderGameTitle(entry, game) {
-        const href = gameHref(game);
+        const href = state.matcher.gameHref(game);
         if (game && href) {
             return `
                 <a class="zzap-award-card__game-link" href="${escapeHtml(href)}" aria-label="Open the CCG game page for ${escapeHtml(entry.title)}">
@@ -255,17 +216,26 @@
         const card = document.createElement("article");
         card.className = "zzap-award-card";
         card.dataset.award = entry.award;
+        card.dataset.system = state.matcher.systemKey(entry.system);
 
         const game = findGame(entry);
+        if (game) card.dataset.gameLinked = "true";
+
         card.innerHTML = `
             <div class="zzap-award-card__top">
-                <span class="zzap-award-card__badge">${escapeHtml(entry.award)}</span>
+                <div class="zzap-award-card__award-mark">
+                    ${awardArtwork(entry)}
+                    <span class="zzap-award-card__award-label">${escapeHtml(entry.award)}</span>
+                </div>
                 ${renderScore(entry)}
             </div>
             <h3 class="zzap-award-card__title">${renderGameTitle(entry, game)}</h3>
-            <div class="zzap-award-card__meta">
-                <span>${escapeHtml(entry.month)} ${escapeHtml(entry.year)}</span>
-                <span>${escapeHtml(entry.system)}</span>
+            <div class="zzap-award-card__bottom">
+                <div class="zzap-award-card__meta">
+                    <span>${escapeHtml(entry.month)} ${escapeHtml(entry.year)}</span>
+                    <span>${escapeHtml(entry.system)}</span>
+                </div>
+                ${platformArtwork(entry)}
             </div>
         `;
         return card;
@@ -326,6 +296,10 @@
     }
 
     async function loadAll() {
+        await ensureScript(MATCHER_PATH);
+        state.matcher = window.CCGZzap64Matcher;
+        if (!state.matcher) throw new Error("Zzap title matcher did not initialise");
+
         const yearResults = await Promise.all(YEARS.map(async (year) => {
             const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "no-store" });
             if (!response.ok) throw new Error(`${year} archive HTTP ${response.status}`);
@@ -338,21 +312,17 @@
             entry.year && entry.month && entry.title && entry.award && entry.system
         ));
 
-        try {
-            const response = await fetch("/games/games-search.json", { cache: "no-store" });
-            const data = response.ok ? await response.json() : [];
-            state.games = Array.isArray(data) ? data : (data.games || []);
-        } catch (error) {
-            state.games = [];
-        }
-
-        buildGameIndex();
+        const gamesResponse = await fetch("/games/games.json", { cache: "no-store" });
+        if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
+        const gamesData = await gamesResponse.json();
+        state.games = Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
+        state.gameIndex = state.matcher.buildGameIndex(state.games);
     }
 
     async function init() {
-        bindFilters();
         try {
             await loadAll();
+            bindFilters();
             const total = document.getElementById("zzapTotalCount");
             if (total) total.textContent = state.entries.length.toLocaleString("en-GB");
             renderYearCards();
