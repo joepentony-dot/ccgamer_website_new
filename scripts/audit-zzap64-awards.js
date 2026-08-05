@@ -25,6 +25,7 @@ const ALLOWED_UNSCORED = new Set([
 ]);
 const REQUIRED_FILES = [
     "resources/images/zzap64/zzap64-gold-medal.webp",
+    "resources/images/zzap64/zzap64-silver-medal.svg",
     "resources/images/zzap64/zzap64-sizzler.webp",
     "resources/images/platforms/commodore-64-logo.webp",
     "resources/images/platforms/commodore-amiga-logo.webp",
@@ -189,6 +190,7 @@ const archiveScript = read("js/zzap64-awards.js");
     ["/games/games.json", "The full system-aware game archive is not used."],
     ["ccg-zzap64-matcher.js", "The shared matcher is not loaded."],
     ["zzap64-gold-medal.webp", "Gold Medal artwork is not rendered."],
+    ["zzap64-silver-medal.svg", "Silver Medal artwork is not rendered."],
     ["zzap64-sizzler.webp", "Sizzler artwork is not rendered."],
     ["commodore-64-logo.webp", "C64 platform artwork is not rendered."],
     ["commodore-amiga-logo.webp", "Amiga platform artwork is not rendered."]
@@ -199,6 +201,7 @@ const archiveScript = read("js/zzap64-awards.js");
 const logoCss = read("resources/css/zzap64-awards-logos.css");
 [
     ".zzap-award-card__award-logo",
+    ".zzap-award-card__award-logo--silver",
     ".zzap-award-card__platform",
     ".zzap-award-card__bottom",
     "data-game-linked"
@@ -212,4 +215,5 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log(`Zzap!64 awards audit passed: ${records.length} records, ${matchedRecords} linked game records, ${unscored.size} intentionally unscored.`);
+const silverCount = records.filter((entry) => entry.award === "Silver Medal").length;
+console.log(`Zzap!64 awards audit passed: ${records.length} records, ${matchedRecords} linked game records, ${silverCount} Silver Medal records, ${unscored.size} intentionally unscored.`);
