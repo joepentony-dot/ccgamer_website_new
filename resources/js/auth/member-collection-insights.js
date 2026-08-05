@@ -209,12 +209,24 @@
   }
 
   function initObserver() {
+    if (ensurePanel()) {
+      render();
+      return;
+    }
     if (observer) return;
+
     observer = new MutationObserver(() => {
       if (!ensurePanel()) return;
+      observer.disconnect();
+      observer = null;
       render();
     });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden", "class", "aria-selected"] });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    window.setTimeout(() => {
+      observer?.disconnect();
+      observer = null;
+    }, 10000);
   }
 
   function init() {
