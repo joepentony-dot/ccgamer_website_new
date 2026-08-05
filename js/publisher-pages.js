@@ -50,7 +50,33 @@
         const empty = document.getElementById("publisherEmptyState");
         const cards = Array.from(grid.querySelectorAll("[data-publisher-card]"));
         const buttons = Array.from(document.querySelectorAll("[data-publisher-system]"));
+        const featuredHeading = document.getElementById("featured-publishers-title");
+        const featuredSection = featuredHeading?.closest(".ccg-publishers-section");
+        const archiveSection = grid.closest(".ccg-publishers-section");
+        const archiveHeading = archiveSection?.querySelector("#all-publishers-title");
+        const archiveKicker = archiveSection?.querySelector(".ccg-publishers-section__kicker");
+        const defaultArchiveHeading = archiveHeading?.textContent || "All Publishers";
+        const defaultArchiveKicker = archiveKicker?.textContent || "Full archive";
         let system = readInitialSystem(["all", "c64", "amiga"]);
+
+        function updateSearchPriority(query) {
+            const hasSearch = Boolean(query);
+
+            if (featuredSection) {
+                featuredSection.hidden = hasSearch;
+                featuredSection.setAttribute("aria-hidden", hasSearch ? "true" : "false");
+            }
+
+            if (archiveHeading) {
+                archiveHeading.textContent = hasSearch ? "Search Results" : defaultArchiveHeading;
+            }
+
+            if (archiveKicker) {
+                archiveKicker.textContent = hasSearch ? "Matching publishers" : defaultArchiveKicker;
+            }
+
+            archiveSection?.classList.toggle("ccg-publishers-section--search-results", hasSearch);
+        }
 
         function applyFilters() {
             const query = normalize(search?.value);
@@ -72,6 +98,7 @@
                 if (show) visible += 1;
             });
 
+            updateSearchPriority(query);
             if (count) count.textContent = String(visible);
             if (empty) empty.hidden = visible !== 0;
             setPressed(buttons, system, "data-publisher-system");
