@@ -1,6 +1,7 @@
 import { getSupabaseClient } from './supabase-client.js';
 
 const STORAGE_KEY = 'ccgPersonalGameLibraryV1';
+const TOMBSTONE_KEY = 'ccgPersonalGameLibraryTombstonesV1';
 const PREFERRED_SYSTEM_KEY = 'ccgMemberPreferredSystemV1';
 const TABLE = 'profile_game_library';
 const CSS_PATH = '/resources/css/member-library-sync.css';
@@ -13,7 +14,6 @@ const state = {
   cloudAvailable: false,
   initialised: false,
   suppressLocalEvent: false,
-  remoteSlugs: new Set(),
   pushTimer: null
 };
 
@@ -52,6 +52,11 @@ function validDate(value) {
   return Number.isNaN(date.getTime()) ? 0 : date.getTime();
 }
 
+function isoDate(value, fallback = '') {
+  const timestamp = validDate(value);
+  return timestamp ? new Date(timestamp).toISOString() : fallback;
+}
+
 function ensureStylesheet() {
   if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
   const link = document.createElement('link');
@@ -69,31 +74,37 @@ function createButton(id, label) {
   return button;
 }
 
+function updateMemberBenefitCopy() {
+  const heading = Array.from(document.querySelectorAll('.member-benefit-card h3')).find((node) => (
+    /coming in later phases|coming in the community phase/i.test(node.textContent || '')
+  ));
+  const list = heading?.parentElement?.querySelector('.member-benefit-list');
+  if (!heading || !list) return;
+
+  heading.textContent = 'Member Hub Features';
+  list.innerHTML = [
+    '<li>Account-synchronised personal lists and private custom collections</li>',
+    '<li>Optional public profile with privacy controls</li>',
+    '<li>Member suggestions and correction tracking</li>',
+    '<li>Monthly loyalty badges that can be shared on Discord</li>'
+  ].join('');
+}
+
 function ensureInterface() {
   const section = document.getElementById('personalGameLibrary');
   const actions = section?.querySelector('.profile-library__actions');
   if (!section || !actions) return;
 
   actions.classList.add('member-library-sync-controls');
-  const jsonExport = document.getElementById('exportPersonalLibrary');
-  if (jsonExport) jsonExport.textContent = 'Export JSON';
 
-  if (!document.getElementById('exportPersonalLibraryCsv')) {
-    actions.insertBefore(createButton('exportPersonalLibraryCsv', 'Export CSV'), document.getElementById('clearPersonalLibrary') || null);
-  }
-  if (!document.getElementById('importPersonalLibraryButton')) {
-    actions.insertBefore(createButton('importPersonalLibraryButton', 'Import JSON'), document.getElementById('clearPersonalLibrary') || null);
-  }
+  [
+    'importPersonalLibraryButton',
+    'importPersonalLibraryFile',
+    'exportPersonalLibraryCsv'
+  ].forEach((id) => document.getElementById(id)?.remove());
+
   if (!document.getElementById('memberSyncLibraryNow')) {
     actions.insertBefore(createButton('memberSyncLibraryNow', 'Sync now'), document.getElementById('clearPersonalLibrary') || null);
-  }
-  if (!document.getElementById('importPersonalLibraryFile')) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.id = 'importPersonalLibraryFile';
-    input.accept = '.json,application/json';
-    input.hidden = true;
-    actions.appendChild(input);
   }
 
   if (!document.getElementById('memberLibrarySyncStatus')) {
@@ -108,7 +119,7 @@ function ensureInterface() {
 
   const note = section.querySelector('.profile-library__note');
   if (note) {
-    note.textContent = 'Record what you played, what you want to try and the games you owned. Your browser copy remains available while account synchronisation keeps the same library available on signed-in devices.';
+    note.textContent = 'Record what you played, what you want to try and the games you owned. Your browser copy remains available while account synchronisation keeps the same private library on signed-in devices.';
   }
 
   const preferredNote = Array.from(document.querySelectorAll('.member-local-note')).find((node) => (
@@ -118,23 +129,29 @@ function ensureInterface() {
     preferredNote.textContent = 'Preferred system is stored on your account when cloud synchronisation is available, with a browser fallback retained.';
   }
 
-  const laterHeading = Array.from(document.querySelectorAll('.member-benefit-card h3')).find((node) => (
-    /coming in later phases/i.test(node.textContent || '')
-  ));
-  const laterList = laterHeading?.parentElement?.querySelector('.member-benefit-list');
-  if (laterHeading && laterList) {
-    laterHeading.textContent = 'Coming in the Community Phase';
-    laterList.innerHTML = '<li>Optional public member profiles</li><li>Shareable public collections</li><li>Member suggestions and correction tracking</li><li>Public badges controlled by privacy settings</li>';
+  const achievementsIntro = document.querySelector('#memberAchievements .member-panel__intro');
+  if (achievementsIntro) {
+    achievementsIntro.textContent = 'Activity milestones remain private. Your monthly loyalty badge is based on the earliest valid account membership date.';
   }
+
+  updateMemberBenefitCopy();
 }
 
-function readLocalLibrary() {
+function readObject(key) {
   try {
-    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    const parsed = JSON.parse(localStorage.getItem(key) || '{}');
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
   } catch (error) {
     return {};
   }
+}
+
+function readLocalLibrary() {
+  return readObject(STORAGE_KEY);
+}
+
+function readLocalTombstones() {
+  return readObject(TOMBSTONE_KEY);
 }
 
 function normalizeLocalEntry(gameSlug, entry = {}) {
@@ -148,26 +165,99 @@ function normalizeLocalEntry(gameSlug, entry = {}) {
     customLists: uniqueStrings(entry.customLists || entry.custom_lists).slice(0, 20),
     rating: validRating(entry.rating),
     note: text(entry.note).slice(0, 2000),
-    updatedAt: text(entry.updatedAt || entry.updated_at || new Date(0).toISOString())
+    updatedAt: isoDate(entry.updatedAt || entry.updated_at, new Date(0).toISOString())
   };
+}
+
+function entryHasContent(entry) {
+  return Boolean(
+    entry?.lists?.length
+    || entry?.customLists?.length
+    || entry?.rating
+    || entry?.note
+  );
 }
 
 function normalizeLocalLibrary(source) {
   const result = {};
   Object.entries(source || {}).forEach(([gameSlug, entry]) => {
     const normalized = normalizeLocalEntry(gameSlug, entry);
-    if (!normalized.slug) return;
-    const hasContent = normalized.lists.length
-      || normalized.customLists.length
-      || normalized.rating
-      || normalized.note;
-    if (hasContent) result[normalized.slug] = normalized;
+    if (!normalized.slug || !entryHasContent(normalized)) return;
+    result[normalized.slug] = normalized;
   });
   return result;
 }
 
-function remoteToLocal(row = {}) {
-  return normalizeLocalEntry(row.game_slug, {
+function normalizeTombstones(source) {
+  const result = {};
+  Object.entries(source || {}).forEach(([gameSlug, deletedAt]) => {
+    const normalizedSlug = slug(gameSlug);
+    const normalizedDate = isoDate(deletedAt);
+    if (normalizedSlug && normalizedDate) result[normalizedSlug] = normalizedDate;
+  });
+  return result;
+}
+
+function localStateMap() {
+  const library = normalizeLocalLibrary(readLocalLibrary());
+  const tombstones = normalizeTombstones(readLocalTombstones());
+  const result = new Map();
+
+  Object.entries(library).forEach(([gameSlug, entry]) => {
+    result.set(gameSlug, {
+      slug: gameSlug,
+      deleted: false,
+      timestamp: validDate(entry.updatedAt),
+      timestampIso: entry.updatedAt,
+      entry
+    });
+  });
+
+  Object.entries(tombstones).forEach(([gameSlug, deletedAt]) => {
+    const deletionState = {
+      slug: gameSlug,
+      deleted: true,
+      timestamp: validDate(deletedAt),
+      timestampIso: deletedAt,
+      entry: null
+    };
+    const existing = result.get(gameSlug);
+    if (!existing || deletionState.timestamp >= existing.timestamp) result.set(gameSlug, deletionState);
+  });
+
+  return result;
+}
+
+function remoteState(row = {}) {
+  const gameSlug = slug(row.game_slug);
+  if (!gameSlug) return null;
+
+  const deletedAt = isoDate(row.deleted_at);
+  const updatedAt = isoDate(row.updated_at, new Date(0).toISOString());
+  const deletedTimestamp = validDate(deletedAt);
+  const updatedTimestamp = validDate(updatedAt);
+
+  if (deletedAt && deletedTimestamp >= updatedTimestamp) {
+    return {
+      slug: gameSlug,
+      deleted: true,
+      timestamp: deletedTimestamp,
+      timestampIso: deletedAt,
+      entry: null
+    };
+  }
+
+  if (deletedAt) {
+    return {
+      slug: gameSlug,
+      deleted: true,
+      timestamp: Math.max(deletedTimestamp, updatedTimestamp),
+      timestampIso: new Date(Math.max(deletedTimestamp, updatedTimestamp)).toISOString(),
+      entry: null
+    };
+  }
+
+  const entry = normalizeLocalEntry(gameSlug, {
     title: row.title,
     system: row.system,
     year: row.release_year,
@@ -175,40 +265,46 @@ function remoteToLocal(row = {}) {
     customLists: row.custom_lists,
     rating: row.rating,
     note: row.note,
-    updatedAt: row.updated_at
+    updatedAt
   });
+
+  return {
+    slug: gameSlug,
+    deleted: false,
+    timestamp: validDate(entry.updatedAt),
+    timestampIso: entry.updatedAt,
+    entry
+  };
 }
 
-function mergeEntries(localEntry, remoteEntry) {
-  if (!localEntry) return remoteEntry;
-  if (!remoteEntry) return localEntry;
-
-  const localNewer = validDate(localEntry.updatedAt) >= validDate(remoteEntry.updatedAt);
-  const newest = localNewer ? localEntry : remoteEntry;
-  const older = localNewer ? remoteEntry : localEntry;
-
-  return normalizeLocalEntry(newest.slug || older.slug, {
-    title: newest.title || older.title,
-    system: newest.system || older.system,
-    year: newest.year || older.year,
-    lists: Array.from(new Set([...(localEntry.lists || []), ...(remoteEntry.lists || [])])),
-    customLists: Array.from(new Set([...(localEntry.customLists || []), ...(remoteEntry.customLists || [])])),
-    rating: newest.rating || older.rating,
-    note: newest.note || older.note,
-    updatedAt: validDate(newest.updatedAt) ? newest.updatedAt : older.updatedAt
-  });
+function newerState(localValue, remoteValue) {
+  if (!localValue) return remoteValue;
+  if (!remoteValue) return localValue;
+  if (localValue.timestamp > remoteValue.timestamp) return localValue;
+  if (remoteValue.timestamp > localValue.timestamp) return remoteValue;
+  if (localValue.deleted !== remoteValue.deleted) return localValue.deleted ? localValue : remoteValue;
+  return localValue;
 }
 
 function librariesEqual(a, b) {
   return JSON.stringify(normalizeLocalLibrary(a)) === JSON.stringify(normalizeLocalLibrary(b));
 }
 
-function writeLocalLibrary(library) {
-  const normalized = normalizeLocalLibrary(library);
-  if (librariesEqual(readLocalLibrary(), normalized)) return false;
+function tombstonesEqual(a, b) {
+  return JSON.stringify(normalizeTombstones(a)) === JSON.stringify(normalizeTombstones(b));
+}
+
+function writeLocalState(library, tombstones) {
+  const normalizedLibrary = normalizeLocalLibrary(library);
+  const normalizedTombstones = normalizeTombstones(tombstones);
+  const libraryChanged = !librariesEqual(readLocalLibrary(), normalizedLibrary);
+  const tombstonesChanged = !tombstonesEqual(readLocalTombstones(), normalizedTombstones);
+  if (!libraryChanged && !tombstonesChanged) return false;
+
   state.suppressLocalEvent = true;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalizedLibrary));
+    localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(normalizedTombstones));
     document.dispatchEvent(new Event('ccg:personal-library-updated'));
   } finally {
     window.setTimeout(() => { state.suppressLocalEvent = false; }, 0);
@@ -227,7 +323,24 @@ function isMissingSchema(error) {
   return MISSING_SCHEMA_CODES.has(String(error?.code || ''));
 }
 
-function payloadFromEntry(entry) {
+function payloadFromState(value) {
+  if (value.deleted) {
+    return {
+      profile_id: state.user.id,
+      game_slug: value.slug,
+      title: null,
+      system: null,
+      release_year: null,
+      lists: [],
+      custom_lists: [],
+      rating: null,
+      note: '',
+      deleted_at: value.timestampIso,
+      updated_at: value.timestampIso
+    };
+  }
+
+  const entry = value.entry;
   return {
     profile_id: state.user.id,
     game_slug: entry.slug,
@@ -238,6 +351,7 @@ function payloadFromEntry(entry) {
     custom_lists: uniqueStrings(entry.customLists).slice(0, 20),
     rating: entry.rating ? Number(entry.rating) : null,
     note: entry.note || '',
+    deleted_at: null,
     updated_at: validDate(entry.updatedAt) ? entry.updatedAt : new Date().toISOString()
   };
 }
@@ -245,28 +359,18 @@ function payloadFromEntry(entry) {
 async function fetchRemoteLibrary() {
   const { data, error } = await state.client
     .from(TABLE)
-    .select('game_slug,title,system,release_year,lists,custom_lists,rating,note,created_at,updated_at')
+    .select('game_slug,title,system,release_year,lists,custom_lists,rating,note,deleted_at,created_at,updated_at')
     .eq('profile_id', state.user.id)
     .order('updated_at', { ascending: false });
   if (error) throw error;
   return Array.isArray(data) ? data : [];
 }
 
-async function upsertEntries(entries) {
-  if (!entries.length) return;
+async function upsertStates(values) {
+  if (!values.length) return;
   const { error } = await state.client
     .from(TABLE)
-    .upsert(entries.map(payloadFromEntry), { onConflict: 'profile_id,game_slug' });
-  if (error) throw error;
-}
-
-async function deleteRemoteSlugs(slugs) {
-  if (!slugs.length) return;
-  const { error } = await state.client
-    .from(TABLE)
-    .delete()
-    .eq('profile_id', state.user.id)
-    .in('game_slug', slugs);
+    .upsert(values.map(payloadFromState), { onConflict: 'profile_id,game_slug' });
   if (error) throw error;
 }
 
@@ -301,56 +405,65 @@ async function savePreferredSystem(value) {
   }
 }
 
-async function reconcileLibraries() {
-  setStatus('Checking your account library…', 'working');
-  const local = normalizeLocalLibrary(readLocalLibrary());
+async function reconcileLibraries({ workingMessage = 'Checking your account library…', successPrefix = 'Account sync ready' } = {}) {
+  setStatus(workingMessage, 'working');
+  const local = localStateMap();
   let remoteRows;
+
   try {
     remoteRows = await fetchRemoteLibrary();
   } catch (error) {
     if (isMissingSchema(error)) {
       state.cloudAvailable = false;
-      setStatus('Device-only mode: account synchronisation is awaiting the database migration.', 'local');
-      return;
+      setStatus('Device-only mode: account synchronisation is awaiting the Phase 7B deletion-safety migration.', 'local');
+      return false;
     }
     throw error;
   }
 
   state.cloudAvailable = true;
-  state.remoteSlugs = new Set(remoteRows.map((row) => slug(row.game_slug)).filter(Boolean));
-  const remote = {};
+  const remote = new Map();
   remoteRows.forEach((row) => {
-    const entry = remoteToLocal(row);
-    if (entry.slug) remote[entry.slug] = entry;
+    const value = remoteState(row);
+    if (value) remote.set(value.slug, value);
   });
 
-  const merged = {};
-  new Set([...Object.keys(local), ...Object.keys(remote)]).forEach((gameSlug) => {
-    const entry = mergeEntries(local[gameSlug], remote[gameSlug]);
-    if (entry) merged[gameSlug] = entry;
+  const winners = [];
+  const library = {};
+  const tombstones = {};
+
+  new Set([...local.keys(), ...remote.keys()]).forEach((gameSlug) => {
+    const winner = newerState(local.get(gameSlug), remote.get(gameSlug));
+    if (!winner) return;
+    winners.push(winner);
+
+    if (winner.deleted) {
+      tombstones[gameSlug] = winner.timestampIso;
+      return;
+    }
+
+    library[gameSlug] = winner.entry;
   });
 
-  writeLocalLibrary(merged);
-  const entries = Object.values(merged);
-  await upsertEntries(entries);
-  state.remoteSlugs = new Set(entries.map((entry) => entry.slug));
-  setStatus(`Account sync ready · ${entries.length} ${entries.length === 1 ? 'game' : 'games'} available on this account.`, 'synced');
+  writeLocalState(library, tombstones);
+  await upsertStates(winners);
+
+  const activeCount = Object.keys(library).length;
+  setStatus(`${successPrefix} · ${activeCount} ${activeCount === 1 ? 'game' : 'games'} available on this account.`, 'synced');
+  return true;
 }
 
 async function pushLocalLibrary() {
   if (!state.cloudAvailable || !state.initialised) return;
-  const entries = Object.values(normalizeLocalLibrary(readLocalLibrary()));
-  setStatus('Synchronising changes…', 'working');
   try {
-    await upsertEntries(entries);
-    const localSlugs = new Set(entries.map((entry) => entry.slug));
-    await deleteRemoteSlugs([...state.remoteSlugs].filter((gameSlug) => !localSlugs.has(gameSlug)));
-    state.remoteSlugs = localSlugs;
-    setStatus(`Synced · ${entries.length} ${entries.length === 1 ? 'game' : 'games'} stored on your account.`, 'synced');
+    await reconcileLibraries({
+      workingMessage: 'Synchronising changes…',
+      successPrefix: 'Synced'
+    });
   } catch (error) {
     if (isMissingSchema(error)) {
       state.cloudAvailable = false;
-      setStatus('Saved on this browser. Account sync is awaiting the database migration.', 'local');
+      setStatus('Saved on this browser. Account sync is awaiting the Phase 7B deletion-safety migration.', 'local');
       return;
     }
     console.error('[member-library-sync] Push failed', error);
@@ -364,72 +477,17 @@ function schedulePush() {
   state.pushTimer = window.setTimeout(() => { void pushLocalLibrary(); }, 700);
 }
 
-function csvCell(value) {
-  const output = Array.isArray(value) ? value.join(' | ') : String(value ?? '');
-  return `"${output.replace(/"/g, '""')}"`;
-}
-
-function downloadFile(filename, content, type) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
-}
-
-function exportCsv() {
-  const rows = Object.values(normalizeLocalLibrary(readLocalLibrary())).sort((a, b) => a.title.localeCompare(b.title));
-  const columns = ['title', 'slug', 'system', 'year', 'lists', 'customLists', 'rating', 'note', 'updatedAt'];
-  const csv = [columns.map(csvCell).join(','), ...rows.map((entry) => columns.map((column) => csvCell(entry[column])).join(','))].join('\r\n');
-  downloadFile('ccg-personal-game-library.csv', csv, 'text/csv;charset=utf-8');
-  setStatus('CSV export created.', state.cloudAvailable ? 'synced' : 'local');
-}
-
-function normalizeImportedLibrary(payload) {
-  const source = payload?.games && typeof payload.games === 'object' ? payload.games : payload;
-  if (!source || typeof source !== 'object' || Array.isArray(source)) throw new Error('This file does not contain a CCG personal game library.');
-  return normalizeLocalLibrary(source);
-}
-
-async function importJsonFile(file) {
-  const imported = normalizeImportedLibrary(JSON.parse(await file.text()));
-  const current = normalizeLocalLibrary(readLocalLibrary());
-  const merged = { ...current };
-  Object.entries(imported).forEach(([gameSlug, entry]) => { merged[gameSlug] = mergeEntries(current[gameSlug], entry); });
-  writeLocalLibrary(merged);
-  if (state.cloudAvailable) await pushLocalLibrary();
-  else setStatus(`Imported ${Object.keys(imported).length} games on this browser.`, 'local');
-}
-
 function bindControls() {
   document.addEventListener('ccg:personal-library-updated', schedulePush);
+
   document.getElementById('memberSyncLibraryNow')?.addEventListener('click', () => {
-    if (state.cloudAvailable) void pushLocalLibrary();
-    else void reconcileLibraries().catch((error) => {
+    void reconcileLibraries({
+      workingMessage: 'Checking both copies of your library…',
+      successPrefix: 'Sync complete'
+    }).catch((error) => {
       console.error('[member-library-sync] Manual sync failed', error);
       setStatus('Account sync could not be started. Your browser data is unchanged.', 'error');
     });
-  });
-  document.getElementById('exportPersonalLibraryCsv')?.addEventListener('click', exportCsv);
-
-  const input = document.getElementById('importPersonalLibraryFile');
-  document.getElementById('importPersonalLibraryButton')?.addEventListener('click', () => input?.click());
-  input?.addEventListener('change', async () => {
-    const file = input.files?.[0];
-    if (!file) return;
-    setStatus('Importing library…', 'working');
-    try {
-      await importJsonFile(file);
-      setStatus('Library import complete.', state.cloudAvailable ? 'synced' : 'local');
-    } catch (error) {
-      console.error('[member-library-sync] Import failed', error);
-      setStatus(error.message || 'The library file could not be imported.', 'error');
-    } finally {
-      input.value = '';
-    }
   });
 
   document.getElementById('preferredSystem')?.addEventListener('change', (event) => {
@@ -449,9 +507,10 @@ async function init() {
     if (error) throw error;
     state.user = data?.user || null;
     if (!state.user) return;
+
     await loadPreferredSystem();
-    await reconcileLibraries();
     state.initialised = true;
+    await reconcileLibraries();
   } catch (error) {
     console.error('[member-library-sync] Initialisation failed', error);
     state.initialised = true;
@@ -461,4 +520,4 @@ async function init() {
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-else init();
+else void init();
