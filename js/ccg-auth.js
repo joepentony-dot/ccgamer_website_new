@@ -27,6 +27,12 @@
     return text;
   }
 
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (character) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character];
+    });
+  }
+
   function getDisplayName(profile, user) {
     const profileDisplayName = readSafeValue(profile && profile.display_name);
     if (profileDisplayName) return profileDisplayName;
@@ -184,8 +190,10 @@
 
     if (auth.loggedIn) {
       const username = auth.username || '@member';
+      const safeUsername = escapeHtml(username);
       slot.innerHTML = '' +
-        '<a class="ccg-btn ccg-btn-auth" id="ccg-auth-identity" href="/community/profile.html">' + username + '</a>' +
+        '<a class="ccg-btn ccg-btn-auth ccg-profile-link" id="ccg-auth-identity" href="/community/profile.html" aria-label="Open profile for ' + safeUsername + '">' +
+        '<span class="ccg-profile-link__label">Profile:</span> <span class="ccg-profile-link__name">' + safeUsername + '</span></a>' +
         '<button type="button" class="ccg-btn ccg-btn-auth" id="ccg-auth-logout" data-logout>Logout</button>';
       bindLogout(slot.querySelector('#ccg-auth-logout'));
       return;
@@ -211,5 +219,15 @@
     window.addEventListener(AUTH_EVENT, renderHeaderAuth);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  window.CCGHeaderAuth = Object.freeze({
+    refresh: refreshUi,
+    render: renderHeaderAuth,
+    resolve: resolveAuthState
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();
