@@ -7,7 +7,12 @@ on:
       - "**/*.js"
       - "**/*.css"
       - "**/*.json"
+      - "**/*.xml"
+      - "_redirects"
+      - "_headers"
+      - "**/.htaccess"
       - "scripts/audit-site-safety.py"
+      - "scripts/audit-legacy-game-routes.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -33,6 +38,7 @@ jobs:
       - name: Validate critical JavaScript syntax
         run: |
           node --check js/ccg-nav-core.js
+          node --check js/ccg-legacy-url-consolidation.js
           node --check js/ccg-global-search.js
           node --check js/ccg-search-ranking.js
           node --check js/ccg-recently-viewed.js
@@ -46,11 +52,15 @@ jobs:
           node --check js/game-discovery.js
           node --check js/zzap64-awards.js
           node --check resources/js/auth/profile-lists.js
+          node --check scripts/audit-legacy-game-routes.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
 
-      - name: Confirm audit made no repository changes
+      - name: Run legacy game route audit
+        run: node scripts/audit-legacy-game-routes.js
+
+      - name: Confirm audits made no repository changes
         run: |
           rm -rf scripts/__pycache__
           git diff --exit-code
