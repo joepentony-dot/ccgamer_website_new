@@ -40,7 +40,7 @@ const navCore = read("js/ccg-nav-core.js");
   "get_public_member_profile",
   "where p.is_public = true",
   "get_my_member_activity",
-  "revoke all on function public.get_my_member_activity"
+  "on function public.get_my_member_activity(int)"
 ].forEach((needle) => {
   if (!migration.includes(needle)) problems.push(`Member Community migration is missing: ${needle}.`);
 });

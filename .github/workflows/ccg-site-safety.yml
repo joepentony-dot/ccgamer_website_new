@@ -27,6 +27,7 @@ on:
       - "scripts/audit-admin-master-data-gate.js"
       - "scripts/audit-member-custom-collections.js"
       - "scripts/audit-member-hub-phase7b.js"
+      - "scripts/audit-member-hub-phase7c.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -96,6 +97,7 @@ jobs:
           node --check scripts/audit-admin-master-data-gate.js
           node --check scripts/audit-member-custom-collections.js
           node --check scripts/audit-member-hub-phase7b.js
+          node --check scripts/audit-member-hub-phase7c.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -135,6 +137,9 @@ jobs:
 
       - name: Run Phase 7B Member Hub audit
         run: node scripts/audit-member-hub-phase7b.js
+
+      - name: Run Phase 7C Supabase compatibility audit
+        run: node scripts/audit-member-hub-phase7c.js
 
       - name: Confirm audits made no repository changes
         run: |
