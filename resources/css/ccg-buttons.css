@@ -273,3 +273,15 @@ body[data-ccg-mode="amiga"] .ccg-btn--secondary {
         transform: scale(0.97);
     }
 }
+
+/* ============================================================
+   AMIGA NAV DRAWER STACKING SAFEGUARD
+   ------------------------------------------------------------
+   Amiga mode assigns the header and main content competing
+   stacking contexts. Keep the header above page visuals so the
+   fixed navigation drawer cannot be painted behind the content.
+============================================================ */
+
+body[data-ccg-mode="amiga"] .ccg-header {
+    z-index: 10020 !important;
+}
