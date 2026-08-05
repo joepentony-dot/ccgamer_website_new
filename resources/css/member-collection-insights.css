@@ -1,0 +1,118 @@
+/* ============================================================
+   CCG MEMBER HUB — PRIVATE CUSTOM COLLECTION INSIGHTS
+============================================================ */
+
+.member-collection-insights {
+  margin: 0.8rem 0;
+  padding: 0.85rem;
+  border: 1px solid rgba(100, 203, 255, 0.34);
+  background: rgba(5, 15, 32, 0.68);
+}
+
+.member-collection-insights__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+.member-collection-insights__header h5 {
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.member-collection-insights__kicker {
+  margin: 0 0 0.2rem;
+  color: rgba(136, 220, 255, 0.86);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.member-collection-insights__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.member-collection-insights__stats article {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid rgba(117, 178, 222, 0.24);
+  background: rgba(3, 10, 23, 0.58);
+}
+
+.member-collection-insights__stats strong {
+  color: #fff;
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.member-collection-insights__stats span {
+  color: rgba(207, 226, 241, 0.66);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.member-collection-insights__random {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.2rem 0.7rem;
+  align-items: center;
+  margin-top: 0.7rem;
+  padding: 0.7rem;
+  border: 1px solid rgba(91, 231, 177, 0.44);
+  background: rgba(6, 39, 37, 0.48);
+}
+
+.member-collection-insights__random > span {
+  grid-row: 1 / 3;
+  color: #9cf7c7;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.member-collection-insights__random a {
+  color: #fff;
+  font-weight: 800;
+}
+
+.member-collection-insights__random small {
+  color: rgba(210, 234, 243, 0.68);
+}
+
+html[data-ccg-mode="amiga"] .member-collection-insights,
+body[data-ccg-mode="amiga"] .member-collection-insights {
+  border-color: rgba(255, 103, 211, 0.38);
+  background: rgba(37, 8, 41, 0.64);
+}
+
+html[data-ccg-mode="amiga"] .member-collection-insights__kicker,
+body[data-ccg-mode="amiga"] .member-collection-insights__kicker {
+  color: rgba(255, 157, 226, 0.9);
+}
+
+@media (max-width: 860px) {
+  .member-collection-insights__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 580px) {
+  .member-collection-insights__header {
+    flex-direction: column;
+  }
+
+  .member-collection-insights__stats {
+    grid-template-columns: 1fr;
+  }
+}

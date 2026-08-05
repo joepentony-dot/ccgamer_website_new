@@ -31,6 +31,7 @@ on:
       - "scripts/audit-member-achievements.js"
       - "scripts/audit-member-public-profile-preview.js"
       - "scripts/audit-member-submissions-admin.js"
+      - "scripts/audit-member-collection-insights.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -73,6 +74,7 @@ jobs:
           node --check js/ccg-member-community-loader.js
           node --check js/ccg-member-public-preview-loader.js
           node --check js/ccg-member-custom-collections-loader.js
+          node --check js/ccg-member-collection-insights-loader.js
           node --check js/ccg-member-loyalty-loader.js
           node --check js/ccg-member-achievements-loader.js
           node --check js/ccg-member-data-safety.js
@@ -91,6 +93,7 @@ jobs:
           node --check resources/js/auth/member-community.js
           node --check resources/js/auth/member-public-profile-preview.js
           node --check resources/js/auth/member-custom-collections.js
+          node --check resources/js/auth/member-collection-insights.js
           node --check resources/js/auth/member-loyalty-badges.js
           node --check resources/js/auth/member-achievement-badges.js
           node --check resources/js/auth/public-member.js
@@ -111,6 +114,7 @@ jobs:
           node --check scripts/audit-member-achievements.js
           node --check scripts/audit-member-public-profile-preview.js
           node --check scripts/audit-member-submissions-admin.js
+          node --check scripts/audit-member-collection-insights.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -162,6 +166,9 @@ jobs:
 
       - name: Run Member Submissions Admin audit
         run: node scripts/audit-member-submissions-admin.js
+
+      - name: Run Member Collection Insights audit
+        run: node scripts/audit-member-collection-insights.js
 
       - name: Confirm audits made no repository changes
         run: |
