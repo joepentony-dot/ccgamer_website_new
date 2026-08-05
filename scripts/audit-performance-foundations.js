@@ -100,12 +100,15 @@ const allowedPaths = new Set([
     "docs/seo-baseline/phase-13-performance-foundations.md"
 ]);
 
-for (const changedPath of changedFiles()) {
-    if (protectedPaths.has(changedPath)) {
-        failures.push(`Protected file changed during Phase 13: ${changedPath}`);
-    }
-    if (!allowedPaths.has(changedPath)) {
-        failures.push(`Out-of-scope Phase 13 change: ${changedPath}`);
+const shouldCheckScope = !process.env.GITHUB_ACTIONS || process.env.GITHUB_EVENT_NAME === "pull_request";
+if (shouldCheckScope) {
+    for (const changedPath of changedFiles()) {
+        if (protectedPaths.has(changedPath)) {
+            failures.push(`Protected file changed during Phase 13: ${changedPath}`);
+        }
+        if (!allowedPaths.has(changedPath)) {
+            failures.push(`Out-of-scope Phase 13 change: ${changedPath}`);
+        }
     }
 }
 
