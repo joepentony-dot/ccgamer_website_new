@@ -459,7 +459,7 @@
       {
         "file": "js/ccg-nav-core.js",
         "mentions_year": false,
-        "mentions_platform_or_system": false,
+        "mentions_platform_or_system": true,
         "has_year_control": false,
         "has_platform_control": false
       },

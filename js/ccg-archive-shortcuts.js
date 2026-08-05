@@ -8,7 +8,18 @@
     "use strict";
 
     const SHORTCUTS = [
-        { href: "/zzap64/", label: "Zzap!64 Awards", terms: "zzap zzap64 gold medal sizzler silver medal awards magazine" }
+        {
+            href: "/zzap64/",
+            label: "Zzap!64 Awards",
+            meta: "Searchable CCG magazine awards archive",
+            terms: "zzap zzap64 gold medal sizzler silver medal awards magazine"
+        },
+        {
+            href: "/games/compare/",
+            label: "C64 vs Amiga",
+            meta: "Compare matching Commodore 64 and Amiga versions",
+            terms: "compare comparison c64 amiga versions ports two systems"
+        }
     ];
 
     function normalize(value) {
@@ -41,7 +52,7 @@
                     <a class="ccg-global-search__result" href="${shortcut.href}">
                         <span class="ccg-global-search__result-main">
                             <span class="ccg-global-search__result-title">${shortcut.label}</span>
-                            <span class="ccg-global-search__result-meta">Searchable CCG magazine awards archive</span>
+                            <span class="ccg-global-search__result-meta">${shortcut.meta}</span>
                         </span>
                         <span class="ccg-global-search__result-type">Archive</span>
                     </a>

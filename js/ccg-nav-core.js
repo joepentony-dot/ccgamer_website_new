@@ -15,52 +15,35 @@ Do Not Override
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
-        { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" }
+        { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
+        { src: "/js/ccg-platform-compare-link.js", marker: "data-ccg-platform-compare-loader" }
     ];
 
     function isNavPillCandidate(el) {
         if (!(el instanceof HTMLElement)) return false;
-        if (el.closest(".ccg-nav__more-menu, .ccg-nav-drawer, [data-ccg-more-menu], [data-ccg-nav-drawer]")) {
-            return false;
-        }
-        return Boolean(
-            el.matches(
-                ".ccg-nav__link, .ccg-nav__more-toggle, .ccg-nav-toggle, .ccg-mode-toggle, .ccg-community-profile-btn"
-            )
-        );
+        if (el.closest(".ccg-nav__more-menu, .ccg-nav-drawer, [data-ccg-more-menu], [data-ccg-nav-drawer]")) return false;
+        return Boolean(el.matches(".ccg-nav__link, .ccg-nav__more-toggle, .ccg-nav-toggle, .ccg-mode-toggle, .ccg-community-profile-btn"));
     }
 
     function migrateDropShadowToBoxShadow(style) {
         const filter = style.getPropertyValue("filter") || "";
         if (!/drop-shadow\(/i.test(filter)) return;
-
         const match = filter.match(/drop-shadow\(([^)]+)\)/i);
         if (!match) return;
-
         const args = match[1].trim().split(/\s+/);
         if (args.length < 2) return;
-
         const x = args[0] || "0px";
         const y = args[1] || "0px";
         const blur = args[2] || "0px";
         const color = args.slice(3).join(" ") || "currentColor";
-
-        if (!style.getPropertyValue("box-shadow")) {
-            style.setProperty("box-shadow", `${x} ${y} ${blur} ${color}`);
-        }
-
+        if (!style.getPropertyValue("box-shadow")) style.setProperty("box-shadow", `${x} ${y} ${blur} ${color}`);
         const cleanedFilter = filter.replace(/\s*drop-shadow\([^)]+\)/gi, "").trim();
-        if (cleanedFilter) {
-            style.setProperty("filter", cleanedFilter);
-        } else {
-            style.removeProperty("filter");
-        }
+        if (cleanedFilter) style.setProperty("filter", cleanedFilter);
+        else style.removeProperty("filter");
     }
 
     function hardenPill(el) {
-        if (!isNavPillCandidate(el)) return;
-        if (el.classList.contains(HARDENED_CLASS)) return;
-
+        if (!isNavPillCandidate(el) || el.classList.contains(HARDENED_CLASS)) return;
         el.classList.add(HARDENED_CLASS);
         el.style.setProperty("border-radius", "0px", "important");
         el.style.setProperty("overflow", "visible", "important");
@@ -71,11 +54,7 @@ Do Not Override
     }
 
     function applyNavGlowPatch() {
-        document
-            .querySelectorAll(
-                ".ccg-header .ccg-nav__link, .ccg-header .ccg-nav__more-toggle, .ccg-header .ccg-nav-toggle, .ccg-header .ccg-mode-toggle, .ccg-header .ccg-community-profile-btn"
-            )
-            .forEach(hardenPill);
+        document.querySelectorAll(".ccg-header .ccg-nav__link, .ccg-header .ccg-nav__more-toggle, .ccg-header .ccg-nav-toggle, .ccg-header .ccg-mode-toggle, .ccg-header .ccg-community-profile-btn").forEach(hardenPill);
     }
 
     function loadOptionalModules() {
@@ -89,45 +68,25 @@ Do Not Override
         });
     }
 
-    function queueApply() {
-        window.requestAnimationFrame(applyNavGlowPatch);
-    }
+    function queueApply() { window.requestAnimationFrame(applyNavGlowPatch); }
 
     function bindStateReapply() {
         if (window.__ccgNavCoreBound) return;
         window.__ccgNavCoreBound = true;
-
         window.addEventListener("resize", queueApply, { passive: true });
         window.addEventListener("orientationchange", queueApply, { passive: true });
-
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
-            if (!target) return;
-            if (
-                target.closest("[data-ccg-mode-toggle], [data-ccg-nav-toggle], [data-ccg-drawer-close], [data-ccg-more-toggle]")
-            ) {
+            if (target?.closest("[data-ccg-mode-toggle], [data-ccg-nav-toggle], [data-ccg-drawer-close], [data-ccg-more-toggle]")) {
                 queueApply();
                 setTimeout(queueApply, 120);
             }
         });
-
         const header = document.querySelector("[data-ccg-header]");
         if (header) {
-            const observer = new MutationObserver((mutations) => {
-                for (const m of mutations) {
-                    if (m.type === "attributes") {
-                        queueApply();
-                        return;
-                    }
-                }
-            });
-
-            observer.observe(header, {
-                subtree: true,
-                childList: true,
-                attributes: true,
-                attributeFilter: ["class", "aria-hidden", "hidden", "style", "data-mode", "data-ccg-mode"]
-            });
+            new MutationObserver((mutations) => {
+                if (mutations.some((mutation) => mutation.type === "attributes" || mutation.type === "childList")) queueApply();
+            }).observe(header, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "aria-hidden", "hidden", "style", "data-mode", "data-ccg-mode"] });
         }
     }
 
@@ -138,14 +97,7 @@ Do Not Override
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
-    window.CCGUnifiedNavCore = Object.freeze({
-        init: initUnifiedNavCore,
-        applyNavGlowPatch
-    });
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
-    } else {
-        initUnifiedNavCore();
-    }
+    window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, applyNavGlowPatch });
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
+    else initUnifiedNavCore();
 })();
