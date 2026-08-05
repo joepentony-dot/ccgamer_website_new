@@ -1,0 +1,125 @@
+/* ============================================================
+   SINGLE GAME — PLATFORM AND ZZAP!64 AWARD BADGES
+   ------------------------------------------------------------
+   Compact identity row beneath the existing game hero metadata.
+============================================================ */
+
+.ccg-game-badges {
+    display: flex;
+    max-width: 760px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 14px 0 0;
+}
+
+.ccg-game-badge {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, .17);
+    background: rgba(3, 7, 18, .78);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .26);
+}
+
+.ccg-game-badge__image {
+    display: block;
+    flex: 0 0 auto;
+    object-fit: contain;
+}
+
+.ccg-game-badge--platform {
+    min-width: 128px;
+    justify-content: center;
+    background: rgba(255, 255, 255, .94);
+}
+
+.ccg-game-badge--platform-c64 {
+    background: rgba(15, 14, 12, .94);
+}
+
+.ccg-game-badge--platform-c64 .ccg-game-badge__image {
+    width: 126px;
+    height: auto;
+    max-height: 18px;
+}
+
+.ccg-game-badge--platform-amiga .ccg-game-badge__image {
+    width: 110px;
+    height: auto;
+    max-height: 42px;
+}
+
+.ccg-game-badge--award {
+    border-color: rgba(var(--accent-rgb, 0, 221, 255), .34);
+}
+
+.ccg-game-badge--gold {
+    border-color: rgba(255, 214, 73, .54);
+    background:
+        linear-gradient(145deg, rgba(255, 214, 73, .13), transparent 56%),
+        rgba(15, 12, 4, .88);
+}
+
+.ccg-game-badge--gold .ccg-game-badge__image {
+    width: auto;
+    height: 52px;
+}
+
+.ccg-game-badge--sizzler .ccg-game-badge__image {
+    width: 70px;
+    height: auto;
+    max-height: 50px;
+}
+
+.ccg-game-badge__copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.ccg-game-badge__title {
+    font: 700 .66rem/1.25 "Orbitron", sans-serif;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.ccg-game-badge__detail {
+    font-size: .7rem;
+    line-height: 1.35;
+    opacity: .72;
+}
+
+@media (max-width: 620px) {
+    .ccg-game-badges {
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .ccg-game-badge {
+        min-height: 42px;
+        padding: 6px 8px;
+    }
+
+    .ccg-game-badge--platform {
+        min-width: 112px;
+    }
+
+    .ccg-game-badge--platform-c64 .ccg-game-badge__image {
+        width: 108px;
+    }
+
+    .ccg-game-badge--platform-amiga .ccg-game-badge__image {
+        width: 96px;
+    }
+
+    .ccg-game-badge--gold .ccg-game-badge__image {
+        height: 44px;
+    }
+
+    .ccg-game-badge--sizzler .ccg-game-badge__image {
+        width: 60px;
+    }
+}
