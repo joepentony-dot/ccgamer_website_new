@@ -1,9 +1,9 @@
 /* ============================================================
    CCG ZZAP!64 AWARDS ARCHIVE
    ------------------------------------------------------------
-   Loads verified year data, matches awards against games.json,
-   displays award/platform artwork and keeps future game additions
-   linkable without editing the archive records again.
+   Loads the small award files first, renders cards in frame-sized
+   batches, then links reviewed games from the full game archive.
+   Static data uses normal browser caching rather than forced reloads.
 ============================================================ */
 
 (function () {
@@ -14,6 +14,7 @@
 
     const YEARS = [1985, 1986, 1987, 1988, 1989];
     const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
+    const BATCH_SIZE = window.matchMedia?.("(max-width: 520px)")?.matches ? 12 : 24;
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
         sizzler: "/resources/images/zzap64/zzap64-sizzler.webp",
@@ -38,10 +39,14 @@
         games: [],
         gameIndex: null,
         matcher: null,
+        linksStatus: "pending",
         query: "",
         year: "all",
         system: "all",
-        award: "all"
+        award: "all",
+        renderToken: 0,
+        filtersBound: false,
+        progressTimer: null
     };
 
     function escapeHtml(value) {
@@ -52,6 +57,14 @@
             "\"": "&quot;",
             "'": "&#039;"
         })[character]);
+    }
+
+    function nextFrame(callback) {
+        if (typeof window.requestAnimationFrame === "function") {
+            window.requestAnimationFrame(callback);
+        } else {
+            window.setTimeout(callback, 16);
+        }
     }
 
     function ensureScript(src) {
@@ -75,6 +88,40 @@
             script.addEventListener("load", resolve, { once: true });
             script.addEventListener("error", reject, { once: true });
             document.head.appendChild(script);
+        });
+    }
+
+    function updateProgress(percent, label, detail, options = {}) {
+        const loading = document.getElementById("zzapLoading");
+        const progress = document.getElementById("zzapLoadingProgress");
+        const bar = document.getElementById("zzapLoadingBar");
+        const labelNode = document.getElementById("zzapLoadingLabel");
+        const detailNode = document.getElementById("zzapLoadingDetail");
+        const percentNode = document.getElementById("zzapLoadingPercent");
+        if (!loading) return;
+
+        const safePercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
+        window.clearTimeout(state.progressTimer);
+        loading.hidden = false;
+        loading.dataset.state = options.state || "loading";
+        loading.setAttribute("aria-busy", safePercent < 100 ? "true" : "false");
+        progress?.setAttribute("aria-valuenow", String(safePercent));
+        if (bar) bar.style.width = `${safePercent}%`;
+        if (labelNode) labelNode.textContent = label;
+        if (detailNode) detailNode.textContent = detail;
+        if (percentNode) percentNode.textContent = `${safePercent}%`;
+
+        if (safePercent >= 100 && options.hide !== false) {
+            state.progressTimer = window.setTimeout(() => {
+                loading.hidden = true;
+            }, options.delay ?? 900);
+        }
+    }
+
+    function setControlsEnabled(enabled) {
+        ["zzapSearch", "zzapYearFilter", "zzapSystemFilter", "zzapAwardFilter"].forEach((id) => {
+            const control = document.getElementById(id);
+            if (control) control.disabled = !enabled;
         });
     }
 
@@ -114,6 +161,7 @@
     }
 
     function findGame(entry) {
+        if (!state.gameIndex || state.linksStatus !== "ready") return null;
         return state.matcher.findGame(entry, state.gameIndex);
     }
 
@@ -155,6 +203,7 @@
         if (!container) return;
         container.textContent = "";
 
+        const fragment = document.createDocumentFragment();
         YEARS.forEach((year) => {
             const meta = YEAR_META[year];
             const count = state.entries.filter((entry) => entry.year === year).length;
@@ -166,8 +215,9 @@
                 <span class="zzap-year-card__count">${count.toLocaleString("en-GB")} award entries · ${escapeHtml(meta.label)}</span>
                 <span class="zzap-year-card__link">Watch the full retrospective →</span>
             `;
-            container.appendChild(card);
+            fragment.appendChild(card);
         });
+        container.appendChild(fragment);
     }
 
     function awardArtwork(entry) {
@@ -189,6 +239,20 @@
     }
 
     function renderGameTitle(entry, game) {
+        if (state.linksStatus === "pending") {
+            return `
+                <span class="zzap-award-card__game-name">${escapeHtml(entry.title)}</span>
+                <span class="zzap-award-card__availability zzap-award-card__availability--checking">Checking review link…</span>
+            `;
+        }
+
+        if (state.linksStatus === "failed") {
+            return `
+                <span class="zzap-award-card__game-name">${escapeHtml(entry.title)}</span>
+                <span class="zzap-award-card__availability zzap-award-card__availability--unavailable">Review link unavailable</span>
+            `;
+        }
+
         const href = state.matcher.gameHref(game);
         if (game && href) {
             return `
@@ -241,37 +305,75 @@
         return card;
     }
 
-    function render() {
-        const grid = document.getElementById("zzapAwardsGrid");
+    function updateResultSummary(entries) {
         const count = document.getElementById("zzapVisibleCount");
         const summary = document.getElementById("zzapFilterSummary");
-        if (!grid) return;
+        if (count) count.textContent = entries.length.toLocaleString("en-GB");
+        if (!summary) return;
+
+        const parts = [];
+        if (state.year !== "all") parts.push(state.year);
+        if (state.system !== "all") parts.push(state.system === "c64" ? "C64" : "Amiga");
+        if (state.award !== "all") parts.push(state.award.replace(/\b\w/g, (letter) => letter.toUpperCase()));
+        if (state.query) parts.push(`“${state.query}”`);
+        const context = parts.length ? parts.join(" · ") : "All indexed awards from 1985–1989";
+        const linkContext = state.linksStatus === "pending" ? " · review links loading" : "";
+        summary.textContent = `${context} · alphabetical order${linkContext}`;
+    }
+
+    function render() {
+        const grid = document.getElementById("zzapAwardsGrid");
+        if (!grid) return Promise.resolve(false);
 
         const entries = filteredEntries();
+        const renderToken = ++state.renderToken;
         grid.textContent = "";
+        grid.setAttribute("aria-busy", "true");
+        updateResultSummary(entries);
 
         if (!entries.length) {
             const empty = document.createElement("div");
             empty.className = "zzap-empty";
             empty.textContent = "No Zzap!64 award entries match those filters.";
             grid.appendChild(empty);
-        } else {
-            entries.forEach((entry) => grid.appendChild(createCard(entry)));
+            grid.setAttribute("aria-busy", "false");
+            return Promise.resolve(true);
         }
 
-        if (count) count.textContent = entries.length.toLocaleString("en-GB");
-        if (summary) {
-            const parts = [];
-            if (state.year !== "all") parts.push(state.year);
-            if (state.system !== "all") parts.push(state.system === "c64" ? "C64" : "Amiga");
-            if (state.award !== "all") parts.push(state.award.replace(/\b\w/g, (letter) => letter.toUpperCase()));
-            if (state.query) parts.push(`“${state.query}”`);
-            const context = parts.length ? parts.join(" · ") : "All indexed awards from 1985–1989";
-            summary.textContent = `${context} · alphabetical order`;
-        }
+        return new Promise((resolve) => {
+            let cursor = 0;
+
+            function appendBatch() {
+                if (renderToken !== state.renderToken) {
+                    resolve(false);
+                    return;
+                }
+
+                const fragment = document.createDocumentFragment();
+                const limit = Math.min(cursor + BATCH_SIZE, entries.length);
+                while (cursor < limit) {
+                    fragment.appendChild(createCard(entries[cursor]));
+                    cursor += 1;
+                }
+                grid.appendChild(fragment);
+
+                if (cursor < entries.length) {
+                    nextFrame(appendBatch);
+                    return;
+                }
+
+                grid.setAttribute("aria-busy", "false");
+                resolve(true);
+            }
+
+            nextFrame(appendBatch);
+        });
     }
 
     function bindFilters() {
+        if (state.filtersBound) return;
+        state.filtersBound = true;
+
         const search = document.getElementById("zzapSearch");
         const year = document.getElementById("zzapYearFilter");
         const system = document.getElementById("zzapSystemFilter");
@@ -279,29 +381,26 @@
 
         search?.addEventListener("input", () => {
             state.query = search.value.trim();
-            render();
+            void render();
         });
         year?.addEventListener("change", () => {
             state.year = year.value;
-            render();
+            void render();
         });
         system?.addEventListener("change", () => {
             state.system = system.value;
-            render();
+            void render();
         });
         award?.addEventListener("change", () => {
             state.award = award.value;
-            render();
+            void render();
         });
     }
 
-    async function loadAll() {
-        await ensureScript(MATCHER_PATH);
-        state.matcher = window.CCGZzap64Matcher;
-        if (!state.matcher) throw new Error("Zzap title matcher did not initialise");
-
+    async function loadAwardEntries() {
+        updateProgress(8, "Loading award records…", "Fetching the five year files in parallel.");
         const yearResults = await Promise.all(YEARS.map(async (year) => {
-            const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "no-store" });
+            const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "default" });
             if (!response.ok) throw new Error(`${year} archive HTTP ${response.status}`);
             const data = await response.json();
             const records = Array.isArray(data) ? data : (data.entries || data.awards || []);
@@ -312,24 +411,68 @@
             entry.year && entry.month && entry.title && entry.award && entry.system
         ));
 
-        const gamesResponse = await fetch("/games/games.json", { cache: "no-store" });
-        if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
-        const gamesData = await gamesResponse.json();
-        state.games = Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
-        state.gameIndex = state.matcher.buildGameIndex(state.games);
+        const total = document.getElementById("zzapTotalCount");
+        if (total) total.textContent = state.entries.length.toLocaleString("en-GB");
+        renderYearCards();
+        bindFilters();
+        setControlsEnabled(true);
+
+        updateProgress(34, "Award records loaded", `${state.entries.length.toLocaleString("en-GB")} entries are ready. Displaying them now.`);
+        await render();
+        updateProgress(58, "Awards displayed", "The archive is usable while reviewed-game links are being prepared.");
+    }
+
+    async function loadReviewedGameLinks() {
+        updateProgress(66, "Linking reviewed games…", "Loading the CCG game index with normal browser caching.");
+
+        try {
+            const gamesResponse = await fetch("/games/games.json", { cache: "default" });
+            if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
+            const gamesData = await gamesResponse.json();
+            state.games = Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
+
+            updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards.`);
+            state.gameIndex = state.matcher.buildGameIndex(state.games);
+            state.linksStatus = "ready";
+            await render();
+
+            updateProgress(100, "Archive ready", "Awards, scores, filters and reviewed-game links are available.");
+        } catch (error) {
+            state.linksStatus = "failed";
+            await render();
+            updateProgress(
+                100,
+                "Awards ready",
+                "The awards loaded, but reviewed-game links could not be checked on this visit.",
+                { state: "warning", delay: 3600 }
+            );
+            console.warn("[CCG] Zzap reviewed-game links were unavailable:", error);
+        }
     }
 
     async function init() {
+        setControlsEnabled(false);
+        updateProgress(2, "Preparing archive…", "Starting the title matcher and award index.");
+
         try {
-            await loadAll();
-            bindFilters();
-            const total = document.getElementById("zzapTotalCount");
-            if (total) total.textContent = state.entries.length.toLocaleString("en-GB");
-            renderYearCards();
-            render();
+            await ensureScript(MATCHER_PATH);
+            state.matcher = window.CCGZzap64Matcher;
+            if (!state.matcher) throw new Error("Zzap title matcher did not initialise");
+
+            await loadAwardEntries();
+            await loadReviewedGameLinks();
         } catch (error) {
             const grid = document.getElementById("zzapAwardsGrid");
-            if (grid) grid.innerHTML = '<div class="zzap-empty">The awards index could not be loaded. Refresh the page to try again.</div>';
+            if (grid) {
+                grid.setAttribute("aria-busy", "false");
+                grid.innerHTML = '<div class="zzap-empty">The awards index could not be loaded. Refresh the page to try again.</div>';
+            }
+            updateProgress(
+                100,
+                "Archive unavailable",
+                "The award records could not be loaded. Refresh the page to try again.",
+                { state: "error", hide: false }
+            );
             console.error("[CCG] Zzap!64 awards archive failed:", error);
         }
     }
