@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# Retire the removed C64 versus Amiga comparison route.
+RewriteRule ^compare/?$ /games/ [R=301,L,NE]
+
 # Canonicalise explicit archive-index requests before file handling.
 RewriteCond %{THE_REQUEST} \s/+games/index\.html(?:[?\s]) [NC]
 RewriteRule ^index\.html$ /games/ [R=301,L,NE]

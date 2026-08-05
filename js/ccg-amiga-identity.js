@@ -30,8 +30,6 @@
         ".ccg-recently-viewed",
         ".zzap-archive__hero",
         ".zzap-tools",
-        ".ccg-compare__hero",
-        ".ccg-compare__picker",
         ".ccg-discover__hero",
         ".ccg-discover__filters",
         ".genre-hero",

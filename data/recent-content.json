@@ -8,12 +8,12 @@
     "category": "Archive"
   },
   {
-    "type": "Added",
+    "type": "Updated",
     "date": "2026-08-05",
-    "title": "C64 vs Amiga Comparisons",
-    "summary": "Compare matching Commodore 64 and Amiga game records side by side.",
-    "href": "/games/compare/",
-    "category": "Games"
+    "title": "Music Hub Navigation",
+    "summary": "The Music Hub and composer archive now use the shared site navigation, account controls and display modes.",
+    "href": "/music/",
+    "category": "Music"
   },
   {
     "type": "Added",

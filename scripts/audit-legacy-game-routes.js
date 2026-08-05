@@ -7,6 +7,12 @@ const ROOT = path.resolve(__dirname, "..");
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const errors = [];
 const warnings = [];
+const RETIRED_COMPARISON_FILES = [
+    "games/compare/index.html",
+    "js/ccg-platform-compare-link.js",
+    "js/game-comparison.js",
+    "resources/css/game-comparison.css"
+];
 
 function read(relativePath) {
     const fullPath = path.join(ROOT, relativePath);
@@ -47,6 +53,7 @@ requireText(redirects, "/games/index.html /games/ 301!", "Missing permanent /gam
 requireText(redirects, "/games/:slug.html /games/:slug/ 301!", "Missing flat game URL redirect.");
 requireText(headers, "/games/game.html", "Missing game-handler header rule.");
 requireText(headers, "X-Robots-Tag: noindex, follow", "The shared game handler must remain noindex.");
+requireText(apache, "RewriteRule ^compare/?$ /games/ [R=301,L,NE]", "The retired comparison route is not redirected to Browse Games.");
 requireText(apache, "RewriteRule ^index\\.html$ /games/ [R=301,L,NE]", "Apache index.html redirect is missing.");
 requireText(apache, "/games/$1/ [R=301,L,NE]", "Apache flat-game redirect is missing.");
 requireText(navCore, "/js/ccg-legacy-url-consolidation.js", "The URL consolidation module is not loaded by the shared navigation core.");
@@ -55,6 +62,12 @@ requireText(consolidation, 'fetch(buildSitePath("games/games.json")', "The conso
 requireText(consolidation, "replaceLocation(`games/${canonicalSlug}/`)", "Resolved games are not sent to canonical folder routes.");
 requireText(handler, '<meta name="robots" content="noindex,follow">', "The shared game handler meta noindex is missing.");
 requireText(handler, '<link rel="canonical" id="game-canonical"', "The runtime canonical link is missing.");
+
+RETIRED_COMPARISON_FILES.forEach((relativePath) => {
+    if (fs.existsSync(path.join(ROOT, relativePath))) {
+        errors.push(`Retired comparison file still exists: ${relativePath}`);
+    }
+});
 
 if (!Array.isArray(games) || games.length === 0) {
     errors.push("games/games.json must contain games.");
@@ -118,9 +131,9 @@ if (!Array.isArray(games) || games.length === 0) {
     console.log(`Checked ${slugs.size} canonical game slugs and ${ids.size} legacy IDs.`);
 }
 
-["/games/game.html?", "/games/index.html"].forEach((token) => {
-    if (sitemap.includes(token)) errors.push(`sitemap-games.xml contains legacy URL token ${token}.`);
-    if (gamesSearch.includes(token)) errors.push(`games-search.json contains legacy URL token ${token}.`);
+["/games/game.html?", "/games/index.html", "/games/compare/"].forEach((token) => {
+    if (sitemap.includes(token)) errors.push(`sitemap-games.xml contains retired or legacy URL token ${token}.`);
+    if (gamesSearch.includes(token)) errors.push(`games-search.json contains retired or legacy URL token ${token}.`);
 });
 
 const redirectCount = redirects.split(/\r?\n/).filter((line) => line.trim() && !line.trim().startsWith("#")).length;

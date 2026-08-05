@@ -15,20 +15,17 @@ PROTECTED = ["index.html", "resources/css/intro.css", "js/index-intro.js", "game
 SKIP_PREFIXES = ("node_modules/", ".git/", "data/lemon-cache/", "reports/", "dist/")
 CRITICAL_PAGES = [
     "home.html", "games/index.html", "games/publishers/index.html",
-    "games/compare/index.html", "games/discover/index.html",
-    "zzap64/index.html", "community/profile.html",
+    "games/discover/index.html", "zzap64/index.html", "community/profile.html",
 ]
 REQUIRED_NEW_PAGES = {
-    "games/compare/index.html": "/games/compare/",
     "games/discover/index.html": "/games/discover/",
     "zzap64/index.html": "/zzap64/",
 }
 CRITICAL_SCRIPTS = [
     "js/ccg-nav-core.js", "js/ccg-global-search.js", "js/ccg-search-ranking.js",
     "js/ccg-recently-viewed.js", "js/ccg-archive-shortcuts.js",
-    "js/ccg-platform-compare-link.js", "js/ccg-publisher-history.js",
-    "js/ccg-amiga-identity.js", "js/ccg-recent-content.js",
-    "js/ccg-personal-library-controls.js", "js/game-comparison.js",
+    "js/ccg-publisher-history.js", "js/ccg-amiga-identity.js",
+    "js/ccg-recent-content.js", "js/ccg-personal-library-controls.js",
     "js/game-discovery.js", "js/zzap64-awards.js",
     "resources/js/auth/profile-lists.js",
 ]
