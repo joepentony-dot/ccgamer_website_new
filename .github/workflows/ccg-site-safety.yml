@@ -13,6 +13,7 @@ on:
       - "**/.htaccess"
       - "scripts/audit-site-safety.py"
       - "scripts/audit-legacy-game-routes.js"
+      - "scripts/audit-music-navigation.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -38,6 +39,10 @@ jobs:
       - name: Validate critical JavaScript syntax
         run: |
           node --check js/ccg-nav-core.js
+          node --check js/ccg-nav-fit.js
+          node --check js/ccg-header-auth-loader.js
+          node --check js/ccg-music-navigation.js
+          node --check js/ccg-music-config.js
           node --check js/ccg-legacy-url-consolidation.js
           node --check js/ccg-global-search.js
           node --check js/ccg-search-ranking.js
@@ -53,12 +58,16 @@ jobs:
           node --check js/zzap64-awards.js
           node --check resources/js/auth/profile-lists.js
           node --check scripts/audit-legacy-game-routes.js
+          node --check scripts/audit-music-navigation.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
 
       - name: Run legacy game route audit
         run: node scripts/audit-legacy-game-routes.js
+
+      - name: Run music navigation audit
+        run: node scripts/audit-music-navigation.js
 
       - name: Confirm audits made no repository changes
         run: |
