@@ -55,6 +55,27 @@
     gap: calc(12px * var(--ui-density));
 }
 
+/* --- Search result priority ------------------------------------ */
+/*
+   A typed search takes precedence over browse-only controls.
+   The system buttons and live result summary remain available,
+   while the large year selector and A–Z strip are temporarily
+   removed so matching game cards sit directly beneath the search.
+*/
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-filter__range,
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-alpha,
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-tools + .ccg-omega-divider {
+    display: none;
+}
+
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-tools {
+    margin-bottom: 6px;
+}
+
+.ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-library {
+    margin-top: 0;
+}
+
 /* --- Mobile/touch compaction ----------------------------------- */
 @media (max-width: 720px) {
     /* Omega spacing normalisation — keep the hero compact on smaller screens. */
@@ -67,5 +88,9 @@
     .ccg-page--games-index .games-tools {
         margin: 2px auto 16px;
         gap: calc(11px * var(--ui-density));
+    }
+
+    .ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-tools {
+        margin-bottom: 4px;
     }
 }
