@@ -32,7 +32,21 @@
     return COMPOSER_CANONICAL[normalized] || String(name || "").trim();
   }
 
+  function ensureMusicShell() {
+    if (document.querySelector('script[src="/js/ccg-music-shell.js"]')) return;
+    const script = document.createElement("script");
+    script.src = "/js/ccg-music-shell.js";
+    script.dataset.ccgMusicShellLoader = "true";
+    document.body.appendChild(script);
+  }
+
   global.normalizeComposerName = normalizeComposerName;
   global.getCanonicalComposer = getCanonicalComposer;
   global.COMPOSER_CANONICAL = COMPOSER_CANONICAL;
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", ensureMusicShell, { once: true });
+  } else {
+    ensureMusicShell();
+  }
 })(window);
