@@ -6,6 +6,30 @@
    established drawer layout.
 ============================================================ */
 
+.ccg-header .ccg-auth-slot {
+    min-width: 0;
+}
+
+.ccg-header .ccg-profile-link {
+    display: inline-flex;
+    min-width: 0;
+    max-width: min(310px, 42vw);
+    align-items: center;
+    gap: 0.38em;
+}
+
+.ccg-header .ccg-profile-link__label {
+    flex: 0 0 auto;
+    font-weight: 800;
+}
+
+.ccg-header .ccg-profile-link__name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 @media (min-width: 1200px) {
     .ccg-header .ccg-nav {
         overflow: visible !important;
@@ -96,5 +120,31 @@
     .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:hover,
     .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:focus-visible {
         background: rgba(var(--accent-rgb), 0.14) !important;
+    }
+}
+
+@media (max-width: 1199px) {
+    .ccg-header .ccg-profile-link {
+        max-width: min(270px, 54vw);
+    }
+
+    .ccg-header .ccg-auth-slot {
+        gap: 6px;
+    }
+
+    .ccg-header .ccg-btn-auth {
+        min-height: 40px !important;
+        padding: 7px 9px !important;
+        font-size: 0.7rem !important;
+    }
+}
+
+@media (max-width: 620px) {
+    .ccg-header .ccg-profile-link {
+        max-width: min(205px, 58vw);
+    }
+
+    .ccg-header .ccg-profile-link__label {
+        font-size: 0.62rem;
     }
 }
