@@ -14,7 +14,8 @@ Do Not Override
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
-        { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" }
+        { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
+        { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" }
     ];
 
     function isNavPillCandidate(el) {
