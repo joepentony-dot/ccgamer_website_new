@@ -1,0 +1,121 @@
+/* ============================================================
+   CCG AMIGA MOBILE ALIGNMENT
+   ------------------------------------------------------------
+   Keeps Amiga mode's colours and Workbench treatment while
+   matching the established C64 mobile geometry exactly.
+============================================================ */
+
+@media (max-width: 960px) {
+    html[data-ccg-mode="amiga"] .ccg-header-inner,
+    html[data-mode="amiga"] .ccg-header-inner,
+    body[data-ccg-mode="amiga"] .ccg-header-inner,
+    body[data-mode="amiga"] .ccg-header-inner {
+        align-items: center !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-header-actions,
+    html[data-mode="amiga"] .ccg-header-actions,
+    body[data-ccg-mode="amiga"] .ccg-header-actions,
+    body[data-mode="amiga"] .ccg-header-actions {
+        min-width: 0 !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        margin: 0 !important;
+        transform: none !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle,
+    html[data-mode="amiga"] .ccg-mode-toggle,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle,
+    body[data-mode="amiga"] .ccg-mode-toggle {
+        align-self: center !important;
+        margin: 0 !important;
+        padding: 4px !important;
+        gap: 8px !important;
+        transform: none !important;
+        box-sizing: border-box !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle__pill,
+    html[data-mode="amiga"] .ccg-mode-toggle__pill,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__pill,
+    body[data-mode="amiga"] .ccg-mode-toggle__pill {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 6px !important;
+        padding: 6px 8px !important;
+        margin: 0 !important;
+        transform: none !important;
+        box-sizing: border-box !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle__label,
+    html[data-mode="amiga"] .ccg-mode-toggle__label,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__label,
+    body[data-mode="amiga"] .ccg-mode-toggle__label {
+        min-width: 0 !important;
+        padding: 6px 10px !important;
+        margin: 0 !important;
+        font-size: 0.6rem !important;
+        line-height: normal !important;
+        letter-spacing: 0.12em !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb,
+    html[data-mode="amiga"] .ccg-mode-toggle__thumb,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__thumb,
+    body[data-mode="amiga"] .ccg-mode-toggle__thumb {
+        inset: 4px !important;
+        width: calc(50% - 6px) !important;
+        box-sizing: border-box !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-nav-toggle,
+    html[data-mode="amiga"] .ccg-nav-toggle,
+    body[data-ccg-mode="amiga"] .ccg-nav-toggle,
+    body[data-mode="amiga"] .ccg-nav-toggle {
+        align-self: center !important;
+        margin: 0 !important;
+        transform: none !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-nav-drawer,
+    html[data-mode="amiga"] .ccg-nav-drawer,
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer,
+    body[data-mode="amiga"] .ccg-nav-drawer,
+    html[data-ccg-mode="amiga"] .ccg-nav-drawer__panel,
+    html[data-mode="amiga"] .ccg-nav-drawer__panel,
+    body[data-ccg-mode="amiga"] .ccg-nav-drawer__panel,
+    body[data-mode="amiga"] .ccg-nav-drawer__panel {
+        transform-origin: top right !important;
+        box-sizing: border-box !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-amiga-window,
+    html[data-mode="amiga"] .ccg-amiga-window,
+    body[data-ccg-mode="amiga"] .ccg-amiga-window,
+    body[data-mode="amiga"] .ccg-amiga-window {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+}
+
+@media (max-width: 520px) {
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle,
+    html[data-mode="amiga"] .ccg-mode-toggle,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle,
+    body[data-mode="amiga"] .ccg-mode-toggle {
+        max-width: 100% !important;
+    }
+
+    html[data-ccg-mode="amiga"] .ccg-mode-toggle__label,
+    html[data-mode="amiga"] .ccg-mode-toggle__label,
+    body[data-ccg-mode="amiga"] .ccg-mode-toggle__label,
+    body[data-mode="amiga"] .ccg-mode-toggle__label {
+        padding-inline: 8px !important;
+    }
+}
