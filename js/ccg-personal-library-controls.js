@@ -13,6 +13,7 @@
   window.CCG_PERSONAL_LIBRARY_CONTROLS_READY = true;
 
   const STORAGE_KEY = "ccgPersonalGameLibraryV1";
+  const TOMBSTONE_KEY = "ccgPersonalGameLibraryTombstonesV1";
   const CSS_PATHS = [
     "/resources/css/profile-lists.css",
     "/resources/css/member-custom-collections.css"
@@ -36,13 +37,46 @@
     return RESERVED.has(value) ? "" : value;
   }
 
-  function readLibrary() {
+  function readJson(key) {
     try {
-      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
       return value && typeof value === "object" && !Array.isArray(value) ? value : {};
     } catch (error) {
       return {};
     }
+  }
+
+  function readLibrary() {
+    return readJson(STORAGE_KEY);
+  }
+
+  function readTombstones() {
+    return readJson(TOMBSTONE_KEY);
+  }
+
+  function writeTombstones(value) {
+    try {
+      localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(value));
+    } catch (error) {}
+  }
+
+  function markDeleted(slug, deletedAt) {
+    if (!slug) return;
+    const requested = new Date(deletedAt || Date.now()).getTime();
+    if (!Number.isFinite(requested) || requested <= 0) return;
+    const tombstones = readTombstones();
+    const current = new Date(tombstones[slug] || 0).getTime();
+    if (!Number.isFinite(current) || requested >= current) {
+      tombstones[slug] = new Date(requested).toISOString();
+      writeTombstones(tombstones);
+    }
+  }
+
+  function clearDeleted(slug) {
+    const tombstones = readTombstones();
+    if (!(slug in tombstones)) return;
+    delete tombstones[slug];
+    writeTombstones(tombstones);
   }
 
   function writeLibrary(value) {
@@ -50,6 +84,17 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
       document.dispatchEvent(new Event("ccg:personal-library-updated"));
     } catch (error) {}
+  }
+
+  function persistEntry(library, slug, entry, changedAt = new Date().toISOString()) {
+    entry.updatedAt = changedAt;
+    if (isEntryEmpty(entry)) {
+      delete library[slug];
+      markDeleted(slug, changedAt);
+    } else {
+      clearDeleted(slug);
+    }
+    writeLibrary(library);
   }
 
   function ensureStylesheets() {
@@ -75,11 +120,11 @@
   }
 
   function gameMeta() {
-    const text = document.body.innerText || "";
-    const system = /\bAmiga\b/i.test(text)
+    const pageText = document.body.innerText || "";
+    const system = /\bAmiga\b/i.test(pageText)
       ? "Amiga"
-      : /\bC64|Commodore 64\b/i.test(text) ? "C64" : "";
-    const year = (text.match(/\b(19|20)\d{2}\b/) || [])[0] || "";
+      : /\bC64|Commodore 64\b/i.test(pageText) ? "C64" : "";
+    const year = (pageText.match(/\b(19|20)\d{2}\b/) || [])[0] || "";
     return { system, year };
   }
 
@@ -115,13 +160,15 @@
   function canonicalCustomName(candidate, library) {
     const normalized = normalizeCustomName(candidate);
     const key = normalized.toLocaleLowerCase("en-GB");
-    return allCustomCollectionNames(library).find((name) => name.toLocaleLowerCase("en-GB") === key) || normalized;
+    return allCustomCollectionNames(library)
+      .find((name) => name.toLocaleLowerCase("en-GB") === key) || normalized;
   }
 
   function ensureEntry(library, slug) {
     if (library[slug]) {
       library[slug].lists = Array.isArray(library[slug].lists) ? library[slug].lists : [];
       library[slug].customLists = uniqueNames(library[slug].customLists || library[slug].custom_lists);
+      delete library[slug].custom_lists;
       return library[slug];
     }
 
@@ -227,9 +274,7 @@
     if (lists.has(listKey)) lists.delete(listKey);
     else lists.add(listKey);
     item.lists = Array.from(lists);
-    item.updatedAt = new Date().toISOString();
-    if (isEntryEmpty(item)) delete library[slug];
-    writeLibrary(library);
+    persistEntry(library, slug, item);
     syncUi();
     setStatus("Saved locally. Account sync runs when you open Member Hub.");
   }
@@ -240,9 +285,7 @@
     const item = ensureEntry(library, slug);
     item.rating = document.getElementById("ccgPersonalRating")?.value || "";
     item.note = document.getElementById("ccgPersonalNote")?.value?.trim() || "";
-    item.updatedAt = new Date().toISOString();
-    if (isEntryEmpty(item)) delete library[slug];
-    writeLibrary(library);
+    persistEntry(library, slug, item);
     syncUi();
     setStatus("Saved locally. Account sync runs when you open Member Hub.");
   }
@@ -272,8 +315,7 @@
     const name = canonicalCustomName(requested, library);
     const item = ensureEntry(library, slug);
     item.customLists = uniqueNames([...(item.customLists || []), name]);
-    item.updatedAt = new Date().toISOString();
-    writeLibrary(library);
+    persistEntry(library, slug, item);
     if (input) input.value = "";
     syncUi();
     setStatus(`Added to ${name}. Account sync runs when you open Member Hub.`);
@@ -287,9 +329,7 @@
     item.customLists = uniqueNames(item.customLists || item.custom_lists)
       .filter((entry) => entry.toLocaleLowerCase("en-GB") !== name.toLocaleLowerCase("en-GB"));
     delete item.custom_lists;
-    item.updatedAt = new Date().toISOString();
-    if (isEntryEmpty(item)) delete library[slug];
-    writeLibrary(library);
+    persistEntry(library, slug, item);
     syncUi();
     setStatus(`Removed from ${name}.`);
   }
