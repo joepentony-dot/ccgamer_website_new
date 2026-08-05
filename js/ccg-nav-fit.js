@@ -47,10 +47,19 @@
         return 42;
     }
 
+    function setMoreOpenState(toggle, menu, open) {
+        const nav = toggle?.closest(".ccg-nav");
+        const header = nav?.closest("[data-ccg-header]");
+        const isOpen = Boolean(open && menu && !menu.hidden);
+        nav?.classList.toggle("ccg-nav--more-open", isOpen);
+        header?.classList.toggle("ccg-header--more-open", isOpen);
+    }
+
     function closeMore(toggle, menu) {
         if (!toggle || !menu) return;
         toggle.setAttribute("aria-expanded", "false");
         menu.hidden = true;
+        setMoreOpenState(toggle, menu, false);
     }
 
     function bindMoreControls(toggle, menu) {
@@ -63,6 +72,7 @@
             const opening = menu.hidden;
             menu.hidden = !opening;
             toggle.setAttribute("aria-expanded", opening ? "true" : "false");
+            setMoreOpenState(toggle, menu, opening);
         });
 
         document.addEventListener("click", (event) => {
