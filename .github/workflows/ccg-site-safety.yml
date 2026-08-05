@@ -30,6 +30,7 @@ on:
       - "scripts/audit-member-hub-phase7c.js"
       - "scripts/audit-member-achievements.js"
       - "scripts/audit-member-public-profile-preview.js"
+      - "scripts/audit-member-submissions-admin.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -82,6 +83,8 @@ jobs:
           node --check js/zzap64-awards.js
           node --check admin/js/input-harden.js
           node --check admin/js/guard.js
+          node --check admin/js/admin-nav.js
+          node --check admin/js/member-submissions.js
           node --check resources/js/auth/profile-lists.js
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
@@ -107,6 +110,7 @@ jobs:
           node --check scripts/audit-member-hub-phase7c.js
           node --check scripts/audit-member-achievements.js
           node --check scripts/audit-member-public-profile-preview.js
+          node --check scripts/audit-member-submissions-admin.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -155,6 +159,9 @@ jobs:
 
       - name: Run Member Public Profile Preview audit
         run: node scripts/audit-member-public-profile-preview.js
+
+      - name: Run Member Submissions Admin audit
+        run: node scripts/audit-member-submissions-admin.js
 
       - name: Confirm audits made no repository changes
         run: |
