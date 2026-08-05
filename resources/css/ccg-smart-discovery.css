@@ -1,0 +1,39 @@
+/* ============================================================
+   CCG SMART GAME DISCOVERY
+============================================================ */
+
+.ccg-smart-discovery__copy {
+    max-width: 78ch;
+    margin: 0 0 1rem;
+    color: var(--ccg-text-muted, rgba(255, 255, 255, 0.76));
+    font-size: 0.95rem;
+    line-height: 1.55;
+}
+
+.related-card--smart {
+    contain: content;
+}
+
+.related-card--smart img {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.related-card__tag--smart {
+    border-color: color-mix(in srgb, var(--ccg-accent, #5ee7ff) 58%, transparent);
+    background: color-mix(in srgb, var(--ccg-accent, #5ee7ff) 12%, transparent);
+    font-weight: 700;
+}
+
+@supports not (color: color-mix(in srgb, white 50%, black)) {
+    .related-card__tag--smart {
+        border-color: var(--ccg-accent, #5ee7ff);
+        background: rgba(94, 231, 255, 0.12);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .related-card--smart {
+        scroll-behavior: auto;
+    }
+}
