@@ -12,6 +12,8 @@ Do Not Override
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
     const OPTIONAL_MODULES = [
+        { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
+        { src: "/js/ccg-public-header-auth.js", marker: "data-ccg-public-header-auth-loader" },
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
