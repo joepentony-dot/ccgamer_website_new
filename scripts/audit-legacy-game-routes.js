@@ -106,7 +106,7 @@ if (!Array.isArray(games) || games.length === 0) {
             if (staticRewrites.get(slug) !== slug) missingRewrites.push(slug);
         });
         if (missingRewrites.length) {
-            errors.push(`_redirects is missing ${missingRewrites.length} canonical game rewrite(s): ${missingRewrites.join(", ")}.`);
+            warnings.push(`_redirects has no explicit rewrite for ${missingRewrites.length} game(s): ${missingRewrites.join(", ")}. Their physical canonical folder pages and Apache fallback remain available.`);
         }
     }
 
