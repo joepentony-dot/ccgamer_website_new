@@ -110,15 +110,23 @@
         ]);
     }
 
-    function genres(game) {
+    function rawGenres(game) {
         return normalizedList([
             ...toList(game?.genres),
             ...toList(game?.genre)
-        ]).filter((value) => value !== "top picks");
+        ]);
+    }
+
+    function genres(game) {
+        return rawGenres(game).filter((value) => value !== "top picks");
     }
 
     function collections(game) {
         return normalizedList(game?.collections);
+    }
+
+    function isTopPick(game) {
+        return rawGenres(game).includes("top picks") || collections(game).includes("top picks");
     }
 
     function creditedPeople(game) {
@@ -212,7 +220,7 @@
 
         const rating = gameRating(candidate);
         if (rating !== null && rating >= 8) score += 2;
-        if (genres(candidate).includes("top picks") || collections(candidate).includes("top picks")) score += 2;
+        if (isTopPick(candidate)) score += 2;
 
         reasons.sort((a, b) => b.points - a.points || a.label.localeCompare(b.label));
         return { score, reasons: reasons.slice(0, 2) };
@@ -301,18 +309,23 @@
 
     function createCard(entry) {
         const game = entry.game;
+        const slug = gameSlug(game);
         const card = document.createElement("a");
         card.className = "related-card related-card--smart";
-        card.href = `/games/${encodeURIComponent(gameSlug(game))}/`;
+        card.href = `/games/${slug}/`;
         card.setAttribute("aria-label", `View ${game.title}`);
 
-        const image = document.createElement("img");
-        image.src = resolveImage(game);
-        image.alt = `${game.title} cover art`;
-        image.loading = "lazy";
-        image.decoding = "async";
-        image.width = 320;
-        image.height = 180;
+        const imageSource = resolveImage(game);
+        if (imageSource) {
+            const image = document.createElement("img");
+            image.src = imageSource;
+            image.alt = `${game.title} cover art`;
+            image.loading = "lazy";
+            image.decoding = "async";
+            image.width = 320;
+            image.height = 180;
+            card.appendChild(image);
+        }
 
         const title = document.createElement("span");
         title.className = "related-card__title";
@@ -332,7 +345,7 @@
 
         entry.reasons.forEach((reason) => meta.appendChild(createTag(reason.label, true)));
 
-        card.append(image, title, meta);
+        card.append(title, meta);
         return card;
     }
 
