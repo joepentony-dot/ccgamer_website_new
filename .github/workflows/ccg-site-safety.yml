@@ -29,6 +29,7 @@ on:
       - "scripts/audit-member-hub-phase7b.js"
       - "scripts/audit-member-hub-phase7c.js"
       - "scripts/audit-member-achievements.js"
+      - "scripts/audit-member-public-profile-preview.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -69,6 +70,7 @@ jobs:
           node --check js/ccg-personal-library-controls.js
           node --check js/ccg-member-library-sync-loader.js
           node --check js/ccg-member-community-loader.js
+          node --check js/ccg-member-public-preview-loader.js
           node --check js/ccg-member-custom-collections-loader.js
           node --check js/ccg-member-loyalty-loader.js
           node --check js/ccg-member-achievements-loader.js
@@ -84,6 +86,7 @@ jobs:
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
           node --check resources/js/auth/member-community.js
+          node --check resources/js/auth/member-public-profile-preview.js
           node --check resources/js/auth/member-custom-collections.js
           node --check resources/js/auth/member-loyalty-badges.js
           node --check resources/js/auth/member-achievement-badges.js
@@ -103,6 +106,7 @@ jobs:
           node --check scripts/audit-member-hub-phase7b.js
           node --check scripts/audit-member-hub-phase7c.js
           node --check scripts/audit-member-achievements.js
+          node --check scripts/audit-member-public-profile-preview.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -148,6 +152,9 @@ jobs:
 
       - name: Run Member Achievements audit
         run: node scripts/audit-member-achievements.js
+
+      - name: Run Member Public Profile Preview audit
+        run: node scripts/audit-member-public-profile-preview.js
 
       - name: Confirm audits made no repository changes
         run: |

@@ -1,0 +1,75 @@
+/* ============================================================
+   CCG MEMBER HUB — PUBLIC PROFILE PRIVACY SUMMARY
+============================================================ */
+
+.member-public-privacy-summary {
+  margin: 0.9rem 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(112, 210, 255, 0.35);
+  background: rgba(4, 14, 31, 0.7);
+}
+
+.member-public-privacy-summary__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+  align-items: center;
+  margin-bottom: 0.65rem;
+}
+
+.member-public-privacy-summary__header strong {
+  color: #fff;
+}
+
+.member-public-privacy-summary__header span {
+  padding: 0.22rem 0.5rem;
+  border: 1px solid rgba(255, 210, 112, 0.5);
+  color: #ffdc91;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.member-public-privacy-summary__header span[data-state="public"] {
+  border-color: rgba(92, 232, 174, 0.62);
+  color: #9cf7c7;
+}
+
+.member-public-privacy-summary ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member-public-privacy-summary li,
+.member-public-privacy-summary p {
+  color: rgba(231, 241, 251, 0.78);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.member-public-privacy-summary p {
+  margin: 0.75rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(130, 180, 218, 0.18);
+}
+
+.member-public-privacy-summary strong {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+html[data-ccg-mode="amiga"] .member-public-privacy-summary,
+body[data-ccg-mode="amiga"] .member-public-privacy-summary {
+  border-color: rgba(255, 104, 211, 0.4);
+  background: rgba(35, 8, 39, 0.7);
+}
+
+@media (max-width: 640px) {
+  .member-public-privacy-summary ul {
+    grid-template-columns: 1fr;
+  }
+}
