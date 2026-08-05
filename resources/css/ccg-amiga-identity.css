@@ -1,0 +1,147 @@
+/* ============================================================
+   CCG AMIGA MODE — DISTINCTIVE INTERFACE LAYER
+   ------------------------------------------------------------
+   Visual identity only. No layout dimensions, routes or content
+   structures are changed by this stylesheet.
+============================================================ */
+
+html[data-ccg-mode="amiga"],
+html[data-mode="amiga"],
+body[data-ccg-mode="amiga"],
+body[data-mode="amiga"] {
+    --ccg-amiga-titlebar: linear-gradient(90deg, rgba(255,255,255,.9) 0 10%, rgba(255,64,184,.85) 10% 42%, rgba(113,94,255,.84) 42% 72%, rgba(60,211,255,.82) 72% 100%);
+    --ccg-amiga-surface: rgba(27, 22, 50, 0.88);
+    --ccg-amiga-edge: rgba(216, 207, 255, 0.32);
+    --ccg-amiga-shadow: rgba(5, 2, 16, 0.72);
+}
+
+html[data-ccg-mode="amiga"] body,
+html[data-mode="amiga"] body,
+body[data-ccg-mode="amiga"],
+body[data-mode="amiga"] {
+    scrollbar-color: rgba(255, 68, 181, .72) rgba(12, 8, 26, .78);
+}
+
+html[data-ccg-mode="amiga"] .ccg-header,
+html[data-mode="amiga"] .ccg-header,
+body[data-ccg-mode="amiga"] .ccg-header,
+body[data-mode="amiga"] .ccg-header {
+    border-bottom-color: rgba(255, 92, 196, .38);
+    box-shadow: 0 13px 34px rgba(7, 2, 20, .58), inset 0 -1px 0 rgba(195, 181, 255, .16);
+}
+
+html[data-ccg-mode="amiga"] .ccg-header-neon-strip,
+html[data-mode="amiga"] .ccg-header-neon-strip,
+body[data-ccg-mode="amiga"] .ccg-header-neon-strip,
+body[data-mode="amiga"] .ccg-header-neon-strip {
+    height: 4px;
+    background: var(--ccg-amiga-titlebar);
+    box-shadow: 0 0 16px rgba(255, 67, 180, .48), 0 0 26px rgba(91, 136, 255, .28);
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-window,
+html[data-mode="amiga"] .ccg-amiga-window,
+body[data-ccg-mode="amiga"] .ccg-amiga-window,
+body[data-mode="amiga"] .ccg-amiga-window {
+    position: relative;
+    border-color: var(--ccg-amiga-edge) !important;
+    border-radius: 0 !important;
+    background-color: var(--ccg-amiga-surface);
+    box-shadow:
+        8px 8px 0 rgba(8, 4, 20, .38),
+        0 22px 56px var(--ccg-amiga-shadow),
+        inset 1px 1px 0 rgba(255,255,255,.11) !important;
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-window::before,
+html[data-mode="amiga"] .ccg-amiga-window::before,
+body[data-ccg-mode="amiga"] .ccg-amiga-window::before,
+body[data-mode="amiga"] .ccg-amiga-window::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--ccg-amiga-titlebar);
+    pointer-events: none;
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-window::after,
+html[data-mode="amiga"] .ccg-amiga-window::after,
+body[data-ccg-mode="amiga"] .ccg-amiga-window::after,
+body[data-mode="amiga"] .ccg-amiga-window::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 10px;
+    right: 10px;
+    width: 10px;
+    height: 10px;
+    border: 1px solid rgba(255,255,255,.42);
+    background: rgba(7, 4, 18, .56);
+    box-shadow: inset 2px 2px 0 rgba(255,255,255,.13);
+    pointer-events: none;
+}
+
+html[data-ccg-mode="amiga"] .ccg-btn,
+html[data-mode="amiga"] .ccg-btn,
+body[data-ccg-mode="amiga"] .ccg-btn,
+body[data-mode="amiga"] .ccg-btn,
+html[data-ccg-mode="amiga"] button:not(.ccg-mode-toggle__thumb),
+html[data-mode="amiga"] button:not(.ccg-mode-toggle__thumb) {
+    border-radius: 0 !important;
+}
+
+html[data-ccg-mode="amiga"] .ccg-btn:hover,
+html[data-mode="amiga"] .ccg-btn:hover,
+body[data-ccg-mode="amiga"] .ccg-btn:hover,
+body[data-mode="amiga"] .ccg-btn:hover {
+    box-shadow: 3px 3px 0 rgba(8,4,20,.46), 0 0 14px rgba(255,70,183,.24);
+}
+
+html[data-ccg-mode="amiga"] .ccg-publisher-card,
+html[data-mode="amiga"] .ccg-publisher-card,
+html[data-ccg-mode="amiga"] .game-card,
+html[data-mode="amiga"] .game-card,
+html[data-ccg-mode="amiga"] .genre-card,
+html[data-mode="amiga"] .genre-card {
+    border-radius: 0 !important;
+    box-shadow: 4px 4px 0 rgba(8,4,20,.28);
+}
+
+html[data-ccg-mode="amiga"] input,
+html[data-ccg-mode="amiga"] select,
+html[data-ccg-mode="amiga"] textarea,
+html[data-mode="amiga"] input,
+html[data-mode="amiga"] select,
+html[data-mode="amiga"] textarea {
+    border-radius: 0 !important;
+}
+
+html[data-ccg-mode="amiga"] .ccg-omega-divider,
+html[data-mode="amiga"] .ccg-omega-divider {
+    opacity: .9;
+    background:
+        linear-gradient(90deg, transparent, rgba(255,82,190,.42), rgba(100,125,255,.4), transparent);
+}
+
+html[data-ccg-mode="amiga"] .ccg-mode-toggle__pill,
+html[data-mode="amiga"] .ccg-mode-toggle__pill {
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.18), 0 0 18px rgba(255,55,180,.2);
+}
+
+@media (max-width: 760px) {
+    html[data-ccg-mode="amiga"] .ccg-amiga-window,
+    html[data-mode="amiga"] .ccg-amiga-window {
+        box-shadow: 4px 4px 0 rgba(8,4,20,.3), 0 16px 38px rgba(5,2,16,.58), inset 1px 1px 0 rgba(255,255,255,.1) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-ccg-mode="amiga"] *,
+    html[data-mode="amiga"] * {
+        transition-duration: .01ms !important;
+    }
+}
