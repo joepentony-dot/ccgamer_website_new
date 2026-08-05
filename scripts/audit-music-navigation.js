@@ -21,23 +21,27 @@ function requireText(source, expected, message) {
     if (!source.includes(expected)) problems.push(message);
 }
 
-const config = read("js/ccg-music-config.js");
-const navigation = read("js/ccg-music-navigation.js");
-const navCss = read("resources/css/ccg-nav-fit.css");
+const composerUtils = read("js/music-composer-utils.js");
+const shell = read("js/ccg-music-shell.js");
+const amigaIdentity = read("js/ccg-amiga-identity.js");
+const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
 const musicHub = read("music/index.html");
 const composerHub = read("music/composers/index.html");
 
-requireText(config, "/js/ccg-music-navigation.js", "Music pages do not request the shared header bootstrap.");
-requireText(navigation, "data-ccg-music-header", "The injected music header marker is missing.");
-requireText(navigation, "/js/ccg-nav-core.js", "The music header does not load the unified navigation core.");
-requireText(navigation, "/js/ccg-mode-engine.js", "The music header does not load the mode engine.");
-requireText(navigation, "data-ccg-nav-drawer", "The music header is missing the mobile navigation drawer.");
-requireText(navigation, "data-ccg-mode-toggle", "The music header is missing the C64/Amiga mode control.");
-requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
-requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
-requireText(navCss, "left: calc(50% + 3px)", "The mobile Amiga mode position is not explicitly aligned.");
-requireText(navCss, "left: 4px", "The mobile C64 mode position is not explicitly aligned.");
-requireText(navCss, "transform: none !important", "Legacy transform positioning can still displace the mobile mode thumb.");
+requireText(composerUtils, "/js/ccg-music-shell.js", "Music pages do not request the shared shell.");
+requireText(shell, "CCG_MUSIC_SHELL_READY", "The music shell duplicate-load guard is missing.");
+requireText(shell, "data-ccg-header", "The music shell does not inject the established public header.");
+requireText(shell, "/js/ccg-nav-core.js", "The music shell does not load the unified navigation core.");
+requireText(shell, "data-ccg-nav-drawer", "The music shell is missing the mobile navigation drawer.");
+requireText(shell, "data-ccg-mode-toggle", "The music shell is missing the C64/Amiga mode control.");
+requireText(shell, "bindDrawer(header)", "The injected mobile navigation drawer is not activated.");
+requireText(shell, "bindMode(header)", "The injected C64/Amiga mode control is not activated.");
+requireText(musicHub, "/js/music-composer-utils.js", "The Music Hub does not load the shared music shell entry point.");
+requireText(composerHub, "/js/music-composer-utils.js", "The composer hub does not load the shared music shell entry point.");
+requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment stylesheet is not loaded site-wide.");
+requireText(mobileAlignment, "left: calc(50% + 3px)", "The mobile Amiga position is not explicitly aligned.");
+requireText(mobileAlignment, "left: 4px", "The mobile C64 position is not explicitly aligned.");
+requireText(mobileAlignment, "transform: none !important", "Legacy transform positioning can still displace the mobile mode thumb.");
 
 if (problems.length) {
     console.error("Music navigation audit failed:");
