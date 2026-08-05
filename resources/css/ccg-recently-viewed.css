@@ -1,0 +1,170 @@
+/* ============================================================
+   CCG RECENTLY VIEWED GAMES
+   ------------------------------------------------------------
+   Local-device history only. Namespaced to prevent card bleed.
+============================================================ */
+
+.ccg-recently-viewed {
+    width: min(1180px, 95vw);
+    margin: 24px auto 30px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background:
+        linear-gradient(135deg, rgba(var(--accent-rgb, 0, 221, 255), 0.1), transparent 40%),
+        rgba(5, 9, 22, 0.82);
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.42);
+}
+
+.ccg-recently-viewed[hidden] {
+    display: none !important;
+}
+
+.ccg-recently-viewed__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 16px;
+}
+
+.ccg-recently-viewed__kicker {
+    margin: 0 0 5px;
+    font: 700 0.7rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    opacity: 0.68;
+}
+
+.ccg-recently-viewed__title {
+    margin: 0;
+    font: 700 clamp(1.2rem, 3vw, 1.8rem)/1.2 "Orbitron", sans-serif;
+}
+
+.ccg-recently-viewed__clear {
+    min-height: 38px;
+    padding: 8px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.25);
+    color: inherit;
+    font: 600 0.72rem/1 "Orbitron", sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.ccg-recently-viewed__clear:hover,
+.ccg-recently-viewed__clear:focus-visible {
+    border-color: currentColor;
+    outline: none;
+}
+
+.ccg-recently-viewed__grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.ccg-recently-viewed__card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.22);
+    color: inherit;
+    text-decoration: none;
+}
+
+.ccg-recently-viewed__card:hover,
+.ccg-recently-viewed__card:focus-visible {
+    border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.82);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb, 0, 221, 255), 0.18);
+    outline: none;
+}
+
+.ccg-recently-viewed__image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb, 0, 221, 255), 0.18), transparent),
+        rgba(0, 0, 0, 0.42);
+}
+
+.ccg-recently-viewed__image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ccg-recently-viewed__fallback {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    place-items: center;
+    padding: 10px;
+    font: 700 0.7rem/1.3 "Orbitron", sans-serif;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    opacity: 0.66;
+}
+
+.ccg-recently-viewed__body {
+    display: flex;
+    min-height: 88px;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 11px;
+}
+
+.ccg-recently-viewed__name {
+    overflow: hidden;
+    font: 700 0.78rem/1.35 "Orbitron", sans-serif;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.ccg-recently-viewed__meta {
+    font-size: 0.72rem;
+    line-height: 1.35;
+    opacity: 0.65;
+}
+
+@media (max-width: 1050px) {
+    .ccg-recently-viewed__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .ccg-recently-viewed {
+        width: min(100% - 20px, 1180px);
+        margin-block: 18px 24px;
+        padding: 16px;
+    }
+
+    .ccg-recently-viewed__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ccg-recently-viewed__grid {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        padding-bottom: 6px;
+    }
+
+    .ccg-recently-viewed__card {
+        min-width: min(72vw, 260px);
+        scroll-snap-align: start;
+    }
+}
