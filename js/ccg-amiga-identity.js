@@ -11,10 +11,7 @@
     if (window.CCG_AMIGA_IDENTITY_READY) return;
     window.CCG_AMIGA_IDENTITY_READY = true;
 
-    const CSS_PATHS = [
-        "/resources/css/ccg-amiga-identity.css",
-        "/resources/css/ccg-amiga-mobile-alignment.css"
-    ];
+    const CSS_PATH = "/resources/css/ccg-amiga-identity.css";
     const PANEL_SELECTORS = [
         ".games-hero",
         ".games-tools",
@@ -43,13 +40,11 @@
     }
 
     function ensureCss() {
-        CSS_PATHS.forEach((path) => {
-            if (document.querySelector(`link[href="${path}"]`)) return;
-            const link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = path;
-            document.head.appendChild(link);
-        });
+        if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = CSS_PATH;
+        document.head.appendChild(link);
     }
 
     function addWindowChrome(element) {
