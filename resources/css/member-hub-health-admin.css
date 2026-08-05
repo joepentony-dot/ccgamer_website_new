@@ -1,0 +1,247 @@
+/* ============================================================
+   CCG ADMIN — MEMBER HUB DEPLOYMENT HEALTH
+============================================================ */
+
+html[data-member-hub-health-gate="pending"] body {
+  visibility: hidden;
+}
+
+.member-health {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.member-health__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.2rem;
+  margin-bottom: 1rem;
+  padding: 1.2rem;
+  border: 1px solid rgba(88, 194, 255, 0.45);
+  background: rgba(7, 18, 39, 0.92);
+}
+
+.member-health__header h1,
+.member-health__report h2,
+.member-health__missing h2,
+.member-health__group h3 {
+  margin: 0;
+  color: #fff;
+}
+
+.member-health__header p {
+  max-width: 780px;
+  color: rgba(225, 239, 250, 0.78);
+  line-height: 1.55;
+}
+
+.member-health__kicker {
+  margin: 0 0 0.3rem;
+  color: #82d9ff !important;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.member-health__header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+}
+
+.member-health__summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.member-health__summary-card {
+  display: grid;
+  gap: 0.2rem;
+  padding: 1rem;
+  border: 1px solid rgba(99, 169, 222, 0.35);
+  background: rgba(7, 19, 40, 0.82);
+}
+
+.member-health__summary-card strong {
+  color: #fff;
+  font-size: 1.7rem;
+}
+
+.member-health__summary-card span {
+  color: rgba(207, 226, 242, 0.7);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.member-health__missing,
+.member-health__report {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(94, 165, 219, 0.34);
+  background: rgba(5, 14, 30, 0.82);
+}
+
+.member-health__missing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.8rem 1rem;
+  border-color: rgba(255, 195, 95, 0.55);
+  background: rgba(55, 35, 6, 0.72);
+}
+
+.member-health__missing p {
+  margin: 0.4rem 0 0;
+  color: rgba(255, 237, 201, 0.76);
+}
+
+.member-health__missing ol {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding-left: 1.4rem;
+  color: rgba(255, 242, 216, 0.9);
+}
+
+.member-health__missing li + li {
+  margin-top: 0.35rem;
+}
+
+.member-health__missing code {
+  color: #ffe2a0;
+  overflow-wrap: anywhere;
+}
+
+.member-health__section-heading,
+.member-health__group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.member-health__section-heading {
+  margin-bottom: 0.9rem;
+}
+
+.member-health__section-heading span,
+.member-health__group-heading span {
+  color: rgba(205, 225, 240, 0.68);
+  font-size: 0.78rem;
+}
+
+.member-health__groups {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.member-health__group {
+  padding: 0.85rem;
+  border: 1px solid rgba(104, 169, 218, 0.28);
+  background: rgba(7, 19, 39, 0.68);
+}
+
+.member-health__group-heading {
+  margin-bottom: 0.65rem;
+}
+
+.member-health__group h3 {
+  font-size: 1rem;
+}
+
+.member-health__items {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.member-health__item {
+  display: grid;
+  grid-template-columns: auto minmax(180px, 0.6fr) minmax(260px, 1fr) minmax(190px, 0.55fr);
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.7rem;
+  border: 1px solid rgba(111, 176, 224, 0.2);
+  background: rgba(2, 10, 24, 0.52);
+}
+
+.member-health__state {
+  display: inline-grid;
+  place-items: center;
+  min-width: 68px;
+  padding: 0.22rem 0.45rem;
+  border: 1px solid rgba(255, 134, 151, 0.58);
+  color: #ffb0bc;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.member-health__item.is-ready .member-health__state {
+  border-color: rgba(88, 232, 174, 0.62);
+  color: #9cf7c7;
+}
+
+.member-health__label {
+  color: #fff;
+  font-weight: 800;
+}
+
+.member-health__detail {
+  color: rgba(218, 234, 246, 0.72);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.member-health__action {
+  color: rgba(139, 215, 255, 0.84);
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 0.74rem;
+  overflow-wrap: anywhere;
+}
+
+.member-health__empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed rgba(117, 174, 218, 0.35);
+  color: rgba(215, 231, 243, 0.72);
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .member-health__item {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .member-health__detail,
+  .member-health__action {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 700px) {
+  .member-health__header,
+  .member-health__missing {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .member-health__header-actions {
+    justify-content: flex-start;
+  }
+
+  .member-health__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .member-health__missing ol,
+  .member-health__missing button {
+    grid-column: 1;
+  }
+}
