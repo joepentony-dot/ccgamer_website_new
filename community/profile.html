@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex,follow">
-<script src="/js/analytics.js" defer></script>
+  <meta name="robots" content="noindex,follow">
+  <script src="/js/analytics.js" defer></script>
   <title>My Profile | CCG Community</title>
   <link rel="stylesheet" href="../resources/css/auth.css" />
   <link rel="stylesheet" href="../resources/css/community-account.css" />
@@ -14,7 +14,7 @@
     <section class="auth-card">
       <a class="auth-btn profile-back-home" href="/home.html">← Back to Home</a>
       <h1>My Private Profile</h1>
-      <p class="auth-subtitle">Manage account preferences and security.</p>
+      <p class="auth-subtitle">Manage account preferences, favourites and your private game library.</p>
 
       <div id="profileMessage" class="auth-message" aria-live="polite"></div>
 
@@ -39,6 +39,52 @@
         <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
       </section>
 
+      <section id="privateGameLibrarySection" class="profile-subsection profile-library" aria-labelledby="profileLibraryTitle">
+        <div class="profile-library__header">
+          <div>
+            <h2 id="profileLibraryTitle" class="profile-subsection__title">My Private Game Library</h2>
+            <p class="profile-library__intro">
+              Record what you have played, what you want to try, games you owned as a kid and titles you still own. Ratings, lists and notes remain private.
+            </p>
+          </div>
+          <div class="profile-library__summary" aria-live="polite">
+            <strong id="profileLibraryCount">0 games</strong>
+            <span id="profileLibraryStorageStatus">Private account library</span>
+          </div>
+        </div>
+
+        <div id="profileLibraryMessage" class="auth-message profile-library__message" aria-live="polite"></div>
+
+        <div class="profile-library__search">
+          <label for="profileLibrarySearchInput">Add a game</label>
+          <input
+            id="profileLibrarySearchInput"
+            type="search"
+            placeholder="Search by title, publisher, system or year…"
+            autocomplete="off"
+            aria-controls="profileLibrarySearchResults"
+          />
+          <div id="profileLibrarySearchResults" class="profile-library-search-results" hidden></div>
+        </div>
+
+        <div class="profile-library__toolbar">
+          <div class="profile-library__filters" role="group" aria-label="Filter private game library">
+            <button type="button" class="auth-btn is-active" data-profile-library-filter="all" aria-pressed="true">All</button>
+            <button type="button" class="auth-btn" data-profile-library-filter="played" aria-pressed="false">Played</button>
+            <button type="button" class="auth-btn" data-profile-library-filter="want_to_play" aria-pressed="false">Want to Play</button>
+            <button type="button" class="auth-btn" data-profile-library-filter="owned_as_child" aria-pressed="false">Owned as a Kid</button>
+            <button type="button" class="auth-btn" data-profile-library-filter="still_own" aria-pressed="false">Still Own</button>
+          </div>
+
+          <div class="profile-library__exports" aria-label="Export private game library">
+            <button type="button" class="auth-btn" id="profileLibraryExportCsv">Export CSV</button>
+            <button type="button" class="auth-btn" id="profileLibraryExportJson">Export JSON</button>
+          </div>
+        </div>
+
+        <div id="profileLibraryList" class="profile-library__list"></div>
+      </section>
+
       <div class="profile-actions">
         <a class="auth-btn" href="/auth/forgot.html">Reset password</a>
         <button type="button" class="auth-btn" id="logoutBtn" data-logout>Logout</button>
@@ -50,5 +96,6 @@
   <script src="../js/ccg-supabase-client.js" defer></script>
   <script src="../js/ccg-auth-ui.js" defer></script>
   <script type="module" src="../resources/js/auth/profile-page.js"></script>
+  <script type="module" src="../resources/js/auth/profile-library.js"></script>
 </body>
 </html>
