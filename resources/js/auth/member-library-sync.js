@@ -32,8 +32,7 @@ function slug(value) {
 }
 
 function uniqueStrings(value) {
-  const source = Array.isArray(value) ? value : [];
-  return Array.from(new Set(source.map(text).filter(Boolean)));
+  return Array.from(new Set((Array.isArray(value) ? value : []).map(text).filter(Boolean)));
 }
 
 function validLists(value) {
@@ -43,13 +42,12 @@ function validLists(value) {
 function validRating(value) {
   if (value === null || value === undefined || value === '') return '';
   const number = Number(value);
-  if (!Number.isFinite(number)) return '';
-  return String(Math.min(10, Math.max(1, Math.round(number))));
+  return Number.isFinite(number) ? String(Math.min(10, Math.max(1, Math.round(number)))) : '';
 }
 
-function validDate(value) {
-  const date = new Date(value || 0);
-  return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+function timestamp(value) {
+  const parsed = new Date(value || 0).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 function ensureStylesheet() {
@@ -69,31 +67,35 @@ function createButton(id, label) {
   return button;
 }
 
+function updateMemberCopy() {
+  const note = document.querySelector('#personalGameLibrary .profile-library__note');
+  if (note) {
+    note.textContent = 'Record what you played, what you want to try and the games you owned. Signed-in account synchronisation keeps the same library available across your devices when the Member Hub database migration is active.';
+  }
+
+  const preferredNote = Array.from(document.querySelectorAll('.member-local-note')).find((node) => /preferred system/i.test(node.textContent || ''));
+  if (preferredNote) {
+    preferredNote.textContent = 'Preferred system is stored on your account when cloud synchronisation is available, with a browser fallback retained.';
+  }
+
+  const laterHeading = Array.from(document.querySelectorAll('.member-benefit-card h3')).find((node) => /coming in later phases|coming in the community phase/i.test(node.textContent || ''));
+  const laterList = laterHeading?.parentElement?.querySelector('.member-benefit-list');
+  if (laterHeading && laterList) {
+    laterHeading.textContent = 'Member Hub Features';
+    laterList.innerHTML = '<li>Account-synchronised personal lists</li><li>Private named custom collections</li><li>Optional public profile controlled by privacy settings</li><li>Member suggestions and correction tracking</li>';
+  }
+}
+
 function ensureInterface() {
   const section = document.getElementById('personalGameLibrary');
   const actions = section?.querySelector('.profile-library__actions');
   if (!section || !actions) return;
 
   actions.classList.add('member-library-sync-controls');
-  const jsonExport = document.getElementById('exportPersonalLibrary');
-  if (jsonExport) jsonExport.textContent = 'Export JSON';
+  ['importPersonalLibraryButton', 'importPersonalLibraryFile', 'exportPersonalLibraryCsv'].forEach((id) => document.getElementById(id)?.remove());
 
-  if (!document.getElementById('exportPersonalLibraryCsv')) {
-    actions.insertBefore(createButton('exportPersonalLibraryCsv', 'Export CSV'), document.getElementById('clearPersonalLibrary') || null);
-  }
-  if (!document.getElementById('importPersonalLibraryButton')) {
-    actions.insertBefore(createButton('importPersonalLibraryButton', 'Import JSON'), document.getElementById('clearPersonalLibrary') || null);
-  }
   if (!document.getElementById('memberSyncLibraryNow')) {
     actions.insertBefore(createButton('memberSyncLibraryNow', 'Sync now'), document.getElementById('clearPersonalLibrary') || null);
-  }
-  if (!document.getElementById('importPersonalLibraryFile')) {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.id = 'importPersonalLibraryFile';
-    input.accept = '.json,application/json';
-    input.hidden = true;
-    actions.appendChild(input);
   }
 
   if (!document.getElementById('memberLibrarySyncStatus')) {
@@ -106,26 +108,7 @@ function ensureInterface() {
     actions.insertAdjacentElement('afterend', status);
   }
 
-  const note = section.querySelector('.profile-library__note');
-  if (note) {
-    note.textContent = 'Record what you played, what you want to try and the games you owned. Your browser copy remains available while account synchronisation keeps the same library available on signed-in devices.';
-  }
-
-  const preferredNote = Array.from(document.querySelectorAll('.member-local-note')).find((node) => (
-    /preferred system/i.test(node.textContent || '')
-  ));
-  if (preferredNote) {
-    preferredNote.textContent = 'Preferred system is stored on your account when cloud synchronisation is available, with a browser fallback retained.';
-  }
-
-  const laterHeading = Array.from(document.querySelectorAll('.member-benefit-card h3')).find((node) => (
-    /coming in later phases/i.test(node.textContent || '')
-  ));
-  const laterList = laterHeading?.parentElement?.querySelector('.member-benefit-list');
-  if (laterHeading && laterList) {
-    laterHeading.textContent = 'Coming in the Community Phase';
-    laterList.innerHTML = '<li>Optional public member profiles</li><li>Shareable public collections</li><li>Member suggestions and correction tracking</li><li>Public badges controlled by privacy settings</li>';
-  }
+  updateMemberCopy();
 }
 
 function readLocalLibrary() {
@@ -137,7 +120,7 @@ function readLocalLibrary() {
   }
 }
 
-function normalizeLocalEntry(gameSlug, entry = {}) {
+function normalizeEntry(gameSlug, entry = {}) {
   const normalizedSlug = slug(gameSlug);
   return {
     slug: normalizedSlug,
@@ -152,22 +135,19 @@ function normalizeLocalEntry(gameSlug, entry = {}) {
   };
 }
 
-function normalizeLocalLibrary(source) {
+function normalizeLibrary(source) {
   const result = {};
   Object.entries(source || {}).forEach(([gameSlug, entry]) => {
-    const normalized = normalizeLocalEntry(gameSlug, entry);
+    const normalized = normalizeEntry(gameSlug, entry);
     if (!normalized.slug) return;
-    const hasContent = normalized.lists.length
-      || normalized.customLists.length
-      || normalized.rating
-      || normalized.note;
+    const hasContent = normalized.lists.length || normalized.customLists.length || normalized.rating || normalized.note;
     if (hasContent) result[normalized.slug] = normalized;
   });
   return result;
 }
 
 function remoteToLocal(row = {}) {
-  return normalizeLocalEntry(row.game_slug, {
+  return normalizeEntry(row.game_slug, {
     title: row.title,
     system: row.system,
     year: row.release_year,
@@ -179,33 +159,16 @@ function remoteToLocal(row = {}) {
   });
 }
 
+/* Newest complete record wins. This preserves deliberate removals instead of restoring stale list memberships. */
 function mergeEntries(localEntry, remoteEntry) {
   if (!localEntry) return remoteEntry;
   if (!remoteEntry) return localEntry;
-
-  const localNewer = validDate(localEntry.updatedAt) >= validDate(remoteEntry.updatedAt);
-  const newest = localNewer ? localEntry : remoteEntry;
-  const older = localNewer ? remoteEntry : localEntry;
-
-  return normalizeLocalEntry(newest.slug || older.slug, {
-    title: newest.title || older.title,
-    system: newest.system || older.system,
-    year: newest.year || older.year,
-    lists: Array.from(new Set([...(localEntry.lists || []), ...(remoteEntry.lists || [])])),
-    customLists: Array.from(new Set([...(localEntry.customLists || []), ...(remoteEntry.customLists || [])])),
-    rating: newest.rating || older.rating,
-    note: newest.note || older.note,
-    updatedAt: validDate(newest.updatedAt) ? newest.updatedAt : older.updatedAt
-  });
-}
-
-function librariesEqual(a, b) {
-  return JSON.stringify(normalizeLocalLibrary(a)) === JSON.stringify(normalizeLocalLibrary(b));
+  return timestamp(localEntry.updatedAt) >= timestamp(remoteEntry.updatedAt) ? localEntry : remoteEntry;
 }
 
 function writeLocalLibrary(library) {
-  const normalized = normalizeLocalLibrary(library);
-  if (librariesEqual(readLocalLibrary(), normalized)) return false;
+  const normalized = normalizeLibrary(library);
+  if (JSON.stringify(normalizeLibrary(readLocalLibrary())) === JSON.stringify(normalized)) return false;
   state.suppressLocalEvent = true;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
@@ -227,7 +190,7 @@ function isMissingSchema(error) {
   return MISSING_SCHEMA_CODES.has(String(error?.code || ''));
 }
 
-function payloadFromEntry(entry) {
+function payload(entry) {
   return {
     profile_id: state.user.id,
     game_slug: entry.slug,
@@ -238,7 +201,7 @@ function payloadFromEntry(entry) {
     custom_lists: uniqueStrings(entry.customLists).slice(0, 20),
     rating: entry.rating ? Number(entry.rating) : null,
     note: entry.note || '',
-    updated_at: validDate(entry.updatedAt) ? entry.updatedAt : new Date().toISOString()
+    updated_at: timestamp(entry.updatedAt) ? entry.updatedAt : new Date().toISOString()
   };
 }
 
@@ -254,29 +217,19 @@ async function fetchRemoteLibrary() {
 
 async function upsertEntries(entries) {
   if (!entries.length) return;
-  const { error } = await state.client
-    .from(TABLE)
-    .upsert(entries.map(payloadFromEntry), { onConflict: 'profile_id,game_slug' });
+  const { error } = await state.client.from(TABLE).upsert(entries.map(payload), { onConflict: 'profile_id,game_slug' });
   if (error) throw error;
 }
 
 async function deleteRemoteSlugs(slugs) {
   if (!slugs.length) return;
-  const { error } = await state.client
-    .from(TABLE)
-    .delete()
-    .eq('profile_id', state.user.id)
-    .in('game_slug', slugs);
+  const { error } = await state.client.from(TABLE).delete().eq('profile_id', state.user.id).in('game_slug', slugs);
   if (error) throw error;
 }
 
 async function loadPreferredSystem() {
   try {
-    const { data, error } = await state.client
-      .from('profiles')
-      .select('preferred_system')
-      .eq('id', state.user.id)
-      .maybeSingle();
+    const { data, error } = await state.client.from('profiles').select('preferred_system').eq('id', state.user.id).maybeSingle();
     if (error) throw error;
     const preferred = ['c64', 'amiga', 'both'].includes(data?.preferred_system) ? data.preferred_system : 'both';
     localStorage.setItem(PREFERRED_SYSTEM_KEY, preferred);
@@ -303,7 +256,7 @@ async function savePreferredSystem(value) {
 
 async function reconcileLibraries() {
   setStatus('Checking your account library…', 'working');
-  const local = normalizeLocalLibrary(readLocalLibrary());
+  const local = normalizeLibrary(readLocalLibrary());
   let remoteRows;
   try {
     remoteRows = await fetchRemoteLibrary();
@@ -339,7 +292,7 @@ async function reconcileLibraries() {
 
 async function pushLocalLibrary() {
   if (!state.cloudAvailable || !state.initialised) return;
-  const entries = Object.values(normalizeLocalLibrary(readLocalLibrary()));
+  const entries = Object.values(normalizeLibrary(readLocalLibrary()));
   setStatus('Synchronising changes…', 'working');
   try {
     await upsertEntries(entries);
@@ -364,46 +317,6 @@ function schedulePush() {
   state.pushTimer = window.setTimeout(() => { void pushLocalLibrary(); }, 700);
 }
 
-function csvCell(value) {
-  const output = Array.isArray(value) ? value.join(' | ') : String(value ?? '');
-  return `"${output.replace(/"/g, '""')}"`;
-}
-
-function downloadFile(filename, content, type) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
-}
-
-function exportCsv() {
-  const rows = Object.values(normalizeLocalLibrary(readLocalLibrary())).sort((a, b) => a.title.localeCompare(b.title));
-  const columns = ['title', 'slug', 'system', 'year', 'lists', 'customLists', 'rating', 'note', 'updatedAt'];
-  const csv = [columns.map(csvCell).join(','), ...rows.map((entry) => columns.map((column) => csvCell(entry[column])).join(','))].join('\r\n');
-  downloadFile('ccg-personal-game-library.csv', csv, 'text/csv;charset=utf-8');
-  setStatus('CSV export created.', state.cloudAvailable ? 'synced' : 'local');
-}
-
-function normalizeImportedLibrary(payload) {
-  const source = payload?.games && typeof payload.games === 'object' ? payload.games : payload;
-  if (!source || typeof source !== 'object' || Array.isArray(source)) throw new Error('This file does not contain a CCG personal game library.');
-  return normalizeLocalLibrary(source);
-}
-
-async function importJsonFile(file) {
-  const imported = normalizeImportedLibrary(JSON.parse(await file.text()));
-  const current = normalizeLocalLibrary(readLocalLibrary());
-  const merged = { ...current };
-  Object.entries(imported).forEach(([gameSlug, entry]) => { merged[gameSlug] = mergeEntries(current[gameSlug], entry); });
-  writeLocalLibrary(merged);
-  if (state.cloudAvailable) await pushLocalLibrary();
-  else setStatus(`Imported ${Object.keys(imported).length} games on this browser.`, 'local');
-}
-
 function bindControls() {
   document.addEventListener('ccg:personal-library-updated', schedulePush);
   document.getElementById('memberSyncLibraryNow')?.addEventListener('click', () => {
@@ -413,25 +326,6 @@ function bindControls() {
       setStatus('Account sync could not be started. Your browser data is unchanged.', 'error');
     });
   });
-  document.getElementById('exportPersonalLibraryCsv')?.addEventListener('click', exportCsv);
-
-  const input = document.getElementById('importPersonalLibraryFile');
-  document.getElementById('importPersonalLibraryButton')?.addEventListener('click', () => input?.click());
-  input?.addEventListener('change', async () => {
-    const file = input.files?.[0];
-    if (!file) return;
-    setStatus('Importing library…', 'working');
-    try {
-      await importJsonFile(file);
-      setStatus('Library import complete.', state.cloudAvailable ? 'synced' : 'local');
-    } catch (error) {
-      console.error('[member-library-sync] Import failed', error);
-      setStatus(error.message || 'The library file could not be imported.', 'error');
-    } finally {
-      input.value = '';
-    }
-  });
-
   document.getElementById('preferredSystem')?.addEventListener('change', (event) => {
     if (state.initialised) void savePreferredSystem(event.target.value);
   });
