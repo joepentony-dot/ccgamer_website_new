@@ -12,6 +12,7 @@ Do Not Override
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
     const OPTIONAL_MODULES = [
+        { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
@@ -42,7 +43,7 @@ Do Not Override
         const color = args.slice(3).join(" ") || "currentColor";
         if (!style.getPropertyValue("box-shadow")) style.setProperty("box-shadow", `${x} ${y} ${blur} ${color}`);
         const cleanedFilter = filter.replace(/\s*drop-shadow\([^)]+\)/gi, "").trim();
-        if (cleanedFilter) style.setProperty("filter", cleanedFilter);
+        if (cleanedFilter) style.setPropertyValue("filter", cleanedFilter);
         else style.removeProperty("filter");
     }
 
