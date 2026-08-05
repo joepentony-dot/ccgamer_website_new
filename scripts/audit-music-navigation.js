@@ -23,7 +23,8 @@ function requireText(source, expected, message) {
 
 const config = read("js/ccg-music-config.js");
 const navigation = read("js/ccg-music-navigation.js");
-const navCss = read("resources/css/ccg-nav-fit.css");
+const amigaIdentity = read("js/ccg-amiga-identity.js");
+const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
 const musicHub = read("music/index.html");
 const composerHub = read("music/composers/index.html");
 
@@ -36,9 +37,10 @@ requireText(navigation, "data-ccg-nav-drawer", "The music header is missing the 
 requireText(navigation, "data-ccg-mode-toggle", "The music header is missing the C64/Amiga mode control.");
 requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
 requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
-requireText(navCss, "left: calc(50% + 3px)", "The mobile Amiga mode position is not explicitly aligned.");
-requireText(navCss, "left: 4px", "The mobile C64 mode position is not explicitly aligned.");
-requireText(navCss, "transform: none !important", "Legacy transform positioning can still displace the mobile mode thumb.");
+requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment layer is not loaded through the shared Amiga identity module.");
+requireText(mobileAlignment, "left: calc(50% + 3px)", "The mobile Amiga mode position is not explicitly aligned.");
+requireText(mobileAlignment, "left: 4px", "The mobile C64 mode position is not explicitly aligned.");
+requireText(mobileAlignment, "transform: none !important", "Legacy transform positioning can still displace the mobile mode thumb.");
 
 if (problems.length) {
     console.error("Music navigation audit failed:");
