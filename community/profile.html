@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex,follow">
-<script src="/js/analytics.js" defer></script>
+  <meta name="robots" content="noindex,follow">
+  <script src="/js/analytics.js" defer></script>
   <title>My Profile | CCG Community</title>
   <link rel="stylesheet" href="../resources/css/auth.css" />
   <link rel="stylesheet" href="../resources/css/community-account.css" />
+  <link rel="stylesheet" href="../resources/css/profile-lists.css" />
 </head>
 <body>
   <main class="auth-shell">
     <section class="auth-card">
       <a class="auth-btn profile-back-home" href="/home.html">← Back to Home</a>
       <h1>My Private Profile</h1>
-      <p class="auth-subtitle">Manage account preferences and security.</p>
+      <p class="auth-subtitle">Manage account preferences, favourites and personal game lists.</p>
 
       <div id="profileMessage" class="auth-message" aria-live="polite"></div>
 
@@ -39,6 +40,26 @@
         <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
       </section>
 
+      <section id="personalGameLibrary" class="profile-library" aria-labelledby="personalGameLibraryTitle">
+        <div class="profile-library__header">
+          <div>
+            <h2 id="personalGameLibraryTitle" class="profile-library__title">My Personal Game Library</h2>
+            <p class="profile-library__note">These lists, ratings and notes are private and stored only on this browser. They are separate from your account favourites and can be exported as a JSON backup.</p>
+          </div>
+          <div class="profile-library__actions">
+            <button type="button" class="auth-btn" id="exportPersonalLibrary">Export lists</button>
+            <button type="button" class="auth-btn" id="clearPersonalLibrary">Clear local lists</button>
+          </div>
+        </div>
+        <div class="profile-library__tabs" role="group" aria-label="Personal game list">
+          <button type="button" class="profile-library__tab is-active" data-profile-list-tab="played" aria-pressed="true">Played</button>
+          <button type="button" class="profile-library__tab" data-profile-list-tab="want" aria-pressed="false">Want to Play</button>
+          <button type="button" class="profile-library__tab" data-profile-list-tab="owned" aria-pressed="false">Owned as a Kid</button>
+          <button type="button" class="profile-library__tab" data-profile-list-tab="still" aria-pressed="false">Still Own</button>
+        </div>
+        <ul id="personalGameLibraryList" class="profile-library__list"></ul>
+      </section>
+
       <div class="profile-actions">
         <a class="auth-btn" href="/auth/forgot.html">Reset password</a>
         <button type="button" class="auth-btn" id="logoutBtn" data-logout>Logout</button>
@@ -50,5 +71,6 @@
   <script src="../js/ccg-supabase-client.js" defer></script>
   <script src="../js/ccg-auth-ui.js" defer></script>
   <script type="module" src="../resources/js/auth/profile-page.js"></script>
+  <script src="../resources/js/auth/profile-lists.js" defer></script>
 </body>
 </html>
