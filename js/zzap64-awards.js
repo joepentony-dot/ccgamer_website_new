@@ -17,6 +17,7 @@
     const BATCH_SIZE = window.matchMedia?.("(max-width: 520px)")?.matches ? 12 : 24;
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
+        silver: "/resources/images/zzap64/zzap64-silver-medal.svg",
         sizzler: "/resources/images/zzap64/zzap64-sizzler.webp",
         c64: "/resources/images/platforms/commodore-64-logo.webp",
         amiga: "/resources/images/platforms/commodore-amiga-logo.webp"
@@ -32,7 +33,7 @@
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
-    const AWARD_ORDER = ["Gold Medal", "Sizzler", "Silver Medal"];
+    const AWARD_ORDER = ["Gold Medal", "Silver Medal", "Sizzler"];
 
     const state = {
         entries: [],
@@ -223,6 +224,9 @@
     function awardArtwork(entry) {
         if (entry.award === "Gold Medal") {
             return `<img class="zzap-award-card__award-logo zzap-award-card__award-logo--gold" src="${ASSETS.gold}" alt="Zzap!64 Gold Medal award" width="64" height="108" loading="lazy" decoding="async">`;
+        }
+        if (entry.award === "Silver Medal") {
+            return `<img class="zzap-award-card__award-logo zzap-award-card__award-logo--silver" src="${ASSETS.silver}" alt="Zzap!64 Silver Medal award" width="64" height="108" loading="lazy" decoding="async">`;
         }
         if (entry.award === "Sizzler") {
             return `<img class="zzap-award-card__award-logo zzap-award-card__award-logo--sizzler" src="${ASSETS.sizzler}" alt="Zzap!64 Sizzler award" width="96" height="72" loading="lazy" decoding="async">`;

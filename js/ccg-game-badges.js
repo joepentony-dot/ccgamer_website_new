@@ -2,7 +2,7 @@
    CCG SINGLE-GAME PLATFORM + ZZAP!64 BADGES
    ------------------------------------------------------------
    Adds a compact Commodore platform logo to every resolved game
-   page and adds supplied Gold Medal/Sizzler artwork when that
+   page and adds supplied Gold Medal/Silver Medal/Sizzler artwork when that
    game/platform appears in the verified Zzap!64 award archive.
 ============================================================ */
 
@@ -21,6 +21,7 @@
     const CSS_PATH = "/resources/css/ccg-game-badges.css";
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
+        silver: "/resources/images/zzap64/zzap64-silver-medal.svg",
         sizzler: "/resources/images/zzap64/zzap64-sizzler.webp",
         c64: "/resources/images/platforms/commodore-64-logo.webp",
         amiga: "/resources/images/platforms/commodore-amiga-logo.webp"
@@ -133,8 +134,9 @@
     function awardPriority(entry) {
         const award = matcherText(entry.award);
         if (award.includes("gold")) return 0;
-        if (award.includes("sizzler")) return 1;
-        return 2;
+        if (award.includes("silver")) return 1;
+        if (award.includes("sizzler")) return 2;
+        return 3;
     }
 
     function matcherText(value) {
@@ -146,7 +148,7 @@
         return entries
             .filter((entry) => {
                 const award = matcherText(entry.award);
-                return award.includes("gold") || award.includes("sizzler");
+                return award.includes("gold") || award.includes("silver") || award.includes("sizzler");
             })
             .sort((a, b) => awardPriority(a) - awardPriority(b) || a.year - b.year)
             .filter((entry) => {
@@ -176,16 +178,22 @@
     }
 
     function createAwardBadge(entry) {
-        const isGold = matcherText(entry.award).includes("gold");
+        const award = matcherText(entry.award);
+        const isGold = award.includes("gold");
+        const isSilver = award.includes("silver");
+        const type = isGold ? "gold" : (isSilver ? "silver" : "sizzler");
+
         const badge = document.createElement("div");
-        badge.className = `ccg-game-badge ccg-game-badge--award ccg-game-badge--${isGold ? "gold" : "sizzler"}`;
+        badge.className = `ccg-game-badge ccg-game-badge--award ccg-game-badge--${type}`;
 
         const image = document.createElement("img");
         image.className = "ccg-game-badge__image";
-        image.src = isGold ? ASSETS.gold : ASSETS.sizzler;
-        image.alt = isGold ? "Zzap!64 Gold Medal award" : "Zzap!64 Sizzler award";
-        image.width = isGold ? 64 : 96;
-        image.height = isGold ? 108 : 72;
+        image.src = isGold ? ASSETS.gold : (isSilver ? ASSETS.silver : ASSETS.sizzler);
+        image.alt = isGold
+            ? "Zzap!64 Gold Medal award"
+            : (isSilver ? "Zzap!64 Silver Medal award" : "Zzap!64 Sizzler award");
+        image.width = (isGold || isSilver) ? 64 : 96;
+        image.height = (isGold || isSilver) ? 108 : 72;
         image.loading = "lazy";
         image.decoding = "async";
 
@@ -194,7 +202,9 @@
 
         const title = document.createElement("span");
         title.className = "ccg-game-badge__title";
-        title.textContent = isGold ? "Zzap!64 Gold Medal" : "Zzap!64 Sizzler";
+        title.textContent = isGold
+            ? "Zzap!64 Gold Medal"
+            : (isSilver ? "Zzap!64 Silver Medal" : "Zzap!64 Sizzler");
 
         const detail = document.createElement("span");
         detail.className = "ccg-game-badge__detail";

@@ -63,7 +63,15 @@
         rgba(15, 12, 4, .88);
 }
 
-.ccg-game-badge--gold .ccg-game-badge__image {
+.ccg-game-badge--silver {
+    border-color: rgba(214, 225, 236, .54);
+    background:
+        linear-gradient(145deg, rgba(214, 225, 236, .14), transparent 56%),
+        rgba(10, 13, 18, .9);
+}
+
+.ccg-game-badge--gold .ccg-game-badge__image,
+.ccg-game-badge--silver .ccg-game-badge__image {
     width: auto;
     height: 52px;
 }
@@ -115,7 +123,8 @@
         width: 96px;
     }
 
-    .ccg-game-badge--gold .ccg-game-badge__image {
+    .ccg-game-badge--gold .ccg-game-badge__image,
+    .ccg-game-badge--silver .ccg-game-badge__image {
         height: 44px;
     }
 

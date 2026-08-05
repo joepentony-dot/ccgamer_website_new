@@ -8,6 +8,7 @@ on:
       - "**/*.css"
       - "**/*.json"
       - "**/*.xml"
+      - "**/*.svg"
       - "**/*.webp"
       - "_redirects"
       - "_headers"
