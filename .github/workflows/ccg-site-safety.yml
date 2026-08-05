@@ -16,6 +16,7 @@ on:
       - "scripts/audit-legacy-game-routes.js"
       - "scripts/audit-music-navigation.js"
       - "scripts/audit-zzap64-awards.js"
+      - "scripts/audit-zzap64-performance.js"
       - "scripts/audit-game-badges.js"
       - "scripts/audit-collections-index.js"
       - ".github/workflows/ccg-site-safety.yml"
@@ -65,6 +66,7 @@ jobs:
           node --check scripts/audit-legacy-game-routes.js
           node --check scripts/audit-music-navigation.js
           node --check scripts/audit-zzap64-awards.js
+          node --check scripts/audit-zzap64-performance.js
           node --check scripts/audit-game-badges.js
           node --check scripts/audit-collections-index.js
 
@@ -79,6 +81,9 @@ jobs:
 
       - name: Run Zzap award data audit
         run: node scripts/audit-zzap64-awards.js
+
+      - name: Run Zzap progressive loading audit
+        run: node scripts/audit-zzap64-performance.js
 
       - name: Run game badge audit
         run: node scripts/audit-game-badges.js
