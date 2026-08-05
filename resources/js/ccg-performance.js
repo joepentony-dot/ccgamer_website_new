@@ -1,34 +1,156 @@
 (function () {
     "use strict";
 
-    const desktopQuery = window.matchMedia?.("(min-width: 1024px)");
-    const finePointerQuery = window.matchMedia?.("(pointer: fine)");
-    if (!desktopQuery || !desktopQuery.matches) return;
-    if (finePointerQuery && !finePointerQuery.matches) return;
+    if (window.CCG_PERFORMANCE_FOUNDATIONS_READY) return;
+    window.CCG_PERFORMANCE_FOUNDATIONS_READY = true;
 
+    const STYLESHEET_PATH = "/resources/css/ccg-performance-foundations.css";
     const root = document.documentElement;
     const body = document.body;
+    const desktopQuery = window.matchMedia?.("(min-width: 1024px)");
+    const finePointerQuery = window.matchMedia?.("(pointer: fine)");
     const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const saveData = Boolean(connection?.saveData);
+
     const state = {
         idle: false,
         scrolling: false,
-        visible: !document.hidden
+        visible: !document.hidden,
+        mediaObserver: null,
+        mutationObserver: null,
+        idleTimer: null,
+        scrollTimer: null,
+        mutationTimer: null,
+        metrics: {
+            cls: 0,
+            lcp: 0,
+            longTasks: 0
+        }
     };
 
-    root.classList.add("ccg-perf-desktop");
+    const IDLE_DELAY = 5000;
+    const SCROLL_IDLE_DELAY = 150;
+    const MUTATION_DELAY = 80;
 
-    let idleTimer = null;
-    let scrollTimer = null;
-    const idleDelay = 5000;
-    const scrollIdleDelay = 150;
+    function ensureStylesheet() {
+        if (document.querySelector(`link[href="${STYLESHEET_PATH}"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = STYLESHEET_PATH;
+        link.dataset.ccgPerformanceStyles = "true";
+        document.head.appendChild(link);
+    }
 
-    function shouldPause() {
+    function isPriorityImage(image) {
+        if (!(image instanceof HTMLImageElement)) return false;
+        if (image.dataset.ccgPriority === "high") return true;
+        if (String(image.getAttribute("fetchpriority") || "").toLowerCase() === "high") return true;
+        if (image.closest("[data-ccg-priority-media], .home-hero, .games-hero, .ccg-hero")) return true;
+        return false;
+    }
+
+    function isHeaderImage(image) {
+        return Boolean(image.closest("header, .ccg-header, .ccg-brand"));
+    }
+
+    function normalizeImage(image) {
+        if (!(image instanceof HTMLImageElement)) return;
+        if (image.dataset.ccgPerfNormalized === "true") return;
+
+        if (!image.hasAttribute("decoding")) {
+            image.setAttribute("decoding", "async");
+        }
+
+        if (isPriorityImage(image)) {
+            image.setAttribute("loading", "eager");
+            if (!image.hasAttribute("fetchpriority")) {
+                image.setAttribute("fetchpriority", "high");
+            }
+        } else if (isHeaderImage(image)) {
+            image.setAttribute("loading", "eager");
+            if (!image.hasAttribute("fetchpriority")) {
+                image.setAttribute("fetchpriority", "auto");
+            }
+        } else {
+            if (!image.hasAttribute("loading")) {
+                image.setAttribute("loading", "lazy");
+            }
+            if (!image.hasAttribute("fetchpriority")) {
+                image.setAttribute("fetchpriority", "low");
+            }
+        }
+
+        image.dataset.ccgPerfNormalized = "true";
+    }
+
+    function normalizeIframe(frame) {
+        if (!(frame instanceof HTMLIFrameElement)) return;
+        if (frame.dataset.ccgPerfNormalized === "true") return;
+        if (!frame.closest("[data-ccg-priority-media], .home-hero, .games-hero, .ccg-hero")) {
+            if (!frame.hasAttribute("loading")) frame.setAttribute("loading", "lazy");
+        }
+        frame.dataset.ccgPerfNormalized = "true";
+    }
+
+    function normalizeVideo(video) {
+        if (!(video instanceof HTMLVideoElement)) return;
+        if (video.dataset.ccgPerfNormalized === "true") return;
+        if (!video.hasAttribute("preload")) video.setAttribute("preload", "metadata");
+        video.dataset.ccgPerfNormalized = "true";
+    }
+
+    function normalizeMedia(scope) {
+        const host = scope instanceof Element || scope instanceof Document ? scope : document;
+        if (host instanceof HTMLImageElement) normalizeImage(host);
+        if (host instanceof HTMLIFrameElement) normalizeIframe(host);
+        if (host instanceof HTMLVideoElement) normalizeVideo(host);
+
+        host.querySelectorAll?.("img").forEach(normalizeImage);
+        host.querySelectorAll?.("iframe").forEach(normalizeIframe);
+        host.querySelectorAll?.("video").forEach(normalizeVideo);
+    }
+
+    function scheduleMutationPass() {
+        window.clearTimeout(state.mutationTimer);
+        state.mutationTimer = window.setTimeout(() => normalizeMedia(document), MUTATION_DELAY);
+    }
+
+    function observeDynamicMedia() {
+        if (!("MutationObserver" in window) || !document.body) return;
+        state.mutationObserver = new MutationObserver((records) => {
+            let hasMedia = false;
+            for (const record of records) {
+                for (const node of record.addedNodes) {
+                    if (!(node instanceof Element)) continue;
+                    if (node.matches("img, iframe, video") || node.querySelector("img, iframe, video")) {
+                        hasMedia = true;
+                        break;
+                    }
+                }
+                if (hasMedia) break;
+            }
+            if (hasMedia) scheduleMutationPass();
+        });
+        state.mutationObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function shouldPauseDecorativeWork() {
         if (!state.visible) return true;
         return state.idle && !state.scrolling;
     }
 
     function applyPauseState() {
-        root.classList.toggle("ccg-perf-paused", shouldPause());
+        root.classList.toggle("ccg-perf-paused", shouldPauseDecorativeWork());
+        root.classList.toggle("ccg-page-hidden", !state.visible);
+    }
+
+    function resetIdleTimer() {
+        window.clearTimeout(state.idleTimer);
+        state.idleTimer = window.setTimeout(() => {
+            state.idle = true;
+            applyPauseState();
+        }, IDLE_DELAY);
     }
 
     function markActive() {
@@ -37,24 +159,16 @@
         resetIdleTimer();
     }
 
-    function resetIdleTimer() {
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = window.setTimeout(() => {
-            state.idle = true;
-            applyPauseState();
-        }, idleDelay);
-    }
-
     function handleScroll() {
         state.scrolling = true;
         body?.classList.add("scrolling");
         applyPauseState();
-        if (scrollTimer) clearTimeout(scrollTimer);
-        scrollTimer = window.setTimeout(() => {
+        window.clearTimeout(state.scrollTimer);
+        state.scrollTimer = window.setTimeout(() => {
             state.scrolling = false;
             body?.classList.remove("scrolling");
             applyPauseState();
-        }, scrollIdleDelay);
+        }, SCROLL_IDLE_DELAY);
     }
 
     function handleVisibility() {
@@ -62,36 +176,79 @@
         applyPauseState();
     }
 
-    window.addEventListener("mousemove", markActive, { passive: true });
-    window.addEventListener("pointermove", markActive, { passive: true });
-    window.addEventListener("pointerdown", markActive, { passive: true });
-    window.addEventListener("keydown", markActive, { passive: true });
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("focus", markActive, { passive: true });
-    document.addEventListener("visibilitychange", handleVisibility);
+    function recordMetrics() {
+        if (!("PerformanceObserver" in window)) return;
 
-    resetIdleTimer();
-    applyPauseState();
+        try {
+            const clsObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (!entry.hadRecentInput) state.metrics.cls += entry.value;
+                }
+            });
+            clsObserver.observe({ type: "layout-shift", buffered: true });
+        } catch (error) {}
 
-    const originalRaf = window.requestAnimationFrame.bind(window);
-    const throttleFps = reducedMotionQuery?.matches ? 30 : 45;
-    const frameInterval = 1000 / throttleFps;
-    let lastFrameTime = 0;
+        try {
+            const lcpObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                const latest = entries[entries.length - 1];
+                if (latest) state.metrics.lcp = Math.round(latest.startTime);
+            });
+            lcpObserver.observe({ type: "largest-contentful-paint", buffered: true });
+        } catch (error) {}
 
-    window.requestAnimationFrame = function (callback) {
-        if (!desktopQuery.matches || !shouldPause()) {
-            return originalRaf(callback);
-        }
+        try {
+            const longTaskObserver = new PerformanceObserver((list) => {
+                state.metrics.longTasks += list.getEntries().length;
+            });
+            longTaskObserver.observe({ type: "longtask", buffered: true });
+        } catch (error) {}
 
-        const wrapped = (timestamp) => {
-            if (timestamp - lastFrameTime >= frameInterval) {
-                lastFrameTime = timestamp;
-                callback(timestamp);
-                return;
+        window.CCG_PERFORMANCE_METRICS = state.metrics;
+    }
+
+    function dispatchSnapshot() {
+        document.dispatchEvent(new CustomEvent("ccg:performance-snapshot", {
+            detail: {
+                cls: Number(state.metrics.cls.toFixed(4)),
+                lcp: state.metrics.lcp,
+                longTasks: state.metrics.longTasks,
+                saveData,
+                reducedMotion: Boolean(reducedMotionQuery?.matches)
             }
-            originalRaf(wrapped);
-        };
+        }));
+    }
 
-        return originalRaf(wrapped);
-    };
+    function bindActivityEvents() {
+        const passive = { passive: true };
+        window.addEventListener("mousemove", markActive, passive);
+        window.addEventListener("pointermove", markActive, passive);
+        window.addEventListener("pointerdown", markActive, passive);
+        window.addEventListener("keydown", markActive, passive);
+        window.addEventListener("scroll", handleScroll, passive);
+        window.addEventListener("focus", markActive, passive);
+        document.addEventListener("visibilitychange", handleVisibility);
+        window.addEventListener("pagehide", dispatchSnapshot, { once: true });
+    }
+
+    function initialise() {
+        ensureStylesheet();
+        root.classList.add("ccg-perf-enabled");
+        root.classList.toggle("ccg-perf-desktop", Boolean(desktopQuery?.matches && finePointerQuery?.matches));
+        root.classList.toggle("ccg-perf-reduced-motion", Boolean(reducedMotionQuery?.matches));
+        root.classList.toggle("ccg-perf-save-data", saveData);
+
+        normalizeMedia(document);
+        observeDynamicMedia();
+        bindActivityEvents();
+        recordMetrics();
+        resetIdleTimer();
+        applyPauseState();
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initialise, { once: true });
+    } else {
+        initialise();
+    }
 })();
