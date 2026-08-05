@@ -23,7 +23,7 @@ const ALLOWED_UNSCORED = new Set([
     "1989|falcon",
     "1989|f 16 combat pilot"
 ]);
-const REQUIRED_ASSETS = [
+const REQUIRED_FILES = [
     "resources/images/zzap64/zzap64-gold-medal.webp",
     "resources/images/zzap64/zzap64-sizzler.webp",
     "resources/images/platforms/commodore-64-logo.webp",
@@ -48,24 +48,22 @@ function normalize(value) {
 function read(relativePath) {
     const filePath = path.join(ROOT, relativePath);
     if (!fs.existsSync(filePath)) {
-        problems.push(`Missing required file: ${relativePath}`);
+        problems.push(`Missing required file: ${relativePath}.`);
         return "";
     }
     return fs.readFileSync(filePath, "utf8");
 }
 
 function readJson(relativePath) {
-    const source = read(relativePath);
-    if (!source) return null;
     try {
-        return JSON.parse(source);
+        return JSON.parse(read(relativePath));
     } catch (error) {
         problems.push(`${relativePath} is invalid JSON: ${error.message}`);
         return null;
     }
 }
 
-function normalizeEntry(raw, year) {
+function entryFrom(raw, year) {
     if (Array.isArray(raw)) {
         return {
             year,
@@ -86,66 +84,57 @@ function normalizeEntry(raw, year) {
     };
 }
 
-REQUIRED_ASSETS.forEach((relativePath) => {
+REQUIRED_FILES.forEach((relativePath) => {
     const filePath = path.join(ROOT, relativePath);
-    if (!fs.existsSync(filePath)) problems.push(`Missing Zzap badge asset/module: ${relativePath}.`);
-    else if (fs.statSync(filePath).size === 0) problems.push(`Empty Zzap badge asset/module: ${relativePath}.`);
+    if (!fs.existsSync(filePath)) problems.push(`Missing Zzap asset/module: ${relativePath}.`);
+    else if (!fs.statSync(filePath).size) problems.push(`Empty Zzap asset/module: ${relativePath}.`);
 });
 
-for (const year of YEARS) {
+YEARS.forEach((year) => {
     const relativePath = `data/zzap64-awards/${year}.json`;
     const data = readJson(relativePath);
-    if (!data) continue;
-
-    const rows = Array.isArray(data) ? data : (data.entries || data.awards || []);
-    if (!Array.isArray(rows) || !rows.length) {
+    const rows = Array.isArray(data) ? data : (data?.entries || data?.awards || []);
+    if (!rows.length) {
         problems.push(`${relativePath} contains no award records.`);
-        continue;
+        return;
     }
-
     if (EXPECTED_COUNTS.has(year) && rows.length !== EXPECTED_COUNTS.get(year)) {
         problems.push(`${relativePath} should contain ${EXPECTED_COUNTS.get(year)} records, found ${rows.length}.`);
     }
 
     rows.forEach((raw, index) => {
-        const entry = normalizeEntry(raw, year);
+        const entry = entryFrom(raw, year);
         const where = `${relativePath} record ${index + 1}`;
-
-        if (entry.year !== year) problems.push(`${where} has year ${entry.year}, expected ${year}.`);
+        if (entry.year !== year) problems.push(`${where} has the wrong year.`);
         if (!MONTHS.has(entry.month)) problems.push(`${where} has invalid month: ${entry.month}.`);
-        if (!String(entry.title || "").trim()) problems.push(`${where} has no game title.`);
+        if (!String(entry.title || "").trim()) problems.push(`${where} has no title.`);
         if (!AWARDS.has(entry.award)) problems.push(`${where} has invalid award: ${entry.award}.`);
         if (!SYSTEMS.has(entry.system)) problems.push(`${where} has invalid system: ${entry.system}.`);
-
-        if (entry.score !== null) {
-            if (!Number.isInteger(entry.score) || entry.score < 0 || entry.score > 100) {
-                problems.push(`${where} has invalid score: ${entry.score}.`);
-            }
+        if (entry.score !== null && (!Number.isInteger(entry.score) || entry.score < 0 || entry.score > 100)) {
+            problems.push(`${where} has invalid score: ${entry.score}.`);
         }
-
         records.push(entry);
     });
-}
+});
 
-const seen = new Set();
-for (const entry of records) {
+const duplicates = new Set();
+records.forEach((entry) => {
     const key = [entry.year, entry.month, normalize(entry.title), entry.award, entry.system].join("|");
-    if (seen.has(key)) problems.push(`Duplicate award record: ${key}.`);
-    seen.add(key);
-}
+    if (duplicates.has(key)) problems.push(`Duplicate award record: ${key}.`);
+    duplicates.add(key);
+});
 
-const actualUnscored = new Set(records
+const unscored = new Set(records
     .filter((entry) => entry.score === null)
     .map((entry) => `${entry.year}|${normalize(entry.title)}`));
+unscored.forEach((key) => {
+    if (!ALLOWED_UNSCORED.has(key)) problems.push(`Unexpected unscored record: ${key}.`);
+});
+ALLOWED_UNSCORED.forEach((key) => {
+    if (!unscored.has(key)) problems.push(`Expected unscored record is missing: ${key}.`);
+});
 
-for (const key of actualUnscored) {
-    if (!ALLOWED_UNSCORED.has(key)) problems.push(`Unexpected unscored award record: ${key}.`);
-}
-for (const key of ALLOWED_UNSCORED) {
-    if (!actualUnscored.has(key)) problems.push(`Expected unscored award record is missing: ${key}.`);
-}
-
-function find(year, title, system) {
+function findRecord(year, title, system) {
     return records.find((entry) => (
         entry.year === year
         && normalize(entry.title) === normalize(title)
@@ -153,80 +142,68 @@ function find(year, title, system) {
     ));
 }
 
-function expectRecord(year, title, expected) {
-    const entry = find(year, title, expected.system);
+function verifyRecord(year, title, expected) {
+    const entry = findRecord(year, title, expected.system);
     if (!entry) {
-        problems.push(`Missing verification record: ${year} ${title}${expected.system ? ` (${expected.system})` : ""}.`);
+        problems.push(`Missing verification record: ${year} ${title}.`);
         return;
     }
     Object.entries(expected).forEach(([field, value]) => {
-        if (entry[field] !== value) {
-            problems.push(`${year} ${title} should have ${field}=${value}, found ${entry[field]}.`);
-        }
+        if (entry[field] !== value) problems.push(`${year} ${title} should have ${field}=${value}, found ${entry[field]}.`);
     });
 }
 
-expectRecord(1985, "Elite", { score: 95, award: "Gold Medal", system: "C64" });
-expectRecord(1985, "Finders Keepers", { score: 90, award: "Sizzler", system: "C64" });
-expectRecord(1988, "Barbarian II: The Dungeon of Drax", { score: 96, award: "Gold Medal", system: "C64" });
-expectRecord(1988, "Corruption", { score: 90, award: "Sizzler", system: "C64" });
-expectRecord(1988, "Ultima IV", { score: 91, system: "Amiga" });
-expectRecord(1988, "Fish!", { score: 93, system: "Amiga" });
-expectRecord(1988, "Nebulus", { score: 97, system: "Amiga" });
+verifyRecord(1985, "Elite", { score: 95, award: "Gold Medal", system: "C64" });
+verifyRecord(1985, "Finders Keepers", { score: 90, award: "Sizzler", system: "C64" });
+verifyRecord(1988, "Barbarian II: The Dungeon of Drax", { score: 96, award: "Gold Medal", system: "C64" });
+verifyRecord(1988, "Corruption", { score: 90, award: "Sizzler", system: "C64" });
+verifyRecord(1988, "Ultima IV", { score: 91, system: "Amiga" });
+verifyRecord(1988, "Fish!", { score: 93, system: "Amiga" });
+verifyRecord(1988, "Nebulus", { score: 97, system: "Amiga" });
 
-const games = readJson("games/games.json");
-const gameList = Array.isArray(games) ? games : (games?.games || []);
-if (!gameList.length) problems.push("games/games.json contains no games for Zzap matching.");
-const gameIndex = matcher.buildGameIndex(gameList);
+const gamesData = readJson("games/games.json");
+const games = Array.isArray(gamesData) ? gamesData : (gamesData?.games || []);
+if (!games.length) problems.push("games/games.json contains no games for matching.");
+const index = matcher.buildGameIndex(games);
 
-const expectedLinks = [
+[
     [1985, "Elite", "C64"],
     [1985, "Finders Keepers", "C64"],
     [1988, "Barbarian II: The Dungeon of Drax", "C64"],
-    [1988, "Corruption", "C64"],
-    [1988, "Ultima IV", "Amiga"],
-    [1988, "Fish!", "Amiga"],
     [1988, "Nebulus", "Amiga"]
-];
-expectedLinks.forEach(([year, title, system]) => {
-    const entry = find(year, title, system);
-    if (!entry) return;
-    const game = matcher.findGame(entry, gameIndex);
-    if (!game) {
-        problems.push(`Known reviewed game does not link: ${title} (${system}).`);
-        return;
-    }
-    if (!matcher.gameHref(game)) problems.push(`Matched game has no usable route: ${title} (${system}).`);
+].forEach(([year, title, system]) => {
+    const entry = findRecord(year, title, system);
+    const game = entry ? matcher.findGame(entry, index) : null;
+    if (!game || !matcher.gameHref(game)) problems.push(`Known existing review does not link: ${title} (${system}).`);
 });
 
-const matchedRecords = records.filter((entry) => matcher.findGame(entry, gameIndex)).length;
+const matchedRecords = records.filter((entry) => matcher.findGame(entry, index)).length;
 if (!matchedRecords) problems.push("No Zzap records match games/games.json.");
 
 const archiveScript = read("js/zzap64-awards.js");
 [
     ["Not yet reviewed", "Missing-game fallback text is absent."],
-    ["Not scored by Zzap!64", "Unscored Zzap fallback text is absent."],
-    ["compareEntriesAlphabetically", "Alphabetical ordering function is absent."],
-    ["Open game page", "Game-link affordance text is absent."],
-    ["value === null || value === undefined", "Null scores are not explicitly preserved."],
-    ["/games/games.json", "Zzap matching does not use the full system-aware game archive."],
-    ["ccg-zzap64-matcher.js", "Shared Zzap title matcher is not loaded."],
+    ["Not scored by Zzap!64", "Unscored fallback text is absent."],
+    ["compareEntriesAlphabetically", "Alphabetical ordering is absent."],
+    ["Open game page", "Game-link affordance is absent."],
+    ["/games/games.json", "The full system-aware game archive is not used."],
+    ["ccg-zzap64-matcher.js", "The shared matcher is not loaded."],
     ["zzap64-gold-medal.webp", "Gold Medal artwork is not rendered."],
     ["zzap64-sizzler.webp", "Sizzler artwork is not rendered."],
     ["commodore-64-logo.webp", "C64 platform artwork is not rendered."],
     ["commodore-amiga-logo.webp", "Amiga platform artwork is not rendered."]
-].forEach(([text, message]) => {
-    if (!archiveScript.includes(text)) problems.push(message);
+].forEach(([needle, message]) => {
+    if (!archiveScript.includes(needle)) problems.push(message);
 });
 
-const css = read("resources/css/zzap64-awards-logos.css");
+const logoCss = read("resources/css/zzap64-awards-logos.css");
 [
     ".zzap-award-card__award-logo",
     ".zzap-award-card__platform",
     ".zzap-award-card__bottom",
     "data-game-linked"
 ].forEach((selector) => {
-    if (!css.includes(selector)) problems.push(`Missing Zzap logo style: ${selector}.`);
+    if (!logoCss.includes(selector)) problems.push(`Missing Zzap logo style: ${selector}.`);
 });
 
 if (problems.length) {
@@ -235,4 +212,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log(`Zzap!64 awards audit passed: ${records.length} records, ${matchedRecords} linked game records, ${actualUnscored.size} intentionally unscored.`);
+console.log(`Zzap!64 awards audit passed: ${records.length} records, ${matchedRecords} linked game records, ${unscored.size} intentionally unscored.`);
