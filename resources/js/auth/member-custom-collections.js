@@ -2,8 +2,8 @@
    CCG MEMBER HUB — PRIVATE CUSTOM COLLECTIONS
    ------------------------------------------------------------
    Manages named collections stored inside the existing personal
-   game library. The account sync module already synchronises the
-   customLists field; this module adds the private management UI.
+   game library. The account sync module synchronises customLists
+   and deletion tombstones between signed-in devices.
 ============================================================ */
 
 (function () {
@@ -13,25 +13,50 @@
   window.CCG_MEMBER_CUSTOM_COLLECTIONS_READY = true;
 
   const STORAGE_KEY = "ccgPersonalGameLibraryV1";
+  const TOMBSTONE_KEY = "ccgPersonalGameLibraryTombstonesV1";
   const CSS_PATH = "/resources/css/member-custom-collections.css";
   const NAME_LIMIT = 40;
   let activeCollection = "";
 
-  function ensureCss() {
-    if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = CSS_PATH;
-    document.head.appendChild(link);
-  }
-
-  function readLibrary() {
+  function readJson(key) {
     try {
-      const value = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
       return value && typeof value === "object" && !Array.isArray(value) ? value : {};
     } catch (error) {
       return {};
     }
+  }
+
+  function readLibrary() {
+    return readJson(STORAGE_KEY);
+  }
+
+  function readTombstones() {
+    return readJson(TOMBSTONE_KEY);
+  }
+
+  function writeTombstones(value) {
+    try {
+      localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(value));
+    } catch (error) {}
+  }
+
+  function markDeleted(slug, deletedAt) {
+    const requested = new Date(deletedAt || Date.now()).getTime();
+    if (!Number.isFinite(requested) || requested <= 0) return;
+    const tombstones = readTombstones();
+    const current = new Date(tombstones[slug] || 0).getTime();
+    if (!Number.isFinite(current) || requested >= current) {
+      tombstones[slug] = new Date(requested).toISOString();
+      writeTombstones(tombstones);
+    }
+  }
+
+  function clearDeleted(slug) {
+    const tombstones = readTombstones();
+    if (!(slug in tombstones)) return;
+    delete tombstones[slug];
+    writeTombstones(tombstones);
   }
 
   function writeLibrary(value) {
@@ -39,6 +64,14 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
       document.dispatchEvent(new Event("ccg:personal-library-updated"));
     } catch (error) {}
+  }
+
+  function ensureCss() {
+    if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = CSS_PATH;
+    document.head.appendChild(link);
   }
 
   function normalizeName(value) {
@@ -83,6 +116,16 @@
       && !entry?.note;
   }
 
+  function persistEntry(library, slug, entry, changedAt = new Date().toISOString()) {
+    entry.updatedAt = changedAt;
+    if (entryIsEmpty(entry)) {
+      delete library[slug];
+      markDeleted(slug, changedAt);
+    } else {
+      clearDeleted(slug);
+    }
+  }
+
   function setStatus(message, mode = "") {
     const node = document.getElementById("memberCustomCollectionStatus");
     if (!node) return;
@@ -113,7 +156,7 @@
         <div>
           <p class="member-panel__kicker">Your own categories</p>
           <h3 class="member-custom-collections__title" id="memberCustomCollectionsTitle">Custom Collections</h3>
-          <p class="member-custom-collections__intro">Create a named collection from any game page, then manage its games here. These remain private unless a later sharing option is deliberately enabled.</p>
+          <p class="member-custom-collections__intro">Create a named collection from any game page, then manage its games here. These remain private and follow your signed-in account when cloud synchronisation is available.</p>
         </div>
         <a class="auth-btn" href="/games/">Add games</a>
       </div>
@@ -174,11 +217,11 @@
     const library = readLibrary();
     const entry = library[slug];
     if (!entry) return;
+
     const targetKey = collectionKey(activeCollection);
     entry.customLists = customNames(entry).filter((name) => collectionKey(name) !== targetKey);
     delete entry.custom_lists;
-    entry.updatedAt = new Date().toISOString();
-    if (entryIsEmpty(entry)) delete library[slug];
+    persistEntry(library, slug, entry);
     writeLibrary(library);
     setStatus(`Removed ${entry.title || slug} from ${activeCollection}.`, "success");
     render();
@@ -194,7 +237,9 @@
     link.textContent = game.title || game.slug;
     const meta = document.createElement("span");
     meta.className = "member-custom-collections__game-meta";
-    meta.textContent = [game.system, game.year, game.rating ? `${game.rating}/10` : ""].filter(Boolean).join(" · ") || "Personal library game";
+    meta.textContent = [game.system, game.year, game.rating ? `${game.rating}/10` : ""]
+      .filter(Boolean)
+      .join(" · ") || "Personal library game";
     content.append(link, meta);
 
     const remove = document.createElement("button");
@@ -248,12 +293,13 @@
       return;
     }
 
-    Object.values(library).forEach((entry) => {
+    const changedAt = new Date().toISOString();
+    Object.entries(library).forEach(([slug, entry]) => {
       const names = customNames(entry);
       if (!names.some((name) => collectionKey(name) === oldKey)) return;
       entry.customLists = names.map((name) => collectionKey(name) === oldKey ? requested : name);
       delete entry.custom_lists;
-      entry.updatedAt = new Date().toISOString();
+      persistEntry(library, slug, entry, changedAt);
     });
 
     activeCollection = requested;
@@ -269,12 +315,12 @@
 
     const library = readLibrary();
     const targetKey = collectionKey(activeCollection);
+    const changedAt = new Date().toISOString();
     Object.keys(library).forEach((slug) => {
       const entry = library[slug];
       entry.customLists = customNames(entry).filter((name) => collectionKey(name) !== targetKey);
       delete entry.custom_lists;
-      entry.updatedAt = new Date().toISOString();
-      if (entryIsEmpty(entry)) delete library[slug];
+      persistEntry(library, slug, entry, changedAt);
     });
 
     const deletedName = activeCollection;
@@ -318,7 +364,7 @@
     render();
     document.addEventListener("ccg:personal-library-updated", render);
     window.addEventListener("storage", (event) => {
-      if (event.key === STORAGE_KEY) render();
+      if (event.key === STORAGE_KEY || event.key === TOMBSTONE_KEY) render();
     });
   }
 
