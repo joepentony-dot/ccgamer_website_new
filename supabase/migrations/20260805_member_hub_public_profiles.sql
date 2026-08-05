@@ -42,6 +42,22 @@ create table if not exists public.member_submissions (
   constraint member_submissions_message_length check (char_length(message) between 10 and 3000)
 );
 
+create or replace function public.set_member_submission_updated_at()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+drop trigger if exists member_submissions_set_updated_at on public.member_submissions;
+create trigger member_submissions_set_updated_at
+before update on public.member_submissions
+for each row execute function public.set_member_submission_updated_at();
+
 alter table public.member_submissions enable row level security;
 
 drop policy if exists member_submissions_owner_select on public.member_submissions;
@@ -59,7 +75,30 @@ create policy member_submissions_owner_delete
   on public.member_submissions for delete to authenticated
   using (profile_id = auth.uid());
 
-grant select, insert, delete on public.member_submissions to authenticated;
+drop policy if exists member_submissions_admin_select on public.member_submissions;
+create policy member_submissions_admin_select
+  on public.member_submissions for select to authenticated
+  using (exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid()
+      and lower(coalesce(p.role, '')) in ('admin', 'superadmin')
+  ));
+
+drop policy if exists member_submissions_admin_update on public.member_submissions;
+create policy member_submissions_admin_update
+  on public.member_submissions for update to authenticated
+  using (exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid()
+      and lower(coalesce(p.role, '')) in ('admin', 'superadmin')
+  ))
+  with check (exists (
+    select 1 from public.profiles p
+    where p.id = auth.uid()
+      and lower(coalesce(p.role, '')) in ('admin', 'superadmin')
+  ));
+
+grant select, insert, update, delete on public.member_submissions to authenticated;
 
 create or replace function public.get_public_member_profile(member_handle text)
 returns jsonb
@@ -103,6 +142,7 @@ as $$
   limit 1;
 $$;
 
+revoke all on function public.get_public_member_profile(text) from public;
 grant execute on function public.get_public_member_profile(text) to anon, authenticated;
 
 create or replace function public.get_my_member_activity(row_limit int default 12)
@@ -141,4 +181,5 @@ as $$
   limit greatest(1, least(coalesce(row_limit, 12), 50));
 $$;
 
+revoke all on function public.get_my_member_activity(int) from public;
 grant execute on function public.get_my_member_activity(int) to authenticated;
