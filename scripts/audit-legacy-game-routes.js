@@ -101,11 +101,13 @@ if (!Array.isArray(games) || games.length === 0) {
             }
         });
 
-        let missingRewrites = 0;
+        const missingRewrites = [];
         slugs.forEach((slug) => {
-            if (staticRewrites.get(slug) !== slug) missingRewrites += 1;
+            if (staticRewrites.get(slug) !== slug) missingRewrites.push(slug);
         });
-        if (missingRewrites) errors.push(`_redirects is missing ${missingRewrites} canonical game rewrite(s).`);
+        if (missingRewrites.length) {
+            errors.push(`_redirects is missing ${missingRewrites.length} canonical game rewrite(s): ${missingRewrites.join(", ")}.`);
+        }
     }
 
     const sitemapUrls = new Set(
