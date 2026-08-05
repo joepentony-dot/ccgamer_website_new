@@ -1,0 +1,64 @@
+/* ============================================================
+   CCG PERFORMANCE FOUNDATIONS
+   ------------------------------------------------------------
+   Shared rendering containment and animation controls.
+   Loaded by resources/js/ccg-performance.js.
+============================================================ */
+
+html.ccg-perf-enabled .ccg-main > .ccg-chapter,
+html.ccg-perf-enabled .ccg-main > section:nth-of-type(n + 2),
+html.ccg-perf-enabled .games-accordion__section,
+html.ccg-perf-enabled .ccg-publisher-results,
+html.ccg-perf-enabled .ccg-developer-results,
+html.ccg-perf-enabled [data-ccg-defer-render] {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 720px;
+}
+
+html.ccg-perf-enabled .games-accordion__section {
+    contain-intrinsic-size: auto 240px;
+}
+
+html.ccg-perf-enabled img[data-ccg-perf-normalized="true"] {
+    max-width: 100%;
+}
+
+html.ccg-perf-paused .ccg-bg-starfield,
+html.ccg-perf-paused .ccg-bg-grid,
+html.ccg-perf-paused .ccg-bg-crt-overlay,
+html.ccg-perf-paused .home-hero__scanlines,
+html.ccg-perf-paused .home-hero__crt-overlay,
+html.ccg-page-hidden .ccg-bg-starfield,
+html.ccg-page-hidden .ccg-bg-grid,
+html.ccg-page-hidden .ccg-bg-crt-overlay,
+html.ccg-page-hidden .home-hero__scanlines,
+html.ccg-page-hidden .home-hero__crt-overlay {
+    animation-play-state: paused !important;
+}
+
+html.ccg-perf-save-data .ccg-bg-starfield,
+html.ccg-perf-save-data .ccg-bg-grid,
+html.ccg-perf-save-data .ccg-bg-crt-overlay,
+html.ccg-perf-reduced-motion .ccg-bg-starfield,
+html.ccg-perf-reduced-motion .ccg-bg-grid,
+html.ccg-perf-reduced-motion .ccg-bg-crt-overlay {
+    animation: none !important;
+}
+
+@media (max-width: 820px) {
+    html.ccg-perf-enabled .ccg-main > .ccg-chapter,
+    html.ccg-perf-enabled .ccg-main > section:nth-of-type(n + 2),
+    html.ccg-perf-enabled [data-ccg-defer-render] {
+        contain-intrinsic-size: auto 560px;
+    }
+}
+
+@media print {
+    html.ccg-perf-enabled .ccg-main > .ccg-chapter,
+    html.ccg-perf-enabled .ccg-main > section,
+    html.ccg-perf-enabled .games-accordion__section,
+    html.ccg-perf-enabled [data-ccg-defer-render] {
+        content-visibility: visible;
+        contain-intrinsic-size: none;
+    }
+}
