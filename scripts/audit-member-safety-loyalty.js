@@ -28,6 +28,9 @@ const loyalty = read("resources/js/auth/member-loyalty-badges.js");
 const loyaltyCss = read("resources/css/member-loyalty-badges.css");
 const zzapCss = read("resources/css/zzap64-performance.css");
 const profile = read("community/profile.html");
+const profileLists = read("resources/js/auth/profile-lists.js");
+const memberSync = read("resources/js/auth/member-library-sync.js");
+const adminCss = read("resources/css/ccg-admin.css");
 
 requireText(navCore, "/js/ccg-member-loyalty-loader.js", "The monthly loyalty loader is not registered in the shared navigation core.");
 requireText(navCore, "/js/ccg-member-data-safety.js", "The Member Hub data-safety module is not registered in the shared navigation core.");
@@ -54,6 +57,23 @@ if (dataSafety.includes("/games/games.json")) {
 if (/type=["']file["'][^>]*json/i.test(profile)) {
   problems.push("The Member Hub HTML contains a JSON upload field.");
 }
+
+if (/Import JSON|importJsonFile|normalizeImportedLibrary|application\/json/.test(memberSync)) {
+  problems.push("The Member Hub synchronisation source still contains JSON import controls or handlers.");
+}
+
+if (/exportData\s*\(|personal-game-library\.json|application\/json/.test(profileLists)) {
+  problems.push("The device-local profile list source still contains JSON export logic.");
+}
+
+requireText(profileLists, "!customLists(item).length", "Standard-list removal does not preserve custom collection membership.");
+requireText(memberSync, "Newest complete record wins", "Account reconciliation does not document removal-safe newest-record semantics.");
+if (/\.\.\.\(localEntry\.lists|\.\.\.\(remoteEntry\.lists|customLists:\s*Array\.from\(new Set/.test(memberSync)) {
+  problems.push("Account reconciliation still unions stale list memberships.");
+}
+
+requireText(memberSync, "Member Hub Features", "Member Hub phase wording is not updated by the synchronisation module.");
+requireText(adminCss, "data-ccg-master-data-gate=\"granted\"", "Master-data pages are not concealed in CSS until the role guard grants access.");
 
 [
   "completedMonths",
