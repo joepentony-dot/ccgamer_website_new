@@ -83,11 +83,32 @@
         z-index: 30;
     }
 
+    /*
+       The social bar follows the navigation in the desktop grid, so it
+       normally paints later. While More is open, lift the nav stacking
+       context above the socials without hiding or moving the social icons.
+    */
+    .ccg-header .ccg-header-socials {
+        position: relative;
+        z-index: 10;
+    }
+
+    .ccg-header.ccg-header--more-open .ccg-nav,
+    .ccg-header .ccg-nav.ccg-nav--more-open {
+        position: relative;
+        z-index: 1000 !important;
+        isolation: isolate;
+    }
+
+    .ccg-header .ccg-nav.ccg-nav--more-open .ccg-nav__more {
+        z-index: 1010;
+    }
+
     .ccg-header .ccg-nav__more-menu {
         position: absolute;
         top: calc(100% + 8px);
         right: 0;
-        z-index: 200;
+        z-index: 1020;
         display: grid;
         width: max-content;
         min-width: min(260px, 82vw);
