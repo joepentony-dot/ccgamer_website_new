@@ -20,6 +20,7 @@ function requireFile(relativePath) {
 
 [
     "resources/images/zzap64/zzap64-gold-medal.webp",
+    "resources/images/zzap64/zzap64-silver-medal.svg",
     "resources/images/zzap64/zzap64-sizzler.webp",
     "resources/images/platforms/commodore-64-logo.webp",
     "resources/images/platforms/commodore-amiga-logo.webp"
@@ -36,7 +37,9 @@ const nav = requireFile("js/ccg-nav-core.js");
     "commodore-64-logo.webp",
     "commodore-amiga-logo.webp",
     "zzap64-gold-medal.webp",
+    "zzap64-silver-medal.svg",
     "zzap64-sizzler.webp",
+    "Silver Medal",
     ".game-hero__meta",
     ".ccg-game-badges"
 ].forEach((needle) => {
@@ -48,6 +51,7 @@ const nav = requireFile("js/ccg-nav-core.js");
     ".ccg-game-badge--platform-c64",
     ".ccg-game-badge--platform-amiga",
     ".ccg-game-badge--gold",
+    ".ccg-game-badge--silver",
     ".ccg-game-badge--sizzler"
 ].forEach((selector) => {
     if (!css.includes(selector)) problems.push(`Game badge stylesheet is missing: ${selector}.`);
@@ -68,4 +72,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log(`Game badge audit passed for ${supported.length} C64 and Amiga games.`);
+console.log(`Game badge audit passed for ${supported.length} C64 and Amiga games, including Gold Medal, Silver Medal and Sizzler artwork.`);
