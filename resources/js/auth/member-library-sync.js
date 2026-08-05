@@ -3,6 +3,7 @@ import { getSupabaseClient } from './supabase-client.js';
 const STORAGE_KEY = 'ccgPersonalGameLibraryV1';
 const PREFERRED_SYSTEM_KEY = 'ccgMemberPreferredSystemV1';
 const TABLE = 'profile_game_library';
+const CSS_PATH = '/resources/css/member-library-sync.css';
 const VALID_LISTS = new Set(['played', 'want', 'owned', 'still']);
 const MISSING_SCHEMA_CODES = new Set(['42P01', '42703', 'PGRST204', 'PGRST205']);
 
@@ -49,6 +50,82 @@ function validRating(value) {
 function validDate(value) {
   const date = new Date(value || 0);
   return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function ensureStylesheet() {
+  if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = CSS_PATH;
+  document.head.appendChild(link);
+}
+
+function createButton(id, label) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'auth-btn';
+  button.id = id;
+  button.textContent = label;
+  return button;
+}
+
+function ensureInterface() {
+  const section = document.getElementById('personalGameLibrary');
+  const actions = section?.querySelector('.profile-library__actions');
+  if (!section || !actions) return;
+
+  actions.classList.add('member-library-sync-controls');
+  const jsonExport = document.getElementById('exportPersonalLibrary');
+  if (jsonExport) jsonExport.textContent = 'Export JSON';
+
+  if (!document.getElementById('exportPersonalLibraryCsv')) {
+    actions.insertBefore(createButton('exportPersonalLibraryCsv', 'Export CSV'), document.getElementById('clearPersonalLibrary') || null);
+  }
+  if (!document.getElementById('importPersonalLibraryButton')) {
+    actions.insertBefore(createButton('importPersonalLibraryButton', 'Import JSON'), document.getElementById('clearPersonalLibrary') || null);
+  }
+  if (!document.getElementById('memberSyncLibraryNow')) {
+    actions.insertBefore(createButton('memberSyncLibraryNow', 'Sync now'), document.getElementById('clearPersonalLibrary') || null);
+  }
+  if (!document.getElementById('importPersonalLibraryFile')) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.id = 'importPersonalLibraryFile';
+    input.accept = '.json,application/json';
+    input.hidden = true;
+    actions.appendChild(input);
+  }
+
+  if (!document.getElementById('memberLibrarySyncStatus')) {
+    const status = document.createElement('p');
+    status.id = 'memberLibrarySyncStatus';
+    status.className = 'member-sync-status';
+    status.dataset.state = 'working';
+    status.setAttribute('aria-live', 'polite');
+    status.textContent = 'Checking account synchronisation…';
+    actions.insertAdjacentElement('afterend', status);
+  }
+
+  const note = section.querySelector('.profile-library__note');
+  if (note) {
+    note.textContent = 'Record what you played, what you want to try and the games you owned. Your browser copy remains available while account synchronisation keeps the same library available on signed-in devices.';
+  }
+
+  const preferredNote = Array.from(document.querySelectorAll('.member-local-note')).find((node) => (
+    /preferred system/i.test(node.textContent || '')
+  ));
+  if (preferredNote) {
+    preferredNote.textContent = 'Preferred system is stored on your account when cloud synchronisation is available, with a browser fallback retained.';
+  }
+
+  const laterHeading = Array.from(document.querySelectorAll('.member-benefit-card h3')).find((node) => (
+    /coming in later phases/i.test(node.textContent || '')
+  ));
+  const laterList = laterHeading?.parentElement?.querySelector('.member-benefit-list');
+  if (laterHeading && laterList) {
+    laterHeading.textContent = 'Coming in the Community Phase';
+    laterList.innerHTML = '<li>Optional public member profiles</li><li>Shareable public collections</li><li>Member suggestions and correction tracking</li><li>Public badges controlled by privacy settings</li>';
+  }
 }
 
 function readLocalLibrary() {
@@ -128,17 +205,13 @@ function librariesEqual(a, b) {
 
 function writeLocalLibrary(library) {
   const normalized = normalizeLocalLibrary(library);
-  const current = readLocalLibrary();
-  if (librariesEqual(current, normalized)) return false;
-
+  if (librariesEqual(readLocalLibrary(), normalized)) return false;
   state.suppressLocalEvent = true;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
     document.dispatchEvent(new Event('ccg:personal-library-updated'));
   } finally {
-    window.setTimeout(() => {
-      state.suppressLocalEvent = false;
-    }, 0);
+    window.setTimeout(() => { state.suppressLocalEvent = false; }, 0);
   }
   return true;
 }
@@ -175,7 +248,6 @@ async function fetchRemoteLibrary() {
     .select('game_slug,title,system,release_year,lists,custom_lists,rating,note,created_at,updated_at')
     .eq('profile_id', state.user.id)
     .order('updated_at', { ascending: false });
-
   if (error) throw error;
   return Array.isArray(data) ? data : [];
 }
@@ -206,10 +278,7 @@ async function loadPreferredSystem() {
       .eq('id', state.user.id)
       .maybeSingle();
     if (error) throw error;
-
-    const preferred = ['c64', 'amiga', 'both'].includes(data?.preferred_system)
-      ? data.preferred_system
-      : 'both';
+    const preferred = ['c64', 'amiga', 'both'].includes(data?.preferred_system) ? data.preferred_system : 'both';
     localStorage.setItem(PREFERRED_SYSTEM_KEY, preferred);
     const select = document.getElementById('preferredSystem');
     if (select) {
@@ -225,10 +294,7 @@ async function savePreferredSystem(value) {
   if (!state.user) return;
   const preferred = ['c64', 'amiga', 'both'].includes(value) ? value : 'both';
   try {
-    const { error } = await state.client
-      .from('profiles')
-      .update({ preferred_system: preferred })
-      .eq('id', state.user.id);
+    const { error } = await state.client.from('profiles').update({ preferred_system: preferred }).eq('id', state.user.id);
     if (error) throw error;
   } catch (error) {
     if (!isMissingSchema(error)) console.warn('[member-library-sync] Preferred system save failed', error);
@@ -238,14 +304,13 @@ async function savePreferredSystem(value) {
 async function reconcileLibraries() {
   setStatus('Checking your account library…', 'working');
   const local = normalizeLocalLibrary(readLocalLibrary());
-
   let remoteRows;
   try {
     remoteRows = await fetchRemoteLibrary();
   } catch (error) {
     if (isMissingSchema(error)) {
       state.cloudAvailable = false;
-      setStatus('Device-only mode: the account-library migration has not been applied yet.', 'local');
+      setStatus('Device-only mode: account synchronisation is awaiting the database migration.', 'local');
       return;
     }
     throw error;
@@ -253,7 +318,6 @@ async function reconcileLibraries() {
 
   state.cloudAvailable = true;
   state.remoteSlugs = new Set(remoteRows.map((row) => slug(row.game_slug)).filter(Boolean));
-
   const remote = {};
   remoteRows.forEach((row) => {
     const entry = remoteToLocal(row);
@@ -261,8 +325,7 @@ async function reconcileLibraries() {
   });
 
   const merged = {};
-  const allSlugs = new Set([...Object.keys(local), ...Object.keys(remote)]);
-  allSlugs.forEach((gameSlug) => {
+  new Set([...Object.keys(local), ...Object.keys(remote)]).forEach((gameSlug) => {
     const entry = mergeEntries(local[gameSlug], remote[gameSlug]);
     if (entry) merged[gameSlug] = entry;
   });
@@ -276,15 +339,12 @@ async function reconcileLibraries() {
 
 async function pushLocalLibrary() {
   if (!state.cloudAvailable || !state.initialised) return;
-  const local = normalizeLocalLibrary(readLocalLibrary());
-  const entries = Object.values(local);
+  const entries = Object.values(normalizeLocalLibrary(readLocalLibrary()));
   setStatus('Synchronising changes…', 'working');
-
   try {
     await upsertEntries(entries);
     const localSlugs = new Set(entries.map((entry) => entry.slug));
-    const removed = [...state.remoteSlugs].filter((gameSlug) => !localSlugs.has(gameSlug));
-    await deleteRemoteSlugs(removed);
+    await deleteRemoteSlugs([...state.remoteSlugs].filter((gameSlug) => !localSlugs.has(gameSlug)));
     state.remoteSlugs = localSlugs;
     setStatus(`Synced · ${entries.length} ${entries.length === 1 ? 'game' : 'games'} stored on your account.`, 'synced');
   } catch (error) {
@@ -301,9 +361,7 @@ async function pushLocalLibrary() {
 function schedulePush() {
   if (state.suppressLocalEvent || !state.initialised || !state.cloudAvailable) return;
   window.clearTimeout(state.pushTimer);
-  state.pushTimer = window.setTimeout(() => {
-    void pushLocalLibrary();
-  }, 700);
+  state.pushTimer = window.setTimeout(() => { void pushLocalLibrary(); }, 700);
 }
 
 function csvCell(value) {
@@ -323,36 +381,24 @@ function downloadFile(filename, content, type) {
 }
 
 function exportCsv() {
-  const library = normalizeLocalLibrary(readLocalLibrary());
+  const rows = Object.values(normalizeLocalLibrary(readLocalLibrary())).sort((a, b) => a.title.localeCompare(b.title));
   const columns = ['title', 'slug', 'system', 'year', 'lists', 'customLists', 'rating', 'note', 'updatedAt'];
-  const rows = Object.values(library).sort((a, b) => a.title.localeCompare(b.title));
-  const csv = [
-    columns.map(csvCell).join(','),
-    ...rows.map((entry) => columns.map((column) => csvCell(entry[column])).join(','))
-  ].join('\r\n');
+  const csv = [columns.map(csvCell).join(','), ...rows.map((entry) => columns.map((column) => csvCell(entry[column])).join(','))].join('\r\n');
   downloadFile('ccg-personal-game-library.csv', csv, 'text/csv;charset=utf-8');
   setStatus('CSV export created.', state.cloudAvailable ? 'synced' : 'local');
 }
 
 function normalizeImportedLibrary(payload) {
   const source = payload?.games && typeof payload.games === 'object' ? payload.games : payload;
-  if (!source || typeof source !== 'object' || Array.isArray(source)) {
-    throw new Error('This file does not contain a CCG personal game library.');
-  }
+  if (!source || typeof source !== 'object' || Array.isArray(source)) throw new Error('This file does not contain a CCG personal game library.');
   return normalizeLocalLibrary(source);
 }
 
 async function importJsonFile(file) {
-  const raw = await file.text();
-  const parsed = JSON.parse(raw);
-  const imported = normalizeImportedLibrary(parsed);
+  const imported = normalizeImportedLibrary(JSON.parse(await file.text()));
   const current = normalizeLocalLibrary(readLocalLibrary());
   const merged = { ...current };
-
-  Object.entries(imported).forEach(([gameSlug, entry]) => {
-    merged[gameSlug] = mergeEntries(current[gameSlug], entry);
-  });
-
+  Object.entries(imported).forEach(([gameSlug, entry]) => { merged[gameSlug] = mergeEntries(current[gameSlug], entry); });
   writeLocalLibrary(merged);
   if (state.cloudAvailable) await pushLocalLibrary();
   else setStatus(`Imported ${Object.keys(imported).length} games on this browser.`, 'local');
@@ -360,7 +406,6 @@ async function importJsonFile(file) {
 
 function bindControls() {
   document.addEventListener('ccg:personal-library-updated', schedulePush);
-
   document.getElementById('memberSyncLibraryNow')?.addEventListener('click', () => {
     if (state.cloudAvailable) void pushLocalLibrary();
     else void reconcileLibraries().catch((error) => {
@@ -368,7 +413,6 @@ function bindControls() {
       setStatus('Account sync could not be started. Your browser data is unchanged.', 'error');
     });
   });
-
   document.getElementById('exportPersonalLibraryCsv')?.addEventListener('click', exportCsv);
 
   const input = document.getElementById('importPersonalLibraryFile');
@@ -395,6 +439,8 @@ function bindControls() {
 
 async function init() {
   if (!document.getElementById('memberHub')) return;
+  ensureStylesheet();
+  ensureInterface();
   bindControls();
 
   try {
@@ -403,7 +449,6 @@ async function init() {
     if (error) throw error;
     state.user = data?.user || null;
     if (!state.user) return;
-
     await loadPreferredSystem();
     await reconcileLibraries();
     state.initialised = true;
@@ -415,8 +460,5 @@ async function init() {
   }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init, { once: true });
-} else {
-  init();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+else init();
