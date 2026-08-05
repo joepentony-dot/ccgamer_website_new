@@ -20,6 +20,7 @@ on:
       - "scripts/audit-zzap64-performance.js"
       - "scripts/audit-game-badges.js"
       - "scripts/audit-collections-index.js"
+      - "scripts/audit-member-hub.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -64,12 +65,14 @@ jobs:
           node --check js/game-discovery.js
           node --check js/zzap64-awards.js
           node --check resources/js/auth/profile-lists.js
+          node --check resources/js/auth/member-hub.js
           node --check scripts/audit-legacy-game-routes.js
           node --check scripts/audit-music-navigation.js
           node --check scripts/audit-zzap64-awards.js
           node --check scripts/audit-zzap64-performance.js
           node --check scripts/audit-game-badges.js
           node --check scripts/audit-collections-index.js
+          node --check scripts/audit-member-hub.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -91,6 +94,9 @@ jobs:
 
       - name: Run collections index audit
         run: node scripts/audit-collections-index.js
+
+      - name: Run Member Hub audit
+        run: node scripts/audit-member-hub.js
 
       - name: Confirm audits made no repository changes
         run: |
