@@ -11,7 +11,10 @@ Do Not Override
     "use strict";
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
-    const GLOBAL_SEARCH_SCRIPT = "/js/ccg-global-search.js";
+    const OPTIONAL_MODULES = [
+        { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
+        { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" }
+    ];
 
     function isNavPillCandidate(el) {
         if (!(el instanceof HTMLElement)) return false;
@@ -73,13 +76,15 @@ Do Not Override
             .forEach(hardenPill);
     }
 
-    function loadGlobalSearchModule() {
-        if (document.querySelector(`script[src="${GLOBAL_SEARCH_SCRIPT}"]`)) return;
-        const script = document.createElement("script");
-        script.src = GLOBAL_SEARCH_SCRIPT;
-        script.defer = true;
-        script.setAttribute("data-ccg-global-search-loader", "true");
-        document.body.appendChild(script);
+    function loadOptionalModules() {
+        OPTIONAL_MODULES.forEach(({ src, marker }) => {
+            if (document.querySelector(`script[src="${src}"]`)) return;
+            const script = document.createElement("script");
+            script.src = src;
+            script.defer = true;
+            script.setAttribute(marker, "true");
+            document.body.appendChild(script);
+        });
     }
 
     function queueApply() {
@@ -127,7 +132,7 @@ Do Not Override
     function initUnifiedNavCore() {
         applyNavGlowPatch();
         bindStateReapply();
-        loadGlobalSearchModule();
+        loadOptionalModules();
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
