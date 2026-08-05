@@ -1,0 +1,50 @@
+[
+  {
+    "type": "Added",
+    "date": "2026-08-05",
+    "title": "Zzap!64 Awards Archive",
+    "summary": "Search Gold Medals, Sizzlers and Silver Medals from the 1985–1989 CCG retrospective series.",
+    "href": "/zzap64/",
+    "category": "Archive"
+  },
+  {
+    "type": "Added",
+    "date": "2026-08-05",
+    "title": "C64 vs Amiga Comparisons",
+    "summary": "Compare matching Commodore 64 and Amiga game records side by side.",
+    "href": "/games/compare/",
+    "category": "Games"
+  },
+  {
+    "type": "Added",
+    "date": "2026-08-05",
+    "title": "Find Me a Game",
+    "summary": "Choose a system, decade, genre or publisher and let the archive find something to play.",
+    "href": "/games/discover/",
+    "category": "Discovery"
+  },
+  {
+    "type": "Updated",
+    "date": "2026-08-05",
+    "title": "Publisher Archive",
+    "summary": "Search priority, publisher logos, corrected credits and curated histories have expanded the publisher section.",
+    "href": "/games/publishers/",
+    "category": "Publishers"
+  },
+  {
+    "type": "Updated",
+    "date": "2026-08-05",
+    "title": "Browse All Games",
+    "summary": "Search results now take priority and the full library has stronger discovery controls.",
+    "href": "/games/",
+    "category": "Games"
+  },
+  {
+    "type": "Added",
+    "date": "2026-08-05",
+    "title": "Global Archive Search",
+    "summary": "Search games, publishers, composers, genres, collections and Retro Specials from the header.",
+    "href": "/games/",
+    "category": "Search"
+  }
+]
