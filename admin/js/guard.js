@@ -14,6 +14,14 @@ import { clearRoleCache, fetchUserRole } from './roles.js';
 
 const TAG = '[CCG-GUARD]';
 const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
+const MASTER_DATA_PAGE_PATTERN = /\/admin\/(?:admin|games-editor)\.html$/i;
+const IS_MASTER_DATA_PAGE = MASTER_DATA_PAGE_PATTERN.test(window.location.pathname);
+const MASTER_DATA_ROLES = Object.freeze(['admin', 'superadmin']);
+
+if (IS_MASTER_DATA_PAGE) {
+  document.documentElement.dataset.ccgMasterDataGate = 'pending';
+  document.documentElement.style.visibility = 'hidden';
+}
 
 function redirect(path, reason = '') {
   const url = new URL(path, window.location.origin);
@@ -107,7 +115,9 @@ export async function ensureRole(allowedRoles = []) {
     return null;
   }
 
-  if (allowedRoles.length && !allowedRoles.includes(role)) {
+  const effectiveAllowedRoles = IS_MASTER_DATA_PAGE ? MASTER_DATA_ROLES : allowedRoles;
+  if (effectiveAllowedRoles.length && !effectiveAllowedRoles.includes(role)) {
+    console.warn(TAG, 'role denied for protected page', { role, path: window.location.pathname });
     redirect(AUTH_CONFIG.loginPage, 'role');
     return null;
   }
@@ -116,7 +126,8 @@ export async function ensureRole(allowedRoles = []) {
 }
 
 export async function startAccessMonitor({ onSessionInvalidated } = {}) {
-  if (IS_LOGIN_PAGE) return;
+  if (IS_LOGIN_PAGE || window.__ccgAdminAccessMonitorStarted) return;
+  window.__ccgAdminAccessMonitorStarted = true;
 
   await waitForAuthReady();
 
@@ -141,4 +152,21 @@ export async function startAccessMonitor({ onSessionInvalidated } = {}) {
       redirect(AUTH_CONFIG.loginPage, 'expired');
     }
   }, Number(AUTH_CONFIG.sessionCheckIntervalMs || 30000));
+}
+
+async function enforceMasterDataPageAccess() {
+  try {
+    const access = await ensureRole(MASTER_DATA_ROLES);
+    if (!access) return;
+    document.documentElement.dataset.ccgMasterDataGate = 'granted';
+    document.documentElement.style.visibility = '';
+    await startAccessMonitor();
+  } catch (error) {
+    console.error(TAG, 'master data access gate failed', error);
+    redirect(AUTH_CONFIG.loginPage, 'role');
+  }
+}
+
+if (IS_MASTER_DATA_PAGE && !IS_LOGIN_PAGE) {
+  void enforceMasterDataPageAccess();
 }
