@@ -19,6 +19,12 @@
             label: "C64 vs Amiga",
             meta: "Compare matching Commodore 64 and Amiga versions",
             terms: "compare comparison c64 amiga versions ports two systems"
+        },
+        {
+            href: "/games/discover/",
+            label: "Find Me a Game",
+            meta: "Choose a system, decade, genre or publisher and discover something to play",
+            terms: "find me a game discover random recommendation chooser what to play"
         }
     ];
 
