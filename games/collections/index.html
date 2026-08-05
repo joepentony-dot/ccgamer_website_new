@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <script>
         (function () {
             try {
@@ -11,7 +11,6 @@
                 if (!saved) return;
                 document.documentElement.setAttribute('data-ccg-mode', saved);
                 document.documentElement.setAttribute('data-mode', saved);
-                // Body may not exist yet during head execution, but set if available
                 if (document.body) {
                     document.body.setAttribute('data-ccg-mode', saved);
                     document.body.setAttribute('data-mode', saved);
@@ -25,32 +24,97 @@
         })();
     </script>
 
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/">
+    <title>C64 &amp; Amiga Game Collections | Cheeky Commodore Gamer</title>
+    <meta name="description" content="Explore curated Commodore 64 and Amiga game collections, including cartridge releases, licensed games, CCG favourites, retro features and Amiga demo music." />
+    <meta name="robots" content="index,follow" />
+    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/collections/" />
 
-    <title>Best Commodore 64 &amp; Amiga Game Collections | Cheeky Commodore Gamer</title>
-
-    <script src="/js/analytics.js" defer></script>
-    <meta name="description"
-          content="Browse the best Commodore 64 and Amiga game collections featuring hidden gems, rare classics, and curated retro picks for faster discovery." />
-    <meta property="og:title" content="Best Commodore 64 &amp; Amiga Game Collections | Cheeky Commodore Gamer" />
-    <meta property="og:description" content="Browse the best Commodore 64 and Amiga game collections featuring hidden gems, rare classics, and curated retro picks for faster discovery." />
+    <meta property="og:title" content="C64 &amp; Amiga Game Collections | Cheeky Commodore Gamer" />
+    <meta property="og:description" content="Explore curated Commodore 64 and Amiga game collections, including cartridge releases, licensed games, CCG favourites, retro features and Amiga demo music." />
     <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/collections/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Cheeky Commodore Gamer" />
     <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Best Commodore 64 &amp; Amiga Game Collections | Cheeky Commodore Gamer" />
-    <meta name="twitter:description" content="Browse the best Commodore 64 and Amiga game collections featuring hidden gems, rare classics, and curated retro picks for faster discovery." />
+    <meta name="twitter:title" content="C64 &amp; Amiga Game Collections | Cheeky Commodore Gamer" />
+    <meta name="twitter:description" content="Explore curated Commodore 64 and Amiga game collections, including cartridge releases, licensed games, CCG favourites, retro features and Amiga demo music." />
     <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
 
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "CollectionPage",
+          "@id": "https://www.cheekycommodoregamer.co.uk/games/collections/#page",
+          "url": "https://www.cheekycommodoregamer.co.uk/games/collections/",
+          "name": "Commodore 64 and Amiga Game Collections",
+          "description": "Curated Commodore 64 and Amiga game collections covering cartridge releases, licensed games, CCG favourites, retro events, special features and Amiga demo music.",
+          "isPartOf": {
+            "@type": "WebSite",
+            "name": "Cheeky Commodore Gamer",
+            "url": "https://www.cheekycommodoregamer.co.uk/"
+          },
+          "breadcrumb": {
+            "@id": "https://www.cheekycommodoregamer.co.uk/games/collections/#breadcrumb"
+          },
+          "mainEntity": {
+            "@id": "https://www.cheekycommodoregamer.co.uk/games/collections/#collections"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://www.cheekycommodoregamer.co.uk/games/collections/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.cheekycommodoregamer.co.uk/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Games",
+              "item": "https://www.cheekycommodoregamer.co.uk/games/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Collections",
+              "item": "https://www.cheekycommodoregamer.co.uk/games/collections/"
+            }
+          ]
+        },
+        {
+          "@type": "ItemList",
+          "@id": "https://www.cheekycommodoregamer.co.uk/games/collections/#collections",
+          "name": "Curated Commodore 64 and Amiga collections",
+          "numberOfItems": 7,
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Cartridge Games", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/cartridge-games.html" },
+            { "@type": "ListItem", "position": 2, "name": "Licensed Games", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/licensed-games.html" },
+            { "@type": "ListItem", "position": 3, "name": "BPjS and BPjM Indexed Games", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/bpjs-indexed-games.html" },
+            { "@type": "ListItem", "position": 4, "name": "Top Picks", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/top-picks.html" },
+            { "@type": "ListItem", "position": 5, "name": "Amiga Demo Music", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/amiga-demo-music.html" },
+            { "@type": "ListItem", "position": 6, "name": "Retro Events", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/retro-events.html" },
+            { "@type": "ListItem", "position": 7, "name": "Retro Specials", "url": "https://www.cheekycommodoregamer.co.uk/games/collections/retro-specials.html" }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <script src="/js/analytics.js" defer></script>
     <link rel="icon" href="../../favicon.ico" />
 
-    <!-- REQUIRED FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
-    <!-- GLOBAL CSS -->
     <link rel="stylesheet" href="../../resources/css/ccg-master.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
     <link rel="preload" href="../../resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -62,24 +126,18 @@
     <link rel="preload" href="../../resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="../../resources/css/ccg-anim.css" /></noscript>
     <link rel="stylesheet" href="../../resources/css/ccg-overlays.css" />
-
-
-    <!-- PAGE CSS -->
     <link rel="stylesheet" href="../../resources/css/collections.css" />
-
-    <!-- FOOTER -->
+    <link rel="stylesheet" href="../../resources/css/collections-seo-layout.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="../../resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="../../resources/css/ccg-community.css" />
-    <script src="../../js/ccg-mobile-lite.js" defer></script>
-
     <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
     <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
+    <script src="../../js/ccg-mobile-lite.js" defer></script>
 </head>
 
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
 
-<!-- BACKGROUND -->
 <div class="ccg-bg" aria-hidden="true">
     <div class="ccg-bg-starfield" aria-hidden="true"></div>
     <div class="ccg-bg-grid" aria-hidden="true"></div>
@@ -88,18 +146,15 @@
 
 <div class="ccg-page ccg-page--collections-index">
 
-<!-- HEADER (LOCKED CANONICAL) -->
-        <!-- HEADER -->
-        
-
 <header class="ccg-header" data-ccg-header>
     <div class="ccg-header-inner">
-
         <a href="../../home.html" class="ccg-brand">
             <img src="../../resources/images/ccgamer-logo.png"
                  alt="Cheeky Commodore Gamer logo"
                  class="ccg-brand__logo"
-                 loading="lazy" width="1500" height="1032" srcset="../../resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px">
+                 loading="lazy" width="1500" height="1032"
+                 srcset="../../resources/images/ccgamer-logo.png 1500w"
+                 sizes="(max-width: 720px) 200px, 320px">
 
             <div class="ccg-brand__text">
                 <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
@@ -117,9 +172,7 @@
                 aria-controls="ccg-primary-nav"
                 data-ccg-nav-toggle>
             <span class="ccg-nav-toggle__bars" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
             </span>
             <span class="ccg-nav-toggle__label">Menu</span>
         </button>
@@ -130,7 +183,7 @@
                     <li><a href="../../home.html" class="ccg-nav__link">Home</a></li>
                     <li><a href="../../games/index.html" class="ccg-nav__link">Browse Games</a></li>
                     <li><a href="../../games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="../../games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="../../games/collections/index.html" class="ccg-nav__link" aria-current="page">Collections</a></li>
                 </ul>
                 <div class="ccg-nav__more">
                     <button class="ccg-nav__more-toggle"
@@ -152,7 +205,6 @@
         </nav>
 
         <div class="ccg-header-actions">
-
             <div class="ccg-mode-hint">Try different modes</div>
             <button class="ccg-mode-toggle"
                     type="button"
@@ -178,7 +230,6 @@
                 <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
                 <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
             </div>
-
         </div>
     </div>
 
@@ -203,13 +254,15 @@
     <div class="ccg-header-neon-strip"></div>
 </header>
 
-
-
-
-<!-- MAIN -->
 <main class="ccg-main">
+    <nav class="ccg-collections-breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+            <li><a href="/home.html">Home</a></li>
+            <li><a href="/games/">Games</a></li>
+            <li aria-current="page">Collections</li>
+        </ol>
+    </nav>
 
-    <!-- HERO -->
     <section class="ccg-section ccg-collections-hero">
         <div class="ccg-hero ccg-hero--collections">
             <div class="ccg-hero-image"></div>
@@ -217,100 +270,118 @@
 
             <div class="ccg-hero-inner ccg-hero-inner--collections">
                 <p class="ccg-hero-kicker">Curated Sets · C64 &amp; Amiga</p>
-                <h1 class="ccg-hero-title">Curated Collections</h1>
+                <h1 class="ccg-hero-title">Commodore 64 &amp; Amiga Game Collections</h1>
                 <p class="ccg-hero-tagline">
-                    Themed bundles for quick browsing — cartridge showcases, licensed tie-ins, BPjS/BPjM indexed curiosities, CCG favourites, and legendary Amiga demoscene music.
+                    Browse cartridge releases, licensed tie-ins, CCG favourites, retro features, specialist indexes and Amiga demo music from one organised archive.
                 </p>
             </div>
         </div>
     </section>
 
-
-    <section class="ccg-collection-intro">
-        <h2>Best Commodore 64 &amp; Amiga Game Collections</h2>
-
+    <section class="ccg-collection-intro" aria-labelledby="collections-intro-title">
+        <h2 id="collections-intro-title">Find a Different Route Through the Archive</h2>
         <p>
-            Browse curated collections of the best Commodore 64 and Amiga games, including hidden gems, rare classics, and standout retro experiences.
+            These collections group Commodore 64 and Amiga games by format, theme and editorial focus, making it easier to discover worthwhile titles without searching the full library one game at a time.
         </p>
-
         <p>
-            Each collection is designed to help you discover high-quality games quickly, whether you're revisiting favourites or exploring something new.
+            Choose a collection below to explore game pages, reviews, videos, downloads and related archive material.
         </p>
-
     </section>
 
-    <!-- COLLECTIONS GRID -->
     <div class="ccg-omega-divider" aria-hidden="true">
         <span class="ccg-omega-core"></span>
     </div>
 
-    <section class="ccg-section ccg-chapter">
+    <section class="ccg-section ccg-chapter" aria-labelledby="collections-grid-title">
+        <div class="ccg-collections-grid-heading">
+            <h2 id="collections-grid-title">Explore the Collections</h2>
+            <p>Seven curated gateways covering games, features, events and Amiga music.</p>
+        </div>
+
         <div class="ccg-genre-grid">
-
-            <a href="cartridge-games.html" class="ccg-card ccg-genre-card">
+            <a href="cartridge-games.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/cartridge-collection.png"
-                     alt="Cartridge Games" width="460" height="215">
-                <span>Cartridge Games</span>
+                     alt="Commodore cartridge game collection artwork" width="460" height="215"
+                     loading="eager" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Cartridge Games</strong>
+                    <small class="ccg-collection-card__description">Explore instant-loading cartridge releases and arcade-style favourites from the Commodore era.</small>
+                </span>
             </a>
 
-            <a href="licensed-games.html" class="ccg-card ccg-genre-card">
+            <a href="licensed-games.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/licensed-collection.png"
-                     alt="Licensed Games" width="460" height="215">
-                <span>Licensed Games</span>
+                     alt="Licensed Commodore game collection artwork" width="460" height="215"
+                     loading="eager" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Licensed Games</strong>
+                    <small class="ccg-collection-card__description">Film, television, comic and character licences released for the Commodore 64 and Amiga.</small>
+                </span>
             </a>
 
-            <a href="bpjs-indexed-games.html" class="ccg-card ccg-genre-card">
+            <a href="bpjs-indexed-games.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/bpjs-collection.png"
-                     alt="BPjS / BPjM Indexed Games" width="460" height="215">
-                <span>BPjS / BPjM Indexed</span>
+                     alt="BPjS and BPjM indexed Commodore games artwork" width="460" height="215"
+                     loading="lazy" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">BPjS / BPjM Indexed</strong>
+                    <small class="ccg-collection-card__description">A specialist archive of titles tracked through the BPjS and BPjM indexing projects.</small>
+                </span>
             </a>
 
-            <a href="top-picks.html" class="ccg-card ccg-genre-card">
+            <a href="top-picks.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/top-picks-collection.png"
-                     alt="Top Picks" width="460" height="215">
-                <span>Top Picks</span>
+                     alt="Cheeky Commodore Gamer top picks artwork" width="460" height="215"
+                     loading="lazy" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Top Picks</strong>
+                    <small class="ccg-collection-card__description">Personal CCG favourites selected for gameplay, atmosphere, music and lasting appeal.</small>
+                </span>
             </a>
 
-            <a href="/games/collections/amiga-demo-music.html" class="ccg-card ccg-genre-card">
+            <a href="/games/collections/amiga-demo-music.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/amiga-demo-music.png"
-                     alt="Amiga Demo Music Collection" width="460" height="215">
-                <span>Amiga Demo Music</span>
+                     alt="Amiga demo music collection artwork" width="460" height="215"
+                     loading="lazy" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Amiga Demo Music</strong>
+                    <small class="ccg-collection-card__description">Classic Amiga demo-scene music, composers and tracks gathered into a dedicated archive.</small>
+                </span>
             </a>
 
-            <a href="retro-events.html" class="ccg-card ccg-genre-card">
+            <a href="retro-events.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/retro-events.png"
-                     alt="Retro Events" width="460" height="215">
-                <span>Retro Events</span>
+                     alt="Retro gaming events collection artwork" width="460" height="215"
+                     loading="lazy" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Retro Events</strong>
+                    <small class="ccg-collection-card__description">Event coverage, exhibitions and community gatherings connected to classic gaming.</small>
+                </span>
             </a>
 
-            <a href="retro-specials.html" class="ccg-card ccg-genre-card">
+            <a href="retro-specials.html" class="ccg-card ccg-genre-card ccg-collection-card">
                 <img src="../../resources/images/collections/retro-specials.png"
-                     alt="Retro Specials" width="460" height="215">
-                <span>Retro Specials</span>
+                     alt="Cheeky Commodore Gamer retro specials artwork" width="460" height="215"
+                     loading="lazy" decoding="async">
+                <span class="ccg-collection-card__content">
+                    <strong class="ccg-collection-card__title">Retro Specials</strong>
+                    <small class="ccg-collection-card__description">Long-form countdowns, magazine retrospectives and themed Commodore features.</small>
+                </span>
             </a>
-
-
         </div>
     </section>
 
     <section class="ccg-related">
-        <h2>Explore More Retro Content</h2>
-
-        <p>Browse the full game archive and discover more classics.</p>
-
-        <a href="/games/index.html" class="ccg-btn ccg-btn--primary">
-            Browse All Games
-        </a>
-
+        <h2>Explore the Full Commodore Game Archive</h2>
+        <p>Search the complete A–Z library when you need a specific Commodore 64 or Amiga title.</p>
+        <a href="/games/" class="ccg-btn ccg-btn--primary">Browse All Games</a>
     </section>
-
 </main>
 
 <div class="ccg-omega-divider" aria-hidden="true">
     <span class="ccg-omega-core"></span>
 </div>
 
-<!-- FOOTER -->
 <footer class="ccg-footer">
     <p class="ccg-footer__text">
         © <span data-ccg-year></span> Cheeky Commodore Gamer.
@@ -320,13 +391,11 @@
 
 </div>
 
-<!-- JS -->
 <script src="../../js/ccg-nav-core.js" defer></script>
 <script src="../../js/ccg-global.js" defer></script>
 <script src="../../js/ccg-mode-engine.js" defer></script>
 <script src="../../resources/js/ccg-performance.js" defer></script>
 
-<!-- GOATCOUNTER — SAFE ANALYTICS -->
 <script
   data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
   async
@@ -334,13 +403,8 @@
 </script>
 
 <script src="../../js/ccg-supabase-config.js" defer></script>
-
 <script src="../../js/ccg-supabase-client.js" defer></script>
-
 <script src="../../js/ccg-community-auth.js" defer></script>
-
-
-
 <script src="/js/ccg-nav.js" defer></script>
 <script src="/js/ccg-auth.js" defer></script>
 <script src="/js/ccg-mode.js" defer></script>

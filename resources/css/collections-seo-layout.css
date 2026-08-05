@@ -1,0 +1,183 @@
+/* ============================================================
+   COLLECTIONS INDEX — BALANCED GRID + SEO CONTENT
+   ------------------------------------------------------------
+   Isolated to the collections index. Existing thumbnail and card
+   contracts remain untouched elsewhere.
+============================================================ */
+
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs {
+    width: min(1360px, calc(100% - 32px));
+    margin: 20px auto 0;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.82rem;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs li + li::before {
+    content: "›";
+    margin-right: 8px;
+    color: rgba(var(--accent-rgb), 0.82);
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs a:hover,
+html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs a:focus-visible {
+    color: rgb(var(--accent-rgb));
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-intro {
+    width: min(920px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 8px 0 10px;
+    text-align: center;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-intro h2 {
+    margin: 0 0 14px;
+    font-size: clamp(1.35rem, 2.5vw, 2rem);
+    letter-spacing: 0.035em;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-intro p {
+    max-width: 72ch;
+    margin: 8px auto;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.7;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-grid-heading {
+    width: min(1360px, calc(100% - 32px));
+    margin: 0 auto 18px;
+    text-align: center;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-grid-heading h2 {
+    margin: 0 0 8px;
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+}
+
+html[data-ccg-page="collections-index"] .ccg-collections-grid-heading p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.68);
+}
+
+html[data-ccg-page="collections-index"] .ccg-genre-grid {
+    width: min(1360px, calc(100% - 32px));
+    margin: 12px auto 0;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card img {
+    aspect-ratio: 460 / 215;
+    object-fit: cover;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card__content {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 8px;
+    padding: 15px 16px 17px;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card__title {
+    display: block;
+    color: var(--ccg-text-light);
+    font-family: var(--ccg-font-main);
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    line-height: 1.35;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 14px rgba(var(--accent-rgb), 0.30),
+        0 14px 32px rgba(0, 0, 0, 0.88);
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card__description {
+    display: block;
+    color: rgba(255, 255, 255, 0.70);
+    font-family: Roboto, sans-serif;
+    font-size: 0.86rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.52;
+    text-transform: none;
+    text-shadow: none;
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card:hover .ccg-collection-card__title,
+html[data-ccg-page="collections-index"] .ccg-collection-card:focus-visible .ccg-collection-card__title {
+    color: rgb(var(--accent-rgb));
+}
+
+html[data-ccg-page="collections-index"] .ccg-collection-card:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb), 0.9);
+    outline-offset: 4px;
+}
+
+@media (min-width: 1200px) {
+    html[data-ccg-page="collections-index"] .ccg-genre-grid {
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    html[data-ccg-page="collections-index"] .ccg-collection-card {
+        grid-column: span 3;
+    }
+
+    html[data-ccg-page="collections-index"] .ccg-collection-card:nth-child(n + 5) {
+        grid-column: span 4;
+    }
+}
+
+@media (min-width: 700px) and (max-width: 1199px) {
+    html[data-ccg-page="collections-index"] .ccg-genre-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    html[data-ccg-page="collections-index"] .ccg-collection-card:last-child {
+        grid-column: 1 / -1;
+        width: min(100%, 560px);
+        justify-self: center;
+    }
+}
+
+@media (max-width: 699px) {
+    html[data-ccg-page="collections-index"] .ccg-collections-breadcrumbs,
+    html[data-ccg-page="collections-index"] .ccg-collection-intro,
+    html[data-ccg-page="collections-index"] .ccg-collections-grid-heading,
+    html[data-ccg-page="collections-index"] .ccg-genre-grid {
+        width: min(100% - 20px, 1360px);
+    }
+
+    html[data-ccg-page="collections-index"] .ccg-genre-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    html[data-ccg-page="collections-index"] .ccg-collection-card__content {
+        padding: 13px 14px 15px;
+    }
+}
