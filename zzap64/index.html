@@ -48,6 +48,7 @@
     <link rel="stylesheet" href="/resources/css/ccg-footer.css">
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="/resources/css/zzap64-awards.css">
+    <link rel="stylesheet" href="/resources/css/zzap64-performance.css">
     <script src="/js/analytics.js" defer></script>
     <script src="/js/ccg-mobile-lite.js" defer></script>
 </head>
@@ -139,14 +140,32 @@
                 <section aria-labelledby="zzap-index-title">
                     <p class="zzap-section__kicker">Searchable award index</p>
                     <h2 id="zzap-index-title" class="visually-hidden">Search Zzap!64 awards</h2>
-                    <div class="zzap-tools">
-                        <label><span class="visually-hidden">Search award entries</span><input type="search" id="zzapSearch" placeholder="Search games or months…" autocomplete="off"></label>
-                        <label><span class="visually-hidden">Filter by year</span><select id="zzapYearFilter"><option value="all">All years</option><option>1985</option><option>1986</option><option>1987</option><option>1988</option><option>1989</option></select></label>
-                        <label><span class="visually-hidden">Filter by system</span><select id="zzapSystemFilter"><option value="all">C64 &amp; Amiga</option><option value="c64">C64 only</option><option value="amiga">Amiga only</option></select></label>
-                        <label><span class="visually-hidden">Filter by award</span><select id="zzapAwardFilter"><option value="all">All awards</option><option value="gold medal">Gold Medals</option><option value="sizzler">Sizzlers</option><option value="silver medal">Silver Medals</option></select></label>
+
+                    <div class="zzap-loading" id="zzapLoading" role="status" aria-live="polite" aria-busy="true">
+                        <div class="zzap-loading__header">
+                            <span id="zzapLoadingLabel">Loading award records…</span>
+                            <strong id="zzapLoadingPercent">0%</strong>
+                        </div>
+                        <div class="zzap-loading__track"
+                             id="zzapLoadingProgress"
+                             role="progressbar"
+                             aria-label="Zzap!64 archive loading progress"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-valuenow="0">
+                            <span class="zzap-loading__bar" id="zzapLoadingBar"></span>
+                        </div>
+                        <p class="zzap-loading__detail" id="zzapLoadingDetail">Preparing the five year award index.</p>
                     </div>
-                    <div class="zzap-results-summary" aria-live="polite"><p id="zzapFilterSummary">All indexed awards from 1985–1989</p><p><strong id="zzapVisibleCount">0</strong> shown</p></div>
-                    <div class="zzap-awards" id="zzapAwardsGrid"><div class="zzap-empty">Loading the Zzap!64 awards archive…</div></div>
+
+                    <div class="zzap-tools">
+                        <label><span class="visually-hidden">Search award entries</span><input type="search" id="zzapSearch" placeholder="Search games or months…" autocomplete="off" disabled></label>
+                        <label><span class="visually-hidden">Filter by year</span><select id="zzapYearFilter" disabled><option value="all">All years</option><option>1985</option><option>1986</option><option>1987</option><option>1988</option><option>1989</option></select></label>
+                        <label><span class="visually-hidden">Filter by system</span><select id="zzapSystemFilter" disabled><option value="all">C64 &amp; Amiga</option><option value="c64">C64 only</option><option value="amiga">Amiga only</option></select></label>
+                        <label><span class="visually-hidden">Filter by award</span><select id="zzapAwardFilter" disabled><option value="all">All awards</option><option value="gold medal">Gold Medals</option><option value="sizzler">Sizzlers</option><option value="silver medal">Silver Medals</option></select></label>
+                    </div>
+                    <div class="zzap-results-summary" aria-live="polite"><p id="zzapFilterSummary">Loading the award index…</p><p><strong id="zzapVisibleCount">0</strong> shown</p></div>
+                    <div class="zzap-awards" id="zzapAwardsGrid" aria-busy="true"><div class="zzap-empty">Loading the Zzap!64 awards archive…</div></div>
                 </section>
 
                 <aside class="zzap-notes">
@@ -162,6 +181,7 @@
     <script src="/js/ccg-nav.js" defer></script>
     <script src="/js/ccg-nav-core.js" defer></script>
     <script src="/js/ccg-mode-engine.js" defer></script>
+    <script src="/js/ccg-zzap64-matcher.js" defer></script>
     <script src="/js/zzap64-awards.js" defer></script>
 </body>
 </html>
