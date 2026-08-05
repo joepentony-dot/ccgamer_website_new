@@ -1,8 +1,8 @@
 /* ============================================================
    CCG AMIGA MODE — DISTINCTIVE INTERFACE LAYER
    ------------------------------------------------------------
-   Visual identity only. No layout dimensions, routes or content
-   structures are changed by this stylesheet.
+   Visual identity only. No routes or content structures are
+   changed by this stylesheet.
 ============================================================ */
 
 html[data-ccg-mode="amiga"],
@@ -53,44 +53,58 @@ body[data-mode="amiga"] .ccg-amiga-window {
         inset 1px 1px 0 rgba(255,255,255,.11) !important;
 }
 
-html[data-ccg-mode="amiga"] .ccg-amiga-window::before,
-html[data-mode="amiga"] .ccg-amiga-window::before,
-body[data-ccg-mode="amiga"] .ccg-amiga-window::before,
-body[data-mode="amiga"] .ccg-amiga-window::before {
-    content: "";
+.ccg-amiga-window__chrome {
+    display: none;
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-window > .ccg-amiga-window__chrome,
+html[data-mode="amiga"] .ccg-amiga-window > .ccg-amiga-window__chrome,
+body[data-ccg-mode="amiga"] .ccg-amiga-window > .ccg-amiga-window__chrome,
+body[data-mode="amiga"] .ccg-amiga-window > .ccg-amiga-window__chrome {
     position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: var(--ccg-amiga-titlebar);
+    z-index: 3;
+    inset: 0 0 auto;
+    display: block;
+    height: 18px;
     pointer-events: none;
 }
 
-html[data-ccg-mode="amiga"] .ccg-amiga-window::after,
-html[data-mode="amiga"] .ccg-amiga-window::after,
-body[data-ccg-mode="amiga"] .ccg-amiga-window::after,
-body[data-mode="amiga"] .ccg-amiga-window::after {
-    content: "";
+html[data-ccg-mode="amiga"] .ccg-amiga-window__titlebar,
+html[data-mode="amiga"] .ccg-amiga-window__titlebar,
+body[data-ccg-mode="amiga"] .ccg-amiga-window__titlebar,
+body[data-mode="amiga"] .ccg-amiga-window__titlebar {
     position: absolute;
-    z-index: 2;
-    top: 10px;
-    right: 10px;
-    width: 10px;
-    height: 10px;
+    inset: 0 0 auto;
+    display: block;
+    height: 5px;
+    background: var(--ccg-amiga-titlebar);
+}
+
+html[data-ccg-mode="amiga"] .ccg-amiga-window__gadget,
+html[data-mode="amiga"] .ccg-amiga-window__gadget,
+body[data-ccg-mode="amiga"] .ccg-amiga-window__gadget,
+body[data-mode="amiga"] .ccg-amiga-window__gadget {
+    position: absolute;
+    top: 7px;
+    right: 9px;
+    display: block;
+    width: 9px;
+    height: 9px;
     border: 1px solid rgba(255,255,255,.42);
     background: rgba(7, 4, 18, .56);
     box-shadow: inset 2px 2px 0 rgba(255,255,255,.13);
-    pointer-events: none;
 }
 
 html[data-ccg-mode="amiga"] .ccg-btn,
 html[data-mode="amiga"] .ccg-btn,
 body[data-ccg-mode="amiga"] .ccg-btn,
 body[data-mode="amiga"] .ccg-btn,
-html[data-ccg-mode="amiga"] button:not(.ccg-mode-toggle__thumb),
-html[data-mode="amiga"] button:not(.ccg-mode-toggle__thumb) {
+html[data-ccg-mode="amiga"] .ccg-nav__link,
+html[data-mode="amiga"] .ccg-nav__link,
+html[data-ccg-mode="amiga"] .ccg-nav-toggle,
+html[data-mode="amiga"] .ccg-nav-toggle,
+html[data-ccg-mode="amiga"] .ccg-nav__more-toggle,
+html[data-mode="amiga"] .ccg-nav__more-toggle {
     border-radius: 0 !important;
 }
 
