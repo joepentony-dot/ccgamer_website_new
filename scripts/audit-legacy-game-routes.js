@@ -58,7 +58,9 @@ requireText(apache, "RewriteRule ^index\\.html$ /games/ [R=301,L,NE]", "Apache i
 requireText(apache, "/games/$1/ [R=301,L,NE]", "Apache flat-game redirect is missing.");
 requireText(navCore, "/js/ccg-legacy-url-consolidation.js", "The URL consolidation module is not loaded by the shared navigation core.");
 requireText(consolidation, "consolidateBrowseGamesUrl", "Browse Games index consolidation is missing.");
-requireText(consolidation, "permanent two-way reload loop", "The game-handler loop safeguard is not documented in the consolidation module.");
+if (!/permanent\s+two-way\s+reload\s+loop/i.test(consolidation)) {
+    errors.push("The game-handler loop safeguard is not documented in the consolidation module.");
+}
 requireText(handler, '<meta name="robots" content="noindex,follow">', "The shared game handler meta noindex is missing.");
 requireText(handler, '<link rel="canonical" id="game-canonical"', "The runtime canonical link is missing.");
 
