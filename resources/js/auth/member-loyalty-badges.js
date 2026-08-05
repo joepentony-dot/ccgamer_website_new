@@ -33,6 +33,12 @@ function safeDate(value) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function earliestDate(...values) {
+  const dates = values.map(safeDate).filter(Boolean);
+  if (!dates.length) return null;
+  return new Date(Math.min(...dates.map((date) => date.getTime())));
+}
+
 function addMonthsSafe(date, amount) {
   const result = new Date(date.getTime());
   const day = result.getDate();
@@ -59,7 +65,11 @@ function nextTierFor(month) {
 }
 
 function formatDate(date) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
 }
 
 function setStatus(message, mode = '') {
@@ -87,6 +97,7 @@ async function copyText(value) {
     await navigator.clipboard.writeText(value);
     return;
   }
+
   const input = document.createElement('textarea');
   input.value = value;
   input.setAttribute('readonly', '');
@@ -113,7 +124,9 @@ function createBadgeBlob() {
       return;
     }
 
-    const mode = document.documentElement.getAttribute('data-ccg-mode') || document.body.dataset.ccgMode || 'c64';
+    const mode = document.documentElement.getAttribute('data-ccg-mode')
+      || document.body.dataset.ccgMode
+      || 'c64';
     const accent = mode === 'amiga' ? '#ff4fcb' : '#27d8ff';
     const secondary = mode === 'amiga' ? '#8b72ff' : '#6f82ff';
 
@@ -178,7 +191,9 @@ async function shareBadge() {
   setStatus('Preparing your badge…');
   try {
     const blob = await createBadgeBlob();
-    const file = new File([blob], `ccg-member-badge-month-${state.month}.png`, { type: 'image/png' });
+    const file = new File([blob], `ccg-member-badge-month-${state.month}.png`, {
+      type: 'image/png'
+    });
     const payload = {
       title: `CCG ${state.tier.name} badge`,
       text: shareText(),
@@ -249,8 +264,10 @@ function renderBadge() {
   `;
 
   achievements.insertBefore(panel, badgeGrid);
-  document.getElementById('memberShareLoyaltyBadge')?.addEventListener('click', () => { void shareBadge(); });
-  document.getElementById('memberCopyLoyaltyBadge')?.addEventListener('click', () => { void copyForDiscord(); });
+  document.getElementById('memberShareLoyaltyBadge')
+    ?.addEventListener('click', () => { void shareBadge(); });
+  document.getElementById('memberCopyLoyaltyBadge')
+    ?.addEventListener('click', () => { void copyForDiscord(); });
 }
 
 async function loadMemberDetails() {
@@ -273,9 +290,16 @@ async function loadMemberDetails() {
     console.warn('[member-loyalty] Profile details unavailable; using account creation date.', error);
   }
 
-  state.displayName = String(profile?.display_name || profile?.username || user.user_metadata?.display_name || 'CCG Member').trim();
-  state.joinedAt = safeDate(profile?.created_at || user.created_at);
+  state.displayName = String(
+    profile?.display_name
+    || profile?.username
+    || user.user_metadata?.display_name
+    || 'CCG Member'
+  ).trim();
+
+  state.joinedAt = earliestDate(profile?.created_at, user.created_at);
   if (!state.joinedAt) return false;
+
   state.month = completedMonths(state.joinedAt) + 1;
   state.tier = tierFor(state.month);
   return true;
@@ -291,5 +315,8 @@ async function init() {
   }
 }
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
-else init();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init, { once: true });
+} else {
+  void init();
+}
