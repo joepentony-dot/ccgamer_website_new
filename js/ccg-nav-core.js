@@ -43,7 +43,7 @@ Do Not Override
         const color = args.slice(3).join(" ") || "currentColor";
         if (!style.getPropertyValue("box-shadow")) style.setProperty("box-shadow", `${x} ${y} ${blur} ${color}`);
         const cleanedFilter = filter.replace(/\s*drop-shadow\([^)]+\)/gi, "").trim();
-        if (cleanedFilter) style.setPropertyValue("filter", cleanedFilter);
+        if (cleanedFilter) style.setProperty("filter", cleanedFilter);
         else style.removeProperty("filter");
     }
 
