@@ -167,7 +167,7 @@
     position: relative;
     display: flex;
     min-width: 0;
-    min-height: 164px;
+    min-height: 184px;
     flex-direction: column;
     justify-content: space-between;
     gap: 16px;
@@ -205,7 +205,17 @@
 }
 
 .zzap-award-card__score {
+    flex: 0 0 auto;
     font: 700 1.25rem/1 "Orbitron",sans-serif;
+}
+
+.zzap-award-card__score--unscored {
+    max-width: 150px;
+    font-size: .66rem;
+    line-height: 1.35;
+    letter-spacing: .04em;
+    text-align: right;
+    text-transform: uppercase;
 }
 
 .zzap-award-card__title {
@@ -213,16 +223,56 @@
     font: 700 1rem/1.35 "Orbitron",sans-serif;
 }
 
-.zzap-award-card__title a {
+.zzap-award-card__game-name {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.zzap-award-card__game-link {
+    display: flex;
+    width: 100%;
+    min-height: 78px;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(var(--accent-rgb,0,221,255),.42);
+    background: rgba(var(--accent-rgb,0,221,255),.08);
     color: inherit;
     text-decoration: none;
 }
 
-.zzap-award-card__title a:hover,
-.zzap-award-card__title a:focus-visible {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+.zzap-award-card__game-action {
+    display: block;
+    font: 700 .62rem/1.3 "Orbitron",sans-serif;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    opacity: .78;
+}
+
+.zzap-award-card__game-link:hover,
+.zzap-award-card__game-link:focus-visible {
+    border-color: rgba(var(--accent-rgb,0,221,255),.95);
+    background: rgba(var(--accent-rgb,0,221,255),.16);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb,0,221,255),.16);
     outline: none;
+}
+
+.zzap-award-card__game-link:hover .zzap-award-card__game-name,
+.zzap-award-card__game-link:focus-visible .zzap-award-card__game-name {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.zzap-award-card__availability {
+    display: inline-flex;
+    margin-top: 10px;
+    padding: 6px 8px;
+    border: 1px dashed rgba(255,255,255,.24);
+    font: 700 .61rem/1.25 "Orbitron",sans-serif;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    opacity: .68;
 }
 
 .zzap-award-card__meta {
@@ -272,4 +322,6 @@
     .zzap-awards,
     .zzap-tools { grid-template-columns: 1fr; }
     .zzap-results-summary { align-items: flex-start; flex-direction: column; }
+    .zzap-award-card__top { align-items: flex-start; }
+    .zzap-award-card__score--unscored { max-width: 132px; }
 }
