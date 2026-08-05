@@ -24,6 +24,7 @@ on:
       - "scripts/audit-member-hub.js"
       - "scripts/audit-member-community.js"
       - "scripts/audit-member-safety-loyalty.js"
+      - "scripts/audit-admin-master-data-gate.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -71,6 +72,7 @@ jobs:
           node --check js/ccg-game-badges.js
           node --check js/game-discovery.js
           node --check js/zzap64-awards.js
+          node --check admin/js/guard.js
           node --check resources/js/auth/profile-lists.js
           node --check resources/js/auth/member-hub.js
           node --check resources/js/auth/member-library-sync.js
@@ -86,6 +88,7 @@ jobs:
           node --check scripts/audit-member-hub.js
           node --check scripts/audit-member-community.js
           node --check scripts/audit-member-safety-loyalty.js
+          node --check scripts/audit-admin-master-data-gate.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -116,6 +119,9 @@ jobs:
 
       - name: Run Member Safety and Loyalty audit
         run: node scripts/audit-member-safety-loyalty.js
+
+      - name: Run Admin Master Data Gate audit
+        run: node scripts/audit-admin-master-data-gate.js
 
       - name: Confirm audits made no repository changes
         run: |
