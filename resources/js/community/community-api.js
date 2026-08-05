@@ -61,6 +61,27 @@ export async function listLatestComments(limit = 25) {
   return { data: data ?? [], error };
 }
 
+export async function refreshMemberBadges(profileId) {
+  if (!window.supabase || !profileId) return { data: [], error: null };
+
+  try {
+    const { data, error } = await supabase.rpc('award_badge_if_eligible', {
+      target_user_id: profileId
+    });
+
+    if (error) {
+      cLog('award_badge_if_eligible error', error);
+      return { data: [], error };
+    }
+
+    document.dispatchEvent(new CustomEvent('ccg:member-badges-updated'));
+    return { data: data ?? [], error: null };
+  } catch (error) {
+    cLog('award_badge_if_eligible exception', error);
+    return { data: [], error };
+  }
+}
+
 export async function addComment(profileId, gameSlug, content) {
   const payload = {
     profile_id: profileId,
@@ -75,7 +96,10 @@ export async function addComment(profileId, gameSlug, content) {
     .single();
 
   if (error) cLog('addComment error', error);
-  if (!error) await logActivity('comment', gameSlug, { len: payload.content.length });
+  if (!error) {
+    await logActivity('comment', gameSlug, { len: payload.content.length });
+    await refreshMemberBadges(profileId);
+  }
   return { data, error };
 }
 
@@ -118,7 +142,10 @@ export async function upsertRating(profileId, gameSlug, rating) {
     .single();
 
   if (error) cLog('upsertRating error', error);
-  if (!error) await logActivity('rating', gameSlug, { rating: r });
+  if (!error) {
+    await logActivity('rating', gameSlug, { rating: r });
+    await refreshMemberBadges(profileId);
+  }
   return { data, error };
 }
 

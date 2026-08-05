@@ -1,0 +1,167 @@
+/* ============================================================
+   CCG MEMBER HUB — PRIVATE ACHIEVEMENT BADGES
+   Isolated to the Member Hub achievement panel.
+============================================================ */
+
+.member-achievement-panel {
+  margin: 1rem 0;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  border: 1px solid rgba(100, 217, 255, 0.36);
+  background: linear-gradient(145deg, rgba(7, 17, 35, 0.96), rgba(12, 24, 48, 0.9));
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28), inset 0 0 24px rgba(60, 197, 255, 0.05);
+}
+
+.member-achievement-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.member-achievement-panel__kicker,
+.member-achievement-card__meta {
+  margin: 0 0 0.25rem;
+  color: rgba(145, 224, 255, 0.84);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.member-achievement-panel__title {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+}
+
+.member-achievement-panel__intro {
+  max-width: 760px;
+  margin: 0.45rem 0 0;
+  color: rgba(235, 244, 255, 0.8);
+  line-height: 1.55;
+}
+
+.member-achievement-panel__status {
+  min-height: 1.4em;
+  margin: 0 0 0.9rem;
+  color: rgba(235, 244, 255, 0.72);
+  font-size: 0.88rem;
+}
+
+.member-achievement-panel__status[data-state="success"] {
+  color: #9cf7c7;
+}
+
+.member-achievement-panel__status[data-state="error"] {
+  color: #ffb2bd;
+}
+
+.member-achievement-panel__status[data-state="local"] {
+  color: #ffd88a;
+}
+
+.member-achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.member-achievement-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 0.8rem;
+  min-height: 148px;
+  padding: 0.9rem;
+  border: 1px solid rgba(129, 174, 211, 0.28);
+  background: rgba(3, 10, 24, 0.72);
+}
+
+.member-achievement-card.is-earned {
+  border-color: rgba(88, 232, 174, 0.65);
+  background: linear-gradient(145deg, rgba(8, 37, 38, 0.84), rgba(5, 21, 35, 0.9));
+  box-shadow: inset 0 0 22px rgba(69, 234, 172, 0.08);
+}
+
+.member-achievement-card.is-locked {
+  opacity: 0.72;
+}
+
+.member-achievement-card__mark {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(142, 194, 232, 0.4);
+  color: rgba(220, 236, 249, 0.76);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.member-achievement-card.is-earned .member-achievement-card__mark {
+  border-color: rgba(88, 232, 174, 0.78);
+  color: #a8ffd5;
+  font-size: 1.55rem;
+}
+
+.member-achievement-card__body {
+  min-width: 0;
+}
+
+.member-achievement-card__title {
+  margin: 0;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.member-achievement-card__description {
+  margin: 0.4rem 0 0;
+  color: rgba(229, 240, 250, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.member-achievement-card__state {
+  margin: 0.6rem 0 0;
+  color: rgba(188, 215, 237, 0.72);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.member-achievement-card.is-earned .member-achievement-card__state {
+  color: #9cf7c7;
+}
+
+html[data-ccg-mode="amiga"] .member-achievement-panel,
+body[data-ccg-mode="amiga"] .member-achievement-panel {
+  border-color: rgba(255, 106, 213, 0.42);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.28), inset 0 0 24px rgba(255, 88, 206, 0.06);
+}
+
+html[data-ccg-mode="amiga"] .member-achievement-panel__kicker,
+html[data-ccg-mode="amiga"] .member-achievement-card__meta,
+body[data-ccg-mode="amiga"] .member-achievement-panel__kicker,
+body[data-ccg-mode="amiga"] .member-achievement-card__meta {
+  color: rgba(255, 154, 226, 0.9);
+}
+
+@media (max-width: 980px) {
+  .member-achievement-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .member-achievement-panel__header {
+    flex-direction: column;
+  }
+
+  .member-achievement-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .member-achievement-card {
+    min-height: 0;
+  }
+}

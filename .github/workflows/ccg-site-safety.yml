@@ -28,6 +28,7 @@ on:
       - "scripts/audit-member-custom-collections.js"
       - "scripts/audit-member-hub-phase7b.js"
       - "scripts/audit-member-hub-phase7c.js"
+      - "scripts/audit-member-achievements.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -70,6 +71,7 @@ jobs:
           node --check js/ccg-member-community-loader.js
           node --check js/ccg-member-custom-collections-loader.js
           node --check js/ccg-member-loyalty-loader.js
+          node --check js/ccg-member-achievements-loader.js
           node --check js/ccg-member-data-safety.js
           node --check js/ccg-zzap64-matcher.js
           node --check js/zzap64-awards-logo-styles.js
@@ -84,7 +86,9 @@ jobs:
           node --check resources/js/auth/member-community.js
           node --check resources/js/auth/member-custom-collections.js
           node --check resources/js/auth/member-loyalty-badges.js
+          node --check resources/js/auth/member-achievement-badges.js
           node --check resources/js/auth/public-member.js
+          node --check resources/js/community/community-api.js
           node --check scripts/audit-legacy-game-routes.js
           node --check scripts/audit-music-navigation.js
           node --check scripts/audit-zzap64-awards.js
@@ -98,6 +102,7 @@ jobs:
           node --check scripts/audit-member-custom-collections.js
           node --check scripts/audit-member-hub-phase7b.js
           node --check scripts/audit-member-hub-phase7c.js
+          node --check scripts/audit-member-achievements.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -140,6 +145,9 @@ jobs:
 
       - name: Run Phase 7C Supabase compatibility audit
         run: node scripts/audit-member-hub-phase7c.js
+
+      - name: Run Member Achievements audit
+        run: node scripts/audit-member-achievements.js
 
       - name: Confirm audits made no repository changes
         run: |
