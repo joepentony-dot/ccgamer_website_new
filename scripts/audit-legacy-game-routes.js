@@ -57,11 +57,14 @@ requireText(apache, "RewriteRule ^compare/?$ /games/ [R=301,L,NE]", "The retired
 requireText(apache, "RewriteRule ^index\\.html$ /games/ [R=301,L,NE]", "Apache index.html redirect is missing.");
 requireText(apache, "/games/$1/ [R=301,L,NE]", "Apache flat-game redirect is missing.");
 requireText(navCore, "/js/ccg-legacy-url-consolidation.js", "The URL consolidation module is not loaded by the shared navigation core.");
-requireText(consolidation, "findGame(await loadGames(), candidate)", "Legacy IDs are not resolved against the game database.");
-requireText(consolidation, 'fetch(buildSitePath("games/games.json")', "The consolidation module does not load the canonical game database.");
-requireText(consolidation, "replaceLocation(`games/${canonicalSlug}/`)", "Resolved games are not sent to canonical folder routes.");
+requireText(consolidation, "consolidateBrowseGamesUrl", "Browse Games index consolidation is missing.");
+requireText(consolidation, "permanent two-way reload loop", "The game-handler loop safeguard is not documented in the consolidation module.");
 requireText(handler, '<meta name="robots" content="noindex,follow">', "The shared game handler meta noindex is missing.");
 requireText(handler, '<link rel="canonical" id="game-canonical"', "The runtime canonical link is missing.");
+
+if (/consolidateLegacyGameUrl|replaceLocation\(`games\/\$\{canonicalSlug\}\//.test(consolidation)) {
+    errors.push("The shared game handler redirects back to canonical game folders and can create a reciprocal reload loop.");
+}
 
 RETIRED_COMPARISON_FILES.forEach((relativePath) => {
     if (fs.existsSync(path.join(ROOT, relativePath))) {
@@ -78,6 +81,7 @@ if (!Array.isArray(games) || games.length === 0) {
         "game", "index", "genres", "collections", "publishers",
         "developers", "years", "compare", "discover", "seo"
     ]);
+    let forwardingStubCount = 0;
 
     games.forEach((game, index) => {
         const slug = String(game?.slug || "").trim();
@@ -95,7 +99,17 @@ if (!Array.isArray(games) || games.length === 0) {
 
         slugs.add(slug);
         if (id) ids.add(id);
+
+        const folderPage = path.join(ROOT, "games", slug, "index.html");
+        if (fs.existsSync(folderPage)) {
+            const source = fs.readFileSync(folderPage, "utf8");
+            if (/\/games\/game\.html\?(?:id|slug)=/i.test(source)) forwardingStubCount += 1;
+        }
     });
+
+    if (forwardingStubCount && /\/games\/game\.html/i.test(consolidation)) {
+        errors.push(`${forwardingStubCount} canonical game folder page(s) forward to the shared handler, so the consolidation module must not redirect the handler back to game folders.`);
+    }
 
     if (!Array.isArray(gamesIndex)) {
         errors.push("games/games-index.json must contain an array.");
@@ -128,7 +142,7 @@ if (!Array.isArray(games) || games.length === 0) {
         warnings.push(`${missingExplicitRewrites.length} game(s) rely on their physical folder page rather than an explicit _redirects rewrite: ${missingExplicitRewrites.join(", ")}.`);
     }
 
-    console.log(`Checked ${slugs.size} canonical game slugs and ${ids.size} legacy IDs.`);
+    console.log(`Checked ${slugs.size} canonical game slugs, ${ids.size} legacy IDs and ${forwardingStubCount} shared-handler forwarding page(s).`);
 }
 
 ["/games/game.html?", "/games/index.html", "/games/compare/"].forEach((token) => {
