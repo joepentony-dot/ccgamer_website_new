@@ -47,12 +47,30 @@
         document.head.appendChild(link);
     }
 
+    function addWindowChrome(element) {
+        if (!(element instanceof Element)) return;
+        if (element.querySelector(":scope > .ccg-amiga-window__chrome")) return;
+
+        const chrome = document.createElement("span");
+        chrome.className = "ccg-amiga-window__chrome";
+        chrome.setAttribute("aria-hidden", "true");
+        chrome.innerHTML = `
+            <span class="ccg-amiga-window__titlebar"></span>
+            <span class="ccg-amiga-window__gadget"></span>
+        `;
+        element.prepend(chrome);
+    }
+
+    function enhancePanel(element) {
+        if (!(element instanceof Element)) return;
+        if (element.closest(".ccg-nav-drawer, .ccg-global-search")) return;
+        element.classList.add("ccg-amiga-window");
+        addWindowChrome(element);
+    }
+
     function markPanels(root = document) {
         PANEL_SELECTORS.forEach((selector) => {
-            root.querySelectorAll?.(selector).forEach((element) => {
-                if (element.closest(".ccg-nav-drawer, .ccg-global-search")) return;
-                element.classList.add("ccg-amiga-window");
-            });
+            root.querySelectorAll?.(selector).forEach(enhancePanel);
         });
     }
 
@@ -60,18 +78,19 @@
         if (isExcludedPage()) return;
         ensureCss();
         markPanels();
+
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
-                    if (node instanceof Element) {
-                        if (PANEL_SELECTORS.some((selector) => node.matches(selector))) {
-                            node.classList.add("ccg-amiga-window");
-                        }
-                        markPanels(node);
+                    if (!(node instanceof Element)) return;
+                    if (PANEL_SELECTORS.some((selector) => node.matches(selector))) {
+                        enhancePanel(node);
                     }
+                    markPanels(node);
                 });
             });
         });
+
         observer.observe(document.body, { childList: true, subtree: true });
     }
 
