@@ -63,6 +63,9 @@ jobs:
           node --check scripts/validate-sitemaps.js
           node --check tools/seo/generate-sitemap.js
 
+      - name: Register feature archive pages
+        run: node scripts/ensure-feature-sitemap-pages.js
+
       - name: Generate sitemaps
         run: node scripts/generate-sitemaps.js
 
