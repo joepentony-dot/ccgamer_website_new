@@ -1,0 +1,40 @@
+name: CCG Site Safety
+
+on:
+  pull_request:
+    paths:
+      - "**/*.html"
+      - "**/*.js"
+      - "**/*.css"
+      - "**/*.json"
+      - "scripts/audit-site-safety.py"
+      - ".github/workflows/ccg-site-safety.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safety-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate audit syntax
+        run: python -m py_compile scripts/audit-site-safety.py
+
+      - name: Run read-only site safety audit
+        run: python scripts/audit-site-safety.py
+
+      - name: Confirm audit made no repository changes
+        run: |
+          rm -rf scripts/__pycache__
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
