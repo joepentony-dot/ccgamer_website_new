@@ -81,7 +81,7 @@ as $$
       where t.profile_id = p.id
     ), '[]'::jsonb) else '[]'::jsonb end,
     'badges', case when p.show_badges then coalesce((
-      select jsonb_agg(jsonb_build_object('badge_key', b.badge_key, 'awarded_at', b.awarded_at) order by b.awarded_at desc)
+      select jsonb_agg(jsonb_build_object('badge_key', b.badge_key, 'assigned_at', b.assigned_at) order by b.assigned_at desc)
       from public.user_badges b
       where b.user_id = p.id
     ), '[]'::jsonb) else '[]'::jsonb end,
@@ -133,7 +133,7 @@ as $$
 
     union all
 
-    select 'badge'::text, null::text, null::int, b.badge_key, b.awarded_at
+    select 'badge'::text, null::text, null::int, b.badge_key, b.assigned_at
     from public.user_badges b
     where b.user_id = auth.uid()
   ) feed
