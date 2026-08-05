@@ -8,6 +8,16 @@
   --omega-admin-warn-border: rgba(255, 203, 83, 0.7);
 }
 
+/*
+  games-editor.html contains its master-data interface in main.builder-wrap.
+  Hide that interface from the first stylesheet pass until guard.js grants
+  an administrator, superadministrator or configured owner session.
+*/
+html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > main.builder-wrap,
+html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
+  visibility: hidden !important;
+}
+
 .omega-admin-shell {
   width: min(1400px, 95vw);
   margin: 1rem auto 0;
@@ -231,6 +241,7 @@
   filter: none !important;
   text-shadow: none !important;
 }
+
 /* =====================================================
    ADMIN HARD OVERRIDE — INPUT TEXT UNMASK
    Last-resort protection against global neon/glass leaks
