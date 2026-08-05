@@ -8,6 +8,17 @@
   --omega-admin-warn-border: rgba(255, 203, 83, 0.7);
 }
 
+/* Master games-data pages fail closed from first paint. guard.js grants visibility. */
+html[data-ccg-page="admin"]:not([data-ccg-master-data-gate="granted"]),
+html:not([data-ccg-master-data-gate="granted"]) body[data-ccg-context="admin"] {
+  visibility: hidden !important;
+}
+
+html[data-ccg-master-data-gate="granted"],
+html[data-ccg-master-data-gate="granted"] body[data-ccg-context="admin"] {
+  visibility: visible !important;
+}
+
 .omega-admin-shell {
   width: min(1400px, 95vw);
   margin: 1rem auto 0;
