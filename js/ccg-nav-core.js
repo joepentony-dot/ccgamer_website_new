@@ -16,7 +16,8 @@ Do Not Override
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
         { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
-        { src: "/js/ccg-platform-compare-link.js", marker: "data-ccg-platform-compare-loader" }
+        { src: "/js/ccg-platform-compare-link.js", marker: "data-ccg-platform-compare-loader" },
+        { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" }
     ];
 
     function isNavPillCandidate(el) {
