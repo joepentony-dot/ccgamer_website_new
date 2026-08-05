@@ -1,0 +1,100 @@
+/* ============================================================
+   CCG ADAPTIVE DESKTOP NAVIGATION
+   ------------------------------------------------------------
+   Loaded after the shared navigation styles. Desktop-only
+   density changes prevent clipping while mobile keeps the
+   established drawer layout.
+============================================================ */
+
+@media (min-width: 1200px) {
+    .ccg-header .ccg-nav {
+        overflow: visible !important;
+        contain: none !important;
+    }
+
+    .ccg-header .ccg-nav__bar,
+    .ccg-header .ccg-nav__list {
+        min-width: 0;
+    }
+
+    .ccg-header .ccg-nav__list {
+        gap: clamp(5px, 0.55vw, 10px) !important;
+    }
+
+    .ccg-header .ccg-nav--fit-compact .ccg-nav__list {
+        gap: clamp(4px, 0.4vw, 7px) !important;
+    }
+
+    .ccg-header .ccg-nav--fit-compact .ccg-nav__link,
+    .ccg-header .ccg-nav--fit-compact .ccg-nav__more-toggle {
+        min-height: 42px !important;
+        padding: 7px clamp(8px, 0.75vw, 11px) !important;
+        font-size: clamp(0.67rem, 0.64vw, 0.76rem) !important;
+        letter-spacing: 0.055em !important;
+        white-space: nowrap;
+    }
+
+    .ccg-header .ccg-nav--fit-tight .ccg-nav__list {
+        gap: 4px !important;
+    }
+
+    .ccg-header .ccg-nav--fit-tight .ccg-nav__link,
+    .ccg-header .ccg-nav--fit-tight .ccg-nav__more-toggle {
+        min-height: 38px !important;
+        padding: 6px clamp(6px, 0.55vw, 9px) !important;
+        font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
+        letter-spacing: 0.035em !important;
+        white-space: nowrap;
+    }
+
+    .ccg-header .ccg-nav__more[hidden] {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-nav--has-overflow .ccg-nav__more {
+        position: relative;
+        display: inline-flex !important;
+        align-items: center;
+        flex: 0 0 auto;
+        z-index: 30;
+    }
+
+    .ccg-header .ccg-nav__more-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        right: 0;
+        z-index: 200;
+        display: grid;
+        width: max-content;
+        min-width: min(260px, 82vw);
+        max-width: min(340px, 88vw);
+        padding: 8px;
+        border: 1px solid rgba(var(--accent-rgb), 0.48);
+        background: rgba(3, 7, 18, 0.98);
+        box-shadow: 0 18px 42px rgba(0, 0, 0, 0.72), 0 0 22px rgba(var(--accent-rgb), 0.18);
+    }
+
+    .ccg-header .ccg-nav__more-menu[hidden] {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link {
+        display: block;
+        width: 100%;
+        min-height: 40px !important;
+        padding: 9px 11px !important;
+        border: 0 !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
+        text-align: left;
+        white-space: normal;
+    }
+
+    .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:last-child {
+        border-bottom: 0 !important;
+    }
+
+    .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:hover,
+    .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:focus-visible {
+        background: rgba(var(--accent-rgb), 0.14) !important;
+    }
+}
