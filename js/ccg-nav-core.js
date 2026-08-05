@@ -27,6 +27,7 @@ Do Not Override
         { src: "/js/ccg-member-community-loader.js", marker: "data-ccg-member-community-loader" },
         { src: "/js/ccg-member-public-preview-loader.js", marker: "data-ccg-member-public-preview-loader" },
         { src: "/js/ccg-member-custom-collections-loader.js", marker: "data-ccg-member-custom-collections-loader" },
+        { src: "/js/ccg-member-collection-insights-loader.js", marker: "data-ccg-member-collection-insights-loader" },
         { src: "/js/ccg-member-loyalty-loader.js", marker: "data-ccg-member-loyalty-loader" },
         { src: "/js/ccg-member-achievements-loader.js", marker: "data-ccg-member-achievements-loader" },
         { src: "/js/ccg-member-data-safety.js", marker: "data-ccg-member-data-safety-loader" },
