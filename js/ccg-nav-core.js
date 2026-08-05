@@ -27,6 +27,7 @@ Do Not Override
         { src: "/js/ccg-member-community-loader.js", marker: "data-ccg-member-community-loader" },
         { src: "/js/ccg-member-custom-collections-loader.js", marker: "data-ccg-member-custom-collections-loader" },
         { src: "/js/ccg-member-loyalty-loader.js", marker: "data-ccg-member-loyalty-loader" },
+        { src: "/js/ccg-member-achievements-loader.js", marker: "data-ccg-member-achievements-loader" },
         { src: "/js/ccg-member-data-safety.js", marker: "data-ccg-member-data-safety-loader" },
         { src: "/js/zzap64-awards-logo-styles.js", marker: "data-ccg-zzap-logo-styles-loader" },
         { src: "/js/ccg-game-badges.js", marker: "data-ccg-game-badges-loader" }
@@ -110,7 +111,7 @@ Do Not Override
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
-    window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, applyNavGlowPatch });
+    window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, apply: applyNavGlowPatch });
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
     else initUnifiedNavCore();
 })();
