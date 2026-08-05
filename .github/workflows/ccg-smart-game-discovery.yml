@@ -1,0 +1,40 @@
+name: CCG Smart Game Discovery
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-smart-discovery.js"
+      - "resources/css/ccg-smart-discovery.css"
+      - "scripts/audit-smart-game-discovery.js"
+      - "docs/seo-baseline/phase-14-smart-game-discovery.md"
+      - ".github/workflows/ccg-smart-game-discovery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smart-game-discovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-smart-discovery.js
+          node --check scripts/audit-smart-game-discovery.js
+
+      - name: Run smart discovery audit
+        run: node scripts/audit-smart-game-discovery.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
