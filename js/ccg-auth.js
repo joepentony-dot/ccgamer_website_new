@@ -230,5 +230,9 @@
     window.addEventListener(AUTH_EVENT, renderHeaderAuth);
   }
 
-  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 })();
