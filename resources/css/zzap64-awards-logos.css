@@ -21,7 +21,8 @@
     filter: drop-shadow(0 5px 8px rgba(0, 0, 0, .46));
 }
 
-.zzap-award-card__award-logo--gold {
+.zzap-award-card__award-logo--gold,
+.zzap-award-card__award-logo--silver {
     width: auto;
     height: 68px;
 }
@@ -86,7 +87,8 @@
         min-height: 250px;
     }
 
-    .zzap-award-card__award-logo--gold {
+    .zzap-award-card__award-logo--gold,
+    .zzap-award-card__award-logo--silver {
         height: 58px;
     }
 
