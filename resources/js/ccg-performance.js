@@ -6,7 +6,6 @@
 
     const STYLESHEET_PATH = "/resources/css/ccg-performance-foundations.css";
     const root = document.documentElement;
-    const body = document.body;
     const desktopQuery = window.matchMedia?.("(min-width: 1024px)");
     const finePointerQuery = window.matchMedia?.("(pointer: fine)");
     const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -17,7 +16,6 @@
         idle: false,
         scrolling: false,
         visible: !document.hidden,
-        mediaObserver: null,
         mutationObserver: null,
         idleTimer: null,
         scrollTimer: null,
@@ -42,12 +40,17 @@
         document.head.appendChild(link);
     }
 
+    function priorityContainerFor(image) {
+        return image.closest("[data-ccg-priority-media], .home-hero, .games-hero, .ccg-hero");
+    }
+
     function isPriorityImage(image) {
         if (!(image instanceof HTMLImageElement)) return false;
         if (image.dataset.ccgPriority === "high") return true;
         if (String(image.getAttribute("fetchpriority") || "").toLowerCase() === "high") return true;
-        if (image.closest("[data-ccg-priority-media], .home-hero, .games-hero, .ccg-hero")) return true;
-        return false;
+
+        const container = priorityContainerFor(image);
+        return Boolean(container && container.querySelector("img") === image);
     }
 
     function isHeaderImage(image) {
@@ -62,6 +65,8 @@
             image.setAttribute("decoding", "async");
         }
 
+        const currentLoading = String(image.getAttribute("loading") || "").toLowerCase();
+
         if (isPriorityImage(image)) {
             image.setAttribute("loading", "eager");
             if (!image.hasAttribute("fetchpriority")) {
@@ -73,10 +78,10 @@
                 image.setAttribute("fetchpriority", "auto");
             }
         } else {
-            if (!image.hasAttribute("loading")) {
+            if (!currentLoading) {
                 image.setAttribute("loading", "lazy");
             }
-            if (!image.hasAttribute("fetchpriority")) {
+            if (!image.hasAttribute("fetchpriority") && currentLoading !== "eager") {
                 image.setAttribute("fetchpriority", "low");
             }
         }
@@ -161,12 +166,12 @@
 
     function handleScroll() {
         state.scrolling = true;
-        body?.classList.add("scrolling");
+        document.body?.classList.add("scrolling");
         applyPauseState();
         window.clearTimeout(state.scrollTimer);
         state.scrollTimer = window.setTimeout(() => {
             state.scrolling = false;
-            body?.classList.remove("scrolling");
+            document.body?.classList.remove("scrolling");
             applyPauseState();
         }, SCROLL_IDLE_DELAY);
     }
@@ -231,13 +236,14 @@
         window.addEventListener("pagehide", dispatchSnapshot, { once: true });
     }
 
-    function initialise() {
-        ensureStylesheet();
+    function applyRootCapabilities() {
         root.classList.add("ccg-perf-enabled");
         root.classList.toggle("ccg-perf-desktop", Boolean(desktopQuery?.matches && finePointerQuery?.matches));
         root.classList.toggle("ccg-perf-reduced-motion", Boolean(reducedMotionQuery?.matches));
         root.classList.toggle("ccg-perf-save-data", saveData);
+    }
 
+    function initialise() {
         normalizeMedia(document);
         observeDynamicMedia();
         bindActivityEvents();
@@ -246,9 +252,12 @@
         applyPauseState();
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initialise, { once: true });
-    } else {
+    ensureStylesheet();
+    applyRootCapabilities();
+
+    if (document.body) {
         initialise();
+    } else {
+        document.addEventListener("DOMContentLoaded", initialise, { once: true });
     }
 })();
