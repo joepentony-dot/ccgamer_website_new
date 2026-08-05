@@ -1,1 +1,434 @@
-[["January","Combat School","Sizzler",91,"C64"],["January","Driller","Sizzler",96,"C64"],["January","Tetris","Sizzler",94,"C64"],["January","Chuck Yeager's Advanced Flight Trainer","Sizzler",95,"C64"],["January","Battles in Normandy","Sizzler",90,"C64"],["January","Cosmic Causeway","Sizzler",93,"C64"],["January","Skate or Die","Sizzler",92,"C64"],["January","R.I.S.K.","Sizzler",90,"C64"],["February","Match Day II","Sizzler",90,"C64"],["February","Hunter's Moon","Sizzler",92,"C64"],["February","Platoon","Sizzler",94,"C64"],["March","Project Stealth Fighter","Gold Medal",96,"C64"],["March","Predator","Sizzler",90,"C64"],["March","I, Ball II","Silver Medal",90,"C64"],["March","Battle Valley","Silver Medal",91,"C64"],["March","Zybex","Silver Medal",93,"C64"],["April","Time Bandit","Sizzler",92,"Amiga"],["April","Strike Fleet","Sizzler",96,"C64"],["April","4th & Inches","Sizzler",90,"C64"],["May","Samurai Warrior: The Battles of Usagi Yojimbo","Sizzler",91,"C64"],["May","Cybernoid","Sizzler",93,"C64"],["May","Pac-Land","Sizzler",92,"C64"],["June","Impossible Mission II","Gold Medal",96,"C64"],["June","Alien Syndrome","Sizzler",90,"C64"],["June","Train Robbers","Silver Medal",90,"C64"],["June","Draconus","Silver Medal",92,"C64"],["July","Bionic Commando","Sizzler",90,"C64"],["July","The Great Giana Sisters","Gold Medal",96,"C64"],["August","Barbarian II: The Dungeon of Drax","Gold Medal",null,"C64"],["August","Hawkeye","Gold Medal",96,"C64"],["August","Dark Side","Sizzler",90,"C64"],["August","Bruce Lee","Silver Medal",92,"C64"],["September","Last Ninja 2","Sizzler",94,"C64"],["September","Salamander","Sizzler",94,"C64"],["September","Wasteland","Sizzler",95,"C64"],["September","Slimey's Mine","Silver Medal",94,"C64"],["October","Katakis","Sizzler",93,"C64"],["October","Decisive Battles of the American Civil War Volume II","Sizzler",90,"C64"],["October","Buggy Boy","Sizzler",92,"Amiga"],["October","Carrier Command","Sizzler",92,"Amiga"],["October","Starglider 2","Gold Medal",98,"Amiga"],["November","Cybernoid II: The Revenge","Sizzler",91,"C64"],["November","Armalyte","Gold Medal",97,"C64"],["November","Emlyn Hughes International Soccer","Sizzler",90,"C64"],["November","StarRay","Sizzler",90,"Amiga"],["December","Bombuzal","Gold Medal",97,"C64"],["December","Slayer","Silver Medal",90,"C64"],["December","Ultima IV","Sizzler",null,"Amiga"],["December","Fish!","Sizzler",null,"Amiga"],["December","Corruption","Sizzler",null,"Amiga"],["December","Nebulus","Sizzler",null,"Amiga"],["December","Rocket Ranger","Sizzler",94,"Amiga"],["December","Cybernoid","Sizzler",93,"Amiga"],["December","Impossible Mission II","Sizzler",92,"Amiga"]]
+[
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Combat School",
+    "award": "Sizzler",
+    "score": 91,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Driller",
+    "award": "Sizzler",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Tetris",
+    "award": "Sizzler",
+    "score": 94,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Chuck Yeager's Advanced Flight Trainer",
+    "award": "Sizzler",
+    "score": 95,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Battles in Normandy",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Cosmic Causeway",
+    "award": "Sizzler",
+    "score": 93,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "Skate or Die",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "January",
+    "title": "R.I.S.K.",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "February",
+    "title": "Match Day II",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "February",
+    "title": "Hunter's Moon",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "February",
+    "title": "Platoon",
+    "award": "Sizzler",
+    "score": 94,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "March",
+    "title": "Project Stealth Fighter",
+    "award": "Gold Medal",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "March",
+    "title": "Predator",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "March",
+    "title": "I, Ball II",
+    "award": "Silver Medal",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "March",
+    "title": "Battle Valley",
+    "award": "Silver Medal",
+    "score": 91,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "March",
+    "title": "Zybex",
+    "award": "Silver Medal",
+    "score": 93,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "April",
+    "title": "Time Bandit",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "April",
+    "title": "Strike Fleet",
+    "award": "Sizzler",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "April",
+    "title": "4th & Inches",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "May",
+    "title": "Samurai Warrior: The Battles of Usagi Yojimbo",
+    "award": "Sizzler",
+    "score": 91,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "May",
+    "title": "Cybernoid",
+    "award": "Sizzler",
+    "score": 93,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "May",
+    "title": "Pac-Land",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "June",
+    "title": "Impossible Mission II",
+    "award": "Gold Medal",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "June",
+    "title": "Alien Syndrome",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "June",
+    "title": "Train Robbers",
+    "award": "Silver Medal",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "June",
+    "title": "Draconus",
+    "award": "Silver Medal",
+    "score": 92,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "July",
+    "title": "Bionic Commando",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "July",
+    "title": "The Great Giana Sisters",
+    "award": "Gold Medal",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "August",
+    "title": "Barbarian II: The Dungeon of Drax",
+    "award": "Gold Medal",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "August",
+    "title": "Hawkeye",
+    "award": "Gold Medal",
+    "score": 96,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "August",
+    "title": "Dark Side",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "August",
+    "title": "Bruce Lee",
+    "award": "Silver Medal",
+    "score": 92,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "September",
+    "title": "Last Ninja 2",
+    "award": "Sizzler",
+    "score": 94,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "September",
+    "title": "Salamander",
+    "award": "Sizzler",
+    "score": 94,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "September",
+    "title": "Wasteland",
+    "award": "Sizzler",
+    "score": 95,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "September",
+    "title": "Slimey's Mine",
+    "award": "Silver Medal",
+    "score": 94,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "October",
+    "title": "Katakis",
+    "award": "Sizzler",
+    "score": 93,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "October",
+    "title": "Decisive Battles of the American Civil War Volume II",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "October",
+    "title": "Buggy Boy",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "October",
+    "title": "Carrier Command",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "October",
+    "title": "Starglider 2",
+    "award": "Gold Medal",
+    "score": 98,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "November",
+    "title": "Cybernoid II: The Revenge",
+    "award": "Sizzler",
+    "score": 91,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "November",
+    "title": "Armalyte",
+    "award": "Gold Medal",
+    "score": 97,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "November",
+    "title": "Emlyn Hughes International Soccer",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "November",
+    "title": "StarRay",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Bombuzal",
+    "award": "Gold Medal",
+    "score": 97,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Slayer",
+    "award": "Silver Medal",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Ultima IV",
+    "award": "Sizzler",
+    "score": 91,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Fish!",
+    "award": "Sizzler",
+    "score": 93,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Corruption",
+    "award": "Sizzler",
+    "score": 90,
+    "system": "C64"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Nebulus",
+    "award": "Sizzler",
+    "score": 97,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Rocket Ranger",
+    "award": "Sizzler",
+    "score": 94,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Cybernoid",
+    "award": "Sizzler",
+    "score": 93,
+    "system": "Amiga"
+  },
+  {
+    "year": 1988,
+    "month": "December",
+    "title": "Impossible Mission II",
+    "award": "Sizzler",
+    "score": 92,
+    "system": "Amiga"
+  }
+]
