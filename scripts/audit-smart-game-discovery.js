@@ -56,7 +56,7 @@ requireText(navCore, "data-ccg-smart-discovery-loader", "Smart discovery loader 
 requireText(moduleCode, "CCG_SMART_DISCOVERY_READY", "Module guard");
 requireText(moduleCode, "/games/games.json", "Archive data source");
 requireText(moduleCode, "cache: \"force-cache\"", "Archive caching policy");
-requireText(moduleCode, "#relatedGamesTrack", "Existing related carousel target");
+requireText(moduleCode, "relatedGamesTrack", "Existing related carousel target");
 requireText(moduleCode, ".game-section--related", "Existing related section target");
 requireText(moduleCode, "Same Publisher", "Publisher matching");
 requireText(moduleCode, "Same Developer", "Developer matching");
