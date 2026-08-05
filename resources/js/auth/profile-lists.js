@@ -1,26 +1,86 @@
-/* CCG DEVICE-LOCAL PROFILE GAME LISTS */
+/* ============================================================
+   CCG MEMBER HUB — PERSONAL GAME LISTS
+   ------------------------------------------------------------
+   Renders the member's private browser-backed lists. Master game
+   archive data is read-only. Safe CSV export is provided by the
+   Member Hub data-safety module.
+============================================================ */
+
 (function () {
   "use strict";
 
-  const KEY = "ccgPersonalGameLibraryV1";
-  const $ = (selector) => document.querySelector(selector);
-  let active = "played";
-  const index = new Map();
+  const STORAGE_KEY = "ccgPersonalGameLibraryV1";
+  const TOMBSTONE_KEY = "ccgPersonalGameLibraryTombstonesV1";
+  const TABS = [
+    ["played", "Played"],
+    ["want", "Want to Play"],
+    ["owned", "Owned as a Kid"],
+    ["still", "Still Own"]
+  ];
 
-  function read() {
+  const query = (selector) => document.querySelector(selector);
+  let active = "played";
+  const gameIndex = new Map();
+
+  function readJson(key) {
     try {
-      const value = JSON.parse(localStorage.getItem(KEY) || "{}");
+      const value = JSON.parse(localStorage.getItem(key) || "{}");
       return value && typeof value === "object" && !Array.isArray(value) ? value : {};
     } catch (error) {
       return {};
     }
   }
 
-  function write(value) {
+  function readLibrary() {
+    return readJson(STORAGE_KEY);
+  }
+
+  function readTombstones() {
+    return readJson(TOMBSTONE_KEY);
+  }
+
+  function writeTombstones(value) {
     try {
-      localStorage.setItem(KEY, JSON.stringify(value));
+      localStorage.setItem(TOMBSTONE_KEY, JSON.stringify(value));
+    } catch (error) {}
+  }
+
+  function markDeleted(slug, deletedAt = new Date().toISOString()) {
+    const tombstones = readTombstones();
+    const current = new Date(tombstones[slug] || 0).getTime();
+    const requested = new Date(deletedAt || 0).getTime();
+    if (!Number.isFinite(requested) || requested <= 0) return;
+    if (!Number.isFinite(current) || requested >= current) {
+      tombstones[slug] = new Date(requested).toISOString();
+      writeTombstones(tombstones);
+    }
+  }
+
+  function clearDeleted(slug) {
+    const tombstones = readTombstones();
+    if (!(slug in tombstones)) return;
+    delete tombstones[slug];
+    writeTombstones(tombstones);
+  }
+
+  function writeLibrary(value) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(value));
       document.dispatchEvent(new Event("ccg:personal-library-updated"));
     } catch (error) {}
+  }
+
+  function customLists(entry) {
+    return Array.isArray(entry?.customLists)
+      ? entry.customLists
+      : Array.isArray(entry?.custom_lists) ? entry.custom_lists : [];
+  }
+
+  function entryIsEmpty(entry) {
+    return !(Array.isArray(entry?.lists) ? entry.lists : []).length
+      && !customLists(entry).length
+      && !entry?.note
+      && !entry?.rating;
   }
 
   function escapeHtml(value) {
@@ -28,44 +88,38 @@
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
-      .replace(/\"/g, "&quot;")
+      .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
   }
 
-  function customLists(item) {
-    if (Array.isArray(item?.customLists)) return item.customLists;
-    if (Array.isArray(item?.custom_lists)) return item.custom_lists;
-    return [];
+  function entriesFor(listKey) {
+    return Object.entries(readLibrary())
+      .filter(([, entry]) => Array.isArray(entry?.lists) && entry.lists.includes(listKey))
+      .sort((a, b) => String(a[1]?.title || a[0]).localeCompare(String(b[1]?.title || b[0]), "en-GB"));
   }
 
-  function isEmpty(item) {
-    return !(Array.isArray(item?.lists) ? item.lists : []).length
-      && !customLists(item).length
-      && !item?.note
-      && !item?.rating;
-  }
-
-  function entriesFor(listName) {
-    return Object.entries(read())
-      .filter(([, value]) => Array.isArray(value.lists) && value.lists.includes(listName))
-      .sort((a, b) => String(a[1].title || a[0]).localeCompare(String(b[1].title || b[0]), "en-GB"));
-  }
-
-  function remove(gameSlug, listName) {
-    const data = read();
-    const item = data[gameSlug];
+  function removeFromList(slug, listKey) {
+    const library = readLibrary();
+    const item = library[slug];
     if (!item) return;
 
-    item.lists = (Array.isArray(item.lists) ? item.lists : []).filter((value) => value !== listName);
-    item.updatedAt = new Date().toISOString();
-    if (isEmpty(item)) delete data[gameSlug];
+    const changedAt = new Date().toISOString();
+    item.lists = (Array.isArray(item.lists) ? item.lists : []).filter((value) => value !== listKey);
+    item.updatedAt = changedAt;
 
-    write(data);
+    if (entryIsEmpty(item)) {
+      delete library[slug];
+      markDeleted(slug, changedAt);
+    } else {
+      clearDeleted(slug);
+    }
+
+    writeLibrary(library);
     render();
   }
 
   function render() {
-    const list = $("#personalGameLibraryList");
+    const list = query("#personalGameLibraryList");
     const tabs = document.querySelectorAll("[data-profile-list-tab]");
     if (!list) return;
 
@@ -76,34 +130,45 @@
     });
 
     const rows = entriesFor(active);
-    list.innerHTML = "";
+    list.replaceChildren();
+
     if (!rows.length) {
-      list.innerHTML = '<li class="profile-library__empty">No games in this list yet. Add them from any game page.</li>';
+      const empty = document.createElement("li");
+      empty.className = "profile-library__empty";
+      empty.textContent = "No games in this list yet. Add them from any game page.";
+      list.appendChild(empty);
       return;
     }
 
-    rows.forEach(([gameSlug, item]) => {
-      const game = index.get(gameSlug) || {};
-      const row = document.createElement("li");
-      row.className = "profile-library-card";
-      row.innerHTML = `
+    rows.forEach(([slug, item]) => {
+      const game = gameIndex.get(slug) || {};
+      const listItem = document.createElement("li");
+      listItem.className = "profile-library-card";
+      listItem.innerHTML = `
         <div>
-          <div class="profile-library-card__title"><a href="/games/${encodeURIComponent(gameSlug)}/">${escapeHtml(item.title || game.title || gameSlug)}</a></div>
-          <p class="profile-library-card__meta">${escapeHtml([item.system || game.system, item.year || game.year].filter(Boolean).join(" · ") || "CCG archive game")}</p>
+          <div class="profile-library-card__title">
+            <a href="/games/${encodeURIComponent(slug)}/">${escapeHtml(item.title || game.title || slug)}</a>
+          </div>
+          <p class="profile-library-card__meta">${escapeHtml(
+            [item.system || game.system, item.year || game.year].filter(Boolean).join(" · ") || "CCG archive game"
+          )}</p>
           ${item.note ? `<p class="profile-library-card__note">${escapeHtml(item.note)}</p>` : ""}
         </div>
         <div class="profile-library-card__actions">
           ${item.rating ? `<span class="profile-library-card__rating">${escapeHtml(item.rating)}/10</span>` : ""}
           <button type="button" class="auth-btn">Remove</button>
-        </div>`;
-      row.querySelector("button")?.addEventListener("click", () => remove(gameSlug, active));
-      list.appendChild(row);
+        </div>
+      `;
+      listItem.querySelector("button")?.addEventListener("click", () => removeFromList(slug, active));
+      list.appendChild(listItem);
     });
   }
 
   function clearAll() {
-    if (!window.confirm("Clear all personal game lists, ratings, notes and custom collections on this browser?")) return;
-    localStorage.removeItem(KEY);
+    if (!window.confirm("Clear all personal game lists, ratings, notes and private custom collections on this browser?")) return;
+    const deletedAt = new Date().toISOString();
+    Object.keys(readLibrary()).forEach((slug) => markDeleted(slug, deletedAt));
+    localStorage.removeItem(STORAGE_KEY);
     document.dispatchEvent(new Event("ccg:personal-library-updated"));
     render();
   }
@@ -114,25 +179,30 @@
       if (!response.ok) return;
       const games = await response.json();
       (Array.isArray(games) ? games : []).forEach((game) => {
-        if (game.slug) index.set(String(game.slug), game);
+        if (game?.slug) gameIndex.set(String(game.slug), game);
       });
     } catch (error) {}
   }
 
   async function init() {
-    if (!$("#personalGameLibrary")) return;
+    if (!query("#personalGameLibrary")) return;
     await loadIndex();
+
     document.querySelectorAll("[data-profile-list-tab]").forEach((button) => {
       button.addEventListener("click", () => {
         active = button.dataset.profileListTab;
         render();
       });
     });
-    $("#clearPersonalLibrary")?.addEventListener("click", clearAll);
+
+    query("#clearPersonalLibrary")?.addEventListener("click", clearAll);
     document.addEventListener("ccg:personal-library-updated", render);
     render();
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
-  else init();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    void init();
+  }
 })();

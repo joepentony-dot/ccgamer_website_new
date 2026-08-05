@@ -66,8 +66,18 @@ if (/exportData\s*\(|personal-game-library\.json|application\/json/.test(profile
   problems.push("The device-local profile list source still contains JSON export logic.");
 }
 
-requireText(profileLists, "!customLists(item).length", "Standard-list removal does not preserve custom collection membership.");
-requireText(memberSync, "Newest complete record wins", "Account reconciliation does not document removal-safe newest-record semantics.");
+requireText(profileLists, "customLists(entry)", "Standard-list removal does not inspect custom collection membership.");
+requireText(profileLists, "entryIsEmpty(item)", "Standard-list removal does not preserve custom collection membership.");
+requireText(profileLists, "ccgPersonalGameLibraryTombstonesV1", "Standard-list removal does not record persistent deletion tombstones.");
+
+[
+  "ccgPersonalGameLibraryTombstonesV1",
+  "deleted_at",
+  "newerState",
+  "upsertStates",
+  "Phase 7B deletion-safety migration"
+].forEach((needle) => requireText(memberSync, needle, `Account reconciliation is missing tombstone safeguard: ${needle}.`));
+
 if (/\.\.\.\(localEntry\.lists|\.\.\.\(remoteEntry\.lists|customLists:\s*Array\.from\(new Set/.test(memberSync)) {
   problems.push("Account reconciliation still unions stale list memberships.");
 }
@@ -78,6 +88,7 @@ requireText(adminCss, "data-ccg-master-data-gate=\"granted\"", "Master-data page
 [
   "completedMonths",
   "state.month = completedMonths(state.joinedAt) + 1",
+  "earliestDate(profile?.created_at, user.created_at)",
   "Share badge",
   "Copy for Discord",
   "navigator.share",

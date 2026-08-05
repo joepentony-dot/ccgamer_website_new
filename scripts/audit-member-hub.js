@@ -19,6 +19,10 @@ function read(relativePath) {
   return source;
 }
 
+function requireText(source, expected, message) {
+  if (!source.includes(expected)) problems.push(message);
+}
+
 const html = read("community/profile.html");
 const css = read("resources/css/member-hub.css");
 const script = read("resources/js/auth/member-hub.js");
@@ -27,6 +31,7 @@ const syncScript = read("resources/js/auth/member-library-sync.js");
 const syncLoader = read("js/ccg-member-library-sync-loader.js");
 const navCore = read("js/ccg-nav-core.js");
 const migration = read("supabase/migrations/20260805_member_hub_cloud_library.sql");
+const deletionMigration = read("supabase/migrations/20260805_member_hub_deletion_tombstones.sql");
 
 [
   'data-ccg-page="member-hub"',
@@ -46,7 +51,7 @@ const migration = read("supabase/migrations/20260805_member_hub_cloud_library.sq
   '/resources/js/auth/profile-lists.js',
   '/resources/js/auth/member-hub.js'
 ].forEach((needle) => {
-  if (!html.includes(needle)) problems.push(`Member Hub HTML is missing: ${needle}.`);
+  requireText(html, needle, `Member Hub HTML is missing: ${needle}.`);
 });
 
 const ids = Array.from(html.matchAll(/\sid="([^"]+)"/g), (match) => match[1]);
@@ -61,7 +66,7 @@ if (duplicateIds.length) problems.push(`Member Hub contains duplicate IDs: ${[..
   ".member-community-grid",
   ".member-account-settings"
 ].forEach((selector) => {
-  if (!css.includes(selector)) problems.push(`Member Hub stylesheet is missing: ${selector}.`);
+  requireText(css, selector, `Member Hub stylesheet is missing: ${selector}.`);
 });
 
 [
@@ -74,22 +79,35 @@ if (duplicateIds.length) problems.push(`Member Hub contains duplicate IDs: ${[..
   "memberActivityFeed",
   "MutationObserver"
 ].forEach((needle) => {
-  if (!script.includes(needle)) problems.push(`Member Hub script is missing: ${needle}.`);
+  requireText(script, needle, `Member Hub script is missing: ${needle}.`);
 });
 
 [
   "profile_game_library",
   "ccgPersonalGameLibraryV1",
+  "ccgPersonalGameLibraryTombstonesV1",
   "memberLibrarySyncStatus",
   "memberSyncLibraryNow",
-  "exportPersonalLibraryCsv",
-  "importPersonalLibraryFile",
   "MISSING_SCHEMA_CODES",
   "reconcileLibraries",
-  "deleteRemoteSlugs",
+  "deleted_at",
+  "newerState",
+  "upsertStates",
+  "Phase 7B deletion-safety migration",
   "Device-only mode"
 ].forEach((needle) => {
-  if (!syncScript.includes(needle)) problems.push(`Member library sync is missing: ${needle}.`);
+  requireText(syncScript, needle, `Member library sync is missing: ${needle}.`);
+});
+
+[
+  "importJsonFile",
+  "Import JSON",
+  "function exportCsv",
+  "deleteRemoteSlugs"
+].forEach((forbidden) => {
+  if (syncScript.includes(forbidden)) {
+    problems.push(`Member library sync still contains obsolete unsafe or deletion-prone code: ${forbidden}.`);
+  }
 });
 
 if (!syncLoader.includes('import("/resources/js/auth/member-library-sync.js")')) {
@@ -112,7 +130,15 @@ if (!syncCss.includes('.member-sync-status') || !syncCss.includes('[data-state="
   "profile_game_library_owner_delete",
   "profile_id = auth.uid()"
 ].forEach((needle) => {
-  if (!migration.includes(needle)) problems.push(`Member library migration is missing: ${needle}.`);
+  requireText(migration, needle, `Member library migration is missing: ${needle}.`);
+});
+
+[
+  "add column if not exists deleted_at timestamptz",
+  "profile_game_library_profile_deleted_idx",
+  "where deleted_at is not null"
+].forEach((needle) => {
+  requireText(deletionMigration, needle, `Phase 7B deletion migration is missing: ${needle}.`);
 });
 
 if (!/<meta name="robots" content="noindex,follow">/.test(html)) {
@@ -125,4 +151,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Member Hub audit passed with account-library synchronisation safeguards.");
+console.log("Member Hub audit passed with tombstone-safe account synchronisation.");

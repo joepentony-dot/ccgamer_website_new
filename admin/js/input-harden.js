@@ -1,5 +1,14 @@
 // CCG ADMIN LOCK — DO NOT REMOVE — INPUT SAFETY BOOTSTRAP
 (() => {
+  const MASTER_DATA_PAGE_PATTERN = /\/admin\/admin\.html$/i;
+
+  // admin.html loads this synchronously in <head>. Conceal the master-data
+  // interface before first paint and let the authenticated guard reveal it.
+  if (MASTER_DATA_PAGE_PATTERN.test(window.location.pathname)) {
+    document.documentElement.dataset.ccgMasterDataGate = 'pending';
+    document.documentElement.style.visibility = 'hidden';
+  }
+
   if (!window.ccgIsEditableTarget) {
     window.ccgIsEditableTarget = function ccgIsEditableTarget(target) {
       if (!target) return false;
