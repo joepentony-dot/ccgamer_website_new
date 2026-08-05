@@ -15,12 +15,6 @@
             terms: "zzap zzap64 gold medal sizzler silver medal awards magazine"
         },
         {
-            href: "/games/compare/",
-            label: "C64 vs Amiga",
-            meta: "Compare matching Commodore 64 and Amiga versions",
-            terms: "compare comparison c64 amiga versions ports two systems"
-        },
-        {
             href: "/games/discover/",
             label: "Find Me a Game",
             meta: "Choose a system, decade, genre or publisher and discover something to play",
