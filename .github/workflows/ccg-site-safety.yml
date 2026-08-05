@@ -41,9 +41,8 @@ jobs:
           node --check js/ccg-nav-core.js
           node --check js/ccg-nav-fit.js
           node --check js/ccg-header-auth-loader.js
-          node --check js/ccg-music-shell.js
+          node --check js/ccg-music-navigation.js
           node --check js/ccg-music-config.js
-          node --check js/music-composer-utils.js
           node --check js/ccg-legacy-url-consolidation.js
           node --check js/ccg-global-search.js
           node --check js/ccg-search-ranking.js
