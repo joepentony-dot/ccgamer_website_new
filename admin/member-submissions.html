@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-admin-submissions-gate="pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Member Submissions</title>
+  <script>
+    document.documentElement.dataset.adminSubmissionsGate = 'pending';
+  </script>
+
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/member-submissions-admin.css?v=phase10-20260806" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
+  <main class="omega-admin-shell ccg-admin-panel submissions-admin" data-admin-shell>
+    <header class="submissions-admin__header">
+      <div>
+        <p class="submissions-admin__kicker">Member Hub moderation</p>
+        <h1>Member Submissions</h1>
+        <p>Review game suggestions, corrections and website feedback. Nothing here edits or publishes the master game archive automatically.</p>
+      </div>
+      <div class="submissions-admin__header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/dashboard.html">Admin dashboard</a>
+        <button class="ccg-btn ccg-btn--primary" type="button" id="submissionsRefresh">Refresh</button>
+      </div>
+    </header>
+
+    <p class="admin-status" data-admin-status>Checking administrator session…</p>
+    <p class="admin-status" id="submissionsInlineStatus" data-state="info" aria-live="polite"></p>
+
+    <section class="submissions-admin__controls" aria-label="Submission filters">
+      <label>
+        Search
+        <input type="search" id="submissionsSearch" placeholder="subject, message, game or member" />
+      </label>
+
+      <label>
+        Status
+        <select id="submissionsStatusFilter">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="reviewing">Reviewing</option>
+          <option value="resolved">Resolved</option>
+          <option value="declined">Declined</option>
+        </select>
+      </label>
+
+      <label>
+        Type
+        <select id="submissionsTypeFilter">
+          <option value="">All types</option>
+          <option value="game_suggestion">Game suggestions</option>
+          <option value="correction">Corrections</option>
+          <option value="site_feedback">Website feedback</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="submissions-admin__summary" aria-label="Submission totals">
+      <article><strong id="submissionsCountNew">0</strong><span>New</span></article>
+      <article><strong id="submissionsCountReviewing">0</strong><span>Reviewing</span></article>
+      <article><strong id="submissionsCountResolved">0</strong><span>Resolved</span></article>
+      <article><strong id="submissionsCountDeclined">0</strong><span>Declined</span></article>
+    </section>
+
+    <section class="submissions-admin__inbox" aria-labelledby="submissionsInboxTitle">
+      <div class="submissions-admin__section-heading">
+        <h2 id="submissionsInboxTitle">Review Inbox</h2>
+        <span id="submissionsVisibleCount">0 submissions</span>
+      </div>
+      <div class="submissions-admin__list" id="submissionsList"></div>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/member-submissions.js?v=phase10-20260806"></script>
+</body>
+</html>
