@@ -25,6 +25,7 @@ Do Not Override
         { src: "/js/ccg-personal-library-controls.js", marker: "data-ccg-personal-library-loader" },
         { src: "/js/ccg-member-library-sync-loader.js", marker: "data-ccg-member-library-sync-loader" },
         { src: "/js/ccg-member-community-loader.js", marker: "data-ccg-member-community-loader" },
+        { src: "/js/ccg-member-public-preview-loader.js", marker: "data-ccg-member-public-preview-loader" },
         { src: "/js/ccg-member-custom-collections-loader.js", marker: "data-ccg-member-custom-collections-loader" },
         { src: "/js/ccg-member-loyalty-loader.js", marker: "data-ccg-member-loyalty-loader" },
         { src: "/js/ccg-member-achievements-loader.js", marker: "data-ccg-member-achievements-loader" },
