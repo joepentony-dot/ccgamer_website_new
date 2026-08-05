@@ -16,6 +16,7 @@ on:
       - "scripts/audit-legacy-game-routes.js"
       - "scripts/audit-music-navigation.js"
       - "scripts/audit-zzap64-awards.js"
+      - "scripts/audit-game-badges.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -56,12 +57,14 @@ jobs:
           node --check js/ccg-personal-library-controls.js
           node --check js/ccg-zzap64-matcher.js
           node --check js/zzap64-awards-logo-styles.js
+          node --check js/ccg-game-badges.js
           node --check js/game-discovery.js
           node --check js/zzap64-awards.js
           node --check resources/js/auth/profile-lists.js
           node --check scripts/audit-legacy-game-routes.js
           node --check scripts/audit-music-navigation.js
           node --check scripts/audit-zzap64-awards.js
+          node --check scripts/audit-game-badges.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -74,6 +77,9 @@ jobs:
 
       - name: Run Zzap award data audit
         run: node scripts/audit-zzap64-awards.js
+
+      - name: Run game badge audit
+        run: node scripts/audit-game-badges.js
 
       - name: Confirm audits made no repository changes
         run: |
