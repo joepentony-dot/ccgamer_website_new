@@ -53,10 +53,10 @@
     }
 
     /*
-       Canonical game-folder pages currently forward to
-       /games/game.html so the shared handler can render them.
-       The handler must therefore never redirect back to the folder,
-       otherwise the browser enters a permanent two-way reload loop.
+       Canonical game-folder pages currently forward to the shared
+       renderer. The renderer must therefore never redirect back to
+       the folder, otherwise the browser enters a permanent two-way
+       reload loop.
     */
     consolidateBrowseGamesUrl();
 })();
