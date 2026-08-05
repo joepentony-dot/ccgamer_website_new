@@ -1,6 +1,8 @@
 -- CCG Member Hub Phase 2: private account-backed game library
 -- Safe and additive. Existing favourites and browser-local data are untouched.
 
+create extension if not exists pgcrypto;
+
 alter table public.profiles
   add column if not exists preferred_system text not null default 'both';
 
