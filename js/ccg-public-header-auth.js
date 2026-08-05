@@ -17,7 +17,11 @@
     const STEPS = [
         { src: "/js/ccg-supabase-config.js", ready: () => Boolean(window.CCG_SUPABASE_URL) },
         { src: "/js/ccg-supabase-client.js", ready: () => Boolean(window.ccgSupabase) },
-        { src: "/js/ccg-community-auth.js", ready: () => Boolean(window.ccgCommunityAuth) },
+        {
+            src: "/js/ccg-community-auth.js",
+            ready: () => Boolean(window.ccgCommunityAuth),
+            activate: () => window.ccgCommunityAuth?.init?.()
+        },
         { src: "/js/ccg-auth.js", ready: () => Boolean(window.CCG_AUTH || document.querySelector("#join-login, #ccg-auth-identity")) }
     ];
 
@@ -46,11 +50,27 @@
         });
     }
 
+    async function activateStep(step) {
+        if (typeof step.activate !== "function") return;
+        try {
+            await step.activate();
+        } catch (error) {
+            console.warn(`[CCG AUTH] Could not activate ${step.src}.`, error);
+        }
+    }
+
     async function loadStep(step) {
-        if (step.ready()) return true;
+        if (step.ready()) {
+            await activateStep(step);
+            return true;
+        }
 
         const existing = existingScript(step.src);
-        if (existing) return waitUntil(step.ready);
+        if (existing) {
+            const ready = await waitUntil(step.ready);
+            if (ready) await activateStep(step);
+            return ready;
+        }
 
         await new Promise((resolve) => {
             const script = document.createElement("script");
@@ -62,7 +82,9 @@
             document.body.appendChild(script);
         });
 
-        return waitUntil(step.ready, 3500);
+        const ready = await waitUntil(step.ready, 3500);
+        if (ready) await activateStep(step);
+        return ready;
     }
 
     async function init() {
