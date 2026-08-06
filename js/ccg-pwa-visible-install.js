@@ -12,6 +12,7 @@
   window.CCG_PWA_VISIBLE_INSTALL_READY = true;
 
   const INSTALL_PAGE = "/install-app.html";
+  const INSTALL_CSS = "/resources/css/ccg-pwa-install-page.css";
   const state = {
     deferredPrompt: null,
     installed: false
@@ -29,6 +30,16 @@
     const ios = /iPad|iPhone|iPod/.test(agent)
       || (platform === "MacIntel" && navigator.maxTouchPoints > 1);
     return ios && /WebKit/.test(agent) && !/CriOS|FxiOS|EdgiOS|OPiOS/.test(agent);
+  }
+
+  function ensureInstallStyles() {
+    if (!document.querySelector("[data-ccg-pwa-install-page]")) return;
+    if (document.querySelector(`link[href="${INSTALL_CSS}"]`)) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = INSTALL_CSS;
+    link.setAttribute("data-ccg-pwa-install-page-styles", "true");
+    document.head.appendChild(link);
   }
 
   function ensureNavigationLink() {
@@ -136,6 +147,7 @@
   }
 
   function init() {
+    ensureInstallStyles();
     ensureNavigationLink();
     bindInstallPage();
   }
