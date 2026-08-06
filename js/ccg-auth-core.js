@@ -16,6 +16,12 @@ function normalizeNotificationPreferences(preferences = {}) {
   };
 }
 
+function generateUnsubscribeToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('');
+}
+
 function buildErrorInfo(error, context) {
   const message = String(error?.message || '').trim();
   const lower = message.toLowerCase();
@@ -123,13 +129,21 @@ async function ensureProfileBootstrap(user, preferences = null) {
           points: 0,
           bio: '',
           avatar_url: '',
-          newsletter_opt_in: normalized.notifyNewsletter,
-          notify_new_games_opt_in: normalized.notifyNewGames,
+          created_at: new Date().toISOString(),
+          newsletter_monthly: false,
           notify_new_games: normalized.notifyNewGames,
+          notify_c64: false,
+          notify_amiga: false,
+          newsletter_opt_in: false,
+          notify_new_games_opt_in: normalized.notifyNewGames,
+          notify_platform_c64: false,
+          notify_platform_amiga: false,
           notify_newsletter: normalized.notifyNewsletter,
           notify_new_games_choice_recorded: normalized.choiceRecorded,
           notify_newsletter_choice_recorded: normalized.choiceRecorded,
-          notification_preferences_updated_at: recordedAt
+          notification_preferences_updated_at: recordedAt,
+          unsub_token: generateUnsubscribeToken(),
+          email_confirmed: Boolean(user.email_confirmed_at)
         });
 
       if (inserted.error) {
