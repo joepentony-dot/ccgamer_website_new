@@ -1,16 +1,35 @@
 import { getSupabaseClient } from './supabase-client.js';
 
 const PHASE9_CSS = '/resources/css/public-member-profile-phase9.css';
+const COMPLETION_CSS = '/resources/css/commodore-completionist.css';
+const COMMODORE_MILESTONE_KEYS = Object.freeze([
+  'FIRST_RATING',
+  'RATED_10',
+  'RATED_50',
+  'FIRST_COMMENT',
+  'COMMENTER_10',
+  'FIRST_LIBRARY_GAME',
+  'LIBRARY_10',
+  'LIBRARY_50',
+  'LIBRARY_100',
+  'C64_EXPLORER',
+  'AMIGA_EXPLORER',
+  'DUAL_SYSTEM'
+]);
 
 function text(value) {
   return String(value ?? '').trim();
 }
 
-function ensureStylesheet() {
-  if (document.querySelector(`link[href="${PHASE9_CSS}"]`)) return;
+function badgeKey(value) {
+  return text(value).toUpperCase().replace(/[-\s]+/g, '_');
+}
+
+function ensureStylesheet(path) {
+  if (document.querySelector(`link[href="${path}"]`)) return;
   const link = document.createElement('link');
   link.rel = 'stylesheet';
-  link.href = PHASE9_CSS;
+  link.href = path;
   document.head.appendChild(link);
 }
 
@@ -100,24 +119,49 @@ function formatBadgeDate(value) {
   }).format(date);
 }
 
+function withCompletionBadge(entries) {
+  const badges = Array.isArray(entries) ? entries.filter(Boolean) : [];
+  const keys = new Set(badges.map((entry) => badgeKey(entry.badge_key)));
+  if (keys.has('COMMODORE_COMPLETIONIST')) return badges;
+  if (!COMMODORE_MILESTONE_KEYS.every((key) => keys.has(key))) return badges;
+
+  const completionDate = COMMODORE_MILESTONE_KEYS
+    .map((key) => badges.find((entry) => badgeKey(entry.badge_key) === key)?.assigned_at)
+    .map((value) => new Date(value || 0))
+    .filter((date) => !Number.isNaN(date.getTime()) && date.getTime() > 0)
+    .sort((a, b) => b.getTime() - a.getTime())[0];
+
+  return [{
+    badge_key: 'COMMODORE_COMPLETIONIST',
+    badge_name: 'Commodore Completionist',
+    badge_description: 'Completed every Commodore Milestone.',
+    badge_category: 'completion',
+    assigned_at: completionDate?.toISOString() || '',
+    is_completion: true
+  }, ...badges];
+}
+
 function renderBadges(entries) {
   const section = document.getElementById('publicMemberBadges');
   const host = document.getElementById('publicMemberBadgesGrid');
   if (!section || !host) return;
   host.replaceChildren();
-  if (!entries.length) {
+
+  const badges = withCompletionBadge(entries);
+  if (!badges.length) {
     section.hidden = true;
     return;
   }
 
   section.hidden = false;
-  entries.forEach((entry) => {
+  badges.forEach((entry) => {
+    const isCompletion = entry.is_completion === true || badgeKey(entry.badge_key) === 'COMMODORE_COMPLETIONIST';
     const badge = document.createElement('article');
-    badge.className = 'public-member-badge public-member-badge--detailed';
+    badge.className = `public-member-badge public-member-badge--detailed${isCompletion ? ' public-member-badge--completionist' : ''}`;
 
     const mark = document.createElement('span');
     mark.className = 'public-member-badge__mark';
-    mark.textContent = '✓';
+    mark.textContent = isCompletion ? '★' : '✓';
     mark.setAttribute('aria-hidden', 'true');
 
     const body = document.createElement('div');
@@ -252,7 +296,8 @@ function renderProfile(profile, gameIndex, { previewMode = false } = {}) {
 }
 
 async function init() {
-  ensureStylesheet();
+  ensureStylesheet(PHASE9_CSS);
+  ensureStylesheet(COMPLETION_CSS);
   const params = new URLSearchParams(window.location.search);
   const previewMode = params.get('preview') === '1';
   const username = text(params.get('u')).toLowerCase();
