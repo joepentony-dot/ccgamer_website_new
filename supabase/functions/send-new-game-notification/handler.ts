@@ -1,8 +1,9 @@
-// CCG Phase 20C — secure announcement delivery handler.
+// CCG Phase 20D — secure announcement delivery handler.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import {
   brandedFrom,
+  buildBrandedAttachments,
   buildBrandedEmailHtml,
   buildBrandedPlainText,
 } from "./email-template.ts";
@@ -34,6 +35,12 @@ type Recipient = {
   id: string;
   email: string;
   unsubscribeToken: string;
+};
+
+type InlineAttachment = {
+  path: string;
+  filename: string;
+  content_id: string;
 };
 
 function corsHeaders(): Record<string, string> {
@@ -135,6 +142,7 @@ async function sendViaResend(args: {
   subject: string;
   html: string;
   plainText: string;
+  attachments: InlineAttachment[];
 }): Promise<void> {
   const body: Record<string, unknown> = {
     from: args.from,
@@ -144,6 +152,7 @@ async function sendViaResend(args: {
     text: args.plainText,
   };
   if (args.replyTo) body.reply_to = args.replyTo;
+  if (args.attachments.length) body.attachments = args.attachments;
 
   const response = await fetch(RESEND_ENDPOINT, {
     method: "POST",
@@ -387,6 +396,7 @@ Deno.serve(async (req: Request) => {
           subject,
           html: buildBrandedEmailHtml(brandedArgs),
           plainText: buildBrandedPlainText(brandedArgs),
+          attachments: buildBrandedAttachments(brandedArgs),
         });
         return { sent: true, error: "" };
       } catch (error) {
@@ -427,7 +437,7 @@ Deno.serve(async (req: Request) => {
         attempted,
         sent,
         failed,
-        email_template: "branded-v2",
+        email_template: "compact-banner-v3",
       },
     });
 
@@ -443,7 +453,7 @@ Deno.serve(async (req: Request) => {
       scope: recipientScope,
       preference,
       sender: "CCG",
-      template: "branded-v2",
+      template: "compact-banner-v3",
       label,
     });
   } catch (error) {

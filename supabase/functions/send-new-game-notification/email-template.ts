@@ -1,9 +1,19 @@
-// CCG Phase 20C — branded announcement email presentation.
-// Delivery, recipient consent, authentication and audit logging remain in index.ts.
+// CCG Phase 20D — compact announcement email presentation.
+// Delivery, recipient consent, authentication and audit logging remain in handler.ts.
 
 const PAYPAL_URL = "https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL";
 
-type BrandedEmailArgs = {
+export const EMAIL_BANNER_PATH = "/resources/images/email/ccg-email-banner.png";
+export const EMAIL_BANNER_CID = "ccg-email-banner";
+export const EMAIL_CONTENT_CID = "ccg-content-image";
+
+export type EmailInlineAttachment = {
+  path: string;
+  filename: string;
+  content_id: string;
+};
+
+export type BrandedEmailArgs = {
   title: string;
   contentType: string;
   category: string;
@@ -25,6 +35,7 @@ type Presentation = {
   cta: string;
   shareLabel: string;
   archiveLabel: string;
+  archiveCopy: string;
   archiveUrl: string;
 };
 
@@ -62,10 +73,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "🏅",
       heading: featured ? "Featured Zzap!64 Video" : spotlight ? "CCG Zzap!64 Spotlight" : "New Zzap!64 Feature",
-      intro: "A new Zzap!64 feature has just gone live, covering the magazine, its awards and the Commodore games that made the year memorable.",
+      intro: "A new Zzap!64 feature has just gone live, covering the magazine, its awards and the Commodore games reviewed at the time.",
       cta: "Watch the Zzap!64 Feature",
       shareLabel: "Share this Zzap!64 feature",
       archiveLabel: "More Zzap!64 features",
+      archiveCopy: "Continue through the CCG magazine archive for more Zzap!64 awards, reviews and Commodore retrospectives.",
       archiveUrl: `${args.siteOrigin}/retro-specials/`,
     };
   }
@@ -78,6 +90,7 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
       cta: "Watch the Video",
       shareLabel: "Share this video",
       archiveLabel: "More CCG Retro Specials",
+      archiveCopy: "Browse more long-form CCG videos, countdowns and Commodore features.",
       archiveUrl: `${args.siteOrigin}/retro-specials/`,
     };
   }
@@ -90,6 +103,7 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
       cta: "View the Event",
       shareLabel: "Share this event",
       archiveLabel: "Browse Retro Events",
+      archiveCopy: "See more retro gaming events and community dates in the CCG archive.",
       archiveUrl: `${args.siteOrigin}/retro-events/`,
     };
   }
@@ -98,10 +112,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "🎵",
       heading: featured ? "Featured Amiga Video" : spotlight ? "Amiga Music Spotlight" : "New Amiga Demo Music",
-      intro: "A new Amiga demo music video is now available on CCG, preserving another piece of the machine's audio legacy.",
+      intro: "A new Amiga demo music video is now available on CCG, preserving another part of the machine's audio history.",
       cta: "Watch the Amiga Video",
       shareLabel: "Share this Amiga video",
       archiveLabel: "More Amiga Demo Music",
+      archiveCopy: "Continue through the Amiga demo music collection for more classic scene audio.",
       archiveUrl: `${args.siteOrigin}/amiga-demo-music/`,
     };
   }
@@ -109,10 +124,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
   return {
     emoji: featured ? "⭐" : spotlight ? "🎯" : "🆕",
     heading: featured ? "Featured Classic" : spotlight ? "CCG Game Spotlight" : "New Game Added",
-    intro: "A brand new game has just gone live on the CCG archive.",
+    intro: "A new game has just gone live in the Cheeky Commodore Gamer archive.",
     cta: "View Game Page",
     shareLabel: "Share this game",
-    archiveLabel: "Browse More Commodore Games",
+    archiveLabel: "Explore more Commodore games",
+    archiveCopy: "Browse the CCG game archive by title, system, year, genre and publisher.",
     archiveUrl: `${args.siteOrigin}/games/`,
   };
 }
@@ -128,8 +144,28 @@ function shareUrl(network: string, contentUrl: string, subject: string): string 
   return `https://t.me/share/url?url=${url}&text=${copy}`;
 }
 
-function shareButton(label: string, url: string, background: string): string {
-  return `<a href="${escapeHtml(url)}" style="display:inline-block;margin:0 7px 9px 0;padding:10px 13px;border-radius:999px;background:${background};color:#ffffff;text-decoration:none;font-size:13px;font-weight:700">${escapeHtml(label)}</a>`;
+function shareButton(label: string, symbol: string, url: string, background: string): string {
+  return `<a href="${escapeHtml(url)}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}" style="display:inline-block;width:38px;height:38px;line-height:38px;margin:0 8px 8px 0;border-radius:50%;background:${background};color:#ffffff;text-align:center;text-decoration:none;font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:700">${escapeHtml(symbol)}</a>`;
+}
+
+export function buildBrandedAttachments(args: BrandedEmailArgs): EmailInlineAttachment[] {
+  const attachments: EmailInlineAttachment[] = [
+    {
+      path: `${args.siteOrigin}${EMAIL_BANNER_PATH}`,
+      filename: "ccg-email-banner.png",
+      content_id: EMAIL_BANNER_CID,
+    },
+  ];
+
+  if (args.thumbnail) {
+    attachments.push({
+      path: args.thumbnail,
+      filename: "ccg-content-thumbnail.jpg",
+      content_id: EMAIL_CONTENT_CID,
+    });
+  }
+
+  return attachments;
 }
 
 export function buildBrandedEmailHtml(args: BrandedEmailArgs): string {
@@ -139,25 +175,36 @@ export function buildBrandedEmailHtml(args: BrandedEmailArgs): string {
   const safePreferencesUrl = escapeHtml(args.preferencesUrl);
   const safeUnsubscribeUrl = escapeHtml(args.unsubscribeUrl);
   const safeName = escapeHtml(recipientName(args.recipientEmail));
-  const logoUrl = `${args.siteOrigin}/resources/images/ccgamer-logo.png`;
   const preferenceReason = args.contentType === "game"
     ? "You’re receiving this email because you opted into new game notifications."
     : "You’re receiving this email because you opted into new CCG video and Retro Special notifications.";
 
   const image = args.thumbnail
-    ? `<tr><td style="padding:0 30px 24px"><a href="${safeContentUrl}" style="text-decoration:none"><img src="${escapeHtml(args.thumbnail)}" alt="${safeTitle}" width="620" style="display:block;width:100%;max-width:620px;height:auto;border:0;border-radius:12px"></a></td></tr>`
+    ? `<tr>
+        <td style="padding:0 24px 20px">
+          <a href="${safeContentUrl}" style="text-decoration:none">
+            <img src="cid:${EMAIL_CONTENT_CID}" alt="${safeTitle}" width="592" style="display:block;width:100%;max-width:592px;height:auto;border:0;border-radius:8px">
+          </a>
+        </td>
+      </tr>`
     : "";
 
   const testNotice = args.isTest
-    ? `<tr><td style="padding:0 30px 24px"><div style="padding:14px 16px;border-radius:9px;background:#fff4c2;color:#382b00;font-size:14px;font-weight:700;border:1px solid #e7c84d">TEST EMAIL — this was sent only to the administrator address.</div></td></tr>`
+    ? `<tr>
+        <td style="padding:0 24px 18px">
+          <div style="padding:9px 12px;border:1px solid #40546d;background:#111d2e;color:#b9c8da;font-size:12px;line-height:1.45">
+            <strong style="color:#ffffff">TEST EMAIL:</strong> sent only to the administrator address.
+          </div>
+        </td>
+      </tr>`
     : "";
 
   const socialButtons = [
-    shareButton("Facebook", shareUrl("facebook", args.contentUrl, args.subject), "#1877f2"),
-    shareButton("X", shareUrl("x", args.contentUrl, args.subject), "#111111"),
-    shareButton("WhatsApp", shareUrl("whatsapp", args.contentUrl, args.subject), "#25d366"),
-    shareButton("Reddit", shareUrl("reddit", args.contentUrl, args.subject), "#ff4500"),
-    shareButton("Telegram", shareUrl("telegram", args.contentUrl, args.subject), "#229ed9"),
+    shareButton("Facebook", "f", shareUrl("facebook", args.contentUrl, args.subject), "#1877f2"),
+    shareButton("X", "X", shareUrl("x", args.contentUrl, args.subject), "#111111"),
+    shareButton("WhatsApp", "W", shareUrl("whatsapp", args.contentUrl, args.subject), "#20b95a"),
+    shareButton("Reddit", "r", shareUrl("reddit", args.contentUrl, args.subject), "#f04b23"),
+    shareButton("Telegram", "➤", shareUrl("telegram", args.contentUrl, args.subject), "#229ed9"),
   ].join("");
 
   return `<!doctype html>
@@ -168,60 +215,71 @@ export function buildBrandedEmailHtml(args: BrandedEmailArgs): string {
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
   <title>${escapeHtml(args.subject)}</title>
+  <style>
+    @media only screen and (max-width:660px) {
+      .ccg-shell { width:100% !important; }
+      .ccg-pad { padding-left:20px !important; padding-right:20px !important; }
+      .ccg-title { font-size:22px !important; line-height:1.28 !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#060b17;color:#eef5ff;font-family:Arial,Helvetica,sans-serif">
+<body style="margin:0;padding:0;background:#edf1f6;color:#e8eef7;font-family:Arial,Helvetica,sans-serif">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(presentation.heading)}: ${safeTitle}</div>
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#060b17">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="width:100%;background:#edf1f6">
     <tr>
-      <td align="center" style="padding:24px 10px">
-        <table role="presentation" width="680" cellspacing="0" cellpadding="0" border="0" style="width:100%;max-width:680px;background:#081323;border:1px solid #203b58;border-radius:16px;overflow:hidden">
+      <td align="center" style="padding:18px 8px">
+        <table role="presentation" width="640" cellspacing="0" cellpadding="0" border="0" class="ccg-shell" style="width:100%;max-width:640px;background:#071321;border:1px solid #20364d">
           <tr>
-            <td align="center" style="padding:24px 26px 20px;background:#12345a;background-image:linear-gradient(135deg,#12345a,#0a1c35 72%)">
+            <td style="padding:0;background:#153d65">
               <a href="${escapeHtml(args.siteOrigin)}" style="text-decoration:none">
-                <img src="${escapeHtml(logoUrl)}" alt="Cheeky Commodore Gamer" width="310" style="display:block;width:100%;max-width:310px;height:auto;border:0;margin:0 auto">
+                <img src="cid:${EMAIL_BANNER_CID}" alt="Cheeky Commodore Gamer" width="640" style="display:block;width:100%;max-width:640px;height:auto;border:0">
               </a>
-              <p style="margin:14px 0 0;color:#94d8ff;font-size:13px;letter-spacing:.14em;font-weight:700">COMMODORE 64 · AMIGA · RETRO GAMING</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:30px 30px 12px">
-              <p style="margin:0 0 18px;color:#eef5ff;font-size:18px;line-height:1.5">Hello ${safeName},</p>
-              <p style="margin:0 0 10px;color:#72cfff;font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase">${presentation.emoji} ${escapeHtml(presentation.heading)}</p>
-              <h1 style="margin:0 0 18px;color:#ffffff;font-size:30px;line-height:1.2">${safeTitle}</h1>
-              <p style="margin:0 0 18px;color:#dbe6f7;font-size:17px;line-height:1.65">${escapeHtml(presentation.intro)} 😇🕹👌</p>
+            <td class="ccg-pad" style="padding:24px 24px 16px">
+              <p style="margin:0 0 15px;color:#e8eef7;font-size:16px;line-height:1.5">Hello ${safeName},</p>
+              <h1 class="ccg-title" style="margin:0 0 15px;color:#ffffff;font-size:25px;line-height:1.28;font-weight:800">${presentation.emoji} ${escapeHtml(presentation.heading)}: ${safeTitle}</h1>
+              <p style="margin:0;color:#d5deea;font-size:16px;line-height:1.55">${escapeHtml(presentation.intro)} 😇🕹👌</p>
             </td>
           </tr>
           ${image}
           <tr>
-            <td align="center" style="padding:0 30px 28px">
-              <a href="${safeContentUrl}" style="display:inline-block;padding:15px 24px;border-radius:10px;background:#2f72ff;color:#ffffff;text-decoration:none;font-size:17px;font-weight:800">▶ ${escapeHtml(presentation.cta)}</a>
+            <td align="center" style="padding:0 24px 20px">
+              <a href="${safeContentUrl}" style="display:inline-block;padding:12px 20px;background:#2e6fe8;color:#ffffff;text-decoration:none;font-size:16px;font-weight:800;border-radius:7px">▶ ${escapeHtml(presentation.cta)}</a>
             </td>
           </tr>
           ${testNotice}
           <tr>
-            <td style="padding:26px 30px;border-top:1px solid #1e334a">
-              <h2 style="margin:0 0 16px;color:#ffffff;font-size:20px">${escapeHtml(presentation.shareLabel)}</h2>
-              <div>${socialButtons}</div>
+            <td class="ccg-pad" style="padding:20px 24px 14px;border-top:1px solid #1e3349">
+              <h2 style="margin:0 0 13px;color:#ffffff;font-size:18px;line-height:1.3">${escapeHtml(presentation.shareLabel)}</h2>
+              <div style="font-size:0;line-height:0">${socialButtons}</div>
             </td>
           </tr>
           <tr>
-            <td style="padding:26px 30px;border-top:1px solid #1e334a">
-              <h2 style="margin:0 0 10px;color:#ffffff;font-size:20px">${escapeHtml(presentation.archiveLabel)}</h2>
-              <p style="margin:0 0 18px;color:#b9c9dc;font-size:15px;line-height:1.6">Continue through the CCG archive for more Commodore games, videos and magazine features.</p>
-              <a href="${escapeHtml(presentation.archiveUrl)}" style="display:inline-block;padding:11px 17px;border-radius:8px;background:#152f4b;color:#8fd8ff;text-decoration:none;font-weight:700">Browse the archive</a>
+            <td class="ccg-pad" style="padding:18px 24px;border-top:1px solid #1e3349">
+              <h2 style="margin:0 0 8px;color:#ffffff;font-size:18px;line-height:1.3">${escapeHtml(presentation.archiveLabel)}</h2>
+              <p style="margin:0 0 12px;color:#b7c5d6;font-size:14px;line-height:1.55">${escapeHtml(presentation.archiveCopy)}</p>
+              <a href="${escapeHtml(presentation.archiveUrl)}" style="color:#83d2ff;text-decoration:underline;font-size:14px;font-weight:700">Browse the archive</a>
             </td>
           </tr>
           <tr>
-            <td style="padding:26px 30px;border-top:1px solid #1e334a;background:#09101d">
-              <p style="margin:0 0 16px;color:#d4e0ee;font-size:15px;line-height:1.6">Supporting Cheeky Commodore Gamer helps with the ongoing website, video and archive costs. It is always optional and appreciated.</p>
-              <a href="${PAYPAL_URL}" style="display:inline-block;padding:11px 18px;border-radius:8px;background:#0878d1;color:#ffffff;text-decoration:none;font-weight:800">Support CCG with PayPal</a>
+            <td class="ccg-pad" style="padding:16px 24px;border-top:1px solid #1e3349;background:#09111d">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="color:#b7c5d6;font-size:13px;line-height:1.5;padding-right:14px">Support the ongoing CCG website, video and archive costs — always optional.</td>
+                  <td align="right" width="96">
+                    <a href="${PAYPAL_URL}" style="display:inline-block;padding:8px 12px;background:#0878d1;color:#ffffff;text-decoration:none;font-size:13px;font-weight:800;border-radius:5px">PayPal</a>
+                  </td>
+                </tr>
+              </table>
             </td>
           </tr>
           <tr>
-            <td style="padding:25px 30px;border-top:1px solid #1e334a;color:#8fa7bb;font-size:13px;line-height:1.7">
-              <p style="margin:0 0 8px">${escapeHtml(preferenceReason)} <a href="${safePreferencesUrl}" style="color:#7fd7ff">Manage preferences</a>.</p>
-              <p style="margin:0 0 12px"><a href="${safeUnsubscribeUrl}" style="color:#7fd7ff">Stop these emails</a></p>
-              <p style="margin:0;color:#a9bfd1">— Cheeky Commodore Gamer 😇🕹👌</p>
+            <td class="ccg-pad" style="padding:18px 24px;border-top:1px solid #1e3349;color:#91a6ba;font-size:12px;line-height:1.65">
+              <p style="margin:0 0 7px">${escapeHtml(preferenceReason)} <a href="${safePreferencesUrl}" style="color:#78cef7">Manage preferences</a>.</p>
+              <p style="margin:0 0 10px"><a href="${safeUnsubscribeUrl}" style="color:#78cef7">Stop these emails</a></p>
+              <p style="margin:0;color:#a8bacb">— Cheeky Commodore Gamer 😇🕹👌</p>
             </td>
           </tr>
         </table>
