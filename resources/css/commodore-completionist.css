@@ -1,0 +1,78 @@
+/* ============================================================
+   CCG COMMODORE COMPLETIONIST
+============================================================ */
+
+.member-completionist,
+.public-member-badge--completionist {
+  position: relative;
+  overflow: hidden;
+  border-width: 2px;
+  border-color: var(--ccg-accent, #5ee7ff);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 42%),
+    color-mix(in srgb, var(--ccg-accent, #5ee7ff) 12%, rgba(7, 12, 27, 0.96));
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--ccg-accent, #5ee7ff) 28%, transparent),
+    0 12px 30px rgba(0, 0, 0, 0.28);
+}
+
+.member-completionist::before,
+.public-member-badge--completionist::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 25%, rgba(255, 255, 255, 0.14) 50%, transparent 75%);
+  transform: translateX(-120%);
+}
+
+.member-completionist.is-complete::before,
+.public-member-badge--completionist::before {
+  animation: ccg-completionist-sheen 5.5s ease-in-out infinite;
+}
+
+.member-completionist.is-locked {
+  border-style: dashed;
+  box-shadow: none;
+  opacity: 0.82;
+}
+
+.member-completionist__mark,
+.public-member-badge--completionist .public-member-badge__mark {
+  font-size: 1.35rem;
+  font-weight: 900;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--ccg-accent, #5ee7ff) 72%, transparent);
+}
+
+.member-completionist__share {
+  margin-top: 0.7rem;
+}
+
+.public-member-badge--completionist {
+  grid-column: 1 / -1;
+}
+
+.public-member-badge--completionist .public-member-badge__title {
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+@keyframes ccg-completionist-sheen {
+  0%, 58% { transform: translateX(-120%); }
+  78%, 100% { transform: translateX(120%); }
+}
+
+@supports not (color: color-mix(in srgb, white 50%, black)) {
+  .member-completionist,
+  .public-member-badge--completionist {
+    background: rgba(8, 22, 39, 0.98);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-completionist.is-complete::before,
+  .public-member-badge--completionist::before {
+    animation: none;
+  }
+}
