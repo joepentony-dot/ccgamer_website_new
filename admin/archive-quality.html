@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" data-archive-quality-gate="pending">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Archive Quality Centre</title>
+  <script>
+    document.documentElement.dataset.archiveQualityGate = 'pending';
+  </script>
+
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/archive-quality-admin.css?v=phase20-20260806" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" data-ccg-context="admin">
+  <main class="omega-admin-shell archive-quality" data-admin-shell>
+    <header class="archive-quality__header">
+      <div>
+        <p class="archive-quality__kicker">Read-only archive inspection</p>
+        <h1>Archive Quality Centre</h1>
+        <p>Examines the live game catalogue for missing required information, malformed values, duplicate records and absent or oversized local files. It reports findings only and never edits the game database.</p>
+      </div>
+      <div class="archive-quality__header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/dashboard.html">Admin dashboard</a>
+        <button class="ccg-btn ccg-btn--primary" type="button" id="archiveQualityRun">Run full audit</button>
+      </div>
+    </header>
+
+    <p class="admin-status" data-admin-status>Checking administrator session…</p>
+    <p class="admin-status" id="archiveQualityStatus" data-state="info" aria-live="polite">Waiting to load the catalogue.</p>
+
+    <section class="archive-quality__summary" aria-label="Archive quality summary">
+      <article class="archive-quality__summary-card">
+        <strong id="archiveQualityGameCount">0</strong>
+        <span>Games inspected</span>
+      </article>
+      <article class="archive-quality__summary-card is-critical">
+        <strong id="archiveQualityCriticalCount">0</strong>
+        <span>Critical</span>
+      </article>
+      <article class="archive-quality__summary-card is-warning">
+        <strong id="archiveQualityWarningCount">0</strong>
+        <span>Warnings</span>
+      </article>
+      <article class="archive-quality__summary-card is-info">
+        <strong id="archiveQualityInfoCount">0</strong>
+        <span>Advisories</span>
+      </article>
+      <article class="archive-quality__summary-card">
+        <strong id="archiveQualityResourceCount">0</strong>
+        <span>Local files checked</span>
+      </article>
+    </section>
+
+    <section class="archive-quality__progress" id="archiveQualityProgressPanel" hidden aria-live="polite">
+      <div class="archive-quality__progress-heading">
+        <strong id="archiveQualityProgressLabel">Preparing file checks…</strong>
+        <span id="archiveQualityProgressValue">0%</span>
+      </div>
+      <progress id="archiveQualityProgress" max="100" value="0">0%</progress>
+    </section>
+
+    <section class="archive-quality__controls" aria-label="Report controls">
+      <label>
+        <span>Search game or detail</span>
+        <input type="search" id="archiveQualitySearch" placeholder="Title, slug, publisher, file path…" autocomplete="off" />
+      </label>
+      <label>
+        <span>Severity</span>
+        <select id="archiveQualitySeverity">
+          <option value="all">All severities</option>
+          <option value="critical">Critical</option>
+          <option value="warning">Warnings</option>
+          <option value="info">Advisories</option>
+        </select>
+      </label>
+      <label>
+        <span>Category</span>
+        <select id="archiveQualityCategory">
+          <option value="all">All categories</option>
+        </select>
+      </label>
+      <label>
+        <span>System</span>
+        <select id="archiveQualityPlatform">
+          <option value="all">C64 and Amiga</option>
+          <option value="c64">C64</option>
+          <option value="amiga">Amiga</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <div class="archive-quality__export-actions">
+        <button class="ccg-btn ccg-btn--ghost" type="button" id="archiveQualityCopy">Copy visible report</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" id="archiveQualityCsv">Export CSV</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" id="archiveQualityJson">Export JSON</button>
+      </div>
+    </section>
+
+    <section class="archive-quality__report" aria-labelledby="archiveQualityReportTitle">
+      <div class="archive-quality__section-heading">
+        <div>
+          <h2 id="archiveQualityReportTitle">Findings</h2>
+          <p id="archiveQualityVisibleCount">No findings loaded.</p>
+        </div>
+        <span id="archiveQualityCheckedAt">Not checked yet</span>
+      </div>
+      <div class="archive-quality__results" id="archiveQualityResults"></div>
+    </section>
+
+    <aside class="archive-quality__scope">
+      <h2>Audit boundaries</h2>
+      <p>The full audit checks required catalogue fields, duplicate identifiers, local thumbnail, audio, optional 3D-box and canonical page files, plus local image file size. External Google Drive, Lemon64 and YouTube availability cannot be proved reliably from a browser without a server-side service, so this report validates their format and supplies direct review links rather than labelling an unreachable third-party request as broken.</p>
+    </aside>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/archive-quality.js?v=phase20-20260806"></script>
+</body>
+</html>
