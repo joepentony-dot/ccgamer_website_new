@@ -1,0 +1,40 @@
+name: CCG Commodore Completionist
+
+on:
+  pull_request:
+    paths:
+      - "resources/js/auth/member-achievement-badges.js"
+      - "resources/js/auth/public-member.js"
+      - "resources/css/commodore-completionist.css"
+      - "scripts/audit-commodore-completionist.js"
+      - "docs/member-hub-phase16-commodore-completionist.md"
+      - ".github/workflows/ccg-commodore-completionist.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commodore-completionist:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check resources/js/auth/member-achievement-badges.js
+          node --check resources/js/auth/public-member.js
+          node --check scripts/audit-commodore-completionist.js
+
+      - name: Run Completionist reward audit
+        run: node scripts/audit-commodore-completionist.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
