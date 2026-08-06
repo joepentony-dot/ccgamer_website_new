@@ -76,6 +76,16 @@ requireText(memberCode, "navigator.share", "Native share support");
 requireText(memberCode, "navigator.clipboard", "Clipboard share fallback");
 requireText(memberCode, "completionState", "Completion derivation");
 requireText(memberCode, "Complete all twelve milestones", "Member Hub completion explanation");
+requireText(memberCode, "retireRedundantBadgeDisplays", "Legacy badge consolidation");
+requireText(memberCode, "legacyGrid.hidden = true", "Legacy badge grid retirement");
+requireText(memberCode, "member-server-badges", "Duplicate activity badge cleanup");
+requireText(memberCode, "if (completion.complete)", "Earned-only completion display");
+requireText(memberCode, "host.prepend(createCompletionCard(completion))", "Prominent earned completion placement");
+requireText(memberCode, "MILESTONE_TOTAL", "Fixed twelve-milestone total");
+
+rejectText(memberCode, "mark.textContent = completion.complete ? '★' : 'FINAL'", "Locked completion teaser");
+rejectText(memberCode, "before the final reward", "Incomplete milestone status");
+rejectText(memberCode, "member-completionist ${completion.complete", "Conditional locked completion card");
 
 requireText(publicCode, "COMMODORE_COMPLETIONIST", "Public completion reward key");
 requireText(publicCode, "withCompletionBadge", "Public completion derivation");
@@ -84,11 +94,16 @@ requireText(publicCode, "Completed every Commodore Milestone", "Public completio
 
 requireText(css, ".member-completionist", "Private completion styling");
 requireText(css, ".public-member-badge--completionist", "Public completion styling");
+requireText(css, "grid-column: 1 / -1", "Full-width completion presentation");
 requireText(css, "prefers-reduced-motion", "Reduced-motion fallback");
+rejectText(css, ".member-completionist.is-locked", "Obsolete locked completion styling");
+
 requireText(workflow, "node --check resources/js/auth/member-achievement-badges.js", "Workflow member syntax check");
 requireText(workflow, "node scripts/audit-commodore-completionist.js", "Workflow reward audit");
 requireText(documentation, "Phase 16", "Phase documentation");
 requireText(documentation, "No database migration", "Migration-free documentation");
+requireText(documentation, "sole activity-badge gallery", "Consolidated badge documentation");
+requireText(documentation, "without displaying or naming the Completionist card", "Earned-only reward documentation");
 
 rejectText(memberCode, "insert into", "Member completion code");
 rejectText(publicCode, "insert into", "Public completion code");
@@ -126,7 +141,8 @@ if (failures.length) {
 }
 
 console.log("Commodore Completionist audit passed.");
-console.log("- All twelve milestone keys are required");
-console.log("- Private and public completion displays are present");
-console.log("- Sharing includes native and clipboard paths");
+console.log("- One account-backed twelve-milestone gallery is authoritative");
+console.log("- Legacy browser badges and duplicate activity badge chips are retired");
+console.log("- The Completionist reward appears only after all twelve milestones");
+console.log("- Private and public completion displays retain sharing and privacy controls");
 console.log("- No database migration or protected-file change is required");

@@ -16,6 +16,10 @@
     0 12px 30px rgba(0, 0, 0, 0.28);
 }
 
+.member-completionist {
+  grid-column: 1 / -1;
+}
+
 .member-completionist::before,
 .public-member-badge--completionist::before {
   content: "";
@@ -29,12 +33,6 @@
 .member-completionist.is-complete::before,
 .public-member-badge--completionist::before {
   animation: ccg-completionist-sheen 5.5s ease-in-out infinite;
-}
-
-.member-completionist.is-locked {
-  border-style: dashed;
-  box-shadow: none;
-  opacity: 0.82;
 }
 
 .member-completionist__mark,

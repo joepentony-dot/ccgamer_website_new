@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Add a final reward for members who complete all twelve original Commodore Milestones.
+Add a final distinction for members who complete all twelve original Commodore Milestones while keeping one authoritative activity-badge system in the Member Hub.
 
 ## Reward
 
@@ -35,12 +35,14 @@ The reward is not affected by any later badge categories that may be added in fu
 
 ## Member Hub presentation
 
-- A separate final-reward card appears after the normal milestone cards.
-- While locked, it reports how many milestones remain.
-- Once complete, it displays a star, completion date and unlocked message.
-- The milestone summary confirms that Commodore Completionist has been unlocked.
-- Members can share the achievement through the browser share sheet where supported.
+- The twelve account-backed Commodore Milestones are the sole activity-badge gallery.
+- The older browser-local badge cards are retired and hidden.
+- Duplicate recent-activity badge chips are removed from the badge section.
+- While incomplete, the gallery reports progress without displaying or naming the Completionist card.
+- Once all twelve milestones are complete, Commodore Completionist appears first as a full-width earned reward.
+- The completion date is shown and the member can share the achievement through the browser share sheet where supported.
 - Clipboard copying is used as the fallback.
+- Membership loyalty remains a separate panel and does not affect milestone totals.
 
 ## Public-profile presentation
 
