@@ -8,7 +8,6 @@ on:
       - "scripts/apply-phase20b-content-preferences.py"
       - "resources/js/auth/profile-page.js"
       - "community/profile.html"
-      - "supabase/functions/send-new-game-notification/index.ts"
       - ".github/workflows/phase20b-content-preferences-apply.yml"
   workflow_dispatch:
 
@@ -37,7 +36,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Apply bounded Phase 20B changes
+      - name: Apply bounded Phase 20B preferences
         run: python scripts/apply-phase20b-content-preferences.py
 
       - name: Validate output
@@ -52,13 +51,12 @@ jobs:
         run: |
           git add \
             community/profile.html \
-            resources/js/auth/profile-page.js \
-            supabase/functions/send-new-game-notification/index.ts
+            resources/js/auth/profile-page.js
           if git diff --cached --quiet; then
-            echo "Phase 20B generated output is already current."
+            echo "Phase 20B Member Hub preference output is already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Apply Phase 20B generated compatibility fixes"
+          git commit -m "Apply Phase 20B Member Hub preference fixes"
           git push origin "HEAD:${GITHUB_HEAD_REF}"
