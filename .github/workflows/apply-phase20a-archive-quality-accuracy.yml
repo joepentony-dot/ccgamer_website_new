@@ -6,12 +6,18 @@ on:
       - codex/phase-20a-archive-quality-accuracy
     paths:
       - ".github/workflows/apply-phase20a-archive-quality-accuracy.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/apply-phase20a-archive-quality-accuracy.yml"
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.event_name == 'push' || github.head_ref == 'codex/phase-20a-archive-quality-accuracy'
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
