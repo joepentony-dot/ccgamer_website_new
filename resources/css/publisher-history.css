@@ -1,2 +1,199 @@
-/* CCG CURATED PUBLISHER HISTORY */
-.ccg-publisher-history{margin:28px 0;padding:clamp(20px,4vw,32px);border:1px solid rgba(255,255,255,.15);background:linear-gradient(145deg,rgba(var(--accent-rgb,0,221,255),.1),transparent 42%),rgba(5,9,22,.82)}.ccg-publisher-history__kicker{margin:0 0 7px;font:700 .7rem/1.2 Orbitron,sans-serif;letter-spacing:.14em;text-transform:uppercase;opacity:.7}.ccg-publisher-history__title{margin:0;font:700 clamp(1.35rem,3vw,2rem)/1.2 Orbitron,sans-serif}.ccg-publisher-history__summary{max-width:980px;margin:14px 0 0;line-height:1.72;opacity:.84}.ccg-publisher-history__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin-top:20px}.ccg-publisher-history__panel{padding:16px;border:1px solid rgba(255,255,255,.11);background:rgba(0,0,0,.2)}.ccg-publisher-history__panel h3{margin:0 0 10px;font:700 .78rem/1.25 Orbitron,sans-serif;letter-spacing:.09em;text-transform:uppercase}.ccg-publisher-history__tags,.ccg-publisher-history__links{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}.ccg-publisher-history__tag,.ccg-publisher-history__links a{display:inline-flex;align-items:center;min-height:34px;padding:7px 9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);color:inherit;font-size:.78rem;text-decoration:none}.ccg-publisher-history__links a:hover,.ccg-publisher-history__links a:focus-visible{border-color:currentColor;outline:none}.ccg-publisher-history__note{margin:18px 0 0;padding-top:14px;border-top:1px solid rgba(255,255,255,.1);font-size:.8rem;line-height:1.55;opacity:.66}@media(max-width:680px){.ccg-publisher-history__grid{grid-template-columns:1fr}}
+/* ============================================================
+   CCG CURATED PUBLISHER HISTORY
+============================================================ */
+
+.ccg-publisher-history {
+  margin: 28px 0;
+  padding: clamp(20px, 4vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background:
+    linear-gradient(145deg, rgba(var(--accent-rgb, 0, 221, 255), 0.1), transparent 42%),
+    rgba(5, 9, 22, 0.82);
+}
+
+.ccg-publisher-history.is-source-backed {
+  border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.44);
+}
+
+.ccg-publisher-history__topline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 7px;
+}
+
+.ccg-publisher-history__kicker {
+  margin: 0;
+  font: 700 0.7rem/1.2 Orbitron, sans-serif;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.76;
+}
+
+.ccg-publisher-history__status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 8px;
+  border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.34);
+  background: rgba(var(--accent-rgb, 0, 221, 255), 0.07);
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ccg-publisher-history__title {
+  margin: 0;
+  font: 700 clamp(1.35rem, 3vw, 2rem)/1.2 Orbitron, sans-serif;
+}
+
+.ccg-publisher-history__summary {
+  max-width: 980px;
+  margin: 14px 0 0;
+  line-height: 1.72;
+  opacity: 0.88;
+}
+
+.ccg-publisher-history__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.ccg-publisher-history__panel {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.ccg-publisher-history__panel--sources {
+  grid-column: 1 / -1;
+}
+
+.ccg-publisher-history__panel h3 {
+  margin: 0 0 10px;
+  font: 700 0.78rem/1.25 Orbitron, sans-serif;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ccg-publisher-history__tags,
+.ccg-publisher-history__links,
+.ccg-publisher-history__sources {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ccg-publisher-history__tags,
+.ccg-publisher-history__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ccg-publisher-history__tag,
+.ccg-publisher-history__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  font-size: 0.78rem;
+  text-decoration: none;
+}
+
+.ccg-publisher-history__facts {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.ccg-publisher-history__facts li::marker {
+  color: rgb(var(--accent-rgb, 0, 221, 255));
+}
+
+.ccg-publisher-history__sources {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ccg-publisher-history__sources li {
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  min-width: 0;
+  padding: 11px 12px;
+  border-left: 3px solid rgba(var(--accent-rgb, 0, 221, 255), 0.66);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.ccg-publisher-history__sources a {
+  color: inherit;
+  font-size: 0.83rem;
+  font-weight: 750;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-underline-offset: 0.18em;
+}
+
+.ccg-publisher-history__source-type {
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.62;
+}
+
+.ccg-publisher-history__links a:hover,
+.ccg-publisher-history__links a:focus-visible,
+.ccg-publisher-history__sources a:hover,
+.ccg-publisher-history__sources a:focus-visible {
+  border-color: currentColor;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.ccg-publisher-history__note {
+  margin: 18px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  opacity: 0.7;
+}
+
+@media (max-width: 900px) {
+  .ccg-publisher-history__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ccg-publisher-history__panel--sources {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 680px) {
+  .ccg-publisher-history__grid,
+  .ccg-publisher-history__sources {
+    grid-template-columns: 1fr;
+  }
+
+  .ccg-publisher-history__panel--sources {
+    grid-column: auto;
+  }
+
+  .ccg-publisher-history__status {
+    width: 100%;
+  }
+}
