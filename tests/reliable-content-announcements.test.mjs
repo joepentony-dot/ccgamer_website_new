@@ -17,6 +17,7 @@ const profileJs = read('resources/js/auth/profile-page.js');
 const profileHtml = read('community/profile.html');
 const migration = read('supabase/migrations/20260806150000_reliable_content_announcements.sql');
 const retroSpecials = JSON.parse(read('data/retro-specials.json'));
+const bannerPath = path.join(root, 'resources/images/email/ccg-email-banner.png');
 
 test('announcement selector loads every supported live content feed', () => {
   assert.match(announceJs, /RETRO_SPECIALS_DATA_PATH\s*=\s*'\/data\/retro-specials\.json'/);
@@ -69,19 +70,31 @@ test('edge function sends real emails and rejects unsafe announcements', () => {
   assert.doesNotMatch(edgeFunction, /return json\(\{ success: true, sent: 1, failed: 0 \}\)/);
 });
 
-test('announcement emails retain CCG branding and useful sections', () => {
-  assert.match(emailTemplate, /CCG <\$\{address\}>/);
-  assert.match(emailTemplate, /resources\/images\/ccgamer-logo\.png/);
+test('announcement emails restore the established compact CCG presentation', () => {
+  assert.ok(fs.existsSync(bannerPath), 'The original CCG email banner must remain available');
+  assert.match(emailTemplate, /resources\/images\/email\/ccg-email-banner\.png/);
+  assert.match(emailTemplate, /cid:\$\{EMAIL_BANNER_CID\}/);
+  assert.match(emailTemplate, /cid:\$\{EMAIL_CONTENT_CID\}/);
+  assert.match(emailTemplate, /max-width:640px/);
   assert.match(emailTemplate, /Hello \$\{safeName\}/);
   assert.match(emailTemplate, /Share this Zzap!64 feature/);
-  assert.match(emailTemplate, /Facebook/);
-  assert.match(emailTemplate, /WhatsApp/);
-  assert.match(emailTemplate, /Reddit/);
-  assert.match(emailTemplate, /Telegram/);
-  assert.match(emailTemplate, /Support CCG with PayPal/);
+  assert.match(emailTemplate, /Explore more Commodore games/);
+  assert.match(emailTemplate, />PayPal<\/a>/);
   assert.match(emailTemplate, /Cheeky Commodore Gamer 😇🕹👌/);
-  assert.match(emailTemplate, /TEST EMAIL — this was sent only to the administrator address/);
-  assert.match(edgeHandler, /email_template:\s*"branded-v2"/);
+  assert.match(emailTemplate, /TEST EMAIL:<\/strong> sent only to the administrator address/);
+  assert.doesNotMatch(emailTemplate, /resources\/images\/ccgamer-logo\.png/);
+  assert.doesNotMatch(emailTemplate, /max-width:680px/);
+  assert.doesNotMatch(emailTemplate, /font-size:30px/);
+  assert.doesNotMatch(emailTemplate, /border-radius:999px/);
+});
+
+test('Resend embeds the banner and content image instead of relying on email-client hotlinks', () => {
+  assert.match(emailTemplate, /buildBrandedAttachments/);
+  assert.match(emailTemplate, /content_id:\s*EMAIL_BANNER_CID/);
+  assert.match(emailTemplate, /content_id:\s*EMAIL_CONTENT_CID/);
+  assert.match(edgeHandler, /attachments:\s*buildBrandedAttachments\(brandedArgs\)/);
+  assert.match(edgeHandler, /body\.attachments\s*=\s*args\.attachments/);
+  assert.match(edgeHandler, /email_template:\s*"compact-banner-v3"/);
 });
 
 test('database migration provides privacy-safe logging and preference support', () => {
