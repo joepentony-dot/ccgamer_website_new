@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Announcements</title>
+  <title>CCG Content Announcements</title>
   <meta name="robots" content="noindex,nofollow" />
   <link rel="icon" href="../favicon.ico" />
   <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
@@ -18,10 +18,11 @@
       <a href="/admin/members.html" data-nav="members">Members</a>
       <button type="button" data-admin-logout>Logout</button>
     </nav>
+
     <header class="ccg-admin-hero">
-      <h1 class="ccg-admin-title">Announcements</h1>
+      <h1 class="ccg-admin-title">Content Announcements</h1>
       <p class="ccg-admin-subtitle">
-        Notify members about live games and retro videos on the website.
+        Notify opted-in members about games, Zzap!64 features, Retro Specials, Retro Events and Amiga demo videos already live on the website.
       </p>
     </header>
 
@@ -31,7 +32,18 @@
       <div class="ccg-admin-row">
         <label class="ccg-admin-label" for="announceSearch">
           Search
-          <input id="announceSearch" class="ccg-input" type="text" placeholder="Search title, year, system…" autocomplete="off" />
+          <input id="announceSearch" class="ccg-input" type="text" placeholder="Search title, year, system or content type…" autocomplete="off" />
+        </label>
+
+        <label class="ccg-admin-label" for="announceContentFilter">
+          Content type
+          <select id="announceContentFilter" class="ccg-select">
+            <option value="all">All live content</option>
+            <option value="game">Games</option>
+            <option value="retro_special">Zzap!64 and Retro Specials</option>
+            <option value="retro_event">Retro Events</option>
+            <option value="demo_music">Amiga Demo Music</option>
+          </select>
         </label>
       </div>
 
@@ -39,19 +51,19 @@
         <div class="ccg-admin-list" id="announceResults"></div>
       </div>
 
-      <p class="ccg-admin-hint" id="announceLoadedHint">Loading games and retro feeds…</p>
+      <p class="ccg-admin-hint" id="announceLoadedHint">Loading live games and video feeds…</p>
     </section>
 
     <section class="ccg-admin-card">
       <h2 class="ccg-admin-card__title">Announcement options</h2>
 
       <div class="ccg-admin-row">
-        <label class="ccg-admin-label">
-          Announcement type
+        <label class="ccg-admin-label" for="announceType">
+          Wording
           <select id="announceType" class="ccg-select">
-            <option value="new_game_added">New Game Added</option>
-            <option value="featured_classic">Featured Classic</option>
-            <option value="spotlight_pick">Spotlight Pick</option>
+            <option value="new_content">New content — recommended</option>
+            <option value="featured_classic">Featured classic or video</option>
+            <option value="spotlight_pick">CCG spotlight</option>
           </select>
         </label>
       </div>
@@ -59,16 +71,16 @@
       <div class="ccg-admin-row">
         <label class="ccg-admin-check">
           <input type="checkbox" id="announceTestEmail" />
-          Send test email (admin only)
+          Send test email to my administrator address only
         </label>
         <label class="ccg-admin-check">
           <input type="checkbox" id="announceNotifyMembers" />
-          Notify members
+          Notify opted-in members
         </label>
       </div>
 
       <p class="ccg-admin-hint">
-        Test sends only to your admin email. Notify members sends to all opted-in users.
+        Games use the member's New game notifications preference. Videos and Retro Specials use the separate New video and Retro Special notifications preference.
       </p>
     </section>
 
@@ -80,7 +92,9 @@
         <div class="ccg-admin-preview__meta">
           <div><strong>Title:</strong> <span id="announceTitle">—</span></div>
           <div><strong>Slug:</strong> <span id="announceSlug">—</span></div>
-          <div><strong>Link:</strong> <a id="announceLink" hidden target="_blank">Open page</a></div>
+          <div><strong>Content type:</strong> <span id="announceContentType">—</span></div>
+          <div><strong>Member preference:</strong> <span id="announcePreference">—</span></div>
+          <div><strong>Link:</strong> <a id="announceLink" hidden target="_blank" rel="noopener">Open page</a></div>
           <div><strong>Subject:</strong> <span id="announceSubject">—</span></div>
         </div>
       </div>
@@ -91,7 +105,7 @@
         </button>
       </div>
 
-      <div class="ccg-admin-status" id="announceStatus"></div>
+      <div class="ccg-admin-status" id="announceStatus" aria-live="polite"></div>
     </section>
   </main>
 
@@ -99,6 +113,6 @@
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/admin-nav.js?v=admin-stable-20260207"></script>
-  <script type="module" src="/admin/js/announce.js?v=admin-stable-20260207"></script>
+  <script type="module" src="/admin/js/announce.js?v=phase20b-20260806"></script>
 </body>
 </html>
