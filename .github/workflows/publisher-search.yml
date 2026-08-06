@@ -1,0 +1,51 @@
+name: CCG Publisher Search
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "js/publisher-pages.js"
+      - "tests/publisher-search.test.mjs"
+      - ".github/workflows/publisher-search.yml"
+      - "scripts/generate-publisher-pages.js"
+      - "games/publishers/index.html"
+  push:
+    branches:
+      - main
+    paths:
+      - "js/publisher-pages.js"
+      - "tests/publisher-search.test.mjs"
+      - ".github/workflows/publisher-search.yml"
+      - "scripts/generate-publisher-pages.js"
+      - "games/publishers/index.html"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate publisher search JavaScript
+        run: node --check js/publisher-pages.js
+
+      - name: Run publisher search regression tests
+        run: node --test tests/publisher-search.test.mjs
+
+      - name: Confirm featured publisher source remains present
+        shell: bash
+        run: |
+          grep -q 'data-publisher-name="firebird"' games/publishers/index.html
+          grep -q 'id="publisherGrid"' games/publishers/index.html
+          grep -q 'data-publisher-system="both"' games/publishers/index.html
