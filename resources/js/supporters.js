@@ -1,14 +1,6 @@
-/* CCG public supporter Hall of Fame loader */
+/* CCG public supporter recognition loader */
 (function () {
   'use strict';
-
-  const TIER_ORDER = ['founder', 'gold-medal', 'sizzler', 'supporter'];
-  const TIER_LABELS = {
-    founder: 'Founding Supporters',
-    'gold-medal': 'Gold Medal Supporters',
-    sizzler: 'Sizzler Supporters',
-    supporter: 'Supporters'
-  };
 
   function text(value) {
     return String(value ?? '').trim();
@@ -24,9 +16,6 @@
   function normalizeEntry(entry) {
     return {
       displayName: text(entry.display_name || entry.displayName || 'Supporter'),
-      tier: TIER_ORDER.includes(text(entry.supporter_tier || entry.tier))
-        ? text(entry.supporter_tier || entry.tier)
-        : 'supporter',
       supporterSince: entry.supporter_since || entry.supporterSince || null,
       note: text(entry.supporter_note || entry.note),
       sortOrder: Number(entry.supporter_sort_order ?? entry.sortOrder ?? 0)
@@ -46,16 +35,17 @@
 
     const badge = document.createElement('span');
     badge.className = 'ccg-hall-card__badge';
-    badge.textContent = entry.tier.replace(/-/g, ' ');
+    badge.textContent = 'CCG Supporter';
 
     const heading = document.createElement('h3');
     heading.textContent = entry.displayName;
 
     article.append(badge, heading);
 
-    const details = [entry.supporterSince ? `Supporting since ${formatDate(entry.supporterSince)}` : '', entry.note]
-      .filter(Boolean)
-      .join(' · ');
+    const details = [
+      entry.supporterSince ? `Supporting since ${formatDate(entry.supporterSince)}` : '',
+      entry.note
+    ].filter(Boolean).join(' · ');
 
     if (details) {
       const paragraph = document.createElement('p');
@@ -77,34 +67,29 @@
     if (!normalized.length) {
       const empty = document.createElement('div');
       empty.className = 'ccg-hall-empty';
-      empty.textContent = 'The Hall of Fame is ready. Verified supporters will appear here after choosing public recognition in Member Hub.';
+      empty.textContent = 'The supporters page is ready. Verified members who choose public recognition will appear here.';
       root.appendChild(empty);
-      status.textContent = 'No verified opt-in listings are currently public.';
+      status.textContent = 'No verified opt-in supporter listings are currently public.';
       return;
     }
 
-    TIER_ORDER.forEach((tier) => {
-      const members = normalized.filter((entry) => entry.tier === tier);
-      if (!members.length) return;
+    const section = document.createElement('section');
+    section.className = 'ccg-hall-tier';
+    section.setAttribute('aria-labelledby', 'ccg-supporters-heading');
 
-      const section = document.createElement('section');
-      section.className = 'ccg-hall-tier';
-      section.setAttribute('aria-labelledby', `supporter-tier-${tier}`);
+    const heading = document.createElement('h2');
+    heading.className = 'ccg-hall-tier__heading';
+    heading.id = 'ccg-supporters-heading';
+    heading.textContent = 'CCG Supporters';
 
-      const heading = document.createElement('h2');
-      heading.className = 'ccg-hall-tier__heading';
-      heading.id = `supporter-tier-${tier}`;
-      heading.textContent = TIER_LABELS[tier];
+    const grid = document.createElement('div');
+    grid.className = 'ccg-hall-grid';
+    normalized.forEach((entry) => grid.appendChild(createCard(entry)));
 
-      const grid = document.createElement('div');
-      grid.className = 'ccg-hall-grid';
-      members.forEach((entry) => grid.appendChild(createCard(entry)));
+    section.append(heading, grid);
+    root.appendChild(section);
 
-      section.append(heading, grid);
-      root.appendChild(section);
-    });
-
-    status.textContent = `${normalized.length} verified supporter${normalized.length === 1 ? '' : 's'} recognised${source === 'fallback' ? ' from the maintained fallback list' : ''}.`;
+    status.textContent = `${normalized.length} CCG supporter${normalized.length === 1 ? '' : 's'} recognised${source === 'fallback' ? ' from the maintained fallback list' : ''}.`;
   }
 
   async function getSupabaseClient() {
