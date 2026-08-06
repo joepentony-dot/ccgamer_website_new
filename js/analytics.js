@@ -3,10 +3,11 @@
    ---------------------------------------------------------
    - Google Analytics remains disabled until consent.
    - Essential preferences remain available without consent.
-   - Adds site-wide legal/support links without editing every
-     generated archive page.
+   - Adds site-wide legal, shop and supporter links without
+     editing every generated archive page.
    - Labels Amazon affiliate links and adds the required
      disclosure near affiliate content.
+   - Adds restrained passive-revenue prompts to suitable pages.
    ========================================================= */
 
 (function () {
@@ -16,6 +17,7 @@
   var CONSENT_VERSION = '2026-08-06';
   var GA_ID = 'G-GT1JB7HMQ4';
   var PUBLIC_ROOT = '/';
+  var FOURTHWALL_URL = 'https://cheeky-commodore-gamer-shop.fourthwall.com/?utm_source=ccg_website&utm_medium=referral&utm_campaign=sitewide_shop';
   var isAdmin = window.location.pathname.indexOf('/admin/') === 0;
   var isIntro = document.documentElement.getAttribute('data-ccg-page') === 'intro';
 
@@ -23,13 +25,18 @@
   if (window.ccgConsentBootstrapLoaded) return;
   window.ccgConsentBootstrapLoaded = true;
 
-  function loadStylesheet() {
-    if (document.querySelector('link[data-ccg-monetisation-css]')) return;
+  function loadStylesheet(href, marker) {
+    if (document.querySelector('link[' + marker + ']')) return;
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = PUBLIC_ROOT + 'resources/css/ccg-monetisation.css';
-    link.setAttribute('data-ccg-monetisation-css', 'true');
+    link.href = href;
+    link.setAttribute(marker, 'true');
     document.head.appendChild(link);
+  }
+
+  function loadStylesheets() {
+    loadStylesheet(PUBLIC_ROOT + 'resources/css/ccg-monetisation.css', 'data-ccg-monetisation-css');
+    loadStylesheet(PUBLIC_ROOT + 'resources/css/passive-income.css', 'data-ccg-passive-income-css');
   }
 
   function safeParse(value) {
@@ -215,9 +222,7 @@
       });
     }));
 
-    dialog.querySelector('.ccg-consent-close').addEventListener('click', function () {
-      closeConsentUi();
-    });
+    dialog.querySelector('.ccg-consent-close').addEventListener('click', closeConsentUi);
     overlay.addEventListener('click', function (event) {
       if (event.target === overlay) closeConsentUi();
     });
@@ -270,14 +275,16 @@
     var nav = document.createElement('nav');
     nav.className = 'ccg-footer-legal';
     nav.setAttribute('data-ccg-legal-links', 'true');
-    nav.setAttribute('aria-label', 'Legal, privacy and support');
+    nav.setAttribute('aria-label', 'Legal, privacy, shop and support');
     nav.innerHTML = [
+      '<a href="/shop.html">Shop</a>',
+      '<a href="/supporters.html">Hall of Fame</a>',
+      '<a href="/support.html">Support CCG</a>',
       '<a href="/privacy.html">Privacy</a>',
       '<a href="/cookies.html">Cookies</a>',
       '<a href="/affiliate-disclosure.html">Affiliate disclosure</a>',
       '<a href="/terms.html">Terms</a>',
       '<a href="/copyright.html">Copyright</a>',
-      '<a href="/support.html">Support CCG</a>',
       '<a href="/work-with-ccg.html">Work with CCG</a>',
       '<button type="button" data-ccg-open-consent>Privacy choices</button>'
     ].join('');
@@ -306,6 +313,7 @@
       rel.add('noopener');
       link.setAttribute('rel', Array.from(rel).join(' '));
       link.setAttribute('data-ccg-affiliate-link', 'amazon');
+      link.setAttribute('data-ccg-revenue-link', 'amazon-affiliate');
       if (!link.getAttribute('target')) link.setAttribute('target', '_blank');
 
       if (!link.nextElementSibling || !link.nextElementSibling.matches('.ccg-affiliate-label')) {
@@ -342,14 +350,84 @@
     });
   }
 
+  function shouldShowPassivePanel() {
+    var path = (window.location.pathname || '/').toLowerCase();
+    var page = (document.documentElement.getAttribute('data-ccg-page') || '').toLowerCase();
+    var excludedPages = new Set([
+      'shop', 'supporters', 'support', 'privacy', 'cookies', 'terms',
+      'copyright', 'affiliate-disclosure', 'work-with-ccg', 'login',
+      'register', 'member-hub', 'contact'
+    ]);
+    var excludedPrefixes = ['/admin/', '/auth/', '/community/', '/games/downloads/', '/quiz/'];
+
+    if (excludedPages.has(page)) return false;
+    if (excludedPrefixes.some(function (prefix) { return path.indexOf(prefix) === 0; })) return false;
+    return Boolean(document.querySelector('main') && document.querySelector('.ccg-footer'));
+  }
+
+  function appendPassiveRevenuePanel() {
+    if (!shouldShowPassivePanel()) return;
+    if (document.querySelector('[data-ccg-passive-revenue-panel]')) return;
+
+    var footer = document.querySelector('.ccg-footer');
+    if (!footer || !footer.parentNode) return;
+
+    var panel = document.createElement('aside');
+    panel.className = 'ccg-passive-revenue-panel';
+    panel.setAttribute('data-ccg-passive-revenue-panel', 'true');
+    panel.setAttribute('aria-label', 'Support Cheeky Commodore Gamer');
+    panel.innerHTML = [
+      '<div class="ccg-passive-revenue-panel__copy">',
+      '  <strong>Enjoying the archive?</strong>',
+      '  <span>Support CCG by visiting the official shop, joining Patreon or viewing the supporter Hall of Fame.</span>',
+      '</div>',
+      '<div class="ccg-passive-revenue-panel__actions">',
+      '  <a href="' + FOURTHWALL_URL + '" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="fourthwall-sitewide">Official Shop</a>',
+      '  <a href="/support.html">Support CCG</a>',
+      '  <a href="/supporters.html">Hall of Fame</a>',
+      '</div>'
+    ].join('');
+
+    footer.parentNode.insertBefore(panel, footer);
+  }
+
+  function trackRevenueLinks() {
+    document.addEventListener('click', function (event) {
+      var link = event.target.closest('a[data-ccg-revenue-link]');
+      if (!link) return;
+      if (!window.ccgConsentState || !window.ccgConsentState.analytics) return;
+
+      window.gtag('event', 'ccg_revenue_click', {
+        revenue_route: link.getAttribute('data-ccg-revenue-link') || 'unknown',
+        link_url: link.href,
+        page_path: window.location.pathname
+      });
+    });
+  }
+
+  function loadMemberHallOfFamePreference() {
+    var path = (window.location.pathname || '').replace(/\/+$/, '');
+    if (path !== '/community/profile.html' && path !== '/community/profile') return;
+    if (document.querySelector('script[data-ccg-hall-preference]')) return;
+
+    var script = document.createElement('script');
+    script.src = '/resources/js/auth/hall-of-fame-preference.js';
+    script.defer = true;
+    script.setAttribute('data-ccg-hall-preference', 'true');
+    document.body.appendChild(script);
+  }
+
   function initDomFeatures() {
     appendFooterLinks();
     labelAffiliateLinks();
     usePrivacyEnhancedYouTube();
+    appendPassiveRevenuePanel();
+    trackRevenueLinks();
+    loadMemberHallOfFamePreference();
     if (!window.ccgConsentState.decided) showBanner();
   }
 
-  loadStylesheet();
+  loadStylesheets();
   window.ccgConsentState = readConsent();
   applyConsent(window.ccgConsentState);
 
