@@ -60,6 +60,7 @@ test('edge function sends real emails and rejects unsafe announcements', () => {
   assert.match(edgeFunction, /notify_new_games/);
   assert.match(edgeFunction, /notify_newsletter/);
   assert.match(edgeFunction, /This announcement was already sent recently/);
+  assert.match(edgeFunction, /users\.forEach\(\(user:\s*\{/);
   assert.doesNotMatch(edgeFunction, /wire your Resend logic here/i);
   assert.doesNotMatch(edgeFunction, /return json\(\{ success: true, sent: 1, failed: 0 \}\)/);
 });
