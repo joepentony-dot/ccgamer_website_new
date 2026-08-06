@@ -62,6 +62,12 @@ def main() -> None:
         """async function authEmailMap(serviceClient: any): Promise<Map<string, string>> {""",
     )
 
+    replace_once(
+        edge_function,
+        """    users.forEach((user) => {""",
+        """    users.forEach((user: { id?: string; email?: string; email_confirmed_at?: string | null }) => {""",
+    )
+
     print("Phase 20B generated output is current.")
 
 
