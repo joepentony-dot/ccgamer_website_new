@@ -1,0 +1,46 @@
+name: CCG Installable PWA
+
+on:
+  pull_request:
+    paths:
+      - "manifest.webmanifest"
+      - "service-worker.js"
+      - "offline.html"
+      - "js/ccg-pwa.js"
+      - "js/ccg-nav-core.js"
+      - "resources/css/ccg-pwa.css"
+      - "resources/images/ccg-app-icon.svg"
+      - "scripts/audit-installable-pwa.js"
+      - "docs/phase-17-installable-pwa.md"
+      - ".github/workflows/ccg-installable-pwa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  installable-pwa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript and manifest syntax
+        run: |
+          node --check service-worker.js
+          node --check js/ccg-pwa.js
+          node --check js/ccg-nav-core.js
+          node --check scripts/audit-installable-pwa.js
+          node -e "JSON.parse(require('fs').readFileSync('manifest.webmanifest', 'utf8'))"
+
+      - name: Run installable app audit
+        run: node scripts/audit-installable-pwa.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
