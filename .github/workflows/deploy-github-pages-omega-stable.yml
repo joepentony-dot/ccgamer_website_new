@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -11,12 +12,13 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages-deploy"
+  group: "pages"
   cancel-in-progress: false
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -24,15 +26,105 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Stage public website only
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf _site
+          mkdir -p _site
+
+          rsync -a --prune-empty-dirs \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='_site/' \
+            --exclude='.idea/' \
+            --exclude='.vscode/' \
+            --exclude='node_modules/' \
+            --exclude='supabase/' \
+            --exclude='scripts/' \
+            --exclude='tests/' \
+            --exclude='docs/' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='*.md' \
+            --exclude='*.py' \
+            --exclude='*.sql' \
+            --exclude='*.ts' \
+            --exclude='*.tsx' \
+            --exclude='*.ps1' \
+            --exclude='*.bat' \
+            --exclude='*.sh' \
+            --exclude='.DS_Store' \
+            --exclude='Thumbs.db' \
+            ./ _site/
+
+          touch _site/.nojekyll
+
+      - name: Verify staged Phase 20B files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f _site/admin/announce.html
+          test -f _site/admin/js/announce.js
+          test -f _site/data/retro-specials.json
+          test -f _site/games/games.json
+          grep -Fq 'Content Announcements' _site/admin/announce.html
+          grep -Fq 'announceContentFilter' _site/admin/announce.html
+          grep -Fq 'RETRO_SPECIALS_DATA_PATH' _site/admin/js/announce.js
+
+      - name: Check published-site size
+        shell: bash
+        run: |
+          set -euo pipefail
+          site_bytes="$(du -sb _site | cut -f1)"
+          site_mib="$((site_bytes / 1024 / 1024))"
+          file_count="$(find _site -type f | wc -l | tr -d ' ')"
+
+          {
+            echo '### GitHub Pages artifact'
+            echo
+            echo "- Files: ${file_count}"
+            echo "- Size: ${site_mib} MiB"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$site_bytes" -ge 1000000000 ]; then
+            echo "Public site artifact is ${site_mib} MiB and exceeds the 1 GB GitHub Pages limit." >&2
+            exit 1
+          fi
+
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ./
+          path: _site
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify deployed announcement page
+        shell: bash
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          target="${PAGE_URL%/}/admin/announce.html?deployment=${GITHUB_SHA}"
+
+          for attempt in $(seq 1 18); do
+            body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
+            if printf '%s' "$body" | grep -Fq 'Content Announcements' \
+              && printf '%s' "$body" | grep -Fq 'announceContentFilter'; then
+              echo "Verified Phase 20B announcement page at $target"
+              exit 0
+            fi
+            echo "Deployment not visible yet (attempt ${attempt}/18)."
+            sleep 10
+          done
+
+          echo "The deployment completed, but the Phase 20B announcement page was not visible after three minutes." >&2
+          exit 1
