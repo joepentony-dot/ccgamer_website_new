@@ -24,6 +24,7 @@ Do Not Override
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
+        { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
         { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
         { src: "/js/ccg-personal-library-controls.js", marker: "data-ccg-personal-library-loader" },
         { src: "/js/ccg-member-library-sync-loader.js", marker: "data-ccg-member-library-sync-loader" },

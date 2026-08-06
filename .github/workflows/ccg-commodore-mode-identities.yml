@@ -1,0 +1,40 @@
+name: CCG Commodore Mode Identities
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-mode-identity.js"
+      - "resources/css/ccg-mode-identity.css"
+      - "scripts/audit-commodore-mode-identities.js"
+      - "docs/phase-19-commodore-mode-identities.md"
+      - ".github/workflows/ccg-commodore-mode-identities.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  commodore-mode-identities:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-mode-identity.js
+          node --check scripts/audit-commodore-mode-identities.js
+
+      - name: Run Commodore mode identity audit
+        run: node scripts/audit-commodore-mode-identities.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
