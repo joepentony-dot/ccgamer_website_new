@@ -38,26 +38,13 @@ async function getClient() {
   return window.CCG_SUPABASE_CLIENT || null;
 }
 
-function tierOptions(selectedTier) {
-  const options = [
-    ['supporter', 'Supporter'],
-    ['sizzler', 'Sizzler'],
-    ['gold-medal', 'Gold Medal'],
-    ['founder', 'Founder']
-  ];
-
-  return options.map(([value, label]) => (
-    `<option value="${value}"${selectedTier === value ? ' selected' : ''}>${label}</option>`
-  )).join('');
-}
-
 function renderRows(rows) {
   const body = document.getElementById('supportersTableBody');
   if (!body) return;
   body.innerHTML = '';
 
   if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="8">No opt-in or previously verified supporters found.</td></tr>';
+    body.innerHTML = '<tr><td colspan="7">No opted-in or previously verified supporters found.</td></tr>';
     return;
   }
 
@@ -71,7 +58,6 @@ function renderRows(rows) {
       </td>
       <td>${row.hall_of_fame_opt_in ? '<span class="badge">Yes</span>' : '<span>No</span>'}</td>
       <td><label><input type="checkbox" data-field="verified"${row.supporter_verified ? ' checked' : ''}> Verified</label></td>
-      <td><select data-field="tier">${tierOptions(row.supporter_tier || 'supporter')}</select></td>
       <td><input type="date" data-field="since" value="${escapeHtml(row.supporter_since || '')}"></td>
       <td><input type="text" data-field="note" maxlength="120" value="${escapeHtml(row.supporter_note || '')}" placeholder="Optional short public note"></td>
       <td><input type="number" data-field="order" min="0" step="1" value="${Number(row.supporter_sort_order || 0)}"></td>
@@ -95,11 +81,11 @@ async function loadSupporters() {
   });
 
   if (error) {
-    console.error('[admin-supporters] list failed', error);
+    console.error('[admin-supporters] admin_list_supporters failed', error);
     renderRows([]);
     setStatus(
       ['42883', 'PGRST202'].includes(String(error.code || ''))
-        ? 'Supporter RPCs are unavailable. Apply the Hall of Fame migration, then reload.'
+        ? 'Supporter controls are unavailable. Apply the supporter migration, then reload.'
         : `Could not load supporters: ${error.message}`,
       'error'
     );
@@ -117,18 +103,17 @@ async function saveRow(row) {
 
   const button = row.querySelector('[data-save-supporter]');
   const verified = Boolean(row.querySelector('[data-field="verified"]')?.checked);
-  const tier = text(row.querySelector('[data-field="tier"]')?.value) || 'supporter';
   const since = text(row.querySelector('[data-field="since"]')?.value) || null;
   const note = text(row.querySelector('[data-field="note"]')?.value) || null;
   const sortOrder = Math.max(0, Number(row.querySelector('[data-field="order"]')?.value || 0));
 
   if (button) button.disabled = true;
-  setStatus('Saving supporter status…', 'info');
+  setStatus('Saving supporter recognition…', 'info');
 
   const { error } = await supabase.rpc('admin_set_supporter_status', {
     p_user_id: userId,
     p_verified: verified,
-    p_tier: tier,
+    p_tier: 'supporter',
     p_supporter_since: since,
     p_note: note,
     p_sort_order: sortOrder
@@ -137,12 +122,12 @@ async function saveRow(row) {
   if (button) button.disabled = false;
 
   if (error) {
-    console.error('[admin-supporters] save failed', error);
-    setStatus(`Could not save supporter status: ${error.message}`, 'error');
+    console.error('[admin-supporters] admin_set_supporter_status failed', error);
+    setStatus(`Could not save supporter recognition: ${error.message}`, 'error');
     return;
   }
 
-  setStatus('Supporter status saved.', 'success');
+  setStatus('Supporter recognition saved.', 'success');
   await loadSupporters();
 }
 
@@ -180,7 +165,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     wireControls();
     await loadSupporters();
   } catch (error) {
-    console.error('[admin-supporters] init failed', error);
+    console.error('[admin-supporters] initialisation failed', error);
     setSessionStatus('Unable to verify admin session.', 'error');
     setStatus(error?.message || 'Failed to initialise supporter management.', 'error');
   }
