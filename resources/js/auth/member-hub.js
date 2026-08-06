@@ -350,7 +350,6 @@
 
     if (Object.hasOwn(values, "notifyNewsletter")) {
       updates.notify_newsletter = Boolean(values.notifyNewsletter);
-      updates.newsletter_opt_in = Boolean(values.notifyNewsletter);
       updates.notify_newsletter_choice_recorded = true;
     }
 
