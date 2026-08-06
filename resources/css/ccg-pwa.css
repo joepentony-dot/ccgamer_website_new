@@ -1,0 +1,181 @@
+/* ============================================================
+   CCG INSTALLABLE APP CONTROLS
+============================================================ */
+
+.ccg-pwa-panel {
+  position: fixed;
+  z-index: 2147481200;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: min(430px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--ccg-accent, #5ee7ff);
+  border-radius: 0;
+  background: rgba(3, 12, 30, 0.98);
+  color: #eefbff;
+  box-shadow:
+    0 20px 54px rgba(0, 0, 0, 0.48),
+    0 0 26px color-mix(in srgb, var(--ccg-accent, #5ee7ff) 16%, transparent);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.ccg-pwa-panel.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ccg-pwa-panel.is-leaving {
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+}
+
+.ccg-pwa-panel--update {
+  border-color: #c778ff;
+}
+
+.ccg-pwa-panel__icon {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  grid-row: 1 / span 2;
+}
+
+.ccg-pwa-panel__copy {
+  min-width: 0;
+}
+
+.ccg-pwa-panel__title {
+  display: block;
+  margin: 0 0 5px;
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.ccg-pwa-panel__message {
+  margin: 0;
+  color: rgba(224, 242, 252, 0.78);
+  font-size: 0.88rem;
+  line-height: 1.48;
+}
+
+.ccg-pwa-panel__actions {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ccg-pwa-button {
+  min-height: 40px;
+  padding: 9px 13px;
+  border: 1px solid rgba(158, 198, 226, 0.5);
+  border-radius: 0;
+  background: rgba(13, 35, 66, 0.96);
+  color: #fff;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ccg-pwa-button--primary {
+  border-color: var(--ccg-accent, #5ee7ff);
+  background: color-mix(in srgb, var(--ccg-accent, #5ee7ff) 20%, #082243);
+}
+
+.ccg-pwa-button:hover,
+.ccg-pwa-button:focus-visible {
+  outline: 3px solid #c778ff;
+  outline-offset: 2px;
+  background: #16477a;
+}
+
+.ccg-pwa-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.ccg-pwa-network {
+  position: fixed;
+  z-index: 2147481300;
+  left: 50%;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 10px 14px;
+  border: 1px solid #5ee7ff;
+  background: rgba(3, 12, 30, 0.98);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 750;
+  text-align: center;
+  opacity: 0;
+  transform: translate(-50%, 16px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.ccg-pwa-network[data-state="offline"] {
+  border-color: #ffb04a;
+}
+
+.ccg-pwa-network.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+@supports not (color: color-mix(in srgb, white 50%, black)) {
+  .ccg-pwa-panel,
+  .ccg-pwa-button--primary {
+    box-shadow: 0 20px 54px rgba(0, 0, 0, 0.48);
+  }
+
+  .ccg-pwa-button--primary {
+    background: #0d466a;
+  }
+}
+
+@media (max-width: 520px) {
+  .ccg-pwa-panel {
+    left: max(12px, env(safe-area-inset-left));
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    width: auto;
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding: 14px;
+  }
+
+  .ccg-pwa-panel__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ccg-pwa-panel__actions {
+    grid-column: 1 / -1;
+  }
+
+  .ccg-pwa-button {
+    flex: 1 1 130px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccg-pwa-panel,
+  .ccg-pwa-network {
+    transition: none;
+  }
+}
+
+@media print {
+  .ccg-pwa-panel,
+  .ccg-pwa-network {
+    display: none !important;
+  }
+}
