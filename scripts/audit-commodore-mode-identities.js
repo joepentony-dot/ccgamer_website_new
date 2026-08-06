@@ -1,0 +1,119 @@
+#!/usr/bin/env node
+
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+const childProcess = require("child_process");
+
+const root = path.resolve(__dirname, "..");
+const failures = [];
+
+function read(relativePath) {
+  const filePath = path.join(root, relativePath);
+  if (!fs.existsSync(filePath)) {
+    failures.push(`Missing required file: ${relativePath}`);
+    return "";
+  }
+  return fs.readFileSync(filePath, "utf8");
+}
+
+function requireText(content, token, label) {
+  if (!content.includes(token)) failures.push(`${label} is missing: ${token}`);
+}
+
+function rejectText(content, token, label) {
+  if (content.toLowerCase().includes(token.toLowerCase())) {
+    failures.push(`${label} must not contain: ${token}`);
+  }
+}
+
+function changedFiles() {
+  for (const range of ["origin/main...HEAD", "HEAD^...HEAD"]) {
+    try {
+      const output = childProcess.execFileSync(
+        "git",
+        ["diff", "--name-only", range],
+        { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+      );
+      const files = output.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
+      if (files.length) return files;
+    } catch (error) {}
+  }
+  return [];
+}
+
+const moduleCode = read("js/ccg-mode-identity.js");
+const css = read("resources/css/ccg-mode-identity.css");
+const navCore = read("js/ccg-nav-core.js");
+const workflow = read(".github/workflows/ccg-commodore-mode-identities.yml");
+const documentation = read("docs/phase-19-commodore-mode-identities.md");
+const existingAmiga = read("js/ccg-amiga-identity.js");
+
+requireText(navCore, "/js/ccg-mode-identity.js", "Shared mode identity loader");
+requireText(navCore, "data-ccg-mode-identity-loader", "Mode identity loader marker");
+requireText(moduleCode, "CCG_MODE_IDENTITY_READY", "Module guard");
+requireText(moduleCode, "COMMODORE 64 MODE", "C64 label");
+requireText(moduleCode, "READY.", "C64 status");
+requireText(moduleCode, "64K RAM SYSTEM", "C64 detail");
+requireText(moduleCode, "COMMODORE AMIGA MODE", "Amiga label");
+requireText(moduleCode, "WORKBENCH", "Amiga status");
+requireText(moduleCode, "DF0: CCG ARCHIVE", "Amiga detail");
+requireText(moduleCode, "MutationObserver", "Mode attribute observation");
+requireText(moduleCode, "data-ccg-mode", "Established mode attribute support");
+requireText(moduleCode, "aria-live", "Accessible mode announcement");
+requireText(moduleCode, "EXCLUDED_PATH", "Private-area exclusion");
+
+requireText(css, '[data-mode="c64"]', "C64 status styling");
+requireText(css, '[data-mode="amiga"]', "Amiga status styling");
+requireText(css, "ccg-mode-identity__c64-mark", "C64 identity mark");
+requireText(css, "ccg-mode-identity__amiga-mark", "Amiga identity mark");
+requireText(css, 'data-ccg-identity-mode="c64"', "C64 page treatment");
+requireText(css, 'data-ccg-identity-mode="amiga"', "Amiga page treatment");
+requireText(css, "prefers-reduced-motion", "Reduced-motion fallback");
+requireText(css, "@media print", "Print exclusion");
+requireText(existingAmiga, "CCG_AMIGA_IDENTITY_READY", "Existing Amiga window system remains present");
+requireText(workflow, "node scripts/audit-commodore-mode-identities.js", "Mode identity workflow audit");
+requireText(documentation, "Phase 19", "Phase documentation");
+requireText(documentation, "one compact status strip", "Scope documentation");
+
+rejectText(moduleCode, "new Audio", "Mode identity module");
+rejectText(moduleCode, "autoplay", "Mode identity module");
+rejectText(moduleCode, "localStorage", "Mode identity module");
+rejectText(moduleCode, "innerHTML = document", "Mode identity module");
+
+const protectedPaths = new Set([
+  "index.html",
+  "home.html",
+  "resources/css/intro.css",
+  "js/index-intro.js",
+  "games/games.json"
+]);
+
+const allowedPaths = new Set([
+  "js/ccg-nav-core.js",
+  "js/ccg-mode-identity.js",
+  "resources/css/ccg-mode-identity.css",
+  "scripts/audit-commodore-mode-identities.js",
+  ".github/workflows/ccg-commodore-mode-identities.yml",
+  "docs/phase-19-commodore-mode-identities.md"
+]);
+
+for (const changedPath of changedFiles()) {
+  if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+  if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
+    failures.push(`Out-of-scope local Phase 19 change: ${changedPath}`);
+  }
+}
+
+if (failures.length) {
+  console.error("Commodore mode identity audit failed:");
+  failures.forEach((failure) => console.error(`- ${failure}`));
+  process.exit(1);
+}
+
+console.log("Commodore mode identity audit passed.");
+console.log("- C64 and Amiga status identities are both present");
+console.log("- Established Amiga window treatment remains intact");
+console.log("- Private routes, audio and persistent tracking remain outside scope");
+console.log("- Reduced-motion and print fallbacks are present");
