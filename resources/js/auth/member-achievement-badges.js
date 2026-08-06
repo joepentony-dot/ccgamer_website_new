@@ -70,8 +70,9 @@ function retireRedundantBadgeDisplays() {
   if (!section) return null;
 
   const intro = section.querySelector('.member-panel__intro');
-  if (intro) {
-    intro.textContent = 'Your account-backed Commodore Milestones and membership loyalty progress.';
+  const introText = 'Your account-backed Commodore Milestones and membership loyalty progress.';
+  if (intro && intro.textContent !== introText) {
+    intro.textContent = introText;
   }
 
   const legacyGrid = section.querySelector('.member-achievements');
