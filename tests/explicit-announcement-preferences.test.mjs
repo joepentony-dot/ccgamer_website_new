@@ -13,6 +13,7 @@ const registerHtml = read('auth/register.html');
 const memberHub = read('resources/js/auth/member-hub.js');
 const announceHtml = read('admin/announce.html');
 const previewJs = read('admin/js/announcement-recipient-preview.js');
+const preferenceCss = read('resources/css/notification-preferences.css');
 
 test('existing members are not silently opted into video announcements', () => {
   assert.match(migration, /notify_newsletter_choice_recorded boolean default false/i);
@@ -25,10 +26,14 @@ test('registration presents separate unticked game and video choices', () => {
   assert.match(registerHtml, /id="notifyNewsletter"/);
   assert.match(registerHtml, /Both choices are optional and start unticked/);
   assert.doesNotMatch(registerHtml, /id="notifyNewsletter"[^>]*checked/i);
+  assert.doesNotMatch(registerHtml, /style=/i);
+  assert.match(registerHtml, /notification-preferences\.css/);
+  assert.match(preferenceCss, /auth-notification-preferences/);
   assert.match(registerHtml, /registerUser\(email, password, notificationPreferences\)/);
   assert.match(authCore, /notification_preferences_presented/);
   assert.match(authCore, /notify_new_games_choice_recorded/);
   assert.match(authCore, /notify_newsletter_choice_recorded/);
+  assert.match(authCore, /generateUnsubscribeToken/);
 });
 
 test('Member Hub prompts only when the video preference has not been recorded', () => {
@@ -37,6 +42,8 @@ test('Member Hub prompts only when the video preference has not been recorded', 
   assert.match(memberHub, /No thanks/);
   assert.match(memberHub, /No video announcement emails will be sent to you until you choose/);
   assert.match(memberHub, /notification_preferences_updated_at/);
+  assert.match(memberHub, /notification-preferences\.css/);
+  assert.doesNotMatch(memberHub, /updates\.newsletter_opt_in/);
 });
 
 test('admin panel previews eligible recipients and blocks an empty send', () => {
