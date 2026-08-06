@@ -1,0 +1,42 @@
+name: CCG Admin Archive Quality
+
+on:
+  pull_request:
+    paths:
+      - "admin/archive-quality.html"
+      - "admin/js/archive-quality.js"
+      - "admin/js/admin-nav.js"
+      - "resources/css/archive-quality-admin.css"
+      - "scripts/audit-admin-archive-quality.js"
+      - "docs/phase-20-admin-archive-quality-centre.md"
+      - ".github/workflows/ccg-admin-archive-quality.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  admin-archive-quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript and catalogue syntax
+        run: |
+          node --check admin/js/archive-quality.js
+          node --check admin/js/admin-nav.js
+          node --check scripts/audit-admin-archive-quality.js
+          node -e "const games=JSON.parse(require('fs').readFileSync('games/games.json','utf8')); if(!Array.isArray(games)||games.length<651) process.exit(1)"
+
+      - name: Run administrator archive quality audit
+        run: node scripts/audit-admin-archive-quality.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
