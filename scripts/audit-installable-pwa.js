@@ -95,7 +95,8 @@ requireText(pwaCode, "INSTALL_DELAY = 9000", "Restrained install prompt delay");
 requireText(pwaCode, "visits < 2", "Repeat-visit install threshold");
 requireText(pwaCode, "apple-mobile-web-app-capable", "iOS install metadata");
 requireText(pwaCode, "Add to Home Screen", "iOS install guidance");
-requireText(pwaCode, "navigator.onLine", "Network-state handling");
+requireText(pwaCode, 'window.addEventListener("online"', "Online-state handling");
+requireText(pwaCode, 'window.addEventListener("offline"', "Offline-state handling");
 
 requireText(serviceWorker, "PRIVATE_PATH_PREFIXES", "Service worker private path exclusions");
 requireText(serviceWorker, '"/admin/"', "Administrator cache exclusion");
