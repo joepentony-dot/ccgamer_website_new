@@ -102,3 +102,7 @@ The historical function name is retained so the existing administrator route doe
 - timestamps
 
 Recipient email addresses are not stored in this table.
+
+## Repository verification
+
+The committed Member Hub preference output is regenerated and compared during CI. The announcement selector, database contract and Edge Function also have dedicated regression checks.
