@@ -66,10 +66,12 @@ jobs:
 
           touch _site/.nojekyll
 
-      - name: Verify staged Phase 20B files
+      - name: Verify staged public features
         shell: bash
         run: |
           set -euo pipefail
+
+          # Phase 20B announcement files.
           test -f _site/admin/announce.html
           test -f _site/admin/js/announce.js
           test -f _site/data/retro-specials.json
@@ -77,6 +79,30 @@ jobs:
           grep -Fq 'Content Announcements' _site/admin/announce.html
           grep -Fq 'announceContentFilter' _site/admin/announce.html
           grep -Fq 'RETRO_SPECIALS_DATA_PATH' _site/admin/js/announce.js
+
+          # Support pages must publish in their understated form.
+          test -f _site/shop.html
+          test -f _site/support.html
+          test -f _site/supporters.html
+          test -f _site/resources/css/passive-income.css
+          grep -Fq 'url=/support.html' _site/shop.html
+          grep -Fq 'The former shop page has moved' _site/shop.html
+          grep -Fq 'Quietly keeping CCG going' _site/support.html
+          grep -Fq 'YouTube Membership' _site/support.html
+          grep -Fq 'Buy Joe a Beer' _site/support.html
+          grep -Fq 'CCG Supporters' _site/support.html
+          grep -Fq '.ccg-passive-revenue-panel__actions a[href="/shop.html"]' _site/resources/css/passive-income.css
+          grep -Fq '.ccg-passive-revenue-panel__actions a[href="/supporters.html"]' _site/resources/css/passive-income.css
+
+          if grep -Fq 'Retro Merchandise' _site/shop.html; then
+            echo 'The retired duplicate merchandise panel is still present in shop.html.' >&2
+            exit 1
+          fi
+
+          if grep -Fq 'Digital Products' _site/shop.html; then
+            echo 'The retired duplicate digital-products panel is still present in shop.html.' >&2
+            exit 1
+          fi
 
       - name: Check published-site size
         shell: bash
@@ -107,24 +133,36 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Verify deployed announcement page
+      - name: Verify deployed public pages
         shell: bash
         env:
           PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           set -euo pipefail
-          target="${PAGE_URL%/}/admin/announce.html?deployment=${GITHUB_SHA}"
+          announcement_target="${PAGE_URL%/}/admin/announce.html?deployment=${GITHUB_SHA}"
+          support_target="${PAGE_URL%/}/support.html?deployment=${GITHUB_SHA}"
+          shop_target="${PAGE_URL%/}/shop.html?deployment=${GITHUB_SHA}"
 
           for attempt in $(seq 1 18); do
-            body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
-            if printf '%s' "$body" | grep -Fq 'Content Announcements' \
-              && printf '%s' "$body" | grep -Fq 'announceContentFilter'; then
-              echo "Verified Phase 20B announcement page at $target"
+            announcement_body="$(curl --fail --silent --show-error --location --max-time 30 "$announcement_target" || true)"
+            support_body="$(curl --fail --silent --show-error --location --max-time 30 "$support_target" || true)"
+            shop_body="$(curl --fail --silent --show-error --max-time 30 "$shop_target" || true)"
+
+            if printf '%s' "$announcement_body" | grep -Fq 'Content Announcements' \
+              && printf '%s' "$announcement_body" | grep -Fq 'announceContentFilter' \
+              && printf '%s' "$support_body" | grep -Fq 'Quietly keeping CCG going' \
+              && printf '%s' "$support_body" | grep -Fq 'YouTube Membership' \
+              && printf '%s' "$support_body" | grep -Fq 'Buy Joe a Beer' \
+              && printf '%s' "$shop_body" | grep -Fq 'url=/support.html' \
+              && ! printf '%s' "$shop_body" | grep -Fq 'Retro Merchandise' \
+              && ! printf '%s' "$shop_body" | grep -Fq 'Digital Products'; then
+              echo "Verified announcement and understated support pages."
               exit 0
             fi
-            echo "Deployment not visible yet (attempt ${attempt}/18)."
+
+            echo "Deployment not fully visible yet (attempt ${attempt}/18)."
             sleep 10
           done
 
-          echo "The deployment completed, but the Phase 20B announcement page was not visible after three minutes." >&2
+          echo "The deployment completed, but the expected announcement/support pages were not visible after three minutes." >&2
           exit 1

@@ -3,11 +3,12 @@
    Understated support routes and privacy-safe public thanks.
    ============================================================ */
 
-/* Fourthwall is deliberately retired from the public experience. */
+/* Fourthwall and the retired shop route stay out of public promotion. */
 a[href*="fourthwall.com"],
 .ccg-footer-legal a[href="/shop.html"],
 .ccg-legal-nav a[href="/shop.html"],
-.ccg-passive-actions a[href="/shop.html"] {
+.ccg-passive-actions a[href="/shop.html"],
+.ccg-passive-revenue-panel__actions a[href="/shop.html"] {
     display: none !important;
 }
 
@@ -220,7 +221,7 @@ a[href*="fourthwall.com"],
 
 /*
    The shared script still creates the original panel container.
-   It is deliberately reduced here to a single muted line and one link.
+   It is reduced here to one muted line with support and recognition links.
 */
 .ccg-passive-revenue-panel {
     position: relative;
@@ -256,7 +257,9 @@ a[href*="fourthwall.com"],
 }
 
 .ccg-passive-revenue-panel__actions {
-    display: inline;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     margin: 0;
 }
 
@@ -264,7 +267,8 @@ a[href*="fourthwall.com"],
     display: none;
 }
 
-.ccg-passive-revenue-panel__actions a[href="/support.html"] {
+.ccg-passive-revenue-panel__actions a[href="/support.html"],
+.ccg-passive-revenue-panel__actions a[href="/supporters.html"] {
     display: inline;
     min-height: 0;
     padding: 0;
@@ -278,13 +282,21 @@ a[href*="fourthwall.com"],
     text-underline-offset: 0.18em;
 }
 
+.ccg-passive-revenue-panel__actions a[href="/supporters.html"]::before {
+    content: "· ";
+    color: rgba(255, 255, 255, 0.38);
+    text-decoration: none;
+}
+
 .ccg-passive-revenue-panel:hover,
 .ccg-passive-revenue-panel:focus-within {
     opacity: 0.95;
 }
 
 .ccg-passive-revenue-panel__actions a[href="/support.html"]:hover,
-.ccg-passive-revenue-panel__actions a[href="/support.html"]:focus-visible {
+.ccg-passive-revenue-panel__actions a[href="/support.html"]:focus-visible,
+.ccg-passive-revenue-panel__actions a[href="/supporters.html"]:hover,
+.ccg-passive-revenue-panel__actions a[href="/supporters.html"]:focus-visible {
     transform: none;
     outline: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.45);
     outline-offset: 3px;
