@@ -16,6 +16,7 @@ const TAG = '[CCG-GUARD]';
 const IS_LOGIN_PAGE = window.location.pathname.endsWith('/login.html');
 const MASTER_DATA_PAGE_PATTERN = /\/admin\/(?:admin|games-editor)\.html$/i;
 const IS_MASTER_DATA_PAGE = MASTER_DATA_PAGE_PATTERN.test(window.location.pathname);
+const IS_GAME_BUILDER_PAGE = /\/admin\/games-editor\.html$/i.test(window.location.pathname);
 const MASTER_DATA_ROLES = Object.freeze(['admin', 'superadmin']);
 
 if (IS_MASTER_DATA_PAGE) {
@@ -60,6 +61,17 @@ function renderAuthStatus(state) {
     statusNode.textContent = text;
     statusNode.dataset.state = status;
   });
+}
+
+async function loadBuilderHandoff() {
+  if (!IS_GAME_BUILDER_PAGE || window.__ccgSubmissionBuilderHandoffRequested) return;
+  window.__ccgSubmissionBuilderHandoffRequested = true;
+
+  try {
+    await import('./submission-builder-handoff.js');
+  } catch (error) {
+    console.warn(TAG, 'submission builder handoff unavailable', error);
+  }
 }
 
 export async function ensureAuthenticated({ redirectTo = AUTH_CONFIG.loginPage } = {}) {
@@ -160,6 +172,7 @@ async function enforceMasterDataPageAccess() {
     if (!access) return;
     document.documentElement.dataset.ccgMasterDataGate = 'granted';
     document.documentElement.style.visibility = '';
+    await loadBuilderHandoff();
     await startAccessMonitor();
   } catch (error) {
     console.error(TAG, 'master data access gate failed', error);
