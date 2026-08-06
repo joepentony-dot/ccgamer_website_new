@@ -1,24 +1,71 @@
 [
   {
     "slug": "ocean-software",
-    "summary": "Ocean Software became one of the most visible British computer-game publishers of the 1980s and early 1990s. Its CCG archive is particularly strong in arcade conversions, film licences and large boxed releases that helped define the UK retail scene.",
+    "summary": "Ocean Software was founded in Manchester in 1983 by David Ward and Jon Woods. It began as Spectrum Games, adopted the Ocean name, and became strongly associated with licensed film, television and arcade properties across the British home-computer market.",
+    "facts": [
+      "Founded in 1983 by David Ward and Jon Woods.",
+      "The business initially used the name Spectrum Games before adopting Ocean.",
+      "Ocean acquired the Imagine label in late 1984 and used it for many arcade conversions."
+    ],
     "strengths": ["Arcade conversions", "Film and television licences", "Large UK retail releases"],
     "related": [{"label":"Imagine","slug":"imagine"}, {"label":"US Gold","slug":"us-gold"}],
-    "note": "The archive treats each credited publishing label separately, even where staff, licences or distribution relationships overlapped."
+    "note": "The source-backed company facts are separate from the archive strengths, which summarise the Ocean games represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Ocean Software company profile",
+        "url": "https://www.computinghistory.org.uk/pages/cache/FULL-57894.htm",
+        "type": "museum"
+      }
+    ]
   },
   {
     "slug": "mastertronic",
-    "summary": "Mastertronic was central to the British budget-game market, placing inexpensive releases in newsagents and high-street shops and giving many C64 owners a large library without full-price spending.",
+    "summary": "The business that became Mastertronic was started in London late in 1983 and began trading on 1 April 1984. Its defining strategy was budget software at £1.99, backed by a distribution-led approach designed to place inexpensive games directly onto a wide range of retail shelves.",
+    "facts": [
+      "The business was started late in 1983 and began trading on 1 April 1984.",
+      "Its standard UK launch price was £1.99 at a time when many games cost considerably more.",
+      "Its commercial strategy concentrated on distributors and retailers as well as consumer demand."
+    ],
     "strengths": ["Budget releases", "Wide retail distribution", "Large C64 catalogue"],
     "related": [{"label":"MAD (Mastertronic)","slug":"mad-mastertronic"}, {"label":"Virgin Mastertronic","slug":"virgin-mastertronic"}],
-    "note": "Related Mastertronic labels remain separate so their individual game credits can still be explored."
+    "note": "The historical source was written by former Mastertronic financial controller Anthony Guter and is preserved by the Mastertronic Collectors Archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — A History of Mastertronic",
+        "url": "https://mastertronic.co.uk/a-history-of-mastertronic/",
+        "type": "first-person archive"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — site provenance",
+        "url": "https://mastertronic.co.uk/about-this-site/",
+        "type": "archive provenance"
+      }
+    ]
   },
   {
     "slug": "firebird",
-    "summary": "Firebird was one of Telecomsoft's best-known labels and covered both inexpensive releases and more ambitious full-price games. The label is remembered for a broad C64 catalogue and distinctive packaging.",
+    "summary": "Firebird was created in 1984 by Telecomsoft, British Telecom's software division. The label published games for the Commodore 64 and other home computers, using both budget and premium ranges while Telecomsoft explored software publishing alongside early ideas for network-delivered content.",
+    "facts": [
+      "Firebird was created by Telecomsoft in 1984.",
+      "The label published for the Commodore 64, ZX Spectrum and other systems.",
+      "Firebird used both premium and budget ranges rather than serving only one price band."
+    ],
     "strengths": ["Budget and full-price ranges", "C64 arcade and adventure games", "Distinctive label identity"],
     "related": [{"label":"Rainbird","slug":"rainbird"}, {"label":"Silverbird","slug":"silverbird"}],
-    "note": "Firebird, Rainbird and later associated labels are kept as separate archive destinations."
+    "note": "Only the institutional archive's documented points are presented as company facts; Firebird, Rainbird and Silverbird remain separate CCG routes.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Play It Again digital heritage archive — Firebird Software",
+        "url": "https://ourdigitalheritage.org/hostedArchives/playitagain/companies/firebird/index.html",
+        "type": "digital heritage archive"
+      }
+    ]
   },
   {
     "slug": "us-gold",
@@ -29,10 +76,29 @@
   },
   {
     "slug": "codemasters",
-    "summary": "Codemasters built a major reputation through affordable, technically confident games and recognisable series. The C64 catalogue includes racing, sports, platform and arcade-style releases.",
+    "summary": "Codemasters was founded in the 1980s by brothers David and Richard Darling. Its early output included sports games such as BMX Simulator for the Commodore 64, and the company first built its business around affordable releases for 8-bit home computers.",
+    "facts": [
+      "Founded in the 1980s by David and Richard Darling.",
+      "BMX Simulator for the Commodore 64 was among its early sports titles.",
+      "Its early catalogue concentrated on budget-priced 8-bit games before later expansion."
+    ],
     "strengths": ["Budget games", "Racing and sports", "Recognisable game series"],
     "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"Alternative Software","slug":"alternative-software"}],
-    "note": "The publisher page reflects the credits in the main CCG game database rather than every title released on other systems."
+    "note": "The company facts use Codemasters' official EA studio history, with the independent Codemasters Archive supplying additional context on its early budget focus.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Codemasters official EA studio history",
+        "url": "https://www.ea.com/ea-studios/codemasters/studio",
+        "type": "official company"
+      },
+      {
+        "label": "The Codemasters Archive — company history",
+        "url": "https://thecodemastersarchive.co.uk/history/",
+        "type": "specialist archive"
+      }
+    ]
   },
   {
     "slug": "system-3",
@@ -43,17 +109,50 @@
   },
   {
     "slug": "activision",
-    "summary": "Activision's Commodore catalogue ranges from early home-computer releases to licensed action games and distributed European titles. It is one of the larger publisher collections in the CCG archive.",
+    "summary": "Activision was founded in 1979 and developed, published and distributed interactive entertainment. Its CCG Commodore archive reflects only part of a much wider catalogue and includes early home-computer releases alongside later licensed and distributed titles.",
+    "facts": [
+      "Activision was founded in 1979.",
+      "The company described its business as developing, publishing and distributing interactive entertainment.",
+      "Its historical operations included the United Kingdom alongside North America and other international markets."
+    ],
     "strengths": ["Early home-computer publishing", "Licensed games", "Broad C64 catalogue"],
     "related": [{"label":"System 3","slug":"system-3"}, {"label":"Infocom","slug":"infocom"}],
-    "note": "Some games carried different publishers by territory; the CCG page lists the credits stored for each archived version."
+    "note": "Territorial publisher credits can differ, so CCG continues to display the publisher stored for each archived version rather than rewriting game records.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Activision investor archive — company profile in 2002 announcement",
+        "url": "https://investor.activision.com/news-releases/news-release-details/activision-launches-new-website-wwwactivisioncom",
+        "type": "official company archive"
+      }
+    ]
   },
   {
     "slug": "electronic-arts",
-    "summary": "Electronic Arts published a wide mixture of sports, simulations, construction tools and original computer games. Its C64 and Amiga output includes both accessible arcade-style titles and much deeper disk-based releases.",
+    "summary": "Electronic Arts was founded in 1982. Its first five games shipped on 20 May 1983, with packaging that placed creator names prominently on the front; that first group included Archon and M.U.L.E., both later released for the Commodore 64.",
+    "facts": [
+      "Electronic Arts was founded in 1982.",
+      "Its first five games shipped on 20 May 1983.",
+      "Early packaging presented game creators prominently and included titles later released on the Commodore 64."
+    ],
     "strengths": ["Sports games", "Simulations and strategy", "Creator-led computer titles"],
     "related": [{"label":"Origin Systems","slug":"origin-systems"}, {"label":"Lucasfilm Games","slug":"lucasfilm-games"}],
-    "note": "Developer and publisher relationships are shown separately wherever the archive contains both credits."
+    "note": "The factual history is drawn from EA's own company and anniversary pages; archive strengths describe the EA games currently represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Electronic Arts — About EA",
+        "url": "https://www.ea.com/about?lang=en",
+        "type": "official company"
+      },
+      {
+        "label": "Electronic Arts — first games anniversary history",
+        "url": "https://www.ea.com/en-gb/news/28-years-of-electronic-arts",
+        "type": "official company archive"
+      }
+    ]
   },
   {
     "slug": "psygnosis",
@@ -64,10 +163,29 @@
   },
   {
     "slug": "elite",
-    "summary": "Elite Systems was a major British publisher of arcade conversions and licensed action games. Its C64 releases include several familiar coin-op names alongside original home-computer titles.",
+    "summary": "Elite Systems Limited was incorporated in England on 14 August 1984. The company began as a developer and publisher for the ZX Spectrum and Commodore 64, and its early licensing work included Airwolf before a wider run of licensed and arcade-derived releases.",
+    "facts": [
+      "Elite Systems Limited was incorporated on 14 August 1984.",
+      "It began as a developer and publisher for the ZX Spectrum and Commodore 64.",
+      "Its 1984 licensing activity included an official game based on the television series Airwolf."
+    ],
     "strengths": ["Arcade conversions", "Licensed action games", "C64 retail releases"],
     "related": [{"label":"Encore","slug":"encore"}, {"label":"Hit-Pak","slug":"hit-pak"}],
-    "note": "Budget re-releases may appear under their own credited label rather than being folded into Elite's main total."
+    "note": "The incorporation date comes from Companies House; the early platform and licensing details come from Elite's company profile.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Companies House — Elite Systems Limited",
+        "url": "https://find-and-update.company-information.service.gov.uk/company/01840901",
+        "type": "government record"
+      },
+      {
+        "label": "Elite Systems — corporate profile",
+        "url": "https://www.elite-systems.co.uk/elite/htdocs/corporate_profile.php",
+        "type": "official company"
+      }
+    ]
   },
   {
     "slug": "gremlin-graphics",
@@ -78,10 +196,24 @@
   },
   {
     "slug": "microprose-software",
-    "summary": "MicroProse became synonymous with detailed simulations and strategy games supplied with substantial manuals, maps and reference material. Its C64 catalogue rewards patience and preparation more than quick arcade play.",
+    "summary": "Sid Meier co-founded MicroProse in 1982. The company became closely associated with simulation and strategy games, and the CCG Commodore archive includes several detailed releases that relied on manuals, maps and patient play.",
+    "facts": [
+      "Sid Meier co-founded MicroProse in 1982.",
+      "MicroProse became an important foundation for Sid Meier's later strategy-game work.",
+      "The CCG archive records the relevant Commodore releases under the publisher name MicroProse Software."
+    ],
     "strengths": ["Flight simulations", "Military strategy", "Detailed manuals and packaging"],
     "related": [{"label":"MicroStyle","slug":"microstyle"}, {"label":"Electronic Arts","slug":"electronic-arts"}],
-    "note": "The CCG archive uses MicroProse Software as the recorded publisher name for these entries."
+    "note": "The founding statement is sourced from Firaxis' official studio history; catalogue observations are limited to the games already represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-06",
+    "sources": [
+      {
+        "label": "Firaxis Games — official studio history",
+        "url": "https://firaxis.com/about/",
+        "type": "official successor studio"
+      }
+    ]
   },
   {
     "slug": "rainbird",
