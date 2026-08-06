@@ -20,6 +20,7 @@ Do Not Override
         { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
         { src: "/js/ccg-archive-schema.js", marker: "data-ccg-archive-schema-loader" },
         { src: "/js/ccg-pwa.js", marker: "data-ccg-pwa-loader" },
+        { src: "/js/ccg-pwa-visible-install.js", marker: "data-ccg-pwa-visible-install-loader" },
         { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
