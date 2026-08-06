@@ -65,6 +65,7 @@ requireText(page, 'id="archiveQualityResults"', "Findings container");
 requireText(page, 'id="archiveQualityCsv"', "CSV export control");
 requireText(page, 'id="archiveQualityJson"', "JSON export control");
 requireText(page, "never edits the game database", "Read-only visitor explanation");
+requireText(page, "External Google Drive, Lemon64 and YouTube", "External-check limitation");
 
 requireText(code, "ensureRole(['admin', 'superadmin'])", "Administrator role guard");
 requireText(code, "startAccessMonitor", "Administrator access monitor");
@@ -80,7 +81,6 @@ requireText(code, "video:id-format", "YouTube ID format reporting");
 requireText(code, "resource:canonical-page", "Canonical page reporting");
 requireText(code, "exportCsv", "CSV report export");
 requireText(code, "exportJson", "JSON report export");
-requireText(code, "External Google Drive, Lemon64 and YouTube", "External-check limitation");
 
 rejectText(code, /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i, "Archive audit");
 rejectText(code, /\.from\([^)]*\)\.(?:insert|update|upsert|delete)\s*\(/i, "Archive audit");
