@@ -18,6 +18,7 @@ Do Not Override
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
         { src: "/js/ccg-smart-discovery.js", marker: "data-ccg-smart-discovery-loader" },
         { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
+        { src: "/js/ccg-archive-schema.js", marker: "data-ccg-archive-schema-loader" },
         { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },

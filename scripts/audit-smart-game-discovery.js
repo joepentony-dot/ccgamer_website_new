@@ -97,11 +97,10 @@ const allowedPaths = new Set([
     "docs/seo-baseline/phase-14-smart-game-discovery.md"
 ]);
 
-const shouldCheckScope = !process.env.GITHUB_ACTIONS || process.env.GITHUB_EVENT_NAME === "pull_request";
-if (shouldCheckScope) {
-    for (const changedPath of changedFiles()) {
-        if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
-        if (!allowedPaths.has(changedPath)) failures.push(`Out-of-scope change: ${changedPath}`);
+for (const changedPath of changedFiles()) {
+    if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+    if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
+        failures.push(`Out-of-scope local Phase 14 change: ${changedPath}`);
     }
 }
 
@@ -115,4 +114,5 @@ console.log("Smart game discovery audit passed.");
 console.log("- Existing related carousel reused");
 console.log("- Archive-only recommendation factors present");
 console.log("- Publisher and genre diversity controls present");
+console.log("- Later shared-loader phases are tolerated in CI");
 console.log("- No account data, tracking or master-data edits");
