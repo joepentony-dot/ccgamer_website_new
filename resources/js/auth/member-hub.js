@@ -319,18 +319,13 @@
     throw new Error("Supabase member client is unavailable.");
   }
 
-  function installConsentStyles() {
-    if (document.getElementById("ccgNotificationConsentStyles")) return;
-    const style = document.createElement("style");
-    style.id = "ccgNotificationConsentStyles";
-    style.textContent = `
-      .member-notification-choice{margin:18px 0 24px;padding:18px;border:1px solid rgba(111,201,255,.45);background:rgba(7,25,44,.88);box-shadow:0 0 18px rgba(56,154,218,.13)}
-      .member-notification-choice h3{margin:0 0 8px;font-size:1.2rem}
-      .member-notification-choice p{margin:0 0 14px;line-height:1.55}
-      .member-notification-choice__actions{display:flex;flex-wrap:wrap;gap:10px}
-      .member-notification-choice__status{margin-top:12px!important;font-size:.92rem}
-    `;
-    document.head.appendChild(style);
+  function ensureConsentStylesheet() {
+    if (document.querySelector('link[data-ccg-notification-preferences]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/resources/css/notification-preferences.css";
+    link.dataset.ccgNotificationPreferences = "true";
+    document.head.appendChild(link);
   }
 
   function setProfileMessage(message, type = "success") {
@@ -367,7 +362,7 @@
     const grid = settings?.querySelector(".member-account-grid");
     if (!settings || !grid || document.getElementById("memberNotificationChoice")) return;
 
-    installConsentStyles();
+    ensureConsentStylesheet();
 
     const panel = document.createElement("section");
     panel.id = "memberNotificationChoice";
