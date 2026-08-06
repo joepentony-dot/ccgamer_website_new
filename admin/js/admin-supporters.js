@@ -156,7 +156,9 @@ function wireControls() {
   });
 
   document.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-save-supporter]');
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest('[data-save-supporter]');
     if (!button) return;
     const row = button.closest('tr');
     if (row) void saveRow(row);
