@@ -73,6 +73,10 @@ requireText(code, "initAdminNav({ active: 'quality'", "Shared admin navigation")
 requireText(code, "'/games/games.json'", "Live catalogue source");
 requireText(code, "method: 'HEAD'", "Read-only local resource checking");
 requireText(code, "RESOURCE_CONCURRENCY = 8", "Bounded local resource checks");
+requireText(code, "'action-adventure'", "Canonical action-adventure genre");
+requireText(code, "'role-playing'", "Canonical role-playing genre");
+requireText(code, "result.status >= 500", "Temporary server response handling");
+requireText(code, "const hasRating", "Optional legacy rating handling");
 requireText(code, "THUMBNAIL_SIZE_LIMIT", "Thumbnail size review");
 requireText(code, "BOX_SIZE_LIMIT", "3D box size review");
 requireText(code, "duplicate:slug", "Duplicate slug reporting");

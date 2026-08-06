@@ -10,16 +10,20 @@ const THUMBNAIL_SIZE_LIMIT = 1_500_000;
 const BOX_SIZE_LIMIT = 2_000_000;
 const RESOURCE_CONCURRENCY = 8;
 const VALID_GENRES = new Set([
+  'action-adventure',
   'action adventure',
   'adventure',
   'arcade',
+  'casino',
   'casino games',
+  'fighting',
   'fighting games',
   'horror',
   'miscellaneous',
   'platform',
   'puzzle',
   'racing',
+  'role-playing',
   'role playing',
   'quiz',
   'shooting',
@@ -183,7 +187,9 @@ function auditRequiredFields(game, index) {
   const year = Number(game?.year);
   const genres = asArray(game?.genres).map((value) => text(value).toLowerCase()).filter(Boolean);
   const videoId = text(game?.videoid || game?.videoId);
-  const rating = Number(game?.ccg_rating);
+  const ratingRaw = game?.ccg_rating;
+  const hasRating = ratingRaw !== undefined && ratingRaw !== null && ratingRaw !== '';
+  const rating = hasRating ? Number(ratingRaw) : null;
   const description = text(game?.description);
   const slug = text(game?.slug);
   const thumbnail = text(game?.thumbnail);
@@ -199,8 +205,7 @@ function auditRequiredFields(game, index) {
     ['description', description, 'Description'],
     ['video', videoId, 'YouTube video ID'],
     ['publisher', publishers.join(', '), 'Publisher'],
-    ['thumbnail', thumbnail, 'Thumbnail path'],
-    ['rating', Number.isFinite(rating) ? String(rating) : '', 'CCG rating']
+    ['thumbnail', thumbnail, 'Thumbnail path']
   ];
 
   required.forEach(([code, value, label]) => {
@@ -255,7 +260,7 @@ function auditRequiredFields(game, index) {
     });
   }
 
-  if (Number.isFinite(rating) && (rating < 1 || rating > 10)) {
+  if (hasRating && (!Number.isFinite(rating) || rating < 1 || rating > 10)) {
     addFinding({
       game,
       index,
@@ -310,7 +315,8 @@ function auditDuplicates() {
     const id = text(game?.id);
     const slug = text(game?.slug);
     const platform = normalizePlatform(game?.system || game?.platform);
-    const titleKey = `${platform}:${normalizeTitle(game?.title)}`;
+    const year = Number.isInteger(Number(game?.year)) ? Number(game.year) : 'unknown';
+    const titleKey = `${platform}:${year}:${normalizeTitle(game?.title)}`;
 
     if (id) {
       if (!indexes.id.has(id)) indexes.id.set(id, []);
@@ -511,7 +517,8 @@ async function fetchHead(url) {
 
 function addResourceFinding(task, result) {
   if (!result.ok) {
-    const unverifiable = result.status === 0 || result.status === 405;
+    const unverifiable = result.status === 0 || result.status === 405 || result.status === 429 || result.status >= 500;
+    if (unverifiable) return;
     addFinding({
       game: task.game,
       index: task.index,

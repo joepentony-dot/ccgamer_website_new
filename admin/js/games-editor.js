@@ -10,17 +10,17 @@ const REDIRECT_TEMPLATE_PATH = '/admin/templates/game-redirect-template.html';
 const GAME_OUTPUT_UTILS_PATH = '/scripts/game-output-utils.js';
 
 const REQUIRED_GENRE_VALUES = [
-  'action adventure',
+  'action-adventure',
   'adventure',
   'arcade',
-  'casino games',
-  'fighting games',
+  'casino',
+  'fighting',
   'horror',
   'miscellaneous',
   'platform',
   'puzzle',
   'racing',
-  'role playing',
+  'role-playing',
   'quiz',
   'shooting',
   'sports',
@@ -528,8 +528,8 @@ function validateStep1() {
   }
 
   const rating = Number(state.draft.ccg_rating);
-  if (!Number.isInteger(rating) || rating < 0 || rating > 10) {
-    errors.push('CCG Rating must be an integer between 0 and 10.');
+  if (!Number.isInteger(rating) || rating < 1 || rating > 10) {
+    errors.push('CCG Rating must be an integer between 1 and 10.');
   }
 
 
