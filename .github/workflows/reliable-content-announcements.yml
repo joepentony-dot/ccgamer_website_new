@@ -1,0 +1,76 @@
+name: CCG Reliable Content Announcements
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "admin/announce.html"
+      - "admin/js/announce.js"
+      - "community/profile.html"
+      - "resources/js/auth/profile-page.js"
+      - "data/retro-specials.json"
+      - "supabase/functions/send-new-game-notification/**"
+      - "supabase/migrations/20260806150000_reliable_content_announcements.sql"
+      - "scripts/apply-phase20b-content-preferences.py"
+      - "tests/reliable-content-announcements.test.mjs"
+      - ".github/workflows/reliable-content-announcements.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/phase20b-protected.sha256"
+
+      - name: Confirm generated member preferences are current
+        run: |
+          python scripts/apply-phase20b-content-preferences.py
+          git diff --exit-code -- community/profile.html resources/js/auth/profile-page.js
+
+      - name: Validate syntax
+        run: |
+          python -m py_compile scripts/apply-phase20b-content-preferences.py
+          node --check admin/js/announce.js
+          node --check resources/js/auth/profile-page.js
+          deno check supabase/functions/send-new-game-notification/index.ts
+
+      - name: Run announcement regressions
+        run: node --test tests/reliable-content-announcements.test.mjs
+
+      - name: Check whitespace
+        run: git diff --check
+
+      - name: Confirm protected files are unchanged
+        if: always()
+        run: sha256sum --check "$RUNNER_TEMP/phase20b-protected.sha256"
