@@ -1,0 +1,39 @@
+name: CCG Archive Structured Data
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-archive-schema.js"
+      - "scripts/audit-archive-schema.js"
+      - "docs/seo-baseline/phase-15-archive-structured-data.md"
+      - ".github/workflows/ccg-archive-schema.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive-schema:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-archive-schema.js
+          node --check scripts/audit-archive-schema.js
+
+      - name: Run archive structured data audit
+        run: node scripts/audit-archive-schema.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
