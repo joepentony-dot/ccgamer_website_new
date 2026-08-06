@@ -92,15 +92,15 @@ const allowedPaths = new Set([
     "js/ccg-nav-core.js",
     "js/ccg-archive-schema.js",
     "scripts/audit-archive-schema.js",
+    "scripts/audit-smart-game-discovery.js",
     ".github/workflows/ccg-archive-schema.yml",
     "docs/seo-baseline/phase-15-archive-structured-data.md"
 ]);
 
-const shouldCheckScope = !process.env.GITHUB_ACTIONS || process.env.GITHUB_EVENT_NAME === "pull_request";
-if (shouldCheckScope) {
-    for (const changedPath of changedFiles()) {
-        if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
-        if (!allowedPaths.has(changedPath)) failures.push(`Out-of-scope change: ${changedPath}`);
+for (const changedPath of changedFiles()) {
+    if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
+    if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
+        failures.push(`Out-of-scope local Phase 15 change: ${changedPath}`);
     }
 }
 
@@ -114,4 +114,5 @@ console.log("Archive structured data audit passed.");
 console.log("- CollectionPage, ItemList, BreadcrumbList and Quiz coverage present");
 console.log("- Existing schema is detected before adaptive schema is added");
 console.log("- Archive lists are bounded while full counts are retained");
+console.log("- Later shared-loader phases are tolerated in CI");
 console.log("- Member data and protected files remain outside scope");
