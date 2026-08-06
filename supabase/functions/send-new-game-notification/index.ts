@@ -240,7 +240,7 @@ async function authEmailMap(serviceClient: any): Promise<Map<string, string>> {
     const { data, error } = await serviceClient.auth.admin.listUsers({ page, perPage });
     if (error) throw new Error(`Recipient email lookup failed: ${error.message}`);
     const users = Array.isArray(data?.users) ? data.users : [];
-    users.forEach((user) => {
+    users.forEach((user: { id?: string; email?: string; email_confirmed_at?: string | null }) => {
       if (user.id && user.email && user.email_confirmed_at) result.set(user.id, user.email);
     });
     if (users.length < perPage) break;
