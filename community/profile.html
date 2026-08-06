@@ -322,7 +322,7 @@
                   <li>Account-backed favourites</li>
                   <li>Choose up to ten Top Picks</li>
                   <li>Personal Played and ownership lists</li>
-                  <li>Optional new-game notifications</li>
+                  <li>Separate game and video notification choices</li>
                   <li>Private dashboard and activity summary</li>
                 </ul>
               </article>
@@ -367,6 +367,7 @@
                 <h3>Archive preferences</h3>
                 <form id="prefsForm" class="pref-grid">
                   <label><input type="checkbox" id="notifyNewGames" /> New game notifications</label>
+                  <label><input type="checkbox" id="notifyNewsletter" /> New CCG videos and Retro Special notifications</label>
                   <label for="preferredSystem">Preferred system</label>
                   <select id="preferredSystem" name="preferredSystem">
                     <option value="both">C64 &amp; Amiga</option>
@@ -400,7 +401,7 @@
   <script src="/js/ccg-supabase-config.js" defer></script>
   <script src="/js/ccg-supabase-client.js" defer></script>
   <script src="/js/ccg-auth-ui.js" defer></script>
-  <script type="module" src="/resources/js/auth/profile-page.js"></script>
+  <script type="module" src="/resources/js/auth/profile-page.js?v=phase20b-20260806"></script>
   <script src="/resources/js/auth/profile-lists.js" defer></script>
   <script src="/resources/js/auth/member-hub.js" defer></script>
 </body>

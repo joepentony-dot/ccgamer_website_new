@@ -54,7 +54,8 @@ function profileDefaults(user) {
       || user.user_metadata?.full_name
       || user.user_metadata?.name
       || 'Member',
-    notify_new_games: false
+    notify_new_games: false,
+    notify_newsletter: false
   };
 }
 
@@ -109,6 +110,9 @@ function renderProfile(user, profile) {
 
   const notifyNewGames = document.getElementById('notifyNewGames');
   if (notifyNewGames) notifyNewGames.checked = Boolean(profile.notify_new_games);
+
+  const notifyNewsletter = document.getElementById('notifyNewsletter');
+  if (notifyNewsletter) notifyNewsletter.checked = Boolean(profile.notify_newsletter);
 }
 
 function normalizeSlugCandidate(candidate) {
@@ -349,8 +353,12 @@ async function fetchTopPicks(supabaseClient, userId) {
 
 async function savePreferences({ supabaseClient, user, messageBox }) {
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
+  const notifyNewsletter = Boolean(document.getElementById('notifyNewsletter')?.checked);
 
-  const updates = { notify_new_games: notifyNewGames };
+  const updates = {
+    notify_new_games: notifyNewGames,
+    notify_newsletter: notifyNewsletter
+  };
   const { error: updateError } = await supabaseClient
     .from('profiles')
     .update(updates)
