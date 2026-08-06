@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Cheeky Commodore Gamer app icon</title>
+  <desc id="desc">A dark blue retro computer badge with neon CCG lettering and Commodore-inspired stripes.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071938"/>
+      <stop offset="0.52" stop-color="#020b1d"/>
+      <stop offset="1" stop-color="#160626"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#66f6ff"/>
+      <stop offset="0.5" stop-color="#537cff"/>
+      <stop offset="1" stop-color="#e15dff"/>
+    </linearGradient>
+    <linearGradient id="letters" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.48" stop-color="#9ffaff"/>
+      <stop offset="1" stop-color="#4ed6ff"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <clipPath id="screenClip">
+      <rect x="176" y="174" width="672" height="516" rx="70"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <rect x="72" y="72" width="880" height="880" rx="184" fill="none" stroke="url(#rim)" stroke-width="24"/>
+  <rect x="122" y="122" width="780" height="780" rx="142" fill="#030918" stroke="#17447d" stroke-width="10"/>
+
+  <g clip-path="url(#screenClip)">
+    <rect x="176" y="174" width="672" height="516" rx="70" fill="#06172f"/>
+    <path d="M176 238H848M176 302H848M176 366H848M176 430H848M176 494H848M176 558H848M176 622H848" stroke="#0d2d54" stroke-width="7" opacity="0.7"/>
+    <path d="M240 174V690M304 174V690M368 174V690M432 174V690M496 174V690M560 174V690M624 174V690M688 174V690M752 174V690M816 174V690" stroke="#0b2749" stroke-width="7" opacity="0.45"/>
+    <ellipse cx="512" cy="448" rx="300" ry="220" fill="#163c68" opacity="0.18" filter="url(#glow)"/>
+  </g>
+
+  <rect x="176" y="174" width="672" height="516" rx="70" fill="none" stroke="#2aa1d9" stroke-width="14"/>
+  <path d="M228 730H796L850 820H174Z" fill="#0a1a32" stroke="#315784" stroke-width="12"/>
+  <rect x="292" y="770" width="440" height="30" rx="15" fill="#16385f"/>
+
+  <g filter="url(#glow)" fill="url(#letters)" stroke="#55dfff" stroke-width="4" paint-order="stroke">
+    <text x="512" y="442" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="238" font-weight="900" letter-spacing="-26">CCG</text>
+  </g>
+  <text x="512" y="546" text-anchor="middle" fill="#eafcff" font-family="Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="13">COMMODORE</text>
+  <text x="512" y="608" text-anchor="middle" fill="#c778ff" font-family="Arial, sans-serif" font-size="39" font-weight="800" letter-spacing="17">GAMER</text>
+
+  <g transform="translate(246 848)">
+    <rect width="104" height="24" rx="12" fill="#f44c65"/>
+    <rect x="116" width="104" height="24" rx="12" fill="#ff8b3d"/>
+    <rect x="232" width="104" height="24" rx="12" fill="#ffd34d"/>
+    <rect x="348" width="104" height="24" rx="12" fill="#55d68b"/>
+    <rect x="464" width="68" height="24" rx="12" fill="#5e96ff"/>
+  </g>
+</svg>
