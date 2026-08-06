@@ -134,6 +134,7 @@ set search_path = public
 as $$
 declare
   v_tier text := lower(trim(coalesce(p_tier, 'supporter')));
+  v_updated integer := 0;
 begin
   if not public.ccg_is_admin(auth.uid()) then
     raise exception 'not_authorized';
@@ -152,20 +153,24 @@ begin
       updated_at = now()
   where id = p_user_id;
 
-  insert into public.admin_activity_log (event_type, actor_user_id, target_user_id, metadata)
-  values (
-    'supporter_status_update',
-    auth.uid(),
-    p_user_id,
-    jsonb_build_object(
-      'verified', coalesce(p_verified, false),
-      'tier', v_tier,
-      'supporter_since', p_supporter_since,
-      'sort_order', greatest(coalesce(p_sort_order, 0), 0)
-    )
-  );
+  get diagnostics v_updated = row_count;
 
-  return found;
+  if v_updated > 0 then
+    insert into public.admin_activity_log (event_type, actor_user_id, target_user_id, metadata)
+    values (
+      'supporter_status_update',
+      auth.uid(),
+      p_user_id,
+      jsonb_build_object(
+        'verified', coalesce(p_verified, false),
+        'tier', v_tier,
+        'supporter_since', p_supporter_since,
+        'sort_order', greatest(coalesce(p_sort_order, 0), 0)
+      )
+    );
+  end if;
+
+  return v_updated > 0;
 end;
 $$;
 
