@@ -2,8 +2,8 @@
    CCG MEMBER HUB — PRIVATE DASHBOARD
    ------------------------------------------------------------
    Phase 1 uses existing account favourites plus established
-   browser-local history and personal-list data. No new account
-   database writes are introduced by this module.
+   browser-local history and personal-list data. Phase 20E adds
+   an explicit, account-backed announcement preference choice.
 ============================================================ */
 
 (function () {
@@ -308,6 +308,163 @@
     host.appendChild(list);
   }
 
+  async function getMemberClient() {
+    const started = Date.now();
+    while (Date.now() - started < 8000) {
+      if (window.ccgSupabase && typeof window.ccgSupabase.getClient === "function") {
+        return window.ccgSupabase.getClient();
+      }
+      await new Promise((resolve) => window.setTimeout(resolve, 50));
+    }
+    throw new Error("Supabase member client is unavailable.");
+  }
+
+  function ensureConsentStylesheet() {
+    if (document.querySelector('link[data-ccg-notification-preferences]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/resources/css/notification-preferences.css";
+    link.dataset.ccgNotificationPreferences = "true";
+    document.head.appendChild(link);
+  }
+
+  function setProfileMessage(message, type = "success") {
+    const box = document.getElementById("profileMessage");
+    if (!box) return;
+    box.textContent = message;
+    box.classList.remove("auth-error", "auth-success");
+    box.classList.add(type === "error" ? "auth-error" : "auth-success");
+  }
+
+  async function updateRecordedPreferences(supabase, userId, values) {
+    const now = new Date().toISOString();
+    const updates = {
+      notification_preferences_updated_at: now
+    };
+
+    if (Object.hasOwn(values, "notifyNewGames")) {
+      updates.notify_new_games = Boolean(values.notifyNewGames);
+      updates.notify_new_games_opt_in = Boolean(values.notifyNewGames);
+      updates.notify_new_games_choice_recorded = true;
+    }
+
+    if (Object.hasOwn(values, "notifyNewsletter")) {
+      updates.notify_newsletter = Boolean(values.notifyNewsletter);
+      updates.notify_newsletter_choice_recorded = true;
+    }
+
+    return supabase.from("profiles").update(updates).eq("id", userId);
+  }
+
+  function createNotificationChoice({ supabase, userId, currentValue }) {
+    const settings = document.getElementById("memberSettings");
+    const grid = settings?.querySelector(".member-account-grid");
+    if (!settings || !grid || document.getElementById("memberNotificationChoice")) return;
+
+    ensureConsentStylesheet();
+
+    const panel = document.createElement("section");
+    panel.id = "memberNotificationChoice";
+    panel.className = "member-notification-choice";
+    panel.setAttribute("aria-labelledby", "memberNotificationChoiceTitle");
+
+    const title = document.createElement("h3");
+    title.id = "memberNotificationChoiceTitle";
+    title.textContent = "Choose your CCG video email preference";
+
+    const copy = document.createElement("p");
+    copy.textContent = "Would you like an email when new CCG videos, Zzap!64 features and Retro Specials are published? No video announcement emails will be sent to you until you choose.";
+
+    const actions = document.createElement("div");
+    actions.className = "member-notification-choice__actions";
+
+    const yesButton = document.createElement("button");
+    yesButton.type = "button";
+    yesButton.className = "auth-btn";
+    yesButton.textContent = "Yes, email me";
+
+    const noButton = document.createElement("button");
+    noButton.type = "button";
+    noButton.className = "auth-btn";
+    noButton.textContent = "No thanks";
+
+    const status = document.createElement("p");
+    status.className = "member-notification-choice__status";
+    status.setAttribute("aria-live", "polite");
+
+    const choose = async (enabled) => {
+      yesButton.disabled = true;
+      noButton.disabled = true;
+      status.textContent = "Saving your choice…";
+
+      const { error } = await updateRecordedPreferences(supabase, userId, {
+        notifyNewsletter: enabled
+      });
+
+      if (error) {
+        console.error("[member-hub] notification choice save failed", error);
+        status.textContent = "Your choice could not be saved. Please try again.";
+        yesButton.disabled = false;
+        noButton.disabled = false;
+        return;
+      }
+
+      const newsletterCheckbox = document.getElementById("notifyNewsletter");
+      if (newsletterCheckbox) newsletterCheckbox.checked = enabled;
+      setProfileMessage(enabled ? "Video and Retro Special emails enabled." : "Video and Retro Special emails remain disabled.");
+      panel.remove();
+    };
+
+    yesButton.addEventListener("click", () => void choose(true));
+    noButton.addEventListener("click", () => void choose(false));
+    actions.append(yesButton, noButton);
+    panel.append(title, copy, actions, status);
+    grid.insertAdjacentElement("beforebegin", panel);
+
+    const newsletterCheckbox = document.getElementById("notifyNewsletter");
+    if (newsletterCheckbox) newsletterCheckbox.checked = Boolean(currentValue);
+  }
+
+  async function initNotificationConsent() {
+    try {
+      const supabase = await getMemberClient();
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData?.user?.id) return;
+
+      const userId = authData.user.id;
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("notify_new_games, notify_newsletter, notify_newsletter_choice_recorded")
+        .eq("id", userId)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        console.error("[member-hub] notification preference read failed", profileError);
+        return;
+      }
+
+      const prefsForm = document.getElementById("prefsForm");
+      prefsForm?.addEventListener("submit", () => {
+        const notifyNewGames = Boolean(document.getElementById("notifyNewGames")?.checked);
+        const notifyNewsletter = Boolean(document.getElementById("notifyNewsletter")?.checked);
+        void updateRecordedPreferences(supabase, userId, { notifyNewGames, notifyNewsletter })
+          .then(({ error }) => {
+            if (error) console.error("[member-hub] preference choice marker save failed", error);
+          });
+      });
+
+      if (!profile.notify_newsletter_choice_recorded) {
+        createNotificationChoice({
+          supabase,
+          userId,
+          currentValue: profile.notify_newsletter
+        });
+      }
+    } catch (error) {
+      console.error("[member-hub] notification consent init failed", error);
+    }
+  }
+
   function refreshDashboard() {
     loadLocalState();
     updateStats();
@@ -355,6 +512,7 @@
     observeAccountContent();
     refreshDashboard();
     void loadRecentContent();
+    void initNotificationConsent();
   }
 
   if (document.readyState === "loading") {

@@ -4,6 +4,24 @@ function clean(value) {
   return String(value ?? '').trim();
 }
 
+function bool(value) {
+  return value === true || String(value ?? '').toLowerCase() === 'true';
+}
+
+function normalizeNotificationPreferences(preferences = {}) {
+  return {
+    notifyNewGames: bool(preferences.notifyNewGames),
+    notifyNewsletter: bool(preferences.notifyNewsletter),
+    choiceRecorded: bool(preferences.choiceRecorded)
+  };
+}
+
+function generateUnsubscribeToken() {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('');
+}
+
 function buildErrorInfo(error, context) {
   const message = String(error?.message || '').trim();
   const lower = message.toLowerCase();
@@ -75,7 +93,7 @@ async function getSupabaseClient() {
   return api.getClient();
 }
 
-async function ensureProfileBootstrap(user) {
+async function ensureProfileBootstrap(user, preferences = null) {
   if (!user?.id) return { error: null };
 
   try {
@@ -93,6 +111,14 @@ async function ensureProfileBootstrap(user) {
 
     if (!existing.data) {
       const fallbackUsername = String((user.email || 'player').split('@')[0]).slice(0, 24) || 'player';
+      const metadata = user.user_metadata || {};
+      const normalized = normalizeNotificationPreferences(preferences || {
+        notifyNewGames: metadata.notify_new_games,
+        notifyNewsletter: metadata.notify_newsletter,
+        choiceRecorded: metadata.notification_preferences_presented
+      });
+      const recordedAt = normalized.choiceRecorded ? new Date().toISOString() : null;
+
       const inserted = await supabase
         .from('profiles')
         .insert({
@@ -103,8 +129,21 @@ async function ensureProfileBootstrap(user) {
           points: 0,
           bio: '',
           avatar_url: '',
+          created_at: new Date().toISOString(),
+          newsletter_monthly: false,
+          notify_new_games: normalized.notifyNewGames,
+          notify_c64: false,
+          notify_amiga: false,
           newsletter_opt_in: false,
-          notify_new_games_opt_in: false
+          notify_new_games_opt_in: normalized.notifyNewGames,
+          notify_platform_c64: false,
+          notify_platform_amiga: false,
+          notify_newsletter: normalized.notifyNewsletter,
+          notify_new_games_choice_recorded: normalized.choiceRecorded,
+          notify_newsletter_choice_recorded: normalized.choiceRecorded,
+          notification_preferences_updated_at: recordedAt,
+          unsub_token: generateUnsubscribeToken(),
+          email_confirmed: Boolean(user.email_confirmed_at)
         });
 
       if (inserted.error) {
@@ -135,16 +174,28 @@ function sanitizeEmailPassword(email, password) {
   return { safeEmail, safePassword, error: null };
 }
 
-export async function registerUser(email, password) {
+export async function registerUser(email, password, notificationPreferences = {}) {
   const { safeEmail, safePassword, error: inputError } = sanitizeEmailPassword(email, password);
   if (inputError) return { data: null, error: inputError };
 
+  const preferences = normalizeNotificationPreferences(notificationPreferences);
+
   try {
     const supabase = await getSupabaseClient();
-    const result = await supabase.auth.signUp({ email: safeEmail, password: safePassword });
+    const result = await supabase.auth.signUp({
+      email: safeEmail,
+      password: safePassword,
+      options: {
+        data: {
+          notify_new_games: preferences.notifyNewGames,
+          notify_newsletter: preferences.notifyNewsletter,
+          notification_preferences_presented: preferences.choiceRecorded
+        }
+      }
+    });
     if (result.error) return { data: null, error: buildErrorInfo(result.error, 'register') };
 
-    await ensureProfileBootstrap(result.data?.user || null);
+    await ensureProfileBootstrap(result.data?.user || null, preferences);
     return result;
   } catch (error) {
     return { data: null, error: buildErrorInfo(error, 'register') };
@@ -249,7 +300,6 @@ export function onAuthStateChange(callback) {
     }
   };
 }
-
 
 if (typeof window !== 'undefined') {
   window.ccgAuthCore = window.ccgAuthCore || {

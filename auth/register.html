@@ -6,6 +6,7 @@
     <script src="/js/analytics.js" defer></script>
   <title>Register | CCG Auth</title>
   <link rel="stylesheet" href="../resources/css/auth.css" />
+  <link rel="stylesheet" href="../resources/css/notification-preferences.css" />
 </head>
 <body>
   <main class="auth-shell">
@@ -28,6 +29,21 @@
             <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password"></button>
           </div>
         </div>
+
+        <fieldset class="auth-notification-preferences">
+          <legend>Optional email alerts</legend>
+          <label class="auth-notification-preferences__choice">
+            <input id="notifyNewGames" name="notifyNewGames" type="checkbox" />
+            <span>Email me when new Commodore games are added to the CCG archive.</span>
+          </label>
+          <label class="auth-notification-preferences__choice">
+            <input id="notifyNewsletter" name="notifyNewsletter" type="checkbox" />
+            <span>Email me about new CCG videos, Zzap!64 features and Retro Specials.</span>
+          </label>
+          <p class="auth-notification-preferences__note">
+            Both choices are optional and start unticked. You can change them later in Member Hub account settings.
+          </p>
+        </fieldset>
 
         <div id="formMessage" class="auth-message" aria-live="polite"></div>
 
@@ -61,8 +77,13 @@
 
       const email = byId('email').value;
       const password = byId('password').value;
+      const notificationPreferences = {
+        notifyNewGames: Boolean(byId('notifyNewGames').checked),
+        notifyNewsletter: Boolean(byId('notifyNewsletter').checked),
+        choiceRecorded: true
+      };
 
-      const { data, error } = await registerUser(email, password);
+      const { data, error } = await registerUser(email, password, notificationPreferences);
 
       if (error) {
         const duplicate = error.category === 'duplicate_email';
