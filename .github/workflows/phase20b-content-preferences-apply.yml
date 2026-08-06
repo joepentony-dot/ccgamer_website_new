@@ -1,0 +1,60 @@
+name: Phase 20B Content Preferences Apply
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/apply-phase20b-content-preferences.py"
+      - "resources/js/auth/profile-page.js"
+      - "community/profile.html"
+      - ".github/workflows/phase20b-content-preferences-apply.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: phase20b-content-preferences-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Apply bounded preference changes
+        run: python scripts/apply-phase20b-content-preferences.py
+
+      - name: Validate output
+        run: |
+          python -m py_compile scripts/apply-phase20b-content-preferences.py
+          node --check resources/js/auth/profile-page.js
+          git diff --check
+
+      - name: Commit generated preference changes
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          git add community/profile.html resources/js/auth/profile-page.js
+          if git diff --cached --quiet; then
+            echo "Phase 20B preference output is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Apply Phase 20B member notification preferences"
+          git push origin "HEAD:${GITHUB_HEAD_REF}"
