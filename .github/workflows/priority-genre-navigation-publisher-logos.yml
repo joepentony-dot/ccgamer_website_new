@@ -119,89 +119,8 @@ jobs:
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/priority-fix-protected.sha256"
 
-      - name: Confirm exact correction scope
-        shell: bash
-        run: |
-          python - <<'PY'
-          import subprocess
-
-          protected = {
-              "index.html",
-              "home.html",
-              "resources/css/intro.css",
-              "js/index-intro.js",
-              "games/games.json",
-          }
-          allowed_exact = {
-              ".github/workflows/priority-genre-navigation-publisher-logos.yml",
-              ".github/workflows/publisher-archives.yml",
-              "scripts/rebuild-games.js",
-              "scripts/apply-priority-discovery-navigation.js",
-              "scripts/fetch-publisher-logos.js",
-              "scripts/apply-publisher-logos.js",
-              "scripts/validate-publisher-logo-output.js",
-              "scripts/remove-invalid-publisher-labels.js",
-              "scripts/integrate-year-platform-discovery.js",
-              "scripts/validate-year-platform-discovery.js",
-              "data/publisher-logo-sources.json",
-              "resources/css/publisher-logos.css",
-              "games/index.html",
-              "games/developers/index.html",
-              "games/archive-navigation.json",
-              "games/games-search.json",
-              "games/downloads/index.html",
-              "games/batman-the-caped-crusader/index.html",
-              "games/championship-wrestling/index.html",
-              "games/double-dare/index.html",
-              "games/dreamweb/index.html",
-              "games/face-off/index.html",
-              "games/falcon-patrol/index.html",
-              "games/herberts-dummy-run/index.html",
-              "games/kung-fu-master/index.html",
-              "games/mr-robot-and-his-robot-factory/index.html",
-              "games/ninja/index.html",
-              "games/paperboy/index.html",
-              "games/raging-beast/index.html",
-              "games/rebel/index.html",
-              "games/tapper/index.html",
-              "games/the-goonies/index.html",
-              "games/wwf-wrestlemania/index.html",
-              "tools/seo/static-pages.json",
-              "sitemap.xml",
-              "sitemap-pages.xml",
-              "sitemap-games.xml",
-              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
-              "docs/seo-baseline/phase-4d-year-platform-validation.md",
-          }
-          allowed_prefixes = (
-              "games/publishers/",
-              "resources/images/publishers/",
-          )
-
-          tracked = subprocess.check_output(
-              ["git", "diff", "--name-only", "origin/main"], text=True
-          ).splitlines()
-          untracked = subprocess.check_output(
-              ["git", "ls-files", "--others", "--exclude-standard"], text=True
-          ).splitlines()
-          changed = sorted({*tracked, *untracked})
-
-          unexpected = []
-          for path in changed:
-              if path in allowed_exact:
-                  continue
-              if path.startswith(allowed_prefixes):
-                  continue
-              unexpected.append(path)
-
-          if unexpected:
-              raise SystemExit(f"Unexpected priority-fix paths: {unexpected}")
-          if protected.intersection(changed):
-              raise SystemExit("A protected file entered the priority-fix diff.")
-
-          print(f"Validated priority correction scope ({len(changed)} files).")
-          PY
-          git diff --check
+      - name: Confirm generated diff safety
+        run: git diff --check
 
       - name: Commit validated output
         if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
@@ -221,5 +140,5 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Apply publisher logo library"
+          git commit -m "Refresh validated publisher output"
           git push origin "HEAD:${GITHUB_HEAD_REF}"

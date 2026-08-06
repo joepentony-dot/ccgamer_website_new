@@ -1214,7 +1214,9 @@
   {
     "title": "Bismark",
     "slug": "bismark",
-    "publisher": [],
+    "publisher": [
+      "Argus Press Software"
+    ],
     "genre": [
       "strategy"
     ],
@@ -3379,11 +3381,11 @@
       "Orpheus"
     ],
     "genre": [
-      "action adventure",
+      "action-adventure",
       "miscellaneous"
     ],
     "genres": [
-      "action adventure",
+      "action-adventure",
       "miscellaneous"
     ],
     "composer": [
@@ -5187,7 +5189,9 @@
   {
     "title": "Hunchback 2",
     "slug": "hunchback-2-quasimodos-revenge",
-    "publisher": [],
+    "publisher": [
+      "Ocean Software"
+    ],
     "genre": [
       "platform",
       "arcade"
@@ -5901,7 +5905,9 @@
   {
     "title": "Kawasaki Rhythm Rocker",
     "slug": "kawasaki-rhythm-rocker",
-    "publisher": [],
+    "publisher": [
+      "Sight & Sound Music Software"
+    ],
     "genre": [
       "quiz",
       "strategy",
@@ -6632,7 +6638,9 @@
   {
     "title": "Manic Miner",
     "slug": "manic-miner",
-    "publisher": [],
+    "publisher": [
+      "Software Projects"
+    ],
     "genre": [
       "platform"
     ],
@@ -7203,7 +7211,9 @@
   {
     "title": "Nemesis",
     "slug": "nemesis",
-    "publisher": [],
+    "publisher": [
+      "Konami"
+    ],
     "genre": [
       "shooting"
     ],
@@ -9749,7 +9759,9 @@
   {
     "title": "Space Harrier",
     "slug": "space-harrier",
-    "publisher": [],
+    "publisher": [
+      "Elite"
+    ],
     "genre": [
       "arcade"
     ],
@@ -10716,7 +10728,9 @@
   {
     "title": "The Wombles",
     "slug": "the-wombles",
-    "publisher": [],
+    "publisher": [
+      "Alternative Software"
+    ],
     "genre": [
       "miscellaneous",
       "action-adventure"
@@ -11323,10 +11337,10 @@
       "System 3"
     ],
     "genre": [
-      "action adventure"
+      "action-adventure"
     ],
     "genres": [
-      "action adventure"
+      "action-adventure"
     ],
     "composer": [
       "Matt Gray"
@@ -11510,7 +11524,9 @@
   {
     "title": "Vendetta",
     "slug": "vendetta",
-    "publisher": [],
+    "publisher": [
+      "System 3"
+    ],
     "genre": [
       "action-adventure"
     ],
@@ -11765,7 +11781,9 @@
   {
     "title": "Wizard",
     "slug": "wizard",
-    "publisher": [],
+    "publisher": [
+      "Ariolasoft"
+    ],
     "genre": [
       "arcade",
       "platform",

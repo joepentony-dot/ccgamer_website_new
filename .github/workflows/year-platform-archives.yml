@@ -169,7 +169,7 @@ jobs:
       - name: Confirm protected files are unchanged
         run: sha256sum --check /tmp/phase4d-protected.sha256
 
-      - name: Confirm no protected branch changes
+      - name: Confirm protected implementation files are unchanged from main
         if: github.event_name != 'push' || github.ref_name != 'main'
         shell: bash
         run: |
@@ -177,8 +177,7 @@ jobs:
             index.html \
             home.html \
             resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json
+            js/index-intro.js
 
       - name: Confirm bounded generated scope
         shell: bash

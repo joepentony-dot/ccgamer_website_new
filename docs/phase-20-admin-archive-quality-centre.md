@@ -71,3 +71,9 @@ Phase 20 does not modify:
 - `resources/css/intro.css`;
 - `js/index-intro.js`;
 - `games/games.json`.
+
+## Phase 20A accuracy correction
+
+The live archive uses canonical genre values such as `action-adventure`, `fighting`, `casino` and `role-playing`. The audit accepts those values and their older editor aliases, while the Game Builder now writes the canonical forms. Legacy records without a CCG score are allowed to remain unrated; new Game Builder records still require a score from 1 to 10. Temporary HTTP 429 and 5xx responses are ignored rather than reported as missing files. Same-title checks include release year so intentional versions from different years are not treated as duplicates.
+
+Phase 20A is a separate, reviewed repository correction rather than an ability granted to the live report. It updates the identified source records, runs the full `rebuild-games.js` publishing chain and validates the resulting game, publisher, search, schema and sitemap output before merge. The protected intro stack and Home page remain unchanged.

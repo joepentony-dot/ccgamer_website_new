@@ -42,8 +42,12 @@ function jsonForHtml(value) {
         .replace(/-->/g, "--\\u003e");
 }
 
+function normalizeGeneratedText(content) {
+    return String(content).replace(/[ \t]+$/gm, "");
+}
+
 function writeFileIfChanged(filePath, content) {
-    const next = String(content);
+    const next = normalizeGeneratedText(content);
     const previous = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : null;
     if (previous === next) return false;
 
@@ -335,7 +339,7 @@ function renderPublisherIndex(groups) {
             },
             {
                 "@type": "ItemList",
-                name: "C64 & Amiga Publishers",
+                name: "Publisher archives",
                 numberOfItems: groups.length,
                 itemListElement: groups.map((group, index) => ({
                     "@type": "ListItem",
@@ -347,25 +351,34 @@ function renderPublisherIndex(groups) {
         ]
     };
 
-    const featured = FEATURED_PUBLISHERS
+    const featuredGroups = FEATURED_PUBLISHERS
         .map((name) => groups.find((group) => group.name === name))
-        .filter(Boolean)
-        .slice(0, 12);
+        .filter(Boolean);
 
-    const renderPublisherCard = (group, extraClass = "") => `
-        <a class="ccg-publisher-card ${extraClass}"
-           href="/games/publishers/${htmlEscape(group.slug)}/"
-           data-publisher-card
-           data-publisher-name="${htmlEscape(group.name.toLowerCase())}"
-           data-c64-count="${group.c64Count}"
-           data-amiga-count="${group.amigaCount}">
-            <span class="ccg-publisher-card__name">${htmlEscape(group.name)}</span>
-            <span class="ccg-publisher-card__count">${group.count} ${group.count === 1 ? "game" : "games"}</span>
-            <span class="ccg-publisher-card__meta">${htmlEscape(platformSummary(group))}${yearSummary(group) ? ` · ${htmlEscape(yearSummary(group))}` : ""}</span>
-        </a>`;
+    const featuredSlugs = new Set(featuredGroups.map((group) => group.slug));
+    const remainingGroups = groups.filter((group) => !featuredSlugs.has(group.slug));
+
+    const featuredCards = featuredGroups.map((group) => `
+                <article class="ccg-publisher-card ccg-publisher-card--featured" data-publisher-card data-publisher-name="${htmlEscape(group.name.toLowerCase())}" data-publisher-platform="${htmlEscape(group.platformKey)}">
+                    <a class="ccg-publisher-card__link" href="/games/publishers/${htmlEscape(group.slug)}/">
+                        <span class="ccg-publisher-card__eyebrow">Featured Publisher</span>
+                        <h3 class="ccg-publisher-card__title">${htmlEscape(group.name)}</h3>
+                        <p class="ccg-publisher-card__stats">${htmlEscape(platformSummary(group))}${yearSummary(group) ? ` · ${htmlEscape(yearSummary(group))}` : ""}</p>
+                        <span class="ccg-publisher-card__cta">Browse ${group.count} ${group.count === 1 ? "game" : "games"}</span>
+                    </a>
+                </article>`).join("");
+
+    const publisherCards = remainingGroups.map((group) => `
+                <article class="ccg-publisher-card" data-publisher-card data-publisher-name="${htmlEscape(group.name.toLowerCase())}" data-publisher-platform="${htmlEscape(group.platformKey)}">
+                    <a class="ccg-publisher-card__link" href="/games/publishers/${htmlEscape(group.slug)}/">
+                        <h3 class="ccg-publisher-card__title">${htmlEscape(group.name)}</h3>
+                        <p class="ccg-publisher-card__stats">${htmlEscape(platformSummary(group))}${yearSummary(group) ? ` · ${htmlEscape(yearSummary(group))}` : ""}</p>
+                        <span class="ccg-publisher-card__cta">${group.count} ${group.count === 1 ? "game" : "games"}</span>
+                    </a>
+                </article>`).join("");
 
     return `<!DOCTYPE html>
-<html lang="en" data-ccg-page="publishers-index">
+<html lang="en" data-ccg-page="publisher-index">
 ${renderHead({ title, description, canonicalUrl, schema })}
 <body class="ccg-body ccg-publishers-page" data-ccg-mode="c64" data-mode="c64" id="top">
     <div class="ccg-bg" aria-hidden="true">
@@ -379,14 +392,16 @@ ${renderHead({ title, description, canonicalUrl, schema })}
 
         <main class="ccg-main ccg-publishers-main">
             <section class="ccg-publishers-hero">
-                <p class="ccg-publishers-hero__kicker">Publisher archive · C64 &amp; Amiga</p>
+                <p class="ccg-publishers-hero__kicker">C64 &amp; Amiga archive</p>
                 <h1 class="ccg-publishers-hero__title">Browse Games by Publisher</h1>
                 <p class="ccg-publishers-hero__intro">
-                    Explore the CCG library by the companies that released the games. Every publisher page is generated from the main game database, so the archive stays in step as new titles are added.
+                    Explore every publisher represented in the Cheeky Commodore Gamer archive. Each publisher page lists its C64 and Amiga games with direct links to the individual game pages.
                 </p>
                 <div class="ccg-publishers-hero__stats">
                     <span><strong>${groups.length}</strong> publishers</span>
-                    <span><strong>${groups.reduce((total, group) => total + group.count, 0)}</strong> publisher credits</span>
+                    <span><strong>${groups.reduce((sum, group) => sum + group.count, 0)}</strong> publisher credits</span>
+                    <span><strong>${groups.reduce((sum, group) => sum + group.c64Count, 0)}</strong> C64 entries</span>
+                    <span><strong>${groups.reduce((sum, group) => sum + group.amigaCount, 0)}</strong> Amiga entries</span>
                 </div>
             </section>
 
@@ -405,38 +420,30 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                     <button type="button" class="ccg-btn ccg-btn--secondary is-active" data-publisher-system="all" aria-pressed="true">All</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="c64" aria-pressed="false">C64</button>
                     <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="amiga" aria-pressed="false">Amiga</button>
+                    <button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-system="both" aria-pressed="false">Both</button>
                 </div>
                 <p class="ccg-publishers-visible-count"><strong id="publisherVisibleCount">${groups.length}</strong> publishers shown</p>
             </section>
 
-            ${featured.length ? `<section class="ccg-publishers-section" aria-labelledby="featured-publishers-title">
+            ${featuredGroups.length ? `<section class="ccg-publishers-section ccg-publishers-section--featured" aria-labelledby="featured-publishers-title">
                 <div class="ccg-publishers-section__heading">
                     <p class="ccg-publishers-section__kicker">Major names</p>
                     <h2 id="featured-publishers-title">Featured Publishers</h2>
                 </div>
                 <div class="ccg-publisher-grid ccg-publisher-grid--featured">
-                    ${featured.map((group) => renderPublisherCard(group, "ccg-publisher-card--featured")).join("\n")}
+                    ${featuredCards}
                 </div>
             </section>` : ""}
 
             <section class="ccg-publishers-section" aria-labelledby="all-publishers-title">
                 <div class="ccg-publishers-section__heading">
-                    <p class="ccg-publishers-section__kicker">Full archive</p>
+                    <p class="ccg-publishers-section__kicker">Full directory</p>
                     <h2 id="all-publishers-title">All Publishers</h2>
                 </div>
                 <div class="ccg-publisher-grid" id="publisherGrid">
-                    ${groups.map((group) => renderPublisherCard(group)).join("\n")}
+                    ${publisherCards}
                 </div>
                 <p class="ccg-publishers-empty" id="publisherEmptyState" hidden>No publishers match that search.</p>
-            </section>
-
-            <section class="ccg-publishers-wayfinding">
-                <h2>Keep Exploring</h2>
-                <div class="ccg-publishers-wayfinding__links">
-                    <a class="ccg-btn ccg-btn--secondary" href="/games/">All Games</a>
-                    <a class="ccg-btn ccg-btn--secondary" href="/games/genres/">Browse by Genre</a>
-                    <a class="ccg-btn ccg-btn--secondary" href="/games/collections/">Collections</a>
-                </div>
             </section>
         </main>
 
@@ -450,35 +457,29 @@ ${renderHead({ title, description, canonicalUrl, schema })}
 }
 
 function renderGameCard(game) {
-    const thumb = getThumbnailUrl(game.thumbnail);
-    const year = game.year ? String(game.year) : "Year unknown";
-    const system = game.system || "Retro";
+    const thumbnail = getThumbnailUrl(game.thumbnail);
+    const platform = String(game.system || game.platform || "Retro").trim();
+    const year = Number(game.year) || "Year unknown";
 
-    return `<a class="ccg-publisher-game-card"
-              href="/games/${htmlEscape(game.slug)}/"
-              data-publisher-game
-              data-game-title="${htmlEscape(game.title.toLowerCase())}"
-              data-system="${htmlEscape(system.toLowerCase())}">
-        <span class="ccg-publisher-game-card__image">
-            <img src="${htmlEscape(thumb)}"
-                 alt="${htmlEscape(game.title)} cover art"
-                 loading="lazy"
-                 decoding="async" width="320" height="180">
-        </span>
-        <span class="ccg-publisher-game-card__body">
-            <span class="ccg-publisher-game-card__title">${htmlEscape(game.title)}</span>
-            <span class="ccg-publisher-game-card__meta">${htmlEscape(system)} · ${htmlEscape(year)}</span>
-        </span>
-    </a>`;
+    return `                    <article class="ccg-publisher-game-card" data-publisher-game-card data-game-title="${htmlEscape(String(game.title || "").toLowerCase())}" data-game-platform="${htmlEscape(String(platform).toLowerCase())}">
+                        <a class="ccg-publisher-game-card__link" href="/games/${htmlEscape(game.slug)}/">
+                            <div class="ccg-publisher-game-card__media">
+                                <img src="${htmlEscape(thumbnail)}" alt="${htmlEscape(game.title)} thumbnail" loading="lazy" decoding="async">
+                            </div>
+                            <div class="ccg-publisher-game-card__body">
+                                <h3>${htmlEscape(game.title)}</h3>
+                                <p>${htmlEscape(platform)} · ${htmlEscape(year)}</p>
+                            </div>
+                        </a>
+                    </article>`;
 }
 
 function renderPublisherPage(group, playlists) {
     const canonicalUrl = `${SITE_ORIGIN}/games/publishers/${group.slug}/`;
     const systemLabel = platformLabel(group);
-    const title = `${group.name} ${systemLabel} Games | Cheeky Commodore Gamer`;
-    const description = `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with videos, game information and links to individual titles.`;
-    const indexable = group.count >= INDEXABLE_MIN_GAMES;
-    const robots = indexable ? "index,follow" : "noindex,follow";
+    const description = `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with release years, videos and direct game links.`;
+    const title = `${group.name} C64 & Amiga Games | Cheeky Commodore Gamer`;
+    const robots = group.count >= INDEXABLE_MIN_GAMES ? "index,follow" : "noindex,follow";
     const playlistUrl = getPlaylistUrl(playlists, group);
 
     const schema = {
@@ -486,17 +487,17 @@ function renderPublisherPage(group, playlists) {
         "@graph": [
             {
                 "@type": "CollectionPage",
-                name: `${group.name} ${systemLabel} Games`,
+                name: `${group.name} Games`,
                 description,
                 url: canonicalUrl,
-                about: {
-                    "@type": "Organization",
-                    name: group.name
-                },
                 isPartOf: {
                     "@type": "WebSite",
                     name: "Cheeky Commodore Gamer",
                     url: SITE_ORIGIN
+                },
+                about: {
+                    "@type": "Organization",
+                    name: group.name
                 }
             },
             {

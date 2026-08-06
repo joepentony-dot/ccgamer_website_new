@@ -326,6 +326,8 @@ def update_workflow_ownership() -> list[str]:
         ".github/workflows/year-platform-archives.yml",
     ]
     for path in paths:
+        if not (ROOT / path).exists():
+            continue
         source = read(path)
         next_source = re.sub(r'^\s*-\s*["\']?games/games\.json["\']?\s*\n', '', source, flags=re.M)
         if next_source != source and write(path, next_source):

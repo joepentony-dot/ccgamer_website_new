@@ -12,9 +12,6 @@
     "collections": [],
     "videoid": "ph1ugM0zHvE",
     "thumbnail": "resources/images/thumbnails/all/20_tons_new.png",
-    "music": [
-      "20-tons.mp3"
-    ],
     "pdf": "",
     "disk": [
       "https://drive.google.com/file/d/1_v23G9pXL73QhEeYS922nO0AGzfX23ze/view?usp=drive_link"
@@ -2228,7 +2225,6 @@
       "https://www.lemon64.com/game/barbarian-2"
     ],
     "description": "Barbarian II: The Dungeon of Drax is a Commodore 64 fighting game released in 1988 by Palace Software. Acting as a sequel to Barbarian: The Ultimate Warrior, it expands the combat system with new enemies and locations while retaining the brutal sword-based duels of the original.",
-    "ccg_rating": "",
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
@@ -3007,7 +3003,9 @@
     "ccg_rating": 4,
     "ccg_rating_reason": "Not the most technical simulation game out there, but half decent to pass 5 or 10 minutes",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Argus Press Software"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -6468,7 +6466,6 @@
       "https://www.lemon64.com/game/dan-dare-2"
     ],
     "description": "Dan Dare II is a Commodore 64 arcade shooter based on the classic comic series. you battle through enemy-filled levels using a variety of weapons, with fast scrolling and high difficulty.",
-    "ccg_rating": "",
     "ccg_rating_reason": "",
     "credits": {
       "publisher": [
@@ -8203,15 +8200,12 @@
     "sorttitle": "Elidon",
     "year": 1985,
     "genres": [
-      "action adventure",
+      "action-adventure",
       "miscellaneous"
     ],
     "collections": [],
     "videoid": "rd5ItTu0y1g",
     "thumbnail": "resources/images/thumbnails/all/elidon.jpg",
-    "music": [
-      "elidon.mp3"
-    ],
     "pdf": "https://drive.google.com/file/d/10EOcB0UxQAefpTUIXRSskkJn_xGhOMMo/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/18ZRpH0pE2MkLmfhwdsc_KTrUifzuS6r6/view?usp=drive_link"
@@ -12576,7 +12570,9 @@
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Ocean Software"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -14339,7 +14335,9 @@
     "ccg_rating": 4,
     "ccg_rating_reason": "",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Sight & Sound Music Software"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -16068,7 +16066,9 @@
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Software Projects"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -17475,7 +17475,9 @@
     "ccg_rating": 10,
     "ccg_rating_reason": "Played it to death as a kid",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Konami"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -23647,7 +23649,9 @@
     "ccg_rating": 7,
     "ccg_rating_reason": "",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Elite"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -26029,7 +26033,9 @@
     "ccg_rating": 5,
     "ccg_rating_reason": "Wombles are very strange creatures indeed",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Alternative Software"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -27456,7 +27462,7 @@
     "sorttitle": "Tusker",
     "year": 1989,
     "genres": [
-      "action adventure"
+      "action-adventure"
     ],
     "collections": [
       "top picks"
@@ -27930,7 +27936,9 @@
     "ccg_rating": 8,
     "ccg_rating_reason": "",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "System 3"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -28565,7 +28573,9 @@
     "ccg_rating": 10,
     "ccg_rating_reason": "Fast frantic platforming fun",
     "credits": {
-      "publisher": [],
+      "publisher": [
+        "Ariolasoft"
+      ],
       "producer": "",
       "coder": [],
       "graphics": [],
@@ -28786,9 +28796,6 @@
     "collections": [],
     "videoid": "ANDFibxD8n0",
     "thumbnail": "resources/images/thumbnails/all/x_out.jpg",
-    "music": [
-      "x-out.mp3"
-    ],
     "pdf": "https://drive.google.com/file/d/1y1TIUqIJ4T5W9b73KkyKO0OboI77q37t/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1lC81e4TOd497-jsUYdQUPXnR4-gH-ehG/view?usp=drive_link"
@@ -29144,9 +29151,6 @@
     "collections": [],
     "videoid": "iFDaeYjZnsc",
     "thumbnail": "resources/images/thumbnails/all/zeewolf.jpg",
-    "music": [
-      "zeewolf.mp3"
-    ],
     "pdf": "https://drive.google.com/file/d/1bM5XVV1AGtwToG5ti-fqkq8CfanNmgzL/view?usp=drive_link",
     "disk": [
       "https://drive.google.com/file/d/1nNjQ4gA6FWuOGeEsHommWMy50dSRNf6E/view?usp=drive_link"
