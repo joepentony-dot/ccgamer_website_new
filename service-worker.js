@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-phase17-v1";
+const CACHE_VERSION = "2026-08-phase17b-v1";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -12,6 +12,7 @@ const OFFLINE_URL = "/offline.html";
 const PUBLIC_SHELL = Object.freeze([
   OFFLINE_URL,
   "/home.html",
+  "/install-app.html",
   "/games/",
   "/games/discover/",
   "/quiz/quiz.html",
@@ -20,9 +21,11 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-footer.css",
+  "/resources/css/ccg-pwa-install-page.css",
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
-  "/js/ccg-pwa.js"
+  "/js/ccg-pwa.js",
+  "/js/ccg-pwa-visible-install.js"
 ]);
 
 const PRIVATE_PATH_PREFIXES = Object.freeze([
