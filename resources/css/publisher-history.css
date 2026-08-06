@@ -84,6 +84,7 @@
 
 .ccg-publisher-history__tags,
 .ccg-publisher-history__links,
+.ccg-publisher-history__associated,
 .ccg-publisher-history__sources {
   margin: 0;
   padding: 0;
@@ -91,14 +92,16 @@
 }
 
 .ccg-publisher-history__tags,
-.ccg-publisher-history__links {
+.ccg-publisher-history__links,
+.ccg-publisher-history__associated {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
 .ccg-publisher-history__tag,
-.ccg-publisher-history__links a {
+.ccg-publisher-history__links a,
+.ccg-publisher-history__associated span {
   display: inline-flex;
   align-items: center;
   min-height: 34px;
@@ -108,6 +111,12 @@
   color: inherit;
   font-size: 0.78rem;
   text-decoration: none;
+}
+
+.ccg-publisher-history__associated span {
+  border-style: dashed;
+  opacity: 0.68;
+  cursor: default;
 }
 
 .ccg-publisher-history__facts {

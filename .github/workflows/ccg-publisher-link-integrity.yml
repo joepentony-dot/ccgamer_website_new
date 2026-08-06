@@ -1,0 +1,43 @@
+name: CCG Publisher Link Integrity
+
+on:
+  pull_request:
+    paths:
+      - "404.html"
+      - "data/publisher-histories.json"
+      - "games/publishers/publishers.json"
+      - "js/ccg-publisher-history.js"
+      - "resources/css/publisher-history.css"
+      - "scripts/audit-publisher-link-integrity.js"
+      - "docs/phase-19a-publisher-link-integrity.md"
+      - ".github/workflows/ccg-publisher-link-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publisher-link-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate JavaScript and JSON syntax
+        run: |
+          node --check js/ccg-publisher-history.js
+          node --check scripts/audit-publisher-link-integrity.js
+          node -e "JSON.parse(require('fs').readFileSync('data/publisher-histories.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('games/publishers/publishers.json', 'utf8'))"
+
+      - name: Run publisher-link integrity audit
+        run: node scripts/audit-publisher-link-integrity.js
+
+      - name: Confirm audit made no repository changes
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"

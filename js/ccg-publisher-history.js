@@ -3,6 +3,10 @@
    ------------------------------------------------------------
    Adds concise archive context. Source-backed profiles expose
    their evidence links and review date to visitors.
+
+   Publisher relationships are link-safe: a relationship becomes
+   clickable only when the generated publisher metadata confirms
+   a populated archive route. Other historical labels remain text.
 ============================================================ */
 
 (function () {
@@ -13,10 +17,11 @@
 
   const CSS_PATH = "/resources/css/publisher-history.css";
   const DATA_PATH = "/data/publisher-histories.json";
+  const METADATA_PATH = "/games/publishers/publishers.json";
 
   function currentPublisherSlug() {
     const match = window.location.pathname.match(/\/games\/publishers\/([^/]+)\/?(?:index\.html)?$/i);
-    return match ? String(match[1] || "").toLowerCase() : "";
+    return match ? normaliseSlug(match[1]) : "";
   }
 
   function ensureCss() {
@@ -29,6 +34,10 @@
 
   function text(value) {
     return String(value ?? "").trim();
+  }
+
+  function normaliseSlug(value) {
+    return text(value).toLowerCase().replace(/^\/+|\/+$/g, "");
   }
 
   function safeExternalUrl(value) {
@@ -79,26 +88,86 @@
     return list;
   }
 
-  function createRelatedList(values) {
+  function buildPublisherArchiveMap(metadata) {
+    const archiveMap = new Map();
+
+    (Array.isArray(metadata) ? metadata : []).forEach((record) => {
+      const slug = normaliseSlug(record?.slug);
+      const count = Number(record?.count || 0);
+      const url = text(record?.url);
+      const expectedUrl = slug ? `/games/publishers/${slug}/` : "";
+
+      if (!slug || !Number.isFinite(count) || count < 1 || url !== expectedUrl) return;
+      archiveMap.set(slug, {
+        slug,
+        label: text(record?.name || slug),
+        count,
+        url
+      });
+    });
+
+    return archiveMap;
+  }
+
+  function partitionRelationships(values, archiveMap) {
+    const archives = [];
+    const associated = [];
+    const seen = new Set();
+
+    (Array.isArray(values) ? values : []).forEach((entry) => {
+      const slug = normaliseSlug(entry?.slug);
+      const label = text(entry?.label || slug);
+      const key = slug || label.toLowerCase();
+      if (!label || !key || seen.has(key)) return;
+      seen.add(key);
+
+      const archive = slug ? archiveMap.get(slug) : null;
+      if (archive) {
+        archives.push({
+          slug,
+          label,
+          count: archive.count,
+          url: archive.url
+        });
+      } else {
+        associated.push({ slug, label });
+      }
+    });
+
+    return { archives, associated };
+  }
+
+  function createArchiveLinkList(entries) {
     const list = document.createElement("ul");
     list.className = "ccg-publisher-history__links";
-    const entries = Array.isArray(values) ? values : [];
-
-    if (!entries.length) {
-      const item = document.createElement("li");
-      item.textContent = "No related archive routes recorded.";
-      list.appendChild(item);
-      return list;
-    }
 
     entries.forEach((entry) => {
-      const slug = text(entry?.slug).replace(/^\/+|\/+$/g, "");
-      if (!slug) return;
       const item = document.createElement("li");
       const link = document.createElement("a");
-      link.href = `/games/publishers/${encodeURIComponent(slug)}/`;
-      link.textContent = text(entry?.label || slug);
+      link.href = entry.url;
+      link.textContent = entry.label;
+      link.dataset.publisherArchive = entry.slug;
+      link.setAttribute(
+        "aria-label",
+        `${entry.label}: open CCG publisher archive containing ${entry.count} ${entry.count === 1 ? "game" : "games"}`
+      );
       item.appendChild(link);
+      list.appendChild(item);
+    });
+
+    return list;
+  }
+
+  function createAssociatedLabelList(entries) {
+    const list = document.createElement("ul");
+    list.className = "ccg-publisher-history__associated";
+
+    entries.forEach((entry) => {
+      const item = document.createElement("li");
+      const label = document.createElement("span");
+      label.textContent = entry.label;
+      label.title = "Historical association; no populated CCG publisher archive is currently available.";
+      item.appendChild(label);
       list.appendChild(item);
     });
 
@@ -159,13 +228,14 @@
     return createPanel("Evidence sources", list, "ccg-publisher-history__panel--sources");
   }
 
-  function insertProfile(profile) {
+  function insertProfile(profile, archiveMap) {
     if (document.querySelector("[data-ccg-publisher-history]")) return;
 
     const facts = Array.isArray(profile.facts) ? profile.facts.filter((item) => text(item)) : [];
     const sources = Array.isArray(profile.sources) ? profile.sources : [];
     const sourceBacked = facts.length > 0 && sources.length > 0;
     const reviewed = formatReviewDate(profile.verified_on);
+    const relationships = partitionRelationships(profile.related, archiveMap);
 
     const section = document.createElement("section");
     section.className = `ccg-publisher-history${sourceBacked ? " is-source-backed" : ""}`;
@@ -200,7 +270,13 @@
       grid.appendChild(createPanel("Documented company facts", createFactList(facts)));
     }
     grid.appendChild(createPanel("Archive strengths", createTagList(profile.strengths)));
-    grid.appendChild(createPanel("Related labels and archives", createRelatedList(profile.related)));
+
+    if (relationships.archives.length) {
+      grid.appendChild(createPanel("Related CCG archives", createArchiveLinkList(relationships.archives)));
+    }
+    if (relationships.associated.length) {
+      grid.appendChild(createPanel("Associated labels", createAssociatedLabelList(relationships.associated)));
+    }
 
     const sourcePanel = createSourcePanel(profile);
     if (sourcePanel) grid.appendChild(sourcePanel);
@@ -220,19 +296,33 @@
     else targetContainer()?.appendChild(section);
   }
 
+  async function fetchJson(path) {
+    const response = await fetch(path, { cache: "default" });
+    if (!response.ok) throw new Error(`${path} returned HTTP ${response.status}`);
+    return response.json();
+  }
+
   async function init() {
     const slug = currentPublisherSlug();
     if (!slug) return;
     ensureCss();
 
     try {
-      const response = await fetch(DATA_PATH, { cache: "default" });
-      if (!response.ok) return;
-      const data = await response.json();
-      const profile = Array.isArray(data)
-        ? data.find((entry) => text(entry?.slug).toLowerCase() === slug)
-        : null;
-      if (profile) insertProfile(profile);
+      const [profilesResult, metadataResult] = await Promise.allSettled([
+        fetchJson(DATA_PATH),
+        fetchJson(METADATA_PATH)
+      ]);
+
+      if (profilesResult.status !== "fulfilled" || !Array.isArray(profilesResult.value)) return;
+
+      const profile = profilesResult.value.find((entry) => normaliseSlug(entry?.slug) === slug);
+      if (!profile) return;
+
+      const archiveMap = metadataResult.status === "fulfilled"
+        ? buildPublisherArchiveMap(metadataResult.value)
+        : new Map();
+
+      insertProfile(profile, archiveMap);
     } catch (error) {
       console.warn("[ccg-publisher-history] Publisher profile unavailable", error);
     }

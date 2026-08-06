@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex,follow">
-<script src="/js/analytics.js" defer></script>
+    <script src="/js/analytics.js" defer></script>
     <title>Page not found</title>
     <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/404.html">
     <style>
@@ -21,11 +21,27 @@
 <body>
     <main>
         <h1>Page not found</h1>
-        <p>We could not find that page. If you are looking for a game, you will be redirected shortly.</p>
-        <p><a href="home.html">Go to home</a></p>
+        <p id="ccg404Message">We could not find that page.</p>
+        <p>
+            <a href="/home.html">Go to home</a>
+            · <a href="/games/">Browse games</a>
+            · <a href="/games/publishers/">Browse publishers</a>
+        </p>
     </main>
     <script>
         (function redirectPrettyGame() {
+            const RESERVED_GAME_SECTIONS = new Set([
+                "collections",
+                "developers",
+                "discover",
+                "downloads",
+                "genres",
+                "platforms",
+                "publishers",
+                "search",
+                "years"
+            ]);
+
             let pathname = window.location.pathname || "";
             const repoMarker = "/ccgamer_website_new/";
             let basePath = "/";
@@ -35,17 +51,39 @@
                 pathname = pathname.slice(pathname.indexOf(repoMarker) + repoMarker.length);
             }
 
-            pathname = pathname.replace(/^\/+|\/+$/g, "");
-            if (!pathname.startsWith("games/")) {
+            const segments = pathname
+                .replace(/^\/+|\/+$/g, "")
+                .split("/")
+                .filter(Boolean);
+
+            const showNotFound = function (message) {
+                const messageNode = document.getElementById("ccg404Message");
+                if (messageNode && message) messageNode.textContent = message;
                 document.body.classList.add("ccg-404-ready");
+            };
+
+            if (segments[0] !== "games") {
+                showNotFound("We could not find that page.");
                 return;
             }
 
-            let slug = pathname.slice("games/".length);
-            slug = slug.replace(/index\.html$/i, "").replace(/\.html$/i, "");
-            slug = slug.replace(/\/+$/g, "");
-            if (!slug) {
-                document.body.classList.add("ccg-404-ready");
+            if (segments.length !== 2) {
+                showNotFound("That game archive page is unavailable. Use the links below to return to a populated archive.");
+                return;
+            }
+
+            let slug = String(segments[1] || "")
+                .replace(/index\.html$/i, "")
+                .replace(/\.html$/i, "")
+                .replace(/\/+$/g, "")
+                .toLowerCase();
+
+            if (
+                !slug
+                || RESERVED_GAME_SECTIONS.has(slug)
+                || !/^[a-z0-9][a-z0-9-]*$/.test(slug)
+            ) {
+                showNotFound("That game archive page is unavailable. Use the links below to return to a populated archive.");
                 return;
             }
 
@@ -53,6 +91,6 @@
             window.location.replace(target);
         })();
     </script>
-<script src="/js/ccg-schema.js"></script>
+    <script src="/js/ccg-schema.js"></script>
 </body>
 </html>
