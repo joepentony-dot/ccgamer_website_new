@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Apply the bounded Member Hub preference changes for Phase 20B."""
+"""Apply the bounded Member Hub and Edge Function changes for Phase 20B."""
 
 from pathlib import Path
 
@@ -18,6 +18,7 @@ def replace_once(path: Path, old: str, new: str) -> None:
 def main() -> None:
     profile_js = ROOT / "resources" / "js" / "auth" / "profile-page.js"
     profile_html = ROOT / "community" / "profile.html"
+    edge_function = ROOT / "supabase" / "functions" / "send-new-game-notification" / "index.ts"
 
     replace_once(
         profile_js,
@@ -55,7 +56,13 @@ def main() -> None:
         """  <script type=\"module\" src=\"/resources/js/auth/profile-page.js?v=phase20b-20260806\"></script>""",
     )
 
-    print("Phase 20B Member Hub preferences are current.")
+    replace_once(
+        edge_function,
+        """async function authEmailMap(serviceClient: ReturnType<typeof createClient>): Promise<Map<string, string>> {""",
+        """async function authEmailMap(serviceClient: any): Promise<Map<string, string>> {""",
+    )
+
+    print("Phase 20B generated output is current.")
 
 
 if __name__ == "__main__":
