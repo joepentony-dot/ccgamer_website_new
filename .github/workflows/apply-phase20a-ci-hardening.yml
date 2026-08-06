@@ -1,6 +1,11 @@
 name: Apply Phase 20A CI hardening
 
 on:
+  push:
+    branches:
+      - codex/phase-20a-archive-quality-accuracy
+    paths:
+      - ".github/workflows/apply-phase20a-ci-hardening.yml"
   pull_request:
     branches:
       - main
@@ -12,7 +17,7 @@ permissions:
 
 jobs:
   harden:
-    if: github.head_ref == 'codex/phase-20a-archive-quality-accuracy'
+    if: github.event_name == 'push' || github.head_ref == 'codex/phase-20a-archive-quality-accuracy'
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
