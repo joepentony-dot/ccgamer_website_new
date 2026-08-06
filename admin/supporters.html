@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="ccg-context" content="admin" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CCG Admin | Members</title>
+  <title>CCG Admin | Supporters</title>
   <meta name="robots" content="noindex,nofollow" />
 
   <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
@@ -12,7 +12,6 @@
   <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="./css/members.css?v=admin-stable-20260227" rel="stylesheet" />
 </head>
-
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <main class="omega-admin-shell ccg-admin-panel" data-admin-shell>
     <nav class="ccg-admin-nav" aria-label="Admin navigation">
@@ -24,67 +23,45 @@
     </nav>
 
     <header class="members-header">
-      <h1>Members Directory</h1>
-      <p>Phase 3: role controls, Moderator badge wiring, moderation safety rails and supporter verification access.</p>
-      <p class="admin-status" data-member-status>Checking admin session…</p>
-      <p class="admin-status" id="membersInlineStatus" data-state="info"></p>
+      <h1>Supporter Hall of Fame</h1>
+      <p>Verify supporters and control the privacy-safe public listing. A member must also opt in from Member Hub.</p>
+      <p class="admin-status" data-supporter-status>Checking admin session…</p>
+      <p class="admin-status" id="supportersInlineStatus" data-state="info"></p>
     </header>
 
     <section class="members-controls">
       <label>
         Search
-        <input type="search" id="membersSearch" placeholder="email or username" />
+        <input type="search" id="supportersSearch" placeholder="email or display name" />
       </label>
-
-      <label>
-        Role
-        <select id="membersRoleFilter">
-          <option value="">All roles</option>
-          <option value="user">user</option>
-          <option value="editor">Moderator</option>
-          <option value="admin">admin</option>
-          <option value="superadmin">superadmin</option>
-        </select>
-      </label>
-
-      <label>
-        Ban state
-        <select id="membersBannedFilter">
-          <option value="">All</option>
-          <option value="false">Active</option>
-          <option value="true">Banned</option>
-        </select>
-      </label>
-
-      <button id="membersRefresh">Refresh</button>
-      <a href="/admin/supporters.html">Manage Hall of Fame</a>
+      <button id="supportersRefresh" type="button">Refresh</button>
+      <a href="/supporters.html" target="_blank" rel="noopener noreferrer">Open public Hall of Fame</a>
     </section>
 
     <section class="members-table-wrap">
       <table class="members-table">
         <thead>
           <tr>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Signup date</th>
-            <th>Last sign in</th>
-            <th>Role</th>
-            <th>Badges</th>
-            <th>Role controls</th>
-            <th>Soft ban controls</th>
+            <th>Member</th>
+            <th>Opted in</th>
+            <th>Verified</th>
+            <th>Tier</th>
+            <th>Supporting since</th>
+            <th>Public note</th>
+            <th>Order</th>
+            <th>Save</th>
           </tr>
         </thead>
-        <tbody id="membersTableBody"></tbody>
+        <tbody id="supportersTableBody"></tbody>
       </table>
     </section>
-
   </main>
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/admin-nav.js?v=admin-stable-20260207"></script>
-  <script type="module" src="/admin/js/admin-members.js?v=admin-stable-20260301"></script>
+  <script type="module" src="/admin/js/admin-supporters.js?v=phase21-20260806"></script>
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
 </html>

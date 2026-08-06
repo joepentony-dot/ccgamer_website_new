@@ -1,0 +1,304 @@
+/* ============================================================
+   CCG PASSIVE INCOME + SUPPORTER EXPERIENCE
+   Shop gateway, passive revenue panels and Hall of Fame.
+   ============================================================ */
+
+.ccg-passive-main {
+    position: relative;
+    z-index: 2;
+    width: min(1120px, calc(100% - 2rem));
+    margin: clamp(1.2rem, 4vw, 2.8rem) auto;
+}
+
+.ccg-passive-hero {
+    overflow: hidden;
+    position: relative;
+    padding: clamp(1.5rem, 4vw, 2.6rem);
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.38);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at 15% 10%, rgba(var(--accent-rgb, 0, 170, 255), 0.2), transparent 38%),
+        linear-gradient(145deg, rgba(7, 13, 30, 0.96), rgba(2, 5, 14, 0.98));
+    box-shadow: 0 20px 54px rgba(0, 0, 0, 0.46), 0 0 34px rgba(var(--accent-rgb, 0, 170, 255), 0.13);
+    text-align: center;
+}
+
+.ccg-passive-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 4px);
+    opacity: 0.4;
+}
+
+.ccg-passive-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.ccg-passive-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--accent, #43c6ff);
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.ccg-passive-hero h1 {
+    margin: 0;
+    color: #ffffff;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1.05;
+}
+
+.ccg-passive-hero p {
+    max-width: 72ch;
+    margin: 0.9rem auto 0;
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.7;
+}
+
+.ccg-passive-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 1.2rem;
+}
+
+.ccg-passive-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--accent, #43c6ff);
+    border-radius: 10px;
+    color: #06101a;
+    background: var(--accent, #43c6ff);
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.ccg-passive-button--ghost {
+    color: #ffffff;
+    background: rgba(var(--accent-rgb, 0, 170, 255), 0.08);
+}
+
+.ccg-passive-button:hover,
+.ccg-passive-button:focus-visible {
+    transform: translateY(-1px);
+    outline: 2px solid rgba(var(--accent-rgb, 0, 170, 255), 0.7);
+    outline-offset: 3px;
+}
+
+.ccg-passive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.ccg-passive-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    padding: 1.2rem;
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.28);
+    border-radius: 15px;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb, 0, 170, 255), 0.08), rgba(4, 7, 16, 0.9) 42%),
+        rgba(7, 11, 22, 0.95);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.34);
+}
+
+.ccg-passive-card h2,
+.ccg-passive-card h3 {
+    margin: 0 0 0.55rem;
+    color: #ffffff;
+}
+
+.ccg-passive-card p,
+.ccg-passive-card li {
+    color: rgba(255, 255, 255, 0.76);
+    line-height: 1.65;
+}
+
+.ccg-passive-card p {
+    margin: 0.45rem 0;
+}
+
+.ccg-passive-card ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.15rem;
+}
+
+.ccg-passive-card .ccg-passive-actions {
+    justify-content: flex-start;
+    margin-top: auto;
+    padding-top: 0.75rem;
+}
+
+.ccg-shop-notice {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem;
+    border-left: 4px solid var(--accent, #43c6ff);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.76);
+    background: rgba(var(--accent-rgb, 0, 170, 255), 0.08);
+    line-height: 1.65;
+}
+
+.ccg-hall-status {
+    margin: 1rem 0 0;
+    color: rgba(255, 255, 255, 0.72);
+    text-align: center;
+}
+
+.ccg-hall-tier {
+    margin-top: 1.2rem;
+}
+
+.ccg-hall-tier__heading {
+    margin: 0 0 0.7rem;
+    color: #ffffff;
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    text-align: center;
+}
+
+.ccg-hall-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 0.75rem;
+}
+
+.ccg-hall-card {
+    padding: 1rem;
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.28);
+    border-radius: 13px;
+    background: rgba(6, 10, 22, 0.92);
+    text-align: center;
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.3);
+}
+
+.ccg-hall-card__badge {
+    display: inline-flex;
+    margin-bottom: 0.55rem;
+    padding: 0.28rem 0.52rem;
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.32);
+    border-radius: 999px;
+    color: var(--accent, #43c6ff);
+    background: rgba(var(--accent-rgb, 0, 170, 255), 0.08);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-hall-card h3 {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.ccg-hall-card p {
+    margin: 0.45rem 0 0;
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.ccg-hall-empty {
+    grid-column: 1 / -1;
+    padding: 1.2rem;
+    border: 1px dashed rgba(var(--accent-rgb, 0, 170, 255), 0.35);
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(5, 9, 19, 0.72);
+    text-align: center;
+}
+
+.ccg-passive-revenue-panel {
+    position: relative;
+    z-index: 2;
+    width: min(1100px, calc(100% - 2rem));
+    margin: clamp(1.4rem, 4vw, 2.4rem) auto;
+    padding: 1rem;
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.28);
+    border-radius: 15px;
+    background:
+        linear-gradient(120deg, rgba(var(--accent-rgb, 0, 170, 255), 0.1), transparent 55%),
+        rgba(5, 9, 19, 0.92);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+}
+
+.ccg-passive-revenue-panel__copy {
+    display: grid;
+    gap: 0.35rem;
+    text-align: center;
+}
+
+.ccg-passive-revenue-panel__copy strong {
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.ccg-passive-revenue-panel__copy span {
+    color: rgba(255, 255, 255, 0.68);
+    line-height: 1.55;
+}
+
+.ccg-passive-revenue-panel__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.55rem;
+    margin-top: 0.8rem;
+}
+
+.ccg-passive-revenue-panel__actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0.62rem 0.8rem;
+    border: 1px solid rgba(var(--accent-rgb, 0, 170, 255), 0.45);
+    border-radius: 9px;
+    color: #ffffff;
+    background: rgba(var(--accent-rgb, 0, 170, 255), 0.09);
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.ccg-passive-revenue-panel__actions a:first-child {
+    color: #06101a;
+    background: var(--accent, #43c6ff);
+}
+
+.ccg-passive-revenue-panel__actions a:hover,
+.ccg-passive-revenue-panel__actions a:focus-visible {
+    transform: translateY(-1px);
+    outline: 2px solid rgba(var(--accent-rgb, 0, 170, 255), 0.65);
+    outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+    .ccg-passive-main,
+    .ccg-passive-revenue-panel {
+        width: min(100% - 1.1rem, 1120px);
+    }
+
+    .ccg-passive-actions,
+    .ccg-passive-revenue-panel__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .ccg-passive-button,
+    .ccg-passive-revenue-panel__actions a {
+        width: 100%;
+    }
+}
