@@ -7,6 +7,12 @@ on:
     paths:
       - scripts/apply-phase20c-email-branding.py
       - .github/workflows/phase20c-email-branding-apply.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/apply-phase20c-email-branding.py
+      - .github/workflows/phase20c-email-branding-apply.yml
 
 permissions:
   contents: write
@@ -17,6 +23,7 @@ concurrency:
 
 jobs:
   apply:
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch
