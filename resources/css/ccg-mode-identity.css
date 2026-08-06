@@ -1,0 +1,210 @@
+/* ============================================================
+   CCG COMMODORE MODE IDENTITIES
+============================================================ */
+
+.ccg-mode-identity {
+  position: relative;
+  z-index: 46;
+  min-height: 31px;
+  border-bottom: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.25);
+  background: rgba(3, 9, 24, 0.96);
+  color: #dffaff;
+  box-shadow: 0 9px 26px rgba(0, 0, 0, 0.26);
+}
+
+.ccg-mode-identity__inner {
+  width: min(100% - clamp(20px, 3.6vw, 48px), 1320px);
+  min-height: 31px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 0.67rem;
+  line-height: 1;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.ccg-mode-identity__name,
+.ccg-mode-identity__details {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.ccg-mode-identity__name {
+  gap: 9px;
+  font-weight: 800;
+}
+
+.ccg-mode-identity__details {
+  gap: 10px;
+  color: rgba(220, 241, 250, 0.66);
+  white-space: nowrap;
+}
+
+.ccg-mode-identity__eyebrow {
+  color: rgba(220, 241, 250, 0.68);
+}
+
+.ccg-mode-identity__primary {
+  color: #fff;
+  font-weight: 900;
+}
+
+.ccg-mode-identity__icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 20px;
+}
+
+.ccg-mode-identity__c64-mark,
+.ccg-mode-identity__amiga-mark {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+.ccg-mode-identity[data-mode="c64"] {
+  border-bottom-color: rgba(80, 228, 255, 0.34);
+  background:
+    linear-gradient(90deg, rgba(26, 71, 138, 0.28), transparent 42%),
+    rgba(3, 13, 35, 0.98);
+}
+
+.ccg-mode-identity[data-mode="c64"] .ccg-mode-identity__c64-mark {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  align-items: end;
+}
+
+.ccg-mode-identity__c64-mark i {
+  display: block;
+  height: 7px;
+  background: #54d8ff;
+  box-shadow: 0 0 7px rgba(84, 216, 255, 0.45);
+}
+
+.ccg-mode-identity__c64-mark i:nth-child(2) { height: 11px; }
+.ccg-mode-identity__c64-mark i:nth-child(3) { height: 15px; }
+.ccg-mode-identity__c64-mark i:nth-child(4) { height: 19px; }
+
+.ccg-mode-identity[data-mode="c64"] .ccg-mode-identity__primary {
+  color: #79efff;
+  text-shadow: 0 0 10px rgba(55, 215, 255, 0.38);
+}
+
+html[data-ccg-identity-mode="c64"] body,
+html[data-ccg-identity-mode="c64"] .ccg-site-bg {
+  background-image:
+    linear-gradient(rgba(68, 170, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(68, 170, 255, 0.025) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+html[data-ccg-identity-mode="c64"] :where(.game-card, .genre-card, .ccg-publisher-card, .collection-card) {
+  border-top-color: rgba(77, 214, 255, 0.38);
+}
+
+.ccg-mode-identity[data-mode="amiga"] {
+  border-bottom-color: rgba(238, 84, 206, 0.4);
+  background:
+    linear-gradient(90deg, rgba(246, 70, 189, 0.2), rgba(85, 78, 190, 0.12) 48%, transparent 78%),
+    rgba(20, 13, 37, 0.98);
+}
+
+.ccg-mode-identity[data-mode="amiga"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 21px, rgba(255, 255, 255, 0.025) 21px 22px);
+}
+
+.ccg-mode-identity[data-mode="amiga"] .ccg-mode-identity__amiga-mark {
+  display: block;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, #fff 0 48%, #f04cae 49% 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 10px rgba(241, 68, 181, 0.38);
+}
+
+.ccg-mode-identity__amiga-mark i {
+  position: absolute;
+  left: -3px;
+  right: -3px;
+  top: 8px;
+  height: 5px;
+  background: #7345d2;
+  transform: rotate(-22deg);
+}
+
+.ccg-mode-identity[data-mode="amiga"] .ccg-mode-identity__primary {
+  color: #ff9fe0;
+  text-shadow: 0 0 10px rgba(255, 73, 188, 0.4);
+}
+
+html[data-ccg-identity-mode="amiga"] body,
+html[data-ccg-identity-mode="amiga"] .ccg-site-bg {
+  background-image:
+    linear-gradient(135deg, rgba(231, 87, 212, 0.024) 25%, transparent 25%),
+    linear-gradient(225deg, rgba(104, 92, 230, 0.022) 25%, transparent 25%);
+  background-size: 42px 42px;
+}
+
+html[data-ccg-identity-mode="amiga"] :where(.game-card, .genre-card, .ccg-publisher-card, .collection-card) {
+  border-top-color: rgba(240, 94, 204, 0.42);
+}
+
+.ccg-mode-identity.is-changing .ccg-mode-identity__primary,
+.ccg-mode-identity.is-changing .ccg-mode-identity__icon {
+  animation: ccg-mode-signal 460ms ease-out;
+}
+
+@keyframes ccg-mode-signal {
+  0% { opacity: 0.25; transform: translateY(2px); }
+  42% { opacity: 1; transform: translateY(-1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+  .ccg-mode-identity {
+    min-height: 28px;
+  }
+
+  .ccg-mode-identity__inner {
+    min-height: 28px;
+    font-size: 0.61rem;
+    letter-spacing: 0.065em;
+  }
+
+  .ccg-mode-identity__details {
+    display: none;
+  }
+
+  .ccg-mode-identity__eyebrow {
+    max-width: 46vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccg-mode-identity.is-changing .ccg-mode-identity__primary,
+  .ccg-mode-identity.is-changing .ccg-mode-identity__icon {
+    animation: none;
+  }
+}
+
+@media print {
+  .ccg-mode-identity {
+    display: none !important;
+  }
+}
