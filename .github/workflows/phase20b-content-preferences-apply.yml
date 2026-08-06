@@ -8,6 +8,7 @@ on:
       - "scripts/apply-phase20b-content-preferences.py"
       - "resources/js/auth/profile-page.js"
       - "community/profile.html"
+      - "supabase/functions/send-new-game-notification/index.ts"
       - ".github/workflows/phase20b-content-preferences-apply.yml"
   workflow_dispatch:
 
@@ -36,7 +37,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Apply bounded preference changes
+      - name: Apply bounded Phase 20B changes
         run: python scripts/apply-phase20b-content-preferences.py
 
       - name: Validate output
@@ -45,16 +46,19 @@ jobs:
           node --check resources/js/auth/profile-page.js
           git diff --check
 
-      - name: Commit generated preference changes
+      - name: Commit generated Phase 20B output
         if: github.event_name == 'pull_request'
         shell: bash
         run: |
-          git add community/profile.html resources/js/auth/profile-page.js
+          git add \
+            community/profile.html \
+            resources/js/auth/profile-page.js \
+            supabase/functions/send-new-game-notification/index.ts
           if git diff --cached --quiet; then
-            echo "Phase 20B preference output is already current."
+            echo "Phase 20B generated output is already current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Apply Phase 20B member notification preferences"
+          git commit -m "Apply Phase 20B generated compatibility fixes"
           git push origin "HEAD:${GITHUB_HEAD_REF}"
