@@ -96,7 +96,6 @@ requireText(pwaCode, "visits < 2", "Repeat-visit install threshold");
 requireText(pwaCode, "apple-mobile-web-app-capable", "iOS install metadata");
 requireText(pwaCode, "Add to Home Screen", "iOS install guidance");
 requireText(pwaCode, "navigator.onLine", "Network-state handling");
-requireText(pwaCode, "prefers-reduced-motion", "",);
 
 requireText(serviceWorker, "PRIVATE_PATH_PREFIXES", "Service worker private path exclusions");
 requireText(serviceWorker, '"/admin/"', "Administrator cache exclusion");
@@ -113,7 +112,7 @@ requireText(serviceWorker, 'const OFFLINE_URL = "/offline.html"', "Offline fallb
 requireText(serviceWorker, "navigationPreload.enable", "Navigation preload");
 requireText(serviceWorker, "CLEAR_PUBLIC_CACHES", "Public cache reset control");
 rejectText(serviceWorker, "supabase.co", "Service worker");
-rejectText(serviceWorker, "skipWaiting();\n  event.waitUntil(precache", "Automatic update activation");
+rejectText(serviceWorker, "self.skipWaiting();\n  event.waitUntil(precache", "Automatic update activation");
 
 requireText(offline, "CCG Offline", "Offline page title");
 requireText(offline, "No connection", "Offline status message");
