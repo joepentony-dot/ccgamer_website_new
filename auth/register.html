@@ -29,6 +29,21 @@
           </div>
         </div>
 
+        <fieldset class="auth-field" style="border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:14px 16px">
+          <legend style="padding:0 6px;font-weight:700">Optional email alerts</legend>
+          <label style="display:flex;gap:9px;align-items:flex-start;margin:6px 0 12px">
+            <input id="notifyNewGames" name="notifyNewGames" type="checkbox" style="margin-top:3px" />
+            <span>Email me when new Commodore games are added to the CCG archive.</span>
+          </label>
+          <label style="display:flex;gap:9px;align-items:flex-start;margin:6px 0 8px">
+            <input id="notifyNewsletter" name="notifyNewsletter" type="checkbox" style="margin-top:3px" />
+            <span>Email me about new CCG videos, Zzap!64 features and Retro Specials.</span>
+          </label>
+          <p style="margin:10px 0 0;font-size:.9rem;line-height:1.45;opacity:.82">
+            Both choices are optional and start unticked. You can change them later in Member Hub account settings.
+          </p>
+        </fieldset>
+
         <div id="formMessage" class="auth-message" aria-live="polite"></div>
 
         <button type="submit" class="auth-btn">Register</button>
@@ -61,8 +76,13 @@
 
       const email = byId('email').value;
       const password = byId('password').value;
+      const notificationPreferences = {
+        notifyNewGames: Boolean(byId('notifyNewGames').checked),
+        notifyNewsletter: Boolean(byId('notifyNewsletter').checked),
+        choiceRecorded: true
+      };
 
-      const { data, error } = await registerUser(email, password);
+      const { data, error } = await registerUser(email, password, notificationPreferences);
 
       if (error) {
         const duplicate = error.category === 'duplicate_email';
