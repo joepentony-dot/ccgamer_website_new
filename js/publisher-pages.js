@@ -12,6 +12,53 @@
         return String(value || "").trim().toLowerCase();
     }
 
+    function parsePublisherCounts(source) {
+        const datasetC64 = Number(source?.c64Count);
+        const datasetAmiga = Number(source?.amigaCount);
+        const statsText = String(source?.statsText || "");
+        const c64Match = statsText.match(/(\d+)\s+C64\b/i);
+        const amigaMatch = statsText.match(/(\d+)\s+Amiga\b/i);
+
+        return {
+            c64Count: Number.isFinite(datasetC64) && datasetC64 >= 0
+                ? datasetC64
+                : Number(c64Match?.[1] || 0),
+            amigaCount: Number.isFinite(datasetAmiga) && datasetAmiga >= 0
+                ? datasetAmiga
+                : Number(amigaMatch?.[1] || 0)
+        };
+    }
+
+    function publisherDataMatches(item, query, system) {
+        const name = normalize(item?.name);
+        const normalizedQuery = normalize(query);
+        const normalizedSystem = normalize(system) || "all";
+        const counts = parsePublisherCounts(item);
+        const nameMatches = !normalizedQuery || name.includes(normalizedQuery);
+        const systemMatches =
+            normalizedSystem === "all" ||
+            (normalizedSystem === "c64" && counts.c64Count > 0) ||
+            (normalizedSystem === "amiga" && counts.amigaCount > 0) ||
+            (normalizedSystem === "both" && counts.c64Count > 0 && counts.amigaCount > 0);
+
+        return nameMatches && systemMatches;
+    }
+
+    function getPublisherCardData(card) {
+        const stats = card?.querySelector?.(".ccg-publisher-card__stats");
+
+        return {
+            name: card?.dataset?.publisherName || card?.querySelector?.(".ccg-publisher-card__title")?.textContent || "",
+            c64Count: card?.dataset?.c64Count,
+            amigaCount: card?.dataset?.amigaCount,
+            statsText: stats?.textContent || ""
+        };
+    }
+
+    function publisherCardMatches(card, query, system) {
+        return publisherDataMatches(getPublisherCardData(card), query, system);
+    }
+
     function setPressed(buttons, activeValue, attributeName) {
         buttons.forEach((button) => {
             const isActive = normalize(button.getAttribute(attributeName)) === activeValue;
@@ -41,6 +88,15 @@
         } catch (error) {}
     }
 
+    function createSearchResultCard(card) {
+        const clone = card.cloneNode(true);
+        clone.hidden = false;
+        clone.dataset.publisherSearchResult = "true";
+        clone.classList.remove("ccg-publisher-card--featured");
+        clone.querySelector(".ccg-publisher-card__eyebrow")?.remove();
+        return clone;
+    }
+
     function initPublisherIndex() {
         const grid = document.getElementById("publisherGrid");
         if (!grid) return;
@@ -48,24 +104,26 @@
         const search = document.getElementById("publisherSearchInput");
         const count = document.getElementById("publisherVisibleCount");
         const empty = document.getElementById("publisherEmptyState");
-        const cards = Array.from(grid.querySelectorAll("[data-publisher-card]"));
+        const archiveCards = Array.from(grid.querySelectorAll("[data-publisher-card]"));
         const buttons = Array.from(document.querySelectorAll("[data-publisher-system]"));
         const featuredHeading = document.getElementById("featured-publishers-title");
         const featuredSection = featuredHeading?.closest(".ccg-publishers-section");
+        const featuredGrid = featuredSection?.querySelector(".ccg-publisher-grid--featured");
+        const featuredCards = Array.from(featuredGrid?.querySelectorAll("[data-publisher-card]") || []);
+        const allCards = [...featuredCards, ...archiveCards];
         const archiveSection = grid.closest(".ccg-publishers-section");
         const archiveHeading = archiveSection?.querySelector("#all-publishers-title");
         const archiveKicker = archiveSection?.querySelector(".ccg-publishers-section__kicker");
         const defaultArchiveHeading = archiveHeading?.textContent || "All Publishers";
-        const defaultArchiveKicker = archiveKicker?.textContent || "Full archive";
-        let system = readInitialSystem(["all", "c64", "amiga"]);
+        const defaultArchiveKicker = archiveKicker?.textContent || "Full directory";
+        let system = readInitialSystem(["all", "c64", "amiga", "both"]);
+
+        function clearSearchResults() {
+            grid.querySelectorAll("[data-publisher-search-result]").forEach((card) => card.remove());
+        }
 
         function updateSearchPriority(query) {
             const hasSearch = Boolean(query);
-
-            if (featuredSection) {
-                featuredSection.hidden = hasSearch;
-                featuredSection.setAttribute("aria-hidden", hasSearch ? "true" : "false");
-            }
 
             if (archiveHeading) {
                 archiveHeading.textContent = hasSearch ? "Search Results" : defaultArchiveHeading;
@@ -78,25 +136,66 @@
             archiveSection?.classList.toggle("ccg-publishers-section--search-results", hasSearch);
         }
 
-        function applyFilters() {
-            const query = normalize(search?.value);
+        function renderSearchResults(query) {
+            const matches = allCards
+                .filter((card) => publisherCardMatches(card, query, system))
+                .sort((a, b) => normalize(getPublisherCardData(a).name).localeCompare(
+                    normalize(getPublisherCardData(b).name),
+                    "en",
+                    { sensitivity: "base" }
+                ));
+
+            archiveCards.forEach((card) => {
+                card.hidden = true;
+            });
+
+            featuredCards.forEach((card) => {
+                card.hidden = true;
+            });
+
+            if (featuredSection) {
+                featuredSection.hidden = true;
+                featuredSection.setAttribute("aria-hidden", "true");
+            }
+
+            const fragment = document.createDocumentFragment();
+            matches.forEach((card) => fragment.appendChild(createSearchResultCard(card)));
+            grid.prepend(fragment);
+
+            return matches.length;
+        }
+
+        function renderDirectory() {
             let visible = 0;
+            let featuredVisible = 0;
 
-            cards.forEach((card) => {
-                const name = normalize(card.dataset.publisherName);
-                const nameMatches = !query || name.includes(query);
-                const c64Count = Number(card.dataset.c64Count || 0);
-                const amigaCount = Number(card.dataset.amigaCount || 0);
+            featuredCards.forEach((card) => {
+                const show = publisherCardMatches(card, "", system);
+                card.hidden = !show;
+                if (show) {
+                    featuredVisible += 1;
+                    visible += 1;
+                }
+            });
 
-                const systemMatches =
-                    system === "all" ||
-                    (system === "c64" && c64Count > 0) ||
-                    (system === "amiga" && amigaCount > 0);
-
-                const show = nameMatches && systemMatches;
+            archiveCards.forEach((card) => {
+                const show = publisherCardMatches(card, "", system);
                 card.hidden = !show;
                 if (show) visible += 1;
             });
+
+            if (featuredSection) {
+                featuredSection.hidden = featuredVisible === 0;
+                featuredSection.setAttribute("aria-hidden", featuredVisible === 0 ? "true" : "false");
+            }
+
+            return visible;
+        }
+
+        function applyFilters() {
+            const query = normalize(search?.value);
+            clearSearchResults();
+            const visible = query ? renderSearchResults(query) : renderDirectory();
 
             updateSearchPriority(query);
             if (count) count.textContent = String(visible);
@@ -167,9 +266,19 @@
         initPublisherGames();
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
-    } else {
-        init();
+    if (typeof module !== "undefined" && module.exports) {
+        module.exports = {
+            normalize,
+            parsePublisherCounts,
+            publisherDataMatches
+        };
+    }
+
+    if (typeof document !== "undefined") {
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", init, { once: true });
+        } else {
+            init();
+        }
     }
 })();
