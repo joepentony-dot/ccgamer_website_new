@@ -26,10 +26,13 @@ const COMMODORE_MILESTONE_KEYS = Object.freeze([
   'DUAL_SYSTEM'
 ]);
 
+const MILESTONE_TOTAL = COMMODORE_MILESTONE_KEYS.length;
+const MILESTONE_KEY_SET = new Set(COMMODORE_MILESTONE_KEYS);
+
 const COMPLETION_BADGE = Object.freeze({
   badge_key: 'COMMODORE_COMPLETIONIST',
   badge_name: 'Commodore Completionist',
-  badge_description: 'Complete every Commodore Milestone.',
+  badge_description: 'Completed every Commodore Milestone.',
   badge_category: 'completion'
 });
 
@@ -38,7 +41,8 @@ const state = {
   user: null,
   refreshTimer: null,
   refreshing: false,
-  queued: false
+  queued: false,
+  sectionObserver: null
 };
 
 function text(value) {
@@ -61,10 +65,42 @@ function ensureStylesheet(path) {
   document.head.appendChild(link);
 }
 
+function retireRedundantBadgeDisplays() {
+  const section = document.getElementById('memberAchievements');
+  if (!section) return null;
+
+  const intro = section.querySelector('.member-panel__intro');
+  if (intro) {
+    intro.textContent = 'Your account-backed Commodore Milestones and membership loyalty progress.';
+  }
+
+  const legacyGrid = section.querySelector('.member-achievements');
+  if (legacyGrid) {
+    if (legacyGrid.childElementCount) legacyGrid.replaceChildren();
+    if (!legacyGrid.hidden) legacyGrid.hidden = true;
+    legacyGrid.setAttribute('aria-hidden', 'true');
+    legacyGrid.dataset.retiredBadgeSystem = 'true';
+  }
+
+  section.querySelectorAll('.member-server-badges').forEach((node) => node.remove());
+  return legacyGrid;
+}
+
+function watchBadgeSection() {
+  const section = document.getElementById('memberAchievements');
+  if (!section || state.sectionObserver) return;
+
+  state.sectionObserver = new MutationObserver(() => {
+    retireRedundantBadgeDisplays();
+  });
+  state.sectionObserver.observe(section, { childList: true, subtree: true });
+}
+
 function ensurePanel() {
   const section = document.getElementById('memberAchievements');
-  const existingGrid = section?.querySelector('.member-achievements');
-  if (!section || !existingGrid) return null;
+  if (!section) return null;
+
+  const legacyGrid = retireRedundantBadgeDisplays();
 
   let panel = document.getElementById('memberAchievementPanel');
   if (panel) return panel;
@@ -75,9 +111,9 @@ function ensurePanel() {
   panel.innerHTML = `
     <div class="member-achievement-panel__header">
       <div>
-        <p class="member-achievement-panel__kicker">Private achievements</p>
+        <p class="member-achievement-panel__kicker">Account achievements</p>
         <h3 class="member-achievement-panel__title">Commodore Milestones</h3>
-        <p class="member-achievement-panel__intro">Badges are awarded from your ratings, comments and private game library. Complete all twelve milestones to unlock the Commodore Completionist reward.</p>
+        <p class="member-achievement-panel__intro">Badges are awarded from ratings, comments and private game-library activity saved to your account. Complete all twelve milestones to unlock the final distinction.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
@@ -85,7 +121,7 @@ function ensurePanel() {
     <div class="member-achievement-grid" id="memberAchievementGrid"></div>
   `;
 
-  section.insertBefore(panel, existingGrid);
+  section.insertBefore(panel, legacyGrid);
   panel.querySelector('#memberRefreshAchievements')?.addEventListener('click', () => {
     void refreshAchievements({ award: true, manual: true });
   });
@@ -114,7 +150,7 @@ function categoryLabel(value) {
   if (value === 'comments') return 'Comments';
   if (value === 'library') return 'My Games';
   if (value === 'systems') return 'Systems';
-  if (value === 'completion') return 'Final Reward';
+  if (value === 'completion') return 'Completion Reward';
   return 'Achievement';
 }
 
@@ -158,13 +194,13 @@ async function shareCompletion(button) {
 
 function createCompletionCard(completion) {
   const card = document.createElement('article');
-  card.className = `member-achievement-card member-completionist ${completion.complete ? 'is-earned is-complete' : 'is-locked'}`;
+  card.className = 'member-achievement-card member-completionist is-earned is-complete';
   card.dataset.badgeKey = COMPLETION_BADGE.badge_key;
 
   const mark = document.createElement('span');
   mark.className = 'member-achievement-card__mark member-completionist__mark';
-  mark.textContent = completion.complete ? '★' : 'FINAL';
-  mark.setAttribute('aria-label', completion.complete ? 'Completion reward earned' : 'Completion reward locked');
+  mark.textContent = '★';
+  mark.setAttribute('aria-label', 'Completion reward earned');
 
   const body = document.createElement('div');
   body.className = 'member-achievement-card__body';
@@ -179,29 +215,30 @@ function createCompletionCard(completion) {
 
   const description = document.createElement('p');
   description.className = 'member-achievement-card__description';
-  description.textContent = completion.complete
-    ? 'Every Commodore Milestone is complete. This final profile distinction is now yours.'
-    : `${COMPLETION_BADGE.badge_description} ${completion.missing.length} ${completion.missing.length === 1 ? 'milestone remains' : 'milestones remain'}.`;
+  description.textContent = COMPLETION_BADGE.badge_description;
 
   const stateLine = document.createElement('p');
   stateLine.className = 'member-achievement-card__state';
-  stateLine.textContent = completion.complete
-    ? formatAwardDate(completion.assignedAt)
-    : 'Locked until all twelve milestones are complete';
+  stateLine.textContent = formatAwardDate(completion.assignedAt);
 
-  body.append(meta, title, description, stateLine);
+  const share = document.createElement('button');
+  share.type = 'button';
+  share.className = 'auth-btn member-completionist__share';
+  share.textContent = 'Share achievement';
+  share.addEventListener('click', () => { void shareCompletion(share); });
 
-  if (completion.complete) {
-    const share = document.createElement('button');
-    share.type = 'button';
-    share.className = 'auth-btn member-completionist__share';
-    share.textContent = 'Share achievement';
-    share.addEventListener('click', () => { void shareCompletion(share); });
-    body.appendChild(share);
-  }
-
+  body.append(meta, title, description, stateLine, share);
   card.append(mark, body);
   return card;
+}
+
+function orderedMilestoneEntries(catalog) {
+  const byKey = new Map();
+  (Array.isArray(catalog) ? catalog : []).forEach((entry) => {
+    const key = badgeKey(entry?.badge_key);
+    if (MILESTONE_KEY_SET.has(key) && !byKey.has(key)) byKey.set(key, entry);
+  });
+  return COMMODORE_MILESTONE_KEYS.map((key) => byKey.get(key)).filter(Boolean);
 }
 
 function renderAchievements(catalog, earnedRows) {
@@ -212,10 +249,10 @@ function renderAchievements(catalog, earnedRows) {
   const earned = new Map();
   (Array.isArray(earnedRows) ? earnedRows : []).forEach((row) => {
     const key = badgeKey(row?.badge_key);
-    if (key && !earned.has(key)) earned.set(key, row);
+    if (MILESTONE_KEY_SET.has(key) && !earned.has(key)) earned.set(key, row);
   });
 
-  const entries = Array.isArray(catalog) ? catalog : [];
+  const entries = orderedMilestoneEntries(catalog);
   entries.forEach((entry) => {
     const key = badgeKey(entry.badge_key);
     const award = earned.get(key);
@@ -253,14 +290,15 @@ function renderAchievements(catalog, earnedRows) {
   });
 
   const completion = completionState(earned);
-  host.appendChild(createCompletionCard(completion));
+  if (completion.complete) {
+    host.prepend(createCompletionCard(completion));
+  }
 
-  const total = entries.length;
-  const earnedTotal = entries.filter((entry) => earned.has(badgeKey(entry.badge_key))).length;
+  const earnedTotal = COMMODORE_MILESTONE_KEYS.filter((key) => earned.has(key)).length;
   setStatus(
     completion.complete
-      ? `${earnedTotal} of ${total} activity badges earned. Commodore Completionist unlocked.`
-      : `${earnedTotal} of ${total} activity badges earned. ${completion.missing.length} ${completion.missing.length === 1 ? 'milestone remains' : 'milestones remain'} before the final reward.`,
+      ? `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned. Commodore Completionist unlocked.`
+      : `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned. Complete all twelve to unlock the final distinction.`,
     earnedTotal ? 'success' : 'ready'
   );
 }
@@ -332,6 +370,7 @@ async function init() {
   ensureStylesheet(CSS_PATH);
   ensureStylesheet(COMPLETION_CSS_PATH);
   if (!ensurePanel()) return;
+  watchBadgeSection();
   bindEvents();
 
   try {
