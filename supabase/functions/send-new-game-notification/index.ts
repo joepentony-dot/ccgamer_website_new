@@ -232,7 +232,7 @@ async function mapLimit<T, R>(items: T[], limit: number, worker: (item: T) => Pr
   return results;
 }
 
-async function authEmailMap(serviceClient: ReturnType<typeof createClient>): Promise<Map<string, string>> {
+async function authEmailMap(serviceClient: any): Promise<Map<string, string>> {
   const result = new Map<string, string>();
   const perPage = 1000;
 
