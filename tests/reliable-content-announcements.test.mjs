@@ -9,7 +9,10 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 
 const announceJs = read('admin/js/announce.js');
 const announceHtml = read('admin/announce.html');
-const edgeFunction = read('supabase/functions/send-new-game-notification/index.ts');
+const edgeEntry = read('supabase/functions/send-new-game-notification/index.ts');
+const edgeHandler = read('supabase/functions/send-new-game-notification/handler.ts');
+const emailTemplate = read('supabase/functions/send-new-game-notification/email-template.ts');
+const edgeFunction = `${edgeEntry}\n${edgeHandler}\n${emailTemplate}`;
 const profileJs = read('resources/js/auth/profile-page.js');
 const profileHtml = read('community/profile.html');
 const migration = read('supabase/migrations/20260806150000_reliable_content_announcements.sql');
@@ -53,6 +56,7 @@ test('member preferences keep games and videos separate', () => {
 });
 
 test('edge function sends real emails and rejects unsafe announcements', () => {
+  assert.match(edgeEntry, /import "\.\/handler\.ts"/);
   assert.match(edgeFunction, /https:\/\/api\.resend\.com\/emails/);
   assert.match(edgeFunction, /RESEND_API_KEY/);
   assert.match(edgeFunction, /content_announcements/);
@@ -63,6 +67,21 @@ test('edge function sends real emails and rejects unsafe announcements', () => {
   assert.match(edgeFunction, /users\.forEach\(\(user:\s*\{/);
   assert.doesNotMatch(edgeFunction, /wire your Resend logic here/i);
   assert.doesNotMatch(edgeFunction, /return json\(\{ success: true, sent: 1, failed: 0 \}\)/);
+});
+
+test('announcement emails retain CCG branding and useful sections', () => {
+  assert.match(emailTemplate, /CCG <\$\{address\}>/);
+  assert.match(emailTemplate, /resources\/images\/ccgamer-logo\.png/);
+  assert.match(emailTemplate, /Hello \$\{safeName\}/);
+  assert.match(emailTemplate, /Share this Zzap!64 feature/);
+  assert.match(emailTemplate, /Facebook/);
+  assert.match(emailTemplate, /WhatsApp/);
+  assert.match(emailTemplate, /Reddit/);
+  assert.match(emailTemplate, /Telegram/);
+  assert.match(emailTemplate, /Support CCG with PayPal/);
+  assert.match(emailTemplate, /Cheeky Commodore Gamer 😇🕹👌/);
+  assert.match(emailTemplate, /TEST EMAIL — this was sent only to the administrator address/);
+  assert.match(edgeHandler, /email_template:\s*"branded-v2"/);
 });
 
 test('database migration provides privacy-safe logging and preference support', () => {
