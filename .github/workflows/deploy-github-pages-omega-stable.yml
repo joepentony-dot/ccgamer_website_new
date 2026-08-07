@@ -71,7 +71,7 @@ jobs:
 
           touch _site/.nojekyll
 
-      - name: Build and validate canonical game and genre SEO
+      - name: Build and validate canonical game, genre and sitemap SEO
         shell: bash
         run: |
           set -euo pipefail
@@ -79,6 +79,7 @@ jobs:
           node scripts/prepare-seo-genre-links.js --root _site
           node scripts/validate-seo-game-routes.js --root _site
           node scripts/validate-seo-genre-links.js --root _site
+          (cd _site && node ../scripts/validate-sitemaps.js)
 
       - name: Verify staged public features
         shell: bash
