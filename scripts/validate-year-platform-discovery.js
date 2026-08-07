@@ -33,6 +33,12 @@ const phase4cReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4c-
 const phase4dReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4d-year-platform-validation.md");
 const PHASE5B_EXCLUDED_REGISTRY_ENTRY = "viewer/manual.html";
 const PHASE5B_EXCLUDED_SITEMAP_URL = `${SITE_ORIGIN}/viewer/manual.html`;
+const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
+    "games/discover/index.html"
+]);
+const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
+    ["sitemap-pages.xml", new Set([`${SITE_ORIGIN}/games/discover/`])]
+]);
 
 function readRequired(filePath) {
     if (!fs.existsSync(filePath)) {
@@ -258,7 +264,9 @@ function validateBaselineRegistry(current, baseline, problems) {
     const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
 
     const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
-    const unexpectedForeign = comparableCurrent.filter((entry) => !expectedForeign.includes(entry));
+    const unexpectedForeign = comparableCurrent.filter((entry) => (
+        !expectedForeign.includes(entry) && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
+    ));
     if (missingForeign.length) problems.push(`Non-year/platform registry entries missing: ${missingForeign.join(", ")}`);
     if (unexpectedForeign.length) problems.push(`Unexpected non-year/platform registry entries: ${unexpectedForeign.join(", ")}`);
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
@@ -271,9 +279,12 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const baselineLocs = extractLocs(baselineXml);
     const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
     const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
+    const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
 
     const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
-    const unexpectedLocs = comparableCurrent.filter((url) => !expectedLocs.includes(url));
+    const unexpectedLocs = comparableCurrent.filter((url) => (
+        !expectedLocs.includes(url) && !reviewedAdditions.has(url)
+    ));
     if (missingLocs.length) problems.push(`${label} URLs missing: ${missingLocs.join(", ")}`);
     if (unexpectedLocs.length) problems.push(`Unexpected ${label} URLs: ${unexpectedLocs.join(", ")}`);
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
@@ -317,7 +328,7 @@ function buildReport(summary) {
 - Validation that every archive game target exists and is its own canonical game route.
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
-- Exact membership checks for registry entries and sitemap URLs owned by other workflows; Phase 6B separately enforces deterministic current ordering.
+- Exact membership checks for registry entries and sitemap URLs owned by other workflows, with the reviewed Find Me a Game sitemap addition permitted; Phase 6B separately enforces deterministic current ordering.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
