@@ -5,6 +5,25 @@
 ============================================================ */
 (function () {
     const root = document.documentElement;
+
+    const revealPrefilledSingleGame = () => {
+        if (root.getAttribute("data-ccg-page") !== "single-game") return;
+
+        const heroTitle = document.getElementById("gameHeroTitle");
+        if (!heroTitle || !heroTitle.textContent.trim()) return;
+
+        if (document.body) {
+            document.body.classList.remove("ccg-loading-single");
+            document.body.classList.add("ccg-single-ready");
+        }
+    };
+
+    // Canonical /games/<slug>/ pages are prefilled in the HTML. The shared
+    // single-game CSS hides pages until ccg-single-ready is present, so reveal
+    // prefilled pages immediately. The dynamic game.html shell has an empty H1
+    // and therefore keeps its existing loader-controlled reveal behaviour.
+    revealPrefilledSingleGame();
+
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
