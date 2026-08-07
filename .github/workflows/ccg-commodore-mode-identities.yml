@@ -7,6 +7,7 @@ on:
       - "js/ccg-mode-engine.js"
       - "js/ccg-mode-identity.js"
       - "js/ccg-header-auto.js"
+      - "resources/audio/mode/lemmings-lets-go.mp3"
       - "resources/css/ccg-mode-identity.css"
       - "scripts/audit-commodore-mode-identities.js"
       - "tests/mode-engine-runtime.test.cjs"

@@ -18,6 +18,19 @@ function read(relativePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
+function requireFile(relativePath) {
+  const filePath = path.join(root, relativePath);
+  if (!fs.existsSync(filePath)) {
+    failures.push(`Missing required file: ${relativePath}`);
+    return false;
+  }
+  if (fs.statSync(filePath).size < 1024) {
+    failures.push(`Required asset is unexpectedly small: ${relativePath}`);
+    return false;
+  }
+  return true;
+}
+
 function requireText(content, token, label) {
   if (!content.includes(token)) failures.push(`${label} is missing: ${token}`);
 }
@@ -52,6 +65,7 @@ const workflow = read(".github/workflows/ccg-commodore-mode-identities.yml");
 const runtimeTest = read("tests/mode-engine-runtime.test.cjs");
 const documentation = read("docs/phase-19-commodore-mode-identities.md");
 const existingAmiga = read("js/ccg-amiga-identity.js");
+const amigaCuePath = "resources/audio/mode/lemmings-lets-go.mp3";
 
 requireText(navCore, "/js/ccg-mode-engine.js", "Shared mode engine loader");
 requireText(navCore, "data-ccg-mode-engine-loader", "Mode engine loader marker");
@@ -67,9 +81,14 @@ requireText(modeEngine, 'document.readyState === "loading"', "Late-load safe mod
 requireText(modeEngine, 'document.querySelectorAll("[data-ccg-mode-toggle]")', "All toggle state synchronization");
 requireText(modeEngine, 'toggle.dataset.ccgModeOwner = "engine"', "Mode ownership marker");
 requireText(modeEngine, "EXCLUDED_PATH", "Private-area mode exclusion");
+requireText(modeEngine, "/resources/audio/mode/lemmings-lets-go.mp3", "Amiga mode audio cue");
+requireText(modeEngine, "/resources/css/audio/c64_speech_stayawhile.mp3", "C64 mode audio cue");
+requireText(modeEngine, "toggleMode({ sound: true })", "User-triggered mode audio path");
+requireText(modeEngine, "sound: false", "Silent initial mode restoration");
 rejectText(modeEngine, 'toggle.addEventListener("click"', "Per-toggle mode engine ownership");
 rejectText(modeEngine, "pointerdown", "Mode engine pointer double-toggle path");
 rejectText(modeEngine, "touchstart", "Mode engine touch double-toggle path");
+requireFile(amigaCuePath);
 
 requireText(moduleCode, "CCG_MODE_IDENTITY_READY", "Module guard");
 requireText(moduleCode, "COMMODORE 64 MODE", "C64 label");
@@ -92,6 +111,8 @@ requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "header-fallback"', "Lega
 
 requireText(runtimeTest, "C64 → Amiga → C64", "Runtime toggle round-trip test");
 requireText(runtimeTest, "stopImmediatePropagation", "Runtime competing-handler assertion");
+requireText(runtimeTest, "entering Amiga mode plays the Lemmings cue once", "Runtime Amiga audio assertion");
+requireText(runtimeTest, "returning to C64 mode plays the stay-a-while cue once", "Runtime C64 audio assertion");
 requireText(runtimeTest, "duplicate script execution does not add another click owner", "Runtime singleton assertion");
 
 requireText(css, '[data-mode="c64"]', "C64 status styling");
@@ -105,6 +126,7 @@ requireText(css, "@media print", "Print exclusion");
 requireText(existingAmiga, "CCG_AMIGA_IDENTITY_READY", "Existing Amiga window system remains present");
 requireText(workflow, "node scripts/audit-commodore-mode-identities.js", "Mode identity workflow audit");
 requireText(workflow, "node tests/mode-engine-runtime.test.cjs", "Mode runtime workflow test");
+requireText(workflow, amigaCuePath, "Mode audio workflow path");
 requireText(documentation, "Phase 19", "Phase documentation");
 requireText(documentation, "one compact status strip", "Scope documentation");
 
@@ -126,6 +148,7 @@ const allowedPaths = new Set([
   "js/ccg-mode-engine.js",
   "js/ccg-mode-identity.js",
   "js/ccg-header-auto.js",
+  amigaCuePath,
   "resources/css/ccg-mode-identity.css",
   "scripts/audit-commodore-mode-identities.js",
   "tests/mode-engine-runtime.test.cjs",
@@ -150,8 +173,9 @@ console.log("Commodore mode identity audit passed.");
 console.log("- One global capture-phase controller owns the public C64/Amiga toggle");
 console.log("- The controller is late-load safe and duplicate-script safe");
 console.log("- Runtime coverage proves C64 → Amiga → C64 state changes");
+console.log("- User-triggered Amiga and C64 changes use restrained audio cues without page-load playback");
 console.log("- C64 and Amiga status identities are both present");
 console.log("- Mode identity observes mode changes only, not unrelated class churn");
 console.log("- Existing Amiga window treatment remains intact");
-console.log("- Private routes, audio and persistent tracking remain outside scope");
+console.log("- Private routes and persistent tracking remain outside scope");
 console.log("- Reduced-motion and print fallbacks are present");
