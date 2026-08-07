@@ -111,8 +111,9 @@ requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "header-fallback"', "Lega
 
 requireText(runtimeTest, "C64 → Amiga → C64", "Runtime toggle round-trip test");
 requireText(runtimeTest, "stopImmediatePropagation", "Runtime competing-handler assertion");
-requireText(runtimeTest, "entering Amiga mode plays the Lemmings cue once", "Runtime Amiga audio assertion");
-requireText(runtimeTest, "returning to C64 mode plays the stay-a-while cue once", "Runtime C64 audio assertion");
+requireText(runtimeTest, "InvalidStateError: metadata not loaded", "Runtime unloaded-audio browser simulation");
+requireText(runtimeTest, "entering Amiga mode still plays when metadata was unavailable at click time", "Runtime Amiga unloaded-audio assertion");
+requireText(runtimeTest, "returning to C64 mode still plays when its metadata was unavailable before the click", "Runtime C64 unloaded-audio assertion");
 requireText(runtimeTest, "duplicate script execution does not add another click owner", "Runtime singleton assertion");
 
 requireText(css, '[data-mode="c64"]', "C64 status styling");
@@ -173,7 +174,7 @@ console.log("Commodore mode identity audit passed.");
 console.log("- One global capture-phase controller owns the public C64/Amiga toggle");
 console.log("- The controller is late-load safe and duplicate-script safe");
 console.log("- Runtime coverage proves C64 → Amiga → C64 state changes");
-console.log("- User-triggered Amiga and C64 changes use restrained audio cues without page-load playback");
+console.log("- Browser-style unloaded audio still plays on user-triggered Amiga and C64 changes without page-load playback");
 console.log("- C64 and Amiga status identities are both present");
 console.log("- Mode identity observes mode changes only, not unrelated class churn");
 console.log("- Existing Amiga window treatment remains intact");
