@@ -1,0 +1,479 @@
+/* ============================================================
+   CCG QUIZ EXPERIENCE — GUIDED PLAY LAYER
+   ------------------------------------------------------------
+   Loaded by quiz-ui-fixes.js after the established quiz.css.
+   This file improves hierarchy and guidance without replacing the
+   working quiz engine or its Omega visual language.
+============================================================ */
+
+.ccg-page--quiz .ccg-hero--quiz {
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+
+.ccg-page--quiz .quiz-hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 170px);
+    gap: clamp(18px, 3vw, 34px);
+}
+
+.ccg-page--quiz .quiz-hero-copy {
+    min-width: 0;
+}
+
+.ccg-page--quiz .quiz-hero-copy > .ccg-section-subtitle {
+    max-width: 68ch;
+    margin-bottom: 16px;
+    color: rgba(235,244,252,0.78);
+    line-height: 1.65;
+}
+
+/* ============================================================
+   THREE-STEP FLOW
+============================================================ */
+
+.quiz-ux-flow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 12px;
+}
+
+.quiz-ux-flow__step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 9px 10px;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 9px;
+    background: rgba(3,8,18,0.62);
+    color: rgba(225,236,246,0.58);
+    font: 700 0.66rem/1.25 "Orbitron", sans-serif;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.quiz-ux-flow__number {
+    display: inline-grid;
+    flex: 0 0 auto;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 50%;
+    background: rgba(0,0,0,0.28);
+    font-size: 0.64rem;
+}
+
+.quiz-ux-flow__step.is-active {
+    border-color: rgba(var(--accent-rgb),0.48);
+    background: rgba(var(--accent-rgb),0.11);
+    color: rgba(248,252,255,0.94);
+    box-shadow: 0 0 18px rgba(var(--accent-rgb),0.10);
+}
+
+.quiz-ux-flow__step.is-complete {
+    border-color: rgba(118,231,172,0.32);
+    color: rgba(213,250,231,0.82);
+}
+
+.quiz-ux-flow__step.is-complete .quiz-ux-flow__number {
+    border-color: rgba(118,231,172,0.42);
+    background: rgba(51,143,94,0.22);
+}
+
+/* ============================================================
+   OPENING INSTRUCTIONS — SHORTER VISUAL WEIGHT
+============================================================ */
+
+.ccg-page--quiz .quiz-hero-copy .quiz-panel--intro {
+    margin: 0 0 14px;
+    padding: 13px 15px;
+    border-radius: 12px;
+    background:
+        linear-gradient(120deg, rgba(var(--accent-rgb),0.055), transparent 50%),
+        rgba(5,10,22,0.64);
+    box-shadow: none;
+}
+
+.ccg-page--quiz .quiz-hero-copy .quiz-panel--intro .ccg-section-title {
+    margin-bottom: 7px;
+    font-size: 0.82rem;
+    color: rgba(242,248,255,0.78);
+}
+
+.ccg-page--quiz .quiz-howto-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 6px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: quiz-howto;
+}
+
+.ccg-page--quiz .quiz-howto-list li {
+    position: relative;
+    min-width: 0;
+    padding-left: 25px;
+    color: rgba(226,237,247,0.68);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    counter-increment: quiz-howto;
+}
+
+.ccg-page--quiz .quiz-howto-list li::before {
+    content: counter(quiz-howto);
+    position: absolute;
+    top: 0.05em;
+    left: 0;
+    display: grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border: 1px solid rgba(var(--accent-rgb),0.32);
+    border-radius: 50%;
+    color: rgb(var(--accent-rgb));
+    font: 700 0.58rem/1 "Orbitron", sans-serif;
+}
+
+.ccg-page--quiz .quiz-note {
+    display: none;
+}
+
+/* ============================================================
+   PACK PICKER — MAKE THE CHOICE OBVIOUS
+============================================================ */
+
+.ccg-page--quiz .quiz-pack-select-wrap {
+    gap: 9px;
+    padding: clamp(13px, 2vw, 18px);
+    border-radius: 13px;
+    border-color: rgba(var(--accent-rgb),0.22);
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.045), transparent 48%),
+        rgba(4,9,20,0.84);
+}
+
+.ccg-page--quiz .quiz-pack-label {
+    color: rgba(246,250,255,0.88);
+    font: 700 0.72rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.11em;
+}
+
+.ccg-page--quiz .quiz-pack-label::before {
+    content: "1  ";
+    color: rgb(var(--accent-rgb));
+}
+
+.ccg-page--quiz .quiz-pack-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ccg-page--quiz .quiz-pack-btn {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 108px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 13px 14px 12px;
+    border: 1px solid rgba(255,255,255,0.11);
+    border-radius: 11px;
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.055), transparent 50%),
+        rgba(4,9,20,0.82);
+    box-shadow: 0 9px 20px rgba(0,0,0,0.30);
+    text-align: left;
+    text-transform: none;
+}
+
+.ccg-page--quiz .quiz-pack-btn::after {
+    content: "Select";
+    position: absolute;
+    right: 10px;
+    bottom: 9px;
+    color: rgba(var(--accent-rgb),0.78);
+    font: 700 0.58rem/1 "Orbitron", sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.ccg-page--quiz .quiz-pack-btn:hover,
+.ccg-page--quiz .quiz-pack-btn:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(var(--accent-rgb),0.46);
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.10), transparent 50%),
+        rgba(5,11,24,0.92);
+}
+
+.ccg-page--quiz .quiz-pack-btn.is-active {
+    border-color: rgba(var(--accent-rgb),0.72);
+    background:
+        linear-gradient(145deg, rgba(var(--accent-rgb),0.18), transparent 58%),
+        rgba(5,12,26,0.96);
+    box-shadow:
+        0 12px 28px rgba(0,0,0,0.38),
+        0 0 0 1px rgba(var(--accent-rgb),0.18),
+        0 0 22px rgba(var(--accent-rgb),0.16);
+}
+
+.ccg-page--quiz .quiz-pack-btn.is-active::after {
+    content: "Selected ✓";
+    color: rgba(218,255,235,0.94);
+}
+
+.quiz-pack-btn__name {
+    display: block;
+    max-width: calc(100% - 20px);
+    color: rgba(249,252,255,0.96);
+    font: 700 0.88rem/1.35 "Orbitron", sans-serif;
+    overflow-wrap: anywhere;
+}
+
+.quiz-pack-btn__meta {
+    display: block;
+    color: rgba(var(--accent-rgb),0.86);
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.quiz-pack-btn__desc {
+    display: -webkit-box;
+    overflow: hidden;
+    max-width: calc(100% - 18px);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    color: rgba(224,235,245,0.58);
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.ccg-page--quiz .quiz-pack-status {
+    margin: 1px 0 0;
+    color: rgba(223,235,245,0.58);
+    font-size: 0.76rem;
+}
+
+.ccg-page--quiz .quiz-pack-status[data-state="ready"] {
+    color: rgba(201,240,220,0.68);
+}
+
+/* ============================================================
+   START AREA / SELECTED PACK
+============================================================ */
+
+.ccg-page--quiz .quiz-hero-buttons {
+    display: grid;
+    grid-template-columns: minmax(210px, 1fr) auto;
+    gap: 10px;
+}
+
+.ccg-page--quiz .quiz-start-btn {
+    min-height: 54px;
+    border-radius: 10px;
+}
+
+.ccg-page--quiz .quiz-start-btn:disabled {
+    opacity: 0.58;
+}
+
+.ccg-page--quiz #quiz-sfx-toggle {
+    min-width: 106px;
+    min-height: 54px;
+    border-radius: 10px;
+}
+
+.ccg-page--quiz .quiz-hero-meta {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(260px, 1.5fr);
+    gap: 8px;
+}
+
+.ccg-page--quiz .quiz-meta-chip {
+    padding: 9px 11px;
+    border-radius: 9px;
+    box-shadow: none;
+}
+
+.ccg-page--quiz .quiz-meta-chip:has([data-quiz-active-pack]) {
+    border-color: rgba(var(--accent-rgb),0.38);
+    background: rgba(var(--accent-rgb),0.09);
+}
+
+.ccg-page--quiz .quiz-meta-chip:has([data-quiz-active-pack]) .quiz-meta-label::before {
+    content: "Current: ";
+    color: rgb(var(--accent-rgb));
+}
+
+.ccg-page--quiz [data-quiz-active-pack] {
+    overflow-wrap: anywhere;
+}
+
+/* Decorative bars should support the page, not compete with the controls. */
+.ccg-page--quiz .quiz-hero-visual {
+    opacity: 0.56;
+    transform: scale(0.84);
+    transform-origin: center;
+}
+
+/* ============================================================
+   ACTIVE QUIZ — STRONGER QUESTION HIERARCHY
+============================================================ */
+
+.ccg-page--quiz .quiz-panel--active {
+    border-radius: 16px;
+}
+
+.ccg-page--quiz .quiz-status {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    min-width: 0;
+    padding-bottom: 15px;
+}
+
+.ccg-page--quiz .quiz-status::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background:
+        linear-gradient(to right,
+            rgb(var(--accent-rgb)) 0,
+            rgb(var(--accent-rgb)) var(--quiz-progress, 0%),
+            rgba(255,255,255,0.08) var(--quiz-progress, 0%),
+            rgba(255,255,255,0.08) 100%);
+    box-shadow: 0 0 12px rgba(var(--accent-rgb),0.20);
+}
+
+.ccg-page--quiz .quiz-question-card {
+    padding: clamp(17px, 3vw, 26px);
+}
+
+.ccg-page--quiz #quiz-question-text {
+    margin-top: 0;
+    color: rgba(250,252,255,0.98);
+    font-size: clamp(1.08rem, 2.4vw, 1.38rem);
+    line-height: 1.5;
+}
+
+.ccg-page--quiz #quiz-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 10px;
+}
+
+.ccg-page--quiz .quiz-answer-btn {
+    position: relative;
+    min-height: 58px;
+    justify-content: flex-start;
+    padding: 12px 14px 12px 48px;
+    border-radius: 10px;
+    text-align: left;
+    text-transform: none;
+    letter-spacing: 0.01em;
+}
+
+.ccg-page--quiz .quiz-answer-btn::before {
+    position: absolute;
+    left: 12px;
+    display: grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    border: 1px solid rgba(var(--accent-rgb),0.34);
+    border-radius: 6px;
+    background: rgba(var(--accent-rgb),0.08);
+    color: rgb(var(--accent-rgb));
+    font: 700 0.7rem/1 "Orbitron", sans-serif;
+}
+
+.ccg-page--quiz .quiz-answer-btn:nth-child(1)::before { content: "A"; }
+.ccg-page--quiz .quiz-answer-btn:nth-child(2)::before { content: "B"; }
+.ccg-page--quiz .quiz-answer-btn:nth-child(3)::before { content: "C"; }
+.ccg-page--quiz .quiz-answer-btn:nth-child(4)::before { content: "D"; }
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 900px) {
+    .ccg-page--quiz .quiz-hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--quiz .quiz-hero-visual {
+        display: none;
+    }
+
+    .ccg-page--quiz .quiz-hero-meta {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+
+    .ccg-page--quiz .quiz-meta-chip:has([data-quiz-active-pack]) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .quiz-ux-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .quiz-ux-flow__step {
+        min-height: 36px;
+        padding-block: 7px;
+    }
+
+    .ccg-page--quiz .quiz-howto-list,
+    .ccg-page--quiz .quiz-pack-list,
+    .ccg-page--quiz #quiz-options {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--quiz .quiz-pack-btn {
+        min-height: 94px;
+    }
+
+    .ccg-page--quiz .quiz-hero-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--quiz #quiz-sfx-toggle {
+        min-height: 46px;
+    }
+
+    .ccg-page--quiz .quiz-hero-meta {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 460px) {
+    .ccg-page--quiz .quiz-hero-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--quiz .quiz-meta-chip:has([data-quiz-active-pack]) {
+        grid-column: auto;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-ux-flow__step,
+    .ccg-page--quiz .quiz-pack-btn {
+        transition: none;
+    }
+
+    .ccg-page--quiz .quiz-pack-btn:hover,
+    .ccg-page--quiz .quiz-pack-btn:focus-visible {
+        transform: none;
+    }
+}
