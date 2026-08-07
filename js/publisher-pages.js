@@ -105,7 +105,6 @@
         const count = document.getElementById("publisherVisibleCount");
         const empty = document.getElementById("publisherEmptyState");
         const archiveCards = Array.from(grid.querySelectorAll("[data-publisher-card]"));
-        const buttons = Array.from(document.querySelectorAll("[data-publisher-system]"));
         const featuredHeading = document.getElementById("featured-publishers-title");
         const featuredSection = featuredHeading?.closest(".ccg-publishers-section");
         const featuredGrid = featuredSection?.querySelector(".ccg-publisher-grid--featured");
@@ -116,7 +115,11 @@
         const archiveKicker = archiveSection?.querySelector(".ccg-publishers-section__kicker");
         const defaultArchiveHeading = archiveHeading?.textContent || "All Publishers";
         const defaultArchiveKicker = archiveKicker?.textContent || "Full directory";
-        let system = readInitialSystem(["all", "c64", "amiga", "both"]);
+
+        /* The publisher index only needs one search box. Platform filtering
+           belongs on individual publisher game pages, where it is useful. */
+        document.querySelector(".ccg-publishers-tools .ccg-publishers-filter")?.remove();
+        updateSystemQuery("all");
 
         function clearSearchResults() {
             grid.querySelectorAll("[data-publisher-search-result]").forEach((card) => card.remove());
@@ -138,7 +141,7 @@
 
         function renderSearchResults(query) {
             const matches = allCards
-                .filter((card) => publisherCardMatches(card, query, system))
+                .filter((card) => publisherCardMatches(card, query, "all"))
                 .sort((a, b) => normalize(getPublisherCardData(a).name).localeCompare(
                     normalize(getPublisherCardData(b).name),
                     "en",
@@ -170,7 +173,7 @@
             let featuredVisible = 0;
 
             featuredCards.forEach((card) => {
-                const show = publisherCardMatches(card, "", system);
+                const show = publisherCardMatches(card, "", "all");
                 card.hidden = !show;
                 if (show) {
                     featuredVisible += 1;
@@ -179,7 +182,7 @@
             });
 
             archiveCards.forEach((card) => {
-                const show = publisherCardMatches(card, "", system);
+                const show = publisherCardMatches(card, "", "all");
                 card.hidden = !show;
                 if (show) visible += 1;
             });
@@ -200,18 +203,9 @@
             updateSearchPriority(query);
             if (count) count.textContent = String(visible);
             if (empty) empty.hidden = visible !== 0;
-            setPressed(buttons, system, "data-publisher-system");
         }
 
         search?.addEventListener("input", applyFilters);
-        buttons.forEach((button) => {
-            button.addEventListener("click", () => {
-                system = normalize(button.dataset.publisherSystem) || "all";
-                updateSystemQuery(system);
-                applyFilters();
-            });
-        });
-
         applyFilters();
     }
 
