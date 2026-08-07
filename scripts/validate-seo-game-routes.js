@@ -18,6 +18,17 @@ function read(filePath) {
   return fs.readFileSync(filePath, "utf8");
 }
 
+function decodeHtmlEntities(value) {
+  return String(value || "")
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+    .replace(/&#([0-9]+);/g, (_, code) => String.fromCodePoint(Number.parseInt(code, 10)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 function unescapeXml(value) {
   return String(value || "")
     .replace(/&amp;/g, "&")
@@ -86,14 +97,15 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   const ogUrl = metaValue(html, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
   const pageTitle = metaValue(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
   const description = metaValue(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
+  const descriptionText = decodeHtmlEntities(description);
   const heroTitle = metaValue(html, /<h1[^>]+id=["']gameHeroTitle["'][^>]*>([\s\S]*?)<\/h1>/i);
 
   expect(hasIndexFollow(html), `${rel}: canonical page must be index,follow.`, errors);
   expect(canonical === canonicalUrl, `${rel}: canonical mismatch (${canonical || "missing"}).`, errors);
   expect(ogUrl === canonicalUrl, `${rel}: og:url mismatch (${ogUrl || "missing"}).`, errors);
   expect(pageTitle.length > 0, `${rel}: title is missing.`, errors);
-  expect(description.length > 0, `${rel}: meta description is missing.`, errors);
-  expect(description.length <= 160, `${rel}: meta description exceeds 160 characters.`, errors);
+  expect(descriptionText.length > 0, `${rel}: meta description is missing.`, errors);
+  expect(descriptionText.length <= 160, `${rel}: decoded meta description exceeds 160 characters.`, errors);
   expect(heroTitle.length > 0, `${rel}: static H1 is missing.`, errors);
   expect(!/http-equiv=["']refresh["']/i.test(html), `${rel}: canonical page still contains a meta refresh.`, errors);
   expect(!/\/games\/game\.html\?id=/i.test(html), `${rel}: canonical page still points to the query-string game route.`, errors);
@@ -127,13 +139,7 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   expect(hasBreadcrumb, `${rel}: BreadcrumbList JSON-LD is missing.`, errors);
 
   const expectedTitleText = title.toLowerCase() === "smash t.v." ? "Smash TV" : title;
-  const normalizedHero = heroTitle
-    .replace(/&amp;/g, "&")
-    .replace(/&#39;/g, "'")
-    .replace(/&quot;/g, '"')
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .trim();
+  const normalizedHero = decodeHtmlEntities(heroTitle).trim();
   expect(normalizedHero === expectedTitleText, `${rel}: static H1 does not match game title.`, errors);
 }
 
