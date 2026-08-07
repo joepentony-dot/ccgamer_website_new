@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-phase17b-v1";
+const CACHE_VERSION = "2026-08-phase17b-v2-code-refresh";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -41,7 +41,8 @@ const PUBLIC_DATA_PATHS = new Set([
   "/data/retro-specials.json"
 ]);
 
-const STATIC_ASSET_PATTERN = /\.(?:css|js|mjs|png|jpe?g|webp|gif|svg|ico|woff2?|ttf|mp3|ogg|wav)$/i;
+const CODE_ASSET_PATTERN = /\.(?:css|js|mjs)$/i;
+const STATIC_ASSET_PATTERN = /\.(?:png|jpe?g|webp|gif|svg|ico|woff2?|ttf|mp3|ogg|wav)$/i;
 
 function isSameOrigin(url) {
   return url.origin === self.location.origin;
@@ -159,6 +160,21 @@ async function staleWhileRevalidate(request, cacheName) {
   return new Response("", { status: 504, statusText: "Offline" });
 }
 
+async function networkFirstAsset(request) {
+  const cache = await caches.open(ASSET_CACHE);
+
+  try {
+    const response = await fetch(request, { cache: "no-cache" });
+    if (canStoreResponse(response)) await cache.put(request, response.clone());
+    return response;
+  } catch (error) {
+    const cached = await cache.match(request, { ignoreSearch: false })
+      || await caches.match(request, { ignoreSearch: false });
+    if (cached) return cached;
+    return new Response("", { status: 504, statusText: "Offline" });
+  }
+}
+
 async function cacheFirstAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
   const cached = await cache.match(request, { ignoreSearch: false });
@@ -209,6 +225,11 @@ self.addEventListener("fetch", (event) => {
 
   if (PUBLIC_DATA_PATHS.has(url.pathname)) {
     event.respondWith(staleWhileRevalidate(request, DATA_CACHE));
+    return;
+  }
+
+  if (CODE_ASSET_PATTERN.test(url.pathname)) {
+    event.respondWith(networkFirstAsset(request));
     return;
   }
 
