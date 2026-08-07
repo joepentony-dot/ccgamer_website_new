@@ -3,6 +3,7 @@ const fs = require('fs');
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
 const CORE_CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
+const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
 
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
@@ -77,6 +78,12 @@ function sitemapFileFromLoc(loc, filePath) {
   return child;
 }
 
+function localChildSitemaps() {
+  return fs.readdirSync('.')
+    .filter((filename) => CHILD_SITEMAP_PATTERN.test(filename))
+    .sort();
+}
+
 function validateSitemapIndex() {
   const filePath = 'sitemap.xml';
   const xml = readFile(filePath);
@@ -93,6 +100,11 @@ function validateSitemapIndex() {
   }
 
   const children = locs.map((loc) => sitemapFileFromLoc(loc, filePath));
+  const indexedChildren = new Set(children);
+  for (const child of localChildSitemaps()) {
+    assert(indexedChildren.has(child), `${filePath} is missing local child sitemap: ${child}`);
+  }
+
   console.log(`[validate-sitemaps] sitemap.xml index structure valid (${children.length} child sitemaps).`);
   return children;
 }
