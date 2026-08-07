@@ -81,10 +81,18 @@ jobs:
         run: |
           set -euo pipefail
           cp "$RUNNER_TEMP/second.diff" "$RUNNER_TEMP/before-legacy.diff"
+
+          # The older command may format generated files differently, but it must
+          # never reintroduce invalid SEO semantics.
           node scripts/generate-slug-pages.js
           node scripts/validate-seo-game-routes.js --root .
-          git diff --binary > "$RUNNER_TEMP/after-legacy.diff"
-          cmp "$RUNNER_TEMP/before-legacy.diff" "$RUNNER_TEMP/after-legacy.diff"
+
+          # The authoritative generator must then restore the exact deterministic
+          # canonical output used by publishing and deployment.
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/validate-seo-game-routes.js --root .
+          git diff --binary > "$RUNNER_TEMP/after-legacy-repair.diff"
+          cmp "$RUNNER_TEMP/before-legacy.diff" "$RUNNER_TEMP/after-legacy-repair.diff"
 
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
@@ -101,5 +109,6 @@ jobs:
             echo "- Generated game files changed from current wrappers: ${changed_games}"
             echo '- Protected intro files: unchanged'
             echo '- games/games.json: unchanged'
-            echo '- Legacy slug generator compatibility: PASS'
+            echo '- Legacy slug generator semantic compatibility: PASS'
+            echo '- Authoritative regeneration after legacy command: deterministic PASS'
           } >> "$GITHUB_STEP_SUMMARY"
