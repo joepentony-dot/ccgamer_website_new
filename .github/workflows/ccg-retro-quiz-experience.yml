@@ -1,0 +1,92 @@
+name: CCG Retro Collections and Quiz Experience
+
+on:
+  pull_request:
+    paths:
+      - "games/collections/retro-specials.html"
+      - "games/collections/retro-events.html"
+      - "games/collections/amiga-demo-music.html"
+      - "js/retro-specials-loader.js"
+      - "js/retro-events-loader.js"
+      - "js/amiga-demo-music-loader.js"
+      - "resources/css/retro-events.css"
+      - "admin/templates/retro-video-template.html"
+      - "resources/css/retro-video-pages.css"
+      - "scripts/generate-retro-pages.js"
+      - ".github/workflows/rebuild-retro-on-data-change.yml"
+      - "quiz/quiz.html"
+      - "resources/css/quiz.css"
+      - "resources/css/quiz-experience.css"
+      - "resources/js/quiz-ui-fixes.js"
+      - "scripts/audit-retro-quiz-experience.js"
+      - ".github/workflows/ccg-retro-quiz-experience.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retro-quiz-experience:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate changed JavaScript syntax
+        run: |
+          node --check js/retro-specials-loader.js
+          node --check js/retro-events-loader.js
+          node --check js/amiga-demo-music-loader.js
+          node --check resources/js/quiz-ui-fixes.js
+          node --check scripts/generate-retro-pages.js
+          node --check scripts/audit-retro-quiz-experience.js
+
+      - name: Run source contract audit
+        run: node scripts/audit-retro-quiz-experience.js
+
+      - name: Generate retro pages in CI workspace
+        run: node scripts/generate-retro-pages.js
+
+      - name: Inspect representative generated detail pages
+        run: |
+          test -f amiga-demo-music/red-sector-folow-me/index.html
+          test -f retro-specials/50-essential-amiga-games/index.html
+
+          for page in \
+            amiga-demo-music/red-sector-folow-me/index.html \
+            retro-specials/50-essential-amiga-games/index.html
+          do
+            grep -Fq 'class="ccg-header"' "$page"
+            grep -Fq 'retro-video-page__hero-media' "$page"
+            grep -Fq 'retro-video-page__watch' "$page"
+            grep -Fq 'retro-video-page__related-media' "$page"
+            grep -Fq 'data-ccg-mode-toggle' "$page"
+          done
+
+      - name: Validate generated canonical URLs
+        run: |
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/amiga-demo-music/red-sector-folow-me/"' amiga-demo-music/red-sector-folow-me/index.html
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/"' retro-specials/50-essential-amiga-games/index.html
+
+      - name: Refresh and validate sitemap model
+        run: |
+          node scripts/generate-sitemaps.js
+          node scripts/validate-sitemaps.js
+
+      - name: Check generated output whitespace
+        run: git diff --check
+
+      - name: Restore CI workspace and confirm source branch stays deterministic
+        run: |
+          git reset --hard HEAD
+          git clean -fd
+          test -z "$(git status --porcelain)"
