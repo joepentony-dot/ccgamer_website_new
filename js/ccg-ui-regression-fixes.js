@@ -4,7 +4,7 @@
    Small runtime layer for:
    • guaranteed stylesheet delivery for interaction polish
    • minimum visible Zzap!64 loading progress window
-   • compact home-page footer navigation/legal information
+   • home-page footer duplicate-link cleanup
    • protected streamlined home-page highlights
    • mobile home/publisher formatting corrections
    • legacy MicroProse featured-card compatibility
@@ -268,25 +268,12 @@
         if (root.getAttribute("data-ccg-page") !== "home") return;
 
         const footer = document.querySelector(".ccg-footer");
-        if (!footer || footer.querySelector("[data-ccg-footer-mini-nav]")) return;
+        if (!footer) return;
 
-        const nav = document.createElement("nav");
-        nav.className = "ccg-footer-mini-nav";
-        nav.dataset.ccgFooterMiniNav = "true";
-        nav.setAttribute("aria-label", "Footer links");
-        nav.innerHTML = `
-            <a href="/about.html">About</a>
-            <a href="/contact.html">Contact</a>
-            <a href="/support.html">Support CCG</a>
-            <a href="/privacy.html">Privacy</a>
-            <a href="/terms.html">Terms</a>
-            <a href="/cookies.html">Cookies</a>
-            <a href="/affiliate-disclosure.html">Affiliate disclosure</a>
-        `;
-
-        const copyright = footer.querySelector(".ccg-footer__text");
-        if (copyright) footer.insertBefore(nav, copyright);
-        else footer.appendChild(nav);
+        /* The shared footer already supplies the site/legal navigation.
+           Remove the extra mini-nav previously added here so the homepage
+           does not repeat the same links twice. */
+        footer.querySelectorAll("[data-ccg-footer-mini-nav], .ccg-footer-mini-nav").forEach((nav) => nav.remove());
     }
 
     function holdZzapLoaderForFirstPaint() {
