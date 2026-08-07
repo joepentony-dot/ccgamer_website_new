@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    
     <script>
         (function () {
             try {
@@ -12,7 +11,6 @@
                 if (!saved) return;
                 document.documentElement.setAttribute('data-ccg-mode', saved);
                 document.documentElement.setAttribute('data-mode', saved);
-                // Body may not exist yet during head execution, but set if available
                 if (document.body) {
                     document.body.setAttribute('data-ccg-mode', saved);
                     document.body.setAttribute('data-mode', saved);
@@ -55,7 +53,7 @@
     <link rel="preload" as="image" href="resources/images/hero/ccg-hero-c64.png" fetchpriority="high" type="image/png">
     <link rel="preload" as="image" href="resources/images/hero/ccg-hero-amiga.png" fetchpriority="high" type="image/png">
     <link rel="preload" as="image" href="resources/images/ccgamer-logo.png" fetchpriority="high" type="image/png" imagesizes="150px">
-    <!-- Fonts loaded globally via ccg-master (Robotron) -->
+
     <script>
         document.documentElement.classList.add('ccg-prepaint');
         requestAnimationFrame(() => {
@@ -95,16 +93,12 @@
 
 <body class="ccg-body page-home" data-ccg-mode="c64" data-mode="c64" id="top">
 
-    <!-- GLOBAL BACKGROUND OVERLAYS -->
     <div class="ccg-bg" aria-hidden="true">
         <div class="ccg-bg-starfield" aria-hidden="true"></div>
         <div class="ccg-bg-grid" aria-hidden="true"></div>
     </div>
 
     <div class="ccg-page ccg-page--home">
-
-        <!-- HEADER -->
-        
 
 <header class="ccg-header" data-ccg-header>
     <div class="ccg-header-inner">
@@ -168,7 +162,6 @@
         </nav>
 
         <div class="ccg-header-actions">
-
             <div class="ccg-mode-hint">Try different modes</div>
             <button class="ccg-mode-toggle"
                     type="button"
@@ -194,7 +187,6 @@
                 <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
                 <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
             </div>
-
         </div>
     </div>
 
@@ -219,11 +211,10 @@
     <div class="ccg-header-neon-strip"></div>
 </header>
 
-        <!-- MAIN -->
         <main class="ccg-main ccg-main--home">
 
-            <!-- HERO -->
-            <section class="home-hero" data-hero-mode="c64">
+            <!-- HERO: ONE CLEAR DECISION, NOT A SECOND NAVIGATION MENU -->
+            <section class="home-hero home-hero--streamlined" data-hero-mode="c64">
                 <div class="home-hero__frame">
                     <div class="home-hero__bg home-hero__bg--c64" aria-hidden="true"></div>
                     <div class="home-hero__bg home-hero__bg--amiga" aria-hidden="true"></div>
@@ -245,47 +236,17 @@
                                 </h1>
 
                                 <p class="ccg-hero-tagline home-hero__tagline">
-                                    Dive into curated classics, game reviews, deep-dive features and retro magic
-                                    across C64 &amp; Amiga.
+                                    Curated Commodore 64 and Amiga games, reviews, videos and retro history — all in one archive.
                                 </p>
 
-                                <div class="home-hero__mobile-cta">
-                                    <button type="button"
-                                            class="home-random-cta"
-                                            data-ccg-random-game
-                                            data-ccg-random-cta
-                                            aria-label="Play a random game">
-                                        <span class="home-random-cta__label">🎲 RANDOM GAME</span>
-                                        <span class="home-random-cta__status" aria-live="polite"></span>
-                                    </button>
-                                    <div class="home-discovery-strip" aria-label="Discover more games">
-                                        <a class="home-discovery-strip__link" href="games/index.html">
-                                            <span class="home-discovery-strip__icon" aria-hidden="true">📚</span>
-                                            <span class="home-discovery-strip__label">All Games</span>
-                                        </a>
-                                        <a class="home-discovery-strip__link" href="/games/genres/index.html">
-                                            <span class="home-discovery-strip__icon" aria-hidden="true">🏷️</span>
-                                            <span class="home-discovery-strip__label">Genres</span>
-                                        </a>
-                                        <a class="home-button home-discovery-strip__link home-collections" href="/games/collections/">
-                                            <span class="home-discovery-strip__icon" aria-hidden="true">⭐</span>
-                                            <span class="home-discovery-strip__label collections-full">Collections</span>
-                                            <span class="home-discovery-strip__label collections-short">Collections</span>
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div class="home-hero__actions">
+                                <div class="home-hero__actions home-hero__actions--streamlined">
                                     <a href="games/index.html" class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--solid">
-                                        Browse The Full Library
-                                    </a>
-                                    <a href="games/collections/top-picks.html" class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--ghost home-hero__cta--featured">
-                                        See CCG Top Picks
+                                        Browse Games
                                     </a>
                                     <button type="button"
                                             class="ccg-btn ccg-btn--neon home-hero__cta home-hero__cta--random"
                                             data-ccg-random-game>
-                                        Random Game
+                                        🎲 Random Game
                                     </button>
                                 </div>
                             </div>
@@ -306,84 +267,49 @@
                 <span class="ccg-omega-core"></span>
             </div>
 
-            <!-- FEATURED HIGHLIGHTS -->
-            <section class="home-section home-section--highlights ccg-chapter">
-                <header class="home-section__header">
-                    <h2 class="home-section__title">Featured Highlights</h2>
+            <!-- THREE GENUINE DESTINATIONS INSTEAD OF ANOTHER SITE MAP -->
+            <section class="home-section home-section--highlights home-section--streamlined ccg-chapter" aria-labelledby="home-highlights-title">
+                <header class="home-section__header home-section__header--focused">
+                    <p class="home-section__eyebrow">Start here</p>
+                    <h2 class="home-section__title" id="home-highlights-title">Featured Highlights</h2>
+                    <p class="home-section__intro">Three of the strongest ways into the CCG archive.</p>
                     <div class="home-section__divider"></div>
                 </header>
 
-                <div class="home-highlights-grid">
-
-                    <a href="games/index.html" class="ccg-card home-highlight-card">
+                <div class="home-highlights-grid home-highlights-grid--focused">
+                    <a href="/zzap64/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--zzap">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">The Full A–Z Index</h3>
-                            <p class="ccg-card__text">
-                                Fast browsing with alphabet jumpers and direct search.
-                            </p>
+                            <span class="home-highlight-card__eyebrow">Magazine archive</span>
+                            <h3 class="ccg-card__title">Zzap!64 Awards</h3>
+                            <p class="ccg-card__text">Revisit the Sizzlers, Gold Medals and standout scores from Zzap!64, year by year.</p>
+                            <span class="home-highlight-card__cta">Explore the awards →</span>
                         </div>
                     </a>
 
-                    <a href="/games/downloads/" class="ccg-card home-highlight-card" data-home-downloads-card="true">
+                    <a href="/games/downloads/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--downloads" data-home-downloads-card="true">
                         <div class="ccg-card__body">
+                            <span class="home-highlight-card__eyebrow">Archive access</span>
                             <h3 class="ccg-card__title">Game Downloads A–Z</h3>
-                            <p class="ccg-card__text">
-                                Search the downloadable C64 and Amiga archive, open a letter and download a game directly.
-                            </p>
+                            <p class="ccg-card__text">Search the downloadable C64 and Amiga archive and jump straight to the title you want.</p>
+                            <span class="home-highlight-card__cta">Browse downloads →</span>
                         </div>
                     </a>
 
-                    <a href="games/collections/index.html" class="ccg-card home-highlight-card">
+                    <a href="games/collections/top-picks.html" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--picks">
                         <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Collections that matter</h3>
-                            <p class="ccg-card__text">
-                                Cartridge, licensed, BPjS/BPjM indexed, and Top Picks curated for quick jumping.
-                            </p>
+                            <span class="home-highlight-card__eyebrow">Curated by CCG</span>
+                            <h3 class="ccg-card__title">CCG Top Picks</h3>
+                            <p class="ccg-card__text">Skip the endless lists and head straight to a hand-picked selection of Commodore favourites.</p>
+                            <span class="home-highlight-card__cta">See the picks →</span>
                         </div>
                     </a>
-
-                    <a href="quiz/quiz.html" class="ccg-card home-highlight-card">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Quiz</h3>
-                            <p class="ccg-card__text">
-                                Quick-fire rounds with instant scoring and bragging rights.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a href="emulation.html" class="ccg-card home-highlight-card">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Emulation Guides</h3>
-                            <p class="ccg-card__text">
-                                Clean setup steps for both C64 and Amiga without the noise.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a href="about.html" class="ccg-card home-highlight-card">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">The Channel Mission</h3>
-                            <p class="ccg-card__text">
-                                Why the site exists, what’s next, and what makes CCG tick.
-                            </p>
-                        </div>
-                    </a>
-
-                    <a href="/games/genres/index.html" class="ccg-card home-highlight-card">
-                        <div class="ccg-card__body">
-                            <h3 class="ccg-card__title">Genre hubs</h3>
-                            <p class="ccg-card__text">
-                                Jump straight into action, shooters, platformers, strategy and more.
-                            </p>
-                        </div>
-                    </a>
-
                 </div>
 
                 <div class="home-featured-videos" aria-labelledby="home-videos-heading">
                     <div class="home-featured-videos__copy">
+                        <span class="home-highlight-card__eyebrow">From the channel</span>
                         <h3 class="home-featured-videos__title" id="home-videos-heading">Featured Gameplay Videos</h3>
-                        <p class="home-featured-videos__text">Fresh C64 and Amiga picks with embedded previews, pulled straight from the library.</p>
+                        <p class="home-featured-videos__text">Fresh C64 and Amiga picks pulled from the library.</p>
                     </div>
 
                     <div class="home-video-grid" data-ccg-video-grid>
@@ -402,67 +328,36 @@
                 <span class="ccg-omega-core"></span>
             </div>
 
-            <!-- BOTTOM CTA -->
-            <section class="home-bottom-cta ccg-chapter" aria-labelledby="home-bottom-cta-heading">
-                <div class="home-bottom-cta__beam" aria-hidden="true"></div>
-                <div class="home-bottom-cta__content">
-                    <p class="home-bottom-cta__eyebrow">Ready to play?</p>
-                    <h2 class="home-bottom-cta__headline" id="home-bottom-cta-heading">Explore the games. Discover the reviews. Find your favourites.</h2>
-                    <p class="home-bottom-cta__copy">This site exists because of the Cheeky Commodore Gamer community. Thank you for stopping by, supporting the channel, and being part of a shared love for Commodore classics as we build something bigger together..</p>
-                    <div class="home-bottom-cta__actions home-cta-row ccg-cta-group">
-                        <a class="ccg-btn ccg-btn--neon home-cta-btn" href="/games/genres/index.html">Genres</a>
-                        <a class="ccg-btn ccg-btn--neon home-cta-btn home-cta-main" href="/quiz/quiz.html">Try The Quiz</a>
-                        <a class="ccg-btn ccg-btn--neon home-cta-btn home-cta-btn--collections" href="/games/collections/index.html">Collections</a>
-                    </div>
-                    <div class="home-bottom-cta__return">
-                        <a class="ccg-btn ccg-btn--utility home-return-top" href="#top">Return to Top</a>
-                    </div>
+            <!-- COMPACT SUPPORT STRIP -->
+            <section class="home-cta-upgrade home-cta-upgrade--streamlined" aria-label="Support Cheeky Commodore Gamer">
+                <div class="home-support-strip__copy">
+                    <span class="home-highlight-card__eyebrow">Keep the archive growing</span>
+                    <h2 class="home-support-strip__title">Enjoying CCG?</h2>
+                    <p class="home-support-strip__text">Support the project or follow the channel for more Commodore videos and deep dives.</p>
+                </div>
+                <div class="home-support-strip__actions">
+                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="ccg-btn ccg-btn-blue">
+                        Support CCG
+                    </a>
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="ccg-btn ccg-btn-red">
+                        YouTube
+                    </a>
                 </div>
             </section>
 
-            <div class="ccg-omega-divider" aria-hidden="true">
-                <span class="ccg-omega-core"></span>
-            </div>
-
-            <!-- NEON VISITOR CALLOUT -->
-            <section class="home-visitor-callout ccg-chapter" aria-labelledby="visitor-callout-heading">
+            <!-- SIGNATURE LINE: ATMOSPHERE WITHOUT ANOTHER FULL-SCREEN PANEL -->
+            <section class="home-visitor-callout home-visitor-callout--compact ccg-chapter" aria-labelledby="visitor-callout-heading">
                 <div class="home-visitor-callout__inner">
                     <div class="home-visitor-callout__beam" aria-hidden="true"></div>
                     <p class="home-visitor-callout__kicker" id="visitor-callout-heading">Another visitor...</p>
                     <p class="home-visitor-callout__headline home-visitor-callout__headline--interactive" role="button" tabindex="0" aria-label="Play stay a while, stay forever audio">Stay a while, stay forever!</p>
                 </div>
-            </section>
-
-            <div class="ccg-omega-divider" aria-hidden="true">
-                <span class="ccg-omega-core"></span>
-            </div>
-
-            <section class="home-cta-upgrade">
-
-                <div class="cta-card">
-                    <p class="cta-text">
-                        Enjoying the site? If it’s brought back a few memories, you can support the project and help keep everything growing.
-                    </p>
-
-                    <!-- CCG PAYPAL DONATE LINK — DO NOT CHANGE ROUTE -->
-                    <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="ccg-btn ccg-btn-blue">
-                        💙 SUPPORT THE SITE
-                    </a>
-                </div>
-
-                <div class="cta-card">
-                    <p class="cta-text">
-                        Weekly retro gaming videos, deep dives, music, and community content — join the channel and be part of it.
-                    </p>
-
-                    <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer" class="ccg-btn ccg-btn-red">
-                        ▶ SUBSCRIBE ON YOUTUBE
-                    </a>
-                </div>
-
             </section>
 
         </main>
@@ -471,41 +366,23 @@
             <span class="ccg-omega-core"></span>
         </div>
 
-      <!-- FOOTER -->
-<footer class="ccg-footer">
+        <footer class="ccg-footer ccg-footer--home-compact">
+            <div class="ccg-footer-home-brand">THE CHEEKY COMMODORE GAMER ARCHIVE</div>
+            <p class="ccg-footer-home-summary">Independent Commodore 64 &amp; Amiga archive, reviews, videos and retro history.</p>
 
-    <p class="ccg-footer__text">
-        © <span data-ccg-year></span> Cheeky Commodore Gamer.
-        Not affiliated with Commodore, Amiga or publishers.
-    </p>
+            <div class="ccg-footer__counter-wrap" aria-label="Visitor count">
+                <div class="ccg-footer__counter">
+                    <span id="ccg-visit-count">—</span> visitors
+                </div>
+            </div>
 
-   <!-- VISITOR COUNTER -->
-<div class="ccg-footer__counter-wrap" aria-label="Visitor count">
-    <div class="ccg-footer__counter">
-        <span id="ccg-visit-count">—</span> visitors
-    </div>
-</div>
-
-    <div class="ccg-footer-signature" aria-label="Archive information">
-
-        <div class="ccg-footer-archive-title">
-            THE CHEEKY COMMODORE GAMER ARCHIVE
-        </div>
-
-        <div class="ccg-footer-archive-sub">
-            Curated Commodore 64 &amp; Amiga History<br>
-            Independently Maintained
-        </div>
-
-        <div class="ccg-footer-phrase">
-            Another visitor… stay a while, stay forever.
-        </div>
+            <p class="ccg-footer__text">
+                © <span data-ccg-year></span> Cheeky Commodore Gamer. Not affiliated with Commodore, Amiga or publishers.
+            </p>
+        </footer>
 
     </div>
 
-</footer>
-
-<!-- CORE JS -->
 <script src="js/ccg-nav-core.js" defer></script>
 <script src="js/ccg-global.js" defer></script>
 <script src="resources/js/ccg-nav-scroll-indicator.js" defer></script>
@@ -514,8 +391,6 @@
 <script src="js/home-dynamic.js" defer></script>
 <script src="js/ccg-livestream-status.js" defer></script>
 
-
-<!-- GOATCOUNTER — SAFE ANALYTICS (TRACKING ONLY) -->
 <script
   data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
   async
@@ -523,13 +398,8 @@
 </script>
 
 <script src="js/ccg-supabase-config.js" defer></script>
-
 <script src="js/ccg-supabase-client.js" defer></script>
-
 <script src="js/ccg-community-auth.js" defer></script>
-
-  
-
 <script src="/js/ccg-nav.js" defer></script>
 <script src="/js/ccg-auth.js" defer></script>
 <script src="/js/ccg-mode.js" defer></script>
