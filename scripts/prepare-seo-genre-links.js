@@ -79,7 +79,7 @@ function updateGenrePage(html, fallbackGames) {
   const existing = new RegExp(`${START_MARKER}[\\s\\S]*?${END_MARKER}`, "i");
   if (existing.test(html)) return html.replace(existing, block);
 
-  const gridOpen = /(<div\s+id=["']genreGamesGrid["']\s+class=["']ccg-genre-grid["']\s*>)/i;
+  const gridOpen = /(<div\b(?=[^>]*\bid=["']genreGamesGrid["'])[^>]*>)/i;
   if (!gridOpen.test(html)) return null;
   return html.replace(gridOpen, `$1\n                    ${block}`);
 }
