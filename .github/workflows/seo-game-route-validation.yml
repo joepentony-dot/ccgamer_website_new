@@ -66,6 +66,7 @@ jobs:
           node scripts/validate-seo-game-routes.js --root .
           git diff --check
           git diff --binary > "$RUNNER_TEMP/first.diff"
+          git status --short > "$RUNNER_TEMP/first.status"
 
       - name: Require deterministic regeneration
         shell: bash
@@ -74,7 +75,18 @@ jobs:
           node scripts/prepare-seo-game-routes.js --output-root .
           node scripts/validate-seo-game-routes.js --root .
           git diff --binary > "$RUNNER_TEMP/second.diff"
-          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+          git status --short > "$RUNNER_TEMP/second.status"
+
+          if ! cmp -s "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"; then
+            echo "::error::Canonical route generation is not deterministic"
+            echo "=== status after pass one ==="
+            cat "$RUNNER_TEMP/first.status"
+            echo "=== status after pass two ==="
+            cat "$RUNNER_TEMP/second.status"
+            echo "=== generated patch difference (first 400 lines) ==="
+            diff -u "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff" | head -n 400 || true
+            exit 1
+          fi
 
       - name: Check legacy generator compatibility
         shell: bash
