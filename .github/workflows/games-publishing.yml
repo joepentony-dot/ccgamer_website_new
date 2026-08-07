@@ -6,12 +6,17 @@ on:
       - main
     paths:
       - "games/games.json"
+      - "games/genres/**"
       - "resources/images/thumbnails/all/**"
       - "resources/audio/games/**"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
+      - "scripts/prepare-seo-genre-links.js"
+      - "scripts/validate-seo-genre-links.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/generate-developer-pages.js"
       - "scripts/generate-composer-pages.js"
@@ -52,6 +57,7 @@ jobs:
             home.html \
             resources/css/intro.css \
             js/index-intro.js \
+            games/games.json \
             > "$RUNNER_TEMP/protected.sha256"
 
       - name: Run authoritative publishing command

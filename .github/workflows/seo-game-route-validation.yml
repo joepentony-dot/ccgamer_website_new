@@ -1,0 +1,174 @@
+name: SEO Game Route Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/game.html"
+      - "games/games.json"
+      - "games/genres/**"
+      - "js/genre-loader.js"
+      - "sitemap-games.xml"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
+      - "scripts/prepare-seo-genre-links.js"
+      - "scripts/validate-seo-genre-links.js"
+      - "scripts/rebuild-games.js"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
+      - ".github/workflows/seo-game-route-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-game-route-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Validate script syntax
+        run: |
+          node --check scripts/prepare-seo-game-routes.js
+          node --check scripts/validate-seo-game-routes.js
+          node --check scripts/prepare-seo-genre-links.js
+          node --check scripts/validate-seo-genre-links.js
+          node --check scripts/rebuild-games.js
+
+      - name: Generate canonical game routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-game-routes.js --output-root .
+
+      - name: Validate canonical game routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-seo-game-routes.js --root .
+
+      - name: Generate crawlable genre links
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-genre-links.js --root .
+
+      - name: Validate crawlable genre links
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-seo-genre-links.js --root .
+
+      - name: Check generated patch and capture baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          diff_check_output="$(git diff --check 2>&1)"
+          diff_check_status=$?
+          set -e
+          if [ "$diff_check_status" -ne 0 ]; then
+            echo "::error::Generated SEO patch contains whitespace errors"
+            echo "=== git diff --check ==="
+            printf '%s\n' "$diff_check_output"
+            echo "=== generated diff stat ==="
+            git diff --stat
+            echo "=== generated status ==="
+            git status --short
+            exit "$diff_check_status"
+          fi
+          git diff --binary > "$RUNNER_TEMP/first.diff"
+          git status --short > "$RUNNER_TEMP/first.status"
+
+      - name: Require deterministic regeneration
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/validate-seo-game-routes.js --root .
+          node scripts/prepare-seo-genre-links.js --root .
+          node scripts/validate-seo-genre-links.js --root .
+          git diff --binary > "$RUNNER_TEMP/second.diff"
+          git status --short > "$RUNNER_TEMP/second.status"
+
+          if ! cmp -s "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"; then
+            echo "::error::SEO generation is not deterministic"
+            echo "=== status after pass one ==="
+            cat "$RUNNER_TEMP/first.status"
+            echo "=== status after pass two ==="
+            cat "$RUNNER_TEMP/second.status"
+            echo "=== generated patch difference (first 400 lines) ==="
+            diff -u "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff" | head -n 400 || true
+            exit 1
+          fi
+
+      - name: Check legacy generator compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/second.diff" "$RUNNER_TEMP/before-legacy.diff"
+
+          # The older command may format generated game files differently, but it
+          # must never reintroduce invalid SEO semantics.
+          node scripts/generate-slug-pages.js
+          node scripts/validate-seo-game-routes.js --root .
+          node scripts/validate-seo-genre-links.js --root .
+
+          # The authoritative generators must restore the exact deterministic
+          # canonical output used by publishing and deployment.
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/prepare-seo-genre-links.js --root .
+          node scripts/validate-seo-game-routes.js --root .
+          node scripts/validate-seo-genre-links.js --root .
+          git diff --binary > "$RUNNER_TEMP/after-legacy-repair.diff"
+          cmp "$RUNNER_TEMP/before-legacy.diff" "$RUNNER_TEMP/after-legacy-repair.diff"
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Summarize generated migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed_games="$(git status --porcelain -- games | wc -l | tr -d ' ')"
+          {
+            echo '### Canonical game and genre SEO validation'
+            echo
+            echo '- Result: PASS'
+            echo "- Generated game/genre files changed from current repository state: ${changed_games}"
+            echo '- Protected intro files: unchanged'
+            echo '- games/games.json: unchanged'
+            echo '- Canonical game routes: validated'
+            echo '- Crawlable genre game links: validated'
+            echo '- Legacy slug generator semantic compatibility: PASS'
+            echo '- Authoritative regeneration after legacy command: deterministic PASS'
+          } >> "$GITHUB_STEP_SUMMARY"

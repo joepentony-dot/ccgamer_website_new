@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
-const CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
+const CORE_CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
 
 function readFile(filePath) {
   return fs.readFileSync(filePath, 'utf8');
@@ -63,6 +63,20 @@ function assertCanonicalSitemapUrl(loc, filePath) {
   assert(url.pathname !== '/games/game.html', `${filePath} must not include the dynamic game shell: ${loc}`);
 }
 
+function sitemapFileFromLoc(loc, filePath) {
+  const url = toUrl(loc, filePath);
+  assert(url.origin === SITE_URL, `${filePath} child sitemap must use ${SITE_URL}: ${loc}`);
+  assert(!url.search && !url.hash, `${filePath} child sitemap must not include query strings or fragments: ${loc}`);
+  assert(
+    /^\/sitemap-[a-z0-9-]+\.xml$/i.test(url.pathname),
+    `${filePath} child sitemap must be a root-level sitemap-*.xml file: ${loc}`
+  );
+
+  const child = url.pathname.slice(1);
+  assert(fs.existsSync(child), `${filePath} references missing local child sitemap: ${child}`);
+  return child;
+}
+
 function validateSitemapIndex() {
   const filePath = 'sitemap.xml';
   const xml = readFile(filePath);
@@ -70,14 +84,17 @@ function validateSitemapIndex() {
   assert(!xml.includes('<urlset'), `${filePath} must be a sitemap index, not a URL sitemap.`);
 
   const locs = extractLocs(xml);
-  const expectedLocs = CHILD_SITEMAPS.map((name) => `${SITE_URL}/${name}`);
+  assert(locs.length >= CORE_CHILD_SITEMAPS.length, `${filePath} must list the core child sitemaps.`);
+  assertNoDuplicates(locs, filePath);
 
-  assert(locs.length === expectedLocs.length, `${filePath} must list exactly the child sitemaps.`);
+  const expectedLocs = CORE_CHILD_SITEMAPS.map((name) => `${SITE_URL}/${name}`);
   for (const loc of expectedLocs) {
-    assert(locs.includes(loc), `${filePath} missing child sitemap: ${loc}`);
+    assert(locs.includes(loc), `${filePath} missing core child sitemap: ${loc}`);
   }
 
-  console.log('[validate-sitemaps] sitemap.xml index structure valid.');
+  const children = locs.map((loc) => sitemapFileFromLoc(loc, filePath));
+  console.log(`[validate-sitemaps] sitemap.xml index structure valid (${children.length} child sitemaps).`);
+  return children;
 }
 
 function validateUrlSitemap(filePath) {
@@ -100,8 +117,8 @@ function validateUrlSitemap(filePath) {
 }
 
 function main() {
-  validateSitemapIndex();
-  for (const child of CHILD_SITEMAPS) {
+  const children = validateSitemapIndex();
+  for (const child of children) {
     validateUrlSitemap(child);
   }
 }

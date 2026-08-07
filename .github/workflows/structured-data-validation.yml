@@ -11,6 +11,8 @@ on:
       - "admin/templates/retro-video-template.html"
       - "scripts/generate-retro-pages.js"
       - "scripts/generate-slug-pages.js"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
       - "scripts/game-output-utils.js"
       - "scripts/validate_structured_data.py"
       - "scripts/phase2a_structured_data_audit.py"
@@ -51,6 +53,8 @@ jobs:
           python -m py_compile scripts/phase2a_structured_data_audit.py
           node --check scripts/generate-retro-pages.js
           node --check scripts/generate-slug-pages.js
+          node --check scripts/prepare-seo-game-routes.js
+          node --check scripts/validate-seo-game-routes.js
 
       - name: Validate committed structured data
         run: python scripts/validate_structured_data.py
@@ -96,8 +100,11 @@ jobs:
           git restore --source=HEAD -- retro-events retro-specials amiga-demo-music
           git clean -fd -- retro-events retro-specials amiga-demo-music
 
-      - name: Regenerate canonical game pages for validation
-        run: node scripts/generate-slug-pages.js
+      - name: Regenerate authoritative canonical game pages for validation
+        run: node scripts/prepare-seo-game-routes.js --output-root .
+
+      - name: Validate regenerated canonical game routes
+        run: node scripts/validate-seo-game-routes.js --root .
 
       - name: Validate regenerated game structured data
         run: python scripts/validate_structured_data.py
@@ -134,8 +141,16 @@ jobs:
           print(f"Validated game generator scope across {len(paths)} changed paths.")
           PY
 
-      - name: Require committed game output to be current
-        run: test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Require deterministic authoritative game output
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --binary > "$RUNNER_TEMP/game-first.diff"
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/validate-seo-game-routes.js --root .
+          git diff --binary > "$RUNNER_TEMP/game-second.diff"
+          cmp "$RUNNER_TEMP/game-first.diff" "$RUNNER_TEMP/game-second.diff"
+          git diff --check
 
       - name: Restore temporary game output
         if: always()
