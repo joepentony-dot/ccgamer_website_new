@@ -28,6 +28,7 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-static-pages.js"
       - "scripts/generate-sitemaps.js"
+      - "tools/seo/static-pages.json"
   workflow_dispatch:
 
 permissions:
