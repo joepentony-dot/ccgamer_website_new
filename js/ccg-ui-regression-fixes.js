@@ -5,7 +5,7 @@
    • guaranteed stylesheet delivery for interaction polish
    • minimum visible Zzap!64 loading progress window
    • home-page footer duplicate-link cleanup
-   • protected streamlined home-page highlights
+   • restored dynamic home-page featured games
    • mobile home/publisher formatting corrections
    • legacy MicroProse featured-card compatibility
 ============================================================ */
@@ -70,6 +70,72 @@
                 text-align: center !important;
             }
 
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card {
+                display: grid !important;
+                grid-template-rows: auto 1fr !important;
+                min-width: 0 !important;
+                min-height: 0 !important;
+                overflow: hidden !important;
+                text-decoration: none !important;
+                border: 1px solid rgba(var(--accent-rgb), 0.32) !important;
+                background:
+                    linear-gradient(150deg, rgba(var(--accent-rgb), 0.10), transparent 48%),
+                    linear-gradient(145deg, rgba(3, 8, 20, 0.97), rgba(6, 13, 29, 0.90)) !important;
+                box-shadow:
+                    0 18px 42px rgba(0, 0, 0, 0.62),
+                    0 0 22px rgba(var(--accent-rgb), 0.18),
+                    inset 0 0 0 1px rgba(255, 255, 255, 0.035) !important;
+                transition: transform 180ms ease, border-color 180ms ease, box-shadow 220ms ease !important;
+            }
+
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card > img {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                aspect-ratio: 16 / 9 !important;
+                object-fit: cover !important;
+                border-bottom: 1px solid rgba(var(--accent-rgb), 0.24) !important;
+            }
+
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card .ccg-card__body {
+                display: grid !important;
+                align-content: start !important;
+                gap: 8px !important;
+                padding: 20px !important;
+            }
+
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card .ccg-card__title {
+                margin: 0 !important;
+                color: #f3f7ff !important;
+                font-size: clamp(1.05rem, 1.8vw, 1.28rem) !important;
+                line-height: 1.25 !important;
+            }
+
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card .ccg-card__text {
+                margin: 0 !important;
+                color: rgba(226, 235, 255, 0.76) !important;
+                line-height: 1.45 !important;
+            }
+
+            html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card--loading .ccg-card__body {
+                min-height: 150px !important;
+                place-content: center !important;
+                text-align: center !important;
+            }
+
+            @media (hover: hover) and (pointer: fine) {
+                html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card:hover,
+                html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card:focus-visible {
+                    transform: translateY(-4px) !important;
+                    border-color: rgba(var(--accent-rgb), 0.72) !important;
+                    box-shadow:
+                        0 24px 48px rgba(0, 0, 0, 0.72),
+                        0 0 30px rgba(var(--accent-rgb), 0.30),
+                        inset 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+                    outline: none !important;
+                }
+            }
+
             html[data-ccg-page="publisher-index"] .ccg-publishers-search > .visually-hidden {
                 position: absolute !important;
                 width: 1px !important;
@@ -115,6 +181,10 @@
                 html[data-ccg-page="home"] .home-highlight-card--feature .ccg-card__body {
                     min-height: 190px !important;
                     padding: 24px 22px !important;
+                }
+
+                html[data-ccg-page="home"] .home-highlights-grid--focused .home-feature-card .ccg-card__body {
+                    padding: 18px 18px 20px !important;
                 }
 
                 html[data-ccg-page="publisher-index"] .ccg-publishers-main {
@@ -210,63 +280,32 @@
         article.dataset.ccgMicroproseRepair = "true";
     }
 
-    function getHomeHighlightMarkup() {
-        return `
-            <a href="/zzap64/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--zzap">
-                <div class="ccg-card__body">
-                    <span class="home-highlight-card__eyebrow">Magazine archive</span>
-                    <h3 class="ccg-card__title">Zzap!64 Awards</h3>
-                    <p class="ccg-card__text">Revisit the Sizzlers, Gold Medals and standout scores from Zzap!64, year by year.</p>
-                    <span class="home-highlight-card__cta">Explore the awards →</span>
-                </div>
-            </a>
-
-            <a href="/games/downloads/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--downloads" data-home-downloads-card="true">
-                <div class="ccg-card__body">
-                    <span class="home-highlight-card__eyebrow">Archive access</span>
-                    <h3 class="ccg-card__title">Game Downloads A–Z</h3>
-                    <p class="ccg-card__text">Search the downloadable C64 and Amiga archive and jump straight to the title you want.</p>
-                    <span class="home-highlight-card__cta">Browse downloads →</span>
-                </div>
-            </a>
-
-            <a href="/games/collections/top-picks.html" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--picks">
-                <div class="ccg-card__body">
-                    <span class="home-highlight-card__eyebrow">Curated by CCG</span>
-                    <h3 class="ccg-card__title">CCG Top Picks</h3>
-                    <p class="ccg-card__text">Skip the endless lists and head straight to a hand-picked selection of Commodore favourites.</p>
-                    <span class="home-highlight-card__cta">See the picks →</span>
-                </div>
-            </a>
-        `;
-    }
-
-    function protectStreamlinedHomeHighlights() {
+    function enableDynamicHomeHighlights() {
         if (document.documentElement.getAttribute("data-ccg-page") !== "home") return;
 
+        const section = document.querySelector(".home-section--highlights");
         const grid = document.querySelector(".home-highlights-grid--focused");
-        if (!grid || grid.dataset.ccgStaticHighlightsProtected === "true") return;
+        if (!section || !grid) return;
 
-        const restoreHighlights = () => {
-            const intendedCards = grid.querySelectorAll(".home-highlight-card--feature");
-            const dynamicCards = grid.querySelectorAll(".home-feature-card");
-            if (intendedCards.length === 3 && dynamicCards.length === 0) return;
-            grid.innerHTML = getHomeHighlightMarkup();
-        };
+        const eyebrow = section.querySelector(".home-section__eyebrow");
+        const title = section.querySelector(".home-section__title");
+        const intro = section.querySelector(".home-section__intro");
 
-        grid.dataset.ccgStaticHighlightsProtected = "true";
-        restoreHighlights();
+        if (eyebrow) eyebrow.textContent = "Fresh from the archive";
+        if (title) title.textContent = "Featured Games";
+        if (intro) intro.textContent = "Three picks from the C64 & Amiga archive, refreshed every visit.";
 
-        const observer = new MutationObserver(() => {
-            restoreHighlights();
-        });
-        observer.observe(grid, { childList: true });
+        grid.dataset.ccgDynamicHighlights = "true";
 
-        requestAnimationFrame(() => {
-            requestAnimationFrame(restoreHighlights);
-        });
-        window.setTimeout(restoreHighlights, 120);
-        window.setTimeout(restoreHighlights, 500);
+        if (grid.querySelector(".home-highlight-card--feature")) {
+            grid.innerHTML = Array.from({ length: 3 }, () => `
+                <article class="ccg-card home-feature-card home-feature-card--loading" aria-hidden="true">
+                    <div class="ccg-card__body">
+                        <h3 class="ccg-card__title">Loading featured game…</h3>
+                    </div>
+                </article>
+            `).join("");
+        }
     }
 
     function enhanceHomeFooter() {
@@ -326,7 +365,7 @@
         ensureStylesheet();
         ensureFormattingPolish();
         repairLegacyMicroProseFeaturedCard();
-        protectStreamlinedHomeHighlights();
+        enableDynamicHomeHighlights();
         enhanceHomeFooter();
         holdZzapLoaderForFirstPaint();
     }
