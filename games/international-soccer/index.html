@@ -1,55 +1,526 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-ccg-page="single-game">
 <head>
-    <title>International Soccer | Cheeky Commodore Gamer</title>
-    <meta name="description" content="International Soccer on Commodore — screenshots, manual, downloads and video.">
-    <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Cheeky Commodore Gamer">
-    <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
-    <meta property="og:title" content="International Soccer | Cheeky Commodore Gamer">
-    <meta property="og:description" content="International Soccer on Commodore — screenshots, manual, downloads and video.">
-    <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="International Soccer | Cheeky Commodore Gamer">
-    <meta name="twitter:description" content="International Soccer on Commodore — screenshots, manual, downloads and video.">
-    <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg">
-    <meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
-    <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/#game","name":"International Soccer","description":"International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system’s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football ti...","url":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"sports","publisher":{"@type":"Organization","name":"Commodore"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"International Soccer","item":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/"}]}]}</script>
-<meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="/js/analytics.js" defer></script>
-    <meta http-equiv="refresh" content="0; url=/games/game.html?id=international_soccer">
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-
-    <style>
-        html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            overflow: hidden;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <script>
         (function () {
-            if (typeof window !== "undefined") {
-                window.location.replace("/games/game.html?id=international_soccer");
-            }
+            try {
+                var saved = localStorage.getItem('ccg-mode');
+                if (!saved) return;
+                document.documentElement.setAttribute('data-ccg-mode', saved);
+                document.documentElement.setAttribute('data-mode', saved);
+                // Body may not exist yet during head execution, but set if available
+                if (document.body) {
+                    document.body.setAttribute('data-ccg-mode', saved);
+                    document.body.setAttribute('data-mode', saved);
+                } else {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        document.body.setAttribute('data-ccg-mode', saved);
+                        document.body.setAttribute('data-mode', saved);
+                    }, { once: true });
+                }
+            } catch (e) {}
         })();
     </script>
+
+    <title id="game-meta-title">International Soccer – C64 | Review, Screens &amp; History</title>
+
+    <script src="/js/analytics.js" defer></script>
+    <meta name="description"
+          id="game-meta-description"
+          content="International Soccer (1983) from Commodore — International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely reg">
+    <meta name="robots" content="index,follow">
+    <link rel="canonical" id="game-canonical" href="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
+    <script>
+        (function () {
+            try {
+                if (typeof URLSearchParams === 'undefined') return;
+
+                var canonical = document.getElementById('game-canonical');
+                if (!canonical) return;
+
+                var ogUrl = document.getElementById('game-og-url');
+                var pathname = String(window.location.pathname || '');
+                var params = new URLSearchParams(window.location.search || '');
+                var slug = '';
+
+                var pathMatch = pathname.match(/\/games\/([^/?#]+)\/(?:index\.html)?$/i);
+                if (pathMatch && pathMatch[1] && pathMatch[1].toLowerCase() !== 'game') {
+                    slug = String(pathMatch[1]).trim().toLowerCase();
+                }
+
+                if (!slug) {
+                    var slugParam = params.get('slug');
+                    if (slugParam) {
+                        slug = String(slugParam).trim().toLowerCase();
+                    }
+                }
+
+                if (!slug) {
+                    var id = params.get('id');
+                    if (id) {
+                        slug = String(id).trim().replace(/_/g, '-').toLowerCase();
+                    }
+                }
+
+                if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
+
+                var path = '/games/' + slug + '/';
+                canonical.setAttribute('href', path);
+
+                if (ogUrl) {
+                    var origin = window.location.origin || '';
+                    ogUrl.setAttribute('content', origin ? (origin + path) : path);
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <meta property="og:type" content="website">
+    <meta property="og:title" id="game-og-title" content="International Soccer – C64 | Review, Screens &amp; History">
+    <meta property="og:description" id="game-og-description" content="International Soccer (1983) from Commodore — International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely reg">
+    <meta property="og:image" id="game-og-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg">
+    <meta property="og:url" id="game-og-url" content="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="game-twitter-title" content="International Soccer – C64 | Review, Screens &amp; History">
+    <meta name="twitter:description" id="game-twitter-description" content="International Soccer (1983) from Commodore — International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely reg">
+    <meta name="twitter:image" id="game-twitter-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg">
+    <meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/international-soccer/">
+        <script type="application/ld+json" data-ccg-schema="game-graph">{"@context":"https://schema.org","@graph":[{"@type":"VideoGame","@id":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/#game","name":"International Soccer","description":"International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system’s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football ti...","url":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/","datePublished":"1983","gamePlatform":"Commodore 64","genre":"sports","publisher":{"@type":"Organization","name":"Commodore"},"image":"https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/international_soccer.jpg"},{"@type":"BreadcrumbList","@id":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.cheekycommodoregamer.co.uk"},{"@type":"ListItem","position":2,"name":"Games","item":"https://www.cheekycommodoregamer.co.uk/games/"},{"@type":"ListItem","position":3,"name":"International Soccer","item":"https://www.cheekycommodoregamer.co.uk/games/international-soccer/"}]}]}</script>
+
+    <link rel="icon" href="/favicon.ico">
+
+    <!-- REQUIRED FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- GLOBAL CSS -->
+    <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+    <link rel="preload" href="/resources/css/ccg-effects.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/ccg-effects.css" /></noscript>
+    <link rel="stylesheet" href="/resources/css/ccg-hero.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-cards.css" />
+    <link rel="preload" href="/resources/css/ccg-socials.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/ccg-socials.css" /></noscript>
+    <link rel="preload" href="/resources/css/ccg-anim.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/resources/css/ccg-anim.css" /></noscript>
+    <link rel="stylesheet" href="/resources/css/ccg-overlays.css" />
+
+
+    <link rel="stylesheet" href="/resources/css/ccg-modal.css">
+    <link rel="stylesheet" href="/resources/css/games.css">
+    <link rel="stylesheet" href="/resources/css/game-pages.css">
+    <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
+    <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
+    <script src="/js/ccg-mobile-lite.js" defer></script>
 </head>
-<body></body>
+
+<body class="ccg-body game-page" data-ccg-mode="c64" data-mode="c64" id="top">
+
+<div class="ccg-scroll-progress" data-ccg-scroll-progress aria-hidden="true"><span></span></div>
+
+<div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield" aria-hidden="true"></div>
+    <div class="ccg-bg-grid" aria-hidden="true"></div>
+    <div class="ccg-bg-crt-overlay" aria-hidden="true"></div>
+</div>
+
+<div class="ccg-page ccg-page--single-game">
+
+    <!-- HEADER (LOCKED PARITY) -->
+            <!-- HEADER -->
+
+
+
+<header class="ccg-header" data-ccg-header>
+    <div class="ccg-header-inner">
+
+        <a href="/home.html" class="ccg-brand">
+            <img src="/resources/images/ccgamer-logo.png"
+                 alt="Cheeky Commodore Gamer logo"
+                 class="ccg-brand__logo"
+                 loading="eager" width="1500" height="1032" srcset="/resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px" decoding="async">
+
+            <div class="ccg-brand__text">
+                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                <div class="ccg-brand__title">
+                    <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                    <span class="ccg-brand__neon-sub">GAMER</span>
+                </div>
+            </div>
+        </a>
+
+        <button class="ccg-nav-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                aria-controls="ccg-primary-nav"
+                data-ccg-nav-toggle>
+            <span class="ccg-nav-toggle__bars" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="ccg-nav-toggle__label">Menu</span>
+        </button>
+
+        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+            <div class="ccg-nav__bar">
+                <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                    <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+                    <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="/games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                </ul>
+                <div class="ccg-nav__more">
+                    <button class="ccg-nav__more-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="ccg-more-menu"
+                            data-ccg-more-toggle>
+                        More <span aria-hidden="true">▾</span>
+                    </button>
+                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                </div>
+            </div>
+            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                <li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+                <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="ccg-header-actions">
+
+            <div class="ccg-auth-slot" aria-live="polite"></div>
+            <div class="ccg-mode-hint">Try different modes</div>
+            <button class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle between C64 and Amiga modes"
+                    data-ccg-mode-toggle>
+                <span class="ccg-mode-toggle__pill">
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                    <span class="ccg-mode-toggle__thumb"></span>
+                </span>
+            </button>
+
+            <div class="ccg-header-socials" aria-label="Social links">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+            </div>
+            <div class="ccg-socials-fallback">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+        <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+        <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+            <div class="ccg-nav-drawer__header">
+                <span class="ccg-nav-drawer__title">Navigate</span>
+                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
+                    <span aria-hidden="true">✕</span>
+                </button>
+            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
+                <div class="ccg-nav-drawer__label">Primary</div>
+            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
+                <div class="ccg-nav-drawer__label">Explore more</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ccg-header-neon-strip"></div>
+</header>
+
+
+
+
+    <main class="ccg-main ccg-main--single-game">
+        <div class="game-shell">
+
+        <!-- HERO -->
+        <section class="game-hero">
+            <div id="gameHeroBG" class="game-hero__bg" aria-hidden="true"></div>
+
+            <div class="game-hero__inner">
+                <div class="game-hero__media">
+                    <img id="gameHeroThumb" class="game-hero__thumb" src="/resources/images/thumbnails/all/international_soccer.jpg" alt="International Soccer cover art" loading="eager" decoding="async" fetchpriority="high" width="320" height="180">
+                </div>
+
+                <div class="game-hero__content">
+                    <div class="game-hero__title-row ccg-share" data-ccg-share>
+                        <h1 id="gameHeroTitle" class="game-hero__title">International Soccer</h1>
+                        <button class="ccg-btn ccg-btn--share" type="button" data-ccg-share-btn aria-label="Share this game">
+                            <span class="ccg-btn__icon" aria-hidden="true">🔗</span>
+                            <span class="ccg-btn__label">Share</span>
+                        </button>
+                        <span class="game-share__status" data-ccg-share-status role="status" aria-live="polite"></span>
+                    </div>
+
+                    <div class="game-hero__meta">
+                        <span id="gameMetaYear" class="game-meta__item">1983</span>
+                        <span class="game-meta__sep">•</span>
+                        <span id="gameMetaSystem" class="game-meta__item">C64</span>
+                        <span class="game-meta__sep">•</span>
+                        <span id="gameMetaDeveloper" class="game-meta__item">Commodore</span>
+                    </div>
+
+                    <div class="game-hero__rating" id="gameHeroRating">
+                        <div class="ccg-rating ccg-rating--single" data-ccg-rating>
+                            <span class="ccg-rating__label">Cheeky Commodore Gamer Rating</span>
+                            <span class="ccg-rating__stars" id="gameRatingStars" aria-hidden="true"></span>
+                            <span class="ccg-rating__status" id="gameRatingStatus" hidden>Not Yet Rated</span>
+                            <span class="ccg-rating__reason" id="gameRatingReason" hidden></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="game-hero__box3d" hidden>
+                    <img class="game-hero__box3d-img"
+                         alt=""
+                         loading="lazy"
+                         decoding="async"
+                         width="600"
+                         height="900"
+                         sizes="(max-width: 900px) 55vw, (max-width: 1200px) 22vw, 220px">
+                </div>
+            </div>
+        </section>
+
+        <section id="gameNotFound" class="game-section game-not-found" hidden><span id="notFoundId" hidden></span></section>
+
+        <nav class="game-toc" data-game-toc hidden></nav>
+
+        <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
+
+        <!-- DESCRIPTION -->
+        <section id="game-description-section" class="game-section">
+            <p class="game-section__kicker">Lore &amp; Overview</p>
+            <h2 class="game-section__title">In the Spotlight</h2>
+            <div id="gameDescription" class="game-description">International Soccer is a Commodore 64 sports classic released in 1983 by Commodore, widely regarded as one of the system’s most influential football games. The C64 version introduced smooth scrolling, intuitive controls, and a convincing sense of pitch movement that shaped many later football titles.</div>
+        </section>
+
+        <section id="game-discovery-links" class="game-section">
+            <p class="game-section__kicker">Explore More</p>
+            <h2 class="game-section__title">Browse by Genre &amp; Collection</h2>
+            <p class="ccg-section__intro">
+                Jump to <a href="/games/genres/index.html">all genres</a>, visit
+                <a href="/games/collections/index.html">curated collections</a>, or return to the
+                <a href="/games/index.html">full games library</a>.
+            </p>
+            <div id="gameGenreLinks" class="game-downloads"></div>
+            <div id="gameCollectionLinks" class="game-downloads"></div>
+            <noscript>
+                <p class="ccg-section__intro">JavaScript is disabled — use the crawlable links above to continue browsing.</p>
+            </noscript>
+        </section>
+
+        <!-- VIDEO -->
+        <section id="game-video-section" class="game-section" hidden>
+            <p class="game-section__kicker">Longplay / Review</p>
+            <h2 class="game-section__title">Watch the Action</h2>
+
+            <div class="game-video">
+                <iframe id="game-video-embed"
+                        class="game-video__frame"
+                        title="Game video"
+                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen loading="lazy" width="560" height="315"></iframe>
+
+                <div class="game-video__actions">
+                    <a id="gameVideoBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Open on YouTube</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
+            <p class="game-section__kicker">Ready to Play</p>
+            <h2 class="game-section__title">PLAY, LISTEN &amp; DOWNLOAD</h2>
+
+            <div class="ccg-game-utility-hub__grid ccg-utility-hub">
+                <article id="game-manual-card" class="ccg-utility-card ccg-utility-card--manual" hidden>
+                    <h3 class="ccg-utility-card__title">Manual</h3>
+                    <a id="gameManualBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">View Manual / PDF</a>
+                </article>
+
+                <article id="game-download-card" class="ccg-utility-card ccg-utility-card--download" hidden>
+                    <h3 class="ccg-utility-card__title">Download</h3>
+                    <a id="gameDiskBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Download Disk / Tape</a>
+                </article>
+
+                <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
+                    <h3 class="ccg-utility-card__title">Further Reading</h3>
+                    <div class="ccg-utility-card__actions" id="gameLemonLinks"></div>
+                </article>
+
+                <article id="game-music-card" class="ccg-utility-card ccg-utility-card--music" hidden>
+                    <div id="gameMusicSection" class="game-music-section">
+                        <h3 class="ccg-utility-card__title">Game Music</h3>
+                        <div class="ccg-utility-card__actions ccg-music-meta" id="gameMusicMeta"></div>
+                        <div class="ccg-utility-card__actions ccg-music-tracks" id="gameMusicTracks"></div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- SCREENSHOTS -->
+        <section class="game-section game-screenshots" hidden>
+            <p class="game-section__kicker">See the pixels</p>
+            <h2 class="game-section__title">Gallery</h2>
+
+            <div id="gameScreenshotsStrip" class="game-screenshots__strip"></div>
+        </section>
+
+        <!-- RELATED -->
+        <section class="game-section game-section--related" hidden>
+            <p id="relatedGamesKicker" class="game-section__kicker">RELATED COLLECTION</p>
+            <h2 id="relatedGamesTitle" class="game-section__title">More from this Publisher &amp; Similar Titles</h2>
+
+            <div class="related-carousel" data-related-carousel>
+                <button class="related-carousel__nav related-carousel__nav--prev" type="button" aria-label="Previous related games">‹</button>
+                <div class="related-carousel__viewport" aria-live="polite">
+                    <div id="relatedGamesTrack" class="related-carousel__track"></div>
+                </div>
+                <button class="related-carousel__nav related-carousel__nav--next" type="button" aria-label="Next related games">›</button>
+            </div>
+        </section>
+
+        <section
+            class="game-facts game-section affiliate-products-section"
+            id="affiliate-products-section"
+            aria-label="Compatible Commodore hardware"
+            data-game-slug=""
+            hidden>
+            <div class="game-facts__inner affiliate-products-inner">
+                <div class="ccg-hardware-accordion">
+                    <div class="ccg-hardware-accordion__header">
+                        <h2 class="game-facts__hardware-title affiliate-products-title">Need New Commodore Peripherals?</h2>
+                        <p class="affiliate-products-disclosure">Compatible hardware and controllers for modern retro setups.</p>
+                    </div>
+                    <button
+                        type="button"
+                        class="ccg-hardware-toggle"
+                        data-hardware-toggle
+                        aria-expanded="false"
+                        aria-controls="ccg-hardware-panel">
+                        <span>Show Hardware</span>
+                        <span class="ccg-hardware-toggle__icon" aria-hidden="true">▼</span>
+                    </button>
+                    <div id="ccg-hardware-panel" class="ccg-hardware-panel game-facts__hardware" data-hardware-panel hidden>
+                        <div class="affiliate-products-grid" id="affiliate-products-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <div class="game-quick-actions" data-game-quick-actions hidden>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="video" aria-label="Jump to video section">Watch</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="share" aria-label="Share this game">Share</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="subscribe" aria-label="Subscribe to Cheeky Commodore Gamer">Subscribe</button>
+            <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="support" aria-label="Support Cheeky Commodore Gamer">Buy Me A Beer</button>
+        </div>
+        </div>
+    </main>
+
+    <div class="ccg-omega-divider" aria-hidden="true">
+        <span class="ccg-omega-core"></span>
+    </div>
+
+    <footer class="ccg-footer ccg-footer--game">
+        <div class="ccg-footer-inner ccg-footer-inner--game">
+            <div class="ccg-footer__col ccg-footer__col--left">
+                <p class="ccg-footer__text">© <span data-ccg-year></span> Cheeky Commodore Gamer.</p>
+                <p class="ccg-footer__text ccg-footer__tagline">Stay a while, stay forever!</p>
+            </div>
+        </div>
+    </footer>
+</div>
+
+<!-- MANUAL MODAL -->
+<div id="manualModal" class="ccg-modal ccg-modal--doc manual-overlay" aria-hidden="true">
+    <div class="ccg-modal-content manual-content" role="dialog" aria-modal="true" aria-labelledby="manualModalTitle">
+        <h2 id="manualModalTitle" class="visually-hidden">Game manual viewer</h2>
+        <p id="manualModalStatus" class="manual-loading" aria-live="polite">Loading manual…</p>
+        <button id="manualModalClose" class="ccg-modal-close" type="button" aria-label="Close manual">&times;</button>
+        <iframe id="gameManualEmbed" class="ccg-pdf-frame" title="Game manual" loading="lazy"></iframe>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="ccgModal" class="ccg-modal" aria-hidden="true">
+    <button class="ccg-modal-nav ccg-modal-nav--prev" aria-label="Previous screenshot">‹</button>
+
+    <div class="ccg-modal-content">
+        <div class="ccg-modal-counter" data-ccg-modal-counter hidden>1 / 10</div>
+        <span class="ccg-modal-close" aria-label="Close modal">&times;</span>
+        <iframe id="ccgModalFrame" class="ccg-pdf-frame" title="Screenshot viewer" loading="lazy"></iframe>
+    </div>
+
+    <button class="ccg-modal-nav ccg-modal-nav--next" aria-label="Next screenshot">›</button>
+</div>
+
+<div class="ccg-back-to-top-wrap" data-ccg-back-to-top-wrap hidden>
+    <button class="ccg-back-to-top" data-ccg-back-to-top aria-label="Back to top" type="button">↑</button>
+    <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
+</div>
+
+<script src="/js/ccg-nav-core.js" defer></script>
+<script src="/js/ccg-global.js" defer></script>
+<script src="/js/ccg-mode-engine.js" defer></script>
+<script src="/js/ccg-mode.js" defer></script>
+<script src="/js/ccg-supabase-config.js" defer></script>
+<script src="/js/ccg-supabase-client.js" defer></script>
+<script src="/js/ccg-auth.js" defer></script>
+<script src="/js/ccg-nav.js" defer></script>
+<script src="/js/ccg-music-config.js" defer></script>
+<script src="/js/ccg-shared-music-player.js" defer></script>
+<script src="/js/ccg-game-music-player.js" defer></script>
+<script src="/js/load-single-game.js" defer></script>
+<script src="/js/affiliate-products.js" defer></script>
+<script src="/resources/js/ccg-share.js" defer></script>
+
+<!-- GOATCOUNTER — SAFE ANALYTICS -->
+<script
+  data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
+  async
+  src="https://gc.zgo.at/count.js">
+</script>
+
+
+<script src="/js/ccg-community-config.js" defer></script>
+<script src="/js/ccg-community-ratings.js" defer></script>
+
+<script src="/js/ccg-community-comments.js" defer></script>
+
+<script src="/js/ccg-schema.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'none';
+  });
+});
+window.addEventListener('error', function() {
+  document.querySelectorAll('.ccg-socials-fallback').forEach(function(el) {
+    el.style.display = 'flex';
+  });
+});
+</script>
+</body>
 </html>
