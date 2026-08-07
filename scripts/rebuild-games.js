@@ -13,6 +13,7 @@ const steps = [
   ["validate-games-source.js"],
   ["build-games.js"],
   ["prepare-seo-game-routes.js", "--output-root", "."],
+  ["prepare-seo-genre-links.js", "--root", "."],
   ["generate-publisher-pages.js"],
   ["apply-publisher-logos.js"],
   ["validate-publisher-logo-output.js"],
@@ -26,6 +27,7 @@ const steps = [
   ["validate-sitemaps.js"],
   ["verify-seo.mjs"],
   ["validate-seo-game-routes.js", "--root", "."],
+  ["validate-seo-genre-links.js", "--root", "."],
   ["validate-year-platform-discovery.js"],
 ];
 
