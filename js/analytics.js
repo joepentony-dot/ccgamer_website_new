@@ -275,11 +275,10 @@
     var nav = document.createElement('nav');
     nav.className = 'ccg-footer-legal';
     nav.setAttribute('data-ccg-legal-links', 'true');
-    nav.setAttribute('aria-label', 'Legal, privacy, shop and support');
+    nav.setAttribute('aria-label', 'Legal, privacy, shop and supporter links');
     nav.innerHTML = [
       '<a href="/shop.html">Shop</a>',
       '<a href="/supporters.html">Hall of Fame</a>',
-      '<a href="/support.html">Support CCG</a>',
       '<a href="/privacy.html">Privacy</a>',
       '<a href="/cookies.html">Cookies</a>',
       '<a href="/affiliate-disclosure.html">Affiliate disclosure</a>',
@@ -379,12 +378,9 @@
     panel.innerHTML = [
       '<div class="ccg-passive-revenue-panel__copy">',
       '  <strong>Enjoying the archive?</strong>',
-      '  <span>Support CCG by visiting the official shop, joining Patreon or viewing the supporter Hall of Fame.</span>',
       '</div>',
       '<div class="ccg-passive-revenue-panel__actions">',
-      '  <a href="' + FOURTHWALL_URL + '" target="_blank" rel="noopener noreferrer" data-ccg-revenue-link="fourthwall-sitewide">Official Shop</a>',
       '  <a href="/support.html">Support CCG</a>',
-      '  <a href="/supporters.html">Hall of Fame</a>',
       '</div>'
     ].join('');
 
