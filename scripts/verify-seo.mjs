@@ -63,7 +63,7 @@ function readHtmlMeta(filePath) {
     ogUrl: read(/<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i),
     twitterUrl: read(/<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i),
     robots: read(/<meta[^>]+name=["']robots["'][^>]*content=["']([^"']+)["']/i),
-    title: read(/<title>([^<]+)<\/title>/i),
+    title: read(/<title(?:\s[^>]*)?>([^<]+)<\/title>/i),
     description: read(/<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i),
     refreshTarget: read(/<meta[^>]+http-equiv=["']refresh["'][^>]*content=["'][^"']*url=([^"']+)["']/i),
   };
