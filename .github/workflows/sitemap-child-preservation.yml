@@ -1,0 +1,102 @@
+name: Sitemap Child Preservation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "sitemap.xml"
+      - "sitemap-*.xml"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - ".github/workflows/sitemap-child-preservation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sitemap-child-preservation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Validate sitemap tooling syntax
+        run: |
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/validate-sitemaps.js
+
+      - name: Simulate provisional admin index dropping commerce sitemap
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f sitemap-commerce.xml
+          grep -Fq 'https://www.cheekycommodoregamer.co.uk/sitemap-commerce.xml' sitemap.xml
+
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path('sitemap.xml')
+          xml = path.read_text(encoding='utf-8')
+          pattern = re.compile(
+              r'\s*<sitemap>\s*<loc>https://www\.cheekycommodoregamer\.co\.uk/sitemap-commerce\.xml</loc>'
+              r'(?:\s*<lastmod>[^<]+</lastmod>)?\s*</sitemap>',
+              re.IGNORECASE,
+          )
+          updated, count = pattern.subn('', xml)
+          if count != 1:
+              raise SystemExit(f'Expected exactly one commerce sitemap block, removed {count}.')
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+          if grep -Fq 'https://www.cheekycommodoregamer.co.uk/sitemap-commerce.xml' sitemap.xml; then
+            echo 'Synthetic removal failed.' >&2
+            exit 1
+          fi
+
+      - name: Require authoritative rebuild to rediscover child sitemap
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/generate-sitemaps.js
+          node scripts/validate-sitemaps.js
+          grep -Fq 'https://www.cheekycommodoregamer.co.uk/sitemap-commerce.xml' sitemap.xml
+
+      - name: Require deterministic recovered sitemap output
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp sitemap.xml "$RUNNER_TEMP/recovered-sitemap.xml"
+          node scripts/generate-sitemaps.js
+          node scripts/validate-sitemaps.js
+          cmp "$RUNNER_TEMP/recovered-sitemap.xml" sitemap.xml
+          git diff --check
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
