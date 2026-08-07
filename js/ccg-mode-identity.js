@@ -114,13 +114,13 @@
     return bar;
   }
 
-  function updateBar({ announce = false } = {}) {
+  function updateBar() {
     const mode = modeFromDom();
     const copy = MODE_COPY[mode];
     const bar = createBar();
     if (!bar) return;
 
-    const changed = state.mode && state.mode !== mode;
+    const changed = Boolean(state.mode && state.mode !== mode);
     state.mode = mode;
     root.dataset.ccgIdentityMode = mode;
     bar.dataset.mode = mode;
@@ -129,7 +129,7 @@
     bar.querySelector(".ccg-mode-identity__secondary").textContent = copy.secondary;
     bar.querySelector(".ccg-mode-identity__tertiary").textContent = copy.tertiary;
 
-    if (changed || announce) {
+    if (changed) {
       bar.classList.remove("is-changing");
       void bar.offsetWidth;
       bar.classList.add("is-changing");
@@ -139,7 +139,7 @@
 
   function scheduleUpdate() {
     window.clearTimeout(state.timer);
-    state.timer = window.setTimeout(() => updateBar({ announce: true }), 40);
+    state.timer = window.setTimeout(updateBar, 40);
   }
 
   function observeModes() {
@@ -147,7 +147,7 @@
 
     const options = {
       attributes: true,
-      attributeFilter: ["data-mode", "data-ccg-mode", "class"]
+      attributeFilter: ["data-mode", "data-ccg-mode"]
     };
 
     state.observer = new MutationObserver(scheduleUpdate);
@@ -164,12 +164,7 @@
     ensureCss();
     updateBar();
     observeModes();
-    document.addEventListener("click", (event) => {
-      if (event.target instanceof Element && event.target.closest("[data-ccg-mode-toggle], .ccg-mode-toggle")) {
-        window.setTimeout(scheduleUpdate, 30);
-        window.setTimeout(scheduleUpdate, 180);
-      }
-    });
+    window.addEventListener("ccg:mode-changed", scheduleUpdate);
   }
 
   if (document.readyState === "loading") {

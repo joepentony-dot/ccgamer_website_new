@@ -2,7 +2,7 @@
    CCG-HEADER-AUTO.JS — OMEGA SAFE PATCH (FINAL)
    Purpose:
    • Auto-correct broken navigation & internal links
-   • Sync mode toggle + hero badge
+   • Sync saved mode state + hero badge without double-owning the toggle
    • NEVER touch intro loader logic
    • Zero visual changes — only structural fixes
    ======================================================================= */
@@ -45,33 +45,55 @@
     }
 
     /* ------------------------------------------------------------
-       2) MODE TOGGLE (C64 ↔ Amiga)
-       Fully compatible with home.css / ccg-mode.css
+       2) MODE STATE FALLBACK (C64 ↔ Amiga)
+       ccg-mode-engine.js is the established toggle owner whenever
+       it is present. This helper only restores the saved state on
+       legacy pages that do not load the mode engine.
     ------------------------------------------------------------ */
-    function setupModeToggle() {
+    function setupModeStateFallback() {
         const toggle = document.querySelector("[data-ccg-mode-toggle]");
         if (!toggle) return;
+
+        const hasModeEngine = Array.from(document.scripts).some(script => {
+            const src = script.getAttribute("src") || "";
+            return /(?:^|\/)ccg-mode-engine\.js(?:[?#].*)?$/i.test(src);
+        });
+
+        if (hasModeEngine) {
+            toggle.dataset.ccgModeOwner = "engine";
+            return;
+        }
 
         const body = document.body;
         const heroLabel = document.querySelector("[data-ccg-hero-mode-label]");
 
         function applyMode(mode) {
-            body.setAttribute("data-ccg-mode", mode);
-            body.setAttribute("data-mode", mode); // for home.css
+            const nextMode = mode === "amiga" ? "amiga" : "c64";
+            document.documentElement.setAttribute("data-ccg-mode", nextMode);
+            document.documentElement.setAttribute("data-mode", nextMode);
+            body.setAttribute("data-ccg-mode", nextMode);
+            body.setAttribute("data-mode", nextMode);
 
-            if (heroLabel) heroLabel.textContent = mode === "c64" ? "C64" : "Amiga";
+            if (heroLabel) heroLabel.textContent = nextMode === "c64" ? "C64" : "Amiga";
+            toggle.setAttribute("aria-pressed", String(nextMode === "amiga"));
+            toggle.setAttribute("aria-label", nextMode === "amiga" ? "Switch to C64 mode" : "Switch to Amiga mode");
+            toggle.dataset.ccgActiveMode = nextMode;
         }
 
-        // Initial load
-        let saved = localStorage.getItem("ccg-mode");
-        if (!saved) saved = "c64";
+        let saved = "c64";
+        try {
+            saved = localStorage.getItem("ccg-mode") || "c64";
+        } catch (error) {}
         applyMode(saved);
 
-        // Toggle click
+        toggle.dataset.ccgModeOwner = "header-fallback";
         toggle.addEventListener("click", () => {
             const newMode = body.getAttribute("data-ccg-mode") === "c64" ? "amiga" : "c64";
-            localStorage.setItem("ccg-mode", newMode);
+            try {
+                localStorage.setItem("ccg-mode", newMode);
+            } catch (error) {}
             applyMode(newMode);
+            window.dispatchEvent(new CustomEvent("ccg:mode-changed", { detail: { mode: newMode } }));
         });
     }
 
@@ -132,7 +154,7 @@
     document.addEventListener("DOMContentLoaded", () => {
         fixBrokenLinks();
         normaliseLogo();
-        setupModeToggle();
+        setupModeStateFallback();
         syncHeroBadge();
         fixSocialLinks();
     });
