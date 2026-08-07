@@ -44,15 +44,33 @@ function changedFiles() {
 }
 
 const moduleCode = read("js/ccg-mode-identity.js");
+const modeEngine = read("js/ccg-mode-engine.js");
 const headerAuto = read("js/ccg-header-auto.js");
 const css = read("resources/css/ccg-mode-identity.css");
 const navCore = read("js/ccg-nav-core.js");
 const workflow = read(".github/workflows/ccg-commodore-mode-identities.yml");
+const runtimeTest = read("tests/mode-engine-runtime.test.cjs");
 const documentation = read("docs/phase-19-commodore-mode-identities.md");
 const existingAmiga = read("js/ccg-amiga-identity.js");
 
+requireText(navCore, "/js/ccg-mode-engine.js", "Shared mode engine loader");
+requireText(navCore, "data-ccg-mode-engine-loader", "Mode engine loader marker");
+requireText(navCore, "hasModuleScript", "Duplicate-safe shared module loading");
 requireText(navCore, "/js/ccg-mode-identity.js", "Shared mode identity loader");
 requireText(navCore, "data-ccg-mode-identity-loader", "Mode identity loader marker");
+
+requireText(modeEngine, "window.CCGModeEngine", "Global mode controller");
+requireText(modeEngine, "Object.freeze", "Mode controller API lock");
+requireText(modeEngine, 'document.addEventListener("click", handleToggleClick, true)', "Capture-phase single toggle owner");
+requireText(modeEngine, "event.stopImmediatePropagation()", "Competing toggle suppression");
+requireText(modeEngine, 'document.readyState === "loading"', "Late-load safe mode initialization");
+requireText(modeEngine, 'document.querySelectorAll("[data-ccg-mode-toggle]")', "All toggle state synchronization");
+requireText(modeEngine, 'toggle.dataset.ccgModeOwner = "engine"', "Mode ownership marker");
+requireText(modeEngine, "EXCLUDED_PATH", "Private-area mode exclusion");
+rejectText(modeEngine, 'toggle.addEventListener("click"', "Per-toggle mode engine ownership");
+rejectText(modeEngine, "pointerdown", "Mode engine pointer double-toggle path");
+rejectText(modeEngine, "touchstart", "Mode engine touch double-toggle path");
+
 requireText(moduleCode, "CCG_MODE_IDENTITY_READY", "Module guard");
 requireText(moduleCode, "COMMODORE 64 MODE", "C64 label");
 requireText(moduleCode, "READY.", "C64 status");
@@ -72,6 +90,10 @@ requireText(headerAuto, "setupModeStateFallback", "Header mode fallback");
 requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "engine"', "Mode engine ownership guard");
 requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "header-fallback"', "Legacy header fallback ownership marker");
 
+requireText(runtimeTest, "C64 → Amiga → C64", "Runtime toggle round-trip test");
+requireText(runtimeTest, "stopImmediatePropagation", "Runtime competing-handler assertion");
+requireText(runtimeTest, "duplicate script execution does not add another click owner", "Runtime singleton assertion");
+
 requireText(css, '[data-mode="c64"]', "C64 status styling");
 requireText(css, '[data-mode="amiga"]', "Amiga status styling");
 requireText(css, "ccg-mode-identity__c64-mark", "C64 identity mark");
@@ -82,6 +104,7 @@ requireText(css, "prefers-reduced-motion", "Reduced-motion fallback");
 requireText(css, "@media print", "Print exclusion");
 requireText(existingAmiga, "CCG_AMIGA_IDENTITY_READY", "Existing Amiga window system remains present");
 requireText(workflow, "node scripts/audit-commodore-mode-identities.js", "Mode identity workflow audit");
+requireText(workflow, "node tests/mode-engine-runtime.test.cjs", "Mode runtime workflow test");
 requireText(documentation, "Phase 19", "Phase documentation");
 requireText(documentation, "one compact status strip", "Scope documentation");
 
@@ -100,10 +123,12 @@ const protectedPaths = new Set([
 
 const allowedPaths = new Set([
   "js/ccg-nav-core.js",
+  "js/ccg-mode-engine.js",
   "js/ccg-mode-identity.js",
   "js/ccg-header-auto.js",
   "resources/css/ccg-mode-identity.css",
   "scripts/audit-commodore-mode-identities.js",
+  "tests/mode-engine-runtime.test.cjs",
   ".github/workflows/ccg-commodore-mode-identities.yml",
   "docs/phase-19-commodore-mode-identities.md"
 ]);
@@ -122,9 +147,11 @@ if (failures.length) {
 }
 
 console.log("Commodore mode identity audit passed.");
+console.log("- One global capture-phase controller owns the public C64/Amiga toggle");
+console.log("- The controller is late-load safe and duplicate-script safe");
+console.log("- Runtime coverage proves C64 → Amiga → C64 state changes");
 console.log("- C64 and Amiga status identities are both present");
 console.log("- Mode identity observes mode changes only, not unrelated class churn");
-console.log("- Established mode engine remains the single toggle owner when present");
-console.log("- Established Amiga window treatment remains intact");
+console.log("- Existing Amiga window treatment remains intact");
 console.log("- Private routes, audio and persistent tracking remain outside scope");
 console.log("- Reduced-motion and print fallbacks are present");

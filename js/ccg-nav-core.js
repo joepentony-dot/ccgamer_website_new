@@ -24,6 +24,7 @@ Do Not Override
         { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
+        { src: "/js/ccg-mode-engine.js", marker: "data-ccg-mode-engine-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
         { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
@@ -78,9 +79,25 @@ Do Not Override
         document.querySelectorAll(".ccg-header .ccg-nav__link, .ccg-header .ccg-nav__more-toggle, .ccg-header .ccg-nav-toggle, .ccg-header .ccg-mode-toggle, .ccg-header .ccg-community-profile-btn, .ccg-header .ccg-btn-auth").forEach(hardenPill);
     }
 
+    function normaliseModulePath(value) {
+        if (!value) return "";
+        try {
+            const pathname = new URL(value, window.location.href).pathname;
+            return pathname.replace(/^\/ccgamer_website_new(?=\/)/i, "");
+        } catch (error) {
+            return String(value || "").split(/[?#]/, 1)[0];
+        }
+    }
+
+    function hasModuleScript(src) {
+        return Array.from(document.scripts).some((script) => (
+            normaliseModulePath(script.getAttribute("src")) === src
+        ));
+    }
+
     function loadOptionalModules() {
         OPTIONAL_MODULES.forEach(({ src, marker }) => {
-            if (document.querySelector(`script[src="${src}"]`)) return;
+            if (hasModuleScript(src)) return;
             const script = document.createElement("script");
             script.src = src;
             script.defer = true;
