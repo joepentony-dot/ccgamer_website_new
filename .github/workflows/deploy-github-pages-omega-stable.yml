@@ -71,12 +71,13 @@ jobs:
 
           touch _site/.nojekyll
 
-      - name: Build and validate canonical game, genre and sitemap SEO
+      - name: Build and validate canonical game, retro, genre and sitemap SEO
         shell: bash
         run: |
           set -euo pipefail
           node scripts/prepare-seo-game-routes.js --output-root _site
           node scripts/prepare-seo-genre-links.js --root _site
+          node scripts/generate-retro-pages.js --root _site
           node scripts/validate-seo-game-routes.js --root _site
           node scripts/validate-seo-genre-links.js --root _site
           (cd _site && node ../scripts/validate-sitemaps.js)
@@ -90,10 +91,53 @@ jobs:
           test -f _site/admin/announce.html
           test -f _site/admin/js/announce.js
           test -f _site/data/retro-specials.json
+          test -f _site/data/retro-events.json
+          test -f _site/data/amiga-demo-music.json
+          test -f _site/admin/templates/retro-video-template.html
           test -f _site/games/games.json
           grep -Fq 'Content Announcements' _site/admin/announce.html
           grep -Fq 'announceContentFilter' _site/admin/announce.html
           grep -Fq 'RETRO_SPECIALS_DATA_PATH' _site/admin/js/announce.js
+
+          # Retro editorial collections must publish the unified collection presentation.
+          for page in \
+            _site/games/collections/retro-specials.html \
+            _site/games/collections/retro-events.html \
+            _site/games/collections/amiga-demo-music.html
+          do
+            test -f "$page"
+            grep -Fq '/resources/css/retro-events.css' "$page"
+          done
+          test -f _site/resources/css/retro-events.css
+          grep -Fq 'CCG RETRO CONTENT COLLECTIONS' _site/resources/css/retro-events.css
+          grep -Fq '.ccg-collection-skeleton' _site/resources/css/retro-events.css
+          grep -Fq 'aspect-ratio: 16 / 9' _site/resources/css/retro-events.css
+
+          # Representative generated retro pages must use the new full detail template.
+          retro_pages=(
+            "_site/amiga-demo-music/red-sector-folow-me/index.html|https://www.cheekycommodoregamer.co.uk/amiga-demo-music/red-sector-folow-me/"
+            "_site/retro-specials/50-essential-amiga-games/index.html|https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/"
+          )
+          for entry in "${retro_pages[@]}"; do
+            page="${entry%%|*}"
+            canonical="${entry#*|}"
+            test -f "$page"
+            grep -Fq 'class="ccg-header"' "$page"
+            grep -Fq 'data-ccg-mode-toggle' "$page"
+            grep -Fq 'retro-video-page__hero-media' "$page"
+            grep -Fq 'retro-video-page__watch' "$page"
+            grep -Fq 'retro-video-page__related-media' "$page"
+            grep -Fq "<link rel=\"canonical\" href=\"${canonical}\"" "$page"
+          done
+
+          # Quiz enhancement assets must be present in the published artifact.
+          test -f _site/quiz/quiz.html
+          test -f _site/resources/js/quiz-ui-fixes.js
+          test -f _site/resources/css/quiz-experience.css
+          grep -Fq 'Choose a pack' _site/resources/js/quiz-ui-fixes.js
+          grep -Fq 'Choose a Pack First' _site/resources/js/quiz-ui-fixes.js
+          grep -Fq 'quiz-ux-flow' _site/resources/js/quiz-ui-fixes.js
+          grep -Fq -- '--quiz-progress' _site/resources/css/quiz-experience.css
 
           # Canonical game routes must be full indexable pages, never redirect shells.
           for slug in 1942 cops-n-robbers the-human-race; do
@@ -190,11 +234,18 @@ jobs:
           support_target="${PAGE_URL%/}/support.html?deployment=${GITHUB_SHA}"
           shop_target="${PAGE_URL%/}/shop.html?deployment=${GITHUB_SHA}"
           genre_target="${PAGE_URL%/}/games/genres/fighting-games.html?deployment=${GITHUB_SHA}"
+          retro_css_target="${PAGE_URL%/}/resources/css/retro-events.css?deployment=${GITHUB_SHA}"
+          quiz_js_target="${PAGE_URL%/}/resources/js/quiz-ui-fixes.js?deployment=${GITHUB_SHA}"
+          quiz_css_target="${PAGE_URL%/}/resources/css/quiz-experience.css?deployment=${GITHUB_SHA}"
 
           game_targets=(
             "${PAGE_URL%/}/games/1942/?deployment=${GITHUB_SHA}"
             "${PAGE_URL%/}/games/cops-n-robbers/?deployment=${GITHUB_SHA}"
             "${PAGE_URL%/}/games/the-human-race/?deployment=${GITHUB_SHA}"
+          )
+          retro_targets=(
+            "${PAGE_URL%/}/amiga-demo-music/red-sector-folow-me/?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/retro-specials/50-essential-amiga-games/?deployment=${GITHUB_SHA}"
           )
 
           for attempt in $(seq 1 18); do
@@ -202,6 +253,9 @@ jobs:
             support_body="$(curl --fail --silent --show-error --location --max-time 30 "$support_target" || true)"
             shop_body="$(curl --fail --silent --show-error --max-time 30 "$shop_target" || true)"
             genre_body="$(curl --fail --silent --show-error --max-time 30 "$genre_target" || true)"
+            retro_css_body="$(curl --fail --silent --show-error --max-time 30 "$retro_css_target" || true)"
+            quiz_js_body="$(curl --fail --silent --show-error --max-time 30 "$quiz_js_target" || true)"
+            quiz_css_body="$(curl --fail --silent --show-error --max-time 30 "$quiz_css_target" || true)"
 
             games_ok=true
             for target in "${game_targets[@]}"; do
@@ -224,6 +278,34 @@ jobs:
               genre_ok=true
             fi
 
+            retro_ok=true
+            for target in "${retro_targets[@]}"; do
+              retro_body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
+              if ! printf '%s' "$retro_body" | grep -Fq 'class="ccg-header"' \
+                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__hero-media' \
+                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__watch' \
+                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__related-media' \
+                || ! printf '%s' "$retro_body" | grep -Fq 'data-ccg-mode-toggle'; then
+                retro_ok=false
+                break
+              fi
+            done
+
+            retro_assets_ok=false
+            if printf '%s' "$retro_css_body" | grep -Fq 'CCG RETRO CONTENT COLLECTIONS' \
+              && printf '%s' "$retro_css_body" | grep -Fq '.ccg-collection-skeleton' \
+              && printf '%s' "$retro_css_body" | grep -Fq 'aspect-ratio: 16 / 9'; then
+              retro_assets_ok=true
+            fi
+
+            quiz_ok=false
+            if printf '%s' "$quiz_js_body" | grep -Fq 'Choose a Pack First' \
+              && printf '%s' "$quiz_js_body" | grep -Fq 'quiz-ux-flow' \
+              && printf '%s' "$quiz_css_body" | grep -Fq -- '--quiz-progress' \
+              && printf '%s' "$quiz_css_body" | grep -Fq '.quiz-pack-btn__desc'; then
+              quiz_ok=true
+            fi
+
             if printf '%s' "$announcement_body" | grep -Fq 'Content Announcements' \
               && printf '%s' "$announcement_body" | grep -Fq 'announceContentFilter' \
               && printf '%s' "$support_body" | grep -Fq 'Quietly keeping CCG going' \
@@ -233,8 +315,11 @@ jobs:
               && ! printf '%s' "$shop_body" | grep -Fq 'Retro Merchandise' \
               && ! printf '%s' "$shop_body" | grep -Fq 'Digital Products' \
               && [ "$games_ok" = true ] \
-              && [ "$genre_ok" = true ]; then
-              echo "Verified announcement, support pages, canonical game routes, and crawlable genre links."
+              && [ "$genre_ok" = true ] \
+              && [ "$retro_ok" = true ] \
+              && [ "$retro_assets_ok" = true ] \
+              && [ "$quiz_ok" = true ]; then
+              echo "Verified announcement, support pages, canonical game routes, crawlable genre links, retro detail layouts, collection assets, and quiz experience assets."
               exit 0
             fi
 
@@ -242,5 +327,5 @@ jobs:
             sleep 10
           done
 
-          echo "The deployment completed, but the expected public pages, canonical game routes, or genre fallbacks were not visible after three minutes." >&2
+          echo "The deployment completed, but the expected public pages, canonical game routes, genre fallbacks, retro layouts, or quiz experience were not visible after three minutes." >&2
           exit 1
