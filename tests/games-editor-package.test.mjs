@@ -71,9 +71,15 @@ for (const path of [
 
 assert.ok(existsSync('games/zeewolf/index.html'), 'games/zeewolf/index.html exists');
 assert.ok(existsSync('games/zeewolf.html'), 'games/zeewolf.html exists');
-assert.match(readFileSync('games/zeewolf/index.html', 'utf8'), /\/games\/game\.html\?id=zeewolf/);
+const publishedZeewolfHtml = readFileSync('games/zeewolf/index.html', 'utf8');
+assert.match(publishedZeewolfHtml, /<meta name="robots" content="index,follow">/);
+assert.match(publishedZeewolfHtml, /<link rel="canonical" id="game-canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
+assert.match(publishedZeewolfHtml, /<meta name="twitter:url" content="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
+assert.doesNotMatch(publishedZeewolfHtml, /\/games\/game\.html\?id=zeewolf|http-equiv="refresh"|Game not found/i);
 assert.match(readFileSync('games/zeewolf.html', 'utf8'), /\/games\/zeewolf\//);
 
+// The editor export template remains a compatibility wrapper. The authoritative
+// publishing command replaces its nested route with the full canonical page.
 assert.match(canonicalWrapperHtml, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/zeewolf\/">/);
 assert.match(canonicalWrapperHtml, /<meta http-equiv="refresh" content="0; url=\/games\/game\.html\?id=zeewolf">/);
 assert.match(canonicalWrapperHtml, /window\.location\.replace\("\/games\/game\.html\?id=zeewolf"\)/);
