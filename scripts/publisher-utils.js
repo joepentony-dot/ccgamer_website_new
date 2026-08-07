@@ -128,7 +128,8 @@ const FEATURED_PUBLISHERS = [
     "Psygnosis",
     "Elite",
     "Gremlin Graphics",
-    "MicroProse"
+    "MicroProse",
+    "MicroProse Software"
 ];
 
 function normalizePublisherKey(value) {
