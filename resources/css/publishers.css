@@ -99,7 +99,7 @@
 
 .ccg-publishers-tools {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) auto auto;
+    grid-template-columns: minmax(220px, 1fr) auto;
     align-items: center;
     gap: 14px;
     margin: 24px 0 32px;
@@ -133,6 +133,12 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+
+/* Publisher directory: publisher names are the useful filter.
+   Platform buttons remain available on individual publisher game pages. */
+html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
+    display: none !important;
 }
 
 .ccg-publishers-filter .ccg-btn.is-active {
@@ -388,6 +394,10 @@
     .ccg-publishers-filter {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
+        display: none !important;
     }
 
     .ccg-publishers-filter .ccg-btn {
