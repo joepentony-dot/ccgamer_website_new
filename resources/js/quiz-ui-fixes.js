@@ -6,6 +6,7 @@
     let readyState = "ready";
     let readyText = "Quiz packs ready.";
     let mutationObserver = null;
+    let initialized = false;
 
     function isAdminContext() {
         const meta = document.querySelector('meta[name="ccg-context"]');
@@ -286,11 +287,13 @@
     }
 
     function init() {
+        if (initialized) return;
         if (isAdminContext()) {
             console.log("[CCG] Admin context detected — quiz experience layer skipped.");
             return;
         }
         if (!document.querySelector('[data-ccg-page="quiz"], .ccg-page--quiz')) return;
+        initialized = true;
 
         ensureExperienceStyles();
         ensureFlowIndicator();
@@ -302,9 +305,11 @@
         refreshExperience();
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
-    } else {
-        init();
-    }
+    /*
+       Deferred quiz scripts execute after the document has been parsed but
+       before DOMContentLoaded. Initialise immediately so the loader wrappers
+       are installed before quiz-engine.js's DOMContentLoaded callback asks
+       for the first pack list.
+    */
+    init();
 })();
