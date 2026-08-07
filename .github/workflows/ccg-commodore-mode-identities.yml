@@ -4,9 +4,12 @@ on:
   pull_request:
     paths:
       - "js/ccg-nav-core.js"
+      - "js/ccg-mode-engine.js"
       - "js/ccg-mode-identity.js"
+      - "js/ccg-header-auto.js"
       - "resources/css/ccg-mode-identity.css"
       - "scripts/audit-commodore-mode-identities.js"
+      - "tests/mode-engine-runtime.test.cjs"
       - "docs/phase-19-commodore-mode-identities.md"
       - ".github/workflows/ccg-commodore-mode-identities.yml"
   workflow_dispatch:
@@ -28,8 +31,13 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check js/ccg-nav-core.js
+          node --check js/ccg-mode-engine.js
           node --check js/ccg-mode-identity.js
           node --check scripts/audit-commodore-mode-identities.js
+          node --check tests/mode-engine-runtime.test.cjs
+
+      - name: Run mode engine runtime test
+        run: node tests/mode-engine-runtime.test.cjs
 
       - name: Run Commodore mode identity audit
         run: node scripts/audit-commodore-mode-identities.js
