@@ -71,12 +71,14 @@ jobs:
 
           touch _site/.nojekyll
 
-      - name: Build and validate canonical game routes
+      - name: Build and validate canonical game and genre SEO
         shell: bash
         run: |
           set -euo pipefail
           node scripts/prepare-seo-game-routes.js --output-root _site
+          node scripts/prepare-seo-genre-links.js --root _site
           node scripts/validate-seo-game-routes.js --root _site
+          node scripts/validate-seo-genre-links.js --root _site
 
       - name: Verify staged public features
         shell: bash
@@ -98,6 +100,7 @@ jobs:
             test -f "$page"
             grep -Fq "<link rel=\"canonical\" id=\"game-canonical\" href=\"https://www.cheekycommodoregamer.co.uk/games/${slug}/\">" "$page"
             grep -Fq '<meta name="robots" content="index,follow">' "$page"
+            grep -Fq "<meta name=\"twitter:url\" content=\"https://www.cheekycommodoregamer.co.uk/games/${slug}/\">" "$page"
             if grep -Fq 'Game not found' "$page"; then
               echo "Crawler-visible Game not found copy remains in ${page}." >&2
               exit 1
@@ -111,6 +114,17 @@ jobs:
               exit 1
             fi
           done
+
+          # Genre pages must expose crawlable canonical game links before JavaScript runs.
+          genre_page="_site/games/genres/fighting-games.html"
+          test -f "$genre_page"
+          grep -Fq '<!-- CCG STATIC GENRE FALLBACK START -->' "$genre_page"
+          grep -Fq 'data-ccg-static-genre-fallback="true"' "$genre_page"
+          grep -Eq 'href="/games/[a-z0-9-]+/"' "$genre_page"
+          if grep -Fq 'game.html?id=' "$genre_page"; then
+            echo "Genre fallback contains a query-string game route." >&2
+            exit 1
+          fi
 
           # Support pages must publish in their understated form.
           test -f _site/shop.html
@@ -174,6 +188,7 @@ jobs:
           announcement_target="${PAGE_URL%/}/admin/announce.html?deployment=${GITHUB_SHA}"
           support_target="${PAGE_URL%/}/support.html?deployment=${GITHUB_SHA}"
           shop_target="${PAGE_URL%/}/shop.html?deployment=${GITHUB_SHA}"
+          genre_target="${PAGE_URL%/}/games/genres/fighting-games.html?deployment=${GITHUB_SHA}"
 
           game_targets=(
             "${PAGE_URL%/}/games/1942/?deployment=${GITHUB_SHA}"
@@ -185,11 +200,13 @@ jobs:
             announcement_body="$(curl --fail --silent --show-error --location --max-time 30 "$announcement_target" || true)"
             support_body="$(curl --fail --silent --show-error --location --max-time 30 "$support_target" || true)"
             shop_body="$(curl --fail --silent --show-error --max-time 30 "$shop_target" || true)"
+            genre_body="$(curl --fail --silent --show-error --max-time 30 "$genre_target" || true)"
 
             games_ok=true
             for target in "${game_targets[@]}"; do
               game_body="$(curl --fail --silent --show-error --max-time 30 "$target" || true)"
               if ! printf '%s' "$game_body" | grep -Fq '<meta name="robots" content="index,follow">' \
+                || ! printf '%s' "$game_body" | grep -Fq '<meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/' \
                 || printf '%s' "$game_body" | grep -Fq 'Game not found' \
                 || printf '%s' "$game_body" | grep -Fq '/games/game.html?id=' \
                 || printf '%s' "$game_body" | grep -Fqi 'http-equiv="refresh"'; then
@@ -197,6 +214,14 @@ jobs:
                 break
               fi
             done
+
+            genre_ok=false
+            if printf '%s' "$genre_body" | grep -Fq '<!-- CCG STATIC GENRE FALLBACK START -->' \
+              && printf '%s' "$genre_body" | grep -Fq 'data-ccg-static-genre-fallback="true"' \
+              && printf '%s' "$genre_body" | grep -Eq 'href="/games/[a-z0-9-]+/"' \
+              && ! printf '%s' "$genre_body" | grep -Fq 'game.html?id='; then
+              genre_ok=true
+            fi
 
             if printf '%s' "$announcement_body" | grep -Fq 'Content Announcements' \
               && printf '%s' "$announcement_body" | grep -Fq 'announceContentFilter' \
@@ -206,8 +231,9 @@ jobs:
               && printf '%s' "$shop_body" | grep -Fq 'url=/support.html' \
               && ! printf '%s' "$shop_body" | grep -Fq 'Retro Merchandise' \
               && ! printf '%s' "$shop_body" | grep -Fq 'Digital Products' \
-              && [ "$games_ok" = true ]; then
-              echo "Verified announcement, understated support pages, and canonical game routes."
+              && [ "$games_ok" = true ] \
+              && [ "$genre_ok" = true ]; then
+              echo "Verified announcement, support pages, canonical game routes, and crawlable genre links."
               exit 0
             fi
 
@@ -215,5 +241,5 @@ jobs:
             sleep 10
           done
 
-          echo "The deployment completed, but the expected public pages or canonical game routes were not visible after three minutes." >&2
+          echo "The deployment completed, but the expected public pages, canonical game routes, or genre fallbacks were not visible after three minutes." >&2
           exit 1
