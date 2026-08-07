@@ -14,6 +14,7 @@ on:
       - "resources/css/retro-video-pages.css"
       - "scripts/generate-retro-pages.js"
       - ".github/workflows/rebuild-retro-on-data-change.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "quiz/quiz.html"
       - "resources/css/quiz.css"
       - "resources/css/quiz-experience.css"
@@ -52,6 +53,44 @@ jobs:
 
       - name: Run source contract audit
         run: node scripts/audit-retro-quiz-experience.js
+
+      - name: Reproduce Pages-stage retro generation
+        shell: bash
+        run: |
+          set -euo pipefail
+          site_root="$RUNNER_TEMP/ccg-retro-pages-site"
+          rm -rf "$site_root"
+          mkdir -p "$site_root"
+
+          rsync -a --prune-empty-dirs \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='_site/' \
+            --exclude='node_modules/' \
+            --exclude='scripts/' \
+            --exclude='tests/' \
+            --exclude='docs/' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            ./ "$site_root/"
+
+          node scripts/generate-retro-pages.js --root "$site_root"
+
+          for page in \
+            "$site_root/amiga-demo-music/red-sector-folow-me/index.html" \
+            "$site_root/retro-specials/50-essential-amiga-games/index.html"
+          do
+            test -f "$page"
+            grep -Fq 'class="ccg-header"' "$page"
+            grep -Fq 'retro-video-page__hero-media' "$page"
+            grep -Fq 'retro-video-page__watch' "$page"
+            grep -Fq 'retro-video-page__related-media' "$page"
+            grep -Fq 'data-ccg-mode-toggle' "$page"
+          done
+
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/amiga-demo-music/red-sector-folow-me/"' "$site_root/amiga-demo-music/red-sector-folow-me/index.html"
+          grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/"' "$site_root/retro-specials/50-essential-amiga-games/index.html"
+          test -z "$(git status --porcelain)"
 
       - name: Generate retro pages in CI workspace
         run: node scripts/generate-retro-pages.js
