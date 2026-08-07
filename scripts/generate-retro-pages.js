@@ -100,6 +100,13 @@ function resolveYoutubeId(entry) {
     .replace(/[?&].*$/, '');
 }
 
+function resolveThumbnail(entry) {
+  const supplied = String(entry?.thumbnail || '').trim();
+  if (supplied) return supplied;
+  const youtubeId = resolveYoutubeId(entry);
+  return youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : '';
+}
+
 function normalizeRetroSlug(entry, datasetLabel) {
   const source = String(entry.slug || entry.id || entry.title || '').trim();
   if (!source) return '';
@@ -152,11 +159,15 @@ function buildRelatedItems(items, currentSlug, pagePrefix) {
   const cards = related
     .map((item) => {
       const href = `${pagePrefix}${item.slug}/`;
-      return `<li><a class="retro-video-page__related-card" href="${escapeHtml(href)}"><span class="retro-video-page__related-title">${escapeHtml(item.title)}</span><p class="retro-video-page__related-summary">${escapeHtml(item.summary || item.description || '')}</p></a></li>`;
+      const thumbnail = resolveThumbnail(item);
+      const media = thumbnail
+        ? `<span class="retro-video-page__related-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(item.title)} video thumbnail" loading="lazy" decoding="async" /></span>`
+        : '';
+      return `<li><a class="retro-video-page__related-card" href="${escapeHtml(href)}">${media}<span class="retro-video-page__related-copy"><span class="retro-video-page__related-title">${escapeHtml(item.title)}</span><p class="retro-video-page__related-summary">${escapeHtml(item.summary || item.description || '')}</p><span class="retro-video-page__related-action">Open feature →</span></span></a></li>`;
     })
     .join('\n    ');
 
-  return `<section class="retro-video-page__related">\n    <h2 class="game-subtitle">More from this collection</h2>\n    <ul class="retro-video-page__related-grid">\n    ${cards}\n    </ul>\n  </section>`;
+  return `<section class="retro-video-page__related">\n    <h2>More from this collection</h2>\n    <ul class="retro-video-page__related-grid">\n    ${cards}\n    </ul>\n  </section>`;
 }
 
 function toIsoDate(value) {
@@ -196,6 +207,9 @@ function validateRetroEntry(config, entry, slug, youtubeId, canonicalUrl) {
 function validateGeneratedHtml(html, canonicalUrl) {
   const problems = [];
   if (!html.includes('class="retro-video-page')) problems.push('generated HTML missing retro-video-page root class');
+  if (!html.includes('class="ccg-header"')) problems.push('generated HTML missing the shared site header');
+  if (!html.includes('retro-video-page__hero-media')) problems.push('generated HTML missing the visual feature hero');
+  if (!html.includes('retro-video-page__watch')) problems.push('generated HTML missing the dedicated watch panel');
   if (!html.includes('/resources/css/retro-video-pages.css')) problems.push('generated HTML missing retro-video-pages.css');
   if (!html.includes(`<link rel="canonical" href="${canonicalUrl}"`)) problems.push('generated canonical mismatch');
   return problems;
@@ -224,7 +238,6 @@ function generateDatasetPages(config, template) {
     const youtubeId = entry.youtubeId;
     const label = entry.id || entry.title || `item-${index + 1}`;
 
-    // Accept all retro-specials entries
     if (!slug) return;
 
     if (seenSlugs.has(slug)) {
