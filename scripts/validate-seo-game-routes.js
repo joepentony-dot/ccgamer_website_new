@@ -95,6 +95,7 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   const html = read(filePath);
   const canonical = metaValue(html, /<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
   const ogUrl = metaValue(html, /<meta[^>]+property=["']og:url["'][^>]*content=["']([^"']+)["']/i);
+  const twitterUrl = metaValue(html, /<meta[^>]+name=["']twitter:url["'][^>]*content=["']([^"']+)["']/i);
   const pageTitle = metaValue(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
   const description = metaValue(html, /<meta[^>]+name=["']description["'][^>]*content=["']([^"']*)["']/i);
   const descriptionText = decodeHtmlEntities(description);
@@ -103,6 +104,7 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   expect(hasIndexFollow(html), `${rel}: canonical page must be index,follow.`, errors);
   expect(canonical === canonicalUrl, `${rel}: canonical mismatch (${canonical || "missing"}).`, errors);
   expect(ogUrl === canonicalUrl, `${rel}: og:url mismatch (${ogUrl || "missing"}).`, errors);
+  expect(twitterUrl === canonicalUrl, `${rel}: twitter:url mismatch (${twitterUrl || "missing"}).`, errors);
   expect(pageTitle.length > 0, `${rel}: title is missing.`, errors);
   expect(descriptionText.length > 0, `${rel}: meta description is missing.`, errors);
   expect(descriptionText.length <= 160, `${rel}: decoded meta description exceeds 160 characters.`, errors);
