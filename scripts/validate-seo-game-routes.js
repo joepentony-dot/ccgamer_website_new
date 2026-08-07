@@ -61,6 +61,14 @@ function hasIndexFollow(html) {
   return tokens.includes("index") && tokens.includes("follow") && !tokens.includes("noindex");
 }
 
+function hasCanonicalReadyBody(html) {
+  return /<body\b[^>]*\bclass=["'][^"']*\bccg-single-ready\b[^"']*["'][^>]*>/i.test(html);
+}
+
+function hasPrefilledGameMarker(html) {
+  return /\bdata-ccg-prefilled=["']true["']/i.test(html);
+}
+
 function extractSitemapLocs(xml) {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => unescapeXml(match[1].trim()));
 }
@@ -109,6 +117,8 @@ function validateCanonicalPage(root, game, sitemapLocs, errors) {
   expect(descriptionText.length > 0, `${rel}: meta description is missing.`, errors);
   expect(descriptionText.length <= 160, `${rel}: decoded meta description exceeds 160 characters.`, errors);
   expect(heroTitle.length > 0, `${rel}: static H1 is missing.`, errors);
+  expect(hasCanonicalReadyBody(html), `${rel}: canonical page is not server-visible on first load (missing ccg-single-ready body class).`, errors);
+  expect(hasPrefilledGameMarker(html), `${rel}: canonical page is missing the prefilled-content marker.`, errors);
   expect(!/http-equiv=["']refresh["']/i.test(html), `${rel}: canonical page still contains a meta refresh.`, errors);
   expect(!/\/games\/game\.html\?id=/i.test(html), `${rel}: canonical page still points to the query-string game route.`, errors);
   expect(!/\bGame not found\b/i.test(html), `${rel}: canonical page contains crawlable Game not found copy.`, errors);
@@ -170,7 +180,10 @@ function validateUtilityRoutes(root, errors) {
 
   expect(fs.existsSync(queryRoute), "games/game.html is missing.", errors);
   if (fs.existsSync(queryRoute)) {
-    expect(hasNoindex(read(queryRoute)), "games/game.html must remain noindex,follow.", errors);
+    const queryHtml = read(queryRoute);
+    expect(hasNoindex(queryHtml), "games/game.html must remain noindex,follow.", errors);
+    expect(!hasCanonicalReadyBody(queryHtml), "games/game.html must remain loader-controlled and must not carry ccg-single-ready in source.", errors);
+    expect(!hasPrefilledGameMarker(queryHtml), "games/game.html must not be marked as prefilled.", errors);
   }
 
   expect(fs.existsSync(redirectRoute), "redirect.html is missing.", errors);
@@ -230,7 +243,7 @@ function main(argv = process.argv.slice(2)) {
     process.exit(1);
   }
 
-  console.log("[validate-seo-game-routes] PASS — canonical game routes are indexable, direct, and crawler-safe.");
+  console.log("[validate-seo-game-routes] PASS — canonical game routes are indexable, direct, first-load visible, and crawler-safe.");
 }
 
 if (require.main === module) {
