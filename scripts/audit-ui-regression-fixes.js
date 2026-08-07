@@ -69,15 +69,23 @@ rejectText(navCore, 'el.style.setProperty("overflow", "visible", "important")', 
     ".ccg-nav__more-toggle",
     "overflow: hidden !important",
     ".ccg-publisher-card--has-logo",
+    ".ccg-publisher-grid--featured",
     "min-width: 0 !important",
+    "width: 100% !important",
+    "grid-template-columns: repeat(2, minmax(0, 1fr)) !important",
+    "grid-template-columns: minmax(0, 1fr) !important",
     ".zzap-loading:not([hidden])",
     "z-index: 2147483000",
     ".ccg-footer-hub",
     "grid-template-columns: repeat(3",
+    "@media (max-width: 1100px)",
     "@media (max-width: 760px)",
-    'body[data-ccg-mode="c64"] .ccg-btn:hover',
-    'body[data-ccg-mode="amiga"] .ccg-btn:hover'
+    "@media (max-width: 500px)",
+    '.ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover'
 ].forEach((token) => requireText(polishCss, token, "UI regression stylesheet"));
+
+rejectText(polishCss, 'body[data-ccg-mode="c64"] .ccg-btn:hover', "Generic C64 hover must not override existing blue/red CTAs");
+rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Amiga hover must not override existing blue/red CTAs");
 
 [
     'id="zzapLoading"',
@@ -115,5 +123,6 @@ console.log("UI regression audit passed.");
 console.log("- mode cues are present, cache-busted and safe before metadata loads");
 console.log("- Zzap loading overlay is held on screen long enough for a real first paint");
 console.log("- nav shimmer and publisher cards are clipped to their own controls/cells");
-console.log("- C64/Amiga button hover labels retain contrast");
+console.log("- publisher grids retain safe two-column/tablet and one-column/mobile layouts");
+console.log("- C64/Amiga generic button hover labels retain contrast without overriding the existing blue/red CTAs");
 console.log("- home footer exposes verified explore, support and legal routes");
