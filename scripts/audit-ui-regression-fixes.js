@@ -62,7 +62,12 @@ rejectText(navCore, 'el.style.setProperty("overflow", "visible", "important")', 
     "/terms.html",
     "/privacy.html",
     "/cookies.html",
-    "/affiliate-disclosure.html"
+    "/affiliate-disclosure.html",
+    "repairLegacyMicroProseFeaturedCard",
+    ':scope > a.ccg-publisher-card__link[href=\"/games/publishers/microprose-software/\"]',
+    'article.className = "ccg-publisher-card ccg-publisher-card--featured"',
+    'eyebrow.textContent = "Featured Publisher"',
+    'article.dataset.ccgMicroproseRepair = "true"'
 ].forEach((token) => requireText(runtimeFixes, token, "UI regression runtime"));
 
 [
@@ -123,6 +128,7 @@ console.log("UI regression audit passed.");
 console.log("- mode cues are present, cache-busted and safe before metadata loads");
 console.log("- Zzap loading overlay is held on screen long enough for a real first paint");
 console.log("- nav shimmer and publisher cards are clipped to their own controls/cells");
+console.log("- legacy bare MicroProse featured markup is repaired only when the generated article wrapper is absent");
 console.log("- publisher grids retain safe two-column/tablet and one-column/mobile layouts");
 console.log("- C64/Amiga generic button hover labels retain contrast without overriding the existing blue/red CTAs");
 console.log("- home footer exposes verified explore, support and legal routes");
