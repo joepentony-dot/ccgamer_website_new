@@ -74,7 +74,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git diff --check
+          set +e
+          diff_check_output="$(git diff --check 2>&1)"
+          diff_check_status=$?
+          set -e
+          if [ "$diff_check_status" -ne 0 ]; then
+            echo "::error::Generated canonical route patch contains whitespace errors"
+            echo "=== git diff --check ==="
+            printf '%s\n' "$diff_check_output"
+            echo "=== generated diff stat ==="
+            git diff --stat
+            echo "=== generated status ==="
+            git status --short
+            exit "$diff_check_status"
+          fi
           git diff --binary > "$RUNNER_TEMP/first.diff"
           git status --short > "$RUNNER_TEMP/first.status"
 
