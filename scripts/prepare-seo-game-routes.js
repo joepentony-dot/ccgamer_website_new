@@ -30,6 +30,18 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function truncateSeoText(value, maxLength) {
+  const text = stripHtml(value);
+  if (!text || text.length <= maxLength) return text;
+
+  const bodyLimit = Math.max(1, maxLength - 1);
+  let body = text.slice(0, bodyLimit);
+  const lastSpace = body.lastIndexOf(" ");
+  if (lastSpace > 0) body = body.slice(0, lastSpace);
+  body = body.replace(/[\s,;:–—-]+$/g, "").trim();
+  return `${body}…`;
+}
+
 function canonicalGameTitle(game) {
   const title = String(game?.title || "").trim();
   const slug = String(game?.slug || "").trim();
@@ -88,16 +100,14 @@ function buildRuntimeDescription(game, title) {
   if (publisher) introParts.push(`from ${publisher}`);
 
   const strippedDescription = stripHtml(game?.description || "");
-  const hook = strippedDescription
-    ? strippedDescription.slice(0, 95)
-    : "retro gameplay, screenshots, reviews and Commodore history.";
+  const hook = strippedDescription || "retro gameplay, screenshots, reviews and Commodore history.";
 
-  return `${introParts.join(" ")} — ${hook}`.slice(0, 160);
+  return truncateSeoText(`${introParts.join(" ")} — ${hook}`, 160);
 }
 
 function buildSchemaDescription(game, title, platformLong) {
   const raw = stripHtml(game?.description || game?.desc || "");
-  if (raw) return raw.length <= 300 ? raw : `${raw.slice(0, 297).trim()}...`;
+  if (raw) return truncateSeoText(raw, 300);
   return `${title} is a retro ${platformLong} title featured on Cheeky Commodore Gamer with screenshots, game information, manual links and video coverage.`;
 }
 
@@ -428,5 +438,6 @@ module.exports = {
   buildSchemaGraph,
   canonicalGameTitle,
   run,
+  truncateSeoText,
   validateGames,
 };
