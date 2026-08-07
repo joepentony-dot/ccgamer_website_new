@@ -63,7 +63,17 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/prepare-seo-game-routes.js --output-root .
+
+      - name: Validate canonical game routes
+        shell: bash
+        run: |
+          set -euo pipefail
           node scripts/validate-seo-game-routes.js --root .
+
+      - name: Check generated patch and capture baseline
+        shell: bash
+        run: |
+          set -euo pipefail
           git diff --check
           git diff --binary > "$RUNNER_TEMP/first.diff"
           git status --short > "$RUNNER_TEMP/first.status"
