@@ -68,6 +68,18 @@
     max-height: 86px;
 }
 
+/* MicroProse uses an unusually wide wordmark. Keep generous breathing room
+   so its featured card retains the same visible frame as neighbouring cards. */
+.ccg-publisher-card__logo[data-publisher-logo="microprose-software"] img {
+    max-width: 74% !important;
+    max-height: 62px !important;
+}
+
+.ccg-publisher-grid--featured .ccg-publisher-card__logo[data-publisher-logo="microprose-software"] img {
+    max-width: 76% !important;
+    max-height: 68px !important;
+}
+
 /* The supplied Microsphere artwork contains unusually wide transparent margins. */
 .ccg-publisher-card__logo[data-publisher-logo="microsphere"] img {
     transform: scale(3.15);
@@ -197,6 +209,12 @@
     .ccg-publisher-card__logo img,
     .ccg-publisher-grid--featured .ccg-publisher-card__logo img {
         max-height: 66px;
+    }
+
+    .ccg-publisher-card__logo[data-publisher-logo="microprose-software"] img,
+    .ccg-publisher-grid--featured .ccg-publisher-card__logo[data-publisher-logo="microprose-software"] img {
+        max-width: 72% !important;
+        max-height: 54px !important;
     }
 
     .ccg-publisher-card__logo[data-publisher-logo="microsphere"] img {
