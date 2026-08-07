@@ -5,6 +5,7 @@
    • guaranteed stylesheet delivery for interaction polish
    • minimum visible Zzap!64 loading progress window
    • richer home-page footer navigation/legal information
+   • legacy MicroProse featured-card compatibility
 ============================================================ */
 
 (function () {
@@ -20,6 +21,37 @@
         link.href = STYLE_PATH;
         link.dataset.ccgUiRegressionFixes = "true";
         document.head.appendChild(link);
+    }
+
+    function repairLegacyMicroProseFeaturedCard() {
+        if (document.documentElement.getAttribute("data-ccg-page") !== "publisher-index") return;
+
+        const featuredGrid = document.querySelector(".ccg-publisher-grid--featured");
+        if (!featuredGrid) return;
+
+        const legacyLink = featuredGrid.querySelector(':scope > a.ccg-publisher-card__link[href="/games/publishers/microprose-software/"]');
+        if (!legacyLink) return;
+
+        const article = document.createElement("article");
+        article.className = "ccg-publisher-card ccg-publisher-card--featured";
+        article.dataset.publisherCard = "";
+        article.dataset.publisherName = "microprose software";
+        article.dataset.publisherPlatform = "";
+
+        featuredGrid.insertBefore(article, legacyLink);
+        article.appendChild(legacyLink);
+
+        if (!legacyLink.querySelector(".ccg-publisher-card__eyebrow")) {
+            const eyebrow = document.createElement("span");
+            eyebrow.className = "ccg-publisher-card__eyebrow";
+            eyebrow.textContent = "Featured Publisher";
+
+            const title = legacyLink.querySelector(".ccg-publisher-card__title");
+            if (title) legacyLink.insertBefore(eyebrow, title);
+            else legacyLink.appendChild(eyebrow);
+        }
+
+        article.dataset.ccgMicroproseRepair = "true";
     }
 
     function enhanceHomeFooter() {
@@ -116,6 +148,7 @@
 
     function init() {
         ensureStylesheet();
+        repairLegacyMicroProseFeaturedCard();
         enhanceHomeFooter();
         holdZzapLoaderForFirstPaint();
     }
