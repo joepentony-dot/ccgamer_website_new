@@ -1,13 +1,17 @@
 /* ============================================================
-   CCG Mode Engine — Safe Unified Build
+   CCG Mode Engine — Global Single-Owner Controller
    ============================================================ */
 
-document.addEventListener("DOMContentLoaded", () => {
+(function () {
+    "use strict";
 
-    const root = document.body;
+    if (window.CCGModeEngine && typeof window.CCGModeEngine.refresh === "function") {
+        window.CCGModeEngine.refresh();
+        return;
+    }
+
     const rootElement = document.documentElement;
-    const toggle = document.querySelector("[data-ccg-mode-toggle]");
-    const hero = document.querySelector(".home-hero");
+    const EXCLUDED_PATH = /^\/(admin|auth|community)\//i;
     const AMIGA_STYLESHEETS = [
         {
             id: "ccg-amiga-mode-styles",
@@ -20,13 +24,40 @@ document.addEventListener("DOMContentLoaded", () => {
             label: "Amiga mobile performance layer"
         }
     ];
-    let lastMode = root.getAttribute("data-ccg-mode") || rootElement.getAttribute("data-ccg-mode") || null;
-    let lastTouchToggle = 0;
-    let modeChangeTimer = 0;
-    const supportsPointer = "PointerEvent" in window;
 
-    const heroModeLabel = document.querySelector('[data-ccg-mode-label]');
-    const heroBadgeLabel = document.querySelector('[data-ccg-hero-mode-label]');
+    let initialized = false;
+    let lastMode = null;
+    let modeChangeTimer = 0;
+
+    function normalizeMode(mode) {
+        return String(mode || "").toLowerCase() === "amiga" ? "amiga" : "c64";
+    }
+
+    function readStoredMode() {
+        try {
+            const saved = localStorage.getItem("ccg-mode");
+            return saved === "amiga" || saved === "c64" ? saved : "";
+        } catch (error) {
+            return "";
+        }
+    }
+
+    function writeStoredMode(mode) {
+        try {
+            localStorage.setItem("ccg-mode", mode);
+        } catch (error) {}
+    }
+
+    function getMode() {
+        const body = document.body;
+        const value = body?.getAttribute("data-ccg-mode")
+            || rootElement.getAttribute("data-ccg-mode")
+            || body?.getAttribute("data-mode")
+            || rootElement.getAttribute("data-mode")
+            || readStoredMode()
+            || "c64";
+        return normalizeMode(value);
+    }
 
     function ensureStylesheet({ id, path, label }) {
         if (document.getElementById(id)) return;
@@ -46,7 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function ensureAmigaChrome() {
-        if (document.querySelector(".ccg-amiga-chrome")) return;
+        const body = document.body;
+        if (!body || document.querySelector(".ccg-amiga-chrome")) return;
 
         const chrome = document.createElement("div");
         chrome.className = "ccg-amiga-chrome";
@@ -60,24 +92,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span>16-Bit Workbench</span>
             </div>
         `;
-        root.appendChild(chrome);
+        body.appendChild(chrome);
     }
 
     function ensureFlash() {
+        const body = document.body;
+        if (!body) return null;
         let flash = document.querySelector(".ccg-mode-flash");
         if (!flash) {
             flash = document.createElement("div");
             flash.className = "ccg-mode-flash";
             flash.setAttribute("aria-hidden", "true");
-            root.appendChild(flash);
+            body.appendChild(flash);
         }
         return flash;
     }
 
     function triggerFlash(mode) {
         const flash = ensureFlash();
+        if (!flash) return;
         const flashClass = mode === "c64" ? "c64-flash" : "amiga-flash";
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const prefersReducedMotion = typeof window.matchMedia === "function"
+            && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         const lowPower = Boolean(connection?.saveData) || ["slow-2g", "2g"].includes(connection?.effectiveType);
         const useLite = prefersReducedMotion || lowPower;
@@ -108,68 +144,108 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 760);
     }
 
-    function applyMode(mode) {
-        const nextMode = mode === "amiga" ? "amiga" : "c64";
+    function syncModeControls(mode) {
+        const label = mode === "c64" ? "C64" : "Amiga";
+        document.querySelectorAll("[data-ccg-mode-label]").forEach((element) => {
+            element.textContent = label;
+        });
+        document.querySelectorAll("[data-ccg-hero-mode-label]").forEach((element) => {
+            element.textContent = label;
+        });
+        document.querySelectorAll("[data-ccg-mode-toggle]").forEach((toggle) => {
+            toggle.setAttribute("aria-pressed", String(mode === "amiga"));
+            toggle.setAttribute("aria-label", mode === "amiga" ? "Switch to C64 mode" : "Switch to Amiga mode");
+            toggle.dataset.ccgActiveMode = mode;
+            toggle.dataset.ccgModeOwner = "engine";
+        });
+        document.querySelectorAll(".home-hero").forEach((hero) => {
+            hero.setAttribute("data-hero-mode", mode);
+        });
+    }
+
+    function applyMode(mode, options = {}) {
+        const body = document.body;
+        if (!body) return normalizeMode(mode);
+
+        const nextMode = normalizeMode(mode);
         const changed = Boolean(lastMode && lastMode !== nextMode);
+        const persist = options.persist !== false;
+        const animate = options.animate !== false;
+        const announce = options.announce !== false;
 
         rootElement.setAttribute("data-ccg-mode", nextMode);
         rootElement.setAttribute("data-mode", nextMode);
-        root.setAttribute("data-ccg-mode", nextMode);
-        root.setAttribute("data-mode", nextMode);
-        if (hero) hero.setAttribute("data-hero-mode", nextMode);
-        localStorage.setItem("ccg-mode", nextMode);
+        body.setAttribute("data-ccg-mode", nextMode);
+        body.setAttribute("data-mode", nextMode);
+        if (persist) writeStoredMode(nextMode);
+        syncModeControls(nextMode);
 
-        const label = nextMode === "c64" ? "C64" : "Amiga";
-        if (heroModeLabel) heroModeLabel.textContent = label;
-        if (heroBadgeLabel) heroBadgeLabel.textContent = label;
-
-        if (toggle) {
-            toggle.setAttribute("aria-pressed", String(nextMode === "amiga"));
-            toggle.setAttribute("aria-label", nextMode === "amiga" ? "Switch to C64 mode" : "Switch to Amiga mode");
-            toggle.dataset.ccgActiveMode = nextMode;
-        }
-
-        if (changed) {
+        if (changed && animate) {
             triggerModeBuild(nextMode);
             triggerFlash(nextMode);
         }
 
         lastMode = nextMode;
-        window.dispatchEvent(new CustomEvent("ccg:mode-changed", {
-            detail: { mode: nextMode }
-        }));
+        if (announce) {
+            window.dispatchEvent(new CustomEvent("ccg:mode-changed", {
+                detail: { mode: nextMode }
+            }));
+        }
+        return nextMode;
     }
 
-    function handleToggle(event) {
-        const now = Date.now();
-        if (event.type === "pointerdown") {
-            if (event.pointerType && !["touch", "pen"].includes(event.pointerType)) return;
-            lastTouchToggle = now;
-        }
-
-        if (event.type === "touchstart") {
-            lastTouchToggle = now;
-        }
-
-        if (event.type === "click" && now - lastTouchToggle < 500) return;
-        const current = root.getAttribute("data-ccg-mode") === "c64" ? "amiga" : "c64";
-        applyMode(current);
+    function toggleMode() {
+        return applyMode(getMode() === "amiga" ? "c64" : "amiga");
     }
 
-    ensureAmigaStyles();
-    ensureAmigaChrome();
+    function refresh() {
+        if (!document.body) return "";
+        const current = getMode();
+        syncModeControls(current);
+        return current;
+    }
 
-    if (toggle) {
-        toggle.addEventListener("click", handleToggle);
-        if (supportsPointer) {
-            toggle.addEventListener("pointerdown", handleToggle, { passive: true });
-        } else {
-            toggle.addEventListener("touchstart", handleToggle, { passive: true });
-        }
+    function handleToggleClick(event) {
+        const target = event.target instanceof Element
+            ? event.target.closest("[data-ccg-mode-toggle]")
+            : null;
+        if (!target || target.disabled || target.getAttribute("aria-disabled") === "true") return;
+
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        toggleMode();
+    }
+
+    function init() {
+        if (initialized || EXCLUDED_PATH.test(window.location.pathname)) return;
+        if (!document.body) return;
+        initialized = true;
+
+        ensureAmigaStyles();
+        ensureAmigaChrome();
+        document.addEventListener("click", handleToggleClick, true);
+
+        const initialMode = readStoredMode()
+            || document.body.getAttribute("data-ccg-mode")
+            || rootElement.getAttribute("data-ccg-mode")
+            || "c64";
+        applyMode(initialMode, { animate: false, announce: false });
+    }
+
+    const controller = Object.freeze({
+        get ready() {
+            return initialized;
+        },
+        applyMode,
+        toggleMode,
+        getMode,
+        refresh
+    });
+    window.CCGModeEngine = controller;
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init, { once: true });
     } else {
-        console.warn("ccg-mode-engine.js: Mode toggle button not found.");
+        init();
     }
-
-    const saved = localStorage.getItem("ccg-mode");
-    applyMode(saved || root.getAttribute("data-ccg-mode") || rootElement.getAttribute("data-ccg-mode") || "c64");
-});
+})();
