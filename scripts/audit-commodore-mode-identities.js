@@ -44,6 +44,7 @@ function changedFiles() {
 }
 
 const moduleCode = read("js/ccg-mode-identity.js");
+const headerAuto = read("js/ccg-header-auto.js");
 const css = read("resources/css/ccg-mode-identity.css");
 const navCore = read("js/ccg-nav-core.js");
 const workflow = read(".github/workflows/ccg-commodore-mode-identities.yml");
@@ -60,9 +61,16 @@ requireText(moduleCode, "COMMODORE AMIGA MODE", "Amiga label");
 requireText(moduleCode, "WORKBENCH", "Amiga status");
 requireText(moduleCode, "DF0: CCG ARCHIVE", "Amiga detail");
 requireText(moduleCode, "MutationObserver", "Mode attribute observation");
+requireText(moduleCode, 'attributeFilter: ["data-mode", "data-ccg-mode"]', "Mode-only mutation observation");
+requireText(moduleCode, 'window.addEventListener("ccg:mode-changed", scheduleUpdate)', "Mode-change event sync");
 requireText(moduleCode, "data-ccg-mode", "Established mode attribute support");
 requireText(moduleCode, "aria-live", "Accessible mode announcement");
 requireText(moduleCode, "EXCLUDED_PATH", "Private-area exclusion");
+rejectText(moduleCode, 'attributeFilter: ["data-mode", "data-ccg-mode", "class"]', "Mode identity observer");
+
+requireText(headerAuto, "setupModeStateFallback", "Header mode fallback");
+requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "engine"', "Mode engine ownership guard");
+requireText(headerAuto, 'toggle.dataset.ccgModeOwner = "header-fallback"', "Legacy header fallback ownership marker");
 
 requireText(css, '[data-mode="c64"]', "C64 status styling");
 requireText(css, '[data-mode="amiga"]', "Amiga status styling");
@@ -93,6 +101,7 @@ const protectedPaths = new Set([
 const allowedPaths = new Set([
   "js/ccg-nav-core.js",
   "js/ccg-mode-identity.js",
+  "js/ccg-header-auto.js",
   "resources/css/ccg-mode-identity.css",
   "scripts/audit-commodore-mode-identities.js",
   ".github/workflows/ccg-commodore-mode-identities.yml",
@@ -114,6 +123,8 @@ if (failures.length) {
 
 console.log("Commodore mode identity audit passed.");
 console.log("- C64 and Amiga status identities are both present");
+console.log("- Mode identity observes mode changes only, not unrelated class churn");
+console.log("- Established mode engine remains the single toggle owner when present");
 console.log("- Established Amiga window treatment remains intact");
 console.log("- Private routes, audio and persistent tracking remain outside scope");
 console.log("- Reduced-motion and print fallbacks are present");
