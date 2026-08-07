@@ -30,6 +30,7 @@ const detailCss = read("resources/css/retro-video-pages.css");
 const template = read("admin/templates/retro-video-template.html");
 const generator = read("scripts/generate-retro-pages.js");
 const rebuildWorkflow = read(".github/workflows/rebuild-retro-on-data-change.yml");
+const deployWorkflow = read(".github/workflows/deploy-github-pages-omega-stable.yml");
 const quizCss = read("resources/css/quiz-experience.css");
 const quizUx = read("resources/js/quiz-ui-fixes.js");
 const loaders = {
@@ -80,6 +81,10 @@ for (const [label, source] of Object.entries(loaders)) {
 ].forEach((token) => requireText(detailCss, token, "Retro detail styling"));
 
 [
+  "resolveRootArgument",
+  "process.argv.indexOf('--root')",
+  "Retro output root does not exist",
+  "Retro video template is missing from target root",
   "resolveThumbnail",
   "retro-video-page__related-media",
   "generated HTML missing the shared site header",
@@ -92,9 +97,26 @@ for (const [label, source] of Object.entries(loaders)) {
   "node scripts/generate-sitemaps.js",
   "node scripts/validate-sitemaps.js",
   "admin/templates/retro-video-template.html",
-  "resources/css/retro-video-pages.css"
+  "resources/css/retro-video-pages.css",
+  "git push origin HEAD:main",
+  "Verify generated commit reached main"
 ].forEach((token) => requireText(rebuildWorkflow, token, "Retro rebuild workflow"));
 rejectText(rebuildWorkflow, "node scripts/rebuild-games.js", "Retro rebuild workflow");
+rejectText(rebuildWorkflow, 'git push || echo "No generated retro changes to push"', "Retro rebuild workflow");
+
+[
+  "node scripts/generate-retro-pages.js --root _site",
+  "Build and validate canonical game, retro, genre and sitemap SEO",
+  "_site/amiga-demo-music/red-sector-folow-me/index.html",
+  "_site/retro-specials/50-essential-amiga-games/index.html",
+  "retro-video-page__hero-media",
+  "retro-video-page__watch",
+  "retro-video-page__related-media",
+  "_site/resources/css/quiz-experience.css",
+  "retro_targets=(",
+  "retro_assets_ok",
+  "quiz_ok"
+].forEach((token) => requireText(deployWorkflow, token, "Pages retro deployment contract"));
 
 [
   ".quiz-ux-flow",
@@ -131,5 +153,7 @@ console.log("Retro collection and quiz experience audit passed.");
 console.log("- Three editorial collections share one responsive card and hero system");
 console.log("- Collection loaders provide immediate skeleton feedback and cached JSON reads");
 console.log("- Generated retro detail pages include full site navigation, visual hero, watch and related panels");
-console.log("- Retro rebuild workflow regenerates detail pages and validates sitemaps");
+console.log("- Retro generator supports isolated deployment roots without changing canonical URLs");
+console.log("- Repository rebuild workflow regenerates detail pages and verifies its main-branch push");
+console.log("- Pages staging regenerates and verifies retro detail pages before upload and after deployment");
 console.log("- Quiz guidance exposes Choose → Start → Play, richer pack cards and question progress");

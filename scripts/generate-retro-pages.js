@@ -4,7 +4,19 @@ const fs = require('fs');
 const path = require('path');
 const { applyTemplate, readTemplate } = require('./template-engine');
 
-const repoRoot = path.resolve(__dirname, '..');
+function resolveRootArgument() {
+  const rootIndex = process.argv.indexOf('--root');
+  if (rootIndex === -1) return path.resolve(__dirname, '..');
+
+  const suppliedRoot = process.argv[rootIndex + 1];
+  if (!suppliedRoot || suppliedRoot.startsWith('--')) {
+    throw new Error('generate-retro-pages.js --root requires a target directory.');
+  }
+
+  return path.resolve(process.cwd(), suppliedRoot);
+}
+
+const repoRoot = resolveRootArgument();
 const SITE_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
 const RETRO_SPECIAL_MAX_SLUG_LENGTH = 55;
 const RETRO_SPECIAL_FILLER_WORDS = new Set(['the', 'about', 'these', 'this', 'a', 'an']);
@@ -318,6 +330,13 @@ function generateDatasetPages(config, template) {
 }
 
 function generateRetroPages() {
+  if (!fs.existsSync(repoRoot)) {
+    throw new Error(`Retro output root does not exist: ${repoRoot}`);
+  }
+  if (!fs.existsSync(retroVideoTemplatePath)) {
+    throw new Error(`Retro video template is missing from target root: ${retroVideoTemplatePath}`);
+  }
+
   const retroVideoTemplate = readTemplate(retroVideoTemplatePath);
 
   let totalGenerated = 0;
@@ -335,7 +354,7 @@ function generateRetroPages() {
     return;
   }
 
-  console.log(`[retro] Completed. Generated: ${totalGenerated}. Blocked: ${totalSkipped}.`);
+  console.log(`[retro] Completed for ${repoRoot}. Generated: ${totalGenerated}. Blocked: ${totalSkipped}.`);
 }
 
 generateRetroPages();
