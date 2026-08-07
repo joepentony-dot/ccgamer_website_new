@@ -22,6 +22,27 @@ TRANSACTION_TARGET = ROOT / "scripts" / "phase6b_games_editor_transaction.py"
 
 GAME_SCHEMA_LINE = "    GAME_SCHEMA_JSON: gameSchemaJson,\n"
 NOINDEX_YEAR_LINE = "        noindexYearRoutes: years.filter((group) => !group.indexable).length,\n"
+AUTHORITATIVE_REBUILD_STEPS = '''const steps = [
+  ["validate-games-source.js"],
+  ["build-games.js"],
+  ["prepare-seo-game-routes.js", "--output-root", "."],
+  ["prepare-seo-genre-links.js", "--root", "."],
+  ["generate-publisher-pages.js"],
+  ["apply-publisher-logos.js"],
+  ["validate-publisher-logo-output.js"],
+  ["generate-developer-pages.js"],
+  ["generate-composer-pages.js"],
+  ["generate-year-platform-pages.js"],
+  ["integrate-year-platform-discovery.js"],
+  ["generate-downloads-page.js"],
+  ["update-downloads-static-pages.js"],
+  ["generate-sitemaps.js"],
+  ["validate-sitemaps.js"],
+  ["verify-seo.mjs"],
+  ["validate-seo-game-routes.js", "--root", "."],
+  ["validate-seo-genre-links.js", "--root", "."],
+  ["validate-year-platform-discovery.js"],
+];'''
 
 
 def update_apply_idempotency() -> None:
@@ -234,12 +255,15 @@ def update_year_platform_validator() -> None:
 
 def update_rebuild_games() -> None:
     source = REBUILD_TARGET.read_text(encoding="utf-8")
-    updated = source.replace('  ["generate-retro-pages.js"],\n', "")
+    pattern = re.compile(r"const steps = \[\n.*?\n\];", re.S)
+    updated, count = pattern.subn(AUTHORITATIVE_REBUILD_STEPS, source, count=1)
+    if count != 1:
+        raise SystemExit("Could not isolate scripts/rebuild-games.js publishing steps.")
     if updated != source:
         REBUILD_TARGET.write_text(updated, encoding="utf-8")
-        print("Removed unrelated retro-page generation from scripts/rebuild-games.js")
+        print("Normalized scripts/rebuild-games.js to the authoritative 19-step SEO publishing chain.")
     else:
-        print("scripts/rebuild-games.js already excludes unrelated retro pages.")
+        print("scripts/rebuild-games.js already uses the authoritative 19-step SEO publishing chain.")
 
 
 def update_transaction() -> None:
