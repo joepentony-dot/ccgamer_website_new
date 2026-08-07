@@ -216,6 +216,29 @@ function rootAbsoluteAssetAttributes(html) {
     .replace(/\bsrcset=(['"])\.\.\//gi, "srcset=$1/");
 }
 
+function markCanonicalPageReady(html) {
+  let output = String(html);
+
+  output = output.replace(/<body\b[^>]*>/i, (tag) => {
+    const classMatch = tag.match(/\bclass=(['"])([^'"]*)\1/i);
+    if (!classMatch) return tag.replace(/>$/, ' class="ccg-single-ready">');
+
+    const classes = classMatch[2].split(/\s+/).filter(Boolean);
+    if (!classes.includes("ccg-single-ready")) classes.push("ccg-single-ready");
+    return tag.replace(classMatch[0], `class="${classes.join(" ")}"`);
+  });
+
+  output = output.replace(
+    /<div\b([^>]*\bclass=(['"])[^'"]*\bccg-page--single-game\b[^'"]*\2[^>]*)>/i,
+    (tag, attributes) => {
+      if (/\bdata-ccg-prefilled=(['"])true\1/i.test(tag)) return tag;
+      return `<div${attributes} data-ccg-prefilled="true">`;
+    }
+  );
+
+  return output;
+}
+
 function removeStaticNotFoundCopy(html) {
   return html.replace(
     /<section id="gameNotFound" class="game-section game-not-found" hidden>[\s\S]*?<\/section>/i,
@@ -276,7 +299,7 @@ function buildCanonicalPage(shell, game) {
   const schemaJson = serializeSchema(buildSchemaGraph(game, title, canonicalUrl, imageUrl));
   const schemaScript = `    <script type="application/ld+json" data-ccg-schema="game-graph">${schemaJson}</script>`;
 
-  let html = rootAbsoluteAssetAttributes(shell);
+  let html = markCanonicalPageReady(rootAbsoluteAssetAttributes(shell));
   html = html.replace(
     /<title id="game-meta-title">[\s\S]*?<\/title>/i,
     `<title id="game-meta-title">${escapeHtml(seoTitle)}</title>`
