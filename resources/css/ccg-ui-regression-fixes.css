@@ -6,11 +6,12 @@
 
 /* ------------------------------------------------------------
    BUTTON HOVER — KEEP LABELS VISIBLE, USE THE STRIKING CTA CUE
+   Existing home blue/red CTAs are intentionally left untouched.
 ------------------------------------------------------------ */
 
 @media (hover: hover) and (pointer: fine) {
-    body[data-ccg-mode="c64"] .ccg-btn:hover,
-    body[data-ccg-mode="c64"] .ccg-btn:focus-visible {
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover,
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible {
         color: #eaffff !important;
         border-color: rgba(0, 208, 255, 0.96) !important;
         background:
@@ -22,8 +23,8 @@
         text-shadow: 0 0 8px rgba(0, 208, 255, 0.52) !important;
     }
 
-    body[data-ccg-mode="amiga"] .ccg-btn:hover,
-    body[data-ccg-mode="amiga"] .ccg-btn:focus-visible {
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover,
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible {
         color: #15101d !important;
         border-color: #f3f5fa !important;
         background:
@@ -38,10 +39,10 @@
         text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.62) !important;
     }
 
-    body[data-ccg-mode="c64"] .ccg-btn:hover :where(span, strong, small),
-    body[data-ccg-mode="c64"] .ccg-btn:focus-visible :where(span, strong, small),
-    body[data-ccg-mode="amiga"] .ccg-btn:hover :where(span, strong, small),
-    body[data-ccg-mode="amiga"] .ccg-btn:focus-visible :where(span, strong, small) {
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover :where(span, strong, small),
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible :where(span, strong, small),
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover :where(span, strong, small),
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible :where(span, strong, small) {
         color: inherit !important;
     }
 }
@@ -59,12 +60,26 @@
 .ccg-nav-toggle::before {
     inset: 0 !important;
     max-width: 100% !important;
-    clip-path: inset(0 round inherit);
 }
 
 /* ------------------------------------------------------------
    PUBLISHER CARDS — NEVER BLEED INTO A NEIGHBOURING GRID CELL
 ------------------------------------------------------------ */
+
+.ccg-publishers-main,
+.ccg-publishers-section,
+.ccg-publisher-grid,
+.ccg-publisher-grid--featured {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.ccg-publisher-grid,
+.ccg-publisher-grid--featured {
+    width: 100% !important;
+    overflow: hidden !important;
+}
 
 .ccg-publisher-grid > *,
 .ccg-publisher-card,
@@ -78,6 +93,7 @@
 .ccg-publisher-card__logo,
 .ccg-publisher-grid--featured .ccg-publisher-card__logo {
     width: auto !important;
+    min-width: 0 !important;
     max-width: none !important;
     align-self: stretch !important;
     margin-left: -20px !important;
@@ -87,16 +103,37 @@
 }
 
 .ccg-publisher-card__logo img {
-    max-width: min(92%, 100%) !important;
+    width: auto !important;
+    max-width: 92% !important;
 }
 
 .ccg-publisher-card__name,
-.ccg-publisher-card__meta {
+.ccg-publisher-card__meta,
+.ccg-publisher-card__count {
+    min-width: 0;
     max-width: 100%;
     overflow-wrap: anywhere;
 }
 
+@media (max-width: 1100px) {
+    .ccg-publisher-grid--featured {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .ccg-publisher-grid,
+    .ccg-publisher-grid--featured {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
 @media (max-width: 500px) {
+    .ccg-publisher-grid,
+    .ccg-publisher-grid--featured {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
     .ccg-publisher-card__logo,
     .ccg-publisher-grid--featured .ccg-publisher-card__logo {
         margin-left: -16px !important;
