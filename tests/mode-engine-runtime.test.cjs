@@ -79,14 +79,33 @@ class FakeAudio {
     this.src = src;
     this.preload = '';
     this.volume = 1;
-    this.currentTime = 0;
+    this.playsInline = false;
+    this.readyState = 0;
+    this._currentTime = 0;
     this.playCalls = 0;
     this.pauseCalls = 0;
+    this.loadCalls = 0;
     audioInstances.push(this);
+  }
+
+  get currentTime() {
+    return this._currentTime;
+  }
+
+  set currentTime(value) {
+    if (this.readyState === 0) {
+      throw new Error('InvalidStateError: metadata not loaded');
+    }
+    this._currentTime = Number(value);
+  }
+
+  load() {
+    this.loadCalls += 1;
   }
 
   play() {
     this.playCalls += 1;
+    this.readyState = 4;
     return Promise.resolve();
   }
 
@@ -197,13 +216,16 @@ assert.equal(html.getAttribute('data-ccg-mode'), 'c64', 'initial html mode is sy
 assert.equal(toggle.dataset.ccgModeOwner, 'engine', 'toggle is marked as owned by the global engine');
 assert.equal(audioInstances.length, 2, 'both short mode cues are preloaded');
 assert.equal(audioInstances.reduce((sum, audio) => sum + audio.playCalls, 0), 0, 'restoring the saved mode does not play a sound');
+assert.ok(audioInstances.every((audio) => audio.loadCalls === 1), 'both cues are explicitly primed for metadata loading');
 
-const amigaAudio = audioInstances.find((audio) => audio.src === '/resources/audio/mode/lemmings-lets-go.mp3');
-const c64Audio = audioInstances.find((audio) => audio.src === '/resources/css/audio/c64_speech_stayawhile.mp3');
-assert.ok(amigaAudio, 'Amiga mode uses the Lemmings cue');
-assert.ok(c64Audio, 'C64 mode uses the existing stay-a-while speech cue');
+const amigaAudio = audioInstances.find((audio) => audio.src.startsWith('/resources/audio/mode/lemmings-lets-go.mp3?v='));
+const c64Audio = audioInstances.find((audio) => audio.src.startsWith('/resources/css/audio/c64_speech_stayawhile.mp3?v='));
+assert.ok(amigaAudio, 'Amiga mode uses the versioned Lemmings cue');
+assert.ok(c64Audio, 'C64 mode uses the versioned existing stay-a-while speech cue');
 assert.ok(amigaAudio.volume <= 0.5, 'Amiga cue volume stays restrained');
 assert.ok(c64Audio.volume <= 0.5, 'C64 cue volume stays restrained');
+assert.equal(amigaAudio.readyState, 0, 'test begins before Amiga audio metadata is available');
+assert.equal(c64Audio.readyState, 0, 'test begins before C64 audio metadata is available');
 
 const clickListener = listeners.get('click');
 assert.equal(typeof clickListener, 'function', 'delegated click handler exists');
@@ -233,7 +255,7 @@ assert.equal(storedValues.get('ccg-mode'), 'amiga', 'Amiga choice is persisted')
 assert.equal(toggle.getAttribute('aria-pressed'), 'true', 'toggle exposes the Amiga active state');
 assert.equal(toggle.dataset.ccgActiveMode, 'amiga', 'toggle dataset exposes Amiga mode');
 assert.equal(dispatchedEvents.at(-1)?.detail?.mode, 'amiga', 'Amiga change event is dispatched');
-assert.equal(amigaAudio.playCalls, 1, 'entering Amiga mode plays the Lemmings cue once');
+assert.equal(amigaAudio.playCalls, 1, 'entering Amiga mode still plays when metadata was unavailable at click time');
 assert.equal(c64Audio.playCalls, 0, 'C64 cue does not play while entering Amiga mode');
 
 clickToggle();
@@ -242,7 +264,7 @@ assert.equal(html.getAttribute('data-ccg-mode'), 'c64', 'second click switches h
 assert.equal(storedValues.get('ccg-mode'), 'c64', 'C64 choice is persisted');
 assert.equal(toggle.getAttribute('aria-pressed'), 'false', 'toggle exposes the C64 active state');
 assert.equal(dispatchedEvents.at(-1)?.detail?.mode, 'c64', 'C64 change event is dispatched');
-assert.equal(c64Audio.playCalls, 1, 'returning to C64 mode plays the stay-a-while cue once');
+assert.equal(c64Audio.playCalls, 1, 'returning to C64 mode still plays when its metadata was unavailable before the click');
 assert.ok(amigaAudio.pauseCalls >= 1, 'previous Amiga cue is stopped before the C64 cue plays');
 
 const firstController = windowObject.CCGModeEngine;
@@ -252,4 +274,4 @@ assert.equal(windowObject.CCGModeEngine, firstController, 'duplicate script exec
 assert.equal(listenerCounts.get('click'), 1, 'duplicate script execution does not add another click owner');
 assert.equal(audioInstances.length, firstAudioCount, 'duplicate script execution does not create duplicate audio cues');
 
-console.log('Mode engine runtime test passed: C64 → Amiga → C64 with one click owner and one cue per user-triggered change.');
+console.log('Mode engine runtime test passed: browser-style unloaded audio still plays on C64 → Amiga → C64 user clicks.');
