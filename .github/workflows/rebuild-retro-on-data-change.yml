@@ -1,4 +1,4 @@
-name: Rebuild retro outputs on retro data change
+name: Rebuild retro outputs on retro content change
 
 on:
   push:
@@ -8,6 +8,9 @@ on:
       - 'data/retro-events.json'
       - 'data/retro-specials.json'
       - 'data/amiga-demo-music.json'
+      - 'admin/templates/retro-video-template.html'
+      - 'scripts/generate-retro-pages.js'
+      - 'resources/css/retro-video-pages.css'
   workflow_dispatch:
 
 env:
@@ -20,6 +23,7 @@ jobs:
   rebuild-retro-assets:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
@@ -30,23 +34,34 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - name: Rebuild generated outputs
+      - name: Validate retro generator syntax
         run: |
-          echo "[rebuild-retro] Starting retro rebuild pipeline..."
-          node scripts/rebuild-games.js
-          echo "[rebuild-retro] Retro rebuild pipeline complete."
+          node --check scripts/generate-retro-pages.js
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/validate-sitemaps.js
 
-      - name: Commit generated outputs
+      - name: Regenerate retro feature pages
         run: |
-          echo "[rebuild-retro] Preparing commit (if any changes exist)..."
+          echo "[rebuild-retro] Generating Retro Events, Retro Specials and Amiga Demo Music pages..."
+          node scripts/generate-retro-pages.js
+
+      - name: Refresh and validate sitemaps
+        run: |
+          node scripts/generate-sitemaps.js
+          node scripts/validate-sitemaps.js
+
+      - name: Check generated output whitespace
+        run: git diff --check
+
+      - name: Commit generated retro outputs
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .
-          git diff --cached --quiet || git commit -m "Auto rebuild retro assets"
+          git add retro-events retro-specials amiga-demo-music sitemap.xml sitemap-pages.xml
+          git diff --cached --quiet || git commit -m "Auto rebuild retro feature pages"
 
       - name: Push generated outputs
         run: |
-          echo "[rebuild-retro] Pushing generated outputs commit (if any changes exist)..."
-          git push || echo "No changes to push"
+          git push || echo "No generated retro changes to push"
