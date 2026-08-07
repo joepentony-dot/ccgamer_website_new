@@ -100,9 +100,12 @@ requireText(loyaltyLoader, "member-loyalty-badges.js", "The loyalty loader does 
 requireText(loyaltyCss, ".member-loyalty-badge", "The loyalty badge stylesheet is missing its main component.");
 
 requireText(zzapCss, ".zzap-loading:not([hidden])", "The Zzap loading panel does not have an active viewport rule.");
-requireText(zzapCss, "position: fixed", "The Zzap loading panel is not fixed at eye level.");
-requireText(zzapCss, "top: 50%", "The Zzap loading panel is not vertically centred on desktop.");
-requireText(zzapCss, "transform: translate(-50%, -50%)", "The Zzap loading panel lacks viewport centring.");
+requireText(zzapCss, "position: fixed", "The Zzap loading strip is not fixed in the viewport.");
+requireText(zzapCss, "top: 0", "The Zzap loading strip is not anchored to the top edge.");
+requireText(zzapCss, 'content: "PLEASE WAIT"', "The Zzap loading strip does not show the PLEASE WAIT cue.");
+if (zzapCss.includes("0 0 0 100vmax")) {
+  problems.push("The Zzap loading strip still dims the whole viewport.");
+}
 
 if (problems.length) {
   console.error("Member safety and loyalty audit failed:");

@@ -68,6 +68,10 @@ if (awardFetchPosition < 0 || gameFetchPosition < 0 || awardFetchPosition > game
 
 [
   [".zzap-loading", "Zzap loading panel styles are missing."],
+  [".zzap-loading:not([hidden])", "Zzap active loading state styles are missing."],
+  ['content: "PLEASE WAIT"', "Zzap top loader does not show the PLEASE WAIT cue."],
+  ["position: fixed", "Zzap loading progress is not fixed in the viewport."],
+  ["top: 0", "Zzap loading progress is not anchored to the top edge."],
   [".zzap-loading__bar", "Zzap progress fill styles are missing."],
   ["content-visibility: auto", "Off-screen Zzap cards are not render-contained."],
   ["contain-intrinsic-size", "Zzap cards lack intrinsic placeholder sizing."],
@@ -76,10 +80,14 @@ if (awardFetchPosition < 0 || gameFetchPosition < 0 || awardFetchPosition > game
   if (!css.includes(needle)) problems.push(message);
 });
 
+if (css.includes("0 0 0 100vmax")) {
+  problems.push("Zzap loading progress still dims the whole page instead of remaining a compact top strip.");
+}
+
 if (problems.length) {
   console.error("Zzap progressive loading audit failed:");
   problems.forEach((problem) => console.error(` - ${problem}`));
   process.exit(1);
 }
 
-console.log("Zzap progressive loading audit passed: cached data, staged enrichment, batched rendering and visible progress verified.");
+console.log("Zzap progressive loading audit passed: cached data, staged enrichment, batched rendering and top-edge real progress verified.");

@@ -24,10 +24,22 @@
             label: "Amiga mobile performance layer"
         }
     ];
+    const MODE_SOUNDS = Object.freeze({
+        amiga: {
+            path: "/resources/audio/mode/lemmings-lets-go.mp3",
+            volume: 0.42
+        },
+        c64: {
+            path: "/resources/css/audio/c64_speech_stayawhile.mp3",
+            volume: 0.38
+        }
+    });
 
     let initialized = false;
     let lastMode = null;
     let modeChangeTimer = 0;
+    let currentModeAudio = null;
+    const modeAudioCache = new Map();
 
     function normalizeMode(mode) {
         return String(mode || "").toLowerCase() === "amiga" ? "amiga" : "c64";
@@ -57,6 +69,45 @@
             || readStoredMode()
             || "c64";
         return normalizeMode(value);
+    }
+
+    function getModeAudio(mode) {
+        const config = MODE_SOUNDS[normalizeMode(mode)];
+        if (!config || typeof window.Audio !== "function") return null;
+
+        let audio = modeAudioCache.get(config.path);
+        if (!audio) {
+            audio = new window.Audio(config.path);
+            audio.preload = "auto";
+            audio.volume = config.volume;
+            modeAudioCache.set(config.path, audio);
+        }
+        return audio;
+    }
+
+    function primeModeSounds() {
+        Object.keys(MODE_SOUNDS).forEach((mode) => {
+            getModeAudio(mode);
+        });
+    }
+
+    function playModeSound(mode) {
+        const audio = getModeAudio(mode);
+        if (!audio) return;
+
+        try {
+            if (currentModeAudio && currentModeAudio !== audio) {
+                currentModeAudio.pause();
+                currentModeAudio.currentTime = 0;
+            }
+            audio.pause();
+            audio.currentTime = 0;
+            const playPromise = audio.play();
+            if (playPromise && typeof playPromise.catch === "function") {
+                playPromise.catch(() => {});
+            }
+            currentModeAudio = audio;
+        } catch (error) {}
     }
 
     function ensureStylesheet({ id, path, label }) {
@@ -172,6 +223,7 @@
         const persist = options.persist !== false;
         const animate = options.animate !== false;
         const announce = options.announce !== false;
+        const sound = options.sound === true;
 
         rootElement.setAttribute("data-ccg-mode", nextMode);
         rootElement.setAttribute("data-mode", nextMode);
@@ -184,6 +236,9 @@
             triggerModeBuild(nextMode);
             triggerFlash(nextMode);
         }
+        if (changed && sound) {
+            playModeSound(nextMode);
+        }
 
         lastMode = nextMode;
         if (announce) {
@@ -194,8 +249,8 @@
         return nextMode;
     }
 
-    function toggleMode() {
-        return applyMode(getMode() === "amiga" ? "c64" : "amiga");
+    function toggleMode(options = {}) {
+        return applyMode(getMode() === "amiga" ? "c64" : "amiga", options);
     }
 
     function refresh() {
@@ -213,7 +268,7 @@
 
         event.preventDefault();
         event.stopImmediatePropagation();
-        toggleMode();
+        toggleMode({ sound: true });
     }
 
     function init() {
@@ -223,13 +278,14 @@
 
         ensureAmigaStyles();
         ensureAmigaChrome();
+        primeModeSounds();
         document.addEventListener("click", handleToggleClick, true);
 
         const initialMode = readStoredMode()
             || document.body.getAttribute("data-ccg-mode")
             || rootElement.getAttribute("data-ccg-mode")
             || "c64";
-        applyMode(initialMode, { animate: false, announce: false });
+        applyMode(initialMode, { animate: false, announce: false, sound: false });
     }
 
     const controller = Object.freeze({
