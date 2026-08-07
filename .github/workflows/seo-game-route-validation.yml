@@ -7,9 +7,13 @@ on:
     paths:
       - "games/game.html"
       - "games/games.json"
+      - "games/genres/**"
+      - "js/genre-loader.js"
       - "sitemap-games.xml"
       - "scripts/prepare-seo-game-routes.js"
       - "scripts/validate-seo-game-routes.js"
+      - "scripts/prepare-seo-genre-links.js"
+      - "scripts/validate-seo-genre-links.js"
       - "scripts/rebuild-games.js"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/deploy-github-pages-omega-stable.yml"
@@ -56,6 +60,8 @@ jobs:
         run: |
           node --check scripts/prepare-seo-game-routes.js
           node --check scripts/validate-seo-game-routes.js
+          node --check scripts/prepare-seo-genre-links.js
+          node --check scripts/validate-seo-genre-links.js
           node --check scripts/rebuild-games.js
 
       - name: Generate canonical game routes
@@ -70,6 +76,18 @@ jobs:
           set -euo pipefail
           node scripts/validate-seo-game-routes.js --root .
 
+      - name: Generate crawlable genre links
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-genre-links.js --root .
+
+      - name: Validate crawlable genre links
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/validate-seo-genre-links.js --root .
+
       - name: Check generated patch and capture baseline
         shell: bash
         run: |
@@ -79,7 +97,7 @@ jobs:
           diff_check_status=$?
           set -e
           if [ "$diff_check_status" -ne 0 ]; then
-            echo "::error::Generated canonical route patch contains whitespace errors"
+            echo "::error::Generated SEO patch contains whitespace errors"
             echo "=== git diff --check ==="
             printf '%s\n' "$diff_check_output"
             echo "=== generated diff stat ==="
@@ -97,11 +115,13 @@ jobs:
           set -euo pipefail
           node scripts/prepare-seo-game-routes.js --output-root .
           node scripts/validate-seo-game-routes.js --root .
+          node scripts/prepare-seo-genre-links.js --root .
+          node scripts/validate-seo-genre-links.js --root .
           git diff --binary > "$RUNNER_TEMP/second.diff"
           git status --short > "$RUNNER_TEMP/second.status"
 
           if ! cmp -s "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"; then
-            echo "::error::Canonical route generation is not deterministic"
+            echo "::error::SEO generation is not deterministic"
             echo "=== status after pass one ==="
             cat "$RUNNER_TEMP/first.status"
             echo "=== status after pass two ==="
@@ -117,15 +137,18 @@ jobs:
           set -euo pipefail
           cp "$RUNNER_TEMP/second.diff" "$RUNNER_TEMP/before-legacy.diff"
 
-          # The older command may format generated files differently, but it must
-          # never reintroduce invalid SEO semantics.
+          # The older command may format generated game files differently, but it
+          # must never reintroduce invalid SEO semantics.
           node scripts/generate-slug-pages.js
           node scripts/validate-seo-game-routes.js --root .
+          node scripts/validate-seo-genre-links.js --root .
 
-          # The authoritative generator must then restore the exact deterministic
+          # The authoritative generators must restore the exact deterministic
           # canonical output used by publishing and deployment.
           node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/prepare-seo-genre-links.js --root .
           node scripts/validate-seo-game-routes.js --root .
+          node scripts/validate-seo-genre-links.js --root .
           git diff --binary > "$RUNNER_TEMP/after-legacy-repair.diff"
           cmp "$RUNNER_TEMP/before-legacy.diff" "$RUNNER_TEMP/after-legacy-repair.diff"
 
@@ -138,12 +161,14 @@ jobs:
           set -euo pipefail
           changed_games="$(git status --porcelain -- games | wc -l | tr -d ' ')"
           {
-            echo '### Canonical game route validation'
+            echo '### Canonical game and genre SEO validation'
             echo
             echo '- Result: PASS'
-            echo "- Generated game files changed from current wrappers: ${changed_games}"
+            echo "- Generated game/genre files changed from current repository state: ${changed_games}"
             echo '- Protected intro files: unchanged'
             echo '- games/games.json: unchanged'
+            echo '- Canonical game routes: validated'
+            echo '- Crawlable genre game links: validated'
             echo '- Legacy slug generator semantic compatibility: PASS'
             echo '- Authoritative regeneration after legacy command: deterministic PASS'
           } >> "$GITHUB_STEP_SUMMARY"
