@@ -1,99 +1,264 @@
 /* =========================================================
-   Retro Events – Collection-specific styling
-   Full rewrite for clarity & readability (NO REGRESSION)
+   CCG RETRO CONTENT COLLECTIONS
+   ---------------------------------------------------------
+   Shared visual layer for:
+   • Retro Specials
+   • Retro Events
+   • Amiga Demo Music
+
+   Purpose:
+   Bring these editorial/video collections into the same Omega
+   layout rhythm as the established game collection pages while
+   preserving their video-specific information and badges.
 ========================================================= */
 
-/* ---------------------------------------------------------
-   Hero overlay
---------------------------------------------------------- */
-
-.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__overlay {
-    background: linear-gradient(
-        180deg,
-        rgba(1, 9, 24, 0.38) 0%,
-        rgba(1, 9, 24, 0.65) 100%
-    );
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-page--collection-single .ccg-main {
+    padding-top: 0;
 }
 
-/* ---------------------------------------------------------
-   Hero title & tagline (balanced brightness)
---------------------------------------------------------- */
+/* =========================================================
+   HERO — MATCH THE COLLECTION FAMILY
+========================================================= */
 
-.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__title {
-    color: #e9fbff;
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero {
+    margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-hero__overlay {
+    background:
+        radial-gradient(circle at 18% 24%, rgba(var(--accent-rgb), 0.24), transparent 44%),
+        radial-gradient(circle at 82% 16%, rgba(255,255,255,0.09), transparent 42%),
+        linear-gradient(115deg, rgba(3,7,18,0.86), rgba(3,7,18,0.48) 58%, rgba(3,7,18,0.74)),
+        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.66));
+    mix-blend-mode: normal;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-hero__inner {
+    width: min(980px, calc(100% - 48px));
+    margin-inline: auto;
+    align-items: flex-start;
+    text-align: left;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-hero__title {
+    margin: 0;
+    color: rgba(249, 253, 255, 0.98);
+    letter-spacing: 0.04em;
     text-shadow:
-        0 0 6px rgba(0, 200, 255, 0.35),
-        0 0 14px rgba(0, 180, 240, 0.25);
+        0 12px 30px rgba(0,0,0,0.78),
+        0 0 22px rgba(var(--accent-rgb),0.30);
 }
 
-.ccg-page--collection-single .ccg-collection-hero .ccg-genre-hero__tagline {
-    color: rgba(235, 250, 255, 0.92);
-    text-shadow: 0 0 8px rgba(0, 180, 240, 0.25);
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-hero__tagline {
+    max-width: 68ch;
+    margin: 0;
+    color: rgba(241,248,255,0.88);
+    line-height: 1.55;
+    text-shadow: 0 8px 24px rgba(0,0,0,0.72);
 }
 
-/* ---------------------------------------------------------
-   Retro collection social buttons
-   Match the square inner-page treatment without changing
-   social icons elsewhere on the website.
---------------------------------------------------------- */
-
-body[data-collection="Retro Specials"] .ccg-header-socials a,
-body[data-collection="Retro Events"] .ccg-header-socials a,
-body[data-collection="Amiga Demo Music"] .ccg-header-socials a {
-    border-radius: 3px !important;
-}
-
-/* ---------------------------------------------------------
-   Hero META pill (FINAL FIX – lifted above overlay)
---------------------------------------------------------- */
-
-.ccg-page--collection-single
-.ccg-collection-hero
-.ccg-genre-meta {
+/* Use the quieter metadata treatment seen across the normal collection pages. */
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-meta {
     position: relative;
-    z-index: 5;              /* Lift above hero overlay */
-    isolation: isolate;      /* Prevent overlay bleed */
-
-    margin-top: 0.75rem;
-    padding: 0.55rem 0.9rem;
-
-    background: linear-gradient(
-        180deg,
-        rgba(60, 170, 220, 0.85),
-        rgba(25, 110, 160, 0.85)
-    );
-
-    border: 1px solid rgba(200, 240, 255, 0.55);
-    border-radius: 6px;
-
-    color: rgba(245, 255, 255, 0.98);
-
+    z-index: 4;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 18px;
+    width: min(760px, 100%);
+    margin-top: 8px;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    background: rgba(2,8,20,0.60);
     box-shadow:
-        0 0 22px rgba(0, 180, 240, 0.45),
-        inset 0 0 14px rgba(255, 255, 255, 0.08);
-
-    text-shadow: none;       /* Remove dark hero shadow */
-    opacity: 1;
-    filter: none;
+        inset 0 1px 0 rgba(255,255,255,0.07),
+        0 12px 28px rgba(0,0,0,0.28);
+    color: rgba(240,249,255,0.82);
+    backdrop-filter: blur(8px);
 }
 
-.ccg-page--collection-single
-.ccg-collection-hero
-.ccg-genre-meta span {
-    color: rgba(245, 255, 255, 0.98);
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-hero .ccg-genre-meta span {
+    color: inherit;
     text-shadow: none;
 }
 
-/* ---------------------------------------------------------
-   Retro Event cards
---------------------------------------------------------- */
+/* =========================================================
+   INTRO — SAME CONTENT RHYTHM AS TOP PICKS
+========================================================= */
 
-.ccg-page--collection-single .ccg-game-card--retro-event {
-    position: relative;
-    min-height: 100%;
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) :is(.ccg-collection-intro, .ccg-section--intro) {
+    width: min(1080px, calc(100% - 32px));
+    margin: 0 auto clamp(24px, 4vw, 38px);
+    padding: clamp(18px, 2.8vw, 28px);
+    border: 1px solid rgba(255,255,255,0.11);
+    border-left: 3px solid rgba(var(--accent-rgb),0.76);
+    border-radius: 14px;
+    background:
+        linear-gradient(125deg, rgba(var(--accent-rgb),0.08), transparent 44%),
+        rgba(5,10,22,0.72);
+    box-shadow:
+        0 18px 44px rgba(0,0,0,0.30),
+        inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__link {
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-intro h2 {
+    margin: 0 0 12px;
+    font: 700 clamp(1.08rem, 2.4vw, 1.42rem)/1.35 "Orbitron", sans-serif;
+    letter-spacing: 0.035em;
+    color: rgba(248,252,255,0.96);
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) :is(.ccg-collection-intro p, .ccg-section--intro .ccg-section__intro) {
+    max-width: 84ch;
+    margin: 0;
+    color: rgba(235,243,251,0.78);
+    font-size: clamp(0.94rem, 1.7vw, 1.04rem);
+    line-height: 1.72;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-collection-intro p + p,
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-section--intro .ccg-section__intro + .ccg-section__intro {
+    margin-top: 10px;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) :is(.ccg-collection-intro, .ccg-section--intro) a {
+    color: rgb(var(--accent-rgb));
+    text-underline-offset: 3px;
+}
+
+/* =========================================================
+   COLLECTION GRID — SAME WIDTH / SPACING AS GAME COLLECTIONS
+========================================================= */
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-genre-main {
+    width: min(1320px, calc(100% - 28px));
+    margin-inline: auto;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-genre-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(14px, 2vw, 20px);
+    align-items: stretch;
+}
+
+/* =========================================================
+   VIDEO COLLECTION CARD
+========================================================= */
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event {
+    position: relative;
+    min-width: 0;
+    min-height: 100%;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    background:
+        linear-gradient(155deg, rgba(var(--accent-rgb),0.07), transparent 44%),
+        rgba(5,10,22,0.90);
+    box-shadow:
+        0 16px 34px rgba(0,0,0,0.38),
+        inset 0 1px 0 rgba(255,255,255,0.045);
+    transform: translateZ(0);
+    transition:
+        transform 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:hover,
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:focus-within {
+    transform: translateY(-4px);
+    border-color: rgba(var(--accent-rgb),0.52);
+    box-shadow:
+        0 22px 46px rgba(0,0,0,0.48),
+        0 0 24px rgba(var(--accent-rgb),0.14),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__link {
     display: flex;
     flex-direction: column;
     height: 100%;
@@ -101,277 +266,416 @@ body[data-collection="Amiga Demo Music"] .ccg-header-socials a {
     text-decoration: none;
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media {
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__media {
     position: relative;
     isolation: isolate;
     overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    background: rgba(0,0,0,0.72);
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media::after {
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__media::after {
     content: "";
     position: absolute;
-    inset: auto 0 0;
+    inset: 0;
     z-index: 1;
-    height: 34%;
     pointer-events: none;
-    background: linear-gradient(180deg, transparent, rgba(1, 7, 18, 0.62));
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img {
-    transition: transform 0.24s ease, filter 0.24s ease;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__media img,
-.ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__media img {
-    transform: scale(1.025);
-    filter: saturate(1.06) contrast(1.03);
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 0.7rem;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__title {
-    font-family: "Roboto Condensed", "Roboto", sans-serif;
-    font-size: clamp(0.96rem, 2vw, 1.08rem);
-    line-height: 1.25;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__desc {
-    overflow-wrap: anywhere;
-}
-
-/* ---------------------------------------------------------
-   Members-only thumbnail sash and access notice
---------------------------------------------------------- */
-
-.ccg-page--collection-single
-.ccg-game-card--retro-event
-.ccg-collection-sash--members {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 3;
-    display: block;
-    padding: 0.58rem 0.75rem;
-    border-top: 1px solid rgba(255, 235, 248, 0.78);
     background:
-        linear-gradient(90deg, rgba(148, 9, 72, 0.97), rgba(238, 40, 118, 0.96), rgba(148, 9, 72, 0.97));
-    box-shadow:
-        0 -8px 24px rgba(0, 0, 0, 0.42),
-        0 0 20px rgba(255, 52, 137, 0.48);
-    color: #ffffff;
-    font: 800 clamp(0.68rem, 1.7vw, 0.82rem)/1.15 "Orbitron", sans-serif;
-    letter-spacing: 0.14em;
-    text-align: center;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
-    text-transform: uppercase;
+        linear-gradient(to bottom, transparent 52%, rgba(1,5,14,0.78)),
+        linear-gradient(120deg, rgba(var(--accent-rgb),0.10), transparent 46%);
 }
 
-.ccg-page--collection-single
-.ccg-game-card--retro-event
-.ccg-game-card__access {
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 220ms ease, filter 220ms ease;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:hover .ccg-game-card__media img,
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:focus-within .ccg-game-card__media img {
+    transform: scale(1.035);
+    filter: saturate(1.06) contrast(1.025);
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 10px;
+    padding: clamp(14px, 2vw, 18px);
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__title {
+    display: -webkit-box;
+    overflow: hidden;
+    min-height: 2.7em;
     margin: 0;
-    padding: 0.68rem 0.75rem;
-    border: 1px solid rgba(255, 108, 173, 0.42);
-    border-left: 4px solid rgba(255, 68, 148, 0.95);
-    border-radius: 6px;
-    background: rgba(105, 9, 54, 0.3);
-    color: rgba(255, 239, 248, 0.96);
-    font-size: 0.82rem;
-    line-height: 1.5;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font: 700 clamp(0.96rem, 1.7vw, 1.08rem)/1.35 "Orbitron", sans-serif;
+    letter-spacing: 0.012em;
+    color: rgba(249,252,255,0.97);
 }
 
-.ccg-page--collection-single
-.ccg-game-card--retro-event
-.ccg-game-card__access strong {
-    color: #ffffff;
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__desc {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: rgba(228,238,248,0.72);
+    font-size: 0.9rem;
+    line-height: 1.58;
 }
 
-/* ---------------------------------------------------------
-   Event badge (right)
---------------------------------------------------------- */
+/* =========================================================
+   COLLECTION LABELS / MEMBER STATUS
+========================================================= */
 
-.ccg-page--collection-single
-.ccg-game-card--retro-event
-.ccg-collection-badge--event {
+.ccg-page--collection-single .ccg-collection-badge--event {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 2;
-    pointer-events: none;
-
-    padding: 0.3rem 0.55rem;
-    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-
-    color: #f3f9ff;
-    background: linear-gradient(
-        135deg,
-        rgba(49, 129, 255, 0.95),
-        rgba(27, 92, 217, 0.9)
-    );
-
-    border: 1px solid rgba(199, 226, 255, 0.65);
-    border-radius: 6px;
-
-    box-shadow: 0 0 12px rgba(48, 118, 255, 0.5);
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
-}
-
-/* ---------------------------------------------------------
-   Members-only badge (left)
---------------------------------------------------------- */
-
-.ccg-page--collection-single
-.ccg-game-card[data-members-only="true"]
-.ccg-collection-badge--members {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 2;
-    pointer-events: none;
-
-    padding: 0.3rem 0.55rem;
-    font-size: clamp(0.55rem, 1.2vw, 0.7rem);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-
-    color: #f9fbff;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 42, 109, 0.95),
-        rgba(255, 72, 149, 0.88)
-    );
-
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    border-radius: 6px;
-
-    box-shadow: 0 0 12px rgba(255, 70, 150, 0.65);
-    text-shadow: 0 0 6px rgba(0, 0, 0, 0.65);
-}
-
-/* ---------------------------------------------------------
-   Mobile tweaks
---------------------------------------------------------- */
-
-@media (max-width: 680px) {
-    .ccg-page--collection-single
-    .ccg-game-card--retro-event
-    .ccg-collection-badge--event {
-        top: 8px;
-        right: 8px;
-        padding: 0.25rem 0.45rem;
-    }
-
-    .ccg-page--collection-single
-    .ccg-game-card[data-members-only="true"]
-    .ccg-collection-badge--members {
-        top: 8px;
-        left: 8px;
-        padding: 0.25rem 0.45rem;
-    }
-
-    .ccg-page--collection-single
-    .ccg-game-card--retro-event
-    .ccg-collection-sash--members {
-        padding: 0.52rem 0.6rem;
-        letter-spacing: 0.11em;
-    }
-}
-
-/* ---------------------------------------------------------
-   Retro collection card CTA polish (Omega-safe)
---------------------------------------------------------- */
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__actions {
-    display: flex;
-    margin-top: auto;
-    padding-top: 0.25rem;
-}
-
-.ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__btn {
+    z-index: 3;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    width: 100%;
-    padding: 0.72rem 0.95rem;
-    border: 1px solid rgba(125, 220, 255, 0.72);
-    border-radius: 999px;
-    background: linear-gradient(135deg, rgba(26, 118, 206, 0.92), rgba(126, 76, 255, 0.72));
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.45),
-        0 0 18px rgba(59, 205, 255, 0.28),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    color: #f6fbff;
-    font: 700 0.78rem/1.2 "Orbitron", sans-serif;
-    letter-spacing: 0.1em;
+    min-height: 28px;
+    padding: 5px 8px;
+    border: 1px solid rgba(235,249,255,0.36);
+    border-radius: 7px;
+    background: rgba(3,10,24,0.84);
+    box-shadow: 0 7px 18px rgba(0,0,0,0.42);
+    color: rgba(248,252,255,0.94);
+    font: 700 0.62rem/1 "Orbitron", sans-serif;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
+    backdrop-filter: blur(8px);
+}
+
+.ccg-page--collection-single .ccg-collection-sash--members {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    z-index: 3;
+    display: block;
+    padding: 7px 9px;
+    border: 1px solid rgba(255,208,231,0.48);
+    border-radius: 7px;
+    background: rgba(116,12,62,0.90);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.40);
+    color: #fff;
+    font: 800 0.64rem/1.1 "Orbitron", sans-serif;
+    letter-spacing: 0.11em;
     text-align: center;
-    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    text-transform: uppercase;
 }
 
-.ccg-page--collection-single
-.ccg-game-card--retro-event[data-members-only="true"]
-.ccg-game-card__btn {
-    border-color: rgba(255, 141, 191, 0.78);
-    background: linear-gradient(135deg, rgba(144, 20, 82, 0.94), rgba(220, 45, 126, 0.86));
-    box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.45),
-        0 0 18px rgba(255, 70, 150, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+.ccg-page--collection-single .ccg-game-card__access {
+    margin: 0;
+    padding: 8px 9px;
+    border: 1px solid rgba(255,108,173,0.30);
+    border-left: 3px solid rgba(255,68,148,0.86);
+    border-radius: 7px;
+    background: rgba(105,9,54,0.20);
+    color: rgba(255,239,248,0.92);
+    font-size: 0.78rem;
+    line-height: 1.45;
 }
 
-.ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__btn,
-.ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__btn {
-    transform: translateY(-1px);
-    border-color: rgba(210, 245, 255, 0.9);
-    box-shadow:
-        0 14px 30px rgba(0, 0, 0, 0.52),
-        0 0 24px rgba(59, 205, 255, 0.42),
-        inset 0 1px 0 rgba(255, 255, 255, 0.26);
+/* =========================================================
+   CTA — QUIETER, COLLECTION-LIKE BUTTON
+========================================================= */
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__actions {
+    display: flex;
+    margin-top: auto;
+    padding-top: 4px;
 }
 
-.ccg-page--collection-single
-.ccg-game-card--retro-event[data-members-only="true"]:hover
-.ccg-game-card__btn,
-.ccg-page--collection-single
-.ccg-game-card--retro-event[data-members-only="true"]:focus-within
-.ccg-game-card__btn {
-    border-color: rgba(255, 221, 237, 0.96);
-    box-shadow:
-        0 14px 30px rgba(0, 0, 0, 0.52),
-        0 0 24px rgba(255, 70, 150, 0.48),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 12px;
+    border: 1px solid rgba(var(--accent-rgb),0.34);
+    border-radius: 8px;
+    background: rgba(var(--accent-rgb),0.08);
+    color: rgba(244,250,255,0.90);
+    font: 700 0.68rem/1.2 "Orbitron", sans-serif;
+    letter-spacing: 0.075em;
+    text-transform: uppercase;
+    transition: border-color 180ms ease, background 180ms ease;
 }
 
-@media (max-width: 560px) {
-    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__btn {
-        min-height: 48px;
-        padding-inline: 0.8rem;
-        font-size: 0.74rem;
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event .ccg-game-card__btn::after {
+    content: "→";
+    margin-left: 10px;
+    color: rgb(var(--accent-rgb));
+    font-size: 0.9rem;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:hover .ccg-game-card__btn,
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-game-card--retro-event:focus-within .ccg-game-card__btn {
+    border-color: rgba(var(--accent-rgb),0.62);
+    background: rgba(var(--accent-rgb),0.14);
+}
+
+/* =========================================================
+   FAST VISUAL FEEDBACK WHILE JSON LOADS
+========================================================= */
+
+.ccg-page--collection-single .ccg-collection-skeleton {
+    min-height: 320px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    background: rgba(6,11,23,0.72);
+}
+
+.ccg-page--collection-single .ccg-collection-skeleton__media {
+    aspect-ratio: 16 / 9;
+    background:
+        linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.07) 40%, transparent 60%) 0 0 / 220% 100%,
+        rgba(var(--accent-rgb),0.08);
+    animation: ccg-collection-skeleton-shimmer 1.35s linear infinite;
+}
+
+.ccg-page--collection-single .ccg-collection-skeleton__body {
+    display: grid;
+    gap: 10px;
+    padding: 16px;
+}
+
+.ccg-page--collection-single .ccg-collection-skeleton__line {
+    display: block;
+    height: 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.09);
+}
+
+.ccg-page--collection-single .ccg-collection-skeleton__line--title {
+    width: 78%;
+    height: 14px;
+}
+
+.ccg-page--collection-single .ccg-collection-skeleton__line--short {
+    width: 58%;
+}
+
+@keyframes ccg-collection-skeleton-shimmer {
+    to { background-position: -220% 0, 0 0; }
+}
+
+/* =========================================================
+   RELATED / WAYFINDING — REMOVE THE VISUAL DETOUR
+========================================================= */
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-related {
+    width: min(1080px, calc(100% - 32px));
+    margin: clamp(28px, 4vw, 46px) auto 0;
+    padding: 18px 20px;
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    background: rgba(5,10,22,0.58);
+    text-align: left;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-related h2 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-genre-wayfinding {
+    width: min(1080px, calc(100% - 32px));
+    margin: 18px auto 0;
+    padding-inline: 0;
+}
+
+/* Keep this collection-family detail small and consistent with other inner pages. */
+body:is(
+    [data-collection="Retro Specials"],
+    [data-collection="Retro Events"],
+    [data-collection="Amiga Demo Music"]
+) .ccg-header-socials a {
+    border-radius: 4px !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1040px) {
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-genre-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 680px) {
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-collection-hero .ccg-genre-hero__inner {
+        width: calc(100% - 30px);
+    }
+
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-collection-hero .ccg-genre-meta {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 9px 11px;
+    }
+
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-genre-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) :is(.ccg-collection-intro, .ccg-section--intro) {
+        width: calc(100% - 20px);
+        padding: 16px;
+    }
+
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-genre-main,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-related,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-genre-wayfinding {
+        width: calc(100% - 20px);
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__media img,
-    .ccg-page--collection-single .ccg-game-card--retro-event .ccg-game-card__btn {
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event .ccg-game-card__media img,
+    .ccg-page--collection-single .ccg-collection-skeleton__media {
         transition: none;
+        animation: none;
     }
 
-    .ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__media img,
-    .ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__media img,
-    .ccg-page--collection-single .ccg-game-card--retro-event:hover .ccg-game-card__btn,
-    .ccg-page--collection-single .ccg-game-card--retro-event:focus-within .ccg-game-card__btn {
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event:hover,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event:focus-within,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event:hover .ccg-game-card__media img,
+    body:is(
+        [data-collection="Retro Specials"],
+        [data-collection="Retro Events"],
+        [data-collection="Amiga Demo Music"]
+    ) .ccg-game-card--retro-event:focus-within .ccg-game-card__media img {
         transform: none;
     }
 }
