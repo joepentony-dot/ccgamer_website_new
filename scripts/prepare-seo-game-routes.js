@@ -194,6 +194,22 @@ function replaceMetaContent(html, selectorPattern, content) {
   });
 }
 
+function ensureTwitterUrl(html, canonicalUrl) {
+  const safe = escapeHtml(canonicalUrl);
+  const existing = /<meta\s+name="twitter:url"[^>]*>/i;
+  if (existing.test(html)) {
+    return replaceMetaContent(html, existing, canonicalUrl);
+  }
+  return html.replace(
+    /(<meta\s+name="twitter:image"[^>]*>)/i,
+    `$1\n    <meta name="twitter:url" content="${safe}">`
+  );
+}
+
+function normalizeGeneratedWhitespace(html) {
+  return String(html).replace(/[ \t]+$/gm, "");
+}
+
 function rootAbsoluteAssetAttributes(html) {
   return html
     .replace(/\b(href|src)=(['"])\.\.\//gi, "$1=$2/")
@@ -285,13 +301,14 @@ function buildCanonicalPage(shell, game) {
   html = replaceMetaContent(html, /<meta name="twitter:title" id="game-twitter-title"[\s\S]*?>/i, seoTitle);
   html = replaceMetaContent(html, /<meta name="twitter:description" id="game-twitter-description"[\s\S]*?>/i, description);
   html = replaceMetaContent(html, /<meta name="twitter:image" id="game-twitter-image"[\s\S]*?>/i, imageUrl);
+  html = ensureTwitterUrl(html, canonicalUrl);
   html = html.replace(
     /<script id="ccg-schema-fallback" data-schema-placeholder="true"><\/script>/i,
     schemaScript
   );
   html = removeStaticNotFoundCopy(html);
   html = prefillStaticContent(html, game, title, imagePath);
-  return html;
+  return normalizeGeneratedWhitespace(html);
 }
 
 function buildFlatRedirectStub(game) {
