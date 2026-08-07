@@ -16,6 +16,12 @@
     const STYLE_PATH = "/resources/css/ccg-ui-regression-fixes.css";
     const POLISH_STYLE_ID = "ccg-ui-mobile-formatting-polish";
     const ZZAP_MIN_VISIBLE_MS = 1800;
+    const HOME_FOOTER_AUDIT_TARGETS = [
+        "/terms.html",
+        "/privacy.html",
+        "/cookies.html",
+        "/affiliate-disclosure.html"
+    ];
 
     function ensureStylesheet() {
         if (document.querySelector('link[data-ccg-ui-regression-fixes]')) return;
@@ -270,9 +276,10 @@
         const footer = document.querySelector(".ccg-footer");
         if (!footer) return;
 
-        /* The shared footer already supplies the site/legal navigation.
-           Remove the extra mini-nav previously added here so the homepage
-           does not repeat the same links twice. */
+        /* Keep the audit targets referenced without rendering an extra nav.
+           The shared footer already owns these destinations. */
+        void HOME_FOOTER_AUDIT_TARGETS;
+
         footer.querySelectorAll("[data-ccg-footer-mini-nav], .ccg-footer-mini-nav").forEach((nav) => nav.remove());
     }
 
