@@ -12,6 +12,8 @@ on:
       - "scripts/build-games.js"
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/generate-developer-pages.js"
       - "scripts/generate-composer-pages.js"
@@ -95,6 +97,6 @@ jobs:
           fi
 
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "4189822+github-actions[bot]@users.noreply.github.com"
           git commit -m "Publish generated game archive output"
           git push origin HEAD:main
