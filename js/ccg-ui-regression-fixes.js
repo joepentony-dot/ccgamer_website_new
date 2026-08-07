@@ -4,7 +4,7 @@
    Small runtime layer for:
    • guaranteed stylesheet delivery for interaction polish
    • minimum visible Zzap!64 loading progress window
-   • richer home-page footer navigation/legal information
+   • compact home-page footer navigation/legal information
    • legacy MicroProse featured-card compatibility
 ============================================================ */
 
@@ -59,52 +59,25 @@
         if (root.getAttribute("data-ccg-page") !== "home") return;
 
         const footer = document.querySelector(".ccg-footer");
-        if (!footer || footer.querySelector("[data-ccg-footer-hub]")) return;
+        if (!footer || footer.querySelector("[data-ccg-footer-mini-nav]")) return;
 
-        const hub = document.createElement("nav");
-        hub.className = "ccg-footer-hub";
-        hub.dataset.ccgFooterHub = "true";
-        hub.setAttribute("aria-label", "Footer navigation");
-        hub.innerHTML = `
-            <div class="ccg-footer-hub__group">
-                <h2 class="ccg-footer-hub__title">Explore CCG</h2>
-                <div class="ccg-footer-hub__links">
-                    <a href="/games/">Games</a>
-                    <a href="/games/genres/">Genres</a>
-                    <a href="/games/publishers/">Publishers</a>
-                    <a href="/games/collections/">Collections</a>
-                    <a href="/zzap64/">Zzap!64 Awards</a>
-                    <a href="/quiz/quiz.html">Quiz</a>
-                </div>
-            </div>
-            <div class="ccg-footer-hub__group">
-                <h2 class="ccg-footer-hub__title">Cheeky Commodore Gamer</h2>
-                <div class="ccg-footer-hub__links">
-                    <a href="/about.html">About</a>
-                    <a href="/contact.html">Contact</a>
-                    <a href="/support.html">Support CCG</a>
-                    <a href="/supporters.html">Supporters</a>
-                </div>
-            </div>
-            <div class="ccg-footer-hub__group">
-                <h2 class="ccg-footer-hub__title">Site information</h2>
-                <div class="ccg-footer-hub__links">
-                    <a href="/terms.html">Terms</a>
-                    <a href="/privacy.html">Privacy</a>
-                    <a href="/cookies.html">Cookies</a>
-                    <a href="/affiliate-disclosure.html">Affiliate disclosure</a>
-                </div>
-            </div>
+        const nav = document.createElement("nav");
+        nav.className = "ccg-footer-mini-nav";
+        nav.dataset.ccgFooterMiniNav = "true";
+        nav.setAttribute("aria-label", "Footer links");
+        nav.innerHTML = `
+            <a href="/about.html">About</a>
+            <a href="/contact.html">Contact</a>
+            <a href="/support.html">Support CCG</a>
+            <a href="/privacy.html">Privacy</a>
+            <a href="/terms.html">Terms</a>
+            <a href="/cookies.html">Cookies</a>
+            <a href="/affiliate-disclosure.html">Affiliate disclosure</a>
         `;
 
-        const counter = footer.querySelector(".ccg-footer__counter-wrap");
-        if (counter) footer.insertBefore(hub, counter);
-        else footer.appendChild(hub);
-
-        const note = document.createElement("p");
-        note.className = "ccg-footer-hub__note";
-        note.textContent = "Independent Commodore 64 & Amiga archive, videos, reviews and community features.";
-        hub.insertAdjacentElement("afterend", note);
+        const copyright = footer.querySelector(".ccg-footer__text");
+        if (copyright) footer.insertBefore(nav, copyright);
+        else footer.appendChild(nav);
     }
 
     function holdZzapLoaderForFirstPaint() {

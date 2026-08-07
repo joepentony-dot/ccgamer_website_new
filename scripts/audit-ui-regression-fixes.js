@@ -30,6 +30,7 @@ const modeTest = read("tests/mode-engine-runtime.test.cjs");
 const navCore = read("js/ccg-nav-core.js");
 const runtimeFixes = read("js/ccg-ui-regression-fixes.js");
 const polishCss = read("resources/css/ccg-ui-regression-fixes.css");
+const homePage = read("home.html");
 const zzapPage = read("zzap64/index.html");
 const publisherIndex = read("games/publishers/index.html");
 
@@ -58,7 +59,7 @@ rejectText(navCore, 'el.style.setProperty("overflow", "visible", "important")', 
     "ZZAP_MIN_VISIBLE_MS = 1800",
     "requestAnimationFrame",
     "MutationObserver",
-    "data-ccg-footer-hub",
+    "data-ccg-footer-mini-nav",
     "/terms.html",
     "/privacy.html",
     "/cookies.html",
@@ -69,6 +70,7 @@ rejectText(navCore, 'el.style.setProperty("overflow", "visible", "important")', 
     'eyebrow.textContent = "Featured Publisher"',
     'article.dataset.ccgMicroproseRepair = "true"'
 ].forEach((token) => requireText(runtimeFixes, token, "UI regression runtime"));
+rejectText(runtimeFixes, "data-ccg-footer-hub", "Home footer runtime");
 
 [
     ".ccg-nav__more-toggle",
@@ -81,16 +83,36 @@ rejectText(navCore, 'el.style.setProperty("overflow", "visible", "important")', 
     "grid-template-columns: minmax(0, 1fr) !important",
     ".zzap-loading:not([hidden])",
     "z-index: 2147483000",
-    ".ccg-footer-hub",
-    "grid-template-columns: repeat(3",
+    ".home-highlights-grid--focused",
+    ".home-cta-upgrade--streamlined",
+    ".home-visitor-callout--compact",
+    ".ccg-footer-mini-nav",
     "@media (max-width: 1100px)",
     "@media (max-width: 760px)",
     "@media (max-width: 500px)",
     '.ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover'
 ].forEach((token) => requireText(polishCss, token, "UI regression stylesheet"));
 
+rejectText(polishCss, ".ccg-footer-hub", "Home footer stylesheet");
 rejectText(polishCss, 'body[data-ccg-mode="c64"] .ccg-btn:hover', "Generic C64 hover must not override existing blue/red CTAs");
 rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Amiga hover must not override existing blue/red CTAs");
+
+[
+    "home-hero__actions--streamlined",
+    "Browse Games",
+    "Zzap!64 Awards",
+    "Game Downloads A–Z",
+    "CCG Top Picks",
+    "home-cta-upgrade--streamlined",
+    "home-visitor-callout--compact",
+    "ccg-footer--home-compact"
+].forEach((token) => requireText(homePage, token, "Streamlined home page"));
+
+[
+    "home-discovery-strip",
+    "home-bottom-cta",
+    "The Full A–Z Index"
+].forEach((token) => rejectText(homePage, token, "Streamlined home page"));
 
 [
     'id="zzapLoading"',
@@ -131,4 +153,4 @@ console.log("- nav shimmer and publisher cards are clipped to their own controls
 console.log("- legacy bare MicroProse featured markup is repaired only when the generated article wrapper is absent");
 console.log("- publisher grids retain safe two-column/tablet and one-column/mobile layouts");
 console.log("- C64/Amiga generic button hover labels retain contrast without overriding the existing blue/red CTAs");
-console.log("- home footer exposes verified explore, support and legal routes");
+console.log("- home page uses a focused hero, three featured destinations, compact support/signature sections and a minimal legal footer");
