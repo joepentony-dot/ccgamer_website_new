@@ -261,12 +261,12 @@ function validateBaselineRegistry(current, baseline, problems) {
     const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
     const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
     const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
-    const comparableCurrent = currentForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
+    const comparableCurrent = currentForeign.filter((entry) => (
+        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
+    ));
 
     const missingForeign = expectedForeign.filter((entry) => !comparableCurrent.includes(entry));
-    const unexpectedForeign = comparableCurrent.filter((entry) => (
-        !expectedForeign.includes(entry) && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
-    ));
+    const unexpectedForeign = comparableCurrent.filter((entry) => !expectedForeign.includes(entry));
     if (missingForeign.length) problems.push(`Non-year/platform registry entries missing: ${missingForeign.join(", ")}`);
     if (unexpectedForeign.length) problems.push(`Unexpected non-year/platform registry entries: ${unexpectedForeign.join(", ")}`);
     if (currentForeign.includes(PHASE5B_EXCLUDED_REGISTRY_ENTRY)) {
@@ -278,13 +278,13 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
     const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
-    const comparableCurrent = currentLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
     const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
+    const comparableCurrent = currentLocs.filter((url) => (
+        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
+    ));
 
     const missingLocs = expectedLocs.filter((url) => !comparableCurrent.includes(url));
-    const unexpectedLocs = comparableCurrent.filter((url) => (
-        !expectedLocs.includes(url) && !reviewedAdditions.has(url)
-    ));
+    const unexpectedLocs = comparableCurrent.filter((url) => !expectedLocs.includes(url));
     if (missingLocs.length) problems.push(`${label} URLs missing: ${missingLocs.join(", ")}`);
     if (unexpectedLocs.length) problems.push(`Unexpected ${label} URLs: ${unexpectedLocs.join(", ")}`);
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
