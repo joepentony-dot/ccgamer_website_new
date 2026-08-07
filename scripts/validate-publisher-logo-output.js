@@ -70,6 +70,18 @@ if (!indexHtml.includes('/resources/css/publisher-logos.css')) {
     fail("Publisher logo stylesheet is missing from the publisher index.");
 }
 
+const featuredStart = indexHtml.indexOf('id="featured-publishers-title"');
+const allPublishersStart = indexHtml.indexOf('id="all-publishers-title"');
+if (featuredStart === -1 || allPublishersStart === -1 || featuredStart >= allPublishersStart) {
+    fail("Featured publisher section boundaries are invalid.");
+}
+
+const featuredHtml = indexHtml.slice(featuredStart, allPublishersStart);
+const microproseArticlePattern = /<article\s+class="[^"]*\bccg-publisher-card\b[^"]*\bccg-publisher-card--featured\b[^"]*"[^>]*>[\s\S]*?href="\/games\/publishers\/microprose-software\/"[\s\S]*?data-publisher-logo="microprose-software"[\s\S]*?ccg-publisher-card__eyebrow">Featured Publisher<\/span>[\s\S]*?<\/article>/;
+if (!microproseArticlePattern.test(featuredHtml)) {
+    fail("MicroProse Software must be a complete featured <article> card with its logo and Featured Publisher label.");
+}
+
 const unmatchedLogoAssets = [];
 const missingIndexLogos = [];
 const wrongIndexLogoCounts = [];
@@ -157,4 +169,5 @@ console.log(`[publisher-logo-validation] ${logoAssets.length} supported logo ass
 console.log(`[publisher-logo-validation] ${logoAssets.length} logo assets match generated publisher routes.`);
 console.log(`[publisher-logo-validation] ${indexLogoCount} publisher card logo placements verified.`);
 console.log(`[publisher-logo-validation] ${publisherPagesWithLogos} individual publisher page logos verified.`);
+console.log("[publisher-logo-validation] MicroProse featured card structure verified.");
 console.log("[publisher-logo-validation] Authoritative rebuild order verified.");
