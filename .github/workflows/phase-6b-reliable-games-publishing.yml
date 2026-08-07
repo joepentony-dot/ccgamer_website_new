@@ -11,6 +11,10 @@ on:
       - "scripts/validate-games-source.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
+      - "scripts/prepare-seo-genre-links.js"
+      - "scripts/validate-seo-genre-links.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/generate-year-platform-pages.js"
       - "scripts/validate-year-platform-discovery.js"
@@ -27,6 +31,7 @@ on:
       - ".github/workflows/composer-archives.yml"
       - ".github/workflows/game-downloads.yml"
       - ".github/workflows/year-platform-archives.yml"
+      - "games/genres/**"
       - "games/publishers/**"
       - "games/developers/**"
       - "games/games-index.json"
@@ -94,6 +99,10 @@ jobs:
           node --check scripts/validate-games-source.js
           node --check scripts/rebuild-games.js
           node --check scripts/build-games.js
+          node --check scripts/prepare-seo-game-routes.js
+          node --check scripts/validate-seo-game-routes.js
+          node --check scripts/prepare-seo-genre-links.js
+          node --check scripts/validate-seo-genre-links.js
           node --check scripts/generate-composer-pages.js
           node --check scripts/generate-year-platform-pages.js
           node --check scripts/validate-year-platform-discovery.js
@@ -160,6 +169,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import json
           import subprocess
 
           allowed_exact = {
@@ -200,13 +210,26 @@ jobs:
           allowed_prefixes = (
               "games/publishers/",
               "games/developers/",
+              "games/genres/",
           )
+          with open("games/games.json", encoding="utf-8") as handle:
+              games = json.load(handle)
+          allowed_game_routes = set()
+          for game in games:
+              slug = str(game.get("slug") or "").strip()
+              if not slug:
+                  continue
+              allowed_game_routes.add(f"games/{slug}/index.html")
+              allowed_game_routes.add(f"games/{slug}.html")
+
           tracked = subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True).splitlines()
           untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()
           changed = sorted({*tracked, *untracked})
           unexpected = [
               path for path in changed
-              if path not in allowed_exact and not path.startswith(allowed_prefixes)
+              if path not in allowed_exact
+              and path not in allowed_game_routes
+              and not path.startswith(allowed_prefixes)
           ]
           if unexpected:
               raise SystemExit(f"Unexpected Phase 6B generated paths: {unexpected}")
@@ -235,6 +258,7 @@ jobs:
             games/games-search.json \
             games/publishers \
             games/developers \
+            games/genres \
             tools/seo/static-pages.json \
             sitemap.xml \
             sitemap-pages.xml \
