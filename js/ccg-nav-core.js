@@ -24,6 +24,7 @@ Do Not Override
         { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
         { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
+        { src: "/js/ccg-ui-regression-fixes.js", marker: "data-ccg-ui-regression-fixes-loader" },
         { src: "/js/ccg-mode-engine.js", marker: "data-ccg-mode-engine-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
@@ -68,7 +69,7 @@ Do Not Override
         if (!isNavPillCandidate(el) || el.classList.contains(HARDENED_CLASS)) return;
         el.classList.add(HARDENED_CLASS);
         el.style.setProperty("border-radius", "0px", "important");
-        el.style.setProperty("overflow", "visible", "important");
+        el.style.setProperty("overflow", "hidden", "important");
         el.style.setProperty("background-clip", "padding-box", "important");
         el.style.setProperty("filter", "none", "important");
         el.style.setProperty("backdrop-filter", "none", "important");

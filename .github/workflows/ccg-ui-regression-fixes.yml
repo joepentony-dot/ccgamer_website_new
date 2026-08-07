@@ -1,0 +1,53 @@
+name: CCG UI Regression Fixes
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-mode-engine.js"
+      - "js/ccg-nav-core.js"
+      - "js/ccg-ui-regression-fixes.js"
+      - "resources/css/ccg-ui-regression-fixes.css"
+      - "resources/audio/mode/lemmings-lets-go.mp3"
+      - "tests/mode-engine-runtime.test.cjs"
+      - "scripts/audit-ui-regression-fixes.js"
+      - "zzap64/**"
+      - "games/publishers/**"
+      - ".github/workflows/ccg-ui-regression-fixes.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ui-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-mode-engine.js
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-ui-regression-fixes.js
+          node --check scripts/audit-ui-regression-fixes.js
+          node --check tests/mode-engine-runtime.test.cjs
+
+      - name: Reproduce browser-style mode audio timing
+        run: node tests/mode-engine-runtime.test.cjs
+
+      - name: Audit reported regressions
+        run: node scripts/audit-ui-regression-fixes.js
+
+      - name: Check whitespace
+        run: git diff --check
+
+      - name: Confirm tests are read-only
+        run: test -z "$(git status --porcelain)"

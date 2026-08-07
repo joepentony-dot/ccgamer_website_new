@@ -12,6 +12,7 @@
 
     const rootElement = document.documentElement;
     const EXCLUDED_PATH = /^\/(admin|auth|community)\//i;
+    const AUDIO_CACHE_BUSTER = "20260807-r2";
     const AMIGA_STYLESHEETS = [
         {
             id: "ccg-amiga-mode-styles",
@@ -26,11 +27,11 @@
     ];
     const MODE_SOUNDS = Object.freeze({
         amiga: {
-            path: "/resources/audio/mode/lemmings-lets-go.mp3",
+            path: `/resources/audio/mode/lemmings-lets-go.mp3?v=${AUDIO_CACHE_BUSTER}`,
             volume: 0.42
         },
         c64: {
-            path: "/resources/css/audio/c64_speech_stayawhile.mp3",
+            path: `/resources/css/audio/c64_speech_stayawhile.mp3?v=${AUDIO_CACHE_BUSTER}`,
             volume: 0.38
         }
     });
@@ -80,6 +81,10 @@
             audio = new window.Audio(config.path);
             audio.preload = "auto";
             audio.volume = config.volume;
+            audio.playsInline = true;
+            try {
+                if (typeof audio.load === "function") audio.load();
+            } catch (error) {}
             modeAudioCache.set(config.path, audio);
         }
         return audio;
@@ -91,6 +96,18 @@
         });
     }
 
+    function resetAudioPosition(audio) {
+        if (!audio) return;
+        try {
+            if (Number(audio.readyState) > 0 && Number.isFinite(Number(audio.currentTime))) {
+                audio.currentTime = 0;
+            }
+        } catch (error) {
+            // Fresh HTMLAudioElement instances can reject currentTime writes
+            // before metadata is available. Playback must still continue.
+        }
+    }
+
     function playModeSound(mode) {
         const audio = getModeAudio(mode);
         if (!audio) return;
@@ -98,16 +115,20 @@
         try {
             if (currentModeAudio && currentModeAudio !== audio) {
                 currentModeAudio.pause();
-                currentModeAudio.currentTime = 0;
+                resetAudioPosition(currentModeAudio);
             }
             audio.pause();
-            audio.currentTime = 0;
+            resetAudioPosition(audio);
             const playPromise = audio.play();
             if (playPromise && typeof playPromise.catch === "function") {
-                playPromise.catch(() => {});
+                playPromise.catch((error) => {
+                    console.warn("ccg-mode-engine.js: mode cue could not be played.", error);
+                });
             }
             currentModeAudio = audio;
-        } catch (error) {}
+        } catch (error) {
+            console.warn("ccg-mode-engine.js: mode cue could not be started.", error);
+        }
     }
 
     function ensureStylesheet({ id, path, label }) {

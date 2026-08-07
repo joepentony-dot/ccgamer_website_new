@@ -1,0 +1,267 @@
+/* ============================================================
+   CCG UI REGRESSION POLISH — 2026-08-07
+   ------------------------------------------------------------
+   Reported desktop/mobile fixes only. No structural page reset.
+============================================================ */
+
+/* ------------------------------------------------------------
+   BUTTON HOVER — KEEP LABELS VISIBLE, USE THE STRIKING CTA CUE
+   Existing home blue/red CTAs are intentionally left untouched.
+------------------------------------------------------------ */
+
+@media (hover: hover) and (pointer: fine) {
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover,
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible {
+        color: #eaffff !important;
+        border-color: rgba(0, 208, 255, 0.96) !important;
+        background:
+            linear-gradient(135deg, rgba(0, 208, 255, 0.20), rgba(0, 208, 255, 0.08)) !important;
+        box-shadow:
+            0 0 0 1px rgba(0, 208, 255, 0.30),
+            0 0 12px rgba(0, 208, 255, 0.46),
+            0 10px 26px rgba(0, 0, 0, 0.52) !important;
+        text-shadow: 0 0 8px rgba(0, 208, 255, 0.52) !important;
+    }
+
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover,
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible {
+        color: #15101d !important;
+        border-color: #f3f5fa !important;
+        background:
+            linear-gradient(90deg, rgba(88, 232, 255, 0.34), rgba(255, 79, 189, 0.40)),
+            linear-gradient(180deg, #eef1f5, #aab3c0) !important;
+        box-shadow:
+            inset 1px 1px 0 rgba(255, 255, 255, 0.86),
+            inset -1px -1px 0 rgba(25, 29, 40, 0.68),
+            0 0 0 1px rgba(255, 79, 189, 0.34),
+            0 0 16px rgba(255, 79, 189, 0.42),
+            0 10px 24px rgba(0, 0, 0, 0.48) !important;
+        text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.62) !important;
+    }
+
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover :where(span, strong, small),
+    body[data-ccg-mode="c64"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible :where(span, strong, small),
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):hover :where(span, strong, small),
+    body[data-ccg-mode="amiga"] .ccg-btn:not(.ccg-btn-blue):not(.ccg-btn-red):focus-visible :where(span, strong, small) {
+        color: inherit !important;
+    }
+}
+
+/* ------------------------------------------------------------
+   MORE/MODE SHIMMER CONTAINMENT
+------------------------------------------------------------ */
+
+.ccg-header :is(.ccg-nav__link, .ccg-nav__more-toggle, .ccg-nav-toggle, .ccg-mode-toggle) {
+    overflow: hidden !important;
+    isolation: isolate;
+}
+
+.ccg-nav__more-toggle::before,
+.ccg-nav-toggle::before {
+    inset: 0 !important;
+    max-width: 100% !important;
+}
+
+/* ------------------------------------------------------------
+   PUBLISHER CARDS — NEVER BLEED INTO A NEIGHBOURING GRID CELL
+------------------------------------------------------------ */
+
+.ccg-publishers-main,
+.ccg-publishers-section,
+.ccg-publisher-grid,
+.ccg-publisher-grid--featured {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.ccg-publisher-grid,
+.ccg-publisher-grid--featured {
+    width: 100% !important;
+    overflow: hidden !important;
+}
+
+.ccg-publisher-grid > *,
+.ccg-publisher-card,
+.ccg-publisher-card--has-logo {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.ccg-publisher-card__logo,
+.ccg-publisher-grid--featured .ccg-publisher-card__logo {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    align-self: stretch !important;
+    margin-left: -20px !important;
+    margin-right: -20px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.ccg-publisher-card__logo img {
+    width: auto !important;
+    max-width: 92% !important;
+}
+
+.ccg-publisher-card__name,
+.ccg-publisher-card__meta,
+.ccg-publisher-card__count {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1100px) {
+    .ccg-publisher-grid--featured {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .ccg-publisher-grid,
+    .ccg-publisher-grid--featured {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 500px) {
+    .ccg-publisher-grid,
+    .ccg-publisher-grid--featured {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    .ccg-publisher-card__logo,
+    .ccg-publisher-grid--featured .ccg-publisher-card__logo {
+        margin-left: -16px !important;
+        margin-right: -16px !important;
+    }
+}
+
+/* ------------------------------------------------------------
+   ZZAP TOP PROGRESS — GUARANTEE IT READS AS AN OVERLAY
+------------------------------------------------------------ */
+
+.zzap-loading:not([hidden]) {
+    box-sizing: border-box !important;
+    inset: 0 0 auto !important;
+    z-index: 2147483000 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.zzap-loading--painted .zzap-loading__track {
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+        0 0 12px rgba(var(--accent-rgb), 0.28);
+}
+
+/* ------------------------------------------------------------
+   HOME FOOTER HUB
+------------------------------------------------------------ */
+
+html[data-ccg-page="home"] .ccg-footer {
+    width: min(1180px, calc(100% - 24px));
+    max-width: 1180px;
+    padding: clamp(22px, 3vw, 34px);
+}
+
+.ccg-footer-hub {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    width: 100%;
+    margin: 14px auto 16px;
+    text-align: left;
+}
+
+.ccg-footer-hub__group {
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid rgba(var(--accent-rgb), 0.22);
+    background: rgba(5, 10, 22, 0.50);
+    box-shadow: inset 0 0 18px rgba(var(--accent-rgb), 0.06);
+}
+
+.ccg-footer-hub__title {
+    margin: 0 0 11px;
+    color: rgba(244, 248, 255, 0.96);
+    font: 700 0.78rem/1.35 var(--ccg-font-main, "Orbitron", sans-serif);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+}
+
+.ccg-footer-hub__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ccg-footer-hub__links a {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    padding: 7px 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    background: rgba(255, 255, 255, 0.035);
+    color: rgba(232, 236, 255, 0.86) !important;
+    font-size: 0.76rem;
+    line-height: 1.25;
+    transition: transform 140ms ease, border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .ccg-footer-hub__links a:hover,
+    .ccg-footer-hub__links a:focus-visible {
+        transform: translateY(-1px);
+        border-color: rgba(var(--accent-rgb), 0.78);
+        background: rgba(var(--accent-rgb), 0.13);
+        box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.22);
+        color: #fff !important;
+    }
+}
+
+.ccg-footer-hub__note {
+    position: relative;
+    z-index: 2;
+    margin: 4px auto 12px;
+    color: rgba(232, 236, 255, 0.62);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+body[data-ccg-mode="amiga"] .ccg-footer-hub__group {
+    border-color: rgba(180, 190, 205, 0.38);
+    background: rgba(26, 31, 42, 0.72);
+    box-shadow:
+        inset 1px 1px 0 rgba(255, 255, 255, 0.18),
+        inset -1px -1px 0 rgba(4, 6, 10, 0.52);
+}
+
+@media (max-width: 760px) {
+    .ccg-footer-hub {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .ccg-footer-hub__group {
+        text-align: center;
+    }
+
+    .ccg-footer-hub__links {
+        justify-content: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-footer-hub__links a {
+        transition: none;
+    }
+}
