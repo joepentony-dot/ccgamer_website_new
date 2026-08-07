@@ -1,5 +1,8 @@
 /* ============================================================
    RETRO EVENTS COLLECTION LOADER
+   ------------------------------------------------------------
+   Renders event videos using the same Omega collection-card rhythm
+   as the rest of the curated collection pages.
 ============================================================ */
 
 const CCG_RETRO_EVENTS_ORIGIN = 'https://www.cheekycommodoregamer.co.uk';
@@ -13,10 +16,10 @@ function ccgEscapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function ccgGetYouTubeThumbUrl(youtubeId, variant) {
+function ccgGetYouTubeThumbUrl(youtubeId, variant = 'hqdefault.jpg') {
   const id = String(youtubeId || '').trim();
   if (!id) return '';
-  return `https://img.youtube.com/vi/${encodeURIComponent(id)}/${variant || 'hqdefault.jpg'}`;
+  return `https://img.youtube.com/vi/${encodeURIComponent(id)}/${variant}`;
 }
 
 function ccgResolveYoutubeId(item) {
@@ -32,7 +35,6 @@ function ccgResolveYoutubeId(item) {
 
 function ccgIsMembersOnly(item) {
   const value = item?.membersOnly;
-
   return value === true ||
     value === 1 ||
     String(value || '').trim().toLowerCase() === 'true' ||
@@ -46,7 +48,29 @@ function ccgGetDetailPath(slug) {
 
 function ccgGetRetroEventThumbnail(item, youtubeId) {
   const supplied = String(item?.thumbnail || '').trim();
-  return supplied || ccgGetYouTubeThumbUrl(youtubeId, 'hqdefault.jpg');
+  return supplied || ccgGetYouTubeThumbUrl(youtubeId);
+}
+
+function ccgBuildCollectionSkeletons(count = 6) {
+  return Array.from({ length: count }, () => `
+    <article class="ccg-card ccg-collection-skeleton" aria-hidden="true">
+      <div class="ccg-collection-skeleton__media"></div>
+      <div class="ccg-collection-skeleton__body">
+        <span class="ccg-collection-skeleton__line ccg-collection-skeleton__line--title"></span>
+        <span class="ccg-collection-skeleton__line"></span>
+        <span class="ccg-collection-skeleton__line ccg-collection-skeleton__line--short"></span>
+      </div>
+    </article>
+  `).join('');
+}
+
+function ccgPrimeRetroEventsUi() {
+  const grid = document.getElementById('genreGamesGrid');
+  if (!grid || grid.dataset.ccgPrimed === 'true') return;
+  grid.dataset.ccgPrimed = 'true';
+  grid.dataset.collectionState = 'loading';
+  grid.setAttribute('aria-busy', 'true');
+  grid.innerHTML = ccgBuildCollectionSkeletons();
 }
 
 function ccgBuildCard(item, index = 0) {
@@ -55,7 +79,6 @@ function ccgBuildCard(item, index = 0) {
   const description = String(item?.summary || item?.description || '').trim();
   const youtubeId = ccgResolveYoutubeId(item);
   const membersOnly = ccgIsMembersOnly(item);
-
   if (!title || !pageUrl || !youtubeId) return '';
 
   const thumb = ccgGetRetroEventThumbnail(item, youtubeId);
@@ -63,21 +86,20 @@ function ccgBuildCard(item, index = 0) {
   const accessLabel = membersOnly ? ' (members-only video)' : '';
   const loading = index < 2 ? 'eager' : 'lazy';
   const fetchPriority = index === 0 ? ' fetchpriority="high"' : '';
-  const eventBadge = '<span class="ccg-collection-badge ccg-collection-badge--event" aria-hidden="true">Retro event</span>';
   const membersSash = membersOnly
     ? '<span class="ccg-collection-sash ccg-collection-sash--members" aria-hidden="true">Members only</span>'
     : '';
   const membersNotice = membersOnly
     ? '<p class="ccg-game-card__access"><strong>Members only:</strong> YouTube channel membership is required to watch this video.</p>'
     : '';
-  const buttonText = membersOnly ? 'View members-only event' : 'View event';
+  const buttonText = membersOnly ? 'Open members event' : 'Open event';
 
   return `
-    <article class="ccg-game-card genre-card ccg-game-card--retro-event" data-members-only="${membersOnly}">
+    <article class="ccg-card ccg-game-card genre-card ccg-game-card--retro-event" data-members-only="${membersOnly}">
       <a class="ccg-game-card__link" href="${ccgEscapeHtml(pageUrl)}" aria-label="Open ${ccgEscapeHtml(title + accessLabel)}">
         <div class="ccg-game-card__media ccg-game-card__thumb">
-          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(`${title} – Retro Events video thumbnail${accessLabel}`)}" loading="${loading}" decoding="async"${fetchPriority} width="480" height="360" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${ccgEscapeHtml(thumbFallback)}';" />
-          ${eventBadge}
+          <img src="${ccgEscapeHtml(thumb)}" alt="${ccgEscapeHtml(`${title} – Retro Events video thumbnail${accessLabel}`)}" loading="${loading}" decoding="async"${fetchPriority} width="480" height="270" referrerpolicy="no-referrer" onerror="this.onerror=null; this.src='${ccgEscapeHtml(thumbFallback)}';" />
+          <span class="ccg-collection-badge ccg-collection-badge--event" aria-hidden="true">Retro event</span>
           ${membersSash}
         </div>
         <div class="ccg-game-card__body">
@@ -100,7 +122,6 @@ function ccgInjectRetroEventStructuredData(items) {
       const youtubeId = ccgResolveYoutubeId(item);
       const title = String(item?.title || '').trim();
       const pageUrl = String(item?.pageUrl || '').trim();
-
       if (!youtubeId || !title || !pageUrl) return null;
 
       const description = String(item?.summary || item?.description || '').trim();
@@ -135,12 +156,11 @@ function ccgInjectRetroEventStructuredData(items) {
     itemListOrder: 'https://schema.org/ItemListOrderAscending',
     itemListElement
   });
-
   document.head.appendChild(script);
 }
 
 async function ccgLoadItems() {
-  const response = await fetch('/data/retro-events.json', { cache: 'no-store' });
+  const response = await fetch('/data/retro-events.json', { cache: 'default' });
   if (!response.ok) throw new Error(`Could not load retro-events.json (${response.status})`);
 
   const data = await response.json();
@@ -182,6 +202,8 @@ async function ccgRunCollection() {
     if (countEl) countEl.textContent = String(items.length);
 
     grid.innerHTML = items.map(ccgBuildCard).join('');
+    grid.dataset.collectionState = 'ready';
+    grid.setAttribute('aria-busy', 'false');
     ccgInjectRetroEventStructuredData(items);
 
     if (!items.length) {
@@ -190,10 +212,13 @@ async function ccgRunCollection() {
   } catch (error) {
     console.error('[CCG RETRO EVENTS]', error);
     if (countEl) countEl.textContent = '0';
-    grid.innerHTML = '<div class="ccg-genre-empty"><h3>Unable to load this collection</h3></div>';
+    grid.dataset.collectionState = 'error';
+    grid.setAttribute('aria-busy', 'false');
+    grid.innerHTML = '<div class="ccg-genre-empty"><h3>Unable to load this collection</h3><p>Please refresh the page to try again.</p></div>';
   }
 }
 
+ccgPrimeRetroEventsUi();
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', ccgRunCollection, { once: true });
 } else {
