@@ -1,0 +1,105 @@
+name: SEO Game Route Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "games/game.html"
+      - "games/games.json"
+      - "sitemap-games.xml"
+      - "scripts/prepare-seo-game-routes.js"
+      - "scripts/validate-seo-game-routes.js"
+      - "scripts/rebuild-games.js"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
+      - ".github/workflows/seo-game-route-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: seo-game-route-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Validate script syntax
+        run: |
+          node --check scripts/prepare-seo-game-routes.js
+          node --check scripts/validate-seo-game-routes.js
+          node --check scripts/rebuild-games.js
+
+      - name: Generate canonical game routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/validate-seo-game-routes.js --root .
+          git diff --check
+          git diff --binary > "$RUNNER_TEMP/first.diff"
+
+      - name: Require deterministic regeneration
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/prepare-seo-game-routes.js --output-root .
+          node scripts/validate-seo-game-routes.js --root .
+          git diff --binary > "$RUNNER_TEMP/second.diff"
+          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+
+      - name: Check legacy generator compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$RUNNER_TEMP/second.diff" "$RUNNER_TEMP/before-legacy.diff"
+          node scripts/generate-slug-pages.js
+          node scripts/validate-seo-game-routes.js --root .
+          git diff --binary > "$RUNNER_TEMP/after-legacy.diff"
+          cmp "$RUNNER_TEMP/before-legacy.diff" "$RUNNER_TEMP/after-legacy.diff"
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Summarize generated migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed_games="$(git status --porcelain -- games | wc -l | tr -d ' ')"
+          {
+            echo '### Canonical game route validation'
+            echo
+            echo '- Result: PASS'
+            echo "- Generated game files changed from current wrappers: ${changed_games}"
+            echo '- Protected intro files: unchanged'
+            echo '- games/games.json: unchanged'
+            echo '- Legacy slug generator compatibility: PASS'
+          } >> "$GITHUB_STEP_SUMMARY"
