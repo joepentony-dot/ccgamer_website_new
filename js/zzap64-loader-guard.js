@@ -14,10 +14,22 @@
     if (window.CCG_ZZAP64_LOADER_GUARD_READY) return;
     window.CCG_ZZAP64_LOADER_GUARD_READY = true;
 
+    const CSS_PATH = "/resources/css/zzap64-loader-guard.css";
     const MIN_VISIBLE_MS = 2400;
+
+    function ensureStylesheet() {
+        if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = CSS_PATH;
+        link.dataset.zzapLoaderGuard = "true";
+        document.head.appendChild(link);
+    }
 
     function init() {
         if (document.documentElement.getAttribute("data-ccg-page") !== "zzap64-awards") return;
+
+        ensureStylesheet();
 
         const loader = document.getElementById("zzapLoading");
         if (!loader || loader.dataset.ccgLoaderGuard === "true") return;
