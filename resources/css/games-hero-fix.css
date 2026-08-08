@@ -76,6 +76,53 @@
     margin-top: 0;
 }
 
+/* --- Browse card row alignment --------------------------------- */
+/*
+   Keep every card in a grid row the same height, reserve the flexible
+   middle area for title/meta copy, and anchor each action to the bottom.
+   The game title already identifies the destination, so the visible CTA
+   stays deliberately short while the existing aria-label remains specific.
+*/
+.ccg-page--games-index .games-grid {
+    align-items: stretch;
+}
+
+.ccg-page--games-index .games-grid > .ccg-game-card {
+    height: 100%;
+    grid-template-rows: auto minmax(0, 1fr);
+}
+
+.ccg-page--games-index .ccg-game-card__body {
+    min-height: 0;
+    height: 100%;
+}
+
+.ccg-page--games-index .ccg-game-card__body .game-title-wrapper {
+    flex: 1 1 auto;
+    justify-content: flex-start;
+}
+
+.ccg-page--games-index .ccg-game-card__actions {
+    margin-top: auto;
+}
+
+.ccg-page--games-index .ccg-game-card__btn {
+    min-width: min(180px, 100%);
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0 !important;
+    line-height: 1;
+}
+
+.ccg-page--games-index .ccg-game-card__btn::after {
+    content: "View Game";
+    font-size: calc(0.78rem * var(--ui-font-scale));
+    line-height: 1;
+    letter-spacing: 0.08em;
+}
+
 /* --- Mobile/touch compaction ----------------------------------- */
 @media (max-width: 720px) {
     /* Omega spacing normalisation — keep the hero compact on smaller screens. */
@@ -92,5 +139,10 @@
 
     .ccg-page--games-index:has(#gamesSearchInput:not(:placeholder-shown)) .games-tools {
         margin-bottom: 4px;
+    }
+
+    .ccg-page--games-index .ccg-game-card__btn {
+        width: 100%;
+        min-width: 0;
     }
 }
