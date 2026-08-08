@@ -1,0 +1,151 @@
+/* ============================================================
+   ZZAP!64 ARCHIVE — VISIBLE TOP LOADER GUARD
+   ------------------------------------------------------------
+   Keeps the real archive progress visible at the top of the page
+   without covering the CCG header or mode identity strip.
+============================================================ */
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard:not([hidden]) {
+    position: sticky !important;
+    top: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: 12050 !important;
+    width: min(1360px, calc(100% - 28px)) !important;
+    max-width: none !important;
+    margin: 0 auto 14px !important;
+    padding: 10px clamp(14px, 2.4vw, 24px) 11px !important;
+    transform: none !important;
+    border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.52) !important;
+    border-top: 2px solid rgba(var(--accent-rgb, 0, 221, 255), 0.95) !important;
+    border-radius: 0 0 10px 10px !important;
+    background:
+        linear-gradient(90deg, rgba(var(--accent-rgb, 0, 221, 255), 0.16), transparent 46%, rgba(var(--accent-rgb, 0, 221, 255), 0.08)),
+        linear-gradient(180deg, rgba(5, 12, 28, 0.985), rgba(2, 6, 16, 0.975)) !important;
+    box-shadow:
+        0 16px 34px rgba(0, 0, 0, 0.52),
+        0 0 24px rgba(var(--accent-rgb, 0, 221, 255), 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    isolation: isolate;
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard::before {
+    content: "ZZAP!64 ARCHIVE LOADING" !important;
+    margin-bottom: 1px;
+    color: rgb(var(--accent-rgb, 0, 221, 255));
+    font-size: 0.59rem;
+    letter-spacing: 0.19em;
+    text-shadow: 0 0 12px rgba(var(--accent-rgb, 0, 221, 255), 0.42);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__header {
+    min-height: 20px;
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__header > span {
+    color: rgba(242, 248, 255, 0.94);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__header strong {
+    min-width: 3.4em;
+    text-align: right;
+    text-shadow: 0 0 10px rgba(var(--accent-rgb, 0, 221, 255), 0.42);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__track {
+    height: 9px;
+    border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.28);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.035) 0,
+            rgba(255, 255, 255, 0.035) 7px,
+            rgba(0, 0, 0, 0.10) 7px,
+            rgba(0, 0, 0, 0.10) 9px
+        ),
+        rgba(0, 0, 0, 0.56);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.62);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__bar {
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(var(--accent-rgb, 0, 221, 255), 0.76),
+            rgba(255, 255, 255, 0.98),
+            rgba(var(--accent-rgb, 0, 221, 255), 0.88)
+        );
+    box-shadow:
+        0 0 14px rgba(var(--accent-rgb, 0, 221, 255), 0.72),
+        0 0 26px rgba(var(--accent-rgb, 0, 221, 255), 0.34);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 0 30%, rgba(255, 255, 255, 0.9) 48%, transparent 66% 100%);
+    transform: translateX(-140%);
+    animation: zzap-top-loader-scan 1.25s linear infinite;
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__detail {
+    color: rgba(219, 230, 249, 0.68);
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard[data-state="warning"] {
+    border-color: rgba(255, 196, 94, 0.62) !important;
+    border-top-color: rgba(255, 196, 94, 0.96) !important;
+}
+
+html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard[data-state="error"] {
+    border-color: rgba(255, 92, 112, 0.72) !important;
+    border-top-color: rgba(255, 92, 112, 0.98) !important;
+}
+
+@keyframes zzap-top-loader-scan {
+    to { transform: translateX(140%); }
+}
+
+@media (max-width: 760px) {
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard:not([hidden]) {
+        width: calc(100% - 12px) !important;
+        margin-bottom: 10px !important;
+        padding: 8px 10px 9px !important;
+        border-radius: 0 0 8px 8px !important;
+    }
+
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard::before {
+        font-size: 0.54rem;
+        letter-spacing: 0.14em;
+    }
+
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__header {
+        font-size: 0.62rem;
+    }
+
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__track {
+        height: 8px;
+    }
+}
+
+@media (max-width: 420px) {
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard::before {
+        content: "ZZAP!64 LOADING" !important;
+    }
+
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__header > span {
+        max-width: calc(100vw - 96px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard .zzap-loading__bar::after {
+        animation: none;
+        display: none;
+    }
+}
