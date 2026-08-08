@@ -1,0 +1,104 @@
+/* ============================================================
+   ZZAP!64 ARCHIVE — VISIBLE LOADING BAR GUARD
+   ------------------------------------------------------------
+   Makes the existing real-progress loader impossible to miss:
+   • moves it directly beneath the site header/mode strip
+   • keeps it visible long enough to be useful
+   • waits for the page load event before allowing dismissal
+   • preserves warning/error states from the archive controller
+============================================================ */
+
+(function () {
+    "use strict";
+
+    if (window.CCG_ZZAP64_LOADER_GUARD_READY) return;
+    window.CCG_ZZAP64_LOADER_GUARD_READY = true;
+
+    const CSS_PATH = "/resources/css/zzap64-loader-guard.css";
+    const MIN_VISIBLE_MS = 2400;
+
+    function ensureStylesheet() {
+        if (document.querySelector(`link[href="${CSS_PATH}"]`)) return;
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = CSS_PATH;
+        link.dataset.zzapLoaderGuard = "true";
+        document.head.appendChild(link);
+    }
+
+    function positionLoader(loader) {
+        const identityBar = document.getElementById("ccgModeIdentityBar");
+        const header = document.querySelector("[data-ccg-header], .ccg-header");
+        const anchor = identityBar || header;
+        if (anchor?.parentNode) {
+            anchor.parentNode.insertBefore(loader, anchor.nextSibling);
+        }
+    }
+
+    function init() {
+        if (document.documentElement.getAttribute("data-ccg-page") !== "zzap64-awards") return;
+
+        ensureStylesheet();
+
+        const loader = document.getElementById("zzapLoading");
+        if (!loader || loader.dataset.ccgLoaderGuard === "true") return;
+
+        loader.dataset.ccgLoaderGuard = "true";
+        loader.classList.add("zzap-loading--top-guard");
+        positionLoader(loader);
+
+        const startedAt = performance.now();
+        let pageLoaded = document.readyState === "complete";
+        let hideRequested = false;
+        let allowHide = false;
+        let releaseTimer = 0;
+
+        const releaseWhenReady = () => {
+            if (!hideRequested || allowHide) return;
+            if (!pageLoaded) return;
+            if (loader.getAttribute("aria-busy") !== "false") return;
+            if (loader.dataset.state === "error") return;
+
+            const elapsed = performance.now() - startedAt;
+            const remaining = Math.max(0, MIN_VISIBLE_MS - elapsed);
+
+            window.clearTimeout(releaseTimer);
+            releaseTimer = window.setTimeout(() => {
+                allowHide = true;
+                loader.hidden = true;
+                observer.disconnect();
+            }, remaining);
+        };
+
+        const observer = new MutationObserver(() => {
+            if (loader.hidden && !allowHide) {
+                hideRequested = true;
+                loader.hidden = false;
+            }
+            releaseWhenReady();
+        });
+
+        observer.observe(loader, {
+            attributes: true,
+            attributeFilter: ["hidden", "aria-busy", "data-state"]
+        });
+
+        loader.hidden = false;
+
+        if (!pageLoaded) {
+            window.addEventListener("load", () => {
+                pageLoaded = true;
+                positionLoader(loader);
+                releaseWhenReady();
+            }, { once: true });
+        }
+
+        window.setTimeout(releaseWhenReady, MIN_VISIBLE_MS);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init, { once: true });
+    } else {
+        init();
+    }
+})();
