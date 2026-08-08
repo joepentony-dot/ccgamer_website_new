@@ -93,7 +93,9 @@
                 width: 100% !important;
                 height: auto !important;
                 aspect-ratio: 16 / 9 !important;
-                object-fit: cover !important;
+                object-fit: contain !important;
+                object-position: center !important;
+                background: #050914 !important;
                 border-bottom: 1px solid rgba(var(--accent-rgb), 0.24) !important;
             }
 
