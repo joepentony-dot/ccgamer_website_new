@@ -26,6 +26,15 @@
         document.head.appendChild(link);
     }
 
+    function positionLoader(loader) {
+        const identityBar = document.getElementById("ccgModeIdentityBar");
+        const header = document.querySelector("[data-ccg-header], .ccg-header");
+        const anchor = identityBar || header;
+        if (anchor?.parentNode) {
+            anchor.parentNode.insertBefore(loader, anchor.nextSibling);
+        }
+    }
+
     function init() {
         if (document.documentElement.getAttribute("data-ccg-page") !== "zzap64-awards") return;
 
@@ -36,11 +45,7 @@
 
         loader.dataset.ccgLoaderGuard = "true";
         loader.classList.add("zzap-loading--top-guard");
-
-        const header = document.querySelector("[data-ccg-header], .ccg-header");
-        if (header?.parentNode) {
-            header.parentNode.insertBefore(loader, header.nextSibling);
-        }
+        positionLoader(loader);
 
         const startedAt = performance.now();
         let pageLoaded = document.readyState === "complete";
@@ -83,6 +88,7 @@
         if (!pageLoaded) {
             window.addEventListener("load", () => {
                 pageLoaded = true;
+                positionLoader(loader);
                 releaseWhenReady();
             }, { once: true });
         }
