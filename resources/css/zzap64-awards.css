@@ -312,7 +312,48 @@
 }
 
 @media (max-width: 760px) {
-    .zzap-archive { width: min(100% - 18px,1360px); padding-top: 16px; }
+    html[data-ccg-page="zzap64-awards"] .ccg-main {
+        width: 100%;
+        margin-inline: auto;
+        padding-inline: 12px;
+    }
+
+    .zzap-archive {
+        width: 100%;
+        max-width: 100%;
+        margin-inline: auto;
+        padding-top: 16px;
+    }
+
+    .zzap-archive__hero {
+        width: 100%;
+        margin-inline: auto;
+        padding: clamp(24px, 6vw, 34px) clamp(16px, 5vw, 26px);
+        text-align: center;
+    }
+
+    .zzap-archive__title,
+    .zzap-archive__intro {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .zzap-archive__stats {
+        width: 100%;
+        justify-content: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .zzap-archive__stat {
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 420px;
+        min-width: 0;
+        margin-inline: auto;
+        text-align: center;
+    }
+
     .zzap-years { grid-template-columns: repeat(2,minmax(0,1fr)); }
     .zzap-awards { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
