@@ -34,14 +34,16 @@ const phase4dReportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-4d-
 const PHASE5B_EXCLUDED_REGISTRY_ENTRY = "viewer/manual.html";
 const PHASE5B_EXCLUDED_SITEMAP_URL = `${SITE_ORIGIN}/viewer/manual.html`;
 const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
-    "games/discover/index.html"
+    "games/discover/index.html",
+    "videos/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
     ["sitemap.xml", new Set([
         `${SITE_ORIGIN}/sitemap-retro-videos.xml`
     ])],
     ["sitemap-pages.xml", new Set([
-        `${SITE_ORIGIN}/games/discover/`
+        `${SITE_ORIGIN}/games/discover/`,
+        `${SITE_ORIGIN}/videos/`
     ])]
 ]);
 
