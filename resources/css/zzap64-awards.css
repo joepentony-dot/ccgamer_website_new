@@ -258,6 +258,12 @@
     outline: none;
 }
 
+.zzap-award-card__magazine-link--pending {
+    cursor: default;
+    opacity: .58;
+    border-style: dashed;
+}
+
 .zzap-award-card__game-link:hover .zzap-award-card__game-name,
 .zzap-award-card__game-link:focus-visible .zzap-award-card__game-name {
     text-decoration: underline;

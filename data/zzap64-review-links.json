@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generatedFrom": "Verified Zzap!64 magazine references from the repository Lemon cache plus optional live Lemon64/Lemon Amiga lookups. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",
+  "generatedFrom": "Verified Zzap!64 review pages from the official Zzap Bible, verified exception records, and repository Lemon cache/live Lemon lookups as secondary verification. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",
   "officialHost": "www.zzap64.co.uk",
   "years": [
     1985,
@@ -11,9 +11,9 @@
   ],
   "totals": {
     "awards": 287,
-    "exactPages": 268,
-    "issueFallbacks": 19,
-    "directCoveragePercent": 93.4
+    "exactPages": 287,
+    "issueFallbacks": 0,
+    "directCoveragePercent": 100
   },
   "entries": {
     "1985|may|c64|Elite": {
@@ -367,17 +367,21 @@
     },
     "1985|december|c64|ACE": {
       "issue": 8,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
-      "source": "official-issue-fallback"
+      "page": 26,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=8&page=26",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Ace",
+      "bibleScore": 90
     },
     "1985|december|c64|Electrosound": {
       "issue": 8,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
-      "source": "official-issue-fallback"
+      "page": 88,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=8&page=88",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Electrosound",
+      "bibleScore": 97
     },
     "1985|december|c64|Who Dares Wins II": {
       "issue": 8,
@@ -672,10 +676,12 @@
     },
     "1986|august|c64|Kikstart II": {
       "issue": 16,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap16/zzap16.html",
-      "source": "official-issue-fallback"
+      "page": 98,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=16&page=98",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Kikstart II (128)",
+      "bibleScore": 96
     },
     "1986|august|c64|Infiltrator": {
       "issue": 16,
@@ -716,10 +722,11 @@
     },
     "1986|september|c64|Graphic Adventure Creator": {
       "issue": 17,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
-      "source": "official-issue-fallback"
+      "page": 70,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=70",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Graphic Adventure Creator"
     },
     "1986|september|c64|Jewels of Darkness": {
       "issue": 17,
@@ -813,10 +820,11 @@
     },
     "1986|december|c64|The Sentinel": {
       "issue": 20,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
-      "source": "official-issue-fallback"
+      "page": 22,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=20&page=22",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Sentinel, The"
     },
     "1986|december|c64|The Sacred Armour of Antiriad": {
       "issue": 20,
@@ -1064,10 +1072,12 @@
     },
     "1987|october|c64|B-24 Flight Simulator": {
       "issue": 30,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap30/zzap30.html",
-      "source": "official-issue-fallback"
+      "page": 71,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=30&page=71",
+      "source": "official-zzap-bible",
+      "bibleTitle": "B-24 Flight Simulator",
+      "bibleScore": 90
     },
     "1987|october|c64|Arcade Classics": {
       "issue": 30,
@@ -1130,10 +1140,11 @@
     },
     "1987|december|c64|Shoot 'Em Up Construction Kit": {
       "issue": 32,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
-      "source": "official-issue-fallback"
+      "page": 28,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=28",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Shoot 'Em Up Construction Kit"
     },
     "1987|december|c64|Russia: The Great War in the East": {
       "issue": 32,
@@ -1160,10 +1171,10 @@
     },
     "1987|december|c64|Computer Scrabble Deluxe": {
       "issue": 32,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
-      "source": "official-issue-fallback"
+      "page": 154,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=154",
+      "source": "verified-zzap-bible-exception"
     },
     "1987|december|c64|Nebulus": {
       "issue": 32,
@@ -1296,10 +1307,10 @@
     },
     "1988|april|amiga|Time Bandit": {
       "issue": 36,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap36/zzap36.html",
-      "source": "official-issue-fallback"
+      "page": 62,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=36&page=62",
+      "source": "verified-direct-scan-exception"
     },
     "1988|april|c64|Strike Fleet": {
       "issue": 36,
@@ -1456,10 +1467,10 @@
     },
     "1988|october|c64|Decisive Battles of the American Civil War Volume II": {
       "issue": 42,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
-      "source": "official-issue-fallback"
+      "page": 45,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=42&page=45",
+      "source": "verified-zzap-bible-exception"
     },
     "1988|october|amiga|Buggy Boy": {
       "issue": 42,
@@ -1676,10 +1687,12 @@
     },
     "1989|march|amiga|Rocket Ranger": {
       "issue": 47,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
-      "source": "official-issue-fallback"
+      "page": 24,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=47&page=24",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Rocket Ranger",
+      "bibleScore": 95
     },
     "1989|march|c64|Batman: The Caped Crusader": {
       "issue": 47,
@@ -2021,17 +2034,19 @@
     },
     "1989|september|amiga|Fire Brigade": {
       "issue": 53,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
-      "source": "official-issue-fallback"
+      "page": 39,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=53&page=39",
+      "source": "verified-direct-scan-exception"
     },
     "1989|september|c64|Rambo": {
       "issue": 53,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
-      "source": "official-issue-fallback"
+      "page": 58,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=53&page=58",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Rambo",
+      "bibleScore": 96
     },
     "1989|september|amiga|Kult": {
       "issue": 53,
@@ -2059,17 +2074,21 @@
     },
     "1989|october|amiga|APB": {
       "issue": 54,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
-      "source": "official-issue-fallback"
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=18",
+      "source": "official-zzap-bible",
+      "bibleTitle": "APB",
+      "bibleScore": 90
     },
     "1989|october|c64|APB": {
       "issue": 54,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
-      "source": "official-issue-fallback"
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=18",
+      "source": "official-zzap-bible",
+      "bibleTitle": "APB",
+      "bibleScore": 90
     },
     "1989|october|c64|Ghosts 'n Goblins": {
       "issue": 54,
@@ -2088,17 +2107,17 @@
     },
     "1989|october|amiga|Falcon": {
       "issue": 54,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
-      "source": "official-issue-fallback"
+      "page": 75,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=75",
+      "source": "verified-direct-scan-exception"
     },
     "1989|october|amiga|F-16 Combat Pilot": {
       "issue": 54,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
-      "source": "official-issue-fallback"
+      "page": 75,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=75",
+      "source": "verified-direct-scan-exception"
     },
     "1989|october|amiga|Strider": {
       "issue": 54,
@@ -2117,10 +2136,12 @@
     },
     "1989|november|amiga|Batman: The Movie": {
       "issue": 55,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap55/zzap55.html",
-      "source": "official-issue-fallback"
+      "page": 9,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=9",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Batman: The Movie",
+      "bibleScore": 96
     },
     "1989|november|c64|Pitstop II": {
       "issue": 55,
@@ -2159,10 +2180,12 @@
     },
     "1989|december|c64|Myth": {
       "issue": 56,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap56/zzap56.html",
-      "source": "official-issue-fallback"
+      "page": 14,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=56&page=14",
+      "source": "official-zzap-bible",
+      "bibleTitle": "Myth",
+      "bibleScore": 94
     },
     "1989|december|amiga|North & South": {
       "issue": 56,

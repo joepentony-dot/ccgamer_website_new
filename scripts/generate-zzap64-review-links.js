@@ -5,11 +5,13 @@
 const fs = require("fs");
 const path = require("path");
 const matcher = require("../js/ccg-zzap64-matcher.js");
+const zzapBible = require("./zzap64-bible-client.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const AWARDS_DIR = path.join(ROOT, "data", "zzap64-awards");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
 const OUTPUT_PATH = path.join(ROOT, "data", "zzap64-review-links.json");
+const OVERRIDES_PATH = path.join(ROOT, "data", "zzap64-review-overrides.json");
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -117,11 +119,12 @@ function readAwards() {
     const records = Array.isArray(parsed) ? parsed : (parsed.entries || parsed.awards || []);
     records.forEach((raw) => {
       const entry = Array.isArray(raw)
-        ? { year, month: raw[0], title: raw[1], system: raw[4] || "C64" }
+        ? { year, month: raw[0], title: raw[1], score: raw[3], system: raw[4] || "C64" }
         : {
             year: Number(raw.year || year),
             month: raw.month,
             title: raw.title || raw.game,
+            score: raw.score,
             system: raw.system || raw.platform || "C64"
           };
       if (entry.year && entry.month && entry.title && entry.system) entries.push(entry);
@@ -138,6 +141,12 @@ function readExistingOutput() {
   } catch {
     return { entries: {} };
   }
+}
+
+function readOverrides() {
+  if (!fs.existsSync(OVERRIDES_PATH)) return {};
+  const parsed = JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"));
+  return parsed && typeof parsed.entries === "object" && parsed.entries ? parsed.entries : {};
 }
 
 function extractMetaContent(html, property) {
@@ -257,6 +266,23 @@ function readCachedMagazinePages() {
   return bySystem;
 }
 
+function verifiedOverride(overrides, entry, issue) {
+  const record = overrides?.[recordKey(entry)];
+  if (
+    Number(record?.issue) !== Number(issue)
+    || !Number.isInteger(Number(record?.page))
+    || Number(record.page) < 1
+  ) return null;
+
+  return {
+    issue: Number(issue),
+    page: Number(record.page),
+    precision: "page",
+    url: officialPageUrl(issue, Number(record.page)),
+    source: String(record.source || "verified-review-exception")
+  };
+}
+
 function persistedExact(existing, entry, issue) {
   const record = existing?.entries?.[recordKey(entry)];
   if (
@@ -272,7 +298,9 @@ function persistedExact(existing, entry, issue) {
     precision: "page",
     url: officialPageUrl(issue, Number(record.page)),
     source: String(record.source || "persisted-verified-reference"),
-    ...(record.lemonUrl ? { lemonUrl: String(record.lemonUrl) } : {})
+    ...(record.lemonUrl ? { lemonUrl: String(record.lemonUrl) } : {}),
+    ...(record.bibleTitle ? { bibleTitle: String(record.bibleTitle) } : {}),
+    ...(Number.isFinite(Number(record.bibleScore)) ? { bibleScore: Number(record.bibleScore) } : {})
   };
 }
 
@@ -292,6 +320,7 @@ function recalculateTotals(output) {
 function buildOutput(existing = readExistingOutput()) {
   const awards = readAwards();
   const years = awardYears();
+  const overrides = readOverrides();
   const cached = readCachedMagazinePages();
   const indexes = {
     c64: matcher.buildGameIndex(cached.c64),
@@ -305,12 +334,15 @@ function buildOutput(existing = readExistingOutput()) {
     if (!issue) throw new Error(`Unable to derive Zzap!64 issue for ${recordKey(entry)}`);
 
     const key = recordKey(entry);
+    const override = verifiedOverride(overrides, entry, issue);
     const persisted = persistedExact(existing, entry, issue);
     const system = systemKey(entry.system);
     const cacheMatch = matcher.findGame(entry, indexes[system]);
     const cachedExact = cacheMatch?.zzapLinks?.find((link) => link.issue === issue) || null;
 
-    if (persisted) {
+    if (override) {
+      entries[key] = override;
+    } else if (persisted) {
       entries[key] = persisted;
     } else if (cachedExact) {
       entries[key] = {
@@ -334,7 +366,7 @@ function buildOutput(existing = readExistingOutput()) {
 
   return recalculateTotals({
     version: 2,
-    generatedFrom: "Verified Zzap!64 magazine references from the repository Lemon cache plus optional live Lemon64/Lemon Amiga lookups. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",
+    generatedFrom: "Verified Zzap!64 review pages from the official Zzap Bible, verified exception records, and repository Lemon cache/live Lemon lookups as secondary verification. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",
     officialHost: "www.zzap64.co.uk",
     years,
     totals: {},
@@ -503,20 +535,32 @@ async function resolveLiveExact(entry) {
 async function enrichLive(output) {
   const awards = readAwards();
   const unresolved = awards.filter((entry) => output.entries?.[recordKey(entry)]?.precision !== "page");
-  console.log(`Deep Lemon lookup: ${unresolved.length} unresolved award entries to check.`);
+  console.log(`Deep Zzap review lookup: ${unresolved.length} unresolved award entries to check.`);
 
   let resolved = 0;
   let checked = 0;
   for (const entry of unresolved) {
     checked += 1;
     try {
-      const exact = await resolveLiveExact(entry);
+      const issue = issueNumber(entry.year, entry.month);
+      const bibleExact = issue
+        ? await zzapBible.resolveReview({
+            entry,
+            issue,
+            searchVariants: searchVariants(entry),
+            userAgent: USER_AGENT
+          })
+        : null;
+      const lemonExact = bibleExact ? null : await resolveLiveExact(entry);
+      const exact = bibleExact
+        ? { ...bibleExact, url: officialPageUrl(bibleExact.issue, bibleExact.page) }
+        : lemonExact;
       if (exact) {
         output.entries[recordKey(entry)] = exact;
         resolved += 1;
         console.log(`  ✓ ${entry.year} ${entry.month} ${entry.system} — ${entry.title}: issue ${exact.issue}, page ${exact.page}`);
       } else {
-        console.log(`  · ${entry.year} ${entry.month} ${entry.system} — ${entry.title}: no direct Lemon page reference found`);
+        console.log(`  · ${entry.year} ${entry.month} ${entry.system} — ${entry.title}: no verified direct review page found`);
       }
     } catch (error) {
       console.warn(`  ! ${entry.title}: ${error.message}`);
@@ -570,6 +614,7 @@ module.exports = {
   awardYears,
   buildOutput,
   enrichLive,
+  readOverrides,
   extractZzapLinks,
   issueNumber,
   recordKey,

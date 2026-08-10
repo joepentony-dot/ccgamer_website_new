@@ -7,7 +7,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const generator = require('../scripts/generate-zzap64-review-links.js');
 const root = path.resolve(import.meta.dirname, '..');
-const years = [1985, 1986, 1987, 1988, 1989];
+const years = generator.awardYears();
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
@@ -35,6 +35,8 @@ test('every Zzap award has a safe official magazine destination', () => {
   assert.equal(data.totals.awards, awards.length);
   assert.equal(Object.keys(data.entries).length, awards.length);
   assert.equal(data.totals.exactPages + data.totals.issueFallbacks, awards.length);
+  assert.equal(data.totals.issueFallbacks, 0, 'Every indexed award must resolve to a direct original Zzap!64 scan page.');
+  assert.equal(data.totals.exactPages, awards.length);
 
   awards.forEach((entry) => {
     const key = generator.recordKey(entry);
@@ -71,12 +73,23 @@ test('The Eidolon resolves to the known February 1986 review page', () => {
   assert.equal(record.url, 'https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=10&page=28');
 });
 
+test('Armalyte resolves to Zzap!64 issue 43 page 24', () => {
+  const data = readJson('data/zzap64-review-links.json');
+  const record = data.entries['1988|november|c64|Armalyte'];
+  assert.ok(record);
+  assert.equal(record.precision, 'page');
+  assert.equal(record.issue, 43);
+  assert.equal(record.page, 24);
+  assert.equal(record.url, 'https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=43&page=24');
+});
+
 test('archive renderer exposes original-magazine links without replacing CCG game links', () => {
   const source = fs.readFileSync(path.join(root, 'js/zzap64-awards.js'), 'utf8');
   assert.match(source, /\/data\/zzap64-review-links\.json/);
   assert.match(source, /zzap-award-card__game-link/);
   assert.match(source, /zzap-award-card__magazine-link/);
   assert.match(source, /Read original Zzap!64 review/);
-  assert.match(source, /Browse original Zzap!64 issue/);
+  assert.doesNotMatch(source, /Browse original Zzap!64 issue/);
+  assert.match(source, /Original Zzap!64 scan pending verification/);
   assert.match(source, /noopener noreferrer external/);
 });
