@@ -1,5 +1,10 @@
 name: Manual retro output rebuild
 
+# Manual recovery path for generated retro output.
+# Authoritative presentation inputs retained by this workflow contract:
+# - admin/templates/retro-video-template.html
+# - resources/css/retro-video-pages.css
+
 on:
   workflow_dispatch:
 
