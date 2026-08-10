@@ -4,8 +4,8 @@
   "officialHost": "www.zzap64.co.uk",
   "totals": {
     "awards": 287,
-    "exactPages": 92,
-    "issueFallbacks": 195
+    "exactPages": 98,
+    "issueFallbacks": 189
   },
   "entries": {
     "1985|may|c64|Elite": {
@@ -178,10 +178,10 @@
     },
     "1985|july|c64|Gribbly's Day Out": {
       "issue": 3,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
-      "source": "official-issue-fallback"
+      "page": 96,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=3&page=96",
+      "source": "cached-magazine-reference"
     },
     "1985|august|c64|Thing on a Spring": {
       "issue": 4,
@@ -402,10 +402,10 @@
     },
     "1986|february|c64|The Eidolon": {
       "issue": 10,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap10/zzap10.html",
-      "source": "official-issue-fallback"
+      "page": 28,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=10&page=28",
+      "source": "cached-magazine-reference"
     },
     "1986|february|c64|REVS": {
       "issue": 10,
@@ -640,10 +640,10 @@
     },
     "1986|september|c64|Ghosts 'n Goblins": {
       "issue": 17,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
-      "source": "official-issue-fallback"
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=18",
+      "source": "cached-magazine-reference"
     },
     "1986|september|c64|Knight Games": {
       "issue": 17,
@@ -920,10 +920,10 @@
     },
     "1987|august|c64|The Last Ninja": {
       "issue": 28,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap28/zzap28.html",
-      "source": "official-issue-fallback"
+      "page": 104,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=104",
+      "source": "cached-magazine-reference"
     },
     "1987|september|c64|Zynaps": {
       "issue": 29,
@@ -1830,10 +1830,10 @@
     },
     "1989|september|c64|The New Zealand Story": {
       "issue": 53,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
-      "source": "official-issue-fallback"
+      "page": 9,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=53&page=9",
+      "source": "cached-magazine-reference"
     },
     "1989|september|amiga|Rainbow Islands": {
       "issue": 53,
@@ -1900,10 +1900,10 @@
     },
     "1989|october|c64|Ghosts 'n Goblins": {
       "issue": 54,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
-      "source": "official-issue-fallback"
+      "page": 66,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=66",
+      "source": "cached-magazine-reference"
     },
     "1989|october|amiga|Xenon 2: Megablast": {
       "issue": 54,
