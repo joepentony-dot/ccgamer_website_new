@@ -39,6 +39,7 @@ jobs:
           echo "[seo] Installing dependencies (best effort)..."
           npm install || true
 
+      # Verified public YouTube metadata is read via the repository secret below; never commit the API key itself.
       - name: Sync verified YouTube metadata
         env:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
