@@ -7,8 +7,8 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>Retro Video Collections Builder</title>
   <link rel="icon" href="../favicon.ico" />
-  <link href="../resources/css/ccg-master.css?v=retro-events-editor-7" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-7" rel="stylesheet" />
+  <link href="../resources/css/ccg-master.css?v=retro-events-editor-8" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=retro-events-editor-8" rel="stylesheet" />
 
   <style>
     .retro-editor { max-width: 1120px; margin: 1.5rem auto; padding: 1rem; }
@@ -53,13 +53,17 @@
       <div class="content-switcher">
         <label>Builder Selector</label>
         <div class="retro-actions">
-          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game" onclick="window.location.href='/admin/games-editor.html'">Games</button>
-          <button type="button" class="ccg-btn ccg-btn--primary" data-builder-select="retro">Amiga Demo Music / Events / Specials</button>
+          <a class="ccg-btn ccg-btn--primary" href="/admin/content-publisher.html#video">CCG Content Publisher — Recommended</a>
+          <button type="button" class="ccg-btn ccg-btn--ghost" data-builder-select="game" onclick="window.location.href='/admin/games-editor.html'">Legacy Game Builder</button>
         </div>
-        <span class="mode-pill">Current mode: Non-Game Video Builder</span>
+        <span class="mode-pill">Current mode: Legacy Video Builder</span>
       </div>
 
-      <h1>Non-Game Video Builder</h1>
+      <h1>Legacy Non-Game Video Builder</h1>
+
+      <p class="retro-help">
+        The new <a href="/admin/content-publisher.html#video">CCG Content Publisher</a> combines game and video publishing, YouTube ID handling, video SEO health and automated publishing status in one place. This page remains available as a fallback.
+      </p>
 
       <p>This editor manages:
         <code>/data/retro-events.json</code>,
@@ -174,7 +178,7 @@
 
   </main>
 
-  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-7"></script>
+  <script type="module" src="/admin/js/retro-events-editor.js?v=retro-events-editor-8"></script>
 
 </body>
 </html>
