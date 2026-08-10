@@ -4,13 +4,24 @@ on:
   push:
     branches:
       - codex/zzap64-original-review-links
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "data/zzap64-awards/**"
+      - "data/lemon-cache/**"
+      - "scripts/generate-zzap64-review-links.js"
+      - "js/zzap64-awards.js"
+      - "resources/css/zzap64-awards.css"
+      - "tests/zzap64-review-links.test.mjs"
+      - ".github/workflows/bootstrap-zzap64-review-links.yml"
 
 permissions:
   contents: write
 
 jobs:
   generate:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
