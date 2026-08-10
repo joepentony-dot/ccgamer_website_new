@@ -1,0 +1,2021 @@
+{
+  "version": 1,
+  "generatedFrom": "Existing local Lemon64/LemonAmiga magazine-review cache. Exact page numbers are never guessed; unmatched awards fall back to the correct official Zzap!64 issue.",
+  "officialHost": "www.zzap64.co.uk",
+  "totals": {
+    "awards": 287,
+    "exactPages": 92,
+    "issueFallbacks": 195
+  },
+  "entries": {
+    "1985|may|c64|Elite": {
+      "issue": 1,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1985|may|c64|Pastfinder": {
+      "issue": 1,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap1/zzap1.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|may|c64|Bounty Bob Strikes Back": {
+      "issue": 1,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap1/zzap1.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|may|c64|Spy Hunter": {
+      "issue": 1,
+      "page": 40,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=40",
+      "source": "cached-magazine-reference"
+    },
+    "1985|may|c64|Super Huey": {
+      "issue": 1,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap1/zzap1.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|may|c64|Airwolf": {
+      "issue": 1,
+      "page": 54,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=54",
+      "source": "cached-magazine-reference"
+    },
+    "1985|may|c64|Shadowfire": {
+      "issue": 1,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap1/zzap1.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|may|c64|Cauldron": {
+      "issue": 1,
+      "page": 110,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=110",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|Theatre Europe": {
+      "issue": 2,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap2/zzap2.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|june|c64|On-Court Tennis": {
+      "issue": 2,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap2/zzap2.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|june|c64|M.U.L.E.": {
+      "issue": 2,
+      "page": 24,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=2&page=24",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|Super Pipeline II": {
+      "issue": 2,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap2/zzap2.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|june|c64|Pitstop II": {
+      "issue": 2,
+      "page": 42,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=2&page=42",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|Everyone's a Wally": {
+      "issue": 2,
+      "page": 50,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=2&page=50",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|Gremlins: The Adventure": {
+      "issue": 2,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap2/zzap2.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|june|c64|Lode Runner": {
+      "issue": 2,
+      "page": 73,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=2&page=73",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|International Basketball": {
+      "issue": 2,
+      "page": 77,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=2&page=77",
+      "source": "cached-magazine-reference"
+    },
+    "1985|june|c64|World Series Baseball": {
+      "issue": 2,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap2/zzap2.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|july|c64|Dropzone": {
+      "issue": 3,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=3&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1985|july|c64|Entombed": {
+      "issue": 3,
+      "page": 22,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=3&page=22",
+      "source": "cached-magazine-reference"
+    },
+    "1985|july|c64|Boulder Dash II: Rockford's Revenge": {
+      "issue": 3,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|july|c64|Kikstart": {
+      "issue": 3,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|july|c64|The Dambusters": {
+      "issue": 3,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|july|c64|Strangeloop": {
+      "issue": 3,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|july|c64|Gribbly's Day Out": {
+      "issue": 3,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap3/zzap3.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|august|c64|Thing on a Spring": {
+      "issue": 4,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1985|august|c64|Beach-Head II": {
+      "issue": 4,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1985|august|c64|The Way of the Exploding Fist": {
+      "issue": 4,
+      "page": 30,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=30",
+      "source": "cached-magazine-reference"
+    },
+    "1985|august|c64|Confuzion": {
+      "issue": 4,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap4/zzap4.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|august|c64|The Fourth Protocol": {
+      "issue": 4,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap4/zzap4.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|september|c64|Summer Games II": {
+      "issue": 5,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=5&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1985|september|c64|Frankie Goes to Hollywood": {
+      "issue": 5,
+      "page": 28,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=5&page=28",
+      "source": "cached-magazine-reference"
+    },
+    "1985|september|c64|Finders Keepers": {
+      "issue": 5,
+      "page": 36,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=5&page=36",
+      "source": "cached-magazine-reference"
+    },
+    "1985|september|c64|Skyfox": {
+      "issue": 5,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap5/zzap5.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|september|c64|Rescue on Fractalus!": {
+      "issue": 5,
+      "page": 100,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=5&page=100",
+      "source": "cached-magazine-reference"
+    },
+    "1985|october|c64|Monty on the Run": {
+      "issue": 6,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1985|october|c64|Racing Destruction Set": {
+      "issue": 6,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap6/zzap6.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|october|c64|Pinball Construction Set": {
+      "issue": 6,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap6/zzap6.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|october|c64|Nodes of Yesod": {
+      "issue": 6,
+      "page": 40,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=40",
+      "source": "cached-magazine-reference"
+    },
+    "1985|october|c64|Barry McGuigan World Championship Boxing": {
+      "issue": 6,
+      "page": 108,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=108",
+      "source": "cached-magazine-reference"
+    },
+    "1985|october|c64|Spy vs Spy II: The Island Caper": {
+      "issue": 6,
+      "page": 112,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=112",
+      "source": "cached-magazine-reference"
+    },
+    "1985|november|c64|Little Computer People": {
+      "issue": 7,
+      "page": 8,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=8",
+      "source": "cached-magazine-reference"
+    },
+    "1985|november|c64|Wizard's Lair": {
+      "issue": 7,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap7/zzap7.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|november|c64|Winter Games": {
+      "issue": 7,
+      "page": 104,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=104",
+      "source": "cached-magazine-reference"
+    },
+    "1985|november|c64|Paradroid": {
+      "issue": 7,
+      "page": 120,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=120",
+      "source": "cached-magazine-reference"
+    },
+    "1985|december|c64|Scarabaeus": {
+      "issue": 8,
+      "page": 8,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=8&page=8",
+      "source": "cached-magazine-reference"
+    },
+    "1985|december|c64|Batalyx": {
+      "issue": 8,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|december|c64|ACE": {
+      "issue": 8,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|december|c64|Electrosound": {
+      "issue": 8,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
+      "source": "official-issue-fallback"
+    },
+    "1985|december|c64|Who Dares Wins II": {
+      "issue": 8,
+      "page": 128,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=8&page=128",
+      "source": "cached-magazine-reference"
+    },
+    "1986|january|c64|Koronis Rift": {
+      "issue": 9,
+      "page": 8,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=9&page=8",
+      "source": "cached-magazine-reference"
+    },
+    "1986|january|c64|Ballblazer": {
+      "issue": 9,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap9/zzap9.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|january|c64|Robin of the Wood": {
+      "issue": 9,
+      "page": 48,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=9&page=48",
+      "source": "cached-magazine-reference"
+    },
+    "1986|january|c64|The Temple of Apshai Trilogy": {
+      "issue": 9,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap9/zzap9.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|february|c64|Fight Night": {
+      "issue": 10,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap10/zzap10.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|february|c64|Bounder": {
+      "issue": 10,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=10&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1986|february|c64|The Eidolon": {
+      "issue": 10,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap10/zzap10.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|february|c64|REVS": {
+      "issue": 10,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap10/zzap10.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Mercenary": {
+      "issue": 11,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap11/zzap11.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Arc of Yesod": {
+      "issue": 11,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap11/zzap11.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Hardball": {
+      "issue": 11,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap11/zzap11.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Borrowed Time": {
+      "issue": 11,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap11/zzap11.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Germany 1985": {
+      "issue": 11,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap11/zzap11.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|march|c64|Uridium": {
+      "issue": 11,
+      "page": 100,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=11&page=100",
+      "source": "cached-magazine-reference"
+    },
+    "1986|april|c64|Zoids": {
+      "issue": 12,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap12/zzap12.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|april|c64|Spellbreaker": {
+      "issue": 12,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap12/zzap12.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|april|c64|Questron": {
+      "issue": 12,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap12/zzap12.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|april|c64|Field of Fire": {
+      "issue": 12,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap12/zzap12.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|may|c64|Thrust": {
+      "issue": 13,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap13/zzap13.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|may|c64|Alter Ego": {
+      "issue": 13,
+      "page": 24,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=13&page=24",
+      "source": "cached-magazine-reference"
+    },
+    "1986|may|c64|Super Bowl": {
+      "issue": 13,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap13/zzap13.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|may|c64|Ultima IV": {
+      "issue": 13,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap13/zzap13.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|june|c64|Cauldron II": {
+      "issue": 14,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1986|june|c64|Starquake": {
+      "issue": 14,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1986|june|c64|International Karate": {
+      "issue": 14,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|june|c64|Spellbound": {
+      "issue": 14,
+      "page": 30,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=30",
+      "source": "cached-magazine-reference"
+    },
+    "1986|june|c64|Doomdark's Revenge": {
+      "issue": 14,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|june|c64|Kentilla": {
+      "issue": 14,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|june|c64|Spindizzy": {
+      "issue": 14,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|june|c64|Fairlight": {
+      "issue": 14,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|july|c64|Leaderboard": {
+      "issue": 15,
+      "page": 19,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=15&page=19",
+      "source": "cached-magazine-reference"
+    },
+    "1986|july|c64|Boulder Dash III": {
+      "issue": 15,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap15/zzap15.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|july|c64|HES Games": {
+      "issue": 15,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap15/zzap15.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|july|c64|Sentinel": {
+      "issue": 15,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap15/zzap15.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|july|c64|Slamball": {
+      "issue": 15,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap15/zzap15.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|august|c64|Green Beret": {
+      "issue": 16,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=16&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1986|august|c64|Tau Ceti": {
+      "issue": 16,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=16&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1986|august|c64|Kikstart II": {
+      "issue": 16,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap16/zzap16.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|august|c64|Infiltrator": {
+      "issue": 16,
+      "page": 108,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=16&page=108",
+      "source": "cached-magazine-reference"
+    },
+    "1986|september|c64|ARAC": {
+      "issue": 17,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|september|c64|Ghosts 'n Goblins": {
+      "issue": 17,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|september|c64|Knight Games": {
+      "issue": 17,
+      "page": 30,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=30",
+      "source": "cached-magazine-reference"
+    },
+    "1986|september|c64|The Second City": {
+      "issue": 17,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|september|c64|Graphic Adventure Creator": {
+      "issue": 17,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|september|c64|Jewels of Darkness": {
+      "issue": 17,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap17/zzap17.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|september|c64|Split Personalities": {
+      "issue": 17,
+      "page": 116,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=116",
+      "source": "cached-magazine-reference"
+    },
+    "1986|october|c64|Beyond the Forbidden Forest": {
+      "issue": 18,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=18&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1986|october|c64|Powerplay": {
+      "issue": 18,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap18/zzap18.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|october|c64|Parallax": {
+      "issue": 18,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap18/zzap18.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|october|c64|Iridis Alpha": {
+      "issue": 18,
+      "page": 108,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=18&page=108",
+      "source": "cached-magazine-reference"
+    },
+    "1986|october|c64|Super Cycle": {
+      "issue": 18,
+      "page": 112,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=18&page=112",
+      "source": "cached-magazine-reference"
+    },
+    "1986|november|c64|World Games": {
+      "issue": 19,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=19&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1986|november|c64|Dan Dare": {
+      "issue": 19,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap19/zzap19.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|november|c64|Vietnam": {
+      "issue": 19,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap19/zzap19.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|november|c64|Sanxion": {
+      "issue": 19,
+      "page": 122,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=19&page=122",
+      "source": "cached-magazine-reference"
+    },
+    "1986|november|c64|Trivial Pursuit": {
+      "issue": 19,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap19/zzap19.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|december|c64|The Sentinel": {
+      "issue": 20,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|december|c64|The Sacred Armour of Antiriad": {
+      "issue": 20,
+      "page": 34,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=20&page=34",
+      "source": "cached-magazine-reference"
+    },
+    "1986|december|c64|The Pawn": {
+      "issue": 20,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|december|c64|Bobby Bearing": {
+      "issue": 20,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|december|c64|Trailblazer": {
+      "issue": 20,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
+      "source": "official-issue-fallback"
+    },
+    "1986|december|c64|Boulder Dash Construction Kit": {
+      "issue": 20,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap20/zzap20.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|january|c64|The Bard's Tale": {
+      "issue": 21,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap21/zzap21.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|february|c64|Gauntlet": {
+      "issue": 22,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=22&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1987|february|c64|Moonmist": {
+      "issue": 22,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap22/zzap22.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|february|c64|Silicon Dreams": {
+      "issue": 22,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap22/zzap22.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|february|c64|Escape from Singe's Castle": {
+      "issue": 22,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap22/zzap22.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|february|c64|Park Patrol": {
+      "issue": 22,
+      "page": 114,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=22&page=114",
+      "source": "cached-magazine-reference"
+    },
+    "1987|february|c64|They Stole a Million": {
+      "issue": 22,
+      "page": 116,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=22&page=116",
+      "source": "cached-magazine-reference"
+    },
+    "1987|march|c64|Mutants": {
+      "issue": 23,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap23/zzap23.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|april|c64|Gunship": {
+      "issue": 24,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap24/zzap24.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|may|c64|Into the Eagle's Nest": {
+      "issue": 25,
+      "page": 26,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=25&page=26",
+      "source": "cached-magazine-reference"
+    },
+    "1987|may|c64|Hollywood Hijinx": {
+      "issue": 25,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap25/zzap25.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|june|c64|Zenji": {
+      "issue": 26,
+      "page": 14,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=26&page=14",
+      "source": "cached-magazine-reference"
+    },
+    "1987|june|c64|Zolyx": {
+      "issue": 26,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap26/zzap26.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|july|c64|Wizball": {
+      "issue": 27,
+      "page": 14,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=27&page=14",
+      "source": "cached-magazine-reference"
+    },
+    "1987|july|c64|World Class Leaderboard": {
+      "issue": 27,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap27/zzap27.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|august|c64|Head Over Heels": {
+      "issue": 28,
+      "page": 14,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=14",
+      "source": "cached-magazine-reference"
+    },
+    "1987|august|c64|The Lurking Horror": {
+      "issue": 28,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap28/zzap28.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|august|c64|Defender of the Crown": {
+      "issue": 28,
+      "page": 98,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=98",
+      "source": "cached-magazine-reference"
+    },
+    "1987|august|c64|The Last Ninja": {
+      "issue": 28,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap28/zzap28.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|september|c64|Zynaps": {
+      "issue": 29,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|september|c64|Re-Bounder": {
+      "issue": 29,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|september|c64|California Games": {
+      "issue": 29,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=29&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1987|september|c64|Guild of Thieves": {
+      "issue": 29,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|september|c64|Star Paws": {
+      "issue": 29,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|october|c64|Bubble Bobble": {
+      "issue": 30,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=30&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1987|october|c64|Red L.E.D.": {
+      "issue": 30,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap30/zzap30.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|october|c64|Mega Apocalypse": {
+      "issue": 30,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap30/zzap30.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|october|c64|B-24 Flight Simulator": {
+      "issue": 30,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap30/zzap30.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|october|c64|Arcade Classics": {
+      "issue": 30,
+      "page": 107,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=30&page=107",
+      "source": "cached-magazine-reference"
+    },
+    "1987|october|c64|Revenge of the Mutant Camels II": {
+      "issue": 30,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap30/zzap30.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|november|c64|Renegade": {
+      "issue": 31,
+      "page": 11,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=31&page=11",
+      "source": "cached-magazine-reference"
+    },
+    "1987|november|c64|International Karate Plus": {
+      "issue": 31,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=31&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1987|november|c64|Morpheus": {
+      "issue": 31,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap31/zzap31.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|november|c64|Quedex": {
+      "issue": 31,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap31/zzap31.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|december|c64|Maniac Mansion": {
+      "issue": 32,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1987|december|c64|Buggy Boy": {
+      "issue": 32,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1987|december|c64|Shoot 'Em Up Construction Kit": {
+      "issue": 32,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|december|c64|Russia: The Great War in the East": {
+      "issue": 32,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|december|c64|Zig Zag": {
+      "issue": 32,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|december|c64|Bangkok Knights": {
+      "issue": 32,
+      "page": 152,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=152",
+      "source": "cached-magazine-reference"
+    },
+    "1987|december|c64|Computer Scrabble Deluxe": {
+      "issue": 32,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap32/zzap32.html",
+      "source": "official-issue-fallback"
+    },
+    "1987|december|c64|Nebulus": {
+      "issue": 32,
+      "page": 156,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=32&page=156",
+      "source": "cached-magazine-reference"
+    },
+    "1988|january|c64|Combat School": {
+      "issue": 33,
+      "page": 11,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=11",
+      "source": "cached-magazine-reference"
+    },
+    "1988|january|c64|Driller": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|january|c64|Tetris": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|january|c64|Chuck Yeager's Advanced Flight Trainer": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|january|c64|Battles in Normandy": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|january|c64|Cosmic Causeway": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|january|c64|Skate or Die": {
+      "issue": 33,
+      "page": 160,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=160",
+      "source": "cached-magazine-reference"
+    },
+    "1988|january|c64|R.I.S.K.": {
+      "issue": 33,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|february|c64|Match Day II": {
+      "issue": 34,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=34&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1988|february|c64|Hunter's Moon": {
+      "issue": 34,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap34/zzap34.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|february|c64|Platoon": {
+      "issue": 34,
+      "page": 88,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=34&page=88",
+      "source": "cached-magazine-reference"
+    },
+    "1988|march|c64|Project Stealth Fighter": {
+      "issue": 35,
+      "page": 24,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=35&page=24",
+      "source": "cached-magazine-reference"
+    },
+    "1988|march|c64|Predator": {
+      "issue": 35,
+      "page": 92,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=35&page=92",
+      "source": "cached-magazine-reference"
+    },
+    "1988|march|c64|I, Ball II": {
+      "issue": 35,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap35/zzap35.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|march|c64|Battle Valley": {
+      "issue": 35,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap35/zzap35.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|march|c64|Zybex": {
+      "issue": 35,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap35/zzap35.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|april|amiga|Time Bandit": {
+      "issue": 36,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap36/zzap36.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|april|c64|Strike Fleet": {
+      "issue": 36,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap36/zzap36.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|april|c64|4th & Inches": {
+      "issue": 36,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap36/zzap36.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|may|c64|Samurai Warrior: The Battles of Usagi Yojimbo": {
+      "issue": 37,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=37&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1988|may|c64|Cybernoid": {
+      "issue": 37,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap37/zzap37.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|may|c64|Pac-Land": {
+      "issue": 37,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap37/zzap37.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|june|c64|Impossible Mission II": {
+      "issue": 38,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap38/zzap38.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|june|c64|Alien Syndrome": {
+      "issue": 38,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap38/zzap38.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|june|c64|Train Robbers": {
+      "issue": 38,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap38/zzap38.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|june|c64|Draconus": {
+      "issue": 38,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap38/zzap38.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|july|c64|Bionic Commando": {
+      "issue": 39,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=39&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1988|july|c64|The Great Giana Sisters": {
+      "issue": 39,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=39&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1988|august|c64|Barbarian II: The Dungeon of Drax": {
+      "issue": 40,
+      "page": 14,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=40&page=14",
+      "source": "cached-magazine-reference"
+    },
+    "1988|august|c64|Hawkeye": {
+      "issue": 40,
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=40&page=20",
+      "source": "cached-magazine-reference"
+    },
+    "1988|august|c64|Dark Side": {
+      "issue": 40,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap40/zzap40.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|august|c64|Bruce Lee": {
+      "issue": 40,
+      "page": 86,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=40&page=86",
+      "source": "cached-magazine-reference"
+    },
+    "1988|september|c64|Last Ninja 2": {
+      "issue": 41,
+      "page": 16,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=41&page=16",
+      "source": "cached-magazine-reference"
+    },
+    "1988|september|c64|Salamander": {
+      "issue": 41,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap41/zzap41.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|september|c64|Wasteland": {
+      "issue": 41,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap41/zzap41.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|september|c64|Slimey's Mine": {
+      "issue": 41,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap41/zzap41.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|october|c64|Katakis": {
+      "issue": 42,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|october|c64|Decisive Battles of the American Civil War Volume II": {
+      "issue": 42,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|october|amiga|Buggy Boy": {
+      "issue": 42,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|october|amiga|Carrier Command": {
+      "issue": 42,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|october|amiga|Starglider 2": {
+      "issue": 42,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap42/zzap42.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|november|c64|Cybernoid II: The Revenge": {
+      "issue": 43,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap43/zzap43.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|november|c64|Armalyte": {
+      "issue": 43,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap43/zzap43.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|november|c64|Emlyn Hughes International Soccer": {
+      "issue": 43,
+      "page": 29,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=43&page=29",
+      "source": "cached-magazine-reference"
+    },
+    "1988|november|amiga|StarRay": {
+      "issue": 43,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap43/zzap43.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|c64|Bombuzal": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|c64|Slayer": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Ultima IV": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Fish!": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|c64|Corruption": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Nebulus": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Rocket Ranger": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Cybernoid": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1988|december|amiga|Impossible Mission II": {
+      "issue": 44,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap44/zzap44.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|january|c64|Operation Wolf": {
+      "issue": 45,
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=45&page=18",
+      "source": "cached-magazine-reference"
+    },
+    "1989|january|amiga|Speedball": {
+      "issue": 45,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap45/zzap45.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|january|amiga|Pac-Mania": {
+      "issue": 45,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap45/zzap45.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|january|amiga|Bombuzal": {
+      "issue": 45,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap45/zzap45.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|january|amiga|Joan of Arc": {
+      "issue": 45,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap45/zzap45.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|february|c64|Total Eclipse": {
+      "issue": 46,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap46/zzap46.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|february|c64|MicroProse Soccer": {
+      "issue": 46,
+      "page": 25,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=46&page=25",
+      "source": "cached-magazine-reference"
+    },
+    "1989|february|c64|Ingrid's Back": {
+      "issue": 46,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap46/zzap46.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|february|amiga|Elite": {
+      "issue": 46,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap46/zzap46.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|march|c64|LED Storm": {
+      "issue": 47,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|march|amiga|LED Storm": {
+      "issue": 47,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|march|amiga|Rocket Ranger": {
+      "issue": 47,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|march|c64|Batman: The Caped Crusader": {
+      "issue": 47,
+      "page": 32,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=47&page=32",
+      "source": "cached-magazine-reference"
+    },
+    "1989|march|c64|Zamzara": {
+      "issue": 47,
+      "page": 63,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=47&page=63",
+      "source": "cached-magazine-reference"
+    },
+    "1989|march|c64|Zak McKracken": {
+      "issue": 47,
+      "page": 70,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=47&page=70",
+      "source": "cached-magazine-reference"
+    },
+    "1989|march|amiga|Zak McKracken": {
+      "issue": 47,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|march|amiga|TV Sports Football": {
+      "issue": 47,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap47/zzap47.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|amiga|Populous": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|c64|Pastfinder": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|amiga|Dungeon Master": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|amiga|R-Type": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|c64|Incredible Shrinking Sphere": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|april|amiga|Incredible Shrinking Sphere": {
+      "issue": 48,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|c64|Renegade III": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|amiga|Cybernoid II": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|amiga|Voyager": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|c64|Silkworm": {
+      "issue": 49,
+      "page": 70,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=49&page=70",
+      "source": "cached-magazine-reference"
+    },
+    "1989|may|amiga|Silkworm": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|amiga|RoboCop": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|amiga|War in Middle Earth": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|may|c64|Heavy Metal Paradroid": {
+      "issue": 49,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap49/zzap49.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|c64|Speedball": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|amiga|Battlehawks 1942": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|amiga|Powerdrome": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|amiga|The Kristal": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|c64|Tetris": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|c64|Manic Miner": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|amiga|Forgotten Worlds": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|c64|Forgotten Worlds": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|june|amiga|Kick Off": {
+      "issue": 50,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap50/zzap50.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|c64|Phobia": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|c64|Project Firestart": {
+      "issue": 51,
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=51&page=12",
+      "source": "cached-magazine-reference"
+    },
+    "1989|july|amiga|The Duel: Test Drive II": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|c64|Storm Across Europe": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|amiga|Archipelagos": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|amiga|Blood Money": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|amiga|Millennium 2.2": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|amiga|Federation of Free Traders": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|july|amiga|Wicked": {
+      "issue": 51,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap51/zzap51.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|august|c64|Citadel": {
+      "issue": 52,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap52/zzap52.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|august|amiga|Astaroth": {
+      "issue": 52,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap52/zzap52.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|august|amiga|The New Zealand Story": {
+      "issue": 52,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap52/zzap52.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|c64|The New Zealand Story": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|amiga|Rainbow Islands": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|c64|Rainbow Islands": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|amiga|Fire Brigade": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|c64|Rambo": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|amiga|Kult": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|september|amiga|Fiendish Freddy's Big Top O' Fun": {
+      "issue": 53,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap53/zzap53.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|c64|Tusker": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|amiga|APB": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|c64|APB": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|c64|Ghosts 'n Goblins": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|amiga|Xenon 2: Megablast": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|amiga|Falcon": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|amiga|F-16 Combat Pilot": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|october|amiga|Strider": {
+      "issue": 54,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap54/zzap54.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|november|c64|Batman: The Movie": {
+      "issue": 55,
+      "page": 9,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=9",
+      "source": "cached-magazine-reference"
+    },
+    "1989|november|amiga|Batman: The Movie": {
+      "issue": 55,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap55/zzap55.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|november|c64|Pitstop II": {
+      "issue": 55,
+      "page": 49,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=49",
+      "source": "cached-magazine-reference"
+    },
+    "1989|november|c64|Wizball": {
+      "issue": 55,
+      "page": 50,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=50",
+      "source": "cached-magazine-reference"
+    },
+    "1989|november|c64|Power Drift": {
+      "issue": 55,
+      "page": 68,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=68",
+      "source": "cached-magazine-reference"
+    },
+    "1989|november|c64|The Untouchables": {
+      "issue": 55,
+      "page": 76,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=76",
+      "source": "cached-magazine-reference"
+    },
+    "1989|december|c64|Turbo OutRun": {
+      "issue": 56,
+      "page": 8,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=56&page=8",
+      "source": "cached-magazine-reference"
+    },
+    "1989|december|c64|Myth": {
+      "issue": 56,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap56/zzap56.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|december|amiga|North & South": {
+      "issue": 56,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap56/zzap56.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|december|amiga|Stunt Car Racer": {
+      "issue": 56,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap56/zzap56.html",
+      "source": "official-issue-fallback"
+    },
+    "1989|december|c64|Stunt Car Racer": {
+      "issue": 56,
+      "page": 74,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=56&page=74",
+      "source": "cached-magazine-reference"
+    },
+    "1989|december|amiga|Interphase": {
+      "issue": 56,
+      "page": null,
+      "precision": "issue",
+      "url": "https://www.zzap64.co.uk/zzap56/zzap56.html",
+      "source": "official-issue-fallback"
+    }
+  }
+}
