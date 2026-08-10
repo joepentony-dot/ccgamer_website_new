@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 const html = fs.readFileSync('admin/content-publisher.html', 'utf8');
+const adminIndex = fs.readFileSync('admin/index.html', 'utf8');
 const js = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
 const css = fs.readFileSync('resources/css/ccg-content-publisher.css', 'utf8');
 
@@ -12,6 +13,14 @@ test('publisher is a private role-gated admin page', () => {
   assert.match(js, /ensureRole\(\['editor', 'admin', 'superadmin'\]\)/);
   assert.doesNotMatch(html, /<style[\s>]/i);
   assert.match(html, /resources\/css\/ccg-content-publisher\.css/);
+});
+
+test('default admin route forwards safely to the unified publisher', () => {
+  assert.match(adminIndex, /<meta name="robots" content="noindex,nofollow"/);
+  assert.match(adminIndex, /url=\/admin\/content-publisher\.html/);
+  assert.match(adminIndex, /window\.location\.replace\(target\)/);
+  assert.match(adminIndex, /window\.location\.search \+ window\.location\.hash/);
+  assert.doesNotMatch(adminIndex, /games\/games\.json|YOUTUBE_API_KEY|github_token/i);
 });
 
 test('publisher keeps the YouTube API key server-side', () => {
