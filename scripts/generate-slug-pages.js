@@ -77,22 +77,34 @@ function getImageMetadata(filePath) {
     if (!fs.existsSync(filePath)) return metadata;
 
     const buffer = fs.readFileSync(filePath);
-    if (extension === ".png" && buffer.length >= 24) {
+    const isPng = buffer.length >= 24 &&
+        buffer[0] === 0x89 &&
+        buffer.toString("ascii", 1, 4) === "PNG";
+    const isGif = buffer.length >= 10 &&
+        (buffer.toString("ascii", 0, 6) === "GIF87a" || buffer.toString("ascii", 0, 6) === "GIF89a");
+    const isWebp = buffer.length >= 30 &&
+        buffer.toString("ascii", 0, 4) === "RIFF" &&
+        buffer.toString("ascii", 8, 12) === "WEBP";
+    const isJpeg = buffer.length >= 4 && buffer[0] === 0xff && buffer[1] === 0xd8;
+
+    // Dimensions are detected from the actual bytes. MIME follows the public
+    // filename because GitHub Pages derives its Content-Type from that suffix.
+    if (isPng) {
         metadata.width = buffer.readUInt32BE(16);
         metadata.height = buffer.readUInt32BE(20);
         return metadata;
     }
-    if (extension === ".gif" && buffer.length >= 10) {
+    if (isGif) {
         metadata.width = buffer.readUInt16LE(6);
         metadata.height = buffer.readUInt16LE(8);
         return metadata;
     }
-    if (extension === ".webp" && buffer.length >= 30 && buffer.toString("ascii", 12, 16) === "VP8X") {
+    if (isWebp && buffer.toString("ascii", 12, 16) === "VP8X") {
         metadata.width = 1 + buffer.readUIntLE(24, 3);
         metadata.height = 1 + buffer.readUIntLE(27, 3);
         return metadata;
     }
-    if ((extension === ".jpg" || extension === ".jpeg") && buffer.length >= 4) {
+    if (isJpeg) {
         let offset = 2;
         while (offset + 9 < buffer.length) {
             if (buffer[offset] !== 0xff) {
