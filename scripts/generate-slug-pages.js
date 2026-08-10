@@ -687,6 +687,8 @@ if (require.main === module) {
 module.exports = {
     buildCanonicalHtml,
     buildDescription,
+    buildSocialMetaBlock,
+    getImageMetadata,
     getCanonicalRewriteReason,
     getExpectedPageArtifacts,
     normalizeSlug,
