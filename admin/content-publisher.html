@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="content-publisher">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Content Publisher</title>
+  <meta name="description" content="Private CCG publishing tool for games, videos and retro features." />
+  <link rel="icon" href="../favicon.ico" />
+  <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-admin.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-content-publisher.css" />
+</head>
+<body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64" data-publisher-ready="false">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="publisher-app" data-publisher-app>
+    <header class="publisher-header">
+      <div>
+        <p class="publisher-kicker">CHEEKY COMMODORE GAMER · ADMIN</p>
+        <h1>CCG Content Publisher</h1>
+        <p class="publisher-intro">Add a game or video once. The existing GitHub publishing chain then regenerates pages, verified YouTube metadata, VideoObject markup, chapters, the video library, sitemaps and validation.</p>
+      </div>
+      <div class="publisher-header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/admin.html">Admin Home</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/videos/" target="_blank" rel="noopener noreferrer">Video Library</a>
+        <button class="ccg-btn ccg-btn--secondary" type="button" data-action="refresh">Refresh Live Data</button>
+      </div>
+    </header>
+
+    <section class="publisher-health" aria-labelledby="publisher-health-title">
+      <div class="publisher-section-heading">
+        <div>
+          <h2 id="publisher-health-title">Publishing health</h2>
+          <p>Live source counts and verified YouTube coverage. This page never reads or exposes the YouTube API key.</p>
+        </div>
+        <span class="publisher-badge" data-connection-badge>Loading…</span>
+      </div>
+
+      <div class="publisher-stat-grid">
+        <article class="publisher-stat">
+          <span class="publisher-stat-label">Games</span>
+          <strong data-stat="games">—</strong>
+          <small>games.json records</small>
+        </article>
+        <article class="publisher-stat">
+          <span class="publisher-stat-label">Public retro videos</span>
+          <strong data-stat="retro-public">—</strong>
+          <small>specials, events and demo/music</small>
+        </article>
+        <article class="publisher-stat">
+          <span class="publisher-stat-label">Site video IDs</span>
+          <strong data-stat="video-ids">—</strong>
+          <small>unique public + game IDs</small>
+        </article>
+        <article class="publisher-stat">
+          <span class="publisher-stat-label">Verified metadata</span>
+          <strong data-stat="verified">—</strong>
+          <small>YouTube Data API records</small>
+        </article>
+      </div>
+
+      <div class="publisher-health-row">
+        <p class="publisher-health-copy" data-health-summary>Loading current video metadata coverage…</p>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="show-unverified">Show unverified IDs</button>
+      </div>
+      <div class="publisher-unverified" data-unverified-list hidden></div>
+    </section>
+
+    <nav class="publisher-tabs" aria-label="Publisher sections">
+      <button class="publisher-tab is-active" type="button" data-tab="game" aria-selected="true">Add Game</button>
+      <button class="publisher-tab" type="button" data-tab="video" aria-selected="false">Add Video / Feature</button>
+      <button class="publisher-tab" type="button" data-tab="status" aria-selected="false">Publishing Status</button>
+    </nav>
+
+    <section class="publisher-panel is-active" data-panel="game">
+      <div class="publisher-section-heading">
+        <div>
+          <h2>Add a C64 or Amiga game</h2>
+          <p>The publisher commits the source record only. Existing workflows build the canonical page, archives, search data, video SEO and sitemaps.</p>
+        </div>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-game">Reset Game Form</button>
+      </div>
+
+      <form class="publisher-form" data-game-form novalidate>
+        <div class="publisher-grid publisher-grid--2">
+          <label>Title *
+            <input type="text" data-game-field="title" autocomplete="off" required />
+          </label>
+          <label>System *
+            <select data-game-field="system" required>
+              <option value="">Select</option>
+              <option value="C64">C64</option>
+              <option value="AMIGA">AMIGA</option>
+            </select>
+          </label>
+          <label>Year *
+            <input type="number" min="1970" max="2100" data-game-field="year" required />
+          </label>
+          <label>CCG rating *
+            <input type="number" min="1" max="10" step="1" value="6" data-game-field="ccg_rating" required />
+          </label>
+          <label>Slug *
+            <input type="text" data-game-field="slug" required />
+            <small>Canonical URL: <span data-game-canonical-preview>/games/…/</span></small>
+          </label>
+          <label>ID *
+            <input type="text" data-game-field="id" required />
+            <small>Lowercase snake_case.</small>
+          </label>
+        </div>
+
+        <label>Description *
+          <textarea rows="5" data-game-field="description" required></textarea>
+        </label>
+
+        <div class="publisher-grid publisher-grid--2">
+          <label>YouTube URL *
+            <input type="url" data-game-field="youtubeUrl" placeholder="https://www.youtube.com/watch?v=…" required />
+          </label>
+          <label>YouTube ID *
+            <input type="text" maxlength="11" data-game-field="videoId" required />
+            <small>Filled automatically when a YouTube URL is pasted.</small>
+          </label>
+        </div>
+
+        <div class="publisher-video-preview" data-video-preview="game">
+          <div class="publisher-video-thumb-wrap">
+            <img data-video-thumb="game" alt="YouTube video thumbnail preview" hidden />
+          </div>
+          <div>
+            <strong data-video-status="game">Paste a YouTube URL to begin.</strong>
+            <p data-video-detail="game">The secure GitHub Action will fetch the official upload date, duration, title, thumbnail and chapters after publishing.</p>
+          </div>
+        </div>
+
+        <div class="publisher-grid publisher-grid--2">
+          <div>
+            <span class="publisher-label">Genres *</span>
+            <div class="publisher-chip-grid" data-game-genres></div>
+          </div>
+          <div>
+            <span class="publisher-label">Collections</span>
+            <div class="publisher-chip-grid" data-game-collections></div>
+          </div>
+        </div>
+
+        <div class="publisher-grid publisher-grid--2">
+          <label>Thumbnail path *
+            <input type="text" data-game-field="thumbnail" placeholder="resources/images/thumbnails/all/game-name.jpg" required />
+          </label>
+          <label>Thumbnail file (optional)
+            <input type="file" accept="image/png,image/jpeg,image/webp" data-game-thumbnail-file />
+            <small>If selected, it is committed atomically with games.json at the path above.</small>
+          </label>
+          <label>PDF / manual URL
+            <input type="url" data-game-field="pdf" />
+          </label>
+          <label>Lemon64 URL
+            <input type="url" data-game-field="lemonUrl" />
+          </label>
+          <label>Disk/download URLs
+            <textarea rows="3" data-game-field="disk" placeholder="One URL per line"></textarea>
+          </label>
+          <label>Game music files
+            <textarea rows="3" data-game-field="music" placeholder="filename.mp3, second-file.mp3"></textarea>
+          </label>
+        </div>
+
+        <div class="publisher-card publisher-card--subtle">
+          <h3>Credits</h3>
+          <div class="publisher-grid publisher-grid--2">
+            <label>Publisher *
+              <input type="text" data-game-field="publisher" placeholder="Publisher 1, Publisher 2" required />
+            </label>
+            <label>Developer
+              <input type="text" data-game-field="developer" />
+            </label>
+            <label>Programmer(s)
+              <input type="text" data-game-field="coder" placeholder="Name 1, Name 2" />
+            </label>
+            <label>Graphics
+              <input type="text" data-game-field="graphics" placeholder="Name 1, Name 2" />
+            </label>
+            <label>Musician(s)
+              <input type="text" data-game-field="musician" placeholder="Name 1, Name 2" />
+            </label>
+            <label>Producer
+              <input type="text" data-game-field="producer" />
+            </label>
+            <label>Re-release labels
+              <input type="text" data-game-field="reReleaser" placeholder="Kixx, Hit Squad" />
+            </label>
+            <label>Rating reason
+              <input type="text" data-game-field="ccg_rating_reason" />
+            </label>
+          </div>
+        </div>
+
+        <div class="publisher-validation" data-game-validation hidden></div>
+
+        <div class="publisher-submit-row">
+          <div>
+            <strong>After publish:</strong>
+            <span>game page → verified video metadata → VideoObject → video library → sitemaps → validation</span>
+          </div>
+          <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-game>Publish Game</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="publisher-panel" data-panel="video" hidden>
+      <div class="publisher-section-heading">
+        <div>
+          <h2>Add a video or feature</h2>
+          <p>Use this for Retro Specials, Zzap!64 videos, Retro Events and Amiga Demo/Music pages.</p>
+        </div>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-video">Reset Video Form</button>
+      </div>
+
+      <form class="publisher-form" data-feature-form novalidate>
+        <div class="publisher-grid publisher-grid--2">
+          <label>Section *
+            <select data-feature-field="type" required>
+              <option value="retro-specials">Retro Specials / Zzap!64</option>
+              <option value="retro-events">Retro Events</option>
+              <option value="amiga-demo-music">Amiga Demo / Music</option>
+            </select>
+          </label>
+          <label>Title *
+            <input type="text" data-feature-field="title" required />
+          </label>
+          <label>Slug *
+            <input type="text" data-feature-field="slug" required />
+          </label>
+          <label class="publisher-inline-check">
+            <input type="checkbox" data-feature-field="membersOnly" />
+            <span>Members only</span>
+          </label>
+        </div>
+
+        <div class="publisher-grid publisher-grid--2">
+          <label>YouTube URL *
+            <input type="url" data-feature-field="youtubeUrl" placeholder="https://www.youtube.com/watch?v=…" required />
+          </label>
+          <label>YouTube ID *
+            <input type="text" maxlength="11" data-feature-field="youtubeId" required />
+          </label>
+        </div>
+
+        <div class="publisher-video-preview" data-video-preview="feature">
+          <div class="publisher-video-thumb-wrap">
+            <img data-video-thumb="feature" alt="YouTube feature thumbnail preview" hidden />
+          </div>
+          <div>
+            <strong data-video-status="feature">Paste a YouTube URL to begin.</strong>
+            <p data-video-detail="feature">If the YouTube description contains timestamps, the next SEO run can turn them into visible chapters and Clip Key Moments.</p>
+          </div>
+        </div>
+
+        <label>Summary *
+          <textarea rows="3" data-feature-field="summary" required></textarea>
+        </label>
+        <label>Description *
+          <textarea rows="5" data-feature-field="description" required></textarea>
+        </label>
+
+        <div class="publisher-grid publisher-grid--2">
+          <label>SEO title
+            <input type="text" data-feature-field="seoTitle" />
+            <small>Optional. A sensible title is generated if left blank.</small>
+          </label>
+          <label>SEO description
+            <textarea rows="3" data-feature-field="seoDescription"></textarea>
+          </label>
+          <label>Related feature slugs
+            <textarea rows="3" data-feature-field="relatedSlugs" placeholder="slug-one, slug-two"></textarea>
+          </label>
+          <label>Related game slugs
+            <textarea rows="3" data-feature-field="relatedGameSlugs" placeholder="game-one, game-two"></textarea>
+            <small>Optional discovery hint. Automatic game linking still runs from video metadata/content.</small>
+          </label>
+        </div>
+
+        <div class="publisher-validation" data-feature-validation hidden></div>
+
+        <div class="publisher-submit-row">
+          <div>
+            <strong>After publish:</strong>
+            <span>watch page → YouTube verification → VideoObject → chapters/Key Moments → video library → video sitemap</span>
+          </div>
+          <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-feature>Publish Video / Feature</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="publisher-panel" data-panel="status" hidden>
+      <div class="publisher-section-heading">
+        <div>
+          <h2>Publishing status</h2>
+          <p>This mirrors the automated work that happens after the source data is committed.</p>
+        </div>
+      </div>
+
+      <ol class="publisher-pipeline" data-pipeline>
+        <li data-pipeline-step="source"><span>1</span><div><strong>Source committed</strong><small>games.json or the selected video data file</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="metadata"><span>2</span><div><strong>YouTube metadata</strong><small>verified upload date, duration, title and thumbnail</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="pages"><span>3</span><div><strong>Pages & structured data</strong><small>canonical page, VideoGame/VideoObject and Clip markup</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="library"><span>4</span><div><strong>Video Library</strong><small>/videos/ refreshed</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="sitemaps"><span>5</span><div><strong>Sitemaps</strong><small>existing page/game/video sitemap files regenerated</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="validation"><span>6</span><div><strong>Validation</strong><small>SEO, sitemaps and protected-file checks</small></div><b>Waiting</b></li>
+        <li data-pipeline-step="live"><span>7</span><div><strong>Live site</strong><small>final canonical URL responds successfully</small></div><b>Waiting</b></li>
+      </ol>
+
+      <div class="publisher-log" aria-live="polite">
+        <div class="publisher-log-heading">
+          <strong>Publisher log</strong>
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-action="clear-log">Clear</button>
+        </div>
+        <pre data-publisher-log>No publishing job has been started in this session.</pre>
+      </div>
+    </section>
+
+    <section class="publisher-card publisher-card--connection">
+      <details data-github-details>
+        <summary>GitHub publishing connection</summary>
+        <p class="publisher-connection-copy">The website already uses a browser GitHub token for the legacy Retro Video Builder. This publisher can reuse that token. It never stores or requests your YouTube Data API key; that key remains in GitHub Secrets.</p>
+        <div class="publisher-grid publisher-grid--2">
+          <label>GitHub owner
+            <input type="text" data-github-owner value="joepentony-dot" autocomplete="off" />
+          </label>
+          <label>Repository
+            <input type="text" data-github-repo value="ccgamer_website_new" autocomplete="off" />
+          </label>
+          <label>Branch
+            <input type="text" data-github-branch value="main" autocomplete="off" />
+          </label>
+          <label>GitHub token
+            <input type="password" data-github-token autocomplete="off" />
+          </label>
+        </div>
+        <label class="publisher-inline-check publisher-remember-token">
+          <input type="checkbox" data-remember-token />
+          <span>Remember GitHub token on this browser</span>
+        </label>
+        <div class="publisher-header-actions">
+          <button class="ccg-btn ccg-btn--secondary" type="button" data-action="test-github">Test GitHub Connection</button>
+          <button class="ccg-btn ccg-btn--ghost" type="button" data-action="clear-token">Clear Saved Token</button>
+        </div>
+        <p class="publisher-connection-status" data-github-status>Connection not tested in this session.</p>
+      </details>
+    </section>
+
+    <section class="publisher-card publisher-card--legacy">
+      <h2>Legacy tools</h2>
+      <p>The existing editors remain available as fallbacks while this unified publisher is introduced.</p>
+      <div class="publisher-header-actions">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html">Legacy Game Builder</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/retro-events-editor.html">Legacy Video Builder</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/admin/js/content-publisher.js"></script>
+</body>
+</html>
