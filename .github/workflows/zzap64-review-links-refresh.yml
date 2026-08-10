@@ -7,8 +7,18 @@ on:
     paths:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-overrides.json"
+      - "data/lemon-cache/**"
+      - "games/games.json"
       - "scripts/generate-zzap64-review-links.js"
+      - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/zzap64-bible-client.js"
+      - "js/zzap64-awards.js"
+      - "js/zzap64-game-link-fix.js"
+      - "js/zzap64-review-browser.js"
+      - "zzap64/index.html"
+      - "resources/css/zzap64-reviews.css"
+      - "tests/zzap64-review-links.test.mjs"
+      - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
 
@@ -43,18 +53,27 @@ jobs:
       - name: Validate resolver syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
+          node --check scripts/enrich-zzap64-game-reviews.js
           node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
+          node --check js/zzap64-game-link-fix.js
+          node --check js/zzap64-review-browser.js
 
-      - name: Resolve original Zzap review scans
+      - name: Resolve original Zzap award scans
         run: |
           node scripts/generate-zzap64-review-links.js --live
           node scripts/generate-zzap64-review-links.js
+          node scripts/generate-zzap64-review-links.js --check
+
+      - name: Add all linked game reviews and re-reviews
+        run: |
+          node scripts/enrich-zzap64-game-reviews.js
+          node scripts/enrich-zzap64-game-reviews.js --check
 
       - name: Validate direct scan coverage
         run: |
-          node scripts/generate-zzap64-review-links.js --check
           node --test tests/zzap64-review-links.test.mjs
+          node --test tests/game-zzap-links.test.mjs
           node scripts/audit-zzap64-awards.js
           git diff --check
 
@@ -68,7 +87,7 @@ jobs:
             echo "Zzap review-link map already current."
             exit 0
           fi
-          git commit -m "Auto refresh Zzap64 original review links [skip ci]"
+          git commit -m "Auto refresh Zzap64 all-game review links [skip ci]"
           git push origin HEAD:main
 
       - name: Verify refreshed map reached main
