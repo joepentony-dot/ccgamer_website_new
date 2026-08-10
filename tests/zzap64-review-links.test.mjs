@@ -28,13 +28,16 @@ function awardEntries() {
   });
 }
 
-test('every Zzap award has a safe official magazine destination', () => {
+function rowsForGameSlug(data, slug) {
+  return Object.values(data.entries || {}).filter((row) => row?.gameSlug === slug);
+}
+
+test('every Zzap award keeps its safe official magazine destination when all-game reviews are added', () => {
   const data = readJson('data/zzap64-review-links.json');
   const awards = awardEntries();
 
   assert.equal(data.totals.awards, awards.length);
-  assert.equal(Object.keys(data.entries).length, awards.length);
-  assert.equal(data.totals.exactPages + data.totals.issueFallbacks, awards.length);
+  assert.ok(Object.keys(data.entries).length >= awards.length, 'The full review index may contain non-award reviews in addition to awards.');
   assert.equal(data.totals.issueFallbacks, 0, 'Every indexed award must resolve to a direct original Zzap!64 scan page.');
   assert.equal(data.totals.exactPages, awards.length);
 
@@ -47,17 +50,11 @@ test('every Zzap award has a safe official magazine destination', () => {
     const url = new URL(record.url);
     assert.equal(url.protocol, 'https:');
     assert.equal(url.hostname, 'www.zzap64.co.uk');
-    assert.ok(record.precision === 'page' || record.precision === 'issue');
-
-    if (record.precision === 'page') {
-      assert.ok(Number.isInteger(record.page) && record.page > 0, `Invalid page for ${key}`);
-      assert.equal(url.pathname, '/cgi-bin/displaypage.pl');
-      assert.equal(Number(url.searchParams.get('issue')), record.issue);
-      assert.equal(Number(url.searchParams.get('page')), record.page);
-    } else {
-      assert.equal(record.page, null);
-      assert.equal(record.url, generator.officialIssueUrl(record.issue));
-    }
+    assert.equal(record.precision, 'page');
+    assert.ok(Number.isInteger(record.page) && record.page > 0, `Invalid page for ${key}`);
+    assert.equal(url.pathname, '/cgi-bin/displaypage.pl');
+    assert.equal(Number(url.searchParams.get('issue')), record.issue);
+    assert.equal(Number(url.searchParams.get('page')), record.page);
   });
 });
 
@@ -83,8 +80,30 @@ test('Armalyte resolves to Zzap!64 issue 43 page 24', () => {
   assert.equal(record.url, 'https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=43&page=24');
 });
 
-test('archive renderer exposes original-magazine links without replacing CCG game links', () => {
+test('Caveman Ugh-Lympics exposes both its full-price and budget Zzap reviews', () => {
+  const data = readJson('data/zzap64-review-links.json');
+  const rows = rowsForGameSlug(data, 'caveman-ugh-lympics');
+  const destinations = new Set(rows.map((row) => `${row.issue}|${row.page}`));
+
+  assert.ok(destinations.has('45|28'), 'Missing Caveman Ugh-Lympics issue 45 page 28 review.');
+  assert.ok(destinations.has('70|63'), 'Missing Caveman Ugh-Lympics issue 70 page 63 re-review.');
+});
+
+test('Rambo resolves both the original review and the later Silver Medal re-review to the CCG game', () => {
+  const data = readJson('data/zzap64-review-links.json');
+  const rows = rowsForGameSlug(data, 'rambo-first-blood-part-2');
+  const destinations = new Set(rows.map((row) => `${row.issue}|${row.page}`));
+
+  assert.ok(destinations.has('10|23'), 'Missing Rambo issue 10 page 23 original review.');
+  assert.ok(destinations.has('53|58'), 'Missing Rambo issue 53 page 58 Silver Medal re-review.');
+});
+
+test('archive renderer exposes original-magazine links and the scan-identity game-link repair', () => {
   const source = fs.readFileSync(path.join(root, 'js/zzap64-awards.js'), 'utf8');
+  const linkFix = fs.readFileSync(path.join(root, 'js/zzap64-game-link-fix.js'), 'utf8');
+  const browser = fs.readFileSync(path.join(root, 'js/zzap64-review-browser.js'), 'utf8');
+  const page = fs.readFileSync(path.join(root, 'zzap64/index.html'), 'utf8');
+
   assert.match(source, /\/data\/zzap64-review-links\.json/);
   assert.match(source, /zzap-award-card__game-link/);
   assert.match(source, /zzap-award-card__magazine-link/);
@@ -92,4 +111,10 @@ test('archive renderer exposes original-magazine links without replacing CCG gam
   assert.doesNotMatch(source, /Browse original Zzap!64 issue/);
   assert.match(source, /Original Zzap!64 scan pending verification/);
   assert.match(source, /noopener noreferrer external/);
+
+  assert.match(linkFix, /gameLinkResolvedByScan/);
+  assert.match(linkFix, /gameSlug/);
+  assert.match(browser, /All verified reviews linked to CCG game pages/);
+  assert.match(page, /All Zzap!64 Reviews for CCG Games/);
+  assert.match(page, /zzap64-review-browser\.js/);
 });
