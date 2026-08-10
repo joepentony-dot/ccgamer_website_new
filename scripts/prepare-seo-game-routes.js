@@ -312,7 +312,7 @@ function buildCanonicalPage(shell, game) {
   const imagePath = `/resources/images/thumbnails/all/${thumbnailFilename(game, slug)}`;
   const imageUrl = `${SITE_ORIGIN}${imagePath}`;
   const imageMetadata = getImageMetadata(
-    path.join(__dirname, "..", imagePath.replace(/^\\//, ""))
+    path.join(__dirname, "..", imagePath.startsWith("/") ? imagePath.slice(1) : imagePath)
   );
   const schemaJson = serializeSchema(buildSchemaGraph(game, title, canonicalUrl, imageUrl));
   const schemaScript = `    <script type="application/ld+json" data-ccg-schema="game-graph">${schemaJson}</script>`;
