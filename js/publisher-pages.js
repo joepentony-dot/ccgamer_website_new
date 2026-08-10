@@ -216,7 +216,7 @@
         const search = document.getElementById("publisherGameSearchInput");
         const count = document.getElementById("publisherGameVisibleCount");
         const empty = document.getElementById("publisherGameEmptyState");
-        const cards = Array.from(document.querySelectorAll("[data-publisher-game-card]"));
+        const cards = Array.from(grid.querySelectorAll("[data-publisher-game]"));
         const buttons = Array.from(document.querySelectorAll("[data-publisher-game-system]"));
         let system = readInitialSystem(["all", "c64", "amiga"]);
 
@@ -226,7 +226,7 @@
 
             cards.forEach((card) => {
                 const title = normalize(card.dataset.gameTitle);
-                const gameSystem = normalize(card.dataset.gamePlatform);
+                const gameSystem = normalize(card.dataset.system);
                 const nameMatches = !query || title.includes(query);
                 const systemMatches =
                     system === "all" ||
