@@ -1,0 +1,47 @@
+name: Materialize Zzap Additional Reviews
+
+on:
+  push:
+    branches:
+      - fix/materialize-zzap-additional-reviews
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v5
+        with:
+          ref: fix/materialize-zzap-additional-reviews
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Build browser data
+        run: |
+          node scripts/generate-zzap64-review-links.js
+          node scripts/enrich-zzap64-game-reviews.js
+          node scripts/build-zzap64-game-review-chunks.js
+          node scripts/build-zzap64-game-review-chunks.js --check
+
+      - name: Commit generated browser data
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/zzap64-additional-reviews
+          if git diff --cached --quiet; then
+            echo "Additional review data already current."
+            exit 0
+          fi
+          git commit -m "Materialize non-duplicate Zzap review browser data [skip ci]"
+          git push origin HEAD:fix/materialize-zzap-additional-reviews
