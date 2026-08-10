@@ -499,10 +499,7 @@ function buildCanonicalHtml({
         }
         const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;
         if (charset.test(updated)) {
-            return updated.replace(charset, `${schemaScript}\n        if (charset.test(current)) {
-            return current.replace(charset, `${schemaScript}\n$&`);
-        }
-        return current.replace(/<\/head>/i, `${schemaScript}\n</head>`);`);
+            return updated.replace(charset, `${schemaScript}\n$&`);
         }
         return updated.replace(/<\/head>/i, `${schemaScript}\n</head>`);
     }
