@@ -54,7 +54,11 @@
         award: "all",
         renderToken: 0,
         filtersBound: false,
-        progressTimer: null
+        progressTimer: null,
+        progressTick: null,
+        progressValue: 0,
+        progressTarget: 0,
+        progressOptions: {}
     };
 
     function escapeHtml(value) {
@@ -99,31 +103,56 @@
         });
     }
 
-    function updateProgress(percent, label, detail, options = {}) {
+    function paintProgress(percent) {
         const loading = document.getElementById("zzapLoading");
         const progress = document.getElementById("zzapLoadingProgress");
         const bar = document.getElementById("zzapLoadingBar");
+        const percentNode = document.getElementById("zzapLoadingPercent");
+        if (!loading) return;
+
+        loading.setAttribute("aria-busy", percent < 100 ? "true" : "false");
+        progress?.setAttribute("aria-valuenow", String(percent));
+        if (bar) bar.style.width = `${percent}%`;
+        if (percentNode) percentNode.textContent = `${percent}%`;
+
+        if (percent >= 100 && state.progressOptions.hide !== false) {
+            window.clearTimeout(state.progressTimer);
+            state.progressTimer = window.setTimeout(() => {
+                loading.hidden = true;
+            }, state.progressOptions.delay ?? 900);
+        }
+    }
+
+    function advanceProgress() {
+        window.clearTimeout(state.progressTick);
+        if (state.progressValue >= state.progressTarget) return;
+
+        const remaining = state.progressTarget - state.progressValue;
+        const step = remaining > 24 ? 2 : 1;
+        state.progressValue = Math.min(state.progressTarget, state.progressValue + step);
+        paintProgress(state.progressValue);
+
+        if (state.progressValue < state.progressTarget) {
+            state.progressTick = window.setTimeout(advanceProgress, 34);
+        }
+    }
+
+    function updateProgress(percent, label, detail, options = {}) {
+        const loading = document.getElementById("zzapLoading");
         const labelNode = document.getElementById("zzapLoadingLabel");
         const detailNode = document.getElementById("zzapLoadingDetail");
-        const percentNode = document.getElementById("zzapLoadingPercent");
         if (!loading) return;
 
         const safePercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
         window.clearTimeout(state.progressTimer);
         loading.hidden = false;
         loading.dataset.state = options.state || "loading";
-        loading.setAttribute("aria-busy", safePercent < 100 ? "true" : "false");
-        progress?.setAttribute("aria-valuenow", String(safePercent));
-        if (bar) bar.style.width = `${safePercent}%`;
         if (labelNode) labelNode.textContent = label;
         if (detailNode) detailNode.textContent = detail;
-        if (percentNode) percentNode.textContent = `${safePercent}%`;
 
-        if (safePercent >= 100 && options.hide !== false) {
-            state.progressTimer = window.setTimeout(() => {
-                loading.hidden = true;
-            }, options.delay ?? 900);
-        }
+        state.progressTarget = Math.max(state.progressTarget, safePercent);
+        state.progressOptions = options;
+        advanceProgress();
     }
 
     function setControlsEnabled(enabled) {
@@ -389,7 +418,10 @@
             <div class="zzap-award-card__top">
                 <div class="zzap-award-card__award-mark">
                     ${awardArtwork(entry)}
-                    <span class="zzap-award-card__award-label">${escapeHtml(entry.award)}</span>
+                    <span class="zzap-award-card__award-details">
+                        <span class="zzap-award-card__award-label">${escapeHtml(entry.award)}</span>
+                        ${platformArtwork(entry)}
+                    </span>
                 </div>
                 ${renderScore(entry)}
             </div>
@@ -400,7 +432,6 @@
                     <span>${escapeHtml(entry.system)}</span>
                 </div>
                 ${renderMagazineLink(entry)}
-                ${platformArtwork(entry)}
             </div>
         `;
         return card;
