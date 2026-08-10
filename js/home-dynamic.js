@@ -879,10 +879,9 @@ function buildVideoCard(game, systemLabel, index) {
         : resolveThumb(game?.thumbnail);
     const meta = game ? (buildMeta(game) || systemLabel) : `${systemLabel} feature`;
     const title = game?.title || `${systemLabel} pick`;
-    const viewLabel = game ? `View ${title}` : "View game";
+    const viewLabel = "View Game";
     const viewAria = game ? `aria-label="View ${title} game page"` : "aria-disabled=\"true\"";
     const gameUrl = game ? resolveGameUrl(game) : "#";
-    const ytUrl = hasVideo ? `https://www.youtube.com/watch?v=${videoId}` : "#";
     const iframeId = hasVideo ? `yt-player-featured-${systemLabel.toLowerCase().replace(/\s+/g, "-")}-${index}` : "";
 
     card.innerHTML = `
@@ -909,8 +908,7 @@ function buildVideoCard(game, systemLabel, index) {
             <h3 class="ccg-card__title">${title}</h3>
             <p class="ccg-card__text">${meta}</p>
             <div class="home-video-card__links">
-                <a href="${gameUrl}" class="ccg-link" ${viewAria}>${viewLabel}</a>
-                <a href="${ytUrl}" class="ccg-link" target="_blank" rel="noopener" ${hasVideo ? "" : "aria-disabled=\"true\""}>Open on YouTube</a>
+                <a href="${gameUrl}" class="ccg-link home-video-card__game-link" ${viewAria}>${viewLabel}</a>
             </div>
         </div>
     `;
