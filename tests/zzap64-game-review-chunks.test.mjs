@@ -5,21 +5,24 @@ import test from 'node:test';
 
 const root = path.resolve(import.meta.dirname, '..');
 const dataDir = path.join(root, 'data', 'zzap64-game-reviews');
+const additionalDir = path.join(root, 'data', 'zzap64-additional-reviews');
 const manifest = JSON.parse(fs.readFileSync(path.join(dataDir, 'manifest.json'), 'utf8'));
+const additionalManifest = JSON.parse(fs.readFileSync(path.join(additionalDir, 'manifest.json'), 'utf8'));
 
-function loadGames() {
+function loadGames(directory, dataManifest) {
   const games = {};
-  manifest.chunks.forEach((chunk) => {
-    const parsed = JSON.parse(fs.readFileSync(path.join(dataDir, chunk), 'utf8'));
+  dataManifest.chunks.forEach((chunk) => {
+    const parsed = JSON.parse(fs.readFileSync(path.join(directory, chunk), 'utf8'));
     Object.assign(games, parsed.games || {});
   });
   return games;
 }
 
-const games = loadGames();
+const games = loadGames(dataDir, manifest);
+const additionalGames = loadGames(additionalDir, additionalManifest);
 
-function scans(slug) {
-  return (games[slug] || []).map((row) => `${row[0]}|${row[1]}`);
+function scans(collection, slug) {
+  return (collection[slug] || []).map((row) => `${row[0]}|${row[1]}`);
 }
 
 test('compact review manifest matches the verified CCG-linked review set', () => {
@@ -32,12 +35,12 @@ test('compact review manifest matches the verified CCG-linked review set', () =>
   assert.equal(manifest.totals.unmatched, 0);
 });
 
-test('Caveman Ugh-Lympics retains both Zzap reviews', () => {
-  assert.deepEqual(scans('caveman-ugh-lympics'), ['45|28', '70|63']);
+test('Caveman Ugh-Lympics retains both Zzap reviews in the full game-page dataset', () => {
+  assert.deepEqual(scans(games, 'caveman-ugh-lympics'), ['45|28', '70|63']);
 });
 
-test('Rambo title mismatch resolves to the CCG slug with both reviews', () => {
-  assert.deepEqual(scans('rambo-first-blood-part-2'), ['10|23', '53|58']);
+test('Rambo title mismatch resolves to the CCG slug with both reviews in the full dataset', () => {
+  assert.deepEqual(scans(games, 'rambo-first-blood-part-2'), ['10|23', '53|58']);
   assert.ok(games['rambo-first-blood-part-2'].every((row) => row[3] === 'Rambo: First Blood Part II'));
 });
 
@@ -59,13 +62,37 @@ test('every compact review row is a unique direct issue/page scan for its CCG ga
   });
 });
 
-test('front-end review features use the compact review dataset', () => {
+test('additional browser dataset removes award-index duplication and same-issue scan-page duplication', () => {
+  const recordCount = Object.values(additionalGames).reduce((total, rows) => total + rows.length, 0);
+  assert.equal(additionalManifest.totals.records, recordCount);
+  assert.equal(additionalManifest.totals.games, Object.keys(additionalGames).length);
+  assert.ok(additionalManifest.totals.records < manifest.totals.records, 'Browser dataset should be smaller than the full linked-scan dataset.');
+  assert.ok(additionalManifest.totals.excludedAwardIssueScans > 0, 'Award review scans should be excluded from the lower browser.');
+  assert.ok(additionalManifest.totals.collapsedSameIssuePages > 0, 'Multi-page reviews should collapse to a single browser card per issue.');
+
+  Object.entries(additionalGames).forEach(([slug, rows]) => {
+    const issueKeys = new Set();
+    rows.forEach((row) => {
+      const key = `${row[2]}|${row[0]}`;
+      assert.ok(!issueKeys.has(key), `${slug} repeats the same platform/issue in the browser dataset`);
+      issueKeys.add(key);
+    });
+  });
+});
+
+test('award reviews stay above while genuine non-award reviews remain below', () => {
+  assert.ok(!scans(additionalGames, 'elite').includes('1|16'), 'Elite award review must not be repeated below the award index.');
+  assert.ok(scans(additionalGames, 'rambo-first-blood-part-2').includes('10|23'), 'Rambo original non-award review should remain in additional reviews.');
+  assert.ok(!scans(additionalGames, 'rambo-first-blood-part-2').includes('53|58'), 'Rambo Silver Medal review must not be repeated below the award index.');
+});
+
+test('front-end review features use the correct compact datasets', () => {
   const browser = fs.readFileSync(path.join(root, 'js/zzap64-review-browser.js'), 'utf8');
   const linkFix = fs.readFileSync(path.join(root, 'js/zzap64-game-link-fix.js'), 'utf8');
   const runtime = fs.readFileSync(path.join(root, 'js/zzap64-game-reviews-runtime.js'), 'utf8');
   const schema = fs.readFileSync(path.join(root, 'js/ccg-schema.js'), 'utf8');
 
-  assert.match(browser, /\/data\/zzap64-game-reviews\//);
+  assert.match(browser, /\/data\/zzap64-additional-reviews\//);
   assert.match(linkFix, /\/data\/zzap64-game-reviews\//);
   assert.match(runtime, /\/data\/zzap64-game-reviews\//);
   assert.match(runtime, /gameLemonLinks/);
