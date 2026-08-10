@@ -9,6 +9,7 @@ const {
     buildCanonicalHtml,
     getImageMetadata
 } = require("./generate-slug-pages");
+const { buildCanonicalPage } = require("./prepare-seo-game-routes");
 
 const canonicalUrl = "https://www.cheekycommodoregamer.co.uk/games/entombed/";
 const ogImage = "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/entombed.jpg";
@@ -30,6 +31,7 @@ const args = {
         title: "Entombed",
         year: 1985,
         system: "C64",
+        thumbnail: "entombed.jpg",
         publisher: "Ultimate",
         genres: ["action-adventure"]
     },
@@ -62,6 +64,20 @@ assert.strictEqual((updated.match(/property="og:image"/g) || []).length, 1, "og:
 
 const repeated = buildCanonicalHtml({ ...args, existingHtml: updated });
 assert.strictEqual(repeated, updated, "Metadata generation must be deterministic");
+
+const gameShell = fs.readFileSync(path.join(__dirname, "..", "games", "game.html"), "utf8");
+const finalPage = buildCanonicalPage(gameShell, args.game);
+assert.match(finalPage, /property="og:image:type" content="image\\/jpeg"/);
+assert.match(finalPage, /property="og:image:width" content="460"/);
+assert.match(finalPage, /property="og:image:height" content="215"/);
+assert.match(finalPage, /property="og:image:secure_url"/);
+assert.match(finalPage, /property="og:image:alt"/);
+assert.match(finalPage, /name="twitter:image:alt"/);
+assert.strictEqual(
+    (finalPage.match(/property="og:image"/g) || []).length,
+    1,
+    "The authoritative route builder must emit one og:image"
+);
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "ccg-social-meta-"));
 const pngPath = path.join(tempDir, "test.png");
