@@ -30,6 +30,13 @@ jobs:
         run: |
           node scripts/patch-zzap64-deep-generator.js
           node scripts/patch-zzap64-future.js
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('scripts/patch-content-publisher-zzap.js')
+          s = p.read_text(encoding='utf-8')
+          s = s.replace(r'\`${sourcePath} already exists.', r'\`\${sourcePath} already exists.')
+          p.write_text(s, encoding='utf-8')
+          PY
           node scripts/patch-content-publisher-zzap.js
 
       - name: Validate JavaScript syntax
