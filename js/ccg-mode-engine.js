@@ -12,7 +12,7 @@
 
     const rootElement = document.documentElement;
     const EXCLUDED_PATH = /^\/(admin|auth|community)\//i;
-    const AUDIO_CACHE_BUSTER = "20260807-r2";
+    const AUDIO_CACHE_BUSTER = "20260810-r3";
     const AMIGA_STYLESHEETS = [
         {
             id: "ccg-amiga-mode-styles",
@@ -32,7 +32,8 @@
         },
         c64: {
             path: `/resources/css/audio/c64_speech_stayawhile.mp3?v=${AUDIO_CACHE_BUSTER}`,
-            volume: 0.38
+            volume: 0.38,
+            stopAfterMs: 1350
         }
     });
 
@@ -40,6 +41,7 @@
     let lastMode = null;
     let modeChangeTimer = 0;
     let currentModeAudio = null;
+    let currentModeAudioStopTimer = 0;
     const modeAudioCache = new Map();
 
     function normalizeMode(mode) {
@@ -108,11 +110,24 @@
         }
     }
 
+    function stopCurrentModeAudio() {
+        window.clearTimeout(currentModeAudioStopTimer);
+        currentModeAudioStopTimer = 0;
+        if (!currentModeAudio) return;
+        currentModeAudio.pause();
+        resetAudioPosition(currentModeAudio);
+        currentModeAudio = null;
+    }
+
     function playModeSound(mode) {
-        const audio = getModeAudio(mode);
-        if (!audio) return;
+        const normalizedMode = normalizeMode(mode);
+        const config = MODE_SOUNDS[normalizedMode];
+        const audio = getModeAudio(normalizedMode);
+        if (!audio || !config) return;
 
         try {
+            window.clearTimeout(currentModeAudioStopTimer);
+            currentModeAudioStopTimer = 0;
             if (currentModeAudio && currentModeAudio !== audio) {
                 currentModeAudio.pause();
                 resetAudioPosition(currentModeAudio);
@@ -126,6 +141,12 @@
                 });
             }
             currentModeAudio = audio;
+
+            if (Number(config.stopAfterMs) > 0) {
+                currentModeAudioStopTimer = window.setTimeout(() => {
+                    if (currentModeAudio === audio) stopCurrentModeAudio();
+                }, Number(config.stopAfterMs));
+            }
         } catch (error) {
             console.warn("ccg-mode-engine.js: mode cue could not be started.", error);
         }
