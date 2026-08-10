@@ -13,38 +13,33 @@
   <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <div aria-hidden="true" class="ccg-bg">
-    <div aria-hidden="true" class="ccg-bg-starfield"></div>
-    <div aria-hidden="true" class="ccg-bg-grid"></div>
-    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
   </div>
 
   <main class="admin-dashboard-wrap ccg-page--admin omega-admin-shell" data-admin-shell>
-    <nav class="ccg-admin-nav ccg-admin-panel" aria-label="Admin navigation">
-      <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-      <a href="/admin/announce.html" data-nav="announce">Announcements</a>
-      <a href="/admin/members.html" data-nav="members">Members</a>
-      <button type="button" data-admin-logout>Logout</button>
-    </nav>
-
     <header class="admin-dashboard-header">
       <div>
         <p class="admin-auth-kicker">CCG Admin Panel</p>
         <h1>Dashboard</h1>
+        <p>Publish games and videos from one place, then use the supporting tools for announcements, members and diagnostics.</p>
       </div>
     </header>
 
-    <section class="admin-tool-nav" aria-label="Admin command hub">
-      <a class="ccg-btn ccg-btn--primary" href="/admin/games-editor.html" data-admin-editor-link>Game Builder Wizard (Primary)</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/games-json-editor.html">Legacy Bulk Editor — Legacy (not used)</a>
-      <a class="ccg-btn ccg-btn--ghost" href="/admin/members.html">Members &amp; Moderation</a>
-    </section>
-
-    <section aria-label="Admin reference links">
-      <p><small><a href="/admin/help.html">Help &amp; Workflow</a></small></p>
+    <section class="omega-workflow-note" aria-labelledby="primary-publishing-title">
+      <h2 id="primary-publishing-title">Primary publishing workflow</h2>
+      <p><strong>CCG Content Publisher</strong> is now the main tool for new games, Zzap!64 features, Retro Specials, Retro Events and Amiga demo/music videos. It commits the authoritative source data and lets the existing GitHub workflows handle pages, verified YouTube metadata, structured data, video discovery, sitemaps and validation.</p>
+      <div class="admin-tool-nav" aria-label="Primary admin actions">
+        <a class="ccg-btn ccg-btn--primary" href="/admin/content-publisher.html" data-admin-publisher-link>Open CCG Content Publisher</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/announce.html">Announcements</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/members.html">Members</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/member-submissions.html">Member Submissions</a>
+      </div>
     </section>
 
     <section class="admin-card-grid" aria-label="System status and session details">
@@ -57,33 +52,45 @@
         <p data-admin-role>Loading…</p>
       </article>
       <article class="admin-info-card">
-        <h2>Status</h2>
+        <h2>Access Status</h2>
         <p data-admin-status data-state="info">Restoring session…</p>
       </article>
       <article class="admin-info-card omega-status-panel">
-        <h2>System Status</h2>
-        <p><strong>games.json path:</strong> <code>/games/games.json</code></p>
-        <p data-admin-load-status>Last load success: pending…</p>
-        <p data-admin-export-status>Last export: not yet recorded.</p>
+        <h2>Publishing Sources</h2>
+        <p data-admin-load-status>Game library: checking…</p>
+        <p data-admin-video-status>Verified video metadata: checking…</p>
         <p data-admin-env-status><strong>Environment:</strong> checking…</p>
       </article>
     </section>
 
-    <section class="omega-quickstart">
-      <h2>Quick Start</h2>
+    <section class="omega-quickstart" aria-labelledby="quick-start-title">
+      <h2 id="quick-start-title">Quick Start</h2>
       <ol>
-        <li>Add or edit games</li>
-        <li>Export updated games.json</li>
-        <li>Commit &amp; deploy</li>
+        <li>Open <strong>CCG Content Publisher</strong>.</li>
+        <li>Choose <strong>Add Game</strong> or <strong>Add Video / Feature</strong> and complete the source details.</li>
+        <li>Publish once. The automated repository workflows regenerate the page, video SEO, library and sitemaps.</li>
+        <li>Use <strong>Publishing Status</strong> in the Content Publisher to follow the automated stages, then announce the content after it is live.</li>
       </ol>
+    </section>
+
+    <section class="omega-workflow-note" aria-labelledby="admin-tools-title">
+      <h2 id="admin-tools-title">Tools &amp; diagnostics</h2>
+      <p>These remain available for maintenance and recovery, but they are not the normal publishing route.</p>
+      <div class="admin-tool-nav" aria-label="Admin diagnostic and legacy tools">
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/member-hub-health.html">Member Hub Health</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/archive-quality.html">Archive Quality</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/games-editor.html">Legacy Game Builder</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/help.html">Help &amp; Workflow</a>
+      </div>
+      <p><small>The old bulk JSON editor remains available by its direct URL for exceptional recovery work, but it is intentionally omitted from normal navigation.</small></p>
     </section>
   </main>
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/admin-nav.js?v=admin-stable-20260207"></script>
-  <script type="module" src="/admin/js/dashboard.js?v=admin-stable-20260207"></script>
+  <script type="module" src="/admin/js/admin-nav.js?v=admin-modern-20260810"></script>
+  <script type="module" src="/admin/js/dashboard.js?v=admin-modern-20260810"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
   <script src="/admin/js/input-fix.js?v=admin-stable-20260207"></script>
 </body>
