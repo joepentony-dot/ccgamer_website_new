@@ -1,16 +1,17 @@
 name: Bootstrap Deep Zzap64 Review Links
 
 on:
-  push:
+  pull_request:
     branches:
-      - codex/zzap64-deep-direct-links
+      - main
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
 
 jobs:
   enrich:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.head.ref == 'codex/zzap64-deep-direct-links'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
