@@ -10,12 +10,21 @@ const css = fs.readFileSync(path.join(root, 'resources', 'css', 'zzap64-reviews.
 
 test('additional-review browser is lazy by default', () => {
   assert.match(script, /const PAGE_SIZE = 24;/);
-  assert.match(script, /\/data\/zzap64-additional-reviews\//);
+  assert.match(script, /\/data\/zzap64-game-reviews\//);
   assert.match(script, /IntersectionObserver/);
   assert.match(script, /function chunkForLetter\(/);
   assert.match(script, /async function loadChunk\(/);
   assert.match(script, /Choose a letter above to browse additional reviews/);
   assert.doesNotMatch(script, /state\.records\s*=\s*await loadRecords\(/);
+});
+
+test('award exclusions are loaded only when review chunks are requested', () => {
+  assert.match(script, /const REVIEW_INDEX_URL = "\/data\/zzap64-review-links\.json"/);
+  assert.match(script, /async function loadAwardIssueKeys\(/);
+  assert.match(script, /row\.scope === "game-review"/);
+  assert.match(script, /Promise\.all\(\[/);
+  assert.match(script, /loadAwardIssueKeys\(\)/);
+  assert.match(script, /recordsByReview/);
 });
 
 test('global loading is opt-in for All or search', () => {
