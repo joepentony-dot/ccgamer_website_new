@@ -23,6 +23,12 @@ replaceOnce(
 );
 
 replaceOnce(
+  'const OUTPUT_PATH = path.join(ROOT, "data", "zzap64-review-links.json");',
+  'const OUTPUT_PATH = path.join(ROOT, "data", "zzap64-review-links.json");\nconst OVERRIDES_PATH = path.join(ROOT, "data", "zzap64-review-overrides.json");',
+  "verified override path"
+);
+
+replaceOnce(
   '? { year, month: raw[0], title: raw[1], system: raw[4] || "C64" }',
   '? { year, month: raw[0], title: raw[1], score: raw[3], system: raw[4] || "C64" }',
   "array award score"
@@ -35,14 +41,95 @@ replaceOnce(
 );
 
 replaceOnce(
+  `function readExistingOutput() {
+  if (!fs.existsSync(OUTPUT_PATH)) return { entries: {} };
+  try {
+    const parsed = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : { entries: {} };
+  } catch {
+    return { entries: {} };
+  }
+}`,
+  `function readExistingOutput() {
+  if (!fs.existsSync(OUTPUT_PATH)) return { entries: {} };
+  try {
+    const parsed = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : { entries: {} };
+  } catch {
+    return { entries: {} };
+  }
+}
+
+function readOverrides() {
+  if (!fs.existsSync(OVERRIDES_PATH)) return {};
+  const parsed = JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"));
+  return parsed && typeof parsed.entries === "object" && parsed.entries ? parsed.entries : {};
+}`,
+  "override reader"
+);
+
+replaceOnce(
+  `function persistedExact(existing, entry, issue) {`,
+  `function verifiedOverride(overrides, entry, issue) {
+  const record = overrides?.[recordKey(entry)];
+  if (
+    Number(record?.issue) !== Number(issue)
+    || !Number.isInteger(Number(record?.page))
+    || Number(record.page) < 1
+  ) return null;
+
+  return {
+    issue: Number(issue),
+    page: Number(record.page),
+    precision: "page",
+    url: officialPageUrl(issue, Number(record.page)),
+    source: String(record.source || "verified-review-exception")
+  };
+}
+
+function persistedExact(existing, entry, issue) {`,
+  "verified override resolver"
+);
+
+replaceOnce(
   '    ...(record.lemonUrl ? { lemonUrl: String(record.lemonUrl) } : {})',
   '    ...(record.lemonUrl ? { lemonUrl: String(record.lemonUrl) } : {}),\n    ...(record.bibleTitle ? { bibleTitle: String(record.bibleTitle) } : {}),\n    ...(Number.isFinite(Number(record.bibleScore)) ? { bibleScore: Number(record.bibleScore) } : {})',
   "persist Zzap Bible verification fields"
 );
 
 replaceOnce(
+  `function buildOutput(existing = readExistingOutput()) {
+  const awards = readAwards();
+  const years = awardYears();`,
+  `function buildOutput(existing = readExistingOutput()) {
+  const awards = readAwards();
+  const years = awardYears();
+  const overrides = readOverrides();`,
+  "load verified overrides"
+);
+
+replaceOnce(
+  `    const key = recordKey(entry);
+    const persisted = persistedExact(existing, entry, issue);`,
+  `    const key = recordKey(entry);
+    const override = verifiedOverride(overrides, entry, issue);
+    const persisted = persistedExact(existing, entry, issue);`,
+  "resolve verified override"
+);
+
+replaceOnce(
+  `    if (persisted) {
+      entries[key] = persisted;`,
+  `    if (override) {
+      entries[key] = override;
+    } else if (persisted) {
+      entries[key] = persisted;`,
+  "prioritize verified override"
+);
+
+replaceOnce(
   '    generatedFrom: "Verified Zzap!64 magazine references from the repository Lemon cache plus optional live Lemon64/Lemon Amiga lookups. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",',
-  '    generatedFrom: "Verified Zzap!64 review pages from the official Zzap Bible, with repository Lemon cache/live Lemon lookups as secondary verification. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",',
+  '    generatedFrom: "Verified Zzap!64 review pages from the official Zzap Bible, verified exception records, and repository Lemon cache/live Lemon lookups as secondary verification. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",',
   "generated source description"
 );
 
@@ -64,5 +151,14 @@ replaceOnce(
   "unresolved log"
 );
 
+replaceOnce(
+  `  buildOutput,
+  enrichLive,`,
+  `  buildOutput,
+  enrichLive,
+  readOverrides,`,
+  "override export"
+);
+
 fs.writeFileSync(target, source, "utf8");
-console.log("Prepared Zzap review enrichment with official Zzap Bible verification first and Lemon as fallback.");
+console.log("Prepared Zzap review enrichment with verified exceptions, official Zzap Bible verification and Lemon fallback.");
