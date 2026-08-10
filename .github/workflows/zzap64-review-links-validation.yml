@@ -7,6 +7,7 @@ on:
     paths:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
+      - "data/zzap64-review-overrides.json"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
@@ -21,6 +22,7 @@ on:
     paths:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
+      - "data/zzap64-review-overrides.json"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
