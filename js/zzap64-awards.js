@@ -55,10 +55,7 @@
         renderToken: 0,
         filtersBound: false,
         progressTimer: null,
-        progressTick: null,
-        progressValue: 0,
-        progressTarget: 0,
-        progressOptions: {}
+        gamesPromise: null
     };
 
     function escapeHtml(value) {
@@ -103,56 +100,31 @@
         });
     }
 
-    function paintProgress(percent) {
+    function updateProgress(percent, label, detail, options = {}) {
         const loading = document.getElementById("zzapLoading");
         const progress = document.getElementById("zzapLoadingProgress");
         const bar = document.getElementById("zzapLoadingBar");
-        const percentNode = document.getElementById("zzapLoadingPercent");
-        if (!loading) return;
-
-        loading.setAttribute("aria-busy", percent < 100 ? "true" : "false");
-        progress?.setAttribute("aria-valuenow", String(percent));
-        if (bar) bar.style.width = `${percent}%`;
-        if (percentNode) percentNode.textContent = `${percent}%`;
-
-        if (percent >= 100 && state.progressOptions.hide !== false) {
-            window.clearTimeout(state.progressTimer);
-            state.progressTimer = window.setTimeout(() => {
-                loading.hidden = true;
-            }, state.progressOptions.delay ?? 900);
-        }
-    }
-
-    function advanceProgress() {
-        window.clearTimeout(state.progressTick);
-        if (state.progressValue >= state.progressTarget) return;
-
-        const remaining = state.progressTarget - state.progressValue;
-        const step = remaining > 24 ? 2 : 1;
-        state.progressValue = Math.min(state.progressTarget, state.progressValue + step);
-        paintProgress(state.progressValue);
-
-        if (state.progressValue < state.progressTarget) {
-            state.progressTick = window.setTimeout(advanceProgress, 34);
-        }
-    }
-
-    function updateProgress(percent, label, detail, options = {}) {
-        const loading = document.getElementById("zzapLoading");
         const labelNode = document.getElementById("zzapLoadingLabel");
         const detailNode = document.getElementById("zzapLoadingDetail");
+        const percentNode = document.getElementById("zzapLoadingPercent");
         if (!loading) return;
 
         const safePercent = Math.max(0, Math.min(100, Math.round(Number(percent) || 0)));
         window.clearTimeout(state.progressTimer);
         loading.hidden = false;
         loading.dataset.state = options.state || "loading";
+        loading.setAttribute("aria-busy", safePercent < 100 ? "true" : "false");
+        progress?.setAttribute("aria-valuenow", String(safePercent));
+        if (bar) bar.style.width = `${safePercent}%`;
         if (labelNode) labelNode.textContent = label;
         if (detailNode) detailNode.textContent = detail;
+        if (percentNode) percentNode.textContent = `${safePercent}%`;
 
-        state.progressTarget = Math.max(state.progressTarget, safePercent);
-        state.progressOptions = options;
-        advanceProgress();
+        if (safePercent >= 100 && options.hide !== false) {
+            state.progressTimer = window.setTimeout(() => {
+                loading.hidden = true;
+            }, options.delay ?? 260);
+        }
     }
 
     function setControlsEnabled(enabled) {
@@ -553,11 +525,19 @@
 
     async function loadAwardEntries() {
         updateProgress(8, "Loading award records…", `Fetching ${state.years.length} year file${state.years.length === 1 ? "" : "s"} in parallel.`);
+        let completedYears = 0;
         const yearResults = await Promise.all(state.years.map(async (year) => {
             const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "default" });
             if (!response.ok) throw new Error(`${year} archive HTTP ${response.status}`);
             const data = await response.json();
             const records = Array.isArray(data) ? data : (data.entries || data.awards || []);
+            completedYears += 1;
+            const yearProgress = 8 + Math.round((completedYears / state.years.length) * 42);
+            updateProgress(
+                yearProgress,
+                "Loading award records…",
+                `${completedYears} of ${state.years.length} award years loaded.`
+            );
             return records.map((record) => normalizeEntry(record, year));
         }));
 
@@ -591,7 +571,6 @@
 
         renderYearCards();
         bindFilters();
-        setControlsEnabled(true);
 
         const exactCount = state.entries.filter((entry) => magazineLinkFor(entry)?.precision === "page").length;
         const magazineDetail = state.reviewLinksStatus === "ready"
@@ -600,34 +579,40 @@
                 : ` ${exactCount.toLocaleString("en-GB")} direct original-review scan links are verified; unresolved links remain pending rather than opening a generic issue.`)
             : " Direct original-review links will remain pending until the verification map is available.";
 
-        updateProgress(34, "Award records loaded", `${state.entries.length.toLocaleString("en-GB")} entries are ready.${magazineDetail}`);
-        await render();
-        updateProgress(58, "Awards displayed", "The archive is usable while reviewed-game links are being prepared.");
+        updateProgress(58, "Award records ready", `${state.entries.length.toLocaleString("en-GB")} entries are prepared.${magazineDetail}`);
+    }
+
+    async function loadGameArchive() {
+        const gamesResponse = await fetch("/games/games.json", { cache: "default" });
+        if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
+        const gamesData = await gamesResponse.json();
+        return Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
     }
 
     async function loadReviewedGameLinks() {
-        updateProgress(66, "Linking reviewed games…", "Loading the CCG game index with normal browser caching.");
+        updateProgress(66, "Linking reviewed games…", "Using the game index that loaded alongside the award records.");
 
         try {
-            const gamesResponse = await fetch("/games/games.json", { cache: "default" });
-            if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
-            const gamesData = await gamesResponse.json();
-            state.games = Array.isArray(gamesData) ? gamesData : (gamesData.games || []);
+            const gameResult = await state.gamesPromise;
+            if (gameResult.error) throw gameResult.error;
+            state.games = gameResult.games;
 
             updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards.`);
             state.gameIndex = state.matcher.buildGameIndex(state.games);
             state.linksStatus = "ready";
             await render();
+            setControlsEnabled(true);
 
             updateProgress(100, "Archive ready", "Awards, scores, original magazine links, filters and reviewed-game links are available.");
         } catch (error) {
             state.linksStatus = "failed";
             await render();
+            setControlsEnabled(true);
             updateProgress(
                 100,
                 "Awards ready",
                 "The awards and original magazine links loaded, but CCG reviewed-game links could not be checked on this visit.",
-                { state: "warning", delay: 3600 }
+                { state: "warning", delay: 1200 }
             );
             console.warn("[CCG] Zzap reviewed-game links were unavailable:", error);
         }
@@ -642,6 +627,10 @@
             state.matcher = window.CCGZzap64Matcher;
             if (!state.matcher) throw new Error("Zzap title matcher did not initialise");
 
+            state.gamesPromise = loadGameArchive().then(
+                (games) => ({ games }),
+                (error) => ({ error })
+            );
             await loadReviewLinks();
             await loadAwardEntries();
             await loadReviewedGameLinks();
