@@ -27,7 +27,7 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 
 .omega-admin-bar {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr minmax(0, 2fr) 1fr;
   align-items: center;
   gap: 1rem;
   border: 1px solid var(--omega-admin-border);
@@ -49,10 +49,30 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 }
 
 .omega-admin-links {
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  min-width: 0;
+}
+
+.omega-admin-links__group {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
+  align-items: center;
+}
+
+.omega-admin-links__group--tools {
+  gap: 0.4rem;
+}
+
+.omega-admin-links__label {
+  color: var(--omega-admin-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .omega-admin-links a {
@@ -64,14 +84,29 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
   font-size: 0.85rem;
 }
 
+.omega-admin-links__group--tools a {
+  color: var(--omega-admin-muted);
+  border-color: rgba(98, 217, 255, 0.26);
+  padding: 0.3rem 0.62rem;
+  font-size: 0.76rem;
+}
+
 .omega-admin-links a.is-active {
   background: rgba(98, 217, 255, 0.2);
   border-color: var(--omega-admin-accent);
+  color: var(--omega-admin-text);
 }
 
 .omega-admin-links a:hover,
 .omega-admin-links a:focus-visible {
   border-color: var(--omega-admin-accent);
+  color: var(--omega-admin-text);
+}
+
+.omega-admin-links__logout {
+  margin-top: 0.05rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.76rem;
 }
 
 .omega-admin-session {
@@ -132,6 +167,12 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 @media (max-width: 980px) {
   .omega-admin-bar {
     grid-template-columns: 1fr;
+  }
+
+  .omega-admin-links,
+  .omega-admin-links__group {
+    justify-items: start;
+    justify-content: flex-start;
   }
 
   .omega-admin-session {

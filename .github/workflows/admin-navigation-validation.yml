@@ -1,0 +1,69 @@
+name: Admin Navigation Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "admin/admin.html"
+      - "admin/dashboard.html"
+      - "admin/help.html"
+      - "admin/js/admin-nav.js"
+      - "admin/js/dashboard.js"
+      - "resources/css/ccg-admin.css"
+      - "tests/admin-navigation.test.mjs"
+      - ".github/workflows/admin-navigation-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "admin/admin.html"
+      - "admin/dashboard.html"
+      - "admin/help.html"
+      - "admin/js/admin-nav.js"
+      - "admin/js/dashboard.js"
+      - "resources/css/ccg-admin.css"
+      - "tests/admin-navigation.test.mjs"
+      - ".github/workflows/admin-navigation-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Validate admin JavaScript syntax
+        run: |
+          node --check admin/js/admin-nav.js
+          node --check admin/js/dashboard.js
+
+      - name: Run admin navigation regression tests
+        run: node --test tests/admin-navigation.test.mjs
+
+      - name: Confirm protected site files are untouched
+        shell: bash
+        run: |
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          for protected in index.html home.html resources/css/intro.css js/index-intro.js games/games.json; do
+            if printf '%s\n' "$changed" | grep -Fxq "$protected"; then
+              echo "Protected file changed: $protected"
+              exit 1
+            fi
+          done
+
+      - name: Check whitespace
+        run: git diff --check origin/main...HEAD

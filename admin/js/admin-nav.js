@@ -27,10 +27,8 @@ function bindLogout(shell) {
         const supabase = await getSupabaseClient();
         await supabase.auth.signOut();
       } catch (err) {
-        // fail-silent: we still redirect, because the goal is to end the session UX
         console.warn("[admin] signOut failed (continuing)", err);
       } finally {
-        // hard redirect to login
         window.location.href = "/admin/login.html";
       }
     });
@@ -51,16 +49,23 @@ export async function initAdminNav({ pageLabel = "Dashboard", active = "dashboar
       </div>
 
       <nav class="omega-admin-links" aria-label="CCG admin navigation">
-        <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-        <a href="/admin/games-editor.html" data-nav="editor">Game Builder Wizard (Primary)</a>
-        <a href="/admin/games-json-editor.html" data-nav="audit">Legacy Bulk Editor — Legacy (not used)</a>
-        <a href="/admin/announce.html" data-nav="announce">Announcements</a>
-        <a href="/admin/members.html" data-nav="members">Members</a>
-        <a href="/admin/member-submissions.html" data-nav="submissions">Member Submissions</a>
-        <a href="/admin/member-hub-health.html" data-nav="health">Member Hub Health</a>
-        <a href="/admin/archive-quality.html" data-nav="quality">Archive Quality</a>
-        <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
-        <button type="button" class="ccg-btn ccg-btn--ghost" data-nav="logout" data-admin-logout>Logout</button>
+        <div class="omega-admin-links__group omega-admin-links__group--primary" aria-label="Main admin tools">
+          <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
+          <a href="/admin/content-publisher.html" data-nav="publisher">Content Publisher</a>
+          <a href="/admin/announce.html" data-nav="announce">Announcements</a>
+          <a href="/admin/members.html" data-nav="members">Members</a>
+          <a href="/admin/member-submissions.html" data-nav="submissions">Member Submissions</a>
+        </div>
+
+        <div class="omega-admin-links__group omega-admin-links__group--tools" aria-label="Admin tools and diagnostics">
+          <span class="omega-admin-links__label">Tools</span>
+          <a href="/admin/member-hub-health.html" data-nav="health">Member Hub Health</a>
+          <a href="/admin/archive-quality.html" data-nav="quality">Archive Quality</a>
+          <a href="/admin/games-editor.html" data-nav="editor">Legacy Game Builder</a>
+          <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
+        </div>
+
+        <button type="button" class="ccg-btn ccg-btn--ghost omega-admin-links__logout" data-nav="logout" data-admin-logout>Logout</button>
       </nav>
 
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>
@@ -99,7 +104,7 @@ export function injectDeprecatedBanner(message = "Legacy admin page") {
 
   const banner = document.createElement("aside");
   banner.className = "omega-deprecated-banner";
-  banner.innerHTML = `<strong>Deprecated:</strong> ${escapeHtml(message)}. Use <a href="/admin/games-editor.html">/admin/games-editor.html</a> for the guided game package workflow.`;
+  banner.innerHTML = `<strong>Legacy tool:</strong> ${escapeHtml(message)}. Use <a href="/admin/content-publisher.html">CCG Content Publisher</a> for normal game and video publishing.`;
 
   const parent = document.querySelector(".ccg-page") || document.body;
   parent.prepend(banner);
