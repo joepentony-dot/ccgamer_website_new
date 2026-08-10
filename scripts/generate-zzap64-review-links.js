@@ -19,9 +19,27 @@ const LEMON_ORIGINS = Object.freeze({
   amiga: "https://www.lemonamiga.com"
 });
 const USER_AGENT = "CheekyCommodoreGamer-ZzapArchive/1.0 (+https://www.cheekycommodoregamer.co.uk/)";
-const REQUEST_DELAY_MS = 160;
+const REQUEST_DELAY_MS = 900;
 const FETCH_TIMEOUT_MS = 15000;
-const MAX_LIVE_CANDIDATES = 6;
+const MAX_LIVE_CANDIDATES = 8;
+const LEMON_SEARCH_ALIASES = Object.freeze({
+  "Graphic Adventure Creator": ["GAC"],
+  "Shoot 'Em Up Construction Kit": ["SEUCK", "Shoot Em Up Construction Kit"],
+  "R.I.S.K.": ["Risk"],
+  "B-24 Flight Simulator": ["B24 Flight Simulator"],
+  "Kikstart II": ["Kikstart 2"],
+  "World Class Leaderboard": ["World Class Leader Board"],
+  "APB": ["A.P.B."],
+  "F-16 Combat Pilot": ["F16 Combat Pilot"],
+  "Computer Scrabble Deluxe": ["Scrabble Deluxe"],
+  "The Sentinel": ["Sentinel"],
+  "Batman: The Movie": ["Batman The Movie", "Batman"],
+  "R-Type": ["R Type"],
+  "Rambo": ["Rambo: First Blood Part II", "Rambo First Blood Part 2"],
+  "Ultima IV": ["Ultima 4"],
+  "Doomdark's Revenge": ["Doomdarks Revenge"],
+  "Hunter's Moon": ["Hunters Moon"]
+});
 
 const requestCache = new Map();
 const searchCache = new Map();
@@ -374,7 +392,7 @@ function searchVariants(entry) {
   const canonical = matcher.canonicalTitle(raw);
   const punctuationLight = raw.replace(/[’‘`]/g, "'").replace(/[^A-Za-z0-9'+& -]+/g, " ").replace(/\s+/g, " ").trim();
   const beforeColon = raw.split(":")[0].trim();
-  const variants = [raw, noArticle, punctuationLight, canonical, beforeColon];
+  const variants = [raw, noArticle, punctuationLight, canonical, beforeColon, ...(LEMON_SEARCH_ALIASES[raw] || [])];
   const seen = new Set();
   return variants.filter((value) => {
     const key = String(value || "").trim().toLowerCase();

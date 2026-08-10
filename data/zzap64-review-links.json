@@ -11,9 +11,9 @@
   ],
   "totals": {
     "awards": 287,
-    "exactPages": 249,
-    "issueFallbacks": 38,
-    "directCoveragePercent": 86.8
+    "exactPages": 268,
+    "issueFallbacks": 19,
+    "directCoveragePercent": 93.4
   },
   "entries": {
     "1985|may|c64|Elite": {
@@ -286,17 +286,19 @@
     },
     "1985|october|c64|Racing Destruction Set": {
       "issue": 6,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap6/zzap6.html",
-      "source": "official-issue-fallback"
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=20",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/racing-destruction-set"
     },
     "1985|october|c64|Pinball Construction Set": {
       "issue": 6,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap6/zzap6.html",
-      "source": "official-issue-fallback"
+      "page": 28,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=6&page=28",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/pinball-construction-set"
     },
     "1985|october|c64|Nodes of Yesod": {
       "issue": 6,
@@ -328,10 +330,11 @@
     },
     "1985|november|c64|Wizard's Lair": {
       "issue": 7,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap7/zzap7.html",
-      "source": "official-issue-fallback"
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=12",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/wizards-lair"
     },
     "1985|november|c64|Winter Games": {
       "issue": 7,
@@ -356,10 +359,11 @@
     },
     "1985|december|c64|Batalyx": {
       "issue": 8,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap8/zzap8.html",
-      "source": "official-issue-fallback"
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=8&page=12",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/batalyx"
     },
     "1985|december|c64|ACE": {
       "issue": 8,
@@ -546,10 +550,11 @@
     },
     "1986|may|c64|Ultima IV": {
       "issue": 13,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap13/zzap13.html",
-      "source": "official-issue-fallback"
+      "page": 67,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=13&page=67",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/ultima-4"
     },
     "1986|june|c64|Cauldron II": {
       "issue": 14,
@@ -567,10 +572,11 @@
     },
     "1986|june|c64|International Karate": {
       "issue": 14,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
-      "source": "official-issue-fallback"
+      "page": 20,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=20",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/international-karate"
     },
     "1986|june|c64|Spellbound": {
       "issue": 14,
@@ -581,17 +587,19 @@
     },
     "1986|june|c64|Doomdark's Revenge": {
       "issue": 14,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
-      "source": "official-issue-fallback"
+      "page": 33,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=33",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/doomdarks-revenge"
     },
     "1986|june|c64|Kentilla": {
       "issue": 14,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap14/zzap14.html",
-      "source": "official-issue-fallback"
+      "page": 73,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=14&page=73",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/kentilla"
     },
     "1986|june|c64|Spindizzy": {
       "issue": 14,
@@ -797,10 +805,11 @@
     },
     "1986|november|c64|Trivial Pursuit": {
       "issue": 19,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap19/zzap19.html",
-      "source": "official-issue-fallback"
+      "page": 144,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=19&page=144",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/trivial-pursuit"
     },
     "1986|december|c64|The Sentinel": {
       "issue": 20,
@@ -956,10 +965,11 @@
     },
     "1987|july|c64|World Class Leaderboard": {
       "issue": 27,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap27/zzap27.html",
-      "source": "official-issue-fallback"
+      "page": 18,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=27&page=18",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/world-class-leader-board"
     },
     "1987|august|c64|Head Over Heels": {
       "issue": 28,
@@ -970,10 +980,11 @@
     },
     "1987|august|c64|The Lurking Horror": {
       "issue": 28,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap28/zzap28.html",
-      "source": "official-issue-fallback"
+      "page": 38,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=28&page=38",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/lurking-horror"
     },
     "1987|august|c64|Defender of the Crown": {
       "issue": 28,
@@ -991,17 +1002,19 @@
     },
     "1987|september|c64|Zynaps": {
       "issue": 29,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
-      "source": "official-issue-fallback"
+      "page": 8,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=29&page=8",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/zynaps"
     },
     "1987|september|c64|Re-Bounder": {
       "issue": 29,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap29/zzap29.html",
-      "source": "official-issue-fallback"
+      "page": 12,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=29&page=12",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/re-bounder"
     },
     "1987|september|c64|California Games": {
       "issue": 29,
@@ -1192,17 +1205,19 @@
     },
     "1988|january|c64|Battles in Normandy": {
       "issue": 33,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
-      "source": "official-issue-fallback"
+      "page": 116,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=116",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/battles-in-normandy"
     },
     "1988|january|c64|Cosmic Causeway": {
       "issue": 33,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
-      "source": "official-issue-fallback"
+      "page": 159,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=159",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/cosmic-causeway-trailblazer-2"
     },
     "1988|january|c64|Skate or Die": {
       "issue": 33,
@@ -1213,10 +1228,11 @@
     },
     "1988|january|c64|R.I.S.K.": {
       "issue": 33,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap33/zzap33.html",
-      "source": "official-issue-fallback"
+      "page": 184,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=184",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/risk"
     },
     "1988|february|c64|Match Day II": {
       "issue": 34,
@@ -1227,10 +1243,11 @@
     },
     "1988|february|c64|Hunter's Moon": {
       "issue": 34,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap34/zzap34.html",
-      "source": "official-issue-fallback"
+      "page": 69,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=34&page=69",
+      "source": "live-lemon64-magazine-reference",
+      "lemonUrl": "https://www.lemon64.com/game/hunters-moon"
     },
     "1988|february|c64|Platoon": {
       "issue": 34,
@@ -1719,17 +1736,19 @@
     },
     "1989|april|amiga|Dungeon Master": {
       "issue": 48,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
-      "source": "official-issue-fallback"
+      "page": 60,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=48&page=60",
+      "source": "live-lemonamiga-magazine-reference",
+      "lemonUrl": "https://www.lemonamiga.com/game/dungeon-master"
     },
     "1989|april|amiga|R-Type": {
       "issue": 48,
-      "page": null,
-      "precision": "issue",
-      "url": "https://www.zzap64.co.uk/zzap48/zzap48.html",
-      "source": "official-issue-fallback"
+      "page": 67,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=48&page=67",
+      "source": "live-lemonamiga-magazine-reference",
+      "lemonUrl": "https://www.lemonamiga.com/game/r-type"
     },
     "1989|april|c64|Incredible Shrinking Sphere": {
       "issue": 48,
