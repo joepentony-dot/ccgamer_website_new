@@ -26,6 +26,16 @@ jobs:
         with:
           node-version: 22
 
+      - name: Inspect official Zzap Bible search form
+        run: |
+          python - <<'PY'
+          import re, urllib.request
+          req = urllib.request.Request('https://www.zzap64.co.uk/cgi-bin/zzapbible.pl', headers={'User-Agent':'Mozilla/5.0 CCG archive verifier'})
+          html = urllib.request.urlopen(req, timeout=20).read().decode('latin-1', 'replace')
+          m = re.search(r'<form\b[\s\S]*?</form>', html, re.I)
+          print(m.group(0)[:12000] if m else 'FORM NOT FOUND')
+          PY
+
       - name: Prepare slower deeper pass
         run: node scripts/patch-zzap64-deep-generator.js
 
