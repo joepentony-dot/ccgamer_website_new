@@ -104,10 +104,10 @@ function main() {
   const sitemapLocSet = new Set(sitemapLocs);
   assert(sitemapLocSet.size === sitemapLocs.length, "sitemap-retro-videos.xml contains duplicate watch-page URLs.");
 
-  const expectedPublicLocs = new Set();
+  const expectedVideoLocs = new Set();
   let processed = 0;
   let verifiedObjects = 0;
-  let privatePages = 0;
+  let restrictedVideos = 0;
 
   for (const config of DATASETS) {
     const payload = readJson(config.dataPath, []);
@@ -122,7 +122,7 @@ function main() {
       assert(fs.existsSync(pagePath), `${config.label}:${slug} is missing its canonical index.html page.`);
       const canonicalUrl = `${SITE_ORIGIN}${config.pagePrefix}${slug}/`;
       const html = fs.readFileSync(pagePath, "utf8");
-      const isPublic = entry?.membersOnly !== true;
+      const videoIndexable = entry?.membersOnly !== true;
       const record = metadata[videoId] || {};
 
       assert(
@@ -137,29 +137,30 @@ function main() {
       );
 
       const robotsTag = (html.match(/<meta\b[^>]*name\s*=\s*(["'])robots\1[^>]*>/i) || [])[0] || "";
-      if (isPublic) {
-        assert(!/noindex/i.test(robotsTag), `${config.label}:${slug} is public but has noindex.`);
-        assert(/max-video-preview:-1/i.test(robotsTag), `${config.label}:${slug} does not allow full video previews.`);
-        expectedPublicLocs.add(canonicalUrl);
-      } else {
-        privatePages += 1;
-        assert(/noindex/i.test(robotsTag), `${config.label}:${slug} is members-only but is not noindex.`);
-        assert(!sitemapLocSet.has(canonicalUrl), `${config.label}:${slug} is members-only but appears in the public retro video sitemap.`);
-      }
+      assert(!/noindex/i.test(robotsTag), `${config.label}:${slug} feature page unexpectedly has noindex.`);
+      assert(/max-video-preview:-1/i.test(robotsTag), `${config.label}:${slug} does not allow full video previews.`);
 
       const objects = videoObjects(html);
-      if (verifiedMetadata(record)) {
-        assert(objects.length === 1, `${config.label}:${slug} has verified metadata but does not contain exactly one VideoObject.`);
-        const object = objects[0];
-        assert(object.name, `${config.label}:${slug} VideoObject is missing name.`);
-        assert(object.description, `${config.label}:${slug} VideoObject is missing description.`);
-        assert(object.thumbnailUrl, `${config.label}:${slug} VideoObject is missing thumbnailUrl.`);
-        assert(object.uploadDate === record.uploadDate, `${config.label}:${slug} VideoObject uploadDate does not match verified YouTube metadata.`);
-        assert(object.embedUrl === `https://www.youtube.com/embed/${videoId}`, `${config.label}:${slug} VideoObject embedUrl is incorrect.`);
-        assert(object.url === canonicalUrl, `${config.label}:${slug} VideoObject URL does not match the canonical watch page.`);
-        verifiedObjects += 1;
+      if (videoIndexable) {
+        expectedVideoLocs.add(canonicalUrl);
+
+        if (verifiedMetadata(record)) {
+          assert(objects.length === 1, `${config.label}:${slug} has verified metadata but does not contain exactly one VideoObject.`);
+          const object = objects[0];
+          assert(object.name, `${config.label}:${slug} VideoObject is missing name.`);
+          assert(object.description, `${config.label}:${slug} VideoObject is missing description.`);
+          assert(object.thumbnailUrl, `${config.label}:${slug} VideoObject is missing thumbnailUrl.`);
+          assert(object.uploadDate === record.uploadDate, `${config.label}:${slug} VideoObject uploadDate does not match verified YouTube metadata.`);
+          assert(object.embedUrl === `https://www.youtube.com/embed/${videoId}`, `${config.label}:${slug} VideoObject embedUrl is incorrect.`);
+          assert(object.url === canonicalUrl, `${config.label}:${slug} VideoObject URL does not match the canonical watch page.`);
+          verifiedObjects += 1;
+        } else {
+          assert(objects.length === 0, `${config.label}:${slug} contains VideoObject markup without a verified YouTube upload date.`);
+        }
       } else {
-        assert(objects.length === 0, `${config.label}:${slug} contains VideoObject markup without a verified YouTube upload date.`);
+        restrictedVideos += 1;
+        assert(!sitemapLocSet.has(canonicalUrl), `${config.label}:${slug} is members-only but appears in the public retro video sitemap.`);
+        assert(objects.length === 0, `${config.label}:${slug} is members-only but exposes public VideoObject markup.`);
       }
 
       processed += 1;
@@ -167,15 +168,15 @@ function main() {
   }
 
   assert(
-    sitemapLocSet.size === expectedPublicLocs.size,
-    `sitemap-retro-videos.xml contains ${sitemapLocSet.size} URLs; expected ${expectedPublicLocs.size}.`
+    sitemapLocSet.size === expectedVideoLocs.size,
+    `sitemap-retro-videos.xml contains ${sitemapLocSet.size} URLs; expected ${expectedVideoLocs.size}.`
   );
-  for (const loc of expectedPublicLocs) {
+  for (const loc of expectedVideoLocs) {
     assert(sitemapLocSet.has(loc), `sitemap-retro-videos.xml is missing ${loc}.`);
   }
 
   const videoBlocks = [...sitemap.matchAll(/<video:video>[\s\S]*?<\/video:video>/g)].map((match) => match[0]);
-  assert(videoBlocks.length === expectedPublicLocs.size, "Retro video sitemap video block count does not match its URL count.");
+  assert(videoBlocks.length === expectedVideoLocs.size, "Retro video sitemap video block count does not match its URL count.");
   for (const block of videoBlocks) {
     assert(/<video:thumbnail_loc>[^<]+<\/video:thumbnail_loc>/.test(block), "A retro video sitemap entry is missing thumbnail_loc.");
     assert(/<video:title>[^<]+<\/video:title>/.test(block), "A retro video sitemap entry is missing title.");
@@ -184,9 +185,9 @@ function main() {
   }
 
   console.log(`[validate-retro-video-seo] ${processed} generated video detail pages validated.`);
-  console.log(`[validate-retro-video-seo] ${expectedPublicLocs.size} public watch pages validated in sitemap-retro-videos.xml.`);
+  console.log(`[validate-retro-video-seo] ${expectedVideoLocs.size} public videos validated in sitemap-retro-videos.xml.`);
   console.log(`[validate-retro-video-seo] ${verifiedObjects} verified VideoObjects validated.`);
-  console.log(`[validate-retro-video-seo] ${privatePages} members-only pages confirmed noindex and excluded from the public video sitemap.`);
+  console.log(`[validate-retro-video-seo] ${restrictedVideos} members-only videos confirmed excluded while their feature pages remain indexable.`);
 }
 
 main();
