@@ -26,50 +26,35 @@ jobs:
         with:
           node-version: 22
 
-      - name: Probe official Zzap Bible review records
-        run: |
-          python - <<'PY'
-          import html as htmlmod, re, urllib.parse, urllib.request
-          url='https://www.zzap64.co.uk/cgi-bin/zzapbible.pl'
-          for title, issue in [('Computer Scrabble',32), ('Decisive Battles',42), ('Armalyte',43)]:
-              data=urllib.parse.urlencode({
-                  'game': f'%{title}%', 'company':'', 'score_selection':'equal to', 'score':'',
-                  'issue_selection':'equal to', 'issue':str(issue), 'order_selection':'Page', 'Submit':'Search'
-              }).encode()
-              req=urllib.request.Request(url, data=data, headers={'User-Agent':'Mozilla/5.0 CCG archive verifier'})
-              raw=urllib.request.urlopen(req, timeout=20).read().decode('latin-1','replace')
-              text=htmlmod.unescape(re.sub(r'<[^>]+>', ' ', raw))
-              text=re.sub(r'\s+', ' ', text)
-              print('\n###', title, 'ISSUE', issue)
-              needle=title.lower().split()[0]
-              pos=text.lower().find(needle)
-              print(text[max(0,pos-500):pos+1800] if pos>=0 else text[:2500])
-              print('DISPLAYPAGE URLS:', re.findall(r'https?://[^\s"\']*displaypage\.pl\?[^\s"\']+', raw, re.I)[:10])
-          PY
-
-      - name: Prepare slower deeper pass
+      - name: Apply final generator patch
         run: node scripts/patch-zzap64-deep-generator.js
 
-      - name: Validate generator syntax
-        run: node --check scripts/generate-zzap64-review-links.js
+      - name: Validate resolver syntax
+        run: |
+          node --check scripts/generate-zzap64-review-links.js
+          node --check scripts/zzap64-bible-client.js
 
       - name: Deep-refresh direct magazine links
         run: node scripts/generate-zzap64-review-links.js --live
 
-      - name: Confirm known Armalyte direct scan
+      - name: Require direct scan coverage
         run: |
           node - <<'NODE'
           const data = require('./data/zzap64-review-links.json');
-          const row = data.entries['1988|november|c64|Armalyte'];
-          if (!row || row.precision !== 'page' || Number(row.issue) !== 43 || Number(row.page) !== 24) {
-            console.error('Armalyte was not resolved to Zzap!64 issue 43 page 24:', row);
+          const armalyte = data.entries['1988|november|c64|Armalyte'];
+          if (!armalyte || armalyte.precision !== 'page' || Number(armalyte.issue) !== 43 || Number(armalyte.page) !== 24) {
+            console.error('Armalyte was not resolved to Zzap!64 issue 43 page 24:', armalyte);
             process.exit(1);
           }
-          console.log('Armalyte verified at issue 43 page 24.');
+          const unresolved = Object.entries(data.entries).filter(([, row]) => row.precision !== 'page');
           console.log(`Direct coverage: ${data.totals.exactPages}/${data.totals.awards} (${data.totals.directCoveragePercent}%).`);
+          if (unresolved.length) {
+            console.error('Unresolved direct scan records:', unresolved.map(([key]) => key));
+            process.exit(1);
+          }
           NODE
 
-      - name: Commit deeper generator and enriched map
+      - name: Commit generator and enriched map
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -79,5 +64,5 @@ jobs:
             echo "Review-link generator and map already current."
             exit 0
           fi
-          git commit -m "Deepen Zzap64 direct review discovery"
+          git commit -m "Resolve all Zzap64 awards to direct scans"
           git push origin HEAD:codex/zzap64-deep-direct-links
