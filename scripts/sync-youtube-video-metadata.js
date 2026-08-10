@@ -9,6 +9,11 @@ const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
 const gamesJsonPath = path.join(repoRoot, "games", "games.json");
+const retroDatasetPaths = [
+  path.join(repoRoot, "data", "retro-specials.json"),
+  path.join(repoRoot, "data", "retro-events.json"),
+  path.join(repoRoot, "data", "amiga-demo-music.json")
+];
 const metadataPath = path.join(repoRoot, "data", "video-metadata.json");
 const apiKey = String(process.env.YOUTUBE_API_KEY || "").trim();
 
@@ -26,9 +31,35 @@ function readJson(filePath, fallback) {
   }
 }
 
-function videoIdFor(game) {
-  const value = String(game?.videoid || game?.videoId || "").trim();
+function videoIdFor(entry) {
+  const value = String(
+    entry?.videoid ||
+    entry?.videoId ||
+    entry?.youtubeId ||
+    entry?.youtube_video_id ||
+    entry?.youtube ||
+    ""
+  )
+    .trim()
+    .replace(/^https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)/i, "")
+    .replace(/[?&].*$/, "");
   return /^[A-Za-z0-9_-]{6,20}$/.test(value) ? value : "";
+}
+
+function collectVideoIds() {
+  const ids = new Set();
+
+  const gamesPayload = readJson(gamesJsonPath, []);
+  const games = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload.games || []);
+  games.map(videoIdFor).filter(Boolean).forEach((id) => ids.add(id));
+
+  for (const datasetPath of retroDatasetPaths) {
+    const payload = readJson(datasetPath, []);
+    const entries = Array.isArray(payload) ? payload : [];
+    entries.map(videoIdFor).filter(Boolean).forEach((id) => ids.add(id));
+  }
+
+  return [...ids].sort();
 }
 
 function chunks(values, size) {
@@ -74,7 +105,7 @@ async function fetchBatch(ids) {
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "CheekyCommodoreGamer-VideoMetadata/1.0"
+      "User-Agent": "CheekyCommodoreGamer-VideoMetadata/1.1"
     }
   });
   if (!response.ok) {
@@ -90,10 +121,8 @@ async function main() {
     return;
   }
 
-  const gamesPayload = readJson(gamesJsonPath, []);
-  const games = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload.games || []);
-  const ids = [...new Set(games.map(videoIdFor).filter(Boolean))].sort();
-  if (!ids.length) fail("No valid YouTube video IDs were found in games/games.json.");
+  const ids = collectVideoIds();
+  if (!ids.length) fail("No valid YouTube video IDs were found in games or retro video datasets.");
 
   const current = readJson(metadataPath, { version: 1, videos: {} });
   const videos = current?.videos && typeof current.videos === "object" ? { ...current.videos } : {};
@@ -128,9 +157,9 @@ async function main() {
     };
     fs.mkdirSync(path.dirname(metadataPath), { recursive: true });
     fs.writeFileSync(metadataPath, `${JSON.stringify(next, null, 2)}\n`, "utf8");
-    console.log(`[video-metadata] Verified metadata changed; wrote ${found}/${ids.length} game videos.`);
+    console.log(`[video-metadata] Verified metadata changed; wrote ${found}/${ids.length} unique site videos.`);
   } else {
-    console.log(`[video-metadata] Verified metadata unchanged for ${found}/${ids.length} game videos; no file rewrite needed.`);
+    console.log(`[video-metadata] Verified metadata unchanged for ${found}/${ids.length} unique site videos; no file rewrite needed.`);
   }
   if (missingFromYoutube.length) {
     console.warn(`[video-metadata] ${missingFromYoutube.length} video IDs were not returned by YouTube (private, removed or unavailable).`);
