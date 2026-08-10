@@ -475,5 +475,29 @@
       "zzap64-gold-medals-sizzlers-1986",
       "zzap64-gold-medals-sizzlers-1985"
     ]
+  },
+  {
+    "id": "zzap64-20-lowest-scoring-commodore-64-games",
+    "slug": "zzap64-20-lowest-scoring-commodore-64-games",
+    "type": "retro-specials",
+    "title": "Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games",
+    "youtubeId": "gEcii5RNges",
+    "thumbnail": "https://img.youtube.com/vi/gEcii5RNges/hqdefault.jpg",
+    "membersOnly": false,
+    "order": 19,
+    "summary": "The 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, counting down from 10% to a miserable 3%.",
+    "description": "This Retro Special counts down the 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, beginning at 10% and ending with the magazine’s lowest ratings at just 3%. Each game is revisited to examine the criticisms, the scores and whether Zzap!64’s reviewers were fair or far too harsh. With ratings always open to debate, the countdown gives C64 fans another chance to judge these notorious releases for themselves.",
+    "collection": "retro-specials",
+    "seo": {
+      "title": "20 Lowest-Scoring C64 Games in Zzap!64 – Too Harsh? | Cheeky Commodore Gamer",
+      "description": "Count down the 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, from 10% to just 3%, and decide whether the magazine was too harsh."
+    },
+    "created_at": "2026-08-10T00:00:00.000Z",
+    "relatedSlugs": [
+      "zzap64-gold-medals-sizzlers-1989",
+      "zzap64-gold-medals-sizzlers-1988",
+      "hardest-commodore-64-games",
+      "50-essential-commodore-64-games"
+    ]
   }
 ]
