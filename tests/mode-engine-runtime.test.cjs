@@ -279,4 +279,4 @@ assert.equal(windowObject.CCGModeEngine, firstController, 'duplicate script exec
 assert.equal(listenerCounts.get('click'), 1, 'duplicate script execution does not add another click owner');
 assert.equal(audioInstances.length, firstAudioCount, 'duplicate script execution does not create duplicate audio cues');
 
-console.log('Mode engine runtime test passed: Amiga cue plays normally and the C64 return cue is limited to the short Another Visitor phrase.');
+console.log('Mode engine runtime test passed: C64 → Amiga → C64 state changes still work, the Amiga cue plays normally, and the C64 return cue is limited to the short Another Visitor phrase.');
