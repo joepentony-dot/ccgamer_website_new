@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "data/zzap64-awards/**"
+      - "data/zzap64-review-overrides.json"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/zzap64-bible-client.js"
       - ".github/workflows/zzap64-review-links-refresh.yml"
