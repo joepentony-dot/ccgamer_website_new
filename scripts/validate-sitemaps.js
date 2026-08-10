@@ -2,6 +2,7 @@ const fs = require('fs');
 
 const SITE_URL = 'https://www.cheekycommodoregamer.co.uk';
 const SITEMAP_XMLNS = 'http://www.sitemaps.org/schemas/sitemap/0.9';
+const VIDEO_XMLNS = 'http://www.google.com/schemas/sitemap-video/1.1';
 const CORE_CHILD_SITEMAPS = ['sitemap-pages.xml', 'sitemap-games.xml'];
 const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
 
@@ -24,9 +25,11 @@ function assertXmlRoot(xml, rootTag, filePath) {
     xml.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n'),
     `${filePath} must start with the UTF-8 XML declaration.`
   );
+  const rootMatch = xml.slice(xml.indexOf('\n') + 1).match(new RegExp(`^<${rootTag}\\b([^>]*)>`));
+  assert(rootMatch, `${filePath} must use the ${rootTag} root.`);
   assert(
-    xml.includes(`<${rootTag} xmlns="${SITEMAP_XMLNS}">`),
-    `${filePath} must use the ${rootTag} root and sitemap namespace.`
+    new RegExp(`\\bxmlns=["']${SITEMAP_XMLNS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`).test(rootMatch[1]),
+    `${filePath} must declare the standard sitemap namespace.`
   );
   assert(xml.trim().endsWith(`</${rootTag}>`), `${filePath} must close ${rootTag}.`);
 }
@@ -109,6 +112,42 @@ function validateSitemapIndex() {
   return children;
 }
 
+function validateVideoSitemap(filePath, xml, locs) {
+  const rootMatch = xml.slice(xml.indexOf('\n') + 1).match(/^<urlset\b([^>]*)>/);
+  assert(
+    rootMatch && new RegExp(`\\bxmlns:video=["']${VIDEO_XMLNS.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`).test(rootMatch[1]),
+    `${filePath} must declare the Google video sitemap namespace.`
+  );
+
+  const videoBlocks = [...xml.matchAll(/<video:video>([\s\S]*?)<\/video:video>/g)].map((match) => match[1]);
+  assert(videoBlocks.length > 0, `${filePath} must contain at least one video entry.`);
+  assert(videoBlocks.length === locs.length, `${filePath} must contain exactly one video entry per page URL.`);
+
+  const requiredTags = ['thumbnail_loc', 'title', 'description', 'player_loc'];
+  videoBlocks.forEach((block, index) => {
+    for (const tag of requiredTags) {
+      assert(
+        new RegExp(`<video:${tag}>[^<]+<\\/video:${tag}>`).test(block),
+        `${filePath} video entry ${index + 1} is missing video:${tag}.`
+      );
+    }
+
+    const title = (block.match(/<video:title>([\s\S]*?)<\/video:title>/) || [])[1] || '';
+    const description = (block.match(/<video:description>([\s\S]*?)<\/video:description>/) || [])[1] || '';
+    assert(title.length <= 500, `${filePath} video entry ${index + 1} title is unexpectedly long.`);
+    assert(description.length <= 4096, `${filePath} video entry ${index + 1} description is unexpectedly long.`);
+
+    const player = (block.match(/<video:player_loc>([^<]+)<\/video:player_loc>/) || [])[1] || '';
+    assert(/^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]+$/.test(player), `${filePath} video entry ${index + 1} has an invalid YouTube player URL.`);
+
+    const duration = (block.match(/<video:duration>([^<]+)<\/video:duration>/) || [])[1];
+    if (duration) {
+      const seconds = Number(duration);
+      assert(Number.isInteger(seconds) && seconds > 0 && seconds <= 28800, `${filePath} video entry ${index + 1} has an invalid duration.`);
+    }
+  });
+}
+
 function validateUrlSitemap(filePath) {
   const xml = readFile(filePath);
   assertXmlRoot(xml, 'urlset', filePath);
@@ -119,10 +158,15 @@ function validateUrlSitemap(filePath) {
 
   for (const loc of locs) {
     assertCanonicalSitemapUrl(loc, filePath);
-    if (filePath === 'sitemap-games.xml') {
+    if (filePath === 'sitemap-games.xml' || filePath === 'sitemap-videos.xml') {
       const pathname = toUrl(loc, filePath).pathname;
       assert(!pathname.endsWith('.html'), `${filePath} game URLs must use canonical directory URLs: ${loc}`);
+      assert(/^\/games\/[a-z0-9-]+\/$/.test(pathname), `${filePath} must contain canonical game routes only: ${loc}`);
     }
+  }
+
+  if (filePath === 'sitemap-videos.xml') {
+    validateVideoSitemap(filePath, xml, locs);
   }
 
   console.log(`[validate-sitemaps] ${filePath} canonical URL checks valid (${locs.length} URLs).`);
