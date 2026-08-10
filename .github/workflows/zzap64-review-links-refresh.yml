@@ -47,7 +47,9 @@ jobs:
           node --check js/zzap64-awards.js
 
       - name: Resolve original Zzap review scans
-        run: node scripts/generate-zzap64-review-links.js --live
+        run: |
+          node scripts/generate-zzap64-review-links.js --live
+          node scripts/generate-zzap64-review-links.js
 
       - name: Validate direct scan coverage
         run: |
