@@ -1,8 +1,9 @@
 /* ============================================================
    CCG ZZAP!64 ALL-REVIEWS BROWSER
    ------------------------------------------------------------
-   Displays every verified Zzap!64 scan tied to an existing CCG
-   game page, including ordinary reviews and later re-reviews.
+   Lazy A-Z browser for every verified Zzap!64 scan tied to an
+   existing CCG game page. Only the requested review chunk is
+   downloaded for letter browsing; global search / All is opt-in.
 ============================================================ */
 
 (function () {
@@ -13,17 +14,32 @@
 
     const DATA_BASE = "/data/zzap64-game-reviews/";
     const MANIFEST_URL = `${DATA_BASE}manifest.json`;
+    const PAGE_SIZE = 24;
+    const SEARCH_MIN_LENGTH = 2;
+    const LETTERS = ["0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
     const MONTHS = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
 
     const state = {
-        records: [],
+        manifest: null,
+        manifestPromise: null,
+        chunkCache: new Map(),
+        chunkPromises: new Map(),
+        allRecords: null,
+        allRecordsPromise: null,
+        scopeRecords: [],
         query: "",
         system: "all",
         year: "all",
-        totals: null
+        activeLetter: "",
+        mode: "idle",
+        visibleLimit: PAGE_SIZE,
+        requestToken: 0,
+        controlsReady: false,
+        observed: false,
+        searchTimer: 0
     };
 
     function escapeHtml(value) {
@@ -96,35 +112,98 @@
                 });
             });
         });
-        return records;
+        return records.sort(compareRecords);
     }
 
-    async function loadRecords() {
-        const manifestResponse = await fetch(MANIFEST_URL, { cache: "default" });
-        if (!manifestResponse.ok) throw new Error(`Review manifest HTTP ${manifestResponse.status}`);
-        const manifest = await manifestResponse.json();
-        const chunks = Array.isArray(manifest?.chunks) ? manifest.chunks : [];
-        if (!chunks.length) throw new Error("Review manifest contains no chunks");
+    function compareRecords(a, b) {
+        return a.gameTitle.localeCompare(b.gameTitle, "en-GB", { numeric: true })
+            || a.issue - b.issue
+            || a.page - b.page;
+    }
 
-        const responses = await Promise.all(chunks.map(async (chunk) => {
-            const response = await fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" });
-            if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
-            return response.json();
-        }));
+    async function loadManifest() {
+        if (state.manifest) return state.manifest;
+        if (state.manifestPromise) return state.manifestPromise;
 
-        state.totals = manifest.totals || null;
-        return responses
-            .flatMap(parseChunk)
-            .sort((a, b) => (
-                a.gameTitle.localeCompare(b.gameTitle, "en-GB", { numeric: true })
-                || a.issue - b.issue
-                || a.page - b.page
-            ));
+        state.manifestPromise = fetch(MANIFEST_URL, { cache: "default" })
+            .then((response) => {
+                if (!response.ok) throw new Error(`Review manifest HTTP ${response.status}`);
+                return response.json();
+            })
+            .then((manifest) => {
+                const chunks = Array.isArray(manifest?.chunks) ? manifest.chunks : [];
+                if (!chunks.length) throw new Error("Review manifest contains no chunks");
+                state.manifest = manifest;
+                updateIdleSummary();
+                return manifest;
+            });
+
+        return state.manifestPromise;
+    }
+
+    function chunkForLetter(letter, chunks) {
+        const token = String(letter || "").toUpperCase();
+        let expected = "";
+        if (token === "0-9" || /^[A-D]$/.test(token)) expected = "0-d.json";
+        else if (/^[E-H]$/.test(token)) expected = "e-h.json";
+        else if (/^[I-L]$/.test(token)) expected = "i-l.json";
+        else if (/^[M-P]$/.test(token)) expected = "m-p.json";
+        else if (/^[Q-T]$/.test(token)) expected = "q-t.json";
+        else if (/^[U-Z]$/.test(token)) expected = "u-z.json";
+        if (!expected) return "";
+        return chunks.includes(expected) ? expected : "";
+    }
+
+    async function loadChunk(chunk) {
+        if (state.chunkCache.has(chunk)) return state.chunkCache.get(chunk);
+        if (state.chunkPromises.has(chunk)) return state.chunkPromises.get(chunk);
+
+        const promise = fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" })
+            .then((response) => {
+                if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
+                return response.json();
+            })
+            .then((data) => {
+                const records = parseChunk(data);
+                state.chunkCache.set(chunk, records);
+                state.chunkPromises.delete(chunk);
+                return records;
+            })
+            .catch((error) => {
+                state.chunkPromises.delete(chunk);
+                throw error;
+            });
+
+        state.chunkPromises.set(chunk, promise);
+        return promise;
+    }
+
+    async function loadAllRecords() {
+        if (state.allRecords) return state.allRecords;
+        if (state.allRecordsPromise) return state.allRecordsPromise;
+
+        state.allRecordsPromise = (async () => {
+            const manifest = await loadManifest();
+            const chunks = Array.isArray(manifest.chunks) ? manifest.chunks : [];
+            const responses = await Promise.all(chunks.map((chunk) => loadChunk(chunk)));
+            state.allRecords = responses.flat().sort(compareRecords);
+            return state.allRecords;
+        })().finally(() => {
+            state.allRecordsPromise = null;
+        });
+
+        return state.allRecordsPromise;
+    }
+
+    function matchesLetter(record, letter) {
+        const first = normalize(record.gameTitle).charAt(0).toUpperCase();
+        if (letter === "0-9") return /[0-9]/.test(first);
+        return first === letter;
     }
 
     function filteredRecords() {
         const query = normalize(state.query);
-        return state.records.filter((record) => {
+        return state.scopeRecords.filter((record) => {
             const haystack = normalize([
                 record.gameTitle,
                 record.month,
@@ -163,10 +242,11 @@
         return article;
     }
 
-    function updateYearOptions() {
+    function updateYearOptions(records) {
         const select = document.getElementById("zzapReviewYearFilter");
         if (!select) return;
-        const years = [...new Set(state.records.map((record) => record.year).filter(Boolean))].sort((a, b) => a - b);
+        const current = state.year;
+        const years = [...new Set(records.map((record) => record.year).filter(Boolean))].sort((a, b) => a - b);
         select.textContent = "";
         const all = document.createElement("option");
         all.value = "all";
@@ -178,23 +258,55 @@
             option.textContent = String(year);
             select.appendChild(option);
         });
+        state.year = years.some((year) => String(year) === current) ? current : "all";
+        select.value = state.year;
+        select.disabled = records.length === 0;
+    }
+
+    function updateIdleSummary() {
+        if (state.mode !== "idle") return;
+        const count = document.getElementById("zzapReviewVisibleCount");
+        const summary = document.getElementById("zzapReviewSummary");
+        if (count) count.textContent = "0";
+        if (!summary) return;
+        const totals = state.manifest?.totals;
+        const totalText = Number(totals?.records) > 0
+            ? `${Number(totals.records).toLocaleString("en-GB")} verified reviews across ${Number(totals.games || 0).toLocaleString("en-GB")} CCG games.`
+            : "Verified Zzap!64 reviews are available by letter.";
+        summary.textContent = `Choose a letter or search. ${totalText}`;
     }
 
     function updateSummary(records) {
         const count = document.getElementById("zzapReviewVisibleCount");
-        const total = document.getElementById("zzapReviewTotalCount");
-        const games = document.getElementById("zzapReviewGameCount");
         const summary = document.getElementById("zzapReviewSummary");
-        if (count) count.textContent = records.length.toLocaleString("en-GB");
-        if (total) total.textContent = Number(state.totals?.records || state.records.length).toLocaleString("en-GB");
-        if (games) games.textContent = Number(state.totals?.games || new Set(state.records.map((record) => record.gameSlug)).size).toLocaleString("en-GB");
+        if (count) count.textContent = Math.min(records.length, state.visibleLimit).toLocaleString("en-GB");
         if (!summary) return;
 
         const parts = [];
+        if (state.mode === "letter" && state.activeLetter) parts.push(state.activeLetter === "0-9" ? "0–9" : state.activeLetter);
+        if (state.mode === "all") parts.push("All reviews");
+        if (state.mode === "search" && state.query) parts.push(`Search: “${state.query}”`);
         if (state.system !== "all") parts.push(state.system === "amiga" ? "Amiga" : "C64");
         if (state.year !== "all") parts.push(state.year);
-        if (state.query) parts.push(`“${state.query}”`);
-        summary.textContent = parts.length ? parts.join(" · ") : "All verified Zzap!64 scans linked to CCG game pages";
+        parts.push(`${records.length.toLocaleString("en-GB")} matching review${records.length === 1 ? "" : "s"}`);
+        summary.textContent = parts.join(" · ");
+    }
+
+    function setGridMessage(message, busy = false) {
+        const grid = document.getElementById("zzapReviewGrid");
+        if (!grid) return;
+        grid.setAttribute("aria-busy", busy ? "true" : "false");
+        grid.innerHTML = `<div class="zzap-review-browser__empty">${escapeHtml(message)}</div>`;
+        updateLoadMore(0, 0);
+    }
+
+    function updateLoadMore(visible, total) {
+        const wrap = document.querySelector(".zzap-review-browser__more");
+        const button = wrap?.querySelector("button");
+        if (!wrap || !button) return;
+        const remaining = Math.max(0, total - visible);
+        wrap.hidden = remaining === 0;
+        if (remaining) button.textContent = `Load more (${remaining.toLocaleString("en-GB")} remaining)`;
     }
 
     function render() {
@@ -202,6 +314,7 @@
         if (!grid) return;
         const records = filteredRecords();
         grid.textContent = "";
+        grid.setAttribute("aria-busy", "false");
         updateSummary(records);
 
         if (!records.length) {
@@ -209,44 +322,288 @@
             empty.className = "zzap-review-browser__empty";
             empty.textContent = "No linked Zzap!64 reviews match those filters.";
             grid.appendChild(empty);
+            updateLoadMore(0, 0);
             return;
         }
 
+        const visibleRecords = records.slice(0, state.visibleLimit);
         const fragment = document.createDocumentFragment();
-        records.forEach((record) => fragment.appendChild(renderCard(record)));
+        visibleRecords.forEach((record) => fragment.appendChild(renderCard(record)));
         grid.appendChild(fragment);
+        updateLoadMore(visibleRecords.length, records.length);
     }
 
-    function bindFilters() {
+    function updateBrowseControls() {
+        document.querySelectorAll("[data-zzap-review-letter]").forEach((button) => {
+            const token = button.getAttribute("data-zzap-review-letter") || "";
+            const active = (state.mode === "all" && token === "all")
+                || (state.mode === "letter" && token === state.activeLetter);
+            button.classList.toggle("is-active", active);
+            button.setAttribute("aria-pressed", active ? "true" : "false");
+        });
+        const select = document.getElementById("zzapReviewLetterSelect");
+        if (select) select.value = state.mode === "all" ? "all" : (state.activeLetter || "");
+    }
+
+    function updateHash(token) {
+        const next = token === "all" ? "#reviews-all" : `#reviews-${String(token).toLowerCase()}`;
+        if (window.location.hash === next) return;
+        window.history.pushState(null, "", next);
+    }
+
+    async function selectLetter(letter, options = {}) {
+        const token = String(letter || "").toUpperCase();
+        if (!LETTERS.includes(token)) return;
+        const requestToken = ++state.requestToken;
+        state.mode = "letter";
+        state.activeLetter = token;
+        state.query = "";
+        state.year = "all";
+        state.visibleLimit = PAGE_SIZE;
+        const search = document.getElementById("zzapReviewSearch");
+        if (search) search.value = "";
+        updateBrowseControls();
+        setGridMessage(`Loading ${token === "0-9" ? "0–9" : token} reviews…`, true);
+
+        try {
+            const manifest = await loadManifest();
+            const chunks = Array.isArray(manifest.chunks) ? manifest.chunks : [];
+            const chunk = chunkForLetter(token, chunks);
+            if (!chunk) throw new Error(`No review chunk is available for ${token}`);
+            const records = await loadChunk(chunk);
+            if (requestToken !== state.requestToken) return;
+            state.scopeRecords = records.filter((record) => matchesLetter(record, token));
+            updateYearOptions(state.scopeRecords);
+            render();
+            if (options.updateHash !== false) updateHash(token);
+        } catch (error) {
+            if (requestToken !== state.requestToken) return;
+            setGridMessage("That review section could not be loaded. Please try again.");
+            console.warn("[CCG] Zzap!64 letter reviews unavailable:", error);
+        }
+    }
+
+    async function selectAll(options = {}) {
+        const requestToken = ++state.requestToken;
+        state.mode = "all";
+        state.activeLetter = "";
+        state.query = "";
+        state.year = "all";
+        state.visibleLimit = PAGE_SIZE;
+        const search = document.getElementById("zzapReviewSearch");
+        if (search) search.value = "";
+        updateBrowseControls();
+        setGridMessage("Loading the complete review index…", true);
+
+        try {
+            const records = await loadAllRecords();
+            if (requestToken !== state.requestToken) return;
+            state.scopeRecords = records;
+            updateYearOptions(records);
+            render();
+            if (options.updateHash !== false) updateHash("all");
+        } catch (error) {
+            if (requestToken !== state.requestToken) return;
+            setGridMessage("The complete review index could not be loaded. Please try again.");
+            console.warn("[CCG] Full Zzap!64 review browser unavailable:", error);
+        }
+    }
+
+    async function runSearch(query) {
+        const trimmed = String(query || "").trim();
+        state.query = trimmed;
+        state.visibleLimit = PAGE_SIZE;
+
+        if (!trimmed) {
+            if (state.mode === "search") {
+                state.mode = "idle";
+                state.activeLetter = "";
+                state.scopeRecords = [];
+                state.year = "all";
+                updateBrowseControls();
+                updateYearOptions([]);
+                setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+                updateIdleSummary();
+            } else {
+                render();
+            }
+            return;
+        }
+
+        if (normalize(trimmed).length < SEARCH_MIN_LENGTH) {
+            state.mode = "search";
+            state.activeLetter = "";
+            state.scopeRecords = [];
+            updateBrowseControls();
+            setGridMessage(`Type at least ${SEARCH_MIN_LENGTH} characters to search all reviews.`);
+            return;
+        }
+
+        const requestToken = ++state.requestToken;
+        state.mode = "search";
+        state.activeLetter = "";
+        updateBrowseControls();
+        setGridMessage("Searching the complete review index…", true);
+
+        try {
+            const records = await loadAllRecords();
+            if (requestToken !== state.requestToken) return;
+            state.scopeRecords = records;
+            updateYearOptions(records);
+            render();
+        } catch (error) {
+            if (requestToken !== state.requestToken) return;
+            setGridMessage("The review search could not be loaded. Please try again.");
+            console.warn("[CCG] Zzap!64 review search unavailable:", error);
+        }
+    }
+
+    function createBrowseControls() {
+        const heading = document.querySelector(".zzap-review-browser__heading");
+        const tools = document.querySelector(".zzap-review-browser__tools");
+        const grid = document.getElementById("zzapReviewGrid");
+        if (!heading || !tools || !grid || document.querySelector(".zzap-review-browser__az")) return;
+
+        const nav = document.createElement("div");
+        nav.className = "zzap-review-browser__az";
+        nav.setAttribute("aria-label", "Browse Zzap!64 reviews alphabetically");
+
+        const desktop = document.createElement("div");
+        desktop.className = "zzap-review-browser__alphabet";
+        const tokens = ["all", ...LETTERS];
+        tokens.forEach((token) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "zzap-review-browser__letter";
+            button.setAttribute("data-zzap-review-letter", token);
+            button.setAttribute("aria-pressed", "false");
+            button.textContent = token === "all" ? "All" : (token === "0-9" ? "0–9" : token);
+            desktop.appendChild(button);
+        });
+
+        const mobileLabel = document.createElement("label");
+        mobileLabel.className = "zzap-review-browser__letter-select-wrap";
+        mobileLabel.innerHTML = '<span>Browse by letter</span><select id="zzapReviewLetterSelect" aria-label="Browse Zzap!64 reviews by letter"><option value="">Choose a letter…</option><option value="all">All reviews</option></select>';
+        const mobileSelect = mobileLabel.querySelector("select");
+        LETTERS.forEach((letter) => {
+            const option = document.createElement("option");
+            option.value = letter;
+            option.textContent = letter === "0-9" ? "0–9" : letter;
+            mobileSelect.appendChild(option);
+        });
+
+        nav.append(desktop, mobileLabel);
+        tools.parentNode.insertBefore(nav, tools);
+
+        const more = document.createElement("div");
+        more.className = "zzap-review-browser__more";
+        more.hidden = true;
+        more.innerHTML = '<button type="button" class="zzap-review-browser__more-button">Load more</button>';
+        grid.insertAdjacentElement("afterend", more);
+    }
+
+    function bindControls() {
+        if (state.controlsReady) return;
+        state.controlsReady = true;
         const search = document.getElementById("zzapReviewSearch");
         const system = document.getElementById("zzapReviewSystemFilter");
         const year = document.getElementById("zzapReviewYearFilter");
-        search?.addEventListener("input", () => {
-            state.query = search.value.trim();
-            render();
+        const letterSelect = document.getElementById("zzapReviewLetterSelect");
+
+        document.querySelectorAll("[data-zzap-review-letter]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const token = button.getAttribute("data-zzap-review-letter") || "";
+                if (token === "all") selectAll();
+                else selectLetter(token);
+            });
         });
+
+        letterSelect?.addEventListener("change", () => {
+            const token = letterSelect.value;
+            if (token === "all") selectAll();
+            else if (token) selectLetter(token);
+        });
+
+        search?.addEventListener("input", () => {
+            window.clearTimeout(state.searchTimer);
+            state.searchTimer = window.setTimeout(() => runSearch(search.value), 220);
+        });
+
         system?.addEventListener("change", () => {
             state.system = system.value;
+            state.visibleLimit = PAGE_SIZE;
+            if (state.mode === "idle") {
+                setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+                updateIdleSummary();
+                return;
+            }
             render();
         });
+
         year?.addEventListener("change", () => {
             state.year = year.value;
+            state.visibleLimit = PAGE_SIZE;
+            if (state.mode !== "idle") render();
+        });
+
+        document.querySelector(".zzap-review-browser__more-button")?.addEventListener("click", () => {
+            state.visibleLimit += PAGE_SIZE;
             render();
         });
+
+        window.addEventListener("popstate", applyHashSelection);
     }
 
-    async function init() {
+    function hashSelection() {
+        const match = String(window.location.hash || "").match(/^#reviews-(all|0-9|[a-z])$/i);
+        if (!match) return "";
+        return match[1].toLowerCase() === "all" ? "all" : match[1].toUpperCase();
+    }
+
+    function applyHashSelection() {
+        const token = hashSelection();
+        if (!token) return;
+        if (token === "all") selectAll({ updateHash: false });
+        else selectLetter(token, { updateHash: false });
+    }
+
+    function observeBrowser() {
+        const section = document.querySelector(".zzap-review-browser");
+        if (!section) return;
+
+        const warmManifest = () => {
+            if (state.observed) return;
+            state.observed = true;
+            loadManifest().catch((error) => {
+                console.warn("[CCG] Zzap!64 review manifest unavailable:", error);
+            });
+            const token = hashSelection();
+            if (token === "all") selectAll({ updateHash: false });
+            else if (token) selectLetter(token, { updateHash: false });
+        };
+
+        if (!("IntersectionObserver" in window)) {
+            warmManifest();
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (!entries.some((entry) => entry.isIntersecting)) return;
+            observer.disconnect();
+            warmManifest();
+        }, { rootMargin: "300px 0px" });
+        observer.observe(section);
+    }
+
+    function init() {
         const grid = document.getElementById("zzapReviewGrid");
         if (!grid) return;
-        try {
-            state.records = await loadRecords();
-            updateYearOptions();
-            bindFilters();
-            render();
-        } catch (error) {
-            grid.innerHTML = '<div class="zzap-review-browser__empty">The full Zzap!64 review index could not be loaded. Refresh the page to try again.</div>';
-            console.warn("[CCG] Full Zzap!64 review browser unavailable:", error);
-        }
+        createBrowseControls();
+        bindControls();
+        updateYearOptions([]);
+        setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+        updateIdleSummary();
+        observeBrowser();
     }
 
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
