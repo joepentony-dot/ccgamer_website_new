@@ -34,11 +34,11 @@
       <h2>Normal publishing workflow</h2>
       <ol>
         <li>Open <a href="/admin/content-publisher.html"><strong>CCG Content Publisher</strong></a>.</li>
-        <li>Choose <strong>Add Game</strong> or <strong>Add Video / Feature</strong>.</li>
+        <li>Choose <strong>Add Game</strong>, <strong>Add Video / Feature</strong> or <strong>Zzap!64 Awards Year</strong>.</li>
         <li>Enter the source information once. For videos, paste the YouTube URL; the publisher extracts the video ID automatically.</li>
         <li>Review the form validation and publish. The publisher writes only the authoritative source data and any selected game thumbnail.</li>
-        <li>Existing GitHub workflows then regenerate the canonical pages, verified YouTube metadata, VideoObject/Clip structured data, video library, archives and sitemaps.</li>
-        <li>Use the <strong>Publishing Status</strong> tab to follow the automated stages and confirm the final canonical URL is live.</li>
+        <li>Existing GitHub workflows then regenerate the relevant canonical pages, verified YouTube metadata, structured data, archives, direct Zzap review links and sitemaps.</li>
+        <li>Use the <strong>Publishing Status</strong> tab to follow the automated stages and confirm the final output is live.</li>
         <li>After the content is live, use <a href="/admin/announce.html">Announcements</a> if you want to notify opted-in members.</li>
       </ol>
 
@@ -48,6 +48,16 @@
         <li>Verified upload dates, durations, titles and thumbnails are fetched by GitHub Actions after the source entry is published.</li>
         <li>If YouTube does not return a video, the site withholds unverified VideoObject fields rather than inventing them.</li>
         <li>YouTube descriptions containing timestamps can feed visible chapters and Google Clip/Key Moments markup during the SEO generation step.</li>
+      </ul>
+
+      <h2>Zzap!64 year-by-year publishing</h2>
+      <ul>
+        <li>Publish the finished Zzap!64 retrospective video through <strong>Add Video / Feature</strong> as normal.</li>
+        <li>Open <strong>Zzap!64 Awards Year</strong>, enter the magazine year and paste the award table as JSON, CSV, tab-separated or pipe-separated rows.</li>
+        <li>The award columns are <strong>Month, Title, Award, Score, System</strong>. A score can be left blank where Zzap!64 did not print an overall percentage.</li>
+        <li>The publisher saves a new authoritative <code>/data/zzap64-awards/YYYY.json</code> year file and will not silently overwrite an existing historical year.</li>
+        <li>The review-link workflow queries the official Zzap Bible for the expected issue and exact review page, then stores direct <code>zzap64.co.uk</code> scan links. Page numbers are never guessed.</li>
+        <li>The public <code>/zzap64/</code> archive discovers the new year from the verified review-link index, so the year card, filter and award records do not need hand-editing.</li>
       </ul>
 
       <h2>Games</h2>

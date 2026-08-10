@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "description": "Manually verified original Zzap!64 scan pages for award records that the automated Zzap Bible/Lemon title resolver cannot match unambiguously. Page numbers are exact and must never be inferred.",
+  "entries": {
+    "1987|december|c64|Computer Scrabble Deluxe": {
+      "issue": 32,
+      "page": 154,
+      "source": "verified-zzap-bible-exception"
+    },
+    "1988|april|amiga|Time Bandit": {
+      "issue": 36,
+      "page": 62,
+      "source": "verified-direct-scan-exception"
+    },
+    "1988|october|c64|Decisive Battles of the American Civil War Volume II": {
+      "issue": 42,
+      "page": 45,
+      "source": "verified-zzap-bible-exception"
+    },
+    "1989|september|amiga|Fire Brigade": {
+      "issue": 53,
+      "page": 39,
+      "source": "verified-direct-scan-exception"
+    },
+    "1989|october|amiga|Falcon": {
+      "issue": 54,
+      "page": 75,
+      "source": "verified-direct-scan-exception"
+    },
+    "1989|october|amiga|F-16 Combat Pilot": {
+      "issue": 54,
+      "page": 75,
+      "source": "verified-direct-scan-exception"
+    }
+  }
+}

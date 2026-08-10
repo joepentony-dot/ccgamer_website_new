@@ -3,9 +3,9 @@
    ------------------------------------------------------------
    Loads the small award files first, renders cards in frame-sized
    batches, then links reviewed games from the full game archive.
-   Original-magazine links use a generated, local verification map;
-   page numbers are never guessed and unresolved entries fall back
-   to the correct official Zzap!64 issue.
+   Original-magazine links use a generated verification map backed
+   by the official Zzap Bible; page numbers are never guessed.
+   Available award-year files are discovered from that map.
 ============================================================ */
 
 (function () {
@@ -14,7 +14,7 @@
     if (window.CCG_ZZAP64_AWARDS_READY) return;
     window.CCG_ZZAP64_AWARDS_READY = true;
 
-    const YEARS = [1985, 1986, 1987, 1988, 1989];
+    const DEFAULT_YEARS = [1985, 1986, 1987, 1988, 1989];
     const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
     const REVIEW_LINKS_PATH = "/data/zzap64-review-links.json";
     const ZZAP_HOST = "www.zzap64.co.uk";
@@ -40,6 +40,7 @@
     const AWARD_ORDER = ["Gold Medal", "Silver Medal", "Sizzler"];
 
     const state = {
+        years: DEFAULT_YEARS.slice(),
         entries: [],
         games: [],
         gameIndex: null,
@@ -206,22 +207,19 @@
         if (
             recordUrl
             && Number(record?.issue) === issue
-            && (record.precision === "page" || record.precision === "issue")
+            && record.precision === "page"
+            && Number.isInteger(Number(record.page))
+            && Number(record.page) > 0
         ) {
             return {
                 issue,
-                page: Number.isInteger(Number(record.page)) && Number(record.page) > 0 ? Number(record.page) : null,
-                precision: record.precision,
+                page: Number(record.page),
+                precision: "page",
                 url: recordUrl
             };
         }
 
-        return {
-            issue,
-            page: null,
-            precision: "issue",
-            url: officialIssueUrl(issue)
-        };
+        return { issue, page: null, precision: "pending", url: "" };
     }
 
     function findGame(entry) {
@@ -271,8 +269,11 @@
         container.textContent = "";
 
         const fragment = document.createDocumentFragment();
-        YEARS.forEach((year) => {
-            const meta = YEAR_META[year];
+        state.years.forEach((year) => {
+            const meta = YEAR_META[year] || {
+                label: "Zzap!64 awards retrospective",
+                page: `/retro-specials/zzap64-gold-medals-sizzlers-${year}/`
+            };
             const count = state.entries.filter((entry) => entry.year === year).length;
             const card = document.createElement("a");
             card.className = "zzap-year-card";
@@ -343,21 +344,24 @@
         const magazine = magazineLinkFor(entry);
         if (!magazine) return "";
 
-        const exactPage = magazine.precision === "page" && magazine.page;
-        const label = exactPage ? "Read original Zzap!64 review" : "Browse original Zzap!64 issue";
-        const detail = exactPage ? `Issue ${magazine.issue} · p${magazine.page}` : `Issue ${magazine.issue}`;
-        const aria = exactPage
-            ? `Open the original Zzap!64 review of ${entry.title}, issue ${magazine.issue}, page ${magazine.page}`
-            : `Open Zzap!64 issue ${magazine.issue}, containing the original review of ${entry.title}`;
+        if (magazine.precision !== "page" || !magazine.page || !magazine.url) {
+            return `
+                <span class="zzap-award-card__magazine-link zzap-award-card__magazine-link--pending">
+                    <span class="zzap-award-card__magazine-label">Original Zzap!64 scan pending verification</span>
+                    <span class="zzap-award-card__magazine-detail">Issue ${escapeHtml(magazine.issue)}</span>
+                </span>
+            `;
+        }
 
+        const aria = `Open the original Zzap!64 review of ${entry.title}, issue ${magazine.issue}, page ${magazine.page}`;
         return `
-            <a class="zzap-award-card__magazine-link${exactPage ? " zzap-award-card__magazine-link--page" : ""}"
+            <a class="zzap-award-card__magazine-link zzap-award-card__magazine-link--page"
                href="${escapeHtml(magazine.url)}"
                target="_blank"
                rel="noopener noreferrer external"
                aria-label="${escapeHtml(aria)}">
-                <span class="zzap-award-card__magazine-label">${escapeHtml(label)} <span aria-hidden="true">↗</span></span>
-                <span class="zzap-award-card__magazine-detail">${escapeHtml(detail)} · zzap64.co.uk</span>
+                <span class="zzap-award-card__magazine-label">Read original Zzap!64 review <span aria-hidden="true">↗</span></span>
+                <span class="zzap-award-card__magazine-detail">Issue ${escapeHtml(magazine.issue)} · p${escapeHtml(magazine.page)} · zzap64.co.uk</span>
             </a>
         `;
     }
@@ -413,7 +417,8 @@
         if (state.system !== "all") parts.push(state.system === "c64" ? "C64" : "Amiga");
         if (state.award !== "all") parts.push(state.award.replace(/\b\w/g, (letter) => letter.toUpperCase()));
         if (state.query) parts.push(`“${state.query}”`);
-        const context = parts.length ? parts.join(" · ") : "All indexed awards from 1985–1989";
+        const yearRange = state.years.length ? `${state.years[0]}–${state.years[state.years.length - 1]}` : "available years";
+        const context = parts.length ? parts.join(" · ") : `All indexed awards from ${yearRange}`;
         const linkContext = state.linksStatus === "pending" ? " · review links loading" : "";
         summary.textContent = `${context} · alphabetical order${linkContext}`;
     }
@@ -501,18 +506,23 @@
             if (!response.ok) throw new Error(`Magazine link index HTTP ${response.status}`);
             const data = await response.json();
             const records = data && typeof data.entries === "object" && data.entries ? data.entries : {};
+            const years = Array.isArray(data?.years)
+                ? data.years.map(Number).filter((year) => Number.isInteger(year) && year >= 1985).sort((a, b) => a - b)
+                : [];
+            state.years = years.length ? [...new Set(years)] : DEFAULT_YEARS.slice();
             state.reviewLinks = new Map(Object.entries(records));
             state.reviewLinksStatus = "ready";
         } catch (error) {
             state.reviewLinks = new Map();
             state.reviewLinksStatus = "failed";
-            console.warn("[CCG] Exact Zzap!64 magazine page links were unavailable; issue links will be used.", error);
+            state.years = DEFAULT_YEARS.slice();
+            console.warn("[CCG] Exact Zzap!64 magazine page links were unavailable; direct scan links will remain pending.", error);
         }
     }
 
     async function loadAwardEntries() {
-        updateProgress(8, "Loading award records…", "Fetching the five year files in parallel.");
-        const yearResults = await Promise.all(YEARS.map(async (year) => {
+        updateProgress(8, "Loading award records…", `Fetching ${state.years.length} year file${state.years.length === 1 ? "" : "s"} in parallel.`);
+        const yearResults = await Promise.all(state.years.map(async (year) => {
             const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "default" });
             if (!response.ok) throw new Error(`${year} archive HTTP ${response.status}`);
             const data = await response.json();
@@ -526,14 +536,38 @@
 
         const total = document.getElementById("zzapTotalCount");
         if (total) total.textContent = state.entries.length.toLocaleString("en-GB");
+
+        const yearRange = document.getElementById("zzapYearRange");
+        const yearCount = document.getElementById("zzapYearCount");
+        if (yearRange && state.years.length) yearRange.textContent = `${state.years[0]}–${state.years[state.years.length - 1]}`;
+        if (yearCount) yearCount.textContent = `${state.years.length} year${state.years.length === 1 ? "" : "s"} covered`;
+
+        const yearFilter = document.getElementById("zzapYearFilter");
+        if (yearFilter) {
+            yearFilter.textContent = "";
+            const all = document.createElement("option");
+            all.value = "all";
+            all.textContent = "All years";
+            yearFilter.appendChild(all);
+            state.years.forEach((year) => {
+                const option = document.createElement("option");
+                option.value = String(year);
+                option.textContent = String(year);
+                yearFilter.appendChild(option);
+            });
+            state.year = "all";
+        }
+
         renderYearCards();
         bindFilters();
         setControlsEnabled(true);
 
-        const exactCount = Array.from(state.reviewLinks.values()).filter((record) => record?.precision === "page").length;
+        const exactCount = state.entries.filter((entry) => magazineLinkFor(entry)?.precision === "page").length;
         const magazineDetail = state.reviewLinksStatus === "ready"
-            ? ` ${exactCount.toLocaleString("en-GB")} exact original-review scan links are available; the rest open the correct issue.`
-            : " Original-magazine links will open the correct issue where an exact scan reference is unavailable.";
+            ? (exactCount === state.entries.length
+                ? " Every indexed award has a verified direct original-review scan link."
+                : ` ${exactCount.toLocaleString("en-GB")} direct original-review scan links are verified; unresolved links remain pending rather than opening a generic issue.`)
+            : " Direct original-review links will remain pending until the verification map is available.";
 
         updateProgress(34, "Award records loaded", `${state.entries.length.toLocaleString("en-GB")} entries are ready.${magazineDetail}`);
         await render();
@@ -570,7 +604,7 @@
 
     async function init() {
         setControlsEnabled(false);
-        updateProgress(2, "Preparing archive…", "Starting the title matcher and original-magazine index.");
+        updateProgress(2, "Preparing archive…", "Starting the title matcher and verified original-magazine index.");
 
         try {
             await ensureScript(MATCHER_PATH);

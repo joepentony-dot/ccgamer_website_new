@@ -5,16 +5,47 @@
 const fs = require("fs");
 const path = require("path");
 const matcher = require("../js/ccg-zzap64-matcher.js");
+const zzapBible = require("./zzap64-bible-client.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const AWARDS_DIR = path.join(ROOT, "data", "zzap64-awards");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
 const OUTPUT_PATH = path.join(ROOT, "data", "zzap64-review-links.json");
-const YEARS = [1985, 1986, 1987, 1988, 1989];
+const OVERRIDES_PATH = path.join(ROOT, "data", "zzap64-review-overrides.json");
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
 ];
+const LEMON_ORIGINS = Object.freeze({
+  c64: "https://www.lemon64.com",
+  amiga: "https://www.lemonamiga.com"
+});
+const USER_AGENT = "CheekyCommodoreGamer-ZzapArchive/1.0 (+https://www.cheekycommodoregamer.co.uk/)";
+const REQUEST_DELAY_MS = 900;
+const FETCH_TIMEOUT_MS = 15000;
+const MAX_LIVE_CANDIDATES = 8;
+const LEMON_SEARCH_ALIASES = Object.freeze({
+  "Graphic Adventure Creator": ["GAC"],
+  "Shoot 'Em Up Construction Kit": ["SEUCK", "Shoot Em Up Construction Kit"],
+  "R.I.S.K.": ["Risk"],
+  "B-24 Flight Simulator": ["B24 Flight Simulator"],
+  "Kikstart II": ["Kikstart 2"],
+  "World Class Leaderboard": ["World Class Leader Board"],
+  "APB": ["A.P.B."],
+  "F-16 Combat Pilot": ["F16 Combat Pilot"],
+  "Computer Scrabble Deluxe": ["Scrabble Deluxe"],
+  "The Sentinel": ["Sentinel"],
+  "Batman: The Movie": ["Batman The Movie", "Batman"],
+  "R-Type": ["R Type"],
+  "Rambo": ["Rambo: First Blood Part II", "Rambo First Blood Part 2"],
+  "Ultima IV": ["Ultima 4"],
+  "Doomdark's Revenge": ["Doomdarks Revenge"],
+  "Hunter's Moon": ["Hunters Moon"]
+});
+
+const requestCache = new Map();
+const searchCache = new Map();
+let lastRequestAt = 0;
 
 function decodeHtml(value) {
   return String(value || "")
@@ -37,6 +68,19 @@ function normalizeLemonTitle(value) {
   const trailingArticle = title.match(/^(.+),\s*(The|A|An)$/i);
   if (!trailingArticle) return title;
   return `${trailingArticle[2]} ${trailingArticle[1]}`.trim();
+}
+
+function normalizeSearchTitle(value) {
+  return normalizeLemonTitle(String(value || "").replace(/\s+\([^)]*\)\s*$/g, "").trim());
+}
+
+function awardYears() {
+  return fs.readdirSync(AWARDS_DIR)
+    .map((name) => name.match(/^(\d{4})\.json$/))
+    .filter(Boolean)
+    .map((match) => Number(match[1]))
+    .filter((year) => Number.isInteger(year) && year >= 1985)
+    .sort((a, b) => a - b);
 }
 
 function issueNumber(year, month) {
@@ -69,23 +113,40 @@ function officialPageUrl(issue, page) {
 
 function readAwards() {
   const entries = [];
-  YEARS.forEach((year) => {
+  awardYears().forEach((year) => {
     const sourcePath = path.join(AWARDS_DIR, `${year}.json`);
     const parsed = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
     const records = Array.isArray(parsed) ? parsed : (parsed.entries || parsed.awards || []);
     records.forEach((raw) => {
       const entry = Array.isArray(raw)
-        ? { year, month: raw[0], title: raw[1], system: raw[4] || "C64" }
+        ? { year, month: raw[0], title: raw[1], score: raw[3], system: raw[4] || "C64" }
         : {
             year: Number(raw.year || year),
             month: raw.month,
             title: raw.title || raw.game,
+            score: raw.score,
             system: raw.system || raw.platform || "C64"
           };
       if (entry.year && entry.month && entry.title && entry.system) entries.push(entry);
     });
   });
   return entries;
+}
+
+function readExistingOutput() {
+  if (!fs.existsSync(OUTPUT_PATH)) return { entries: {} };
+  try {
+    const parsed = JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
+    return parsed && typeof parsed === "object" ? parsed : { entries: {} };
+  } catch {
+    return { entries: {} };
+  }
+}
+
+function readOverrides() {
+  if (!fs.existsSync(OVERRIDES_PATH)) return {};
+  const parsed = JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"));
+  return parsed && typeof parsed.entries === "object" && parsed.entries ? parsed.entries : {};
 }
 
 function extractMetaContent(html, property) {
@@ -133,6 +194,15 @@ function canonicalGameSlug(canonical) {
   }
 }
 
+function addZzapLink(links, issue, page, source = "magazine-reference") {
+  const numericIssue = Number(issue);
+  const numericPage = Number(page);
+  if (!Number.isInteger(numericIssue) || numericIssue < 1 || !Number.isInteger(numericPage) || numericPage < 1) return;
+  const key = `${numericIssue}|${numericPage}`;
+  if (links.some((item) => item.key === key)) return;
+  links.push({ key, issue: numericIssue, page: numericPage, url: officialPageUrl(numericIssue, numericPage), source });
+}
+
 function extractZzapLinks(html) {
   const links = [];
   const hrefPattern = /href=["']([^"']*zzap64\.co\.uk\/cgi-bin\/displaypage\.pl\?[^"']+)["']/gi;
@@ -145,13 +215,19 @@ function extractZzapLinks(html) {
     } catch {
       continue;
     }
-    const issue = Number(parsed.searchParams.get("issue"));
-    const page = Number(parsed.searchParams.get("page"));
-    if (!Number.isInteger(issue) || issue < 1 || !Number.isInteger(page) || page < 1) continue;
-    const key = `${issue}|${page}`;
-    if (links.some((item) => item.key === key)) continue;
-    links.push({ key, issue, page, url: officialPageUrl(issue, page) });
+    addZzapLink(links, parsed.searchParams.get("issue"), parsed.searchParams.get("page"), "official-link");
   }
+
+  const rows = String(html || "").match(/<tr\b[\s\S]*?<\/tr>/gi) || [];
+  rows.forEach((row) => {
+    const text = stripTags(row);
+    if (!/\bZzap(?:!64)?\b/i.test(text) || /\bZzap\s+Amiga\b/i.test(text)) return;
+    const issueMatch = text.match(/\bZzap(?:!64)?\s+(?:No\.?\s*)?(\d+)\b/i);
+    const pageMatch = text.match(/(?:^|[,;\s])p(?:age)?\.?\s*(\d+)\b/i);
+    if (!issueMatch || !pageMatch) return;
+    addZzapLink(links, issueMatch[1], pageMatch[1], "magazine-row");
+  });
+
   return links;
 }
 
@@ -182,6 +258,7 @@ function readCachedMagazinePages() {
         slug: canonicalGameSlug(canonical),
         system: system === "amiga" ? "AMIGA" : "C64",
         zzapLinks,
+        lemonUrl: canonical,
         source: `data/lemon-cache/${name}`
       });
     });
@@ -189,8 +266,61 @@ function readCachedMagazinePages() {
   return bySystem;
 }
 
-function buildOutput() {
+function verifiedOverride(overrides, entry, issue) {
+  const record = overrides?.[recordKey(entry)];
+  if (
+    Number(record?.issue) !== Number(issue)
+    || !Number.isInteger(Number(record?.page))
+    || Number(record.page) < 1
+  ) return null;
+
+  return {
+    issue: Number(issue),
+    page: Number(record.page),
+    precision: "page",
+    url: officialPageUrl(issue, Number(record.page)),
+    source: String(record.source || "verified-review-exception")
+  };
+}
+
+function persistedExact(existing, entry, issue) {
+  const record = existing?.entries?.[recordKey(entry)];
+  if (
+    record?.precision !== "page"
+    || Number(record.issue) !== Number(issue)
+    || !Number.isInteger(Number(record.page))
+    || Number(record.page) < 1
+  ) return null;
+
+  return {
+    issue: Number(issue),
+    page: Number(record.page),
+    precision: "page",
+    url: officialPageUrl(issue, Number(record.page)),
+    source: String(record.source || "persisted-verified-reference"),
+    ...(record.lemonUrl ? { lemonUrl: String(record.lemonUrl) } : {}),
+    ...(record.bibleTitle ? { bibleTitle: String(record.bibleTitle) } : {}),
+    ...(Number.isFinite(Number(record.bibleScore)) ? { bibleScore: Number(record.bibleScore) } : {})
+  };
+}
+
+function recalculateTotals(output) {
+  const records = Object.values(output.entries || {});
+  const exactPages = records.filter((record) => record?.precision === "page").length;
+  const issueFallbacks = records.length - exactPages;
+  output.totals = {
+    awards: records.length,
+    exactPages,
+    issueFallbacks,
+    directCoveragePercent: records.length ? Number(((exactPages / records.length) * 100).toFixed(1)) : 0
+  };
+  return output;
+}
+
+function buildOutput(existing = readExistingOutput()) {
   const awards = readAwards();
+  const years = awardYears();
+  const overrides = readOverrides();
   const cached = readCachedMagazinePages();
   const indexes = {
     c64: matcher.buildGameIndex(cached.c64),
@@ -198,29 +328,32 @@ function buildOutput() {
   };
 
   const entries = {};
-  let exactPages = 0;
-  let issueFallbacks = 0;
 
   awards.forEach((entry) => {
     const issue = issueNumber(entry.year, entry.month);
     if (!issue) throw new Error(`Unable to derive Zzap!64 issue for ${recordKey(entry)}`);
 
+    const key = recordKey(entry);
+    const override = verifiedOverride(overrides, entry, issue);
+    const persisted = persistedExact(existing, entry, issue);
     const system = systemKey(entry.system);
     const cacheMatch = matcher.findGame(entry, indexes[system]);
-    const exact = cacheMatch?.zzapLinks?.find((link) => link.issue === issue) || null;
-    const key = recordKey(entry);
+    const cachedExact = cacheMatch?.zzapLinks?.find((link) => link.issue === issue) || null;
 
-    if (exact) {
-      exactPages += 1;
+    if (override) {
+      entries[key] = override;
+    } else if (persisted) {
+      entries[key] = persisted;
+    } else if (cachedExact) {
       entries[key] = {
         issue,
-        page: exact.page,
+        page: cachedExact.page,
         precision: "page",
-        url: exact.url,
-        source: "cached-magazine-reference"
+        url: cachedExact.url,
+        source: "cached-magazine-reference",
+        ...(cacheMatch?.lemonUrl ? { lemonUrl: cacheMatch.lemonUrl } : {})
       };
     } else {
-      issueFallbacks += 1;
       entries[key] = {
         issue,
         page: null,
@@ -231,26 +364,225 @@ function buildOutput() {
     }
   });
 
-  return {
-    version: 1,
-    generatedFrom: "Existing local Lemon64/LemonAmiga magazine-review cache. Exact page numbers are never guessed; unmatched awards fall back to the correct official Zzap!64 issue.",
+  return recalculateTotals({
+    version: 2,
+    generatedFrom: "Verified Zzap!64 review pages from the official Zzap Bible, verified exception records, and repository Lemon cache/live Lemon lookups as secondary verification. Exact page numbers are never guessed; unresolved entries fall back to the correct official issue.",
     officialHost: "www.zzap64.co.uk",
-    totals: {
-      awards: awards.length,
-      exactPages,
-      issueFallbacks
-    },
+    years,
+    totals: {},
     entries
-  };
+  });
 }
 
 function serialize(output) {
   return `${JSON.stringify(output, null, 2)}\n`;
 }
 
-function main() {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchText(url) {
+  if (requestCache.has(url)) return requestCache.get(url);
+
+  const task = (async () => {
+    const elapsed = Date.now() - lastRequestAt;
+    if (elapsed < REQUEST_DELAY_MS) await sleep(REQUEST_DELAY_MS - elapsed);
+
+    let lastError = null;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+      try {
+        lastRequestAt = Date.now();
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml"
+          }
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await response.text();
+      } catch (error) {
+        lastError = error;
+        if (attempt < 3) await sleep(450 * attempt);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    throw new Error(`Unable to fetch ${url}: ${lastError?.message || lastError}`);
+  })();
+
+  requestCache.set(url, task);
+  return task;
+}
+
+function searchVariants(entry) {
+  const raw = String(entry.title || "").trim();
+  const noArticle = raw.replace(/^(the|a|an)\s+/i, "").trim();
+  const canonical = matcher.canonicalTitle(raw);
+  const punctuationLight = raw.replace(/[’‘`]/g, "'").replace(/[^A-Za-z0-9'+& -]+/g, " ").replace(/\s+/g, " ").trim();
+  const beforeColon = raw.split(":")[0].trim();
+  const variants = [raw, noArticle, punctuationLight, canonical, beforeColon, ...(LEMON_SEARCH_ALIASES[raw] || [])];
+  const seen = new Set();
+  return variants.filter((value) => {
+    const key = String(value || "").trim().toLowerCase();
+    if (!key || key.length < 2 || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function extractSearchCandidates(html, origin, system) {
+  const candidates = [];
+  const seen = new Set();
+  const anchorPattern = /<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+
+  while ((match = anchorPattern.exec(String(html || "")))) {
+    const href = decodeHtml(match[1]);
+    let url;
+    try {
+      url = new URL(href, origin);
+    } catch {
+      continue;
+    }
+    if (url.origin !== origin || !/^\/game\/[^/?#]+\/?$/i.test(url.pathname)) continue;
+
+    const title = normalizeSearchTitle(stripTags(match[2]));
+    if (!title || seen.has(url.href)) continue;
+    seen.add(url.href);
+    candidates.push({
+      title,
+      slug: canonicalGameSlug(url.href),
+      system: system === "amiga" ? "AMIGA" : "C64",
+      url: url.href
+    });
+  }
+
+  return candidates;
+}
+
+async function searchLemon(entry) {
+  const system = systemKey(entry.system);
+  const origin = LEMON_ORIGINS[system];
+  const cacheKey = `${system}|${matcher.canonicalTitle(entry.title)}`;
+  if (searchCache.has(cacheKey)) return searchCache.get(cacheKey);
+
+  const task = (async () => {
+    const candidatesByUrl = new Map();
+
+    for (const query of searchVariants(entry)) {
+      const searchUrl = new URL("/games/list.php", origin);
+      searchUrl.searchParams.set("list_title", query);
+      let html;
+      try {
+        html = await fetchText(searchUrl.href);
+      } catch (error) {
+        console.warn(`Lemon search failed for ${entry.title} (${system}, ${query}): ${error.message}`);
+        continue;
+      }
+
+      extractSearchCandidates(html, origin, system).forEach((candidate) => candidatesByUrl.set(candidate.url, candidate));
+      const rankedNow = Array.from(candidatesByUrl.values())
+        .map((candidate) => ({ candidate, score: matcher.scoreGame(entry, candidate) }))
+        .sort((a, b) => b.score - a.score);
+      if (rankedNow[0]?.score >= 120) break;
+    }
+
+    return Array.from(candidatesByUrl.values())
+      .map((candidate) => ({ ...candidate, matchScore: matcher.scoreGame(entry, candidate) }))
+      .filter((candidate) => candidate.matchScore >= 88)
+      .sort((a, b) => b.matchScore - a.matchScore || a.title.localeCompare(b.title, "en-GB"))
+      .slice(0, MAX_LIVE_CANDIDATES);
+  })();
+
+  searchCache.set(cacheKey, task);
+  return task;
+}
+
+async function resolveLiveExact(entry) {
+  const issue = issueNumber(entry.year, entry.month);
+  if (!issue) return null;
+
+  const candidates = await searchLemon(entry);
+  for (const candidate of candidates) {
+    let html;
+    try {
+      html = await fetchText(candidate.url);
+    } catch (error) {
+      console.warn(`Lemon game page failed for ${entry.title}: ${error.message}`);
+      continue;
+    }
+
+    const exact = extractZzapLinks(html).find((link) => link.issue === issue);
+    if (!exact) continue;
+
+    return {
+      issue,
+      page: exact.page,
+      precision: "page",
+      url: exact.url,
+      source: systemKey(entry.system) === "amiga" ? "live-lemonamiga-magazine-reference" : "live-lemon64-magazine-reference",
+      lemonUrl: candidate.url
+    };
+  }
+
+  return null;
+}
+
+async function enrichLive(output) {
+  const awards = readAwards();
+  const unresolved = awards.filter((entry) => output.entries?.[recordKey(entry)]?.precision !== "page");
+  console.log(`Deep Zzap review lookup: ${unresolved.length} unresolved award entries to check.`);
+
+  let resolved = 0;
+  let checked = 0;
+  for (const entry of unresolved) {
+    checked += 1;
+    try {
+      const issue = issueNumber(entry.year, entry.month);
+      const bibleExact = issue
+        ? await zzapBible.resolveReview({
+            entry,
+            issue,
+            searchVariants: searchVariants(entry),
+            userAgent: USER_AGENT
+          })
+        : null;
+      const lemonExact = bibleExact ? null : await resolveLiveExact(entry);
+      const exact = bibleExact
+        ? { ...bibleExact, url: officialPageUrl(bibleExact.issue, bibleExact.page) }
+        : lemonExact;
+      if (exact) {
+        output.entries[recordKey(entry)] = exact;
+        resolved += 1;
+        console.log(`  ✓ ${entry.year} ${entry.month} ${entry.system} — ${entry.title}: issue ${exact.issue}, page ${exact.page}`);
+      } else {
+        console.log(`  · ${entry.year} ${entry.month} ${entry.system} — ${entry.title}: no verified direct review page found`);
+      }
+    } catch (error) {
+      console.warn(`  ! ${entry.title}: ${error.message}`);
+    }
+
+    if (checked % 20 === 0 || checked === unresolved.length) {
+      console.log(`Deep lookup progress: ${checked}/${unresolved.length}; ${resolved} newly resolved.`);
+    }
+  }
+
+  recalculateTotals(output);
+  console.log(`Deep lookup complete: +${resolved} direct pages; ${output.totals.exactPages}/${output.totals.awards} direct (${output.totals.directCoveragePercent}%).`);
+  return output;
+}
+
+async function main() {
   const check = process.argv.includes("--check");
-  const output = buildOutput();
+  const live = process.argv.includes("--live");
+  const existing = readExistingOutput();
+  let output = buildOutput(existing);
+
+  if (live) output = await enrichLive(output);
   const next = serialize(output);
 
   if (check) {
@@ -271,12 +603,22 @@ function main() {
   console.log(`Wrote ${path.relative(ROOT, OUTPUT_PATH)}: ${output.totals.awards} awards, ${output.totals.exactPages} exact pages, ${output.totals.issueFallbacks} issue fallbacks.`);
 }
 
-if (require.main === module) main();
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
 
 module.exports = {
+  awardYears,
   buildOutput,
+  enrichLive,
+  readOverrides,
+  extractZzapLinks,
   issueNumber,
   recordKey,
   officialIssueUrl,
-  officialPageUrl
+  officialPageUrl,
+  searchVariants
 };

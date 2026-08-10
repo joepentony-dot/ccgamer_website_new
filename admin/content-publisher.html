@@ -26,7 +26,7 @@
       <div>
         <p class="publisher-kicker">CHEEKY COMMODORE GAMER · ADMIN</p>
         <h1>CCG Content Publisher</h1>
-        <p class="publisher-intro">Add a game or video once. The existing GitHub publishing chain then regenerates pages, verified YouTube metadata, VideoObject markup, chapters, the video library, sitemaps and validation.</p>
+        <p class="publisher-intro">Add a game, video or Zzap!64 award year once. The existing GitHub publishing chain then regenerates pages, verified YouTube metadata, VideoObject markup, chapters, the video library, original Zzap review links, sitemaps and validation.</p>
       </div>
       <div class="publisher-header-actions">
         <a class="ccg-btn ccg-btn--ghost" href="/admin/admin.html">Admin Home</a>
@@ -77,6 +77,7 @@
     <nav class="publisher-tabs" aria-label="Publisher sections">
       <button class="publisher-tab is-active" type="button" data-tab="game" aria-selected="true">Add Game</button>
       <button class="publisher-tab" type="button" data-tab="video" aria-selected="false">Add Video / Feature</button>
+      <button class="publisher-tab" type="button" data-tab="zzap" aria-selected="false">Zzap!64 Awards Year</button>
       <button class="publisher-tab" type="button" data-tab="status" aria-selected="false">Publishing Status</button>
     </nav>
 
@@ -297,6 +298,49 @@
             <span>watch page → YouTube verification → VideoObject → chapters/Key Moments → video library → video sitemap</span>
           </div>
           <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-feature>Publish Video / Feature</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="publisher-panel" data-panel="zzap" hidden>
+      <div class="publisher-section-heading">
+        <div>
+          <h2>Add a Zzap!64 awards year</h2>
+          <p>Use this when the next year-by-year Zzap!64 retrospective is ready. The award data is saved once; the archive then discovers the year automatically and the secure GitHub workflow resolves each entry to its direct original Zzap!64 scan page.</p>
+        </div>
+        <button class="ccg-btn ccg-btn--ghost" type="button" data-action="reset-zzap">Reset Zzap Form</button>
+      </div>
+
+      <form class="publisher-form" data-zzap-form novalidate>
+        <div class="publisher-grid publisher-grid--2">
+          <label>Magazine year *
+            <input type="number" min="1985" max="2100" data-zzap-field="year" placeholder="1990" required />
+            <small>Matching video page convention: <span data-zzap-video-slug>/retro-specials/zzap64-gold-medals-sizzlers-1990/</span></small>
+          </label>
+          <div class="publisher-card publisher-card--subtle">
+            <strong>Automatic after publish</strong>
+            <p>Official Zzap Bible lookup → exact issue/page → zzap64.co.uk scan link → archive year/filter refresh → validation.</p>
+          </div>
+        </div>
+
+        <label>Award records *
+          <textarea rows="14" data-zzap-field="records" placeholder="January | Game Title | Sizzler | 93 | C64&#10;February | Another Game | Gold Medal | 97 | C64"></textarea>
+          <small>Paste JSON, CSV, tab-separated rows or pipe-separated rows. Columns are Month, Title, Award, Score, System. Score may be blank for awards without a printed overall percentage.</small>
+        </label>
+
+        <div class="publisher-card publisher-card--subtle" data-zzap-preview>
+          <strong>Paste the year's award list to preview it.</strong>
+          <p>No magazine page numbers are required here; those are verified automatically against the official Zzap Bible.</p>
+        </div>
+
+        <div class="publisher-validation" data-zzap-validation hidden></div>
+
+        <div class="publisher-submit-row">
+          <div>
+            <strong>After publish:</strong>
+            <span>award year → official Zzap Bible → direct original scans → /zzap64/ year card &amp; filter → validation</span>
+          </div>
+          <button class="ccg-btn ccg-btn--primary publisher-primary-action" type="submit" data-publish-zzap>Publish Zzap Awards Year</button>
         </div>
       </form>
     </section>

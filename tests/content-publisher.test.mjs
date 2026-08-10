@@ -57,6 +57,15 @@ test('video publishing supports all three authoritative video datasets', () => {
   assert.match(html, /Amiga Demo \/ Music/);
 });
 
+test('publisher supports a new Zzap awards year without hand-editing archive code', () => {
+  assert.match(html, /Zzap!64 Awards Year/);
+  assert.match(html, /official Zzap Bible/i);
+  assert.match(js, /data\/zzap64-awards\/\$\{year\}\.json/);
+  assert.match(js, /parseZzapAwardsInput/);
+  assert.match(js, /monitorZzapAwardsLive/);
+  assert.match(js, /refuses to overwrite an existing historical award year/i);
+});
+
 test('YouTube URLs are normalised without exposing credentials', () => {
   assert.match(js, /host === 'youtu\.be'/);
   assert.match(js, /\['shorts', 'live', 'embed'\]/);
