@@ -65,6 +65,10 @@
     return `${getSiteOrigin()}/${raw.replace(/^\/+/, '')}`;
   }
 
+  function hasStaticGameGraph() {
+    return !!document.querySelector('script[type="application/ld+json"][data-ccg-schema="game-graph"]');
+  }
+
   window.ccgSchemaWebsite = function () {
     addSchema('ccg-schema-website', {
       '@context': 'https://schema.org',
@@ -75,7 +79,7 @@
   };
 
   window.ccgSchemaGame = function (game) {
-    if (!game) return;
+    if (!game || hasStaticGameGraph()) return;
 
     const schema = {
       '@context': 'https://schema.org',
@@ -104,7 +108,7 @@
   };
 
   window.ccgSchemaBreadcrumb = function (items) {
-    if (!items || !items.length) return;
+    if (!items || !items.length || hasStaticGameGraph()) return;
 
     const schema = {
       '@context': 'https://schema.org',
