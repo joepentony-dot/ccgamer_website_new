@@ -1,20 +1,6 @@
-name: Rebuild retro outputs on retro content change
+name: Manual retro output rebuild
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'data/retro-events.json'
-      - 'data/retro-specials.json'
-      - 'data/amiga-demo-music.json'
-      - 'data/video-metadata.json'
-      - 'admin/templates/retro-video-template.html'
-      - 'scripts/generate-retro-pages.js'
-      - 'scripts/generate-retro-video-seo.js'
-      - 'scripts/validate-retro-video-seo.js'
-      - 'resources/css/retro-video-pages.css'
-      - '.github/workflows/rebuild-retro-on-data-change.yml'
   workflow_dispatch:
 
 env:
@@ -24,12 +10,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: retro-output-rebuild-main
-  cancel-in-progress: true
+  group: manual-retro-output-rebuild-main
+  cancel-in-progress: false
 
 jobs:
   rebuild-retro-assets:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -37,6 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -76,14 +62,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add retro-events retro-specials amiga-demo-music sitemap.xml sitemap-pages.xml sitemap-retro-videos.xml
-          git diff --cached --quiet || git commit -m "Auto rebuild retro feature pages"
+          git diff --cached --quiet || git commit -m "Auto rebuild retro feature pages [skip ci]"
 
       - name: Push generated outputs
         run: |
-          if git diff --quiet HEAD^ HEAD -- retro-events retro-specials amiga-demo-music sitemap.xml sitemap-pages.xml sitemap-retro-videos.xml; then
-            echo "[rebuild-retro] No generated commit was created."
-            exit 0
-          fi
           git push origin HEAD:main
 
       - name: Verify generated commit reached main
