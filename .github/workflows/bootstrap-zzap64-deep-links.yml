@@ -30,12 +30,14 @@ jobs:
         run: |
           node scripts/patch-zzap64-deep-generator.js
           node scripts/patch-zzap64-future.js
+          node scripts/patch-content-publisher-zzap.js
 
       - name: Validate JavaScript syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
+          node --check admin/js/content-publisher.js
 
       - name: Deep-refresh direct magazine links
         run: node scripts/generate-zzap64-review-links.js --live
@@ -57,11 +59,13 @@ jobs:
           }
           NODE
 
-      - name: Run Zzap regression tests
+      - name: Run Zzap and publisher regression tests
         run: |
           node scripts/generate-zzap64-review-links.js --check
           node --test tests/zzap64-review-links.test.mjs
           node scripts/audit-zzap64-awards.js
+          node --test tests/content-publisher.test.mjs
+          git diff --check
 
       - name: Commit permanent Zzap changes
         shell: bash
@@ -74,10 +78,13 @@ jobs:
             js/zzap64-awards.js \
             zzap64/index.html \
             resources/css/zzap64-awards.css \
-            tests/zzap64-review-links.test.mjs
+            tests/zzap64-review-links.test.mjs \
+            admin/content-publisher.html \
+            admin/js/content-publisher.js \
+            tests/content-publisher.test.mjs
           if git diff --cached --quiet; then
-            echo "Zzap review-link and future-year outputs already current."
+            echo "Zzap review-link, future-year and admin outputs already current."
             exit 0
           fi
-          git commit -m "Complete direct Zzap review links and future-year archive"
+          git commit -m "Complete direct Zzap reviews and future-year publishing"
           git push origin HEAD:codex/zzap64-deep-direct-links
