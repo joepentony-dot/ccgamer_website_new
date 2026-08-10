@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -30,24 +33,44 @@ jobs:
           echo "[seo] Installing dependencies (best effort)..."
           npm install || true
 
-      - name: Generate sitemap
+      - name: Sync verified YouTube metadata
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
-          echo "[seo] Generating sitemap artifacts..."
-          if [ -f scripts/generate-sitemap.js ]; then
-            node scripts/generate-sitemap.js
+          if [ -n "$YOUTUBE_API_KEY" ]; then
+            echo "[seo] Syncing verified YouTube upload dates, durations and titles..."
+            npm run sync:video-metadata
           else
-            echo "[seo] No sitemap script found, skipping"
+            echo "[seo] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
           fi
 
-      - name: Commit sitemap if changed
+      - name: Generate video SEO
         run: |
-          echo "[seo] Checking sitemap diffs..."
+          echo "[seo] Generating static video markup and video sitemap..."
+          npm run generate:video-seo
+
+      - name: Generate sitemap index
+        run: |
+          echo "[seo] Generating sitemap artifacts and indexing all child sitemaps..."
+          npm run generate:sitemaps
+
+      - name: Validate sitemaps
+        run: npm run validate:sitemaps
+
+      - name: Validate video SEO
+        run: npm run validate:video-seo
+
+      - name: Commit generated SEO artifacts
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml
-          git diff --cached --quiet || git commit -m "Auto-update sitemap"
+          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html
+          git diff --cached --quiet || git commit -m "Auto-update video SEO artifacts [skip ci]"
 
-      - name: Push changes
+      - name: Push generated SEO artifacts
+        if: github.event_name != 'pull_request'
         run: |
-          echo "[seo] Pushing sitemap updates (if any)..."
+          echo "[seo] Pushing generated SEO updates (if any)..."
           git push
