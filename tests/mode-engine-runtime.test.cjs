@@ -129,6 +129,7 @@ const createdElements = [];
 const listeners = new Map();
 const listenerCounts = new Map();
 const audioInstances = [];
+const scheduledTimeouts = [];
 
 const document = {
   readyState: 'complete',
@@ -170,9 +171,10 @@ const windowObject = {
   matchMedia() {
     return { matches: true };
   },
-  setTimeout(callback) {
+  setTimeout(callback, delay = 0) {
+    scheduledTimeouts.push(Number(delay) || 0);
     callback();
-    return 1;
+    return scheduledTimeouts.length;
   },
   clearTimeout() {},
   dispatchEvent(event) {
@@ -221,7 +223,7 @@ assert.ok(audioInstances.every((audio) => audio.loadCalls === 1), 'both cues are
 const amigaAudio = audioInstances.find((audio) => audio.src.startsWith('/resources/audio/mode/lemmings-lets-go.mp3?v='));
 const c64Audio = audioInstances.find((audio) => audio.src.startsWith('/resources/css/audio/c64_speech_stayawhile.mp3?v='));
 assert.ok(amigaAudio, 'Amiga mode uses the versioned Lemmings cue');
-assert.ok(c64Audio, 'C64 mode uses the versioned existing stay-a-while speech cue');
+assert.ok(c64Audio, 'C64 mode uses the versioned Impossible Mission speech cue');
 assert.ok(amigaAudio.volume <= 0.5, 'Amiga cue volume stays restrained');
 assert.ok(c64Audio.volume <= 0.5, 'C64 cue volume stays restrained');
 assert.equal(amigaAudio.readyState, 0, 'test begins before Amiga audio metadata is available');
@@ -266,6 +268,9 @@ assert.equal(toggle.getAttribute('aria-pressed'), 'false', 'toggle exposes the C
 assert.equal(dispatchedEvents.at(-1)?.detail?.mode, 'c64', 'C64 change event is dispatched');
 assert.equal(c64Audio.playCalls, 1, 'returning to C64 mode still plays when its metadata was unavailable before the click');
 assert.ok(amigaAudio.pauseCalls >= 1, 'previous Amiga cue is stopped before the C64 cue plays');
+assert.ok(scheduledTimeouts.includes(1350), 'C64 return cue is limited to the short Another Visitor playback window');
+assert.ok(c64Audio.pauseCalls >= 2, 'C64 return cue is automatically stopped after the short playback window');
+assert.equal(c64Audio.currentTime, 0, 'short C64 cue is rewound after its automatic stop');
 
 const firstController = windowObject.CCGModeEngine;
 const firstAudioCount = audioInstances.length;
@@ -274,4 +279,4 @@ assert.equal(windowObject.CCGModeEngine, firstController, 'duplicate script exec
 assert.equal(listenerCounts.get('click'), 1, 'duplicate script execution does not add another click owner');
 assert.equal(audioInstances.length, firstAudioCount, 'duplicate script execution does not create duplicate audio cues');
 
-console.log('Mode engine runtime test passed: browser-style unloaded audio still plays on C64 → Amiga → C64 user clicks.');
+console.log('Mode engine runtime test passed: Amiga cue plays normally and the C64 return cue is limited to the short Another Visitor phrase.');
