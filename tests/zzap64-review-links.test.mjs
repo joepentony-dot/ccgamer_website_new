@@ -122,7 +122,8 @@ test('archive renderer exposes original-magazine links and conservative verified
   assert.doesNotMatch(linkFix, /tetris\|50\|56/);
   assert.doesNotMatch(linkFix, /wizball\|55\|50/);
   assert.match(browser, /\/data\/zzap64-game-reviews\//);
-  assert.match(browser, /All verified Zzap!64 scans linked to CCG game pages/);
+  assert.match(browser, /Choose a letter or search/);
+  assert.match(browser, /IntersectionObserver/);
   assert.match(page, /All Zzap!64 Reviews for CCG Games/);
   assert.match(page, /zzap64-review-browser\.js/);
 });
