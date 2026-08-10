@@ -1,0 +1,56 @@
+name: Publish Game Social Metadata Branch
+
+on:
+  push:
+    branches:
+      - codex/publish-game-social-metadata
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/publish-game-social-metadata
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Record protected hashes
+        run: |
+          sha256sum index.html home.html resources/css/intro.css js/index-intro.js games/games.json > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Run sharing tests and full publishing chain
+        run: |
+          node scripts/test-game-social-sharing.js
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          git diff --check
+
+      - name: Verify deterministic repeat
+        run: |
+          git diff -- games > "$RUNNER_TEMP/first.diff"
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+          git diff -- games > "$RUNNER_TEMP/second.diff"
+          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
+
+      - name: Confirm protected files
+        run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Commit generated game pages to branch
+        run: |
+          git add -- games/*/index.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Generate enriched social metadata for all game pages"
+          git push origin HEAD:codex/publish-game-social-metadata
