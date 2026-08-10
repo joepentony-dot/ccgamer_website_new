@@ -525,11 +525,19 @@
 
     async function loadAwardEntries() {
         updateProgress(8, "Loading award records…", `Fetching ${state.years.length} year file${state.years.length === 1 ? "" : "s"} in parallel.`);
+        let completedYears = 0;
         const yearResults = await Promise.all(state.years.map(async (year) => {
             const response = await fetch(`/data/zzap64-awards/${year}.json`, { cache: "default" });
             if (!response.ok) throw new Error(`${year} archive HTTP ${response.status}`);
             const data = await response.json();
             const records = Array.isArray(data) ? data : (data.entries || data.awards || []);
+            completedYears += 1;
+            const yearProgress = 8 + Math.round((completedYears / state.years.length) * 42);
+            updateProgress(
+                yearProgress,
+                "Loading award records…",
+                `${completedYears} of ${state.years.length} award years loaded.`
+            );
             return records.map((record) => normalizeEntry(record, year));
         }));
 
