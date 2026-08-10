@@ -39,16 +39,15 @@ test('Barry McGuigan game can resolve its Zzap review through the shared matcher
     || games.find((game) => /barry mcguigan/i.test(String(game?.title || '')));
   assert.ok(barry, 'Barry McGuigan game is present in games.json');
 
-  const index = matcher.buildGameIndex(games);
-  const matches = matcher.findAwardsForGame(barry, reviewEntries(), index)
+  const matches = matcher.findAwardsForGame(barry, reviewEntries(), [barry])
     .filter((row) => row.precision === 'page' && row.url);
   assert.ok(matches.length > 0, 'Barry McGuigan has at least one direct Zzap review page');
 });
 
-test('game runtime supports automatic and optional Zzap review links', () => {
+test('game runtime supports automatic, lightweight and optional Zzap review links', () => {
   assert.match(gameJs, /\/data\/zzap64-review-links\.json/);
   assert.match(gameJs, /ccg-zzap64-matcher\.js/);
-  assert.match(gameJs, /findAwardsForGame/);
+  assert.match(gameJs, /findAwardsForGame\(game, entries, \[game\]\)/);
   assert.match(gameJs, /resolveZzapLinks/);
   assert.match(gameJs, /ZZAP!64 REVIEW/);
   assert.match(gameJs, /game-reading-card/);
