@@ -229,31 +229,43 @@ function fallbackVariants(title) {
   ]);
 }
 
+function resultRecord(selected, issue) {
+  return {
+    issue: Number(issue),
+    page: Number(selected.page),
+    precision: "page",
+    source: "official-zzap-bible",
+    bibleTitle: selected.title,
+    ...(selected.score !== null ? { bibleScore: selected.score } : {})
+  };
+}
+
+async function candidatesForQuery(query, issue, userAgent) {
+  const html = await postBible(query, issue, userAgent);
+  const tableRows = parseResultRows(html);
+  return tableRows.length ? tableRows : fallbackTextRows(html, issue);
+}
+
 async function resolveReview({ entry, issue, searchVariants = [], userAgent = DEFAULT_USER_AGENT }) {
   const variants = uniqueVariants([...searchVariants, ...fallbackVariants(entry.title)]);
 
   for (const query of variants) {
-    let html;
     try {
-      html = await postBible(query, issue, userAgent);
+      const selected = selectCandidate(entry, await candidatesForQuery(query, issue, userAgent), issue);
+      if (selected) return resultRecord(selected, issue);
     } catch (error) {
       console.warn(`[Zzap Bible] ${error.message}`);
-      continue;
     }
+  }
 
-    let candidates = parseResultRows(html);
-    if (!candidates.length) candidates = fallbackTextRows(html, issue);
-    const selected = selectCandidate(entry, candidates, issue);
-    if (!selected) continue;
-
-    return {
-      issue: Number(issue),
-      page: Number(selected.page),
-      precision: "page",
-      source: "official-zzap-bible",
-      bibleTitle: selected.title,
-      ...(selected.score !== null ? { bibleScore: selected.score } : {})
-    };
+  // Last resort: ask the official Bible for every review in the expected issue,
+  // then let the same title/score matcher choose a unique result. This catches
+  // spelling differences such as "Deluxe"/"De Luxe" without guessing a page.
+  try {
+    const selected = selectCandidate(entry, await candidatesForQuery("", issue, userAgent), issue);
+    if (selected) return resultRecord(selected, issue);
+  } catch (error) {
+    console.warn(`[Zzap Bible] issue-wide fallback failed for issue ${issue}: ${error.message}`);
   }
 
   return null;
