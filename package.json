@@ -3,8 +3,11 @@
     "admin:api": "node scripts/admin-local-api.js",
     "generate:publishers": "node scripts/generate-publisher-pages.js",
     "rebuild:games": "node scripts/rebuild-games.js",
+    "sync:video-metadata": "node scripts/sync-youtube-video-metadata.js",
+    "generate:video-seo": "node scripts/generate-video-seo.js",
+    "validate:video-seo": "node scripts/validate-video-seo.js",
     "generate:sitemaps": "node scripts/generate-sitemaps.js",
     "validate:sitemaps": "node scripts/validate-sitemaps.js",
-    "build:sitemaps": "npm run generate:publishers && npm run generate:sitemaps && npm run validate:sitemaps"
+    "build:sitemaps": "npm run generate:publishers && npm run generate:video-seo && npm run generate:sitemaps && npm run validate:sitemaps && npm run validate:video-seo"
   }
 }
