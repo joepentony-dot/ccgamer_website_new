@@ -30,7 +30,7 @@ permissions:
 
 concurrency:
   group: zzap64-review-link-refresh-main
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   refresh:
@@ -59,9 +59,12 @@ jobs:
           node --check js/zzap64-game-link-fix.js
           node --check js/zzap64-review-browser.js
 
-      - name: Resolve original Zzap award scans
+      - name: Refresh live award references when run manually
+        if: github.event_name == 'workflow_dispatch'
+        run: node scripts/generate-zzap64-review-links.js --live
+
+      - name: Rebuild verified award scan index
         run: |
-          node scripts/generate-zzap64-review-links.js --live
           node scripts/generate-zzap64-review-links.js
           node scripts/generate-zzap64-review-links.js --check
 
