@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -54,7 +56,8 @@ jobs:
       - name: Confirm protected site files are untouched
         shell: bash
         run: |
-          changed="$(git diff --name-only origin/main...HEAD 2>/dev/null || true)"
+          git fetch --no-tags origin main:refs/remotes/origin/main
+          changed="$(git diff --name-only origin/main...HEAD)"
           for protected in index.html home.html resources/css/intro.css js/index-intro.js games/games.json; do
             if printf '%s\n' "$changed" | grep -Fxq "$protected"; then
               echo "Protected file changed: $protected"
@@ -63,4 +66,4 @@ jobs:
           done
 
       - name: Check whitespace
-        run: git diff --check
+        run: git diff --check origin/main...HEAD
