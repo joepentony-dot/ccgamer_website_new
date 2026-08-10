@@ -56,8 +56,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Collections",
-          "item": "https://www.cheekycommodoregamer.co.uk/games/collections/"
+          "name": "Video Library",
+          "item": "https://www.cheekycommodoregamer.co.uk/videos/"
         },
         {
           "@type": "ListItem",
@@ -87,6 +87,7 @@
     <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css" />
     <link rel="stylesheet" href="/resources/css/retro-video-pages.css" />
+    <link rel="stylesheet" href="/resources/css/retro-video-discovery.css" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
 <div class="ccg-bg" aria-hidden="true">
@@ -144,6 +145,7 @@
         </div>
       </div>
       <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+        <li><a href="/videos/" class="ccg-nav__link">Videos</a></li>
         <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Awards</a></li>
         <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
         <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
@@ -184,7 +186,7 @@
     <nav class="retro-video-page__breadcrumbs" aria-label="Breadcrumb">
       <a href="/home.html">Home</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
-      <a href="/games/collections/">Collections</a>
+      <a href="/videos/">Video Library</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
       <a href="/games/collections/retro-specials.html">Retro Specials</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
@@ -204,18 +206,7 @@
 
       </div>
 
-      <div class="retro-video-page__hero-media">
-        <img src="https://img.youtube.com/vi/EuiU6Tc_RN0/hqdefault.jpg" alt="My Favourite Arcade Games – Commodore 64 &amp; Amiga Ports Reviewed video thumbnail" loading="eager" decoding="async" fetchpriority="high" />
-        <span class="retro-video-page__hero-media-label">Video feature</span>
-      </div>
-    </header>
-
-    <section class="retro-video-page__watch" aria-labelledby="retro-watch-title">
-      <div class="retro-video-page__section-heading">
-        <h2 id="retro-watch-title">Watch My Favourite Arcade Games – Commodore 64 &amp; Amiga Ports Reviewed</h2>
-        <span>Primary video — plays here on the CCG watch page</span>
-      </div>
-      <div class="retro-video-page__video">
+      <div class="retro-video-page__hero-media retro-video-page__hero-media--player" id="watch-video">
         <iframe src="https://www.youtube-nocookie.com/embed/EuiU6Tc_RN0"
           title="My Favourite Arcade Games – Commodore 64 &amp; Amiga Ports Reviewed — watch on Cheeky Commodore Gamer"
           loading="eager"
@@ -223,6 +214,23 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
       </div>
+    </header>
+
+    <section class="retro-video-page__watch retro-video-page__watch--guide" aria-labelledby="retro-watch-title">
+      <div class="retro-video-page__section-heading">
+        <h2 id="retro-watch-title">Video guide</h2>
+        <span>Chapters and linked CCG game pages</span>
+      </div>
+      <!-- CCG_VIDEO_DISCOVERY_START -->
+      <div class="retro-video-page__discovery"><div class="retro-video-page__discovery-panel retro-video-page__discovery-panel--wide"><h3 class="retro-video-page__discovery-title">Games linked in the CCG archive</h3><ul class="retro-video-page__featured-games"><li><a class="retro-video-page__featured-game-link" href="/games/rolling-thunder/">Rolling Thunder</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/street-fighter/">Street Fighter</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/double-dragon/">Double Dragon</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/dragons-lair/">Dragon&#39;s Lair</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/space-harrier/">Space Harrier</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/after-burner/">After Burner</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/golden-axe/">Golden Axe</a></li>
+<li><a class="retro-video-page__featured-game-link" href="/games/rtype/">R-Type</a></li></ul></div></div>
+      <!-- CCG_VIDEO_DISCOVERY_END -->
     </section>
 
     <section class="retro-video-page__description-block">
@@ -245,8 +253,11 @@ The video highlights how each version performs, what was lost or gained in trans
   </section>
 
     <section class="retro-video-page__return">
-      <p>Continue browsing more videos and features from this collection.</p>
-      <a class="ccg-btn ccg-btn--secondary" href="/games/collections/retro-specials.html">Browse Retro Specials</a>
+      <p>Continue browsing more videos and features from Cheeky Commodore Gamer.</p>
+      <div class="retro-video-page__return-actions">
+        <a class="ccg-btn ccg-btn--secondary" href="/games/collections/retro-specials.html">Browse Retro Specials</a>
+        <a class="ccg-btn ccg-btn--primary" href="/videos/">Browse all CCG videos</a>
+      </div>
     </section>
   </article>
 </main>
@@ -264,6 +275,7 @@ The video highlights how each version performs, what was lost or gained in trans
 <script src="/js/ccg-global.js" defer></script>
 <script src="/js/ccg-mode-engine.js" defer></script>
 <script src="/resources/js/ccg-share.js" defer></script>
+<script src="/js/video-watch.js" defer></script>
 <script src="/js/ccg-nav.js" defer></script>
 </body>
 </html>

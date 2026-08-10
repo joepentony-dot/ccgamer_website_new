@@ -56,8 +56,8 @@
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "Collections",
-          "item": "https://www.cheekycommodoregamer.co.uk/games/collections/"
+          "name": "Video Library",
+          "item": "https://www.cheekycommodoregamer.co.uk/videos/"
         },
         {
           "@type": "ListItem",
@@ -87,6 +87,7 @@
     <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css" />
     <link rel="stylesheet" href="/resources/css/retro-video-pages.css" />
+    <link rel="stylesheet" href="/resources/css/retro-video-discovery.css" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
 <div class="ccg-bg" aria-hidden="true">
@@ -144,6 +145,7 @@
         </div>
       </div>
       <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+        <li><a href="/videos/" class="ccg-nav__link">Videos</a></li>
         <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Awards</a></li>
         <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
         <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
@@ -184,7 +186,7 @@
     <nav class="retro-video-page__breadcrumbs" aria-label="Breadcrumb">
       <a href="/home.html">Home</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
-      <a href="/games/collections/">Collections</a>
+      <a href="/videos/">Video Library</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
       <a href="/games/collections/retro-events.html">Retro Events</a>
       <span class="retro-video-page__breadcrumb-separator" aria-hidden="true">/</span>
@@ -204,18 +206,7 @@
 
       </div>
 
-      <div class="retro-video-page__hero-media">
-        <img src="https://img.youtube.com/vi/sAU3CPCCpvE/hqdefault.jpg" alt="Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds video thumbnail" loading="eager" decoding="async" fetchpriority="high" />
-        <span class="retro-video-page__hero-media-label">Video feature</span>
-      </div>
-    </header>
-
-    <section class="retro-video-page__watch" aria-labelledby="retro-watch-title">
-      <div class="retro-video-page__section-heading">
-        <h2 id="retro-watch-title">Watch Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds</h2>
-        <span>Primary video — plays here on the CCG watch page</span>
-      </div>
-      <div class="retro-video-page__video">
+      <div class="retro-video-page__hero-media retro-video-page__hero-media--player" id="watch-video">
         <iframe src="https://www.youtube-nocookie.com/embed/sAU3CPCCpvE"
           title="Video Game Market Leeds 2024 – Royal Armouries Retro Gaming Finds — watch on Cheeky Commodore Gamer"
           loading="eager"
@@ -223,6 +214,16 @@
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
       </div>
+    </header>
+
+    <section class="retro-video-page__watch retro-video-page__watch--guide" aria-labelledby="retro-watch-title">
+      <div class="retro-video-page__section-heading">
+        <h2 id="retro-watch-title">Video guide</h2>
+        <span>Chapters and linked CCG game pages</span>
+      </div>
+      <!-- CCG_VIDEO_DISCOVERY_START -->
+      <p class="retro-video-page__guide-empty">Watch the full feature above, then continue through the related CCG pages below.</p>
+      <!-- CCG_VIDEO_DISCOVERY_END -->
     </section>
 
     <section class="retro-video-page__description-block">
@@ -241,8 +242,11 @@
   </section>
 
     <section class="retro-video-page__return">
-      <p>Continue browsing more videos and features from this collection.</p>
-      <a class="ccg-btn ccg-btn--secondary" href="/games/collections/retro-events.html">Browse Retro Events</a>
+      <p>Continue browsing more videos and features from Cheeky Commodore Gamer.</p>
+      <div class="retro-video-page__return-actions">
+        <a class="ccg-btn ccg-btn--secondary" href="/games/collections/retro-events.html">Browse Retro Events</a>
+        <a class="ccg-btn ccg-btn--primary" href="/videos/">Browse all CCG videos</a>
+      </div>
     </section>
   </article>
 </main>
@@ -260,6 +264,7 @@
 <script src="/js/ccg-global.js" defer></script>
 <script src="/js/ccg-mode-engine.js" defer></script>
 <script src="/resources/js/ccg-share.js" defer></script>
+<script src="/js/video-watch.js" defer></script>
 <script src="/js/ccg-nav.js" defer></script>
 </body>
 </html>
