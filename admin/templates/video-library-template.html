@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="video-library">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('ccg-mode');
+        if (!saved) return;
+        document.documentElement.setAttribute('data-ccg-mode', saved);
+        document.documentElement.setAttribute('data-mode', saved);
+      } catch (e) {}
+    })();
+  </script>
+
+  <title>Commodore 64 &amp; Amiga Video Library | Cheeky Commodore Gamer</title>
+  <meta name="description" content="Browse Cheeky Commodore Gamer videos covering Commodore 64 and Amiga games, Zzap!64 awards, retro features, events and Amiga demo music." />
+  <meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/videos/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cheeky Commodore Gamer" />
+  <meta property="og:title" content="Commodore 64 &amp; Amiga Video Library | Cheeky Commodore Gamer" />
+  <meta property="og:description" content="Browse CCG videos covering C64 and Amiga games, Zzap!64 awards, retro features, events and demo music." />
+  <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/videos/" />
+  <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Commodore 64 &amp; Amiga Video Library | Cheeky Commodore Gamer" />
+  <meta name="twitter:description" content="Browse CCG videos covering C64 and Amiga games, Zzap!64 awards, retro features, events and demo music." />
+  <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+  <meta name="twitter:site" content="@CheekyC64Gamer" />
+
+  <script type="application/ld+json">
+{{SCHEMA_JSON}}
+  </script>
+
+  <link rel="icon" href="/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-effects.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-cards.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css" />
+  <link rel="stylesheet" href="/resources/css/video-library.css" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
+<div class="ccg-bg" aria-hidden="true">
+  <div class="ccg-bg-starfield"></div>
+  <div class="ccg-bg-grid"></div>
+  <div class="ccg-bg-crt-overlay"></div>
+</div>
+
+<div class="ccg-page">
+<header class="ccg-header" data-ccg-header>
+  <div class="ccg-header-inner">
+    <a href="/home.html" class="ccg-brand">
+      <img src="/resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo" loading="eager" width="1500" height="1032" sizes="(max-width: 720px) 200px, 320px" />
+      <div class="ccg-brand__text">
+        <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+        <div class="ccg-brand__title">
+          <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+          <span class="ccg-brand__neon-sub">GAMER</span>
+        </div>
+      </div>
+    </a>
+
+    <button class="ccg-nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="ccg-primary-nav" data-ccg-nav-toggle>
+      <span class="ccg-nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="ccg-nav-toggle__label">Menu</span>
+    </button>
+
+    <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+      <div class="ccg-nav__bar">
+        <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+          <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+          <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+          <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
+          <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
+          <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+        </ul>
+        <div class="ccg-nav__more">
+          <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>More <span aria-hidden="true">▾</span></button>
+          <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+        </div>
+      </div>
+      <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+        <li><a href="/videos/" class="ccg-nav__link" aria-current="page">Videos</a></li>
+        <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Awards</a></li>
+        <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
+        <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+        <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+      </ul>
+    </nav>
+
+    <div class="ccg-header-actions">
+      <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
+        <span class="ccg-mode-toggle__pill">
+          <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+          <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+          <span class="ccg-mode-toggle__thumb"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+    <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+    <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+      <div class="ccg-nav-drawer__header">
+        <span class="ccg-nav-drawer__title">Navigate</span>
+        <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close><span aria-hidden="true">✕</span></button>
+      </div>
+      <div class="ccg-nav-drawer__section" data-ccg-drawer-primary><div class="ccg-nav-drawer__label">Primary</div></div>
+      <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary><div class="ccg-nav-drawer__label">Explore more</div></div>
+    </div>
+  </div>
+  <div class="ccg-header-neon-strip"></div>
+</header>
+
+<main class="ccg-main">
+  <div class="video-library" data-video-library data-video-index="/videos/video-index.json">
+    <nav class="video-library__breadcrumbs" aria-label="Breadcrumb">
+      <a href="/home.html">Home</a><span aria-hidden="true">/</span><span aria-current="page">Video Library</span>
+    </nav>
+
+    <section class="video-library__hero">
+      <p class="video-library__eyebrow">Cheeky Commodore Gamer Video Archive</p>
+      <h1>Commodore 64 &amp; Amiga Video Library</h1>
+      <p>Search CCG game videos, Zzap!64 retrospectives, long-form features, retro events and Amiga demo music from one dedicated video archive.</p>
+      <div class="video-library__stats" aria-label="Video library totals">
+        <span><strong>{{VIDEO_TOTAL}}</strong> videos</span>
+        <span><strong>{{GAME_VIDEO_TOTAL}}</strong> game videos</span>
+        <span><strong>{{RETRO_VIDEO_TOTAL}}</strong> retro features</span>
+        <span><strong>{{C64_VIDEO_TOTAL}}</strong> C64 game videos</span>
+        <span><strong>{{AMIGA_VIDEO_TOTAL}}</strong> Amiga game videos</span>
+      </div>
+    </section>
+
+    <section class="video-library__search-panel" aria-labelledby="video-library-search-title">
+      <div class="video-library__section-heading">
+        <div>
+          <p class="video-library__kicker">Find a video</p>
+          <h2 id="video-library-search-title">Search the CCG video archive</h2>
+        </div>
+        <p data-video-result-count>{{INITIAL_RESULT_COUNT}} videos shown</p>
+      </div>
+
+      <label class="video-library__search-field" for="videoLibrarySearch">
+        <span>Search by game or feature</span>
+        <input id="videoLibrarySearch" type="search" placeholder="Try Last Ninja, Zzap!64, Amiga, Ocean…" autocomplete="off" data-video-search />
+      </label>
+
+      <div class="video-library__filters" role="group" aria-label="Filter videos">
+        <button type="button" data-video-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-video-filter="c64" aria-pressed="false">C64 Games</button>
+        <button type="button" data-video-filter="amiga" aria-pressed="false">Amiga Games</button>
+        <button type="button" data-video-filter="retro-specials" aria-pressed="false">Retro Specials</button>
+        <button type="button" data-video-filter="retro-events" aria-pressed="false">Retro Events</button>
+        <button type="button" data-video-filter="amiga-demo-music" aria-pressed="false">Amiga Demo Music</button>
+      </div>
+    </section>
+
+    <section class="video-library__featured" aria-labelledby="video-library-featured-title">
+      <div class="video-library__section-heading">
+        <div>
+          <p class="video-library__kicker">Long-form CCG</p>
+          <h2 id="video-library-featured-title">Latest retro features</h2>
+        </div>
+        <a href="/games/collections/retro-specials.html">Browse Retro Specials →</a>
+      </div>
+      <div class="video-library__grid video-library__grid--featured">
+{{FEATURED_CARDS}}
+      </div>
+    </section>
+
+    <section class="video-library__results" aria-labelledby="video-library-results-title">
+      <div class="video-library__section-heading">
+        <div>
+          <p class="video-library__kicker">Game videos &amp; features</p>
+          <h2 id="video-library-results-title">Browse the video library</h2>
+        </div>
+      </div>
+      <div class="video-library__grid" data-video-results>
+{{INITIAL_CARDS}}
+      </div>
+      <button class="ccg-btn ccg-btn--secondary video-library__more" type="button" data-video-more hidden>Show more videos</button>
+      <p class="video-library__empty" data-video-empty hidden>No videos matched that search.</p>
+    </section>
+
+    <section class="video-library__crawl-links" aria-labelledby="video-library-explore-title">
+      <div class="video-library__section-heading">
+        <div>
+          <p class="video-library__kicker">Explore CCG</p>
+          <h2 id="video-library-explore-title">More ways to browse</h2>
+        </div>
+      </div>
+      <div class="video-library__quick-links">
+        <a href="/games/">Complete game archive</a>
+        <a href="/games/years/">Browse games by year</a>
+        <a href="/games/publishers/">Browse publishers</a>
+        <a href="/zzap64/">Zzap!64 Awards</a>
+        <a href="/games/collections/retro-events.html">Retro Events</a>
+        <a href="/games/collections/amiga-demo-music.html">Amiga Demo Music</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="ccg-footer">
+  <div class="ccg-footer__inner">
+    <p>© <span data-ccg-year></span> Cheeky Commodore Gamer. Not affiliated with Commodore, Amiga or publishers.</p>
+  </div>
+</footer>
+</div>
+
+<script src="/js/analytics.js" defer></script>
+<script src="/js/ccg-mobile-lite.js" defer></script>
+<script src="/js/ccg-nav-core.js" defer></script>
+<script src="/js/ccg-global.js" defer></script>
+<script src="/js/ccg-mode-engine.js" defer></script>
+<script src="/js/video-library.js" defer></script>
+<script src="/js/ccg-nav.js" defer></script>
+</body>
+</html>

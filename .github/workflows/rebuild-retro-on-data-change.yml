@@ -4,6 +4,9 @@ name: Manual retro output rebuild
 # Authoritative presentation inputs retained by this workflow contract:
 # - admin/templates/retro-video-template.html
 # - resources/css/retro-video-pages.css
+# - resources/css/retro-video-discovery.css
+# - admin/templates/video-library-template.html
+# - resources/css/video-library.css
 
 on:
   workflow_dispatch:
@@ -40,6 +43,8 @@ jobs:
           node --check scripts/generate-retro-pages.js
           node --check scripts/generate-retro-video-seo.js
           node --check scripts/validate-retro-video-seo.js
+          node --check scripts/generate-video-library.js
+          node --check scripts/validate-video-library.js
           node --check scripts/generate-sitemaps.js
           node --check scripts/validate-sitemaps.js
 
@@ -53,11 +58,17 @@ jobs:
           echo "[rebuild-retro] Applying dedicated watch-page markup and building the retro video sitemap..."
           node scripts/generate-retro-video-seo.js
 
+      - name: Generate video library and key moments
+        run: |
+          echo "[rebuild-retro] Building the CCG video library, chapters and internal game links..."
+          node scripts/generate-video-library.js
+
       - name: Refresh and validate sitemaps
         run: |
           node scripts/generate-sitemaps.js
           node scripts/validate-sitemaps.js
           node scripts/validate-retro-video-seo.js
+          node scripts/validate-video-library.js
 
       - name: Check generated output whitespace
         run: git diff --check
@@ -66,8 +77,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add retro-events retro-specials amiga-demo-music sitemap.xml sitemap-pages.xml sitemap-retro-videos.xml
-          git diff --cached --quiet || git commit -m "Auto rebuild retro feature pages [skip ci]"
+          git add retro-events retro-specials amiga-demo-music videos sitemap.xml sitemap-pages.xml sitemap-retro-videos.xml tools/seo/static-pages.json
+          git diff --cached --quiet || git commit -m "Auto rebuild retro feature and video library pages [skip ci]"
 
       - name: Push generated outputs
         run: |

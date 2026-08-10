@@ -84,11 +84,13 @@ function normalizeRecord(item, existing = {}) {
   const uploadDate = String(item?.snippet?.publishedAt || existing.uploadDate || "").trim();
   const duration = String(item?.contentDetails?.duration || existing.duration || "").trim();
   const title = String(item?.snippet?.title || existing.title || "").trim();
+  const description = String(item?.snippet?.description || existing.description || "").trim();
   const thumbnailUrl = bestThumbnail(item?.snippet) || String(existing.thumbnailUrl || "").trim();
   const channelTitle = String(item?.snippet?.channelTitle || existing.channelTitle || "").trim();
 
   return {
     ...(title ? { title } : {}),
+    ...(description ? { description } : {}),
     ...(uploadDate ? { uploadDate } : {}),
     ...(duration ? { duration } : {}),
     ...(thumbnailUrl ? { thumbnailUrl } : {}),
@@ -105,7 +107,7 @@ async function fetchBatch(ids) {
   const response = await fetch(url, {
     headers: {
       Accept: "application/json",
-      "User-Agent": "CheekyCommodoreGamer-VideoMetadata/1.1"
+      "User-Agent": "CheekyCommodoreGamer-VideoMetadata/1.2"
     }
   });
   if (!response.ok) {
@@ -145,7 +147,7 @@ async function main() {
 
   const sortedVideos = Object.fromEntries(Object.entries(videos).sort(([a], [b]) => a.localeCompare(b)));
   const previousVideos = current?.videos && typeof current.videos === "object" ? current.videos : {};
-  const source = "YouTube Data API v3. uploadDate and duration are only emitted into VideoObject when verified here.";
+  const source = "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.";
   const changed = JSON.stringify(sortedVideos) !== JSON.stringify(previousVideos);
 
   if (changed || !fs.existsSync(metadataPath)) {
