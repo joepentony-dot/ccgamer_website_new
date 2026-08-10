@@ -75,6 +75,13 @@ assert.deepStrictEqual(getImageMetadata(pngPath), {
     width: 1200,
     height: 630
 });
+const misnamedPngPath = path.join(tempDir, "legacy-thumbnail.jpg");
+fs.writeFileSync(misnamedPngPath, png);
+assert.deepStrictEqual(getImageMetadata(misnamedPngPath), {
+    mimeType: "image/jpeg",
+    width: 1200,
+    height: 630
+}, "Legacy thumbnails with mismatched bytes must remain publishable");
 fs.rmSync(tempDir, { recursive: true, force: true });
 
 const shareScript = fs.readFileSync(path.join(__dirname, "..", "resources", "js", "ccg-share.js"), "utf8");
