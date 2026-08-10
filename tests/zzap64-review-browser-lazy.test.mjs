@@ -8,12 +8,13 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const script = fs.readFileSync(path.join(root, 'js', 'zzap64-review-browser.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'resources', 'css', 'zzap64-reviews.css'), 'utf8');
 
-test('all-review browser is lazy by default', () => {
+test('additional-review browser is lazy by default', () => {
   assert.match(script, /const PAGE_SIZE = 24;/);
+  assert.match(script, /\/data\/zzap64-additional-reviews\//);
   assert.match(script, /IntersectionObserver/);
   assert.match(script, /function chunkForLetter\(/);
   assert.match(script, /async function loadChunk\(/);
-  assert.match(script, /Choose a letter above to browse reviews/);
+  assert.match(script, /Choose a letter above to browse additional reviews/);
   assert.doesNotMatch(script, /state\.records\s*=\s*await loadRecords\(/);
 });
 
