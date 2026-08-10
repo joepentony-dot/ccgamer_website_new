@@ -146,8 +146,8 @@
         state.applying = true;
         try {
             state.results.querySelectorAll(".ccg-global-search__list").forEach((list) => {
-                const items = Array.from(list.children);
-                items
+                const currentItems = Array.from(list.children);
+                const rankedItems = currentItems
                     .map((item, index) => ({
                         item,
                         index,
@@ -155,7 +155,14 @@
                         score: scoreTitle(item.querySelector(".ccg-global-search__result-title")?.textContent || "", query)
                     }))
                     .sort((a, b) => a.score - b.score || a.index - b.index)
-                    .forEach((entry) => list.appendChild(entry.item));
+                    .map((entry) => entry.item);
+
+                const orderChanged = rankedItems.some((item, index) => currentItems[index] !== item);
+                if (!orderChanged) return;
+
+                const fragment = document.createDocumentFragment();
+                rankedItems.forEach((item) => fragment.appendChild(item));
+                list.appendChild(fragment);
             });
         } finally {
             state.applying = false;
