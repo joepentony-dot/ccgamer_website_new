@@ -5,8 +5,10 @@ import test from 'node:test';
 
 const require = createRequire(import.meta.url);
 const matcher = require('../js/ccg-zzap64-matcher.js');
+const enricher = require('../scripts/enrich-zzap64-game-reviews.js');
 const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
-const reviewIndex = JSON.parse(fs.readFileSync('data/zzap64-review-links.json', 'utf8'));
+const baseReviewIndex = JSON.parse(fs.readFileSync('data/zzap64-review-links.json', 'utf8'));
+const reviewIndex = enricher.enrich(JSON.parse(JSON.stringify(baseReviewIndex))).output;
 const gameJs = fs.readFileSync('js/load-single-game.js', 'utf8');
 const publisherHtml = fs.readFileSync('admin/content-publisher.html', 'utf8');
 const publisherJs = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
@@ -34,7 +36,7 @@ function directMatches(game) {
     .filter((row) => row.precision === 'page' && row.url);
 }
 
-test('current Zzap review index contains direct page links only', () => {
+test('enriched Zzap review index contains direct page links only', () => {
   const rows = Object.values(reviewIndex.entries || {});
   assert.ok(rows.length > 0);
   assert.equal(reviewIndex.totals?.issueFallbacks, 0);
