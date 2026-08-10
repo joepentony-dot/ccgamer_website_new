@@ -4,6 +4,11 @@
 
 const fs = require("fs");
 const path = require("path");
+const {
+  buildSocialMetaBlock,
+  getImageMetadata,
+  upsertSocialMeta,
+} = require("./generate-slug-pages");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -306,6 +311,9 @@ function buildCanonicalPage(shell, game) {
   const canonicalUrl = `${SITE_ORIGIN}/games/${slug}/`;
   const imagePath = `/resources/images/thumbnails/all/${thumbnailFilename(game, slug)}`;
   const imageUrl = `${SITE_ORIGIN}${imagePath}`;
+  const imageMetadata = getImageMetadata(
+    path.join(__dirname, "..", imagePath.startsWith("/") ? imagePath.slice(1) : imagePath)
+  );
   const schemaJson = serializeSchema(buildSchemaGraph(game, title, canonicalUrl, imageUrl));
   const schemaScript = `    <script type="application/ld+json" data-ccg-schema="game-graph">${schemaJson}</script>`;
 
@@ -335,6 +343,16 @@ function buildCanonicalPage(shell, game) {
   html = replaceMetaContent(html, /<meta name="twitter:description" id="game-twitter-description"[\s\S]*?>/i, description);
   html = replaceMetaContent(html, /<meta name="twitter:image" id="game-twitter-image"[\s\S]*?>/i, imageUrl);
   html = ensureTwitterUrl(html, canonicalUrl);
+  html = upsertSocialMeta(
+    html,
+    buildSocialMetaBlock({
+      title: seoTitle,
+      description,
+      canonicalUrl,
+      ogImage: imageUrl,
+      imageMetadata,
+    })
+  );
   html = html.replace(
     /<script id="ccg-schema-fallback" data-schema-placeholder="true"><\/script>/i,
     schemaScript
