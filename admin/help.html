@@ -11,51 +11,72 @@
   <link href="../resources/css/ccg-master.css" rel="stylesheet" />
   <link href="../resources/css/ccg-mode.css" rel="stylesheet" />
   <link href="../resources/css/ccg-effects.css" rel="stylesheet" />
-  <link href="../resources/css/ccg-admin.css" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
   <link href="./css/admin-auth.css" rel="stylesheet" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <div aria-hidden="true" class="ccg-bg">
-    <div aria-hidden="true" class="ccg-bg-starfield"></div>
-    <div aria-hidden="true" class="ccg-bg-grid"></div>
-    <div aria-hidden="true" class="ccg-bg-crt-overlay"></div>
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
   </div>
 
   <main class="admin-dashboard-wrap" data-admin-shell>
     <header class="admin-dashboard-header">
       <div>
         <p class="admin-auth-kicker">CCG Admin Guidance</p>
-        <h1>Admin Help &amp; Instructions</h1>
+        <h1>Admin Help &amp; Workflow</h1>
+        <p>The normal publishing route is now the unified CCG Content Publisher. Legacy editors remain available for recovery and specialist maintenance only.</p>
       </div>
     </header>
 
     <section class="omega-help-panel">
-      <h2>CCG Admin Panel workflow</h2>
+      <h2>Normal publishing workflow</h2>
       <ol>
-        <li>Start local server: <code>python -m http.server 8000</code>.</li>
-        <li>Open <code>/admin/dashboard.html</code> and confirm status panel.</li>
-        <li>Open Games Editor, edit/add drafts, then run Validate Library.</li>
-        <li>Use Integrated Export Panel: download <code>games.json</code>, SEO stubs, and package if required.</li>
-        <li>Replace repository files manually (<code>/games/games.json</code>, generated pages/sitemap as needed).</li>
-        <li>Open <code>/admin/publish.html</code> and complete all 7 publish checklist steps.</li>
-        <li>Commit, push, and verify production pages.</li>
+        <li>Open <a href="/admin/content-publisher.html"><strong>CCG Content Publisher</strong></a>.</li>
+        <li>Choose <strong>Add Game</strong> or <strong>Add Video / Feature</strong>.</li>
+        <li>Enter the source information once. For videos, paste the YouTube URL; the publisher extracts the video ID automatically.</li>
+        <li>Review the form validation and publish. The publisher writes only the authoritative source data and any selected game thumbnail.</li>
+        <li>Existing GitHub workflows then regenerate the canonical pages, verified YouTube metadata, VideoObject/Clip structured data, video library, archives and sitemaps.</li>
+        <li>Use the <strong>Publishing Status</strong> tab to follow the automated stages and confirm the final canonical URL is live.</li>
+        <li>After the content is live, use <a href="/admin/announce.html">Announcements</a> if you want to notify opted-in members.</li>
       </ol>
+
+      <h2>Video publishing</h2>
+      <ul>
+        <li>The YouTube Data API key stays in GitHub Secrets and is never displayed by the browser admin tool.</li>
+        <li>Verified upload dates, durations, titles and thumbnails are fetched by GitHub Actions after the source entry is published.</li>
+        <li>If YouTube does not return a video, the site withholds unverified VideoObject fields rather than inventing them.</li>
+        <li>YouTube descriptions containing timestamps can feed visible chapters and Google Clip/Key Moments markup during the SEO generation step.</li>
+      </ul>
+
+      <h2>Games</h2>
+      <ul>
+        <li>The Content Publisher updates the authoritative <code>/games/games.json</code> source and can commit a selected thumbnail atomically.</li>
+        <li>The existing Reliable Games Publishing workflow remains responsible for generated game pages, search/index files, archives and game sitemap output.</li>
+        <li>Do not hand-edit generated game pages or sitemap files when the normal publisher can generate them from source data.</li>
+      </ul>
+
+      <h2>Tools &amp; diagnostics</h2>
+      <ul>
+        <li><a href="/admin/member-hub-health.html"><strong>Member Hub Health</strong></a> — diagnose member-area data and service health.</li>
+        <li><a href="/admin/archive-quality.html"><strong>Archive Quality</strong></a> — inspect archive/data quality and maintenance issues.</li>
+        <li><a href="/admin/games-editor.html"><strong>Legacy Game Builder</strong></a> — fallback package/export workflow for exceptional recovery or comparison work.</li>
+        <li>The old bulk JSON editor remains available by direct URL only. It is intentionally removed from normal navigation because it is not part of the day-to-day workflow.</li>
+      </ul>
 
       <h2>Safety rules</h2>
       <ul>
-        <li>No auto-write to repository files from browser tools.</li>
-        <li>All exports are client-side downloads.</li>
-        <li>Use diff viewer before export for regression safety.</li>
-        <li>Mark publish steps complete to keep workflow traceable.</li>
+        <li>Never paste the YouTube API key into an admin form, source file, issue or chat. It belongs only in the GitHub secret <code>YOUTUBE_API_KEY</code>.</li>
+        <li>Use the Content Publisher as the source-entry layer; let the existing generators own derived pages and XML files.</li>
+        <li>Keep legacy editors available as fallbacks rather than deleting recovery paths.</li>
+        <li>Use the publishing status and GitHub validation checks before treating a new entry as live.</li>
       </ul>
-
-      <h2>Legacy pages</h2>
-      <p>Legacy admin pages are still available for reference but are deprecated. Use Dashboard, Editor, Publish, and Help as the primary CMS flow.</p>
     </section>
   </main>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
   <script type="module">
-    import { initAdminNav } from '/admin/js/admin-nav.js';
+    import { initAdminNav } from '/admin/js/admin-nav.js?v=admin-modern-20260810';
     initAdminNav({ pageLabel: 'Help', active: 'help' });
   </script>
 </body>
