@@ -24,6 +24,16 @@ function reviewEntries() {
   });
 }
 
+function gameBySlug(slug, titlePattern) {
+  return games.find((game) => String(game?.slug || '') === slug)
+    || games.find((game) => titlePattern?.test(String(game?.title || '')));
+}
+
+function directMatches(game) {
+  return matcher.findAwardsForGame(game, reviewEntries(), [game])
+    .filter((row) => row.precision === 'page' && row.url);
+}
+
 test('current Zzap review index contains direct page links only', () => {
   const rows = Object.values(reviewIndex.entries || {});
   assert.ok(rows.length > 0);
@@ -35,13 +45,25 @@ test('current Zzap review index contains direct page links only', () => {
 });
 
 test('Barry McGuigan game can resolve its Zzap review through the shared matcher', () => {
-  const barry = games.find((game) => String(game?.slug || '') === 'barry-mcguigan-world-championship-boxing')
-    || games.find((game) => /barry mcguigan/i.test(String(game?.title || '')));
+  const barry = gameBySlug('barry-mcguigan-world-championship-boxing', /barry mcguigan/i);
   assert.ok(barry, 'Barry McGuigan game is present in games.json');
+  assert.ok(directMatches(barry).length > 0, 'Barry McGuigan has at least one direct Zzap review page');
+});
 
-  const matches = matcher.findAwardsForGame(barry, reviewEntries(), [barry])
-    .filter((row) => row.precision === 'page' && row.url);
-  assert.ok(matches.length > 0, 'Barry McGuigan has at least one direct Zzap review page');
+test('Caveman Ugh-Lympics resolves every indexed Zzap re-review on its game page', () => {
+  const caveman = gameBySlug('caveman-ugh-lympics', /caveman ugh/i);
+  assert.ok(caveman, 'Caveman Ugh-Lympics is present in games.json');
+  const destinations = new Set(directMatches(caveman).map((row) => `${row.issue}|${row.page}`));
+  assert.ok(destinations.has('45|28'));
+  assert.ok(destinations.has('70|63'));
+});
+
+test('Rambo uses its archive title while retaining both Zzap review links', () => {
+  const rambo = gameBySlug('rambo-first-blood-part-2', /^Rambo: First Blood Part II$/i);
+  assert.ok(rambo, 'Rambo: First Blood Part II is present in games.json');
+  const destinations = new Set(directMatches(rambo).map((row) => `${row.issue}|${row.page}`));
+  assert.ok(destinations.has('10|23'));
+  assert.ok(destinations.has('53|58'));
 });
 
 test('game runtime supports automatic, lightweight and optional Zzap review links', () => {
