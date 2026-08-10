@@ -28,7 +28,9 @@ jobs:
           node-version: 22
 
       - name: Apply game-page Zzap integration
-        run: node scripts/patch-game-page-zzap-links.js
+        run: |
+          node scripts/patch-game-page-zzap-links.js
+          node scripts/patch-game-page-zzap-performance.js
 
       - name: Validate JavaScript syntax
         run: |
