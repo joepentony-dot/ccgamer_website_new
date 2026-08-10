@@ -8,6 +8,7 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-overrides.json"
       - "data/zzap64-game-reviews/**"
+      - "data/zzap64-additional-reviews/**"
       - "data/lemon-cache/**"
       - "games/games.json"
       - "scripts/generate-zzap64-review-links.js"
@@ -28,6 +29,7 @@ on:
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/zzap64-review-browser-lazy.test.mjs"
       - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
@@ -103,6 +105,7 @@ jobs:
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
           node --test tests/zzap64-game-review-chunks.test.mjs
+          node --test tests/zzap64-review-browser-lazy.test.mjs
           node scripts/audit-zzap64-awards.js
           node scripts/audit-game-badges.js
           git diff --check
@@ -112,7 +115,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
+          git add data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews data/zzap64-additional-reviews
           if git diff --cached --quiet; then
             echo "Zzap review data already current."
             exit 0
