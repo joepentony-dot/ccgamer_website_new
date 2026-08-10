@@ -701,6 +701,7 @@ module.exports = {
     buildDescription,
     buildSocialMetaBlock,
     getImageMetadata,
+    upsertSocialMeta,
     getCanonicalRewriteReason,
     getExpectedPageArtifacts,
     normalizeSlug,
