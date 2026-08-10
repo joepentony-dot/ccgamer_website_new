@@ -10,9 +10,9 @@
     const SHORTCUTS = [
         {
             href: "/zzap64/",
-            label: "Zzap!64 Awards",
-            meta: "Searchable CCG magazine awards archive",
-            terms: "zzap zzap64 gold medal sizzler silver medal awards magazine"
+            label: "Zzap!64 Reviews & Awards",
+            meta: "Search linked Zzap!64 reviews, Gold Medals, Sizzlers and Silver Medals",
+            terms: "zzap zzap64 review reviews gold medal sizzler silver medal awards magazine scans"
         },
         {
             href: "/games/discover/",
