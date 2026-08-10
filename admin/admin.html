@@ -7,15 +7,21 @@
   <meta name="robots" content="noindex,nofollow" />
   <title>CCG Admin</title>
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/admin/dashboard.html" />
-  <meta http-equiv="refresh" content="0; url=/admin/dashboard.html" />
-  <script>
-    (function () {
-      var target = '/admin/dashboard.html' + window.location.search + window.location.hash;
-      window.location.replace(target);
-    })();
-  </script>
 </head>
 <body>
-  <p>Opening the <a href="/admin/dashboard.html">CCG Admin Dashboard</a>…</p>
+  <p>Checking admin access…</p>
+
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script src="/js/ccg-auth-ui.js" defer></script>
+  <script type="module">
+    import { ensureRole } from '/admin/js/guard.js';
+
+    const access = await ensureRole(['admin', 'superadmin']);
+    if (access) {
+      const target = '/admin/dashboard.html' + window.location.search + window.location.hash;
+      window.location.replace(target);
+    }
+  </script>
 </body>
 </html>
