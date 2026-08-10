@@ -795,8 +795,21 @@ function resolveGameUrl(game) {
     return "#";
 }
 
+function getFeaturedCompany(game) {
+    const developer = String(game?.developer || game?.credits?.developer || "").trim();
+    if (developer) return developer;
+
+    const publishers = Array.isArray(game?.credits?.publisher)
+        ? game.credits.publisher
+        : [game?.credits?.publisher || game?.publisher];
+
+    return publishers
+        .map((publisher) => String(publisher || "").trim())
+        .find(Boolean) || "";
+}
+
 function buildMeta(game) {
-    return [game.system, game.year, game.developer].filter(Boolean).join(" · ");
+    return [game.system, game.year, getFeaturedCompany(game)].filter(Boolean).join(" · ");
 }
 
 function sampleGames(count, predicate = () => true) {
