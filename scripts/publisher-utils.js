@@ -214,12 +214,10 @@ function toList(value) {
     return [value];
 }
 
-function getPublisherNames(game) {
-    const creditValue = game?.credits?.publisher;
-    const source = toList(creditValue).length ? toList(creditValue) : toList(game?.publisher);
+function getCompanyNames(value) {
     const seen = new Set();
 
-    return source
+    return toList(value)
         .map(canonicalizePublisherName)
         .filter(Boolean)
         .filter((name) => {
@@ -228,6 +226,18 @@ function getPublisherNames(game) {
             seen.add(key);
             return true;
         });
+}
+
+function getPublisherNames(game) {
+    const creditValue = game?.credits?.publisher;
+    const source = toList(creditValue).length ? creditValue : game?.publisher;
+    return getCompanyNames(source);
+}
+
+function getDeveloperNames(game) {
+    const creditValue = game?.credits?.developer;
+    const source = toList(creditValue).length ? creditValue : game?.developer;
+    return getCompanyNames(source);
 }
 
 function normalizeSystem(game) {
@@ -269,7 +279,8 @@ function buildPublisherGroups(games) {
                 bySlug.set(slug, {
                     name: publisherName,
                     slug,
-                    games: []
+                    games: [],
+                    developedGames: []
                 });
             }
 
@@ -280,9 +291,31 @@ function buildPublisherGroups(games) {
         });
     });
 
+    (Array.isArray(games) ? games : []).forEach((game) => {
+        const gameRecord = getGameRecord(game);
+        if (!gameRecord) return;
+
+        getDeveloperNames(game).forEach((developerName) => {
+            const slug = slugifyPublisher(developerName);
+            const group = bySlug.get(slug);
+            if (!group) return;
+
+            const isPublishedByCompany = group.games.some((entry) => entry.slug === gameRecord.slug);
+            const isAlreadyIncluded = group.developedGames.some((entry) => entry.slug === gameRecord.slug);
+            if (!isPublishedByCompany && !isAlreadyIncluded) {
+                group.developedGames.push(gameRecord);
+            }
+        });
+    });
+
     return Array.from(bySlug.values())
         .map((group) => {
             group.games.sort((a, b) => (
+                a.sortTitle.localeCompare(b.sortTitle, "en", { sensitivity: "base" }) ||
+                (a.year || 0) - (b.year || 0)
+            ));
+
+            group.developedGames.sort((a, b) => (
                 a.sortTitle.localeCompare(b.sortTitle, "en", { sensitivity: "base" }) ||
                 (a.year || 0) - (b.year || 0)
             ));
@@ -311,6 +344,7 @@ module.exports = {
     PUBLISHER_ALIASES,
     buildPublisherGroups,
     canonicalizePublisherName,
+    getDeveloperNames,
     getPublisherNames,
     normalizePublisherKey,
     normalizeSystem,
