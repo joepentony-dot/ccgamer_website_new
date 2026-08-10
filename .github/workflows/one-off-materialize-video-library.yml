@@ -1,0 +1,83 @@
+name: One-off materialize video library
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: one-off-materialize-video-library-${{ github.head_ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    if: github.head_ref == 'codex/seo/materialize-video-library-output' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v5
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > "$RUNNER_TEMP/protected.sha256"
+
+      - name: Generate current video outputs
+        run: |
+          node scripts/generate-retro-pages.js
+          node scripts/generate-video-seo.js
+          node scripts/generate-retro-video-seo.js
+          node scripts/generate-video-library.js
+          node scripts/generate-sitemaps.js
+
+      - name: Validate generated output
+        run: |
+          node scripts/validate-sitemaps.js
+          node scripts/validate-video-seo.js
+          node scripts/validate-retro-video-seo.js
+          node scripts/validate-video-library.js
+          git diff --check
+          sha256sum --check "$RUNNER_TEMP/protected.sha256"
+
+      - name: Commit generated output
+        run: |
+          git add \
+            retro-events \
+            retro-specials \
+            amiga-demo-music \
+            videos \
+            tools/seo/static-pages.json \
+            sitemap.xml \
+            sitemap-pages.xml \
+            sitemap-games.xml \
+            sitemap-videos.xml \
+            sitemap-retro-videos.xml
+
+          if git diff --cached --quiet; then
+            echo "Generated video output is already current."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize video library and watch-page output"
+          git push origin HEAD:${{ github.head_ref }}
