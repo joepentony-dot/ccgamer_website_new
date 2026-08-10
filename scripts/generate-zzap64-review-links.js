@@ -32,6 +32,13 @@ function stripTags(value) {
   return decodeHtml(String(value || "").replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
 }
 
+function normalizeLemonTitle(value) {
+  const title = String(value || "").trim();
+  const trailingArticle = title.match(/^(.+),\s*(The|A|An)$/i);
+  if (!trailingArticle) return title;
+  return `${trailingArticle[2]} ${trailingArticle[1]}`.trim();
+}
+
 function issueNumber(year, month) {
   const monthIndex = MONTHS.findIndex((name) => name.toLowerCase() === String(month || "").trim().toLowerCase());
   if (monthIndex < 0) return null;
@@ -108,12 +115,22 @@ function extractCanonical(html) {
 
 function extractTitle(html) {
   const ogTitle = extractMetaContent(html, "og:title");
-  if (ogTitle) return ogTitle;
+  if (ogTitle) return normalizeLemonTitle(ogTitle);
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
-  if (h1) return stripTags(h1[1]);
+  if (h1) return normalizeLemonTitle(stripTags(h1[1]));
   const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
   if (!title) return "";
-  return stripTags(title[1]).replace(/\s+-\s+(?:Commodore 64|Amiga).*$/i, "").trim();
+  return normalizeLemonTitle(stripTags(title[1]).replace(/\s+-\s+(?:Commodore 64|Amiga).*$/i, "").trim());
+}
+
+function canonicalGameSlug(canonical) {
+  try {
+    const parsed = new URL(canonical);
+    const match = parsed.pathname.match(/\/game\/([^/?#]+)/i);
+    return match ? decodeURIComponent(match[1]).trim() : "";
+  } catch {
+    return "";
+  }
 }
 
 function extractZzapLinks(html) {
@@ -162,6 +179,7 @@ function readCachedMagazinePages() {
 
       bySystem[system].push({
         title,
+        slug: canonicalGameSlug(canonical),
         system: system === "amiga" ? "AMIGA" : "C64",
         zzapLinks,
         source: `data/lemon-cache/${name}`
