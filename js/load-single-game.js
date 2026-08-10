@@ -925,7 +925,7 @@ async function resolveAutomaticZzapLinks(game) {
     const { matcher, entries } = await loadZzapReviewData();
     if (!matcher || !entries.length || !game) return [];
 
-    const matches = matcher.findAwardsForGame(game, entries, CCG_SINGLE_ALL_GAMES);
+    const matches = matcher.findAwardsForGame(game, entries, [game]);
     return matches
         .map((entry) => normaliseZzapReviewUrl(entry.url, entry))
         .filter(Boolean);
