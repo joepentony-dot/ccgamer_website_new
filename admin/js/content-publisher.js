@@ -877,6 +877,7 @@ function buildGameEntry() {
     pdf: gameValue('pdf'),
     disk: parseLines(gameValue('disk')),
     lemon: gameValue('lemonUrl') ? [gameValue('lemonUrl')] : [],
+    zzap: gameValue('zzapUrl') ? [gameValue('zzapUrl')] : [],
     description: gameValue('description'),
     ccg_rating: Number(gameValue('ccg_rating')),
     ccg_rating_reason: gameValue('ccg_rating_reason'),
@@ -915,6 +916,7 @@ function validateGameEntry(entry) {
   if (entry.pdf && !isHttpUrl(entry.pdf)) errors.push('PDF/manual URL is not valid.');
   entry.disk.forEach((url) => { if (!isHttpUrl(url)) errors.push(`Invalid disk/download URL: ${url}`); });
   entry.lemon.forEach((url) => { if (!isHttpUrl(url)) errors.push(`Invalid Lemon64 URL: ${url}`); });
+  entry.zzap.forEach((url) => { if (!isValidZzapReviewUrl(url)) errors.push(`Zzap!64 review URL must be a direct zzap64.co.uk displaypage link: ${url}`); });
 
   if (state.games.some((game) => String(game?.slug || '').toLowerCase() === entry.slug.toLowerCase())) errors.push('Slug already exists in the loaded games library.');
   if (state.games.some((game) => String(game?.id || '').toLowerCase() === entry.id.toLowerCase())) errors.push('ID already exists in the loaded games library.');
@@ -1381,6 +1383,24 @@ function isHttpUrl(value) {
   try {
     const url = new URL(value);
     return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (_error) {
+    return false;
+  }
+}
+
+function isValidZzapReviewUrl(value) {
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./i, '').toLowerCase();
+    const issue = Number(url.searchParams.get('issue'));
+    const page = Number(url.searchParams.get('page'));
+    return url.protocol === 'https:'
+      && host === 'zzap64.co.uk'
+      && url.pathname.toLowerCase() === '/cgi-bin/displaypage.pl'
+      && Number.isInteger(issue)
+      && issue > 0
+      && Number.isInteger(page)
+      && page > 0;
   } catch (_error) {
     return false;
   }

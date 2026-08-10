@@ -669,6 +669,7 @@ function normalizeGame(game) {
         collections: Array.isArray(entry.collections) ? entry.collections : [],
         disk: Array.isArray(entry.disk) ? entry.disk : (entry.disk ? [entry.disk] : []),
         lemon: Array.isArray(entry.lemon) ? entry.lemon : (entry.lemon ? [entry.lemon] : []),
+        zzap: Array.isArray(entry.zzap) ? entry.zzap : (entry.zzap ? [entry.zzap] : []),
         music: Array.isArray(entry.music) ? entry.music : (entry.music ? [entry.music] : []),
     };
 }
@@ -806,6 +807,197 @@ function resolveLemonLinks(game) {
     }
     const link = String(raw || "").trim();
     return link ? [link] : [];
+}
+
+const CCG_ZZAP_REVIEW_INDEX_URL = "/data/zzap64-review-links.json";
+let CCG_ZZAP_REVIEW_DATA_PROMISE = null;
+let CCG_ZZAP_MATCHER_PROMISE = null;
+
+function normaliseZzapReviewUrl(value, metadata = {}) {
+    const raw = String(value || "").trim();
+    if (!raw) return null;
+
+    try {
+        const url = new URL(raw);
+        const host = url.hostname.replace(/^www\./i, "").toLowerCase();
+        const issue = Number(url.searchParams.get("issue"));
+        const page = Number(url.searchParams.get("page"));
+        if (url.protocol !== "https:" || host !== "zzap64.co.uk") return null;
+        if (url.pathname.toLowerCase() !== "/cgi-bin/displaypage.pl") return null;
+        if (!Number.isInteger(issue) || issue < 1 || !Number.isInteger(page) || page < 1) return null;
+
+        return {
+            ...metadata,
+            issue,
+            page,
+            precision: "page",
+            url: `https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=${issue}&page=${page}`
+        };
+    } catch {
+        return null;
+    }
+}
+
+function resolveZzapLinks(game) {
+    const raw = game?.zzap || game?.zzap64 || game?.zzapReviewUrl || game?.zzapReviewUrls;
+    if (!raw) return [];
+    const values = Array.isArray(raw) ? raw : [raw];
+    return values
+        .map((item) => {
+            if (item && typeof item === "object") {
+                return normaliseZzapReviewUrl(item.url || item.href, item);
+            }
+            return normaliseZzapReviewUrl(item, { source: "game-data" });
+        })
+        .filter(Boolean);
+}
+
+function ensureZzapMatcher() {
+    if (window.CCGZzap64Matcher) return Promise.resolve(window.CCGZzap64Matcher);
+    if (CCG_ZZAP_MATCHER_PROMISE) return CCG_ZZAP_MATCHER_PROMISE;
+
+    CCG_ZZAP_MATCHER_PROMISE = new Promise((resolve, reject) => {
+        const src = "/js/ccg-zzap64-matcher.js";
+        const existing = document.querySelector('script[src="/js/ccg-zzap64-matcher.js"], script[src$="/js/ccg-zzap64-matcher.js"]');
+        const finish = () => {
+            if (window.CCGZzap64Matcher) resolve(window.CCGZzap64Matcher);
+            else reject(new Error("Zzap title matcher did not initialise"));
+        };
+
+        if (existing) {
+            existing.addEventListener("load", finish, { once: true });
+            existing.addEventListener("error", () => reject(new Error("Zzap title matcher failed to load")), { once: true });
+            window.setTimeout(() => {
+                if (window.CCGZzap64Matcher) resolve(window.CCGZzap64Matcher);
+            }, 0);
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = src;
+        script.defer = true;
+        script.addEventListener("load", finish, { once: true });
+        script.addEventListener("error", () => reject(new Error("Zzap title matcher failed to load")), { once: true });
+        document.head.appendChild(script);
+    });
+
+    return CCG_ZZAP_MATCHER_PROMISE;
+}
+
+function zzapEntryFromIndex(key, row) {
+    const parts = String(key || "").split("|");
+    if (parts.length < 4 || !row || typeof row !== "object") return null;
+    const [year, month, system, ...titleParts] = parts;
+    const title = titleParts.join("|").trim();
+    if (!title) return null;
+    return {
+        year: Number(year),
+        month,
+        system: system === "amiga" ? "Amiga" : "C64",
+        title,
+        ...row
+    };
+}
+
+function loadZzapReviewData() {
+    if (CCG_ZZAP_REVIEW_DATA_PROMISE) return CCG_ZZAP_REVIEW_DATA_PROMISE;
+
+    CCG_ZZAP_REVIEW_DATA_PROMISE = Promise.all([
+        ensureZzapMatcher(),
+        fetch(CCG_ZZAP_REVIEW_INDEX_URL, { cache: "default" }).then((response) => {
+            if (!response.ok) throw new Error(`Zzap review index HTTP ${response.status}`);
+            return response.json();
+        })
+    ]).then(([matcher, data]) => {
+        const entries = Object.entries(data?.entries || {})
+            .map(([key, row]) => zzapEntryFromIndex(key, row))
+            .filter(Boolean);
+        return { matcher, entries };
+    }).catch((error) => {
+        console.warn("[CCG] Zzap review links are unavailable on this visit.", error);
+        return { matcher: null, entries: [] };
+    });
+
+    return CCG_ZZAP_REVIEW_DATA_PROMISE;
+}
+
+async function resolveAutomaticZzapLinks(game) {
+    const { matcher, entries } = await loadZzapReviewData();
+    if (!matcher || !entries.length || !game) return [];
+
+    const matches = matcher.findAwardsForGame(game, entries, [game]);
+    return matches
+        .map((entry) => normaliseZzapReviewUrl(entry.url, entry))
+        .filter(Boolean);
+}
+
+function dedupeZzapReviewRecords(records) {
+    const seen = new Set();
+    return records.filter((record) => {
+        const key = String(record?.url || "").trim();
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    }).sort((a, b) => Number(a.issue || 0) - Number(b.issue || 0) || Number(a.page || 0) - Number(b.page || 0));
+}
+
+function appendFurtherReadingButton(container, href, label, title) {
+    if (!container || !href) return;
+    const anchor = document.createElement("a");
+    anchor.className = "game-pill";
+    anchor.href = href;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer external";
+    anchor.textContent = label;
+    if (title) anchor.title = title;
+    container.appendChild(anchor);
+}
+
+function renderFurtherReadingLinks({ game, readingCard, container, utilityHubSection }) {
+    if (!readingCard || !container) return false;
+
+    const lemonLinks = resolveLemonLinks(game);
+    const explicitZzapLinks = resolveZzapLinks(game);
+
+    const render = (zzapLinks) => {
+        container.innerHTML = "";
+        const system = String(game?.system || "").trim().toUpperCase();
+        const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
+
+        Array.from(new Set(lemonLinks)).forEach((link, index, all) => {
+            appendFurtherReadingButton(
+                container,
+                link,
+                all.length > 1 ? `${baseLabel} LINK ${index + 1}` : baseLabel,
+                "Open the matching Lemon game database page"
+            );
+        });
+
+        dedupeZzapReviewRecords(zzapLinks).forEach((record) => {
+            const label = record.issue && record.page
+                ? `ZZAP!64 REVIEW · ISSUE ${record.issue} · P${record.page}`
+                : "ZZAP!64 REVIEW";
+            appendFurtherReadingButton(
+                container,
+                record.url,
+                label,
+                "Open the original Zzap!64 magazine review scan"
+            );
+        });
+
+        const hasReading = container.children.length > 0;
+        readingCard.hidden = !hasReading;
+        if (utilityHubSection && hasReading) utilityHubSection.hidden = false;
+        return hasReading;
+    };
+
+    const initialReading = render(explicitZzapLinks);
+
+    void resolveAutomaticZzapLinks(game).then((automaticLinks) => {
+        render([...explicitZzapLinks, ...automaticLinks]);
+    });
+
+    return initialReading;
 }
 
 function resolveCreditsEntries(game) {
@@ -1185,10 +1377,12 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
     const finalizeMusicVisibility = () => {
         const hasPlayer = !!musicTracksEl.querySelector("audio");
         const hasMetadata = !!musicMetaEl.querySelector(".ccg-music-composer, .ccg-music-related, .ccg-music-composer__hint");
+        const currentReadingCard = document.getElementById("game-reading-card");
+        const hasCurrentReading = !!(currentReadingCard && !currentReadingCard.hidden);
         musicSection.style.display = hasPlayer || hasMetadata ? "" : "none";
         musicCard.hidden = !(hasPlayer || hasMetadata);
         if (utilityHubSection) {
-            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasPlayer || hasMetadata);
+            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasCurrentReading || hasPlayer || hasMetadata);
         }
     };
 
@@ -1479,32 +1673,13 @@ function renderGame(game) {
         downloadCard.hidden = !hasDisk;
     }
 
-    const lemonLinks = resolveLemonLinks(game);
     const lemonLinksEl = document.getElementById("gameLemonLinks");
-    if (readingCard && lemonLinksEl) {
-        lemonLinksEl.innerHTML = "";
-        if (lemonLinks.length) {
-            const system = String(game?.system || "").trim().toUpperCase();
-            const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
-
-            Array.from(new Set(lemonLinks)).forEach((link, index, all) => {
-                const anchor = document.createElement("a");
-                anchor.className = "game-pill";
-                anchor.href = link;
-                anchor.target = "_blank";
-                anchor.rel = "noopener";
-                anchor.textContent = all.length > 1
-                    ? `${baseLabel} LINK ${index + 1}`
-                    : baseLabel;
-                lemonLinksEl.appendChild(anchor);
-            });
-            readingCard.hidden = false;
-        } else {
-            readingCard.hidden = true;
-        }
-    }
-
-    const hasReading = lemonLinks.length > 0;
+    const hasReading = renderFurtherReadingLinks({
+        game,
+        readingCard,
+        container: lemonLinksEl,
+        utilityHubSection
+    });
     const hasUtilityHub = !!(hasManual || hasDisk || hasReading);
     if (utilityHubSection) {
         utilityHubSection.hidden = !hasUtilityHub;
