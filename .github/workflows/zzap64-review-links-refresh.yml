@@ -13,17 +13,22 @@ on:
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/build-zzap64-game-review-chunks.js"
+      - "scripts/refresh-lemon-game-cache.js"
       - "scripts/zzap64-bible-client.js"
+      - "scripts/audit-game-badges.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
       - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-game-badges.js"
       - "js/ccg-schema.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-reviews.css"
+      - "resources/css/ccg-game-badges.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
 
@@ -48,7 +53,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: main
-          fetch-depth: 1
+          fetch-depth: 2
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -60,12 +65,21 @@ jobs:
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/enrich-zzap64-game-reviews.js
           node --check scripts/build-zzap64-game-review-chunks.js
+          node --check scripts/refresh-lemon-game-cache.js
           node --check scripts/zzap64-bible-client.js
+          node --check scripts/audit-game-badges.js
           node --check js/zzap64-awards.js
           node --check js/zzap64-game-link-fix.js
           node --check js/zzap64-review-browser.js
           node --check js/zzap64-game-reviews-runtime.js
+          node --check js/ccg-game-badges.js
           node --check js/ccg-schema.js
+
+      - name: Cache Lemon pages for newly added or changed games
+        if: github.event_name == 'push'
+        run: |
+          node scripts/refresh-lemon-game-cache.js --base HEAD^
+          node scripts/refresh-lemon-game-cache.js --check --base HEAD^
 
       - name: Refresh live award references when run manually
         if: github.event_name == 'workflow_dispatch'
@@ -85,10 +99,12 @@ jobs:
 
       - name: Validate direct scan coverage
         run: |
+          node --test tests/lemon-game-cache-refresh.test.mjs
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
           node --test tests/zzap64-game-review-chunks.test.mjs
           node scripts/audit-zzap64-awards.js
+          node scripts/audit-game-badges.js
           git diff --check
 
       - name: Commit refreshed review data
@@ -96,7 +112,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/zzap64-review-links.json data/zzap64-game-reviews
+          git add data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
           if git diff --cached --quiet; then
             echo "Zzap review data already current."
             exit 0
