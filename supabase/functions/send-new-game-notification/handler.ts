@@ -296,23 +296,25 @@ Deno.serve(async (req: Request) => {
   const thumbnail = resolveThumbnail(payload.content_thumbnail || payload.game_thumbnail, siteOrigin);
   const recipientScope = testEmail ? "test" : "members";
   const preference = preferenceColumn(contentType);
-  const duplicateSince = new Date(Date.now() - DUPLICATE_WINDOW_MINUTES * 60_000).toISOString();
+  if (notifyMembers) {
+    const duplicateSince = new Date(Date.now() - DUPLICATE_WINDOW_MINUTES * 60_000).toISOString();
 
-  const { data: recent, error: recentError } = await serviceClient
-    .from("content_announcements")
-    .select("id, status, created_at")
-    .eq("content_type", contentType)
-    .eq("content_slug", slug)
-    .eq("recipient_scope", recipientScope)
-    .gte("created_at", duplicateSince)
-    .in("status", ["processing", "sent", "partial"])
-    .limit(1);
+    const { data: recent, error: recentError } = await serviceClient
+      .from("content_announcements")
+      .select("id, status, created_at")
+      .eq("content_type", contentType)
+      .eq("content_slug", slug)
+      .eq("recipient_scope", recipientScope)
+      .gte("created_at", duplicateSince)
+      .in("status", ["processing", "sent", "partial"])
+      .limit(1);
 
-  if (recentError) {
-    return json({ success: false, error: "Phase 20B database migration has not been applied" }, 503);
-  }
-  if (Array.isArray(recent) && recent.length) {
-    return json({ success: false, error: "This announcement was already sent recently" }, 409);
+    if (recentError) {
+      return json({ success: false, error: "Phase 20B database migration has not been applied" }, 503);
+    }
+    if (Array.isArray(recent) && recent.length) {
+      return json({ success: false, error: "This announcement was already sent recently" }, 409);
+    }
   }
 
   const subject = subjectFor(mode, contentType, category, title);
