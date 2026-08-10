@@ -444,7 +444,7 @@ function upsertSocialMeta(html, socialMetaBlock) {
     ];
     let output = String(html || "");
     for (const [attribute, key] of managedKeys) {
-        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\function buildCanonicalHtml({");
+        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const pattern = new RegExp(
             `^[ \\t]*<meta\\b(?=[^>]*\\b${attribute}\\s*=\\s*(["'])${escapedKey}\\1)[^>]*>\\s*\\n?`,
             "gim"
@@ -453,9 +453,9 @@ function upsertSocialMeta(html, socialMetaBlock) {
     }
     const schemaMarker = /^[ \\t]*<script\\b(?=[^>]*data-ccg-schema\\s*=\\s*(["'])game-graph\\1)/im;
     if (schemaMarker.test(output)) {
-        return output.replace(schemaMarker, `${socialMetaBlock}\nfunction buildCanonicalHtml({`);
+        return output.replace(schemaMarker, `${socialMetaBlock}\n$&`);
     }
-    return output.replace(/<\\/head>/i, `${socialMetaBlock}\n</head>`);
+    return output.replace(/<\/head>/i, `${socialMetaBlock}\n</head>`);
 }
 
 function buildCanonicalHtml({
