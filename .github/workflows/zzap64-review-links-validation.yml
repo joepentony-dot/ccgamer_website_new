@@ -8,19 +8,24 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "data/zzap64-review-overrides.json"
+      - "data/zzap64-game-reviews/**"
       - "data/lemon-cache/**"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
+      - "scripts/build-zzap64-game-review-chunks.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
+      - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-schema.js"
       - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "resources/css/zzap64-reviews.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
+      - "tests/zzap64-game-review-chunks.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   push:
@@ -30,19 +35,24 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "data/zzap64-review-overrides.json"
+      - "data/zzap64-game-reviews/**"
       - "data/lemon-cache/**"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
+      - "scripts/build-zzap64-game-review-chunks.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
+      - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-schema.js"
       - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "resources/css/zzap64-reviews.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
+      - "tests/zzap64-game-review-chunks.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
@@ -67,10 +77,13 @@ jobs:
         run: |
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/enrich-zzap64-game-reviews.js
+          node --check scripts/build-zzap64-game-review-chunks.js
           node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
           node --check js/zzap64-game-link-fix.js
           node --check js/zzap64-review-browser.js
+          node --check js/zzap64-game-reviews-runtime.js
+          node --check js/ccg-schema.js
           node --check js/ccg-search-ranking.js
 
       - name: Rebuild deterministic review index
@@ -79,11 +92,14 @@ jobs:
           node scripts/generate-zzap64-review-links.js --check
           node scripts/enrich-zzap64-game-reviews.js
           node scripts/enrich-zzap64-game-reviews.js --check
+          node scripts/build-zzap64-game-review-chunks.js
+          node scripts/build-zzap64-game-review-chunks.js --check
 
       - name: Test original magazine and game links
         run: |
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
+          node --test tests/zzap64-game-review-chunks.test.mjs
 
       - name: Run existing Zzap award audit
         run: node scripts/audit-zzap64-awards.js

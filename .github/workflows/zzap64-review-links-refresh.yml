@@ -7,18 +7,23 @@ on:
     paths:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-overrides.json"
+      - "data/zzap64-game-reviews/**"
       - "data/lemon-cache/**"
       - "games/games.json"
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
+      - "scripts/build-zzap64-game-review-chunks.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
+      - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-schema.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-reviews.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
+      - "tests/zzap64-game-review-chunks.test.mjs"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
 
@@ -54,10 +59,13 @@ jobs:
         run: |
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/enrich-zzap64-game-reviews.js
+          node --check scripts/build-zzap64-game-review-chunks.js
           node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
           node --check js/zzap64-game-link-fix.js
           node --check js/zzap64-review-browser.js
+          node --check js/zzap64-game-reviews-runtime.js
+          node --check js/ccg-schema.js
 
       - name: Refresh live award references when run manually
         if: github.event_name == 'workflow_dispatch'
@@ -72,28 +80,31 @@ jobs:
         run: |
           node scripts/enrich-zzap64-game-reviews.js
           node scripts/enrich-zzap64-game-reviews.js --check
+          node scripts/build-zzap64-game-review-chunks.js
+          node scripts/build-zzap64-game-review-chunks.js --check
 
       - name: Validate direct scan coverage
         run: |
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
+          node --test tests/zzap64-game-review-chunks.test.mjs
           node scripts/audit-zzap64-awards.js
           git diff --check
 
-      - name: Commit refreshed review-link map
+      - name: Commit refreshed review data
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/zzap64-review-links.json
+          git add data/zzap64-review-links.json data/zzap64-game-reviews
           if git diff --cached --quiet; then
-            echo "Zzap review-link map already current."
+            echo "Zzap review data already current."
             exit 0
           fi
           git commit -m "Auto refresh Zzap64 all-game review links [skip ci]"
           git push origin HEAD:main
 
-      - name: Verify refreshed map reached main
+      - name: Verify refreshed data reached main
         if: always()
         shell: bash
         run: |

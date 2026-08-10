@@ -1,9 +1,11 @@
 /* ============================================================
    CCG ZZAP!64 AWARD → GAME LINK RESOLVER
    ------------------------------------------------------------
-   Uses verified issue/page scan identity from the enriched review
-   index to repair award cards whose magazine title differs from
-   the title used by the CCG game archive (for example, Rambo).
+   Repairs a small set of verified magazine-title differences that
+   the conservative shared matcher intentionally does not guess.
+
+   IMPORTANT: a Zzap scan page can contain more than one review, so
+   issue/page identity alone must never be used to choose a CCG game.
 ============================================================ */
 
 (function () {
@@ -12,9 +14,27 @@
     if (window.CCG_ZZAP64_GAME_LINK_FIX_READY) return;
     window.CCG_ZZAP64_GAME_LINK_FIX_READY = true;
 
-    const INDEX_URL = "/data/zzap64-review-links.json";
+    const DATA_BASE = "/data/zzap64-game-reviews/";
+    const MANIFEST_URL = `${DATA_BASE}manifest.json`;
+
+    // Key format: normalized award title | issue | page.
+    // These are intentionally explicit. Do not broaden this to page-only matching:
+    // several Zzap pages contain multiple reviews and therefore map to several games.
+    const VERIFIED_OVERRIDES = new Map([
+        ["cauldron ii|14|16", "cauldron-2-the-pumpkin-strikes-back"],
+        ["leaderboard|15|19", "leader-board"],
+        ["dan dare|19|26", "dan-dare-pilot-of-the-future"],
+        ["escape from singe s castle|22|78", "dragons-lair-2-escape-from-singes-castle"],
+        ["international karate plus|31|12", "ik-c64"],
+        ["last ninja 2|41|16", "last-ninja-2-back-with-a-vengeance"],
+        ["zak mckracken|47|70", "zak-mckracken-and-the-alien-mindbenders"],
+        ["rambo|53|58", "rambo-first-blood-part-2"],
+        ["turbo outrun|56|8", "turbo-out-run"],
+        ["myth|56|14", "myth-history-in-the-making"]
+    ]);
+
     const state = {
-        byScan: new Map(),
+        knownSlugs: new Set(),
         observer: null
     };
 
@@ -28,7 +48,18 @@
         })[character]);
     }
 
-    function normalizeScan(value) {
+    function normalizeTitle(value) {
+        return String(value || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/&/g, " and ")
+            .replace(/[^a-z0-9]+/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function scanIdentity(value) {
         try {
             const url = new URL(String(value || ""), window.location.origin);
             const host = url.hostname.replace(/^www\./i, "").toLowerCase();
@@ -48,46 +79,55 @@
         return /^[a-z0-9-]+$/i.test(slug) ? slug : "";
     }
 
-    function buildIndex(data) {
-        const ambiguous = new Set();
-        Object.values(data?.entries || {}).forEach((record) => {
-            const scan = normalizeScan(record?.url);
-            const slug = safeSlug(record?.gameSlug);
-            if (!scan || !slug || ambiguous.has(scan)) return;
-            const existing = state.byScan.get(scan);
-            if (existing && existing.slug !== slug) {
-                state.byScan.delete(scan);
-                ambiguous.add(scan);
-                return;
-            }
-            state.byScan.set(scan, {
-                slug,
-                title: String(record?.gameTitle || "").trim()
+    async function loadKnownSlugs() {
+        const manifestResponse = await fetch(MANIFEST_URL, { cache: "default" });
+        if (!manifestResponse.ok) throw new Error(`Review manifest HTTP ${manifestResponse.status}`);
+        const manifest = await manifestResponse.json();
+        const chunks = Array.isArray(manifest?.chunks) ? manifest.chunks : [];
+        if (!chunks.length) throw new Error("Review manifest contains no chunks");
+
+        const datasets = await Promise.all(chunks.map(async (chunk) => {
+            const response = await fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" });
+            if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
+            return response.json();
+        }));
+
+        datasets.forEach((data) => {
+            Object.keys(data?.games || {}).forEach((rawSlug) => {
+                const slug = safeSlug(rawSlug);
+                if (slug) state.knownSlugs.add(slug);
             });
         });
     }
 
+    function overrideForCard(card) {
+        const titleNode = card.querySelector(".zzap-award-card__game-name");
+        const scanLink = card.querySelector(".zzap-award-card__magazine-link--page[href]");
+        const scan = scanIdentity(scanLink?.href);
+        const title = normalizeTitle(titleNode?.textContent);
+        if (!title || !scan) return null;
+
+        const slug = VERIFIED_OVERRIDES.get(`${title}|${scan}`);
+        if (!slug || !state.knownSlugs.has(slug)) return null;
+        return { slug, title: titleNode.textContent.trim() };
+    }
+
     function repairCard(card) {
         if (!(card instanceof Element) || card.dataset.gameLinked === "true") return;
-        const scanLink = card.querySelector(".zzap-award-card__magazine-link--page[href]");
-        const scan = normalizeScan(scanLink?.href);
-        const match = scan ? state.byScan.get(scan) : null;
+        const match = overrideForCard(card);
         if (!match) return;
 
         const heading = card.querySelector(".zzap-award-card__title");
-        const titleNode = heading?.querySelector(".zzap-award-card__game-name");
-        if (!heading || !titleNode) return;
-        const visibleTitle = titleNode.textContent.trim() || match.title;
-        if (!visibleTitle) return;
+        if (!heading || !match.title) return;
 
         heading.innerHTML = `
-            <a class="zzap-award-card__game-link" href="/games/${encodeURIComponent(match.slug)}/" aria-label="Open the CCG game page for ${escapeHtml(visibleTitle)}">
-                <span class="zzap-award-card__game-name">${escapeHtml(visibleTitle)}</span>
+            <a class="zzap-award-card__game-link" href="/games/${encodeURIComponent(match.slug)}/" aria-label="Open the CCG game page for ${escapeHtml(match.title)}">
+                <span class="zzap-award-card__game-name">${escapeHtml(match.title)}</span>
                 <span class="zzap-award-card__game-action">Open game page <span aria-hidden="true">→</span></span>
             </a>
         `;
         card.dataset.gameLinked = "true";
-        card.dataset.gameLinkResolvedByScan = "true";
+        card.dataset.gameLinkResolvedByAlias = "true";
     }
 
     function repairAll(root = document) {
@@ -113,12 +153,10 @@
 
     async function init() {
         try {
-            const response = await fetch(INDEX_URL, { cache: "default" });
-            if (!response.ok) throw new Error(`Review index HTTP ${response.status}`);
-            buildIndex(await response.json());
+            await loadKnownSlugs();
             observeGrid();
         } catch (error) {
-            console.warn("[CCG] Zzap award scan-to-game resolver unavailable:", error);
+            console.warn("[CCG] Verified Zzap title-alias resolver unavailable:", error);
         }
     }
 

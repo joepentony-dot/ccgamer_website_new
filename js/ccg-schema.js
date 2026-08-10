@@ -69,6 +69,17 @@
     return !!document.querySelector('script[type="application/ld+json"][data-ccg-schema="game-graph"]');
   }
 
+  function loadGameReviewRuntime() {
+    const isGamePage = document.documentElement?.getAttribute('data-ccg-page') === 'single-game'
+      || !!document.querySelector('.ccg-page--single-game');
+    if (!isGamePage || document.querySelector('script[data-ccg-zzap-game-reviews-runtime]')) return;
+
+    const script = document.createElement('script');
+    script.src = '/js/zzap64-game-reviews-runtime.js';
+    script.setAttribute('data-ccg-zzap-game-reviews-runtime', 'true');
+    document.body.appendChild(script);
+  }
+
   window.ccgSchemaWebsite = function () {
     addSchema('ccg-schema-website', {
       '@context': 'https://schema.org',
@@ -172,9 +183,14 @@
     addSchema('ccg-schema-composer', schema);
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', window.ccgSchemaWebsite, { once: true });
-  } else {
+  function initSchemaRuntime() {
     window.ccgSchemaWebsite();
+    loadGameReviewRuntime();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSchemaRuntime, { once: true });
+  } else {
+    initSchemaRuntime();
   }
 })();

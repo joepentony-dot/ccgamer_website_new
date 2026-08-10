@@ -1,8 +1,8 @@
 /* ============================================================
    CCG ZZAP!64 ALL-REVIEWS BROWSER
    ------------------------------------------------------------
-   Displays every verified Zzap!64 scan that can be tied to an
-   existing CCG game page, including ordinary reviews and re-reviews.
+   Displays every verified Zzap!64 scan tied to an existing CCG
+   game page, including ordinary reviews and later re-reviews.
 ============================================================ */
 
 (function () {
@@ -11,7 +11,8 @@
     if (window.CCG_ZZAP64_REVIEW_BROWSER_READY) return;
     window.CCG_ZZAP64_REVIEW_BROWSER_READY = true;
 
-    const INDEX_URL = "/data/zzap64-review-links.json";
+    const DATA_BASE = "/data/zzap64-game-reviews/";
+    const MANIFEST_URL = `${DATA_BASE}manifest.json`;
     const MONTHS = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -21,7 +22,8 @@
         records: [],
         query: "",
         system: "all",
-        year: "all"
+        year: "all",
+        totals: null
     };
 
     function escapeHtml(value) {
@@ -54,65 +56,70 @@
         };
     }
 
-    function safeGameHref(slug) {
+    function gameHref(slug) {
         const value = String(slug || "").trim().replace(/^\/+|\/+$/g, "");
         return /^[a-z0-9-]+$/i.test(value) ? `/games/${encodeURIComponent(value)}/` : "";
     }
 
-    function safeZzapUrl(value) {
-        try {
-            const url = new URL(String(value || ""));
-            if (url.protocol !== "https:" || url.hostname !== "www.zzap64.co.uk") return "";
-            if (url.pathname.toLowerCase() !== "/cgi-bin/displaypage.pl") return "";
-            if (!Number.isInteger(Number(url.searchParams.get("issue")))) return "";
-            if (!Number.isInteger(Number(url.searchParams.get("page")))) return "";
-            return url.toString();
-        } catch {
-            return "";
-        }
+    function reviewUrl(issue, page) {
+        const numericIssue = Number(issue);
+        const numericPage = Number(page);
+        if (!Number.isInteger(numericIssue) || numericIssue < 1) return "";
+        if (!Number.isInteger(numericPage) || numericPage < 1) return "";
+        return `https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=${numericIssue}&page=${numericPage}`;
     }
 
-    function parseRecords(data) {
-        const grouped = new Map();
-
-        Object.entries(data?.entries || {}).forEach(([key, row]) => {
-            if (!row || typeof row !== "object") return;
-            const gameSlug = String(row.gameSlug || "").trim();
-            const href = safeGameHref(gameSlug);
-            const zzapUrl = safeZzapUrl(row.url);
-            const issue = Number(row.issue);
-            const page = Number(row.page);
-            if (!href || !zzapUrl || !Number.isInteger(issue) || !Number.isInteger(page)) return;
-
-            const parts = key.split("|");
-            const systemFromKey = String(parts[2] || "").toLowerCase();
-            const date = issueDate(issue);
-            const identity = `${gameSlug}|${issue}|${page}`;
-            const existing = grouped.get(identity);
-            const record = existing || {
-                gameSlug,
-                gameTitle: String(row.gameTitle || parts.slice(3).join("|") || gameSlug),
-                gameHref: href,
-                system: String(row.gameSystem || systemFromKey || "c64").toLowerCase() === "amiga" ? "amiga" : "c64",
-                issue,
-                page,
-                url: zzapUrl,
-                year: date?.year || Number(parts[0]) || 0,
-                month: date?.month || "",
-                awardLinked: false
-            };
-
-            if (row.scope !== "game-review") record.awardLinked = true;
-            if (!record.gameTitle && row.gameTitle) record.gameTitle = String(row.gameTitle);
-            grouped.set(identity, record);
+    function parseChunk(data) {
+        const records = [];
+        Object.entries(data?.games || {}).forEach(([slug, rows]) => {
+            const href = gameHref(slug);
+            if (!href || !Array.isArray(rows)) return;
+            rows.forEach((row) => {
+                if (!Array.isArray(row) || row.length < 4) return;
+                const issue = Number(row[0]);
+                const page = Number(row[1]);
+                const system = row[2] === "a" ? "amiga" : "c64";
+                const title = String(row[3] || slug);
+                const url = reviewUrl(issue, page);
+                const date = issueDate(issue);
+                if (!url || !date) return;
+                records.push({
+                    gameSlug: slug,
+                    gameTitle: title,
+                    gameHref: href,
+                    system,
+                    issue,
+                    page,
+                    url,
+                    year: date.year,
+                    month: date.month
+                });
+            });
         });
+        return records;
+    }
 
-        return Array.from(grouped.values()).sort((a, b) => (
-            a.gameTitle.localeCompare(b.gameTitle, "en-GB", { numeric: true })
-            || a.year - b.year
-            || a.issue - b.issue
-            || a.page - b.page
-        ));
+    async function loadRecords() {
+        const manifestResponse = await fetch(MANIFEST_URL, { cache: "default" });
+        if (!manifestResponse.ok) throw new Error(`Review manifest HTTP ${manifestResponse.status}`);
+        const manifest = await manifestResponse.json();
+        const chunks = Array.isArray(manifest?.chunks) ? manifest.chunks : [];
+        if (!chunks.length) throw new Error("Review manifest contains no chunks");
+
+        const responses = await Promise.all(chunks.map(async (chunk) => {
+            const response = await fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" });
+            if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
+            return response.json();
+        }));
+
+        state.totals = manifest.totals || null;
+        return responses
+            .flatMap(parseChunk)
+            .sort((a, b) => (
+                a.gameTitle.localeCompare(b.gameTitle, "en-GB", { numeric: true })
+                || a.issue - b.issue
+                || a.page - b.page
+            ));
     }
 
     function filteredRecords() {
@@ -125,7 +132,7 @@
                 record.system,
                 `issue ${record.issue}`,
                 `page ${record.page}`,
-                record.awardLinked ? "award winner medal sizzler silver gold" : "standard review"
+                "zzap64 review magazine scan"
             ].join(" "));
             const queryMatch = !query || query.split(" ").filter(Boolean).every((term) => haystack.includes(term));
             const systemMatch = state.system === "all" || record.system === state.system;
@@ -138,13 +145,11 @@
         const article = document.createElement("article");
         article.className = "zzap-review-card";
         article.dataset.system = record.system;
-        article.dataset.awardLinked = record.awardLinked ? "true" : "false";
         const platform = record.system === "amiga" ? "Amiga" : "C64";
-        const reviewType = record.awardLinked ? "Award-linked review" : "Standard review";
 
         article.innerHTML = `
             <div class="zzap-review-card__top">
-                <span class="zzap-review-card__type">${escapeHtml(reviewType)}</span>
+                <span class="zzap-review-card__type">Zzap!64 review</span>
                 <span class="zzap-review-card__platform">${escapeHtml(platform)}</span>
             </div>
             <h3 class="zzap-review-card__title"><a href="${escapeHtml(record.gameHref)}">${escapeHtml(record.gameTitle)}</a></h3>
@@ -181,15 +186,15 @@
         const games = document.getElementById("zzapReviewGameCount");
         const summary = document.getElementById("zzapReviewSummary");
         if (count) count.textContent = records.length.toLocaleString("en-GB");
-        if (total) total.textContent = state.records.length.toLocaleString("en-GB");
-        if (games) games.textContent = new Set(state.records.map((record) => record.gameSlug)).size.toLocaleString("en-GB");
+        if (total) total.textContent = Number(state.totals?.records || state.records.length).toLocaleString("en-GB");
+        if (games) games.textContent = Number(state.totals?.games || new Set(state.records.map((record) => record.gameSlug)).size).toLocaleString("en-GB");
         if (!summary) return;
 
         const parts = [];
         if (state.system !== "all") parts.push(state.system === "amiga" ? "Amiga" : "C64");
         if (state.year !== "all") parts.push(state.year);
         if (state.query) parts.push(`“${state.query}”`);
-        summary.textContent = parts.length ? parts.join(" · ") : "All verified reviews linked to CCG game pages";
+        summary.textContent = parts.length ? parts.join(" · ") : "All verified Zzap!64 scans linked to CCG game pages";
     }
 
     function render() {
@@ -234,10 +239,7 @@
         const grid = document.getElementById("zzapReviewGrid");
         if (!grid) return;
         try {
-            const response = await fetch(INDEX_URL, { cache: "default" });
-            if (!response.ok) throw new Error(`Review index HTTP ${response.status}`);
-            const data = await response.json();
-            state.records = parseRecords(data);
+            state.records = await loadRecords();
             updateYearOptions();
             bindFilters();
             render();
