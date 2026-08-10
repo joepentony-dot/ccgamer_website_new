@@ -13,19 +13,24 @@ on:
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/build-zzap64-game-review-chunks.js"
+      - "scripts/refresh-lemon-game-cache.js"
       - "scripts/zzap64-bible-client.js"
+      - "scripts/audit-game-badges.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
       - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-game-badges.js"
       - "js/ccg-schema.js"
       - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "resources/css/zzap64-reviews.css"
+      - "resources/css/ccg-game-badges.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   push:
@@ -40,19 +45,24 @@ on:
       - "scripts/generate-zzap64-review-links.js"
       - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/build-zzap64-game-review-chunks.js"
+      - "scripts/refresh-lemon-game-cache.js"
       - "scripts/zzap64-bible-client.js"
+      - "scripts/audit-game-badges.js"
       - "js/zzap64-awards.js"
       - "js/zzap64-game-link-fix.js"
       - "js/zzap64-review-browser.js"
       - "js/zzap64-game-reviews-runtime.js"
+      - "js/ccg-game-badges.js"
       - "js/ccg-schema.js"
       - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "resources/css/zzap64-reviews.css"
+      - "resources/css/ccg-game-badges.css"
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
@@ -78,11 +88,14 @@ jobs:
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/enrich-zzap64-game-reviews.js
           node --check scripts/build-zzap64-game-review-chunks.js
+          node --check scripts/refresh-lemon-game-cache.js
           node --check scripts/zzap64-bible-client.js
+          node --check scripts/audit-game-badges.js
           node --check js/zzap64-awards.js
           node --check js/zzap64-game-link-fix.js
           node --check js/zzap64-review-browser.js
           node --check js/zzap64-game-reviews-runtime.js
+          node --check js/ccg-game-badges.js
           node --check js/ccg-schema.js
           node --check js/ccg-search-ranking.js
 
@@ -97,12 +110,15 @@ jobs:
 
       - name: Test original magazine and game links
         run: |
+          node --test tests/lemon-game-cache-refresh.test.mjs
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
           node --test tests/zzap64-game-review-chunks.test.mjs
 
-      - name: Run existing Zzap award audit
-        run: node scripts/audit-zzap64-awards.js
+      - name: Run existing Zzap audits
+        run: |
+          node scripts/audit-zzap64-awards.js
+          node scripts/audit-game-badges.js
 
       - name: Confirm protected files are untouched
         shell: bash
