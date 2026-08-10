@@ -1,0 +1,82 @@
+name: One-off bootstrap YouTube metadata
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: one-off-bootstrap-youtube-metadata-${{ github.head_ref }}
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    if: github.head_ref == 'codex/seo/bootstrap-youtube-metadata' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+
+      - name: Record protected hashes
+        run: |
+          sha256sum \
+            index.html \
+            home.html \
+            resources/css/intro.css \
+            js/index-intro.js \
+            games/games.json \
+            > /tmp/video-metadata-protected.sha256
+
+      - name: Install dependencies
+        run: npm install || true
+
+      - name: Sync verified YouTube metadata
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          test -n "$YOUTUBE_API_KEY"
+          npm run sync:video-metadata
+
+      - name: Regenerate video SEO outputs
+        run: |
+          node scripts/generate-retro-pages.js
+          npm run generate:video-seo
+          npm run generate:retro-video-seo
+          npm run generate:video-library
+          npm run generate:sitemaps
+
+      - name: Validate video SEO outputs
+        run: |
+          npm run validate:sitemaps
+          npm run validate:video-seo
+          npm run validate:retro-video-seo
+          npm run validate:video-library
+          git diff --check
+
+      - name: Confirm protected files are unchanged
+        run: sha256sum -c /tmp/video-metadata-protected.sha256
+
+      - name: Commit verified metadata and generated outputs
+        run: |
+          git config user.name "seo-bot"
+          git config user.email "seo-bot@users.noreply.github.com"
+          git add data/video-metadata.json sitemap.xml sitemap-*.xml games/*/index.html retro-events retro-specials amiga-demo-music videos tools/seo/static-pages.json
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Bootstrap verified YouTube metadata and video SEO"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
