@@ -98,7 +98,7 @@ test('Rambo resolves both the original review and the later Silver Medal re-revi
   assert.ok(destinations.has('53|58'), 'Missing Rambo issue 53 page 58 Silver Medal re-review.');
 });
 
-test('archive renderer exposes original-magazine links and the scan-identity game-link repair', () => {
+test('archive renderer exposes original-magazine links and the compact scan-identity game-link repair', () => {
   const source = fs.readFileSync(path.join(root, 'js/zzap64-awards.js'), 'utf8');
   const linkFix = fs.readFileSync(path.join(root, 'js/zzap64-game-link-fix.js'), 'utf8');
   const browser = fs.readFileSync(path.join(root, 'js/zzap64-review-browser.js'), 'utf8');
@@ -113,8 +113,10 @@ test('archive renderer exposes original-magazine links and the scan-identity gam
   assert.match(source, /noopener noreferrer external/);
 
   assert.match(linkFix, /gameLinkResolvedByScan/);
-  assert.match(linkFix, /gameSlug/);
-  assert.match(browser, /All verified reviews linked to CCG game pages/);
+  assert.match(linkFix, /\/data\/zzap64-game-reviews\//);
+  assert.match(linkFix, /match\.slug/);
+  assert.match(browser, /\/data\/zzap64-game-reviews\//);
+  assert.match(browser, /All verified Zzap!64 scans linked to CCG game pages/);
   assert.match(page, /All Zzap!64 Reviews for CCG Games/);
   assert.match(page, /zzap64-review-browser\.js/);
 });
