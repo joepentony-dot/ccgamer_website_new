@@ -59,6 +59,75 @@
         );
     }
 
+    function getGameDetails() {
+        const details = {
+            year: "",
+            platform: "",
+            publisher: ""
+        };
+        const schema = document.querySelector(
+            'script[type="application/ld+json"][data-ccg-schema="game-graph"]'
+        );
+        if (schema) {
+            try {
+                const parsed = JSON.parse(schema.textContent || "{}");
+                const graph = Array.isArray(parsed["@graph"]) ? parsed["@graph"] : [parsed];
+                const game = graph.find((item) => {
+                    const types = Array.isArray(item?.["@type"]) ? item["@type"] : [item?.["@type"]];
+                    return types.includes("VideoGame");
+                });
+                if (game) {
+                    details.year = String(game.datePublished || "").slice(0, 4);
+                    details.platform = String(game.gamePlatform || "");
+                    if (typeof game.publisher === "string") {
+                        details.publisher = game.publisher;
+                    } else if (game.publisher && typeof game.publisher.name === "string") {
+                        details.publisher = game.publisher.name;
+                    }
+                }
+            } catch (error) {
+                // Fall back to the visible game information below.
+            }
+        }
+
+        if (!details.year || !details.platform) {
+            const metaItems = Array.from(document.querySelectorAll(".game-meta__item"))
+                .map((item) => String(item.textContent || "").trim())
+                .filter(Boolean);
+            if (!details.year) {
+                details.year = metaItems.find((item) => /^\d{4}$/.test(item)) || "";
+            }
+            if (!details.platform) {
+                details.platform = metaItems.find((item) => /^(?:c64|commodore 64|amiga)$/i.test(item)) || "";
+            }
+        }
+
+        if (/commodore 64|^c64$/i.test(details.platform)) details.platform = "Commodore 64";
+        if (/amiga/i.test(details.platform)) details.platform = "Amiga";
+        return details;
+    }
+
+    function buildShareCopy(gameTitle, description) {
+        const details = getGameDetails();
+        const datedTitle = details.year ? `${gameTitle} (${details.year})` : gameTitle;
+        const platformPhrase = details.platform ? ` on ${details.platform}` : "";
+        const publisherPhrase = details.publisher ? ` from ${details.publisher}` : "";
+        const headline = `🕹️ ${datedTitle}${platformPhrase}`;
+        const defaultDescription =
+            `${headline}${publisherPhrase} — screenshots, gameplay video, manual, downloads and game history on Cheeky Commodore Gamer.`;
+        const emailDescription = description || defaultDescription;
+        const hashtags = details.platform === "Amiga"
+            ? "#Amiga #RetroGaming"
+            : "#Commodore64 #C64";
+        return {
+            nativeText: defaultDescription,
+            emailSubject: `${datedTitle}${platformPhrase} | Cheeky Commodore Gamer`,
+            emailBody: `${defaultDescription}\n\n${emailDescription}`,
+            whatsappText: defaultDescription,
+            xText: `${headline} — screenshots, gameplay, manual and game history. ${hashtags}`
+        };
+    }
+
     function decodeValue(value) {
         try {
             return decodeURIComponent(value);
@@ -222,13 +291,9 @@
 
     const shareUrl = resolveShareUrl();
     const title = document.title || "Cheeky Commodore Gamer";
-    const gameTitle = getGameTitle();
+    const gameTitle = getGameTitle() || "This retro game";
     const description = getShareDescription();
-    const shareText =
-        description ||
-        (gameTitle
-            ? `Discover ${gameTitle} on Cheeky Commodore Gamer.`
-            : "Discover this game on Cheeky Commodore Gamer.");
+    const shareCopy = buildShareCopy(gameTitle, description);
 
     function copyWithFallback(text) {
         const textarea = document.createElement("textarea");
@@ -292,43 +357,58 @@
     function updateFallbackLinks() {
         if (!shareUrl) return;
         const encodedUrl = encodeURIComponent(shareUrl);
-        const subject = encodeURIComponent(gameTitle || title || "Cheeky Commodore Gamer");
-        const body = encodeURIComponent(`${shareText}\n\n${shareUrl}`);
+        const subject = encodeURIComponent(shareCopy.emailSubject);
+        const body = encodeURIComponent(`${shareCopy.emailBody}\n\n${shareUrl}`);
 
         if (emailLink) {
             emailLink.href = `mailto:?subject=${subject}&body=${body}`;
         }
         if (whatsappLink) {
-            whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+            whatsappLink.href = `https://wa.me/?text=${encodeURIComponent(`${shareCopy.whatsappText}\n\n${shareUrl}`)}`;
         }
         if (xLink) {
-            xLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodedUrl}`;
+            xLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareCopy.xText)}&url=${encodedUrl}`;
         }
         if (facebookLink) {
             facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
         }
     }
 
+    function setFallbackOpen(open) {
+        if (!fallback) return;
+        fallback.hidden = !open;
+        fallback.setAttribute("aria-hidden", open ? "false" : "true");
+        root.classList.toggle("is-share-open", open);
+        if (shareBtn) shareBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
     if (shareBtn) {
-        if (navigator.share) {
-            shareBtn.addEventListener("click", () => {
-                if (!shareUrl) return;
-                navigator.share({ title: gameTitle || title, text: shareText, url: shareUrl }).catch(() => {
+        shareBtn.setAttribute("aria-expanded", "false");
+        shareBtn.addEventListener("click", () => {
+            if (fallback) {
+                setFallbackOpen(fallback.hidden);
+                return;
+            }
+            if (navigator.share) {
+                navigator.share({
+                    title: shareCopy.emailSubject || title,
+                    text: shareCopy.nativeText,
+                    url: shareUrl
+                }).catch(() => {
                     // Ignore share cancellation/errors.
                 });
-            });
-        } else {
-            shareBtn.addEventListener("click", copyShareUrl);
-        }
+                return;
+            }
+            copyShareUrl();
+        });
     }
 
     if (copyBtn) {
         copyBtn.addEventListener("click", copyShareUrl);
     }
 
-    // If there’s a fallback panel, ensure it is visible when Web Share isn't available.
-    if (fallback && !navigator.share) {
-        fallback.hidden = false;
+    if (fallback) {
+        setFallbackOpen(false);
     }
 
     updateFallbackLinks();
