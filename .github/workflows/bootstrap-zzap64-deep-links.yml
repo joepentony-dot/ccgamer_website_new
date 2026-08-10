@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Prepare slower deeper pass
+        run: node scripts/patch-zzap64-deep-generator.js
+
       - name: Validate generator syntax
         run: node --check scripts/generate-zzap64-review-links.js
 
@@ -45,15 +48,15 @@ jobs:
           console.log(`Direct coverage: ${data.totals.exactPages}/${data.totals.awards} (${data.totals.directCoveragePercent}%).`);
           NODE
 
-      - name: Commit enriched map
+      - name: Commit deeper generator and enriched map
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/zzap64-review-links.json
+          git add scripts/generate-zzap64-review-links.js data/zzap64-review-links.json
           if git diff --cached --quiet; then
-            echo "Review-link map already current."
+            echo "Review-link generator and map already current."
             exit 0
           fi
-          git commit -m "Deep-refresh Zzap64 direct review links"
+          git commit -m "Deepen Zzap64 direct review discovery"
           git push origin HEAD:codex/zzap64-deep-direct-links
