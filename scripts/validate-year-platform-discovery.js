@@ -37,7 +37,12 @@ const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
     "games/discover/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
-    ["sitemap-pages.xml", new Set([`${SITE_ORIGIN}/games/discover/`])]
+    ["sitemap.xml", new Set([
+        `${SITE_ORIGIN}/sitemap-retro-videos.xml`
+    ])],
+    ["sitemap-pages.xml", new Set([
+        `${SITE_ORIGIN}/games/discover/`
+    ])]
 ]);
 
 function readRequired(filePath) {
@@ -260,7 +265,9 @@ function validateCanonicalGameRoutes(games, problems) {
 function validateBaselineRegistry(current, baseline, problems) {
     const baselineForeign = baseline.filter((entry) => !isOwnedArchiveEntry(entry));
     const currentForeign = current.filter((entry) => !isOwnedArchiveEntry(entry));
-    const expectedForeign = baselineForeign.filter((entry) => entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY);
+    const expectedForeign = baselineForeign.filter((entry) => (
+        entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
+    ));
     const comparableCurrent = currentForeign.filter((entry) => (
         entry !== PHASE5B_EXCLUDED_REGISTRY_ENTRY && !REVIEWED_FOREIGN_REGISTRY_ADDITIONS.has(entry)
     ));
@@ -277,8 +284,10 @@ function validateBaselineRegistry(current, baseline, problems) {
 function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
-    const expectedLocs = baselineLocs.filter((url) => url !== PHASE5B_EXCLUDED_SITEMAP_URL);
     const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
+    const expectedLocs = baselineLocs.filter((url) => (
+        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
+    ));
     const comparableCurrent = currentLocs.filter((url) => (
         url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
     ));
@@ -328,7 +337,7 @@ function buildReport(summary) {
 - Validation that every archive game target exists and is its own canonical game route.
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
-- Exact membership checks for registry entries and sitemap URLs owned by other workflows, with the reviewed Find Me a Game sitemap addition permitted; Phase 6B separately enforces deterministic current ordering.
+- Exact membership checks for registry entries and sitemap URLs owned by other workflows, with reviewed non-year/platform additions excluded from this archive-specific baseline comparison; their dedicated validators remain authoritative.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
 
 ## Safety
