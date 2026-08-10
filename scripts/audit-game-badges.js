@@ -23,7 +23,8 @@ function requireFile(relativePath) {
     "resources/images/zzap64/zzap64-silver-medal.svg",
     "resources/images/zzap64/zzap64-sizzler.webp",
     "resources/images/platforms/commodore-64-logo.webp",
-    "resources/images/platforms/commodore-amiga-logo.webp"
+    "resources/images/platforms/commodore-amiga-logo.webp",
+    "data/zzap64-review-links.json"
 ].forEach(requireFile);
 
 const script = requireFile("js/ccg-game-badges.js");
@@ -33,6 +34,7 @@ const nav = requireFile("js/ccg-nav-core.js");
 [
     "/games/games.json",
     "/data/zzap64-awards/",
+    "/data/zzap64-review-links.json",
     "ccg-zzap64-matcher.js",
     "commodore-64-logo.webp",
     "commodore-amiga-logo.webp",
@@ -41,7 +43,12 @@ const nav = requireFile("js/ccg-nav-core.js");
     "zzap64-sizzler.webp",
     "Silver Medal",
     ".game-hero__meta",
-    ".ccg-game-badges"
+    ".ccg-game-badges",
+    "reviewRecordKey",
+    "reviewIssue",
+    "reviewPage",
+    "noopener noreferrer external",
+    "Read the original Zzap!64 review"
 ].forEach((needle) => {
     if (!script.includes(needle)) problems.push(`Game badge script is missing: ${needle}.`);
 });
@@ -52,7 +59,8 @@ const nav = requireFile("js/ccg-nav-core.js");
     ".ccg-game-badge--platform-amiga",
     ".ccg-game-badge--gold",
     ".ccg-game-badge--silver",
-    ".ccg-game-badge--sizzler"
+    ".ccg-game-badge--sizzler",
+    ".ccg-game-badge--award[href]"
 ].forEach((selector) => {
     if (!css.includes(selector)) problems.push(`Game badge stylesheet is missing: ${selector}.`);
 });
@@ -66,10 +74,18 @@ const gameList = Array.isArray(games) ? games : (games.games || []);
 const supported = gameList.filter((game) => /c64|commodore 64|amiga/i.test(String(game.system || game.platform || "")));
 if (!supported.length) problems.push("No C64 or Amiga games were found for platform badges.");
 
+const reviewData = JSON.parse(requireFile("data/zzap64-review-links.json") || "{}");
+const exactReviewCount = Object.values(reviewData.entries || {}).filter((record) => (
+    record?.precision === "page"
+    && Number.isInteger(Number(record?.issue))
+    && Number.isInteger(Number(record?.page))
+)).length;
+if (!exactReviewCount) problems.push("No exact Zzap review pages are available for clickable award badges.");
+
 if (problems.length) {
     console.error("Game badge audit failed:");
     problems.forEach((problem) => console.error(` - ${problem}`));
     process.exit(1);
 }
 
-console.log(`Game badge audit passed for ${supported.length} C64 and Amiga games, including Gold Medal, Silver Medal and Sizzler artwork.`);
+console.log(`Game badge audit passed for ${supported.length} C64 and Amiga games with ${exactReviewCount} exact Zzap review records available to Gold Medal, Silver Medal and Sizzler badges.`);
