@@ -16,6 +16,7 @@
 
     <title>{{SEO_TITLE}}</title>
     <meta name="description" content="{{SEO_DESCRIPTION}}" />
+    <meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />
     <link rel="canonical" href="{{CANONICAL_URL}}" />
 
     <meta property="og:type" content="video.other" />
@@ -26,6 +27,9 @@
     <meta property="og:image" content="{{THUMBNAIL_URL}}" />
     <meta property="og:video" content="https://www.youtube.com/embed/{{YOUTUBE_ID}}" />
     <meta property="og:video:secure_url" content="https://www.youtube.com/embed/{{YOUTUBE_ID}}" />
+    <meta property="og:video:type" content="text/html" />
+    <meta property="og:video:width" content="1280" />
+    <meta property="og:video:height" content="720" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{SEO_TITLE}}" />
@@ -34,18 +38,10 @@
     <meta name="twitter:url" content="{{CANONICAL_URL}}" />
     <meta name="twitter:site" content="@CheekyC64Gamer" />
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "VideoObject",
-      "name": "{{TITLE_JSON}}",
-      "description": "{{DESCRIPTION_JSON}}",
-      "thumbnailUrl": "{{THUMBNAIL_URL_JSON}}",
-      "uploadDate": "{{UPLOAD_DATE_JSON}}",
-      "embedUrl": "{{EMBED_URL_JSON}}",
-      "url": "{{CANONICAL_URL_JSON}}"{{VIDEO_DURATION_FIELD}}
-    }
-    </script>
+    <link rel="preconnect" href="https://www.youtube-nocookie.com" />
+    <link rel="preconnect" href="https://i.ytimg.com" crossorigin />
+
+    <!-- CCG_VIDEO_SCHEMA -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -197,7 +193,7 @@
 
     <header class="retro-video-page__hero">
       <div class="retro-video-page__hero-copy">
-        <p class="retro-video-page__eyebrow">{{COLLECTION_LABEL}} Feature</p>
+        <p class="retro-video-page__eyebrow">{{COLLECTION_LABEL}} Video Watch Page</p>
         <h1 class="retro-video-page__title">{{TITLE}}</h1>
         <p class="retro-video-page__summary">{{SUMMARY}}</p>
 
@@ -216,13 +212,14 @@
 
     <section class="retro-video-page__watch" aria-labelledby="retro-watch-title">
       <div class="retro-video-page__section-heading">
-        <h2 id="retro-watch-title">Watch the feature</h2>
-        <span>Plays here without leaving the CCG archive</span>
+        <h2 id="retro-watch-title">Watch {{TITLE}}</h2>
+        <span>Primary video — plays here on the CCG watch page</span>
       </div>
       <div class="retro-video-page__video">
-        <iframe src="https://www.youtube.com/embed/{{YOUTUBE_ID}}"
-          title="{{TITLE}}"
-          loading="lazy"
+        <iframe src="https://www.youtube-nocookie.com/embed/{{YOUTUBE_ID}}"
+          title="{{TITLE}} — watch on Cheeky Commodore Gamer"
+          loading="eager"
+          data-ccg-primary-video="true"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowfullscreen></iframe>
       </div>
