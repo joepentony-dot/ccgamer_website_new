@@ -3,7 +3,9 @@
    ------------------------------------------------------------
    Loads the small award files first, renders cards in frame-sized
    batches, then links reviewed games from the full game archive.
-   Static data uses normal browser caching rather than forced reloads.
+   Original-magazine links use a generated, local verification map;
+   page numbers are never guessed and unresolved entries fall back
+   to the correct official Zzap!64 issue.
 ============================================================ */
 
 (function () {
@@ -14,6 +16,8 @@
 
     const YEARS = [1985, 1986, 1987, 1988, 1989];
     const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
+    const REVIEW_LINKS_PATH = "/data/zzap64-review-links.json";
+    const ZZAP_HOST = "www.zzap64.co.uk";
     const BATCH_SIZE = window.matchMedia?.("(max-width: 520px)")?.matches ? 12 : 24;
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
@@ -41,6 +45,8 @@
         gameIndex: null,
         matcher: null,
         linksStatus: "pending",
+        reviewLinks: new Map(),
+        reviewLinksStatus: "pending",
         query: "",
         year: "all",
         system: "all",
@@ -161,6 +167,63 @@
         };
     }
 
+    function awardRecordKey(entry) {
+        return [
+            Number(entry.year),
+            String(entry.month || "").trim().toLowerCase(),
+            state.matcher.systemKey(entry.system) === "amiga" ? "amiga" : "c64",
+            String(entry.title || "").trim()
+        ].join("|");
+    }
+
+    function issueNumber(entry) {
+        const monthIndex = MONTH_ORDER.findIndex((month) => month.toLowerCase() === String(entry.month || "").trim().toLowerCase());
+        if (monthIndex < 0) return null;
+        const issue = ((Number(entry.year) - 1985) * 12) + monthIndex - 3;
+        return issue >= 1 ? issue : null;
+    }
+
+    function officialIssueUrl(issue) {
+        return `https://${ZZAP_HOST}/zzap${issue}/zzap${issue}.html`;
+    }
+
+    function safeZzapUrl(value) {
+        try {
+            const url = new URL(String(value || ""));
+            if (url.protocol !== "https:" || url.hostname !== ZZAP_HOST) return "";
+            return url.toString();
+        } catch {
+            return "";
+        }
+    }
+
+    function magazineLinkFor(entry) {
+        const issue = issueNumber(entry);
+        if (!issue) return null;
+
+        const record = state.reviewLinks.get(awardRecordKey(entry));
+        const recordUrl = safeZzapUrl(record?.url);
+        if (
+            recordUrl
+            && Number(record?.issue) === issue
+            && (record.precision === "page" || record.precision === "issue")
+        ) {
+            return {
+                issue,
+                page: Number.isInteger(Number(record.page)) && Number(record.page) > 0 ? Number(record.page) : null,
+                precision: record.precision,
+                url: recordUrl
+            };
+        }
+
+        return {
+            issue,
+            page: null,
+            precision: "issue",
+            url: officialIssueUrl(issue)
+        };
+    }
+
     function findGame(entry) {
         if (!state.gameIndex || state.linksStatus !== "ready") return null;
         return state.matcher.findGame(entry, state.gameIndex);
@@ -183,13 +246,16 @@
         const query = state.matcher.normalizeText(state.query);
 
         return state.entries.filter((entry) => {
+            const magazine = magazineLinkFor(entry);
             const haystack = state.matcher.normalizeText([
                 entry.title,
                 entry.month,
                 entry.year,
                 entry.award,
                 entry.system,
-                entry.score === null ? "not scored" : entry.score
+                entry.score === null ? "not scored" : entry.score,
+                magazine?.issue ? `issue ${magazine.issue}` : "",
+                magazine?.page ? `page ${magazine.page}` : ""
             ].join(" "));
             const queryMatch = !query || query.split(" ").filter(Boolean).every((term) => haystack.includes(term));
             const yearMatch = state.year === "all" || String(entry.year) === state.year;
@@ -273,6 +339,29 @@
         `;
     }
 
+    function renderMagazineLink(entry) {
+        const magazine = magazineLinkFor(entry);
+        if (!magazine) return "";
+
+        const exactPage = magazine.precision === "page" && magazine.page;
+        const label = exactPage ? "Read original Zzap!64 review" : "Browse original Zzap!64 issue";
+        const detail = exactPage ? `Issue ${magazine.issue} · p${magazine.page}` : `Issue ${magazine.issue}`;
+        const aria = exactPage
+            ? `Open the original Zzap!64 review of ${entry.title}, issue ${magazine.issue}, page ${magazine.page}`
+            : `Open Zzap!64 issue ${magazine.issue}, containing the original review of ${entry.title}`;
+
+        return `
+            <a class="zzap-award-card__magazine-link${exactPage ? " zzap-award-card__magazine-link--page" : ""}"
+               href="${escapeHtml(magazine.url)}"
+               target="_blank"
+               rel="noopener noreferrer external"
+               aria-label="${escapeHtml(aria)}">
+                <span class="zzap-award-card__magazine-label">${escapeHtml(label)} <span aria-hidden="true">↗</span></span>
+                <span class="zzap-award-card__magazine-detail">${escapeHtml(detail)} · zzap64.co.uk</span>
+            </a>
+        `;
+    }
+
     function renderScore(entry) {
         if (entry.score === null) {
             return '<span class="zzap-award-card__score zzap-award-card__score--unscored">Not scored by Zzap!64</span>';
@@ -289,6 +378,9 @@
         const game = findGame(entry);
         if (game) card.dataset.gameLinked = "true";
 
+        const magazine = magazineLinkFor(entry);
+        if (magazine?.precision === "page") card.dataset.magazinePageLinked = "true";
+
         card.innerHTML = `
             <div class="zzap-award-card__top">
                 <div class="zzap-award-card__award-mark">
@@ -303,6 +395,7 @@
                     <span>${escapeHtml(entry.month)} ${escapeHtml(entry.year)}</span>
                     <span>${escapeHtml(entry.system)}</span>
                 </div>
+                ${renderMagazineLink(entry)}
                 ${platformArtwork(entry)}
             </div>
         `;
@@ -401,6 +494,22 @@
         });
     }
 
+    async function loadReviewLinks() {
+        state.reviewLinksStatus = "pending";
+        try {
+            const response = await fetch(REVIEW_LINKS_PATH, { cache: "default" });
+            if (!response.ok) throw new Error(`Magazine link index HTTP ${response.status}`);
+            const data = await response.json();
+            const records = data && typeof data.entries === "object" && data.entries ? data.entries : {};
+            state.reviewLinks = new Map(Object.entries(records));
+            state.reviewLinksStatus = "ready";
+        } catch (error) {
+            state.reviewLinks = new Map();
+            state.reviewLinksStatus = "failed";
+            console.warn("[CCG] Exact Zzap!64 magazine page links were unavailable; issue links will be used.", error);
+        }
+    }
+
     async function loadAwardEntries() {
         updateProgress(8, "Loading award records…", "Fetching the five year files in parallel.");
         const yearResults = await Promise.all(YEARS.map(async (year) => {
@@ -421,7 +530,12 @@
         bindFilters();
         setControlsEnabled(true);
 
-        updateProgress(34, "Award records loaded", `${state.entries.length.toLocaleString("en-GB")} entries are ready. Displaying them now.`);
+        const exactCount = Array.from(state.reviewLinks.values()).filter((record) => record?.precision === "page").length;
+        const magazineDetail = state.reviewLinksStatus === "ready"
+            ? ` ${exactCount.toLocaleString("en-GB")} exact original-review scan links are available; the rest open the correct issue.`
+            : " Original-magazine links will open the correct issue where an exact scan reference is unavailable.";
+
+        updateProgress(34, "Award records loaded", `${state.entries.length.toLocaleString("en-GB")} entries are ready.${magazineDetail}`);
         await render();
         updateProgress(58, "Awards displayed", "The archive is usable while reviewed-game links are being prepared.");
     }
@@ -440,14 +554,14 @@
             state.linksStatus = "ready";
             await render();
 
-            updateProgress(100, "Archive ready", "Awards, scores, filters and reviewed-game links are available.");
+            updateProgress(100, "Archive ready", "Awards, scores, original magazine links, filters and reviewed-game links are available.");
         } catch (error) {
             state.linksStatus = "failed";
             await render();
             updateProgress(
                 100,
                 "Awards ready",
-                "The awards loaded, but reviewed-game links could not be checked on this visit.",
+                "The awards and original magazine links loaded, but CCG reviewed-game links could not be checked on this visit.",
                 { state: "warning", delay: 3600 }
             );
             console.warn("[CCG] Zzap reviewed-game links were unavailable:", error);
@@ -456,13 +570,14 @@
 
     async function init() {
         setControlsEnabled(false);
-        updateProgress(2, "Preparing archive…", "Starting the title matcher and award index.");
+        updateProgress(2, "Preparing archive…", "Starting the title matcher and original-magazine index.");
 
         try {
             await ensureScript(MATCHER_PATH);
             state.matcher = window.CCGZzap64Matcher;
             if (!state.matcher) throw new Error("Zzap title matcher did not initialise");
 
+            await loadReviewLinks();
             await loadAwardEntries();
             await loadReviewedGameLinks();
         } catch (error) {
