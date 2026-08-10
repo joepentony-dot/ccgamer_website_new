@@ -30,6 +30,7 @@ on:
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/zzap64-review-browser-lazy.test.mjs"
       - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
@@ -62,6 +63,7 @@ on:
       - "tests/zzap64-review-links.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - "tests/zzap64-game-review-chunks.test.mjs"
+      - "tests/zzap64-review-browser-lazy.test.mjs"
       - "tests/lemon-game-cache-refresh.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
@@ -114,6 +116,7 @@ jobs:
           node --test tests/zzap64-review-links.test.mjs
           node --test tests/game-zzap-links.test.mjs
           node --test tests/zzap64-game-review-chunks.test.mjs
+          node --test tests/zzap64-review-browser-lazy.test.mjs
 
       - name: Run existing Zzap audits
         run: |
