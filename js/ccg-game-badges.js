@@ -4,6 +4,7 @@
    Adds a compact Commodore platform logo to every resolved game
    page and adds supplied Gold Medal/Silver Medal/Sizzler artwork when that
    game/platform appears in the verified Zzap!64 award archive.
+   Award badges link directly to their verified original review scan.
 ============================================================ */
 
 (function () {
@@ -18,6 +19,7 @@
 
     const YEARS = [1985, 1986, 1987, 1988, 1989];
     const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
+    const REVIEW_LINKS_PATH = "/data/zzap64-review-links.json";
     const CSS_PATH = "/resources/css/ccg-game-badges.css";
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
@@ -143,6 +145,47 @@
         return window.CCGZzap64Matcher.normalizeText(value);
     }
 
+    function reviewRecordKey(entry, matcher) {
+        return [
+            Number(entry.year),
+            String(entry.month || "").trim().toLowerCase(),
+            matcher.systemKey(entry.system) === "amiga" ? "amiga" : "c64",
+            String(entry.title || "").trim()
+        ].join("|");
+    }
+
+    function verifiedReview(row) {
+        if (!row || row.precision !== "page") return null;
+        const issue = Number(row.issue);
+        const page = Number(row.page);
+        if (!Number.isInteger(issue) || issue < 1 || !Number.isInteger(page) || page < 1) return null;
+        try {
+            const url = new URL(String(row.url || ""));
+            const host = url.hostname.replace(/^www\./i, "").toLowerCase();
+            if (url.protocol !== "https:" || host !== "zzap64.co.uk") return null;
+            if (url.pathname.toLowerCase() !== "/cgi-bin/displaypage.pl") return null;
+            if (Number(url.searchParams.get("issue")) !== issue || Number(url.searchParams.get("page")) !== page) return null;
+            return { url: url.toString(), issue, page };
+        } catch {
+            return null;
+        }
+    }
+
+    function attachReviewLinks(entries, reviewData, matcher) {
+        const records = reviewData && typeof reviewData.entries === "object" && reviewData.entries
+            ? reviewData.entries
+            : {};
+        return entries.map((entry) => {
+            const review = verifiedReview(records[reviewRecordKey(entry, matcher)]);
+            return review ? {
+                ...entry,
+                reviewUrl: review.url,
+                reviewIssue: review.issue,
+                reviewPage: review.page
+            } : entry;
+        });
+    }
+
     function uniqueAwards(entries) {
         const seen = new Set();
         return entries
@@ -182,9 +225,17 @@
         const isGold = award.includes("gold");
         const isSilver = award.includes("silver");
         const type = isGold ? "gold" : (isSilver ? "silver" : "sizzler");
+        const isLinked = Boolean(entry.reviewUrl);
 
-        const badge = document.createElement("div");
+        const badge = document.createElement(isLinked ? "a" : "div");
         badge.className = `ccg-game-badge ccg-game-badge--award ccg-game-badge--${type}`;
+        if (isLinked) {
+            badge.href = entry.reviewUrl;
+            badge.target = "_blank";
+            badge.rel = "noopener noreferrer external";
+            badge.setAttribute("aria-label", `Read the original Zzap!64 review for ${entry.title}, issue ${entry.reviewIssue}, page ${entry.reviewPage}`);
+            badge.title = `Read original Zzap!64 review · Issue ${entry.reviewIssue}, p${entry.reviewPage}`;
+        }
 
         const image = document.createElement("img");
         image.className = "ccg-game-badge__image";
@@ -209,7 +260,8 @@
         const detail = document.createElement("span");
         detail.className = "ccg-game-badge__detail";
         const score = Number.isFinite(entry.score) ? ` · ${entry.score}%` : "";
-        detail.textContent = `${entry.month} ${entry.year}${score}`;
+        const reviewHint = isLinked ? " · Review ↗" : "";
+        detail.textContent = `${entry.month} ${entry.year}${score}${reviewHint}`;
 
         copy.append(title, detail);
         badge.append(image, copy);
@@ -240,6 +292,12 @@
         return yearGroups.flat();
     }
 
+    async function loadReviewLinks() {
+        const response = await fetch(REVIEW_LINKS_PATH, { cache: "default" });
+        if (!response.ok) throw new Error(`Zzap review links HTTP ${response.status}`);
+        return response.json();
+    }
+
     async function init() {
         ensureStylesheet();
         try {
@@ -247,9 +305,10 @@
             const matcher = window.CCGZzap64Matcher;
             if (!matcher) throw new Error("Zzap matcher unavailable");
 
-            const [gamesResponse, entries] = await Promise.all([
+            const [gamesResponse, rawEntries, reviewData] = await Promise.all([
                 fetch("/games/games.json", { cache: "no-store" }),
-                loadAwards()
+                loadAwards(),
+                loadReviewLinks()
             ]);
             if (!gamesResponse.ok) throw new Error(`Game archive HTTP ${gamesResponse.status}`);
             const gamesData = await gamesResponse.json();
@@ -258,6 +317,7 @@
             const game = resolveGame(games, requestedId, matcher);
             if (!game) return;
 
+            const entries = attachReviewLinks(rawEntries, reviewData, matcher);
             const awards = entries.filter((entry) => entryMatchesGame(entry, game, matcher));
             if (!insertBadges(game, awards, matcher)) {
                 window.setTimeout(() => insertBadges(game, awards, matcher), 180);
