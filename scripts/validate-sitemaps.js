@@ -138,7 +138,9 @@ function validateVideoSitemap(filePath, xml, locs) {
     assert(description.length <= 4096, `${filePath} video entry ${index + 1} description is unexpectedly long.`);
 
     const player = (block.match(/<video:player_loc>([^<]+)<\/video:player_loc>/) || [])[1] || '';
-    assert(/^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]+$/.test(player), `${filePath} video entry ${index + 1} has an invalid YouTube player URL.`);
+    const isYouTubePlayer = /^https:\/\/www\.youtube\.com\/embed\/[A-Za-z0-9_-]+$/.test(player);
+    const isGoogleDrivePlayer = /^https:\/\/drive\.google\.com\/file\/d\/[A-Za-z0-9_-]+\/preview$/.test(player);
+    assert(isYouTubePlayer || isGoogleDrivePlayer, `${filePath} video entry ${index + 1} has an invalid supported player URL.`);
 
     const duration = (block.match(/<video:duration>([^<]+)<\/video:duration>/) || [])[1];
     if (duration) {
