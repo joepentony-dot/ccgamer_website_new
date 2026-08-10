@@ -8,10 +8,13 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "scripts/generate-zzap64-review-links.js"
+      - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
+      - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "tests/zzap64-review-links.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
+      - ".github/workflows/zzap64-review-links-refresh.yml"
   push:
     branches:
       - main
@@ -19,10 +22,13 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "scripts/generate-zzap64-review-links.js"
+      - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
+      - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
       - "tests/zzap64-review-links.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
+      - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
 
 permissions:
@@ -44,6 +50,7 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
+          node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
 
       - name: Confirm generated review links are current
