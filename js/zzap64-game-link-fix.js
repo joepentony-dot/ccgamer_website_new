@@ -1,9 +1,9 @@
 /* ============================================================
    CCG ZZAP!64 AWARD → GAME LINK RESOLVER
    ------------------------------------------------------------
-   Uses verified issue/page scan identity from the enriched review
-   index to repair award cards whose magazine title differs from
-   the title used by the CCG game archive (for example, Rambo).
+   Uses verified issue/page scan identity from the compact all-game
+   review data to repair award cards whose magazine title differs
+   from the title used by the CCG archive (for example, Rambo).
 ============================================================ */
 
 (function () {
@@ -12,7 +12,8 @@
     if (window.CCG_ZZAP64_GAME_LINK_FIX_READY) return;
     window.CCG_ZZAP64_GAME_LINK_FIX_READY = true;
 
-    const INDEX_URL = "/data/zzap64-review-links.json";
+    const DATA_BASE = "/data/zzap64-game-reviews/";
+    const MANIFEST_URL = `${DATA_BASE}manifest.json`;
     const state = {
         byScan: new Map(),
         observer: null
@@ -48,23 +49,48 @@
         return /^[a-z0-9-]+$/i.test(slug) ? slug : "";
     }
 
-    function buildIndex(data) {
+    function addScan(scan, match, ambiguous) {
+        if (!scan || !match?.slug || ambiguous.has(scan)) return;
+        const existing = state.byScan.get(scan);
+        if (existing && existing.slug !== match.slug) {
+            state.byScan.delete(scan);
+            ambiguous.add(scan);
+            return;
+        }
+        state.byScan.set(scan, match);
+    }
+
+    function buildIndex(chunks) {
         const ambiguous = new Set();
-        Object.values(data?.entries || {}).forEach((record) => {
-            const scan = normalizeScan(record?.url);
-            const slug = safeSlug(record?.gameSlug);
-            if (!scan || !slug || ambiguous.has(scan)) return;
-            const existing = state.byScan.get(scan);
-            if (existing && existing.slug !== slug) {
-                state.byScan.delete(scan);
-                ambiguous.add(scan);
-                return;
-            }
-            state.byScan.set(scan, {
-                slug,
-                title: String(record?.gameTitle || "").trim()
+        chunks.forEach((data) => {
+            Object.entries(data?.games || {}).forEach(([rawSlug, rows]) => {
+                const slug = safeSlug(rawSlug);
+                if (!slug || !Array.isArray(rows)) return;
+                rows.forEach((row) => {
+                    if (!Array.isArray(row) || row.length < 4) return;
+                    const issue = Number(row[0]);
+                    const page = Number(row[1]);
+                    if (!Number.isInteger(issue) || !Number.isInteger(page)) return;
+                    addScan(`${issue}|${page}`, {
+                        slug,
+                        title: String(row[3] || "").trim()
+                    }, ambiguous);
+                });
             });
         });
+    }
+
+    async function loadChunks() {
+        const manifestResponse = await fetch(MANIFEST_URL, { cache: "default" });
+        if (!manifestResponse.ok) throw new Error(`Review manifest HTTP ${manifestResponse.status}`);
+        const manifest = await manifestResponse.json();
+        const chunks = Array.isArray(manifest?.chunks) ? manifest.chunks : [];
+        if (!chunks.length) throw new Error("Review manifest contains no chunks");
+        return Promise.all(chunks.map(async (chunk) => {
+            const response = await fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" });
+            if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
+            return response.json();
+        }));
     }
 
     function repairCard(card) {
@@ -113,9 +139,7 @@
 
     async function init() {
         try {
-            const response = await fetch(INDEX_URL, { cache: "default" });
-            if (!response.ok) throw new Error(`Review index HTTP ${response.status}`);
-            buildIndex(await response.json());
+            buildIndex(await loadChunks());
             observeGrid();
         } catch (error) {
             console.warn("[CCG] Zzap award scan-to-game resolver unavailable:", error);
