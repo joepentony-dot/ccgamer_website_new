@@ -1,0 +1,78 @@
+name: Refresh Zzap64 Review Links
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "data/zzap64-awards/**"
+      - "scripts/generate-zzap64-review-links.js"
+      - "scripts/zzap64-bible-client.js"
+      - ".github/workflows/zzap64-review-links-refresh.yml"
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: zzap64-review-link-refresh-main
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Validate resolver syntax
+        run: |
+          node --check scripts/generate-zzap64-review-links.js
+          node --check scripts/zzap64-bible-client.js
+          node --check js/zzap64-awards.js
+
+      - name: Resolve original Zzap review scans
+        run: node scripts/generate-zzap64-review-links.js --live
+
+      - name: Validate direct scan coverage
+        run: |
+          node scripts/generate-zzap64-review-links.js --check
+          node --test tests/zzap64-review-links.test.mjs
+          node scripts/audit-zzap64-awards.js
+          git diff --check
+
+      - name: Commit refreshed review-link map
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/zzap64-review-links.json
+          if git diff --cached --quiet; then
+            echo "Zzap review-link map already current."
+            exit 0
+          fi
+          git commit -m "Auto refresh Zzap64 original review links [skip ci]"
+          git push origin HEAD:main
+
+      - name: Verify refreshed map reached main
+        if: always()
+        shell: bash
+        run: |
+          if git diff --cached --quiet && git diff --quiet; then
+            git fetch origin main
+            echo "Current main: $(git rev-parse origin/main)"
+          fi
