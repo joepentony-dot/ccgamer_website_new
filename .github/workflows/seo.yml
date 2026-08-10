@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   seo:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
 
     env:
@@ -27,6 +28,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
         with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Setup Node
@@ -82,17 +84,15 @@ jobs:
       - name: Check generated output whitespace
         run: git diff --check
 
-      - name: Commit generated SEO artifacts
-        if: github.event_name != 'pull_request'
+      - name: Commit generated SEO artifacts to PR branch
         run: |
-          echo "[seo] Checking generated SEO diffs..."
+          echo "[seo] Materializing generated SEO diffs on the working branch..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
           git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-events retro-specials amiga-demo-music
-          git diff --cached --quiet || git commit -m "Auto-update generated SEO and video pages [skip ci]"
+          git diff --cached --quiet || git commit -m "Materialize generated video SEO artifacts"
 
-      - name: Push generated SEO artifacts
-        if: github.event_name != 'pull_request'
+      - name: Push generated SEO artifacts to PR branch
         run: |
-          echo "[seo] Pushing generated SEO updates (if any)..."
-          git push
+          echo "[seo] Pushing generated SEO outputs to the PR branch..."
+          git push origin HEAD:${{ github.event.pull_request.head.ref || github.ref_name }}
