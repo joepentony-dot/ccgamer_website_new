@@ -248,8 +248,8 @@ function buildVideoObject(entry, videoId, canonicalUrl, metadata) {
 
 function removeVideoObjectScripts(html) {
   return html.replace(
-    /\s*<script\b[^>]*type\s*=\s*(["'])application\/ld\+json\1[^>]*>[\s\S]*?"@type"\s*:\s*"VideoObject"[\s\S]*?<\/script>\s*/gi,
-    "\n"
+    /<script\b[^>]*type\s*=\s*(["'])application\/ld\+json\1[^>]*>[\s\S]*?<\/script>/gi,
+    (block) => /"@type"\s*:\s*"VideoObject"/i.test(block) ? "" : block
   );
 }
 
@@ -268,10 +268,8 @@ function injectVideoSchema(html, schemaBlock) {
   return html.replace("</head>", `    ${schemaBlock}\n</head>`);
 }
 
-function ensureRobotsMeta(html, indexable) {
-  const tag = indexable
-    ? '<meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />'
-    : '<meta name="robots" content="noindex,follow" />';
+function ensureRobotsMeta(html) {
+  const tag = '<meta name="robots" content="index,follow,max-video-preview:-1,max-image-preview:large,max-snippet:-1" />';
   const robotsRe = /<meta\b[^>]*name\s*=\s*(["'])robots\1[^>]*>/i;
   if (robotsRe.test(html)) return html.replace(robotsRe, tag);
   return html.replace(/(<meta\b[^>]*name\s*=\s*(["'])description\2[^>]*>)/i, `$1\n    ${tag}`);
@@ -279,11 +277,11 @@ function ensureRobotsMeta(html, indexable) {
 
 function ensureVideoMeta(html, videoId) {
   const additions = [
-    `<meta property="og:video:type" content="text/html" />`,
-    `<meta property="og:video:width" content="1280" />`,
-    `<meta property="og:video:height" content="720" />`,
-    `<link rel="preconnect" href="https://www.youtube-nocookie.com" />`,
-    `<link rel="preconnect" href="https://i.ytimg.com" crossorigin />`
+    '<meta property="og:video:type" content="text/html" />',
+    '<meta property="og:video:width" content="1280" />',
+    '<meta property="og:video:height" content="720" />',
+    '<link rel="preconnect" href="https://www.youtube-nocookie.com" />',
+    '<link rel="preconnect" href="https://i.ytimg.com" crossorigin />'
   ].filter((line) => !html.includes(line));
 
   if (additions.length) {
@@ -303,21 +301,14 @@ function markWatchPage(html, entry, videoId) {
       : `<html${attrs} data-ccg-video-watch="true">`
   );
 
-  html = html.replace(
-    /<article\b([^>]*class=(["'])[^"']*\bretro-video-page\b[^"']*\2[^>]*)>/i,
-    (match, attrs) => /data-ccg-primary-video=/i.test(attrs)
-      ? match
-      : `<article${attrs} data-ccg-primary-video="${escapeHtml(videoId)}">`
-  );
-
   const iframeRe = /<iframe\b[^>]*src=(["'])https:\/\/www\.youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]+)[^>]*>/i;
   const iframeMatch = html.match(iframeRe);
   if (iframeMatch && iframeMatch[2] === videoId) {
     let iframe = iframeMatch[0]
       .replace("https://www.youtube.com/embed/", "https://www.youtube-nocookie.com/embed/")
-      .replace(/\sloading=(["'])lazy\1/i, " loading=\"eager\"");
+      .replace(/\sloading=(["'])lazy\1/i, ' loading="eager"');
     if (!/\sdata-ccg-primary-video(?:=|\s|>)/i.test(iframe)) {
-      iframe = iframe.replace(/>$/, ` data-ccg-primary-video="true">`);
+      iframe = iframe.replace(/>$/, ' data-ccg-primary-video="true">');
     }
     const title = `${stripHtml(entry?.title || "Cheeky Commodore Gamer video")} — watch on Cheeky Commodore Gamer`;
     if (/\stitle=(["']).*?\1/i.test(iframe)) {
@@ -332,12 +323,15 @@ function markWatchPage(html, entry, videoId) {
 }
 
 function enhancePage(html, context) {
-  const { entry, videoId, canonicalUrl, metadata, indexable } = context;
+  const { entry, videoId, canonicalUrl, metadata, videoIndexable } = context;
   let next = removeVideoObjectScripts(html);
-  next = ensureRobotsMeta(next, indexable);
+  next = ensureRobotsMeta(next);
   next = ensureVideoMeta(next, videoId);
   next = markWatchPage(next, entry, videoId);
-  next = injectVideoSchema(next, buildVideoObject(entry, videoId, canonicalUrl, metadata));
+  next = injectVideoSchema(
+    next,
+    videoIndexable ? buildVideoObject(entry, videoId, canonicalUrl, metadata) : ""
+  );
   return next;
 }
 
@@ -377,7 +371,7 @@ function main() {
   let updatedPages = 0;
   let processedPages = 0;
   let verifiedObjects = 0;
-  let membersOnlyExcluded = 0;
+  let restrictedVideosExcluded = 0;
   const missingPages = [];
 
   for (const config of DATASETS) {
@@ -397,18 +391,18 @@ function main() {
 
       const canonicalUrl = canonicalUrlFor(config, slug);
       const metadata = metadataById[videoId] || {};
-      const indexable = entry?.membersOnly !== true;
+      const videoIndexable = entry?.membersOnly !== true;
       const before = fs.readFileSync(pagePath, "utf8");
-      const after = enhancePage(before, { entry, videoId, canonicalUrl, metadata, indexable });
+      const after = enhancePage(before, { entry, videoId, canonicalUrl, metadata, videoIndexable });
 
       if (after !== before && writeFileIfChanged(pagePath, after)) updatedPages += 1;
       processedPages += 1;
-      if (verifiedMetadata(metadata)) verifiedObjects += 1;
 
-      if (indexable) {
+      if (videoIndexable) {
         sitemapEntries.push({ entry, videoId, canonicalUrl, metadata });
+        if (verifiedMetadata(metadata)) verifiedObjects += 1;
       } else {
-        membersOnlyExcluded += 1;
+        restrictedVideosExcluded += 1;
       }
     });
   }
@@ -421,8 +415,8 @@ function main() {
   console.log(`[retro-video-seo] Watch pages updated: ${updatedPages}`);
   console.log(`[retro-video-seo] Public video sitemap entries: ${sitemapEntries.length}`);
   console.log(`[retro-video-seo] Verified VideoObjects: ${verifiedObjects}`);
-  if (membersOnlyExcluded) {
-    console.log(`[retro-video-seo] Members-only pages excluded from video sitemap: ${membersOnlyExcluded}`);
+  if (restrictedVideosExcluded) {
+    console.log(`[retro-video-seo] Members-only videos excluded from video markup/sitemap while their feature pages remain indexable: ${restrictedVideosExcluded}`);
   }
   if (missingPages.length) {
     console.warn(`[retro-video-seo] Missing generated pages: ${missingPages.length}`);
