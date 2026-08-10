@@ -98,7 +98,7 @@ test('Rambo resolves both the original review and the later Silver Medal re-revi
   assert.ok(destinations.has('53|58'), 'Missing Rambo issue 53 page 58 Silver Medal re-review.');
 });
 
-test('archive renderer exposes original-magazine links and the compact scan-identity game-link repair', () => {
+test('archive renderer exposes original-magazine links and conservative verified title aliases', () => {
   const source = fs.readFileSync(path.join(root, 'js/zzap64-awards.js'), 'utf8');
   const linkFix = fs.readFileSync(path.join(root, 'js/zzap64-game-link-fix.js'), 'utf8');
   const browser = fs.readFileSync(path.join(root, 'js/zzap64-review-browser.js'), 'utf8');
@@ -112,9 +112,15 @@ test('archive renderer exposes original-magazine links and the compact scan-iden
   assert.match(source, /Original Zzap!64 scan pending verification/);
   assert.match(source, /noopener noreferrer external/);
 
-  assert.match(linkFix, /gameLinkResolvedByScan/);
-  assert.match(linkFix, /\/data\/zzap64-game-reviews\//);
-  assert.match(linkFix, /match\.slug/);
+  assert.match(linkFix, /gameLinkResolvedByAlias/);
+  assert.match(linkFix, /VERIFIED_OVERRIDES/);
+  assert.match(linkFix, /rambo\|53\|58/);
+  assert.match(linkFix, /rambo-first-blood-part-2/);
+  assert.match(linkFix, /issue\/page identity alone must never be used/i);
+  assert.doesNotMatch(linkFix, /i ball ii\|35\|97/);
+  assert.doesNotMatch(linkFix, /pastfinder\|48\|55/);
+  assert.doesNotMatch(linkFix, /tetris\|50\|56/);
+  assert.doesNotMatch(linkFix, /wizball\|55\|50/);
   assert.match(browser, /\/data\/zzap64-game-reviews\//);
   assert.match(browser, /All verified Zzap!64 scans linked to CCG game pages/);
   assert.match(page, /All Zzap!64 Reviews for CCG Games/);
