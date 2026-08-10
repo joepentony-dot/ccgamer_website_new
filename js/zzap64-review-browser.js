@@ -1,9 +1,10 @@
 /* ============================================================
-   CCG ZZAP!64 ALL-REVIEWS BROWSER
+   CCG ZZAP!64 ADDITIONAL-REVIEWS BROWSER
    ------------------------------------------------------------
-   Lazy A-Z browser for every verified Zzap!64 scan tied to an
-   existing CCG game page. Only the requested review chunk is
-   downloaded for letter browsing; global search / All is opt-in.
+   Lazy A-Z browser for verified Zzap!64 reviews tied to CCG game
+   pages that are not already represented in the award index above.
+   Only the requested review chunk is downloaded for letter browsing;
+   global search / All is opt-in.
 ============================================================ */
 
 (function () {
@@ -12,7 +13,7 @@
     if (window.CCG_ZZAP64_REVIEW_BROWSER_READY) return;
     window.CCG_ZZAP64_REVIEW_BROWSER_READY = true;
 
-    const DATA_BASE = "/data/zzap64-game-reviews/";
+    const DATA_BASE = "/data/zzap64-additional-reviews/";
     const MANIFEST_URL = `${DATA_BASE}manifest.json`;
     const PAGE_SIZE = 24;
     const SEARCH_MIN_LENGTH = 2;
@@ -271,8 +272,8 @@
         if (!summary) return;
         const totals = state.manifest?.totals;
         const totalText = Number(totals?.records) > 0
-            ? `${Number(totals.records).toLocaleString("en-GB")} verified reviews across ${Number(totals.games || 0).toLocaleString("en-GB")} CCG games.`
-            : "Verified Zzap!64 reviews are available by letter.";
+            ? `${Number(totals.records).toLocaleString("en-GB")} additional reviews across ${Number(totals.games || 0).toLocaleString("en-GB")} CCG games.`
+            : "Additional Zzap!64 reviews are available by letter.";
         summary.textContent = `Choose a letter or search. ${totalText}`;
     }
 
@@ -284,7 +285,7 @@
 
         const parts = [];
         if (state.mode === "letter" && state.activeLetter) parts.push(state.activeLetter === "0-9" ? "0–9" : state.activeLetter);
-        if (state.mode === "all") parts.push("All reviews");
+        if (state.mode === "all") parts.push("All additional reviews");
         if (state.mode === "search" && state.query) parts.push(`Search: “${state.query}”`);
         if (state.system !== "all") parts.push(state.system === "amiga" ? "Amiga" : "C64");
         if (state.year !== "all") parts.push(state.year);
@@ -320,7 +321,7 @@
         if (!records.length) {
             const empty = document.createElement("div");
             empty.className = "zzap-review-browser__empty";
-            empty.textContent = "No linked Zzap!64 reviews match those filters.";
+            empty.textContent = "No additional Zzap!64 reviews match those filters.";
             grid.appendChild(empty);
             updateLoadMore(0, 0);
             return;
@@ -393,7 +394,7 @@
         const search = document.getElementById("zzapReviewSearch");
         if (search) search.value = "";
         updateBrowseControls();
-        setGridMessage("Loading the complete review index…", true);
+        setGridMessage("Loading the additional review index…", true);
 
         try {
             const records = await loadAllRecords();
@@ -404,8 +405,8 @@
             if (options.updateHash !== false) updateHash("all");
         } catch (error) {
             if (requestToken !== state.requestToken) return;
-            setGridMessage("The complete review index could not be loaded. Please try again.");
-            console.warn("[CCG] Full Zzap!64 review browser unavailable:", error);
+            setGridMessage("The additional review index could not be loaded. Please try again.");
+            console.warn("[CCG] Additional Zzap!64 review browser unavailable:", error);
         }
     }
 
@@ -422,7 +423,7 @@
                 state.year = "all";
                 updateBrowseControls();
                 updateYearOptions([]);
-                setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+                setGridMessage("Choose a letter above to browse additional reviews, or search for a game.");
                 updateIdleSummary();
             } else {
                 render();
@@ -435,7 +436,7 @@
             state.activeLetter = "";
             state.scopeRecords = [];
             updateBrowseControls();
-            setGridMessage(`Type at least ${SEARCH_MIN_LENGTH} characters to search all reviews.`);
+            setGridMessage(`Type at least ${SEARCH_MIN_LENGTH} characters to search additional reviews.`);
             return;
         }
 
@@ -443,7 +444,7 @@
         state.mode = "search";
         state.activeLetter = "";
         updateBrowseControls();
-        setGridMessage("Searching the complete review index…", true);
+        setGridMessage("Searching the additional review index…", true);
 
         try {
             const records = await loadAllRecords();
@@ -466,7 +467,7 @@
 
         const nav = document.createElement("div");
         nav.className = "zzap-review-browser__az";
-        nav.setAttribute("aria-label", "Browse Zzap!64 reviews alphabetically");
+        nav.setAttribute("aria-label", "Browse additional Zzap!64 reviews alphabetically");
 
         const desktop = document.createElement("div");
         desktop.className = "zzap-review-browser__alphabet";
@@ -483,7 +484,7 @@
 
         const mobileLabel = document.createElement("label");
         mobileLabel.className = "zzap-review-browser__letter-select-wrap";
-        mobileLabel.innerHTML = '<span>Browse by letter</span><select id="zzapReviewLetterSelect" aria-label="Browse Zzap!64 reviews by letter"><option value="">Choose a letter…</option><option value="all">All reviews</option></select>';
+        mobileLabel.innerHTML = '<span>Browse by letter</span><select id="zzapReviewLetterSelect" aria-label="Browse additional Zzap!64 reviews by letter"><option value="">Choose a letter…</option><option value="all">All additional reviews</option></select>';
         const mobileSelect = mobileLabel.querySelector("select");
         LETTERS.forEach((letter) => {
             const option = document.createElement("option");
@@ -533,7 +534,7 @@
             state.system = system.value;
             state.visibleLimit = PAGE_SIZE;
             if (state.mode === "idle") {
-                setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+                setGridMessage("Choose a letter above to browse additional reviews, or search for a game.");
                 updateIdleSummary();
                 return;
             }
@@ -601,7 +602,7 @@
         createBrowseControls();
         bindControls();
         updateYearOptions([]);
-        setGridMessage("Choose a letter above to browse reviews, or search for a game.");
+        setGridMessage("Choose a letter above to browse additional reviews, or search for a game.");
         updateIdleSummary();
         observeBrowser();
     }
