@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - "admin/index.html"
       - "admin/content-publisher.html"
       - "admin/js/content-publisher.js"
       - "resources/css/ccg-content-publisher.css"
@@ -14,6 +15,7 @@ on:
     branches:
       - main
     paths:
+      - "admin/index.html"
       - "admin/content-publisher.html"
       - "admin/js/content-publisher.js"
       - "resources/css/ccg-content-publisher.css"
