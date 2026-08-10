@@ -474,33 +474,10 @@ function renderGameCard(game) {
                     </article>`;
 }
 
-function getAssociatedGames(group) {
-    const publishedGames = Array.isArray(group?.games) ? group.games : [];
-    const developedGames = Array.isArray(group?.developedGames) ? group.developedGames : [];
-    return [...publishedGames, ...developedGames];
-}
-
-function summarizeAssociatedGames(games) {
-    const years = games.map((game) => Number(game.year)).filter(Number.isFinite);
-    return {
-        count: games.length,
-        c64Count: games.filter((game) => game.system === "C64").length,
-        amigaCount: games.filter((game) => game.system === "Amiga").length,
-        firstYear: years.length ? Math.min(...years) : null,
-        lastYear: years.length ? Math.max(...years) : null
-    };
-}
-
 function renderPublisherPage(group, playlists) {
     const canonicalUrl = `${SITE_ORIGIN}/games/publishers/${group.slug}/`;
-    const developedGames = Array.isArray(group.developedGames) ? group.developedGames : [];
-    const associatedGames = getAssociatedGames(group);
-    const associated = summarizeAssociatedGames(associatedGames);
-    const systemLabel = platformLabel(associated);
-    const hasDeveloperCredits = developedGames.length > 0;
-    const description = hasDeveloperCredits
-        ? `Browse ${associated.count} ${group.name} ${systemLabel} games published or developed by the company in the Cheeky Commodore Gamer archive.`
-        : `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with release years, videos and direct game links.`;
+    const systemLabel = platformLabel(group);
+    const description = `Browse ${group.count} ${group.name} ${systemLabel} ${group.count === 1 ? "game" : "games"} in the Cheeky Commodore Gamer archive, with release years, videos and direct game links.`;
     const title = `${group.name} C64 & Amiga Games | Cheeky Commodore Gamer`;
     const robots = group.count >= INDEXABLE_MIN_GAMES ? "index,follow" : "noindex,follow";
     const playlistUrl = getPlaylistUrl(playlists, group);
@@ -555,8 +532,8 @@ function renderPublisherPage(group, playlists) {
             {
                 "@type": "ItemList",
                 name: `${group.name} games in the CCG archive`,
-                numberOfItems: associatedGames.length,
-                itemListElement: associatedGames.map((game, index) => ({
+                numberOfItems: group.games.length,
+                itemListElement: group.games.map((game, index) => ({
                     "@type": "ListItem",
                     position: index + 1,
                     name: game.title,
@@ -584,16 +561,13 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
                 <p class="ccg-publishers-hero__kicker">Publisher archive · ${htmlEscape(systemLabel)}</p>
                 <h1 class="ccg-publishers-hero__title">${htmlEscape(group.name)} Games</h1>
                 <p class="ccg-publishers-hero__intro">
-                    ${hasDeveloperCredits
-                        ? `Browse games published or developed by ${htmlEscape(group.name)}, with each role kept separate below.`
-                        : `Browse every ${htmlEscape(group.name)} title currently catalogued by Cheeky Commodore Gamer. New games are added here automatically when their publisher credit is present in the main game database.`}
+                    Browse every ${htmlEscape(group.name)} title currently catalogued by Cheeky Commodore Gamer. New games are added here automatically when their publisher credit is present in the main game database.
                 </p>
                 <div class="ccg-publishers-hero__stats">
-                    ${hasDeveloperCredits ? `<span><strong>${group.count}</strong> published</span>` : `<span><strong>${group.count}</strong> ${group.count === 1 ? "game" : "games"}</span>`}
-                    ${hasDeveloperCredits ? `<span><strong>${developedGames.length}</strong> developed</span>` : ""}
-                    ${associated.c64Count ? `<span><strong>${associated.c64Count}</strong> C64</span>` : ""}
-                    ${associated.amigaCount ? `<span><strong>${associated.amigaCount}</strong> Amiga</span>` : ""}
-                    ${yearSummary(associated) ? `<span><strong>${htmlEscape(yearSummary(associated))}</strong> years covered</span>` : ""}
+                    <span><strong>${group.count}</strong> ${group.count === 1 ? "game" : "games"}</span>
+                    ${group.c64Count ? `<span><strong>${group.c64Count}</strong> C64</span>` : ""}
+                    ${group.amigaCount ? `<span><strong>${group.amigaCount}</strong> Amiga</span>` : ""}
+                    ${yearSummary(group) ? `<span><strong>${htmlEscape(yearSummary(group))}</strong> years covered</span>` : ""}
                 </div>
             </section>
 
@@ -624,16 +598,16 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
                 </label>
                 <div class="ccg-publishers-filter" role="group" aria-label="Filter games by system">
                     <button type="button" class="ccg-btn ccg-btn--secondary is-active" data-publisher-game-system="all" aria-pressed="true">All</button>
-                    ${associated.c64Count ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="c64" aria-pressed="false">C64</button>` : ""}
-                    ${associated.amigaCount ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="amiga" aria-pressed="false">Amiga</button>` : ""}
+                    ${group.c64Count ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="c64" aria-pressed="false">C64</button>` : ""}
+                    ${group.amigaCount ? `<button type="button" class="ccg-btn ccg-btn--secondary" data-publisher-game-system="amiga" aria-pressed="false">Amiga</button>` : ""}
                 </div>
-                <p class="ccg-publishers-visible-count"><strong id="publisherGameVisibleCount">${associated.count}</strong> games shown</p>
+                <p class="ccg-publishers-visible-count"><strong id="publisherGameVisibleCount">${group.count}</strong> games shown</p>
             </section>
 
             <section class="ccg-publishers-section" aria-labelledby="publisher-games-title">
                 <div class="ccg-publishers-section__heading">
-                    <p class="ccg-publishers-section__kicker">${hasDeveloperCredits ? "Publisher credits" : "Game archive"}</p>
-                    <h2 id="publisher-games-title">${hasDeveloperCredits ? `Published by ${htmlEscape(group.name)}` : `${htmlEscape(group.name)} on CCG`}</h2>
+                    <p class="ccg-publishers-section__kicker">Game archive</p>
+                    <h2 id="publisher-games-title">${htmlEscape(group.name)} on CCG</h2>
                     <p>${htmlEscape(platformSummary(group))}${yearSummary(group) ? ` · ${htmlEscape(yearSummary(group))}` : ""}</p>
                 </div>
 
@@ -643,18 +617,6 @@ ${renderHead({ title, description, canonicalUrl, robots, schema })}
 
                 <p class="ccg-publishers-empty" id="publisherGameEmptyState" hidden>No games match that search.</p>
             </section>
-
-            ${hasDeveloperCredits ? `<section class="ccg-publishers-section" aria-labelledby="developer-games-title">
-                <div class="ccg-publishers-section__heading">
-                    <p class="ccg-publishers-section__kicker">Developer credits</p>
-                    <h2 id="developer-games-title">Developed by ${htmlEscape(group.name)}</h2>
-                    <p>${developedGames.length} additional ${developedGames.length === 1 ? "game" : "games"} published by other companies</p>
-                </div>
-
-                <div class="ccg-publisher-game-grid">
-                    ${developedGames.map(renderGameCard).join("\n")}
-                </div>
-            </section>` : ""}
 
             <section class="ccg-publishers-wayfinding">
                 <h2>Browse More</h2>
@@ -792,7 +754,7 @@ function main() {
             html,
             canonical,
             group.name,
-            getAssociatedGames(group).map((game) => game.slug)
+            group.games.map((game) => game.slug)
         );
 
         if (problems.length) {
