@@ -1,0 +1,58 @@
+name: Bootstrap Deep Zzap64 Review Links
+
+on:
+  push:
+    branches:
+      - codex/zzap64-deep-direct-links
+
+permissions:
+  contents: write
+
+jobs:
+  enrich:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v5
+        with:
+          ref: codex/zzap64-deep-direct-links
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Validate generator syntax
+        run: node --check scripts/generate-zzap64-review-links.js
+
+      - name: Deep-refresh direct magazine links
+        run: node scripts/generate-zzap64-review-links.js --live
+
+      - name: Confirm known Armalyte direct scan
+        run: |
+          node - <<'NODE'
+          const data = require('./data/zzap64-review-links.json');
+          const row = data.entries['1988|november|c64|Armalyte'];
+          if (!row || row.precision !== 'page' || Number(row.issue) !== 43 || Number(row.page) !== 24) {
+            console.error('Armalyte was not resolved to Zzap!64 issue 43 page 24:', row);
+            process.exit(1);
+          }
+          console.log('Armalyte verified at issue 43 page 24.');
+          console.log(`Direct coverage: ${data.totals.exactPages}/${data.totals.awards} (${data.totals.directCoveragePercent}%).`);
+          NODE
+
+      - name: Commit enriched map
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/zzap64-review-links.json
+          if git diff --cached --quiet; then
+            echo "Review-link map already current."
+            exit 0
+          fi
+          git commit -m "Deep-refresh Zzap64 direct review links"
+          git push origin HEAD:codex/zzap64-deep-direct-links
