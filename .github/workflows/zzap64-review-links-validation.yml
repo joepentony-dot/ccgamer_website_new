@@ -80,6 +80,14 @@ jobs:
           node scripts/enrich-zzap64-game-reviews.js
           node scripts/enrich-zzap64-game-reviews.js --check
 
+      - name: Upload generated review index
+        uses: actions/upload-artifact@v4
+        with:
+          name: zzap64-review-index
+          path: data/zzap64-review-links.json
+          if-no-files-found: error
+          retention-days: 1
+
       - name: Test original magazine and game links
         run: |
           node --test tests/zzap64-review-links.test.mjs
