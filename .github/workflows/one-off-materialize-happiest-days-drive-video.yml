@@ -4,17 +4,22 @@ on:
   push:
     branches:
       - codex/materialize-happiest-days-drive-video
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   materialize:
+    if: github.event_name == 'push' || github.head_ref == 'codex/materialize-happiest-days-drive-video'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout branch
+      - name: Checkout source branch
         uses: actions/checkout@v5
         with:
+          ref: codex/materialize-happiest-days-drive-video
           fetch-depth: 0
 
       - name: Setup Node
