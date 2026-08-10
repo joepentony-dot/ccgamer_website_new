@@ -254,7 +254,7 @@ function validateCanonicalGameRoutes(games, problems) {
         const expectedCanonical = `${SITE_ORIGIN}/games/${game.slug}/`;
         const canonicals = extractCanonicalUrls(html);
         if (canonicals.length !== 1 || canonicals[0] !== expectedCanonical) {
-            problems.push(`Game route /games/${game.slug}/ is not its own canonical game route`);
+            problems.push(`Game route /games/${game.slug}/ is not its own canonical route`);
             return;
         }
         validated += 1;
@@ -387,6 +387,7 @@ function main() {
     if (new Set(years.map((group) => group.year)).size !== years.length) problems.push("Duplicate release years detected");
     if (new Set(platforms.map((group) => group.key)).size !== platforms.length) problems.push("Duplicate platform keys detected");
     if (platforms.length !== 2) problems.push(`Expected two platform routes, found ${platforms.length}`);
+    if (archiveData.games.length < 651) problems.push(`Game total fell below the protected Phase 6A baseline: ${archiveData.games.length}`);
 
     if (countOccurrences(browseGames, BROWSE_MARKER) !== 1) {
         problems.push("Browse Games must contain exactly one archive shortcut block");
@@ -530,7 +531,6 @@ function main() {
             breadcrumbUrls: [`${SITE_ORIGIN}/`, `${SITE_ORIGIN}/games/`, `${SITE_ORIGIN}/games/platforms/`, canonicalUrl],
             itemUrls: group.games.map((game) => `${SITE_ORIGIN}/games/${game.slug}/`)
         }, problems);
-
         compareExactList(actualSlugs, expectedSlugs, `${pageLabel} game links`, problems);
 
         if (countOccurrences(html, 'data-platform-cross-link="true"') !== 1) {
