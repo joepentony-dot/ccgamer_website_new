@@ -44,7 +44,7 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           if [ -n "$YOUTUBE_API_KEY" ]; then
-            echo "[seo] Syncing verified YouTube upload dates, durations, titles and thumbnails..."
+            echo "[seo] Syncing verified YouTube titles, descriptions, upload dates, durations and thumbnails..."
             npm run sync:video-metadata
           else
             echo "[seo] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
@@ -65,6 +65,11 @@ jobs:
           echo "[seo] Generating Retro Specials, Retro Events and Amiga Demo Music watch-page video SEO..."
           npm run generate:retro-video-seo
 
+      - name: Generate video library and key moments
+        run: |
+          echo "[seo] Generating the CCG video library, chapter links, Clip markup and internal game discovery..."
+          npm run generate:video-library
+
       - name: Generate sitemap index
         run: |
           echo "[seo] Generating sitemap artifacts and indexing all child sitemaps..."
@@ -79,6 +84,9 @@ jobs:
       - name: Validate retro watch page video SEO
         run: npm run validate:retro-video-seo
 
+      - name: Validate video library and key moments
+        run: npm run validate:video-library
+
       - name: Check generated output whitespace
         run: git diff --check
 
@@ -88,7 +96,7 @@ jobs:
           echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-events retro-specials amiga-demo-music
+          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-events retro-specials amiga-demo-music videos tools/seo/static-pages.json
           git diff --cached --quiet || git commit -m "Auto-update generated SEO and video pages [skip ci]"
 
       - name: Push generated SEO artifacts
