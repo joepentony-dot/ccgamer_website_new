@@ -7,7 +7,8 @@
       "playerUrl": "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/preview",
       "actionUrl": "https://drive.google.com/file/d/1QgikSUH8QDdAE7k42IylKkUGuivxhEct/view?usp=drive_link",
       "thumbnailUrl": "https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/happiest_days_of_your_life_the.jpg",
-      "actionLabel": "Play Video"
+      "actionLabel": "Watch Video",
+      "note": "Google Drive source retained because this CCG video is not available on YouTube."
     }
   }
 }
