@@ -1,0 +1,54 @@
+name: CCG Content Publisher Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "admin/content-publisher.html"
+      - "admin/js/content-publisher.js"
+      - "resources/css/ccg-content-publisher.css"
+      - "tests/content-publisher.test.mjs"
+      - ".github/workflows/content-publisher-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "admin/content-publisher.html"
+      - "admin/js/content-publisher.js"
+      - "resources/css/ccg-content-publisher.css"
+      - "tests/content-publisher.test.mjs"
+      - ".github/workflows/content-publisher-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript syntax
+        run: node --check admin/js/content-publisher.js
+
+      - name: Run publisher regression tests
+        run: node --test tests/content-publisher.test.mjs
+
+      - name: Confirm protected files are outside publisher scope
+        shell: bash
+        run: |
+          ! grep -F "resources/css/intro.css" admin/js/content-publisher.js
+          ! grep -F "js/index-intro.js" admin/js/content-publisher.js
+          ! grep -F "YOUTUBE_API_KEY" admin/js/content-publisher.js
+
+      - name: Check whitespace
+        run: git diff --check
