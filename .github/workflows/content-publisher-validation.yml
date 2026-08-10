@@ -9,7 +9,11 @@ on:
       - "admin/content-publisher.html"
       - "admin/js/content-publisher.js"
       - "resources/css/ccg-content-publisher.css"
+      - "js/load-single-game.js"
+      - "js/ccg-zzap64-matcher.js"
+      - "data/zzap64-review-links.json"
       - "tests/content-publisher.test.mjs"
+      - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   push:
     branches:
@@ -19,7 +23,11 @@ on:
       - "admin/content-publisher.html"
       - "admin/js/content-publisher.js"
       - "resources/css/ccg-content-publisher.css"
+      - "js/load-single-game.js"
+      - "js/ccg-zzap64-matcher.js"
+      - "data/zzap64-review-links.json"
       - "tests/content-publisher.test.mjs"
+      - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   workflow_dispatch:
 
@@ -40,10 +48,15 @@ jobs:
           node-version: 22
 
       - name: Validate JavaScript syntax
-        run: node --check admin/js/content-publisher.js
+        run: |
+          node --check admin/js/content-publisher.js
+          node --check js/load-single-game.js
+          node --check js/ccg-zzap64-matcher.js
 
-      - name: Run publisher regression tests
-        run: node --test tests/content-publisher.test.mjs
+      - name: Run publisher and Zzap game-link regression tests
+        run: |
+          node --test tests/content-publisher.test.mjs
+          node --test tests/game-zzap-links.test.mjs
 
       - name: Confirm protected files are outside publisher scope
         shell: bash
