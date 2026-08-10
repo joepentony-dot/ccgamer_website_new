@@ -8,12 +8,19 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "data/zzap64-review-overrides.json"
+      - "data/lemon-cache/**"
       - "scripts/generate-zzap64-review-links.js"
+      - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
+      - "js/zzap64-game-link-fix.js"
+      - "js/zzap64-review-browser.js"
+      - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
+      - "resources/css/zzap64-reviews.css"
       - "tests/zzap64-review-links.test.mjs"
+      - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   push:
@@ -23,12 +30,19 @@ on:
       - "data/zzap64-awards/**"
       - "data/zzap64-review-links.json"
       - "data/zzap64-review-overrides.json"
+      - "data/lemon-cache/**"
       - "scripts/generate-zzap64-review-links.js"
+      - "scripts/enrich-zzap64-game-reviews.js"
       - "scripts/zzap64-bible-client.js"
       - "js/zzap64-awards.js"
+      - "js/zzap64-game-link-fix.js"
+      - "js/zzap64-review-browser.js"
+      - "js/ccg-search-ranking.js"
       - "zzap64/index.html"
       - "resources/css/zzap64-awards.css"
+      - "resources/css/zzap64-reviews.css"
       - "tests/zzap64-review-links.test.mjs"
+      - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/zzap64-review-links-validation.yml"
       - ".github/workflows/zzap64-review-links-refresh.yml"
   workflow_dispatch:
@@ -52,14 +66,24 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
+          node --check scripts/enrich-zzap64-game-reviews.js
           node --check scripts/zzap64-bible-client.js
           node --check js/zzap64-awards.js
+          node --check js/zzap64-game-link-fix.js
+          node --check js/zzap64-review-browser.js
+          node --check js/ccg-search-ranking.js
 
-      - name: Confirm generated review links are current
-        run: node scripts/generate-zzap64-review-links.js --check
+      - name: Rebuild deterministic review index
+        run: |
+          node scripts/generate-zzap64-review-links.js
+          node scripts/generate-zzap64-review-links.js --check
+          node scripts/enrich-zzap64-game-reviews.js
+          node scripts/enrich-zzap64-game-reviews.js --check
 
-      - name: Test original magazine links
-        run: node --test tests/zzap64-review-links.test.mjs
+      - name: Test original magazine and game links
+        run: |
+          node --test tests/zzap64-review-links.test.mjs
+          node --test tests/game-zzap-links.test.mjs
 
       - name: Run existing Zzap award audit
         run: node scripts/audit-zzap64-awards.js
