@@ -3,8 +3,8 @@
    ------------------------------------------------------------
    Lazy A-Z browser for verified Zzap!64 reviews tied to CCG game
    pages that are not already represented in the award index above.
-   Only the requested review chunk is downloaded for letter browsing;
-   global search / All is opt-in.
+   Uses the existing compact full-review chunks and filters award
+   issues at request time, avoiding a second generated data archive.
 ============================================================ */
 
 (function () {
@@ -13,8 +13,9 @@
     if (window.CCG_ZZAP64_REVIEW_BROWSER_READY) return;
     window.CCG_ZZAP64_REVIEW_BROWSER_READY = true;
 
-    const DATA_BASE = "/data/zzap64-additional-reviews/";
+    const DATA_BASE = "/data/zzap64-game-reviews/";
     const MANIFEST_URL = `${DATA_BASE}manifest.json`;
+    const REVIEW_INDEX_URL = "/data/zzap64-review-links.json";
     const PAGE_SIZE = 24;
     const SEARCH_MIN_LENGTH = 2;
     const LETTERS = ["0-9", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
@@ -26,6 +27,8 @@
     const state = {
         manifest: null,
         manifestPromise: null,
+        awardIssueKeys: null,
+        awardIssuePromise: null,
         chunkCache: new Map(),
         chunkPromises: new Map(),
         allRecords: null,
@@ -63,6 +66,15 @@
             .trim();
     }
 
+    function normalizedSystem(value) {
+        return String(value || "").toLowerCase().includes("amiga") ? "amiga" : "c64";
+    }
+
+    function safeSlug(value) {
+        const slug = String(value || "").trim().replace(/^\/+|\/+$/g, "");
+        return /^[a-z0-9-]+$/i.test(slug) ? slug : "";
+    }
+
     function issueDate(issue) {
         const numericIssue = Number(issue);
         if (!Number.isInteger(numericIssue) || numericIssue < 1) return null;
@@ -74,8 +86,8 @@
     }
 
     function gameHref(slug) {
-        const value = String(slug || "").trim().replace(/^\/+|\/+$/g, "");
-        return /^[a-z0-9-]+$/i.test(value) ? `/games/${encodeURIComponent(value)}/` : "";
+        const value = safeSlug(slug);
+        return value ? `/games/${encodeURIComponent(value)}/` : "";
     }
 
     function reviewUrl(issue, page) {
@@ -86,21 +98,65 @@
         return `https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=${numericIssue}&page=${numericPage}`;
     }
 
-    function parseChunk(data) {
-        const records = [];
+    function awardIssueKey(slug, system, issue) {
+        const gameSlug = safeSlug(slug);
+        const numericIssue = Number(issue);
+        if (!gameSlug || !Number.isInteger(numericIssue) || numericIssue < 1) return "";
+        return `${gameSlug}|${normalizedSystem(system)}|${numericIssue}`;
+    }
+
+    async function loadAwardIssueKeys() {
+        if (state.awardIssueKeys) return state.awardIssueKeys;
+        if (state.awardIssuePromise) return state.awardIssuePromise;
+
+        state.awardIssuePromise = fetch(REVIEW_INDEX_URL, { cache: "default" })
+            .then((response) => {
+                if (!response.ok) throw new Error(`Review index HTTP ${response.status}`);
+                return response.json();
+            })
+            .then((data) => {
+                const keys = new Set();
+                Object.entries(data?.entries || {}).forEach(([recordKey, row]) => {
+                    if (!row || typeof row !== "object" || row.scope === "game-review") return;
+                    const parts = recordKey.split("|");
+                    const key = awardIssueKey(row.gameSlug, row.gameSystem || parts[2], row.issue);
+                    if (key) keys.add(key);
+                });
+                state.awardIssueKeys = keys;
+                return keys;
+            })
+            .finally(() => {
+                state.awardIssuePromise = null;
+            });
+
+        return state.awardIssuePromise;
+    }
+
+    function parseChunk(data, awardIssues) {
+        const recordsByReview = new Map();
+
         Object.entries(data?.games || {}).forEach(([slug, rows]) => {
             const href = gameHref(slug);
             if (!href || !Array.isArray(rows)) return;
+
             rows.forEach((row) => {
                 if (!Array.isArray(row) || row.length < 4) return;
                 const issue = Number(row[0]);
                 const page = Number(row[1]);
                 const system = row[2] === "a" ? "amiga" : "c64";
                 const title = String(row[3] || slug);
+                const exclusionKey = awardIssueKey(slug, system, issue);
+                if (exclusionKey && awardIssues.has(exclusionKey)) return;
+
                 const url = reviewUrl(issue, page);
                 const date = issueDate(issue);
                 if (!url || !date) return;
-                records.push({
+
+                const reviewKey = `${slug}|${system}|${issue}`;
+                const existing = recordsByReview.get(reviewKey);
+                if (existing && existing.page <= page) return;
+
+                recordsByReview.set(reviewKey, {
                     gameSlug: slug,
                     gameTitle: title,
                     gameHref: href,
@@ -113,7 +169,8 @@
                 });
             });
         });
-        return records.sort(compareRecords);
+
+        return Array.from(recordsByReview.values()).sort(compareRecords);
     }
 
     function compareRecords(a, b) {
@@ -159,13 +216,15 @@
         if (state.chunkCache.has(chunk)) return state.chunkCache.get(chunk);
         if (state.chunkPromises.has(chunk)) return state.chunkPromises.get(chunk);
 
-        const promise = fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" })
-            .then((response) => {
+        const promise = Promise.all([
+            fetch(`${DATA_BASE}${encodeURIComponent(chunk)}`, { cache: "default" }).then((response) => {
                 if (!response.ok) throw new Error(`${chunk} HTTP ${response.status}`);
                 return response.json();
-            })
-            .then((data) => {
-                const records = parseChunk(data);
+            }),
+            loadAwardIssueKeys()
+        ])
+            .then(([data, awardIssues]) => {
+                const records = parseChunk(data, awardIssues);
                 state.chunkCache.set(chunk, records);
                 state.chunkPromises.delete(chunk);
                 return records;
@@ -270,11 +329,7 @@
         const summary = document.getElementById("zzapReviewSummary");
         if (count) count.textContent = "0";
         if (!summary) return;
-        const totals = state.manifest?.totals;
-        const totalText = Number(totals?.records) > 0
-            ? `${Number(totals.records).toLocaleString("en-GB")} additional reviews across ${Number(totals.games || 0).toLocaleString("en-GB")} CCG games.`
-            : "Additional Zzap!64 reviews are available by letter.";
-        summary.textContent = `Choose a letter or search. ${totalText}`;
+        summary.textContent = "Choose a letter or search. Award reviews already shown above are automatically excluded.";
     }
 
     function updateSummary(records) {
