@@ -67,7 +67,7 @@ assert.strictEqual(repeated, updated, "Metadata generation must be deterministic
 
 const gameShell = fs.readFileSync(path.join(__dirname, "..", "games", "game.html"), "utf8");
 const finalPage = buildCanonicalPage(gameShell, args.game);
-assert.match(finalPage, /property="og:image:type" content="image\\/jpeg"/);
+assert.ok(finalPage.includes('property="og:image:type" content="image/jpeg"'));
 assert.match(finalPage, /property="og:image:width" content="460"/);
 assert.match(finalPage, /property="og:image:height" content="215"/);
 assert.match(finalPage, /property="og:image:secure_url"/);
