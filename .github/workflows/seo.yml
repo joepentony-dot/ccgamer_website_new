@@ -12,6 +12,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ccg-generated-seo-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   seo:
     runs-on: ubuntu-latest
@@ -22,6 +26,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v5
@@ -43,6 +49,11 @@ jobs:
           else
             echo "[seo] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
           fi
+
+      - name: Regenerate retro feature pages
+        run: |
+          echo "[seo] Regenerating Retro Specials, Retro Events and Amiga Demo Music from their authoritative datasets..."
+          node scripts/generate-retro-pages.js
 
       - name: Generate game video SEO
         run: |
@@ -68,14 +79,17 @@ jobs:
       - name: Validate retro watch page video SEO
         run: npm run validate:retro-video-seo
 
+      - name: Check generated output whitespace
+        run: git diff --check
+
       - name: Commit generated SEO artifacts
         if: github.event_name != 'pull_request'
         run: |
           echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-specials/*/index.html retro-events/*/index.html amiga-demo-music/*/index.html
-          git diff --cached --quiet || git commit -m "Auto-update video SEO artifacts [skip ci]"
+          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-events retro-specials amiga-demo-music
+          git diff --cached --quiet || git commit -m "Auto-update generated SEO and video pages [skip ci]"
 
       - name: Push generated SEO artifacts
         if: github.event_name != 'pull_request'
