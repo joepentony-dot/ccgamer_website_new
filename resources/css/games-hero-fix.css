@@ -116,11 +116,20 @@
     line-height: 1;
 }
 
-.ccg-page--games-index .ccg-game-card__btn::after {
+/*
+   The shared card system already uses ::after for the animated sheen.
+   Keep that layer untouched and render the short visible CTA via ::before
+   so the button text remains sharp in both C64 and Amiga modes.
+*/
+.ccg-page--games-index .ccg-game-card__btn::before {
     content: "View Game";
+    position: relative;
+    z-index: 2;
+    display: inline-block;
     font-size: calc(0.78rem * var(--ui-font-scale));
     line-height: 1;
     letter-spacing: 0.08em;
+    color: inherit;
 }
 
 /* --- Mobile/touch compaction ----------------------------------- */
