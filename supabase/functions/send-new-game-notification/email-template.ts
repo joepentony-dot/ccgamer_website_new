@@ -73,7 +73,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "🏅",
       heading: featured ? "Featured Zzap!64 Video" : spotlight ? "CCG Zzap!64 Spotlight" : "New Zzap!64 Feature",
-      intro: "A new Zzap!64 feature has just gone live, covering the magazine, its awards and the Commodore games reviewed at the time.",
+      intro: featured
+        ? "Today’s featured Zzap!64 video is already part of the Cheeky Commodore Gamer archive. If you missed it first time around, or fancy another watch, here it is."
+        : spotlight
+          ? "This is a Zzap!64 video I’ve been revisiting recently, so I’m putting it under the CCG spotlight. Have you watched it, and what do you make of the games and awards featured?"
+          : "A new Zzap!64 feature has just gone live, covering the magazine, its awards and the Commodore games reviewed at the time.",
       cta: "Watch the Zzap!64 Feature",
       shareLabel: "Share this Zzap!64 feature",
       archiveLabel: "More Zzap!64 features",
@@ -86,7 +90,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "🎬",
       heading: featured ? "Featured CCG Video" : spotlight ? "CCG Video Spotlight" : "New CCG Video",
-      intro: "A new Cheeky Commodore Gamer video is now live, with another detailed look back at Commodore gaming.",
+      intro: featured
+        ? "Today’s featured CCG video is already available on the website. If you missed it first time around, or fancy another watch, here it is."
+        : spotlight
+          ? "This is a CCG video I’ve been revisiting recently, so I’m putting it back under the spotlight. If you missed it first time around, here it is."
+          : "A new Cheeky Commodore Gamer video is now live, with another detailed look back at Commodore gaming.",
       cta: "Watch the Video",
       shareLabel: "Share this video",
       archiveLabel: "More CCG Retro Specials",
@@ -99,7 +107,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "📅",
       heading: featured ? "Featured Retro Event" : spotlight ? "Retro Event Spotlight" : "New Retro Event",
-      intro: "A new retro event has been added to the CCG website, with the available details gathered in one place.",
+      intro: featured
+        ? "Today’s featured retro event is already listed on the Cheeky Commodore Gamer website. Here’s another look at the details in case you missed it."
+        : spotlight
+          ? "This retro event is currently under the CCG spotlight. Take a look at the details and see whether it belongs in your calendar."
+          : "A new retro event has been added to the CCG website, with the available details gathered in one place.",
       cta: "View the Event",
       shareLabel: "Share this event",
       archiveLabel: "Browse Retro Events",
@@ -112,7 +124,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
     return {
       emoji: featured ? "⭐" : spotlight ? "🎯" : "🎵",
       heading: featured ? "Featured Amiga Video" : spotlight ? "Amiga Music Spotlight" : "New Amiga Demo Music",
-      intro: "A new Amiga demo music video is now available on CCG, preserving another part of the machine's audio history.",
+      intro: featured
+        ? "Today’s featured Amiga video is already available on the website. If you missed it first time around, or fancy another listen, here it is."
+        : spotlight
+          ? "This is an Amiga demo music video I’ve been revisiting recently, so I’m putting it under the CCG spotlight. Have another listen and let me know what you think."
+          : "A new Amiga demo music video is now available on CCG, preserving another part of the machine's audio history.",
       cta: "Watch the Amiga Video",
       shareLabel: "Share this Amiga video",
       archiveLabel: "More Amiga Demo Music",
@@ -124,7 +140,11 @@ function presentationFor(args: BrandedEmailArgs): Presentation {
   return {
     emoji: featured ? "⭐" : spotlight ? "🎯" : "🆕",
     heading: featured ? "Featured Classic" : spotlight ? "CCG Game Spotlight" : "New Game Added",
-    intro: "A new game has just gone live in the Cheeky Commodore Gamer archive.",
+    intro: featured
+      ? "Today’s featured classic is already part of the Cheeky Commodore Gamer archive. If you missed it first time around, or fancy another look, here it is."
+      : spotlight
+        ? "This is a game I’ve been playing recently, so I’m putting it under the CCG spotlight. Have you played it, and what do you make of it?"
+        : "A new game has just gone live in the Cheeky Commodore Gamer archive.",
     cta: "View Game Page",
     shareLabel: "Share this game",
     archiveLabel: "Explore more Commodore games",
@@ -175,9 +195,14 @@ export function buildBrandedEmailHtml(args: BrandedEmailArgs): string {
   const safePreferencesUrl = escapeHtml(args.preferencesUrl);
   const safeUnsubscribeUrl = escapeHtml(args.unsubscribeUrl);
   const safeName = escapeHtml(recipientName(args.recipientEmail));
+  const isNewContent = args.mode === "new_content";
   const preferenceReason = args.contentType === "game"
-    ? "You’re receiving this email because you opted into new game notifications."
-    : "You’re receiving this email because you opted into new CCG video and Retro Special notifications.";
+    ? isNewContent
+      ? "You’re receiving this email because you opted into new game notifications."
+      : "You’re receiving this email because you opted into game notifications."
+    : isNewContent
+      ? "You’re receiving this email because you opted into new CCG video and Retro Special notifications."
+      : "You’re receiving this email because you opted into CCG video and Retro Special notifications.";
 
   const image = args.thumbnail
     ? `<tr>
