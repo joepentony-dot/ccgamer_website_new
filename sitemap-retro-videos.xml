@@ -363,4 +363,14 @@
       <video:publication_date>2026-08-04T17:30:23Z</video:publication_date>
     </video:video>
   </url>
+  <url>
+    <loc>https://www.cheekycommodoregamer.co.uk/retro-specials/zzap64-20-lowest-scoring-commodore-64-games/</loc>
+    <video:video>
+      <video:thumbnail_loc>https://i.ytimg.com/vi/gEcii5RNges/maxresdefault.jpg</video:thumbnail_loc>
+      <video:title>Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games</video:title>
+      <video:description>Count down the 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, from 10% to just 3%, and decide whether the magazine was too harsh.</video:description>
+      <video:player_loc>https://www.youtube.com/embed/gEcii5RNges</video:player_loc>
+      <video:publication_date>2026-08-10</video:publication_date>
+    </video:video>
+  </url>
 </urlset>
