@@ -1,0 +1,43 @@
+name: Game Social Sharing Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "resources/js/ccg-share.js"
+      - "scripts/generate-slug-pages.js"
+      - "scripts/test-game-social-sharing.js"
+      - "templates/game-template.html"
+      - "admin/templates/game-landing-template.html"
+      - ".github/workflows/game-social-sharing-validation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: game-social-sharing-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check resources/js/ccg-share.js
+          node --check scripts/generate-slug-pages.js
+          node --check scripts/test-game-social-sharing.js
+
+      - name: Run game sharing regression checks
+        run: node scripts/test-game-social-sharing.js

@@ -59,6 +59,77 @@ function getThumbnailFilename(game, slug) {
     return raw.includes("/") ? path.basename(raw) : raw;
 }
 
+function getImageMetadata(filePath) {
+    const extension = path.extname(filePath).toLowerCase();
+    const mimeByExtension = {
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".gif": "image/gif",
+        ".webp": "image/webp"
+    };
+    const metadata = {
+        mimeType: mimeByExtension[extension] || "image/jpeg",
+        width: 0,
+        height: 0
+    };
+
+    if (!fs.existsSync(filePath)) return metadata;
+
+    const buffer = fs.readFileSync(filePath);
+    const isPng = buffer.length >= 24 &&
+        buffer[0] === 0x89 &&
+        buffer.toString("ascii", 1, 4) === "PNG";
+    const isGif = buffer.length >= 10 &&
+        (buffer.toString("ascii", 0, 6) === "GIF87a" || buffer.toString("ascii", 0, 6) === "GIF89a");
+    const isWebp = buffer.length >= 30 &&
+        buffer.toString("ascii", 0, 4) === "RIFF" &&
+        buffer.toString("ascii", 8, 12) === "WEBP";
+    const isJpeg = buffer.length >= 4 && buffer[0] === 0xff && buffer[1] === 0xd8;
+
+    // Dimensions are detected from the actual bytes. MIME follows the public
+    // filename because GitHub Pages derives its Content-Type from that suffix.
+    if (isPng) {
+        metadata.width = buffer.readUInt32BE(16);
+        metadata.height = buffer.readUInt32BE(20);
+        return metadata;
+    }
+    if (isGif) {
+        metadata.width = buffer.readUInt16LE(6);
+        metadata.height = buffer.readUInt16LE(8);
+        return metadata;
+    }
+    if (isWebp && buffer.toString("ascii", 12, 16) === "VP8X") {
+        metadata.width = 1 + buffer.readUIntLE(24, 3);
+        metadata.height = 1 + buffer.readUIntLE(27, 3);
+        return metadata;
+    }
+    if (isJpeg) {
+        let offset = 2;
+        while (offset + 9 < buffer.length) {
+            if (buffer[offset] !== 0xff) {
+                offset += 1;
+                continue;
+            }
+            const marker = buffer[offset + 1];
+            const segmentLength = buffer.readUInt16BE(offset + 2);
+            if (segmentLength < 2) break;
+            if (
+                (marker >= 0xc0 && marker <= 0xc3) ||
+                (marker >= 0xc5 && marker <= 0xc7) ||
+                (marker >= 0xc9 && marker <= 0xcb) ||
+                (marker >= 0xcd && marker <= 0xcf)
+            ) {
+                metadata.height = buffer.readUInt16BE(offset + 5);
+                metadata.width = buffer.readUInt16BE(offset + 7);
+                return metadata;
+            }
+            offset += 2 + segmentLength;
+        }
+    }
+    return metadata;
+}
+
 function validateForGeneration(game, slug, gamesBySlug) {
     const issues = [];
 
@@ -70,9 +141,14 @@ function validateForGeneration(game, slug, gamesBySlug) {
     const expectedThumbnail = thumbnailFile;
     const canonicalUrl = gameOutputUtils.getGameCanonicalUrl(slug, SITE_ROOT);
     const ogImage = `${SITE_ROOT}/resources/images/thumbnails/all/${expectedThumbnail}`;
+    const thumbnailPath = path.join(thumbnailsDir, expectedThumbnail);
+    const imageMetadata = getImageMetadata(thumbnailPath);
 
     if (!thumbnailFile) issues.push('missing thumbnail');
-    if (!fs.existsSync(path.join(thumbnailsDir, expectedThumbnail))) issues.push(`missing thumbnail file ${expectedThumbnail}`);
+    if (!fs.existsSync(thumbnailPath)) issues.push(`missing thumbnail file ${expectedThumbnail}`);
+    if (fs.existsSync(thumbnailPath) && (!imageMetadata.width || !imageMetadata.height)) {
+        issues.push(`unreadable thumbnail dimensions for ${expectedThumbnail}`);
+    }
     if (!canonicalUrl.endsWith(`/games/${slug}/`)) issues.push("canonical URL mismatch");
     if (!ogImage.endsWith(`/resources/images/thumbnails/all/${expectedThumbnail}`)) issues.push("OpenGraph image path mismatch");
 
@@ -80,7 +156,8 @@ function validateForGeneration(game, slug, gamesBySlug) {
         issues,
         expectedThumbnail,
         canonicalUrl,
-        ogImage
+        ogImage,
+        imageMetadata
     };
 }
 
@@ -183,6 +260,7 @@ function getExpectedPageArtifacts(game, slug, validation, canonicalPath) {
             canonicalUrl: validation.canonicalUrl,
             ogImage: validation.ogImage,
             platformLong,
+            imageMetadata: validation.imageMetadata,
             existingHtml
         }),
         redirectStubHtml: buildRedirectStubHtml(
@@ -323,6 +401,75 @@ function serializeSchemaForHtml(schema) {
         .replace(/\u2029/g, "\\u2029");
 }
 
+function buildSocialMetaBlock({
+    title,
+    description,
+    canonicalUrl,
+    ogImage,
+    imageMetadata
+}) {
+    const imageAlt = `${title} game preview on Cheeky Commodore Gamer`;
+    const width = Number(imageMetadata?.width || 0);
+    const height = Number(imageMetadata?.height || 0);
+    const mimeType = String(imageMetadata?.mimeType || "image/jpeg");
+
+    return [
+        `    <meta property="og:type" content="website">`,
+        `    <meta property="og:site_name" content="Cheeky Commodore Gamer">`,
+        `    <meta property="og:url" id="game-og-url" content="${escapeHtml(canonicalUrl)}">`,
+        `    <meta property="og:title" id="game-og-title" content="${escapeHtml(title)}">`,
+        `    <meta property="og:description" id="game-og-description" content="${escapeHtml(description)}">`,
+        `    <meta property="og:image" id="game-og-image" content="${escapeHtml(ogImage)}">`,
+        `    <meta property="og:image:secure_url" content="${escapeHtml(ogImage)}">`,
+        `    <meta property="og:image:type" content="${escapeHtml(mimeType)}">`,
+        ...(width ? [`    <meta property="og:image:width" content="${width}">`] : []),
+        ...(height ? [`    <meta property="og:image:height" content="${height}">`] : []),
+        `    <meta property="og:image:alt" content="${escapeHtml(imageAlt)}">`,
+        `    <meta name="twitter:card" content="summary_large_image">`,
+        `    <meta name="twitter:title" id="game-twitter-title" content="${escapeHtml(title)}">`,
+        `    <meta name="twitter:description" id="game-twitter-description" content="${escapeHtml(description)}">`,
+        `    <meta name="twitter:image" id="game-twitter-image" content="${escapeHtml(ogImage)}">`,
+        `    <meta name="twitter:image:alt" content="${escapeHtml(imageAlt)}">`,
+        `    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">`
+    ].join("\n");
+}
+
+function upsertSocialMeta(html, socialMetaBlock) {
+    const managedKeys = [
+        ["property", "og:type"],
+        ["property", "og:site_name"],
+        ["property", "og:url"],
+        ["property", "og:title"],
+        ["property", "og:description"],
+        ["property", "og:image"],
+        ["property", "og:image:secure_url"],
+        ["property", "og:image:type"],
+        ["property", "og:image:width"],
+        ["property", "og:image:height"],
+        ["property", "og:image:alt"],
+        ["name", "twitter:card"],
+        ["name", "twitter:title"],
+        ["name", "twitter:description"],
+        ["name", "twitter:image"],
+        ["name", "twitter:image:alt"],
+        ["name", "twitter:url"]
+    ];
+    let output = String(html || "");
+    for (const [attribute, key] of managedKeys) {
+        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const pattern = new RegExp(
+            `^[ \\t]*<meta\\b(?=[^>]*\\b${attribute}\\s*=\\s*(["'])${escapedKey}\\1)[^>]*>\\s*\\n?`,
+            "gim"
+        );
+        output = output.replace(pattern, "");
+    }
+    const schemaMarker = /^[ \\t]*<script\\b(?=[^>]*data-ccg-schema\\s*=\\s*(["'])game-graph\\1)/im;
+    if (schemaMarker.test(output)) {
+        return output.replace(schemaMarker, `${socialMetaBlock}\n$&`);
+    }
+    return output.replace(/<\/head>/i, `${socialMetaBlock}\n</head>`);
+}
+
 function buildCanonicalHtml({
     slug,
     game,
@@ -331,6 +478,7 @@ function buildCanonicalHtml({
     canonicalUrl,
     ogImage,
     platformLong,
+    imageMetadata,
     existingHtml
 }) {
     const gameId = String(game?.id || toGameId(slug)).trim();
@@ -348,35 +496,42 @@ function buildCanonicalHtml({
     const current = String(existingHtml || "");
 
     if (current.trim()) {
+        const socialDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
+        const socialTitle = `${title} – ${normalizePlatformShort(game)} | Review, Screens & History`;
+        let updated = upsertSocialMeta(current, buildSocialMetaBlock({
+            title: socialTitle,
+            description: socialDescription,
+            canonicalUrl,
+            ogImage,
+            imageMetadata
+        }));
         const existingSchema = /^[ \t]*<script\b(?=[^>]*type\s*=\s*(["'])application\/ld\+json\1)(?=[^>]*data-ccg-schema\s*=\s*(["'])game-graph\2)[^>]*>.*?<\/script>[ \t]*$/im;
-        if (existingSchema.test(current)) {
-            return current.replace(existingSchema, schemaScript);
+        if (existingSchema.test(updated)) {
+            return updated.replace(existingSchema, schemaScript);
         }
         const charset = /^[ \t]*<meta charset=(["'])UTF-8\1\s*\/>[ \t]*$/im;
-        if (charset.test(current)) {
-            return current.replace(charset, `${schemaScript}\n$&`);
+        if (charset.test(updated)) {
+            return updated.replace(charset, `${schemaScript}\n$&`);
         }
-        return current.replace(/<\/head>/i, `${schemaScript}\n</head>`);
+        return updated.replace(/<\/head>/i, `${schemaScript}\n</head>`);
     }
 
-    const metaDescription = `${title} on ${platformLong} — screenshots, manual, downloads and video.`;
+    const metaDescription = `${title} on ${platformLong} — screenshots, gameplay video, manual, downloads and game history.`;
+    const socialTitle = `${title} – ${normalizePlatformShort(game)} | Review, Screens & History`;
+    const socialMetaBlock = buildSocialMetaBlock({
+        title: socialTitle,
+        description: metaDescription,
+        canonicalUrl,
+        ogImage,
+        imageMetadata
+    });
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>${escapeHtml(title)} | Cheeky Commodore Gamer</title>
     <meta name="description" content="${escapeHtml(metaDescription)}">
     <link rel="canonical" href="${escapeHtml(canonicalUrl)}">
-    <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Cheeky Commodore Gamer">
-    <meta property="og:url" content="${escapeHtml(canonicalUrl)}">
-    <meta property="og:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
-    <meta property="og:description" content="${escapeHtml(metaDescription)}">
-    <meta property="og:image" content="${escapeHtml(ogImage)}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="${escapeHtml(title)} | Cheeky Commodore Gamer">
-    <meta name="twitter:description" content="${escapeHtml(metaDescription)}">
-    <meta name="twitter:image" content="${escapeHtml(ogImage)}">
-    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}">
+${socialMetaBlock}
 ${schemaScript}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -544,6 +699,8 @@ if (require.main === module) {
 module.exports = {
     buildCanonicalHtml,
     buildDescription,
+    buildSocialMetaBlock,
+    getImageMetadata,
     getCanonicalRewriteReason,
     getExpectedPageArtifacts,
     normalizeSlug,
