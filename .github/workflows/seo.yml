@@ -38,16 +38,21 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
         run: |
           if [ -n "$YOUTUBE_API_KEY" ]; then
-            echo "[seo] Syncing verified YouTube upload dates, durations and titles..."
+            echo "[seo] Syncing verified YouTube upload dates, durations, titles and thumbnails..."
             npm run sync:video-metadata
           else
             echo "[seo] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
           fi
 
-      - name: Generate video SEO
+      - name: Generate game video SEO
         run: |
-          echo "[seo] Generating static video markup and video sitemap..."
+          echo "[seo] Generating static game video markup and game video sitemap..."
           npm run generate:video-seo
+
+      - name: Generate retro watch page video SEO
+        run: |
+          echo "[seo] Generating Retro Specials, Retro Events and Amiga Demo Music watch-page video SEO..."
+          npm run generate:retro-video-seo
 
       - name: Generate sitemap index
         run: |
@@ -57,8 +62,11 @@ jobs:
       - name: Validate sitemaps
         run: npm run validate:sitemaps
 
-      - name: Validate video SEO
+      - name: Validate game video SEO
         run: npm run validate:video-seo
+
+      - name: Validate retro watch page video SEO
+        run: npm run validate:retro-video-seo
 
       - name: Commit generated SEO artifacts
         if: github.event_name != 'pull_request'
@@ -66,7 +74,7 @@ jobs:
           echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
-          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html
+          git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-specials/*/index.html retro-events/*/index.html amiga-demo-music/*/index.html
           git diff --cached --quiet || git commit -m "Auto-update video SEO artifacts [skip ci]"
 
       - name: Push generated SEO artifacts
