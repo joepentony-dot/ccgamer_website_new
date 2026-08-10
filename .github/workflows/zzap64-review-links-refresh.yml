@@ -64,7 +64,6 @@ jobs:
       - name: Validate resolver syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
-          node --check scripts/enrich-zzap64-game-re-reviews.js 2>/dev/null || true
           node --check scripts/enrich-zzap64-game-reviews.js
           node --check scripts/build-zzap64-game-review-chunks.js
           node --check scripts/refresh-lemon-game-cache.js
