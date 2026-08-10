@@ -19,20 +19,23 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: codex/zzap64-deep-direct-links
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
           node-version: 22
 
-      - name: Apply final generator patch
-        run: node scripts/patch-zzap64-deep-generator.js
+      - name: Apply final Zzap patches
+        run: |
+          node scripts/patch-zzap64-deep-generator.js
+          node scripts/patch-zzap64-future.js
 
-      - name: Validate resolver syntax
+      - name: Validate JavaScript syntax
         run: |
           node --check scripts/generate-zzap64-review-links.js
           node --check scripts/zzap64-bible-client.js
+          node --check js/zzap64-awards.js
 
       - name: Deep-refresh direct magazine links
         run: node scripts/generate-zzap64-review-links.js --live
@@ -54,15 +57,27 @@ jobs:
           }
           NODE
 
-      - name: Commit generator and enriched map
+      - name: Run Zzap regression tests
+        run: |
+          node scripts/generate-zzap64-review-links.js --check
+          node --test tests/zzap64-review-links.test.mjs
+          node scripts/audit-zzap64-awards.js
+
+      - name: Commit permanent Zzap changes
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/generate-zzap64-review-links.js data/zzap64-review-links.json
+          git add \
+            scripts/generate-zzap64-review-links.js \
+            data/zzap64-review-links.json \
+            js/zzap64-awards.js \
+            zzap64/index.html \
+            resources/css/zzap64-awards.css \
+            tests/zzap64-review-links.test.mjs
           if git diff --cached --quiet; then
-            echo "Review-link generator and map already current."
+            echo "Zzap review-link and future-year outputs already current."
             exit 0
           fi
-          git commit -m "Resolve all Zzap64 awards to direct scans"
+          git commit -m "Complete direct Zzap review links and future-year archive"
           git push origin HEAD:codex/zzap64-deep-direct-links
