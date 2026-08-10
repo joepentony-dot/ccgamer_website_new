@@ -10,6 +10,7 @@ const repoRoot = process.env.CCG_REPO_ROOT
   : path.resolve(__dirname, "..");
 const gamesPath = path.join(repoRoot, "games", "games.json");
 const metadataPath = path.join(repoRoot, "data", "video-metadata.json");
+const overridesPath = path.join(repoRoot, "data", "game-video-overrides.json");
 const sitemapPath = path.join(repoRoot, "sitemap-videos.xml");
 
 function fail(message) {
@@ -55,12 +56,22 @@ function typesOf(entry) {
   return Array.isArray(entry?.["@type"]) ? entry["@type"] : [entry?.["@type"]];
 }
 
+function sitemapBlockFor(sitemap, canonical) {
+  return sitemap
+    .split(/(?=<url>)/g)
+    .find((block) => block.includes(`<loc>${canonical}</loc>`)) || "";
+}
+
 function main() {
   const gamesPayload = readJson(gamesPath, []);
   const games = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload.games || []);
   const metadataPayload = readJson(metadataPath, { videos: {} });
   const metadata = metadataPayload?.videos && typeof metadataPayload.videos === "object"
     ? metadataPayload.videos
+    : {};
+  const overridesPayload = readJson(overridesPath, { videos: {} });
+  const overrides = overridesPayload?.videos && typeof overridesPayload.videos === "object"
+    ? overridesPayload.videos
     : {};
 
   assert(fs.existsSync(sitemapPath), "sitemap-videos.xml is missing. Run scripts/generate-video-seo.js first.");
@@ -69,6 +80,7 @@ function main() {
 
   let expected = 0;
   let verifiedVideoObjects = 0;
+  let externalVideos = 0;
   const expectedLocs = new Set();
 
   for (const game of games) {
@@ -82,6 +94,7 @@ function main() {
     const canonical = `https://www.cheekycommodoregamer.co.uk/games/${slug}/`;
     expectedLocs.add(canonical);
     const html = fs.readFileSync(filePath, "utf8");
+    const external = overrides[String(game?.id || "").trim()] || null;
 
     const sectionTag = (html.match(/<section\b[^>]*\bid=(["'])game-video-section\1[^>]*>/i) || [])[0] || "";
     assert(sectionTag, `${slug}: missing game-video-section.`);
@@ -89,18 +102,31 @@ function main() {
 
     const iframeTag = (html.match(/<iframe\b[^>]*\bid=(["'])game-video-embed\1[^>]*>/i) || [])[0] || "";
     assert(iframeTag, `${slug}: missing game video iframe.`);
-    assert(
-      iframeTag.includes(`https://www.youtube-nocookie.com/embed/${videoId}`),
-      `${slug}: static iframe does not point to its YouTube video ID.`
-    );
+    if (external) {
+      assert(iframeTag.includes(external.playerUrl), `${slug}: static iframe does not point to its external player URL.`);
+      assert(iframeTag.includes(`data-video-provider="${external.provider || "external"}"`), `${slug}: external video provider marker is missing.`);
+      externalVideos += 1;
+    } else {
+      assert(
+        iframeTag.includes(`https://www.youtube-nocookie.com/embed/${videoId}`),
+        `${slug}: static iframe does not point to its YouTube video ID.`
+      );
+    }
     assert(/\btitle=(["'])[^'"]+\1/i.test(iframeTag), `${slug}: video iframe is missing a descriptive title.`);
 
     const buttonTag = (html.match(/<a\b[^>]*\bid=(["'])gameVideoBtn\1[^>]*>/i) || [])[0] || "";
-    assert(buttonTag.includes(`https://www.youtube.com/watch?v=${videoId}`), `${slug}: YouTube action link is missing or incorrect.`);
+    if (external) {
+      assert(buttonTag.includes(external.actionUrl.replace(/&/g, "&amp;")) || buttonTag.includes(external.actionUrl), `${slug}: external video action link is missing or incorrect.`);
+      const sitemapBlock = sitemapBlockFor(sitemap, canonical);
+      assert(sitemapBlock.includes(external.playerUrl), `${slug}: video sitemap does not point to the external player URL.`);
+      assert(sitemapBlock.includes(external.thumbnailUrl), `${slug}: video sitemap does not use the configured external-video thumbnail.`);
+    } else {
+      assert(buttonTag.includes(`https://www.youtube.com/watch?v=${videoId}`), `${slug}: YouTube action link is missing or incorrect.`);
+    }
 
     const objects = schemaObjects(html);
     const videoObjects = objects.filter((entry) => typesOf(entry).includes("VideoObject"));
-    const verified = hasValidUploadDate(metadata?.[videoId]?.uploadDate);
+    const verified = !external && hasValidUploadDate(metadata?.[videoId]?.uploadDate);
     if (verified) {
       assert(videoObjects.length === 1, `${slug}: verified video metadata exists but exactly one VideoObject was not emitted.`);
       const object = videoObjects[0];
@@ -110,7 +136,7 @@ function main() {
       assert(object.embedUrl === `https://www.youtube.com/embed/${videoId}`, `${slug}: VideoObject embedUrl is incorrect.`);
       verifiedVideoObjects += 1;
     } else {
-      assert(videoObjects.length === 0, `${slug}: VideoObject was emitted without a verified upload date.`);
+      assert(videoObjects.length === 0, `${slug}: VideoObject was emitted without verified YouTube metadata.`);
     }
   }
 
@@ -121,6 +147,7 @@ function main() {
 
   console.log(`[validate-video-seo] ${expected} video-enabled canonical game pages validated.`);
   console.log(`[validate-video-seo] ${verifiedVideoObjects} Google-eligible game VideoObjects validated from verified metadata.`);
+  console.log(`[validate-video-seo] ${externalVideos} externally hosted game video override(s) validated.`);
 }
 
 main();
