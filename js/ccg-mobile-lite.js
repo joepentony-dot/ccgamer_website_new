@@ -35,13 +35,11 @@
 
     const closeDedicatedBoxLightbox = () => {
         const lightbox = document.querySelector("[data-ccg-box-lightbox]");
-        if (!lightbox || !lightbox.classList.contains("is-open")) return;
+        if (!lightbox || !lightbox.classList.contains("open")) return;
 
         const savedScroll = Number(lightbox.dataset.scrollY || window.scrollY || 0);
-        lightbox.classList.remove("is-open");
+        lightbox.classList.remove("open", "active");
         lightbox.setAttribute("aria-hidden", "true");
-        root.classList.remove("ccg-box-lightbox-open");
-        document.body?.classList.remove("ccg-box-lightbox-open");
 
         requestAnimationFrame(() => {
             window.scrollTo({ top: savedScroll, left: 0, behavior: "auto" });
@@ -62,17 +60,20 @@
         let lightbox = document.querySelector("[data-ccg-box-lightbox]");
         if (lightbox) return lightbox;
 
+        // Reuse the established modal classes, but use a separate DOM node from
+        // the screenshot/PDF viewer. This avoids the shared-modal state that was
+        // leaving mobile users with only a dark overlay.
         lightbox = document.createElement("div");
-        lightbox.className = "ccg-box-lightbox";
+        lightbox.className = "ccg-modal ccg-box-lightbox";
         lightbox.setAttribute("data-ccg-box-lightbox", "true");
         lightbox.setAttribute("role", "dialog");
         lightbox.setAttribute("aria-modal", "true");
         lightbox.setAttribute("aria-label", "Enlarged game box artwork");
         lightbox.setAttribute("aria-hidden", "true");
         lightbox.innerHTML = `
-            <button class="ccg-box-lightbox__close" type="button" aria-label="Close enlarged game box">&times;</button>
-            <div class="ccg-box-lightbox__stage">
-                <img class="ccg-box-lightbox__image" alt="" decoding="async">
+            <div class="ccg-modal-content">
+                <button class="ccg-modal-close ccg-box-lightbox__close" type="button" aria-label="Close enlarged game box">&times;</button>
+                <img class="ccg-box3d-modal-image ccg-box-lightbox__image" alt="" decoding="async">
             </div>
         `;
         document.body.appendChild(lightbox);
@@ -118,9 +119,7 @@
         enlargedImage.src = source;
         enlargedImage.alt = sourceImage?.alt || "Game box artwork";
 
-        root.classList.add("ccg-box-lightbox-open");
-        document.body?.classList.add("ccg-box-lightbox-open");
-        lightbox.classList.add("is-open");
+        lightbox.classList.add("open");
         lightbox.setAttribute("aria-hidden", "false");
 
         requestAnimationFrame(() => {
@@ -141,8 +140,8 @@
         if (root.dataset.ccgDedicatedBoxLightboxBound === "true") return;
 
         // Capture the interaction before the legacy shared modal handler. The
-        // 3D box now has its own viewport-rooted viewer, so it cannot open at a
-        // different vertical position on long mobile game pages.
+        // 3D box now has its own body-level viewer, so it opens in the viewport
+        // where the user actually tapped it, regardless of page scroll depth.
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             const box = target?.closest(".game-hero__box3d");
@@ -158,7 +157,7 @@
 
         document.addEventListener("keydown", (event) => {
             const lightbox = document.querySelector("[data-ccg-box-lightbox]");
-            if (event.key === "Escape" && lightbox?.classList.contains("is-open")) {
+            if (event.key === "Escape" && lightbox?.classList.contains("open")) {
                 event.preventDefault();
                 closeDedicatedBoxLightbox();
                 return;
