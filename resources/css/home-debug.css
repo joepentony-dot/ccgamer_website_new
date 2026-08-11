@@ -138,3 +138,135 @@ html[data-ccg-page="home"] .ccg-omega-divider {
         padding-block: 14px;
     }
 }
+
+/* ============================================================
+   HOME FEATURED GAMEPLAY — PLATFORM IDENTITY + COMPACT RHYTHM
+   ------------------------------------------------------------
+   The renderer always outputs C64 first and Amiga second.
+   Reuses the existing platform logo artwork already used on game pages.
+============================================================ */
+
+html[data-ccg-page="home"] .home-featured-videos {
+    margin-top: 14px;
+    padding: 12px 14px;
+    gap: 8px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos__copy {
+    display: grid;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos__title {
+    margin: 0 0 2px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos__text {
+    margin: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-grid {
+    gap: 12px;
+    margin: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card {
+    gap: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card .ccg-card__body {
+    grid-template-rows: auto auto auto auto;
+    align-content: start;
+    gap: 5px;
+    min-height: 0;
+    padding: 10px 12px 11px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card__label,
+html[data-ccg-page="home"] .home-featured-videos .home-video-card .ccg-card__title,
+html[data-ccg-page="home"] .home-featured-videos .home-video-card .ccg-card__text {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card__links {
+    align-self: start;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 3px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card__links .home-video-card__game-link {
+    min-height: 38px;
+    padding: 8px 16px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card__badge {
+    top: 10px;
+    padding: 0;
+    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background-color: rgba(2, 7, 18, 0.82);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: calc(100% - 14px) auto;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.48), 0 0 14px rgba(var(--accent-rgb), 0.16);
+    color: transparent;
+    font-size: 0;
+    line-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    text-indent: -9999px;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(1) .home-video-card__badge {
+    left: 10px;
+    right: auto;
+    width: 154px;
+    height: 34px;
+    background-image: url("/resources/images/platforms/commodore-64-logo.webp");
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(2) .home-video-card__badge {
+    left: auto;
+    right: 10px;
+    width: 116px;
+    height: 42px;
+    background-image: url("/resources/images/platforms/commodore-amiga-logo.webp");
+    background-size: calc(100% - 14px) calc(100% - 10px);
+}
+
+@media (max-width: 820px) {
+    html[data-ccg-page="home"] .home-featured-videos {
+        margin-top: 10px;
+        padding: 10px 0;
+        gap: 7px;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos .home-video-grid {
+        gap: 10px;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos .home-video-card {
+        margin-inline: 6px;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos .home-video-card .ccg-card__body {
+        gap: 4px;
+        padding: 9px 10px 10px;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(1) .home-video-card__badge {
+        left: 8px;
+        width: 132px;
+        height: 30px;
+    }
+
+    html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(2) .home-video-card__badge {
+        right: 8px;
+        width: 102px;
+        height: 38px;
+    }
+}
