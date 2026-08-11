@@ -25,7 +25,7 @@
     <header class="seo-centre__header">
       <p class="seo-centre__kicker">CCG Admin · Search Intelligence</p>
       <h1>SEO Opportunity Centre</h1>
-      <p class="seo-centre__intro">Private Search Console analysis for finding pages and search terms where CCG is already close to gaining more traffic. Search Console credentials remain inside the Supabase Edge Function and raw report data is not written to the public repository or browser storage.</p>
+      <p class="seo-centre__intro">Private Search Console analysis for finding pages and search terms where CCG is already close to gaining more traffic. Google access uses a short-lived read-only token that exists only in this administrator browser session; no Google private key, refresh token or Search Console report is written to the public repository or browser storage.</p>
     </header>
 
     <section class="seo-centre__toolbar" aria-label="SEO report controls">
@@ -38,7 +38,7 @@
         </select>
       </label>
       <div class="seo-centre__actions">
-        <button type="button" class="ccg-btn ccg-btn--primary" data-seo-refresh>Refresh Search Console</button>
+        <button type="button" class="ccg-btn ccg-btn--primary" data-seo-refresh>Connect Google Search Console</button>
         <button type="button" class="ccg-btn ccg-btn--ghost" data-seo-export disabled>Export visible report CSV</button>
       </div>
     </section>
@@ -118,7 +118,7 @@
       <div class="seo-centre__section-header">
         <div>
           <h2 id="automation-health-title">Automated site-health protection</h2>
-          <p>The two repository-level safeguards below are deliberately separate from Search Console credentials. They can run without exposing Google account data.</p>
+          <p>The two repository-level safeguards below are deliberately separate from Search Console authorization. They can run without exposing Google account data.</p>
         </div>
       </div>
       <div class="seo-centre__automation">
