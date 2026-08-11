@@ -1,6 +1,9 @@
 name: CCG Site Safety
 
 on:
+  push:
+    branches:
+      - "main"
   pull_request:
     paths:
       - "**/*.html"
