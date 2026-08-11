@@ -31,60 +31,84 @@
         modal.dataset.ccgViewportRoot = "true";
     };
 
-    let boxLightboxReturnFocus = null;
+    let boxDialogReturnFocus = null;
+    let boxDialogScrollState = null;
 
-    const closeDedicatedBoxLightbox = () => {
-        const lightbox = document.querySelector("[data-ccg-box-lightbox]");
-        if (!lightbox || !lightbox.classList.contains("open")) return;
+    const lockBoxDialogPageScroll = () => {
+        if (!document.body || boxDialogScrollState) return;
 
-        const savedScroll = Number(lightbox.dataset.scrollY || window.scrollY || 0);
-        lightbox.classList.remove("open", "active");
-        lightbox.setAttribute("aria-hidden", "true");
+        boxDialogScrollState = {
+            htmlOverflow: document.documentElement.style.overflow,
+            bodyOverflow: document.body.style.overflow
+        };
+
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.overflow = "hidden";
+    };
+
+    const restoreBoxDialogPageScroll = () => {
+        if (!document.body || !boxDialogScrollState) return;
+
+        document.documentElement.style.overflow = boxDialogScrollState.htmlOverflow;
+        document.body.style.overflow = boxDialogScrollState.bodyOverflow;
+        boxDialogScrollState = null;
+    };
+
+    const restoreBoxDialogFocus = () => {
+        const returnFocus = boxDialogReturnFocus;
+        boxDialogReturnFocus = null;
+
+        if (!returnFocus || typeof returnFocus.focus !== "function") return;
 
         requestAnimationFrame(() => {
-            window.scrollTo({ top: savedScroll, left: 0, behavior: "auto" });
-            if (boxLightboxReturnFocus && typeof boxLightboxReturnFocus.focus === "function") {
-                try {
-                    boxLightboxReturnFocus.focus({ preventScroll: true });
-                } catch (error) {
-                    boxLightboxReturnFocus.focus();
-                }
+            try {
+                returnFocus.focus({ preventScroll: true });
+            } catch (error) {
+                returnFocus.focus();
             }
-            boxLightboxReturnFocus = null;
         });
     };
 
-    const ensureDedicatedBoxLightbox = () => {
+    const closeDedicatedBoxDialog = () => {
+        const dialog = document.querySelector("[data-ccg-box-dialog]");
+        if (!dialog || !dialog.open) return;
+        dialog.close();
+    };
+
+    const ensureDedicatedBoxDialog = () => {
         if (!document.body) return null;
 
-        let lightbox = document.querySelector("[data-ccg-box-lightbox]");
-        if (lightbox) return lightbox;
+        let dialog = document.querySelector("[data-ccg-box-dialog]");
+        if (dialog) return dialog;
 
-        // Reuse the established modal classes, but use a separate DOM node from
-        // the screenshot/PDF viewer. This avoids the shared-modal state that was
-        // leaving mobile users with only a dark overlay.
-        lightbox = document.createElement("div");
-        lightbox.className = "ccg-modal ccg-box-lightbox";
-        lightbox.setAttribute("data-ccg-box-lightbox", "true");
-        lightbox.setAttribute("role", "dialog");
-        lightbox.setAttribute("aria-modal", "true");
-        lightbox.setAttribute("aria-label", "Enlarged game box artwork");
-        lightbox.setAttribute("aria-hidden", "true");
-        lightbox.innerHTML = `
-            <div class="ccg-modal-content">
-                <button class="ccg-modal-close ccg-box-lightbox__close" type="button" aria-label="Close enlarged game box">&times;</button>
-                <img class="ccg-box3d-modal-image ccg-box-lightbox__image" alt="" decoding="async">
+        dialog = document.createElement("dialog");
+        dialog.className = "ccg-box-dialog";
+        dialog.setAttribute("data-ccg-box-dialog", "true");
+        dialog.setAttribute("aria-label", "Enlarged game box artwork");
+        dialog.innerHTML = `
+            <div class="ccg-box-dialog__content">
+                <button class="ccg-box-dialog__close" type="button" aria-label="Close enlarged game box">&times;</button>
+                <img class="ccg-box-dialog__image" alt="" decoding="async">
             </div>
         `;
-        document.body.appendChild(lightbox);
+        document.body.appendChild(dialog);
 
-        lightbox.addEventListener("click", (event) => {
-            if (event.target === lightbox || event.target.closest(".ccg-box-lightbox__close")) {
-                closeDedicatedBoxLightbox();
+        dialog.addEventListener("click", (event) => {
+            const closeButton = event.target instanceof Element
+                ? event.target.closest(".ccg-box-dialog__close")
+                : null;
+
+            if (closeButton || event.target === dialog) {
+                closeDedicatedBoxDialog();
             }
         });
 
-        return lightbox;
+        dialog.addEventListener("close", () => {
+            restoreBoxDialogPageScroll();
+            restoreBoxDialogFocus();
+        });
+
+        return dialog;
     };
 
     const resetLegacyBoxModal = () => {
@@ -101,52 +125,63 @@
         if (frame) frame.hidden = false;
     };
 
-    const openDedicatedBoxLightbox = (box) => {
+    const openDedicatedBoxDialog = (box) => {
         if (!box || root.getAttribute("data-ccg-page") !== "single-game") return false;
 
         const sourceImage = box.querySelector(".game-hero__box3d-img, img");
         const source = sourceImage?.currentSrc || sourceImage?.src || "";
         if (!source) return false;
 
-        const lightbox = ensureDedicatedBoxLightbox();
-        const enlargedImage = lightbox?.querySelector(".ccg-box-lightbox__image");
-        const closeButton = lightbox?.querySelector(".ccg-box-lightbox__close");
-        if (!lightbox || !enlargedImage) return false;
+        const dialog = ensureDedicatedBoxDialog();
+        const enlargedImage = dialog?.querySelector(".ccg-box-dialog__image");
+        const closeButton = dialog?.querySelector(".ccg-box-dialog__close");
+        if (!dialog || !enlargedImage || typeof dialog.showModal !== "function") return false;
 
         resetLegacyBoxModal();
-        boxLightboxReturnFocus = box;
-        lightbox.dataset.scrollY = String(window.scrollY || document.documentElement.scrollTop || 0);
+
+        if (dialog.open) {
+            dialog.close();
+        }
+
+        boxDialogReturnFocus = box;
         enlargedImage.src = source;
         enlargedImage.alt = sourceImage?.alt || "Game box artwork";
 
-        lightbox.classList.add("open");
-        lightbox.setAttribute("aria-hidden", "false");
+        lockBoxDialogPageScroll();
+
+        try {
+            dialog.showModal();
+        } catch (error) {
+            restoreBoxDialogPageScroll();
+            boxDialogReturnFocus = null;
+            console.warn("[CCG] Unable to open game box dialog.", error);
+            return false;
+        }
 
         requestAnimationFrame(() => {
-            if (closeButton && typeof closeButton.focus === "function") {
-                try {
-                    closeButton.focus({ preventScroll: true });
-                } catch (error) {
-                    closeButton.focus();
-                }
+            if (!closeButton || typeof closeButton.focus !== "function") return;
+            try {
+                closeButton.focus({ preventScroll: true });
+            } catch (error) {
+                closeButton.focus();
             }
         });
 
         return true;
     };
 
-    const bindDedicatedBoxLightbox = () => {
+    const bindDedicatedBoxDialog = () => {
         if (root.getAttribute("data-ccg-page") !== "single-game") return;
-        if (root.dataset.ccgDedicatedBoxLightboxBound === "true") return;
+        if (root.dataset.ccgDedicatedBoxDialogBound === "true") return;
 
-        // Capture the interaction before the legacy shared modal handler. The
-        // 3D box now has its own body-level viewer, so it opens in the viewport
-        // where the user actually tapped it, regardless of page scroll depth.
+        // Capture the 3D-box interaction before the legacy screenshot-modal
+        // handler. showModal() places the viewer in the browser top layer, so it
+        // cannot be positioned above or below the user's current viewport.
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             const box = target?.closest(".game-hero__box3d");
             if (!box) return;
-            if (!openDedicatedBoxLightbox(box)) return;
+            if (!openDedicatedBoxDialog(box)) return;
 
             event.preventDefault();
             event.stopPropagation();
@@ -156,18 +191,12 @@
         }, true);
 
         document.addEventListener("keydown", (event) => {
-            const lightbox = document.querySelector("[data-ccg-box-lightbox]");
-            if (event.key === "Escape" && lightbox?.classList.contains("open")) {
-                event.preventDefault();
-                closeDedicatedBoxLightbox();
-                return;
-            }
-
             if (event.key !== "Enter" && event.key !== " ") return;
+
             const target = event.target instanceof Element ? event.target : null;
             const box = target?.closest(".game-hero__box3d");
             if (!box) return;
-            if (!openDedicatedBoxLightbox(box)) return;
+            if (!openDedicatedBoxDialog(box)) return;
 
             event.preventDefault();
             event.stopPropagation();
@@ -176,7 +205,7 @@
             }
         }, true);
 
-        root.dataset.ccgDedicatedBoxLightboxBound = "true";
+        root.dataset.ccgDedicatedBoxDialogBound = "true";
     };
 
     // Canonical /games/<slug>/ pages are prefilled in the HTML. The shared
@@ -185,7 +214,7 @@
     // and therefore keeps its existing loader-controlled reveal behaviour.
     revealPrefilledSingleGame();
     ensureSingleGameViewportModalRoot();
-    bindDedicatedBoxLightbox();
+    bindDedicatedBoxDialog();
 
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
@@ -268,12 +297,12 @@
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
             ensureSingleGameViewportModalRoot();
-            bindDedicatedBoxLightbox();
+            bindDedicatedBoxDialog();
             scheduleVisuals();
         }, { once: true });
     } else {
         ensureSingleGameViewportModalRoot();
-        bindDedicatedBoxLightbox();
+        bindDedicatedBoxDialog();
         scheduleVisuals();
     }
 
