@@ -59,3 +59,35 @@ test('opportunity thresholds avoid low-signal query noise', () => {
   assert.match(controller, /impressions >= 50 && row\.position <= 10/);
   assert.match(controller, /MAX_QUERY_ROWS = 5000/);
 });
+
+test('dashboard builds a prioritised work queue with estimated click opportunity', () => {
+  assert.match(page, /SEO Work Queue/);
+  assert.match(controller, /buildWorkQueue/);
+  assert.match(controller, /priorityScore/);
+  assert.match(controller, /recommendedAction/);
+  assert.match(controller, /potentialClicks/);
+  assert.match(controller, /Est\. extra clicks/);
+});
+
+test('ranking and CTR opportunities are grouped by page', () => {
+  assert.match(controller, /function groupQueryRows/);
+  assert.match(controller, /renderQueryGroupTable\('ranking'/);
+  assert.match(controller, /renderQueryGroupTable\('ctr'/);
+  assert.match(page, /grouped by page/);
+});
+
+test('mixed trend signals are separated from growth and decline', () => {
+  assert.match(page, /data-seo-section="mixed"/);
+  assert.match(controller, /hasPositiveTrend/);
+  assert.match(controller, /hasNegativeTrend/);
+  assert.match(controller, /hasNegativeTrend\(row\) && !hasPositiveTrend\(row\)/);
+  assert.match(controller, /hasPositiveTrend\(row\) && !hasNegativeTrend\(row\)/);
+});
+
+test('legacy route detection is conservative and diagnostic only', () => {
+  assert.match(page, /Legacy URLs still appearing in Google/);
+  assert.match(controller, /\/games\\\/game\\\.html/);
+  assert.match(controller, /\/music\\\/composer\\\.html/);
+  assert.match(controller, /Do not remove the old URL blindly/);
+  assert.doesNotMatch(controller, /location\.replace|location\.assign|fetch\([^\n]+method:\s*['"](?:PUT|PATCH|DELETE)/i);
+});
