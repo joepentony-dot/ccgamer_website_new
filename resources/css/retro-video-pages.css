@@ -444,6 +444,12 @@
     min-width: 0;
   }
 
+  .retro-video-page__actions .ccg-btn {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 10px 14px;
+  }
+
   .retro-video-page__return {
     align-items: stretch;
     flex-direction: column;
