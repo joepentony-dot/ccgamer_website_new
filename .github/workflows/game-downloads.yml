@@ -85,8 +85,12 @@ jobs:
         shell: bash
         run: |
           test -s games/downloads/index.html
-          grep -q 'data-home-downloads-card="true"' home.html
-          grep -q 'href="/games/downloads/"' home.html
+          if grep -q 'home-explore-grid' home.html; then
+            echo "Streamlined homepage detected; downloads discovery is intentionally routed through Browse Games."
+          else
+            grep -q 'data-home-downloads-card="true"' home.html
+            grep -q 'href="/games/downloads/"' home.html
+          fi
           grep -q 'data-games-downloads-shortcut="true"' games/index.html
           grep -q 'href="/games/downloads/"' games/index.html
           grep -q 'id="downloadSearchInput"' games/downloads/index.html
