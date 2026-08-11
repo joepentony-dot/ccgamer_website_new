@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
-const SOURCE = path.join(ROOT, "data", "magazine-review-records.json");
+const SOURCE = path.join(ROOT, "data", "magazine-review-records");
 const OUTPUT = path.join(ROOT, "data", "magazine-game-reviews");
 const CHUNKS = ["0-d", "e-h", "i-l", "m-p", "q-t", "u-z"];
 
@@ -19,6 +19,15 @@ function chunkName(slug) {
   if (first < "q") return "m-p";
   if (first < "u") return "q-t";
   return "u-z";
+}
+
+function readSource() {
+  const games = {};
+  CHUNKS.forEach((name) => {
+    const parsed = JSON.parse(fs.readFileSync(path.join(SOURCE, `${name}.json`), "utf8"));
+    Object.assign(games, parsed.games || {});
+  });
+  return { version: 1, games };
 }
 
 function validUrl(value) {
@@ -94,7 +103,7 @@ function check(files) {
 }
 
 function main() {
-  const source = JSON.parse(fs.readFileSync(SOURCE, "utf8"));
+  const source = readSource();
   const built = build(source);
   if (process.argv.includes("--check")) {
     const mismatches = check(built.files);
