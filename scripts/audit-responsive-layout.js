@@ -3,9 +3,9 @@
 /*
  * CCG responsive layout contract audit.
  *
- * This is intentionally deterministic and browser-free so it can run in the
- * existing site-safety workflow. It protects the shared responsive contract,
- * the global loader and representative page viewport configuration.
+ * Deterministic and browser-free so it can run in the existing site-safety
+ * workflow. It protects the shared responsive contract, final cascade loader
+ * and representative public-page viewport configuration.
  */
 
 "use strict";
@@ -18,12 +18,14 @@ const errors = [];
 
 const REQUIRED_FILES = [
     "resources/css/ccg-responsive-safety.css",
+    "resources/css/ccg-responsive-page-polish.css",
     "js/ccg-responsive-safety.js",
     "js/ccg-nav-core.js",
     "resources/css/ccg-master.css",
     "resources/css/ccg-nav.css",
     "resources/css/ccg-mode.css",
     "resources/css/home.css",
+    "resources/css/games.css",
     "resources/css/game-pages.css",
     "resources/css/publishers.css",
     "resources/css/video-library.css",
@@ -87,18 +89,23 @@ REQUIRED_FILES.forEach((relativePath) => {
 });
 
 const safetyCss = read("resources/css/ccg-responsive-safety.css");
+const polishCss = read("resources/css/ccg-responsive-page-polish.css");
 const safetyLoader = read("js/ccg-responsive-safety.js");
 const navCore = read("js/ccg-nav-core.js");
 
 balancedBraces(safetyCss, "ccg-responsive-safety.css");
+balancedBraces(polishCss, "ccg-responsive-page-polish.css");
 
 expectText(
     navCore,
     '{ src: "/js/ccg-responsive-safety.js", marker: "data-ccg-responsive-safety-loader" }',
     "the global responsive-safety module registration"
 );
-expectText(safetyLoader, 'const CSS_PATH = "/resources/css/ccg-responsive-safety.css";', "the responsive stylesheet path");
-expectText(safetyLoader, "ensureStylesheetLast", "late-cascade stylesheet enforcement");
+expectText(safetyLoader, 'href: "/resources/css/ccg-responsive-safety.css"', "the responsive safety stylesheet path");
+expectText(safetyLoader, 'href: "/resources/css/ccg-responsive-page-polish.css"', "the responsive page-polish stylesheet path");
+expectText(safetyLoader, 'pageId === "intro"', "intro-loader isolation");
+expectText(safetyLoader, 'pathname.startsWith("/admin/")', "admin-tool isolation");
+expectText(safetyLoader, "ensureStylesheetsLast", "late-cascade stylesheet enforcement");
 
 expectText(safetyCss, "DOCUMENT + VIEWPORT OWNERSHIP", "document-scroll ownership rules");
 expectText(safetyCss, "body:not(.ccg-body--locked):not(.ccg-body--nav-open)", "body scroll-lock exception handling");
@@ -109,6 +116,11 @@ expectText(safetyCss, "@media (min-width: 521px) and (max-width: 900px)", "the 5
 expectText(safetyCss, "@media (max-width: 520px)", "the small-phone header breakpoint");
 expectText(safetyCss, ".ccg-header .ccg-mode-hint", "mode-hint containment");
 expectText(safetyCss, 'html[data-ccg-page="home"] .home-featured-videos', "home featured-video density normalisation");
+
+expectText(polishCss, "@media (min-width: 701px) and (max-width: 900px)", "compact 701–900px header action row");
+expectText(polishCss, 'html[data-ccg-page="single-game"] .ccg-main--single-game', "single-game mobile gutter ownership");
+expectText(polishCss, ".ccg-modal--doc .ccg-modal-content", "mobile document-modal correction");
+expectText(polishCss, 'html[data-ccg-page="member-hub"] .member-hub-nav', "member-hub mobile sticky-nav correction");
 
 REPRESENTATIVE_PAGES.forEach((relativePath) => {
     const source = read(relativePath);
@@ -122,7 +134,8 @@ REPRESENTATIVE_PAGES.forEach((relativePath) => {
 });
 
 const publicCssChecks = [
-    ["resources/css/game-pages.css", "@media (max-width: 640px)", "single-game mobile collapse"],
+    ["resources/css/games.css", "@media (max-width: 768px)", "single-game scroll-stability layout"],
+    ["resources/css/game-pages.css", "@media (max-width: 640px)", "single-game utility mobile collapse"],
     ["resources/css/publishers.css", "@media (max-width: 500px)", "publisher one-column mobile collapse"],
     ["resources/css/video-library.css", "@media (max-width: 560px)", "video-library one-column mobile collapse"],
     ["resources/css/zzap64-awards.css", "@media (max-width: 520px)", "Zzap mobile card layout"],
