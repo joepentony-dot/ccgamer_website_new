@@ -7,6 +7,9 @@
  * from top -> middle -> bottom -> top in a real headless Chrome session.
  * This catches accidental body locks, nested full-page scrollers and layouts
  * whose final content cannot actually be reached even though the CSS parses.
+ *
+ * Progressive/lazy pages are followed as their document height grows: the
+ * audit keeps chasing the current bottom until the height stabilises.
  */
 
 "use strict";
@@ -19,6 +22,8 @@ const { spawn, spawnSync } = require("child_process");
 const ROOT = path.resolve(__dirname, "..");
 const HOST = "127.0.0.1";
 const DRIVER_PORT = 9516;
+const BOTTOM_TOLERANCE = 24;
+const MAX_BOTTOM_PASSES = 40;
 
 const PAGES = [
     "/home.html",
@@ -279,8 +284,43 @@ async function navigate(sessionId, url) {
 
 async function scrollToY(sessionId, target) {
     await execute(sessionId, "window.scrollTo({ top: arguments[0], left: 0, behavior: 'instant' }); return Math.round(window.scrollY);", [target]);
-    await new Promise((resolve) => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 90));
     return execute(sessionId, READ_SCROLL_SCRIPT);
+}
+
+async function settleAtBottom(sessionId, viewport) {
+    let state = await execute(sessionId, READ_SCROLL_SCRIPT);
+    let previousHeight = state.scrollHeight;
+    let stableBottomPasses = 0;
+    let growthObserved = false;
+
+    for (let pass = 1; pass <= MAX_BOTTOM_PASSES; pass += 1) {
+        state = await scrollToY(sessionId, state.scrollHeight + viewport.height);
+
+        const grew = state.scrollHeight > previousHeight + 4;
+        const atCurrentBottom = state.maxScroll <= 20 || state.y >= state.maxScroll - BOTTOM_TOLERANCE;
+
+        if (grew) growthObserved = true;
+        stableBottomPasses = atCurrentBottom && !grew ? stableBottomPasses + 1 : 0;
+
+        if (stableBottomPasses >= 2) {
+            return {
+                ...state,
+                settled: true,
+                growthObserved,
+                passes: pass
+            };
+        }
+
+        previousHeight = state.scrollHeight;
+    }
+
+    return {
+        ...state,
+        settled: state.maxScroll <= 20 || state.y >= state.maxScroll - BOTTOM_TOLERANCE,
+        growthObserved,
+        passes: MAX_BOTTOM_PASSES
+    };
 }
 
 async function auditScroll(sessionId, page, viewport) {
@@ -296,11 +336,20 @@ async function auditScroll(sessionId, page, viewport) {
     }
 
     if (prepared.maxScroll <= 20) {
-        return { ...prepared, middleY: 0, bottomY: 0, returnedTopY: 0, failures };
+        return {
+            ...prepared,
+            middleY: 0,
+            bottomY: 0,
+            bottomMaxScroll: 0,
+            bottomPasses: 0,
+            progressiveGrowth: false,
+            returnedTopY: 0,
+            failures
+        };
     }
 
     const middle = await scrollToY(sessionId, Math.round(prepared.maxScroll * 0.5));
-    const bottom = await scrollToY(sessionId, prepared.scrollHeight + viewport.height);
+    const bottom = await settleAtBottom(sessionId, viewport);
     const top = await scrollToY(sessionId, 0);
 
     const middleTolerance = Math.max(24, Math.round(prepared.maxScroll * 0.08));
@@ -309,9 +358,8 @@ async function auditScroll(sessionId, page, viewport) {
         failures.push(`mid-page scroll stalled at ${middle.y}px; expected about ${expectedMiddle}px`);
     }
 
-    const bottomTolerance = 24;
-    if (bottom.maxScroll > 20 && bottom.y < bottom.maxScroll - bottomTolerance) {
-        failures.push(`bottom unreachable: stopped at ${bottom.y}px of ${bottom.maxScroll}px`);
+    if (!bottom.settled) {
+        failures.push(`bottom did not settle after ${bottom.passes} passes: stopped at ${bottom.y}px of ${bottom.maxScroll}px`);
     }
 
     if (top.y > 4) {
@@ -323,6 +371,8 @@ async function auditScroll(sessionId, page, viewport) {
         middleY: middle.y,
         bottomY: bottom.y,
         bottomMaxScroll: bottom.maxScroll,
+        bottomPasses: bottom.passes,
+        progressiveGrowth: bottom.growthObserved,
         returnedTopY: top.y,
         failures
     };
@@ -351,6 +401,7 @@ async function main() {
     const sitePort = address && typeof address === "object" ? address.port : 0;
     const failures = [];
     let checks = 0;
+    let progressiveChecks = 0;
 
     try {
         await waitForDriver();
@@ -371,7 +422,9 @@ async function main() {
                     if (result.failures.length) {
                         throw new Error(`${page} @ ${viewport.label}: ${result.failures.join("; ")}`);
                     }
-                    console.log(`PASS ${viewport.label.padEnd(17)} ${page} | bottom ${result.bottomY || 0}/${result.bottomMaxScroll || result.maxScroll || 0}px | top ${result.returnedTopY}px`);
+                    if (result.progressiveGrowth) progressiveChecks += 1;
+                    const growthLabel = result.progressiveGrowth ? ` | progressive ${result.bottomPasses} passes` : "";
+                    console.log(`PASS ${viewport.label.padEnd(17)} ${page} | bottom ${result.bottomY || 0}/${result.bottomMaxScroll || result.maxScroll || 0}px | top ${result.returnedTopY}px${growthLabel}`);
                 } catch (error) {
                     failures.push(error.message);
                     console.error(`FAIL ${error.message}`);
@@ -390,6 +443,7 @@ async function main() {
 
     console.log("\nCCG physical scroll summary");
     console.log(`Physical scroll checks: ${checks}`);
+    console.log(`Progressively growing page checks followed to a stable bottom: ${progressiveChecks}`);
     console.log(`Errors: ${failures.length}`);
 
     if (failures.length) {
