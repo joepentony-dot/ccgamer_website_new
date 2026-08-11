@@ -8,50 +8,68 @@
 (function () {
     "use strict";
 
+    const pageId = String(document.documentElement.getAttribute("data-ccg-page") || "").toLowerCase();
+    const pathname = String(window.location.pathname || "");
+
+    /* The intro loader and admin tools own their own viewport contracts. */
+    if (pageId === "intro" || pathname.startsWith("/admin/")) return;
+
     if (window.CCG_RESPONSIVE_SAFETY_READY) return;
     window.CCG_RESPONSIVE_SAFETY_READY = true;
 
-    const CSS_PATH = "/resources/css/ccg-responsive-safety.css";
-    const ATTR = "data-ccg-responsive-safety";
+    const STYLESHEETS = Object.freeze([
+        {
+            href: "/resources/css/ccg-responsive-safety.css",
+            attr: "data-ccg-responsive-safety"
+        },
+        {
+            href: "/resources/css/ccg-responsive-page-polish.css",
+            attr: "data-ccg-responsive-page-polish"
+        }
+    ]);
+
     let scheduled = false;
 
-    function findLink() {
-        return document.querySelector(`link[${ATTR}], link[href="${CSS_PATH}"]`);
+    function findLink(config) {
+        return document.querySelector(`link[${config.attr}], link[href="${config.href}"]`);
     }
 
-    function ensureStylesheetLast() {
+    function ensureStylesheetsLast() {
         scheduled = false;
-        let link = findLink();
 
-        if (!link) {
-            link = document.createElement("link");
-            link.rel = "stylesheet";
-            link.href = CSS_PATH;
-            link.setAttribute(ATTR, "true");
-            document.head.appendChild(link);
-            return;
-        }
+        STYLESHEETS.forEach((config) => {
+            let link = findLink(config);
 
-        link.setAttribute(ATTR, "true");
+            if (!link) {
+                link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = config.href;
+                link.setAttribute(config.attr, "true");
+                document.head.appendChild(link);
+                return;
+            }
 
-        /* Re-appending an existing link moves it to the end of the
-           stylesheet cascade without duplicating or refetching it. */
-        if (link.parentNode === document.head && link !== document.head.lastElementChild) {
-            document.head.appendChild(link);
-        }
+            link.setAttribute(config.attr, "true");
+
+            /* Re-appending an existing link moves it to the end of the
+               stylesheet cascade without duplicating or refetching it. */
+            if (link.parentNode === document.head && link !== document.head.lastElementChild) {
+                document.head.appendChild(link);
+            }
+        });
     }
 
     function scheduleEnsure() {
         if (scheduled) return;
         scheduled = true;
-        window.requestAnimationFrame(ensureStylesheetLast);
+        window.requestAnimationFrame(ensureStylesheetsLast);
     }
 
     function init() {
-        ensureStylesheetLast();
-        window.setTimeout(ensureStylesheetLast, 120);
-        window.setTimeout(ensureStylesheetLast, 600);
-        window.addEventListener("load", ensureStylesheetLast, { once: true });
+        ensureStylesheetsLast();
+        window.setTimeout(ensureStylesheetsLast, 120);
+        window.setTimeout(ensureStylesheetsLast, 600);
+        window.addEventListener("load", ensureStylesheetsLast, { once: true });
         window.addEventListener("resize", scheduleEnsure, { passive: true });
         window.addEventListener("orientationchange", scheduleEnsure, { passive: true });
     }
