@@ -21,7 +21,7 @@ const fs = require("fs");
 const http = require("http");
 const os = require("os");
 const path = require("path");
-const { spawnSync } = require("child_process");
+const { spawn, spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const HOST = "127.0.0.1";
@@ -325,29 +325,78 @@ function runChromeAudit(chrome, port, page, viewport, index) {
         url
     ];
 
-    try {
-        const run = spawnSync(chrome, args, {
+    return new Promise((resolve, reject) => {
+        const child = spawn(chrome, args, {
             cwd: ROOT,
-            encoding: "utf8",
-            maxBuffer: MAX_BUFFER,
-            timeout: 20000
+            stdio: ["ignore", "pipe", "pipe"]
         });
 
-        if (run.error) throw run.error;
-        if (run.status !== 0 && !run.stdout) {
-            throw new Error(`Chrome exited ${run.status}: ${(run.stderr || "").trim().slice(-1000)}`);
-        }
+        let stdout = "";
+        let stderr = "";
+        let finished = false;
 
-        const result = extractResult(run.stdout || "");
-        if (!result) {
-            throw new Error(`No responsive audit result was emitted. Chrome stderr: ${(run.stderr || "").trim().slice(-1000)}`);
-        }
+        const finish = (error, result) => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(timer);
+            fs.rmSync(profileDir, { recursive: true, force: true });
+            if (error) reject(error);
+            else resolve(result);
+        };
 
-        validateResult(result, page, viewport);
-        return result;
-    } finally {
-        fs.rmSync(profileDir, { recursive: true, force: true });
-    }
+        const append = (current, chunk) => {
+            const next = current + chunk.toString("utf8");
+            if (Buffer.byteLength(next, "utf8") > MAX_BUFFER) {
+                throw new Error("Chrome responsive audit output exceeded the safety buffer.");
+            }
+            return next;
+        };
+
+        const timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            finish(new Error(`${page} @ ${viewport.label}: Chrome timed out after 20 seconds`));
+        }, 20000);
+
+        child.stdout.on("data", (chunk) => {
+            try {
+                stdout = append(stdout, chunk);
+            } catch (error) {
+                child.kill("SIGKILL");
+                finish(error);
+            }
+        });
+
+        child.stderr.on("data", (chunk) => {
+            try {
+                stderr = append(stderr, chunk);
+            } catch (error) {
+                child.kill("SIGKILL");
+                finish(error);
+            }
+        });
+
+        child.once("error", (error) => finish(error));
+        child.once("close", (code) => {
+            if (finished) return;
+            if (code !== 0 && !stdout) {
+                finish(new Error(`Chrome exited ${code}: ${stderr.trim().slice(-1000)}`));
+                return;
+            }
+
+            const result = extractResult(stdout);
+            if (!result) {
+                finish(new Error(`No responsive audit result was emitted. Chrome stderr: ${stderr.trim().slice(-1000)}`));
+                return;
+            }
+
+            try {
+                validateResult(result, page, viewport);
+                finish(null, result);
+            } catch (error) {
+                finish(error);
+            }
+        });
+    });
 }
 
 async function main() {
@@ -373,7 +422,7 @@ async function main() {
             for (const page of PAGES) {
                 checks += 1;
                 try {
-                    const result = runChromeAudit(chrome, port, page, viewport, checks);
+                    const result = await runChromeAudit(chrome, port, page, viewport, checks);
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
                     console.log(`PASS ${viewport.label.padEnd(17)} ${page} | overflow ${result.horizontalOverflow}px | header ${result.headerHeight}px`);
                 } catch (error) {
