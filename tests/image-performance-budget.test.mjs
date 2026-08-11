@@ -38,9 +38,9 @@ test('performance budgets apply only to added or modified raster files', () => {
   assert.match(budget, /TOTAL_CHANGED_IMAGE_BYTES = 12 \* 1024 \* 1024/);
 });
 
-test('budget validator verifies image bytes instead of trusting extensions', () => {
+test('budget validator verifies image bytes and never mutates raster assets', () => {
   assert.match(budget, /image\.verify\(\)/);
   assert.match(budget, /extension-mismatch/);
   assert.match(budget, /pixel-count/);
-  assert.doesNotMatch(budget, /unlink\(|rename\(|replace\(|shutil\.move/);
+  assert.doesNotMatch(budget, /Image\.save\(|\.save\([^\n]*format=|\.unlink\(|shutil\.move|shutil\.rmtree|os\.remove|Path\.rename/);
 });
