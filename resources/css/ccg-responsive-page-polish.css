@@ -1,0 +1,287 @@
+/* ============================================================
+   CCG RESPONSIVE PAGE POLISH — OMEGA
+   ------------------------------------------------------------
+   Targeted corrections found during the public-page sweep.
+   Loaded after ccg-responsive-safety.css.
+============================================================ */
+
+/* ============================================================
+   701–900px HEADER DENSITY
+   Keep account controls and social links on one balanced row
+   when the viewport has enough room for both.
+============================================================ */
+
+@media (min-width: 701px) and (max-width: 900px) {
+    .ccg-header .ccg-header-actions {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        grid-template-areas:
+            "hint hint"
+            "mode mode"
+            "auth socials" !important;
+        column-gap: 10px !important;
+        row-gap: 6px !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        justify-self: stretch !important;
+        justify-content: flex-start !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        justify-self: stretch !important;
+        justify-content: flex-end !important;
+    }
+}
+
+/* ============================================================
+   SINGLE GAME
+============================================================ */
+
+@media (max-width: 760px) {
+    /* games.css deliberately lets game-shell own the horizontal gutter. */
+    html[data-ccg-page="single-game"] .ccg-main--single-game {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* The fixed quick-actions bar must never cover the final page content. */
+    html[data-ccg-page="single-game"] .ccg-page--single-game {
+        padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    }
+
+    html[data-ccg-page="single-game"] .game-quick-actions {
+        max-width: calc(100dvw - 20px);
+        max-height: min(108px, 28dvh);
+        overflow-x: hidden;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+
+    html[data-ccg-page="single-game"] .game-quick-actions button {
+        min-width: 0;
+        white-space: normal;
+        line-height: 1.2;
+    }
+
+    html[data-ccg-page="single-game"] .ccg-back-to-top-wrap {
+        right: max(10px, env(safe-area-inset-right));
+        max-width: calc(100dvw - 20px);
+    }
+
+    html[data-ccg-page="single-game"] .ccg-back-to-top__label {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    html[data-ccg-page="single-game"] .ccg-page--single-game {
+        padding-bottom: calc(98px + env(safe-area-inset-bottom));
+    }
+}
+
+/* ============================================================
+   DOCUMENT / MANUAL MODALS
+   ccg-modal.css had a dvh support branch that reapplied top:50dvh
+   after switching the dialog to position:relative on mobile.
+============================================================ */
+
+@media (max-width: 768px) {
+    .ccg-modal--doc.open,
+    .ccg-modal--doc.active {
+        padding: 8px;
+        overflow: hidden;
+    }
+
+    .ccg-modal--doc .ccg-modal-content {
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        transform: none !important;
+        width: min(calc(100dvw - 16px), 980px) !important;
+        height: min(calc(100dvh - 16px), 820px) !important;
+        min-height: min(68dvh, 560px) !important;
+        max-height: calc(100dvh - 16px) !important;
+        margin: auto !important;
+        box-sizing: border-box;
+    }
+
+    .ccg-modal--doc .ccg-pdf-frame,
+    .ccg-modal--manual iframe {
+        min-width: 0;
+        min-height: 0;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* ============================================================
+   GAMES INDEX
+============================================================ */
+
+@media (max-width: 560px) {
+    html[data-ccg-page="games-index"] .games-grid {
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="games-index"] .games-library--single-result .games-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    html[data-ccg-page="games-index"] .games-library--single-result .ccg-game-card {
+        max-width: min(100%, 360px);
+    }
+
+    html[data-ccg-page="games-index"] .games-filter__controls,
+    html[data-ccg-page="games-index"] .games-filter__range-toggle {
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="games-index"] .games-grid__more-btn {
+        width: min(100%, 320px);
+        min-width: 0;
+    }
+}
+
+/* ============================================================
+   PUBLISHERS + VIDEO LIBRARY + DOWNLOADS
+============================================================ */
+
+@media (max-width: 560px) {
+    .ccg-publishers-tools,
+    .video-library__search-panel,
+    .ccg-downloads-tools {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .ccg-publishers-search input,
+    .video-library__search-field input,
+    .ccg-downloads-search input {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .video-library__section-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 420px) {
+    .ccg-download-card {
+        grid-template-columns: 78px minmax(0, 1fr) !important;
+    }
+
+    .ccg-download-card__image,
+    .ccg-download-card__image img {
+        width: 78px !important;
+    }
+
+    .ccg-download-card__image img {
+        height: 60px !important;
+    }
+
+    .ccg-download-card__body {
+        padding: 9px !important;
+    }
+
+    .ccg-download-card__meta {
+        gap: 4px;
+    }
+}
+
+/* ============================================================
+   MEMBER HUB
+============================================================ */
+
+@media (max-width: 720px) {
+    html[data-ccg-page="member-hub"] .member-hub-nav {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    html[data-ccg-page="member-hub"] .member-panel__header,
+    html[data-ccg-page="member-hub"] .profile-subsection__header,
+    html[data-ccg-page="member-hub"] .profile-library__header {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    html[data-ccg-page="member-hub"] .member-hub-shortcuts {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    html[data-ccg-page="member-hub"] .member-hub-shortcuts .ccg-btn,
+    html[data-ccg-page="member-hub"] .member-hub-shortcuts .auth-btn {
+        width: 100%;
+    }
+
+    html[data-ccg-page="member-hub"] .member-content-card__top,
+    html[data-ccg-page="member-hub"] .member-hub-completion__top {
+        flex-wrap: wrap;
+    }
+}
+
+/* ============================================================
+   ABOUT + EMULATION + QUIZ
+============================================================ */
+
+@media (max-width: 720px) {
+    .ccg-page--about .about-panel__body,
+    .ccg-page--emulation .ccg-info-panel,
+    .ccg-page--quiz .quiz-panel {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .ccg-page--about .about-meta,
+    .ccg-page--quiz .quiz-status,
+    .ccg-page--quiz .quiz-history-top,
+    .ccg-page--quiz .quiz-history-answers {
+        min-width: 0;
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 420px) {
+    .ccg-page--quiz .quiz-status-block {
+        min-width: 0 !important;
+        flex: 1 1 100% !important;
+    }
+
+    .ccg-page--quiz .quiz-score-grid,
+    .ccg-page--quiz .quiz-side-panels {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ============================================================
+   TABLES / PRE-FORMATTED CONTENT
+============================================================ */
+
+:where(
+    .table-responsive,
+    .ccg-table-scroll,
+    .ccg-table-wrap,
+    [data-ccg-table-scroll]
+) {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    :where(.ccg-card, .ccg-game-card, .home-video-card, .related-card) {
+        scroll-behavior: auto;
+    }
+}
