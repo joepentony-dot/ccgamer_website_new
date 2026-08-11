@@ -1,0 +1,111 @@
+name: Image Performance Budget
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.webp"
+      - "admin/content-publisher.html"
+      - "admin/js/content-publisher-image-optimizer.js"
+      - "scripts/image-performance-budget.py"
+      - "tests/image-performance-budget.test.mjs"
+      - ".github/workflows/image-performance-budget.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.png"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.webp"
+      - "admin/content-publisher.html"
+      - "admin/js/content-publisher-image-optimizer.js"
+      - "scripts/image-performance-budget.py"
+      - "tests/image-performance-budget.test.mjs"
+      - ".github/workflows/image-performance-budget.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-performance-budget-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  image-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install image validation dependency
+        run: python -m pip install --disable-pip-version-check Pillow==11.3.0
+
+      - name: Validate browser optimiser and regression rules
+        run: |
+          node --check admin/js/content-publisher-image-optimizer.js
+          node --test tests/image-performance-budget.test.mjs
+          python -m py_compile scripts/image-performance-budget.py
+
+      - name: Resolve comparison base
+        id: comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+            echo "base=origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            echo "base=HEAD^" >> "$GITHUB_OUTPUT"
+          else
+            echo "base=HEAD" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Enforce budgets on changed raster assets only
+        run: |
+          mkdir -p .health
+          python scripts/image-performance-budget.py \
+            --base "${{ steps.comparison.outputs.base }}" \
+            --json .health/image-performance-budget.json
+
+      - name: Publish budget summary
+        if: always()
+        shell: bash
+        run: |
+          if [ -f .health/image-performance-budget.json ]; then
+            python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          report = json.loads(Path('.health/image-performance-budget.json').read_text())
+          print('### CCG image performance budget')
+          print()
+          print(f"- Changed raster images checked: **{report['imagesChecked']}**")
+          print(f"- Changed raster bytes: **{report['changedImageBytes'] / 1024:.1f} KB**")
+          print(f"- Errors: **{report['errors']}**")
+          print(f"- Advisory warnings: **{report['warnings']}**")
+          print()
+          print('Only added or modified raster assets are judged against the hard budget; existing legacy images are not rewritten or retroactively failed.')
+          PY
+          fi
+
+      - name: Upload budget evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-performance-budget
+          path: .health/image-performance-budget.json
+          if-no-files-found: ignore
+          retention-days: 30
