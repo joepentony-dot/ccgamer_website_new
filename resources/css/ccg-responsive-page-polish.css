@@ -19,8 +19,9 @@
     display: none !important;
 }
 
-/* Wide desktop keeps the established three-zone Omega structure,
-   but compresses the three rows into a much shallower command bar. */
+/* Wide desktop baseline. A final two-row desktop contract appears
+   at the end of this file so it remains authoritative after every
+   page-specific responsive correction below. */
 @media (min-width: 1200px) {
     .ccg-header {
         padding: 10px clamp(12px, 1.5vw, 20px) !important;
@@ -711,5 +712,108 @@ body.modal-open {
 @media (prefers-reduced-motion: reduce) {
     :where(.ccg-card, .ccg-game-card, .home-video-card, .related-card) {
         scroll-behavior: auto;
+    }
+}
+
+/* ============================================================
+   WIDE DESKTOP — TWO-ROW COMMAND BAR
+   ------------------------------------------------------------
+   Auth, identity, mode and socials now share the top row. The
+   navigation occupies a single second row. This removes the large
+   dedicated social row that made desktop headers unnecessarily tall.
+============================================================ */
+
+@media (min-width: 1200px) {
+    .ccg-header {
+        padding-block: 8px !important;
+    }
+
+    .ccg-header .ccg-header-inner {
+        grid-template-columns: minmax(190px, 1fr) auto minmax(240px, 270px) auto !important;
+        grid-template-areas:
+            "auth brand mode socials"
+            "nav nav nav nav" !important;
+        row-gap: 5px !important;
+        column-gap: clamp(8px, 1vw, 14px) !important;
+    }
+
+    .ccg-header .ccg-brand {
+        padding: 5px 8px !important;
+        gap: 8px !important;
+    }
+
+    .ccg-header .ccg-brand__logo {
+        height: 56px !important;
+        max-height: 56px !important;
+    }
+
+    .ccg-header .ccg-brand__kicker {
+        font-size: 0.58rem !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    .ccg-header .ccg-brand__title {
+        font-size: 0.86rem !important;
+        letter-spacing: 0.065em !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        justify-self: start !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        gap: 5px !important;
+    }
+
+    .ccg-header .ccg-profile-link {
+        max-width: 210px !important;
+        min-height: 34px !important;
+    }
+
+    .ccg-header .ccg-btn-auth {
+        min-height: 34px !important;
+        padding: 5px 8px !important;
+        font-size: 0.64rem !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        justify-self: end !important;
+        width: 260px !important;
+        max-width: 260px !important;
+        min-height: 34px !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__label {
+        font-size: 0.58rem !important;
+        padding: 4px 6px !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        justify-self: end !important;
+        margin: 0 !important;
+        gap: 5px !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .ccg-header .ccg-header-socials a {
+        width: 30px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        flex: 0 0 30px !important;
+    }
+
+    .ccg-header .ccg-nav {
+        grid-area: nav !important;
+        width: auto !important;
+        max-width: 100% !important;
+        padding: 4px 7px !important;
+    }
+
+    .ccg-header .ccg-nav__link,
+    .ccg-header .ccg-nav__more-toggle {
+        min-height: 34px !important;
+        padding-block: 5px !important;
     }
 }
