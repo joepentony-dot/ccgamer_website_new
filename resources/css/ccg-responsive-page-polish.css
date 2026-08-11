@@ -34,6 +34,18 @@
 }
 
 /* ============================================================
+   EXPLICIT BODY LOCKS
+   The global document-scroll contract must yield to real modal
+   states so background content never scrolls behind a viewer.
+============================================================ */
+
+body.modal-open {
+    height: 100% !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+/* ============================================================
    SINGLE GAME
 ============================================================ */
 
@@ -257,6 +269,65 @@
     .ccg-page--quiz .quiz-score-grid,
     .ccg-page--quiz .quiz-side-panels {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ============================================================
+   ZZAP ARCHIVE + RETRO VIDEO WATCH PAGES
+============================================================ */
+
+@media (max-width: 760px) {
+    html[data-ccg-page="zzap64-awards"] .zzap-tools,
+    html[data-ccg-page="retro-video"] .retro-video-page__hero,
+    html[data-ccg-page="retro-video"] .retro-video-page__related,
+    html[data-ccg-page="retro-video"] .retro-video-page__return {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    html[data-ccg-page="retro-video"] .retro-video-page__breadcrumbs,
+    html[data-ccg-page="retro-video"] .retro-video-page__section-heading {
+        min-width: 0;
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 520px) {
+    html[data-ccg-page="zzap64-awards"] .zzap-tools input,
+    html[data-ccg-page="zzap64-awards"] .zzap-tools select {
+        min-width: 0;
+    }
+
+    html[data-ccg-page="retro-video"] .retro-video-page__eyebrow,
+    html[data-ccg-page="retro-video"] .retro-video-page__title,
+    html[data-ccg-page="retro-video"] .retro-video-page__summary {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+
+.ccg-footer,
+.ccg-footer-inner {
+    min-width: 0;
+    width: min(100%, 1100px);
+    box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+    .ccg-footer-signature,
+    .ccg-footer-signature__panel,
+    .ccg-footer-legal {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .ccg-footer-legal {
+        flex-wrap: wrap;
     }
 }
 
