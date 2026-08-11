@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="seo-opportunity-centre">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>SEO Opportunity Centre | CCG Admin</title>
+  <meta name="description" content="Private Search Console opportunity and site-health dashboard for CCG administrators." />
+  <link rel="icon" href="../favicon.ico" />
+  <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-admin.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-seo-opportunity-centre.css" />
+</head>
+<body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="seo-centre ccg-page--admin" data-admin-shell>
+    <header class="seo-centre__header">
+      <p class="seo-centre__kicker">CCG Admin · Search Intelligence</p>
+      <h1>SEO Opportunity Centre</h1>
+      <p class="seo-centre__intro">Private Search Console analysis for finding pages and search terms where CCG is already close to gaining more traffic. Search Console credentials remain inside the Supabase Edge Function and raw report data is not written to the public repository or browser storage.</p>
+    </header>
+
+    <section class="seo-centre__toolbar" aria-label="SEO report controls">
+      <label>
+        Comparison window
+        <select data-seo-days>
+          <option value="28" selected>Last 28 days vs previous 28</option>
+          <option value="56">Last 56 days vs previous 56</option>
+          <option value="90">Last 90 days vs previous 90</option>
+        </select>
+      </label>
+      <div class="seo-centre__actions">
+        <button type="button" class="ccg-btn ccg-btn--primary" data-seo-refresh>Refresh Search Console</button>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-seo-export disabled>Export visible report CSV</button>
+      </div>
+    </section>
+
+    <section class="seo-centre__notice" data-seo-status data-state="loading" aria-live="polite">
+      Checking administrator access and Search Console connection…
+    </section>
+
+    <section class="seo-centre__summary" aria-label="Search Console summary" data-seo-summary hidden>
+      <article class="seo-stat">
+        <span>Clicks</span>
+        <strong data-seo-stat="clicks">—</strong>
+        <small data-seo-change="clicks">—</small>
+      </article>
+      <article class="seo-stat">
+        <span>Impressions</span>
+        <strong data-seo-stat="impressions">—</strong>
+        <small data-seo-change="impressions">—</small>
+      </article>
+      <article class="seo-stat">
+        <span>CTR</span>
+        <strong data-seo-stat="ctr">—</strong>
+        <small data-seo-change="ctr">—</small>
+      </article>
+      <article class="seo-stat">
+        <span>Average position</span>
+        <strong data-seo-stat="position">—</strong>
+        <small data-seo-change="position">—</small>
+      </article>
+    </section>
+
+    <section class="seo-centre__section" data-seo-section="ranking" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>Ranking opportunities</h2>
+          <p>Queries already averaging positions 4–20 with enough impressions to justify attention. Higher opportunity scores favour stronger demand and nearer-to-page-one positions.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="ranking">0</span>
+      </div>
+      <div data-seo-table="ranking"></div>
+    </section>
+
+    <section class="seo-centre__section" data-seo-section="ctr" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>CTR opportunities</h2>
+          <p>Queries already ranking in the top ten where the click-through rate is materially below a conservative position-based benchmark. These are candidates for stronger titles, descriptions or search-result presentation.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="ctr">0</span>
+      </div>
+      <div data-seo-table="ctr"></div>
+    </section>
+
+    <section class="seo-centre__section" data-seo-section="declines" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>Pages losing momentum</h2>
+          <p>Pages whose clicks or impressions have dropped materially against the immediately preceding comparison period.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="declines">0</span>
+      </div>
+      <div data-seo-table="declines"></div>
+    </section>
+
+    <section class="seo-centre__section" data-seo-section="growth" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>Pages gaining momentum</h2>
+          <p>Pages with meaningful growth in clicks or impressions. These can reveal subjects worth expanding, internally linking or covering again.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="growth">0</span>
+      </div>
+      <div data-seo-table="growth"></div>
+    </section>
+
+    <section class="seo-centre__section" aria-labelledby="automation-health-title">
+      <div class="seo-centre__section-header">
+        <div>
+          <h2 id="automation-health-title">Automated site-health protection</h2>
+          <p>The two repository-level safeguards below are deliberately separate from Search Console credentials. They can run without exposing Google account data.</p>
+        </div>
+      </div>
+      <div class="seo-centre__automation">
+        <article class="seo-automation-card">
+          <h3>External-link health monitor</h3>
+          <p>Scheduled checks distinguish confirmed missing links from rate limits, bot blocks, timeouts and temporary server failures. Confirmed problems are surfaced through the repository health workflow rather than silently altering live content.</p>
+          <a class="ccg-btn ccg-btn--ghost" href="https://github.com/joepentony-dot/ccgamer_website_new/actions" target="_blank" rel="noopener noreferrer">Open GitHub Actions</a>
+        </article>
+        <article class="seo-automation-card">
+          <h3>Image &amp; performance budgets</h3>
+          <p>New and changed assets are checked against file-size budgets, while Content Publisher image uploads can be optimised before they are committed. Existing archive artwork is not destructively rewritten.</p>
+          <a class="ccg-btn ccg-btn--ghost" href="https://github.com/joepentony-dot/ccgamer_website_new/actions" target="_blank" rel="noopener noreferrer">Open performance checks</a>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script src="/js/ccg-auth-ui.js" defer></script>
+  <script type="module" src="/admin/js/admin-nav.js"></script>
+  <script type="module" src="/admin/js/seo-opportunity-centre.js"></script>
+  <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
+</body>
+</html>
