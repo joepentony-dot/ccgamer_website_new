@@ -2220,6 +2220,45 @@ function clearHeroBox3d(hero) {
     delete hero.dataset.box3dSlug;
 }
 
+function openHeroBox3dModal(sourceImage) {
+    const modal = document.getElementById("ccgModal");
+    const frame = document.getElementById("ccgModalFrame");
+    const content = modal?.querySelector(".ccg-modal-content");
+    if (!modal || !frame || !content || !sourceImage?.src) return;
+
+    let modalImage = content.querySelector("[data-ccg-box3d-modal-image]");
+    if (!modalImage) {
+        modalImage = document.createElement("img");
+        modalImage.className = "ccg-box3d-modal-image";
+        modalImage.setAttribute("data-ccg-box3d-modal-image", "true");
+        content.appendChild(modalImage);
+    }
+
+    frame.hidden = true;
+    modalImage.src = sourceImage.currentSrc || sourceImage.src;
+    modalImage.alt = sourceImage.alt || "Game box artwork";
+    modalImage.hidden = false;
+    modal.classList.add("open", "ccg-modal--box3d");
+    modal.setAttribute("aria-hidden", "false");
+    attachModalKeyboardControls();
+}
+
+function bindHeroBox3dZoom(box, image) {
+    if (!box || !image) return;
+    box.setAttribute("role", "button");
+    box.setAttribute("tabindex", "0");
+    box.setAttribute("aria-label", `Enlarge ${image.alt || "game box artwork"}`);
+    if (box.dataset.ccgBox3dZoomBound === "true") return;
+
+    box.addEventListener("click", () => openHeroBox3dModal(image));
+    box.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        openHeroBox3dModal(image);
+    });
+    box.dataset.ccgBox3dZoomBound = "true";
+}
+
 async function renderHeroBox3d(game) {
     const hero = document.querySelector(".game-hero");
     if (!hero) return;
@@ -2259,6 +2298,7 @@ async function renderHeroBox3d(game) {
     if (img) {
         img.src = path;
         img.alt = `${game?.title || "Game"} 3D box art`;
+        bindHeroBox3dZoom(box, img);
     }
     box.hidden = false;
     hero.classList.add("game-hero--has-box3d");
@@ -3475,12 +3515,19 @@ function closeScreenshotModal() {
     const modal = document.getElementById("ccgModal");
     const frame = document.getElementById("ccgModalFrame");
     const counter = document.querySelector("[data-ccg-modal-counter]");
+    const box3dImage = modal?.querySelector("[data-ccg-box3d-modal-image]");
 
     if (!modal || !frame) return;
 
     modal.classList.remove("open");
+    modal.classList.remove("ccg-modal--box3d");
     modal.setAttribute("aria-hidden", "true");
     frame.src = "";
+    frame.hidden = false;
+    if (box3dImage) {
+        box3dImage.hidden = true;
+        box3dImage.removeAttribute("src");
+    }
     if (counter) counter.hidden = true;
     detachModalKeyboardControls();
 }

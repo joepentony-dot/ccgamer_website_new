@@ -23,7 +23,7 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug, opts = {}
 
   const audio = document.createElement("audio");
   audio.controls = true;
-  audio.preload = "none";
+  audio.preload = "metadata";
   audio.style.width = "100%";
 
   const source = document.createElement("source");
@@ -64,6 +64,8 @@ window.ccgGameMusic.renderGameMusicPlayer = function (container, slug, opts = {}
     console.log(`[CCG MUSIC] audio error -> clearing ${logCtx} slug=${slug}`);
   }, { once: true });
 
+  try { audio.load(); } catch (_) {}
+
   return { wrapper, audio, status, url };
 };
 
@@ -90,7 +92,7 @@ window.ccgGameMusic.renderOmegaGameMusicPlayer = function (container, slug, opts
 
   const audio = document.createElement("audio");
   audio.controls = true;
-  audio.preload = "none";
+  audio.preload = "metadata";
   audio.style.width = "100%";
 
   const source = document.createElement("source");
@@ -122,4 +124,6 @@ window.ccgGameMusic.renderOmegaGameMusicPlayer = function (container, slug, opts
     container.innerHTML = "";
     console.log(`[CCG MUSIC] omega game audio error -> cleared ${logCtx} slug=${slug}`);
   }, { once: true });
+
+  try { audio.load(); } catch (_) {}
 };

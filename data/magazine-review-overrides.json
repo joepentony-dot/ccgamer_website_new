@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "description": "Verified title-variant records for catalogue games whose current Lemon page is not present in the local cache.",
+  "games": {
+    "amiga:aladdin": [
+      { "magazine": "Amiga Action", "issue": "65", "date": "Christmas 1994", "page": 38, "reviewer": "Paul Roundell & Steve McNally", "score": "92%", "scorePercent": 92, "url": "https://amr.abime.net/review_32292" },
+      { "magazine": "Amiga Computing", "issue": "81", "date": "Christmas 1994", "page": 116, "reviewer": "Tina Hackett", "score": "85%", "scorePercent": 85, "url": "https://amr.abime.net/review_8453" },
+      { "magazine": "Amiga Concept", "issue": "10", "date": "December 1994", "page": 48, "reviewer": "Frédéric Rosseau", "score": "90%", "scorePercent": 90, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Dream", "issue": "13", "date": "December 1994", "page": 42, "reviewer": "Grégory Halliday", "score": "93%", "scorePercent": 93, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Format", "issue": "66", "date": "December 1994", "page": 78, "reviewer": "Stephen Bradley", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_2805" },
+      { "magazine": "Amiga Games", "issue": "", "date": "December 1994", "page": 84, "reviewer": "Hans Ippisch", "score": "88%", "scorePercent": 88, "url": "", "language": "German", "scanStatus": "missing" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "December 1994", "page": 32, "reviewer": "Richard Löwenstein", "score": "86%", "scorePercent": 86, "url": "https://amr.abime.net/review_49999", "language": "German" },
+      { "magazine": "Amiga Magazine", "issue": "31", "date": "January 1995", "page": 52, "reviewer": "Lawrence van Rijn", "score": "8.5/10", "scorePercent": 85, "url": "https://amr.abime.net/review_13555" },
+      { "magazine": "Amiga Point of View", "issue": "2", "date": "July 2004", "page": 20, "reviewer": "Adrian Simpson", "score": "81%", "scorePercent": 81, "url": "https://amr.abime.net/review_7795", "era": "retrospective" },
+      { "magazine": "Amiga Power", "issue": "44", "date": "December 1994", "page": 48, "reviewer": "Jonathan Davies", "score": "86%", "scorePercent": 86, "url": "https://amr.abime.net/review_1638" },
+      { "magazine": "Amiga User International", "issue": "", "date": "December 1994", "page": 76, "reviewer": "", "score": "92%", "scorePercent": 92, "url": "https://amr.abime.net/review_7711" },
+      { "magazine": "CU Amiga", "issue": "", "date": "January 1995", "page": 62, "reviewer": "Lisa Collins", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_3915" },
+      { "magazine": "Datormagazin", "issue": "22", "date": "December 1994", "page": 40, "reviewer": "Ove Kaufeldt", "score": "4/5", "scorePercent": 80, "url": "https://dmzarkivet.se/pager?issue=199422&page=40", "language": "Swedish" },
+      { "magazine": "The One", "issue": "74", "date": "November 1994", "page": 40, "reviewer": "Simon Byron", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_38026" }
+    ],
+    "amiga:brutal-sports-football": [
+      { "magazine": "Amiga Action", "issue": "50", "date": "November 1993", "page": 32, "reviewer": "John Archer", "score": "87%", "scorePercent": 87, "url": "https://amr.abime.net/review_49531" },
+      { "magazine": "Amiga Computing", "issue": "65", "date": "October 1993", "page": 106, "reviewer": "Simon Clays", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_8308" },
+      { "magazine": "Amiga Down Under", "issue": "7", "date": "March 1994", "page": 73, "reviewer": "Dudley Storey III", "score": "80%", "scorePercent": 80, "url": "https://amr.abime.net/review_10328" },
+      { "magazine": "Amiga Dream", "issue": "2", "date": "December 1993", "page": 40, "reviewer": "Michel Houng", "score": "80%", "scorePercent": 80, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Force", "issue": "12", "date": "December 1993", "page": 32, "reviewer": "Ian Osborne & Miles Guttery", "score": "94%", "scorePercent": 94, "url": "https://amr.abime.net/review_6484" },
+      { "magazine": "Amiga Format", "issue": "53", "date": "December 1993", "page": 100, "reviewer": "Marcus Dyson", "score": "77%", "scorePercent": 77, "url": "https://amr.abime.net/review_2893" },
+      { "magazine": "Amiga Format", "issue": "70", "date": "April 1995", "page": 62, "reviewer": "Stephen Bradley", "score": "85%", "scorePercent": 85, "url": "https://amr.abime.net/review_3165" },
+      { "magazine": "Amiga Power", "issue": "32", "date": "December 1993", "page": 50, "reviewer": "Steve McGill", "score": "88%", "scorePercent": 88, "url": "https://amr.abime.net/review_1420" },
+      { "magazine": "Amiga User International", "issue": "", "date": "January 1994", "page": 81, "reviewer": "", "score": "78%", "scorePercent": 78, "url": "https://amr.abime.net/review_7633" },
+      { "magazine": "CU Amiga", "issue": "", "date": "December 1993", "page": 180, "reviewer": "Jonathan Sloan", "score": "79%", "scorePercent": 79, "url": "https://amr.abime.net/review_3443" },
+      { "magazine": "Datormagazin", "issue": "22", "date": "December 1993", "page": 18, "reviewer": "Daniel Törnqvist", "score": "2/5", "scorePercent": 40, "url": "https://dmzarkivet.se/pager?issue=199322&page=18", "language": "Swedish" },
+      { "magazine": "Svenska Hemdatornytt", "issue": "", "date": "November 1993", "page": 36, "reviewer": "Derek dela Fuente", "score": "70%", "scorePercent": 70, "url": "", "language": "Swedish", "scanStatus": "missing" },
+      { "magazine": "The One", "issue": "62", "date": "November 1993", "page": 72, "reviewer": "Matt Broughton", "score": "88%", "scorePercent": 88, "url": "https://amr.abime.net/review_9264" },
+      { "magazine": "The One", "issue": "81", "date": "June 1995", "page": 58, "reviewer": "Matt Broughton", "score": "82%", "scorePercent": 82, "url": "", "scanStatus": "missing" }
+    ],
+    "amiga:sensible-soccer": [
+      { "magazine": "ACAR", "issue": "", "date": "September 1992", "page": 75, "reviewer": "Juris Graney", "score": "92%", "scorePercent": 92, "url": "", "scanStatus": "missing" },
+      { "magazine": "Amiga Action", "issue": "34", "date": "July 1992", "page": 64, "reviewer": "Alan Bunker", "score": "78%", "scorePercent": 78, "url": "https://amr.abime.net/review_40876" },
+      { "magazine": "Amiga Computing", "issue": "52", "date": "September 1992", "page": 78, "reviewer": "Jonathan Maddock", "score": "92%", "scorePercent": 92, "url": "https://amr.abime.net/review_8176" },
+      { "magazine": "Amiga Computing", "issue": "73", "date": "May 1994", "page": 134, "reviewer": "Adam Phillips & Tina Hackett", "score": "92%", "scorePercent": 92, "url": "", "scanStatus": "missing" },
+      { "magazine": "Amiga Concept", "issue": "1", "date": "February 1994", "page": 25, "reviewer": "Cyril De Graeve", "score": "74%", "scorePercent": 74, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Dream", "issue": "3", "date": "January 1994", "page": 79, "reviewer": "Christophe Marie", "score": "85%", "scorePercent": 85, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Format", "issue": "36", "date": "July 1992", "page": 58, "reviewer": "Tim Smith", "score": "91%", "scorePercent": 91, "url": "https://amr.abime.net/review_2545" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "August 1992", "page": 56, "reviewer": "Max Magenauer", "score": "81%", "scorePercent": 81, "url": "https://amr.abime.net/review_25496", "language": "German" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "April 1994", "page": 75, "reviewer": "Markus Riese", "score": "81%", "scorePercent": 81, "url": "https://amr.abime.net/review_19462", "language": "German" },
+      { "magazine": "Amiga Mania", "issue": "", "date": "August 1992", "page": 58, "reviewer": "Damo Spendel & Jackie Mitchell", "score": "83%", "scorePercent": 83, "url": "https://amr.abime.net/review_4375" },
+      { "magazine": "Amiga Power", "issue": "15", "date": "July 1992", "page": 36, "reviewer": "Stuart Campbell", "score": "93%", "scorePercent": 93, "url": "https://amr.abime.net/review_7" },
+      { "magazine": "Amiga User International", "issue": "", "date": "March 1994", "page": 108, "reviewer": "", "score": "70%", "scorePercent": 70, "url": "https://amr.abime.net/review_7655" },
+      { "magazine": "Amiga User International", "issue": "", "date": "November 1992", "page": 70, "reviewer": "", "score": "94%", "scorePercent": 94, "url": "https://amr.abime.net/review_7536" },
+      { "magazine": "CU Amiga", "issue": "", "date": "July 1992", "page": 62, "reviewer": "Steve Keen", "score": "91%", "scorePercent": 91, "url": "https://amr.abime.net/review_3388" },
+      { "magazine": "Datormagazin", "issue": "13", "date": "August 1992", "page": 61, "reviewer": "Lars Jansson", "score": "92%", "scorePercent": 92, "url": "https://dmzarkivet.se/pager?issue=199213&page=61", "language": "Swedish" },
+      { "magazine": "Datormagazin", "issue": "5", "date": "March 1993", "page": 63, "reviewer": "Ove Kaufeldt", "score": "94%", "scorePercent": 94, "url": "https://dmzarkivet.se/pager?issue=199305&page=63", "language": "Swedish" },
+      { "magazine": "Svenska Hemdatornytt", "issue": "", "date": "October 1992", "page": 36, "reviewer": "Derek", "score": "73.2%", "scorePercent": 73.2, "url": "", "language": "Swedish", "scanStatus": "missing" },
+      { "magazine": "The One", "issue": "45", "date": "June 1992", "page": 42, "reviewer": "Gary Whitta", "score": "93%", "scorePercent": 93, "url": "https://amr.abime.net/review_9068" },
+      { "magazine": "Zero", "issue": "34", "date": "August 1992", "page": 65, "reviewer": "Patrick McCarthy", "score": "92%", "scorePercent": 92, "url": "https://amr.abime.net/review_40656" }
+    ],
+    "amiga:zeewolf": [
+      { "magazine": "Amiga Action", "issue": "65", "date": "Christmas 1994", "page": 28, "reviewer": "Paul McNally & Paul Roundell", "score": "85%", "scorePercent": 85, "url": "https://amr.abime.net/review_32287" },
+      { "magazine": "Amiga Computing", "issue": "81", "date": "Christmas 1994", "page": 120, "reviewer": "Jonathan Maddock", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_8454" },
+      { "magazine": "Amiga Concept", "issue": "11", "date": "January 1995", "page": 34, "reviewer": "Farid Berrais", "score": "85%", "scorePercent": 85, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Dream", "issue": "14", "date": "January 1995", "page": 40, "reviewer": "Wim Sical", "score": "89%", "scorePercent": 89, "url": "", "language": "French", "scanStatus": "missing" },
+      { "magazine": "Amiga Format", "issue": "66", "date": "December 1994", "page": 72, "reviewer": "Steve McGill", "score": "90%", "scorePercent": 90, "url": "https://amr.abime.net/review_2803" },
+      { "magazine": "Amiga Games", "issue": "", "date": "December 1994", "page": 30, "reviewer": "Hans Ippisch", "score": "94%", "scorePercent": 94, "url": "", "language": "German", "scanStatus": "missing" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "January 1995", "page": 34, "reviewer": "Richard Löwenstein", "score": "80%", "scorePercent": 80, "url": "https://amr.abime.net/review_50042", "language": "German" },
+      { "magazine": "Amiga Power", "issue": "44", "date": "December 1994", "page": 38, "reviewer": "Jonathan Davies", "score": "74%", "scorePercent": 74, "url": "https://amr.abime.net/review_1635" },
+      { "magazine": "CU Amiga", "issue": "", "date": "December 1994", "page": 52, "reviewer": "Alan Dykes", "score": "84%", "scorePercent": 84, "url": "https://amr.abime.net/review_10112" },
+      { "magazine": "Datormagazin", "issue": "7", "date": "April 1995", "page": 67, "reviewer": "Pontus Berg", "score": "2/5", "scorePercent": 40, "url": "https://dmzarkivet.se/pager?issue=199507&page=67", "language": "Swedish" },
+      { "magazine": "The One", "issue": "75", "date": "December 1994", "page": 50, "reviewer": "Matt Broughton", "score": "80%", "scorePercent": 80, "url": "https://amr.abime.net/review_28216" }
+    ]
+  }
+}

@@ -9,7 +9,9 @@ const path = require("path");
 const ROOT = path.resolve(__dirname, "..");
 const CACHE_DIR = path.join(ROOT, "data", "lemon-cache");
 const GAMES_PATH = path.join(ROOT, "games", "games.json");
-const RECORDS_PATH = path.join(ROOT, "data", "magazine-review-records.json");
+const RECORDS_PATH = path.join(ROOT, "data", "magazine-review-records");
+const RECORD_CHUNKS = ["0-d", "e-h", "i-l", "m-p", "q-t", "u-z"];
+const OVERRIDES_PATH = path.join(ROOT, "data", "magazine-review-overrides.json");
 const CACHE_IMPORT_EXCLUSIONS = new Set([
   "amiga:arcade-pool" // The legacy Lemon ID resolves to the separate CD32 edition.
 ]);
@@ -169,9 +171,40 @@ function uniqueReviews(rows) {
   });
 }
 
+function recordChunkName(key) {
+  const slug = String(key || "").split(":")[1] || "";
+  const first = slug.charAt(0).toLowerCase();
+  if (/\d/.test(first) || first < "e") return "0-d";
+  if (first < "i") return "e-h";
+  if (first < "m") return "i-l";
+  if (first < "q") return "m-p";
+  if (first < "u") return "q-t";
+  return "u-z";
+}
+
+function readRecords() {
+  const games = {};
+  RECORD_CHUNKS.forEach((name) => {
+    const parsed = JSON.parse(fs.readFileSync(path.join(RECORDS_PATH, `${name}.json`), "utf8"));
+    Object.assign(games, parsed.games || {});
+  });
+  return { version: 1, games };
+}
+
+function writeRecords(source) {
+  const chunks = Object.fromEntries(RECORD_CHUNKS.map((name) => [name, {}]));
+  Object.entries(source.games || {}).forEach(([key, rows]) => {
+    chunks[recordChunkName(key)][key] = rows;
+  });
+  RECORD_CHUNKS.forEach((name) => {
+    fs.writeFileSync(path.join(RECORDS_PATH, `${name}.json`), `${JSON.stringify({ version: 1, games: chunks[name] })}\n`, "utf8");
+  });
+}
+
 function importReviews() {
   const games = JSON.parse(fs.readFileSync(GAMES_PATH, "utf8"));
-  const source = JSON.parse(fs.readFileSync(RECORDS_PATH, "utf8"));
+  const source = readRecords();
+  const overrides = JSON.parse(fs.readFileSync(OVERRIDES_PATH, "utf8"));
   const pages = cachePages();
   const byUrl = new Map(pages.map((page) => [page.canonical, page]));
   const byCacheName = new Map(pages.map((page) => [page.cacheName, page]));
@@ -189,11 +222,12 @@ function importReviews() {
     let page = lemonUrls.map((url) => byUrl.get(url)).find(Boolean);
     if (!page) page = lemonUrls.map((url) => byCacheName.get(cacheNameForUrl(url))).find(Boolean);
     if (page?.platform !== platform) page = null;
-    if (!page) {
+    if (!page && !overrides.games?.[key]?.length) {
       unmatched.push(`${game.slug}: ${game.title}`);
       return;
     }
-    if (!page.reviews.length) {
+    if (!page && overrides.games?.[key]?.length) return;
+    if (!page.reviews.length && !overrides.games?.[key]?.length) {
       withoutReviews.push(`${game.slug}: ${game.title}`);
       return;
     }
@@ -203,8 +237,12 @@ function importReviews() {
     importedReviews += page.reviews.length;
   });
 
+  Object.entries(overrides.games || {}).forEach(([key, rows]) => {
+    source.games[key] = uniqueReviews([...(source.games[key] || []), ...rows]);
+  });
+
   source.description = "Verified magazine review metadata for CCG game pages, imported from locally cached reference pages. Store facts and outbound archive links only; do not copy review text.";
-  fs.writeFileSync(RECORDS_PATH, `${JSON.stringify(source, null, 2)}\n`, "utf8");
+  writeRecords(source);
   return { totalGames: catalogueGames.length, importedGames, importedReviews, unmatched, withoutReviews };
 }
 
