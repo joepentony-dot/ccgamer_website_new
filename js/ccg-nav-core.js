@@ -39,7 +39,8 @@ Do Not Override
         { src: "/js/ccg-member-achievements-loader.js", marker: "data-ccg-member-achievements-loader" },
         { src: "/js/ccg-member-data-safety.js", marker: "data-ccg-member-data-safety-loader" },
         { src: "/js/zzap64-awards-logo-styles.js", marker: "data-ccg-zzap-logo-styles-loader" },
-        { src: "/js/ccg-game-badges.js", marker: "data-ccg-game-badges-loader" }
+        { src: "/js/ccg-game-badges.js", marker: "data-ccg-game-badges-loader" },
+        { src: "/js/ccg-responsive-safety.js", marker: "data-ccg-responsive-safety-loader" }
     ];
 
     function isNavPillCandidate(el) {
