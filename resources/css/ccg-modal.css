@@ -311,3 +311,78 @@ body.modal-open {
         width: 100%;
     }
 }
+
+/* ============================================================
+   3D BOX VIEWER — HARD VIEWPORT ANCHOR
+   The enlarged box must appear in the live viewport at the
+   exact scroll position where the user taps the box artwork.
+============================================================ */
+html[data-ccg-page="single-game"] #ccgModal.ccg-modal--box3d.open {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    display: block !important;
+    transform: none !important;
+    z-index: 2147483000 !important;
+    touch-action: none;
+}
+
+html[data-ccg-page="single-game"] #ccgModal.ccg-modal--box3d.open .ccg-modal-content {
+    position: fixed !important;
+    top: 50vh !important;
+    top: 50dvh !important;
+    left: 50vw !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    box-sizing: border-box !important;
+    width: min(calc(100vw - 24px), 1100px) !important;
+    height: min(calc(100vh - 24px), 920px) !important;
+    height: min(calc(100dvh - 24px), 920px) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+    max-height: calc(100dvh - 24px) !important;
+    margin: 0 !important;
+    padding: 44px 16px 16px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 2147483001 !important;
+}
+
+html[data-ccg-page="single-game"] #ccgModal.ccg-modal--box3d.open .ccg-box3d-modal-image {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: calc(100vw - 56px) !important;
+    max-height: calc(100vh - 88px) !important;
+    max-height: calc(100dvh - 88px) !important;
+    margin: auto !important;
+    object-fit: contain !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+html[data-ccg-page="single-game"] #ccgModal.ccg-modal--box3d.open .ccg-modal-close {
+    display: block !important;
+    position: absolute !important;
+    top: 8px !important;
+    right: 12px !important;
+    z-index: 2147483002 !important;
+    color: #fff !important;
+    opacity: 1 !important;
+}
