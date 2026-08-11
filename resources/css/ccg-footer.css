@@ -1,45 +1,71 @@
 /* ============================================================
-   CCG FOOTER — OMEGA SHARED SYSTEM (PARITY LOCK)
-   W5.1 — MICRO POLISH (ACCESSIBILITY + LINK CLARITY)
+   CCG FOOTER — OMEGA SHARED SYSTEM
    ------------------------------------------------------------
-   • Fully isolated footer styling
-   • Safe for all pages (root + nested)
+   • Shared footer presentation for root + nested public pages
    • C64 / Amiga mode aware
-   • Mobile-first spacing
-   • Cinematic fade-out & grounding
-   • Subtle neon divider glow (non-distracting)
-   • Footer-scoped link + focus-visible polish (W5.1)
+   • Consolidated visitor counter contract
+   • Compact legal / commercial footer treatment
+   • Shared Omega control upgrades for legacy button families
+   • Mobile-first spacing and touch-target safety
 ============================================================ */
 
-/* ------------------------------------------------------------
+/* ============================================================
    FOOTER ROOT
------------------------------------------------------------- */
+============================================================ */
 
 .ccg-footer {
     position: relative;
+    max-width: 1100px;
     margin-top: var(--ccg-footer-gap);
+    margin-left: auto;
+    margin-right: auto;
     padding: 22px 16px 26px;
-
-    text-align: center;
-
-    background:
-        linear-gradient(
-            to top,
-            rgba(0,0,0,0.85),
-            rgba(0,0,0,0.55),
-            rgba(0,0,0,0.35)
-        );
-    background-image: none;
-
+    overflow: hidden;
+    isolation: isolate;
+    opacity: 1;
     border-top: 1px solid rgba(255,255,255,0.06);
-
+    background:
+        linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.55), rgba(0,0,0,0.35));
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.04),
         0 -18px 60px rgba(0,0,0,0.7);
+    text-align: center;
+}
 
-    isolation: isolate;
-    overflow: hidden;
-    opacity: 1;
+.ccg-footer-inner {
+    max-width: 1100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ccg-footer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.58;
+    background: radial-gradient(ellipse at center top, rgba(255,255,255,0.06), transparent 60%);
+}
+
+.ccg-footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    z-index: 1;
+    opacity: 0.78;
+    pointer-events: none;
+    background: linear-gradient(to right, transparent, rgba(var(--accent-rgb),0.68), transparent);
+    box-shadow: 0 0 10px rgba(var(--accent-rgb),0.34);
+}
+
+.ccg-footer > *,
+.ccg-footer-inner > * {
+    position: relative;
+    z-index: 2;
 }
 
 @media (min-width: 1024px) {
@@ -52,89 +78,24 @@
         margin-top: 12px;
     }
 
-    .ccg-footer__counter-wrap {
-        padding: 4px 0;
-    }
-
     .ccg-footer-signature {
         margin-top: 6px;
         padding: 12px 16px;
     }
 }
 
-/* ------------------------------------------------------------
-   ATMOSPHERIC FADE (DEPTH LAYER)
------------------------------------------------------------- */
-
-.ccg-footer::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-
-    background:
-        radial-gradient(
-            ellipse at center top,
-            rgba(255,255,255,0.06),
-            transparent 60%
-        );
-
-    pointer-events: none;
-    opacity: 0.6;
-}
-
-/* ------------------------------------------------------------
-   NEON DIVIDER STRIP (HORIZON LINE)
------------------------------------------------------------- */
-
-.ccg-footer::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 14%;
-    right: 14%;
-    height: 1px;
-    z-index: 1;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(var(--ccg-neon-blue-rgb),0.6),
-            transparent
-        );
-
-    box-shadow:
-        0 0 8px rgba(var(--ccg-neon-blue-rgb),0.30);
-
-    opacity: 0.75;
-}
-
-/* ------------------------------------------------------------
-   FOOTER CONTENT WRAPPING (PARITY SAFE)
------------------------------------------------------------- */
-
-.ccg-footer,
-.ccg-footer-inner {
-    max-width: 1100px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* ------------------------------------------------------------
-   FOOTER TEXT
------------------------------------------------------------- */
+/* ============================================================
+   FOOTER TEXT + LINKS
+============================================================ */
 
 .ccg-footer__text,
 .ccg-footer-text {
     margin: 0;
     padding: 6px 0;
-
-    font-family: var(--ccg-font-body, 'Roboto', sans-serif);
+    color: rgba(232,236,255,0.78);
+    font-family: var(--ccg-font-body, "Roboto", sans-serif);
     font-size: 0.85rem;
     line-height: 1.45;
-
-    color: rgba(232,236,255,0.78);
     text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 
@@ -143,199 +104,123 @@
     opacity: 0.72;
 }
 
-/* ------------------------------------------------------------
-   FOOTER COUNTER WRAP — CENTER ALIGN
------------------------------------------------------------- */
+.ccg-footer a {
+    position: relative;
+    z-index: 2;
+    color: rgba(232,236,255,0.85);
+    text-decoration: none;
+    transition: color 0.18s ease, text-shadow 0.18s ease;
+}
+
+.ccg-footer a:hover {
+    color: #fff;
+    text-shadow: 0 0 7px rgba(var(--accent-rgb),0.38);
+}
+
+.ccg-footer a:focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb),0.72);
+    outline-offset: 3px;
+    color: #fff;
+    text-shadow: 0 0 8px rgba(var(--accent-rgb),0.55);
+}
+
+/* ============================================================
+   VISITOR COUNTER — SINGLE CANONICAL CONTRACT
+============================================================ */
 
 .ccg-footer__counter-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 6px;
-    margin: 0;
-    padding: 6px 0;
-    font-size: 0.85rem;
+    margin: 0.7rem 0 1rem;
+    padding: 4px 0;
+    color: rgba(232,236,255,0.76);
+    font-size: 0.82rem;
     line-height: 1.45;
-    color: rgba(232,236,255,0.78);
-    text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
-
-/* ------------------------------------------------------------
-   FOOTER COUNTER — NEON NUMERAL BADGE
------------------------------------------------------------- */
 
 .ccg-footer__counter {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 7ch;
-    padding: 6px 14px;
-
-    font-family: var(--ccg-font-main, 'Orbitron', sans-serif);
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 0.18em;
-    font-variant-numeric: tabular-nums;
-
-    color: rgba(232, 246, 255, 0.98);
-
-    background:
-        linear-gradient(160deg, rgba(8, 20, 40, 0.95), rgba(16, 34, 64, 0.75));
-    border: 1px solid rgba(var(--ccg-neon-blue-rgb), 0.55);
+    padding: 0.42rem 0.82rem;
+    border: 1px solid rgba(76,255,154,0.42);
     border-radius: 999px;
-
+    background: rgba(8,24,18,0.72);
+    color: #72ffae;
+    font-family: var(--ccg-font-main, "Orbitron", sans-serif);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.15em;
+    font-variant-numeric: tabular-nums;
+    text-transform: lowercase;
+    text-shadow:
+        0 0 5px rgba(76,255,154,0.62),
+        0 0 12px rgba(76,255,154,0.34);
     box-shadow:
-        0 0 14px rgba(var(--ccg-neon-blue-rgb), 0.38),
-        inset 0 0 12px rgba(var(--ccg-neon-blue-rgb), 0.15);
+        inset 0 0 10px rgba(76,255,154,0.14),
+        0 0 12px rgba(76,255,154,0.24);
+}
+
+.ccg-footer__counter span {
+    font-weight: 600;
+}
+
+body[data-ccg-mode="amiga"] .ccg-footer__counter {
+    border-color: rgba(255,96,218,0.46);
+    background: rgba(30,10,28,0.72);
+    color: #ffb4ea;
     text-shadow:
-        0 0 12px rgba(var(--ccg-neon-blue-rgb), 0.65),
-        0 2px 4px rgba(0, 0, 0, 0.65);
-}
-
-/* ------------------------------------------------------------
-   FOOTER LINKS — CLARITY & ACCESSIBILITY (W5.1)
------------------------------------------------------------- */
-
-.ccg-footer a {
-    position: relative;
-    z-index: 2;
-
-    color: rgba(232,236,255,0.85);
-    text-decoration: none;
-
-    transition:
-        color 0.18s ease,
-        text-shadow 0.18s ease;
-}
-
-.ccg-footer a:hover {
-    color: #ffffff;
-    text-shadow:
-        0 0 6px rgba(255,255,255,0.35);
-}
-
-/* Keyboard focus — visible but calm */
-.ccg-footer a:focus-visible {
-    outline: none;
-    text-shadow:
-        0 0 0 2px rgba(0,0,0,0.9),
-        0 0 8px rgba(0,170,255,0.55);
-}
-
-/* ------------------------------------------------------------
-   MODE TINTING (NEON HORIZON)
------------------------------------------------------------- */
-
-/* C64 MODE (BLUE) */
-[data-ccg-mode="c64"] .ccg-footer::before {
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(0,170,255,0.65),
-            transparent
-        );
-
+        0 0 5px rgba(255,80,220,0.58),
+        0 0 12px rgba(255,80,220,0.32);
     box-shadow:
-        0 0 10px rgba(0,170,255,0.40);
+        inset 0 0 10px rgba(255,80,220,0.13),
+        0 0 12px rgba(255,80,220,0.23);
 }
 
-[data-ccg-mode="c64"] .ccg-footer a:focus-visible {
-    text-shadow:
-        0 0 0 2px rgba(0,0,0,0.9),
-        0 0 8px rgba(0,170,255,0.65);
-}
-
-/* AMIGA MODE (PINK) */
-[data-ccg-mode="amiga"] .ccg-footer::before {
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(255,41,224,0.65),
-            transparent
-        );
-
-    box-shadow:
-        0 0 12px rgba(255,41,224,0.40);
-}
-
-[data-ccg-mode="amiga"] .ccg-footer a:focus-visible {
-    text-shadow:
-        0 0 0 2px rgba(0,0,0,0.9),
-        0 0 10px rgba(255,41,224,0.65);
-}
-
-/* ------------------------------------------------------------
-   MOBILE REFINEMENT
------------------------------------------------------------- */
-
-@media (max-width: 640px) {
-
-    .ccg-footer {
-        padding: 18px 14px 22px;
-    }
-
-    .ccg-footer::before {
-        left: 8%;
-        right: 8%;
-    }
-
-    .ccg-footer::after {
-        opacity: 0.45;
-    }
-
-    .ccg-footer__text,
-    .ccg-footer-text {
-        font-size: 0.82rem;
-    }
-
+@media (prefers-reduced-motion: no-preference) {
     .ccg-footer__counter {
-        font-size: 1rem;
-        letter-spacing: 0.14em;
-        min-width: 6.5ch;
+        animation: ccg-led-glow 4.5s ease-in-out infinite;
     }
 }
 
-/* ------------------------------------------------------------
-   REDUCED MOTION — ACCESSIBILITY (W5)
------------------------------------------------------------- */
-
-@media (prefers-reduced-motion: reduce) {
-
-    .ccg-footer::before,
-    .ccg-footer::after {
-        opacity: 0.45;
+@keyframes ccg-led-glow {
+    0%, 100% {
+        filter: brightness(1);
     }
-
-    .ccg-footer a {
-        transition: none;
+    50% {
+        filter: brightness(1.08);
     }
 }
 
 /* ============================================================
-   FOOTER SIGNATURE MODULE — OMEGA SAFE
+   FOOTER SIGNATURE MODULE
 ============================================================ */
 
 .ccg-footer-signature {
     position: relative;
+    min-height: 46px;
     margin-top: 10px;
     padding: 14px 16px;
-    border-radius: 14px;
-    font-family: var(--ccg-font-robotron);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    background: linear-gradient(145deg, rgba(0,0,0,0.84), rgba(0,0,0,0.62));
+    box-shadow:
+        0 10px 28px rgba(0,0,0,0.72),
+        inset 0 0 0 1px rgba(255,255,255,0.035),
+        0 0 16px rgba(var(--accent-rgb),0.12);
+    font-family: var(--ccg-font-robotron, "Orbitron", sans-serif);
     font-size: 0.72rem;
     letter-spacing: 0.16em;
-    text-transform: uppercase;
     text-align: center;
-    overflow: hidden;
-    background: linear-gradient(145deg, rgba(0,0,0,0.85), rgba(0,0,0,0.65));
-    border: 1px solid rgba(255,255,255,0.08);
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.75),
-        inset 0 0 0 1px rgba(255,255,255,0.04);
+    text-transform: uppercase;
 }
 
-/* Panels */
 .ccg-footer-signature__panel {
     position: absolute;
     inset: 0;
@@ -354,176 +239,34 @@
     pointer-events: auto;
 }
 
-/* Archive panel */
 .ccg-footer-archive-title {
     font-weight: 800;
     letter-spacing: 0.22em;
 }
 
 .ccg-footer-archive-sub {
-    font-size: 0.66rem;
     opacity: 0.75;
-    letter-spacing: 0.14em;
+    font-size: 0.66rem;
     line-height: 1.4;
+    letter-spacing: 0.14em;
 }
 
-/* Phrase panel */
 .ccg-footer-phrase {
+    opacity: 0.9;
     font-size: 0.78rem;
     letter-spacing: 0.18em;
-    opacity: 0.9;
-}
-
-/* Mode colouring */
-body[data-ccg-mode="c64"] .ccg-footer-signature {
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.75),
-        0 0 18px rgba(0,180,255,0.35);
-}
-
-body[data-ccg-mode="amiga"] .ccg-footer-signature {
-    box-shadow:
-        0 10px 28px rgba(0,0,0,0.7),
-        0 0 14px rgba(160,170,190,0.25);
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-    .ccg-footer-signature__panel {
-        transition: none;
-        opacity: 0;
-    }
-    .ccg-footer-signature__panel[data-footer-panel="status"] {
-        opacity: 1;
-        position: relative;
-        transform: none;
-    }
 }
 
 /* ============================================================
-   GOATCOUNTER VIEW COUNTER — NEON GREEN ENHANCEMENT
-   (OMEGA SAFE ADDITIVE PATCH)
-============================================================ */
-
-/* Base neon green counter (C64 default) */
-.ccg-footer__counter {
-    color: rgba(210, 255, 235, 0.98);
-
-    border-color: rgba(0, 255, 170, 0.65);
-
-    box-shadow:
-        0 0 16px rgba(0, 255, 170, 0.55),
-        inset 0 0 14px rgba(0, 255, 170, 0.22);
-
-    text-shadow:
-        0 0 14px rgba(0, 255, 170, 0.85),
-        0 2px 4px rgba(0, 0, 0, 0.65);
-}
-
-/* C64 MODE — GREEN / TEAL CRT */
-body[data-ccg-mode="c64"] .ccg-footer__counter {
-    border-color: rgba(0, 255, 190, 0.7);
-    box-shadow:
-        0 0 18px rgba(0, 255, 190, 0.6),
-        inset 0 0 16px rgba(0, 255, 190, 0.25);
-}
-
-/* AMIGA MODE — PINK / PURPLE (PARITY) */
-body[data-ccg-mode="amiga"] .ccg-footer__counter {
-    border-color: rgba(255, 80, 220, 0.6);
-    box-shadow:
-        0 0 16px rgba(255, 80, 220, 0.5),
-        inset 0 0 14px rgba(255, 80, 220, 0.22);
-
-    text-shadow:
-        0 0 14px rgba(255, 80, 220, 0.8),
-        0 2px 4px rgba(0, 0, 0, 0.65);
-}
-
-/* Reduced motion — no glow pulsing */
-@media (prefers-reduced-motion: reduce) {
-    .ccg-footer__counter {
-        box-shadow:
-            0 0 10px rgba(var(--accent-rgb), 0.35),
-            inset 0 0 8px rgba(var(--accent-rgb), 0.18);
-    }
-}
-
-/* ============================================================
-   FOOTER VISITOR COUNTER — NEON LED STYLE
-   ------------------------------------------------------------
-   • Retro LED / VFD inspired
-   • High contrast, CRT-friendly
-   • Respects Omega footer layout
-============================================================ */
-
-.ccg-footer__counter-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 0.75rem 0 1.25rem;
-}
-
-.ccg-footer__counter {
-    font-family: "Orbitron", sans-serif;
-    font-size: 0.95rem;
-    letter-spacing: 0.18em;
-    text-transform: lowercase;
-
-    color: #4cff9a; /* neon green */
-    background: rgba(10, 30, 20, 0.6);
-
-    padding: 0.45rem 0.9rem;
-    border-radius: 999px;
-
-    border: 1px solid rgba(76, 255, 154, 0.35);
-
-    text-shadow:
-        0 0 4px rgba(76, 255, 154, 0.6),
-        0 0 10px rgba(76, 255, 154, 0.45),
-        0 0 18px rgba(76, 255, 154, 0.25);
-
-    box-shadow:
-        inset 0 0 12px rgba(76, 255, 154, 0.18),
-        0 0 12px rgba(76, 255, 154, 0.25);
-
-    backdrop-filter: blur(2px);
-}
-
-/* Emphasise the numeric part slightly */
-.ccg-footer__counter span {
-    font-weight: 600;
-}
-
-/* Optional subtle pulse (very restrained) */
-@media (prefers-reduced-motion: no-preference) {
-    .ccg-footer__counter {
-        animation: ccg-led-glow 4.5s ease-in-out infinite;
-    }
-
-    @keyframes ccg-led-glow {
-        0%, 100% {
-            box-shadow:
-                inset 0 0 12px rgba(76, 255, 154, 0.18),
-                0 0 12px rgba(76, 255, 154, 0.25);
-        }
-        50% {
-            box-shadow:
-                inset 0 0 16px rgba(76, 255, 154, 0.28),
-                0 0 20px rgba(76, 255, 154, 0.45);
-        }
-    }
-}
-
-/* ============================================================
-   OMEGA FOOTER CTA (SHARED)
+   GAME FOOTER CTA
 ============================================================ */
 
 body[data-ccg-mode="c64"] {
-    --ccg-support-rgb: 255, 198, 120;
+    --ccg-support-rgb: 255,198,120;
 }
 
 body[data-ccg-mode="amiga"] {
-    --ccg-support-rgb: 255, 155, 220;
+    --ccg-support-rgb: 255,155,220;
 }
 
 .ccg-footer--game {
@@ -533,7 +276,7 @@ body[data-ccg-mode="amiga"] {
 .ccg-footer-inner--game {
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     align-items: center;
     text-align: center;
 }
@@ -547,54 +290,38 @@ body[data-ccg-mode="amiga"] {
 
 .ccg-footer__tagline,
 .ccg-footer__note {
-    font-size: 0.78rem;
+    color: var(--ccg-soft);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--ccg-soft);
 }
 
 .ccg-footer__btn {
-    min-height: 44px;
-    padding: 10px 16px;
-    border-radius: 16px;
-    text-align: center;
-    gap: 4px;
+    min-height: 40px !important;
+    padding: 8px 13px !important;
+    border-radius: 0 !important;
+    gap: 3px;
     flex-direction: column;
+    text-align: center;
 }
 
 .ccg-footer__btn-icon {
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .ccg-footer__btn-subtext {
-    font-size: 0.64rem;
-    letter-spacing: 0.14em;
-    opacity: 0.75;
+    opacity: 0.72;
+    font-size: 0.61rem;
+    letter-spacing: 0.12em;
 }
 
 .ccg-footer__btn--support {
-    border-color: rgba(var(--ccg-support-rgb), 0.55);
-    box-shadow:
-        0 12px 26px rgba(0,0,0,0.78),
-        0 0 20px rgba(var(--ccg-support-rgb), 0.35);
-}
-
-.ccg-footer__btn--support:hover,
-.ccg-footer__btn--support:focus-visible {
-    border-color: rgba(var(--ccg-support-rgb), 0.85);
-    box-shadow:
-        0 16px 32px rgba(0,0,0,0.82),
-        0 0 26px rgba(var(--ccg-support-rgb), 0.55);
+    border-color: rgba(var(--ccg-support-rgb),0.58) !important;
 }
 
 .ccg-footer__btn--top {
-    border-color: rgba(var(--accent-rgb), 0.55);
-    background: rgba(var(--accent-rgb), 0.1);
-}
-
-.ccg-footer__btn--top:hover,
-.ccg-footer__btn--top:focus-visible {
-    border-color: rgba(var(--accent-rgb), 0.8);
+    border-color: rgba(var(--accent-rgb),0.58) !important;
+    background: rgba(var(--accent-rgb),0.08) !important;
 }
 
 @media (min-width: 860px) {
@@ -612,5 +339,346 @@ body[data-ccg-mode="amiga"] {
     .ccg-footer__col--center {
         align-items: center;
         text-align: center;
+    }
+}
+
+/* ============================================================
+   OMEGA COMPACT LEGAL FOOTER
+   Used by support / supporters / work-with / privacy / terms etc.
+============================================================ */
+
+.ccg-footer.ccg-legal-footer {
+    width: min(980px, calc(100% - 2rem)) !important;
+    max-width: 980px !important;
+    margin: clamp(20px, 3vw, 30px) auto 1.5rem !important;
+    padding: 13px 16px 15px !important;
+    border: 1px solid rgba(var(--accent-rgb),0.22) !important;
+    border-top: 1px solid rgba(var(--accent-rgb),0.48) !important;
+    border-radius: 0 !important;
+    background:
+        linear-gradient(135deg, rgba(var(--accent-rgb),0.065), transparent 42%),
+        rgba(3,7,16,0.82) !important;
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.38),
+        inset 0 1px 0 rgba(255,255,255,0.035) !important;
+    color: rgba(228,238,248,0.66) !important;
+}
+
+.ccg-footer.ccg-legal-footer p {
+    margin: 0.18rem 0 !important;
+    font-size: 0.74rem !important;
+    line-height: 1.45 !important;
+}
+
+.ccg-footer.ccg-legal-footer p:first-child {
+    color: rgba(244,249,255,0.86) !important;
+    font-family: var(--ccg-font-main, "Orbitron", sans-serif);
+    font-size: 0.71rem !important;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+/* ============================================================
+   OMEGA LEGACY BUTTON PARITY
+   Brings commercial, support and consent controls into the same
+   interface language as .ccg-btn without changing destinations.
+============================================================ */
+
+body[data-ccg-mode] :is(
+    .ccg-commercial-button,
+    .ccg-passive-button,
+    .ccg-consent-btn
+) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 42px !important;
+    padding: 9px 14px !important;
+    border: 1px solid rgba(var(--accent-rgb),0.56) !important;
+    border-radius: 0 !important;
+    background:
+        linear-gradient(to bottom, rgba(var(--accent-rgb),0.20), rgba(0,0,0,0.62)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 8px 18px rgba(0,0,0,0.48) !important;
+    color: rgba(246,251,255,0.94) !important;
+    font-family: var(--ccg-font-main, "Orbitron", sans-serif) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.065em !important;
+    text-align: center !important;
+    text-decoration: none !important;
+    text-transform: uppercase !important;
+    cursor: pointer;
+    transition:
+        transform 160ms ease,
+        border-color 160ms ease,
+        background 160ms ease,
+        box-shadow 160ms ease !important;
+}
+
+body[data-ccg-mode] :is(
+    .ccg-commercial-button:not(.ccg-commercial-button--ghost),
+    .ccg-passive-button:not(.ccg-passive-button--ghost),
+    .ccg-consent-btn--primary
+) {
+    border-color: rgba(var(--accent-rgb),0.74) !important;
+    background:
+        linear-gradient(to bottom, rgba(var(--accent-rgb),0.34), rgba(0,0,0,0.68)) !important;
+}
+
+body[data-ccg-mode] :is(
+    .ccg-commercial-button--ghost,
+    .ccg-passive-button--ghost,
+    .ccg-consent-btn--ghost,
+    .ccg-consent-btn--secondary
+) {
+    border-color: rgba(255,255,255,0.18) !important;
+    background:
+        linear-gradient(to bottom, rgba(255,255,255,0.055), rgba(0,0,0,0.56)) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    body[data-ccg-mode] :is(
+        .ccg-commercial-button,
+        .ccg-passive-button,
+        .ccg-consent-btn
+    ):hover {
+        transform: translateY(-1px) !important;
+        border-color: rgba(var(--accent-rgb),0.92) !important;
+        background:
+            linear-gradient(to bottom, rgba(var(--accent-rgb),0.30), rgba(0,0,0,0.58)) !important;
+        box-shadow:
+            0 0 0 1px rgba(var(--accent-rgb),0.15),
+            0 0 18px rgba(var(--accent-rgb),0.22),
+            0 10px 22px rgba(0,0,0,0.52) !important;
+    }
+}
+
+body[data-ccg-mode] :is(
+    .ccg-commercial-button,
+    .ccg-passive-button,
+    .ccg-consent-btn
+):focus-visible {
+    outline: 2px solid rgba(var(--accent-rgb),0.82) !important;
+    outline-offset: 3px !important;
+}
+
+/* Support cards: one action remains compact; paired actions share the row. */
+html[data-ccg-page="support"] .ccg-commercial-actions {
+    align-items: stretch !important;
+}
+
+html[data-ccg-page="support"] .ccg-commercial-actions .ccg-commercial-button {
+    flex: 1 1 150px !important;
+}
+
+/* ============================================================
+   ABOUT PAGE — COMPACT CTA GRID
+============================================================ */
+
+@media (max-width: 720px) {
+    html[data-ccg-page="about"] .about-cta-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+    }
+
+    html[data-ccg-page="about"] .about-cta-grid .about-cta {
+        width: 100% !important;
+        min-width: 0 !important;
+        min-height: 42px !important;
+        padding: 9px 10px !important;
+        font-size: 0.69rem !important;
+    }
+
+    html[data-ccg-page="about"] .about-cta-grid .about-cta:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 430px) {
+    html[data-ccg-page="about"] .about-cta-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    html[data-ccg-page="about"] .about-cta-grid .about-cta:last-child:nth-child(odd) {
+        grid-column: auto;
+    }
+}
+
+/* ============================================================
+   CONTACT PAGE — PRIMARY ACTION WITHOUT GIANT MOBILE BAR
+============================================================ */
+
+@media (max-width: 720px) {
+    html[data-ccg-page="contact"] .contact-actions {
+        align-items: flex-start !important;
+    }
+
+    html[data-ccg-page="contact"] .contact-actions .ccg-btn {
+        width: auto !important;
+        min-width: 220px !important;
+        min-height: 44px !important;
+    }
+
+    html[data-ccg-page="contact"] .contact-panel--callouts .ccg-btn {
+        width: auto !important;
+        min-width: 178px !important;
+        min-height: 42px !important;
+    }
+}
+
+@media (max-width: 430px) {
+    html[data-ccg-page="contact"] .contact-actions .ccg-btn,
+    html[data-ccg-page="contact"] .contact-panel--callouts .ccg-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+}
+
+/* ============================================================
+   PUBLISHER / DEVELOPER FILTERS — SEGMENTED OMEGA CONTROLS
+============================================================ */
+
+:is(.ccg-publishers-filter, .ccg-developers-filter) .ccg-btn {
+    min-height: 38px !important;
+    padding: 8px 11px !important;
+    border-radius: 0 !important;
+    font-size: 0.68rem !important;
+    white-space: nowrap;
+}
+
+:is(.ccg-publishers-filter, .ccg-developers-filter) .ccg-btn.is-active {
+    outline: none !important;
+    border-color: rgba(var(--accent-rgb),0.88) !important;
+    background:
+        linear-gradient(to bottom, rgba(var(--accent-rgb),0.30), rgba(0,0,0,0.64)) !important;
+    box-shadow: inset 0 0 12px rgba(var(--accent-rgb),0.10) !important;
+}
+
+@media (max-width: 500px) {
+    .ccg-publishers-filter:not([hidden]),
+    .ccg-developers-filter:not([hidden]) {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        gap: 6px !important;
+        max-width: 100%;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        padding: 2px 1px 6px;
+        scrollbar-width: thin;
+    }
+
+    html[data-ccg-page="publisher-index"] .ccg-publishers-filter {
+        display: none !important;
+    }
+
+    :is(.ccg-publishers-filter, .ccg-developers-filter) .ccg-btn {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: max-content !important;
+        min-height: 38px !important;
+        padding-inline: 10px !important;
+    }
+}
+
+/* ============================================================
+   CONSENT UI — RETAIN MOBILE ACCESSIBILITY, REDUCE VISUAL BULK
+============================================================ */
+
+body[data-ccg-mode] .ccg-consent-close {
+    border-radius: 0 !important;
+    border: 1px solid rgba(var(--accent-rgb),0.38) !important;
+    background: rgba(2,7,17,0.82) !important;
+}
+
+@media (max-width: 760px) {
+    body[data-ccg-mode] .ccg-consent-banner .ccg-consent-btn,
+    body[data-ccg-mode] .ccg-consent-dialog .ccg-consent-btn {
+        min-height: 42px !important;
+        padding-block: 9px !important;
+    }
+}
+
+/* ============================================================
+   FOOTER LEGAL LINK ROW — QUIET, COMPACT NAVIGATION
+============================================================ */
+
+.ccg-footer-legal {
+    gap: 0.32rem 0.72rem !important;
+    padding-top: 0.7rem !important;
+    font-size: 0.72rem !important;
+}
+
+.ccg-footer-legal :is(a, button) {
+    min-height: 30px;
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 3px;
+}
+
+/* ============================================================
+   MOBILE FOOTER REFINEMENT
+============================================================ */
+
+@media (max-width: 640px) {
+    .ccg-footer {
+        padding: 16px 12px 19px;
+    }
+
+    .ccg-footer::before {
+        left: 8%;
+        right: 8%;
+    }
+
+    .ccg-footer::after {
+        opacity: 0.42;
+    }
+
+    .ccg-footer__text,
+    .ccg-footer-text {
+        font-size: 0.8rem;
+    }
+
+    .ccg-footer__counter {
+        min-width: 6.4ch;
+        font-size: 0.88rem;
+        letter-spacing: 0.13em;
+    }
+
+    .ccg-footer.ccg-legal-footer {
+        width: min(100% - 1.2rem, 980px) !important;
+        padding: 11px 12px 13px !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-footer::before,
+    .ccg-footer::after {
+        opacity: 0.42;
+    }
+
+    .ccg-footer a,
+    .ccg-footer-signature__panel,
+    body[data-ccg-mode] :is(.ccg-commercial-button, .ccg-passive-button, .ccg-consent-btn) {
+        transition: none !important;
+    }
+
+    .ccg-footer__counter {
+        animation: none !important;
+        filter: none !important;
+    }
+
+    .ccg-footer-signature__panel {
+        opacity: 0;
+    }
+
+    .ccg-footer-signature__panel[data-footer-panel="status"] {
+        position: relative;
+        opacity: 1;
+        transform: none;
     }
 }
