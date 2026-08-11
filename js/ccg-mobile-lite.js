@@ -25,11 +25,159 @@
         const modal = document.getElementById("ccgModal");
         if (!modal || modal.parentElement === document.body) return;
 
-        // Keep the shared screenshot / 3D-box modal outside transformed or
-        // contained page wrappers so position: fixed is always relative to the
-        // current viewport instead of a scrolled document section.
+        // Keep the shared screenshot modal outside transformed or contained
+        // page wrappers so position: fixed remains tied to the live viewport.
         document.body.appendChild(modal);
         modal.dataset.ccgViewportRoot = "true";
+    };
+
+    let boxLightboxReturnFocus = null;
+
+    const closeDedicatedBoxLightbox = () => {
+        const lightbox = document.querySelector("[data-ccg-box-lightbox]");
+        if (!lightbox || !lightbox.classList.contains("is-open")) return;
+
+        const savedScroll = Number(lightbox.dataset.scrollY || window.scrollY || 0);
+        lightbox.classList.remove("is-open");
+        lightbox.setAttribute("aria-hidden", "true");
+        root.classList.remove("ccg-box-lightbox-open");
+        document.body?.classList.remove("ccg-box-lightbox-open");
+
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: savedScroll, left: 0, behavior: "auto" });
+            if (boxLightboxReturnFocus && typeof boxLightboxReturnFocus.focus === "function") {
+                try {
+                    boxLightboxReturnFocus.focus({ preventScroll: true });
+                } catch (error) {
+                    boxLightboxReturnFocus.focus();
+                }
+            }
+            boxLightboxReturnFocus = null;
+        });
+    };
+
+    const ensureDedicatedBoxLightbox = () => {
+        if (!document.body) return null;
+
+        let lightbox = document.querySelector("[data-ccg-box-lightbox]");
+        if (lightbox) return lightbox;
+
+        lightbox = document.createElement("div");
+        lightbox.className = "ccg-box-lightbox";
+        lightbox.setAttribute("data-ccg-box-lightbox", "true");
+        lightbox.setAttribute("role", "dialog");
+        lightbox.setAttribute("aria-modal", "true");
+        lightbox.setAttribute("aria-label", "Enlarged game box artwork");
+        lightbox.setAttribute("aria-hidden", "true");
+        lightbox.innerHTML = `
+            <button class="ccg-box-lightbox__close" type="button" aria-label="Close enlarged game box">&times;</button>
+            <div class="ccg-box-lightbox__stage">
+                <img class="ccg-box-lightbox__image" alt="" decoding="async">
+            </div>
+        `;
+        document.body.appendChild(lightbox);
+
+        lightbox.addEventListener("click", (event) => {
+            if (event.target === lightbox || event.target.closest(".ccg-box-lightbox__close")) {
+                closeDedicatedBoxLightbox();
+            }
+        });
+
+        return lightbox;
+    };
+
+    const resetLegacyBoxModal = () => {
+        const legacyModal = document.getElementById("ccgModal");
+        if (!legacyModal) return;
+
+        legacyModal.classList.remove("open", "active", "ccg-modal--box3d");
+        legacyModal.setAttribute("aria-hidden", "true");
+
+        const legacyImage = legacyModal.querySelector("[data-ccg-box3d-modal-image]");
+        if (legacyImage) legacyImage.hidden = true;
+
+        const frame = document.getElementById("ccgModalFrame");
+        if (frame) frame.hidden = false;
+    };
+
+    const openDedicatedBoxLightbox = (box) => {
+        if (!box || root.getAttribute("data-ccg-page") !== "single-game") return false;
+
+        const sourceImage = box.querySelector(".game-hero__box3d-img, img");
+        const source = sourceImage?.currentSrc || sourceImage?.src || "";
+        if (!source) return false;
+
+        const lightbox = ensureDedicatedBoxLightbox();
+        const enlargedImage = lightbox?.querySelector(".ccg-box-lightbox__image");
+        const closeButton = lightbox?.querySelector(".ccg-box-lightbox__close");
+        if (!lightbox || !enlargedImage) return false;
+
+        resetLegacyBoxModal();
+        boxLightboxReturnFocus = box;
+        lightbox.dataset.scrollY = String(window.scrollY || document.documentElement.scrollTop || 0);
+        enlargedImage.src = source;
+        enlargedImage.alt = sourceImage?.alt || "Game box artwork";
+
+        root.classList.add("ccg-box-lightbox-open");
+        document.body?.classList.add("ccg-box-lightbox-open");
+        lightbox.classList.add("is-open");
+        lightbox.setAttribute("aria-hidden", "false");
+
+        requestAnimationFrame(() => {
+            if (closeButton && typeof closeButton.focus === "function") {
+                try {
+                    closeButton.focus({ preventScroll: true });
+                } catch (error) {
+                    closeButton.focus();
+                }
+            }
+        });
+
+        return true;
+    };
+
+    const bindDedicatedBoxLightbox = () => {
+        if (root.getAttribute("data-ccg-page") !== "single-game") return;
+        if (root.dataset.ccgDedicatedBoxLightboxBound === "true") return;
+
+        // Capture the interaction before the legacy shared modal handler. The
+        // 3D box now has its own viewport-rooted viewer, so it cannot open at a
+        // different vertical position on long mobile game pages.
+        document.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const box = target?.closest(".game-hero__box3d");
+            if (!box) return;
+            if (!openDedicatedBoxLightbox(box)) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === "function") {
+                event.stopImmediatePropagation();
+            }
+        }, true);
+
+        document.addEventListener("keydown", (event) => {
+            const lightbox = document.querySelector("[data-ccg-box-lightbox]");
+            if (event.key === "Escape" && lightbox?.classList.contains("is-open")) {
+                event.preventDefault();
+                closeDedicatedBoxLightbox();
+                return;
+            }
+
+            if (event.key !== "Enter" && event.key !== " ") return;
+            const target = event.target instanceof Element ? event.target : null;
+            const box = target?.closest(".game-hero__box3d");
+            if (!box) return;
+            if (!openDedicatedBoxLightbox(box)) return;
+
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof event.stopImmediatePropagation === "function") {
+                event.stopImmediatePropagation();
+            }
+        }, true);
+
+        root.dataset.ccgDedicatedBoxLightboxBound = "true";
     };
 
     // Canonical /games/<slug>/ pages are prefilled in the HTML. The shared
@@ -38,6 +186,7 @@
     // and therefore keeps its existing loader-controlled reveal behaviour.
     revealPrefilledSingleGame();
     ensureSingleGameViewportModalRoot();
+    bindDedicatedBoxLightbox();
 
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
@@ -120,10 +269,12 @@
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
             ensureSingleGameViewportModalRoot();
+            bindDedicatedBoxLightbox();
             scheduleVisuals();
         }, { once: true });
     } else {
         ensureSingleGameViewportModalRoot();
+        bindDedicatedBoxLightbox();
         scheduleVisuals();
     }
 
