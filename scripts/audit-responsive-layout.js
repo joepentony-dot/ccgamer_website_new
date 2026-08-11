@@ -173,7 +173,8 @@ expectText(safetyCss, "@media (max-width: 520px)", "the small-phone header break
 expectText(safetyCss, ".ccg-header .ccg-mode-hint", "mode-hint containment");
 expectText(safetyCss, 'html[data-ccg-page="home"] .home-featured-videos', "home featured-video density normalisation");
 
-expectText(polishCss, "@media (max-width: 1199px)", "compact responsive mode-hint removal");
+expectText(polishCss, ".ccg-header .ccg-mode-hint", "global redundant mode-hint removal");
+expectText(polishCss, "@media (min-width: 1200px)", "compact wide-desktop header density");
 expectText(polishCss, "@media (min-width: 701px) and (max-width: 900px)", "compact 701–900px header action row");
 expectText(polishCss, ".ccg-header .ccg-nav-toggle__label", "compact phone menu-label handling");
 expectText(polishCss, 'html[data-ccg-page="single-game"] .ccg-main--single-game', "single-game mobile gutter ownership");
