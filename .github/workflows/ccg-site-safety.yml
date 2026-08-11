@@ -37,6 +37,7 @@ on:
       - "scripts/audit-member-collection-insights.js"
       - "scripts/audit-member-hub-health.js"
       - "scripts/audit-responsive-layout.js"
+      - "scripts/audit-responsive-browser.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -124,12 +125,16 @@ jobs:
           node --check scripts/audit-member-collection-insights.js
           node --check scripts/audit-member-hub-health.js
           node --check scripts/audit-responsive-layout.js
+          node --check scripts/audit-responsive-browser.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
 
       - name: Run responsive layout contract audit
         run: node scripts/audit-responsive-layout.js
+
+      - name: Run rendered responsive browser audit
+        run: node scripts/audit-responsive-browser.js
 
       - name: Run legacy game route audit
         run: node scripts/audit-legacy-game-routes.js
