@@ -7,6 +7,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const root = path.resolve(import.meta.dirname, "..");
 const { build, cleanRecord } = require(path.join(root, "scripts", "build-magazine-review-chunks.js"));
+const { stabilizeReviewUrl } = require(path.join(root, "scripts", "import-amiga-magazine-reviews.js"));
 
 function reviewSource() {
   const games = {};
@@ -90,4 +91,20 @@ test("3D box artwork opens in the shared accessible image modal", () => {
   assert.match(loader, /event\.key !== "Enter" && event\.key !== " "/);
   assert.match(loader, /ccg-modal--box3d/);
   assert.match(modalCss, /\.ccg-box3d-modal-image/);
+});
+
+test("ACE reviews use stable Internet Archive pages instead of blocked scan hotlinks", () => {
+  const row = stabilizeReviewUrl({ magazine: "ACE", issue: "10", date: "July 1988", page: 42, url: "https://amr.abime.net/review_42377" });
+  assert.equal(row.url, "https://archive.org/details/ACE_Issue_10_1988-07_Future_Publishing_GB/page/n41/mode/2up?view=theater");
+  for (const reviews of Object.values(reviewSource().games)) {
+    for (const review of reviews) {
+      if (review.magazine === "ACE") assert.match(review.url, /^https:\/\/archive\.org\/details\/ACE_Issue_/);
+    }
+  }
+});
+
+test("missing music is explained instead of leaving an empty track area", () => {
+  const loader = fs.readFileSync(path.join(root, "js", "load-single-game.js"), "utf8");
+  assert.match(loader, /TRACK NOT YET UPLOADED/);
+  assert.match(loader, /hasUnavailableNotice/);
 });

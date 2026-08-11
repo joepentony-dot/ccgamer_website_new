@@ -163,12 +163,29 @@ function cachePages() {
 
 function uniqueReviews(rows) {
   const seen = new Set();
-  return rows.filter((row) => {
+  return rows.map(stabilizeReviewUrl).filter((row) => {
     const key = [row.magazine, row.issue, row.date, row.page, row.score].join("|").toLowerCase();
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
+}
+
+function stabilizeReviewUrl(row) {
+  if (!row || row.magazine !== "ACE") return row;
+  const issue = Number(row.issue);
+  const page = Number(row.page);
+  const date = String(row.date || "").match(/([A-Za-z]+)\s+(19\d{2})/);
+  if (!Number.isInteger(issue) || issue < 1 || issue > 55 || !Number.isInteger(page) || page < 1 || !date) return row;
+  const months = { january: "01", february: "02", march: "03", april: "04", may: "05", june: "06", july: "07", august: "08", september: "09", october: "10", november: "11", december: "12" };
+  const month = months[date[1].toLowerCase()];
+  if (!month) return row;
+  const identifier = `ACE_Issue_${String(issue).padStart(2, "0")}_${date[2]}-${month}_Future_Publishing_GB`;
+  return {
+    ...row,
+    url: `https://archive.org/details/${identifier}/page/n${page - 1}/mode/2up?view=theater`,
+    scanStatus: "available"
+  };
 }
 
 function recordChunkName(key) {
@@ -253,4 +270,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { importReviews, parseReviewRow, reviewsFromHtml, scorePercent };
+module.exports = { importReviews, parseReviewRow, reviewsFromHtml, scorePercent, stabilizeReviewUrl };

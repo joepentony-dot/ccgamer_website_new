@@ -332,6 +332,16 @@
     font-weight: 700;
 }
 
+.ccg-music-track-unavailable {
+    margin: 8px 0 0;
+    padding: 10px 12px;
+    border: 1px dashed rgba(var(--accent-rgb), 0.42);
+    background: rgba(5, 18, 34, 0.48);
+    color: rgba(214, 241, 255, 0.82);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+}
+
 .game-music-missing.music-missing-text {
     margin: 0;
     padding: 12px 14px;

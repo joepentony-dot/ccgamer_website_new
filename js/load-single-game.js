@@ -1282,6 +1282,10 @@ async function renderGameMusicSection(game) {
         tracks.innerHTML = "";
 
         if (hasComposerInfo) {
+            const unavailable = document.createElement("p");
+            unavailable.className = "ccg-music-track-unavailable";
+            unavailable.textContent = "● TRACK NOT YET UPLOADED";
+            tracks.appendChild(unavailable);
             console.log(`[CCG MUSIC] no playable MP3, composer info kept [game:${game.slug}]`);
         } else {
             musicSection.style.display = "none";
@@ -1376,11 +1380,12 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
 
     const finalizeMusicVisibility = () => {
         const hasPlayer = !!musicTracksEl.querySelector("audio");
+        const hasUnavailableNotice = !!musicTracksEl.querySelector(".ccg-music-track-unavailable");
         const hasMetadata = !!musicMetaEl.querySelector(".ccg-music-composer, .ccg-music-related, .ccg-music-composer__hint");
         const currentReadingCard = document.getElementById("game-reading-card");
         const hasCurrentReading = !!(currentReadingCard && !currentReadingCard.hidden);
-        musicSection.style.display = hasPlayer || hasMetadata ? "" : "none";
-        musicCard.hidden = !(hasPlayer || hasMetadata);
+        musicSection.style.display = hasPlayer || hasMetadata || hasUnavailableNotice ? "" : "none";
+        musicCard.hidden = !(hasPlayer || hasMetadata || hasUnavailableNotice);
         if (utilityHubSection) {
             utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasCurrentReading || hasPlayer || hasMetadata);
         }
