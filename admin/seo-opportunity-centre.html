@@ -25,7 +25,7 @@
     <header class="seo-centre__header">
       <p class="seo-centre__kicker">CCG Admin · Search Intelligence</p>
       <h1>SEO Opportunity Centre</h1>
-      <p class="seo-centre__intro">Private Search Console analysis for finding pages and search terms where CCG is already close to gaining more traffic. Google access uses a short-lived read-only token that exists only in this administrator browser session; no Google private key, refresh token or Search Console report is written to the public repository or browser storage.</p>
+      <p class="seo-centre__intro">Private Search Console analysis for finding the pages most worth improving next. Google access uses a short-lived read-only token that exists only in this administrator browser session; no Google private key, refresh token or Search Console report is written to the public repository or browser storage.</p>
     </header>
 
     <section class="seo-centre__toolbar" aria-label="SEO report controls">
@@ -70,11 +70,33 @@
       </article>
     </section>
 
+    <section class="seo-centre__section seo-centre__section--priority" data-seo-section="workQueue" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>SEO Work Queue</h2>
+          <p>One prioritised list combining ranking, CTR, legacy-route and momentum signals. Priority is a 0–100 heuristic based on demand, current position, estimated click opportunity and the type of issue detected. It is a triage aid, not an instruction to change pages automatically.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="workQueue">0</span>
+      </div>
+      <div data-seo-table="workQueue"></div>
+    </section>
+
+    <section class="seo-centre__section" data-seo-section="legacy" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>Legacy URLs still appearing in Google</h2>
+          <p>Known legacy CCG route patterns that still received Search Console impressions. These are diagnostic items only: verify redirects and canonicals before changing or removing anything.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="legacy">0</span>
+      </div>
+      <div data-seo-table="legacy"></div>
+    </section>
+
     <section class="seo-centre__section" data-seo-section="ranking" hidden>
       <div class="seo-centre__section-header">
         <div>
           <h2>Ranking opportunities</h2>
-          <p>Queries already averaging positions 4–20 with enough impressions to justify attention. Higher opportunity scores favour stronger demand and nearer-to-page-one positions.</p>
+          <p>Queries averaging positions 4–20 with enough impressions to justify attention, grouped by page so several related searches do not create a wall of duplicate page rows.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="ranking">0</span>
       </div>
@@ -85,18 +107,29 @@
       <div class="seo-centre__section-header">
         <div>
           <h2>CTR opportunities</h2>
-          <p>Queries already ranking in the top ten where the click-through rate is materially below a conservative position-based benchmark. These are candidates for stronger titles, descriptions or search-result presentation.</p>
+          <p>Top-ten queries with click-through rates materially below a conservative position-based benchmark, grouped by page. Estimated extra clicks show the approximate gain if the tracked queries reached that benchmark.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="ctr">0</span>
       </div>
       <div data-seo-table="ctr"></div>
     </section>
 
+    <section class="seo-centre__section" data-seo-section="mixed" hidden>
+      <div class="seo-centre__section-header">
+        <div>
+          <h2>Mixed movement</h2>
+          <p>Pages where clicks and impressions are moving materially in opposite directions. These are separated from growth and decline so the same page is no longer labelled as both.</p>
+        </div>
+        <span class="seo-centre__count" data-seo-count="mixed">0</span>
+      </div>
+      <div data-seo-table="mixed"></div>
+    </section>
+
     <section class="seo-centre__section" data-seo-section="declines" hidden>
       <div class="seo-centre__section-header">
         <div>
           <h2>Pages losing momentum</h2>
-          <p>Pages whose clicks or impressions have dropped materially against the immediately preceding comparison period.</p>
+          <p>Pages with a material negative signal and no competing positive signal in the same comparison window.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="declines">0</span>
       </div>
@@ -107,7 +140,7 @@
       <div class="seo-centre__section-header">
         <div>
           <h2>Pages gaining momentum</h2>
-          <p>Pages with meaningful growth in clicks or impressions. These can reveal subjects worth expanding, internally linking or covering again.</p>
+          <p>Pages with a material positive signal and no competing negative signal. These can reveal subjects worth protecting, internally linking or expanding.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="growth">0</span>
       </div>
