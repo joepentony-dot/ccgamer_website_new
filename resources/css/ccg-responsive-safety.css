@@ -1,0 +1,811 @@
+/* ============================================================
+   CCG RESPONSIVE SAFETY CONTRACT — OMEGA
+   ------------------------------------------------------------
+   Global final-pass layout guard for public CCG pages.
+
+   Goals:
+   • one document scrollbar — never nested page scrolling
+   • no horizontal viewport escape
+   • no grid/flex item forcing a parent wider than the viewport
+   • predictable header layout at every breakpoint
+   • usable drawers, dialogs, media and controls on small screens
+   • preserve desktop Omega presentation at >= 1200px
+============================================================ */
+
+:root {
+    --ccg-responsive-gutter: clamp(12px, 2.5vw, 24px);
+    --ccg-responsive-control-min: 42px;
+}
+
+/* ============================================================
+   DOCUMENT + VIEWPORT OWNERSHIP
+============================================================ */
+
+html,
+body {
+    max-width: 100%;
+}
+
+html {
+    overflow-x: clip;
+}
+
+body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+    min-height: 100%;
+    overflow-x: clip !important;
+    overflow-y: auto !important;
+    overscroll-behavior-y: auto;
+}
+
+@supports not (overflow: clip) {
+    html,
+    body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+        overflow-x: hidden !important;
+    }
+}
+
+:where(.ccg-page, .ccg-main, main) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+:where(.ccg-page, .ccg-main) {
+    overflow-y: visible;
+}
+
+/* Grid and flex children are allowed to shrink instead of escaping. */
+:where(
+    .ccg-header-inner,
+    .ccg-header-actions,
+    .ccg-auth-slot,
+    .ccg-card,
+    .ccg-card__body,
+    .ccg-game-card,
+    .game-section,
+    .game-section__inner,
+    .home-video-card,
+    .home-video-card .ccg-card__body,
+    .ccg-info-panel,
+    .about-panel,
+    .member-panel,
+    .video-library-card,
+    .ccg-download-card,
+    .ccg-publisher-card,
+    .ccg-publisher-game-card
+) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+:where(
+    [class$="-grid"],
+    [class*="-grid "],
+    .ccg-header-actions,
+    .ccg-auth-slot,
+    .ccg-hero-actions,
+    .home-hero__actions,
+    .home-video-card__links,
+    .ccg-info-actions,
+    .profile-actions
+) > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* ============================================================
+   TEXT + CONTROL CONTAINMENT
+============================================================ */
+
+:where(
+    h1,
+    h2,
+    h3,
+    h4,
+    .ccg-card__title,
+    .ccg-section-title,
+    .ccg-hero-title,
+    .game-hero__title,
+    .ccg-profile-link__name,
+    .member-hub-title,
+    .video-library-card__title,
+    .ccg-publisher-card__name,
+    .ccg-download-card__title
+) {
+    max-width: 100%;
+    overflow-wrap: break-word;
+}
+
+:where(input, select, textarea) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+:where(button, .ccg-btn, .ccg-link) {
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+:where(img, picture, video, canvas, svg, iframe, audio) {
+    max-width: 100%;
+}
+
+pre {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+}
+
+/* Keep in-page jumps visible below the desktop sticky header. */
+:where(section, article, details, [id]) {
+    scroll-margin-top: calc(var(--ccg-header-height, 92px) + 16px);
+}
+
+/* ============================================================
+   DRAWERS + DIALOGS
+============================================================ */
+
+.ccg-nav-drawer {
+    max-width: 100dvw;
+    max-height: 100dvh;
+}
+
+.ccg-nav-drawer__panel {
+    width: min(420px, calc(100dvw - 20px));
+    max-width: calc(100dvw - 20px);
+    max-height: calc(100dvh - 20px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+:where(
+    .ccg-modal-content,
+    .ccg-modal__content,
+    .ccg-modal__dialog,
+    .modal-content,
+    .auth-modal__content
+) {
+    max-width: calc(100dvw - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* ============================================================
+   HOME — DENSITY NORMALISATION
+   The late global regression layer used to re-expand this section.
+============================================================ */
+
+html[data-ccg-page="home"] .home-featured-videos {
+    margin-top: clamp(12px, 1.6vw, 18px) !important;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-grid {
+    align-items: stretch;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card {
+    min-height: 0;
+}
+
+html[data-ccg-page="home"] .home-featured-videos .home-video-card .ccg-card__body {
+    min-height: 0 !important;
+}
+
+/* ============================================================
+   HEADER — DESKTOP CONTRACT (>= 1200px)
+   Only containment is normalised here; the established desktop
+   arrangement remains owned by ccg-nav.css / ccg-nav-fit.css.
+============================================================ */
+
+@media (min-width: 1200px) {
+    .ccg-header .ccg-mode-hint {
+        position: relative !important;
+        inset: auto !important;
+        transform: none !important;
+        margin: 0 0 4px !important;
+        justify-self: end !important;
+        align-self: end !important;
+        max-width: 440px;
+        color: rgba(238, 248, 255, 0.78) !important;
+        font-size: 0.64rem !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0.12em !important;
+        white-space: normal !important;
+        pointer-events: none !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        width: min(430px, 100%);
+        max-width: 430px;
+    }
+
+    .ccg-header .ccg-auth-slot,
+    .ccg-header .ccg-header-socials {
+        min-width: 0;
+        max-width: 100%;
+    }
+}
+
+/* ============================================================
+   HEADER — TABLET / SMALL DESKTOP (901–1199px)
+   Fixes the former three-column/two-area-map conflict.
+============================================================ */
+
+@media (min-width: 901px) and (max-width: 1199px) {
+    .ccg-header {
+        position: relative !important;
+        top: auto !important;
+        padding: 9px 12px 10px !important;
+    }
+
+    .ccg-header .ccg-header-inner {
+        width: min(calc(100% - 12px), 1160px) !important;
+        max-width: 1160px !important;
+        padding-inline: 0 !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-areas:
+            "brand toggle"
+            "actions actions" !important;
+        column-gap: 14px !important;
+        row-gap: 8px !important;
+        align-items: center !important;
+    }
+
+    .ccg-header .ccg-brand {
+        grid-area: brand !important;
+        width: auto !important;
+        max-width: min(680px, calc(100vw - 190px)) !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        justify-self: start !important;
+        gap: 10px !important;
+        padding: 7px 10px !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__logo {
+        width: auto !important;
+        height: clamp(56px, 6vw, 70px) !important;
+        max-height: 70px !important;
+    }
+
+    .ccg-header .ccg-brand__text {
+        min-width: 0 !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__kicker {
+        font-size: 0.64rem !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0.16em !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-brand__title {
+        font-size: clamp(0.92rem, 1.7vw, 1.08rem) !important;
+        line-height: 1.08 !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-nav-toggle {
+        grid-area: toggle !important;
+        display: inline-flex !important;
+        justify-self: end !important;
+        align-self: center !important;
+        width: auto !important;
+        min-width: 128px !important;
+        min-height: 44px !important;
+    }
+
+    .ccg-header .ccg-nav {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-header-actions {
+        grid-area: actions !important;
+        display: grid !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+        grid-template-areas:
+            "hint hint"
+            "mode mode"
+            "auth socials" !important;
+        align-items: center !important;
+        justify-items: stretch !important;
+        gap: 6px 12px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    .ccg-header .ccg-mode-hint {
+        grid-area: hint !important;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        justify-self: center !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        color: rgba(238, 248, 255, 0.78) !important;
+        font-size: 0.62rem !important;
+        line-height: 1.25 !important;
+        letter-spacing: 0.12em !important;
+        white-space: normal !important;
+        pointer-events: none !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        grid-area: mode !important;
+        justify-self: center !important;
+        width: min(420px, 100%) !important;
+        max-width: 420px !important;
+        min-height: 42px !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        grid-area: auth !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-self: stretch !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .ccg-header .ccg-profile-link {
+        max-width: min(300px, 45vw) !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+        justify-self: stretch !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        padding: 4px 6px !important;
+    }
+
+    .ccg-header .ccg-socials-fallback {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   HEADER — MOBILE LANDSCAPE / TABLET (521–900px)
+============================================================ */
+
+@media (min-width: 521px) and (max-width: 900px) {
+    .ccg-header {
+        position: relative !important;
+        top: auto !important;
+        padding: 8px 10px 9px !important;
+    }
+
+    .ccg-header .ccg-header-inner {
+        width: min(calc(100% - 8px), 880px) !important;
+        max-width: 880px !important;
+        padding-inline: 0 !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-areas:
+            "brand toggle"
+            "actions actions" !important;
+        column-gap: 10px !important;
+        row-gap: 8px !important;
+        align-items: center !important;
+    }
+
+    .ccg-header .ccg-brand {
+        grid-area: brand !important;
+        min-width: 0 !important;
+        width: auto !important;
+        max-width: 100% !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+        padding: 6px 8px !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__logo {
+        width: auto !important;
+        height: clamp(48px, 7vw, 58px) !important;
+        max-height: 58px !important;
+    }
+
+    .ccg-header .ccg-brand__text {
+        min-width: 0 !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__kicker {
+        font-size: 0.56rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0.12em !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-brand__title {
+        font-size: clamp(0.78rem, 2.2vw, 0.96rem) !important;
+        line-height: 1.08 !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-nav-toggle {
+        grid-area: toggle !important;
+        display: inline-flex !important;
+        justify-self: end !important;
+        width: auto !important;
+        min-width: 116px !important;
+        min-height: 42px !important;
+        padding: 8px 12px !important;
+    }
+
+    .ccg-header .ccg-nav {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-header-actions {
+        grid-area: actions !important;
+        display: grid !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+            "hint"
+            "mode"
+            "auth"
+            "socials" !important;
+        align-items: center !important;
+        justify-items: center !important;
+        gap: 6px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    .ccg-header .ccg-mode-hint {
+        grid-area: hint !important;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        color: rgba(238, 248, 255, 0.76) !important;
+        font-size: 0.58rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0.1em !important;
+        white-space: normal !important;
+        pointer-events: none !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        grid-area: mode !important;
+        width: min(390px, 100%) !important;
+        max-width: 390px !important;
+        min-height: 42px !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        grid-area: auth !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .ccg-header .ccg-profile-link {
+        max-width: min(330px, 70vw) !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        padding: 4px 6px !important;
+    }
+
+    .ccg-header .ccg-socials-fallback {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   HEADER — SMALL PHONES (<= 520px)
+============================================================ */
+
+@media (max-width: 520px) {
+    .ccg-header {
+        position: relative !important;
+        top: auto !important;
+        padding: 7px 8px 8px !important;
+    }
+
+    .ccg-header .ccg-header-inner {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-inline: 0 !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+            "brand"
+            "toggle"
+            "actions" !important;
+        row-gap: 7px !important;
+        align-items: center !important;
+    }
+
+    .ccg-header .ccg-brand {
+        grid-area: brand !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 8px !important;
+        padding: 6px 8px !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__logo {
+        width: auto !important;
+        height: 46px !important;
+        max-height: 46px !important;
+    }
+
+    .ccg-header .ccg-brand__text {
+        min-width: 0 !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+    }
+
+    .ccg-header .ccg-brand__kicker {
+        font-size: 0.52rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0.1em !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-brand__title {
+        font-size: clamp(0.72rem, 4vw, 0.9rem) !important;
+        line-height: 1.08 !important;
+        white-space: normal !important;
+    }
+
+    .ccg-header .ccg-nav-toggle {
+        grid-area: toggle !important;
+        display: inline-flex !important;
+        justify-self: stretch !important;
+        width: 100% !important;
+        min-height: 42px !important;
+        justify-content: center !important;
+        padding: 8px 12px !important;
+    }
+
+    .ccg-header .ccg-nav {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-header-actions {
+        grid-area: actions !important;
+        display: grid !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-areas:
+            "hint"
+            "mode"
+            "auth"
+            "socials" !important;
+        justify-items: center !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    .ccg-header .ccg-mode-hint {
+        grid-area: hint !important;
+        position: static !important;
+        inset: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        color: rgba(238, 248, 255, 0.72) !important;
+        font-size: 0.54rem !important;
+        line-height: 1.2 !important;
+        letter-spacing: 0.08em !important;
+        white-space: normal !important;
+        pointer-events: none !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        grid-area: mode !important;
+        width: min(360px, 100%) !important;
+        max-width: 100% !important;
+        min-height: 40px !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__pill {
+        gap: 4px !important;
+        padding: 4px 5px !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__label {
+        padding: 5px 6px !important;
+        font-size: 0.54rem !important;
+        letter-spacing: 0.08em !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        grid-area: auth !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .ccg-header .ccg-profile-link {
+        flex: 1 1 190px !important;
+        max-width: calc(100% - 86px) !important;
+    }
+
+    .ccg-header .ccg-btn-auth {
+        min-height: 38px !important;
+        padding: 7px 8px !important;
+        font-size: 0.66rem !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        display: flex !important;
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+        gap: 5px !important;
+        width: auto !important;
+        max-width: 100% !important;
+        padding: 4px 5px !important;
+    }
+
+    .ccg-header .ccg-socials-fallback {
+        display: none !important;
+    }
+}
+
+/* ============================================================
+   PUBLIC PAGE MOBILE SAFETY
+============================================================ */
+
+@media (max-width: 760px) {
+    .ccg-main {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: max(12px, env(safe-area-inset-left)) !important;
+        padding-right: max(12px, env(safe-area-inset-right)) !important;
+    }
+
+    :where(
+        .ccg-hero-actions,
+        .ccg-info-actions,
+        .profile-actions,
+        .home-hero__actions,
+        .home-video-card__links,
+        .ccg-publisher-playlist,
+        .ccg-downloads-wayfinding__links,
+        .member-hub-shortcuts,
+        .quiz-score-actions,
+        .quiz-panel-actions
+    ) {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+
+    :where(
+        .ccg-hero-actions,
+        .ccg-info-actions,
+        .home-hero__actions
+    ) .ccg-btn {
+        min-width: 0;
+    }
+
+    .ccg-downloads-breadcrumbs,
+    .ccg-publisher-breadcrumbs,
+    .video-library__breadcrumbs {
+        flex-wrap: wrap;
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .ccg-downloads-letter,
+    .member-hub-nav,
+    .ccg-game-utility-hub,
+    .video-library,
+    .ccg-publishers-main,
+    .ccg-downloads-main,
+    .member-hub-main {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Tall secondary sticky controls consume too much mobile viewport. */
+    .ccg-downloads-tools,
+    .member-hub-nav {
+        position: relative !important;
+        top: auto !important;
+    }
+
+    /* Long metadata must wrap rather than widen a card. */
+    :where(
+        .ccg-card__text,
+        .ccg-publisher-game-card__meta,
+        .ccg-download-card__publisher,
+        .member-game-card__meta,
+        .video-library-card__meta,
+        .game-meta,
+        .game-section p
+    ) {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 420px) {
+    .ccg-main {
+        padding-left: max(10px, env(safe-area-inset-left)) !important;
+        padding-right: max(10px, env(safe-area-inset-right)) !important;
+    }
+
+    .ccg-nav-drawer__panel {
+        width: calc(100dvw - 12px);
+        max-width: calc(100dvw - 12px);
+        max-height: calc(100dvh - 12px);
+    }
+
+    .ccg-download-card,
+    .member-game-card {
+        min-width: 0;
+    }
+}
+
+/* ============================================================
+   ACCESSIBILITY / INPUT MODE SAFETY
+============================================================ */
+
+@media (hover: none), (pointer: coarse) {
+    :where(a, button, input, select, textarea, summary) {
+        touch-action: manipulation;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+}
