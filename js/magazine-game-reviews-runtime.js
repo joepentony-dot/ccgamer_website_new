@@ -93,7 +93,7 @@
                     date: "",
                     page: Number(row[1]) || null,
                     reviewer: "",
-                    score: "Not recorded",
+                    score: "",
                     scorePercent: null,
                     url: zzapReviewUrl(row[0], row[1]),
                     language: "English",
@@ -107,7 +107,7 @@
     function dedupe(rows) {
         const seen = new Set();
         return rows.filter((row) => {
-            const key = [row.magazine, row.issue, row.page, row.score, row.url].join("|").toLowerCase();
+            const key = [row.magazine, row.issue, row.page, row.url].join("|").toLowerCase();
             if (seen.has(key)) return false;
             seen.add(key);
             return true;
@@ -115,7 +115,7 @@
     }
 
     function scoreClass(percent) {
-        if (!Number.isFinite(Number(percent))) return "is-unscored";
+        if (percent === null || percent === "" || !Number.isFinite(Number(percent))) return "is-unscored";
         if (Number(percent) >= 90) return "is-excellent";
         if (Number(percent) >= 75) return "is-good";
         if (Number(percent) >= 60) return "is-mixed";
@@ -130,8 +130,9 @@
     }
 
     function stats(rows) {
-        const contemporary = rows.filter((row) => row.era !== "retrospective" && Number.isFinite(Number(row.scorePercent)));
-        const scored = contemporary.length ? contemporary : rows.filter((row) => Number.isFinite(Number(row.scorePercent)));
+        const hasScore = (row) => row.scorePercent !== null && row.scorePercent !== "" && Number.isFinite(Number(row.scorePercent));
+        const contemporary = rows.filter((row) => row.era !== "retrospective" && hasScore(row));
+        const scored = contemporary.length ? contemporary : rows.filter(hasScore);
         if (!scored.length) return null;
         const values = scored.map((row) => Number(row.scorePercent));
         return {
@@ -158,8 +159,10 @@
         const reviewer = panel.querySelector("[data-magazine-reviewer]");
         const link = panel.querySelector("[data-magazine-link]");
 
+        const hasScore = row.scorePercent !== null && row.scorePercent !== "" && Number.isFinite(Number(row.scorePercent));
+        score.hidden = !hasScore;
         score.className = `ccg-magazine-review__score ${scoreClass(row.scorePercent)}`;
-        score.textContent = row.score || "Not recorded";
+        score.textContent = hasScore ? row.score : "";
         magazine.textContent = row.magazine;
 
         const details = [];
@@ -169,7 +172,8 @@
         if (row.language && row.language !== "English") details.push(row.language);
         if (row.era === "retrospective") details.push("modern retrospective");
         meta.textContent = details.join(" · ") || "Magazine review";
-        reviewer.textContent = row.reviewer ? `Reviewed by ${row.reviewer}` : "Reviewer not recorded";
+        reviewer.hidden = !row.reviewer;
+        reviewer.textContent = row.reviewer ? `Reviewed by ${row.reviewer}` : "";
 
         if (row.url && row.scanStatus !== "missing") {
             link.href = row.url;

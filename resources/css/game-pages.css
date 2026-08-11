@@ -16,15 +16,15 @@
 
 .ccg-game-utility-hub__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
     margin-top: 8px;
-    align-items: stretch;
+    align-items: start;
 }
 
 .ccg-utility-card {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto auto;
     gap: 8px;
     align-content: start;
     min-height: 88px;
@@ -57,10 +57,11 @@
     justify-content: center;
     text-align: center;
     line-height: 1.2;
+    height: auto;
 }
 
 .ccg-utility-card--reading:has(.ccg-magazine-reviews) {
-    grid-column: span 2;
+    grid-column: 1 / -1;
 }
 
 .ccg-magazine-reviews {
@@ -70,6 +71,8 @@
     border: 1px solid rgba(var(--accent-rgb), 0.28);
     border-radius: 10px;
     background: rgba(3, 9, 18, 0.62);
+    width: min(100%, 860px);
+    margin-inline: auto;
 }
 
 .ccg-magazine-reviews__heading,

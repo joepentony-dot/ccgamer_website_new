@@ -33,6 +33,24 @@ test("Arcade Pool contains the verified Amiga Format review", () => {
   const format = reviews.find((review) => review.magazine === "Amiga Format" && review.issue === "59");
   assert.equal(format.scorePercent, 94);
   assert.equal(format.page, 65);
+  assert.equal(reviews.length, 13);
+});
+
+test("cached magazine references cover almost the entire Amiga catalogue without cross-edition matches", () => {
+  const games = JSON.parse(fs.readFileSync(path.join(root, "games/games.json"), "utf8"));
+  const source = JSON.parse(fs.readFileSync(path.join(root, "data/magazine-review-records.json"), "utf8"));
+  const amigaGames = games.filter((game) => /amiga/i.test(String(game.system || "")));
+  const covered = amigaGames.filter((game) => source.games[`amiga:${game.slug}`]?.length);
+  assert.equal(amigaGames.length, 99);
+  assert.equal(covered.length, 94);
+});
+
+test("Ace of Aces uses its scored direct Zzap review reference", () => {
+  const source = JSON.parse(fs.readFileSync(path.join(root, "data/magazine-review-records.json"), "utf8"));
+  const review = source.games["c64:ace-of-aces"].find((row) => row.magazine === "Zzap!64" && row.issue === "20");
+  assert.equal(review.scorePercent, 88);
+  assert.equal(review.page, 148);
+  assert.equal(review.url, "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=20&page=148");
 });
 
 test("schema loader uses the combined magazine runtime", () => {

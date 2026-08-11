@@ -13,6 +13,7 @@
     "generate:sitemaps": "node scripts/generate-sitemaps.js",
     "validate:sitemaps": "node scripts/validate-sitemaps.js",
     "build:magazine-reviews": "node scripts/build-magazine-review-chunks.js",
+    "import:magazine-reviews": "node scripts/import-amiga-magazine-reviews.js",
     "validate:magazine-reviews": "node scripts/build-magazine-review-chunks.js --check",
     "build:sitemaps": "npm run generate:publishers && npm run generate:video-seo && npm run generate:retro-video-seo && npm run generate:video-library && npm run generate:sitemaps && npm run validate:sitemaps && npm run validate:video-seo && npm run validate:retro-video-seo && npm run validate:video-library"
   }
