@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "description": "Verified magazine review metadata for CCG game pages. Store facts and outbound archive links only; do not copy review text.",
+  "games": {
+    "amiga:arcade-pool": [
+      { "magazine": "Amiga Addict", "issue": "34", "date": "November 2024", "page": 44, "reviewer": "Alan Grapes", "score": "79%", "scorePercent": 79, "url": "https://amr.abime.net/review_56042", "era": "retrospective" },
+      { "magazine": "Amiga Computing", "issue": "75", "date": "July 1994", "page": 112, "reviewer": "Jonathan Maddock", "score": "80%", "scorePercent": 80, "url": "https://amr.abime.net/review_8404", "era": "contemporary" },
+      { "magazine": "Amiga Concept", "issue": "5", "date": "June 1994", "page": 38, "reviewer": "Fabien Bonnargent", "score": "92%", "scorePercent": 92, "url": "", "language": "French", "scanStatus": "missing", "era": "contemporary" },
+      { "magazine": "Amiga Dream", "issue": "9", "date": "July 1994", "page": 44, "reviewer": "Alexandre Cavanaggia", "score": "81%", "scorePercent": 81, "url": "", "language": "French", "scanStatus": "missing", "era": "contemporary" },
+      { "magazine": "Amiga Format", "issue": "59", "date": "May 1994", "page": 65, "reviewer": "Stephen Bradley", "score": "94%", "scorePercent": 94, "url": "https://amr.abime.net/review_3052", "era": "contemporary" },
+      { "magazine": "Amiga Games", "issue": "", "date": "April 1994", "page": 46, "reviewer": "Gerhard Fleischmann", "score": "77%", "scorePercent": 77, "url": "", "language": "German", "scanStatus": "missing", "era": "contemporary" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "March 1994", "page": 90, "reviewer": "Joachim Nettelbeck", "score": "62%", "scorePercent": 62, "url": "https://amr.abime.net/review_18129", "language": "German", "era": "contemporary" },
+      { "magazine": "Amiga Joker", "issue": "", "date": "March 1994", "page": 90, "reviewer": "Joachim Nettelbeck", "score": "60%", "scorePercent": 60, "url": "https://amr.abime.net/review_18130", "language": "German", "era": "contemporary" },
+      { "magazine": "Amiga Power", "issue": "38", "date": "June 1994", "page": 71, "reviewer": "Jonathan Davies", "score": "60%", "scorePercent": 60, "url": "https://amr.abime.net/review_1575", "era": "contemporary" },
+      { "magazine": "Amiga Power", "issue": "39", "date": "July 1994", "page": 11, "reviewer": "Jonathan Davies", "score": "91%", "scorePercent": 91, "url": "https://amr.abime.net/review_29503", "era": "contemporary" },
+      { "magazine": "CU Amiga", "issue": "", "date": "June 1994", "page": 78, "reviewer": "Steve Keen", "score": "81%", "scorePercent": 81, "url": "https://amr.abime.net/review_10088", "era": "contemporary" },
+      { "magazine": "Datormagazin", "issue": "12", "date": "July 1994", "page": 40, "reviewer": "Ove Kaufeldt", "score": "4/5", "scorePercent": 80, "url": "https://dmzarkivet.se/pager?issue=199412&page=40", "language": "Swedish", "era": "contemporary" },
+      { "magazine": "The One", "issue": "68", "date": "May 1994", "page": 62, "reviewer": "Simon Byron", "score": "82%", "scorePercent": 82, "url": "https://amr.abime.net/review_9365", "era": "contemporary" }
+    ]
+  }
+}

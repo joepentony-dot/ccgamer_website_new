@@ -119,7 +119,7 @@ test('browser projection collapses same-game same-platform same-issue scan pages
 test('front-end review features reuse the full compact dataset and filter awards lazily', () => {
   const browser = fs.readFileSync(path.join(root, 'js/zzap64-review-browser.js'), 'utf8');
   const linkFix = fs.readFileSync(path.join(root, 'js/zzap64-game-link-fix.js'), 'utf8');
-  const runtime = fs.readFileSync(path.join(root, 'js/zzap64-game-reviews-runtime.js'), 'utf8');
+  const runtime = fs.readFileSync(path.join(root, 'js/magazine-game-reviews-runtime.js'), 'utf8');
   const schema = fs.readFileSync(path.join(root, 'js/ccg-schema.js'), 'utf8');
 
   assert.match(browser, /\/data\/zzap64-game-reviews\//);
@@ -130,5 +130,5 @@ test('front-end review features reuse the full compact dataset and filter awards
   assert.match(linkFix, /\/data\/zzap64-game-reviews\//);
   assert.match(runtime, /\/data\/zzap64-game-reviews\//);
   assert.match(runtime, /gameLemonLinks/);
-  assert.match(schema, /zzap64-game-reviews-runtime\.js/);
+  assert.match(schema, /magazine-game-reviews-runtime\.js/);
 });

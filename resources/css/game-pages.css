@@ -59,6 +59,101 @@
     line-height: 1.2;
 }
 
+.ccg-utility-card--reading:has(.ccg-magazine-reviews) {
+    grid-column: span 2;
+}
+
+.ccg-magazine-reviews {
+    display: grid;
+    gap: 10px;
+    padding: 11px;
+    border: 1px solid rgba(var(--accent-rgb), 0.28);
+    border-radius: 10px;
+    background: rgba(3, 9, 18, 0.62);
+}
+
+.ccg-magazine-reviews__heading,
+.ccg-magazine-review__body {
+    display: grid;
+    gap: 3px;
+}
+
+.ccg-magazine-reviews__title {
+    font-family: var(--ccg-font-main);
+    color: #fff;
+    font-size: 0.9rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.ccg-magazine-reviews__summary,
+.ccg-magazine-review__meta,
+.ccg-magazine-review__reviewer {
+    color: rgba(216, 231, 245, 0.78);
+    font-size: 0.76rem;
+    line-height: 1.4;
+}
+
+.ccg-magazine-reviews__select-label {
+    display: grid;
+    gap: 5px;
+    color: rgba(230, 242, 255, 0.9);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ccg-magazine-reviews__select {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 34px 8px 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.42);
+    border-radius: 8px;
+    background: #091323;
+    color: #fff;
+    font: inherit;
+    text-transform: none;
+}
+
+.ccg-magazine-review {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(140px, auto);
+    gap: 10px;
+    align-items: center;
+    min-width: 0;
+}
+
+.ccg-magazine-review__score {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    min-height: 48px;
+    padding: 6px 8px;
+    border-radius: 9px;
+    background: #607080;
+    color: #fff;
+    font-family: var(--ccg-font-main);
+    font-weight: 700;
+}
+
+.ccg-magazine-review__score.is-excellent { background: #08aa7b; }
+.ccg-magazine-review__score.is-good { background: #4bad13; }
+.ccg-magazine-review__score.is-mixed { background: #d8aa00; }
+.ccg-magazine-review__score.is-low { background: #be4250; }
+.ccg-magazine-review__score.is-unscored { font-size: 0.66rem; background: #536173; }
+
+.ccg-magazine-review__name {
+    color: #fff;
+    font-family: var(--ccg-font-main);
+    font-size: 0.88rem;
+}
+
+.ccg-magazine-review__link[aria-disabled="true"] {
+    pointer-events: none;
+    opacity: 0.58;
+}
+
 .ccg-utility-card--music {
     grid-column: 1 / -1;
     min-height: auto;
@@ -138,6 +233,18 @@
 
     .ccg-utility-card {
         min-height: 0;
+    }
+
+    .ccg-utility-card--reading:has(.ccg-magazine-reviews) {
+        grid-column: auto;
+    }
+
+    .ccg-magazine-review {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .ccg-magazine-review__link {
+        grid-column: 1 / -1;
     }
 }
 

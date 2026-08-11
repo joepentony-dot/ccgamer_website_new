@@ -72,11 +72,11 @@
   function loadGameReviewRuntime() {
     const isGamePage = document.documentElement?.getAttribute('data-ccg-page') === 'single-game'
       || !!document.querySelector('.ccg-page--single-game');
-    if (!isGamePage || document.querySelector('script[data-ccg-zzap-game-reviews-runtime]')) return;
+    if (!isGamePage || document.querySelector('script[data-ccg-magazine-game-reviews-runtime]')) return;
 
     const script = document.createElement('script');
-    script.src = '/js/zzap64-game-reviews-runtime.js';
-    script.setAttribute('data-ccg-zzap-game-reviews-runtime', 'true');
+    script.src = '/js/magazine-game-reviews-runtime.js';
+    script.setAttribute('data-ccg-magazine-game-reviews-runtime', 'true');
     document.body.appendChild(script);
   }
 
