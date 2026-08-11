@@ -3,12 +3,11 @@
 /*
  * CCG rendered responsive browser audit.
  *
- * Uses the Chrome/Chromium already installed on GitHub's Ubuntu runner.
- * A tiny local static server injects a diagnostics probe into representative
- * public pages; nothing is added to production HTML.
+ * Uses ChromeDriver + the Chrome already installed on GitHub's Ubuntu runner.
+ * One persistent headless browser session is resized through representative
+ * phone, tablet, the historically problematic ~956px width, and wide desktop.
  *
- * Checks at phone, tablet, the historically problematic ~956px width and
- * wide desktop:
+ * Checks rendered pages for:
  *   - document-level horizontal overflow
  *   - unexpected body scroll locking
  *   - excessive shared-header height
@@ -19,13 +18,12 @@
 
 const fs = require("fs");
 const http = require("http");
-const os = require("os");
 const path = require("path");
 const { spawn, spawnSync } = require("child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const HOST = "127.0.0.1";
-const MAX_BUFFER = 24 * 1024 * 1024;
+const DRIVER_PORT = 9515;
 
 const PAGES = [
     "/home.html",
@@ -69,16 +67,13 @@ const MIME = Object.freeze({
     ".pdf": "application/pdf"
 });
 
-const AUDIT_PROBE = String.raw`
-<script>
-(function () {
-    "use strict";
-
+const DIAGNOSTIC_SCRIPT = String.raw`
+return (function () {
     function visible(el) {
         if (!el) return false;
-        const style = getComputedStyle(el);
+        var style = getComputedStyle(el);
         if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) return false;
-        const rect = el.getBoundingClientRect();
+        var rect = el.getBoundingClientRect();
         return rect.width > 1 && rect.height > 1;
     }
 
@@ -98,109 +93,93 @@ const AUDIT_PROBE = String.raw`
         return width > 4 && height > 4 ? Math.round(width * height) : 0;
     }
 
-    function collect() {
-        var root = document.documentElement;
-        var body = document.body;
-        var viewportWidth = root.clientWidth;
-        var viewportHeight = window.innerHeight;
-        var header = document.querySelector(".ccg-header");
-        var headerRect = header ? header.getBoundingClientRect() : null;
-        var bodyStyle = body ? getComputedStyle(body) : null;
-        var locked = body && (
-            body.classList.contains("ccg-body--locked") ||
-            body.classList.contains("ccg-body--nav-open") ||
-            body.classList.contains("modal-open")
-        );
+    var root = document.documentElement;
+    var body = document.body;
+    var viewportWidth = root.clientWidth;
+    var viewportHeight = window.innerHeight;
+    var header = document.querySelector(".ccg-header");
+    var headerRect = header ? header.getBoundingClientRect() : null;
+    var bodyStyle = body ? getComputedStyle(body) : null;
+    var locked = body && (
+        body.classList.contains("ccg-body--locked") ||
+        body.classList.contains("ccg-body--nav-open") ||
+        body.classList.contains("modal-open")
+    );
 
-        var overflowOffenders = [];
-        if (body) {
-            Array.from(body.querySelectorAll("*")).forEach(function (el) {
-                if (overflowOffenders.length >= 16 || !visible(el)) return;
-                if (el.closest('.ccg-nav-drawer[aria-hidden="true"]')) return;
-                var style = getComputedStyle(el);
-                if (style.position === "fixed" && /ccg-bg|backdrop|overlay/.test(el.className || "")) return;
-                var rect = el.getBoundingClientRect();
-                if (rect.right > viewportWidth + 4 || rect.left < -4) {
-                    overflowOffenders.push({
-                        element: describe(el),
-                        left: Math.round(rect.left),
-                        right: Math.round(rect.right),
-                        width: Math.round(rect.width)
-                    });
-                }
-            });
-        }
+    var overflowOffenders = [];
+    if (body) {
+        Array.from(body.querySelectorAll("*")).forEach(function (el) {
+            if (overflowOffenders.length >= 16 || !visible(el)) return;
+            if (el.closest('.ccg-nav-drawer[aria-hidden="true"]')) return;
+            var style = getComputedStyle(el);
+            if (style.position === "fixed" && /ccg-bg|backdrop|overlay/.test(String(el.className || ""))) return;
+            var rect = el.getBoundingClientRect();
+            if (rect.right > viewportWidth + 4 || rect.left < -4) {
+                overflowOffenders.push({
+                    element: describe(el),
+                    left: Math.round(rect.left),
+                    right: Math.round(rect.right),
+                    width: Math.round(rect.width)
+                });
+            }
+        });
+    }
 
-        var controlSelectors = [
-            ".ccg-brand",
-            ".ccg-nav-toggle",
-            ".ccg-mode-toggle",
-            ".ccg-auth-slot",
-            ".ccg-header-socials"
-        ];
-        var controls = controlSelectors
-            .map(function (selector) { return document.querySelector(selector); })
-            .filter(visible);
-        var headerOverlaps = [];
+    var controlSelectors = [
+        ".ccg-brand",
+        ".ccg-nav-toggle",
+        ".ccg-mode-toggle",
+        ".ccg-auth-slot",
+        ".ccg-header-socials"
+    ];
+    var controls = controlSelectors
+        .map(function (selector) { return document.querySelector(selector); })
+        .filter(visible);
+    var headerOverlaps = [];
 
-        for (var i = 0; i < controls.length; i += 1) {
-            for (var j = i + 1; j < controls.length; j += 1) {
-                var area = overlap(controls[i], controls[j]);
-                if (area > 0) {
-                    headerOverlaps.push({
-                        a: describe(controls[i]),
-                        b: describe(controls[j]),
-                        area: area
-                    });
-                }
+    for (var i = 0; i < controls.length; i += 1) {
+        for (var j = i + 1; j < controls.length; j += 1) {
+            var area = overlap(controls[i], controls[j]);
+            if (area > 0) {
+                headerOverlaps.push({
+                    a: describe(controls[i]),
+                    b: describe(controls[j]),
+                    area: area
+                });
             }
         }
-
-        var result = {
-            path: location.pathname + location.search,
-            viewportWidth: viewportWidth,
-            viewportHeight: viewportHeight,
-            scrollWidth: root.scrollWidth,
-            horizontalOverflow: Math.max(0, Math.round(root.scrollWidth - viewportWidth)),
-            overflowOffenders: overflowOffenders,
-            bodyOverflowY: bodyStyle ? bodyStyle.overflowY : "",
-            bodyLocked: Boolean(locked),
-            headerHeight: headerRect ? Math.round(headerRect.height) : 0,
-            headerOverlaps: headerOverlaps
-        };
-
-        var node = document.createElement("script");
-        node.id = "ccg-responsive-audit-result";
-        node.type = "application/json";
-        node.textContent = JSON.stringify(result);
-        body.appendChild(node);
     }
 
-    function queue() {
-        window.setTimeout(collect, 900);
-    }
+    return {
+        pageTitle: document.title,
+        path: location.pathname + location.search,
+        viewportWidth: viewportWidth,
+        viewportHeight: viewportHeight,
+        scrollWidth: root.scrollWidth,
+        horizontalOverflow: Math.max(0, Math.round(root.scrollWidth - viewportWidth)),
+        overflowOffenders: overflowOffenders,
+        bodyOverflowY: bodyStyle ? bodyStyle.overflowY : "",
+        bodyLocked: Boolean(locked),
+        headerHeight: headerRect ? Math.round(headerRect.height) : 0,
+        headerOverlaps: headerOverlaps
+    };
+})();`;
 
-    if (document.readyState === "complete") queue();
-    else window.addEventListener("load", queue, { once: true });
-})();
-</script>`;
+function commandPath(command) {
+    const result = spawnSync("bash", ["-lc", `command -v ${command}`], { encoding: "utf8" });
+    return result.status === 0 ? result.stdout.trim() : "";
+}
 
-function findChrome() {
+function findChromeDriver() {
     const candidates = [
-        process.env.CHROME_BIN,
-        "google-chrome",
-        "google-chrome-stable",
-        "chromium",
-        "chromium-browser"
+        commandPath("chromedriver"),
+        process.env.CHROMEWEBDRIVER ? path.join(process.env.CHROMEWEBDRIVER, "chromedriver") : "",
+        "/usr/local/share/chromedriver-linux64/chromedriver"
     ].filter(Boolean);
 
-    for (const candidate of candidates) {
-        if (candidate.includes(path.sep) && fs.existsSync(candidate)) return candidate;
-        const found = spawnSync("bash", ["-lc", `command -v ${candidate}`], { encoding: "utf8" });
-        if (found.status === 0 && found.stdout.trim()) return found.stdout.trim();
-    }
-
-    throw new Error("Chrome/Chromium was not found on the runner.");
+    const found = candidates.find((candidate) => fs.existsSync(candidate));
+    if (!found) throw new Error("ChromeDriver was not found on the GitHub runner.");
+    return found;
 }
 
 function safeFileForRequest(urlPathname) {
@@ -227,21 +206,14 @@ function safeFileForRequest(urlPathname) {
     return target;
 }
 
-function injectProbe(html) {
-    if (/<\/body\s*>/i.test(html)) {
-        return html.replace(/<\/body\s*>/i, `${AUDIT_PROBE}\n</body>`);
-    }
-    return `${html}\n${AUDIT_PROBE}`;
-}
-
 function createServer() {
     return http.createServer((req, res) => {
         const requestUrl = new URL(req.url || "/", `http://${HOST}`);
         const filePath = safeFileForRequest(requestUrl.pathname);
 
         if (!filePath || !fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-            res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
-            res.end("Not found");
+            res.writeHead(404, { "content-type": "text/html; charset=utf-8" });
+            res.end("<!doctype html><html><head><title>CCG_AUDIT_404</title></head><body>Not found</body></html>");
             return;
         }
 
@@ -249,36 +221,132 @@ function createServer() {
         const contentType = MIME[extension] || "application/octet-stream";
 
         try {
-            if (extension === ".html") {
-                const html = fs.readFileSync(filePath, "utf8");
-                res.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
-                res.end(injectProbe(html));
-                return;
-            }
-
             const content = fs.readFileSync(filePath);
             res.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
             res.end(content);
         } catch (error) {
-            res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
-            res.end(String(error && error.message ? error.message : error));
+            res.writeHead(500, { "content-type": "text/html; charset=utf-8" });
+            res.end(`<!doctype html><html><head><title>CCG_AUDIT_500</title></head><body>${String(error && error.message ? error.message : error)}</body></html>`);
         }
     });
 }
 
-function extractResult(html) {
-    const match = html.match(/<script\s+id="ccg-responsive-audit-result"\s+type="application\/json">([\s\S]*?)<\/script>/i);
-    if (!match) return null;
+async function webdriver(method, pathname, body) {
+    const response = await fetch(`http://${HOST}:${DRIVER_PORT}${pathname}`, {
+        method,
+        headers: body === undefined ? undefined : { "content-type": "application/json" },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: AbortSignal.timeout(20000)
+    });
+
+    const text = await response.text();
+    let payload = {};
     try {
-        return JSON.parse(match[1]);
+        payload = text ? JSON.parse(text) : {};
     } catch {
-        return null;
+        throw new Error(`ChromeDriver returned non-JSON for ${method} ${pathname}: ${text.slice(0, 500)}`);
     }
+
+    if (!response.ok || payload.value?.error) {
+        const message = payload.value?.message || text || `${response.status} ${response.statusText}`;
+        throw new Error(`ChromeDriver ${method} ${pathname} failed: ${message}`);
+    }
+
+    return payload;
+}
+
+async function waitForDriver() {
+    let lastError = null;
+    for (let attempt = 0; attempt < 80; attempt += 1) {
+        try {
+            const response = await fetch(`http://${HOST}:${DRIVER_PORT}/status`, { signal: AbortSignal.timeout(1000) });
+            if (response.ok) return;
+        } catch (error) {
+            lastError = error;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    throw new Error(`ChromeDriver did not become ready: ${lastError ? lastError.message : "unknown error"}`);
+}
+
+function startDriver(driverPath) {
+    const child = spawn(driverPath, [`--port=${DRIVER_PORT}`, `--allowed-ips=${HOST}`], {
+        cwd: ROOT,
+        stdio: ["ignore", "pipe", "pipe"]
+    });
+
+    let tail = "";
+    const remember = (chunk) => {
+        tail = (tail + chunk.toString("utf8")).slice(-6000);
+    };
+    child.stdout.on("data", remember);
+    child.stderr.on("data", remember);
+    child.auditLogTail = () => tail;
+    return child;
+}
+
+async function createSession() {
+    const payload = await webdriver("POST", "/session", {
+        capabilities: {
+            alwaysMatch: {
+                browserName: "chrome",
+                pageLoadStrategy: "eager",
+                "goog:chromeOptions": {
+                    args: [
+                        "--headless=new",
+                        "--no-sandbox",
+                        "--disable-gpu",
+                        "--disable-dev-shm-usage",
+                        "--disable-extensions",
+                        "--disable-sync",
+                        "--disable-default-apps",
+                        "--no-first-run",
+                        "--mute-audio",
+                        "--disable-background-networking"
+                    ]
+                }
+            }
+        }
+    });
+
+    const sessionId = payload.value?.sessionId || payload.sessionId;
+    if (!sessionId) throw new Error("ChromeDriver created a session without returning a session id.");
+    return sessionId;
+}
+
+async function setViewport(sessionId, viewport) {
+    await webdriver("POST", `/session/${sessionId}/window/rect`, {
+        x: 0,
+        y: 0,
+        width: viewport.width,
+        height: viewport.height
+    });
+}
+
+async function navigate(sessionId, url) {
+    await webdriver("POST", `/session/${sessionId}/url`, { url });
+    await new Promise((resolve) => setTimeout(resolve, 1300));
+}
+
+async function executeDiagnostics(sessionId) {
+    const payload = await webdriver("POST", `/session/${sessionId}/execute/sync`, {
+        script: DIAGNOSTIC_SCRIPT,
+        args: []
+    });
+    return payload.value;
 }
 
 function validateResult(result, page, viewport) {
     const failures = [];
     const maxHeaderHeight = Math.min(300, Math.round(viewport.height * 0.34));
+
+    if (!result || typeof result !== "object") {
+        throw new Error(`${page} @ ${viewport.label}: no diagnostics object was returned`);
+    }
+
+    if (result.pageTitle === "CCG_AUDIT_404" || result.pageTitle === "CCG_AUDIT_500") {
+        failures.push(`local test server returned ${result.pageTitle}`);
+    }
 
     if (result.horizontalOverflow > 4) {
         failures.push(`horizontal overflow ${result.horizontalOverflow}px`);
@@ -304,104 +372,19 @@ function validateResult(result, page, viewport) {
     }
 }
 
-function runChromeAudit(chrome, port, page, viewport, index) {
-    const profileDir = fs.mkdtempSync(path.join(os.tmpdir(), `ccg-responsive-chrome-${index}-`));
-    const url = `http://${HOST}:${port}${page}${page.includes("?") ? "&" : "?"}ccg-responsive-audit=1`;
-    const args = [
-        "--headless=new",
-        "--no-sandbox",
-        "--disable-gpu",
-        "--disable-dev-shm-usage",
-        "--disable-extensions",
-        "--disable-sync",
-        "--disable-default-apps",
-        "--no-first-run",
-        "--mute-audio",
-        "--disable-background-networking",
-        `--user-data-dir=${profileDir}`,
-        `--window-size=${viewport.width},${viewport.height}`,
-        "--virtual-time-budget=2600",
-        "--dump-dom",
-        url
-    ];
-
-    return new Promise((resolve, reject) => {
-        const child = spawn(chrome, args, {
-            cwd: ROOT,
-            stdio: ["ignore", "pipe", "pipe"]
-        });
-
-        let stdout = "";
-        let stderr = "";
-        let finished = false;
-
-        const finish = (error, result) => {
-            if (finished) return;
-            finished = true;
-            clearTimeout(timer);
-            fs.rmSync(profileDir, { recursive: true, force: true });
-            if (error) reject(error);
-            else resolve(result);
-        };
-
-        const append = (current, chunk) => {
-            const next = current + chunk.toString("utf8");
-            if (Buffer.byteLength(next, "utf8") > MAX_BUFFER) {
-                throw new Error("Chrome responsive audit output exceeded the safety buffer.");
-            }
-            return next;
-        };
-
-        const timer = setTimeout(() => {
-            child.kill("SIGKILL");
-            finish(new Error(`${page} @ ${viewport.label}: Chrome timed out after 20 seconds`));
-        }, 20000);
-
-        child.stdout.on("data", (chunk) => {
-            try {
-                stdout = append(stdout, chunk);
-            } catch (error) {
-                child.kill("SIGKILL");
-                finish(error);
-            }
-        });
-
-        child.stderr.on("data", (chunk) => {
-            try {
-                stderr = append(stderr, chunk);
-            } catch (error) {
-                child.kill("SIGKILL");
-                finish(error);
-            }
-        });
-
-        child.once("error", (error) => finish(error));
-        child.once("close", (code) => {
-            if (finished) return;
-            if (code !== 0 && !stdout) {
-                finish(new Error(`Chrome exited ${code}: ${stderr.trim().slice(-1000)}`));
-                return;
-            }
-
-            const result = extractResult(stdout);
-            if (!result) {
-                finish(new Error(`No responsive audit result was emitted. Chrome stderr: ${stderr.trim().slice(-1000)}`));
-                return;
-            }
-
-            try {
-                validateResult(result, page, viewport);
-                finish(null, result);
-            } catch (error) {
-                finish(error);
-            }
-        });
-    });
-}
-
 async function main() {
-    const chrome = findChrome();
+    PAGES.forEach((pageUrl) => {
+        const pathname = new URL(pageUrl, "http://local").pathname;
+        const filePath = safeFileForRequest(pathname);
+        if (!filePath || !fs.existsSync(filePath)) {
+            throw new Error(`Rendered audit page does not exist in the repository: ${pageUrl}`);
+        }
+    });
+
+    const driverPath = findChromeDriver();
     const server = createServer();
+    const driver = startDriver(driverPath);
+    let sessionId = "";
 
     await new Promise((resolve, reject) => {
         server.once("error", reject);
@@ -409,20 +392,28 @@ async function main() {
     });
 
     const address = server.address();
-    const port = address && typeof address === "object" ? address.port : 0;
+    const sitePort = address && typeof address === "object" ? address.port : 0;
     const failures = [];
     let checks = 0;
     let widestHeader = 0;
 
-    console.log(`CCG rendered responsive audit using: ${chrome}`);
-    console.log(`Pages: ${PAGES.length} | Viewports: ${VIEWPORTS.length}`);
-
     try {
+        await waitForDriver();
+        sessionId = await createSession();
+
+        console.log(`CCG rendered responsive audit using ChromeDriver: ${driverPath}`);
+        console.log(`Pages: ${PAGES.length} | Viewports: ${VIEWPORTS.length}`);
+
         for (const viewport of VIEWPORTS) {
+            await setViewport(sessionId, viewport);
+
             for (const page of PAGES) {
                 checks += 1;
+                const url = `http://${HOST}:${sitePort}${page}`;
                 try {
-                    const result = await runChromeAudit(chrome, port, page, viewport, checks);
+                    await navigate(sessionId, url);
+                    const result = await executeDiagnostics(sessionId);
+                    validateResult(result, page, viewport);
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
                     console.log(`PASS ${viewport.label.padEnd(17)} ${page} | overflow ${result.horizontalOverflow}px | header ${result.headerHeight}px`);
                 } catch (error) {
@@ -432,6 +423,12 @@ async function main() {
             }
         }
     } finally {
+        if (sessionId) {
+            try {
+                await webdriver("DELETE", `/session/${sessionId}`);
+            } catch {}
+        }
+        driver.kill("SIGTERM");
         await new Promise((resolve) => server.close(resolve));
     }
 
@@ -440,7 +437,12 @@ async function main() {
     console.log(`Largest measured header: ${widestHeader}px`);
     console.log(`Errors: ${failures.length}`);
 
-    if (failures.length) process.exit(1);
+    if (failures.length) {
+        const driverTail = driver.auditLogTail ? driver.auditLogTail() : "";
+        if (driverTail) console.error(`\nChromeDriver tail:\n${driverTail}`);
+        process.exit(1);
+    }
+
     console.log("Rendered responsive browser checks passed.");
 }
 
