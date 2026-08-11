@@ -4,8 +4,8 @@
  * CCG responsive layout contract audit.
  *
  * Deterministic and browser-free so it can run in the existing site-safety
- * workflow. It protects the shared responsive contract, final cascade loader
- * and representative public-page viewport configuration.
+ * workflow. It protects the shared responsive contract, final cascade loader,
+ * representative layouts and every public HTML page in the repository.
  */
 
 "use strict";
@@ -50,6 +50,17 @@ const REPRESENTATIVE_PAGES = [
     "community/profile.html"
 ];
 
+const PUBLIC_HTML_EXCLUDED_DIRS = new Set([
+    ".git",
+    ".github",
+    "node_modules",
+    "admin",
+    "scripts",
+    "tests",
+    "test",
+    "tools"
+]);
+
 function fail(message) {
     errors.push(message);
     console.error(`ERROR: ${message}`);
@@ -80,6 +91,51 @@ function balancedBraces(source, label) {
         }
     }
     if (depth !== 0) fail(`${label} has unbalanced CSS braces (${depth})`);
+}
+
+function walkPublicHtml(directory = ROOT, relativeDirectory = "") {
+    const files = [];
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+
+    entries.forEach((entry) => {
+        if (entry.isDirectory() && PUBLIC_HTML_EXCLUDED_DIRS.has(entry.name)) return;
+
+        const absolute = path.join(directory, entry.name);
+        const relative = path.posix.join(relativeDirectory.split(path.sep).join("/"), entry.name);
+
+        if (entry.isDirectory()) {
+            files.push(...walkPublicHtml(absolute, relative));
+            return;
+        }
+
+        if (!entry.isFile() || !entry.name.toLowerCase().endsWith(".html")) return;
+
+        /* resources/ can contain stream overlays and utility HTML which are not
+           navigable website documents and do not share the public page shell. */
+        if (relative.startsWith("resources/")) return;
+
+        files.push(relative);
+    });
+
+    return files;
+}
+
+function auditPublicHtmlPage(relativePath) {
+    const source = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+
+    /* Redirect fragments and non-document helper files are ignored. */
+    if (!/<html\b/i.test(source) || !/<head\b/i.test(source)) return false;
+
+    if (!/<meta\s+[^>]*name=["']viewport["'][^>]*>/i.test(source)) {
+        fail(`Public page lacks a responsive viewport meta tag: ${relativePath}`);
+    }
+
+    const usesSharedHeader = /class=["'][^"']*\bccg-header\b/i.test(source);
+    if (usesSharedHeader && !/ccg-nav-core\.js/i.test(source)) {
+        fail(`Public page uses the shared CCG header but does not load ccg-nav-core.js: ${relativePath}`);
+    }
+
+    return true;
 }
 
 REQUIRED_FILES.forEach((relativePath) => {
@@ -117,7 +173,9 @@ expectText(safetyCss, "@media (max-width: 520px)", "the small-phone header break
 expectText(safetyCss, ".ccg-header .ccg-mode-hint", "mode-hint containment");
 expectText(safetyCss, 'html[data-ccg-page="home"] .home-featured-videos', "home featured-video density normalisation");
 
+expectText(polishCss, "@media (max-width: 1199px)", "compact responsive mode-hint removal");
 expectText(polishCss, "@media (min-width: 701px) and (max-width: 900px)", "compact 701–900px header action row");
+expectText(polishCss, ".ccg-header .ccg-nav-toggle__label", "compact phone menu-label handling");
 expectText(polishCss, 'html[data-ccg-page="single-game"] .ccg-main--single-game', "single-game mobile gutter ownership");
 expectText(polishCss, ".ccg-modal--doc .ccg-modal-content", "mobile document-modal correction");
 expectText(polishCss, 'html[data-ccg-page="member-hub"] .member-hub-nav', "member-hub mobile sticky-nav correction");
@@ -131,6 +189,12 @@ REPRESENTATIVE_PAGES.forEach((relativePath) => {
     if (!/ccg-nav-core\.js/i.test(source)) {
         fail(`Representative public page does not load the unified navigation core: ${relativePath}`);
     }
+});
+
+const publicHtmlFiles = walkPublicHtml();
+let auditedPublicPages = 0;
+publicHtmlFiles.forEach((relativePath) => {
+    if (auditPublicHtmlPage(relativePath)) auditedPublicPages += 1;
 });
 
 const publicCssChecks = [
@@ -152,6 +216,7 @@ publicCssChecks.forEach(([relativePath, needle, label]) => {
 });
 
 console.log("\nCCG responsive layout summary");
+console.log(`Public HTML pages audited: ${auditedPublicPages}`);
 console.log(`Errors: ${errors.length}`);
 
 if (errors.length) process.exit(1);
