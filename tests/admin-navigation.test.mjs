@@ -13,6 +13,7 @@ test('shared admin navigation makes Content Publisher primary', () => {
   assert.match(nav, /href="\/admin\/content-publisher\.html"[^>]*>Content Publisher</);
   assert.match(nav, /omega-admin-links__group--primary/);
   assert.match(nav, /omega-admin-links__group--tools/);
+  assert.match(nav, /href="\/admin\/seo-opportunity-centre\.html"[^>]*>SEO Opportunity Centre</);
   assert.match(nav, />Legacy Game Builder</);
   assert.doesNotMatch(nav, /games-json-editor\.html/);
   assert.doesNotMatch(nav, /Game Builder Wizard \(Primary\)/);
@@ -22,6 +23,7 @@ test('dashboard follows the automated publishing workflow', () => {
   assert.match(dashboard, /Open CCG Content Publisher/);
   assert.match(dashboard, /automated repository workflows regenerate/i);
   assert.match(dashboard, /Publishing Status/);
+  assert.match(dashboard, /SEO Opportunity Centre/);
   assert.match(dashboard, /Legacy Game Builder/);
   assert.doesNotMatch(dashboard, /Game Builder Wizard \(Primary\)/);
   assert.doesNotMatch(dashboard, /Export updated games\.json/);

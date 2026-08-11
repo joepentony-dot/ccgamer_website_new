@@ -1,0 +1,43 @@
+name: SEO Opportunity Centre Validation
+
+on:
+  pull_request:
+    paths:
+      - "admin/seo-opportunity-centre.html"
+      - "admin/js/seo-opportunity-centre.js"
+      - "admin/js/admin-nav.js"
+      - "admin/dashboard.html"
+      - "resources/css/ccg-seo-opportunity-centre.css"
+      - "supabase/functions/search-console-opportunities/**"
+      - "tests/seo-opportunity-centre.test.mjs"
+      - "tests/admin-navigation.test.mjs"
+      - ".github/workflows/seo-opportunity-centre-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "admin/seo-opportunity-centre.html"
+      - "admin/js/seo-opportunity-centre.js"
+      - "admin/js/admin-nav.js"
+      - "admin/dashboard.html"
+      - "resources/css/ccg-seo-opportunity-centre.css"
+      - "supabase/functions/search-console-opportunities/**"
+      - "tests/seo-opportunity-centre.test.mjs"
+      - "tests/admin-navigation.test.mjs"
+      - ".github/workflows/seo-opportunity-centre-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: JavaScript syntax
+        run: node --check admin/js/seo-opportunity-centre.js
+      - name: SEO Opportunity Centre regression tests
+        run: node --test tests/seo-opportunity-centre.test.mjs tests/admin-navigation.test.mjs
