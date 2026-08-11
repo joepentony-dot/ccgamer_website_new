@@ -89,6 +89,124 @@
     <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
     <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mode.css" />
+
+    <style>
+        /* Homepage latest uploads: deliberately compact and video-only. */
+        html[data-ccg-page="home"] .home-section--latest-videos {
+            width: min(1120px, calc(100% - 24px));
+            margin-inline: auto;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: clamp(12px, 1.8vw, 18px);
+            margin-top: 18px;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid rgba(var(--accent-rgb), 0.28);
+            border-radius: 12px;
+            background: rgba(4, 9, 20, 0.92);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.46), 0 0 18px rgba(var(--accent-rgb), 0.1);
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card__link {
+            display: block;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card__media {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            background: #02050b;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card__media img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 180ms ease, filter 180ms ease;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card__play {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            display: grid;
+            place-items: center;
+            width: 54px;
+            height: 38px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+            background: rgba(205, 18, 18, 0.94);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+            color: #fff;
+            font-size: 1rem;
+            transform: translate(-50%, -50%);
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card__title {
+            display: -webkit-box;
+            overflow: hidden;
+            margin: 0;
+            padding: 13px 14px 15px;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            color: rgba(248, 252, 255, 0.96);
+            font-family: var(--ccg-font-main, "Orbitron", sans-serif);
+            font-size: clamp(0.82rem, 1.25vw, 0.96rem);
+            font-weight: 700;
+            line-height: 1.42;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card--fallback {
+            grid-column: 1 / -1;
+            padding: 18px;
+            text-align: center;
+        }
+
+        html[data-ccg-page="home"] .home-latest-video-card--fallback a {
+            color: rgb(var(--accent-rgb));
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            html[data-ccg-page="home"] .home-latest-video-card:hover,
+            html[data-ccg-page="home"] .home-latest-video-card:focus-within {
+                border-color: rgba(var(--accent-rgb), 0.64);
+                box-shadow: 0 18px 36px rgba(0, 0, 0, 0.56), 0 0 24px rgba(var(--accent-rgb), 0.18);
+            }
+
+            html[data-ccg-page="home"] .home-latest-video-card:hover .home-latest-video-card__media img,
+            html[data-ccg-page="home"] .home-latest-video-card:focus-within .home-latest-video-card__media img {
+                transform: scale(1.025);
+                filter: saturate(1.04) contrast(1.02);
+            }
+        }
+
+        @media (max-width: 820px) {
+            html[data-ccg-page="home"] .home-latest-video-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            html[data-ccg-page="home"] .home-latest-video-card__title {
+                padding: 11px 12px 13px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html[data-ccg-page="home"] .home-latest-video-card__media img {
+                transition: none;
+            }
+        }
+    </style>
 </head>
 
 <body class="ccg-body page-home" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -267,60 +385,19 @@
                 <span class="ccg-omega-core"></span>
             </div>
 
-            <!-- THREE STABLE SECONDARY ROUTES: NO DUPLICATE SITE MAP -->
-            <section class="home-section home-section--highlights home-section--streamlined ccg-chapter" aria-labelledby="home-highlights-title">
+            <!-- LATEST YOUTUBE UPLOADS ONLY -->
+            <section class="home-section home-section--latest-videos home-section--streamlined ccg-chapter" aria-labelledby="home-videos-heading">
                 <header class="home-section__header home-section__header--focused">
-                    <p class="home-section__eyebrow">Explore the archive</p>
-                    <h2 class="home-section__title" id="home-highlights-title">Choose How to Explore</h2>
-                    <p class="home-section__intro">Three quick routes when you want something more specific than the full game library.</p>
+                    <p class="home-section__eyebrow">Latest from YouTube</p>
+                    <h2 class="home-section__title" id="home-videos-heading">Latest Videos</h2>
+                    <p class="home-section__intro">The three most recent Cheeky Commodore Gamer uploads.</p>
                     <div class="home-section__divider"></div>
                 </header>
 
-                <div class="home-video-grid home-explore-grid">
-                    <a href="/games/discover/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--picks">
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Game finder</span>
-                            <h3 class="ccg-card__title">Find Me a Game</h3>
-                            <p class="ccg-card__text">Choose a system, year, genre or publisher and let CCG find something from the archive for you.</p>
-                            <span class="home-highlight-card__cta">Find a game →</span>
-                        </div>
-                    </a>
-
-                    <a href="/games/genres/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--downloads">
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Browse your way</span>
-                            <h3 class="ccg-card__title">Browse Genres</h3>
-                            <p class="ccg-card__text">Head straight to platformers, shooters, adventures, strategy and the rest of the C64 and Amiga catalogue.</p>
-                            <span class="home-highlight-card__cta">Browse genres →</span>
-                        </div>
-                    </a>
-
-                    <a href="/zzap64/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--zzap">
-                        <div class="ccg-card__body">
-                            <span class="home-highlight-card__eyebrow">Magazine archive</span>
-                            <h3 class="ccg-card__title">Zzap!64 Awards</h3>
-                            <p class="ccg-card__text">Browse Sizzlers, Gold Medals and Silver Medals, with original review links and CCG coverage where available.</p>
-                            <span class="home-highlight-card__cta">Explore Zzap!64 →</span>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="home-featured-videos" aria-labelledby="home-videos-heading">
-                    <div class="home-featured-videos__copy">
-                        <span class="home-highlight-card__eyebrow">From the channel</span>
-                        <h3 class="home-featured-videos__title" id="home-videos-heading">Featured Gameplay Videos</h3>
-                        <p class="home-featured-videos__text">Fresh C64 and Amiga picks pulled from the library.</p>
-                    </div>
-
-                    <div class="home-video-grid" data-ccg-video-grid>
-                        <article class="ccg-card home-video-card home-video-card--loading">
-                            <div class="home-video-card__media"></div>
-                            <div class="ccg-card__body">
-                                <h4 class="ccg-card__title">Loading featured videos…</h4>
-                                <p class="ccg-card__text">Randomising titles from the games database.</p>
-                            </div>
-                        </article>
-                    </div>
+                <div class="home-latest-video-grid" data-ccg-latest-video-grid aria-live="polite">
+                    <article class="ccg-card home-latest-video-card home-latest-video-card--fallback" aria-hidden="true">
+                        Loading latest videos…
+                    </article>
                 </div>
             </section>
 
@@ -390,6 +467,78 @@
 <script src="resources/js/ccg-performance.js" defer></script>
 <script src="js/home-dynamic.js" defer></script>
 <script src="js/ccg-livestream-status.js" defer></script>
+
+<script>
+(function () {
+    "use strict";
+
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    async function renderLatestHomeVideos() {
+        const grid = document.querySelector("[data-ccg-latest-video-grid]");
+        if (!grid) return;
+
+        try {
+            const response = await fetch("/videos/video-index.json", { cache: "no-cache" });
+            if (!response.ok) throw new Error(`video index returned ${response.status}`);
+
+            const payload = await response.json();
+            const items = Array.isArray(payload?.items) ? payload.items : [];
+            const seen = new Set();
+            const latest = [];
+
+            for (const item of items) {
+                const id = String(item?.id || "").trim();
+                if (!id || seen.has(id)) continue;
+                seen.add(id);
+                latest.push(item);
+                if (latest.length === 3) break;
+            }
+
+            if (!latest.length) throw new Error("No videos found in video index");
+
+            grid.innerHTML = latest.map((item) => {
+                const id = escapeHtml(item.id);
+                const title = escapeHtml(item.title || "Cheeky Commodore Gamer video");
+                const thumbnail = escapeHtml(item.thumbnail || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`);
+                const youtubeUrl = `https://www.youtube.com/watch?v=${encodeURIComponent(String(item.id || ""))}`;
+
+                return `
+                    <article class="ccg-card home-latest-video-card">
+                        <a class="home-latest-video-card__link" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer" aria-label="Watch ${title} on YouTube">
+                            <span class="home-latest-video-card__media">
+                                <img src="${thumbnail}" alt="${title}" loading="lazy" decoding="async" width="480" height="270">
+                                <span class="home-latest-video-card__play" aria-hidden="true">▶</span>
+                            </span>
+                            <h3 class="home-latest-video-card__title">${title}</h3>
+                        </a>
+                    </article>
+                `;
+            }).join("");
+        } catch (error) {
+            console.error("[CCG-HOME] Latest videos failed", error);
+            grid.innerHTML = `
+                <article class="ccg-card home-latest-video-card home-latest-video-card--fallback">
+                    <a href="https://www.youtube.com/@CheekyCommodoreGamer/videos" target="_blank" rel="noopener noreferrer">View the latest CCG videos on YouTube</a>
+                </article>
+            `;
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderLatestHomeVideos, { once: true });
+    } else {
+        renderLatestHomeVideos();
+    }
+})();
+</script>
 
 <script
   data-goatcounter="https://cheekycommodoregamer.goatcounter.com/count"
