@@ -23,8 +23,17 @@ function writeIfChanged(filePath, nextContent) {
     return true;
 }
 
+function hasStreamlinedHomeHierarchy(html) {
+    return html.includes("home-explore-grid");
+}
+
 function ensureHomeDownloadsCard(html) {
     if (html.includes('data-home-downloads-card="true"')) return html;
+
+    // The streamlined homepage intentionally keeps only three secondary routes.
+    // Downloads remain discoverable from Browse Games, so do not re-inject a
+    // fourth homepage card when the focused hierarchy is present.
+    if (hasStreamlinedHomeHierarchy(html)) return html;
 
     const fullIndexCard = /(<a href="games\/index\.html" class="ccg-card home-highlight-card">[\s\S]*?<h3 class="ccg-card__title">The Full A–Z Index<\/h3>[\s\S]*?<\/a>)/;
     const match = html.match(fullIndexCard);
@@ -67,8 +76,9 @@ function ensureGamesIndexDownloadsShortcut(html) {
 
 function validate(homeHtml, gamesIndexHtml) {
     const problems = [];
+    const streamlinedHome = hasStreamlinedHomeHierarchy(homeHtml);
 
-    if (!homeHtml.includes('href="/games/downloads/"') || !homeHtml.includes('data-home-downloads-card="true"')) {
+    if (!streamlinedHome && (!homeHtml.includes('href="/games/downloads/"') || !homeHtml.includes('data-home-downloads-card="true"'))) {
         problems.push("homepage downloads highlight card missing");
     }
 
@@ -94,6 +104,9 @@ function main() {
     const gamesChanged = writeIfChanged(gamesIndexPath, gamesNext);
 
     console.log(`[downloads-discovery] Homepage changed: ${homeChanged ? "yes" : "no"}`);
+    if (hasStreamlinedHomeHierarchy(homeNext)) {
+        console.log("[downloads-discovery] Streamlined homepage detected; downloads remain discoverable from Browse Games.");
+    }
     console.log(`[downloads-discovery] Browse Games changed: ${gamesChanged ? "yes" : "no"}`);
 }
 
