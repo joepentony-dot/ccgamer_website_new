@@ -38,6 +38,7 @@ on:
       - "scripts/audit-member-hub-health.js"
       - "scripts/audit-responsive-layout.js"
       - "scripts/audit-responsive-browser.js"
+      - "scripts/audit-scroll-reachability.js"
       - ".github/workflows/ccg-site-safety.yml"
   workflow_dispatch:
 
@@ -126,6 +127,7 @@ jobs:
           node --check scripts/audit-member-hub-health.js
           node --check scripts/audit-responsive-layout.js
           node --check scripts/audit-responsive-browser.js
+          node --check scripts/audit-scroll-reachability.js
 
       - name: Run read-only site safety audit
         run: python scripts/audit-site-safety.py
@@ -135,6 +137,9 @@ jobs:
 
       - name: Run rendered responsive browser audit
         run: node scripts/audit-responsive-browser.js
+
+      - name: Run physical scroll reachability audit
+        run: node scripts/audit-scroll-reachability.js
 
       - name: Run legacy game route audit
         run: node scripts/audit-legacy-game-routes.js
