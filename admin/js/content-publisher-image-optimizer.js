@@ -6,10 +6,13 @@ const PRIMARY_QUALITY = 0.9;
 const SECONDARY_QUALITY = 0.84;
 const FINAL_QUALITY = 0.8;
 const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp']);
+const THUMBNAIL_PREFIX = 'resources/images/thumbnails/all/';
 
 const fileInput = document.querySelector('[data-game-thumbnail-file]');
 const pathInput = document.querySelector('[data-game-field="thumbnail"]');
+const slugInput = document.querySelector('[data-game-field="slug"]');
 const publishButton = document.querySelector('[data-publish-game]');
+const gameForm = document.querySelector('[data-game-form]');
 
 if (fileInput && pathInput && publishButton) {
   const status = document.createElement('small');
@@ -21,6 +24,11 @@ if (fileInput && pathInput && publishButton) {
   fileInput.addEventListener('change', () => {
     void optimiseSelectedImage();
   });
+
+  gameForm?.addEventListener('submit', () => {
+    const selected = fileInput.files?.[0] || null;
+    if (selected?.type === 'image/webp') updateThumbnailPathToWebp(selected.name);
+  }, { capture: true });
 }
 
 async function optimiseSelectedImage() {
@@ -79,7 +87,7 @@ async function optimiseSelectedImage() {
       : new File([finalBlob], finalName, { type: 'image/webp', lastModified: original.lastModified || Date.now() });
 
     replaceFileSelection(finalFile);
-    if (!keepOriginalWebp) updateThumbnailPathToWebp();
+    updateThumbnailPathToWebp(finalFile.name);
 
     const saving = original.size > finalFile.size ? original.size - finalFile.size : 0;
     const savingPercent = original.size > 0 ? Math.round((saving / original.size) * 100) : 0;
@@ -99,7 +107,11 @@ async function optimiseSelectedImage() {
 
 async function decodeImage(file) {
   if (typeof createImageBitmap === 'function') {
-    return createImageBitmap(file, { imageOrientation: 'from-image' });
+    try {
+      return await createImageBitmap(file, { imageOrientation: 'from-image' });
+    } catch {
+      // Fall back to a normal browser Image below for engines with partial createImageBitmap support.
+    }
   }
 
   return new Promise((resolve, reject) => {
@@ -151,10 +163,17 @@ function clearSelectedFile() {
   }
 }
 
-function updateThumbnailPathToWebp() {
+function updateThumbnailPathToWebp(fileName = '') {
   const current = String(pathInput.value || '').trim();
-  if (!current) return;
-  pathInput.value = replaceExtension(current, 'webp');
+  if (current) {
+    pathInput.value = replaceExtension(current, 'webp');
+  } else {
+    const slug = String(slugInput?.value || '').trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+    const fallback = replaceExtension(String(fileName || 'thumbnail').split(/[\\/]/).pop(), 'webp')
+      .toLowerCase()
+      .replace(/[^a-z0-9._-]+/g, '-');
+    pathInput.value = `${THUMBNAIL_PREFIX}${slug ? `${slug}.webp` : fallback}`;
+  }
   pathInput.dispatchEvent(new Event('input', { bubbles: true }));
   pathInput.dispatchEvent(new Event('change', { bubbles: true }));
 }
