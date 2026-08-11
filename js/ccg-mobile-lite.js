@@ -18,11 +18,26 @@
         }
     };
 
+    const ensureSingleGameViewportModalRoot = () => {
+        if (root.getAttribute("data-ccg-page") !== "single-game") return;
+        if (!document.body) return;
+
+        const modal = document.getElementById("ccgModal");
+        if (!modal || modal.parentElement === document.body) return;
+
+        // Keep the shared screenshot / 3D-box modal outside transformed or
+        // contained page wrappers so position: fixed is always relative to the
+        // current viewport instead of a scrolled document section.
+        document.body.appendChild(modal);
+        modal.dataset.ccgViewportRoot = "true";
+    };
+
     // Canonical /games/<slug>/ pages are prefilled in the HTML. The shared
     // single-game CSS hides pages until ccg-single-ready is present, so reveal
     // prefilled pages immediately. The dynamic game.html shell has an empty H1
     // and therefore keeps its existing loader-controlled reveal behaviour.
     revealPrefilledSingleGame();
+    ensureSingleGameViewportModalRoot();
 
     const isMobile =
         window.matchMedia("(max-width: 900px)").matches ||
@@ -103,8 +118,12 @@
     };
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", scheduleVisuals, { once: true });
+        document.addEventListener("DOMContentLoaded", () => {
+            ensureSingleGameViewportModalRoot();
+            scheduleVisuals();
+        }, { once: true });
     } else {
+        ensureSingleGameViewportModalRoot();
         scheduleVisuals();
     }
 
