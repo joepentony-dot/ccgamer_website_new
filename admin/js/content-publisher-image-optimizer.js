@@ -1,3 +1,5 @@
+import './content-publisher-status-reconciler.js';
+
 const MAX_WIDTH = 1280;
 const MAX_HEIGHT = 960;
 const TARGET_BYTES = 650 * 1024;
