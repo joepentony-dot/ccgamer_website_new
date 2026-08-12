@@ -1,13 +1,27 @@
 {
   "version": 1,
   "counts": {
-    "total": 684,
-    "gameVideos": 651,
-    "retroVideos": 33,
-    "c64GameVideos": 552,
+    "total": 686,
+    "gameVideos": 652,
+    "retroVideos": 34,
+    "c64GameVideos": 553,
     "amigaGameVideos": 99
   },
   "items": [
+    {
+      "id": "gEcii5RNges",
+      "kind": "retro",
+      "filter": "retro-specials",
+      "badge": "Retro Special",
+      "title": "Was Zzap!64 Too Harsh? The 20 Lowest-Scoring Commodore 64 Games",
+      "description": "The 20 lowest-scoring Commodore 64 games reviewed by Zzap!64, counting down from 10% to a miserable 3%.",
+      "url": "/retro-specials/zzap64-20-lowest-scoring-commodore-64-games/",
+      "thumbnail": "https://i.ytimg.com/vi/gEcii5RNges/maxresdefault.jpg",
+      "platform": "",
+      "year": "",
+      "publisher": "",
+      "collectionLabel": "Retro Specials"
+    },
     {
       "id": "l15ptEz8kng",
       "kind": "retro",
@@ -8919,6 +8933,19 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
+    },
+    {
+      "id": "rqqqYRSgSBI",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Go For The Gold",
+      "description": "Go For The Gold is a Commodore 64 multi-event sports game released by Americana in 1986. A re-release of the earlier HES Games, it challenges players across six sporting events: the 100m sp…",
+      "url": "/games/go-for-the-gold/",
+      "thumbnail": "https://i.ytimg.com/vi/rqqqYRSgSBI/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1986,
+      "publisher": "Americana"
     },
     {
       "id": "ght7u1k_tqw",
