@@ -77,10 +77,17 @@ jobs:
           node --check js/ccg-schema.js
 
       - name: Cache Lemon pages for newly added or changed games
+        id: lemon_cache
         if: github.event_name == 'push'
+        continue-on-error: true
         run: |
           node scripts/refresh-lemon-game-cache.js --base HEAD^
           node scripts/refresh-lemon-game-cache.js --check --base HEAD^
+
+      - name: Report Lemon cache fallback
+        if: github.event_name == 'push' && steps.lemon_cache.outcome == 'failure'
+        run: |
+          echo "::warning title=Lemon cache unavailable::The live Lemon cache refresh failed. Continuing with existing cache plus explicit Zzap review URLs from games.json so one external fetch cannot block all review publishing."
 
       - name: Refresh live award references when run manually
         if: github.event_name == 'workflow_dispatch'
