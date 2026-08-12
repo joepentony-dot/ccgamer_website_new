@@ -144,6 +144,18 @@
     "url": "/games/publishers/american-action/"
   },
   {
+    "name": "Americana",
+    "slug": "americana",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/americana/"
+  },
+  {
     "name": "Amersoft",
     "slug": "amersoft",
     "count": 1,

@@ -608,6 +608,25 @@
     ]
   },
   {
+    "name": "Bob Landwehr",
+    "slug": "bob-landwehr",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bob Landwehr"
+    ],
+    "games": [
+      "go-for-the-gold"
+    ]
+  },
+  {
     "name": "Bob Vieira",
     "slug": "bob-vieira",
     "count": 3,
