@@ -47,7 +47,8 @@ const requiredProfileFiles = [
   "publisher-histories-a-c.json",
   "publisher-histories-d-h.json",
   "publisher-histories-i-m.json",
-  "publisher-histories-n-s.json"
+  "publisher-histories-n-s.json",
+  "publisher-histories-t-z.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -126,7 +127,12 @@ const approvedHosts = new Set([
   "www.ubisoft.com",
   "www.generation-msx.nl",
   "www.sega.co.jp",
-  "www.ryokawasaki.com"
+  "www.ryokawasaki.com",
+  "www.team17.com",
+  "finna.fi",
+  "timexsinclair.com",
+  "www.timexsinclair.com",
+  "www.cheekycommodoregamer.co.uk"
 ]);
 
 const publisherArchiveSlugs = new Set(
