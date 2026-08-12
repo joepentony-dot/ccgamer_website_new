@@ -114,22 +114,9 @@
       return urlCache.get(normalizedSlug);
     }
 
-    const resolved = (async () => {
-      const config = getConfig();
-      const primaryUrl = buildUrl(config.MUSIC_BASE_URL, normalizedSlug);
-      if (!primaryUrl) return "";
-
-      const available = await probeAudioUrl(primaryUrl, {
-        timeoutMs: 6000,
-        logCtx: `[game:${normalizedSlug}]`
-      });
-      return available ? primaryUrl : "";
-    })();
-
-    urlCache.set(normalizedSlug, resolved);
-    const finalUrl = await resolved;
-    urlCache.set(normalizedSlug, finalUrl);
-    return finalUrl;
+    const primaryUrl = buildUrl(getConfig().MUSIC_BASE_URL, normalizedSlug);
+    urlCache.set(normalizedSlug, primaryUrl || "");
+    return primaryUrl || "";
   }
 
   function transliterateComposerText(value) {
@@ -201,20 +188,39 @@
     root.querySelectorAll('a[href*="composer.html"]').forEach(rewriteLegacyComposerLink);
   }
 
-  function repairComposerTrackCard(card) {
-    if (!(card instanceof Element)) return;
-    const hasAudio = Boolean(card.querySelector("audio"));
-    const status = card.querySelector(".ccg-composer-game-status");
+  function getAudioSource(audio) {
+    if (!(audio instanceof HTMLAudioElement)) return "";
+    const source = audio.querySelector("source[src]");
+    return String(source?.getAttribute("src") || audio.currentSrc || audio.getAttribute("src") || "").trim();
+  }
 
-    if (hasAudio) {
-      card.classList.remove("ccg-composer-games__item--track-unavailable");
-      if (status) {
-        status.classList.remove("ccg-composer-game-status--unavailable");
-      }
-      return;
+  function setComposerTrackUtilitiesHidden(card, hidden) {
+    if (!(card instanceof Element)) return;
+    card.querySelectorAll(".ccg-composer-game-thumb-overlay, .ccg-track-share, .ccg-composer-audio-wrap").forEach((node) => {
+      node.hidden = Boolean(hidden);
+    });
+  }
+
+  function markComposerTrackReady(card, status) {
+    if (!(card instanceof Element)) return;
+    card.dataset.ccgTrackState = "ready";
+    card.classList.remove("ccg-composer-games__item--track-unavailable", "ccg-composer-games__item--track-checking");
+    card.classList.add("ccg-composer-games__item--has-audio");
+
+    if (status) {
+      status.textContent = "Track ready";
+      status.dataset.readyLabel = "Track ready";
+      status.dataset.playingLabel = "Now playing";
+      status.classList.remove("ccg-composer-game-status--unavailable");
     }
 
-    card.classList.remove("ccg-composer-games__item--has-audio", "is-playing");
+    setComposerTrackUtilitiesHidden(card, false);
+  }
+
+  function markComposerTrackUnavailable(card, status) {
+    if (!(card instanceof Element)) return;
+    card.dataset.ccgTrackState = "unavailable";
+    card.classList.remove("ccg-composer-games__item--has-audio", "ccg-composer-games__item--track-checking", "is-playing");
     card.classList.add("ccg-composer-games__item--track-unavailable");
 
     if (status) {
@@ -234,17 +240,115 @@
     }
   }
 
-  function repairComposerTrackCards(root = document) {
+  function verifyComposerTrackCard(card) {
+    if (!(card instanceof Element)) return;
+
+    // Generated composer pages ship static SEO fallback rows. Leave those intact
+    // until music-composer-pages.js replaces them with interactive cards.
+    if (card.classList.contains("ccg-composer-games__item--static")) return;
+
+    const status = card.querySelector(".ccg-composer-game-status");
+    if (!status) return;
+
+    const audio = card.querySelector("audio");
+    if (!(audio instanceof HTMLAudioElement)) {
+      markComposerTrackUnavailable(card, status);
+      return;
+    }
+
+    const sourceUrl = getAudioSource(audio);
+    if (!sourceUrl) {
+      markComposerTrackUnavailable(card, status);
+      return;
+    }
+
+    if (card.dataset.ccgTrackProbeSource === sourceUrl &&
+        (card.dataset.ccgTrackState === "checking" || card.dataset.ccgTrackState === "ready")) {
+      return;
+    }
+
+    card.dataset.ccgTrackProbeSource = sourceUrl;
+    card.dataset.ccgTrackState = "checking";
+    card.classList.remove("ccg-composer-games__item--track-unavailable");
+    card.classList.add("ccg-composer-games__item--track-checking");
+    status.textContent = "Checking track…";
+    status.dataset.readyLabel = "Track ready";
+    status.dataset.playingLabel = "Now playing";
+    status.classList.remove("ccg-composer-game-status--unavailable");
+    setComposerTrackUtilitiesHidden(card, true);
+
+    void probeAudioUrl(sourceUrl, {
+      timeoutMs: 6000,
+      logCtx: `[composer-card:${normalizeSlug(sourceUrl)}]`
+    }).then((available) => {
+      if (!card.isConnected) return;
+
+      const currentAudio = card.querySelector("audio");
+      const currentSource = getAudioSource(currentAudio);
+      if (currentSource !== sourceUrl) return;
+
+      if (available) {
+        markComposerTrackReady(card, status);
+      } else {
+        markComposerTrackUnavailable(card, status);
+      }
+    }).catch(() => {
+      if (card.isConnected) {
+        markComposerTrackUnavailable(card, status);
+      }
+    });
+  }
+
+  function verifyComposerTrackCards(root = document) {
     if (!root || typeof root.querySelectorAll !== "function") return;
     if (root instanceof Element && root.matches(".ccg-composer-games__item")) {
-      repairComposerTrackCard(root);
+      verifyComposerTrackCard(root);
     }
-    root.querySelectorAll(".ccg-composer-games__item").forEach(repairComposerTrackCard);
+    root.querySelectorAll(".ccg-composer-games__item").forEach(verifyComposerTrackCard);
+  }
+
+  function verifyEssentialTrack(track) {
+    if (!(track instanceof Element)) return;
+    const audio = track.querySelector("audio");
+    if (!(audio instanceof HTMLAudioElement)) return;
+
+    const sourceUrl = getAudioSource(audio);
+    if (!sourceUrl) {
+      track.remove();
+      return;
+    }
+
+    if (track.dataset.ccgTrackProbeSource === sourceUrl) return;
+    track.dataset.ccgTrackProbeSource = sourceUrl;
+    track.hidden = true;
+
+    void probeAudioUrl(sourceUrl, {
+      timeoutMs: 6000,
+      logCtx: `[composer-essential:${normalizeSlug(sourceUrl)}]`
+    }).then((available) => {
+      if (!track.isConnected) return;
+      if (available) {
+        track.hidden = false;
+      } else {
+        track.remove();
+      }
+    }).catch(() => {
+      if (track.isConnected) track.remove();
+    });
+  }
+
+  function verifyEssentialTracks(root = document) {
+    if (!root || typeof root.querySelectorAll !== "function") return;
+    if (root instanceof Element && root.matches(".ccg-essential-track")) {
+      verifyEssentialTrack(root);
+    }
+    root.querySelectorAll(".ccg-essential-track").forEach(verifyEssentialTrack);
   }
 
   function bindComposerIntegrityGuards() {
     rewriteLegacyComposerLinks(document);
-    repairComposerTrackCards(document);
+    verifyComposerTrackCards(document);
+    verifyEssentialTracks(document);
 
     if (!composerLinkObserver && document.body) {
       composerLinkObserver = new MutationObserver((mutations) => {
@@ -252,6 +356,7 @@
           mutation.addedNodes.forEach((node) => {
             if (!(node instanceof Element)) return;
             rewriteLegacyComposerLinks(node);
+            verifyEssentialTracks(node);
           });
         });
       });
@@ -260,7 +365,7 @@
 
     const gamesList = document.getElementById("composer-games");
     if (gamesList && !composerCardObserver) {
-      composerCardObserver = new MutationObserver(() => repairComposerTrackCards(gamesList));
+      composerCardObserver = new MutationObserver(() => verifyComposerTrackCards(gamesList));
       composerCardObserver.observe(gamesList, { childList: true, subtree: true });
     }
 
@@ -305,7 +410,7 @@
     probeAudioUrl,
     composerSlugFromName,
     rewriteLegacyComposerLinks,
-    repairComposerTrackCards
+    repairComposerTrackCards: verifyComposerTrackCards
   });
 
   if (document.readyState === "loading") {
