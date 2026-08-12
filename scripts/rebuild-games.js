@@ -26,12 +26,12 @@ const steps = [
   ["generate-composer-pages.js"],
   ["generate-year-platform-pages.js"],
   ["integrate-year-platform-discovery.js"],
-  ["generate-downloads-page.js"],
-  ["update-downloads-static-pages.js"],
-  ["validate-downloads-page.js"],
   ["generate-video-seo.js"],
   ["generate-video-library.js"],
   ["ensure-secondary-publisher-runtime.js"],
+  ["generate-downloads-page.js"],
+  ["update-downloads-static-pages.js"],
+  ["validate-downloads-page.js"],
   ["generate-sitemaps.js"],
   ["validate-sitemaps.js"],
   ["validate-video-seo.js"],
@@ -43,6 +43,7 @@ const steps = [
   ["ensure-magazine-review-runtime.js", "--check"],
   ["ensure-secondary-publisher-runtime.js", "--check"],
   ["ensure-publisher-history-runtime.js", "--check"],
+  ["validate-downloads-page.js"],
 ];
 
 function fail(message) {
