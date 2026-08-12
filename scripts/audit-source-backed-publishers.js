@@ -47,7 +47,8 @@ const requiredProfileFiles = [
   "publisher-histories-a-c.json",
   "publisher-histories-d-h.json",
   "publisher-histories-i-m.json",
-  "publisher-histories-n-s.json"
+  "publisher-histories-n-s.json",
+  "publisher-histories-t-z.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -126,7 +127,8 @@ const approvedHosts = new Set([
   "www.ubisoft.com",
   "www.generation-msx.nl",
   "www.sega.co.jp",
-  "www.ryokawasaki.com"
+  "www.ryokawasaki.com",
+  "www.team17.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
@@ -196,6 +198,15 @@ for (const slug of legacyRequiredSourceBacked) {
   }
 }
 
+const indexablePublisherSlugs = publisherMetadata
+  .filter((entry) => entry?.indexable === true)
+  .map((entry) => String(entry?.slug || "").trim())
+  .filter(Boolean);
+const missingIndexableProfiles = indexablePublisherSlugs.filter((slug) => !seenSlugs.has(slug));
+if (missingIndexableProfiles.length) {
+  failures.push(`Indexable publisher routes missing history profiles: ${missingIndexableProfiles.join(", ")}`);
+}
+
 const americana = profiles.find((entry) => entry?.slug === "americana");
 const expectedAmericanaFact = "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s. It was set up because U.S. Gold lacked experience in the budget games market and used the label to re-release popular full-price Commodore 64 and other microcomputer games.";
 if (!americana) {
@@ -263,6 +274,7 @@ if (failures.length) {
 console.log("Source-backed publisher audit passed.");
 console.log(`- ${sourceBackedCount} source-backed publisher profile(s) validated`);
 console.log(`- ${profileFiles.length} publisher history data file(s) validated as one unique profile set`);
+console.log(`- ${indexablePublisherSlugs.length} indexable publisher route(s) have history/context profiles`);
 console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current CCG publisher routes`);
 if (dormantProfileSlugs.length) {
   console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant: ${dormantProfileSlugs.join(", ")}`);
