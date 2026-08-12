@@ -156,14 +156,15 @@ function auditContentPublisherInteractionContract() {
     if (!html.includes(needle)) failures.push(`admin/content-publisher.html: required interactive control ${needle} is missing.`);
   }
 
-  const interactionChecks = [
-    [/el\.refresh\?\.addEventListener\(['"]click['"],\s*refreshLiveData\)/, 'Refresh Live Data click binding'],
-    [/data-game-field=\\?['"]title\\?['"][\s\S]{0,160}addEventListener\(['"]input['"],\s*onGameTitleInput\)/, 'title input binding'],
-    [/function\s+onGameTitleInput\s*\(\)\s*\{[\s\S]*?setGameValue\(['"]slug['"],\s*slugify\(title\)\)[\s\S]*?setGameValue\(['"]id['"],\s*idify\(title\)\)/, 'automatic slug and ID generation']
+  const requiredJs = [
+    ["el.refresh?.addEventListener('click', refreshLiveData);", 'Refresh Live Data click binding'],
+    ["document.querySelector('[data-game-field=\"title\"]')?.addEventListener('input', onGameTitleInput);", 'title input binding'],
+    ["if (!state.gameSlugTouched) setGameValue('slug', slugify(title));", 'automatic slug generation'],
+    ["if (!state.gameIdTouched) setGameValue('id', idify(title));", 'automatic game ID generation']
   ];
 
-  for (const [pattern, label] of interactionChecks) {
-    if (!pattern.test(js)) failures.push(`admin/js/content-publisher.js: ${label} is missing or no longer wired.`);
+  for (const [needle, label] of requiredJs) {
+    if (!js.includes(needle)) failures.push(`admin/js/content-publisher.js: ${label} is missing or no longer wired.`);
   }
 }
 
