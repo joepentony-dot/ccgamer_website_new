@@ -51,8 +51,12 @@ on:
       - "scripts/generate-sitemaps.js"
       - "scripts/validate-video-seo.js"
       - "tests/magazine-publishing-pipeline.test.mjs"
+      - "tests/cloudflare-audio-admin.test.mjs"
       - "tools/seo/static-pages.json"
   workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   contents: write
@@ -68,18 +72,21 @@ jobs:
 
     steps:
       - name: Check out main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           show-progress: false
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "22"
+          node-version: "24"
 
       - name: Validate magazine publishing pipeline
         run: node --test tests/magazine-publishing-pipeline.test.mjs
+
+      - name: Validate Cloudflare audio admin integration
+        run: node --test tests/cloudflare-audio-admin.test.mjs
 
       - name: Cache Lemon magazine sources
         id: lemon_cache
