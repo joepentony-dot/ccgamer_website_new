@@ -10,6 +10,8 @@ on:
       - "scripts/materialize-publisher-histories.js"
       - "scripts/audit-publisher-seo-evidence.js"
       - "scripts/apply-publisher-evidence-overrides.js"
+      - "scripts/stabilize-publisher-static-pages.js"
+      - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/publisher-utils.js"
       - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
@@ -32,6 +34,8 @@ on:
       - "scripts/materialize-publisher-histories.js"
       - "scripts/audit-publisher-seo-evidence.js"
       - "scripts/apply-publisher-evidence-overrides.js"
+      - "scripts/stabilize-publisher-static-pages.js"
+      - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/publisher-utils.js"
       - "scripts/fetch-publisher-logos.js"
       - "scripts/apply-publisher-logos.js"
@@ -80,6 +84,8 @@ jobs:
           node --check scripts/materialize-publisher-histories.js
           node --check scripts/audit-publisher-seo-evidence.js
           node --check scripts/apply-publisher-evidence-overrides.js
+          node --check scripts/stabilize-publisher-static-pages.js
+          node --check scripts/ensure-publisher-history-runtime.js
           node --check scripts/fetch-publisher-logos.js
           node --check scripts/apply-publisher-logos.js
           node --check scripts/validate-publisher-logo-output.js
@@ -106,6 +112,12 @@ jobs:
 
       - name: Embed publisher histories in initial HTML
         run: node scripts/materialize-publisher-histories.js
+
+      - name: Restore publisher runtime parity
+        run: node scripts/ensure-publisher-history-runtime.js
+
+      - name: Stabilize publisher sitemap eligibility ordering
+        run: node scripts/stabilize-publisher-static-pages.js
 
       - name: Validate publisher SEO and evidence output
         run: node scripts/audit-publisher-seo-evidence.js
@@ -137,7 +149,7 @@ jobs:
           CHANGED_FILES="$(git diff --name-only "$BASE_SHA" HEAD)"
           printf '%s\n' "$CHANGED_FILES"
 
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(scripts/generate-publisher-pages\.js|scripts/materialize-publisher-histories\.js|scripts/apply-publisher-evidence-overrides\.js|scripts/publisher-utils\.js|scripts/remove-invalid-publisher-labels\.js|data/publisher-histories.*\.json|data/publisher-evidence-overrides\.json|data/publisher-playlists\.json)$'; then
+          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(scripts/generate-publisher-pages\.js|scripts/materialize-publisher-histories\.js|scripts/apply-publisher-evidence-overrides\.js|scripts/stabilize-publisher-static-pages\.js|scripts/ensure-publisher-history-runtime\.js|scripts/publisher-utils\.js|scripts/remove-invalid-publisher-labels\.js|data/publisher-histories.*\.json|data/publisher-evidence-overrides\.json|data/publisher-playlists\.json)$'; then
             echo "refresh=true" >> "$GITHUB_OUTPUT"
           else
             echo "refresh=false" >> "$GITHUB_OUTPUT"
