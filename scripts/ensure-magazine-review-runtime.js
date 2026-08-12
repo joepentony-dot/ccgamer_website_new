@@ -23,13 +23,44 @@ function fail(message) {
   process.exit(1);
 }
 
+function isGeneratedCanonicalWrapper(html) {
+  const text = String(html || "");
+  return /<meta\s+http-equiv=["']refresh["'][^>]*\/games\/game\.html\?id=/i.test(text)
+    && /window\.location\.replace\(["']\/games\/game\.html\?id=/i.test(text);
+}
+
+function buildCanonicalTemplatePage() {
+  if (!fs.existsSync(TEMPLATE)) fail("games/game.html template is missing.");
+  const template = fs.readFileSync(TEMPLATE, "utf8");
+  const materialized = template.replace(/\.\.\//g, "/");
+
+  if (!materialized.includes(PAGE_LOADER)) {
+    fail("games/game.html could not be materialised with the canonical load-single-game.js path.");
+  }
+  if (!materialized.includes(PAGE_RUNTIME)) {
+    fail("games/game.html could not be materialised with the canonical magazine review runtime path.");
+  }
+
+  return materialized;
+}
+
 function ensureScript(filePath, loader, runtime) {
   const relative = path.relative(ROOT, filePath).replace(/\\/g, "/");
   if (!fs.existsSync(filePath)) fail(`${relative}: canonical game page is missing.`);
 
-  const html = fs.readFileSync(filePath, "utf8");
+  let html = fs.readFileSync(filePath, "utf8");
   if (html.includes(runtime)) return { checked: true, changed: false };
-  if (!html.includes(loader)) fail(`${relative}: cannot find load-single-game.js insertion point.`);
+
+  if (!html.includes(loader)) {
+    const canMaterialize = filePath !== TEMPLATE && isGeneratedCanonicalWrapper(html);
+    if (!canMaterialize) fail(`${relative}: cannot find load-single-game.js insertion point.`);
+    if (CHECK_ONLY) fail(`${relative}: canonical game page is still a generated redirect wrapper.`);
+
+    html = buildCanonicalTemplatePage();
+    fs.writeFileSync(filePath, html, "utf8");
+    console.log(`[magazine-review-runtime] Materialised full canonical game template for ${relative}`);
+    return { checked: true, changed: true };
+  }
 
   if (CHECK_ONLY) fail(`${relative}: magazine review runtime is missing.`);
 
