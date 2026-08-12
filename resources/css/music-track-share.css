@@ -1,0 +1,111 @@
+.ccg-track-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.05rem;
+}
+
+.ccg-track-share__button,
+.ccg-track-share__fallback .ccg-btn {
+  min-height: auto;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+
+.ccg-track-share__button {
+  white-space: nowrap;
+}
+
+.ccg-track-share__fallback {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.58rem;
+  border: 1px solid rgba(112, 232, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(3, 13, 24, 0.76);
+  box-shadow: inset 0 0 0 1px rgba(137, 239, 255, 0.05);
+}
+
+.ccg-track-share__fallback[hidden] {
+  display: none !important;
+}
+
+.ccg-track-share__fallback a,
+.ccg-track-share__fallback button {
+  margin: 0;
+}
+
+.ccg-track-share__status {
+  min-height: 1em;
+  margin-left: 0.2rem;
+  color: #9df6ff;
+  font-size: 0.72rem;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.ccg-track-share__status.is-visible {
+  opacity: 1;
+}
+
+.ccg-track-share__copy-buffer {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ccg-composer-games__item[id^="track-"] {
+  scroll-margin-top: 5rem;
+}
+
+.ccg-composer-games__item.ccg-track-share-target,
+.ccg-composer-games__item:target {
+  border-color: rgba(124, 243, 255, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(168, 244, 255, 0.22),
+    0 18px 42px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(124, 243, 255, 0.18),
+    0 0 30px rgba(76, 212, 255, 0.32);
+}
+
+@media (max-width: 760px) {
+  .ccg-track-share {
+    width: 100%;
+  }
+
+  .ccg-track-share__button {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .ccg-track-share__fallback {
+    width: 100%;
+  }
+
+  .ccg-track-share__fallback .ccg-btn {
+    flex: 1 1 calc(50% - 0.42rem);
+    text-align: center;
+  }
+
+  .ccg-track-share__status {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 460px) {
+  .ccg-track-share__fallback .ccg-btn {
+    flex-basis: 100%;
+  }
+}
