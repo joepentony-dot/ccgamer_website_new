@@ -59,11 +59,13 @@ const requiredSourceBacked = new Set([
   "activision",
   "electronic-arts",
   "elite",
-  "microprose-software"
+  "microprose-software",
+  "americana"
 ]);
 
 const approvedHosts = new Set([
   "www.computinghistory.org.uk",
+  "www.lemon64.com",
   "mastertronic.co.uk",
   "ourdigitalheritage.org",
   "www.ea.com",
@@ -173,6 +175,6 @@ if (failures.length) {
 
 console.log("Source-backed publisher audit passed.");
 console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence`);
-console.log("- Sources are restricted to the reviewed institutional and first-party host list");
+console.log("- Sources are restricted to the reviewed institutional and specialist host list");
 console.log("- Unsourced publisher summaries remain labelled as curated context");
 console.log("- Master game data and protected files remain unchanged");
