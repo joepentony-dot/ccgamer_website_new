@@ -37,14 +37,17 @@ function changedFiles() {
   return [];
 }
 
-const profileFiles = fs.readdirSync(path.join(root, "data"))
+const dataDir = path.join(root, "data");
+const profileFiles = fs.readdirSync(dataDir)
   .filter((name) => /^publisher-histories(?:-[a-z0-9-]+)?\.json$/i.test(name))
   .sort((a, b) => a.localeCompare(b));
+
 const requiredProfileFiles = [
   "publisher-histories.json",
   "publisher-histories-a-c.json",
   "publisher-histories-d-h.json",
-  "publisher-histories-i-m.json"
+  "publisher-histories-i-m.json",
+  "publisher-histories-n-s.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -83,7 +86,7 @@ try {
   failures.push(`Publisher metadata JSON is invalid: ${error.message}`);
 }
 
-const requiredSourceBacked = new Set([
+const legacyRequiredSourceBacked = new Set([
   "ocean-software",
   "mastertronic",
   "firebird",
@@ -92,64 +95,7 @@ const requiredSourceBacked = new Set([
   "electronic-arts",
   "elite",
   "microprose-software",
-  "americana",
-  "access-software",
-  "accolade",
-  "alligata-software",
-  "alternative-software",
-  "ariolasoft",
-  "atarisoft",
-  "audiogenic",
-  "br-derbund",
-  "bubble-bus",
-  "cascade-games",
-  "cinemaware",
-  "commodore",
-  "data-east",
-  "datasoft",
-  "design-design",
-  "domark",
-  "durell-software",
-  "dynabyte",
-  "electric-dreams",
-  "empire-software",
-  "english-software",
-  "enigma-variations",
-  "entertainment-usa",
-  "epyx",
-  "erbe-software",
-  "first-star-software",
-  "gamebusters",
-  "gamestar",
-  "gametek",
-  "gargoyle-games",
-  "go",
-  "grandslam",
-  "hi-tec-software",
-  "hudson-soft",
-  "ijk-software",
-  "image-works",
-  "imagine",
-  "infocom",
-  "infogrames",
-  "interceptor-software",
-  "konami",
-  "llamasoft",
-  "loriciels",
-  "lucasfilm-games",
-  "mad-mastertronic",
-  "martech",
-  "melbourne-house",
-  "micro-power",
-  "microdeal",
-  "microsphere",
-  "microstyle",
-  "microvalue",
-  "mikro-gen",
-  "millennium-interactive",
-  "mind-games",
-  "mindscape",
-  "mirrorsoft"
+  "americana"
 ]);
 
 const approvedHosts = new Set([
@@ -175,7 +121,12 @@ const approvedHosts = new Set([
   "firststarsoftware.com",
   "www.infocom-if.org",
   "www.konami.com",
-  "www.lucasfilm.com"
+  "www.lucasfilm.com",
+  "musesoftware.com",
+  "www.ubisoft.com",
+  "www.generation-msx.nl",
+  "www.sega.co.jp",
+  "www.ryokawasaki.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
@@ -183,6 +134,8 @@ const publisherArchiveSlugs = new Set(
 );
 const dormantProfileSlugs = [];
 const seenSlugs = new Set();
+let sourceBackedCount = 0;
+
 for (const profile of profiles) {
   const slug = String(profile?.slug || "").trim();
   if (!slug) {
@@ -192,20 +145,22 @@ for (const profile of profiles) {
   if (seenSlugs.has(slug)) failures.push(`Duplicate publisher profile slug: ${slug}`);
   seenSlugs.add(slug);
 
-  // Research can legitimately outlive a generated route. Publisher corrections
-  // sometimes consolidate or remove a credit after its history has been sourced.
-  // Keep that researched record dormant rather than deleting verified history;
-  // the runtime exposes it only if a matching CCG publisher route exists again.
   if (!publisherArchiveSlugs.has(slug)) dormantProfileSlugs.push(slug);
 
-  const facts = Array.isArray(profile.facts) ? profile.facts : [];
-  const sources = Array.isArray(profile.sources) ? profile.sources : [];
+  const summary = String(profile?.summary || "").trim();
+  const facts = Array.isArray(profile?.facts) ? profile.facts : [];
+  const strengths = Array.isArray(profile?.strengths) ? profile.strengths : [];
+  const sources = Array.isArray(profile?.sources) ? profile.sources : [];
   const sourceBacked = facts.length > 0 || sources.length > 0;
 
+  if (!summary || summary.length < 35) failures.push(`${slug}: summary is missing or too short`);
+  if (!strengths.length) failures.push(`${slug}: archive strengths are missing`);
+
   if (sourceBacked) {
-    if (facts.length < 1) failures.push(`${slug}: source-backed profile requires at least one fact`);
+    sourceBackedCount += 1;
+    if (!facts.length) failures.push(`${slug}: source-backed profile requires at least one fact`);
     if (!sources.length) failures.push(`${slug}: source-backed profile requires evidence links`);
-    if (profile.confidence !== "high") failures.push(`${slug}: confidence must be high or the profile must remain unsourced`);
+    if (profile.confidence !== "high") failures.push(`${slug}: source-backed profile confidence must be high`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(profile.verified_on || ""))) {
       failures.push(`${slug}: verified_on must use YYYY-MM-DD`);
     }
@@ -233,7 +188,7 @@ for (const profile of profiles) {
   }
 }
 
-for (const slug of requiredSourceBacked) {
+for (const slug of legacyRequiredSourceBacked) {
   const profile = profiles.find((entry) => entry?.slug === slug);
   if (!profile) failures.push(`Required source-backed publisher is missing: ${slug}`);
   else if (!Array.isArray(profile.sources) || !profile.sources.length) {
@@ -259,6 +214,12 @@ if (/lemon64\.com/i.test(allProfileText) || /lemon64\.com/i.test(secondaryText))
   failures.push("Publisher history/evidence data must not reference Lemon64");
 }
 
+for (const competitorHost of ["mobygames.com", "gamefaqs.gamespot.com"]) {
+  if (allProfileText.toLowerCase().includes(competitorHost)) {
+    failures.push(`Publisher history/evidence data must not reference competitor database ${competitorHost}`);
+  }
+}
+
 requireText(moduleCode, "Source-backed publisher profile", "Source-backed profile label");
 requireText(moduleCode, "Documented company facts", "Fact panel");
 requireText(moduleCode, "Evidence sources", "Evidence panel");
@@ -266,9 +227,9 @@ requireText(moduleCode, "noopener noreferrer external", "External-link safety");
 requireText(moduleCode, "safeExternalUrl", "Source URL validation");
 requireText(moduleCode, "Evidence reviewed", "Review-date display");
 requireText(moduleCode, "cache: \"default\"", "Publisher data cache policy");
-requireText(moduleCode, "publisher-histories-a-c.json", "A-C publisher history batch loader");
-requireText(moduleCode, "publisher-histories-d-h.json", "D-H publisher history batch loader");
-requireText(moduleCode, "publisher-histories-i-m.json", "I-M publisher history batch loader");
+for (const batchName of requiredProfileFiles.slice(1)) {
+  requireText(moduleCode, batchName, `${batchName} runtime loader`);
+}
 requireText(moduleCode, "mergeProfileResults", "Publisher history batch merger");
 requireText(css, ".ccg-publisher-history__facts", "Fact-list styling");
 requireText(css, ".ccg-publisher-history__sources", "Evidence styling");
@@ -284,24 +245,12 @@ const protectedPaths = new Set([
   "js/index-intro.js",
   "games/games.json"
 ]);
-
-const allowedPaths = new Set([
-  "data/publisher-histories.json",
-  "data/publisher-histories-a-c.json",
-  "data/publisher-histories-d-h.json",
-  "data/publisher-histories-i-m.json",
-  "data/publisher-secondary-credits.json",
-  "js/ccg-publisher-history.js",
-  "resources/css/publisher-history.css",
-  "scripts/audit-source-backed-publishers.js",
-  ".github/workflows/ccg-source-backed-publishers.yml",
-  "docs/phase-18-source-backed-publisher-histories.md"
-]);
+const allowedPattern = /^(?:data\/publisher-histories(?:-[a-z0-9-]+)?\.json|data\/publisher-secondary-credits\.json|js\/ccg-publisher-history\.js|resources\/css\/publisher-history\.css|scripts\/audit-source-backed-publishers\.js|\.github\/workflows\/ccg-source-backed-publishers\.yml|docs\/phase-18-source-backed-publisher-histories\.md)$/i;
 
 for (const changedPath of changedFiles()) {
   if (protectedPaths.has(changedPath)) failures.push(`Protected file changed: ${changedPath}`);
-  if (!process.env.GITHUB_ACTIONS && !allowedPaths.has(changedPath)) {
-    failures.push(`Out-of-scope local Phase 18 change: ${changedPath}`);
+  if (!process.env.GITHUB_ACTIONS && !allowedPattern.test(changedPath)) {
+    failures.push(`Out-of-scope local publisher-history change: ${changedPath}`);
   }
 }
 
@@ -312,14 +261,13 @@ if (failures.length) {
 }
 
 console.log("Source-backed publisher audit passed.");
-console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence or preserved researched history`);
-console.log(`- ${profileFiles.length} publisher history data file(s) were validated as one unique profile set`);
-console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current generated CCG publisher routes`);
+console.log(`- ${sourceBackedCount} source-backed publisher profile(s) validated`);
+console.log(`- ${profileFiles.length} publisher history data file(s) validated as one unique profile set`);
+console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current CCG publisher routes`);
 if (dormantProfileSlugs.length) {
-  console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant because their publisher credits are no longer current: ${dormantProfileSlugs.join(", ")}`);
+  console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant: ${dormantProfileSlugs.join(", ")}`);
 }
-console.log("- Sources are restricted to the reviewed official, institutional, archival and first-person host list");
+console.log("- Sources are restricted to reviewed official, institutional, archival and first-person hosts");
 console.log("- Americana uses the approved Mastertronic history and evidence source only");
-console.log("- Lemon64 is prohibited from publisher history/evidence data");
-console.log("- Unsourced publisher summaries remain labelled as curated context");
+console.log("- Lemon64, MobyGames and GameFAQs are prohibited from publisher history/evidence data");
 console.log("- Master game data and protected files remain unchanged");

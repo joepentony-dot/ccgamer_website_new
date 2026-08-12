@@ -1,0 +1,688 @@
+[
+  {
+    "slug": "mogul",
+    "summary": "Mogul appears in the CCG archive as a small home-computer publishing label. Surviving institutional records are stronger for individual releases than for the company's corporate history, so this profile remains deliberately catalogue-focused.",
+    "facts": [
+      "The Centre for Computing History preserves software carrying the Mogul publishing credit in its historical collection.",
+      "The surviving record is product-led rather than corporate, so no unsupported founder, ownership or formation-date claims are added here."
+    ],
+    "strengths": ["Home-computer publishing", "Small catalogue", "Archive-preserved releases"],
+    "related": [],
+    "note": "CCG shows only Mogul games currently represented in the archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mogul software collection",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mogul&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "muse-software",
+    "summary": "Muse Software was an American computer-software company remembered for early Apple II and home-computer games, including Castle Wolfenstein and Beyond Castle Wolfenstein.",
+    "facts": [
+      "Muse Software's surviving historical site documents the company's early computer-software catalogue and the Wolfenstein titles associated with the label.",
+      "The company operated during the formative period of commercial personal-computer games and published software across multiple home-computer platforms."
+    ],
+    "strengths": ["Early computer games", "Castle Wolfenstein", "Multi-platform software"],
+    "related": [],
+    "note": "The profile uses Muse's surviving historical site rather than modern game databases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Muse Software — historical company site",
+        "url": "https://musesoftware.com/history.html",
+        "type": "historical company archive"
+      }
+    ]
+  },
+  {
+    "slug": "new-generation-software",
+    "summary": "New Generation Software published distinctive early British 8-bit games and programming software. Its catalogue is strongly associated with Malcolm Evans' early 3D work, while its Commodore 64 releases include Shoot the Rapids and The Complete Machine Code Tutor.",
+    "facts": [
+      "The Centre for Computing History preserves New Generation Software titles including 3D Monster Maze, 3D Tunnel and Escape on Sinclair machines.",
+      "The museum records two Commodore 64 releases under New Generation Software: Shoot the Rapids and The Complete Machine Code Tutor."
+    ],
+    "strengths": ["Early 3D games", "British 8-bit software", "Programming utilities"],
+    "related": [],
+    "note": "The CCG route reflects the Commodore titles currently represented on this site.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — New Generation Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=New+Generation+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "new-world-computing",
+    "summary": "New World Computing became a major fantasy strategy and role-playing developer and publisher, associated with King's Bounty and the Might and Magic and Heroes of Might and Magic series.",
+    "facts": [
+      "Ubisoft's current Might and Magic archive identifies New World Computing as developer of the original Heroes of Might and Magic and later entries in the series.",
+      "Ubisoft's historical copyright material records New World Computing as a wholly owned subsidiary of NTN Communications in 1995 and later as a division of The 3DO Company.",
+      "CCG's current New World Computing publisher route contains the Commodore 64 version of King's Bounty from 1990."
+    ],
+    "strengths": ["Fantasy strategy", "Role-playing games", "King's Bounty and Might and Magic"],
+    "related": [],
+    "note": "Later ownership changed, but CCG preserves New World Computing as the historical publisher credit on King's Bounty.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Ubisoft — Might and Magic franchise history",
+        "url": "https://www.ubisoft.com/en-us/company/about-us/our-brands/might-and-magic",
+        "type": "official rights-holder archive"
+      },
+      {
+        "label": "Ubisoft — Heroes of Might and Magic historical release",
+        "url": "https://www.ubisoft.com/en-AU/games/f635df65-45f5-4fd8-bc52-0fe431555e58",
+        "type": "official rights-holder archive"
+      }
+    ]
+  },
+  {
+    "slug": "nexus",
+    "summary": "Nexus appears in the late-1980s British 8-bit catalogue as publisher of Hades Nebula, a vertical-scrolling shooter developed by Paranoid Software.",
+    "facts": [
+      "The Centre for Computing History records Hades Nebula as a 1987 Nexus release developed by Paranoid Software.",
+      "The surviving institutional record for Nexus is limited, so this profile does not speculate about founders or corporate ownership."
+    ],
+    "strengths": ["Hades Nebula", "8-bit publishing", "External development"],
+    "related": [],
+    "note": "Only documented publishing activity is presented because company-level sources are sparse.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Nexus Hades Nebula record",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=ZX+Spectrum&publisher=Nexus&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "odin-computer-graphics",
+    "summary": "Odin Computer Graphics was a Liverpool software house that grew out of the Thor operation and became known for polished 8-bit games including Nodes of Yesod, Robin of the Wood and Heartland.",
+    "facts": [
+      "The Centre for Computing History records Odin as Liverpool-based and states that the company had previously published games under the Thor name.",
+      "The museum records Robin of the Wood as an Odin-published Commodore 64 game in 1985.",
+      "Telecomsoft later agreed to publish ten Odin games through Firebird, after which Odin continued as a separate development entity for a period."
+    ],
+    "strengths": ["British 8-bit games", "Detailed graphics", "Firebird-era development"],
+    "related": [{"label":"Firebird","slug":"firebird"}, {"label":"Thor Computer Software","slug":"thor-computer-software"}],
+    "note": "The historical relationship with Thor and Firebird is documented by the Centre for Computing History's Odin company record.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Odin Computer Graphics company profile",
+        "url": "https://www.computinghistory.org.uk/det/33088/Odin-Computer-Graphics/",
+        "type": "museum company record"
+      }
+    ]
+  },
+  {
+    "slug": "origin-systems",
+    "summary": "Origin Systems published role-playing, simulation and strategy games, becoming strongly associated with the Ultima series and later titles such as Wing Commander. Its Commodore-era catalogue also includes Times of Lore.",
+    "facts": [
+      "The Centre for Computing History preserves multiple games under the Origin Systems publishing credit across home-computer platforms.",
+      "Its collection includes Times of Lore on the Commodore 64 and later Origin-associated PC releases from the Ultima and Wing Commander era."
+    ],
+    "strengths": ["Role-playing games", "Fantasy worlds", "Simulation and strategy"],
+    "related": [{"label":"Electronic Arts","slug":"electronic-arts"}],
+    "note": "Origin's catalogue extends far beyond the Commodore games currently represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Origin Systems games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Origin+Systems&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "orpheus",
+    "summary": "Orpheus was a British software company active in the mid-1980s. Its documented releases include Elidon, a multi-format fantasy game developed and published by Orpheus in 1985.",
+    "facts": [
+      "Generation MSX records Orpheus as a United Kingdom company and lists Elidon as both developed and published by Orpheus in 1985.",
+      "The surviving Orpheus catalogue also includes board-game software and publishing work on other MSX releases."
+    ],
+    "strengths": ["Elidon", "Mid-1980s home-computer games", "Multi-format development"],
+    "related": [],
+    "note": "The source is a specialist preservation archive rather than a competing Commodore database.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Generation MSX — Orpheus software archive",
+        "url": "https://www.generation-msx.nl/company/orpheus/477/software/",
+        "type": "specialist preservation archive"
+      }
+    ]
+  },
+  {
+    "slug": "palace-software",
+    "summary": "Palace Software published a distinctive British 8-bit catalogue during the 1980s, mixing fantasy action, arcade adventures and licensed or externally developed releases.",
+    "facts": [
+      "The Centre for Computing History preserves fifteen games under the Palace Software publishing credit.",
+      "Its Commodore 64 records include Palace-associated titles such as Barbarian, Barbarian II and other mid-to-late-1980s releases."
+    ],
+    "strengths": ["Fantasy action", "British 8-bit publishing", "C64 releases"],
+    "related": [],
+    "note": "This profile focuses on the preserved publishing catalogue rather than unsupported corporate-history details.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Palace Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Palace+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "pandora",
+    "summary": "Pandora appears in the late-1980s home-computer catalogue as a publisher of Amiga software, including the 1987 action-puzzle title Amegas.",
+    "facts": [
+      "The Centre for Computing History records Amegas as a 1987 Commodore Amiga game published by Pandora and authored by Guido Bartels.",
+      "The surviving institutional evidence is limited, so no unsupported corporate-origin claims are included."
+    ],
+    "strengths": ["Amiga publishing", "Amegas", "Late-1980s software"],
+    "related": [],
+    "note": "The profile stays deliberately narrow because reliable company-level material is sparse.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Pandora Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Pandora&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "parker-brothers",
+    "summary": "Parker Brothers expanded beyond its traditional board-game business into early home video games, publishing arcade licences and original releases across Atari and computer platforms in the early 1980s.",
+    "facts": [
+      "The Centre for Computing History preserves thirteen games under the Parker Brothers publishing credit.",
+      "The museum's recorded catalogue includes early releases such as Spider-Man, Super Cobra, Q*bert and Star Wars: Jedi Arena."
+    ],
+    "strengths": ["Early home video games", "Arcade licences", "Multi-platform publishing"],
+    "related": [],
+    "note": "The CCG archive covers only Parker Brothers titles represented on Commodore systems.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Parker Brothers games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Parker+brothers&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "piranha",
+    "summary": "Piranha published a compact British 8-bit catalogue in the second half of the 1980s, including licensed characters and externally developed action-adventure games.",
+    "facts": [
+      "The Centre for Computing History preserves four Commodore 64 games under the Piranha publishing credit.",
+      "Those C64 records include Rogue Trooper, Strike Force Cobra, Through the Trapdoor and Yogi Bear, with several external development teams credited."
+    ],
+    "strengths": ["Licensed characters", "C64 action adventures", "External developers"],
+    "related": [],
+    "note": "The publisher's product catalogue is well documented; this profile avoids adding unsupported ownership details.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Piranha C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Piranha&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "players-software",
+    "summary": "Players Software was a British 8-bit publishing label associated with budget-priced action games during the mid-to-late 1980s.",
+    "facts": [
+      "The Centre for Computing History preserves Players Software games across Commodore, ZX Spectrum and Amstrad systems.",
+      "Its Commodore records include Auriga and Electrix, while the broader Players catalogue includes Crazy Coaster, Fungus and Joe Blade releases."
+    ],
+    "strengths": ["Budget games", "C64 action titles", "8-bit publishing"],
+    "related": [],
+    "note": "Players and Players Software appear as closely related historical credits; CCG retains the publisher wording recorded for each game.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Players Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Players+software&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Players C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Players&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "quicksilva",
+    "summary": "Quicksilva was an important early British software publisher whose broad 8-bit catalogue included experimental games, arcade-style releases and several notable Commodore 64 titles.",
+    "facts": [
+      "The Centre for Computing History preserves forty games under the Quicksilva publishing credit.",
+      "Its Commodore records include Aquaplane, Booga-Boo (The Flea), Purple Turtles, Rupert and the Toymaker's Party and Pac-Land."
+    ],
+    "strengths": ["Early British publishing", "8-bit games", "C64 releases"],
+    "related": [],
+    "note": "The museum catalogue is broader than the set of Quicksilva games currently covered by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Quicksilva games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Quicksilva&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "rabbit-software",
+    "summary": "Rabbit Software published a substantial early Commodore catalogue, especially on the VIC-20, before continuing with Commodore 64 releases during the 1980s.",
+    "facts": [
+      "The Centre for Computing History preserves twenty-one Commodore games under the Rabbit Software publishing credit.",
+      "Fourteen of those preserved releases are for the VIC-20, while seven are recorded for the Commodore 64.",
+      "The C64 catalogue includes Escape-MCP, Paratroopers, Potty Painter in the Jungle and Centropods."
+    ],
+    "strengths": ["VIC-20 software", "Early Commodore games", "C64 publishing"],
+    "related": [],
+    "note": "The publisher history reflects Rabbit's documented Commodore catalogue rather than speculative company details.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Rabbit Software Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Rabbit+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "rack-it-hewson",
+    "summary": "Rack-It was a budget re-release label associated with Hewson, used to bring established 8-bit games back to market at a lower price point.",
+    "facts": [
+      "The Centre for Computing History preserves Rack-It releases carrying Hewson branding across 8-bit systems.",
+      "The museum records a Commodore 64 Rack-It/Hewson release of Light Force alongside a broader Rack-It catalogue on the ZX Spectrum."
+    ],
+    "strengths": ["Budget re-releases", "Hewson catalogue", "8-bit software"],
+    "related": [{"label":"Hewson","slug":"hewson"}],
+    "note": "Rack-It is kept separate because it appears as its own publishing credit in the CCG archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Rack-It / Hewson games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Rack-It&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "rainbow-arts",
+    "summary": "Rainbow Arts published German and European home-computer games across 8-bit and 16-bit platforms, including several technically ambitious Commodore releases.",
+    "facts": [
+      "The Centre for Computing History preserves eighteen games under the Rainbow Arts publishing credit.",
+      "Its Commodore 64 records include Rock 'n Roll, The Curse of RA, Turrican II and Volleyball Simulator.",
+      "The wider collection includes Amiga and Atari ST releases alongside the 8-bit catalogue."
+    ],
+    "strengths": ["European publishing", "C64 and Amiga games", "Action and puzzle titles"],
+    "related": [],
+    "note": "Development credits vary by title; Rainbow Arts is presented here in its publishing role.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Rainbow Arts games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Rainbow+Arts&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "reaktor-software",
+    "summary": "Reaktör was a mid-1980s 8-bit publishing label whose documented releases include Challenge of the Gobots, Deactivators and Starfox.",
+    "facts": [
+      "The Centre for Computing History records Challenge of the Gobots as a 1985 Reaktor release developed by Tony Crowther and collaborators.",
+      "The museum also records Starfox as a Reaktor-published title developed by Realtime Software, with a Commodore 64 version among the documented releases."
+    ],
+    "strengths": ["8-bit publishing", "External developers", "Action games"],
+    "related": [],
+    "note": "The public profile deliberately avoids unsupported claims about Reaktör's ownership structure.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Reaktor Challenge of the Gobots",
+        "url": "https://www.computinghistory.org.uk/det/70005/Challenge-of-the-Gobots/",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Reaktor Starfox record",
+        "url": "https://www.computinghistory.org.uk/det/41452/Starfox/",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "renegade",
+    "summary": "Renegade became a notable 16-bit publisher associated with prominent Amiga releases from studios including The Bitmap Brothers and Sensible Software.",
+    "facts": [
+      "The Centre for Computing History preserves seven games under the Renegade publishing credit.",
+      "Six of the museum's Renegade records are Commodore Amiga releases, including Gods, The Chaos Engine and Sensible World of Soccer editions.",
+      "The preserved catalogue demonstrates Renegade's close work with external development studios."
+    ],
+    "strengths": ["Amiga publishing", "Bitmap Brothers releases", "Sensible Software releases"],
+    "related": [],
+    "note": "The CCG archive uses Renegade as the publisher while preserving each game's separate developer credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Renegade Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Renegade&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "satchel-software",
+    "summary": "Satchel was a small software publisher represented in the institutional record by BBC Micro productivity and strategy software.",
+    "facts": [
+      "The Centre for Computing History preserves two Satchel-published titles: Desk Top and Medieval War and Peace.",
+      "The surviving museum record is limited, so no unsupported founder or ownership claims are included."
+    ],
+    "strengths": ["BBC Micro software", "Productivity software", "Strategy software"],
+    "related": [],
+    "note": "The CCG route is retained because Satchel appears as a historical publishing credit in the archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Satchel games and software",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Satchel&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "sega",
+    "summary": "Sega grew from a commercial amusement business into one of the major arcade and home-console companies. Its properties also reached home computers through licensed conversions and publishing arrangements.",
+    "facts": [
+      "Sega's official history records Nihon Goraku Bussan being established in 1960 and the company adopting the Sega Enterprises name in 1965.",
+      "Sega began commercial arcade-machine production in 1964 and released the SG-1000 home console in 1983.",
+      "Sega Europe was established in 1984 and Sega of America in 1986 as the company expanded internationally."
+    ],
+    "strengths": ["Arcade games", "Home-console history", "Licensed computer conversions"],
+    "related": [],
+    "note": "The CCG publisher route concerns Sega credits on Commodore releases rather than Sega's complete arcade and console catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Sega — official corporate history",
+        "url": "https://www.sega.co.jp/en/company/history/index.html",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "sierra-on-line",
+    "summary": "Sierra On-Line grew from Ken and Roberta Williams' On-Line Systems and became one of the most influential computer-adventure publishers of the 1980s and 1990s.",
+    "facts": [
+      "The Strong records Ken and Roberta Williams founding On-Line Systems in 1979.",
+      "The company's first game, Mystery House, appeared in 1980 and combined text with graphics on the Apple II.",
+      "The business moved to Oakhurst, California and was renamed Sierra On-Line in 1982; King's Quest followed in 1984."
+    ],
+    "strengths": ["Graphic adventures", "King's Quest", "Computer-game publishing"],
+    "related": [],
+    "note": "The history is taken from The Strong's donated Ken and Roberta Williams Sierra On-Line collection.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "The Strong — Ken and Roberta Williams Sierra On-Line collection",
+        "url": "https://archives.museumofplay.org/repositories/3/resources/18",
+        "type": "museum archive"
+      }
+    ]
+  },
+  {
+    "slug": "sight-sound-music-software",
+    "summary": "Sight & Sound Music distributed music software for the Commodore 64, including a series of programs created by jazz guitarist and programmer Ryo Kawasaki.",
+    "facts": [
+      "Ryo Kawasaki's official biography states that he spent two years developing four Commodore 64 music programs after becoming interested in the machine's sound chip.",
+      "The four programs were Kawasaki Synthesizer, Kawasaki Rhythm Rocker, Kawasaki Magical Musicquill and Kawasaki MIDI Workstation, distributed by Sight and Sound Music.",
+      "Kawasaki's biography states that the first three were aimed at school and home use while the MIDI Workstation targeted professional studios."
+    ],
+    "strengths": ["C64 music software", "Ryo Kawasaki programs", "Music education and production"],
+    "related": [],
+    "note": "This profile uses the software creator's own biographical record rather than a game database.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Ryo Kawasaki — official biography and C64 software history",
+        "url": "https://www.ryokawasaki.com/bio/",
+        "type": "first-person creator archive"
+      }
+    ]
+  },
+  {
+    "slug": "silmarils",
+    "summary": "Silmarils published and developed French 16-bit games during the early 1990s, with a strong Amiga presence in role-playing, science-fiction and adventure titles.",
+    "facts": [
+      "The Centre for Computing History preserves six games under the Silmarils publishing credit.",
+      "Five of those recorded releases are for the Commodore Amiga, including Metal Mutant, Transarctica, Ishar, Ishar 2 and Robinson's Requiem."
+    ],
+    "strengths": ["Amiga games", "Role-playing games", "Science fiction and adventure"],
+    "related": [],
+    "note": "The profile is based on the museum-preserved software catalogue rather than speculative corporate history.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Silmarils Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Silmarils&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "software-projects",
+    "summary": "Software Projects published a substantial British home-computer catalogue during the 1980s, including platform games, arcade adventures and licensed conversions.",
+    "facts": [
+      "The Centre for Computing History preserves thirty-eight games under the Software Projects publishing credit.",
+      "Nine of the museum's records are Commodore 64 releases, including Manic Miner, Jet Set Willy II and the Dragon's Lair conversions.",
+      "The preserved catalogue spans Commodore, Sinclair and other 8-bit formats."
+    ],
+    "strengths": ["British 8-bit publishing", "Platform games", "Licensed conversions"],
+    "related": [],
+    "note": "Developer credits vary substantially across the catalogue and remain separate on CCG game pages.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Software Projects games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Software+Projects&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "sparklers",
+    "summary": "Sparklers was an 8-bit publishing label used for a compact catalogue of mid-1980s games, including several Commodore 64 releases.",
+    "facts": [
+      "The Centre for Computing History preserves eight games under the Sparklers publishing credit.",
+      "Three of the museum's Sparklers records are Commodore 64 releases: Black Hawk, Space Tunnel and The Great Burger Riot."
+    ],
+    "strengths": ["8-bit publishing", "C64 releases", "Budget-era catalogue"],
+    "related": [],
+    "note": "The institutional evidence is primarily product-based, so the profile avoids unsupported corporate-origin claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Sparklers games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Sparklers&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "spinnaker-software",
+    "summary": "Spinnaker Software published early educational and entertainment software for home computers, often working with external developers and educational-software specialists.",
+    "facts": [
+      "The Centre for Computing History preserves Spinnaker Software releases including Make-a-Face, Alf in the Colour Caves and Kindercomp.",
+      "Two of the museum's Spinnaker game records are for the Commodore 64, with DesignWare and Joyce Hakansson Associates credited as external authors."
+    ],
+    "strengths": ["Educational software", "Early home-computer publishing", "External developers"],
+    "related": [],
+    "note": "The profile describes the preserved Spinnaker software catalogue represented by institutional sources.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Spinnaker Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Spinnaker+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "state-soft",
+    "summary": "State Soft / Statesoft appears as a small 8-bit publishing credit in the mid-1980s. The surviving institutional record includes Bristles on the ZX Spectrum.",
+    "facts": [
+      "The Centre for Computing History records Bristles as a 1984 ZX Spectrum game published by Statesoft.",
+      "The surviving museum record is limited, so the profile does not invent a wider company history."
+    ],
+    "strengths": ["8-bit publishing", "Small catalogue", "Mid-1980s software"],
+    "related": [],
+    "note": "Historical spelling varies between State Soft and Statesoft; CCG preserves its existing publisher-route spelling.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Statesoft Bristles record",
+        "url": "https://www.computinghistory.org.uk/det/56777/Bristles/",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "storm",
+    "summary": "Storm published a small early-1990s home-computer catalogue, including action conversions and strategy software on 16-bit systems.",
+    "facts": [
+      "The Centre for Computing History preserves three games under the Storm publishing credit.",
+      "The recorded catalogue includes Napoleoni on the Commodore Amiga and Storm releases of Double Dragon 3 / Rodland and St Dragon on other systems."
+    ],
+    "strengths": ["16-bit publishing", "Arcade conversions", "Strategy and action games"],
+    "related": [{"label":"The Sales Curve","slug":"the-sales-curve"}],
+    "note": "The museum records The Sales Curve as developer on some Storm-published releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Storm games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Storm&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "strategic-simulations-inc",
+    "summary": "Strategic Simulations, widely known as SSI, specialised in strategy, wargame and role-playing software across several generations of home computers.",
+    "facts": [
+      "The Centre for Computing History preserves Commodore games under the Strategic Simulations publishing credit, including Phantasie and Roadwar Europa.",
+      "The museum also records SSI on the Commodore Amiga with Renegade Legion: Interceptor."
+    ],
+    "strengths": ["Strategy games", "Computer wargames", "Role-playing games"],
+    "related": [],
+    "note": "The archive route uses the full Strategic Simulations Inc. name while historical packaging often uses the SSI abbreviation.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Strategic Simulations Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Strategic+Simulations&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "superior-software",
+    "summary": "Superior Software was one of the most prolific publishers in the BBC Micro and Acorn ecosystem, with a large catalogue spanning original games, conversions and later co-publishing arrangements.",
+    "facts": [
+      "The Centre for Computing History preserves 143 games under the Superior Software publishing credit.",
+      "Sixty-seven of the museum's records are BBC Micro games, including Citadel, Crazee Rider and numerous Repton-related releases.",
+      "The museum also preserves titles jointly credited to Superior Software and Acornsoft."
+    ],
+    "strengths": ["BBC Micro games", "Acorn publishing", "Large 8-bit catalogue"],
+    "related": [],
+    "note": "The CCG route exists because Superior Software also appears in Commodore-related archive data, although its strongest historical association is with Acorn systems.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Superior Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Superior+software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "supersoft",
+    "summary": "Supersoft was an early Commodore software publisher whose catalogue mixed arcade-style games, music software and productivity packages.",
+    "facts": [
+      "The Centre for Computing History preserves fifteen games under the Supersoft publishing credit.",
+      "Ten of the museum's Supersoft records are Commodore 64 releases, including Cracks of Fire, Halls of Death, Kaktus, Music Master and Stix.",
+      "The preserved catalogue also includes business software such as Word Perfect and later Commodore utilities."
+    ],
+    "strengths": ["Early C64 software", "Games and utilities", "Music and productivity software"],
+    "related": [],
+    "note": "Supersoft's catalogue crosses game and non-game software, which is reflected in the profile.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Supersoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Supersoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "synapse-software",
+    "summary": "Synapse Software was an early computer-software developer and publisher whose games and utilities appeared across Atari and Commodore systems during the 1980s.",
+    "facts": [
+      "The Centre for Computing History preserves software under the Synapse publishing credit, including Essex on the Commodore 64 and the Synfile+ utility on Atari 8-bit.",
+      "The museum also records Synapse-developed titles appearing under other publishers, demonstrating that its development and publishing roles varied by release."
+    ],
+    "strengths": ["Early computer games", "Utilities", "Atari and Commodore software"],
+    "related": [],
+    "note": "CCG retains Synapse Software as a publisher route while individual development credits remain separate.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Synapse games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Synapse&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
