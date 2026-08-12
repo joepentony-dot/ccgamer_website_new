@@ -2,10 +2,20 @@
    CCG PUBLISHER UTILITIES
    ------------------------------------------------------------
    Shared normalization/grouping for generated publisher archives.
-   Source of truth remains: /games/games.json
+   Primary game data remains sourced from /games/games.json.
+   Source-backed secondary publisher associations are additive only
+   and live in /data/publisher-secondary-credits.json.
 ============================================================ */
 
 "use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const repoRoot = process.env.CCG_REPO_ROOT
+    ? path.resolve(process.env.CCG_REPO_ROOT)
+    : path.resolve(__dirname, "..");
+const secondaryCreditsPath = path.join(repoRoot, "data", "publisher-secondary-credits.json");
 
 const PUBLISHER_ALIASES = new Map([
     ["ocean", "Ocean Software"],
@@ -113,7 +123,12 @@ const PUBLISHER_ALIASES = new Map([
     ["digital integration", "Digital Integration"],
 
     ["alternative", "Alternative Software"],
-    ["alternative software", "Alternative Software"]
+    ["alternative software", "Alternative Software"],
+
+    ["americana", "Americana"],
+    ["americana software", "Americana"],
+    ["americana software ltd", "Americana"],
+    ["americana software limited", "Americana"]
 ]);
 
 const FEATURED_PUBLISHERS = [
@@ -214,12 +229,84 @@ function toList(value) {
     return [value];
 }
 
+function normalizeSecondaryTitle(value) {
+    let normalized = String(value ?? "")
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[’‘]/g, "'")
+        .toLowerCase();
+
+    normalized = normalized
+        .replace(/\([^)]*(?:version|edition)[^)]*\)/gi, " ")
+        .replace(/\biii\b/g, "3")
+        .replace(/\bii\b/g, "2")
+        .replace(/\bi\b/g, "1")
+        .replace(/&/g, " and ")
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    if (normalized.startsWith("the ")) normalized = normalized.slice(4).trim();
+    if (normalized.endsWith(" the")) normalized = normalized.slice(0, -4).trim();
+    return normalized;
+}
+
+function loadSecondaryPublisherRules() {
+    if (!fs.existsSync(secondaryCreditsPath)) return [];
+
+    try {
+        const payload = JSON.parse(fs.readFileSync(secondaryCreditsPath, "utf8"));
+        const rules = Array.isArray(payload?.rules) ? payload.rules : [];
+
+        return rules
+            .map((rule) => {
+                const publisher = canonicalizePublisherName(rule?.publisher);
+                const system = String(rule?.system || "").trim();
+                const titleKeys = new Set();
+
+                (Array.isArray(rule?.titles) ? rule.titles : []).forEach((entry) => {
+                    const values = typeof entry === "string"
+                        ? [entry]
+                        : [entry?.title, ...(Array.isArray(entry?.aliases) ? entry.aliases : [])];
+                    values.forEach((value) => {
+                        const key = normalizeSecondaryTitle(value);
+                        if (key) titleKeys.add(key);
+                    });
+                });
+
+                return { publisher, system, titleKeys };
+            })
+            .filter((rule) => rule.publisher && rule.titleKeys.size > 0);
+    } catch (error) {
+        throw new Error(`Could not parse data/publisher-secondary-credits.json: ${error.message}`);
+    }
+}
+
+const SECONDARY_PUBLISHER_RULES = loadSecondaryPublisherRules();
+
+function getSecondaryPublisherNames(game) {
+    const system = normalizeSystem(game);
+    const gameTitleKeys = new Set([
+        normalizeSecondaryTitle(game?.title),
+        normalizeSecondaryTitle(game?.sorttitle)
+    ].filter(Boolean));
+
+    return SECONDARY_PUBLISHER_RULES
+        .filter((rule) => {
+            if (rule.system && rule.system !== system) return false;
+            return Array.from(gameTitleKeys).some((key) => rule.titleKeys.has(key));
+        })
+        .map((rule) => rule.publisher);
+}
+
 function getPublisherNames(game) {
     const creditValue = game?.credits?.publisher;
     const source = toList(creditValue).length ? toList(creditValue) : toList(game?.publisher);
+    const supplemental = getSecondaryPublisherNames(game);
     const seen = new Set();
 
-    return source
+    return [...source, ...supplemental]
         .map(canonicalizePublisherName)
         .filter(Boolean)
         .filter((name) => {
@@ -312,7 +399,9 @@ module.exports = {
     buildPublisherGroups,
     canonicalizePublisherName,
     getPublisherNames,
+    getSecondaryPublisherNames,
     normalizePublisherKey,
+    normalizeSecondaryTitle,
     normalizeSystem,
     slugifyPublisher
 };
