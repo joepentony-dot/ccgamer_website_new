@@ -1,0 +1,331 @@
+name: CCG Cloudflare Audio Admin Migration
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/ccg-cloudflare-audio-migration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: ccg-cloudflare-audio-admin-migration
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Remove obsolete local-audio assumptions
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+
+          function read(path) {
+            return fs.readFileSync(path, 'utf8');
+          }
+
+          function write(path, content) {
+            fs.writeFileSync(path, content, 'utf8');
+          }
+
+          function replaceExact(path, from, to, label) {
+            const source = read(path);
+            const first = source.indexOf(from);
+            if (first === -1) throw new Error(`${path}: could not find ${label}`);
+            if (source.indexOf(from, first + from.length) !== -1) throw new Error(`${path}: ${label} matched more than once`);
+            write(path, source.slice(0, first) + to + source.slice(first + from.length));
+          }
+
+          // Unified Content Publisher: music is resolved by canonical slug from Cloudflare R2.
+          replaceExact(
+            'admin/content-publisher.html',
+            `          <label>Game music files\n            <textarea rows="3" data-game-field="music" placeholder="filename.mp3, second-file.mp3"></textarea>\n          </label>\n`,
+            '',
+            'obsolete Game music files field'
+          );
+          replaceExact(
+            'admin/content-publisher.html',
+            `  <script type="module" src="/admin/js/content-publisher.js"></script>`,
+            `  <script type="module" src="/admin/js/content-publisher.js?v=cloudflare-audio-20260812"></script>`,
+            'Content Publisher script tag'
+          );
+          replaceExact(
+            'admin/js/content-publisher.js',
+            `\n  const music = parseCommaList(gameValue('music'));\n  if (music.length) entry.music = music;`,
+            '',
+            'Content Publisher legacy music property writer'
+          );
+
+          // Legacy Game Builder: remove the obsolete local music filename field and output.
+          replaceExact(
+            'admin/games-editor.html',
+            `        <label class="full">Music Files (optional)<input data-field="music" placeholder="arkanoid-theme.mp3, arkanoid-level.mp3" /></label>\n        <p class="hint full">Files must exist in: <code>resources/audio/games/</code>. Separate multiple files with commas.</p>\n`,
+            '',
+            'legacy Game Builder local music field'
+          );
+          replaceExact(
+            'admin/games-editor.html',
+            `        <p class="hint" data-preview-music-status></p>\n`,
+            '',
+            'legacy Game Builder music preview status'
+          );
+
+          replaceExact(
+            'admin/js/games-editor.js',
+            `  music: '',\n`,
+            '',
+            'EMPTY_DRAFT music field'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `  musicCheck: 'idle',\n`,
+            '',
+            'legacy music check state'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `  previewMusicStatus: document.querySelector('[data-preview-music-status]'),\n`,
+            '',
+            'legacy music preview element'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `    music: parseCommaList(state.draft.music),\n`,
+            '',
+            'legacy gameEntry music property'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `\n  if (!Array.isArray(gameEntry.music) || gameEntry.music.length === 0) {\n    delete gameEntry.music;\n  }\n`,
+            '\n',
+            'legacy empty music cleanup block'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `    return [...toList(game.composer), ...toList(game?.credits?.musician), ...toList(game.music)]\n`,
+            `    return [...toList(game.composer), ...toList(game?.credits?.musician)]\n`,
+            'legacy games-search composer music fallback'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `    composer: normalizeComposerList(game),\n    music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : [])\n`,
+            `    composer: normalizeComposerList(game)\n`,
+            'legacy games-search music output'
+          );
+          replaceExact(
+            'admin/js/games-editor.js',
+            `  if (el.previewMusicStatus) {\n    el.previewMusicStatus.textContent = slug ? \`Auto-detect on page: /resources/audio/games/\${slug}.mp3\` : 'Music auto-detection requires a slug.';\n  }\n`,
+            '',
+            'legacy local audio preview message'
+          );
+
+          // Archive Quality: local-resource audit must not reinterpret music metadata as local files.
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `const RESOURCE_CONCURRENCY = 8;\n`,
+            `const RESOURCE_CONCURRENCY = 8;\nconst CLOUDFLARE_MUSIC_CONCURRENCY = 16;\nconst CLOUDFLARE_MUSIC_TIMEOUT_MS = 2200;\nconst CLOUDFLARE_MUSIC_BASE_URL = 'https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/';\n`,
+            'archive resource constants'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `  resourcesChecked: 0,\n  running: false,\n  lastCheckedAt: null\n`,
+            `  resourcesChecked: 0,\n  cloudflareMusicChecked: 0,\n  cloudflareMusicFound: 0,\n  cloudflareMusicRunning: false,\n  running: false,\n  lastCheckedAt: null\n`,
+            'archive state resource counters'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `function musicPath(value) {\n  const raw = text(value);\n  if (!raw) return '';\n  if (/^https?:\\/\\//i.test(raw) || raw.startsWith('/')) return localPath(raw);\n  if (raw.includes('/')) return localPath(raw);\n  return \`/resources/audio/games/\${encodeURIComponent(raw).replace(/%2F/gi, '/')}\`;\n}\n\n`,
+            '',
+            'obsolete archive musicPath helper'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `    asArray(game?.music).map(musicPath).filter(Boolean).forEach((url) => {\n      tasks.push({\n        game,\n        index,\n        kind: 'music',\n        category: 'Local audio',\n        url,\n        missingSeverity: 'warning',\n        sizeLimit: 0,\n        sizeLabel: 'audio file'\n      });\n    });\n\n`,
+            '',
+            'obsolete local audio resource tasks'
+          );
+
+          const cloudflareFunctions = `\nfunction cloudflareMusicUrl(slug) {\n  const normalized = text(slug).replace(/\\.mp3$/i, '').replace(/^\\/+|\\/+$/g, '');\n  if (!normalized) return '';\n  return \`\${CLOUDFLARE_MUSIC_BASE_URL}\${encodeURIComponent(normalized).replace(/%2F/gi, '/')}.mp3\`;\n}\n\nfunction probeCloudflareMusic(url) {\n  return new Promise((resolve) => {\n    const audio = new Audio();\n    audio.preload = 'metadata';\n    audio.src = url;\n\n    let settled = false;\n    let timeoutId = null;\n\n    const cleanup = () => {\n      audio.removeEventListener('loadedmetadata', onReady);\n      audio.removeEventListener('error', onError);\n      if (timeoutId) window.clearTimeout(timeoutId);\n      audio.removeAttribute('src');\n      try { audio.load(); } catch (_error) {}\n    };\n\n    const finish = (ok) => {\n      if (settled) return;\n      settled = true;\n      cleanup();\n      resolve(ok);\n    };\n\n    const onReady = () => finish(true);\n    const onError = () => finish(false);\n\n    audio.addEventListener('loadedmetadata', onReady, { once: true });\n    audio.addEventListener('error', onError, { once: true });\n    timeoutId = window.setTimeout(() => finish(false), CLOUDFLARE_MUSIC_TIMEOUT_MS);\n\n    try {\n      audio.load();\n    } catch (_error) {\n      finish(false);\n    }\n  });\n}\n\nasync function runCloudflareMusicAudit() {\n  if (state.cloudflareMusicRunning) return;\n  if (state.running) {\n    setStatus('Finish the local archive audit before starting the Cloudflare music check.', 'info');\n    return;\n  }\n\n  state.cloudflareMusicRunning = true;\n  const button = document.getElementById('archiveQualityRunMusic');\n  if (button) {\n    button.disabled = true;\n    button.textContent = 'Checking music…';\n  }\n\n  try {\n    if (!state.games.length) await loadCatalogue();\n\n    const tasks = state.games\n      .map((game, index) => ({ game, index, slug: text(game?.slug) }))\n      .filter((task) => task.slug);\n\n    state.cloudflareMusicChecked = 0;\n    state.cloudflareMusicFound = 0;\n    renderSummary();\n    setStatus('Checking Cloudflare-hosted game music by canonical slug…', 'info');\n    setProgress(0, tasks.length, \`Checking Cloudflare music for \${tasks.length} game slugs…\`);\n\n    let cursor = 0;\n    async function worker() {\n      while (cursor < tasks.length) {\n        const taskIndex = cursor;\n        cursor += 1;\n        const task = tasks[taskIndex];\n        const url = cloudflareMusicUrl(task.slug);\n        const playable = url ? await probeCloudflareMusic(url) : false;\n        state.cloudflareMusicChecked += 1;\n        if (playable) state.cloudflareMusicFound += 1;\n\n        if (state.cloudflareMusicChecked === tasks.length || state.cloudflareMusicChecked % 10 === 0) {\n          renderSummary();\n          setProgress(\n            state.cloudflareMusicChecked,\n            tasks.length,\n            \`Checked \${state.cloudflareMusicChecked} of \${tasks.length} Cloudflare music URLs · \${state.cloudflareMusicFound} playable\`\n          );\n        }\n      }\n    }\n\n    await Promise.all(Array.from(\n      { length: Math.min(CLOUDFLARE_MUSIC_CONCURRENCY, tasks.length || 1) },\n      worker\n    ));\n\n    renderSummary();\n    if (state.cloudflareMusicFound > 0) {\n      setStatus(\n        \`Cloudflare music check complete: \${state.cloudflareMusicFound} playable tracks found across \${state.cloudflareMusicChecked} game slugs. Missing tracks are not archive warnings.\`,\n        'success'\n      );\n    } else {\n      setStatus(\n        \`Cloudflare music check completed across \${state.cloudflareMusicChecked} game slugs, but this browser could not confirm a playable track. No per-game warnings were created.\`,\n        'warning'\n      );\n    }\n  } catch (error) {\n    console.error('[archive-quality] Cloudflare music audit failed', error);\n    setStatus(error?.message || 'The Cloudflare music check could not be completed.', 'error');\n  } finally {\n    state.cloudflareMusicRunning = false;\n    hideProgress();\n    if (button) {\n      button.disabled = false;\n      button.textContent = 'Check Cloudflare music';\n    }\n  }\n}\n`;
+
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `  await Promise.all(Array.from({ length: Math.min(RESOURCE_CONCURRENCY, tasks.length || 1) }, worker));\n  sortFindings();\n}\n\nfunction formatBytes(bytes) {`,
+            `  await Promise.all(Array.from({ length: Math.min(RESOURCE_CONCURRENCY, tasks.length || 1) }, worker));\n  sortFindings();\n}\n${cloudflareFunctions}\nfunction formatBytes(bytes) {`,
+            'Cloudflare music audit insertion point'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `  document.getElementById('archiveQualityResourceCount').textContent = String(state.resourcesChecked);\n`,
+            `  document.getElementById('archiveQualityResourceCount').textContent = String(state.resourcesChecked);\n  const musicCount = document.getElementById('archiveQualityCloudflareMusicCount');\n  if (musicCount) musicCount.textContent = \`${'${state.cloudflareMusicFound}/${state.cloudflareMusicChecked}'}\`;\n`,
+            'archive summary resource count'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `    \`Quick audit complete: \${state.games.length} games inspected. Run the full audit to verify local files and canonical pages.\`,
+            `    \`Quick audit complete: \${state.games.length} games inspected. Run the full audit to verify local resources and canonical pages.\`,
+            'quick audit status copy'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `    setStatus('Checking live local files and canonical pages…', 'info');`,
+            `    setStatus('Checking live local resources and canonical pages…', 'info');`,
+            'full audit resource status copy'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `      \`Full audit complete: \${critical} critical, \${warnings} warning and \${state.resourcesChecked} local file checks.\`,
+            `      \`Full audit complete: \${critical} critical, \${warnings} warning and \${state.resourcesChecked} local resource checks.\`,
+            'full audit completion copy'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `    local_resources_checked: state.resourcesChecked,\n    filters_applied: true,`,
+            `    local_resources_checked: state.resourcesChecked,\n    cloudflare_music_checked: state.cloudflareMusicChecked,\n    cloudflare_music_found: state.cloudflareMusicFound,\n    filters_applied: true,`,
+            'archive JSON export counters'
+          );
+          replaceExact(
+            'admin/js/archive-quality.js',
+            `  document.getElementById('archiveQualityRun')?.addEventListener('click', () => { void runFullAudit(); });\n`,
+            `  document.getElementById('archiveQualityRun')?.addEventListener('click', () => { void runFullAudit(); });\n  document.getElementById('archiveQualityRunMusic')?.addEventListener('click', () => { void runCloudflareMusicAudit(); });\n`,
+            'archive control binding'
+          );
+
+          // Archive Quality UI: distinguish local resources from optional Cloudflare audio availability.
+          replaceExact(
+            'admin/archive-quality.html',
+            `<p>Examines the live game catalogue for missing required information, malformed values, duplicate records and absent or oversized local files. It reports findings only and never edits the game database.</p>`,
+            `<p>Examines the live game catalogue for missing required information, malformed values, duplicate records and absent or oversized local resources. Cloudflare-hosted game music can be checked separately by canonical slug. It reports findings only and never edits the game database.</p>`,
+            'Archive Quality introduction'
+          );
+          replaceExact(
+            'admin/archive-quality.html',
+            `        <button class="ccg-btn ccg-btn--primary" type="button" id="archiveQualityRun">Run full audit</button>`,
+            `        <button class="ccg-btn ccg-btn--primary" type="button" id="archiveQualityRun">Run full audit</button>\n        <button class="ccg-btn ccg-btn--ghost" type="button" id="archiveQualityRunMusic">Check Cloudflare music</button>`,
+            'Archive Quality action button'
+          );
+          replaceExact(
+            'admin/archive-quality.html',
+            `        <span>Local files checked</span>\n      </article>\n    </section>`,
+            `        <span>Local resources checked</span>\n      </article>\n      <article class="archive-quality__summary-card">\n        <strong id="archiveQualityCloudflareMusicCount">0/0</strong>\n        <span>Cloudflare tracks found</span>\n      </article>\n    </section>`,
+            'Archive Quality resource summary card'
+          );
+          replaceExact(
+            'admin/archive-quality.html',
+            `<strong id="archiveQualityProgressLabel">Preparing file checks…</strong>`,
+            `<strong id="archiveQualityProgressLabel">Preparing resource checks…</strong>`,
+            'Archive Quality progress copy'
+          );
+          replaceExact(
+            'admin/archive-quality.html',
+            `<p>The full audit checks required catalogue fields, duplicate identifiers, local thumbnail, audio, optional 3D-box and canonical page files, plus local image file size. External Google Drive, Lemon64 and YouTube availability cannot be proved reliably from a browser without a server-side service, so this report validates their format and supplies direct review links rather than labelling an unreachable third-party request as broken.</p>`,
+            `<p>The full audit checks required catalogue fields, duplicate identifiers, local thumbnails, optional 3D-box images, local linked files and canonical pages, plus local image file size. Game music is hosted on Cloudflare R2 and is not treated as a local repository file. Use “Check Cloudflare music” to probe <code>&lt;slug&gt;.mp3</code> with browser audio metadata; missing tracks are counted as unavailable rather than raised as archive warnings because not every game must have a hosted track. External Google Drive, Lemon64 and YouTube availability cannot be proved reliably from a browser without a server-side service, so this report validates their format and supplies direct review links rather than labelling an unreachable third-party request as broken.</p>`,
+            'Archive Quality audit boundaries'
+          );
+          replaceExact(
+            'admin/archive-quality.html',
+            `<script type="module" src="/admin/js/archive-quality.js?v=phase20-20260806"></script>`,
+            `<script type="module" src="/admin/js/archive-quality.js?v=cloudflare-audio-20260812"></script>`,
+            'Archive Quality script version'
+          );
+
+          // Documentation and publishing trigger must no longer describe repository audio files.
+          replaceExact(
+            'admin/GAMES_EDITOR.md',
+            `Optional information includes collections, manual URL, disk/download links, music files, developer, programmer, graphics and musician credits.`,
+            `Optional information includes collections, manual URL, disk/download links, developer, programmer, graphics and musician credits.`,
+            'Game Builder optional information copy'
+          );
+          replaceExact(
+            'admin/GAMES_EDITOR.md',
+            `- Optional game audio: \`resources/audio/games/<slug>.mp3\` or the explicitly recorded filenames`,
+            `- Game audio is hosted on Cloudflare R2 and resolved from the canonical slug as \`<slug>.mp3\`; do not add repository audio paths or a \`music\` filename field to \`games.json\``,
+            'Game Builder audio file naming documentation'
+          );
+          replaceExact(
+            '.github/workflows/games-publishing.yml',
+            `      - "resources/audio/games/**"\n`,
+            '',
+            'obsolete local audio publishing trigger'
+          );
+
+          // Remove stale source metadata. Cloudflare playback is slug-derived, so filename arrays are no longer authoritative.
+          const gamesPath = 'games/games.json';
+          const games = JSON.parse(read(gamesPath));
+          if (!Array.isArray(games)) throw new Error('games/games.json is not an array');
+          let removedMusicFields = 0;
+          for (const game of games) {
+            if (game && Object.prototype.hasOwnProperty.call(game, 'music')) {
+              delete game.music;
+              removedMusicFields += 1;
+            }
+          }
+          if (removedMusicFields < 1) throw new Error('Expected at least one obsolete games.json music field to remove');
+          write(gamesPath, `${JSON.stringify(games, null, 2)}\n`);
+          console.log(`[cloudflare-audio-migration] Removed ${removedMusicFields} obsolete games.json music field(s).`);
+
+          // Permanent regression coverage.
+          const test = `import assert from 'node:assert/strict';\nimport fs from 'node:fs';\nimport test from 'node:test';\n\nconst read = (path) => fs.readFileSync(new URL(\`../\${path}\`, import.meta.url), 'utf8');\n\ntest('admin publishers never write repository music filename metadata', () => {\n  const publisherHtml = read('admin/content-publisher.html');\n  const publisherJs = read('admin/js/content-publisher.js');\n  const legacyHtml = read('admin/games-editor.html');\n  const legacyJs = read('admin/js/games-editor.js');\n\n  assert.doesNotMatch(publisherHtml, /data-game-field=[\"']music[\"']/);\n  assert.doesNotMatch(publisherJs, /gameValue\\([\"']music[\"']\\)/);\n  assert.doesNotMatch(legacyHtml, /data-field=[\"']music[\"']/);\n  assert.doesNotMatch(legacyHtml, /resources\\/audio\\/games/);\n  assert.doesNotMatch(legacyJs, /state\\.draft\\.music/);\n  assert.doesNotMatch(legacyJs, /resources\\/audio\\/games/);\n});\n\ntest('game source no longer carries obsolete music filename properties', () => {\n  const games = JSON.parse(read('games/games.json'));\n  assert.ok(Array.isArray(games) && games.length > 0);\n  assert.equal(games.filter((game) => Object.prototype.hasOwnProperty.call(game, 'music')).length, 0);\n});\n\ntest('Archive Quality separates Cloudflare music from local resource findings', () => {\n  const html = read('admin/archive-quality.html');\n  const js = read('admin/js/archive-quality.js');\n  const musicConfig = read('js/ccg-music-config.js');\n  const publishing = read('.github/workflows/games-publishing.yml');\n\n  assert.match(html, /id=[\"']archiveQualityRunMusic[\"']/);\n  assert.match(html, /Cloudflare tracks found/);\n  assert.match(js, /runCloudflareMusicAudit/);\n  assert.match(js, /new Audio\\(\\)/);\n  assert.doesNotMatch(js, /category:\\s*[\"']Local audio[\"']/);\n  assert.doesNotMatch(js, /resources\\/audio\\/games/);\n  assert.doesNotMatch(publishing, /resources\\/audio\\/games/);\n\n  const archiveBase = js.match(/CLOUDFLARE_MUSIC_BASE_URL = '([^']+)'/)?.[1];\n  const runtimeBase = musicConfig.match(/DEFAULT_MUSIC_BASE_URL = \"([^\"]+)\"/)?.[1];\n  assert.equal(archiveBase, runtimeBase, 'Archive Quality and public music runtime must use the same Cloudflare base URL');\n});\n`;
+          write('tests/cloudflare-audio-admin.test.mjs', test);
+          NODE
+
+      - name: Validate migration
+        shell: bash
+        run: |
+          node --check admin/js/archive-quality.js
+          node --check admin/js/content-publisher.js
+          node --check admin/js/games-editor.js
+          node --test tests/cloudflare-audio-admin.test.mjs
+          node scripts/validate-games-source.js
+          git diff --check
+
+      - name: Create review branch and pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/ccg-cloudflare-audio-migration.yml
+
+          BRANCH="codex/cloudflare-audio-admin-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add \
+            admin/archive-quality.html \
+            admin/js/archive-quality.js \
+            admin/content-publisher.html \
+            admin/js/content-publisher.js \
+            admin/games-editor.html \
+            admin/js/games-editor.js \
+            admin/GAMES_EDITOR.md \
+            games/games.json \
+            .github/workflows/games-publishing.yml \
+            tests/cloudflare-audio-admin.test.mjs \
+            .github/workflows/ccg-cloudflare-audio-migration.yml
+          git commit -m "Align game audio admin pipeline with Cloudflare R2"
+          git push origin "HEAD:$BRANCH"
+
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$BRANCH" \
+            --title "Align game audio admin pipeline with Cloudflare R2" \
+            --body "Removes obsolete local MP3 filename handling from both game publishers and Archive Quality, strips stale games.json music fields, removes the old local-audio publishing trigger, adds an optional non-warning Cloudflare music availability probe by canonical slug, updates admin documentation, and adds regression coverage. The migration workflow deletes itself in this PR.")
+          echo "Created PR: $PR_URL"
