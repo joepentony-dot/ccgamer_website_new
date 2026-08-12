@@ -9,12 +9,16 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/collection-values.js"
+      - "admin/js/guard.js"
       - "resources/css/ccg-content-publisher.css"
       - "js/load-single-game.js"
+      - "js/collection-loader.js"
       - "js/ccg-zzap64-matcher.js"
       - "data/zzap64-review-links.json"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
+      - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   push:
@@ -25,12 +29,16 @@ on:
       - "admin/content-publisher.html"
       - "admin/help.html"
       - "admin/js/content-publisher.js"
+      - "admin/js/collection-values.js"
+      - "admin/js/guard.js"
       - "resources/css/ccg-content-publisher.css"
       - "js/load-single-game.js"
+      - "js/collection-loader.js"
       - "js/ccg-zzap64-matcher.js"
       - "data/zzap64-review-links.json"
       - "scripts/audit-admin-runtime-bootstrap.js"
       - "tests/content-publisher.test.mjs"
+      - "tests/admin-collection-values.test.mjs"
       - "tests/game-zzap-links.test.mjs"
       - ".github/workflows/content-publisher-validation.yml"
   workflow_dispatch:
@@ -54,13 +62,17 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check admin/js/content-publisher.js
+          node --check admin/js/collection-values.js
+          node --check admin/js/guard.js
           node --check scripts/audit-admin-runtime-bootstrap.js
           node --check js/load-single-game.js
+          node --check js/collection-loader.js
           node --check js/ccg-zzap64-matcher.js
 
-      - name: Run publisher and Zzap game-link regression tests
+      - name: Run publisher and collection regression tests
         run: |
           node --test tests/content-publisher.test.mjs
+          node --test tests/admin-collection-values.test.mjs
           node --test tests/game-zzap-links.test.mjs
 
       - name: Run admin runtime bootstrap audit
