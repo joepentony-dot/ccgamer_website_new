@@ -9,10 +9,13 @@ on:
       - "music/composer.html"
       - "music/composers/**"
       - "music/*/index.html"
+      - "data/composer-research/**"
       - "js/music-composer-pages.js"
       - "js/music-composer-utils.js"
       - "scripts/composer-utils.js"
       - "scripts/generate-composer-pages.js"
+      - "scripts/enrich-generated-composer-pages.js"
+      - "scripts/apply-curated-composer-research.js"
       - "scripts/enable-static-composer-routes.js"
       - "scripts/preserve-sitemap-lastmods.js"
       - "tools/seo/static-pages.json"
@@ -25,10 +28,13 @@ on:
       - "music/composer.html"
       - "music/composers/**"
       - "music/*/index.html"
+      - "data/composer-research/**"
       - "js/music-composer-pages.js"
       - "js/music-composer-utils.js"
       - "scripts/composer-utils.js"
       - "scripts/generate-composer-pages.js"
+      - "scripts/enrich-generated-composer-pages.js"
+      - "scripts/apply-curated-composer-research.js"
       - "scripts/enable-static-composer-routes.js"
       - "scripts/preserve-sitemap-lastmods.js"
       - "tools/seo/static-pages.json"
@@ -60,6 +66,9 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Apply curated composer research
+        run: node scripts/apply-curated-composer-research.js
+
       - name: Record protected hashes
         shell: bash
         run: |
@@ -75,13 +84,14 @@ jobs:
             if (!fs.existsSync(file)) continue;
             const html = fs.readFileSync(file, "utf8");
             if (!/data-ccg-page\s*=\s*(["'])music-composer\1/i.test(html)) continue;
+            if (/data-generated-composer\s*=\s*(["'])true\1/i.test(html)) continue;
             records.push({
               file,
               sha256: crypto.createHash("sha256").update(html).digest("hex")
             });
           }
           fs.writeFileSync("/tmp/phase3c-existing-composers.json", JSON.stringify(records, null, 2));
-          console.log(`Protected ${records.length} existing composer pages.`);
+          console.log(`Protected ${records.length} curated composer pages.`);
           NODE
 
       - name: Snapshot baseline sitemaps
@@ -109,6 +119,8 @@ jobs:
         run: |
           node --check scripts/composer-utils.js
           node --check scripts/generate-composer-pages.js
+          node --check scripts/enrich-generated-composer-pages.js
+          node --check scripts/apply-curated-composer-research.js
           node --check scripts/enable-static-composer-routes.js
           node --check scripts/preserve-sitemap-lastmods.js
           node --check js/music-composer-pages.js
@@ -118,6 +130,9 @@ jobs:
 
       - name: Generate composer archives
         run: node scripts/generate-composer-pages.js
+
+      - name: Enrich generated composer profiles
+        run: node scripts/enrich-generated-composer-pages.js
 
       - name: Rebuild sitemaps
         run: node scripts/generate-sitemaps.js
@@ -135,11 +150,14 @@ jobs:
           const path = require("path");
           const { buildComposerGroups, normalizeComposerKey } = require("./scripts/composer-utils");
           const { INDEXABLE_MIN_GAMES } = require("./scripts/generate-composer-pages");
+          const { loadResearchDocument } = require("./scripts/enrich-generated-composer-pages");
 
           const SITE = "https://www.cheekycommodoregamer.co.uk";
           const games = JSON.parse(fs.readFileSync("games/games.json", "utf8"));
           const groups = buildComposerGroups(games);
           const metadata = JSON.parse(fs.readFileSync("music/composers/composers.json", "utf8"));
+          const research = loadResearchDocument(path.join(process.cwd(), "music", "composers", "research.json"));
+          const researchProfiles = research && research.profiles ? research.profiles : {};
           const staticPages = JSON.parse(fs.readFileSync("tools/seo/static-pages.json", "utf8"));
           const sitemap = fs.readFileSync("sitemap-pages.xml", "utf8");
           const hub = fs.readFileSync("music/composers/index.html", "utf8");
@@ -152,11 +170,17 @@ jobs:
           if (creditedMetadata.length !== groups.length) {
             problems.push(`Credited metadata count ${creditedMetadata.length} does not match source groups ${groups.length}`);
           }
+          if (!Object.keys(researchProfiles).length) {
+            problems.push("Composer research registry is empty");
+          }
           if (!fallback.includes('name="robots" content="noindex,follow"')) {
             problems.push("Query-string fallback is no longer noindex,follow");
           }
           if (!client.includes("knownComposer || allowDedicated || DEDICATED_COMPOSER_SLUGS.has(slug)")) {
             problems.push("Known composer records do not route to static pages");
+          }
+          if (!client.includes('data-ccg-research-profile="true"')) {
+            problems.push("Client does not preserve static researched profiles");
           }
           if (!hub.includes('data-static-composer-fallback="true"') || !musicHub.includes('data-static-composer-fallback="true"')) {
             problems.push("Static composer fallbacks are missing from one or both music hubs");
@@ -178,6 +202,9 @@ jobs:
             if (!html.includes(`rel="canonical" href="${canonical}"`)) {
               problems.push(`Canonical mismatch: ${entry.slug}`);
             }
+            if (!html.includes('data-ccg-research-profile="true"')) {
+              problems.push(`Research profile missing: ${entry.slug}`);
+            }
             if (!hub.includes(`href="/music/${entry.slug}/"`) || !musicHub.includes(`href="/music/${entry.slug}/"`)) {
               problems.push(`Static hub link missing: ${entry.slug}`);
             }
@@ -189,12 +216,15 @@ jobs:
             }
 
             if (entry.generated) {
-              const expectedIndexable = entry.count >= INDEXABLE_MIN_GAMES;
+              const expectedIndexable = entry.count >= INDEXABLE_MIN_GAMES || researchProfiles[entry.slug]?.seoIndex === true;
               if (!html.includes('data-generated-composer="true"')) {
                 problems.push(`Generated marker missing: ${entry.slug}`);
               }
               if (!html.includes(`name="robots" content="${expectedIndexable ? "index,follow" : "noindex,follow"}"`)) {
                 problems.push(`Generated robots mismatch: ${entry.slug}`);
+              }
+              if (!/#(?:person|group)"/.test(html) && !html.includes("#person") && !html.includes("#group")) {
+                problems.push(`Generated entity schema missing: ${entry.slug}`);
               }
               const source = sourceByKey.get(normalizeComposerKey(entry.name));
               if (!source) {
@@ -206,8 +236,16 @@ jobs:
                   }
                 }
               }
-            } else if (html.includes('data-generated-composer="true"')) {
-              problems.push(`Existing page was replaced by generated output: ${entry.slug}`);
+            } else {
+              if (html.includes('data-generated-composer="true"')) {
+                problems.push(`Existing page was replaced by generated output: ${entry.slug}`);
+              }
+              if (!researchProfiles[entry.slug]) {
+                problems.push(`Curated composer lacks research record: ${entry.slug}`);
+              }
+              if (!html.includes('data-ccg-composer-research-schema="true"')) {
+                problems.push(`Curated entity schema missing: ${entry.slug}`);
+              }
             }
           }
 
@@ -223,6 +261,7 @@ jobs:
           console.log(JSON.stringify({
             gameRecords: games.length,
             creditedComposerEntities: groups.length,
+            researchProfiles: Object.keys(researchProfiles).length,
             staticComposerRoutes: metadata.length,
             generatedRoutes: metadata.filter((entry) => entry.generated).length,
             indexableRoutes: metadata.filter((entry) => entry.indexable).length,
@@ -245,10 +284,10 @@ jobs:
             }
             const current = fs.readFileSync(record.file);
             const digest = crypto.createHash("sha256").update(current).digest("hex");
-            if (digest !== record.sha256) problems.push(`Existing composer page changed: ${record.file}`);
+            if (digest !== record.sha256) problems.push(`Existing composer page changed after research pass: ${record.file}`);
           }
           if (problems.length) throw new Error(problems.join("\n"));
-          console.log(`Verified ${records.length} existing composer pages byte-for-byte.`);
+          console.log(`Verified ${records.length} curated composer pages byte-for-byte after generation.`);
           NODE
 
       - name: Confirm bounded generated scope
@@ -286,7 +325,7 @@ jobs:
               path = pathlib.Path(item)
               if len(path.parts) == 3 and path.parts[0] == "music" and path.parts[2] == "index.html":
                   text = path.read_text(encoding="utf-8", errors="ignore") if path.exists() else ""
-                  if 'data-generated-composer="true"' in text:
+                  if 'data-generated-composer="true"' in text or 'data-ccg-research-profile="true"' in text:
                       continue
               unexpected.append(item)
 
