@@ -127,21 +127,26 @@
   },
   {
     "slug": "the-one-amiga",
-    "summary": "The One Amiga appears in the CCG archive as a magazine-associated software publishing credit. Cover-disk and magazine software releases form a distinct part of the Amiga ecosystem and are retained separately from conventional commercial publishers.",
+    "summary": "The One Amiga was part of The One's Amiga-focused magazine lineage and distributed playable software on cover disks. CCG preserves the magazine name as a publisher credit where a game entered the archive through that cover-disk route.",
     "facts": [
-      "The CCG archive records an Amiga title carrying The One Amiga publishing credit.",
-      "Magazine-distributed software is kept as its own publisher route where that is the credit attached to the archived release."
+      "The Centre for Computing History describes The One Amiga as a gaming-focused Amiga magazine and records its March 1994 issue as being bundled with multiple cover disks.",
+      "The museum's preserved cover-disk collection documents The One / The One 100% Amiga disks across the early and mid-1990s, including full-game and demo software."
     ],
     "strengths": ["Amiga magazine software", "Cover-disk distribution", "Periodical publishing"],
     "related": [],
-    "note": "This is intentionally a modest profile because The One's role here is magazine software distribution rather than a conventional standalone game publisher.",
+    "note": "The One Amiga is retained as a separate publishing route because the archived software was distributed through the magazine rather than as a conventional boxed retail release.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — The One magazine collection",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=The+One&type=Games",
-        "type": "museum collection"
+        "label": "Centre for Computing History — The One Amiga March 1994",
+        "url": "https://www.computinghistory.org.uk/det/73579/The-One-Amiga-March-1994/",
+        "type": "museum magazine archive"
+      },
+      {
+        "label": "Centre for Computing History — The One Amiga cover-disk collection",
+        "url": "https://www.computinghistory.org.uk/det/55183/DB009-Amiga-Coverdisks-AUI-The-One/",
+        "type": "museum software archive"
       }
     ]
   },
@@ -187,101 +192,116 @@
   },
   {
     "slug": "tikkurila",
-    "summary": "Tikkurila appears in the CCG archive as a small Commodore 64 publishing credit. Reliable public company documentation for its games activity is sparse, so the profile remains limited to the preserved software relationship.",
+    "summary": "Tikkurila, the Finnish paint company, published Painter Boy as a Commodore 64 advertising game in 1986. The release used game distribution as a form of brand promotion and was expected to circulate well beyond its direct sales.",
     "facts": [
-      "The Centre for Computing History preserves software under the Tikkurila publishing credit.",
-      "No founder or corporate-history claims are added because the surviving game-publishing record is limited."
+      "Finna's teaching collection, assembled by the Finnish Postal Museum, Media Museum Rupriikki and the Finnish Museum of Games, identifies Painter Boy as an advertising game published by Tikkurila in 1986.",
+      "A contemporary Tikkurila advertising-department letter preserved in the collection says the game was made for the Commodore 64 and explicitly anticipated that copying between hobbyists would broaden its promotional reach."
     ],
-    "strengths": ["C64 software", "Small publishing credit", "Archive-preserved release"],
+    "strengths": ["Painter Boy", "C64 advergame", "Brand promotion through games"],
     "related": [],
-    "note": "The intentionally narrow wording prevents this historical software credit being confused with unrelated modern businesses using the same name.",
+    "note": "This publisher route reflects Tikkurila's specific 1986 game-publishing activity rather than presenting the paint company as a conventional software house.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — Tikkurila software",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Tikkurila&type=Games",
-        "type": "museum collection"
+        "label": "Finna / Finnish Museum of Games — Painter Boy archival material",
+        "url": "https://finna.fi/L1Record/aipa.node-579/Home",
+        "type": "national cultural archive"
       }
     ]
   },
   {
     "slug": "timeworks",
-    "summary": "Timeworks was a personal-computer software publisher whose catalogue extended beyond games into productivity and educational software. Its presence in the CCG archive reflects the Commodore software credit attached to the represented title.",
+    "summary": "Timeworks, Inc. published personal-computer software across educational, entertainment and productivity categories. Its 1983 educational game Cave of the Word Wizard appeared on multiple home-computer platforms, including the Commodore 64 version represented by CCG.",
     "facts": [
-      "The Centre for Computing History preserves software carrying the Timeworks publishing credit across personal-computer platforms.",
-      "Timeworks published software for Commodore computers alongside non-game productivity products during the 1980s."
+      "The Timex/Sinclair preservation archive identifies Timeworks, Inc. as publisher of Cave of the Word Wizard in 1983.",
+      "The preserved description presents Cave of the Word Wizard as an educational spelling game with three skill levels, while the wider Timeworks catalogue also includes programming, collection-management and other personal-computer software."
     ],
-    "strengths": ["Commodore software", "Productivity and entertainment software", "1980s computer publishing"],
+    "strengths": ["Educational software", "Personal-computer publishing", "Cave of the Word Wizard"],
     "related": [],
-    "note": "This archive page concerns the game/software release represented by CCG, not the publisher's broader productivity catalogue.",
+    "note": "CCG's route concerns the Commodore release represented on the site; the preservation source documents the same Timeworks title and publisher on another contemporary home-computer platform.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — Timeworks software",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Timeworks&type=Software",
-        "type": "museum collection"
+        "label": "Timex/Sinclair Computers — Timeworks company archive",
+        "url": "https://timexsinclair.com/company/timeworks/index.html",
+        "type": "specialist preservation archive"
+      },
+      {
+        "label": "Timex/Sinclair Computers — Cave of the Word Wizard",
+        "url": "https://www.timexsinclair.com/product/cave-of-the-word-wizard/index.html",
+        "type": "specialist preservation archive"
       }
     ]
   },
   {
     "slug": "titus-software",
-    "summary": "Titus Software was a French developer and publisher whose computer-game catalogue expanded across 8-bit and 16-bit systems before moving heavily into consoles. Its Commodore releases form a small part of that wider catalogue.",
+    "summary": "Titus Software was a French developer and publisher whose computer-game catalogue expanded across 8-bit and 16-bit systems before moving heavily into consoles. Its Commodore releases included driving, action and licensed games.",
     "facts": [
-      "The Centre for Computing History preserves home-computer games carrying the Titus Software publishing credit.",
-      "The museum records Titus as both developer and publisher on releases including Off Shore Warrior, illustrating its dual production and publishing role."
+      "The Centre for Computing History records Titus as publisher and author of Commodore 64 releases including Crazy Cars and Wild Streets.",
+      "The museum also preserves Titus-published Commodore Amiga releases such as Battle Storm and The Blues Brothers, demonstrating the company's presence across both 8-bit and 16-bit Commodore systems."
     ],
-    "strengths": ["French game publishing", "Development and publishing", "8-bit and 16-bit games"],
+    "strengths": ["French game publishing", "Development and publishing", "C64 and Amiga releases"],
     "related": [],
-    "note": "The profile stays catalogue-focused because reliable institutional evidence is stronger for the software output than for a concise corporate timeline.",
+    "note": "The profile stays catalogue-focused because the museum provides strong evidence for Titus's software output while individual development teams and licences vary by title.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — Titus Software games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Titus+Software&type=Games",
-        "type": "museum collection"
+        "label": "Centre for Computing History — Crazy Cars and Crazy Cars II",
+        "url": "https://www.computinghistory.org.uk/det/51797/Crazy-Cars-Crazy-Cars-II/",
+        "type": "museum software archive"
+      },
+      {
+        "label": "Centre for Computing History — The Blues Brothers on Amiga",
+        "url": "https://www.computinghistory.org.uk/det/44781/The%20Blues%20Brothers/",
+        "type": "museum software archive"
       }
     ]
   },
   {
     "slug": "tronix-publishing",
-    "summary": "Tronix Publishing appears in the early Commodore 64 software market as a small publishing label. The surviving institutional record is product-led, so this profile avoids unsupported corporate claims.",
+    "summary": "Tronix Publishing appears in the early Commodore 64 software market as the publisher of Slalom!, the 1983 skiing game represented in the CCG archive. Surviving non-commercial historical material about the company itself is limited.",
     "facts": [
-      "The Centre for Computing History preserves home-computer software carrying the Tronix Publishing credit.",
-      "The label appears during the early commercial period of Commodore 64 game publishing."
+      "CCG's preserved Slalom! release credits Tronix Publishing as publisher in 1983.",
+      "The publisher belongs to the early commercial period of Commodore 64 software, and this profile deliberately avoids repeating unsupported corporate-history claims from commercial game databases."
     ],
-    "strengths": ["Early C64 software", "Small catalogue", "Home-computer publishing"],
+    "strengths": ["Early C64 software", "Slalom!", "Home-computer publishing"],
     "related": [],
-    "note": "Only documented publishing activity is presented because reliable company-history material is limited.",
+    "note": "This is intentionally a cautious archive profile: the release credit is preserved, but no founder, ownership or location claims are made without a suitable independent archival source.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — Tronix Publishing games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Tronix+Publishing&type=Games",
-        "type": "museum collection"
+        "label": "Cheeky Commodore Gamer — preserved Slalom! release record",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/slalom/",
+        "type": "CCG primary archive record"
       }
     ]
   },
   {
     "slug": "tv-games",
-    "summary": "TV Games appears in the CCG archive as a specialist television-related software publishing credit. Its small Commodore catalogue is retained independently where that is the publisher attached to the represented release.",
+    "summary": "TV Games specialised in computer adaptations of British television game shows. Its late-1980s catalogue included Blockbusters, Every Second Counts, Countdown, Bullseye and The Krypton Factor across several home computers.",
     "facts": [
-      "The Centre for Computing History preserves Commodore software carrying the TV Games publishing credit.",
-      "The surviving catalogue evidence is stronger than the company record, so no unsupported ownership or formation claims are included."
+      "The Centre for Computing History preserves TV Special, a 1988 TV Games compilation containing The Krypton Factor, Every Second Counts and Blockbusters.",
+      "The museum's TV Games records also list Countdown, Bullseye and Treasure Hunt, while Blockbusters appears in a Domark/TV Games edition."
     ],
-    "strengths": ["Television-related software", "C64 publishing", "Small catalogue"],
-    "related": [],
-    "note": "This profile is intentionally limited to the publishing activity supported by surviving archive material.",
+    "strengths": ["Television game-show adaptations", "C64 publishing", "British licensed software"],
+    "related": [{"label":"Domark","slug":"domark"}],
+    "note": "The CCG archive retains TV Games as the publisher on the represented Blockbusters release while also acknowledging documented Domark/TV Games editions.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — TV Games software",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=TV+Games&type=Games",
-        "type": "museum collection"
+        "label": "Centre for Computing History — TV Special compilation",
+        "url": "https://www.computinghistory.org.uk/det/35567/TV%20Special/",
+        "type": "museum software archive"
+      },
+      {
+        "label": "Centre for Computing History — Blockbusters Domark / TV Games",
+        "url": "https://www.computinghistory.org.uk/det/18804/Blockbusters/",
+        "type": "museum software archive"
       }
     ]
   },
@@ -350,21 +370,26 @@
   },
   {
     "slug": "vifi-international",
-    "summary": "VIFI International appears in the CCG archive as a small Commodore 64 publishing credit. Public historical documentation is limited, so this profile is deliberately restricted to preserved software evidence.",
+    "summary": "VIFI International was a French educational and home-computer software organisation whose software activity included development and publishing for European microcomputer markets. Its CCG route represents the 1986 Commodore 64 release Serenade.",
     "facts": [
-      "The Centre for Computing History preserves software carrying the VIFI International publishing credit.",
-      "No unsupported claims about founders, ownership or company dates are added where reliable historical documentation is unavailable."
+      "Generation MSX identifies VIFI International as a French organisation and catalogues both software developed by it and software published under its name.",
+      "Its preserved publishing catalogue includes 1980s educational and entertainment software from external developers such as Jawx and Aackosoft, showing that VIFI acted in both development and publishing roles."
     ],
-    "strengths": ["C64 software", "Small publishing credit", "Archive-preserved release"],
+    "strengths": ["French home-computer software", "Educational software", "Development and publishing"],
     "related": [],
-    "note": "The narrow profile is intentional and can be expanded if stronger first-party or institutional evidence is located later.",
+    "note": "The specialist preservation archive documents VIFI's wider microcomputer activity; CCG separately preserves Serenade as the Commodore 64 release carrying the VIFI International publishing credit.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Centre for Computing History — VIFI International software",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=VIFI+International&type=Games",
-        "type": "museum collection"
+        "label": "Generation MSX — VIFI International company archive",
+        "url": "https://www.generation-msx.nl/company/vifi-international/695/",
+        "type": "specialist preservation archive"
+      },
+      {
+        "label": "Generation MSX — software published by VIFI International",
+        "url": "https://www.generation-msx.nl/company/vifi-international/695/published/",
+        "type": "specialist preservation archive"
       }
     ]
   },
