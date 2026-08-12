@@ -1,5 +1,6 @@
 // admin/js/guard.js
 
+import './collection-values.js';
 import { AUTH_CONFIG, OWNER_EMAILS } from './config.js';
 import {
   AUTH_STATE,
