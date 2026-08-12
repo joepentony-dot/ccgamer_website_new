@@ -28,7 +28,7 @@ Required information:
 - thumbnail path and thumbnail file
 - CCG rating
 
-Optional information includes collections, manual URL, disk/download links, music files, developer, programmer, graphics and musician credits.
+Optional information includes collections, manual URL, disk/download links, developer, programmer, graphics and musician credits.
 
 ## Lemon64 Auto Fill
 
@@ -48,7 +48,7 @@ The imported information remains editable. Review every imported value against t
 
 - Thumbnail: `resources/images/thumbnails/all/<slug>.<png|jpg|jpeg|webp>`
 - Optional 3D box: `resources/images/games/boxes-3d/<slug>.webp`
-- Optional game audio: `resources/audio/games/<slug>.mp3` or the explicitly recorded filenames
+- Game audio is hosted on Cloudflare R2 and resolved from the canonical slug as `<slug>.mp3`; do not add repository audio paths or a `music` filename field to `games.json`
 - Manuals and downloads must use the final URLs intended for the public game record
 
 Keep the slug stable after publication because it owns the canonical URL at `/games/<slug>/`.

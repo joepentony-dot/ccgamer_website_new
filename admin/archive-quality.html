@@ -22,11 +22,12 @@
       <div>
         <p class="archive-quality__kicker">Read-only archive inspection</p>
         <h1>Archive Quality Centre</h1>
-        <p>Examines the live game catalogue for missing required information, malformed values, duplicate records and absent or oversized local files. It reports findings only and never edits the game database.</p>
+        <p>Examines the live game catalogue for missing required information, malformed values, duplicate records and absent or oversized local resources. Cloudflare-hosted game music can be checked separately by canonical slug. It reports findings only and never edits the game database.</p>
       </div>
       <div class="archive-quality__header-actions">
         <a class="ccg-btn ccg-btn--ghost" href="/admin/dashboard.html">Admin dashboard</a>
         <button class="ccg-btn ccg-btn--primary" type="button" id="archiveQualityRun">Run full audit</button>
+        <button class="ccg-btn ccg-btn--ghost" type="button" id="archiveQualityRunMusic">Check Cloudflare music</button>
       </div>
     </header>
 
@@ -52,13 +53,17 @@
       </article>
       <article class="archive-quality__summary-card">
         <strong id="archiveQualityResourceCount">0</strong>
-        <span>Local files checked</span>
+        <span>Local resources checked</span>
+      </article>
+      <article class="archive-quality__summary-card">
+        <strong id="archiveQualityCloudflareMusicCount">0/0</strong>
+        <span>Cloudflare tracks found</span>
       </article>
     </section>
 
     <section class="archive-quality__progress" id="archiveQualityProgressPanel" hidden aria-live="polite">
       <div class="archive-quality__progress-heading">
-        <strong id="archiveQualityProgressLabel">Preparing file checks…</strong>
+        <strong id="archiveQualityProgressLabel">Preparing resource checks…</strong>
         <span id="archiveQualityProgressValue">0%</span>
       </div>
       <progress id="archiveQualityProgress" max="100" value="0">0%</progress>
@@ -113,13 +118,13 @@
 
     <aside class="archive-quality__scope">
       <h2>Audit boundaries</h2>
-      <p>The full audit checks required catalogue fields, duplicate identifiers, local thumbnail, audio, optional 3D-box and canonical page files, plus local image file size. External Google Drive, Lemon64 and YouTube availability cannot be proved reliably from a browser without a server-side service, so this report validates their format and supplies direct review links rather than labelling an unreachable third-party request as broken.</p>
+      <p>The full audit checks required catalogue fields, duplicate identifiers, local thumbnails, optional 3D-box images, local linked files and canonical pages, plus local image file size. Game music is hosted on Cloudflare R2 and is not treated as a local repository file. Use “Check Cloudflare music” to probe <code>&lt;slug&gt;.mp3</code> with browser audio metadata; missing tracks are counted as unavailable rather than raised as archive warnings because not every game must have a hosted track. External Google Drive, Lemon64 and YouTube availability cannot be proved reliably from a browser without a server-side service, so this report validates their format and supplies direct review links rather than labelling an unreachable third-party request as broken.</p>
     </aside>
   </main>
 
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/archive-quality.js?v=phase20-20260806"></script>
+  <script type="module" src="/admin/js/archive-quality.js?v=cloudflare-audio-20260812"></script>
 </body>
 </html>

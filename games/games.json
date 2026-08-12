@@ -10633,10 +10633,7 @@
     },
     "developer": "3-2-1 Software",
     "_ccg_enforced": false,
-    "_ccg_migrated": false,
-    "music": [
-      "go-for-the-gold.mp3"
-    ]
+    "_ccg_migrated": false
   },
   {
     "system": "AMIGA",
@@ -13378,10 +13375,7 @@
     },
     "developer": "Sensible Software",
     "_ccg_enforced": false,
-    "_ccg_migrated": false,
-    "music": [
-      "insects-in-space.mp3"
-    ]
+    "_ccg_migrated": false
   },
   {
     "system": "C64",
