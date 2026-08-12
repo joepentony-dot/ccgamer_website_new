@@ -235,5 +235,31 @@
     "strengths": ["C64 technical showcases", "Shoot 'em ups", "Strong music and presentation"],
     "related": [{"label":"Hewson","slug":"hewson"}, {"label":"Rainbow Arts","slug":"rainbow-arts"}],
     "note": "This summary concerns the games represented in the CCG archive and does not attempt to reproduce a complete company history."
+  },
+  {
+    "slug": "americana",
+    "summary": "Americana Software is represented in the CCG archive as a Commodore 64 publishing and re-release label. Its catalogue combines games carrying Americana as the listed publisher with reissues of titles originally associated with a range of other software houses, so CCG records Americana as an additional publisher association rather than replacing established primary credits.",
+    "facts": [
+      "Lemon64 groups 34 Commodore 64 games under its Americana company entry.",
+      "The Centre for Computing History records Commodore 64 copies of BreakDance, Karate Champ, Go For The Gold and Ollie's Follies under Americana Software.",
+      "The Americana catalogue represented by Lemon64 includes both games listed directly under Americana and games whose original publisher field names another company."
+    ],
+    "strengths": ["C64 re-releases", "Budget-era catalogue", "Action and sports games"],
+    "related": [{"label":"US Gold","slug":"us-gold"}, {"label":"Datasoft","slug":"datasoft"}, {"label":"Access Software","slug":"access-software"}],
+    "note": "Americana is additive in CCG: the secondary credit records the Americana release or catalogue relationship and does not overwrite the original publisher stored in the protected game database.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Lemon64 — Commodore 64 games by Americana",
+        "url": "https://www.lemon64.com/games/list.php?list_company=americana",
+        "type": "specialist C64 database"
+      },
+      {
+        "label": "Centre for Computing History — Americana Software C64 collection",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=Commodore+64&publisher=Americana+software&type=Games",
+        "type": "museum collection"
+      }
+    ]
   }
 ]
