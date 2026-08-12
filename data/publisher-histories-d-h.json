@@ -1,0 +1,466 @@
+[
+  {
+    "slug": "data-east",
+    "summary": "Data East was a Japanese video-game company founded in 1976 by engineer Tetsu Fukuda. It became known for arcade hardware and games before its properties spread across consoles and home computers through publishing and licensing arrangements.",
+    "facts": [
+      "Data East's official history states that the company began operations on 20 April 1976 under founder Tetsu Fukuda.",
+      "The company introduced the DECO cassette arcade system and later produced arcade titles including BurgerTime, Bump 'N' Jump and Karate Champ.",
+      "The Centre for Computing History preserves Commodore 64 software carrying Data East as its publisher."
+    ],
+    "strengths": ["Arcade properties", "Home conversions", "Multi-platform publishing"],
+    "related": [],
+    "note": "Data East's home-computer catalogue often involved regional licensees and external conversion teams, so publisher and developer credits can differ by version.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Data East Games — official company history",
+        "url": "https://www.dataeastgames.com/page_id_146/",
+        "type": "official company history"
+      },
+      {
+        "label": "Centre for Computing History — Data East C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Data+East&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "datasoft",
+    "summary": "Datasoft published a broad range of licensed and original home-computer games during the early and mid-1980s, with Commodore 64 releases including Bruce Lee, Pole Position and The Goonies.",
+    "facts": [
+      "The Centre for Computing History preserves Datasoft releases across several home-computer platforms, including Commodore 64, Atari 8-bit and BBC Micro versions.",
+      "Its museum-recorded Commodore 64 catalogue includes Bruce Lee, Pole Position, The Goonies and the Arcade Classics compilation."
+    ],
+    "strengths": ["Licensed games", "Arcade properties", "C64 publishing"],
+    "related": [],
+    "note": "Reliable first-party corporate history for Datasoft is limited, so this profile confines itself to publishing activity documented by the museum collection.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Datasoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Datasoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "design-design",
+    "summary": "Design Design was a British 8-bit software publisher and developer whose surviving catalogue spans the Commodore 64, ZX Spectrum, Amstrad CPC and Dragon 32, including Halls of the Things and Dark Star.",
+    "facts": [
+      "The Centre for Computing History preserves eight games under the Design Design publishing credit across several 8-bit platforms.",
+      "The museum records Halls of the Things as a 1984 Commodore 64 release published by Design Design and credits Neil Mottershead, Simon Brattel, Martin Horsley and Graham Stafford."
+    ],
+    "strengths": ["8-bit development", "3D and action games", "Multi-format publishing"],
+    "related": [],
+    "note": "The available institutional record is stronger for the software catalogue than for the company's corporate history, so the profile remains catalogue-focused.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Design Design games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Design+Design&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "domark",
+    "summary": "Domark was a prominent British publisher whose home-computer catalogue mixed original releases, major licences and arcade conversions. Its Commodore 64 output included James Bond games and later Atari/Tengen properties.",
+    "facts": [
+      "The Centre for Computing History preserves more than one hundred Domark-published computer games across multiple platforms.",
+      "Its Commodore 64 collection includes James Bond releases such as A View to a Kill, The Living Daylights and Licence to Kill."
+    ],
+    "strengths": ["Licensed games", "Arcade conversions", "C64 and Amiga publishing"],
+    "related": [{"label":"Tengen","slug":"tengen"}],
+    "note": "Domark's catalogue involved many external developers and licensors, so CCG keeps publisher history separate from individual development credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Domark games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=DoMark&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "durell-software",
+    "summary": "Durell Software was based in Taunton, Somerset and produced games for several British home computers. Its better-known programmers included Mike Richardson and Clive Townsend, and its catalogue included Harrier Attack, Combat Lynx and Turbo Esprit.",
+    "facts": [
+      "The Centre for Computing History identifies Durell Software as a Taunton-based software house whose games appeared on the Spectrum, Commodore 64, Amstrad and other systems.",
+      "The museum's company profile names Mike Richardson and Clive Townsend as two of Durell's main programmers.",
+      "Durell used distinctive bright-blue cassettes, described by the museum as an anti-piracy measure."
+    ],
+    "strengths": ["Action simulations", "British 8-bit games", "Distinctive cassette releases"],
+    "related": [],
+    "note": "This history follows the Centre for Computing History's dedicated Durell company record rather than secondary game-database summaries.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Durell Software company profile",
+        "url": "https://www.computinghistory.org.uk/det/32945/Durell-Software/",
+        "type": "museum company record"
+      }
+    ]
+  },
+  {
+    "slug": "dynabyte",
+    "summary": "Dynabyte Software published early-1980s microcomputer software, with the museum record particularly strong on BBC Micro titles such as Horse Race, Lemming Syndrome and 3D Tank Zone.",
+    "facts": [
+      "The Centre for Computing History preserves six Dynabyte Software titles in its collection, predominantly for the BBC Micro.",
+      "The recorded catalogue includes games as well as the Multi-Aid programming-utility package."
+    ],
+    "strengths": ["Early microcomputer software", "BBC Micro releases", "Games and utilities"],
+    "related": [],
+    "note": "Surviving institutional information is catalogue-led, so no unsupported claims about Dynabyte's founders or corporate structure are added here.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Dynabyte Software catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?publisher=Dynabyte+Software+Ltd&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "electric-dreams",
+    "summary": "Electric Dreams published a varied mid-1980s home-computer catalogue combining original games, film licences and arcade conversions. Its Commodore 64 releases included Spindizzy, Aliens, R-Type and Super Sprint.",
+    "facts": [
+      "The Centre for Computing History preserves Electric Dreams releases across the Commodore 64, ZX Spectrum, Amstrad CPC and other systems.",
+      "The museum's Commodore 64 records include Spindizzy, R-Type, Firetrack, Citadel and R.M.S. Titanic under the Electric Dreams publishing credit."
+    ],
+    "strengths": ["Licensed games", "Arcade conversions", "Original 8-bit titles"],
+    "related": [],
+    "note": "Electric Dreams used external developers on many releases; the publisher archive therefore does not imply that every listed title was developed internally.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Electric Dreams games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Electric+Dreams&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "empire-software",
+    "summary": "Empire Software published computer games across 16-bit and PC platforms, with a catalogue spanning puzzle games, simulations and strategy titles. Its Amiga releases included Campaign and Campaign II.",
+    "facts": [
+      "The Centre for Computing History preserves Empire Software releases for the Amiga, Atari ST, PC and Acorn platforms.",
+      "The museum's Amiga collection records Campaign, Campaign II and War in the Gulf under the Empire Software publishing credit."
+    ],
+    "strengths": ["Strategy games", "Simulations", "16-bit publishing"],
+    "related": [{"label":"Empire Interactive","slug":"empire-interactive"}],
+    "note": "Empire Software and later Empire Interactive credits remain separate CCG routes where the game database records them separately.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Empire Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Empire+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "english-software",
+    "summary": "English Software published games and utilities across Atari 8-bit, BBC Micro, Commodore 64 and Amstrad systems during the 1980s. Its C64 catalogue includes Octapolis and Knight Games 2.",
+    "facts": [
+      "The Centre for Computing History preserves English Software releases dating from the early 1980s across several home-computer families.",
+      "Its Commodore 64 collection records Knight Games 2, Octapolis and Spritemaker 64 under the English Software publishing credit."
+    ],
+    "strengths": ["Early 8-bit publishing", "Games and utilities", "Multi-format releases"],
+    "related": [],
+    "note": "The museum record documents the catalogue more securely than the corporate background, so this profile avoids unsupported founder or location claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — English Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=English+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "enigma-variations",
+    "summary": "Enigma Variations worked as both developer and publisher across late-1980s and early-1990s home computers. Its documented work includes licensed games for other publishers as well as releases carrying its own publishing credit.",
+    "facts": [
+      "The Centre for Computing History records Enigma Variations as developer on Commodore 64 titles including Sooty & Sweep and Rally Cross.",
+      "The museum also preserves Enigma Variations-published software for the ZX Spectrum and SAM Coupé, including The Famous Five and Sphera."
+    ],
+    "strengths": ["Licensed development", "8-bit and SAM Coupé games", "Development and publishing"],
+    "related": [{"label":"Alternative Software","slug":"alternative-software"}],
+    "note": "Because Enigma Variations appears in both developer and publisher roles, CCG retains the role recorded for each individual game.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Enigma Variations published games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Enigma+Variations&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Enigma Variations development credits",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=Enigma+Variations&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "entertainment-usa",
+    "summary": "Entertainment USA is documented as a Commodore 64 publisher whose catalogue included action games such as Panther, Street Surfer, Los Angeles SWAT and Ninja.",
+    "facts": [
+      "The Centre for Computing History preserves five Commodore 64 games carrying the Entertainment USA publishing credit.",
+      "The museum catalogue identifies Peter Adams, David Barbour, Craig Conder and Steve Coleman among authors of those recorded releases."
+    ],
+    "strengths": ["C64 action games", "Mid-1980s publishing", "Arcade-style releases"],
+    "related": [],
+    "note": "The surviving institutional record is limited, so this profile intentionally makes no unsupported claims about the company's founders or ownership.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Entertainment USA games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?publisher=Entertainment+USA&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "epyx",
+    "summary": "Epyx began as Automated Simulations, founded in 1978 by Jon Freeman and Jim Connelley. The company moved from early role-playing and simulation software toward action games and adopted the Epyx name in 1983.",
+    "facts": [
+      "Epyx's official history states that Automated Simulations was founded in 1978 by Jon Freeman and Jim Connelley.",
+      "The Epyx brand was increasingly used for action-oriented games before Automated Simulations formally renamed itself Epyx, Inc. in 1983.",
+      "Its later catalogue became closely associated with major home-computer releases including the Games series and California Games."
+    ],
+    "strengths": ["Sports compilations", "Action games", "C64 publishing"],
+    "related": [],
+    "note": "This profile follows Epyx's current official historical timeline rather than retrospective database summaries.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Epyx Games — official company history",
+        "url": "https://epyxgames.com/history/",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "erbe-software",
+    "summary": "Erbe Software handled Spanish publishing and distribution of international computer games during the 1980s. Surviving releases include Spanish-market editions of licensed and arcade-derived titles.",
+    "facts": [
+      "The Centre for Computing History preserves Spanish-market games under the Erbe Software S.A. publishing credit.",
+      "The museum collection includes Erbe editions of Indiana Jones and the Temple of Doom, Mad Mix Game and WEC Le Mans."
+    ],
+    "strengths": ["Spanish distribution", "Licensed releases", "European editions"],
+    "related": [],
+    "note": "Erbe often acted as a regional publisher or distributor, so the original developer and international publisher can differ from the Spanish release credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Erbe Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Erbe+Software+S.A.&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "first-star-software",
+    "summary": "First Star Software began developing, publishing and licensing interactive entertainment in 1982. The company became particularly associated with Boulder Dash and the Spy vs Spy series.",
+    "facts": [
+      "First Star's official history states that the company began developing, publishing and licensing interactive entertainment software in 1982.",
+      "Its published and developed catalogue includes Boulder Dash, Spy vs Spy, Astro Chase, Bristles and other home-computer titles.",
+      "First Star states that the original Spy vs Spy was first published in 1984 for Atari 8-bit, Commodore 64 and Apple II computers."
+    ],
+    "strengths": ["Boulder Dash", "Spy vs Spy", "C64 publishing and licensing"],
+    "related": [],
+    "note": "Rights to individual First Star properties have changed over time; this page concerns the historical publisher credit represented in the CCG archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "First Star Software — official titles and history",
+        "url": "https://firststarsoftware.com/titles/",
+        "type": "official company history"
+      },
+      {
+        "label": "First Star Software — Spy vs Spy history",
+        "url": "https://firststarsoftware.com/titles/spy-vs-spy/",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "gamebusters",
+    "summary": "Gamebusters was used as a budget publishing label for 8-bit computer games, with documented releases including ACE, ACE 2, Zone Trooper and Penalty Soccer Simulator.",
+    "facts": [
+      "The Centre for Computing History preserves Gamebusters releases across Commodore 64, ZX Spectrum and Amstrad systems.",
+      "Its museum-recorded catalogue includes a Gamebusters edition of ACE on the Commodore 64 and later versions of ACE and ACE 2 on other 8-bit formats."
+    ],
+    "strengths": ["Budget releases", "8-bit publishing", "Action and simulation games"],
+    "related": [{"label":"Cascade Games","slug":"cascade-games"}],
+    "note": "The label's surviving record is primarily product-based, so the profile avoids unsupported claims about ownership beyond relationships visible in documented releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Gamebusters games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Gamebusters&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "gamestar",
+    "summary": "Gamestar published sports-focused computer games during the 1980s, with surviving Commodore releases centred on American football, basketball and baseball.",
+    "facts": [
+      "The Centre for Computing History records Gamestar-published software on Commodore and ZX Spectrum systems.",
+      "Its preserved catalogue includes GFL Championship Football and The Sports Pack, a compilation built around American football, basketball and baseball."
+    ],
+    "strengths": ["Sports games", "American football", "Commodore publishing"],
+    "related": [{"label":"Activision","slug":"activision"}],
+    "note": "Gamestar credits overlap with Activision on some releases, so both labels are retained where the historical packaging or game data supports them.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Gamestar games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Gamestar&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "gametek",
+    "summary": "GameTek published games across computers and consoles during the 1990s, including conversions, licensed properties and externally developed titles. Its recorded catalogue includes releases from Digital Illusions, Papyrus and other studios.",
+    "facts": [
+      "The Centre for Computing History preserves GameTek-published games across platforms including PC, Sega Genesis, Game Boy and Amiga-related releases.",
+      "The museum catalogue demonstrates GameTek's use of external development teams, with preserved titles credited to studios such as Digital Illusions and Papyrus."
+    ],
+    "strengths": ["Licensed publishing", "Console and computer releases", "External development partnerships"],
+    "related": [],
+    "note": "This profile is intentionally catalogue-focused because surviving institutional sources document GameTek's output more securely than its corporate history.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — GameTek games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=GameTek&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "gargoyle-games",
+    "summary": "Gargoyle Games published a distinctive mid-1980s catalogue of British 8-bit games, including Tir Na Nog, Dun Darach, Marsport and Heavy on the Magick.",
+    "facts": [
+      "The Centre for Computing History preserves Gargoyle Games releases across ZX Spectrum and Amstrad systems.",
+      "The museum records Greg Follis and Roy Carter on several Gargoyle-associated games, including Dun Darach and Marsport."
+    ],
+    "strengths": ["Fantasy adventures", "British 8-bit games", "Distinctive isometric worlds"],
+    "related": [],
+    "note": "The catalogue evidence is strong, while surviving company-level documentation is comparatively sparse; the profile therefore stays close to the institutional record.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Gargoyle Games catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Gargoyle+Games&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "go",
+    "summary": "GO! was an 8-bit publishing label associated with home-computer action and arcade-style releases in the late 1980s. Documented titles include Bad Cat, Side Arms, Bravestarr and Trantor.",
+    "facts": [
+      "The Centre for Computing History preserves GO!-published Commodore releases including Bad Cat and Side Arms.",
+      "The museum also records GO! editions of Bravestarr and Trantor on Amstrad systems, with external developers credited on those conversions."
+    ],
+    "strengths": ["Arcade-style releases", "8-bit publishing", "External conversion teams"],
+    "related": [],
+    "note": "The institutional record documents the label's products more securely than its corporate background, so the page does not speculate about ownership.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — GO! Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Go%21&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "grandslam",
+    "summary": "Grandslam published games across 8-bit and 16-bit home computers, with a catalogue mixing sports titles, arcade conversions and entertainment licences.",
+    "facts": [
+      "The Centre for Computing History preserves more than twenty Grandslam-published games across Commodore, Spectrum and other home-computer formats.",
+      "Its Commodore records include Pac-Mania, Peter Beardsley's International Football, Thunderbirds, The Running Man and Die Hard 2."
+    ],
+    "strengths": ["Sports games", "Licensed properties", "Arcade conversions"],
+    "related": [],
+    "note": "The catalogue uses both Grandslam and Grand Slam variants on historical packaging; CCG follows the publisher name recorded by its game archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Grandslam games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Grandslam&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "hi-tec-software",
+    "summary": "Hi-Tec Software published late-1980s and early-1990s home-computer games, becoming especially visible through licensed cartoon properties and budget releases.",
+    "facts": [
+      "The Centre for Computing History preserves Hi-Tec Software releases across Commodore 64, ZX Spectrum, Amstrad and Atari ST formats.",
+      "The museum catalogue includes Defenders of the Earth, Hong Kong Phooey, Yogi's Great Escape and Road Runner & Wile E. Coyote among Hi-Tec-associated releases."
+    ],
+    "strengths": ["Cartoon licences", "Budget publishing", "8-bit games"],
+    "related": [],
+    "note": "Hi-Tec used multiple external developers, so the publisher archive does not imply in-house authorship of every listed title.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Hi-Tec Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Hi-Tec+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "hudson-soft",
+    "summary": "Hudson Soft was a Japanese developer and publisher whose catalogue expanded from early microcomputer software into major console series such as Bomberman and Adventure Island.",
+    "facts": [
+      "The Centre for Computing History preserves Hudson Soft-published games across Famicom, Super Famicom, Game Boy, PC Engine, PlayStation and other systems.",
+      "The museum also records Hudson Soft as developer on early microcomputer games, including 1984 European home-computer releases."
+    ],
+    "strengths": ["Bomberman", "Japanese console publishing", "Microcomputer origins"],
+    "related": [],
+    "note": "The CCG archive contains only the Commodore-related publisher credit represented on this site and is not intended as a complete Hudson Soft catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Hudson Soft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Hudson+Soft&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Hudson Soft development credits",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=Hudson+Soft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
