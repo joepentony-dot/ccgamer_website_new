@@ -129,3 +129,31 @@
     text-decoration: none;
     font-weight: bold;
 }
+
+/* ============================================================
+   SMALL DESKTOP SOCIAL CENTRING LOCK — 901–1199px
+   ------------------------------------------------------------
+   Keep the social strip on the true horizontal centre line while
+   authentication remains on the left. The matching right column
+   stays empty, so auth width cannot push the socials off-centre.
+   >=1200px and <=900px retain their existing established layouts.
+============================================================ */
+
+@media (min-width: 901px) and (max-width: 1199px) {
+    html body .ccg-header .ccg-header-actions {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+        grid-template-areas:
+            "hint hint hint"
+            "mode mode mode"
+            "auth socials ." !important;
+    }
+
+    html body .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        justify-self: center !important;
+        justify-content: center !important;
+        width: auto !important;
+        max-width: 100% !important;
+        margin-inline: auto !important;
+    }
+}
