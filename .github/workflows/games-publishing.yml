@@ -42,7 +42,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: reliable-games-publishing
+  group: ccg-site-publishing-main
   cancel-in-progress: false
 
 jobs:
@@ -106,7 +106,7 @@ jobs:
             exit 0
           fi
 
-          OUTPUT_BRANCH="automation/games-publishing-${GITHUB_RUN_ID}"
+          OUTPUT_BRANCH="automation/games-publishing-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$OUTPUT_BRANCH"
