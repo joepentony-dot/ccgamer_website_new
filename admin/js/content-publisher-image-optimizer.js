@@ -1,3 +1,5 @@
+import './content-publisher-status-reconciler.js';
+
 const MAX_WIDTH = 1280;
 const MAX_HEIGHT = 960;
 const TARGET_BYTES = 650 * 1024;
@@ -30,8 +32,6 @@ if (fileInput && pathInput && publishButton) {
     if (selected?.type === 'image/webp') updateThumbnailPathToWebp(selected.name);
   }, { capture: true });
 }
-
-installPublishingStatusReconciler();
 
 async function optimiseSelectedImage() {
   const original = fileInput.files?.[0] || null;
@@ -206,125 +206,4 @@ function formatBytes(bytes) {
   if (value < 1024) return `${value} B`;
   if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KB`;
   return `${(value / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-function installPublishingStatusReconciler() {
-  const log = document.querySelector('[data-publisher-log]');
-  if (!log || typeof MutationObserver !== 'function') return;
-
-  let inFlight = false;
-  let lastReconciledSha = '';
-
-  const reconcile = async () => {
-    if (inFlight) return;
-    const text = String(log.textContent || '');
-    const failureIndex = text.lastIndexOf('Automated publishing check failed: Reliable Games Publishing finished with failure.');
-    if (failureIndex < 0) return;
-
-    const sourceMatches = [...text.matchAll(/Source commit created:\s*([0-9a-f]{40})/gi)];
-    const sourceSha = sourceMatches.at(-1)?.[1] || '';
-    const latestStartIndex = Math.max(
-      text.lastIndexOf('Preparing new game:'),
-      text.lastIndexOf('Preparing new feature:'),
-      text.lastIndexOf('Preparing Zzap!64 awards year:')
-    );
-
-    if (!sourceSha || failureIndex < latestStartIndex || sourceSha === lastReconciledSha) return;
-    lastReconciledSha = sourceSha;
-    inFlight = true;
-
-    try {
-      await reconcileReliableGamesWorkflow(sourceSha);
-    } catch (_error) {
-      setPublisherPipelineStep('metadata', 'running', 'See workflow');
-      setPublisherPipelineStep('pages', 'error', 'Workflow failed');
-      ['library', 'sitemaps', 'validation'].forEach((step) => {
-        setPublisherPipelineStep(step, 'running', 'Not confirmed');
-      });
-    } finally {
-      inFlight = false;
-    }
-  };
-
-  const observer = new MutationObserver(() => { void reconcile(); });
-  observer.observe(log, { childList: true, subtree: true, characterData: true });
-  void reconcile();
-}
-
-async function reconcileReliableGamesWorkflow(sourceSha) {
-  const owner = String(document.querySelector('[data-github-owner]')?.value || '').trim();
-  const repo = String(document.querySelector('[data-github-repo]')?.value || '').trim();
-  const branch = String(document.querySelector('[data-github-branch]')?.value || 'main').trim();
-  const token = String(document.querySelector('[data-github-token]')?.value || '').trim();
-  if (!owner || !repo || !branch || !token) throw new Error('GitHub publishing connection is unavailable.');
-
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
-  const runsUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/actions/workflows/games-publishing.yml/runs?branch=${encodeURIComponent(branch)}&per_page=20`;
-  const runsResponse = await fetch(runsUrl, { headers, cache: 'no-store' });
-  if (!runsResponse.ok) throw new Error(`Workflow lookup returned HTTP ${runsResponse.status}.`);
-  const runsPayload = await runsResponse.json();
-  const run = (Array.isArray(runsPayload?.workflow_runs) ? runsPayload.workflow_runs : [])
-    .find((item) => item?.head_sha === sourceSha);
-  if (!run?.id) throw new Error('Matching Reliable Games Publishing run was not found.');
-
-  const jobsResponse = await fetch(`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/actions/runs/${run.id}/jobs`, {
-    headers,
-    cache: 'no-store'
-  });
-  if (!jobsResponse.ok) throw new Error(`Workflow jobs lookup returned HTTP ${jobsResponse.status}.`);
-  const jobsPayload = await jobsResponse.json();
-  const jobs = Array.isArray(jobsPayload?.jobs) ? jobsPayload.jobs : [];
-  const steps = jobs.flatMap((job) => Array.isArray(job?.steps) ? job.steps : []);
-  const metadataStep = steps.find((step) => step?.name === 'Sync verified YouTube metadata');
-  const publishStep = steps.find((step) => step?.name === 'Run authoritative publishing command');
-
-  applyWorkflowStepResult('metadata', metadataStep, 'Synced', 'Sync failed');
-
-  if (publishStep?.conclusion === 'failure') {
-    setPublisherPipelineStep('pages', 'error', 'Build failed');
-    ['library', 'sitemaps', 'validation'].forEach((step) => {
-      setPublisherPipelineStep(step, 'running', 'Not confirmed');
-    });
-    return;
-  }
-
-  if (publishStep?.conclusion === 'success') {
-    setPublisherPipelineStep('pages', 'ok', 'Generated');
-    setPublisherPipelineStep('library', 'ok', 'Updated');
-    setPublisherPipelineStep('sitemaps', 'ok', 'Updated');
-    setPublisherPipelineStep('validation', 'ok', 'Passed');
-    return;
-  }
-
-  setPublisherPipelineStep('pages', 'running', 'Not confirmed');
-  ['library', 'sitemaps', 'validation'].forEach((step) => {
-    setPublisherPipelineStep(step, 'running', 'Not confirmed');
-  });
-}
-
-function applyWorkflowStepResult(stepName, workflowStep, successText, failureText) {
-  if (workflowStep?.conclusion === 'success') {
-    setPublisherPipelineStep(stepName, 'ok', successText);
-    return;
-  }
-  if (workflowStep?.conclusion === 'failure') {
-    setPublisherPipelineStep(stepName, 'error', failureText);
-    return;
-  }
-  setPublisherPipelineStep(stepName, 'running', 'Not confirmed');
-}
-
-function setPublisherPipelineStep(step, state, text) {
-  const node = document.querySelector(`[data-pipeline-step="${step}"]`);
-  if (!node) return;
-  node.classList.remove('is-running', 'is-ok', 'is-error');
-  if (state === 'running') node.classList.add('is-running');
-  if (state === 'ok') node.classList.add('is-ok');
-  if (state === 'error') node.classList.add('is-error');
-  const status = node.querySelector('b');
-  if (status) status.textContent = text;
 }
