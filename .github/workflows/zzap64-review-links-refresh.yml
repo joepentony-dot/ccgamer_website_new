@@ -38,6 +38,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: zzap64-review-link-refresh-main
@@ -117,23 +118,50 @@ jobs:
           git diff --check
 
       - name: Commit refreshed review data
+        id: review_output
         shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
           if git diff --cached --quiet; then
             echo "Zzap review data already current."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "Auto refresh Zzap64 all-game review links [skip ci]"
-          git push origin HEAD:main
+
+          OUTPUT_BRANCH="automation/zzap64-review-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$OUTPUT_BRANCH"
+          git commit -m "Auto refresh Zzap64 all-game review links"
+          git push origin "HEAD:$OUTPUT_BRANCH"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$OUTPUT_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge refreshed review data pull request
+        if: steps.review_output.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTPUT_BRANCH: ${{ steps.review_output.outputs.branch }}
+        run: |
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$OUTPUT_BRANCH" \
+            --title "Refresh Zzap64 all-game review data" \
+            --body "Automated verified Zzap64 review-link, re-review and compact game-review output from workflow run ${GITHUB_RUN_ID}. Resolver checks, review enrichment, chunk validation, award audits and badge audits all passed before this PR was created.")
+
+          echo "Created refreshed-review PR: $PR_URL"
+          gh pr merge "$PR_URL" \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --delete-branch
 
       - name: Verify refreshed data reached main
         if: always()
         shell: bash
         run: |
-          if git diff --cached --quiet && git diff --quiet; then
-            git fetch origin main
-            echo "Current main: $(git rev-parse origin/main)"
-          fi
+          git fetch origin main
+          echo "Current main: $(git rev-parse origin/main)"
+          git diff --exit-code origin/main -- data/lemon-cache data/zzap64-review-links.json data/zzap64-game-reviews
