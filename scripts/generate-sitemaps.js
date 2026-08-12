@@ -9,6 +9,7 @@ const { spawnSync } = require("child_process");
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const repoRoot = path.resolve(__dirname, "..");
 const sitemapIndexPath = path.join(repoRoot, "sitemap.xml");
+const composerMetadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 const CORE_SITEMAPS = new Set(["sitemap-pages.xml", "sitemap-games.xml"]);
 const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
 
@@ -29,11 +30,41 @@ function runNodeScript(scriptName) {
   }
 }
 
+function composerArchivesNeedEnrichment() {
+  if (!fs.existsSync(composerMetadataPath)) return false;
+
+  let metadata;
+  try {
+    metadata = JSON.parse(fs.readFileSync(composerMetadataPath, "utf8"));
+  } catch (error) {
+    fail(`Could not parse music/composers/composers.json: ${error.message}`);
+  }
+
+  if (!Array.isArray(metadata)) {
+    fail("music/composers/composers.json must contain an array.");
+  }
+
+  return metadata.some((entry) => {
+    if (!entry || !entry.generated || !entry.slug) return false;
+    const filePath = path.join(repoRoot, "music", entry.slug, "index.html");
+    if (!fs.existsSync(filePath)) return true;
+    const html = fs.readFileSync(filePath, "utf8");
+    return !html.includes('data-ccg-research-profile="true"');
+  });
+}
+
 function synchronizeComposerArchives() {
-  // Keep static composer facts, SEO copy and sitemap eligibility on the same
-  // current-catalogue snapshot before sitemap URLs are generated.
-  runNodeScript("apply-curated-composer-research.js");
-  runNodeScript("enrich-generated-composer-pages.js");
+  // generate-composer-pages.js deliberately rebuilds generated routes from the
+  // current games catalogue. That base output does not contain the research
+  // profile marker, so enrich it once before the sitemap is emitted. Standalone
+  // sitemap rebuilds leave already-enriched composer pages byte-for-byte alone.
+  if (composerArchivesNeedEnrichment()) {
+    runNodeScript("apply-curated-composer-research.js");
+    runNodeScript("enrich-generated-composer-pages.js");
+  }
+
+  // Always enforce that visible counts, archive summaries and SEO descriptions
+  // agree with the current composer metadata before publishing sitemap URLs.
   runNodeScript("validate-composer-count-sync.js");
 }
 
