@@ -1,0 +1,438 @@
+[
+  {
+    "slug": "taito",
+    "summary": "Taito is a Japanese arcade and video-game company whose coin-operated catalogue supplied many properties later converted for home computers. The CCG archive represents its Commodore publishing activity rather than the much larger arcade catalogue.",
+    "facts": [
+      "The Centre for Computing History preserves home-computer software carrying the Taito publishing credit.",
+      "Taito arcade properties were frequently converted for 8-bit and 16-bit computers by external development and publishing partners."
+    ],
+    "strengths": ["Arcade games", "Home-computer conversions", "Japanese game publishing"],
+    "related": [],
+    "note": "Developer and territorial publishing credits can differ on Taito conversions, so individual CCG game records retain the credit attached to the represented version.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Taito games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Taito&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "taskset",
+    "summary": "Taskset was an early British Commodore 64 developer and publisher whose catalogue concentrated on arcade-style original games during the machine's first commercial years.",
+    "facts": [
+      "The Centre for Computing History preserves Taskset Commodore 64 releases including Cosmic Convoy, Pipeline, Gyropod, Bozo's Night Out and Super Pipeline II.",
+      "Its preserved C64 catalogue credits programmers including Andy Walker, Paul Hodgson, Tony Gibson and Mark Harrison."
+    ],
+    "strengths": ["Early C64 publishing", "Arcade-style games", "Original 8-bit software"],
+    "related": [],
+    "note": "The surviving institutional catalogue is stronger than the corporate record, so this profile avoids unsupported claims about ownership or formation dates.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Taskset C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Taskset&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "team17",
+    "summary": "Team17 was formed in 1990 and established itself as one of the Amiga's defining independent developers and publishers. Its early catalogue included Full Contact, Alien Breed, Project-X and several externally developed releases before Worms broadened the company's reach.",
+    "facts": [
+      "Team17's official history records the company being founded by Debbie Bestwick, Martyn Brown and Michael Robinson on 7 December 1990.",
+      "The company says its first game was Full Contact for the Commodore Amiga in 1991, followed by Alien Breed.",
+      "Team17's own archive describes its early strategy as developing and publishing games with a strong initial focus on the Amiga."
+    ],
+    "strengths": ["Amiga publishing", "Alien Breed and Project-X", "Independent development and publishing"],
+    "related": [{"label":"Ocean Software","slug":"ocean-software"}],
+    "note": "The profile concerns Team17's original Amiga-era activity represented by CCG rather than its much larger modern publishing catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Team17 — official company history",
+        "url": "https://www.team17.com/our-history",
+        "type": "official company history"
+      },
+      {
+        "label": "Team17 — 1991-92 game archive",
+        "url": "https://www.team17.com/news/team17s-100-games-part-one-1991-92",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "tengen",
+    "summary": "Tengen was an Atari Games publishing label used for home versions of arcade properties during the late 1980s and early 1990s. Its appearance in the CCG archive reflects that home-software publishing role.",
+    "facts": [
+      "The Centre for Computing History preserves software carrying the Tengen publishing credit across home-computer and console platforms.",
+      "Tengen releases were closely associated with home versions of arcade games originating from Atari Games and other licensed properties."
+    ],
+    "strengths": ["Arcade conversions", "Atari Games catalogue", "Home-software publishing"],
+    "related": [{"label":"Atari","slug":"atari"}],
+    "note": "Tengen and Atari are kept distinct when the represented release carries the Tengen label.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Tengen games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Tengen&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "terminal-software",
+    "summary": "Terminal Software was an early British home-computer publisher with a substantial Commodore 64 presence. Its preserved catalogue includes arcade-style games, compilations and titles written both internally and by named individual programmers.",
+    "facts": [
+      "The Centre for Computing History preserves Terminal Software C64 releases including Hunter, Stellar Dodger, Super Dogfight, Super Gridder, Plumb Crazy and Triple Tournament.",
+      "The museum credits Reg Stevens on Super Gridder and R. W. Stevens on Super Dogfight, while several other releases simply carry Terminal or Terminal Software as author."
+    ],
+    "strengths": ["Early C64 software", "Arcade-style games", "Small British publisher"],
+    "related": [],
+    "note": "Company-level documentation is limited, so the profile stays with preserved publishing activity rather than speculative ownership history.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Terminal Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Terminal+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "the-edge",
+    "summary": "The Edge was a British home-computer publisher active through the 1980s, releasing original titles, arcade conversions and games from external development teams across the major 8-bit platforms.",
+    "facts": [
+      "The Centre for Computing History preserves Commodore 64 releases under The Edge publishing credit including Quo Vadis, Wizardry and Garfield: Winter's Tail.",
+      "The museum also records The Edge publishing titles such as Fairlight and Bobby Bearing on other British home-computer formats."
+    ],
+    "strengths": ["British 8-bit publishing", "Original and licensed games", "C64 catalogue"],
+    "related": [{"label":"Konami","slug":"konami"}],
+    "note": "The Edge sometimes shared publishing credit with arcade rights holders such as Konami; CCG retains the credit attached to each represented release.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Edge C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Edge&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "the-one-amiga",
+    "summary": "The One Amiga appears in the CCG archive as a magazine-associated software publishing credit. Cover-disk and magazine software releases form a distinct part of the Amiga ecosystem and are retained separately from conventional commercial publishers.",
+    "facts": [
+      "The CCG archive records an Amiga title carrying The One Amiga publishing credit.",
+      "Magazine-distributed software is kept as its own publisher route where that is the credit attached to the archived release."
+    ],
+    "strengths": ["Amiga magazine software", "Cover-disk distribution", "Periodical publishing"],
+    "related": [],
+    "note": "This is intentionally a modest profile because The One's role here is magazine software distribution rather than a conventional standalone game publisher.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The One magazine collection",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=The+One&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "the-sales-curve",
+    "summary": "The Sales Curve was a British game publisher and production company active around the transition from 8-bit home computers to 16-bit systems and consoles. The CCG archive preserves its Commodore publishing credit separately from later company names.",
+    "facts": [
+      "The Centre for Computing History preserves software carrying The Sales Curve publishing credit.",
+      "The company's historical catalogue spans arcade conversions and externally developed games across several home-computer formats."
+    ],
+    "strengths": ["British publishing", "Arcade conversions", "Multi-format releases"],
+    "related": [],
+    "note": "Later corporate identities are not merged into this route because CCG follows the publisher name printed on the represented release.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Sales Curve games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=The+Sales+Curve&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "thor-computer-software",
+    "summary": "Thor Computer Software was a Liverpool-area publishing name linked to the operation that later used the Odin Computer Graphics identity for in-house game development.",
+    "facts": [
+      "The Centre for Computing History's Odin company record states that Odin had previously published games under the Thor name.",
+      "The change to Odin Computer Graphics accompanied the decision to develop games in-house rather than continuing only as a publishing operation."
+    ],
+    "strengths": ["British 8-bit publishing", "Odin predecessor", "C64 software"],
+    "related": [{"label":"Odin Computer Graphics","slug":"odin-computer-graphics"}],
+    "note": "Thor and Odin remain separate archive routes because they are distinct historical publishing names on the represented software.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Odin Computer Graphics company record",
+        "url": "https://www.computinghistory.org.uk/det/33088/Odin-Computer-Graphics/",
+        "type": "museum company record"
+      }
+    ]
+  },
+  {
+    "slug": "tikkurila",
+    "summary": "Tikkurila appears in the CCG archive as a small Commodore 64 publishing credit. Reliable public company documentation for its games activity is sparse, so the profile remains limited to the preserved software relationship.",
+    "facts": [
+      "The Centre for Computing History preserves software under the Tikkurila publishing credit.",
+      "No founder or corporate-history claims are added because the surviving game-publishing record is limited."
+    ],
+    "strengths": ["C64 software", "Small publishing credit", "Archive-preserved release"],
+    "related": [],
+    "note": "The intentionally narrow wording prevents this historical software credit being confused with unrelated modern businesses using the same name.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Tikkurila software",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Tikkurila&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "timeworks",
+    "summary": "Timeworks was a personal-computer software publisher whose catalogue extended beyond games into productivity and educational software. Its presence in the CCG archive reflects the Commodore software credit attached to the represented title.",
+    "facts": [
+      "The Centre for Computing History preserves software carrying the Timeworks publishing credit across personal-computer platforms.",
+      "Timeworks published software for Commodore computers alongside non-game productivity products during the 1980s."
+    ],
+    "strengths": ["Commodore software", "Productivity and entertainment software", "1980s computer publishing"],
+    "related": [],
+    "note": "This archive page concerns the game/software release represented by CCG, not the publisher's broader productivity catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Timeworks software",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Timeworks&type=Software",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "titus-software",
+    "summary": "Titus Software was a French developer and publisher whose computer-game catalogue expanded across 8-bit and 16-bit systems before moving heavily into consoles. Its Commodore releases form a small part of that wider catalogue.",
+    "facts": [
+      "The Centre for Computing History preserves home-computer games carrying the Titus Software publishing credit.",
+      "The museum records Titus as both developer and publisher on releases including Off Shore Warrior, illustrating its dual production and publishing role."
+    ],
+    "strengths": ["French game publishing", "Development and publishing", "8-bit and 16-bit games"],
+    "related": [],
+    "note": "The profile stays catalogue-focused because reliable institutional evidence is stronger for the software output than for a concise corporate timeline.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Titus Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Titus+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "tronix-publishing",
+    "summary": "Tronix Publishing appears in the early Commodore 64 software market as a small publishing label. The surviving institutional record is product-led, so this profile avoids unsupported corporate claims.",
+    "facts": [
+      "The Centre for Computing History preserves home-computer software carrying the Tronix Publishing credit.",
+      "The label appears during the early commercial period of Commodore 64 game publishing."
+    ],
+    "strengths": ["Early C64 software", "Small catalogue", "Home-computer publishing"],
+    "related": [],
+    "note": "Only documented publishing activity is presented because reliable company-history material is limited.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Tronix Publishing games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Tronix+Publishing&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "tv-games",
+    "summary": "TV Games appears in the CCG archive as a specialist television-related software publishing credit. Its small Commodore catalogue is retained independently where that is the publisher attached to the represented release.",
+    "facts": [
+      "The Centre for Computing History preserves Commodore software carrying the TV Games publishing credit.",
+      "The surviving catalogue evidence is stronger than the company record, so no unsupported ownership or formation claims are included."
+    ],
+    "strengths": ["Television-related software", "C64 publishing", "Small catalogue"],
+    "related": [],
+    "note": "This profile is intentionally limited to the publishing activity supported by surviving archive material.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — TV Games software",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=TV+Games&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "tynesoft",
+    "summary": "Tynesoft was a prolific British home-computer publisher whose catalogue covered Acorn, Commodore, Sinclair, Amstrad and Atari systems. It released original games, sports titles and licensed properties throughout the 1980s.",
+    "facts": [
+      "The Centre for Computing History preserves a large multi-platform Tynesoft catalogue covering numerous British home computers.",
+      "Its preserved Commodore releases include Super Gran, Roller Coaster Rumbler and Beverly Hills Cop alongside software for the C16 and Plus/4 family.",
+      "The archive shows Tynesoft working both as publisher and as credited developer on different releases."
+    ],
+    "strengths": ["British multi-format publishing", "Licensed games", "Commodore software"],
+    "related": [],
+    "note": "The profile uses institutional catalogue evidence and does not add unsupported corporate-origin claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Tynesoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Tynesoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "ubi-soft",
+    "summary": "Ubisoft was founded in France in 1986 by the five Guillemot brothers to create and distribute video games. Its earliest home-computer output included Zombi before the company expanded into a major international developer and publisher.",
+    "facts": [
+      "Ubisoft's official history states that the five Guillemot brothers founded the company in 1986.",
+      "The company says it was created to develop and distribute video games around the world.",
+      "Ubisoft identifies Zombi as one of its first home-computer releases."
+    ],
+    "strengths": ["French game publishing", "Home-computer origins", "International development and distribution"],
+    "related": [],
+    "note": "The CCG route uses the historical 'Ubi Soft' spelling recorded on the represented Amiga release while the company now styles its name Ubisoft.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Ubisoft — official company story",
+        "url": "https://www.ubisoft.com/en-us/company/about-us/our-story",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "ultimate",
+    "summary": "Ultimate Play The Game was the publishing name of Ashby Computers and Graphics Ltd, the British company formed by Tim and Chris Stamper. Its technically ambitious 8-bit games became highly influential on the ZX Spectrum and Commodore 64.",
+    "facts": [
+      "The Centre for Computing History records Ultimate Play The Game as the publishing name of Ashby Computers and Graphics Ltd.",
+      "The museum states that brothers Tim and Chris Stamper formed the company in 1982 after working as arcade developers.",
+      "Ultimate's Commodore 64 catalogue included a group of Arthur Pendragon adventures beginning with The Staff of Karnath."
+    ],
+    "strengths": ["Technically ambitious 8-bit games", "Arthur Pendragon series", "British game development"],
+    "related": [],
+    "note": "The profile concerns the historical Ultimate Play The Game publishing identity represented in the CCG archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Ultimate Play The Game company profile",
+        "url": "https://www.computinghistory.org.uk/det/32829/Ultimate-Play-The-Game/",
+        "type": "museum company record"
+      }
+    ]
+  },
+  {
+    "slug": "vifi-international",
+    "summary": "VIFI International appears in the CCG archive as a small Commodore 64 publishing credit. Public historical documentation is limited, so this profile is deliberately restricted to preserved software evidence.",
+    "facts": [
+      "The Centre for Computing History preserves software carrying the VIFI International publishing credit.",
+      "No unsupported claims about founders, ownership or company dates are added where reliable historical documentation is unavailable."
+    ],
+    "strengths": ["C64 software", "Small publishing credit", "Archive-preserved release"],
+    "related": [],
+    "note": "The narrow profile is intentional and can be expanded if stronger first-party or institutional evidence is located later.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — VIFI International software",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=VIFI+International&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "virgin-mastertronic",
+    "summary": "Virgin Mastertronic was created when Mastertronic's business was combined with Virgin Games during the late 1980s. The name spans the final years of the classic budget-software operation and the group's growing involvement in wider games and console distribution.",
+    "facts": [
+      "The Mastertronic Collectors Archive records Virgin Group buying into Mastertronic in 1987 and the business later being merged with Virgin Games to create Virgin Mastertronic.",
+      "Former Mastertronic financial controller Anthony Guter records staff from Mastertronic and Virgin Games joining forces in London in 1988.",
+      "The Centre for Computing History preserves Virgin Mastertronic releases for Commodore, Sinclair and DOS systems."
+    ],
+    "strengths": ["Late budget publishing", "Virgin and Mastertronic catalogue", "Multi-format releases"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"Virgin Games","slug":"virgin-games"}],
+    "note": "Virgin Mastertronic remains a distinct route because the name appears directly on releases represented in the CCG archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — Virgin buys in",
+        "url": "https://mastertronic.co.uk/a-history-of-mastertronic/6/",
+        "type": "first-person archive"
+      },
+      {
+        "label": "Centre for Computing History — Virgin Mastertronic games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Virgin+Mastertronic&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "windham-classics",
+    "summary": "Windham Classics was a specialist interactive-fiction label associated with literary adaptations for home computers. Its presence in the CCG archive reflects that story-led publishing niche.",
+    "facts": [
+      "The Centre for Computing History preserves home-computer software carrying the Windham Classics publishing credit.",
+      "The label's catalogue concentrated on narrative and literary adventure software rather than arcade-style games."
+    ],
+    "strengths": ["Interactive fiction", "Literary adaptations", "Home-computer adventures"],
+    "related": [],
+    "note": "The profile remains catalogue-focused because reliable public corporate-history material for the label is limited.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Windham Classics games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Windham+Classics&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "zeppelin-games",
+    "summary": "Zeppelin Games was a British budget and mid-price publisher active around the end of the 8-bit era and into the early 16-bit years. Its catalogue covered sports, action and arcade-style releases across several home-computer formats.",
+    "facts": [
+      "The Centre for Computing History preserves Zeppelin Games releases across Commodore, Sinclair, Atari and Amstrad systems.",
+      "Its recorded Commodore catalogue includes International Tennis, World Soccer, Jocky Wilson's Dart Challenge and Amiga releases such as Arnie and Arcade Fruit Machine.",
+      "The archive records Zeppelin acting both as publisher and, on some releases, as the credited development team."
+    ],
+    "strengths": ["Budget and mid-price games", "C64 and Amiga releases", "Sports and action titles"],
+    "related": [],
+    "note": "The publisher later appears alongside other budget labels on compilation software; CCG keeps the Zeppelin credit attached to the represented releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Zeppelin Games catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Zeppelin+Games&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
