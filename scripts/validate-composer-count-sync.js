@@ -8,6 +8,7 @@ const path = require("path");
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
+// This metadata is regenerated from the current games catalogue before sitemap output.
 const metadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 
 function fail(message) {
