@@ -1,0 +1,47 @@
+name: Thumbnail Source Export
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/thumbnail-source-export.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch verified source assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p sources
+          curl -fL --retry 3 -o sources/prince_logo.png 'https://images.launchbox-app.com/63ebce6a-270e-4b8a-8e45-10e30d7fbd68.png'
+          curl -fL --retry 3 -o sources/prince_gameplay.png 'https://www.lemonamiga.com/uploads/amiga/images/games/screens/prince_of_persia/prince_of_persia_01.png'
+          curl -fL --retry 3 -o sources/power_drift_logo.png 'https://images.launchbox-app.com/3928d573-3d73-4deb-bba8-08dd3586a084.png'
+          curl -fL --retry 3 -o sources/power_drift_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/power_drift/power_drift_01.png'
+          curl -fL --retry 3 -o sources/one_man_logo.png 'https://images.launchbox-app.com/r2_d5beb70b-f3dd-4abb-9cbf-d1da337536ae.png'
+          curl -fL --retry 3 -o sources/one_man_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/one_man_and_his_droid/one_man_and_his_droid_01.png'
+          curl -fL --retry 3 -o sources/son_of_blagger_logo.png 'https://images.launchbox-app.com/1887cb91-a327-426d-b034-85ae07aed554.png'
+          curl -fL --retry 3 -o sources/son_of_blagger_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/son_of_blagger/son_of_blagger_01.png'
+          curl -fL --retry 3 -o sources/quick_draw_logo.png 'https://images.launchbox-app.com/9a73e006-c136-4635-900e-d6b69526a7a0.png'
+          curl -fL --retry 3 -o sources/quick_draw_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/quick_draw_mcgraw/quick_draw_mcgraw_01.png'
+          curl -fL --retry 3 -o sources/pit_fighter_logo.png 'https://images.launchbox-app.com/26f67b20-005e-4b55-88f4-ff65bea980f9.png'
+          curl -fL --retry 3 -o sources/pit_fighter_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/pit-fighter/pit-fighter_01.png'
+          curl -fL --retry 3 -o sources/rebel_logo.png 'https://images.launchbox-app.com/0e0f3dee-11e3-4fdc-9f4b-cf00a6e9f184.png'
+          curl -fL --retry 3 -o sources/rebel_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/rebel/rebel_01.png'
+          curl -fL --retry 3 -o sources/spartacus_gameplay.png 'https://www.lemon64.com/assets/images/games/screens/spartacus_-_the_swordslayer/spartacus_-_the_swordslayer_01.png'
+          curl -fL --retry 3 -o sources/ween_logo.png 'https://images.launchbox-app.com/4e5984ad-ecc6-4f51-84f4-3052cce3ee4e.png'
+          curl -fL --retry 3 -o sources/ween_gameplay.png 'https://www.lemonamiga.com/uploads/amiga/images/games/screens/ween_-_the_prophecy/ween_-_the_prophecy_01.png'
+          file sources/*
+
+      - name: Upload source bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: thumbnail-source-assets
+          path: sources
+          if-no-files-found: error
+          retention-days: 1
