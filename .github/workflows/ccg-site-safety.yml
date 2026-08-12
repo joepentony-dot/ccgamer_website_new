@@ -28,6 +28,7 @@ on:
       - "scripts/audit-member-community.js"
       - "scripts/audit-member-safety-loyalty.js"
       - "scripts/audit-admin-master-data-gate.js"
+      - "scripts/audit-admin-runtime-bootstrap.js"
       - "scripts/audit-member-custom-collections.js"
       - "scripts/audit-member-hub-phase7b.js"
       - "scripts/audit-member-hub-phase7c.js"
@@ -117,6 +118,7 @@ jobs:
           node --check scripts/audit-member-community.js
           node --check scripts/audit-member-safety-loyalty.js
           node --check scripts/audit-admin-master-data-gate.js
+          node --check scripts/audit-admin-runtime-bootstrap.js
           node --check scripts/audit-member-custom-collections.js
           node --check scripts/audit-member-hub-phase7b.js
           node --check scripts/audit-member-hub-phase7c.js
@@ -170,6 +172,9 @@ jobs:
 
       - name: Run Admin Master Data Gate audit
         run: node scripts/audit-admin-master-data-gate.js
+
+      - name: Run Admin Runtime Bootstrap audit
+        run: node scripts/audit-admin-runtime-bootstrap.js
 
       - name: Run Member Custom Collections audit
         run: node scripts/audit-member-custom-collections.js
