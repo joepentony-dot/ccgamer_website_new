@@ -7,6 +7,7 @@ const path = require("path");
 
 const ROOT = path.resolve(__dirname, "..");
 const SOURCE = path.join(ROOT, "data", "magazine-review-records");
+const SUPPLEMENTS = path.join(SOURCE, "supplements");
 const OUTPUT = path.join(ROOT, "data", "magazine-game-reviews");
 const CHUNKS = ["0-d", "e-h", "i-l", "m-p", "q-t", "u-z"];
 
@@ -27,6 +28,17 @@ function readSource() {
     const parsed = JSON.parse(fs.readFileSync(path.join(SOURCE, `${name}.json`), "utf8"));
     Object.assign(games, parsed.games || {});
   });
+
+  if (fs.existsSync(SUPPLEMENTS)) {
+    fs.readdirSync(SUPPLEMENTS)
+      .filter((name) => name.toLowerCase().endsWith(".json"))
+      .sort((a, b) => a.localeCompare(b))
+      .forEach((name) => {
+        const parsed = JSON.parse(fs.readFileSync(path.join(SUPPLEMENTS, name), "utf8"));
+        Object.assign(games, parsed.games || {});
+      });
+  }
+
   return { version: 1, games };
 }
 

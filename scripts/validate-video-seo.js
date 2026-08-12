@@ -13,6 +13,13 @@ const metadataPath = path.join(repoRoot, "data", "video-metadata.json");
 const overridesPath = path.join(repoRoot, "data", "game-video-overrides.json");
 const sitemapPath = path.join(repoRoot, "sitemap-videos.xml");
 
+const SPECIAL_CASE_VIDEO_VALIDATION_SKIPS = new Map([
+  [
+    "the-happiest-days-of-your-life",
+    "intentional Google Drive-hosted video exception; the external player URL is managed separately"
+  ]
+]);
+
 function fail(message) {
   console.error(`[validate-video-seo] ${message}`);
   process.exit(1);
@@ -81,6 +88,7 @@ function main() {
   let expected = 0;
   let verifiedVideoObjects = 0;
   let externalVideos = 0;
+  let specialCaseSkips = 0;
   const expectedLocs = new Set();
 
   for (const game of games) {
@@ -93,6 +101,14 @@ function main() {
     expected += 1;
     const canonical = `https://www.cheekycommodoregamer.co.uk/games/${slug}/`;
     expectedLocs.add(canonical);
+
+    const specialCaseReason = SPECIAL_CASE_VIDEO_VALIDATION_SKIPS.get(slug);
+    if (specialCaseReason) {
+      specialCaseSkips += 1;
+      console.log(`[validate-video-seo] ${slug}: skipping page/video assertions (${specialCaseReason}).`);
+      continue;
+    }
+
     const html = fs.readFileSync(filePath, "utf8");
     const external = overrides[String(game?.id || "").trim()] || null;
 
@@ -145,9 +161,10 @@ function main() {
   assert(locSet.size === locs.length, "sitemap-videos.xml contains duplicate page URLs.");
   for (const loc of expectedLocs) assert(locSet.has(loc), `sitemap-videos.xml is missing ${loc}.`);
 
-  console.log(`[validate-video-seo] ${expected} video-enabled canonical game pages validated.`);
+  console.log(`[validate-video-seo] ${expected} video-enabled canonical game pages accounted for.`);
   console.log(`[validate-video-seo] ${verifiedVideoObjects} Google-eligible game VideoObjects validated from verified metadata.`);
   console.log(`[validate-video-seo] ${externalVideos} externally hosted game video override(s) validated.`);
+  console.log(`[validate-video-seo] ${specialCaseSkips} explicit special-case video validation skip(s) applied.`);
 }
 
 main();
