@@ -122,37 +122,16 @@ jobs:
       - name: Validate publisher SEO and evidence output
         run: node scripts/audit-publisher-seo-evidence.js
 
-      - name: Detect sitemap-impacting changes
+      - name: Detect sitemap-impacting generated changes
         id: sitemap-impact
         shell: bash
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PUSH_BEFORE_SHA: ${{ github.event.before }}
         run: |
-          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
-            echo "refresh=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          BASE_SHA="$PR_BASE_SHA"
-          if [ -z "$BASE_SHA" ]; then
-            BASE_SHA="$PUSH_BEFORE_SHA"
-          fi
-
-          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
-            echo "refresh=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          git fetch --no-tags --depth=1 origin "$BASE_SHA"
-          CHANGED_FILES="$(git diff --name-only "$BASE_SHA" HEAD)"
-          printf '%s\n' "$CHANGED_FILES"
-
-          if printf '%s\n' "$CHANGED_FILES" | grep -Eq '^(scripts/generate-publisher-pages\.js|scripts/materialize-publisher-histories\.js|scripts/apply-publisher-evidence-overrides\.js|scripts/stabilize-publisher-static-pages\.js|scripts/ensure-publisher-history-runtime\.js|scripts/publisher-utils\.js|scripts/remove-invalid-publisher-labels\.js|data/publisher-histories.*\.json|data/publisher-evidence-overrides\.json|data/publisher-playlists\.json)$'; then
-            echo "refresh=true" >> "$GITHUB_OUTPUT"
-          else
+          if git diff --quiet -- tools/seo/static-pages.json; then
             echo "refresh=false" >> "$GITHUB_OUTPUT"
+            echo "Publisher sitemap eligibility is unchanged; preserving existing sitemap lastmod values."
+          else
+            echo "refresh=true" >> "$GITHUB_OUTPUT"
+            echo "Publisher sitemap eligibility changed; rebuilding sitemaps."
           fi
 
       - name: Rebuild sitemaps
