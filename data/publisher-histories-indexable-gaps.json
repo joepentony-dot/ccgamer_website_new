@@ -1,0 +1,215 @@
+[
+  {
+    "slug": "64-tape-computing",
+    "summary": "64 Tape Computing was a Commodore 64 cassette-based magazine format whose accompanying tapes were published by APS during the mid-1980s, combining magazine content with software distributed directly on cassette.",
+    "facts": [
+      "The Centre for Computing History preserves 64 Tape Computing cassettes published by APS for the Commodore 64, including issues 3, 4 and 13.",
+      "The museum records issue 13 as a cassette supplied with the November 1985 issue of 64 Tape Computing."
+    ],
+    "strengths": ["C64 tape magazine", "Cover-mounted software", "Mid-1980s publishing"],
+    "related": [],
+    "note": "CCG treats 64 Tape Computing as the archive-facing publisher label used by the represented software; the preserved tapes themselves carry APS as publisher.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — APS Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=APS&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "aackosoft",
+    "summary": "Aackosoft International was a Dutch software publisher founded in 1983. It became particularly active in the MSX market while also releasing software for the Commodore 64 and other home computers under several associated labels.",
+    "facts": [
+      "Generation MSX records Aackosoft International B.V. as a Netherlands-based company founded in 1983.",
+      "Its documented associated labels include Aackosoft Edusystems, Eaglesoft, Eurosoft, Methodic Solutions, Premium III Software Distribution and The ByteBusters.",
+      "Generation MSX records both software published and software developed by Aackosoft, reflecting a role beyond simple distribution."
+    ],
+    "strengths": ["Dutch software publishing", "MSX catalogue", "C64 releases"],
+    "related": [],
+    "note": "The company had several subsidiary and distribution labels; CCG preserves the publisher credit attached to each represented game rather than merging those labels automatically.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Generation MSX — Aackosoft company information",
+        "url": "https://www.generation-msx.nl/index.php/company/aackosoft/304/",
+        "type": "specialist historical archive"
+      }
+    ]
+  },
+  {
+    "slug": "argus-press-software",
+    "summary": "Argus Press Software published and commissioned software across several British home-computer formats during the 1980s, including educational titles, magazine tapes, strategy software and licensed releases.",
+    "facts": [
+      "The Centre for Computing History preserves Argus Press Software releases on BBC Micro, ZX Spectrum, Commodore VIC-20 and other systems.",
+      "Its archive records include Clever Clogs: The Music Tutor, World War I and 16/48 Tape 17 under the Argus Press Software publishing credit.",
+      "The museum also records Argus Press Software as an author on the Commodore 64 game American Football, illustrating its involvement in software creation as well as publishing."
+    ],
+    "strengths": ["Multi-format publishing", "Educational software", "British home-computer catalogue"],
+    "related": [],
+    "note": "Argus Press, Argus Press Software and Argus Press Software Group appear in surviving records; CCG retains the specific publisher form stored for each represented release.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Argus Press Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Argus+Press+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "beyond",
+    "summary": "Beyond published a varied British 8-bit catalogue during the mid-1980s, including strategy, adventure and action releases from designers and development teams such as Mike Singleton, Denton Designs and First Star Software.",
+    "facts": [
+      "The Centre for Computing History preserves eleven games under the Beyond publishing credit.",
+      "Its Commodore 64 records include Bounces, Goodness Gracious, Mychess II, Quake Minus One and Spy vs Spy.",
+      "The wider Beyond catalogue includes Mike Singleton's The Lords of Midnight and Doomdark's Revenge on the ZX Spectrum."
+    ],
+    "strengths": ["8-bit publishing", "Strategy and adventure games", "External development teams"],
+    "related": [],
+    "note": "Beyond worked with several independent creators and studios, so CCG keeps publisher and developer credits distinct.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Beyond games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Beyond&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "cbs-electronics-software",
+    "summary": "CBS Electronics participated in the early home video-game market with licensed and arcade-style software. The CCG archive uses the CBS Electronics Software credit for the Commodore titles represented on the site.",
+    "facts": [
+      "The Centre for Computing History preserves early CBS Electronics games including Mouse Trap and Smurf for the Atari 2600.",
+      "The museum also records CBS publishing on other early console software, demonstrating the company's broader video-game activity during the early 1980s."
+    ],
+    "strengths": ["Early video-game publishing", "Licensed properties", "Home-computer releases"],
+    "related": [],
+    "note": "Surviving records use several CBS naming variants, so this profile does not collapse platform-specific credits beyond the CCG publisher route.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — CBS Electronics games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=CBS+Electronics&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "coktel-vision",
+    "summary": "Coktel Vision published and developed European computer games across 16-bit and PC formats. Its CCG Amiga archive is small, but forms part of a wider multi-platform catalogue.",
+    "facts": [
+      "The Centre for Computing History preserves Coktel Vision releases on the Commodore Amiga and Atari ST.",
+      "Its collection records Asterix: Operation Getafix on the Amiga under the Coktel Vision publishing credit."
+    ],
+    "strengths": ["European computer games", "Amiga publishing", "Adventure and licensed software"],
+    "related": [],
+    "note": "The CCG publisher page reflects only Coktel Vision games currently represented in this archive, not its complete commercial catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Coktel Vision games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Coktel+Vision&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "cosmi",
+    "summary": "Cosmi published American computer games during the early-to-late 1980s, with a particularly recognisable Commodore catalogue associated with programmer and designer Paul Norman.",
+    "facts": [
+      "The Centre for Computing History preserves Cosmi releases for the Commodore 64 and Atari 8-bit systems.",
+      "Its Commodore records include Forbidden Forest, Aztec Challenge and The President is Missing, all credited to Paul Norman."
+    ],
+    "strengths": ["C64 publishing", "Paul Norman titles", "Action and adventure games"],
+    "related": [],
+    "note": "The profile is based on the preserved software catalogue; broader corporate claims are intentionally avoided where reliable first-party documentation is limited.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Cosmi games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Cosmi&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "creative-sparks",
+    "summary": "Creative Sparks published a substantial early-to-mid-1980s 8-bit catalogue spanning action, adventure, educational and licensed software, with especially strong representation on the Commodore 64.",
+    "facts": [
+      "The Centre for Computing History preserves sixteen games under the Creative Sparks publishing credit.",
+      "Its Commodore 64 collection contains ten titles including Countdown to Meltdown, Danger Mouse in the Black Forest Chateau, Ice Palace, Mad Doctor and Orc Attack.",
+      "The museum records Creative Sparks releases across Commodore, Atari and ZX Spectrum systems."
+    ],
+    "strengths": ["C64 publishing", "Licensed and educational games", "Multi-format 8-bit catalogue"],
+    "related": [],
+    "note": "The institutional catalogue provides strong evidence for the label's publishing output while developer credits vary by release.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Creative Sparks games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Creative+Sparks&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "crl",
+    "summary": "CRL published a broad British home-computer catalogue during the 1980s, ranging from early arcade-style titles and simulations to adventures, parodies and licensed games across the Commodore 64, ZX Spectrum and other systems.",
+    "facts": [
+      "The Centre for Computing History preserves thirty-eight games under the CRL publishing credit.",
+      "Its Commodore 64 records include The Boggit, Bored of the Rings, The Very Big Cave Adventure, LifeForce and Kellogg's Tour.",
+      "The museum also preserves CRL-authored software and records the longer Computer Rentals Ltd. name on early material."
+    ],
+    "strengths": ["British 8-bit publishing", "Adventure and parody games", "C64 and Spectrum catalogue"],
+    "related": [],
+    "note": "CRL and CRL Group appear as separate historical credits in some records; CCG preserves the publisher label attached to each represented game.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — CRL games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=CRL&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "datamost",
+    "summary": "Datamost was an American early-1980s computer-software publisher represented in the CCG archive by a small selection of Commodore 64 releases. Reliable non-competitive institutional company-history material is limited, so this profile avoids adding unsupported founder or closure claims.",
+    "strengths": ["Early computer publishing", "C64 releases", "8-bit software"],
+    "related": [],
+    "note": "This remains curated CCG context until a suitable first-party, museum or archival source for Datamost's corporate history is available."
+  },
+  {
+    "slug": "hewson",
+    "summary": "Hewson published a substantial British computer-game catalogue spanning the early 1980s into the 16-bit era, with particularly strong Commodore representation and games from developers including Andrew Braybrook and Raffaele Cecco.",
+    "facts": [
+      "The Centre for Computing History preserves forty-seven games under the Hewson publishing credit.",
+      "Its Commodore 64 collection includes Uridium, Nebulus, Zynaps, Cybernoid II and other action titles.",
+      "The museum also records Hewson releases on Amiga, Atari ST, Amstrad CPC, ZX Spectrum and Dragon systems, demonstrating a broad multi-format catalogue."
+    ],
+    "strengths": ["C64 action games", "Multi-format publishing", "Prominent independent developers"],
+    "related": [],
+    "note": "Hewson and Hewson Consultants both appear in historical software records; CCG retains the publisher credit used by each represented release.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Hewson games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Hewson&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
