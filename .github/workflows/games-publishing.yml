@@ -10,12 +10,19 @@ on:
       - "games/games.json"
       - "games/genres/**"
       - "resources/images/thumbnails/all/**"
+      - "resources/images/publishers/**"
       - "resources/audio/games/**"
       - "data/magazine-review-records/**"
+      - "data/publisher-secondary-credits.json"
+      - "data/publisher-histories.json"
+      - "js/game-secondary-publisher-runtime.js"
+      - "js/ccg-publisher-history.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/ensure-magazine-review-runtime.js"
+      - "scripts/ensure-secondary-publisher-runtime.js"
+      - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/sync-youtube-video-metadata.js"
       - "scripts/generate-video-seo.js"
       - "scripts/generate-video-library.js"
@@ -30,12 +37,15 @@ on:
       - "scripts/publisher-utils.js"
       - "scripts/apply-publisher-logos.js"
       - "scripts/validate-publisher-logo-output.js"
+      - "scripts/validate-secondary-publisher-credits.js"
+      - "scripts/audit-source-backed-publishers.js"
       - "scripts/generate-developer-pages.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/generate-year-platform-pages.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-static-pages.js"
+      - "scripts/validate-downloads-page.js"
       - "scripts/generate-sitemaps.js"
       - "scripts/validate-video-seo.js"
       - "tools/seo/static-pages.json"
@@ -146,7 +156,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, magazine-review generation, YouTube metadata sync, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, magazine-review generation, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
