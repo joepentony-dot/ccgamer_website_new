@@ -27,6 +27,29 @@ function readJson(filePath) {
   }
 }
 
+function loadResearchDocument(filePath) {
+  const manifest = readJson(filePath);
+  if (manifest && manifest.profiles && typeof manifest.profiles === "object") return manifest;
+  if (!manifest || !Array.isArray(manifest.parts) || !manifest.parts.length) {
+    fail("Composer research manifest must contain profiles or a non-empty parts array");
+  }
+
+  const profiles = {};
+  for (const relativePart of manifest.parts) {
+    const partPath = path.resolve(path.dirname(filePath), relativePart);
+    const part = readJson(partPath);
+    if (!part || !part.profiles || typeof part.profiles !== "object") {
+      fail(`Research part is missing profiles: ${path.relative(repoRoot, partPath)}`);
+    }
+    for (const [slug, profile] of Object.entries(part.profiles)) {
+      if (Object.prototype.hasOwnProperty.call(profiles, slug)) fail(`Duplicate research profile: ${slug}`);
+      profiles[slug] = profile;
+    }
+  }
+
+  return { ...manifest, profiles };
+}
+
 function htmlEscape(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -198,7 +221,7 @@ function main() {
   if (!fs.existsSync(researchPath)) fail("music/composers/research.json is missing");
 
   const metadata = readJson(metadataPath);
-  const researchDoc = readJson(researchPath);
+  const researchDoc = loadResearchDocument(researchPath);
   const profiles = researchDoc && typeof researchDoc.profiles === "object" ? researchDoc.profiles : {};
   if (!Array.isArray(metadata)) fail("Composer metadata must be an array");
 
@@ -288,6 +311,7 @@ module.exports = {
   buildEntitySchema,
   buildProfileMarkup,
   exactSource,
+  loadResearchDocument,
   replaceJsonLd,
   replaceProfile,
   validStructuredDate
