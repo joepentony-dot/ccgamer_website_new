@@ -1,5 +1,16 @@
 [
   {
+    "name": "3-2-1 Software",
+    "slug": "3-2-1-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "url": "/games/developers/3-2-1-software/"
+  },
+  {
     "name": "Argus Press Software",
     "slug": "argus-press-software",
     "count": 1,
