@@ -4,12 +4,38 @@
 
 const fs = require("fs");
 const path = require("path");
+const { spawnSync } = require("child_process");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const repoRoot = path.resolve(__dirname, "..");
 const sitemapIndexPath = path.join(repoRoot, "sitemap.xml");
 const CORE_SITEMAPS = new Set(["sitemap-pages.xml", "sitemap-games.xml"]);
 const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
+
+function fail(message) {
+  console.error(`[generate-sitemaps] ${message}`);
+  process.exit(1);
+}
+
+function runNodeScript(scriptName) {
+  const scriptPath = path.join(__dirname, scriptName);
+  const result = spawnSync(process.execPath, [scriptPath], {
+    cwd: repoRoot,
+    stdio: "inherit",
+    env: { ...process.env, CCG_REPO_ROOT: repoRoot },
+  });
+  if (result.status !== 0) {
+    fail(`${scriptName} failed with status ${result.status ?? 1}.`);
+  }
+}
+
+function synchronizeComposerArchives() {
+  // Keep static composer facts, SEO copy and sitemap eligibility on the same
+  // current-catalogue snapshot before sitemap URLs are generated.
+  runNodeScript("apply-curated-composer-research.js");
+  runNodeScript("enrich-generated-composer-pages.js");
+  runNodeScript("validate-composer-count-sync.js");
+}
 
 function latestLastmodFromSitemap(filename) {
   const localPath = path.join(repoRoot, filename);
@@ -91,6 +117,7 @@ function restoreAdditionalSitemaps(entries) {
   console.log(`[generate-sitemaps] Restored additional sitemap children: ${missing.map((entry) => entry.loc).join(", ")}`);
 }
 
+synchronizeComposerArchives();
 const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
 restoreAdditionalSitemaps(additionalSitemaps);
