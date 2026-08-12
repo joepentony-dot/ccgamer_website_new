@@ -38,6 +38,7 @@ function changedFiles() {
 }
 
 const dataText = read("data/publisher-histories.json");
+const secondaryText = read("data/publisher-secondary-credits.json");
 const moduleCode = read("js/ccg-publisher-history.js");
 const css = read("resources/css/publisher-history.css");
 const workflow = read(".github/workflows/ccg-source-backed-publishers.yml");
@@ -65,7 +66,6 @@ const requiredSourceBacked = new Set([
 
 const approvedHosts = new Set([
   "www.computinghistory.org.uk",
-  "www.lemon64.com",
   "mastertronic.co.uk",
   "ourdigitalheritage.org",
   "www.ea.com",
@@ -91,7 +91,7 @@ for (const profile of profiles) {
   const sourceBacked = facts.length > 0 || sources.length > 0;
 
   if (sourceBacked) {
-    if (facts.length < 2) failures.push(`${slug}: source-backed profile requires at least two facts`);
+    if (facts.length < 1) failures.push(`${slug}: source-backed profile requires at least one fact`);
     if (!sources.length) failures.push(`${slug}: source-backed profile requires evidence links`);
     if (profile.confidence !== "high") failures.push(`${slug}: confidence must be high or the profile must remain unsourced`);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(String(profile.verified_on || ""))) {
@@ -129,6 +129,23 @@ for (const slug of requiredSourceBacked) {
   }
 }
 
+const americana = profiles.find((entry) => entry?.slug === "americana");
+const expectedAmericanaFact = "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s. It was set up because U.S. Gold lacked experience in the budget games market and used the label to re-release popular full-price Commodore 64 and other microcomputer games.";
+if (!americana) {
+  failures.push("Americana publisher profile is missing");
+} else {
+  if (!Array.isArray(americana.facts) || americana.facts.length !== 1 || americana.facts[0] !== expectedAmericanaFact) {
+    failures.push("Americana documented company facts must contain only the approved Mastertronic/U.S. Gold history text");
+  }
+  if (!Array.isArray(americana.sources) || americana.sources.length !== 1 || americana.sources[0]?.url !== "https://mastertronic.co.uk/americana-checklist/") {
+    failures.push("Americana evidence must reference only the Mastertronic Americana checklist");
+  }
+}
+
+if (/lemon64\.com/i.test(dataText) || /lemon64\.com/i.test(secondaryText)) {
+  failures.push("Publisher history/evidence data must not reference Lemon64");
+}
+
 requireText(moduleCode, "Source-backed publisher profile", "Source-backed profile label");
 requireText(moduleCode, "Documented company facts", "Fact panel");
 requireText(moduleCode, "Evidence sources", "Evidence panel");
@@ -153,6 +170,7 @@ const protectedPaths = new Set([
 
 const allowedPaths = new Set([
   "data/publisher-histories.json",
+  "data/publisher-secondary-credits.json",
   "js/ccg-publisher-history.js",
   "resources/css/publisher-history.css",
   "scripts/audit-source-backed-publishers.js",
@@ -176,5 +194,6 @@ if (failures.length) {
 console.log("Source-backed publisher audit passed.");
 console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence`);
 console.log("- Sources are restricted to the reviewed institutional and specialist host list");
+console.log("- Americana uses the approved Mastertronic history and evidence source only");
 console.log("- Unsourced publisher summaries remain labelled as curated context");
 console.log("- Master game data and protected files remain unchanged");
