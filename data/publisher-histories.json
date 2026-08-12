@@ -238,27 +238,20 @@
   },
   {
     "slug": "americana",
-    "summary": "Americana Software is represented in the CCG archive as a Commodore 64 publishing and re-release label. Its catalogue combines games carrying Americana as the listed publisher with reissues of titles originally associated with a range of other software houses, so CCG records Americana as an additional publisher association rather than replacing established primary credits.",
+    "summary": "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s.",
     "facts": [
-      "Lemon64 groups 34 Commodore 64 games under its Americana company entry.",
-      "The Centre for Computing History records Commodore 64 copies of BreakDance, Karate Champ, Go For The Gold and Ollie's Follies under Americana Software.",
-      "The Americana catalogue represented by Lemon64 includes both games listed directly under Americana and games whose original publisher field names another company."
+      "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s. It was set up because U.S. Gold lacked experience in the budget games market and used the label to re-release popular full-price Commodore 64 and other microcomputer games."
     ],
     "strengths": ["C64 re-releases", "Budget-era catalogue", "Action and sports games"],
-    "related": [{"label":"US Gold","slug":"us-gold"}, {"label":"Datasoft","slug":"datasoft"}, {"label":"Access Software","slug":"access-software"}],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"US Gold","slug":"us-gold"}],
     "note": "Americana is additive in CCG: the secondary credit records the Americana release or catalogue relationship and does not overwrite the original publisher stored in the protected game database.",
     "confidence": "high",
     "verified_on": "2026-08-12",
     "sources": [
       {
-        "label": "Lemon64 — Commodore 64 games by Americana",
-        "url": "https://www.lemon64.com/games/list.php?list_company=americana",
-        "type": "specialist C64 database"
-      },
-      {
-        "label": "Centre for Computing History — Americana Software C64 collection",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=Commodore+64&publisher=Americana+software&type=Games",
-        "type": "museum collection"
+        "label": "Mastertronic — Americana checklist",
+        "url": "https://mastertronic.co.uk/americana-checklist/",
+        "type": "historical archive"
       }
     ]
   }
