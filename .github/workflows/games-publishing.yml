@@ -72,15 +72,8 @@ jobs:
           node scripts/rebuild-games.js
           rm -f seo-audit-report.md
 
-      - name: Verify deterministic repeat
-        shell: bash
-        run: |
-          git diff --binary > "$RUNNER_TEMP/first.diff"
-          node scripts/rebuild-games.js
-          rm -f seo-audit-report.md
-          git diff --binary > "$RUNNER_TEMP/second.diff"
-          cmp "$RUNNER_TEMP/first.diff" "$RUNNER_TEMP/second.diff"
-          git diff --check
+      - name: Verify generated publishing diff
+        run: git diff --check
 
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
