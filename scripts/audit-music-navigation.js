@@ -24,7 +24,10 @@ function requireText(source, expected, message) {
 const config = read("js/ccg-music-config.js");
 const navigation = read("js/ccg-music-navigation.js");
 const navCore = read("js/ccg-nav-core.js");
+const navFit = read("js/ccg-nav-fit.js");
+const navFitCss = read("resources/css/ccg-nav-fit.css");
 const navViewportOverlay = read("resources/css/ccg-nav-viewport-overlay.css");
+const homeCss = read("resources/css/home.css");
 const amigaIdentity = read("js/ccg-amiga-identity.js");
 const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
 const musicHub = read("music/index.html");
@@ -47,6 +50,14 @@ requireText(navViewportOverlay, "position: fixed !important", "The responsive dr
 requireText(navViewportOverlay, "height: 100dvh !important", "The responsive drawer is not locked to the dynamic viewport height.");
 requireText(navViewportOverlay, "width: 100dvw !important", "The responsive drawer is not locked to the dynamic viewport width.");
 requireText(navViewportOverlay, "body.ccg-body--nav-open", "The responsive drawer does not preserve body scroll locking while open.");
+
+requireText(homeCss, "overflow: clip;", "The Home header no longer exposes the expected visual clip contract used by the desktop More regression guard.");
+requireText(navFit, 'header?.classList.toggle("ccg-header--more-open", isOpen);', "Desktop navigation does not expose the header More-open state.");
+requireText(navFitCss, ".ccg-header.ccg-header--more-open .ccg-header-inner", "Desktop More-open styling does not release the Home header inner clip.");
+requireText(navFitCss, ".ccg-header.ccg-header--more-open .ccg-nav__bar", "Desktop More-open styling does not release nav-bar paint containment.");
+requireText(navFitCss, "overflow: visible !important;", "Desktop More-open styling does not allow the dropdown to escape the header panel.");
+requireText(navFitCss, "contain: none !important;", "Desktop More-open styling does not remove paint containment from the dropdown ancestor chain.");
+
 requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
 requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
 requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment layer is not loaded through the shared Amiga identity module.");
@@ -60,4 +71,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log("Music navigation, responsive drawer viewport and mobile mode audit passed.");
+console.log("Music navigation, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");

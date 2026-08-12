@@ -36,6 +36,25 @@
         contain: none !important;
     }
 
+    /*
+       Desktop More menus must be allowed to escape the visual header
+       panel. The Home header normally uses overflow: clip on its inner
+       shell to contain neon glow; if that stays active while More is
+       open, the dropdown is cut off at the bottom of the header.
+
+       Only release clipping/paint containment for the short period in
+       which the More menu is open. Normal desktop header containment
+       resumes immediately when the menu closes.
+    */
+    .ccg-header.ccg-header--more-open,
+    .ccg-header.ccg-header--more-open .ccg-header-inner,
+    .ccg-header.ccg-header--more-open .ccg-nav,
+    .ccg-header.ccg-header--more-open .ccg-nav__bar,
+    .ccg-header.ccg-header--more-open .ccg-nav__more {
+        overflow: visible !important;
+        contain: none !important;
+    }
+
     .ccg-header .ccg-nav__bar,
     .ccg-header .ccg-nav__list {
         min-width: 0;
