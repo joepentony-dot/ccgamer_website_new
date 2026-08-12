@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-08-12T02:21:21.033Z",
+  "updatedAt": "2026-08-12T17:36:04.565Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story – Did Ocean Get the Arcade Adventure Right on C64?",
@@ -4815,6 +4815,15 @@
       "uploadDate": "2022-10-16T15:00:27Z",
       "duration": "PT25M36S",
       "thumbnailUrl": "https://i.ytimg.com/vi/rng9n0SNeDg/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "rqqqYRSgSBI": {
+      "title": "Go For The Gold – The £2.99 C64 Game That Reached UK No.1",
+      "description": "🕹️ Go For The Gold (1986) – Commodore 64 Multi-Event Sports Game\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/go-for-the-gold/\n\nReleased by Americana in 1986, Go For The Gold is a multi-event Commodore 64 sports game featuring sprinting, hurdles, long jump, archery, diving and weightlifting. You can practice individual events or compete across the full programme, with up to six participants battling for the best scores. Some events demand the traditional left-and-right joystick treatment, while archery, diving and weightlifting rely more heavily on timing and technique.\n\nThe game originally appeared in America as HESGames in 1984. That version was only available on disk in the UK and cost £27.95, leaving it competing with considerably cheaper sports games such as Daley Thompson’s Decathlon and Summer Games.\n\nTwo years later, Americana brought it back under the new title Go For The Gold. The revised version was released on cassette for just £2.99, transforming a largely overlooked game into one of the biggest C64 budget successes of 1986. It eventually climbed to number one in the Gallup/Microscope UK combined-format chart for the week ending 13 September 1986. Not bad for a renamed two-year-old sports game costing less than three quid.\n\nGo For The Gold also received excellent reviews. Zzap!64 awarded it 95%, Computer & Video Games and Commodore User both gave it 8/10, while Your Commodore went all the way with 10/10. The chunky athletes and their celebrations give the events plenty of personality. The sprinter punches the air with delight, the long jumper checks his backside after falling over, and one of the diving judges appears to have found something more interesting to look at. Archery remains my favourite, even though its aiming cursor looks suspiciously like a tiny boat with a white sail.\n\n💬 Did you own Go For The Gold, and which event was your favourite?\n\n▶️ RELATED PLAYLISTS\nSports & Olympic Games: https://www.youtube.com/playlist?list=PL_TYjnCNYSey8SGz1nu8mJdPC_xb7eLBL\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#GoForTheGold #Commodore64 #C64 #RetroGaming #C64Gaming\n#Americana #1986Games #C64Longplay #CheekyCommodoreGamer",
+      "uploadDate": "2026-08-12T17:30:38Z",
+      "duration": "PT8M21S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/rqqqYRSgSBI/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

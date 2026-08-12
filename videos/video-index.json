@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "rqqqYRSgSBI",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Go For The Gold – The £2.99 C64 Game That Reached UK No.1",
+      "description": "Go For The Gold is a Commodore 64 multi-event sports game released by Americana in 1986. A re-release of the earlier HES Games, it challenges players across six sporting events: the 100m sp…",
+      "url": "/games/go-for-the-gold/",
+      "thumbnail": "https://i.ytimg.com/vi/rqqqYRSgSBI/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1986,
+      "publisher": "Americana"
+    },
+    {
       "id": "gEcii5RNges",
       "kind": "retro",
       "filter": "retro-specials",
@@ -8933,19 +8946,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "rqqqYRSgSBI",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Go For The Gold",
-      "description": "Go For The Gold is a Commodore 64 multi-event sports game released by Americana in 1986. A re-release of the earlier HES Games, it challenges players across six sporting events: the 100m sp…",
-      "url": "/games/go-for-the-gold/",
-      "thumbnail": "https://i.ytimg.com/vi/rqqqYRSgSBI/hqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1986,
-      "publisher": "Americana"
     },
     {
       "id": "rn_hzXvVYes",
