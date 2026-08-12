@@ -7,8 +7,21 @@
       "The business initially used the name Spectrum Games before adopting Ocean.",
       "Ocean acquired the Imagine label in late 1984 and used it for many arcade conversions."
     ],
-    "strengths": ["Arcade conversions", "Film and television licences", "Large UK retail releases"],
-    "related": [{"label":"Imagine","slug":"imagine"}, {"label":"US Gold","slug":"us-gold"}],
+    "strengths": [
+      "Arcade conversions",
+      "Film and television licences",
+      "Large UK retail releases"
+    ],
+    "related": [
+      {
+        "label": "Imagine",
+        "slug": "imagine"
+      },
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
     "note": "The source-backed company facts are separate from the archive strengths, which summarise the Ocean games represented by CCG.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -28,8 +41,21 @@
       "Its standard UK launch price was £1.99 at a time when many games cost considerably more.",
       "Its commercial strategy concentrated on distributors and retailers as well as consumer demand."
     ],
-    "strengths": ["Budget releases", "Wide retail distribution", "Large C64 catalogue"],
-    "related": [{"label":"MAD (Mastertronic)","slug":"mad-mastertronic"}, {"label":"Virgin Mastertronic","slug":"virgin-mastertronic"}],
+    "strengths": [
+      "Budget releases",
+      "Wide retail distribution",
+      "Large C64 catalogue"
+    ],
+    "related": [
+      {
+        "label": "MAD (Mastertronic)",
+        "slug": "mad-mastertronic"
+      },
+      {
+        "label": "Virgin Mastertronic",
+        "slug": "virgin-mastertronic"
+      }
+    ],
     "note": "The historical source was written by former Mastertronic financial controller Anthony Guter and is preserved by the Mastertronic Collectors Archive.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -54,8 +80,21 @@
       "The label published for the Commodore 64, ZX Spectrum and other systems.",
       "Firebird used both premium and budget ranges rather than serving only one price band."
     ],
-    "strengths": ["Budget and full-price ranges", "C64 arcade and adventure games", "Distinctive label identity"],
-    "related": [{"label":"Rainbird","slug":"rainbird"}, {"label":"Silverbird","slug":"silverbird"}],
+    "strengths": [
+      "Budget and full-price ranges",
+      "C64 arcade and adventure games",
+      "Distinctive label identity"
+    ],
+    "related": [
+      {
+        "label": "Rainbird",
+        "slug": "rainbird"
+      },
+      {
+        "label": "Silverbird",
+        "slug": "silverbird"
+      }
+    ],
     "note": "Only the institutional archive's documented points are presented as company facts; Firebird, Rainbird and Silverbird remain separate CCG routes.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -70,9 +109,40 @@
   {
     "slug": "us-gold",
     "summary": "US Gold brought a substantial number of American and arcade properties to European home-computer owners. Its catalogue spans sports, action games, conversions and licensed releases across both C64 and Amiga.",
-    "strengths": ["American licences", "Arcade conversions", "Multi-format publishing"],
-    "related": [{"label":"Kixx","slug":"kixx"}, {"label":"Ocean Software","slug":"ocean-software"}],
-    "note": "Re-release labels are linked only where they exist as separate publisher routes in the CCG archive."
+    "strengths": [
+      "American licences",
+      "Arcade conversions",
+      "Multi-format publishing"
+    ],
+    "related": [
+      {
+        "label": "Kixx",
+        "slug": "kixx"
+      },
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      }
+    ],
+    "note": "Re-release labels are linked only where they exist as separate publisher routes in the CCG archive.",
+    "facts": [
+      "The Play It Again archive records that Geoff and Anne Brown founded U.S. Gold in 1984 to publish American games in the United Kingdom and arrange conversions for British home computers.",
+      "The CCG publisher index currently records 46 U.S. Gold games across Commodore 64 and Amiga, covering 1982 to 1992."
+    ],
+    "sources": [
+      {
+        "label": "Play It Again — U.S. Gold company history",
+        "url": "https://ourdigitalheritage.org/hostedArchives/playitagain/companies/u-s-gold-ltd/index.html",
+        "type": "institutional preservation archive"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "codemasters",
@@ -82,8 +152,21 @@
       "BMX Simulator for the Commodore 64 was among its early sports titles.",
       "Its early catalogue concentrated on budget-priced 8-bit games before later expansion."
     ],
-    "strengths": ["Budget games", "Racing and sports", "Recognisable game series"],
-    "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"Alternative Software","slug":"alternative-software"}],
+    "strengths": [
+      "Budget games",
+      "Racing and sports",
+      "Recognisable game series"
+    ],
+    "related": [
+      {
+        "label": "Mastertronic",
+        "slug": "mastertronic"
+      },
+      {
+        "label": "Alternative Software",
+        "slug": "alternative-software"
+      }
+    ],
     "note": "The company facts use Codemasters' official EA studio history, with the independent Codemasters Archive supplying additional context on its early budget focus.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -103,9 +186,40 @@
   {
     "slug": "system-3",
     "summary": "System 3 became closely associated with polished action-adventure releases and strong presentation on the Commodore 64. Several of its games remain among the machine's most discussed later-1980s releases.",
-    "strengths": ["Action adventures", "Cinematic presentation", "High-profile C64 releases"],
-    "related": [{"label":"Activision","slug":"activision"}, {"label":"Epyx","slug":"epyx"}],
-    "note": "Publishing and development credits can differ between territories and versions; this page follows the archive's recorded publisher fields."
+    "strengths": [
+      "Action adventures",
+      "Cinematic presentation",
+      "High-profile C64 releases"
+    ],
+    "related": [
+      {
+        "label": "Activision",
+        "slug": "activision"
+      },
+      {
+        "label": "Epyx",
+        "slug": "epyx"
+      }
+    ],
+    "note": "Publishing and development credits can differ between territories and versions; this page follows the archive's recorded publisher fields.",
+    "facts": [
+      "System 3's official history says Mark Cale formed the British developer and publisher in 1982.",
+      "The CCG publisher index currently records nine System 3 games across Commodore 64 and Amiga, spanning 1987 to 1990."
+    ],
+    "sources": [
+      {
+        "label": "System 3 — official company story",
+        "url": "https://system3.com/our-story/",
+        "type": "official company history"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "activision",
@@ -115,8 +229,21 @@
       "The company described its business as developing, publishing and distributing interactive entertainment.",
       "Its historical operations included the United Kingdom alongside North America and other international markets."
     ],
-    "strengths": ["Early home-computer publishing", "Licensed games", "Broad C64 catalogue"],
-    "related": [{"label":"System 3","slug":"system-3"}, {"label":"Infocom","slug":"infocom"}],
+    "strengths": [
+      "Early home-computer publishing",
+      "Licensed games",
+      "Broad C64 catalogue"
+    ],
+    "related": [
+      {
+        "label": "System 3",
+        "slug": "system-3"
+      },
+      {
+        "label": "Infocom",
+        "slug": "infocom"
+      }
+    ],
     "note": "Territorial publisher credits can differ, so CCG continues to display the publisher stored for each archived version rather than rewriting game records.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -136,8 +263,21 @@
       "Its first five games shipped on 20 May 1983.",
       "Early packaging presented game creators prominently and included titles later released on the Commodore 64."
     ],
-    "strengths": ["Sports games", "Simulations and strategy", "Creator-led computer titles"],
-    "related": [{"label":"Origin Systems","slug":"origin-systems"}, {"label":"Lucasfilm Games","slug":"lucasfilm-games"}],
+    "strengths": [
+      "Sports games",
+      "Simulations and strategy",
+      "Creator-led computer titles"
+    ],
+    "related": [
+      {
+        "label": "Origin Systems",
+        "slug": "origin-systems"
+      },
+      {
+        "label": "Lucasfilm Games",
+        "slug": "lucasfilm-games"
+      }
+    ],
     "note": "The factual history is drawn from EA's own company and anniversary pages; archive strengths describe the EA games currently represented by CCG.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -157,9 +297,40 @@
   {
     "slug": "psygnosis",
     "summary": "Psygnosis became strongly associated with visually ambitious Amiga games, elaborate packaging and a distinctive science-fiction and fantasy identity.",
-    "strengths": ["Amiga showcase titles", "Science fiction and fantasy", "Elaborate presentation"],
-    "related": [{"label":"Psyclapse","slug":"psyclapse"}, {"label":"Electronic Arts","slug":"electronic-arts"}],
-    "note": "The CCG archive currently represents only the games already covered on the site, not Psygnosis's complete commercial catalogue."
+    "strengths": [
+      "Amiga showcase titles",
+      "Science fiction and fantasy",
+      "Elaborate presentation"
+    ],
+    "related": [
+      {
+        "label": "Psyclapse",
+        "slug": "psyclapse"
+      },
+      {
+        "label": "Electronic Arts",
+        "slug": "electronic-arts"
+      }
+    ],
+    "note": "The CCG archive currently represents only the games already covered on the site, not Psygnosis's complete commercial catalogue.",
+    "facts": [
+      "National Museums Liverpool identifies Psygnosis as a Liverpool studio behind major early PlayStation games and records that Sony closed the studio in 2012.",
+      "The Centre for Computing History preserves an extensive Psygnosis catalogue including Commodore Amiga releases such as Shadow of the Beast II, Amnios and Obitus."
+    ],
+    "sources": [
+      {
+        "label": "National Museums Liverpool — Psygnosis studio history",
+        "url": "https://www.liverpoolmuseums.org.uk/stories/psygnosis-how-did-liverpool-company-transform-gaming-world-big-question",
+        "type": "museum history"
+      },
+      {
+        "label": "Centre for Computing History — Psygnosis catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Psygnosis&type=Games",
+        "type": "museum collection"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "elite",
@@ -169,8 +340,21 @@
       "It began as a developer and publisher for the ZX Spectrum and Commodore 64.",
       "Its 1984 licensing activity included an official game based on the television series Airwolf."
     ],
-    "strengths": ["Arcade conversions", "Licensed action games", "C64 retail releases"],
-    "related": [{"label":"Encore","slug":"encore"}, {"label":"Hit-Pak","slug":"hit-pak"}],
+    "strengths": [
+      "Arcade conversions",
+      "Licensed action games",
+      "C64 retail releases"
+    ],
+    "related": [
+      {
+        "label": "Encore",
+        "slug": "encore"
+      },
+      {
+        "label": "Hit-Pak",
+        "slug": "hit-pak"
+      }
+    ],
     "note": "The incorporation date comes from Companies House; the early platform and licensing details come from Elite's company profile.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -190,9 +374,40 @@
   {
     "slug": "gremlin-graphics",
     "summary": "Gremlin Graphics developed and published a broad range of British computer games, including platformers, sports, racing and character-led action titles across the C64 and Amiga years.",
-    "strengths": ["Character-led games", "Sports and racing", "C64 and Amiga publishing"],
-    "related": [{"label":"Gremlin Interactive","slug":"gremlin-interactive"}, {"label":"US Gold","slug":"us-gold"}],
-    "note": "The archive keeps later company-name variations separate where they were recorded as distinct publisher credits."
+    "strengths": [
+      "Character-led games",
+      "Sports and racing",
+      "C64 and Amiga publishing"
+    ],
+    "related": [
+      {
+        "label": "Gremlin Interactive",
+        "slug": "gremlin-interactive"
+      },
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
+    "note": "The archive keeps later company-name variations separate where they were recorded as distinct publisher credits.",
+    "facts": [
+      "The Gremlin Graphics Archive presents an officially endorsed history of the Sheffield-based developer and publisher.",
+      "The Centre for Computing History catalogues 82 preserved game records carrying Gremlin Graphics publishing credits across multiple formats."
+    ],
+    "sources": [
+      {
+        "label": "Gremlin Graphics Archive — endorsed company history",
+        "url": "https://www.gremlinarchive.com/",
+        "type": "officially endorsed archive"
+      },
+      {
+        "label": "Centre for Computing History — Gremlin Graphics catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Gremlin+graphics&type=Games",
+        "type": "museum collection"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "microprose-software",
@@ -202,8 +417,21 @@
       "MicroProse became an important foundation for Sid Meier's later strategy-game work.",
       "The CCG archive records the relevant Commodore releases under the publisher name MicroProse Software."
     ],
-    "strengths": ["Flight simulations", "Military strategy", "Detailed manuals and packaging"],
-    "related": [{"label":"MicroStyle","slug":"microstyle"}, {"label":"Electronic Arts","slug":"electronic-arts"}],
+    "strengths": [
+      "Flight simulations",
+      "Military strategy",
+      "Detailed manuals and packaging"
+    ],
+    "related": [
+      {
+        "label": "MicroStyle",
+        "slug": "microstyle"
+      },
+      {
+        "label": "Electronic Arts",
+        "slug": "electronic-arts"
+      }
+    ],
     "note": "The founding statement is sourced from Firaxis' official studio history; catalogue observations are limited to the games already represented by CCG.",
     "confidence": "high",
     "verified_on": "2026-08-06",
@@ -218,23 +446,116 @@
   {
     "slug": "rainbird",
     "summary": "Rainbird was Telecomsoft's premium label, associated with ambitious adventures, simulations and large-format releases that often included extensive supporting material.",
-    "strengths": ["Premium boxed releases", "Adventures and simulations", "Expanded packaging"],
-    "related": [{"label":"Firebird","slug":"firebird"}, {"label":"Silverbird","slug":"silverbird"}],
-    "note": "Rainbird and Firebird are linked here for context but remain separate publisher archives."
+    "strengths": [
+      "Premium boxed releases",
+      "Adventures and simulations",
+      "Expanded packaging"
+    ],
+    "related": [
+      {
+        "label": "Firebird",
+        "slug": "firebird"
+      },
+      {
+        "label": "Silverbird",
+        "slug": "silverbird"
+      }
+    ],
+    "note": "Rainbird and Firebird are linked here for context but remain separate publisher archives.",
+    "facts": [
+      "The Bird Sanctuary identifies Rainbird as one of Telecomsoft's principal publishing labels alongside Firebird and Silverbird.",
+      "The CCG publisher index records two Rainbird-published Amiga games spanning 1987 to 1989."
+    ],
+    "sources": [
+      {
+        "label": "The Bird Sanctuary — Telecomsoft label archive",
+        "url": "https://birdsanctuary.co.uk/",
+        "type": "first-person preservation archive"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "virgin-games",
     "summary": "Virgin Games published and distributed a varied computer-game catalogue across the 1980s and 1990s, spanning original titles, conversions and releases from associated studios and labels.",
-    "strengths": ["Multi-format publishing", "Original and licensed games", "C64 and Amiga releases"],
-    "related": [{"label":"Virgin Mastertronic","slug":"virgin-mastertronic"}, {"label":"Mastertronic","slug":"mastertronic"}],
-    "note": "Virgin Games and Virgin Mastertronic remain separate because the archive records them as distinct publishing credits."
+    "strengths": [
+      "Multi-format publishing",
+      "Original and licensed games",
+      "C64 and Amiga releases"
+    ],
+    "related": [
+      {
+        "label": "Virgin Mastertronic",
+        "slug": "virgin-mastertronic"
+      },
+      {
+        "label": "Mastertronic",
+        "slug": "mastertronic"
+      }
+    ],
+    "note": "Virgin Games and Virgin Mastertronic remain separate because the archive records them as distinct publishing credits.",
+    "facts": [
+      "The Centre for Computing History preserves 64 game records published under the Virgin Games name across multiple computer and console formats.",
+      "The CCG publisher index currently records 21 Virgin Games releases across Commodore 64 and Amiga, spanning 1983 to 1995."
+    ],
+    "sources": [
+      {
+        "label": "Centre for Computing History — Virgin Games catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Virgin+games&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "thalamus",
     "summary": "Thalamus built a focused reputation for technically accomplished Commodore 64 games with strong graphics, music and magazine-era presentation.",
-    "strengths": ["C64 technical showcases", "Shoot 'em ups", "Strong music and presentation"],
-    "related": [{"label":"Hewson","slug":"hewson"}, {"label":"Rainbow Arts","slug":"rainbow-arts"}],
-    "note": "This summary concerns the games represented in the CCG archive and does not attempt to reproduce a complete company history."
+    "strengths": [
+      "C64 technical showcases",
+      "Shoot 'em ups",
+      "Strong music and presentation"
+    ],
+    "related": [
+      {
+        "label": "Hewson",
+        "slug": "hewson"
+      },
+      {
+        "label": "Rainbow Arts",
+        "slug": "rainbow-arts"
+      }
+    ],
+    "note": "This summary concerns the games represented in the CCG archive and does not attempt to reproduce a complete company history.",
+    "facts": [
+      "The Centre for Computing History preserves six Commodore 64 games published by Thalamus in its museum collection.",
+      "The CCG publisher index currently records five Thalamus C64 releases covering 1986 to 1992."
+    ],
+    "sources": [
+      {
+        "label": "Centre for Computing History — Thalamus C64 catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=Commodore+64&publisher=Thalamus&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ],
+    "confidence": "high",
+    "verified_on": "2026-08-12"
   },
   {
     "slug": "americana",
@@ -242,8 +563,21 @@
     "facts": [
       "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s. It was set up because U.S. Gold lacked experience in the budget games market and used the label to re-release popular full-price Commodore 64 and other microcomputer games."
     ],
-    "strengths": ["C64 re-releases", "Budget-era catalogue", "Action and sports games"],
-    "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"US Gold","slug":"us-gold"}],
+    "strengths": [
+      "C64 re-releases",
+      "Budget-era catalogue",
+      "Action and sports games"
+    ],
+    "related": [
+      {
+        "label": "Mastertronic",
+        "slug": "mastertronic"
+      },
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
     "note": "Americana is additive in CCG: the secondary credit records the Americana release or catalogue relationship and does not overwrite the original publisher stored in the protected game database.",
     "confidence": "high",
     "verified_on": "2026-08-12",
