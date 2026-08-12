@@ -1,0 +1,205 @@
+[
+  {
+    "slug": "taskset",
+    "summary": "Taskset published a concentrated run of early Commodore games, particularly on the Commodore 64, with arcade-style releases such as Pipeline, Super Pipeline and Bozo's Night Out.",
+    "facts": [
+      "The Centre for Computing History preserves Taskset Commodore releases including Cosmic Convoy, Pipeline, Gyropod, Bozo's Night Out and Super Pipeline II.",
+      "The museum records recurring contributors including Andy Walker and Paul Hodgson across several Taskset games."
+    ],
+    "strengths": ["Early C64 games", "Arcade-style action", "Commodore publishing"],
+    "related": [],
+    "note": "The surviving institutional record is catalogue-focused, so this profile avoids unsupported claims about Taskset's ownership or founders.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Taskset Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Taskset&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "team17",
+    "summary": "Team17 was formed in 1990 from people associated with 17-Bit Software and Team 7 and quickly became strongly identified with the Commodore Amiga as both a developer and publisher.",
+    "facts": [
+      "Team17's official history states that the company was founded on 7 December 1990 by Debbie Bestwick, Martyn Brown and Michael Robinson when 17-Bit Software and Team 7 came together.",
+      "Its first game was Full Contact for the Commodore Amiga in 1991, followed by Alien Breed, which developed into a major Team17 series.",
+      "Team17's own retrospective describes the company's early vision as making games for the Commodore Amiga."
+    ],
+    "strengths": ["Amiga development", "Action games", "Developer-publisher model"],
+    "related": [],
+    "note": "The historical facts are taken from Team17's own company history and retrospective material.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Team17 — official company history",
+        "url": "https://www.team17.com/our-history",
+        "type": "official company history"
+      },
+      {
+        "label": "Team17 — first Amiga releases retrospective",
+        "url": "https://www.team17.com/news/team17s-100-games-part-one-1991-92",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "terminal-software",
+    "summary": "Terminal Software published a small but concentrated group of early Commodore 64 games during 1983 and 1984, including Super Gridder, Super Dogfight and Plumb Crazy.",
+    "facts": [
+      "The Centre for Computing History preserves six Commodore 64 games under the Terminal Software publishing credit.",
+      "The museum records releases from 1983 and 1984 including Hunter, Stellar Dodger, Super Gridder, Super Dogfight, Plumb Crazy and Triple Tournament."
+    ],
+    "strengths": ["Early C64 publishing", "Arcade-style games", "Small focused catalogue"],
+    "related": [],
+    "note": "Reliable company-level documentation is limited, so the profile sticks to the preserved software record.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Terminal Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Terminal+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "the-edge",
+    "summary": "The Edge published British home-computer games through the mid-to-late 1980s, with a catalogue spanning original titles, licensed characters and arcade-related releases across several 8-bit formats.",
+    "facts": [
+      "The Centre for Computing History preserves Commodore 64 releases under The Edge including Wizardry, Quo Vadis and Garfield: Winter's Tail.",
+      "Its wider Spectrum catalogue includes Fairlight, Bobby Bearing, Shadow Skimmer and licensed Garfield software."
+    ],
+    "strengths": ["8-bit publishing", "Licensed games", "C64 and Spectrum releases"],
+    "related": [{"label":"Konami","slug":"konami"}],
+    "note": "Some Edge releases carried joint or licensed publishing relationships, so CCG retains version-specific credits on game pages.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Edge C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Edge&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — The Edge Spectrum games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=ZX+Spectrum&publisher=The+Edge&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "titus-software",
+    "summary": "Titus published games across 8-bit and 16-bit computers during the late 1980s and early 1990s, with Commodore releases ranging from driving and action titles to Amiga games such as The Blues Brothers.",
+    "facts": [
+      "The Centre for Computing History preserves Titus releases on Commodore, Amstrad, Spectrum and PC systems.",
+      "Its Commodore records include Crazy Cars, Wild Streets, Battle Storm and The Blues Brothers."
+    ],
+    "strengths": ["Driving games", "Action games", "C64 and Amiga publishing"],
+    "related": [],
+    "note": "The museum catalogue supports Titus's multi-format publishing activity; this profile avoids unsupported corporate-history detail.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Battle Storm and Titus catalogue",
+        "url": "https://www.computinghistory.org.uk/det/43205/Battle-Storm/",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "tynesoft",
+    "summary": "Tynesoft built a broad British home-computer catalogue across the 1980s, publishing games on the BBC Micro, Acorn Electron, Commodore systems, ZX Spectrum and other platforms.",
+    "facts": [
+      "The Centre for Computing History preserves seventy-eight game records under the Tynesoft publishing credit.",
+      "The museum collection spans numerous 8-bit platforms and includes sports, licensed and arcade-style games, with Commodore releases extending across the C16/Plus 4 and Commodore 64."
+    ],
+    "strengths": ["Large 8-bit catalogue", "Sports and licensed games", "Multi-format publishing"],
+    "related": [],
+    "note": "The museum's broad catalogue provides strong evidence for Tynesoft's multi-format publishing activity without requiring speculative company-history claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Tynesoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Tynesoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "ultimate",
+    "summary": "Ultimate Play The Game was the publishing name of Ashby Computers and Graphics Ltd., formed in 1982 by brothers Tim and Chris Stamper. The label became one of the best-known British 8-bit game names of the early-to-mid 1980s.",
+    "facts": [
+      "The Centre for Computing History records Ultimate Play The Game as the publishing name of Ashby Computers and Graphics Ltd., formed in 1982 by Tim and Chris Stamper.",
+      "The museum identifies Jetpac and Pssst as the company's first two releases in 1983.",
+      "Its Commodore collection records Ultimate titles including The Staff of Karnath, Entombed, Underwurlde and Outlaws."
+    ],
+    "strengths": ["British 8-bit classics", "Filmation-era games", "C64 and Spectrum publishing"],
+    "related": [],
+    "note": "Ultimate's C64 catalogue includes both conversions and games created externally for the platform, so developer credits remain separate.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Ultimate Play The Game company profile",
+        "url": "https://www.computinghistory.org.uk/det/32829/Ultimate-Play-The-Game/",
+        "type": "museum company archive"
+      },
+      {
+        "label": "Centre for Computing History — Ultimate Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Ultimate+Play+The+Game&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "virgin-mastertronic",
+    "summary": "Virgin Mastertronic was the later form of the Mastertronic business after Virgin became involved. It combined software publishing with a major role in Sega distribution before the business was reorganised in the early 1990s.",
+    "facts": [
+      "Anthony Guter's first-person Mastertronic history records that the company later became Virgin Mastertronic.",
+      "Guter states that the business became the exclusive UK supplier for Sega consoles and software.",
+      "He records that by 1992 Virgin disposed of the Sega distribution side and the remaining games businesses were reorganised as Virgin Interactive Entertainment."
+    ],
+    "strengths": ["Budget software", "Sega distribution", "Late Mastertronic publishing"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}, {"label":"Virgin Games","slug":"virgin-games"}, {"label":"Sega","slug":"sega"}],
+    "note": "The historical account comes from former Mastertronic financial controller and systems manager Anthony Guter.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — company history",
+        "url": "https://mastertronic.co.uk/a-history-of-mastertronic/",
+        "type": "first-person archive"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — website history",
+        "url": "https://mastertronic.co.uk/mastertronic-website-a-brief-history/",
+        "type": "first-person archive"
+      }
+    ]
+  },
+  {
+    "slug": "zeppelin-games",
+    "summary": "Zeppelin Games published budget and mid-price computer games from the late 1980s into the early 1990s, with releases spread across the Commodore 64, Amiga, Atari 8-bit, Spectrum and Amstrad systems.",
+    "facts": [
+      "The Centre for Computing History preserves sixteen game records under the Zeppelin Games publishing credit.",
+      "The museum catalogue includes Commodore releases such as International Tennis, World Soccer and Jocky Wilson's Dart Challenge, as well as later Amiga software."
+    ],
+    "strengths": ["Budget publishing", "Sports games", "C64 and Amiga releases"],
+    "related": [],
+    "note": "The institutional record is strongest for Zeppelin's software catalogue, so the profile stays focused on documented publishing activity.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Zeppelin Games catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Zeppelin+Games&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
