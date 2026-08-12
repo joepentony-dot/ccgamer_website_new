@@ -39,11 +39,9 @@ function replaceMetaDescription(html, description) {
 }
 
 function replaceProfileHost(html, markup) {
-  const empty = /<div\s+id="composer-content">\s*<\/div>/i;
-  if (empty.test(html)) return html.replace(empty, `<div id="composer-content">\n      ${markup}\n    </div>`);
-  const populated = /(<div\s+id="composer-content">\s*)([\s\S]*?)(\s*<\/div>\s*\n\s*<div\s+class="ccg-composer-support">)/i;
-  if (populated.test(html)) return html.replace(populated, `$1\n      ${markup}\n    $3`);
-  return null;
+  const host = /<div\s+id="composer-content">[\s\S]*?<\/div>(?=\s*<div\s+class="ccg-composer-support">)/i;
+  if (!host.test(html)) return null;
+  return html.replace(host, `<div id="composer-content">\n      ${markup}\n    </div>`);
 }
 
 function injectEntitySchema(html, route, profile, archiveBio) {
