@@ -10589,6 +10589,56 @@
     "publisher": "Argus Press Software"
   },
   {
+    "system": "C64",
+    "id": "go_for_the_gold",
+    "slug": "go-for-the-gold",
+    "title": "Go For The Gold",
+    "sorttitle": "Go For The Gold",
+    "year": 1986,
+    "genres": [
+      "sports"
+    ],
+    "collections": [],
+    "videoid": "rqqqYRSgSBI",
+    "thumbnail": "resources/images/thumbnails/all/go-for-the-gold.webp",
+    "pdf": "https://drive.google.com/file/d/1t9AqseYjOKcc6cFE1BUGAlPPvM1_NBBm/view?usp=drive_link",
+    "disk": [
+      "https://drive.google.com/file/d/127eMiQV0MRn9vf4erNe7EbwH9WVtYG4C/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/go-for-the-gold"
+    ],
+    "zzap": [],
+    "description": "Go For The Gold is a Commodore 64 multi-event sports game released by Americana in 1986. A re-release of the earlier HES Games, it challenges players across six sporting events: the 100m sprint, 110m hurdles, long jump, diving, archery and weightlifting. Each event uses different timing, joystick and accuracy-based controls, with support for up to six players making it particularly suited to competitive play. Developed by 3-2-1 Software, Go For The Gold mixes traditional track-and-field events with more unusual challenges such as archery and diving. The C64 version became a well-regarded budget sports release and remains an interesting alternative to the better-known multi-event games of the era.",
+    "ccg_rating": 8,
+    "ccg_rating_reason": "One of the best Olympics games on the C64, and that's a high bar.",
+    "credits": {
+      "publisher": [
+        "Americana"
+      ],
+      "producer": "",
+      "coder": [
+        "Dennis Kirsch",
+        "Michael F.C. Crick"
+      ],
+      "graphics": [
+        "Mark Madland",
+        "Steve Chin"
+      ],
+      "musician": [
+        "Bob Landwehr"
+      ],
+      "re_releaser": [],
+      "developer": "3-2-1 Software"
+    },
+    "developer": "3-2-1 Software",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false,
+    "music": [
+      "go-for-the-gold.mp3"
+    ]
+  },
+  {
     "system": "AMIGA",
     "id": "gobliiins",
     "slug": "gobliiins",
