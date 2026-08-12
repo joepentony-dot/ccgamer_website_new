@@ -444,7 +444,6 @@ function buildResourceTasks() {
         sizeLabel: '3D box image'
       });
     }
-    });
 
     [game?.pdf, game?.disk].flatMap(asArray).map(localPath).filter(Boolean).forEach((url) => {
       tasks.push({

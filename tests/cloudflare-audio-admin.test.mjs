@@ -35,6 +35,7 @@ test('Archive Quality separates Cloudflare music from local resource findings', 
   assert.match(js, /new Audio\(\)/);
   assert.doesNotMatch(js, /category:\s*["']Local audio["']/);
   assert.doesNotMatch(js, /resources\/audio\/games/);
+  assert.doesNotMatch(js, /\n\s*\}\);\n\n\s*\[game\?\.pdf, game\?\.disk\]/, 'Local linked-file checks must remain inside the per-game resource loop');
 
   const archiveBase = js.match(/CLOUDFLARE_MUSIC_BASE_URL = '([^']+)'/)?.[1];
   const runtimeBase = musicConfig.match(/DEFAULT_MUSIC_BASE_URL = "([^"]+)"/)?.[1];
