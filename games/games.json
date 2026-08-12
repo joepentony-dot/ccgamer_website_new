@@ -13336,6 +13336,55 @@
   },
   {
     "system": "C64",
+    "id": "insects_in_space",
+    "slug": "insects-in-space",
+    "title": "Insects In Space",
+    "sorttitle": "Insects In Space",
+    "year": 1989,
+    "genres": [
+      "arcade",
+      "shooting"
+    ],
+    "collections": [],
+    "videoid": "rn_hzXvVYes",
+    "thumbnail": "resources/images/thumbnails/all/insects-in-space.webp",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1-wXAQnUzTGSL4VElw1YMT_uIDayRHQey/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/insects-in-space"
+    ],
+    "zzap": [
+      "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=59&page=9"
+    ],
+    "description": "Insects In Space (C64) is a bizarre and entertaining 1989 Commodore 64 shoot-'em-up from Sensible Software and Hewson. Inspired by Defender, you must battle alien insects, rescue babies and survive the chaotic two-level landscape. Highly rated by the C64 press, including an impressive 94% from Zzap!64, Insects In Space is a fascinating and overlooked C64 classic.",
+    "ccg_rating": 7,
+    "ccg_rating_reason": "A quirky and enjoyable Sensible Software shooter with a great concept and plenty of personality, but repetitive gameplay and some frustrations keep it from reaching the heights of the C64's very best.",
+    "credits": {
+      "publisher": [
+        "Hewson"
+      ],
+      "producer": "",
+      "coder": [
+        "Chris Yates"
+      ],
+      "graphics": [],
+      "musician": [
+        "Martin Galway"
+      ],
+      "re_releaser": [],
+      "developer": "Sensible Software"
+    },
+    "developer": "Sensible Software",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false,
+    "music": [
+      "insects-in-space.mp3"
+    ]
+  },
+  {
+    "system": "C64",
     "id": "international_basketball",
     "slug": "international-basketball",
     "title": "International Basketball",
