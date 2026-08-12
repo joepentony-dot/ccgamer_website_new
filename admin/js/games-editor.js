@@ -43,7 +43,6 @@ const EMPTY_DRAFT = {
   collections: [],
   pdf: '',
   disk: '',
-  music: '',
   creditsPublisher: '',
   creditsDeveloper: '',
   creditsCoder: '',
@@ -79,7 +78,6 @@ const state = {
   thumbnailCheck: 'idle',
   thumbnailLiveExists: null,
   localThumbnailFile: null,
-  musicCheck: 'idle',
   slugManuallyEdited: false,
   siteSettings: {
     facebookAppId: ''
@@ -116,7 +114,6 @@ const el = {
   previewThumbnailManifest: document.querySelector('[data-preview-thumbnail-manifest]'),
   previewThumbnailManualStatus: document.querySelector('[data-preview-thumbnail-manual-status]'),
   thumbnailFileInput: document.querySelector('[data-thumbnail-file]'),
-  previewMusicStatus: document.querySelector('[data-preview-music-status]'),
   previewLandingUrl: document.querySelector('[data-preview-landing-url]'),
   previewRedirectTarget: document.querySelector('[data-preview-redirect-target]'),
   previewRating: document.querySelector('[data-preview-rating]'),
@@ -765,7 +762,6 @@ function buildPackageData() {
     videoid: state.draft.videoId.trim(),
     // Filename-only logic: keep full-path storage in output while allowing shorthand input in the editor UI.
     thumbnail: normalizeThumbnailPath(state.draft.thumbnail, slug),
-    music: parseCommaList(state.draft.music),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
     lemon: buildLemonLinks(state.draft.lemonUrl, state.draft.externalLinks),
@@ -778,12 +774,7 @@ function buildPackageData() {
   };
 
   entryLemonDeduplicate(gameEntry);
-
-  if (!Array.isArray(gameEntry.music) || gameEntry.music.length === 0) {
-    delete gameEntry.music;
-  }
-
-  const normalizedBox3dPath = normalizeBox3dPath(state.draft.box3d, slug);
+const normalizedBox3dPath = normalizeBox3dPath(state.draft.box3d, slug);
 
   const schemaErrors = validateGameEntrySchema(gameEntry);
   if (schemaErrors.length) {
@@ -1180,7 +1171,7 @@ function buildGamesSearch(games) {
   };
   const normalizeComposerList = (game) => {
     const seen = new Set();
-    return [...toList(game.composer), ...toList(game?.credits?.musician), ...toList(game.music)]
+    return [...toList(game.composer), ...toList(game?.credits?.musician)]
       .map((item) => String(item || '').trim())
       .filter(Boolean)
       .filter((name) => !/\.mp3$/i.test(name))
@@ -1203,8 +1194,7 @@ function buildGamesSearch(games) {
     publisher: toList(game.publisher || game?.credits?.publisher),
     genre: Array.isArray(game.genres) ? game.genres : [],
     genres: Array.isArray(game.genres) ? game.genres : [],
-    composer: normalizeComposerList(game),
-    music: Array.isArray(game.music) ? game.music : (game.music ? [game.music] : [])
+    composer: normalizeComposerList(game)
   }));
   return JSON.stringify(payload, null, 2);
 }
@@ -1231,9 +1221,6 @@ function updateDerivedPreviews() {
   }
   if (el.previewThumbnailManualStatus) {
     el.previewThumbnailManualStatus.textContent = thumbnailPath && packaging.mode === 'manual' ? `Manual upload required before deployment: ${thumbnailPath}` : '';
-  }
-  if (el.previewMusicStatus) {
-    el.previewMusicStatus.textContent = slug ? `Auto-detect on page: /resources/audio/games/${slug}.mp3` : 'Music auto-detection requires a slug.';
   }
 }
 

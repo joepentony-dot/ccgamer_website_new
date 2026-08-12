@@ -894,9 +894,6 @@ function buildGameEntry() {
     _ccg_enforced: false,
     _ccg_migrated: false
   };
-
-  const music = parseCommaList(gameValue('music'));
-  if (music.length) entry.music = music;
   return entry;
 }
 

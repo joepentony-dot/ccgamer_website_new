@@ -9,6 +9,9 @@ const GAMES_URL = '/games/games.json';
 const THUMBNAIL_SIZE_LIMIT = 1_500_000;
 const BOX_SIZE_LIMIT = 2_000_000;
 const RESOURCE_CONCURRENCY = 8;
+const CLOUDFLARE_MUSIC_CONCURRENCY = 16;
+const CLOUDFLARE_MUSIC_TIMEOUT_MS = 2200;
+const CLOUDFLARE_MUSIC_BASE_URL = 'https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/';
 const VALID_GENRES = new Set([
   'action-adventure',
   'action adventure',
@@ -38,6 +41,9 @@ const state = {
   findings: [],
   resourceCache: new Map(),
   resourcesChecked: 0,
+  cloudflareMusicChecked: 0,
+  cloudflareMusicFound: 0,
+  cloudflareMusicRunning: false,
   running: false,
   lastCheckedAt: null
 };
@@ -405,14 +411,6 @@ function localPath(value) {
   }
 }
 
-function musicPath(value) {
-  const raw = text(value);
-  if (!raw) return '';
-  if (/^https?:\/\//i.test(raw) || raw.startsWith('/')) return localPath(raw);
-  if (raw.includes('/')) return localPath(raw);
-  return `/resources/audio/games/${encodeURIComponent(raw).replace(/%2F/gi, '/')}`;
-}
-
 function buildResourceTasks() {
   const tasks = [];
 
@@ -446,18 +444,6 @@ function buildResourceTasks() {
         sizeLabel: '3D box image'
       });
     }
-
-    asArray(game?.music).map(musicPath).filter(Boolean).forEach((url) => {
-      tasks.push({
-        game,
-        index,
-        kind: 'music',
-        category: 'Local audio',
-        url,
-        missingSeverity: 'warning',
-        sizeLimit: 0,
-        sizeLabel: 'audio file'
-      });
     });
 
     [game?.pdf, game?.disk].flatMap(asArray).map(localPath).filter(Boolean).forEach((url) => {
@@ -592,6 +578,127 @@ async function runResourceAudit() {
 
   await Promise.all(Array.from({ length: Math.min(RESOURCE_CONCURRENCY, tasks.length || 1) }, worker));
   sortFindings();
+}
+
+
+function cloudflareMusicUrl(slug) {
+  const normalized = text(slug).replace(/\.mp3$/i, '').replace(/^\/+|\/+$/g, '');
+  if (!normalized) return '';
+  return CLOUDFLARE_MUSIC_BASE_URL + encodeURIComponent(normalized).replace(/%2F/gi, '/') + '.mp3';
+}
+
+function probeCloudflareMusic(url) {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audio.src = url;
+
+    let settled = false;
+    let timeoutId = null;
+
+    const cleanup = () => {
+      audio.removeEventListener('loadedmetadata', onReady);
+      audio.removeEventListener('error', onError);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      audio.removeAttribute('src');
+      try { audio.load(); } catch (_error) {}
+    };
+
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(ok);
+    };
+
+    const onReady = () => finish(true);
+    const onError = () => finish(false);
+
+    audio.addEventListener('loadedmetadata', onReady, { once: true });
+    audio.addEventListener('error', onError, { once: true });
+    timeoutId = window.setTimeout(() => finish(false), CLOUDFLARE_MUSIC_TIMEOUT_MS);
+
+    try { audio.load(); } catch (_error) { finish(false); }
+  });
+}
+
+async function runCloudflareMusicAudit() {
+  if (state.cloudflareMusicRunning) return;
+  if (state.running) {
+    setStatus('Finish the local archive audit before starting the Cloudflare music check.', 'info');
+    return;
+  }
+
+  state.cloudflareMusicRunning = true;
+  const button = document.getElementById('archiveQualityRunMusic');
+  if (button) {
+    button.disabled = true;
+    button.textContent = 'Checking music…';
+  }
+
+  try {
+    if (!state.games.length) await loadCatalogue();
+
+    const tasks = state.games
+      .map((game) => ({ game, slug: text(game?.slug) }))
+      .filter((task) => task.slug);
+
+    state.cloudflareMusicChecked = 0;
+    state.cloudflareMusicFound = 0;
+    renderSummary();
+    setStatus('Checking Cloudflare-hosted game music by canonical slug…', 'info');
+    setProgress(0, tasks.length, 'Checking Cloudflare music for ' + tasks.length + ' game slugs…');
+
+    let cursor = 0;
+    async function worker() {
+      while (cursor < tasks.length) {
+        const taskIndex = cursor;
+        cursor += 1;
+        const task = tasks[taskIndex];
+        const url = cloudflareMusicUrl(task.slug);
+        const playable = url ? await probeCloudflareMusic(url) : false;
+        state.cloudflareMusicChecked += 1;
+        if (playable) state.cloudflareMusicFound += 1;
+
+        if (state.cloudflareMusicChecked === tasks.length || state.cloudflareMusicChecked % 10 === 0) {
+          renderSummary();
+          setProgress(
+            state.cloudflareMusicChecked,
+            tasks.length,
+            'Checked ' + state.cloudflareMusicChecked + ' of ' + tasks.length + ' Cloudflare music URLs · ' + state.cloudflareMusicFound + ' playable'
+          );
+        }
+      }
+    }
+
+    await Promise.all(Array.from(
+      { length: Math.min(CLOUDFLARE_MUSIC_CONCURRENCY, tasks.length || 1) },
+      worker
+    ));
+
+    renderSummary();
+    if (state.cloudflareMusicFound > 0) {
+      setStatus(
+        'Cloudflare music check complete: ' + state.cloudflareMusicFound + ' playable tracks found across ' + state.cloudflareMusicChecked + ' game slugs. Missing tracks are not archive warnings.',
+        'success'
+      );
+    } else {
+      setStatus(
+        'Cloudflare music check completed across ' + state.cloudflareMusicChecked + ' game slugs, but this browser could not confirm a playable track. No per-game warnings were created.',
+        'warning'
+      );
+    }
+  } catch (error) {
+    console.error('[archive-quality] Cloudflare music audit failed', error);
+    setStatus(error?.message || 'The Cloudflare music check could not be completed.', 'error');
+  } finally {
+    state.cloudflareMusicRunning = false;
+    hideProgress();
+    if (button) {
+      button.disabled = false;
+      button.textContent = 'Check Cloudflare music';
+    }
+  }
 }
 
 function formatBytes(bytes) {
@@ -730,6 +837,8 @@ function renderSummary() {
   document.getElementById('archiveQualityWarningCount').textContent = String(counts.warning);
   document.getElementById('archiveQualityInfoCount').textContent = String(counts.info);
   document.getElementById('archiveQualityResourceCount').textContent = String(state.resourcesChecked);
+  const musicCount = document.getElementById('archiveQualityCloudflareMusicCount');
+  if (musicCount) musicCount.textContent = state.cloudflareMusicFound + '/' + state.cloudflareMusicChecked;
 }
 
 function renderFindings() {
@@ -794,7 +903,7 @@ async function runQuickAudit() {
 
   const critical = state.findings.filter((finding) => finding.severity === 'critical').length;
   setStatus(
-    `Quick audit complete: ${state.games.length} games inspected. Run the full audit to verify local files and canonical pages.`,
+    `Quick audit complete: ${state.games.length} games inspected. Run the full audit to verify local resources and canonical pages.`,
     critical ? 'warning' : 'success'
   );
 }
@@ -815,7 +924,7 @@ async function runFullAudit() {
     runMetadataAudit();
     renderFindings();
 
-    setStatus('Checking live local files and canonical pages…', 'info');
+    setStatus('Checking live local resources and canonical pages…', 'info');
     await runResourceAudit();
     state.lastCheckedAt = new Date();
     renderFindings();
@@ -824,7 +933,7 @@ async function runFullAudit() {
     const critical = state.findings.filter((finding) => finding.severity === 'critical').length;
     const warnings = state.findings.filter((finding) => finding.severity === 'warning').length;
     setStatus(
-      `Full audit complete: ${critical} critical, ${warnings} warning and ${state.resourcesChecked} local file checks.`,
+      `Full audit complete: ${critical} critical, ${warnings} warning and ${state.resourcesChecked} local resource checks.`,
       critical ? 'warning' : 'success'
     );
   } catch (error) {
@@ -902,6 +1011,8 @@ function exportJson() {
     generated_at: new Date().toISOString(),
     games_inspected: state.games.length,
     local_resources_checked: state.resourcesChecked,
+    cloudflare_music_checked: state.cloudflareMusicChecked,
+    cloudflare_music_found: state.cloudflareMusicFound,
     filters_applied: true,
     findings: reportRows()
   };
@@ -910,6 +1021,7 @@ function exportJson() {
 
 function bindControls() {
   document.getElementById('archiveQualityRun')?.addEventListener('click', () => { void runFullAudit(); });
+  document.getElementById('archiveQualityRunMusic')?.addEventListener('click', () => { void runCloudflareMusicAudit(); });
   document.getElementById('archiveQualityCopy')?.addEventListener('click', () => { void copyVisibleReport(); });
   document.getElementById('archiveQualityCsv')?.addEventListener('click', exportCsv);
   document.getElementById('archiveQualityJson')?.addEventListener('click', exportJson);
