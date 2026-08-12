@@ -23,12 +23,24 @@ function fail(message) {
   process.exit(1);
 }
 
-function ensureScript(filePath, loader, runtime) {
+function delegatesToGameTemplate(html) {
+  const source = String(html || "");
+  const hasRefresh = /<meta\b[^>]*http-equiv=(["'])refresh\1[^>]*content=(["'])[^"']*\/games\/game\.html\?id=[^"']+\2/i.test(source);
+  const hasRedirect = /window\.location\.replace\(\s*(["'])\/games\/game\.html\?id=[^"']+\1\s*\)/i.test(source);
+  return hasRefresh && hasRedirect;
+}
+
+function ensureScript(filePath, loader, runtime, options = {}) {
   const relative = path.relative(ROOT, filePath).replace(/\\/g, "/");
   if (!fs.existsSync(filePath)) fail(`${relative}: canonical game page is missing.`);
 
   const html = fs.readFileSync(filePath, "utf8");
-  if (html.includes(runtime)) return { checked: true, changed: false };
+  if (html.includes(runtime)) return { checked: true, changed: false, delegated: false };
+
+  if (options.allowTemplateDelegation && delegatesToGameTemplate(html)) {
+    return { checked: true, changed: false, delegated: true };
+  }
+
   if (!html.includes(loader)) fail(`${relative}: cannot find load-single-game.js insertion point.`);
 
   if (CHECK_ONLY) fail(`${relative}: magazine review runtime is missing.`);
@@ -36,7 +48,7 @@ function ensureScript(filePath, loader, runtime) {
   const updated = html.replace(loader, `${loader}\n${runtime}`);
   fs.writeFileSync(filePath, updated, "utf8");
   console.log(`[magazine-review-runtime] Added runtime to ${relative}`);
-  return { checked: true, changed: true };
+  return { checked: true, changed: true, delegated: false };
 }
 
 function canonicalPages() {
@@ -61,6 +73,7 @@ function canonicalPages() {
 function main() {
   let checked = 0;
   let changed = 0;
+  let delegated = 0;
 
   const templateResult = ensureScript(TEMPLATE, TEMPLATE_LOADER, TEMPLATE_RUNTIME);
   checked += templateResult.checked ? 1 : 0;
@@ -68,15 +81,16 @@ function main() {
 
   const pages = canonicalPages();
   for (const filePath of pages) {
-    const result = ensureScript(filePath, PAGE_LOADER, PAGE_RUNTIME);
+    const result = ensureScript(filePath, PAGE_LOADER, PAGE_RUNTIME, { allowTemplateDelegation: true });
     checked += result.checked ? 1 : 0;
     changed += result.changed ? 1 : 0;
+    delegated += result.delegated ? 1 : 0;
   }
 
   if (CHECK_ONLY) {
-    console.log(`[magazine-review-runtime] Verified runtime on template and ${pages.length} canonical game pages.`);
+    console.log(`[magazine-review-runtime] Verified runtime coverage for template and ${pages.length} canonical game pages (${delegated} delegated redirect wrapper(s)).`);
   } else {
-    console.log(`[magazine-review-runtime] Checked template plus ${pages.length} canonical game pages; updated ${changed}.`);
+    console.log(`[magazine-review-runtime] Checked template plus ${pages.length} canonical game pages; updated ${changed}; ${delegated} delegated to games/game.html.`);
   }
 }
 
