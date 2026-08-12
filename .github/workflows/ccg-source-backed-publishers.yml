@@ -3,7 +3,9 @@ name: CCG Source-Backed Publishers
 on:
   pull_request:
     paths:
-      - "data/publisher-histories.json"
+      - "data/publisher-histories*.json"
+      - "data/publisher-secondary-credits.json"
+      - "games/publishers/publishers.json"
       - "js/ccg-publisher-history.js"
       - "resources/css/publisher-history.css"
       - "scripts/audit-source-backed-publishers.js"
@@ -25,11 +27,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate JavaScript and JSON syntax
+      - name: Validate JavaScript and publisher JSON syntax
         run: |
           node --check js/ccg-publisher-history.js
           node --check scripts/audit-source-backed-publishers.js
-          node -e "JSON.parse(require('fs').readFileSync('data/publisher-histories.json', 'utf8'))"
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const files = fs.readdirSync('data')
+            .filter((name) => /^publisher-histories(?:-[a-z0-9-]+)?\.json$/i.test(name));
+          for (const name of files) {
+            const value = JSON.parse(fs.readFileSync(path.join('data', name), 'utf8'));
+            if (!Array.isArray(value)) throw new Error(`${name} must contain an array`);
+          }
+          console.log(`Validated ${files.length} publisher history JSON file(s).`);
+          NODE
 
       - name: Run publisher evidence audit
         run: node scripts/audit-source-backed-publishers.js

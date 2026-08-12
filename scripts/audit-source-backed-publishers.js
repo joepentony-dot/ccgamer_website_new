@@ -37,19 +37,40 @@ function changedFiles() {
   return [];
 }
 
-const dataText = read("data/publisher-histories.json");
+const profileFiles = fs.readdirSync(path.join(root, "data"))
+  .filter((name) => /^publisher-histories(?:-[a-z0-9-]+)?\.json$/i.test(name))
+  .sort((a, b) => a.localeCompare(b));
+const profileTexts = profileFiles.map((name) => ({
+  name,
+  text: read(`data/${name}`)
+}));
 const secondaryText = read("data/publisher-secondary-credits.json");
+const publisherMetadataText = read("games/publishers/publishers.json");
 const moduleCode = read("js/ccg-publisher-history.js");
 const css = read("resources/css/publisher-history.css");
 const workflow = read(".github/workflows/ccg-source-backed-publishers.yml");
 const documentation = read("docs/phase-18-source-backed-publisher-histories.md");
 
 let profiles = [];
+for (const file of profileTexts) {
+  try {
+    const parsed = JSON.parse(file.text);
+    if (!Array.isArray(parsed)) {
+      failures.push(`${file.name}: publisher history data must remain an array`);
+      continue;
+    }
+    profiles = profiles.concat(parsed);
+  } catch (error) {
+    failures.push(`${file.name}: publisher history JSON is invalid: ${error.message}`);
+  }
+}
+
+let publisherMetadata = [];
 try {
-  profiles = JSON.parse(dataText);
-  if (!Array.isArray(profiles)) failures.push("Publisher history data must remain an array");
+  publisherMetadata = JSON.parse(publisherMetadataText);
+  if (!Array.isArray(publisherMetadata)) failures.push("Publisher metadata must remain an array");
 } catch (error) {
-  failures.push(`Publisher history JSON is invalid: ${error.message}`);
+  failures.push(`Publisher metadata JSON is invalid: ${error.message}`);
 }
 
 const requiredSourceBacked = new Set([
@@ -61,7 +82,19 @@ const requiredSourceBacked = new Set([
   "electronic-arts",
   "elite",
   "microprose-software",
-  "americana"
+  "americana",
+  "access-software",
+  "accolade",
+  "alligata-software",
+  "alternative-software",
+  "ariolasoft",
+  "atarisoft",
+  "audiogenic",
+  "br-derbund",
+  "bubble-bus",
+  "cascade-games",
+  "cinemaware",
+  "commodore"
 ]);
 
 const approvedHosts = new Set([
@@ -73,9 +106,20 @@ const approvedHosts = new Set([
   "investor.activision.com",
   "find-and-update.company-information.service.gov.uk",
   "www.elite-systems.co.uk",
-  "firaxis.com"
+  "firaxis.com",
+  "news.microsoft.com",
+  "www.ataricompendium.com",
+  "markhardisty.wordpress.com",
+  "history.bertelsmann.com",
+  "atari.com",
+  "atarimuseum.nl",
+  "archives.museumofplay.org",
+  "commodore.net"
 ]);
 
+const publisherArchiveSlugs = new Set(
+  publisherMetadata.map((entry) => String(entry?.slug || "").trim()).filter(Boolean)
+);
 const seenSlugs = new Set();
 for (const profile of profiles) {
   const slug = String(profile?.slug || "").trim();
@@ -85,6 +129,10 @@ for (const profile of profiles) {
   }
   if (seenSlugs.has(slug)) failures.push(`Duplicate publisher profile slug: ${slug}`);
   seenSlugs.add(slug);
+
+  if (!publisherArchiveSlugs.has(slug)) {
+    failures.push(`${slug}: publisher profile has no matching generated CCG publisher archive`);
+  }
 
   const facts = Array.isArray(profile.facts) ? profile.facts : [];
   const sources = Array.isArray(profile.sources) ? profile.sources : [];
@@ -142,7 +190,8 @@ if (!americana) {
   }
 }
 
-if (/lemon64\.com/i.test(dataText) || /lemon64\.com/i.test(secondaryText)) {
+const allProfileText = profileTexts.map((file) => file.text).join("\n");
+if (/lemon64\.com/i.test(allProfileText) || /lemon64\.com/i.test(secondaryText)) {
   failures.push("Publisher history/evidence data must not reference Lemon64");
 }
 
@@ -153,6 +202,8 @@ requireText(moduleCode, "noopener noreferrer external", "External-link safety");
 requireText(moduleCode, "safeExternalUrl", "Source URL validation");
 requireText(moduleCode, "Evidence reviewed", "Review-date display");
 requireText(moduleCode, "cache: \"default\"", "Publisher data cache policy");
+requireText(moduleCode, "publisher-histories-a-c.json", "A-C publisher history batch loader");
+requireText(moduleCode, "mergeProfileResults", "Publisher history batch merger");
 requireText(css, ".ccg-publisher-history__facts", "Fact-list styling");
 requireText(css, ".ccg-publisher-history__sources", "Evidence styling");
 requireText(css, ".ccg-publisher-history__status", "Evidence-status styling");
@@ -170,6 +221,7 @@ const protectedPaths = new Set([
 
 const allowedPaths = new Set([
   "data/publisher-histories.json",
+  "data/publisher-histories-a-c.json",
   "data/publisher-secondary-credits.json",
   "js/ccg-publisher-history.js",
   "resources/css/publisher-history.css",
@@ -193,7 +245,10 @@ if (failures.length) {
 
 console.log("Source-backed publisher audit passed.");
 console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence`);
-console.log("- Sources are restricted to the reviewed institutional and specialist host list");
+console.log(`- ${profileFiles.length} publisher history data file(s) were validated as one unique profile set`);
+console.log("- Every publisher profile maps to an existing generated CCG publisher archive");
+console.log("- Sources are restricted to the reviewed official, institutional, archival and first-person host list");
 console.log("- Americana uses the approved Mastertronic history and evidence source only");
+console.log("- Lemon64 is prohibited from publisher history/evidence data");
 console.log("- Unsourced publisher summaries remain labelled as curated context");
 console.log("- Master game data and protected files remain unchanged");
