@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
 
 const {
@@ -6,6 +7,9 @@ const {
   collectionDisplayLabel,
   collectionMatchesCanonical
 } = await import('../admin/js/collection-values.js');
+
+const guardSource = fs.readFileSync(new URL('../admin/js/guard.js', import.meta.url), 'utf8');
+const collectionLoaderSource = fs.readFileSync(new URL('../js/collection-loader.js', import.meta.url), 'utf8');
 
 test('Top Picks aliases collapse to the public canonical collection key', () => {
   assert.equal(canonicalCollectionValue('top picks'), 'top-picks');
@@ -28,8 +32,17 @@ test('cartridge and licensed labels remain canonical and human friendly', () => 
   assert.equal(collectionDisplayLabel('licensed'), 'Licensed Games');
 });
 
-test('canonical matcher accepts historical Top Picks values', () => {
+test('canonical matcher accepts historical collection values', () => {
   assert.equal(collectionMatchesCanonical('top picks', 'top-picks'), true);
   assert.equal(collectionMatchesCanonical('banned', 'bpjs'), true);
   assert.equal(collectionMatchesCanonical('licensed', 'top-picks'), false);
+});
+
+test('all guarded admin game tools install the shared collection normalizer', () => {
+  assert.match(guardSource, /import ['"]\.\/collection-values\.js['"];?/);
+});
+
+test('public collection loader accepts aliases instead of exact-only collection matching', () => {
+  assert.match(collectionLoaderSource, /game\.collections\.some\(value => ccgCollectionValueMatchesKey\(value, key\)\)/);
+  assert.match(collectionLoaderSource, /normalizedKey === "bpjs"/);
 });
