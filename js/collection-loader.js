@@ -28,6 +28,24 @@ function ccgExtractKey(slug) {
         .trim();
 }
 
+function ccgNormaliseCollectionValue(value) {
+    return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[_\s]+/g, "-")
+        .replace(/-+/g, "-");
+}
+
+function ccgCollectionValueMatchesKey(value, key) {
+    const normalizedValue = ccgNormaliseCollectionValue(value);
+    const normalizedKey = ccgNormaliseCollectionValue(key);
+
+    if (normalizedValue === normalizedKey) return true;
+    if (normalizedKey === "top-picks") return normalizedValue === "top-picks";
+    if (normalizedKey === "bpjs") return normalizedValue === "banned" || normalizedValue === "bpjm";
+    return false;
+}
+
 function ccgRunCollectionLoader() {
     if (document.body?.dataset?.collection === 'Retro Events' || document.body?.dataset?.collection === 'Retro Specials') {
         console.info('[CCG] Skipping legacy collection renderer for curated retro video collections');
@@ -64,7 +82,7 @@ function ccgRunCollectionLoader() {
 
             const filtered = games.filter(game =>
                 Array.isArray(game.collections) &&
-                game.collections.includes(key)
+                game.collections.some(value => ccgCollectionValueMatchesKey(value, key))
             );
 
             if (!filtered.length) {
