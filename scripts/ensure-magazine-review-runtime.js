@@ -9,6 +9,7 @@ const ROOT = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
 const GAMES_DIR = path.join(ROOT, "games");
+const GAMES_JSON = path.join(GAMES_DIR, "games.json");
 const TEMPLATE = path.join(GAMES_DIR, "game.html");
 const CHECK_ONLY = process.argv.includes("--check");
 
@@ -24,7 +25,7 @@ function fail(message) {
 
 function ensureScript(filePath, loader, runtime) {
   const relative = path.relative(ROOT, filePath).replace(/\\/g, "/");
-  if (!fs.existsSync(filePath)) return { checked: false, changed: false };
+  if (!fs.existsSync(filePath)) fail(`${relative}: canonical game page is missing.`);
 
   const html = fs.readFileSync(filePath, "utf8");
   if (html.includes(runtime)) return { checked: true, changed: false };
@@ -39,11 +40,22 @@ function ensureScript(filePath, loader, runtime) {
 }
 
 function canonicalPages() {
-  if (!fs.existsSync(GAMES_DIR)) return [];
-  return fs.readdirSync(GAMES_DIR, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(GAMES_DIR, entry.name, "index.html"))
-    .filter((filePath) => fs.existsSync(filePath));
+  if (!fs.existsSync(GAMES_JSON)) fail("games/games.json is missing.");
+
+  let payload;
+  try {
+    payload = JSON.parse(fs.readFileSync(GAMES_JSON, "utf8"));
+  } catch (error) {
+    fail(`Could not parse games/games.json: ${error.message}`);
+  }
+
+  const games = Array.isArray(payload) ? payload : (Array.isArray(payload?.games) ? payload.games : []);
+  const slugs = [...new Set(games
+    .map((game) => String(game?.slug || "").trim())
+    .filter((slug) => /^[a-z0-9-]+$/.test(slug)))];
+
+  if (!slugs.length) fail("games/games.json did not contain any canonical game slugs.");
+  return slugs.map((slug) => path.join(GAMES_DIR, slug, "index.html"));
 }
 
 function main() {
@@ -54,18 +66,17 @@ function main() {
   checked += templateResult.checked ? 1 : 0;
   changed += templateResult.changed ? 1 : 0;
 
-  for (const filePath of canonicalPages()) {
+  const pages = canonicalPages();
+  for (const filePath of pages) {
     const result = ensureScript(filePath, PAGE_LOADER, PAGE_RUNTIME);
     checked += result.checked ? 1 : 0;
     changed += result.changed ? 1 : 0;
   }
 
-  if (!checked) fail("No game template or canonical game pages were found to validate.");
-
   if (CHECK_ONLY) {
-    console.log(`[magazine-review-runtime] Verified runtime on template and ${checked - 1} canonical game pages.`);
+    console.log(`[magazine-review-runtime] Verified runtime on template and ${pages.length} canonical game pages.`);
   } else {
-    console.log(`[magazine-review-runtime] Checked ${checked} files; updated ${changed}.`);
+    console.log(`[magazine-review-runtime] Checked template plus ${pages.length} canonical game pages; updated ${changed}.`);
   }
 }
 
