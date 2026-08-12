@@ -4,11 +4,11 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **652** |
-| Records with a usable release year | **652** |
+| Game records scanned | **653** |
+| Records with a usable release year | **653** |
 | Records missing a usable release year | **0** |
 | Distinct release years | **15** |
-| C64 records | **553** |
+| C64 records | **554** |
 | Amiga records | **99** |
 | Other or missing platform records | **0** |
 | Existing static year archive pages | **15** |
@@ -25,7 +25,7 @@
 | 1986 | 83 | 83 | 0 |
 | 1987 | 85 | 83 | 2 |
 | 1988 | 50 | 46 | 4 |
-| 1989 | 49 | 40 | 9 |
+| 1989 | 50 | 41 | 9 |
 | 1990 | 44 | 31 | 13 |
 | 1991 | 37 | 18 | 19 |
 | 1992 | 29 | 8 | 21 |
@@ -43,7 +43,7 @@ Years represented in the game data without a detected static year archive: **Non
 - Static links to year archives: **43**
 - Static links to platform archives: **25**
 - Query-string year links: **0**
-- Query-string platform links: **0**
+- Query-string platform links: **36**
 - Year filter control detected on the current browse surface: **Yes**
 - Platform filter control detected on the current browse surface: **No**
 
