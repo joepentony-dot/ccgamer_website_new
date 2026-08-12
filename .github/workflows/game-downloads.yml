@@ -1,16 +1,18 @@
-name: Refresh Game Downloads Archive
+name: Validate Game Downloads Archive
 
 on:
   push:
     branches:
       - main
     paths:
+      - "games/games.json"
       - "home.html"
       - "games/index.html"
       - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
+      - "scripts/validate-downloads-page.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -21,12 +23,14 @@ on:
     branches:
       - main
     paths:
+      - "games/games.json"
       - "home.html"
       - "games/index.html"
       - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
       - "scripts/update-downloads-static-pages.js"
+      - "scripts/validate-downloads-page.js"
       - "scripts/publisher-utils.js"
       - "scripts/rebuild-games.js"
       - "resources/css/downloads.css"
@@ -35,15 +39,18 @@ on:
       - ".github/workflows/game-downloads.yml"
   workflow_dispatch:
 
+# This workflow is deliberately validation-only. Reliable Games Publishing owns
+# generated Game Downloads A-Z output and merges it through the protected-main
+# publishing route. Keeping one writer prevents competing automation commits.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: game-downloads-${{ github.ref }}
+  group: validate-game-downloads-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  refresh:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -66,20 +73,16 @@ jobs:
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
           node --check scripts/update-downloads-static-pages.js
+          node --check scripts/validate-downloads-page.js
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
 
-      - name: Add static downloads discovery links
-        run: node scripts/ensure-downloads-discovery-links.js
-
-      - name: Generate game downloads archive
-        run: node scripts/generate-downloads-page.js
-
-      - name: Preserve static page sources
-        run: node scripts/update-downloads-static-pages.js
-
-      - name: Refresh downloads URL in pages sitemap
-        run: node scripts/update-downloads-sitemap.js
+      - name: Build downloads output in validation workspace
+        run: |
+          node scripts/ensure-downloads-discovery-links.js
+          node scripts/generate-downloads-page.js
+          node scripts/update-downloads-static-pages.js
+          node scripts/update-downloads-sitemap.js
 
       - name: Verify downloads discovery and accordion archive
         shell: bash
@@ -102,6 +105,9 @@ jobs:
           ! grep -q 'View Game &amp; Download' games/downloads/index.html
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
+
+      - name: Validate every downloadable game is in A-Z
+        run: node scripts/validate-downloads-page.js
 
       - name: Verify shared archive registrations survive
         run: |
@@ -156,20 +162,7 @@ jobs:
           print(f"Validated {len(paths)} downloads workflow paths.")
           PY
 
-      - name: Commit generated downloads, discovery and sitemap outputs
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-        shell: bash
+      - name: Confirm workflow is validation-only
         run: |
-          git add home.html games/index.html games/downloads tools/seo/static-pages.json sitemap-pages.xml
-
-          if git diff --cached --quiet; then
-            echo "Game downloads archive and discovery links are already current."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Refresh game downloads discovery links"
-
-          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git push origin "HEAD:${TARGET_BRANCH}"
+          echo "Downloads output validated. No files are committed by this workflow."
+          echo "Reliable Games Publishing remains the sole generated-output writer."
