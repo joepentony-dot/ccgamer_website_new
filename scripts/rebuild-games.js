@@ -48,17 +48,26 @@ const steps = [
 
 function fail(message) {
   console.error(`[rebuild-games] ${message}`);
+  if (process.env.GITHUB_ACTIONS === "true") {
+    const safeMessage = String(message || "Reliable Games Publishing failed")
+      .replace(/%/g, "%25")
+      .replace(/\r/g, "%0D")
+      .replace(/\n/g, "%0A");
+    console.error(`::error title=Reliable Games Publishing::${safeMessage}`);
+  }
   process.exit(1);
 }
 
 function runNodeScript(scriptName, args = []) {
   const scriptPath = path.join(__dirname, scriptName);
+  console.log(`[rebuild-games] START ${scriptName}${args.length ? ` ${args.join(" ")}` : ""}`);
   const result = spawnSync(process.execPath, [scriptPath, ...args], {
     cwd: repoRoot,
     stdio: "inherit",
     env: { ...process.env, CCG_REPO_ROOT: repoRoot },
   });
   if (result.status !== 0) fail(`${scriptName} failed with status ${result.status ?? 1}.`);
+  console.log(`[rebuild-games] PASS ${scriptName}`);
 }
 
 function main() {
