@@ -506,6 +506,28 @@
 
     const systemLabel = getPlatformLabel(bucket.systems);
     const gameCount = bucket.games.length;
+    const researchedProfile = content.querySelector('[data-ccg-research-profile="true"]');
+    if (researchedProfile) {
+      const imagePath = await getComposerImagePath(composer.slug);
+      if (imagePath && !researchedProfile.querySelector(".ccg-composer-profile__image")) {
+        const image = document.createElement("img");
+        image.src = imagePath;
+        image.alt = composer.name;
+        image.className = "ccg-composer-profile__image";
+        image.loading = "lazy";
+        researchedProfile.classList.remove("ccg-composer-profile--text-only");
+        researchedProfile.insertAdjacentElement("afterbegin", image);
+      }
+
+      const subtitle = document.querySelector(".ccg-composer-subtitle");
+      if (subtitle) {
+        subtitle.textContent = systemLabel
+          ? `${gameCount} linked game credits across ${systemLabel}`
+          : `${gameCount} linked game credits`;
+      }
+      return;
+    }
+
     const imagePath = await getComposerImagePath(composer.slug);
 
     content.innerHTML = `
