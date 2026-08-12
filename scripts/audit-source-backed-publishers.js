@@ -154,6 +154,7 @@ const approvedHosts = new Set([
 const publisherArchiveSlugs = new Set(
   publisherMetadata.map((entry) => String(entry?.slug || "").trim()).filter(Boolean)
 );
+const dormantProfileSlugs = [];
 const seenSlugs = new Set();
 for (const profile of profiles) {
   const slug = String(profile?.slug || "").trim();
@@ -164,9 +165,11 @@ for (const profile of profiles) {
   if (seenSlugs.has(slug)) failures.push(`Duplicate publisher profile slug: ${slug}`);
   seenSlugs.add(slug);
 
-  if (!publisherArchiveSlugs.has(slug)) {
-    failures.push(`${slug}: publisher profile has no matching generated CCG publisher archive`);
-  }
+  // Research can legitimately outlive a generated route. Publisher corrections
+  // sometimes consolidate or remove a credit after its history has been sourced.
+  // Keep that researched record dormant rather than deleting verified history;
+  // the runtime exposes it only if a matching CCG publisher route exists again.
+  if (!publisherArchiveSlugs.has(slug)) dormantProfileSlugs.push(slug);
 
   const facts = Array.isArray(profile.facts) ? profile.facts : [];
   const sources = Array.isArray(profile.sources) ? profile.sources : [];
@@ -280,9 +283,12 @@ if (failures.length) {
 }
 
 console.log("Source-backed publisher audit passed.");
-console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence`);
+console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence or preserved researched history`);
 console.log(`- ${profileFiles.length} publisher history data file(s) were validated as one unique profile set`);
-console.log("- Every publisher profile maps to an existing generated CCG publisher archive");
+console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current generated CCG publisher routes`);
+if (dormantProfileSlugs.length) {
+  console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant because their publisher credits are no longer current: ${dormantProfileSlugs.join(", ")}`);
+}
 console.log("- Sources are restricted to the reviewed official, institutional, archival and first-person host list");
 console.log("- Americana uses the approved Mastertronic history and evidence source only");
 console.log("- Lemon64 is prohibited from publisher history/evidence data");
