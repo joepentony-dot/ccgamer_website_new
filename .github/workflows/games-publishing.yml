@@ -16,6 +16,10 @@ on:
       - "scripts/build-games.js"
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/ensure-magazine-review-runtime.js"
+      - "scripts/sync-youtube-video-metadata.js"
+      - "scripts/generate-video-seo.js"
+      - "scripts/generate-video-library.js"
+      - "scripts/validate-video-library.js"
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
       - "scripts/prepare-seo-game-routes.js"
@@ -42,7 +46,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: ccg-site-publishing-main
+  group: reliable-games-publishing
   cancel-in-progress: false
 
 jobs:
@@ -60,6 +64,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Sync verified YouTube metadata
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        run: |
+          if [ -n "$YOUTUBE_API_KEY" ]; then
+            echo "[games-publishing] Syncing verified YouTube titles, descriptions, upload dates, durations and thumbnails..."
+            node scripts/sync-youtube-video-metadata.js
+          else
+            echo "[games-publishing] YOUTUBE_API_KEY is not configured; keeping the verified metadata store unchanged."
+          fi
 
       - name: Record protected hashes
         run: |
@@ -91,10 +106,13 @@ jobs:
             music \
             data \
             js \
+            videos \
+            retro-events \
+            retro-specials \
+            amiga-demo-music \
             tools/seo/static-pages.json \
             sitemap.xml \
-            sitemap-pages.xml \
-            sitemap-games.xml \
+            sitemap-*.xml \
             docs/seo-baseline
 
           git reset -- games/games.json
@@ -128,7 +146,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, magazine-review generation, YouTube metadata sync, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
