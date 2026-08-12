@@ -11,6 +11,9 @@ Do Not Override
     "use strict";
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
+    const REQUIRED_STYLES = [
+        { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" }
+    ];
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
@@ -97,6 +100,23 @@ Do Not Override
         ));
     }
 
+    function hasStylesheet(href) {
+        return Array.from(document.querySelectorAll('link[rel="stylesheet"][href]')).some((link) => (
+            normaliseModulePath(link.getAttribute("href")) === href
+        ));
+    }
+
+    function loadRequiredStyles() {
+        REQUIRED_STYLES.forEach(({ href, marker }) => {
+            if (hasStylesheet(href)) return;
+            const link = document.createElement("link");
+            link.rel = "stylesheet";
+            link.href = href;
+            link.setAttribute(marker, "true");
+            document.head.appendChild(link);
+        });
+    }
+
     function loadOptionalModules() {
         OPTIONAL_MODULES.forEach(({ src, marker }) => {
             if (hasModuleScript(src)) return;
@@ -131,6 +151,7 @@ Do Not Override
     }
 
     function initUnifiedNavCore() {
+        loadRequiredStyles();
         applyNavGlowPatch();
         bindStateReapply();
         loadOptionalModules();
