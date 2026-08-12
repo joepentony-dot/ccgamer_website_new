@@ -1,0 +1,562 @@
+[
+  {
+    "slug": "ijk-software",
+    "summary": "IJK Software published early-1980s games across several British home computers. Its Commodore 64 catalogue includes Jouste, Krazy Kar and Rocket Ball.",
+    "facts": [
+      "The Centre for Computing History preserves IJK releases across the Commodore 64, Oric, Acorn Electron and BBC Micro.",
+      "Its C64 records include Jouste and Krazy Kar by Kim and Paul McHerry, together with John Sinclair's Rocket Ball under the IJK publishing credit."
+    ],
+    "strengths": ["Early 8-bit publishing", "C64 arcade-style games", "Multi-format releases"],
+    "related": [],
+    "note": "Surviving institutional documentation is catalogue-led, so this profile avoids unsupported claims about IJK's ownership or founders.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — IJK Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=IJK+Software&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — IJK games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=IJK&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "image-works",
+    "summary": "Image Works published late-1980s and early-1990s computer games across 8-bit and 16-bit systems. Its Commodore catalogue includes Speedball, Speedball 2, Back to the Future Part II and several Amiga releases from external development teams.",
+    "facts": [
+      "The Centre for Computing History preserves 29 Image Works games across multiple platforms.",
+      "Its collection includes four Commodore 64 releases and seven Commodore Amiga releases under the Image Works publishing credit.",
+      "The recorded Amiga catalogue includes work by The Bitmap Brothers, Sensible Software, Teque Software and other external developers."
+    ],
+    "strengths": ["16-bit publishing", "External development teams", "Action and strategy games"],
+    "related": [{"label":"Mirrorsoft","slug":"mirrorsoft"}],
+    "note": "Image Works frequently published games developed elsewhere, so developer credits remain distinct on individual CCG game pages.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Image Works games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Image+works&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Image Works Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Image+Works&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "imagine",
+    "summary": "Imagine became an important publishing label for Commodore 64 arcade conversions during the second half of the 1980s. The label was acquired by Ocean Software and subsequently used on numerous licensed coin-op conversions.",
+    "facts": [
+      "The Centre for Computing History's Ocean company profile records Ocean acquiring the Imagine label in late 1984.",
+      "The museum preserves fourteen Commodore 64 games under the Imagine publishing credit, including Renegade, Salamander, Army Moves and Bad Dudes vs. Dragon Ninja."
+    ],
+    "strengths": ["Arcade conversions", "C64 action games", "Ocean-associated label"],
+    "related": [{"label":"Ocean Software","slug":"ocean-software"}],
+    "note": "This profile concerns the Imagine publishing label represented in CCG; individual conversion teams and original arcade licensors vary by title.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Ocean Software company profile",
+        "url": "https://www.computinghistory.org.uk/pages/cache/FULL-57894.htm",
+        "type": "museum company record"
+      },
+      {
+        "label": "Centre for Computing History — Imagine C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=imagine&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "infocom",
+    "summary": "Infocom grew from the MIT mainframe adventure Zork and became one of the defining publishers of parser-driven interactive fiction. Its games were designed around a portable virtual-machine approach that allowed the same adventures to reach many home computers.",
+    "facts": [
+      "The Infocom historical archive traces Zork to work by members of MIT's Laboratory for Computer Science, including Marc Blank, Dave Lebling and Tim Anderson.",
+      "The mainframe Zork project was substantially developed during the late 1970s before its ideas became the foundation for Infocom's commercial adventures.",
+      "The Centre for Computing History preserves Infocom adventures for the Commodore 64, including The Hitchhiker's Guide to the Galaxy and Leather Goddesses of Phobos."
+    ],
+    "strengths": ["Interactive fiction", "Text adventures", "Portable adventure technology"],
+    "related": [{"label":"Activision","slug":"activision"}],
+    "note": "The company history is taken from the specialist Infocom historical archive; CCG's game count reflects only titles currently represented on this site.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Infocom historical archive — company history",
+        "url": "https://www.infocom-if.org/company/company.html",
+        "type": "specialist historical archive"
+      },
+      {
+        "label": "Centre for Computing History — Infocom Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Infocom&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "infogrames",
+    "summary": "Infogrames published a wide international catalogue spanning home computers and later consoles. Its Commodore-era releases included Hostages and North & South, while many titles were developed by external studios.",
+    "facts": [
+      "The Centre for Computing History preserves eighty games under the Infogrames publishing credit across numerous computer and console platforms.",
+      "Its Commodore 64 collection includes The Sydney Affair, Hostages and North & South.",
+      "The museum records external developers such as Probe Software on several Infogrames-published home-computer releases."
+    ],
+    "strengths": ["European publishing", "Strategy and action games", "Multi-platform catalogue"],
+    "related": [],
+    "note": "This profile remains catalogue-focused because the institutional collection provides stronger evidence for the publisher's output than for a concise corporate origin story.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Infogrames games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Infogrames&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Infogrames C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Infogrames&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "interceptor-software",
+    "summary": "Interceptor Software was an early Commodore-focused publisher with a substantial catalogue on the VIC-20 and Commodore 64. Its releases included arcade-style games, adventures and utilities.",
+    "facts": [
+      "The Centre for Computing History preserves twenty-one Commodore 64 releases under the Interceptor Software publishing credit.",
+      "The museum also records five VIC-20 games from Interceptor, including Crazy Kong and Jupiter Defender.",
+      "Interceptor's C64 collection includes China Miner, Heroes of Karn, Scramble 64 and Tales of the Arabian Nights."
+    ],
+    "strengths": ["Early Commodore publishing", "C64 arcade-style games", "Adventures and utilities"],
+    "related": [],
+    "note": "The surviving museum catalogue demonstrates Interceptor's strong Commodore presence without requiring speculative claims about its corporate structure.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Interceptor Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Interceptor+Software&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Interceptor Software VIC-20 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+VIC+20&publisher=Interceptor+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "konami",
+    "summary": "Konami began in Osaka in 1969 and moved into amusement-machine manufacturing after incorporation in 1973. Its arcade catalogue later supplied numerous games for home-computer conversions, including Commodore 64 releases.",
+    "facts": [
+      "Konami's official corporate history records Kagemasa Kozuki founding the business on 21 March 1969.",
+      "Konami Industries Co., Ltd. was established on 19 March 1973 and began manufacturing amusement machines for arcades.",
+      "Konami began exporting products to the United States in 1979."
+    ],
+    "strengths": ["Arcade games", "Home conversions", "Long-running game franchises"],
+    "related": [],
+    "note": "CCG's publisher route covers the Commodore releases represented in this archive, not Konami's much larger arcade and console catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Konami — official corporate history",
+        "url": "https://www.konami.com/corporate/en/history/index.html",
+        "type": "official company history"
+      },
+      {
+        "label": "Konami — corporate information",
+        "url": "https://www.konami.com/corporate/en/data/",
+        "type": "official company"
+      }
+    ]
+  },
+  {
+    "slug": "llamasoft",
+    "summary": "Llamasoft is closely associated with Jeff Minter's distinctive early home-computer games. Its Commodore 64 catalogue includes Gridrunner, Matrix, Ancipital, Revenge of the Mutant Camels, Sheep in Space and Batalyx.",
+    "facts": [
+      "The Centre for Computing History preserves seven Commodore 64 games under the Llamasoft publishing credit.",
+      "Jeff Minter is credited as author on most of the museum's recorded C64 Llamasoft titles.",
+      "The museum also preserves Llamasoft releases for the VIC-20 and ZX81-era Sinclair hardware."
+    ],
+    "strengths": ["Jeff Minter games", "Shoot 'em ups", "Early Commodore software"],
+    "related": [],
+    "note": "The profile stays close to the documented software catalogue rather than adding unsourced claims about company formation dates.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Llamasoft C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Llamasoft&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Llamasoft VIC-20 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+VIC+20&publisher=Llamasoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "loriciels",
+    "summary": "Loriciels published European home-computer games during the mid-1980s, with a surviving catalogue spanning the Amstrad CPC, Atari ST and other systems.",
+    "facts": [
+      "The Centre for Computing History preserves six games under the Loriciels publishing credit.",
+      "The museum's recorded catalogue includes The Fifth Axis, Pro-Tennis, MGT, Sapiens, Straight Six and Mach 3 between 1985 and 1987."
+    ],
+    "strengths": ["European 8-bit publishing", "Sports and action games", "Multi-format releases"],
+    "related": [],
+    "note": "The institutional record is strongest on the surviving software catalogue, so no unsupported corporate-origin claims are included.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Loriciels games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Loriciels&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "lucasfilm-games",
+    "summary": "Lucasfilm Games was established in 1982 as part of Lucasfilm's Computer Division. The group developed its first titles with Atari funding and later became responsible for influential home-computer adventures including The Secret of Monkey Island.",
+    "facts": [
+      "Lucasfilm's official company history records Lucasfilm Games being established in 1982.",
+      "Its first titles, Rescue on Fractalus! and Ballblazer, were funded by Atari and released in 1984.",
+      "Lucasfilm's official history records The Secret of Monkey Island being released for home computers in 1990."
+    ],
+    "strengths": ["Graphic adventures", "Experimental early games", "Lucasfilm storytelling"],
+    "related": [],
+    "note": "This profile uses Lucasfilm's own historical material and concerns the Lucasfilm Games imprint represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Lucasfilm — official company history",
+        "url": "https://www.lucasfilm.com/who-we-are/our-story/",
+        "type": "official company history"
+      },
+      {
+        "label": "Lucasfilm — 40 Years Later: Lucasfilm Games",
+        "url": "https://www.lucasfilm.com/news/40-years-later-lucasfilm-games-starts-a-new-era/",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "mad-mastertronic",
+    "summary": "MAD, short for Mastertronic's Added Dimension, was Mastertronic's higher-priced budget label. It launched in late 1985 with a £2.99 price point and a distinct pop-art visual identity.",
+    "facts": [
+      "The Mastertronic Collectors Archive records MAD as the company's first deliberate move away from its original pure-budget range.",
+      "MAD stood for Mastertronic's Added Dimension and launched in late 1985 at £2.99.",
+      "Early MAD releases included The Last V8, Master of Magic, Spellbound and Hero of the Golden Talisman."
+    ],
+    "strengths": ["Premium-budget releases", "C64 games", "Mastertronic sub-label"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}],
+    "note": "MAD branding changed during its relatively short life; CCG keeps the label separate because it appears as a distinct publisher credit in the archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — history of the MAD label",
+        "url": "https://mastertronic.co.uk/a-history-of-mastertronic/4/",
+        "type": "first-person archive"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — MAD checklist",
+        "url": "https://mastertronic.co.uk/mastertronics-added-dimension-m-a-d-checklist/",
+        "type": "historical archive"
+      }
+    ]
+  },
+  {
+    "slug": "martech",
+    "summary": "Martech published a focused range of British home-computer games during the 1980s. Its Commodore 64 catalogue includes Uchi Mata, Crazy Comets, Brian Jacks' Superstar Challenge, The Armageddon Man and Mega Apocalypse.",
+    "facts": [
+      "The Centre for Computing History preserves five Commodore 64 games under the Martech publishing credit.",
+      "Rob Hubbard is credited on the museum's records for Crazy Comets and Mega Apocalypse.",
+      "The preserved Martech C64 catalogue spans sports, arcade action and strategy games from 1984 to 1987."
+    ],
+    "strengths": ["C64 publishing", "Sports games", "Arcade action and strategy"],
+    "related": [],
+    "note": "The catalogue evidence is stronger than surviving corporate-history material, so this page stays focused on documented releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Martech C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Martech&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "melbourne-house",
+    "summary": "Melbourne House published games, programming books and other software for home computers. Its Commodore 64 catalogue includes The Hobbit, The Way of the Exploding Fist, Fist II and J.R.R. Tolkien's War in Middle Earth.",
+    "facts": [
+      "The Centre for Computing History preserves more than sixty games under the Melbourne House publishing credit.",
+      "Its museum collection contains fifteen Commodore 64 games, including The Hobbit and The Way of the Exploding Fist.",
+      "The museum also preserves Melbourne House programming and reference books written specifically for Commodore computers."
+    ],
+    "strengths": ["Adventure games", "Beam Software releases", "Games and computer books"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}],
+    "note": "Mastertronic later owned the Melbourne House label; CCG keeps the historical publisher credit visible on the individual releases where it applies.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Melbourne House games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Melbourne+House&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — Mastertronic history",
+        "url": "https://mastertronic.co.uk/mastertronic-website-a-brief-history/",
+        "type": "first-person archive"
+      }
+    ]
+  },
+  {
+    "slug": "micro-power",
+    "summary": "Micro Power published a large early-1980s software catalogue, particularly for the BBC Micro, while also releasing games on Commodore systems.",
+    "facts": [
+      "The Centre for Computing History preserves thirty-seven games under the Micro Power Ltd publishing credit.",
+      "Thirty-four of the museum's recorded Micro Power titles are for the BBC Micro, demonstrating the label's strong Acorn-market presence.",
+      "The museum also records Micro Power software on Commodore systems."
+    ],
+    "strengths": ["BBC Micro publishing", "Early 8-bit games", "Multi-format software"],
+    "related": [],
+    "note": "This profile is catalogue-based because the surviving museum record is more substantial than accessible first-party corporate history.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Micro Power games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Micro+Power+Ltd&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Micro Power BBC Micro games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=BBC+Micro&publisher=Micro+Power+Ltd&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "microdeal",
+    "summary": "Microdeal published a very large multi-format catalogue, with particularly deep roots in Dragon 32 software before expanding into later Commodore and Amiga releases.",
+    "facts": [
+      "The Centre for Computing History preserves 131 games under the Microdeal publishing credit.",
+      "The museum records twelve Commodore games and seven Commodore Amiga games under Microdeal.",
+      "Its Amiga catalogue includes Goldrunner, Goldrunner II, Insanity Fight, International Soccer and The Karate Kid Part II."
+    ],
+    "strengths": ["Dragon 32 software", "Amiga games", "Large multi-format catalogue"],
+    "related": [],
+    "note": "CCG contains only a small part of Microdeal's much larger preserved software catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Microdeal games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?publisher=Microdeal&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Microdeal Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Microdeal&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "microsphere",
+    "summary": "Microsphere published a small but memorable group of British 8-bit games, particularly on the ZX Spectrum, including Skool Daze, Back to Skool and Evolution.",
+    "facts": [
+      "The Centre for Computing History preserves three games under the Microsphere publishing credit: Evolution, Skool Daze and Back to Skool.",
+      "David Reidy and Keith Warrington are credited on the museum records for Skool Daze and Back to Skool."
+    ],
+    "strengths": ["Skool Daze", "ZX Spectrum games", "Small focused catalogue"],
+    "related": [],
+    "note": "The CCG route reflects a Commodore credit in the archive, while the museum evidence demonstrates Microsphere's wider 8-bit activity.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Microsphere games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Microsphere&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "microstyle",
+    "summary": "MicroStyle published a small late-1980s catalogue that included Geoff Crammond's Stunt Car Racer on the Commodore 64 and Xenophobe on Amiga and Amstrad systems.",
+    "facts": [
+      "The Centre for Computing History preserves three games under the Micro Style publishing credit.",
+      "Its records list Stunt Car Racer on the Commodore 64 with Geoff Crammond as author, alongside Xenophobe releases for the Amiga and Amstrad CPC."
+    ],
+    "strengths": ["Stunt Car Racer", "Late-1980s publishing", "C64 and Amiga releases"],
+    "related": [{"label":"MicroProse Software","slug":"microprose-software"}],
+    "note": "The profile is intentionally limited to the documented releases represented by the museum collection.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Micro Style games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Micro+Style&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "microvalue",
+    "summary": "MicroValue appeared on late-1980s and early-1990s Commodore software releases and compilations. Its surviving museum catalogue includes Mayday Squad Heroes and The Olympiad Collection.",
+    "facts": [
+      "The Centre for Computing History preserves Commodore releases under the MicroValue publishing credit, including Mayday Squad Heroes and The Olympiad Collection.",
+      "The museum also records compilation software carrying a combined MicroValue and Mirrorsoft publishing credit."
+    ],
+    "strengths": ["Budget releases", "Commodore software", "Compilations"],
+    "related": [{"label":"Mirrorsoft","slug":"mirrorsoft"}],
+    "note": "The available institutional evidence is product-focused, so the page avoids unsupported claims about MicroValue's corporate ownership.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — MicroValue Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Microvalue&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mikro-gen",
+    "summary": "Mikro-Gen published British 8-bit games across several systems during the mid-1980s. Its catalogue includes the Wally series and Commodore 64 releases such as Equinox.",
+    "facts": [
+      "The Centre for Computing History preserves eleven games under the Mikro-Gen publishing credit.",
+      "The museum records Equinox and Everyone's a Wally among its Commodore 64 releases.",
+      "Mikro-Gen's preserved catalogue also includes Pyjamarama, Automania and Three Weeks in Paradise on other 8-bit platforms."
+    ],
+    "strengths": ["Wally series", "British 8-bit games", "C64 publishing"],
+    "related": [],
+    "note": "This profile focuses on the documented software catalogue rather than speculative company-origin details.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mikro-Gen games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mikro-Gen&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mikro-Gen C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Mikro-Gen&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "millennium-interactive",
+    "summary": "Millennium Interactive published and developed games during the 16-bit era. Its surviving Amiga-related records include Mr Blobby and the Diggers/Oscar package for the Amiga CD32.",
+    "facts": [
+      "The Centre for Computing History records Mr Blobby as a 1994 Commodore Amiga release under the Millennium Interactive publishing credit.",
+      "The museum also preserves Diggers / Oscar for the Amiga CD32 under Millennium Interactive Ltd."
+    ],
+    "strengths": ["16-bit games", "Amiga releases", "CD32 software"],
+    "related": [],
+    "note": "This profile is deliberately catalogue-focused because the current institutional evidence is limited to a small number of surviving releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Millennium Interactive Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Millennium+Interactive&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Millennium Interactive CD32 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Millennium+Interactive+Ltd&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mind-games",
+    "summary": "Mind Games published a small 1980s home-computer catalogue spanning board-game adaptations, sports and licensed concepts. Its Commodore 64 releases include Alien and American Football.",
+    "facts": [
+      "The Centre for Computing History preserves six games under the Mind Games publishing credit.",
+      "Its records include Commodore 64 versions of Alien and American Football alongside Spectrum releases such as Speculator and Realm of the Undead."
+    ],
+    "strengths": ["C64 games", "Sports and strategy", "Small 8-bit catalogue"],
+    "related": [],
+    "note": "The profile reflects only catalogue facts supported by the museum collection.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mind Games catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mind+Games&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mindscape",
+    "summary": "Mindscape published a large multi-platform catalogue during the late 1980s and 1990s. Its Amiga output ranges from simulations and role-playing games to action titles, often using external developers.",
+    "facts": [
+      "The Centre for Computing History preserves forty-one games under the Mindscape publishing credit.",
+      "Seventeen of the museum's Mindscape records are Commodore Amiga games.",
+      "The Amiga catalogue includes Captive, Wing Commander, 4D Sports Driving, Paperboy 2, Megafortress and SimLife, with multiple external development teams represented."
+    ],
+    "strengths": ["Amiga publishing", "Simulations and strategy", "External development teams"],
+    "related": [],
+    "note": "The publisher archive describes Mindscape's role on CCG-covered releases and does not imply internal development of every title.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mindscape games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mindscape&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mindscape Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Mindscape&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mirrorsoft",
+    "summary": "Mirrorsoft published a broad British home-computer catalogue spanning educational software, simulations, licensed games and arcade conversions. Its Commodore releases include Defender of the Crown, Dark Castle, Blasteroids and Bombuzal.",
+    "facts": [
+      "The Centre for Computing History preserves fifty-two games under the Mirrorsoft publishing credit.",
+      "Nine of the museum's Mirrorsoft records are Commodore 64 games.",
+      "The recorded catalogue includes externally developed releases by Cinemaware, Teque Software, Silicon Beach Software and other studios."
+    ],
+    "strengths": ["Licensed publishing", "C64 and Amiga games", "Educational and entertainment software"],
+    "related": [{"label":"Image Works","slug":"image-works"}],
+    "note": "Mirrorsoft worked with many external developers, so CCG keeps development credits separate from the publisher profile.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mirrorsoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mirrorsoft&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mirrorsoft C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Mirrorsoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
