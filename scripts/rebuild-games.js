@@ -13,6 +13,7 @@ const steps = [
   ["validate-games-source.js"],
   ["build-magazine-review-chunks.js"],
   ["build-games.js"],
+  ["ensure-magazine-review-runtime.js"],
   ["prepare-seo-game-routes.js", "--output-root", "."],
   ["prepare-seo-genre-links.js", "--root", "."],
   ["generate-publisher-pages.js"],
@@ -32,6 +33,7 @@ const steps = [
   ["validate-seo-game-routes.js", "--root", "."],
   ["validate-seo-genre-links.js", "--root", "."],
   ["validate-year-platform-discovery.js"],
+  ["ensure-magazine-review-runtime.js", "--check"],
 ];
 
 function fail(message) {
