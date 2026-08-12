@@ -32,7 +32,32 @@
     return COMPOSER_CANONICAL[normalized] || String(name || "").trim();
   }
 
+  function loadTrackShareAssets() {
+    if (typeof document === "undefined") return;
+
+    const isComposerPage = document.documentElement?.getAttribute("data-ccg-page") === "music-composer"
+      || Boolean(document.querySelector(".ccg-composer-page"));
+    if (!isComposerPage) return;
+
+    if (!document.querySelector('link[data-ccg-music-track-share]')) {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.href = "/resources/css/music-track-share.css";
+      stylesheet.setAttribute("data-ccg-music-track-share", "true");
+      document.head.appendChild(stylesheet);
+    }
+
+    if (!document.querySelector('script[data-ccg-music-track-share]')) {
+      const script = document.createElement("script");
+      script.src = "/js/music-track-share.js";
+      script.setAttribute("data-ccg-music-track-share", "true");
+      document.body.appendChild(script);
+    }
+  }
+
   global.normalizeComposerName = normalizeComposerName;
   global.getCanonicalComposer = getCanonicalComposer;
   global.COMPOSER_CANONICAL = COMPOSER_CANONICAL;
+
+  loadTrackShareAssets();
 })(window);
