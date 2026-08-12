@@ -43,7 +43,8 @@ const profileFiles = fs.readdirSync(path.join(root, "data"))
 const requiredProfileFiles = [
   "publisher-histories.json",
   "publisher-histories-a-c.json",
-  "publisher-histories-d-h.json"
+  "publisher-histories-d-h.json",
+  "publisher-histories-i-m.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -125,7 +126,22 @@ const requiredSourceBacked = new Set([
   "go",
   "grandslam",
   "hi-tec-software",
-  "hudson-soft"
+  "hudson-soft",
+  "image-works",
+  "imagine",
+  "infocom",
+  "infogrames",
+  "interceptor-software",
+  "konami",
+  "llamasoft",
+  "lucasfilm-games",
+  "mad-mastertronic",
+  "martech",
+  "melbourne-house",
+  "mikro-gen",
+  "millennium-interactive",
+  "mindscape",
+  "mirrorsoft"
 ]);
 
 const approvedHosts = new Set([
@@ -145,10 +161,14 @@ const approvedHosts = new Set([
   "atari.com",
   "atarimuseum.nl",
   "archives.museumofplay.org",
+  "www.museumofplay.org",
   "commodore.net",
   "www.dataeastgames.com",
   "epyxgames.com",
-  "firststarsoftware.com"
+  "firststarsoftware.com",
+  "www.konami.com",
+  "www.minotaurproject.co.uk",
+  "www.lucasfilm.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
@@ -241,6 +261,7 @@ requireText(moduleCode, "Evidence reviewed", "Review-date display");
 requireText(moduleCode, "cache: \"default\"", "Publisher data cache policy");
 requireText(moduleCode, "publisher-histories-a-c.json", "A-C publisher history batch loader");
 requireText(moduleCode, "publisher-histories-d-h.json", "D-H publisher history batch loader");
+requireText(moduleCode, "publisher-histories-i-m.json", "I-M publisher history batch loader");
 requireText(moduleCode, "mergeProfileResults", "Publisher history batch merger");
 requireText(css, ".ccg-publisher-history__facts", "Fact-list styling");
 requireText(css, ".ccg-publisher-history__sources", "Evidence styling");
@@ -261,6 +282,7 @@ const allowedPaths = new Set([
   "data/publisher-histories.json",
   "data/publisher-histories-a-c.json",
   "data/publisher-histories-d-h.json",
+  "data/publisher-histories-i-m.json",
   "data/publisher-secondary-credits.json",
   "js/ccg-publisher-history.js",
   "resources/css/publisher-history.css",
