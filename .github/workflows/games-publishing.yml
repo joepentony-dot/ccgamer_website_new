@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - ".github/workflows/games-publishing.yml"
       - "games/games.json"
       - "games/genres/**"
       - "resources/images/thumbnails/all/**"
