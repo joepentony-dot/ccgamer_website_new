@@ -9,8 +9,10 @@ on:
       - "games/genres/**"
       - "resources/images/thumbnails/all/**"
       - "resources/audio/games/**"
+      - "data/magazine-review-records/**"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
+      - "scripts/build-magazine-review-chunks.js"
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
       - "scripts/prepare-seo-game-routes.js"
@@ -28,6 +30,7 @@ on:
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-static-pages.js"
       - "scripts/generate-sitemaps.js"
+      - "scripts/validate-video-seo.js"
       - "tools/seo/static-pages.json"
   workflow_dispatch:
 
