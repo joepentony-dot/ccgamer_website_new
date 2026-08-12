@@ -13,7 +13,7 @@
 | Single-game generated noindex routes | **187** |
 | Total static composer routes | **270** |
 | Linked game-credit relationships | **573** |
-| Generated pages written in this run | **0** |
+| Generated pages written in this run | **250** |
 | Stale generated pages removed | **0** |
 
 ## Indexing policy
@@ -57,9 +57,18 @@ The source records in `games/games.json` remain unchanged.
 - Existing player scripts and curated composer pages preserved.
 - Sitemap and static-page integration for indexable routes.
 
+- Static research-backed composer profiles, archive summaries and Person/MusicGroup entity data on generated routes.
+
+## Research enrichment
+
+- Externally researched generated profiles: **79**
+- Archive-only generated profiles: **171**
+- Research registry: `music/composers/research.json`
+- Research-backed single-credit SEO overrides: **16**
+
 ## Explicit exclusions
 
-- No composer biographies, birth details or personal facts were invented.
+- Composer biographies and personal facts are included only where backed by the research registry; unsupported facts are not invented.
 - No existing curated composer page was rewritten.
 - No changes to `games/games.json`.
 - No homepage or intro-loader changes.
