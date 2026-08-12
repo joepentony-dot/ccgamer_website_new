@@ -44,7 +44,9 @@ const requiredProfileFiles = [
   "publisher-histories.json",
   "publisher-histories-a-c.json",
   "publisher-histories-d-h.json",
-  "publisher-histories-i-m.json"
+  "publisher-histories-i-m.json",
+  "publisher-histories-n-s.json",
+  "publisher-histories-t-z.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -149,7 +151,33 @@ const requiredSourceBacked = new Set([
   "millennium-interactive",
   "mind-games",
   "mindscape",
-  "mirrorsoft"
+  "mirrorsoft",
+  "new-generation-software",
+  "odin-computer-graphics",
+  "origin-systems",
+  "palace-software",
+  "parker-brothers",
+  "piranha",
+  "players-software",
+  "quicksilva",
+  "rainbow-arts",
+  "reaktor-software",
+  "renegade",
+  "sega",
+  "sierra-on-line",
+  "software-projects",
+  "storm",
+  "strategic-simulations-inc",
+  "synapse-software",
+  "taskset",
+  "team17",
+  "terminal-software",
+  "the-edge",
+  "titus-software",
+  "tynesoft",
+  "ultimate",
+  "virgin-mastertronic",
+  "zeppelin-games"
 ]);
 
 const approvedHosts = new Set([
@@ -175,7 +203,10 @@ const approvedHosts = new Set([
   "firststarsoftware.com",
   "www.infocom-if.org",
   "www.konami.com",
-  "www.lucasfilm.com"
+  "www.lucasfilm.com",
+  "richardgarriott.com",
+  "www.sega.jp",
+  "www.team17.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
@@ -241,6 +272,18 @@ for (const slug of requiredSourceBacked) {
   }
 }
 
+// Every publisher page that is substantial enough to be indexed must now have
+// unique historical/contextual content. Very small one-game/noindex routes may
+// remain catalogue-only until reliable historical documentation is available.
+const indexablePublisherSlugs = publisherMetadata
+  .filter((entry) => entry?.indexable === true)
+  .map((entry) => String(entry?.slug || "").trim())
+  .filter(Boolean);
+const missingIndexableProfiles = indexablePublisherSlugs.filter((slug) => !seenSlugs.has(slug));
+if (missingIndexableProfiles.length) {
+  failures.push(`Indexable publisher routes missing history profiles: ${missingIndexableProfiles.join(", ")}`);
+}
+
 const americana = profiles.find((entry) => entry?.slug === "americana");
 const expectedAmericanaFact = "Americana (or Americana Software) was a budget-priced software label created through a partnership between Mastertronic and U.S. Gold in the mid-1980s. It was set up because U.S. Gold lacked experience in the budget games market and used the label to re-release popular full-price Commodore 64 and other microcomputer games.";
 if (!americana) {
@@ -269,6 +312,8 @@ requireText(moduleCode, "cache: \"default\"", "Publisher data cache policy");
 requireText(moduleCode, "publisher-histories-a-c.json", "A-C publisher history batch loader");
 requireText(moduleCode, "publisher-histories-d-h.json", "D-H publisher history batch loader");
 requireText(moduleCode, "publisher-histories-i-m.json", "I-M publisher history batch loader");
+requireText(moduleCode, "publisher-histories-n-s.json", "N-S publisher history batch loader");
+requireText(moduleCode, "publisher-histories-t-z.json", "T-Z publisher history batch loader");
 requireText(moduleCode, "mergeProfileResults", "Publisher history batch merger");
 requireText(css, ".ccg-publisher-history__facts", "Fact-list styling");
 requireText(css, ".ccg-publisher-history__sources", "Evidence styling");
@@ -290,6 +335,8 @@ const allowedPaths = new Set([
   "data/publisher-histories-a-c.json",
   "data/publisher-histories-d-h.json",
   "data/publisher-histories-i-m.json",
+  "data/publisher-histories-n-s.json",
+  "data/publisher-histories-t-z.json",
   "data/publisher-secondary-credits.json",
   "js/ccg-publisher-history.js",
   "resources/css/publisher-history.css",
@@ -314,6 +361,7 @@ if (failures.length) {
 console.log("Source-backed publisher audit passed.");
 console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence or preserved researched history`);
 console.log(`- ${profileFiles.length} publisher history data file(s) were validated as one unique profile set`);
+console.log(`- ${indexablePublisherSlugs.length} indexable publisher route(s) have a history/context profile`);
 console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current generated CCG publisher routes`);
 if (dormantProfileSlugs.length) {
   console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant because their publisher credits are no longer current: ${dormantProfileSlugs.join(", ")}`);
