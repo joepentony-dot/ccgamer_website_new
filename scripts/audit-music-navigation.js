@@ -23,6 +23,8 @@ function requireText(source, expected, message) {
 
 const config = read("js/ccg-music-config.js");
 const navigation = read("js/ccg-music-navigation.js");
+const navCore = read("js/ccg-nav-core.js");
+const navViewportOverlay = read("resources/css/ccg-nav-viewport-overlay.css");
 const amigaIdentity = read("js/ccg-amiga-identity.js");
 const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
 const musicHub = read("music/index.html");
@@ -35,6 +37,16 @@ requireText(navigation, "function applyMode", "The late-loaded music header does
 requireText(navigation, "function bindDrawer", "The late-loaded music header does not initialise its mobile drawer.");
 requireText(navigation, "data-ccg-nav-drawer", "The music header is missing the mobile navigation drawer.");
 requireText(navigation, "data-ccg-mode-toggle", "The music header is missing the C64/Amiga mode control.");
+requireText(navCore, "/resources/css/ccg-nav-viewport-overlay.css", "The unified navigation core does not load the responsive drawer viewport lock.");
+requireText(navCore, "loadRequiredStyles();", "The unified navigation core does not initialise required navigation styles.");
+requireText(navViewportOverlay, "@media (max-width: 1199px)", "The drawer viewport lock does not cover the full responsive Menu breakpoint.");
+requireText(navViewportOverlay, ".ccg-header.ccg-header--nav-open", "The drawer viewport lock is not scoped to the open responsive header.");
+requireText(navViewportOverlay, "contain: none !important", "The open header can still establish paint/layout containment around the fixed drawer.");
+requireText(navViewportOverlay, "transform: none !important", "The open header can still establish a transformed containing block around the fixed drawer.");
+requireText(navViewportOverlay, "position: fixed !important", "The responsive drawer is not locked to fixed positioning.");
+requireText(navViewportOverlay, "height: 100dvh !important", "The responsive drawer is not locked to the dynamic viewport height.");
+requireText(navViewportOverlay, "width: 100dvw !important", "The responsive drawer is not locked to the dynamic viewport width.");
+requireText(navViewportOverlay, "body.ccg-body--nav-open", "The responsive drawer does not preserve body scroll locking while open.");
 requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
 requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
 requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment layer is not loaded through the shared Amiga identity module.");
@@ -48,4 +60,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log("Music navigation and mobile mode audit passed.");
+console.log("Music navigation, responsive drawer viewport and mobile mode audit passed.");
