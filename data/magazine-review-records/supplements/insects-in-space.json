@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "games": {
+    "c64:insects-in-space": [
+      {
+        "magazine": "Commodore Force",
+        "issue": "3",
+        "date": "1993-03",
+        "page": 19,
+        "reviewer": "",
+        "score": "90%",
+        "scorePercent": 90,
+        "language": "English",
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=93&page=19",
+        "source": "lemon64"
+      },
+      {
+        "magazine": "Games Machine",
+        "issue": "29",
+        "date": "1990-04",
+        "page": 38,
+        "reviewer": "Warren Lapworth",
+        "score": "86%",
+        "scorePercent": 86,
+        "language": "English",
+        "url": "https://amr.abime.net/review_23881",
+        "source": "lemon64"
+      },
+      {
+        "magazine": "Zzap!64",
+        "issue": "59",
+        "date": "1990-03",
+        "page": 9,
+        "reviewer": "Phil King, Robin Hogg & Stuart Wynne",
+        "score": "94%",
+        "scorePercent": 94,
+        "language": "English",
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=59&page=9",
+        "source": "lemon64"
+      }
+    ]
+  }
+}
