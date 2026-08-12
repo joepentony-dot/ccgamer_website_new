@@ -299,10 +299,10 @@
   {
     "name": "Sensible Software",
     "slug": "sensible-software",
-    "count": 4,
-    "c64Count": 0,
+    "count": 5,
+    "c64Count": 1,
     "amigaCount": 4,
-    "firstYear": 1993,
+    "firstYear": 1989,
     "lastYear": 1995,
     "indexable": true,
     "url": "/games/developers/sensible-software/"

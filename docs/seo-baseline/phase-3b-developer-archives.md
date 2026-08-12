@@ -4,7 +4,7 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **652** |
+| Game records scanned | **653** |
 | Static developer routes | **36** |
 | Indexable multi-game routes | **11** |
 | Single-game noindex routes | **25** |
@@ -27,7 +27,7 @@ The source records in `games/games.json` remain unchanged.
 - Mastertronic: **8** games
 - Broderbund: **6** games
 - Lucasfilm Games: **6** games
-- Sensible Software: **4** games
+- Sensible Software: **5** games
 - Delphine Software: **3** games
 - Infogrames: **3** games
 - Capcom: **2** games
