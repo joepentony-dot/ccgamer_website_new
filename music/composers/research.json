@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "lastResearched": "2026-08-12",
+  "policy": "Personal facts are included only when supported by a reasonably reliable source. Where sources conflict, disputed birth details are omitted. Every composer page may still use verified CCG game-credit data for its archive overview.",
+  "parts": [
+    "../../data/composer-research/part-01.json",
+    "../../data/composer-research/part-02.json",
+    "../../data/composer-research/part-03.json",
+    "../../data/composer-research/part-04.json",
+    "../../data/composer-research/part-05.json",
+    "../../data/composer-research/part-06.json",
+    "../../data/composer-research/part-07.json",
+    "../../data/composer-research/part-08.json",
+    "../../data/composer-research/part-09.json"
+  ]
+}
