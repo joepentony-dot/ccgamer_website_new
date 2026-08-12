@@ -3,7 +3,8 @@
     "slug": "21st-century-entertainment",
     "summary": "21st Century Entertainment is represented here by the 1992 Amiga release of Pinball Dreams, the game that established the publisher's strong association with computer pinball.",
     "facts": [
-      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992."
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992.",
+      "The Centre for Computing History catalogues Pinball Dreams as a 1992 Commodore Amiga release published by 21st Century Entertainment and authored by Digital Illusions."
     ],
     "strengths": [
       "Amiga publishing",
@@ -19,6 +20,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — 21st Century Entertainment games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=21st+Century+Entertainment&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -60,7 +66,8 @@
     "slug": "anf-software",
     "summary": "A'n'F Software's CCG route centres on the 1984 Commodore 64 edition of Chuckie Egg, the platform game most closely associated with the British label.",
     "facts": [
-      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984.",
+      "The Centre for Computing History preserves Chuckie Egg releases under the A 'n' F Software publishing credit."
     ],
     "strengths": [
       "British 8-bit publishing",
@@ -76,6 +83,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — A 'n' F Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=A+%27n%27+F+Software&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -141,7 +153,8 @@
     "slug": "adventure-soft",
     "summary": "Adventure Soft appears through Simon the Sorcerer, its 1993 Amiga point-and-click fantasy adventure and the opening game in the long-running series.",
     "facts": [
-      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993."
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993.",
+      "The Centre for Computing History catalogues Simon the Sorcerer as a 1993 release published and authored by Adventure Soft."
     ],
     "strengths": [
       "Point-and-click adventures",
@@ -157,6 +170,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Simon the Sorcerer",
+        "url": "https://www.computinghistory.org.uk/det/46580/Simon%20the%20Sorcerer/",
+        "type": "museum collection record"
       }
     ]
   },
@@ -320,7 +338,8 @@
     "slug": "atlantis-software",
     "summary": "Atlantis Software's current CCG entry preserves the publishing credit attached to the 1985 Commodore 64 game Cops 'N' Robbers.",
     "facts": [
-      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1985."
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1985.",
+      "The Centre for Computing History preserves Cops n' Robbers among releases carrying the Atlantis Software publishing credit."
     ],
     "strengths": [
       "British budget software",
@@ -336,6 +355,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Atlantis Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Atlantis+Software+Ltd&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -366,7 +390,8 @@
     "slug": "big-five-software",
     "summary": "Big Five Software's route preserves the Commodore 64 publishing credit for Miner 2049er, the 1983 platform release featuring Bounty Bob.",
     "facts": [
-      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1983."
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1983.",
+      "The Centre for Computing History records Miner 2049er among games published by Big Five Software."
     ],
     "strengths": [
       "Early home-computer games",
@@ -382,6 +407,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Big Five Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Big+Five+Software&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -642,7 +672,8 @@
     "slug": "cosmi",
     "summary": "Cosmi's CCG selection covers four Commodore 64 releases from 1983 to 1989, led by the atmospheric Forbidden Forest games.",
     "facts": [
-      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1983–1989."
+      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1983–1989.",
+      "The Centre for Computing History catalogues Commodore 64 releases under the Cosmi publishing credit, including Aztec Challenge and Forbidden Forest."
     ],
     "strengths": [
       "C64 action games",
@@ -658,6 +689,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Cosmi Commodore 64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Cosmi&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -734,7 +770,8 @@
     "slug": "crl",
     "summary": "CRL's CCG catalogue ranges from licensed titles to original science fiction, with four Commodore 64 releases recorded between 1984 and 1986.",
     "facts": [
-      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1984–1986."
+      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1984–1986.",
+      "The Centre for Computing History preserves multiple Commodore 64 releases under the CRL publishing credit, including The Boggit, Bored of the Rings and LifeForce."
     ],
     "strengths": [
       "Licensed games",
@@ -750,6 +787,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — CRL Commodore 64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=CRL&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -757,7 +799,8 @@
     "slug": "cyberdreams",
     "summary": "Cyberdreams is represented through Dark Seed, the 1992 Amiga graphic adventure built around artwork inspired by H. R. Giger.",
     "facts": [
-      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992."
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992.",
+      "The Centre for Computing History catalogues Darkseed under the Cyberdreams publishing credit in its Commodore games collection."
     ],
     "strengths": [
       "Graphic adventures",
@@ -773,6 +816,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Cyberdreams Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Cyberdreams&type=Games",
+        "type": "museum collection"
       }
     ]
   },
@@ -861,7 +909,8 @@
     "summary": "Hewson's CCG archive brings together nine Commodore 64 releases from 1985–1988, including Paradroid, Uridium, Nebulus and Cybernoid.",
     "facts": [
       "The CCG publisher index currently records 9 Commodore 64 games under this credit, covering 1985–1988.",
-      "The nine C64 games grouped under Hewson by CCG include releases by Andrew Braybrook, Jeff Minter and other prominent British 8-bit developers."
+      "The nine C64 games grouped under Hewson by CCG include releases by Andrew Braybrook, Jeff Minter and other prominent British 8-bit developers.",
+      "The Centre for Computing History preserves a substantial Commodore 64 catalogue under the Hewson publishing credit, including Alleykat, Cybernoid II and Uridium."
     ],
     "strengths": [
       "C64 technical showcases",
@@ -891,6 +940,11 @@
         "label": "Cheeky Commodore Gamer — complete publisher index",
         "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
         "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Hewson Commodore 64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Hewson&type=Games",
+        "type": "museum collection"
       }
     ]
   },
