@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "publisher": "Americana",
+      "system": "C64",
+      "source": "https://www.lemon64.com/games/list.php?list_company=americana",
+      "verified_on": "2026-08-12",
+      "note": "Americana is treated as a secondary publisher/re-release label for matching C64 titles already present in the CCG archive. Existing primary publisher credits remain unchanged.",
+      "titles": [
+        { "title": "Beach-Head", "aliases": ["Beach Head"] },
+        { "title": "Beach-Head II: The Dictator Strikes Back", "aliases": ["Beach Head II", "Beach Head 2", "Beach-Head II", "Beach-Head 2"] },
+        { "title": "Break Dance (Tape version)", "aliases": ["Break Dance", "Breakdance"] },
+        { "title": "Bruce Lee" },
+        { "title": "Conan" },
+        { "title": "Dizasterblaster" },
+        { "title": "Dropzone (C64 version)", "aliases": ["Dropzone"] },
+        { "title": "Fearless Fred and the Factory of Doom" },
+        { "title": "Go for the Gold", "aliases": ["Go For The Gold"] },
+        { "title": "The Halley Mission: A Shuttle Simulation", "aliases": ["Halley Mission, The: A Shuttle Simulation", "The Halley Mission", "Halley Mission"] },
+        { "title": "He-Man and the Masters of the Universe: The Ilearth Stone" },
+        { "title": "HES Games" },
+        { "title": "Karate Champ" },
+        { "title": "Knockout" },
+        { "title": "The Legend of the Knucker-Hole", "aliases": ["Legend of the Knucker-Hole, The", "Legend of the Knucker-Hole"] },
+        { "title": "Moon Shuttle" },
+        { "title": "N.Y.C.", "aliases": ["NYC", "N.Y.C"] },
+        { "title": "Necromancer" },
+        { "title": "Neutral Zone" },
+        { "title": "Ollie's Follies" },
+        { "title": "Olympic Skier" },
+        { "title": "Pacos Pete", "aliases": ["Paco's Pete"] },
+        { "title": "Questprobe 1: The Incredible Hulk (European version)", "aliases": ["Questprobe 1: The Incredible Hulk", "Questprobe: The Incredible Hulk", "Questprobe Featuring The Hulk", "The Incredible Hulk"] },
+        { "title": "Questprobe 2: Spider-Man (European version)", "aliases": ["Questprobe 2: Spider-Man", "Questprobe: Spider-Man", "Questprobe Featuring Spider-Man", "Spider-Man"] },
+        { "title": "Raid over Moscow", "aliases": ["Raid Over Moscow"] },
+        { "title": "Richard Petty's Talladega" },
+        { "title": "Saracen" },
+        { "title": "The Scrolls of Abadon", "aliases": ["Scrolls of Abadon, The", "Scrolls of Abadon"] },
+        { "title": "Sentinel" },
+        { "title": "Shamus" },
+        { "title": "Slamball" },
+        { "title": "Spy Trek" },
+        { "title": "Whirlinurd" },
+        { "title": "Zorro" }
+      ]
+    }
+  ]
+}
