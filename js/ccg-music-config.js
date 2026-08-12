@@ -4,6 +4,15 @@
   const DEFAULT_MUSIC_BASE_URL = "https://pub-2f6ac7261f6347f59524930d84e71a92.r2.dev/";
   const MUSIC_NAVIGATION_SCRIPT = "/js/ccg-music-navigation.js";
   const LEGACY_COMPOSER_PATH = "/music/composer.html";
+  const EDITORIAL_FEATURED_COMPOSERS = [
+    {
+      slug: "paul-norman",
+      name: "Paul Norman",
+      platform: "C64",
+      tracks: 4,
+      image: "/resources/images/composers/paul-norman.webp"
+    }
+  ];
 
   const urlCache = new Map();
   const probeCache = new Map();
@@ -188,6 +197,41 @@
     root.querySelectorAll('a[href*="composer.html"]').forEach(rewriteLegacyComposerLink);
   }
 
+  function getFeaturedGrid(root = document) {
+    if (root instanceof Element) {
+      if (root.matches(".composer-grid-featured")) return root;
+      const descendant = root.querySelector(".composer-grid-featured");
+      if (descendant) return descendant;
+      return root.closest(".composer-grid-featured");
+    }
+
+    return document.querySelector(".composer-grid-featured");
+  }
+
+  function ensureEditorialFeaturedComposers(root = document) {
+    const grid = getFeaturedGrid(root);
+    if (!grid) return;
+
+    EDITORIAL_FEATURED_COMPOSERS.forEach((composer) => {
+      const existing = grid.querySelector(`[data-slug="${composer.slug}"], a[href$="/music/${composer.slug}/"]`);
+      if (existing) return;
+
+      const card = document.createElement("a");
+      card.href = `${resolveSiteRoot()}music/${composer.slug}/`;
+      card.className = "composer-card composer-card--featured";
+      card.dataset.slug = composer.slug;
+      card.innerHTML = `
+        <div class="composer-thumb"><img src="${composer.image}" alt="${composer.name}" loading="lazy"></div>
+        <div class="composer-info">
+          <h3>${composer.name}</h3>
+          <p class="composer-platform">${composer.platform}</p>
+          <p class="composer-count">${composer.tracks} Tracks</p>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
   function getAudioSource(audio) {
     if (!(audio instanceof HTMLAudioElement)) return "";
     const source = audio.querySelector("source[src]");
@@ -219,6 +263,8 @@
 
   function markComposerTrackUnavailable(card, status) {
     if (!(card instanceof Element)) return;
+    if (card.dataset.ccgTrackState === "unavailable") return;
+
     card.dataset.ccgTrackState = "unavailable";
     card.classList.remove("ccg-composer-games__item--has-audio", "ccg-composer-games__item--track-checking", "is-playing");
     card.classList.add("ccg-composer-games__item--track-unavailable");
@@ -246,6 +292,7 @@
     // Generated composer pages ship static SEO fallback rows. Leave those intact
     // until music-composer-pages.js replaces them with interactive cards.
     if (card.classList.contains("ccg-composer-games__item--static")) return;
+    if (card.dataset.ccgTrackState === "unavailable") return;
 
     const status = card.querySelector(".ccg-composer-game-status");
     if (!status) return;
@@ -349,6 +396,7 @@
     rewriteLegacyComposerLinks(document);
     verifyComposerTrackCards(document);
     verifyEssentialTracks(document);
+    ensureEditorialFeaturedComposers(document);
 
     if (!composerLinkObserver && document.body) {
       composerLinkObserver = new MutationObserver((mutations) => {
@@ -357,6 +405,7 @@
             if (!(node instanceof Element)) return;
             rewriteLegacyComposerLinks(node);
             verifyEssentialTracks(node);
+            ensureEditorialFeaturedComposers(node);
           });
         });
       });
@@ -365,8 +414,19 @@
 
     const gamesList = document.getElementById("composer-games");
     if (gamesList && !composerCardObserver) {
-      composerCardObserver = new MutationObserver(() => verifyComposerTrackCards(gamesList));
-      composerCardObserver.observe(gamesList, { childList: true, subtree: true });
+      composerCardObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (!(node instanceof Element)) return;
+            if (node.matches(".ccg-composer-games__item")) {
+              verifyComposerTrackCard(node);
+              return;
+            }
+            node.querySelectorAll(".ccg-composer-games__item").forEach(verifyComposerTrackCard);
+          });
+        });
+      });
+      composerCardObserver.observe(gamesList, { childList: true });
     }
 
     document.addEventListener("click", (event) => {
