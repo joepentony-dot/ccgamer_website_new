@@ -37,6 +37,14 @@
         return normalized;
     }
 
+    function normalizePublisher(value) {
+        return String(value || "")
+            .trim()
+            .replace(/\s+/g, " ")
+            .replace(/[’‘]/g, "'")
+            .toLowerCase();
+    }
+
     function normalizeSystem(game) {
         const raw = String(game?.system || game?.platform || game?.computer || "").trim().toLowerCase();
         if (raw.includes("amiga")) return "Amiga";
@@ -71,12 +79,19 @@
         return rulesPromise;
     }
 
+    function primaryPublisherKeys(game) {
+        const raw = game?.credits?.publisher ?? game?.publisher ?? [];
+        const values = Array.isArray(raw) ? raw : [raw];
+        return new Set(values.map(normalizePublisher).filter(Boolean));
+    }
+
     function matchingPublishers(game, rules) {
         const system = normalizeSystem(game);
         const titleKeys = new Set([
             normalizeTitle(game?.title),
             normalizeTitle(game?.sorttitle)
         ].filter(Boolean));
+        const primaryKeys = primaryPublisherKeys(game);
         const seen = new Set();
         const publishers = [];
 
@@ -92,8 +107,8 @@
                 return values.some((value) => titleKeys.has(normalizeTitle(value)));
             });
 
-            const key = publisher.toLowerCase();
-            if (!matched || seen.has(key)) return;
+            const key = normalizePublisher(publisher);
+            if (!matched || !key || seen.has(key) || primaryKeys.has(key)) return;
             seen.add(key);
             publishers.push(publisher);
         });
