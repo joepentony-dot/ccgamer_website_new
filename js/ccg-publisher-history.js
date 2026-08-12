@@ -22,7 +22,8 @@
     "/data/publisher-histories-d-h.json",
     "/data/publisher-histories-i-m.json",
     "/data/publisher-histories-n-s.json",
-    "/data/publisher-histories-t-z.json"
+    "/data/publisher-histories-t-z.json",
+    "/data/publisher-histories-completion.json"
   ];
   const METADATA_PATH = "/games/publishers/publishers.json";
 

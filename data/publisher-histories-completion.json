@@ -1,0 +1,1104 @@
+[
+  {
+    "slug": "21st-century-entertainment",
+    "summary": "21st Century Entertainment is represented here by the 1992 Amiga release of Pinball Dreams, the game that established the publisher's strong association with computer pinball.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992."
+    ],
+    "strengths": [
+      "Amiga publishing",
+      "Computer pinball",
+      "1990s releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Pinball Dreams credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "64-tape-computing",
+    "summary": "64 Tape Computing was a cassette-based Commodore 64 magazine operation; the CCG archive preserves two of its 1985 game credits, 20 Tons and Android Nim.",
+    "facts": [
+      "The CCG publisher index currently records 2 Commodore 64 games under this credit, covering 1985.",
+      "The Centre for Computing History preserves issue 3 of 64 Tape Computing as a 1984 Commodore 64 cassette published and authored by APS."
+    ],
+    "strengths": [
+      "Cassette magazine software",
+      "C64 games",
+      "1985 archive"
+    ],
+    "related": [
+      {
+        "label": "Argus Press Software",
+        "slug": "argus-press-software"
+      }
+    ],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving 20 Tons, Android Nim credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — 64 Tape Computing issue 3",
+        "url": "https://www.computinghistory.org.uk/det/17864/64%20Tape%20Computing%20-%20Number%203/",
+        "type": "museum collection record"
+      }
+    ]
+  },
+  {
+    "slug": "anf-software",
+    "summary": "A'n'F Software's CCG route centres on the 1984 Commodore 64 edition of Chuckie Egg, the platform game most closely associated with the British label.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "British 8-bit publishing",
+      "Platform games",
+      "Chuckie Egg"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Chuckie Egg credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "aackosoft",
+    "summary": "Aackosoft was a Dutch software publisher with a strong MSX presence and additional releases on other home computers; CCG records two Commodore 64 credits.",
+    "facts": [
+      "The CCG publisher index currently records 2 Commodore 64 games under this credit, covering 1984–1985.",
+      "Generation MSX dates Aackosoft to 1983 and documents its use of the Eaglesoft, Methodic Solutions, Eurosoft and Aackosoft Edusystems labels."
+    ],
+    "strengths": [
+      "Dutch software publishing",
+      "MSX and C64 releases",
+      "1980s home computers"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Airwolf, Revenge of the Mutant Camels credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Generation MSX — Aackosoft company archive",
+        "url": "https://www.generation-msx.nl/company/aackosoft/304/",
+        "type": "specialist preservation archive"
+      }
+    ]
+  },
+  {
+    "slug": "acid-software",
+    "summary": "Acid Software's archive entry reflects its Amiga racing work through Skidmarks, while museum collections preserve a wider group of Acid-published Amiga releases.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993.",
+      "The Centre for Computing History catalogues Skidmarks, Super Skidmarks and other Amiga releases under the Acid Software publishing credit."
+    ],
+    "strengths": [
+      "Amiga racing games",
+      "Skidmarks series",
+      "1990s publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Skidmarks credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Acid Software Amiga catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=Commodore+Amiga&publisher=Acid+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "adventure-soft",
+    "summary": "Adventure Soft appears through Simon the Sorcerer, its 1993 Amiga point-and-click fantasy adventure and the opening game in the long-running series.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993."
+    ],
+    "strengths": [
+      "Point-and-click adventures",
+      "Amiga releases",
+      "Fantasy comedy"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Simon the Sorcerer credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "american-action",
+    "summary": "American Action is retained as a distinct publisher credit for the 1986 Commodore 64 release of Blood 'N Guts.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1986."
+    ],
+    "strengths": [
+      "C64 publishing",
+      "Action games",
+      "1986 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Blood 'N Guts credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "amersoft",
+    "summary": "Amersoft's route documents the Finnish 1986 Commodore 64 release Uuno Turhapuro Muuttaa Maalle, keeping a regional publishing credit visible in the archive.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1986."
+    ],
+    "strengths": [
+      "Finnish software",
+      "Regional C64 releases",
+      "Licensed entertainment"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Uuno Turhapuro Muuttaa Maalle credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "anco",
+    "summary": "Anco published games across several home-computer formats; its CCG entry currently records the 1988 Commodore 64 title Maria's Christmas Box.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1988.",
+      "The Centre for Computing History's Anco collection includes Maria's Christmas Box on Commodore 64 alongside later multi-format sports releases."
+    ],
+    "strengths": [
+      "Multi-format publishing",
+      "Sports and arcade games",
+      "C64 releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Maria's Christmas Box credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Anco games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Anco&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "argus-press-software",
+    "summary": "Argus Press Software's C64 catalogue on CCG ranges from strategy and arcade material to licensed television and music properties between 1984 and 1987.",
+    "facts": [
+      "The CCG publisher index currently records 5 Commodore 64 games under this credit, covering 1984–1987.",
+      "The Centre for Computing History preserves games written by Argus Press Software and further records releases under Argus Press Software Group."
+    ],
+    "strengths": [
+      "Licensed properties",
+      "C64 publishing",
+      "Strategy and action"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Bismark, Give My Regards to Broad Street, Grange Hill, Savage Pond, Up Up and Away credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Argus Press Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=Argus+Press+Software&order=Publisher&platform=&publisher=&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "artic-computing",
+    "summary": "Artic Computing was an early British home-computer publisher whose preserved catalogue spans adventures, utilities and games; CCG represents it with Mutant Monty.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984.",
+      "The Centre for Computing History records Artic Computing releases from the early 1980s, including Mutant Monty on Commodore 64 in 1984."
+    ],
+    "strengths": [
+      "Early British software",
+      "Adventures and utilities",
+      "8-bit publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Mutant Monty credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Artic Computing catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Artic+Computing+Ltd&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "artworx-software",
+    "summary": "Artworx Software is represented by the 1984 Commodore 64 release Strip Poker: A Sizzling Game of Chance, a credit from the early commercial C64 period.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Early C64 publishing",
+      "Card games",
+      "North American software"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Strip Poker: A Sizzling Game of Chance credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "atlantis-software",
+    "summary": "Atlantis Software's current CCG entry preserves the publishing credit attached to the 1985 Commodore 64 game Cops 'N' Robbers.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1985."
+    ],
+    "strengths": [
+      "British budget software",
+      "C64 action games",
+      "Mid-1980s releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Cops 'N' Robbers credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "beyond",
+    "summary": "Beyond was the EMAP-backed British publishing label associated with ambitious home-computer releases; CCG records Bounces and The Lords of Midnight on C64.",
+    "facts": [
+      "The CCG publisher index currently records 2 Commodore 64 games under this credit, covering 1985–1986."
+    ],
+    "strengths": [
+      "British software publishing",
+      "Strategy and action",
+      "C64 releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Bounces, The Lords of Midnight credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "big-five-software",
+    "summary": "Big Five Software's route preserves the Commodore 64 publishing credit for Miner 2049er, the 1983 platform release featuring Bounty Bob.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1983."
+    ],
+    "strengths": [
+      "Early home-computer games",
+      "Platform games",
+      "C64 publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Miner 2049er credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "black-legend",
+    "summary": "Black Legend appears in the Amiga archive through Crystal Dragon, a 1994 fantasy role-playing release carrying the label's publishing credit.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1994."
+    ],
+    "strengths": [
+      "Amiga publishing",
+      "Role-playing games",
+      "1990s releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Crystal Dragon credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "blade-software",
+    "summary": "Blade Software is represented by Laser Squad on Commodore 64, preserving the publisher attached to the 1989 tactical strategy release.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1989."
+    ],
+    "strengths": [
+      "Tactical strategy",
+      "C64 publishing",
+      "Laser Squad"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Laser Squad credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "bloodhouse",
+    "summary": "Bloodhouse's CCG entry centres on Stardust, the 1993 Amiga shoot-'em-up that introduced the Finnish studio's distinctive asteroid-blasting series.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993."
+    ],
+    "strengths": [
+      "Finnish game development",
+      "Amiga shoot-'em-ups",
+      "Stardust series"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Stardust credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "blue-byte",
+    "summary": "Blue Byte was founded in Germany in 1988 and became closely associated with strategy games; CCG represents the company through The Settlers on Amiga.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1993.",
+      "Ubisoft's German studio history traces Blue Byte's operation to 1988 and identifies Anno and The Settlers among the studio network's best-known strategy series."
+    ],
+    "strengths": [
+      "Strategy games",
+      "German development",
+      "Amiga publishing"
+    ],
+    "related": [
+      {
+        "label": "Ubisoft",
+        "slug": "ubi-soft"
+      }
+    ],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving The Settlers credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Ubisoft — Blue Byte studio network history",
+        "url": "https://www.ubisoft.com/en-us/company/careers/locations/germany",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "bulldog-software",
+    "summary": "Bulldog Software's archive route records Feud, the 1987 Commodore 64 action-adventure built around the rivalry between two spell-casting brothers.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1987."
+    ],
+    "strengths": [
+      "Budget C64 software",
+      "Action adventures",
+      "1987 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Feud credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "cbs-electronics-software",
+    "summary": "CBS Electronics Software's early C64 presence includes five 1983–1984 releases in CCG, among them Impossible Mission, Jumpman and Pitstop II.",
+    "facts": [
+      "The CCG publisher index currently records 5 Commodore 64 games under this credit, covering 1983–1984."
+    ],
+    "strengths": [
+      "Early C64 catalogue",
+      "Epyx-associated releases",
+      "Action and platform games"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Breakdance, Gateway to Apshai, Impossible Mission, Jumpman, Pitstop II credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "coktel-vision",
+    "summary": "Coktel Vision was a French developer and publisher known for adventures and educational software; CCG records Gobliiins and Ween: The Prophecy on Amiga.",
+    "facts": [
+      "The CCG publisher index currently records 2 Amiga games under this credit, covering 1992.",
+      "The Centre for Computing History preserves a multi-format catalogue carrying the Coktel Vision publishing credit."
+    ],
+    "strengths": [
+      "French adventures",
+      "Amiga publishing",
+      "Educational software"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Gobliiins, Ween: The Prophecy credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Centre for Computing History — Coktel Vision catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Coktel+Vision&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "commodore-plus",
+    "summary": "Commodore Plus represents the modern homebrew side of the archive through the 2023 Commodore 64 release The Smiths Are Dead.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 2023."
+    ],
+    "strengths": [
+      "Modern C64 releases",
+      "Homebrew publishing",
+      "2020s software"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving The Smiths Are Dead credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "core-design",
+    "summary": "Core Design was a Derby-based British studio and publisher; its CCG route currently preserves the 1991 Amiga adventure Heimdall.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1991.",
+      "The preserved Core Design company timeline records the studio's later ownership changes and the transfer of Tomb Raider development away from Core in 2003."
+    ],
+    "strengths": [
+      "British development",
+      "Amiga adventures",
+      "Action and exploration"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Heimdall credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Core Design preservation site — company timeline",
+        "url": "https://core-design.com/about.html",
+        "type": "company preservation archive"
+      }
+    ]
+  },
+  {
+    "slug": "corgi",
+    "summary": "Corgi's computer-game publishing credit is retained here for Cavelon, the 1984 Commodore 64 conversion of the arcade maze game.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Licensed computer games",
+      "C64 publishing",
+      "Arcade conversions"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Cavelon credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "cosmi",
+    "summary": "Cosmi's CCG selection covers four Commodore 64 releases from 1983 to 1989, led by the atmospheric Forbidden Forest games.",
+    "facts": [
+      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1983–1989."
+    ],
+    "strengths": [
+      "C64 action games",
+      "Forbidden Forest series",
+      "North American publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Aztec Challenge, Beyond the Forbidden Forest, Chomp!, Forbidden Forest credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "craig-communications",
+    "summary": "Craig Communications is represented by System 15000, the unusual 1984 Commodore 64 hacking and financial-simulation game.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "C64 simulations",
+      "Unusual game concepts",
+      "1984 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving System 15000 credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "creative-software",
+    "summary": "Creative Software's route records Trolls and Tribulations, a 1984 Commodore 64 release carrying the American publisher's credit.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Early C64 games",
+      "North American publishing",
+      "Platform action"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Trolls and Tribulations credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "creative-sparks",
+    "summary": "Creative Sparks has four C64 games in the archive from 1984–1985, spanning Black Hawk, Countdown to Meltdown, Mad Doctor and Orc Attack.",
+    "facts": [
+      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1984–1985."
+    ],
+    "strengths": [
+      "C64 action games",
+      "1980s British publishing",
+      "Original releases"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Black Hawk, Countdown to Meltdown, Mad Doctor, Orc Attack credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "crl",
+    "summary": "CRL's CCG catalogue ranges from licensed titles to original science fiction, with four Commodore 64 releases recorded between 1984 and 1986.",
+    "facts": [
+      "The CCG publisher index currently records 4 Commodore 64 games under this credit, covering 1984–1986."
+    ],
+    "strengths": [
+      "Licensed games",
+      "Science fiction",
+      "C64 publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Blade Runner, Derby Day, The Rocky Horror Show, Tau Ceti credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "cyberdreams",
+    "summary": "Cyberdreams is represented through Dark Seed, the 1992 Amiga graphic adventure built around artwork inspired by H. R. Giger.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1992."
+    ],
+    "strengths": [
+      "Graphic adventures",
+      "Dark science fiction",
+      "Amiga publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Dark Seed credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "datamost",
+    "summary": "Datamost's archive entry contains two 1984 Commodore 64 games, Cosmic Tunnels and Mr Robot and His Robot Factory.",
+    "facts": [
+      "The CCG publisher index currently records 2 Commodore 64 games under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Early C64 software",
+      "Arcade-style games",
+      "North American publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Cosmic Tunnels, Mr Robot and His Robot Factory credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "digital-magic-software",
+    "summary": "Digital Magic Software appears through Escape from Colditz, the 1991 Amiga strategy-adventure based on organising a prisoner-of-war escape.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1991."
+    ],
+    "strengths": [
+      "Amiga strategy games",
+      "Historical settings",
+      "1991 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Escape from Colditz credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "gremlin-interactive",
+    "summary": "Gremlin Interactive is kept separate from the earlier Gremlin Graphics credit; the route currently contains the 1995 Amiga release Shadow Fighter.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1995.",
+      "The Gremlin Graphics Archive presents an officially endorsed history of the Sheffield developer whose later publishing identity became Gremlin Interactive."
+    ],
+    "strengths": [
+      "Amiga publishing",
+      "Fighting games",
+      "Later Gremlin identity"
+    ],
+    "related": [
+      {
+        "label": "Gremlin Graphics",
+        "slug": "gremlin-graphics"
+      }
+    ],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Shadow Fighter credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Gremlin Graphics Archive — endorsed company history",
+        "url": "https://www.gremlinarchive.com/",
+        "type": "officially endorsed archive"
+      }
+    ]
+  },
+  {
+    "slug": "hewson",
+    "summary": "Hewson's CCG archive brings together nine Commodore 64 releases from 1985–1988, including Paradroid, Uridium, Nebulus and Cybernoid.",
+    "facts": [
+      "The CCG publisher index currently records 9 Commodore 64 games under this credit, covering 1985–1988.",
+      "The nine C64 games grouped under Hewson by CCG include releases by Andrew Braybrook, Jeff Minter and other prominent British 8-bit developers."
+    ],
+    "strengths": [
+      "C64 technical showcases",
+      "Action and shoot-'em-ups",
+      "British publishing"
+    ],
+    "related": [
+      {
+        "label": "Rack-It (Hewson)",
+        "slug": "rack-it-hewson"
+      },
+      {
+        "label": "21st Century Entertainment",
+        "slug": "21st-century-entertainment"
+      }
+    ],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Alleykat, Cybernoid, Firelord, Gribbly's Day Out, Iridis Alpha, Nebulus, Paradroid, Southern Belle, Uridium credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      },
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "hodder-and-stoughton",
+    "summary": "Book publisher Hodder and Stoughton appears in the C64 archive through The Rats, the 1985 computer adaptation of James Herbert's horror novel.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1985."
+    ],
+    "strengths": [
+      "Book adaptations",
+      "C64 publishing",
+      "Horror games"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving The Rats credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "ice",
+    "summary": "ICE is retained as the publisher credit for the 1994 Amiga conversion of the arcade shooter Total Carnage.",
+    "facts": [
+      "The CCG publisher index currently records 1 Amiga game under this credit, covering 1994."
+    ],
+    "strengths": [
+      "Arcade conversions",
+      "Amiga publishing",
+      "Action games"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Total Carnage credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "interdisc",
+    "summary": "Interdisc's current archive presence consists of Black Knight, a 1984 Commodore 64 release carrying the label's publishing credit.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Early C64 publishing",
+      "Arcade action",
+      "1984 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Black Knight credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "mc-lothlorien",
+    "summary": "MC Lothlorien is represented by Micro Mouse Goes Debugging, an early 1983 Commodore 64 game from the British strategy-software era.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1983."
+    ],
+    "strengths": [
+      "British strategy software",
+      "Early C64 games",
+      "1983 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Micro Mouse Goes Debugging credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "melody-hall-publishing",
+    "summary": "Melody Hall Publishing's CCG route documents Rags to Riches, a 1985 Commodore 64 business and life-simulation release.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1985."
+    ],
+    "strengths": [
+      "C64 simulations",
+      "North American software",
+      "1985 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Rags to Riches credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "micro-fun",
+    "summary": "Micro Fun appears through Dino Eggs, the 1984 Commodore 64 prehistoric platform game designed by David H. Schroeder.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Early C64 games",
+      "Platform action",
+      "North American publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Dino Eggs credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "monarch-software",
+    "summary": "Monarch Software is represented by the 1989 Commodore 64 adaptation of A Nightmare on Elm Street.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1989."
+    ],
+    "strengths": [
+      "Licensed horror games",
+      "C64 publishing",
+      "1989 release"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving A Nightmare on Elm Street credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "sight-and-sound-music-software",
+    "summary": "Sight & Sound Music Software's route preserves Kawasaki Rhythm Rocker, Ryo Kawasaki's 1984 Commodore 64 music program and game.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1984."
+    ],
+    "strengths": [
+      "Music software",
+      "C64 creativity tools",
+      "Ryo Kawasaki"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Kawasaki Rhythm Rocker credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  },
+  {
+    "slug": "simulmondo",
+    "summary": "Simulmondo's CCG entry currently records Bocce, a 1987 Commodore 64 interpretation of the traditional Italian ball game.",
+    "facts": [
+      "The CCG publisher index currently records 1 Commodore 64 game under this credit, covering 1987."
+    ],
+    "strengths": [
+      "Italian game development",
+      "Sports games",
+      "C64 publishing"
+    ],
+    "related": [],
+    "note": "This profile is limited to documented archive information and does not extend sparse public company history beyond the surviving Bocce credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Cheeky Commodore Gamer — complete publisher index",
+        "url": "https://www.cheekycommodoregamer.co.uk/games/publishers/",
+        "type": "CCG archive catalogue"
+      }
+    ]
+  }
+]
