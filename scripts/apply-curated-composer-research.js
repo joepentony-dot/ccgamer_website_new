@@ -72,7 +72,7 @@ function preserveStaticResearchProfile() {
 
 function main() {
   const metadata = readJson(metadataPath);
-  const researchDoc = readJson(researchPath);
+  const researchDoc = enrich.loadResearchDocument(researchPath);
   const games = readJson(gamesPath);
   if (!Array.isArray(metadata) || !Array.isArray(games)) fail("Invalid metadata or games JSON");
   const profiles = researchDoc?.profiles || {};
