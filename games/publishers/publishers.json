@@ -146,12 +146,12 @@
   {
     "name": "Americana",
     "slug": "americana",
-    "count": 1,
-    "c64Count": 1,
+    "count": 11,
+    "c64Count": 11,
     "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "indexable": false,
+    "firstYear": 1983,
+    "lastYear": 1987,
+    "indexable": true,
     "playlist": "",
     "url": "/games/publishers/americana/"
   },
