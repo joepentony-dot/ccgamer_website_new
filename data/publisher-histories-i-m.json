@@ -1,0 +1,387 @@
+[
+  {
+    "slug": "image-works",
+    "summary": "Image Works was a late-1980s and early-1990s computer-game publishing label whose catalogue covered both 8-bit and 16-bit systems. Its Commodore releases included licensed titles alongside games from developers such as The Bitmap Brothers and Sensible Software.",
+    "facts": [
+      "The Centre for Computing History preserves 29 games carrying the Image Works publishing credit across several home-computer platforms.",
+      "Its preserved Commodore catalogue includes Back to the Future Part II, Cadaver, Interphase, Mega Lo Mania, Passing Shot, Speedball and Speedball 2.",
+      "The museum records Image Works publishing both Commodore 64 and Amiga releases during the period represented by the CCG archive."
+    ],
+    "strengths": ["C64 and Amiga publishing", "Licensed games", "Bitmap Brothers and Sensible Software releases"],
+    "related": [{"label":"Mirrorsoft","slug":"mirrorsoft"}],
+    "note": "The surviving institutional record is stronger for the Image Works catalogue than for its corporate structure, so this profile remains focused on documented publishing activity.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Image Works games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Image+works&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Image Works Commodore games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Image+Works&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "imagine",
+    "summary": "Imagine Software was a British home-computer software label associated first with the early Liverpool software boom and later with Ocean Software. The Imagine name continued on arcade conversions and licensed releases after Ocean took over the label.",
+    "facts": [
+      "The Centre for Computing History identifies Alchemist as a 1983 Imagine release from the label's first incarnation before it was taken over by Ocean.",
+      "The museum preserves later Imagine-published Commodore 64 conversions including Basket Master, Target Renegade, Salamander, Vindicators, Comic Bakery and WEC Le Mans.",
+      "Imagine therefore appears in the archive across both its early original software period and its later role as an Ocean-associated publishing label."
+    ],
+    "strengths": ["Arcade conversions", "C64 publishing", "Ocean-associated label"],
+    "related": [{"label":"Ocean Software","slug":"ocean-software"}],
+    "note": "The profile distinguishes the original Imagine operation from the later Ocean-controlled use of the Imagine label while keeping both under the publisher credit represented in CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Imagine Software games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Imagine+Software&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Alchemist archive record",
+        "url": "https://www.computinghistory.org.uk/det/32695/Alchemist/",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "infocom",
+    "summary": "Infocom was one of the defining publishers of commercial interactive fiction. Created by people involved with the MIT mainframe game Zork, the company developed a distinctive catalogue of text adventures for home computers including the Commodore 64.",
+    "facts": [
+      "The Strong records that several of Zork's creators helped found Infocom in 1979.",
+      "Infocom divided and expanded the mainframe Zork into the commercially released Zork I, Zork II and Zork III adventures.",
+      "Activision shut down the Infocom brand in 1989, ending the original company's principal interactive-fiction publishing era."
+    ],
+    "strengths": ["Interactive fiction", "Text adventures", "Zork and story-led computer games"],
+    "related": [{"label":"Activision","slug":"activision"}],
+    "note": "The CCG publisher page represents the Infocom titles currently covered by the Commodore archive rather than the company's complete interactive-fiction catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "The Strong — history of early text adventures and Infocom",
+        "url": "https://www.museumofplay.org/blog/new-interest-in-old-text-based-adventures/",
+        "type": "museum history"
+      },
+      {
+        "label": "The Strong — Bob Bates papers and Infocom history",
+        "url": "https://archives.museumofplay.org/repositories/3/resources/253",
+        "type": "museum archive"
+      }
+    ]
+  },
+  {
+    "slug": "infogrames",
+    "summary": "Infogrames was a French game developer and publisher with a substantial European computer-game catalogue. Its Commodore-era output included adventures, action games and licensed releases before the company later expanded through major acquisitions and ultimately adopted the Atari name.",
+    "facts": [
+      "The Centre for Computing History preserves a large multi-platform Infogrames catalogue, including Commodore 64 releases such as The Sydney Affair, Hostages and North & South.",
+      "Atari's official history records Infogrames acquiring Hasbro Interactive in 2000, a transaction that brought Atari game properties into the group.",
+      "Infogrames completed its acquisition of Atari, Inc. in 2008 and renamed the parent company Atari SA in 2009."
+    ],
+    "strengths": ["European computer publishing", "Adventure and strategy games", "C64 and Amiga releases"],
+    "related": [{"label":"Atari","slug":"atari"}],
+    "note": "The archive focuses on the Infogrames name as it appeared on Commodore releases; later Atari corporate history is included only to explain the company's subsequent identity.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Infogrames games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Infogrames&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Atari — official company history",
+        "url": "https://atari.com/pages/history",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "interceptor-software",
+    "summary": "Interceptor Software was an early British microcomputer publisher with a particularly substantial Commodore catalogue. Its releases appeared on the VIC-20 and Commodore 64 from the opening years of the 1980s and included arcade-style games, adventures and utilities.",
+    "facts": [
+      "The Centre for Computing History preserves Interceptor Software VIC-20 releases dating from 1981, including Crazy Kong and Penny Slot.",
+      "The museum records 21 Commodore 64 titles under the Interceptor Software publishing credit, including China Miner, Defender 64, Frogger 64, Heroes of Karn and Token of Ghall.",
+      "Interceptor's preserved catalogue also includes software utilities such as its Azimuth Head Alignment Tape alongside conventional games."
+    ],
+    "strengths": ["Early Commodore publishing", "C64 arcade-style games", "Games and utilities"],
+    "related": [],
+    "note": "Reliable institutional material documents Interceptor's catalogue more securely than its corporate history, so this profile avoids unsupported founder or ownership claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Interceptor Software C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Interceptor+Software&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Interceptor Software VIC-20 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+VIC+20&publisher=Interceptor+Software&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "konami",
+    "summary": "Konami grew from a Japanese jukebox service business into a major international video-game company. Its arcade catalogue supplied many of the properties later converted for home computers, including titles represented in the CCG Commodore archive.",
+    "facts": [
+      "Konami's official corporate information dates the business's founding to March 1969, when Kagemasa Kozuki began a jukebox rental and repair operation in Toyonaka, Osaka.",
+      "Konami Industry Co., Ltd. was established in March 1973 as the business moved into amusement-machine manufacturing.",
+      "Konami's later arcade properties were widely licensed and converted for home computers, creating a significant presence on systems including the Commodore 64."
+    ],
+    "strengths": ["Arcade games", "Licensed home conversions", "International game publishing"],
+    "related": [{"label":"Imagine","slug":"imagine"}],
+    "note": "Many Commodore Konami games were converted or published regionally by other companies, so CCG preserves the publisher credit recorded for the specific version represented.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Konami — corporate information and founding history",
+        "url": "https://www.konami.com/ir/en/baseinfo/",
+        "type": "official company"
+      },
+      {
+        "label": "Konami — corporate history timeline",
+        "url": "https://www.konami.com/corporate/en/history/index.html",
+        "type": "official company history"
+      }
+    ]
+  },
+  {
+    "slug": "llamasoft",
+    "summary": "Llamasoft is Jeff Minter's independent game label, founded during the early British home-computer boom. Its distinctive arcade-style games became closely associated with the VIC-20 and Commodore 64 before the company continued onto later platforms.",
+    "facts": [
+      "Jeff Minter's own Llamasoft history states that he founded Llamasoft in 1982 after beginning game programming on a Commodore PET in the late 1970s.",
+      "The first Llamasoft games were developed for the Commodore VIC-20 during the summer of 1982.",
+      "Minter describes the early company as becoming known for distinctive humour, animal references and arcade-oriented gameplay on machines including the Commodore 64."
+    ],
+    "strengths": ["Jeff Minter games", "Arcade shooters", "Distinctive independent C64 releases"],
+    "related": [],
+    "note": "The company history is taken directly from Jeff Minter's own Llamasoft archive rather than a third-party game database.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Llamasoft — Jeff Minter introduction and company history",
+        "url": "https://www.minotaurproject.co.uk/jeff.php",
+        "type": "first-person company history"
+      },
+      {
+        "label": "Llamasoft — The Dawn of Llamasoft",
+        "url": "https://www.minotaurproject.co.uk/lshistory8.php",
+        "type": "first-person company history"
+      }
+    ]
+  },
+  {
+    "slug": "lucasfilm-games",
+    "summary": "Lucasfilm Games was established inside Lucasfilm's Computer Division in 1982. The studio moved from experimental computer titles into a celebrated catalogue of adventures and simulations, including Commodore releases now represented in the CCG archive.",
+    "facts": [
+      "Lucasfilm's official history states that Lucasfilm Games was established in 1982 as part of the company's Computer Division.",
+      "A small initial team developed Ballblazer and Rescue on Fractalus!, with Atari funding the projects and the first titles reaching the market in 1984.",
+      "By 1990 Lucasfilm Games had released The Secret of Monkey Island, one of the studio's defining graphic adventures."
+    ],
+    "strengths": ["Graphic adventures", "Technical experimentation", "C64 and Amiga games"],
+    "related": [{"label":"Activision","slug":"activision"}, {"label":"US Gold","slug":"us-gold"}],
+    "note": "Lucasfilm Games later became LucasArts; the CCG publisher route retains the name attached to the historical Commodore releases represented here.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Lucasfilm — official company story and games timeline",
+        "url": "https://www.lucasfilm.com/who-we-are/our-story/",
+        "type": "official company history"
+      },
+      {
+        "label": "Lucasfilm — 40 years of Lucasfilm Games",
+        "url": "https://www.lucasfilm.com/news/40-years-later-lucasfilm-games-starts-a-new-era/",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "mad-mastertronic",
+    "summary": "Mastertronic's Added Dimension, usually abbreviated M.A.D., was a higher-priced spin-off label created to sit above Mastertronic's standard budget range. It launched with distinctive pop-art packaging and a £2.99 price point.",
+    "facts": [
+      "The Mastertronic Collectors Archive identifies M.A.D. as Mastertronic's first spin-off label and expands the name as Mastertronic's Added Dimension.",
+      "The original range was priced at £2.99 and was intended to signal a higher standard than the regular £1.99 Mastertronic releases.",
+      "Mastertronic's historical account dates the launch to late 1985 and names The Last V8, Master of Magic, Spellbound and Hero of the Golden Talisman among the first games demonstrated for the range."
+    ],
+    "strengths": ["Enhanced budget range", "Distinctive pop-art packaging", "C64 releases"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}],
+    "note": "M.A.D. remains a separate CCG publisher route because the archive records the label independently from standard Mastertronic releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — M.A.D. checklist",
+        "url": "https://mastertronic.co.uk/mastertronics-added-dimension-m-a-d-checklist/",
+        "type": "historical archive"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — company history",
+        "url": "https://mastertronic.co.uk/a-history-of-mastertronic/4/",
+        "type": "first-person archive"
+      }
+    ]
+  },
+  {
+    "slug": "martech",
+    "summary": "Martech was a British home-computer publisher active across the major 8-bit systems. Its catalogue mixed original action and strategy games with sports and character licences, and it maintained a notable Commodore 64 presence during the mid-1980s.",
+    "facts": [
+      "The Centre for Computing History preserves 24 games under the Martech publishing credit across several home-computer platforms.",
+      "Its documented Commodore 64 catalogue includes Uchi Mata, Brian Jacks Superstar Challenge, Crazy Comets, Mega Apocalypse and The Armageddon Man.",
+      "The preserved catalogue demonstrates Martech working with both individual programmers and external development teams across action, sports and strategy releases."
+    ],
+    "strengths": ["C64 publishing", "Sports and licensed games", "Action and strategy titles"],
+    "related": [],
+    "note": "Institutional sources document Martech's catalogue more securely than its corporate formation, so no unsupported founder or ownership claims are included.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Martech games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Martech&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Martech C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Martech&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "melbourne-house",
+    "summary": "Melbourne House grew from an Australian publishing business into a significant home-computer game publisher. Its software operation became closely linked with Beam Software and produced major 8-bit releases before the Melbourne House label was sold to Mastertronic.",
+    "facts": [
+      "The Play It Again digital heritage archive records Alfred Milgrom and Naomi Besen establishing Melbourne House as a London distribution arm for their publishing business in 1977.",
+      "Beam Software was formed in Melbourne in 1980 as the software-development operation associated with Melbourne House.",
+      "The archive records Melbourne House being sold to Mastertronic in 1987 after successes including The Hobbit and The Way of the Exploding Fist."
+    ],
+    "strengths": ["Adventure games", "Australian game development", "C64 publishing"],
+    "related": [{"label":"Mastertronic","slug":"mastertronic"}],
+    "note": "Melbourne House's publishing history and Beam Software's development history overlap substantially, but CCG retains the role recorded for each game.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Play It Again digital heritage archive — Melbourne House",
+        "url": "https://ourdigitalheritage.org/hostedArchives/playitagain/companies/melbourne-house/index.html",
+        "type": "digital heritage archive"
+      }
+    ]
+  },
+  {
+    "slug": "mikro-gen",
+    "summary": "Mikro-Gen was a British 8-bit developer and publisher whose catalogue crossed the ZX Spectrum, Commodore and Amstrad markets. It became particularly associated with character-led games such as the Wally series alongside later action releases.",
+    "facts": [
+      "The Centre for Computing History preserves Mikro-Gen publishing credits across ZX Spectrum, Commodore, Amstrad and VIC-20 software.",
+      "The museum records Commodore 64 releases including Equinox and Everyone's a Wally under the Mikro-Gen publishing credit.",
+      "Mikro-Gen also appears as the credited developer on titles including Everyone's a Wally and Equinox, demonstrating that it worked in both development and publishing roles."
+    ],
+    "strengths": ["British 8-bit games", "Character-led adventures", "Development and publishing"],
+    "related": [],
+    "note": "The available institutional record is strongest for Mikro-Gen's software catalogue, so this profile avoids unsupported corporate-history details.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mikro-Gen games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mikro-Gen&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mikro-Gen C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Mikro-Gen&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "millennium-interactive",
+    "summary": "Millennium Interactive was a British game-development and publishing name associated with 16-bit computer releases during the early 1990s. The CCG archive currently represents its Amiga output rather than attempting to reproduce the company's full catalogue.",
+    "facts": [
+      "The Centre for Computing History records Millennium Interactive publishing on the Commodore Amiga and Amiga CD32.",
+      "The museum preserves the 1993 Amiga CD32 release Diggers / Oscar under the Millennium Interactive Ltd publishing credit.",
+      "Its collection also records Mr Blobby as a 1994 Commodore Amiga release published by Millennium Interactive."
+    ],
+    "strengths": ["Amiga publishing", "Early-1990s 16-bit games", "Amiga CD32 releases"],
+    "related": [],
+    "note": "The historical corporate record for this specific early-1990s game company is fragmented, so this profile intentionally limits itself to preserved publishing activity and does not rely on similarly named later companies.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Millennium Interactive Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Millennium+Interactive&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Millennium Interactive Ltd games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Millennium+Interactive+Ltd&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mindscape",
+    "summary": "Mindscape was a major computer and console software publisher whose catalogue covered original games, licensed properties, conversions and releases from external developers. It had a substantial presence on both Commodore 64 and Amiga.",
+    "facts": [
+      "The Centre for Computing History preserves 41 games under the Mindscape publishing credit across multiple computer and console platforms.",
+      "Its preserved Amiga catalogue includes Captive, Balance of Power, 4D Sports Driving, Wing Commander, Paperboy 2, TV Sports Boxing and SimLife.",
+      "The museum records Mindscape working with numerous external developers and rights holders, so developer and publisher credits frequently differ on individual releases."
+    ],
+    "strengths": ["C64 and Amiga publishing", "Licensed and converted games", "Strategy and simulation releases"],
+    "related": [],
+    "note": "Reliable institutional catalogue evidence is used here in preference to unsupported corporate-history claims; individual game pages continue to preserve their specific developer credits.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mindscape games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mindscape&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mindscape Amiga games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Mindscape&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "mirrorsoft",
+    "summary": "Mirrorsoft was a British computer-software publisher with a broad 1980s catalogue spanning educational software, licensed games, strategy titles and arcade-style releases. Its Commodore 64 output included several high-profile games from external developers.",
+    "facts": [
+      "The Centre for Computing History preserves 52 games carrying the Mirrorsoft publishing credit across a range of home-computer platforms.",
+      "Its preserved Commodore 64 catalogue includes Andy Capp, Biggles, Blasteroids, Bombuzal, Dark Castle, Defender of the Crown, Quick Thinking and Spitfire 40.",
+      "The catalogue shows Mirrorsoft publishing work from external developers including Cinemaware, Teque Software, Dalali Software and Silicon Beach Software."
+    ],
+    "strengths": ["Licensed games", "C64 publishing", "External developer partnerships"],
+    "related": [{"label":"Image Works","slug":"image-works"}, {"label":"Cinemaware","slug":"cinemaware"}],
+    "note": "The institutional catalogue is used for documented facts while broader ownership claims are omitted unless supported by an authoritative company-history source.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Mirrorsoft games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Mirrorsoft&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Mirrorsoft C64 games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Mirrorsoft&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
