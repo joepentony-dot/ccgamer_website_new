@@ -7,6 +7,10 @@ const REQUIRED_BOOTSTRAPS = [
   '/js/ccg-supabase-config.js',
   '/js/ccg-supabase-client.js'
 ];
+const BOOTSTRAP_REPO_PATHS = new Set([
+  'js/ccg-supabase-config.js',
+  'js/ccg-supabase-client.js'
+]);
 const AUTH_ROOT_MODULES = new Set([
   'admin/js/auth.js',
   'admin/js/guard.js',
@@ -52,6 +56,7 @@ function extractImports(source) {
 function moduleNeedsSupabase(repoPath, visiting = new Set()) {
   const normalized = normalizeRepoPath(repoPath);
   if (!normalized.endsWith('.js')) return false;
+  if (BOOTSTRAP_REPO_PATHS.has(normalized)) return false;
   if (AUTH_ROOT_MODULES.has(normalized)) return true;
   if (dependencyCache.has(normalized)) return dependencyCache.get(normalized);
   if (visiting.has(normalized)) return false;
@@ -95,7 +100,9 @@ function authDependentScriptPositions(html, htmlPath) {
 
     if (srcMatch) {
       const scriptPath = resolveLocalScript(srcMatch[1], htmlPath);
-      if (scriptPath && moduleNeedsSupabase(scriptPath)) positions.push(tagIndex);
+      if (scriptPath && !BOOTSTRAP_REPO_PATHS.has(scriptPath) && moduleNeedsSupabase(scriptPath)) {
+        positions.push(tagIndex);
+      }
     }
 
     for (const ref of extractImports(body)) {
