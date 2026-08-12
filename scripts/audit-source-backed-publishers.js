@@ -48,7 +48,8 @@ const requiredProfileFiles = [
   "publisher-histories-d-h.json",
   "publisher-histories-i-m.json",
   "publisher-histories-n-s.json",
-  "publisher-histories-t-z.json"
+  "publisher-histories-t-z.json",
+  "publisher-histories-completion.json"
 ];
 for (const requiredFile of requiredProfileFiles) {
   if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
@@ -132,7 +133,12 @@ const approvedHosts = new Set([
   "finna.fi",
   "timexsinclair.com",
   "www.timexsinclair.com",
-  "www.cheekycommodoregamer.co.uk"
+  "www.cheekycommodoregamer.co.uk",
+  "www.gremlinarchive.com",
+  "www.liverpoolmuseums.org.uk",
+  "birdsanctuary.co.uk",
+  "system3.com",
+  "core-design.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
