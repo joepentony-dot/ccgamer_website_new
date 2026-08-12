@@ -1,0 +1,200 @@
+[
+  {
+    "slug": "access-software",
+    "summary": "Access Software was a Salt Lake City game developer and publisher founded in 1982. Its Commodore-era catalogue included games such as Beach-Head and Raid Over Moscow before the company later became especially associated with the Links golf and Tex Murphy series.",
+    "facts": [
+      "Access Software was founded in Salt Lake City in 1982 by Bruce Carver.",
+      "The company was acquired by Microsoft in 1999 and later became known as Indie Built after subsequent ownership changes.",
+      "Its early home-computer output included Beach-Head, one of the titles most closely associated with Access during the Commodore 64 era."
+    ],
+    "strengths": ["C64 action games", "Simulation and sports", "Long-running computer-game development"],
+    "related": [{"label":"Americana","slug":"americana"}, {"label":"US Gold","slug":"us-gold"}],
+    "note": "CCG keeps Access Software's original publisher credit intact even where later budget or regional re-release labels are also recorded.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Game Developer — Bruce Carver and Access Software",
+        "url": "https://www.gamedeveloper.com/game-platforms/obituary-access-software-founder-bruce-carver",
+        "type": "industry archive"
+      }
+    ]
+  },
+  {
+    "slug": "accolade",
+    "summary": "Accolade was an American game developer and publisher established in 1984. Its home-computer catalogue became particularly well known for sports, driving and action releases, including HardBall! and Test Drive.",
+    "facts": [
+      "Alan Miller co-founded Accolade in 1984 after previously helping to establish Activision.",
+      "Accolade operated as a US-based developer and publisher from 1984 until 2000.",
+      "Atari acquired the Accolade trademark and a substantial collection of former Accolade game rights in 2023."
+    ],
+    "strengths": ["Sports games", "Driving games", "C64 and Amiga publishing"],
+    "related": [{"label":"Activision","slug":"activision"}, {"label":"Atari","slug":"atari"}],
+    "note": "The archive summary focuses on Accolade's Commodore-era publishing rather than its later console catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Game Developer — Alan Miller biography",
+        "url": "https://www.gamedeveloper.com/game-platforms/gamesanalytics-recruits-activision-co-founder-alan-miller",
+        "type": "industry archive"
+      },
+      {
+        "label": "Atari — acquisition of Accolade catalogue and trademark",
+        "url": "https://atari.com/blogs/newsroom/atari-announces-acquisition-of-more-than-100-pc-and-console-titles-from-the-80s-and-90s",
+        "type": "rights-holder archive"
+      }
+    ]
+  },
+  {
+    "slug": "alligata-software",
+    "summary": "Alligata Software was a Sheffield software house active during the formative years of the British home-computer market. Its releases covered several 8-bit systems, with a substantial presence on the Commodore 64 and BBC Micro.",
+    "facts": [
+      "The Centre for Computing History preserves a dedicated Alligata Software collection containing home-computer releases from the 1980s.",
+      "Its preserved Commodore 64 catalogue includes titles such as Guardian, Who Dares Wins II and Livingstone, I Presume?.",
+      "A first-hand account from Dave Palmer places Alligata's beginnings in Sheffield during 1981–82 and identifies Mike Mahony as the person who started the company."
+    ],
+    "strengths": ["British 8-bit publishing", "C64 action games", "Sheffield software scene"],
+    "related": [{"label":"Alternative Software","slug":"alternative-software"}, {"label":"Hi-Tec Software","slug":"hi-tec-software"}],
+    "note": "The company history combines museum catalogue evidence with a first-hand recollection from an early Alligata participant.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Alligata Software collection",
+        "url": "https://www.computinghistory.org.uk/sec/73193/Alligata-Software/",
+        "type": "museum collection"
+      },
+      {
+        "label": "The BBC Games Archive — Dave Palmer on Alligata",
+        "url": "https://www.beebgames.com/companies/alligata/",
+        "type": "first-person archive"
+      }
+    ]
+  },
+  {
+    "slug": "alternative-software",
+    "summary": "Alternative Software is a West Yorkshire software publisher whose company record dates from 1986. During the 8-bit era it became strongly associated with inexpensive cassette releases and licensed character games for machines including the Commodore 64.",
+    "facts": [
+      "Alternative Software Limited was incorporated on 4 June 1986.",
+      "The company's registered office is in Castleford, West Yorkshire.",
+      "Companies House records its business activity as ready-made interactive leisure and entertainment software development."
+    ],
+    "strengths": ["Budget software", "Licensed character games", "British 8-bit publishing"],
+    "related": [{"label":"Alligata Software","slug":"alligata-software"}, {"label":"Hi-Tec Software","slug":"hi-tec-software"}],
+    "note": "The public facts use the current UK company record; CCG's archive strengths describe the historical games represented on this site.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Companies House — Alternative Software Limited",
+        "url": "https://find-and-update.company-information.service.gov.uk/company/02025051",
+        "type": "government record"
+      },
+      {
+        "label": "Alternative Software — classic games archive",
+        "url": "https://www.alternativesoft.co.uk/classics/classics.html",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "ariolasoft",
+    "summary": "Ariolasoft was part of Bertelsmann's move into computer software during the 1980s and became an important publisher in the German home-computer market. Its catalogue included numerous imported and licensed titles for systems such as the Commodore 64.",
+    "facts": [
+      "Bertelsmann grouped its computer-software activities into a Digital Information Systems unit during the mid-1980s.",
+      "Bertelsmann's corporate history identifies Ariolasoft as the leading publisher in the German home-computer market during this period.",
+      "The same expansion coincided with Sonopress beginning duplication of software on floppy disks, datasettes and cartridge media in 1985."
+    ],
+    "strengths": ["German home-computer publishing", "European distribution", "C64 catalogue"],
+    "related": [],
+    "note": "Ariolasoft's profile is based on Bertelsmann's own corporate history rather than third-party game databases.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Bertelsmann Chronicle — Digital Information Systems",
+        "url": "https://history.bertelsmann.com/en/milestones/view/169",
+        "type": "official corporate archive"
+      }
+    ]
+  },
+  {
+    "slug": "atarisoft",
+    "summary": "Atarisoft was the Atari publishing label used to bring Atari arcade and console properties to competing home-computer systems during the early 1980s. Commodore 64 releases were sold in the label's distinctive green packaging.",
+    "facts": [
+      "Atarisoft was used by Atari in 1983 and 1984 to publish games for non-Atari home computers and consoles.",
+      "Commodore 64 Atarisoft releases used green packaging as part of a platform-specific colour system.",
+      "Many Atarisoft conversions were produced by third-party developers while Atari concentrated its internal development on Atari hardware."
+    ],
+    "strengths": ["Arcade conversions", "Atari properties on C64", "Short-lived specialist label"],
+    "related": [{"label":"Atari","slug":"atari"}],
+    "note": "Atarisoft is kept separate from Atari where the original CCG publisher credit identifies the dedicated label.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Atari Museum Benelux — Atarisoft archive",
+        "url": "https://atarimuseum.nl/atarisoft/",
+        "type": "specialist preservation archive"
+      },
+      {
+        "label": "Atari — company history",
+        "url": "https://atari.com/pages/history",
+        "type": "official company archive"
+      }
+    ]
+  },
+  {
+    "slug": "cinemaware",
+    "summary": "Cinemaware was founded by Bob and Phyllis Jacob in the mid-1980s with the aim of combining film and television presentation techniques with computer games. Its visually ambitious releases became particularly associated with the Commodore Amiga.",
+    "facts": [
+      "Bob and Phyllis Jacob founded the company that became Cinemaware in 1985–86.",
+      "The business initially used the name Master Designer Software, with Cinemaware becoming the better-known brand and later company name.",
+      "Defender of the Crown established the company's cinematic approach on the Amiga and was followed by titles including Rocket Ranger, It Came from the Desert and Wings."
+    ],
+    "strengths": ["Amiga showcase games", "Cinematic presentation", "Film and television-inspired design"],
+    "related": [{"label":"Mirrorsoft","slug":"mirrorsoft"}, {"label":"Mindscape","slug":"mindscape"}],
+    "note": "The historical description refers to the original Bob and Phyllis Jacob company rather than later businesses that reused the Cinemaware name.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Game Developer — Bob Jacob on the Cinemaware era",
+        "url": "https://www.gamedeveloper.com/game-platforms/interview-bob-jacob-on-the-cinemaware-era",
+        "type": "founder interview"
+      },
+      {
+        "label": "The Strong Museum — Cinemaware archival collection",
+        "url": "https://archives.museumofplay.org/repositories/3/archival_objects/54539",
+        "type": "museum archive"
+      }
+    ]
+  },
+  {
+    "slug": "commodore",
+    "summary": "Commodore Business Machines grew from Jack Tramiel's typewriter business into one of the defining home-computer companies of the late twentieth century. Its own software publishing accompanied machines including the PET, VIC-20, Commodore 64 and Amiga families.",
+    "facts": [
+      "Jack Tramiel founded the business that became Commodore in 1954 as the Commodore Portable Typewriter Company.",
+      "The company was incorporated as Commodore Business Machines in 1955 and later traded as Commodore International.",
+      "Commodore launched the Commodore 64 in 1982 and the original company ultimately declared bankruptcy in 1994."
+    ],
+    "strengths": ["First-party C64 software", "Home-computer hardware and software", "Commodore ecosystem"],
+    "related": [],
+    "note": "This publisher page concerns software carrying a Commodore publisher credit; it is not intended as a complete history of Commodore hardware.",
+    "confidence": "high",
+    "verified_on": "2026-08-12",
+    "sources": [
+      {
+        "label": "Science Museum Group — Commodore Business Machines",
+        "url": "https://collection.sciencemuseumgroup.org.uk/people/ap8631/commodore-business-machines",
+        "type": "museum authority"
+      },
+      {
+        "label": "Centre for Computing History — Commodore",
+        "url": "https://www.computinghistory.org.uk/det/8239/Commodore/",
+        "type": "museum archive"
+      }
+    ]
+  }
+]
