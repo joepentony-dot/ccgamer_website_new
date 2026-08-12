@@ -33,7 +33,8 @@
     "david whittaker": "/music/david-whittaker/",
     "fred gray": "/music/fred-gray/",
     "martin galway": "/music/martin-galway/",
-    "rob hubbard": "/music/rob-hubbard/"
+    "rob hubbard": "/music/rob-hubbard/",
+    "steve turner": "/music/steve-turner/"
   };
   const FEATURED_PRIORITY = Object.keys(FEATURED_COMPOSER_URLS);
   const ESSENTIAL_TRACKS = {
