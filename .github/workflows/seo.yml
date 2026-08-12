@@ -11,9 +11,10 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
-  group: ccg-generated-seo-${{ github.ref }}
+  group: ccg-site-publishing-main
   cancel-in-progress: false
 
 jobs:
@@ -92,16 +93,45 @@ jobs:
         run: git diff --check
 
       - name: Commit generated SEO artifacts
+        id: seo_output
         if: github.event_name != 'pull_request'
+        shell: bash
         run: |
           echo "[seo] Checking generated SEO diffs..."
           git config user.name "seo-bot"
           git config user.email "seo-bot@users.noreply.github.com"
           git add sitemap.xml sitemap-*.xml data/video-metadata.json games/*/index.html retro-events retro-specials amiga-demo-music videos tools/seo/static-pages.json
-          git diff --cached --quiet || git commit -m "Auto-update generated SEO and video pages [skip ci]"
 
-      - name: Push generated SEO artifacts
-        if: github.event_name != 'pull_request'
+          if git diff --cached --quiet; then
+            echo "Generated SEO output is already current."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          OUTPUT_BRANCH="automation/seo-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git checkout -b "$OUTPUT_BRANCH"
+          git commit -m "Auto-update generated SEO and video pages"
+          git push origin "HEAD:$OUTPUT_BRANCH"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$OUTPUT_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge generated SEO pull request
+        if: github.event_name != 'pull_request' && steps.seo_output.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTPUT_BRANCH: ${{ steps.seo_output.outputs.branch }}
         run: |
-          echo "[seo] Pushing generated SEO updates (if any)..."
-          git push
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$OUTPUT_BRANCH" \
+            --title "Auto-update generated SEO and video pages" \
+            --body "Automated SEO/video output from SEO Automation run ${GITHUB_RUN_ID}. YouTube metadata sync, video-page generation, video-library generation, sitemap validation and SEO validation all passed before this PR was created.")
+
+          echo "Created generated SEO PR: $PR_URL"
+          gh pr merge "$PR_URL" \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --delete-branch

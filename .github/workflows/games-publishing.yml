@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/games-publishing.yml"
+      - "games/game.html"
       - "games/games.json"
       - "games/genres/**"
       - "resources/images/thumbnails/all/**"
@@ -14,6 +15,7 @@ on:
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
       - "scripts/build-magazine-review-chunks.js"
+      - "scripts/ensure-magazine-review-runtime.js"
       - "scripts/validate-games-source.js"
       - "scripts/generate-slug-pages.js"
       - "scripts/prepare-seo-game-routes.js"
@@ -40,7 +42,7 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: reliable-games-publishing
+  group: ccg-site-publishing-main
   cancel-in-progress: false
 
 jobs:
@@ -104,7 +106,7 @@ jobs:
             exit 0
           fi
 
-          OUTPUT_BRANCH="automation/games-publishing-${GITHUB_RUN_ID}"
+          OUTPUT_BRANCH="automation/games-publishing-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$OUTPUT_BRANCH"
