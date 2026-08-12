@@ -37,6 +37,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: reliable-games-publishing
@@ -80,6 +81,7 @@ jobs:
         run: sha256sum --check "$RUNNER_TEMP/protected.sha256"
 
       - name: Commit generated publishing output
+        id: publish_output
         shell: bash
         run: |
           git add \
@@ -98,10 +100,36 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "Generated publishing output is already current."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
+          OUTPUT_BRANCH="automation/games-publishing-${GITHUB_RUN_ID}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$OUTPUT_BRANCH"
           git commit -m "Publish generated game archive output"
-          git push origin HEAD:main
+          git push origin "HEAD:$OUTPUT_BRANCH"
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$OUTPUT_BRANCH" >> "$GITHUB_OUTPUT"
+
+      - name: Open and merge generated output pull request
+        if: steps.publish_output.outputs.changed == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTPUT_BRANCH: ${{ steps.publish_output.outputs.branch }}
+        run: |
+          PR_URL=$(gh pr create \
+            --repo "$GITHUB_REPOSITORY" \
+            --base main \
+            --head "$OUTPUT_BRANCH" \
+            --title "Publish generated game archive output" \
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
+
+          echo "Created generated-output PR: $PR_URL"
+          gh pr merge "$PR_URL" \
+            --repo "$GITHUB_REPOSITORY" \
+            --squash \
+            --delete-branch
