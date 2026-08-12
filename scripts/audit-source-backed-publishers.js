@@ -128,7 +128,11 @@ const approvedHosts = new Set([
   "www.generation-msx.nl",
   "www.sega.co.jp",
   "www.ryokawasaki.com",
-  "www.team17.com"
+  "www.team17.com",
+  "finna.fi",
+  "timexsinclair.com",
+  "www.timexsinclair.com",
+  "www.cheekycommodoregamer.co.uk"
 ]);
 
 const publisherArchiveSlugs = new Set(
