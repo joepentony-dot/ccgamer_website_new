@@ -16,7 +16,10 @@
   window.CCG_PUBLISHER_HISTORY_READY = true;
 
   const CSS_PATH = "/resources/css/publisher-history.css";
-  const DATA_PATH = "/data/publisher-histories.json";
+  const DATA_PATHS = [
+    "/data/publisher-histories.json",
+    "/data/publisher-histories-a-c.json"
+  ];
   const METADATA_PATH = "/games/publishers/publishers.json";
 
   function currentPublisherSlug() {
@@ -302,20 +305,36 @@
     return response.json();
   }
 
+  function mergeProfileResults(results) {
+    const merged = [];
+    const seen = new Set();
+
+    results.forEach((result) => {
+      if (result.status !== "fulfilled" || !Array.isArray(result.value)) return;
+      result.value.forEach((entry) => {
+        const slug = normaliseSlug(entry?.slug);
+        if (!slug || seen.has(slug)) return;
+        seen.add(slug);
+        merged.push(entry);
+      });
+    });
+
+    return merged;
+  }
+
   async function init() {
     const slug = currentPublisherSlug();
     if (!slug) return;
     ensureCss();
 
     try {
-      const [profilesResult, metadataResult] = await Promise.allSettled([
-        fetchJson(DATA_PATH),
+      const results = await Promise.allSettled([
+        ...DATA_PATHS.map((path) => fetchJson(path)),
         fetchJson(METADATA_PATH)
       ]);
-
-      if (profilesResult.status !== "fulfilled" || !Array.isArray(profilesResult.value)) return;
-
-      const profile = profilesResult.value.find((entry) => normaliseSlug(entry?.slug) === slug);
+      const metadataResult = results[results.length - 1];
+      const profiles = mergeProfileResults(results.slice(0, -1));
+      const profile = profiles.find((entry) => normaliseSlug(entry?.slug) === slug);
       if (!profile) return;
 
       const archiveMap = metadataResult.status === "fulfilled"
