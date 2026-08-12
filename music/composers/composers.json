@@ -68,7 +68,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Al Lowe"
     ],
@@ -175,7 +175,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Andrew Barnabas"
     ],
@@ -386,7 +386,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Archer MacLean"
     ],
@@ -775,7 +775,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Charles Deenen"
     ],
@@ -1607,7 +1607,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Franck Sauer"
     ],
@@ -2301,7 +2301,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Jeff Minter"
     ],
@@ -2524,7 +2524,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "John Broomhall"
     ],
@@ -3521,7 +3521,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Michael Z. Land"
     ],
@@ -4019,7 +4019,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Peter McConnell"
     ],
@@ -4192,7 +4192,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Reyn Ouwehand"
     ],
@@ -4574,7 +4574,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Russell Shaw"
     ],
@@ -4669,7 +4669,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Shahid Ahmad"
     ],
@@ -4708,7 +4708,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Sid Meier"
     ],
@@ -4861,7 +4861,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Stéphane Picq"
     ],
@@ -5190,7 +5190,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Tim Follin"
     ],
@@ -5405,7 +5405,7 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
       "Wally Beben"
     ],
