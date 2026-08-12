@@ -18,7 +18,8 @@
   const CSS_PATH = "/resources/css/publisher-history.css";
   const DATA_PATHS = [
     "/data/publisher-histories.json",
-    "/data/publisher-histories-a-c.json"
+    "/data/publisher-histories-a-c.json",
+    "/data/publisher-histories-d-h.json"
   ];
   const METADATA_PATH = "/games/publishers/publishers.json";
 
