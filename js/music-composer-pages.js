@@ -52,7 +52,7 @@
     "keith tinman": "heartland",
     "mark cooksey": "airwolf",
     "matt furniss": "escape-from-the-planet-of-the-robot-monsters",
-    "neil brennan": "fist-ii-the-legend-continues",
+    "neil brennan": "fist-2-the-legend-continues",
     "richard joseph": "cannon-fodder"
   };
 
