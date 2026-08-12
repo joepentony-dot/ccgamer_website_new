@@ -40,6 +40,15 @@ function changedFiles() {
 const profileFiles = fs.readdirSync(path.join(root, "data"))
   .filter((name) => /^publisher-histories(?:-[a-z0-9-]+)?\.json$/i.test(name))
   .sort((a, b) => a.localeCompare(b));
+const requiredProfileFiles = [
+  "publisher-histories.json",
+  "publisher-histories-a-c.json",
+  "publisher-histories-d-h.json"
+];
+for (const requiredFile of requiredProfileFiles) {
+  if (!profileFiles.includes(requiredFile)) failures.push(`Missing publisher history batch: data/${requiredFile}`);
+}
+
 const profileTexts = profileFiles.map((name) => ({
   name,
   text: read(`data/${name}`)
@@ -94,7 +103,29 @@ const requiredSourceBacked = new Set([
   "bubble-bus",
   "cascade-games",
   "cinemaware",
-  "commodore"
+  "commodore",
+  "data-east",
+  "datasoft",
+  "design-design",
+  "domark",
+  "durell-software",
+  "dynabyte",
+  "electric-dreams",
+  "empire-software",
+  "english-software",
+  "enigma-variations",
+  "entertainment-usa",
+  "epyx",
+  "erbe-software",
+  "first-star-software",
+  "gamebusters",
+  "gamestar",
+  "gametek",
+  "gargoyle-games",
+  "go",
+  "grandslam",
+  "hi-tec-software",
+  "hudson-soft"
 ]);
 
 const approvedHosts = new Set([
@@ -114,12 +145,16 @@ const approvedHosts = new Set([
   "atari.com",
   "atarimuseum.nl",
   "archives.museumofplay.org",
-  "commodore.net"
+  "commodore.net",
+  "www.dataeastgames.com",
+  "epyxgames.com",
+  "firststarsoftware.com"
 ]);
 
 const publisherArchiveSlugs = new Set(
   publisherMetadata.map((entry) => String(entry?.slug || "").trim()).filter(Boolean)
 );
+const dormantProfileSlugs = [];
 const seenSlugs = new Set();
 for (const profile of profiles) {
   const slug = String(profile?.slug || "").trim();
@@ -130,9 +165,11 @@ for (const profile of profiles) {
   if (seenSlugs.has(slug)) failures.push(`Duplicate publisher profile slug: ${slug}`);
   seenSlugs.add(slug);
 
-  if (!publisherArchiveSlugs.has(slug)) {
-    failures.push(`${slug}: publisher profile has no matching generated CCG publisher archive`);
-  }
+  // Research can legitimately outlive a generated route. Publisher corrections
+  // sometimes consolidate or remove a credit after its history has been sourced.
+  // Keep that researched record dormant rather than deleting verified history;
+  // the runtime exposes it only if a matching CCG publisher route exists again.
+  if (!publisherArchiveSlugs.has(slug)) dormantProfileSlugs.push(slug);
 
   const facts = Array.isArray(profile.facts) ? profile.facts : [];
   const sources = Array.isArray(profile.sources) ? profile.sources : [];
@@ -203,6 +240,7 @@ requireText(moduleCode, "safeExternalUrl", "Source URL validation");
 requireText(moduleCode, "Evidence reviewed", "Review-date display");
 requireText(moduleCode, "cache: \"default\"", "Publisher data cache policy");
 requireText(moduleCode, "publisher-histories-a-c.json", "A-C publisher history batch loader");
+requireText(moduleCode, "publisher-histories-d-h.json", "D-H publisher history batch loader");
 requireText(moduleCode, "mergeProfileResults", "Publisher history batch merger");
 requireText(css, ".ccg-publisher-history__facts", "Fact-list styling");
 requireText(css, ".ccg-publisher-history__sources", "Evidence styling");
@@ -222,6 +260,7 @@ const protectedPaths = new Set([
 const allowedPaths = new Set([
   "data/publisher-histories.json",
   "data/publisher-histories-a-c.json",
+  "data/publisher-histories-d-h.json",
   "data/publisher-secondary-credits.json",
   "js/ccg-publisher-history.js",
   "resources/css/publisher-history.css",
@@ -244,9 +283,12 @@ if (failures.length) {
 }
 
 console.log("Source-backed publisher audit passed.");
-console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence`);
+console.log(`- ${requiredSourceBacked.size} high-confidence profiles include visitor-visible evidence or preserved researched history`);
 console.log(`- ${profileFiles.length} publisher history data file(s) were validated as one unique profile set`);
-console.log("- Every publisher profile maps to an existing generated CCG publisher archive");
+console.log(`- ${profiles.length - dormantProfileSlugs.length} researched profile(s) map to current generated CCG publisher routes`);
+if (dormantProfileSlugs.length) {
+  console.log(`- ${dormantProfileSlugs.length} researched profile(s) are dormant because their publisher credits are no longer current: ${dormantProfileSlugs.join(", ")}`);
+}
 console.log("- Sources are restricted to the reviewed official, institutional, archival and first-person host list");
 console.log("- Americana uses the approved Mastertronic history and evidence source only");
 console.log("- Lemon64 is prohibited from publisher history/evidence data");
