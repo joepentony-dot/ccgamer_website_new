@@ -1,10 +1,10 @@
 {
   "version": 1,
   "counts": {
-    "total": 687,
-    "gameVideos": 653,
+    "total": 688,
+    "gameVideos": 654,
     "retroVideos": 34,
-    "c64GameVideos": 554,
+    "c64GameVideos": 555,
     "amigaGameVideos": 99
   },
   "items": [
@@ -8959,6 +8959,19 @@
       "platform": "Commodore 64",
       "year": 1989,
       "publisher": "Hewson"
+    },
+    {
+      "id": "5tpXo_IEU_U",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "Mr Weems And The She Vampires",
+      "description": "The Astonishing Adventures of Mr. Weems and the She Vampires is a 1987 Commodore 64 action game from Piranha. Guide Mr. Weems through a six-level vampire-filled mansion, collecting key obje…",
+      "url": "/games/mr-weems-and-the-she-vampires/",
+      "thumbnail": "https://i.ytimg.com/vi/5tpXo_IEU_U/hqdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Piranha"
     },
     {
       "id": "ght7u1k_tqw",

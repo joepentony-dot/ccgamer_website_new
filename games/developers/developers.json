@@ -165,6 +165,17 @@
     "url": "/games/developers/firebird/"
   },
   {
+    "name": "Five Ways Software",
+    "slug": "five-ways-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "indexable": false,
+    "url": "/games/developers/five-ways-software/"
+  },
+  {
     "name": "Gremlin Graphics",
     "slug": "gremlin-graphics",
     "count": 1,
