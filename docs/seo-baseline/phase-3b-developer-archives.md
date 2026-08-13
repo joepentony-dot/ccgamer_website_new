@@ -4,10 +4,10 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **653** |
-| Static developer routes | **36** |
+| Game records scanned | **654** |
+| Static developer routes | **37** |
 | Indexable multi-game routes | **11** |
-| Single-game noindex routes | **25** |
+| Single-game noindex routes | **26** |
 | Developer hub pages | **1** |
 
 ## Indexing policy
