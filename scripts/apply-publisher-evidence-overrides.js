@@ -30,6 +30,28 @@ const APPROVED_EVIDENCE_HOSTS = new Set([
   "www.ryokawasaki.com", "www.ivproductions.it", "preservation64.de"
 ]);
 
+const RESEARCH_CORRECTIONS = {
+  "mc-lothlorien": {
+    summary: "M.C. Lothlorien was an early British strategy-software publisher active across 8-bit home computers. Museum records preserve a substantial catalogue from the early 1980s, including Roman Empire, Confrontation, Johnny Reb and Waterloo.",
+    facts: [
+      "The Centre for Computing History preserves Lothlorien releases from 1982 onward across several 8-bit home-computer systems.",
+      "Its museum catalogue includes strategy titles such as Roman Empire, Confrontation, Johnny Reb, Warlord and Waterloo."
+    ],
+    strengths: ["British strategy software", "Early 8-bit publishing", "Historical and tactical games"],
+    related: [],
+    note: "The museum record is strong on the software catalogue; unsupported founder or ownership details are omitted here.",
+    confidence: "high",
+    verified_on: "2026-08-13",
+    sources: [
+      {
+        label: "Centre for Computing History — Lothlorien games",
+        url: "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Lothlorien&type=Games",
+        type: "museum collection"
+      }
+    ]
+  }
+};
+
 function fail(message) {
   console.error(`[publisher-evidence-overrides] ${message}`);
   process.exit(1);
@@ -89,13 +111,10 @@ function validateResearchOverride(override) {
 }
 
 function applyResearchProfile(entry, override) {
-  const scalarKeys = ["summary", "note", "confidence", "verified_on"];
-  const arrayKeys = ["facts", "strengths", "related", "sources"];
-
-  for (const key of scalarKeys) {
+  for (const key of ["summary", "note", "confidence", "verified_on"]) {
     if (Object.prototype.hasOwnProperty.call(override, key)) entry[key] = override[key];
   }
-  for (const key of arrayKeys) {
+  for (const key of ["facts", "strengths", "related", "sources"]) {
     if (Object.prototype.hasOwnProperty.call(override, key)) {
       entry[key] = Array.isArray(override[key]) ? [...override[key]] : override[key];
     }
@@ -120,7 +139,9 @@ function main() {
     const slug = normaliseSlug(rawOverride?.slug);
     if (!slug) fail("Evidence override contains an empty slug");
     if (overrideBySlug.has(slug)) fail(`Duplicate evidence override for ${slug}`);
-    const override = { ...rawOverride, slug };
+
+    const correction = RESEARCH_CORRECTIONS[slug] || {};
+    const override = { ...rawOverride, ...correction, slug };
     if (!Array.isArray(override.sources) || override.sources.length === 0) {
       fail(`${slug}: evidence override must contain at least one source`);
     }
