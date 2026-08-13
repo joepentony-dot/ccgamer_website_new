@@ -5,7 +5,7 @@
     "ben-daglish": { name: "Ben Daglish", slug: "ben-daglish", born: "1966-07-31", birthplace: "London, England", bio: "Ben Daglish was an English composer and musician whose work became a major part of 1980s home-computer gaming. He is best known for C64 scores including The Last Ninja, Krakout and Deflektor, and he also wrote music for Amiga releases." },
     "chris-huelsbeck": { name: "Chris Hülsbeck", slug: "chris-huelsbeck", aliases: ["Chris Hulsbeck"], born: "1968-03-02", birthplace: "Kassel, Germany", bio: "Chris Hülsbeck is a German game composer known for European home-computer soundtracks including The Great Giana Sisters and the Turrican series across C64 and Amiga eras." },
     "dave-thomas": { name: "Dave Thomas", slug: "dave-thomas", bio: "Dave Thomas is credited on Commodore 64 game soundtracks in the archive catalogue." },
-    "david-dunn": { name: "David Dunn", slug: "david-dunn", bio: "David Dunn is credited on Commodore-era game music releases represented in this archive." },
+    "david-dunn": { name: "Julie Dunn", slug: "david-dunn", aliases: ["David Dunn"], born: "1949-06-16", bio: "Julie Dunn is an English former composer, sound designer and programmer whose Commodore 64 work includes Chiller, Finders Keepers, High Noon, The Trap Door and music programming and arrangement for Elite. Her original 1980s game credits appeared under the name David Dunn." },
     "david-whittaker": { name: "David Whittaker", slug: "david-whittaker", born: "1957-04-24", birthplace: "Bury, Lancashire, England", bio: "David Whittaker is an English video-game composer whose music spans major home-computer formats from the 1980s and early 1990s, including notable C64 and Amiga work." },
     "fred-gray": { name: "Fred Gray", slug: "fred-gray", bio: "Fred Gray is an English game composer known for Commodore 64 and Amiga-era music, with credits including Shadowfire and Mutants." },
     "jeroen-tel": { name: "Jeroen Tel", slug: "jeroen-tel", born: "1972-05-19", birthplace: "Eindhoven, Netherlands", bio: "Jeroen Tel is a Dutch composer known for late-1980s and early-1990s computer game music, including C64 and Amiga releases and his work with Maniacs of Noise." },
@@ -447,7 +447,10 @@ function composerSortLetter(name) {
       const hasQuery = query.length > 0;
 
       const sections = orderedLetters.map((letter) => {
-        const matches = groups.get(letter).filter((composer) => normaliseName(composer.name).includes(query));
+        const matches = groups.get(letter).filter((composer) =>
+          [composer.name, ...(Array.isArray(composer.aliases) ? composer.aliases : [])]
+            .some((value) => normaliseName(value).includes(query))
+        );
         if (!matches.length) {
           return "";
         }
