@@ -23,7 +23,6 @@ const steps = [
   ["validate-publisher-logo-output.js"],
   ["materialize-publisher-histories.js"],
   ["ensure-publisher-history-runtime.js"],
-  ["audit-source-backed-publishers.js"],
   ["audit-publisher-seo-evidence.js"],
   ["generate-developer-pages.js"],
   ["generate-composer-pages.js"],
