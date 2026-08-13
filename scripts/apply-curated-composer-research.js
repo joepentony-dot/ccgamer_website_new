@@ -90,7 +90,7 @@ function main() {
       return game?.title || game?.name || String(slug).replace(/-/g, " ");
     }).filter(Boolean);
     const archiveBio = enrich.archiveBiography(route, titles);
-    const markup = enrich.buildProfileMarkup(route, profile, archiveBio);
+    const markup = enrich.buildProfileMarkup(route, profile, archiveBio).replace(/^[ \t]+$/gm, "");
     const filePath = path.join(repoRoot, "music", route.slug, "index.html");
     if (!fs.existsSync(filePath)) fail(`Missing curated page: ${route.slug}`);
     let html = fs.readFileSync(filePath, "utf8");
