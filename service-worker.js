@@ -164,7 +164,9 @@ async function networkFirstAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
 
   try {
-    const response = await fetch(request, { cache: "no-cache" });
+    // Preserve network-first freshness while allowing the browser's normal HTTP cache
+    // to satisfy still-fresh code instead of forcing a revalidation on every request.
+    const response = await fetch(request);
     if (canStoreResponse(response)) await cache.put(request, response.clone());
     return response;
   } catch (error) {
