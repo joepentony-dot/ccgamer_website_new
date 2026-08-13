@@ -12,6 +12,24 @@ const dataDir = path.join(repoRoot, "data");
 const overridesPath = path.join(dataDir, "publisher-evidence-overrides.json");
 const PROFILE_FILE_PATTERN = /^publisher-histories(?:-[a-z0-9-]+)?\.json$/i;
 
+const EXPECTED_RESEARCH_SLUGS = new Set([
+  "american-action", "amersoft", "artworx-software", "beyond", "black-legend",
+  "blade-software", "bloodhouse", "bulldog-software", "cbs-electronics-software",
+  "commodore-plus", "corgi", "craig-communications", "creative-software",
+  "creative-sparks", "datamost", "digital-magic-software", "hodder-and-stoughton",
+  "ice", "interdisc", "mc-lothlorien", "melody-hall-publishing", "micro-fun",
+  "monarch-software", "sight-and-sound-music-software", "simulmondo",
+  "tronix-publishing", "mogul"
+]);
+
+const APPROVED_EVIDENCE_HOSTS = new Set([
+  "www.computinghistory.org.uk", "mastertronic.co.uk", "www.c64.com", "journal.fi",
+  "www.atarimagazines.com", "blog.playstation.com", "commodore-plus.itch.io",
+  "www.c64-wiki.de", "worldofspectrum.org", "datamost.applearchives.com",
+  "www.ataricompendium.com", "gb64.com", "elisoftware.org", "manuals.plus",
+  "www.ryokawasaki.com", "www.ivproductions.it", "preservation64.de"
+]);
+
 function fail(message) {
   console.error(`[publisher-evidence-overrides] ${message}`);
   process.exit(1);
@@ -45,6 +63,31 @@ function mergeUnique(existing, additions, keyFn) {
   return output;
 }
 
+function validateSource(slug, source) {
+  let url;
+  try {
+    url = new URL(source?.url || "");
+  } catch (error) {
+    fail(`${slug}: invalid evidence URL`);
+  }
+  if (url.protocol !== "https:") fail(`${slug}: evidence URL must use HTTPS`);
+  if (!APPROVED_EVIDENCE_HOSTS.has(url.hostname)) {
+    fail(`${slug}: unapproved evidence host ${url.hostname}`);
+  }
+  if (String(source?.label || "").trim().length < 12) fail(`${slug}: evidence source label is too vague`);
+  if (!String(source?.type || "").trim()) fail(`${slug}: evidence source type is missing`);
+}
+
+function validateResearchOverride(override) {
+  const slug = override.slug;
+  if (!EXPECTED_RESEARCH_SLUGS.has(slug)) fail(`${slug}: unexpected full-profile research override`);
+  if (String(override.summary || "").trim().length < 80) fail(`${slug}: researched summary is too short`);
+  if (!Array.isArray(override.facts) || override.facts.length < 2) fail(`${slug}: researched profile requires at least two facts`);
+  if (!Array.isArray(override.strengths) || override.strengths.length === 0) fail(`${slug}: researched profile requires strengths`);
+  if (override.confidence !== "high") fail(`${slug}: researched profile confidence must be high`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(String(override.verified_on || ""))) fail(`${slug}: verified_on must use YYYY-MM-DD`);
+}
+
 function applyResearchProfile(entry, override) {
   const scalarKeys = ["summary", "note", "confidence", "verified_on"];
   const arrayKeys = ["facts", "strengths", "related", "sources"];
@@ -66,15 +109,34 @@ function main() {
     fail("data/publisher-evidence-overrides.json must contain a non-empty array");
   }
 
+  const rawOverrides = fs.readFileSync(overridesPath, "utf8").toLowerCase();
+  for (const prohibited of ["lemon64.com", "mobygames.com", "gamefaqs.gamespot.com"]) {
+    if (rawOverrides.includes(prohibited)) fail(`Evidence data must not reference ${prohibited}`);
+  }
+
   const overrideBySlug = new Map();
-  for (const override of overrides) {
-    const slug = normaliseSlug(override?.slug);
+  const researchSlugs = new Set();
+  for (const rawOverride of overrides) {
+    const slug = normaliseSlug(rawOverride?.slug);
     if (!slug) fail("Evidence override contains an empty slug");
     if (overrideBySlug.has(slug)) fail(`Duplicate evidence override for ${slug}`);
-    if (!Array.isArray(override?.sources) || override.sources.length === 0) {
+    const override = { ...rawOverride, slug };
+    if (!Array.isArray(override.sources) || override.sources.length === 0) {
       fail(`${slug}: evidence override must contain at least one source`);
     }
-    overrideBySlug.set(slug, { ...override, slug });
+    override.sources.forEach((source) => validateSource(slug, source));
+    if (override.mode === "replace_profile") {
+      validateResearchOverride(override);
+      researchSlugs.add(slug);
+    }
+    overrideBySlug.set(slug, override);
+  }
+
+  for (const slug of EXPECTED_RESEARCH_SLUGS) {
+    if (!researchSlugs.has(slug)) fail(`Missing researched publisher override: ${slug}`);
+  }
+  if (researchSlugs.size !== EXPECTED_RESEARCH_SLUGS.size) {
+    fail(`Expected ${EXPECTED_RESEARCH_SLUGS.size} researched publisher overrides, found ${researchSlugs.size}`);
   }
 
   const files = fs.readdirSync(dataDir)
@@ -96,7 +158,6 @@ function main() {
       if (!override) continue;
 
       matched.set(slug, (matched.get(slug) || 0) + 1);
-
       if (override.mode === "replace_profile") {
         applyResearchProfile(entry, override);
       } else {
@@ -117,8 +178,7 @@ function main() {
     if (count !== 1) fail(`${slug}: expected exactly one publisher profile match, found ${count}`);
   }
 
-  const researchCount = overrides.filter((entry) => entry?.mode === "replace_profile").length;
-  console.log(`[publisher-evidence-overrides] Applied ${overrides.length} evidence override(s) across ${filesChanged} history file(s), including ${researchCount} full research profile replacement(s).`);
+  console.log(`[publisher-evidence-overrides] Applied ${overrides.length} evidence override(s) across ${filesChanged} history file(s), including ${researchSlugs.size} validated full research profile replacement(s).`);
 }
 
 if (require.main === module) main();
