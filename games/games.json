@@ -17273,6 +17273,48 @@
   },
   {
     "system": "C64",
+    "id": "mr_weems_and_the_she_vampires",
+    "slug": "mr-weems-and-the-she-vampires",
+    "title": "Mr Weems And The She Vampires",
+    "sorttitle": "Mr Weems And The She Vampires",
+    "year": 1987,
+    "genres": [
+      "arcade",
+      "horror"
+    ],
+    "collections": [],
+    "videoid": "5tpXo_IEU_U",
+    "thumbnail": "resources/images/thumbnails/all/mr-weems-and-the-she-vampires.webp",
+    "pdf": "",
+    "disk": [
+      "https://drive.google.com/file/d/1Sp_cmXivWzb0uWXxP28oZdUBAfrgr9S5/view?usp=drive_link"
+    ],
+    "lemon": [
+      "https://www.lemon64.com/game/mr-weems-and-the-she-vampires"
+    ],
+    "zzap": [],
+    "description": "The Astonishing Adventures of Mr. Weems and the She Vampires is a 1987 Commodore 64 action game from Piranha. Guide Mr. Weems through a six-level vampire-filled mansion, collecting key objects, blasting enemies with garlic and preparing for a final encounter with the Great She Vampire",
+    "ccg_rating": 6,
+    "ccg_rating_reason": "There are some fun ideas here and the vampire theme gives it plenty of character, but the repetitive gameplay, awkward movement and rather unforgiving design stop Mr. Weems from being much more than an interesting C64 curiosity.",
+    "credits": {
+      "publisher": [
+        "Piranha"
+      ],
+      "producer": "",
+      "coder": [],
+      "graphics": [],
+      "musician": [],
+      "re_releaser": [
+        "Alternative Software"
+      ],
+      "developer": "Five Ways Software"
+    },
+    "developer": "Five Ways Software",
+    "_ccg_enforced": false,
+    "_ccg_migrated": false
+  },
+  {
+    "system": "C64",
     "id": "the_muncher",
     "slug": "the-muncher",
     "title": "The Muncher",
