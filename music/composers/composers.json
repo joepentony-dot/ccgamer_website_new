@@ -76,8 +76,8 @@
     ]
   },
   {
-    "name": "Clint Bajakain",
-    "slug": "clint-bajakain",
+    "name": "Clint Bajakian",
+    "slug": "clint-bajakian",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
@@ -88,7 +88,7 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Clint Bajakain"
+      "Clint Bajakian"
     ],
     "games": [
       "monkey-island-2-lechucks-revenge"
