@@ -2,7 +2,8 @@
   const COMPOSER_CANONICAL = {
     "chris hulsbeck": "Chris Hülsbeck",
     "chris huelsbeck": "Chris Hülsbeck",
-    "chris hülsbeck": "Chris Hülsbeck"
+    "chris hülsbeck": "Chris Hülsbeck",
+    "oisten eide": "Oisten Eide"
   };
 
   // Unicode transliteration and punctuation handling must match scripts/composer-utils.js exactly.
