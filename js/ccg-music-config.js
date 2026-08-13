@@ -5,15 +5,30 @@
   const MUSIC_NAVIGATION_SCRIPT = "/js/ccg-music-navigation.js";
   const LEGACY_COMPOSER_PATH = "/music/composer.html";
   const EDITORIAL_FEATURED_COMPOSERS = [
-    {
-      slug: "paul-norman",
-      name: "Paul Norman",
-      platform: "C64",
-      tracks: 4,
-      image: "/resources/images/composers/paul-norman.webp"
-    }
+    { slug: "allister-brimble", name: "Allister Brimble", platform: "AMIGA / C64", tracks: 12, image: "/resources/images/composers/allister-brimble.jpg" },
+    { slug: "barry-leitch", name: "Barry Leitch", platform: "AMIGA / C64", tracks: 8, image: "/resources/images/composers/barry-leitch.jpg" },
+    { slug: "ben-daglish", name: "Ben Daglish", platform: "C64", tracks: 16, image: "/resources/images/composers/ben-daglish.jpg" },
+    { slug: "chris-huelsbeck", name: "Chris Hülsbeck", platform: "AMIGA / C64", tracks: 6, image: "/resources/images/composers/chris-huelsbeck.jpg" },
+    { slug: "david-whittaker", name: "David Whittaker", platform: "AMIGA / C64", tracks: 22, image: "/resources/images/composers/david-whittaker.jpg" },
+    { slug: "fred-gray", name: "Fred Gray", platform: "C64", tracks: 13, image: "/resources/images/composers/fred-gray.jpg" },
+    { slug: "martin-galway", name: "Martin Galway", platform: "C64", tracks: 17, image: "/resources/images/composers/martin-galway.jpg" },
+    { slug: "rob-hubbard", name: "Rob Hubbard", platform: "AMIGA / C64", tracks: 32, image: "/resources/images/composers/rob-hubbard.jpg" },
+    { slug: "jeroen-tel", name: "Jeroen Tel", platform: "AMIGA / C64", tracks: 9, image: "/resources/images/composers/jeroen-tel.jpg" },
+    { slug: "jonathan-dunn", name: "Jonathan Dunn", platform: "AMIGA / C64", tracks: 11, image: "/resources/images/composers/jonathan-dunn.jpg" },
+    { slug: "keith-tinman", name: "Keith Tinman", platform: "AMIGA / C64", tracks: 6, image: "/resources/images/composers/keith-tinman.jpg" },
+    { slug: "mark-cooksey", name: "Mark Cooksey", platform: "C64", tracks: 9, image: "/resources/images/composers/mark-cooksey.jpg" },
+    { slug: "matt-furniss", name: "Matt Furniss", platform: "C64", tracks: 6, image: "/resources/images/composers/matt-furniss.png" },
+    { slug: "matt-gray", name: "Matt Gray", platform: "C64", tracks: 5, image: "/resources/images/composers/matt-gray.jpg" },
+    { slug: "neil-brennan", name: "Neil Brennan", platform: "C64", tracks: 7, image: "/resources/images/composers/neil-brennan.jpg" },
+    { slug: "richard-joseph", name: "Richard Joseph", platform: "AMIGA / C64", tracks: 17, image: "/resources/images/composers/richard-joseph.jpg" },
+    { slug: "russell-lieblich", name: "Russell Lieblich", platform: "C64", tracks: 8, image: "/resources/images/composers/russell-lieblich.png" },
+    { slug: "steve-turner", name: "Steve Turner", platform: "AMIGA / C64", tracks: 4, image: "/resources/images/composers/steve-turner.webp" },
+    { slug: "paul-norman", name: "Paul Norman", platform: "C64", tracks: 4, image: "/resources/images/composers/paul-norman.webp" }
   ];
 
+  const FEATURED_SIGNATURE = EDITORIAL_FEATURED_COMPOSERS
+    .map((composer) => `${composer.slug}:${composer.image}`)
+    .join("|");
   const urlCache = new Map();
   const probeCache = new Map();
   let missingConfigWarningShown = false;
@@ -208,28 +223,57 @@
     return document.querySelector(".composer-grid-featured");
   }
 
+  function getFeaturedGridSignature(grid) {
+    if (!(grid instanceof Element)) return "";
+    return Array.from(grid.querySelectorAll(".composer-card--featured"))
+      .map((card) => {
+        const slug = String(card.getAttribute("data-slug") || "").trim();
+        const image = String(card.querySelector("img")?.getAttribute("src") || "").trim();
+        return `${slug}:${image}`;
+      })
+      .join("|");
+  }
+
   function ensureEditorialFeaturedComposers(root = document) {
     const grid = getFeaturedGrid(root);
     if (!grid) return;
+    if (getFeaturedGridSignature(grid) === FEATURED_SIGNATURE) return;
 
-    EDITORIAL_FEATURED_COMPOSERS.forEach((composer) => {
-      const existing = grid.querySelector(`[data-slug="${composer.slug}"], a[href$="/music/${composer.slug}/"]`);
-      if (existing) return;
-
-      const card = document.createElement("a");
-      card.href = `${resolveSiteRoot()}music/${composer.slug}/`;
-      card.className = "composer-card composer-card--featured";
-      card.dataset.slug = composer.slug;
-      card.innerHTML = `
+    grid.innerHTML = EDITORIAL_FEATURED_COMPOSERS.map((composer) => `
+      <a href="${resolveSiteRoot()}music/${composer.slug}/" class="composer-card composer-card--featured" data-slug="${composer.slug}">
         <div class="composer-thumb"><img src="${composer.image}" alt="${composer.name}" loading="lazy"></div>
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${composer.platform}</p>
           <p class="composer-count">${composer.tracks} Tracks</p>
         </div>
-      `;
-      grid.appendChild(card);
-    });
+      </a>
+    `).join("");
+    grid.dataset.ccgFeaturedManifest = "restored-19";
+  }
+
+  function ensureEditorialComposerProfileImage(root = document) {
+    const page = document.querySelector("[data-composer-slug]");
+    if (!(page instanceof Element)) return;
+
+    const slug = String(page.getAttribute("data-composer-slug") || "").trim();
+    const composer = EDITORIAL_FEATURED_COMPOSERS.find((entry) => entry.slug === slug);
+    if (!composer) return;
+
+    const profile = page.querySelector('[data-ccg-research-profile="true"], .ccg-composer-profile');
+    if (!(profile instanceof Element)) return;
+
+    let image = profile.querySelector(".ccg-composer-profile__image");
+    if (!image) {
+      image = document.createElement("img");
+      image.className = "ccg-composer-profile__image";
+      image.loading = "lazy";
+      profile.insertAdjacentElement("afterbegin", image);
+    }
+
+    if (image.getAttribute("src") !== composer.image) image.setAttribute("src", composer.image);
+    image.setAttribute("alt", composer.name);
+    profile.classList.remove("ccg-composer-profile--text-only");
   }
 
   function getAudioSource(audio) {
@@ -289,8 +333,6 @@
   function verifyComposerTrackCard(card) {
     if (!(card instanceof Element)) return;
 
-    // Generated composer pages ship static SEO fallback rows. Leave those intact
-    // until music-composer-pages.js replaces them with interactive cards.
     if (card.classList.contains("ccg-composer-games__item--static")) return;
     if (card.dataset.ccgTrackState === "unavailable") return;
 
@@ -397,6 +439,7 @@
     verifyComposerTrackCards(document);
     verifyEssentialTracks(document);
     ensureEditorialFeaturedComposers(document);
+    ensureEditorialComposerProfileImage(document);
 
     if (!composerLinkObserver && document.body) {
       composerLinkObserver = new MutationObserver((mutations) => {
@@ -405,7 +448,8 @@
             if (!(node instanceof Element)) return;
             rewriteLegacyComposerLinks(node);
             verifyEssentialTracks(node);
-            ensureEditorialFeaturedComposers(node);
+            ensureEditorialFeaturedComposers(document);
+            ensureEditorialComposerProfileImage(document);
           });
         });
       });

@@ -58,6 +58,38 @@ requireText(navFitCss, ".ccg-header.ccg-header--more-open .ccg-nav__bar", "Deskt
 requireText(navFitCss, "overflow: visible !important;", "Desktop More-open styling does not allow the dropdown to escape the header panel.");
 requireText(navFitCss, "contain: none !important;", "Desktop More-open styling does not remove paint containment from the dropdown ancestor chain.");
 
+const expectedFeaturedSlugs = [
+    "allister-brimble",
+    "barry-leitch",
+    "ben-daglish",
+    "chris-huelsbeck",
+    "david-whittaker",
+    "fred-gray",
+    "martin-galway",
+    "rob-hubbard",
+    "jeroen-tel",
+    "jonathan-dunn",
+    "keith-tinman",
+    "mark-cooksey",
+    "matt-furniss",
+    "matt-gray",
+    "neil-brennan",
+    "richard-joseph",
+    "russell-lieblich",
+    "steve-turner",
+    "paul-norman"
+];
+expectedFeaturedSlugs.forEach((slug) => {
+    requireText(config, `slug: "${slug}"`, `Featured Composer manifest is missing ${slug}.`);
+    requireText(config, `/resources/images/composers/${slug}.`, `Featured Composer manifest is missing the repository portrait for ${slug}.`);
+});
+requireText(config, "const FEATURED_SIGNATURE", "Featured Composer restoration is missing its exact-list signature guard.");
+requireText(config, 'grid.dataset.ccgFeaturedManifest = "restored-19"', "Featured Composer restoration is not marking the managed 19-card grid.");
+requireText(config, "getFeaturedGridSignature(grid) === FEATURED_SIGNATURE", "Featured Composer restoration does not protect the exact card/image set from later renderer replacement.");
+if (config.includes('slug: "reyn-ouwehand"')) {
+    problems.push("Reyn Ouwehand has been reintroduced into the fixed Featured Composer manifest.");
+}
+
 requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
 requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
 requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment layer is not loaded through the shared Amiga identity module.");
@@ -71,4 +103,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log("Music navigation, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
+console.log("Music navigation, Featured Composer restoration, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
