@@ -87,7 +87,7 @@ expectedFeaturedSlugs.forEach((slug) => {
     requireText(config, `/resources/images/composers/${slug}.`, `Featured Composer manifest is missing the repository portrait for ${slug}.`);
 });
 requireText(config, "const FEATURED_SIGNATURE", "Featured Composer restoration is missing its exact-list signature guard.");
-requireText(config, 'grid.dataset.ccgFeaturedManifest = "restored-20"', "Featured Composer restoration is not marking the managed 20-card grid.");
+requireText(config, 'grid.dataset.ccgFeaturedManifest = "restored-20"', "Featured Composer restoration is not marking the managed 20-card base grid.");
 requireText(config, "getFeaturedGridSignature(grid) === FEATURED_SIGNATURE", "Featured Composer restoration does not protect the exact card/image set from later renderer replacement.");
 if (config.includes('slug: "reyn-ouwehand"')) {
     problems.push("Reyn Ouwehand has been reintroduced into the fixed Featured Composer manifest.");
@@ -98,7 +98,12 @@ requireText(composerUtils, "function bindMusicHubAccordion()", "The Music Hub do
 requireText(composerUtils, "requestAnimationFrame(apply)", "The Music Hub composer search is not frame-throttled.");
 requireText(composerUtils, 'grid.classList.add("composer-grid-featured-omega")', "The fixed Featured Composer grid is not protected from the expensive legacy hub renderer.");
 requireText(composerUtils, 'grid.classList.remove("composer-grid-featured")', "The legacy Featured Composer runtime hook is still active after the editorial grid is ready.");
-requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest === "restored-20"', "The Omega grid lock can run before the 20-card editorial manifest is ready.");
+requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest === "restored-20"', "The Omega grid lock can run before the 20-card editorial base manifest is ready.");
+requireText(composerUtils, 'function ensureJonHareFeaturedCard(grid)', "Jon Hare is not being added to the Omega Featured Composer grid.");
+requireText(composerUtils, '/music/jon-hare/', "The Jon Hare Featured Composer card does not link to his archive page.");
+requireText(composerUtils, '/resources/images/composers/jon-hare.webp', "The Jon Hare Featured Composer card is missing its repository portrait.");
+requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest = "omega-21"', "The Omega Featured Composer grid is not marking the managed 21-card state.");
+requireText(composerUtils, "expandedFeaturedCount < 21", "The Omega Featured Composer grid does not enforce all 21 managed cards before locking.");
 requireText(composerUtils, 'normalizeComposerName("Julie Dunn David Dunn")', "Julie Dunn is not searchable by both current and historical names in the Music Hub.");
 requireText(musicHubOmegaCss, ".composer-grid-featured-omega", "The Omega Featured Composer grid styling is missing.");
 requireText(musicHubOmegaCss, ".composer-accordion__header[aria-expanded=\"true\"]::after", "The Omega accordion does not expose a distinct expanded state.");
