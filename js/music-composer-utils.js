@@ -224,6 +224,30 @@ function compareComposerNames(a, b) {
     applyMusicHubAccordionSearch(accordion, searchInput);
   }
 
+  function ensureJonHareFeaturedCard(grid) {
+    if (!(grid instanceof Element)) return;
+    if (grid.querySelector('[data-slug="jon-hare"]')) return;
+
+    const card = document.createElement("a");
+    card.href = `${resolveMusicHubSiteRoot()}music/jon-hare/`;
+    card.className = "composer-card composer-card--featured";
+    card.dataset.slug = "jon-hare";
+    card.innerHTML = `
+      <div class="composer-thumb"><img src="/resources/images/composers/jon-hare.webp" alt="Jon Hare" loading="lazy"></div>
+      <div class="composer-info">
+        <h3>Jon Hare</h3>
+        <p class="composer-platform">AMIGA</p>
+        <p class="composer-count">4 Tracks</p>
+      </div>
+    `;
+    grid.appendChild(card);
+  }
+
+  function resolveMusicHubSiteRoot() {
+    const root = typeof global.ccgGetSiteRoot === "function" ? global.ccgGetSiteRoot() : "/";
+    return root.endsWith("/") ? root : `${root}/`;
+  }
+
   function lockMusicHubFeaturedGrid() {
     if (!isMusicHub()) return;
     const grid = document.querySelector(".composer-grid-featured");
@@ -233,6 +257,11 @@ function compareComposerNames(a, b) {
     const editorialReady = grid.dataset.ccgFeaturedManifest === "restored-20" || featuredCount >= 20;
     if (!editorialReady) return;
 
+    ensureJonHareFeaturedCard(grid);
+    const expandedFeaturedCount = grid.querySelectorAll(".composer-card--featured").length;
+    if (expandedFeaturedCount < 21) return;
+
+    grid.dataset.ccgFeaturedManifest = "omega-21";
     grid.classList.add("composer-grid-featured-omega");
     grid.classList.remove("composer-grid-featured");
     grid.dataset.ccgOmegaRuntimeLocked = "true";
