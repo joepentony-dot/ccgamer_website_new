@@ -7,6 +7,9 @@
 
 "use strict";
 
+const fs = require("fs");
+const path = require("path");
+
 const AUDIO_EXT_RE = /\.(?:mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i;
 
 const COMPOSER_ALIASES = new Map([
@@ -15,6 +18,10 @@ const COMPOSER_ALIASES = new Map([
     ["chris hülsbeck", "Chris Hülsbeck"],
     ["clint bajakain", "Clint Bajakian"],
     ["oisten eide", "Oisten Eide"]
+]);
+
+const LEGACY_COMPOSER_REDIRECTS = new Map([
+    ["clint-bajakain", "clint-bajakian"]
 ]);
 
 function transliterateComposerText(value) {
@@ -41,7 +48,6 @@ function normalizeComposerKey(value) {
         .replace(/\s+/g, " ")
         .trim();
 }
-
 
 const COMPOSER_NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv"]);
 
@@ -204,9 +210,52 @@ function buildComposerGroups(games) {
         ));
 }
 
+function legacyComposerRedirectHtml(fromSlug, toSlug) {
+    const toName = toSlug === "clint-bajakian" ? "Clint Bajakian" : toSlug;
+    return `<!DOCTYPE html>
+<html lang="en" data-generated-composer="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${toName} | Cheeky Commodore Gamer</title>
+  <meta name="robots" content="noindex,follow">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/music/${toSlug}/">
+  <meta http-equiv="refresh" content="0; url=/music/${toSlug}/">
+  <script>
+    window.location.replace('/music/${toSlug}/' + window.location.search + window.location.hash);
+  </script>
+</head>
+<body>
+  <p>This composer page has moved to <a href="/music/${toSlug}/">${toName}</a>.</p>
+</body>
+</html>
+`;
+}
+
+function registerLegacyComposerRedirectWriter() {
+    const invokedScript = path.basename(String(process.argv[1] || ""));
+    if (invokedScript !== "generate-composer-pages.js") return;
+
+    process.once("beforeExit", (code) => {
+        if (code !== 0) return;
+        const repoRoot = process.env.CCG_REPO_ROOT
+            ? path.resolve(process.env.CCG_REPO_ROOT)
+            : path.resolve(__dirname, "..");
+
+        for (const [fromSlug, toSlug] of LEGACY_COMPOSER_REDIRECTS) {
+            const redirectPath = path.join(repoRoot, "music", fromSlug, "index.html");
+            fs.mkdirSync(path.dirname(redirectPath), { recursive: true });
+            fs.writeFileSync(redirectPath, legacyComposerRedirectHtml(fromSlug, toSlug), "utf8");
+        }
+    });
+}
+
+registerLegacyComposerRedirectWriter();
+
 module.exports = {
     AUDIO_EXT_RE,
     COMPOSER_ALIASES,
+    LEGACY_COMPOSER_REDIRECTS,
     buildComposerGroups,
     canonicalizeComposerName,
     compareComposerNames,
