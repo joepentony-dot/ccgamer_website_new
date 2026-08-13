@@ -233,7 +233,7 @@ jobs:
             if (actual !== letter) throw new Error(`${name}: expected ${letter}, got ${actual}`);
           }
           const hubbardOrder = ['Rob Hubbard', 'Chris Hülsbeck'].sort(compareComposerNames);
-          if (hubbardOrder.join('|') !== 'Chris Hülsbeck|Rob Hubbard') {
+          if (hubbardOrder.join('|') !== 'Rob Hubbard|Chris Hülsbeck') {
             throw new Error(`Unexpected H surname order: ${hubbardOrder.join('|')}`);
           }
           console.log('Surname filing helper checks passed.');
