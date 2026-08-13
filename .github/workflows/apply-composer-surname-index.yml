@@ -1,0 +1,249 @@
+name: Apply Composer Surname Index Patch
+
+on:
+  push:
+    branches:
+      - fix/composer-surname-index
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'Prepare composer surname index patch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out patch branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/composer-surname-index
+          fetch-depth: 1
+
+      - name: Apply surname filing changes
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected exactly one match in {path}, found {count}: {old[:90]!r}")
+              p.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          server_helpers = '''
+          const COMPOSER_NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv"]);
+
+          function shouldFileComposerByFullName(value) {
+              const raw = String(value ?? "").trim();
+              const normalized = normalizeComposerKey(raw);
+              if (!normalized || !normalized.includes(" ")) return true;
+              return /\\d/.test(raw) || /(?:^|\\s)(?:and|of|the)(?:\\s|$)/i.test(raw) || /[&+]/.test(raw);
+          }
+
+          function getComposerSortKey(value) {
+              const canonical = canonicalizeComposerName(value) || String(value ?? "").trim();
+              const parts = canonical.split(/\\s+/).filter(Boolean);
+              if (parts.length <= 1 || shouldFileComposerByFullName(canonical)) {
+                  return normalizeComposerKey(canonical);
+              }
+
+              let surnameIndex = parts.length - 1;
+              while (surnameIndex > 0 && COMPOSER_NAME_SUFFIXES.has(normalizeComposerKey(parts[surnameIndex]))) {
+                  surnameIndex -= 1;
+              }
+
+              const surname = normalizeComposerKey(parts[surnameIndex]);
+              const remainder = normalizeComposerKey([
+                  ...parts.slice(0, surnameIndex),
+                  ...parts.slice(surnameIndex + 1)
+              ].join(" "));
+              return [surname, remainder].filter(Boolean).join(" ");
+          }
+
+          function getComposerSortLetter(value) {
+              const first = getComposerSortKey(value).charAt(0).toUpperCase();
+              return /^[A-Z]$/.test(first) ? first : "#";
+          }
+
+          function compareComposerNames(a, b) {
+              return getComposerSortKey(a).localeCompare(getComposerSortKey(b), "en", { sensitivity: "base" }) ||
+                  normalizeComposerKey(a).localeCompare(normalizeComposerKey(b), "en", { sensitivity: "base" });
+          }
+          '''
+
+          replace_once(
+              "scripts/composer-utils.js",
+              '''function canonicalizeComposerName(value) {''',
+              server_helpers + '''\nfunction canonicalizeComposerName(value) {'''
+          )
+          replace_once(
+              "scripts/composer-utils.js",
+              '''        .sort((a, b) => (\n            a.name.localeCompare(b.name, "en", { sensitivity: "base" }) ||\n            a.slug.localeCompare(b.slug)\n        ));''',
+              '''        .sort((a, b) => (\n            compareComposerNames(a.name, b.name) ||\n            a.slug.localeCompare(b.slug)\n        ));'''
+          )
+          replace_once(
+              "scripts/composer-utils.js",
+              '''    buildComposerGroups,\n    canonicalizeComposerName,''',
+              '''    buildComposerGroups,\n    canonicalizeComposerName,\n    compareComposerNames,\n    getComposerSortKey,\n    getComposerSortLetter,'''
+          )
+
+          client_helpers = '''
+
+          const COMPOSER_NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv"]);
+
+          function shouldFileComposerByFullName(value) {
+            const raw = String(value || "").trim();
+            const normalized = normalizeComposerName(raw);
+            if (!normalized || !normalized.includes(" ")) return true;
+            return /\\d/.test(raw) || /(?:^|\\s)(?:and|of|the)(?:\\s|$)/i.test(raw) || /[&+]/.test(raw);
+          }
+
+          function getComposerSortKey(value) {
+            const canonical = getCanonicalComposer(value) || String(value || "").trim();
+            const parts = canonical.split(/\\s+/).filter(Boolean);
+            if (parts.length <= 1 || shouldFileComposerByFullName(canonical)) {
+              return normalizeComposerName(canonical);
+            }
+
+            let surnameIndex = parts.length - 1;
+            while (surnameIndex > 0 && COMPOSER_NAME_SUFFIXES.has(normalizeComposerName(parts[surnameIndex]))) {
+              surnameIndex -= 1;
+            }
+
+            const surname = normalizeComposerName(parts[surnameIndex]);
+            const remainder = normalizeComposerName([
+              ...parts.slice(0, surnameIndex),
+              ...parts.slice(surnameIndex + 1)
+            ].join(" "));
+            return [surname, remainder].filter(Boolean).join(" ");
+          }
+
+          function getComposerSortLetter(value) {
+            const first = getComposerSortKey(value).charAt(0).toUpperCase();
+            return /^[A-Z]$/.test(first) ? first : "#";
+          }
+
+          function compareComposerNames(a, b) {
+            return getComposerSortKey(a).localeCompare(getComposerSortKey(b), "en", { sensitivity: "base" }) ||
+              normalizeComposerName(a).localeCompare(normalizeComposerName(b), "en", { sensitivity: "base" });
+          }
+          '''
+          replace_once(
+              "js/music-composer-utils.js",
+              '''\n  function getCanonicalComposer(name) {''',
+              client_helpers + '''\n\n  function getCanonicalComposer(name) {'''
+          )
+          replace_once(
+              "js/music-composer-utils.js",
+              '''  global.getCanonicalComposer = getCanonicalComposer;\n  global.COMPOSER_CANONICAL = COMPOSER_CANONICAL;''',
+              '''  global.getCanonicalComposer = getCanonicalComposer;\n  global.getComposerSortKey = getComposerSortKey;\n  global.getComposerSortLetter = getComposerSortLetter;\n  global.compareComposerNames = compareComposerNames;\n  global.COMPOSER_CANONICAL = COMPOSER_CANONICAL;'''
+          )
+
+          replace_once(
+              "scripts/generate-composer-pages.js",
+              '''    COMPOSER_ALIASES,\n    buildComposerGroups,\n    normalizeComposerKey,\n    slugifyComposer''',
+              '''    COMPOSER_ALIASES,\n    buildComposerGroups,\n    compareComposerNames,\n    getComposerSortLetter,\n    normalizeComposerKey,\n    slugifyComposer'''
+          )
+          replace_once(
+              "scripts/generate-composer-pages.js",
+              '''    return records.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));''',
+              '''    return records.sort((a, b) => compareComposerNames(a.name, b.name));'''
+          )
+          replace_once(
+              "scripts/generate-composer-pages.js",
+              '''    return routes.sort((a, b) => (\n        a.name.localeCompare(b.name, "en", { sensitivity: "base" }) ||\n        a.slug.localeCompare(b.slug)\n    ));''',
+              '''    return routes.sort((a, b) => (\n        compareComposerNames(a.name, b.name) ||\n        a.slug.localeCompare(b.slug)\n    ));'''
+          )
+          replace_once(
+              "scripts/generate-composer-pages.js",
+              '''        const first = route.name.charAt(0).toUpperCase();\n        const letter = /^[A-Z]$/.test(first) ? first : "#";''',
+              '''        const letter = getComposerSortLetter(route.name);'''
+          )
+
+          browser_helpers = '''
+
+          function compareComposerDisplayNames(a, b) {
+            if (typeof window.compareComposerNames === "function") {
+              return window.compareComposerNames(a, b);
+            }
+            return normaliseName(a).localeCompare(normaliseName(b));
+          }
+
+          function composerSortLetter(name) {
+            if (typeof window.getComposerSortLetter === "function") {
+              return window.getComposerSortLetter(name);
+            }
+            const normalized = normaliseName(name);
+            const parts = normalized.split(/\\s+/).filter(Boolean);
+            const candidate = parts.length > 1 ? parts[parts.length - 1] : normalized;
+            const first = candidate.charAt(0).toUpperCase();
+            return /^[A-Z]$/.test(first) ? first : "#";
+          }
+          '''
+          replace_once(
+              "js/music-composer-pages.js",
+              '''\n  function toComposerList(value) {''',
+              browser_helpers + '''\n\n  function toComposerList(value) {'''
+          )
+          replace_once(
+              "js/music-composer-pages.js",
+              '''    const composers = Array.from(composerMap.values()).sort((a, b) =>\n      a.name.localeCompare(b.name)\n    );''',
+              '''    const composers = Array.from(composerMap.values()).sort((a, b) =>\n      compareComposerDisplayNames(a.name, b.name)\n    );'''
+          )
+          replace_once(
+              "js/music-composer-pages.js",
+              '''  function getSortedComposers(registry) {\n    return [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));\n  }''',
+              '''  function getSortedComposers(registry) {\n    return [...registry.composers].sort((a, b) => compareComposerDisplayNames(a.name, b.name));\n  }'''
+          )
+          replace_once(
+              "js/music-composer-pages.js",
+              '''      const letter = composer.name.charAt(0).toUpperCase();\n      const key = /[A-Z]/.test(letter) ? letter : "#";''',
+              '''      const key = composerSortLetter(composer.name);'''
+          )
+          replace_once(
+              "js/music-composer-pages.js",
+              '''    const composerList = Object.values(composers).sort((a, b) =>\n      a.name.localeCompare(b.name)\n    );''',
+              '''    const composerList = Object.values(composers).sort((a, b) =>\n      compareComposerDisplayNames(a.name, b.name)\n    );'''
+          )
+
+      - name: Validate surname filing helpers
+        shell: bash
+        run: |
+          node --check scripts/composer-utils.js
+          node --check scripts/generate-composer-pages.js
+          node --check js/music-composer-utils.js
+          node --check js/music-composer-pages.js
+          node <<'NODE'
+          const { getComposerSortLetter, compareComposerNames } = require('./scripts/composer-utils');
+          const expected = new Map([
+            ['Rob Hubbard', 'H'],
+            ['Chris Hülsbeck', 'H'],
+            ['Martin Galway', 'G'],
+            ['Oisten Eide', 'E'],
+            ['Jeroen Tel', 'T'],
+            ['Bjørn Lynne', 'L'],
+            ['Nation 12', 'N'],
+            ['Bassbomb', 'B'],
+            ['Maniacs of Noise', 'M']
+          ]);
+          for (const [name, letter] of expected) {
+            const actual = getComposerSortLetter(name);
+            if (actual !== letter) throw new Error(`${name}: expected ${letter}, got ${actual}`);
+          }
+          const hubbardOrder = ['Rob Hubbard', 'Chris Hülsbeck'].sort(compareComposerNames);
+          if (hubbardOrder.join('|') !== 'Chris Hülsbeck|Rob Hubbard') {
+            throw new Error(`Unexpected H surname order: ${hubbardOrder.join('|')}`);
+          }
+          console.log('Surname filing helper checks passed.');
+          NODE
+
+      - name: Commit source changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/composer-utils.js scripts/generate-composer-pages.js js/music-composer-utils.js js/music-composer-pages.js
+          git commit -m "File composer archive by surname"
+          git push origin HEAD:fix/composer-surname-index
