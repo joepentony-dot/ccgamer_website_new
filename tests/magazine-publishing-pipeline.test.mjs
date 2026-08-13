@@ -39,3 +39,25 @@ test("the magazine importer supports both C64 and Amiga Lemon catalogue pages", 
   assert.match(importer, /Magazine Reviews/i);
   assert.match(importer, /reviewsFromHtml/);
 });
+
+test("Mr Weems retains the three verified contemporary magazine scores", () => {
+  const supplementPath = path.join(
+    root,
+    "data",
+    "magazine-review-records",
+    "supplements",
+    "mr-weems-and-the-she-vampires.json"
+  );
+  const supplement = JSON.parse(fs.readFileSync(supplementPath, "utf8"));
+  const rows = supplement.games?.["c64:mr-weems-and-the-she-vampires"] || [];
+
+  assert.equal(rows.length, 3);
+  assert.deepEqual(
+    rows.map((row) => [row.magazine, row.score, row.scorePercent]),
+    [
+      ["Commodore User", "5/10", 50],
+      ["Your Commodore", "8/10", 80],
+      ["Zzap!64", "19%", 19]
+    ]
+  );
+});
