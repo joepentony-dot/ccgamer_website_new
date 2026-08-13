@@ -268,7 +268,7 @@
         </div>
       </a>
     `).join("");
-    grid.dataset.ccgFeaturedManifest = "webp-first-19";
+    grid.dataset.ccgFeaturedManifest = "restored-19";
     bindFeaturedImageFallbacks(grid);
   }
 
