@@ -41,6 +41,46 @@ function normalizeComposerKey(value) {
         .trim();
 }
 
+
+const COMPOSER_NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv"]);
+
+function shouldFileComposerByFullName(value) {
+    const raw = String(value ?? "").trim();
+    const normalized = normalizeComposerKey(raw);
+    if (!normalized || !normalized.includes(" ")) return true;
+    return /\d/.test(raw) || /(?:^|\s)(?:and|of|the)(?:\s|$)/i.test(raw) || /[&+]/.test(raw);
+}
+
+function getComposerSortKey(value) {
+    const canonical = canonicalizeComposerName(value) || String(value ?? "").trim();
+    const parts = canonical.split(/\s+/).filter(Boolean);
+    if (parts.length <= 1 || shouldFileComposerByFullName(canonical)) {
+        return normalizeComposerKey(canonical);
+    }
+
+    let surnameIndex = parts.length - 1;
+    while (surnameIndex > 0 && COMPOSER_NAME_SUFFIXES.has(normalizeComposerKey(parts[surnameIndex]))) {
+        surnameIndex -= 1;
+    }
+
+    const surname = normalizeComposerKey(parts[surnameIndex]);
+    const remainder = normalizeComposerKey([
+        ...parts.slice(0, surnameIndex),
+        ...parts.slice(surnameIndex + 1)
+    ].join(" "));
+    return [surname, remainder].filter(Boolean).join(" ");
+}
+
+function getComposerSortLetter(value) {
+    const first = getComposerSortKey(value).charAt(0).toUpperCase();
+    return /^[A-Z]$/.test(first) ? first : "#";
+}
+
+function compareComposerNames(a, b) {
+    return getComposerSortKey(a).localeCompare(getComposerSortKey(b), "en", { sensitivity: "base" }) ||
+        normalizeComposerKey(a).localeCompare(normalizeComposerKey(b), "en", { sensitivity: "base" });
+}
+
 function canonicalizeComposerName(value) {
     const raw = String(value ?? "").trim().replace(/\s+/g, " ");
     if (!raw || AUDIO_EXT_RE.test(raw)) return "";
@@ -158,7 +198,7 @@ function buildComposerGroups(games) {
             return group;
         })
         .sort((a, b) => (
-            a.name.localeCompare(b.name, "en", { sensitivity: "base" }) ||
+            compareComposerNames(a.name, b.name) ||
             a.slug.localeCompare(b.slug)
         ));
 }
@@ -168,6 +208,9 @@ module.exports = {
     COMPOSER_ALIASES,
     buildComposerGroups,
     canonicalizeComposerName,
+    compareComposerNames,
+    getComposerSortKey,
+    getComposerSortLetter,
     getComposerNames,
     normalizeComposerKey,
     normalizeSystem,
