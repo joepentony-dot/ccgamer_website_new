@@ -28,6 +28,47 @@
       .trim();
   }
 
+
+const COMPOSER_NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv"]);
+
+function shouldFileComposerByFullName(value) {
+  const raw = String(value || "").trim();
+  const normalized = normalizeComposerName(raw);
+  if (!normalized || !normalized.includes(" ")) return true;
+  return /\d/.test(raw) || /(?:^|\s)(?:and|of|the)(?:\s|$)/i.test(raw) || /[&+]/.test(raw);
+}
+
+function getComposerSortKey(value) {
+  const canonical = getCanonicalComposer(value) || String(value || "").trim();
+  const parts = canonical.split(/\s+/).filter(Boolean);
+  if (parts.length <= 1 || shouldFileComposerByFullName(canonical)) {
+    return normalizeComposerName(canonical);
+  }
+
+  let surnameIndex = parts.length - 1;
+  while (surnameIndex > 0 && COMPOSER_NAME_SUFFIXES.has(normalizeComposerName(parts[surnameIndex]))) {
+    surnameIndex -= 1;
+  }
+
+  const surname = normalizeComposerName(parts[surnameIndex]);
+  const remainder = normalizeComposerName([
+    ...parts.slice(0, surnameIndex),
+    ...parts.slice(surnameIndex + 1)
+  ].join(" "));
+  return [surname, remainder].filter(Boolean).join(" ");
+}
+
+function getComposerSortLetter(value) {
+  const first = getComposerSortKey(value).charAt(0).toUpperCase();
+  return /^[A-Z]$/.test(first) ? first : "#";
+}
+
+function compareComposerNames(a, b) {
+  return getComposerSortKey(a).localeCompare(getComposerSortKey(b), "en", { sensitivity: "base" }) ||
+    normalizeComposerName(a).localeCompare(normalizeComposerName(b), "en", { sensitivity: "base" });
+}
+
+
   function getCanonicalComposer(name) {
     const normalized = normalizeComposerName(name);
     return COMPOSER_CANONICAL[normalized] || String(name || "").trim();
@@ -58,6 +99,9 @@
 
   global.normalizeComposerName = normalizeComposerName;
   global.getCanonicalComposer = getCanonicalComposer;
+  global.getComposerSortKey = getComposerSortKey;
+  global.getComposerSortLetter = getComposerSortLetter;
+  global.compareComposerNames = compareComposerNames;
   global.COMPOSER_CANONICAL = COMPOSER_CANONICAL;
 
   loadTrackShareAssets();

@@ -7,6 +7,8 @@ const path = require("path");
 const {
     COMPOSER_ALIASES,
     buildComposerGroups,
+    compareComposerNames,
+    getComposerSortLetter,
     normalizeComposerKey,
     slugifyComposer
 } = require("./composer-utils");
@@ -115,7 +117,7 @@ function findExistingComposerPages() {
         });
     }
 
-    return records.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
+    return records.sort((a, b) => compareComposerNames(a.name, b.name));
 }
 
 function platformLabel(group) {
@@ -209,7 +211,7 @@ function mergeComposerRoutes(creditedGroups, existingPages) {
     });
 
     return routes.sort((a, b) => (
-        a.name.localeCompare(b.name, "en", { sensitivity: "base" }) ||
+        compareComposerNames(a.name, b.name) ||
         a.slug.localeCompare(b.slug)
     ));
 }
@@ -427,8 +429,7 @@ function renderFeaturedFallback(routes) {
 function renderAccordionFallback(routes) {
     const groups = new Map();
     routes.forEach((route) => {
-        const first = route.name.charAt(0).toUpperCase();
-        const letter = /^[A-Z]$/.test(first) ? first : "#";
+        const letter = getComposerSortLetter(route.name);
         if (!groups.has(letter)) groups.set(letter, []);
         groups.get(letter).push(route);
     });

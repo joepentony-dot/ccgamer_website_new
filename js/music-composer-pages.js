@@ -88,6 +88,26 @@
     return normalizeComposerKey(value);
   }
 
+
+function compareComposerDisplayNames(a, b) {
+  if (typeof window.compareComposerNames === "function") {
+    return window.compareComposerNames(a, b);
+  }
+  return normaliseName(a).localeCompare(normaliseName(b));
+}
+
+function composerSortLetter(name) {
+  if (typeof window.getComposerSortLetter === "function") {
+    return window.getComposerSortLetter(name);
+  }
+  const normalized = normaliseName(name);
+  const parts = normalized.split(/\s+/).filter(Boolean);
+  const candidate = parts.length > 1 ? parts[parts.length - 1] : normalized;
+  const first = candidate.charAt(0).toUpperCase();
+  return /^[A-Z]$/.test(first) ? first : "#";
+}
+
+
   function toComposerList(value) {
     if (Array.isArray(value)) {
       return value;
@@ -187,7 +207,7 @@
     });
 
     const composers = Array.from(composerMap.values()).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      compareComposerDisplayNames(a.name, b.name)
     );
 
     const byKey = new Map();
@@ -380,7 +400,7 @@
   }
 
   function getSortedComposers(registry) {
-    return [...registry.composers].sort((a, b) => a.name.localeCompare(b.name));
+    return [...registry.composers].sort((a, b) => compareComposerDisplayNames(a.name, b.name));
   }
 
   function cardMarkup(composer, imagePath, stats, compact) {
@@ -410,8 +430,7 @@
 
     const groups = new Map();
     allComposers.forEach((composer) => {
-      const letter = composer.name.charAt(0).toUpperCase();
-      const key = /[A-Z]/.test(letter) ? letter : "#";
+      const key = composerSortLetter(composer.name);
       if (!groups.has(key)) {
         groups.set(key, []);
       }
@@ -481,7 +500,7 @@
     }
 
     const composerList = Object.values(composers).sort((a, b) =>
-      a.name.localeCompare(b.name)
+      compareComposerDisplayNames(a.name, b.name)
     );
     const imageLookups = await Promise.all(
       composerList.map(async (composer) => ({ composer, imagePath: await getComposerImagePath(composer.slug) }))
