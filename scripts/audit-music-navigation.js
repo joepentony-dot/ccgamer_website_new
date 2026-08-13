@@ -100,7 +100,7 @@ requireText(composerUtils, 'grid.classList.add("composer-grid-featured-omega")',
 requireText(composerUtils, 'grid.classList.remove("composer-grid-featured")', "The legacy Featured Composer runtime hook is still active after the editorial grid is ready.");
 requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest === "restored-20"', "The Omega grid lock can run before the 20-card editorial base manifest is ready.");
 requireText(composerUtils, 'function ensureJonHareFeaturedCard(grid)', "Jon Hare is not being added to the Omega Featured Composer grid.");
-requireText(composerUtils, '/music/jon-hare/', "The Jon Hare Featured Composer card does not link to his archive page.");
+requireText(composerUtils, 'music/jon-hare/', "The Jon Hare Featured Composer card does not link to his archive page.");
 requireText(composerUtils, '/resources/images/composers/jon-hare.webp', "The Jon Hare Featured Composer card is missing its repository portrait.");
 requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest = "omega-21"', "The Omega Featured Composer grid is not marking the managed 21-card state.");
 requireText(composerUtils, "expandedFeaturedCount < 21", "The Omega Featured Composer grid does not enforce all 21 managed cards before locking.");
