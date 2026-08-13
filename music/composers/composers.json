@@ -1226,30 +1226,6 @@
     ]
   },
   {
-    "name": "David Dunn",
-    "slug": "david-dunn",
-    "count": 6,
-    "c64Count": 6,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1986,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "David Dunn"
-    ],
-    "games": [
-      "chiller",
-      "daley-thompsons-decathlon",
-      "elite",
-      "finders-keepers",
-      "high-noon",
-      "the-trap-door"
-    ]
-  },
-  {
     "name": "Jonathan Dunn",
     "slug": "jonathan-dunn",
     "count": 11,
@@ -1276,6 +1252,30 @@
       "terminator-2-judgment-day",
       "total-recall",
       "the-untouchables"
+    ]
+  },
+  {
+    "name": "Julie Dunn",
+    "slug": "david-dunn",
+    "count": 6,
+    "c64Count": 6,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1986,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "David Dunn"
+    ],
+    "games": [
+      "chiller",
+      "daley-thompsons-decathlon",
+      "elite",
+      "finders-keepers",
+      "high-noon",
+      "the-trap-door"
     ]
   },
   {
