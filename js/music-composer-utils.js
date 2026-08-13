@@ -3,6 +3,7 @@
     "chris hulsbeck": "Chris Hülsbeck",
     "chris huelsbeck": "Chris Hülsbeck",
     "chris hülsbeck": "Chris Hülsbeck",
+    "clint bajakain": "Clint Bajakian",
     "oisten eide": "Oisten Eide"
   };
 
