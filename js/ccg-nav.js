@@ -23,6 +23,9 @@
     ['Contact', 'https://www.cheekycommodoregamer.co.uk/contact.html']
   ];
 
+  const COMPOSER_INDEX_PATH = '/music/composers/composers.json';
+  let composerIndexPromise = null;
+
   const PUBLISHER_ALIASES = new Map([
     ['ocean', 'Ocean Software'],
     ['ocean software', 'Ocean Software'],
@@ -223,6 +226,69 @@
       });
   }
 
+  function normalizeComposerKey(value) {
+    return String(value || '')
+      .trim()
+      .replace(/\s+/g, ' ')
+      .replace(/[’‘]/g, "'")
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[.,]+$/g, '')
+      .trim();
+  }
+
+  function getGameMusicians(game) {
+    const raw = game?.credits?.musician ?? game?.music ?? game?.composer ?? [];
+    const values = Array.isArray(raw) ? raw : [raw];
+    const seen = new Set();
+
+    return values
+      .map(value => String(value || '').trim())
+      .filter(Boolean)
+      .filter(value => {
+        const key = normalizeComposerKey(value);
+        if (!key || seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+  }
+
+  function loadComposerIndex() {
+    if (composerIndexPromise) return composerIndexPromise;
+
+    composerIndexPromise = fetch(COMPOSER_INDEX_PATH, { cache: 'default' })
+      .then(response => {
+        if (!response.ok) throw new Error(`${COMPOSER_INDEX_PATH} returned HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(rows => {
+        const index = new Map();
+        (Array.isArray(rows) ? rows : []).forEach(row => {
+          const slug = String(row?.slug || '').trim();
+          if (!slug) return;
+
+          const names = [row?.name, ...(Array.isArray(row?.variants) ? row.variants : [])];
+          names.forEach(name => {
+            const key = normalizeComposerKey(name);
+            if (key && !index.has(key)) {
+              index.set(key, {
+                name: String(row?.name || name || '').trim(),
+                slug
+              });
+            }
+          });
+        });
+        return index;
+      })
+      .catch(error => {
+        console.warn('[CCG composer links] Composer index unavailable', error);
+        return new Map();
+      });
+
+    return composerIndexPromise;
+  }
+
   function getSiteRoot() {
     const root = typeof window.ccgGetSiteRoot === 'function' ? window.ccgGetSiteRoot() : '/';
     return root.endsWith('/') ? root : `${root}/`;
@@ -254,8 +320,49 @@
     publisherDetail.dataset.ccgPublisherLinks = 'true';
   }
 
+  async function linkMusicianCredits(game) {
+    const musicians = getGameMusicians(game);
+    if (!musicians.length) return;
+
+    const terms = document.querySelectorAll('.ccg-behind-pixels-inline__list dt');
+    const musicTerm = Array.from(terms).find(term => term.textContent.trim().toLowerCase() === 'music');
+    const musicDetail = musicTerm?.nextElementSibling;
+    if (!musicDetail || musicDetail.dataset.ccgMusicianLinks === 'true') return;
+
+    const composerIndex = await loadComposerIndex();
+    if (!composerIndex.size || !document.contains(musicDetail)) return;
+
+    const resolved = musicians.map(musician => ({
+      musician,
+      composer: composerIndex.get(normalizeComposerKey(musician)) || null
+    }));
+
+    if (!resolved.some(entry => entry.composer?.slug)) return;
+
+    musicDetail.textContent = '';
+    resolved.forEach((entry, index) => {
+      if (index > 0) musicDetail.appendChild(document.createTextNode(', '));
+
+      if (!entry.composer?.slug) {
+        musicDetail.appendChild(document.createTextNode(entry.musician));
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.className = 'ccg-composer-button ccg-musician-credit-link';
+      link.href = `${getSiteRoot()}music/${entry.composer.slug}/`;
+      link.textContent = entry.musician;
+      link.setAttribute('aria-label', `Open ${entry.composer.name || entry.musician} composer page`);
+      musicDetail.appendChild(link);
+    });
+
+    musicDetail.dataset.ccgMusicianLinks = 'true';
+  }
+
   window.addEventListener('ccg:game-loaded', event => {
-    linkPublisherCredits(event.detail?.game || null);
+    const game = event.detail?.game || null;
+    linkPublisherCredits(game);
+    void linkMusicianCredits(game);
   });
 
   document.addEventListener('DOMContentLoaded', function () {
