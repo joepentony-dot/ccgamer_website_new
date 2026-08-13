@@ -248,6 +248,19 @@ function compareComposerNames(a, b) {
     return root.endsWith("/") ? root : `${root}/`;
   }
 
+  function sortFeaturedComposerCardsBySurname(grid) {
+    if (!(grid instanceof Element)) return;
+
+    const cards = Array.from(grid.querySelectorAll(".composer-card--featured"));
+    cards.sort((a, b) => {
+      const aName = String(a.querySelector("h3")?.textContent || "").trim();
+      const bName = String(b.querySelector("h3")?.textContent || "").trim();
+      return compareComposerNames(aName, bName);
+    });
+    cards.forEach((card) => grid.appendChild(card));
+    grid.dataset.ccgFeaturedSort = "surname";
+  }
+
   function lockMusicHubFeaturedGrid() {
     if (!isMusicHub()) return;
     const grid = document.querySelector(".composer-grid-featured");
@@ -261,6 +274,7 @@ function compareComposerNames(a, b) {
     const expandedFeaturedCount = grid.querySelectorAll(".composer-card--featured").length;
     if (expandedFeaturedCount < 21) return;
 
+    sortFeaturedComposerCardsBySurname(grid);
     grid.dataset.ccgFeaturedManifest = "omega-21";
     grid.classList.add("composer-grid-featured-omega");
     grid.classList.remove("composer-grid-featured");
