@@ -332,60 +332,35 @@
 
   function verifyComposerTrackCard(card) {
     if (!(card instanceof Element)) return;
-
     if (card.classList.contains("ccg-composer-games__item--static")) return;
-    if (card.dataset.ccgTrackState === "unavailable") return;
 
     const status = card.querySelector(".ccg-composer-game-status");
     if (!status) return;
 
     const audio = card.querySelector("audio");
-    if (!(audio instanceof HTMLAudioElement)) {
-      markComposerTrackUnavailable(card, status);
-      return;
-    }
+    if (!(audio instanceof HTMLAudioElement)) return;
 
     const sourceUrl = getAudioSource(audio);
-    if (!sourceUrl) {
-      markComposerTrackUnavailable(card, status);
-      return;
-    }
+    if (!sourceUrl) return;
 
-    if (card.dataset.ccgTrackProbeSource === sourceUrl &&
-        (card.dataset.ccgTrackState === "checking" || card.dataset.ccgTrackState === "ready")) {
+    if (card.dataset.ccgTrackProbeSource === sourceUrl && card.dataset.ccgTrackState === "ready") {
       return;
     }
 
     card.dataset.ccgTrackProbeSource = sourceUrl;
-    card.dataset.ccgTrackState = "checking";
-    card.classList.remove("ccg-composer-games__item--track-unavailable");
-    card.classList.add("ccg-composer-games__item--track-checking");
-    status.textContent = "Checking track…";
-    status.dataset.readyLabel = "Track ready";
-    status.dataset.playingLabel = "Now playing";
-    status.classList.remove("ccg-composer-game-status--unavailable");
-    setComposerTrackUtilitiesHidden(card, true);
+    markComposerTrackReady(card, status);
 
-    void probeAudioUrl(sourceUrl, {
-      timeoutMs: 6000,
-      logCtx: `[composer-card:${normalizeSlug(sourceUrl)}]`
-    }).then((available) => {
-      if (!card.isConnected) return;
-
-      const currentAudio = card.querySelector("audio");
-      const currentSource = getAudioSource(currentAudio);
-      if (currentSource !== sourceUrl) return;
-
-      if (available) {
-        markComposerTrackReady(card, status);
-      } else {
+    if (audio.dataset.ccgComposerAvailabilityBound !== "true") {
+      audio.dataset.ccgComposerAvailabilityBound = "true";
+      audio.addEventListener("error", () => {
+        if (!card.isConnected) return;
+        if (getAudioSource(audio) !== sourceUrl) return;
         markComposerTrackUnavailable(card, status);
-      }
-    }).catch(() => {
-      if (card.isConnected) {
-        markComposerTrackUnavailable(card, status);
-      }
-    });
+      }, { once: true });
+    }
+
+    audio.preload = "metadata";
+    try { audio.load(); } catch (_) {}
   }
 
   function verifyComposerTrackCards(root = document) {
@@ -402,28 +377,23 @@
     if (!(audio instanceof HTMLAudioElement)) return;
 
     const sourceUrl = getAudioSource(audio);
-    if (!sourceUrl) {
-      track.remove();
-      return;
-    }
+    if (!sourceUrl) return;
 
     if (track.dataset.ccgTrackProbeSource === sourceUrl) return;
     track.dataset.ccgTrackProbeSource = sourceUrl;
-    track.hidden = true;
+    track.hidden = false;
 
-    void probeAudioUrl(sourceUrl, {
-      timeoutMs: 6000,
-      logCtx: `[composer-essential:${normalizeSlug(sourceUrl)}]`
-    }).then((available) => {
-      if (!track.isConnected) return;
-      if (available) {
-        track.hidden = false;
-      } else {
+    if (audio.dataset.ccgComposerAvailabilityBound !== "true") {
+      audio.dataset.ccgComposerAvailabilityBound = "true";
+      audio.addEventListener("error", () => {
+        if (!track.isConnected) return;
+        if (getAudioSource(audio) !== sourceUrl) return;
         track.remove();
-      }
-    }).catch(() => {
-      if (track.isConnected) track.remove();
-    });
+      }, { once: true });
+    }
+
+    audio.preload = "metadata";
+    try { audio.load(); } catch (_) {}
   }
 
   function verifyEssentialTracks(root = document) {
