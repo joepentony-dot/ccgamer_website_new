@@ -1,0 +1,1 @@
+Omega Music Hub performance and accordion presentation are implemented in js/music-composer-utils.js and resources/css/music-hub-omega.css. This file is intentionally temporary for validation and should be removed before merge.
