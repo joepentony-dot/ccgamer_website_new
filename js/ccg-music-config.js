@@ -27,7 +27,7 @@
   ];
 
   const FEATURED_SIGNATURE = EDITORIAL_FEATURED_COMPOSERS
-    .map((composer) => `${composer.slug}:${composer.image}`)
+    .map((composer) => composer.slug)
     .join("|");
   const urlCache = new Map();
   const probeCache = new Map();
@@ -184,6 +184,10 @@
     return root.endsWith("/") ? root : `${root}/`;
   }
 
+  function getComposerWebpPath(slug) {
+    return `/resources/images/composers/${slug}.webp`;
+  }
+
   function rewriteLegacyComposerLink(link) {
     if (!(link instanceof HTMLAnchorElement)) return;
     const rawHref = String(link.getAttribute("href") || "").trim();
@@ -226,22 +230,37 @@
   function getFeaturedGridSignature(grid) {
     if (!(grid instanceof Element)) return "";
     return Array.from(grid.querySelectorAll(".composer-card--featured"))
-      .map((card) => {
-        const slug = String(card.getAttribute("data-slug") || "").trim();
-        const image = String(card.querySelector("img")?.getAttribute("src") || "").trim();
-        return `${slug}:${image}`;
-      })
+      .map((card) => String(card.getAttribute("data-slug") || "").trim())
       .join("|");
+  }
+
+  function bindFeaturedImageFallbacks(grid) {
+    if (!(grid instanceof Element)) return;
+
+    grid.querySelectorAll(".composer-card--featured img[data-fallback-src]").forEach((image) => {
+      if (!(image instanceof HTMLImageElement)) return;
+      if (image.dataset.ccgWebpFallbackBound === "true") return;
+
+      image.dataset.ccgWebpFallbackBound = "true";
+      image.addEventListener("error", () => {
+        const fallback = String(image.dataset.fallbackSrc || "").trim();
+        if (!fallback || image.getAttribute("src") === fallback) return;
+        image.setAttribute("src", fallback);
+      });
+    });
   }
 
   function ensureEditorialFeaturedComposers(root = document) {
     const grid = getFeaturedGrid(root);
     if (!grid) return;
-    if (getFeaturedGridSignature(grid) === FEATURED_SIGNATURE) return;
+    if (getFeaturedGridSignature(grid) === FEATURED_SIGNATURE) {
+      bindFeaturedImageFallbacks(grid);
+      return;
+    }
 
     grid.innerHTML = EDITORIAL_FEATURED_COMPOSERS.map((composer) => `
       <a href="${resolveSiteRoot()}music/${composer.slug}/" class="composer-card composer-card--featured" data-slug="${composer.slug}">
-        <div class="composer-thumb"><img src="${composer.image}" alt="${composer.name}" loading="lazy"></div>
+        <div class="composer-thumb"><img src="${getComposerWebpPath(composer.slug)}" data-fallback-src="${composer.image}" alt="${composer.name}" loading="lazy"></div>
         <div class="composer-info">
           <h3>${composer.name}</h3>
           <p class="composer-platform">${composer.platform}</p>
@@ -250,6 +269,7 @@
       </a>
     `).join("");
     grid.dataset.ccgFeaturedManifest = "restored-19";
+    bindFeaturedImageFallbacks(grid);
   }
 
   function ensureEditorialComposerProfileImage(root = document) {
@@ -269,9 +289,15 @@
     const profile = page.querySelector('[data-ccg-research-profile="true"], .ccg-composer-profile');
     if (!(profile instanceof Element)) return;
 
-    const webpImage = `${resolveSiteRoot()}resources/images/composers/${slug}.webp`;
+    const base = `/resources/images/composers/${slug}`;
     const legacyImage = String(composer?.image || "").trim();
-    const candidates = [webpImage, legacyImage].filter((value, index, values) => value && values.indexOf(value) === index);
+    const candidates = [
+      `${base}.webp`,
+      legacyImage,
+      `${base}.jpg`,
+      `${base}.jpeg`,
+      `${base}.png`
+    ].filter((value, index, values) => value && values.indexOf(value) === index);
     const probeSignature = candidates.join("|");
 
     if (profile.dataset.ccgComposerImageProbe === probeSignature) return;
