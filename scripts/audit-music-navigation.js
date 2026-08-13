@@ -104,6 +104,10 @@ requireText(composerUtils, '/music/jon-hare/', "The Jon Hare Featured Composer c
 requireText(composerUtils, '/resources/images/composers/jon-hare.webp', "The Jon Hare Featured Composer card is missing its repository portrait.");
 requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest = "omega-21"', "The Omega Featured Composer grid is not marking the managed 21-card state.");
 requireText(composerUtils, "expandedFeaturedCount < 21", "The Omega Featured Composer grid does not enforce all 21 managed cards before locking.");
+requireText(composerUtils, "function sortFeaturedComposerCardsBySurname(grid)", "Featured Composers are not being sorted by surname.");
+requireText(composerUtils, "return compareComposerNames(aName, bName);", "Featured Composer ordering is not using the shared surname-aware comparator.");
+requireText(composerUtils, 'grid.dataset.ccgFeaturedSort = "surname"', "Featured Composer grid does not expose its surname-sort state.");
+requireText(composerUtils, "sortFeaturedComposerCardsBySurname(grid);", "Featured Composer surname sorting is not applied before the Omega grid is locked.");
 requireText(composerUtils, 'normalizeComposerName("Julie Dunn David Dunn")', "Julie Dunn is not searchable by both current and historical names in the Music Hub.");
 requireText(musicHubOmegaCss, ".composer-grid-featured-omega", "The Omega Featured Composer grid styling is missing.");
 requireText(musicHubOmegaCss, ".composer-accordion__header[aria-expanded=\"true\"]::after", "The Omega accordion does not expose a distinct expanded state.");
@@ -123,4 +127,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log("Music navigation, Omega Music Hub discovery, Featured Composer restoration, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
+console.log("Music navigation, Omega Music Hub discovery, surname-sorted Featured Composers, Featured Composer restoration, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
