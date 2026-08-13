@@ -257,23 +257,65 @@
     if (!(page instanceof Element)) return;
 
     const slug = String(page.getAttribute("data-composer-slug") || "").trim();
+    if (!slug) return;
+
     const composer = EDITORIAL_FEATURED_COMPOSERS.find((entry) => entry.slug === slug);
-    if (!composer) return;
+    const composerName = String(
+      page.getAttribute("data-composer-name") ||
+      composer?.name ||
+      slug.replace(/-/g, " ")
+    ).trim();
 
     const profile = page.querySelector('[data-ccg-research-profile="true"], .ccg-composer-profile');
     if (!(profile instanceof Element)) return;
 
-    let image = profile.querySelector(".ccg-composer-profile__image");
-    if (!image) {
-      image = document.createElement("img");
-      image.className = "ccg-composer-profile__image";
-      image.loading = "lazy";
-      profile.insertAdjacentElement("afterbegin", image);
-    }
+    const webpImage = `${resolveSiteRoot()}resources/images/composers/${slug}.webp`;
+    const legacyImage = String(composer?.image || "").trim();
+    const candidates = [webpImage, legacyImage].filter((value, index, values) => value && values.indexOf(value) === index);
+    const probeSignature = candidates.join("|");
 
-    if (image.getAttribute("src") !== composer.image) image.setAttribute("src", composer.image);
-    image.setAttribute("alt", composer.name);
-    profile.classList.remove("ccg-composer-profile--text-only");
+    if (profile.dataset.ccgComposerImageProbe === probeSignature) return;
+    profile.dataset.ccgComposerImageProbe = probeSignature;
+
+    const applyImage = (src) => {
+      if (!profile.isConnected) return;
+
+      let image = profile.querySelector(".ccg-composer-profile__image");
+      if (!image) {
+        image = document.createElement("img");
+        image.className = "ccg-composer-profile__image";
+        image.loading = "lazy";
+        profile.insertAdjacentElement("afterbegin", image);
+      }
+
+      image.setAttribute("src", src);
+      image.setAttribute("alt", composerName);
+      profile.classList.remove("ccg-composer-profile--text-only");
+      profile.dataset.ccgComposerImageState = "loaded";
+    };
+
+    const keepTextOnly = () => {
+      if (!profile.isConnected) return;
+      if (!profile.querySelector(".ccg-composer-profile__image")) {
+        profile.classList.add("ccg-composer-profile--text-only");
+      }
+      profile.dataset.ccgComposerImageState = "missing";
+    };
+
+    const tryCandidate = (index) => {
+      if (index >= candidates.length) {
+        keepTextOnly();
+        return;
+      }
+
+      const src = candidates[index];
+      const probe = new Image();
+      probe.onload = () => applyImage(src);
+      probe.onerror = () => tryCandidate(index + 1);
+      probe.src = src;
+    };
+
+    tryCandidate(0);
   }
 
   function getAudioSource(audio) {
