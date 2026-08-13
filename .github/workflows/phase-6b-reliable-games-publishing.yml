@@ -34,6 +34,9 @@ on:
       - "games/genres/**"
       - "games/publishers/**"
       - "games/developers/**"
+      - "games/downloads/**"
+      - "games/platforms/**"
+      - "games/years/**"
       - "games/games-index.json"
       - "games/games-search.json"
       - "tools/seo/static-pages.json"
@@ -211,6 +214,9 @@ jobs:
               "games/publishers/",
               "games/developers/",
               "games/genres/",
+              "games/downloads/",
+              "games/platforms/",
+              "games/years/",
           )
           with open("games/games.json", encoding="utf-8") as handle:
               games = json.load(handle)
@@ -259,6 +265,9 @@ jobs:
             games/publishers \
             games/developers \
             games/genres \
+            games/downloads \
+            games/platforms \
+            games/years \
             tools/seo/static-pages.json \
             sitemap.xml \
             sitemap-pages.xml \
