@@ -46,6 +46,7 @@
 - `chris hulsbeck` → **Chris Hülsbeck**
 - `chris huelsbeck` → **Chris Hülsbeck**
 - `chris hülsbeck` → **Chris Hülsbeck**
+- `oisten eide` → **Oisten Eide**
 
 The source records in `games/games.json` remain unchanged.
 
