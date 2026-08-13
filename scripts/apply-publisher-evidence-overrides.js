@@ -45,6 +45,20 @@ function mergeUnique(existing, additions, keyFn) {
   return output;
 }
 
+function applyResearchProfile(entry, override) {
+  const scalarKeys = ["summary", "note", "confidence", "verified_on"];
+  const arrayKeys = ["facts", "strengths", "related", "sources"];
+
+  for (const key of scalarKeys) {
+    if (Object.prototype.hasOwnProperty.call(override, key)) entry[key] = override[key];
+  }
+  for (const key of arrayKeys) {
+    if (Object.prototype.hasOwnProperty.call(override, key)) {
+      entry[key] = Array.isArray(override[key]) ? [...override[key]] : override[key];
+    }
+  }
+}
+
 function main() {
   if (!fs.existsSync(overridesPath)) fail("Missing data/publisher-evidence-overrides.json");
   const overrides = readJson(overridesPath);
@@ -82,8 +96,13 @@ function main() {
       if (!override) continue;
 
       matched.set(slug, (matched.get(slug) || 0) + 1);
-      entry.facts = mergeUnique(entry.facts, override.facts, (value) => String(value || "").trim());
-      entry.sources = mergeUnique(entry.sources, override.sources, sourceKey);
+
+      if (override.mode === "replace_profile") {
+        applyResearchProfile(entry, override);
+      } else {
+        entry.facts = mergeUnique(entry.facts, override.facts, (value) => String(value || "").trim());
+        entry.sources = mergeUnique(entry.sources, override.sources, sourceKey);
+      }
       changed = true;
     }
 
@@ -98,7 +117,8 @@ function main() {
     if (count !== 1) fail(`${slug}: expected exactly one publisher profile match, found ${count}`);
   }
 
-  console.log(`[publisher-evidence-overrides] Applied ${overrideBySlug.size} independent evidence overrides across ${filesChanged} history file(s).`);
+  const researchCount = overrides.filter((entry) => entry?.mode === "replace_profile").length;
+  console.log(`[publisher-evidence-overrides] Applied ${overrides.length} evidence override(s) across ${filesChanged} history file(s), including ${researchCount} full research profile replacement(s).`);
 }
 
 if (require.main === module) main();
