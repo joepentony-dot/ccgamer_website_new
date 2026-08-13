@@ -1,14 +1,14 @@
 {
   "summary": {
-    "game_records": 653,
-    "games_with_year": 653,
+    "game_records": 654,
+    "games_with_year": 654,
     "games_missing_year": 0,
     "distinct_years": 15,
     "earliest_year": 1982,
     "latest_year": 2023
   },
   "platform_counts": {
-    "C64": 554,
+    "C64": 555,
     "Amiga": 99
   },
   "year_counts": [
@@ -49,8 +49,8 @@
     },
     {
       "year": 1987,
-      "total": 85,
-      "c64": 83,
+      "total": 86,
+      "c64": 84,
       "amiga": 2,
       "other": 0
     },

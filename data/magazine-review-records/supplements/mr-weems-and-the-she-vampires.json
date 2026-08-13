@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "games": {
+    "c64:mr-weems-and-the-she-vampires": [
+      {
+        "magazine": "Commodore User",
+        "issue": "48",
+        "date": "September 1987",
+        "page": 46,
+        "reviewer": "Bill Scolding",
+        "score": "5/10",
+        "scorePercent": 50,
+        "url": "https://archive.org/details/commodore-user-magazine-48/page/n45/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Your Commodore",
+        "issue": "38",
+        "date": "November 1987",
+        "page": 30,
+        "reviewer": "Eric Doyle",
+        "score": "8/10",
+        "scorePercent": 80,
+        "url": "https://archive.org/details/38-your-commodore-magazine/page/n29/mode/2up?view=theater",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      },
+      {
+        "magazine": "Zzap!64",
+        "issue": "29",
+        "date": "September 1987",
+        "page": 14,
+        "reviewer": "Julian Rignall, Paul Sumner & Steve Jarratt",
+        "score": "19%",
+        "scorePercent": 19,
+        "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=29&page=14",
+        "language": "English",
+        "scanStatus": "available",
+        "era": "contemporary"
+      }
+    ]
+  }
+}
