@@ -9,6 +9,7 @@
     { slug: "barry-leitch", name: "Barry Leitch", platform: "AMIGA / C64", tracks: 8, image: "/resources/images/composers/barry-leitch.jpg" },
     { slug: "ben-daglish", name: "Ben Daglish", platform: "C64", tracks: 16, image: "/resources/images/composers/ben-daglish.jpg" },
     { slug: "chris-huelsbeck", name: "Chris Hülsbeck", platform: "AMIGA / C64", tracks: 6, image: "/resources/images/composers/chris-huelsbeck.jpg" },
+    { slug: "david-dunn", name: "Julie Dunn", platform: "C64", tracks: 6, image: "/resources/images/composers/david-dunn.webp" },
     { slug: "david-whittaker", name: "David Whittaker", platform: "AMIGA / C64", tracks: 22, image: "/resources/images/composers/david-whittaker.jpg" },
     { slug: "fred-gray", name: "Fred Gray", platform: "C64", tracks: 13, image: "/resources/images/composers/fred-gray.jpg" },
     { slug: "martin-galway", name: "Martin Galway", platform: "C64", tracks: 17, image: "/resources/images/composers/martin-galway.jpg" },
@@ -268,7 +269,7 @@
         </div>
       </a>
     `).join("");
-    grid.dataset.ccgFeaturedManifest = "restored-19";
+    grid.dataset.ccgFeaturedManifest = "restored-20";
     bindFeaturedImageFallbacks(grid);
   }
 
