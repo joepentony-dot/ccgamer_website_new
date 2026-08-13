@@ -62,8 +62,8 @@ The source records in `games/games.json` remain unchanged.
 
 ## Research enrichment
 
-- Externally researched generated profiles: **79**
-- Archive-only generated profiles: **171**
+- Externally researched generated profiles: **80**
+- Archive-only generated profiles: **170**
 - Research registry: `music/composers/research.json`
 - Research-backed single-credit SEO overrides: **16**
 
