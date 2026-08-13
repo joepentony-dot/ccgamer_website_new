@@ -15,6 +15,7 @@ on:
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
       - "data/publisher-histories*.json"
+      - "admin/js/content-publisher-image-optimizer.js"
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
       - "scripts/rebuild-games.js"
@@ -25,6 +26,7 @@ on:
       - "scripts/ensure-magazine-review-runtime.js"
       - "scripts/ensure-secondary-publisher-runtime.js"
       - "scripts/ensure-publisher-history-runtime.js"
+      - "scripts/migrate-mr-weems-thumbnail.js"
       - "scripts/sync-youtube-video-metadata.js"
       - "scripts/generate-video-seo.js"
       - "scripts/generate-video-library.js"
@@ -93,17 +95,13 @@ jobs:
       - name: Validate Cloudflare audio admin integration
         run: node --test tests/cloudflare-audio-admin.test.mjs
 
-      - name: Cache Lemon magazine sources
-        id: lemon_cache
-        continue-on-error: true
+      - name: Repair historical Mr Weems thumbnail source
+        run: node scripts/migrate-mr-weems-thumbnail.js
+
+      - name: Cache required Lemon magazine sources
         run: |
           node scripts/refresh-lemon-game-cache.js --base HEAD^
           node scripts/refresh-lemon-game-cache.js --check --base HEAD^
-
-      - name: Report Lemon cache fallback
-        if: steps.lemon_cache.outcome == 'failure'
-        run: |
-          echo "::warning title=Lemon magazine import fallback::The Lemon64/Lemon Amiga cache refresh failed. Publishing will continue using existing cached magazine data; no scores will be invented."
 
       - name: Import Lemon magazine reviews
         run: node scripts/import-amiga-magazine-reviews.js
@@ -158,7 +156,6 @@ jobs:
             sitemap-*.xml \
             docs/seo-baseline
 
-          git reset -- games/games.json
           git reset -- index.html home.html resources/css/intro.css js/index-intro.js
 
           if git diff --cached --quiet; then
@@ -189,7 +186,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, Lemon magazine-review import, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
