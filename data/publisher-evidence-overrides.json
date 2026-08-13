@@ -1,119 +1,371 @@
 [
   {
     "slug": "21st-century-entertainment",
-    "facts": [
-      "The Centre for Computing History catalogues Pinball Dreams as a 1992 Commodore Amiga release published by 21st Century Entertainment and authored by Digital Illusions."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — 21st Century Entertainment games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=21st+Century+Entertainment&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History catalogues Pinball Dreams as a 1992 Commodore Amiga release published by 21st Century Entertainment and authored by Digital Illusions."],
+    "sources": [{"label": "Centre for Computing History — 21st Century Entertainment games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=21st+Century+Entertainment&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "anf-software",
-    "facts": [
-      "The Centre for Computing History preserves Chuckie Egg releases under the A 'n' F Software publishing credit."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — A 'n' F Software games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=A+%27n%27+F+Software&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History preserves Chuckie Egg releases under the A 'n' F Software publishing credit."],
+    "sources": [{"label": "Centre for Computing History — A 'n' F Software games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=A+%27n%27+F+Software&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "adventure-soft",
-    "facts": [
-      "The Centre for Computing History catalogues Simon the Sorcerer as a 1993 release published and authored by Adventure Soft."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Simon the Sorcerer",
-        "url": "https://www.computinghistory.org.uk/det/46580/Simon%20the%20Sorcerer/",
-        "type": "museum collection record"
-      }
-    ]
+    "facts": ["The Centre for Computing History catalogues Simon the Sorcerer as a 1993 release published and authored by Adventure Soft."],
+    "sources": [{"label": "Centre for Computing History — Simon the Sorcerer", "url": "https://www.computinghistory.org.uk/det/46580/Simon%20the%20Sorcerer/", "type": "museum collection record"}]
   },
   {
     "slug": "big-five-software",
-    "facts": [
-      "The Centre for Computing History records Miner 2049er among games published by Big Five Software."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Big Five Software games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Big+Five+Software&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History records Miner 2049er among games published by Big Five Software."],
+    "sources": [{"label": "Centre for Computing History — Big Five Software games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Big+Five+Software&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "atlantis-software",
-    "facts": [
-      "The Centre for Computing History preserves Cops n' Robbers among releases carrying the Atlantis Software publishing credit."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Atlantis Software games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Atlantis+Software+Ltd&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History preserves Cops n' Robbers among releases carrying the Atlantis Software publishing credit."],
+    "sources": [{"label": "Centre for Computing History — Atlantis Software games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Atlantis+Software+Ltd&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "cyberdreams",
-    "facts": [
-      "The Centre for Computing History catalogues Darkseed under the Cyberdreams publishing credit in its Commodore games collection."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Cyberdreams Commodore games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Cyberdreams&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History catalogues Darkseed under the Cyberdreams publishing credit in its Commodore games collection."],
+    "sources": [{"label": "Centre for Computing History — Cyberdreams Commodore games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore&publisher=Cyberdreams&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "hewson",
-    "facts": [
-      "The Centre for Computing History preserves a substantial Commodore 64 catalogue under the Hewson publishing credit, including Alleykat, Cybernoid II and Uridium."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Hewson Commodore 64 games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Hewson&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History preserves a substantial Commodore 64 catalogue under the Hewson publishing credit, including Alleykat, Cybernoid II and Uridium."],
+    "sources": [{"label": "Centre for Computing History — Hewson Commodore 64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Hewson&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "crl",
-    "facts": [
-      "The Centre for Computing History preserves multiple Commodore 64 releases under the CRL publishing credit, including The Boggit, Bored of the Rings and LifeForce."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — CRL Commodore 64 games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=CRL&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History preserves multiple Commodore 64 releases under the CRL publishing credit, including The Boggit, Bored of the Rings and LifeForce."],
+    "sources": [{"label": "Centre for Computing History — CRL Commodore 64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=CRL&type=Games", "type": "museum collection"}]
   },
   {
     "slug": "cosmi",
-    "facts": [
-      "The Centre for Computing History catalogues Commodore 64 releases under the Cosmi publishing credit, including Aztec Challenge and Forbidden Forest."
-    ],
-    "sources": [
-      {
-        "label": "Centre for Computing History — Cosmi Commodore 64 games",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Cosmi&type=Games",
-        "type": "museum collection"
-      }
-    ]
+    "facts": ["The Centre for Computing History catalogues Commodore 64 releases under the Cosmi publishing credit, including Aztec Challenge and Forbidden Forest."],
+    "sources": [{"label": "Centre for Computing History — Cosmi Commodore 64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Cosmi&type=Games", "type": "museum collection"}]
+  },
+  {
+    "slug": "american-action",
+    "mode": "replace_profile",
+    "summary": "American Action AB was a Swedish home-computer publisher active in the mid-1980s. Surviving C64 material identifies the company in Malmö and records releases created for it by Swedish developer Greve Graphics.",
+    "facts": ["Contemporary C64 material credits American Action AB on games created by Greve Graphics.", "The surviving company address places American Action AB in Malmö, Sweden."],
+    "strengths": ["Swedish C64 publishing", "Greve Graphics releases", "Mid-1980s software"],
+    "related": [],
+    "note": "The company name sounds American, but surviving release material places the publisher in Sweden.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "C64.COM — American Action AB release material", "url": "https://www.c64.com/games/no-frame.php?from=0&range=252&searchfor=1986&searchfor_special=5&show_info=1&showid=77", "type": "C64 preservation archive"}]
+  },
+  {
+    "slug": "amersoft",
+    "mode": "replace_profile",
+    "summary": "Amersoft was a subsidiary of Finland's Amer Group and one of the country's earliest serious attempts to create a domestic commercial computer-game publishing business. Its games operation ran from 1984 to 1986.",
+    "facts": ["Academic research identifies Amersoft as an Amer Group subsidiary active in computer-game publishing from 1984 to 1986.", "The study describes Amersoft as the first Finnish company to attempt large-scale publication of domestically produced computer games."],
+    "strengths": ["Finnish game publishing", "Domestic computer games", "1984–1986 software"],
+    "related": [],
+    "note": "The company also handled other computer-related publishing and products beyond the games represented by CCG.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Lähikuva — Amersoft 1984–1986 research", "url": "https://journal.fi/lahikuva/article/view/77932", "type": "academic research"}]
+  },
+  {
+    "slug": "artworx-software",
+    "mode": "replace_profile",
+    "summary": "Artworx Software was an American home-computer publisher associated with Arthur M. Walsh and a catalogue that included card, strategy and arcade software across several computer formats.",
+    "facts": ["Contemporary Atari magazine coverage identifies Artworx Software Company, Inc. as the publisher of software by Arthur M. Walsh.", "Period coverage shows Artworx continuing to announce and publish new home-computer software during the 1980s."],
+    "strengths": ["American software publishing", "Card and strategy software", "Multi-format releases"],
+    "related": [],
+    "note": "CCG represents only the Commodore portion of Artworx's broader home-computer catalogue.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "ANALOG Computing archive — Artworx software review", "url": "https://www.atarimagazines.com/analog/issue62/review_bridge.php", "type": "contemporary magazine archive"}]
+  },
+  {
+    "slug": "beyond",
+    "mode": "replace_profile",
+    "summary": "Beyond Software was a British home-computer publisher active from the early 1980s, with a C64 catalogue spanning strategy, action and licensed releases from both internal and external development teams.",
+    "facts": ["The Centre for Computing History records Beyond Software from 1983 and preserves C64 releases including Shadowfire and Superman The Game.", "Its preserved catalogue credits development teams including Denton Designs and First Star Software."],
+    "strengths": ["British 8-bit publishing", "Strategy and action games", "External development partnerships"],
+    "related": [],
+    "note": "Publisher and developer credits vary by title, so CCG keeps the release-specific credit shown on each game page.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Beyond Software C64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Beyond+Software&type=Games", "type": "museum collection"}]
+  },
+  {
+    "slug": "black-legend",
+    "mode": "replace_profile",
+    "summary": "Black Legend Software was a 1990s publisher with a strong Amiga presence. Its surviving catalogue covers sports, strategy and role-playing releases during the later commercial years of the platform.",
+    "facts": ["The Centre for Computing History preserves Amiga releases under the Black Legend Software publishing credit from 1994 to 1996.", "Its collection includes Tactical Manager, Football Glory and Voyages of Discovery."],
+    "strengths": ["Amiga publishing", "Sports and strategy games", "1990s releases"],
+    "related": [],
+    "note": "The archive record is stronger for Black Legend's software catalogue than for its corporate history, so unsupported ownership claims are omitted.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Black Legend Amiga games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+Amiga&publisher=Black+Legend+Software&type=Games", "type": "museum collection"}]
+  },
+  {
+    "slug": "blade-software",
+    "mode": "replace_profile",
+    "summary": "Blade Software was a British publishing label closely associated with Julian Gollop's tactical strategy work at the end of the 1980s, including Laser Squad and Lords of Chaos.",
+    "facts": ["The Centre for Computing History records Laser Squad as a Blade Software release written by Julian Gollop.", "Blade's preserved Amiga catalogue also includes Lords of Chaos, linking the label with the Gollop/Mythos strategy lineage."],
+    "strengths": ["Tactical strategy", "Laser Squad", "Julian Gollop releases"],
+    "related": [],
+    "note": "Blade had a small catalogue, so the profile concentrates on its documented publishing role rather than extrapolating a larger company history.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Laser Squad", "url": "https://www.computinghistory.org.uk/det/19818/Laser-Squad/", "type": "museum software record"}]
+  },
+  {
+    "slug": "bloodhouse",
+    "mode": "replace_profile",
+    "summary": "Bloodhouse was a Finnish game studio with roots in the Amiga demo scene. It produced Stardust and Super Stardust before joining with Terramarque in 1995 to form Housemarque.",
+    "facts": ["Housemarque managing director Ilari Kuittinen identifies Bloodhouse and Terramarque as the two studios that joined forces in 1995 to create Housemarque.", "The official Housemarque history records Super Stardust as a Bloodhouse-era Amiga and CD32 release from 1994."],
+    "strengths": ["Finnish Amiga development", "Stardust series", "Housemarque lineage"],
+    "related": [],
+    "note": "Bloodhouse's later significance comes partly from its direct place in the formation of Housemarque.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "PlayStation Blog — official Housemarque history", "url": "https://blog.playstation.com/?p=363093", "type": "official company history"}]
+  },
+  {
+    "slug": "bulldog-software",
+    "mode": "replace_profile",
+    "summary": "Bulldog Software was a Mastertronic publishing label introduced in 1987 rather than a separate software house. The name came from a distribution business Mastertronic had acquired and was used for a short budget range led by Feud.",
+    "facts": ["Former Mastertronic financial controller Anthony Guter states that Bulldog was never more than a Mastertronic label.", "Feud launched on Bulldog in January 1987 at £1.99, and only a small number of titles were issued under the name."],
+    "strengths": ["Mastertronic budget label", "British-developed games", "Feud"],
+    "related": [{"label": "Mastertronic", "slug": "mastertronic"}],
+    "note": "CCG retains Bulldog as a separate archive route because the branding appeared directly on original releases.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Mastertronic Collectors Archive — Bulldog label history", "url": "https://mastertronic.co.uk/mastertronic-style-part-3-new-labels-mad-bulldog-entertainment-usa/", "type": "first-person company archive"}]
+  },
+  {
+    "slug": "cbs-electronics-software",
+    "mode": "replace_profile",
+    "summary": "CBS Electronics Software was a publishing and packaging identity seen on mid-1980s home-computer releases. Surviving C64 material shows the CBS name appearing alongside American software from Epyx.",
+    "facts": ["C64.COM preserves Breakdance with Epyx copyright and CBS Electronics Software credited for packaging.", "This surviving release material demonstrates the CBS label's role in bringing externally created software to the home-computer market."],
+    "strengths": ["C64 publishing and packaging", "Epyx releases", "Mid-1980s software"],
+    "related": [{"label": "Epyx", "slug": "epyx"}],
+    "note": "Territorial credits can vary, so CCG keeps CBS Electronics Software where it belongs to the represented release.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "C64.COM — Breakdance release credits", "url": "https://www.c64.com/games/no-frame.php?from=0&range=671&searchfor=Uncredited&searchfor_special=5&showid=1571", "type": "C64 preservation archive"}]
+  },
+  {
+    "slug": "commodore-plus",
+    "mode": "replace_profile",
+    "summary": "Commodore Plus is a contemporary independent publishing identity creating new software for classic home computers, with a particular emphasis on multilingual interactive fiction for the Commodore 64 and Oric.",
+    "facts": ["The official Commodore Plus catalogue continues to publish new downloadable software for classic systems.", "Its recent C64 and Oric releases include editions in multiple languages, including English, Spanish and Catalan."],
+    "strengths": ["Modern C64 homebrew", "Interactive fiction", "Multilingual releases"],
+    "related": [],
+    "note": "This is a modern homebrew publisher rather than a historical 1980s software company.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Commodore Plus — official software catalogue", "url": "https://commodore-plus.itch.io/", "type": "official publisher catalogue"}]
+  },
+  {
+    "slug": "corgi",
+    "mode": "replace_profile",
+    "summary": "Corgi Software was an Australian software label active in 1983–1984. Its C64 catalogue included regional releases for Australia and New Zealand and frequently overlapped with games published elsewhere by Ocean.",
+    "facts": ["C64-Wiki identifies Corgi Software as an Australian label active in 1983 and 1984.", "The archive records Corgi publishing home-computer games in Australia and New Zealand, including titles also associated with Ocean."],
+    "strengths": ["Australian C64 publishing", "Regional releases", "Early-1980s software"],
+    "related": [{"label": "Ocean Software", "slug": "ocean-software"}],
+    "note": "The evidence is strongest for Corgi's regional publishing activity, so the profile avoids unsupported corporate claims.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "C64-Wiki — Corgi Software archive profile", "url": "https://www.c64-wiki.de/wiki/Corgi_Software", "type": "specialist preservation archive"}]
+  },
+  {
+    "slug": "craig-communications",
+    "mode": "replace_profile",
+    "summary": "Craig Communications Ltd. was a small British software publisher whose surviving catalogue is strongly associated with the 1984 computer-security game System 15000 and its later second edition.",
+    "facts": ["World of Spectrum preserves Craig Communications Ltd. as a UK publisher.", "Its archive records System 15000 and a second edition among the company's surviving software releases."],
+    "strengths": ["British 8-bit publishing", "System 15000", "1980s computer software"],
+    "related": [],
+    "note": "No reliable broader corporate history has surfaced, so the profile stays with independently documented software-publishing activity.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "World of Spectrum — Craig Communications Ltd.", "url": "https://worldofspectrum.org/archive/publishers/Craig-Communications-Ltd", "type": "software preservation archive"}]
+  },
+  {
+    "slug": "creative-software",
+    "mode": "replace_profile",
+    "summary": "Creative Software Inc. was a California home-computer company whose early catalogue covered games, applications and hardware. Its C64 releases included titles such as Astroblitz, Crisis Mountain, Moondust and Save New York.",
+    "facts": ["C64-Wiki identifies Creative Software Inc. as a California company working across software and hardware.", "Its preserved C64 catalogue spans games and productivity applications during the early 1980s."],
+    "strengths": ["Early US home-computer software", "C64 games", "Games and applications"],
+    "related": [],
+    "note": "CCG represents only the games side of a company that also sold non-game software and hardware.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "C64-Wiki — Creative Software company profile", "url": "https://www.c64-wiki.de/wiki/Creative_Software", "type": "specialist preservation archive"}]
+  },
+  {
+    "slug": "creative-sparks",
+    "mode": "replace_profile",
+    "summary": "Creative Sparks was a British home-computer publishing label active in the mid-1980s. Its preserved C64 catalogue ranges from action games to educational software and includes material connected with Thorn EMI Computer Software.",
+    "facts": ["The Centre for Computing History preserves ten Commodore 64 games under the Creative Sparks publishing credit.", "Its collection includes Story House with Thorn EMI Computer Software credited as author, alongside releases such as Danger Mouse, Spelloon and Ice Palace."],
+    "strengths": ["British C64 publishing", "Action and educational software", "Mid-1980s catalogue"],
+    "related": [],
+    "note": "The profile follows the independently preserved label and release history rather than adding unsupported ownership detail.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Creative Sparks C64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Creative+Sparks&type=Games", "type": "museum collection"}]
+  },
+  {
+    "slug": "datamost",
+    "mode": "replace_profile",
+    "summary": "Datamost was an American early-home-computer publisher founded by David Gordon in 1981. Its business covered games, educational software and computer books before it stopped publishing software in 1984.",
+    "facts": ["The Datamost preservation archive records David Gordon founding the company in 1981 after his earlier work with Programma International.", "The archive states that Datamost discontinued software publishing in 1984."],
+    "strengths": ["Early US software publishing", "Games and computer books", "Multi-platform releases"],
+    "related": [],
+    "note": "Datamost's C64 titles formed part of a wider computer-software and publishing business.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Datamost preservation archive — company history", "url": "https://datamost.applearchives.com/", "type": "software preservation archive"}]
+  },
+  {
+    "slug": "digital-magic-software",
+    "mode": "replace_profile",
+    "summary": "Digital Magic Software was a small British 16-bit developer and self-publisher formed around 1989 by Jules Burt and Jon Law. The team operated from Widnes near Liverpool and concentrated heavily on Amiga software.",
+    "facts": ["Co-founder Jules Burt recalls forming Digital Magic Software around 1989 and moving the operation to Widnes near Liverpool.", "Burt describes the team developing, packaging, duplicating and selling its own Amiga releases from the shared studio."],
+    "strengths": ["Independent Amiga development", "Self-publishing", "British 16-bit software"],
+    "related": [],
+    "note": "This profile is based on a first-person interview with company co-founder Jules Burt.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Atari Compendium — Jules Burt interview", "url": "https://www.ataricompendium.com/archives/interviews/jules_burt/interview_jules_burt.html", "type": "first-person developer interview"}]
+  },
+  {
+    "slug": "hodder-and-stoughton",
+    "mode": "replace_profile",
+    "summary": "Hodder & Stoughton is best known as a British book publisher, but it also entered the home-computer software market in the mid-1980s through releases tied to literary properties.",
+    "facts": ["World of Spectrum preserves Hodder & Stoughton Ltd. as a UK software publisher.", "The archive records the company publishing computer software including literary adaptations during the mid-1980s."],
+    "strengths": ["Literary adaptations", "British publishing", "Mid-1980s software"],
+    "related": [],
+    "note": "This profile concerns Hodder & Stoughton's computer-software activity rather than the much larger history of the book publisher.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "World of Spectrum — Hodder & Stoughton software", "url": "https://worldofspectrum.org/archive/software/games/the-rats-hodder--stoughton-ltd", "type": "software preservation archive"}]
+  },
+  {
+    "slug": "ice",
+    "mode": "replace_profile",
+    "summary": "ICE was the abbreviated identity associated with International Computer Entertainment on 1990s 16-bit releases. The preserved record is particularly visible on Amiga and Amiga CD32 software.",
+    "facts": ["The Centre for Computing History records Total Carnage on Amiga CD32 with International Computer Entertainment as the software house and ICE as author.", "The preserved release confirms the connection between the ICE identity and International Computer Entertainment."],
+    "strengths": ["Amiga publishing", "Amiga CD32 software", "1990s 16-bit releases"],
+    "related": [],
+    "note": "The expanded company name is included to make the otherwise ambiguous ICE credit easier to identify.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Total Carnage", "url": "https://www.computinghistory.org.uk/det/37613/Total-Carnage/", "type": "museum software record"}]
+  },
+  {
+    "slug": "interdisc",
+    "mode": "replace_profile",
+    "summary": "Interdisc was a small early Commodore 64 publishing name. The surviving record is limited, but independent preservation data confirms the label on the 1984 C64 release Black Knight.",
+    "facts": ["GameBase64 catalogues Black Knight as a 1984 Commodore 64 game published by Interdisc.", "The release is part of the early commercial C64 period and remains the strongest independently preserved evidence for the Interdisc label."],
+    "strengths": ["Early C64 publishing", "Black Knight", "1984 software"],
+    "related": [],
+    "note": "No reliable founder or ownership history has surfaced, so unsupported corporate details are deliberately omitted.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "GameBase64 — Black Knight publisher record", "url": "https://gb64.com/search.php?a=5&d=39&f=0&id=24&p=11", "type": "C64 preservation database"}]
+  },
+  {
+    "slug": "mc-lothlorien",
+    "mode": "replace_profile",
+    "summary": "M.C. Lothlorien grew from the strategy software written by school friends Mike Cohen and Roger Lees. Their separate trading names were combined as the operation became a full-time software business, with Geoff Street later joining the partnership.",
+    "facts": ["A contemporary CRASH interview identifies Mike Cohen, Roger Lees and Geoff Street as the partners behind M.C. Lothlorien.", "The interview explains that M. C. Associates Trading and Lothlorien Trading were combined as the software business expanded from mail order into retail."],
+    "strengths": ["British strategy software", "Mail-order origins", "8-bit publishing"],
+    "related": [],
+    "note": "The company history is supported by a contemporary interview with the people running M.C. Lothlorien.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "CRASH issue 8 — M.C. Lothlorien company interview", "url": "https://www.crashonline.org.uk/08/lothlorn.htm", "type": "contemporary magazine archive"}]
+  },
+  {
+    "slug": "melody-hall-publishing",
+    "mode": "replace_profile",
+    "summary": "Melody Hall Publishing Corp. was a small American C64 publishing name whose surviving catalogue includes independently authored software such as Rags to Riches.",
+    "facts": ["GameBase64 records Rags to Riches as a Commodore 64 release published by Melody Hall Publishing Corp.", "The preserved credits name Bob Keener as programmer, graphics artist and musician on the release."],
+    "strengths": ["Independent C64 publishing", "Externally authored software", "1980s releases"],
+    "related": [],
+    "note": "The corporate record remains sparse, so this profile is limited to independently preserved publishing evidence.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "GameBase64 — Rags to Riches publisher record", "url": "https://gb64.com/game.php?id=6173", "type": "C64 preservation database"}]
+  },
+  {
+    "slug": "micro-fun",
+    "mode": "replace_profile",
+    "summary": "Micro Fun was an American early-1980s home-computer software label associated with a catalogue spanning Commodore, Apple and Atari systems.",
+    "facts": ["Eli's Software Encyclopedia preserves Micro Fun as a software publisher with a Highland Park, Illinois address.", "The preservation archive documents Micro Fun releases across several early home-computer platforms."],
+    "strengths": ["Early US software publishing", "Multi-platform games", "Commodore releases"],
+    "related": [],
+    "note": "The institutional record is strongest on the catalogue and address, so unsupported founder claims are omitted.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Eli's Software Encyclopedia — Micro Fun", "url": "https://elisoftware.org/w/index.php?title=Micro_Fun", "type": "software preservation archive"}]
+  },
+  {
+    "slug": "monarch-software",
+    "mode": "replace_profile",
+    "summary": "Monarch Software was a publishing division of ShareData, Inc. Its documented games catalogue is very small, but surviving original manual material establishes the corporate relationship behind the label.",
+    "facts": ["The original manual material states that Monarch Software was a division of ShareData, Inc.", "The same material credits Monarch with adapting, publishing and distributing the computer release."],
+    "strengths": ["ShareData division", "Late-1980s software", "Licensed publishing"],
+    "related": [],
+    "note": "The original manual is the strongest surviving evidence for Monarch's ownership and publishing role.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Original game manual archive — Monarch Software credit", "url": "https://manuals.plus/m/ec4b43d6653ec3b42b71064811a1892aea40097546f877e842e1c29635dd9872", "type": "original manual archive"}]
+  },
+  {
+    "slug": "sight-and-sound-music-software",
+    "mode": "replace_profile",
+    "summary": "Sight & Sound Music Software occupied a specialist part of the C64 market, distributing music programs rather than conventional arcade games. Its catalogue included Commodore 64 software created by jazz guitarist and programmer Ryo Kawasaki.",
+    "facts": ["Ryo Kawasaki's official biography states that four Commodore 64 music programs he created were distributed by Sight and Sound Music.", "Kawasaki describes the software as spanning school and home use through to a MIDI workstation intended for professional studios."],
+    "strengths": ["C64 music software", "Ryo Kawasaki programs", "Music-production tools"],
+    "related": [],
+    "note": "This publisher is historically relevant as a specialist music-software distributor rather than a conventional games label.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Ryo Kawasaki — official biography and C64 software history", "url": "https://www.ryokawasaki.com/bio/", "type": "official artist biography"}]
+  },
+  {
+    "slug": "simulmondo",
+    "mode": "replace_profile",
+    "summary": "Simulmondo was a pioneering Italian games company co-founded by Ivan Venturi after his first professional Commodore 64 work. It became an important early name in Italy's commercial games industry.",
+    "facts": ["Ivan Venturi's own career history states that he published his first professional Commodore 64 game in 1987.", "Venturi identifies himself as a co-founder of Simulmondo and records serving as its production director until 1993."],
+    "strengths": ["Italian game development", "Commodore 64 origins", "Multi-format publishing"],
+    "related": [],
+    "note": "The profile uses first-person career history rather than relying on an unsupported precise corporate founding date.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "IV Productions — Ivan Venturi career history", "url": "https://www.ivproductions.it/pagina-di-esempio/", "type": "first-person developer history"}]
+  },
+  {
+    "slug": "tronix-publishing",
+    "mode": "replace_profile",
+    "summary": "Tronix Publishing was an early American Commodore and Atari software publisher active during the first commercial years of the C64. Its preserved releases include Slalom!, Motocross!, Waterline and other 1980s titles.",
+    "facts": ["Preservation64 documents original Tronix Publishing packaging and media for its early C64 releases.", "The preserved Motocross material advertises additional Tronix titles including Slalom!, Waterline, Juice! and Kid Grid."],
+    "strengths": ["Early C64 publishing", "American home-computer software", "1980s arcade games"],
+    "related": [],
+    "note": "This is the early American Tronix Publishing represented by CCG's 1983 Slalom! page, not Mastertronic's later similarly named budget branding.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Preservation64 — original Tronix Motocross package archive", "url": "https://preservation64.de/index.php?title=Motocross%21", "type": "C64 software preservation archive"}]
+  },
+  {
+    "slug": "mogul",
+    "mode": "replace_profile",
+    "summary": "Mogul Communications was an early home-computer publisher active during the opening years of the Commodore 64 market. Museum records preserve several Mogul releases and developer credits from 1983–1984.",
+    "facts": ["The Centre for Computing History preserves Commodore 64 games under the Mogul Communications publishing credit.", "Its archive includes Zeta-7, a 1984 C64 release published by Mogul Communications and authored by Mike Wacker."],
+    "strengths": ["Early C64 publishing", "1983–1984 software", "Externally authored games"],
+    "related": [],
+    "note": "No reliable founder or ownership history has been established, so the profile expands the documented catalogue without inventing corporate details.",
+    "confidence": "high",
+    "verified_on": "2026-08-13",
+    "sources": [{"label": "Centre for Computing History — Mogul Communications C64 games", "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=Mogul+Communications&type=Games", "type": "museum collection"}]
   }
 ]
