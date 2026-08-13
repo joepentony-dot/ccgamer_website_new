@@ -24,7 +24,8 @@ if (game.thumbnail === newPath) {
 }
 
 if (game.thumbnail !== oldPath) {
-  throw new Error(`Unexpected Mr Weems thumbnail source: ${game.thumbnail || "(blank)"}`);
+  console.log(`Mr Weems thumbnail source is now ${game.thumbnail || "(blank)"}; the historical WebP migration is not required.`);
+  process.exit(0);
 }
 
 game.thumbnail = newPath;
