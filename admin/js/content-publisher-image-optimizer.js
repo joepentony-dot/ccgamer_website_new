@@ -20,7 +20,7 @@ if (fileInput && pathInput && publishButton) {
   const status = document.createElement('small');
   status.dataset.thumbnailOptimizationStatus = 'true';
   status.setAttribute('aria-live', 'polite');
-  status.textContent = 'PNG, JPEG and WebP uploads are optimised locally before publishing. Your original file is never changed.';
+  status.textContent = 'PNG, JPEG and WebP uploads can be optimised locally. An explicit .jpg, .jpeg or .png thumbnail path is preserved exactly.';
   fileInput.insertAdjacentElement('afterend', status);
 
   fileInput.addEventListener('change', () => {
@@ -29,7 +29,10 @@ if (fileInput && pathInput && publishButton) {
 
   gameForm?.addEventListener('submit', () => {
     const selected = fileInput.files?.[0] || null;
-    if (selected?.type === 'image/webp') updateThumbnailPathToWebp(selected.name);
+    const current = String(pathInput.value || '').trim();
+    if (selected?.type === 'image/webp' && (!current || /\.webp$/i.test(current))) {
+      updateThumbnailPathToWebp(selected.name);
+    }
   }, { capture: true });
 }
 
@@ -43,6 +46,23 @@ async function optimiseSelectedImage() {
   if (!ALLOWED_TYPES.has(original.type)) {
     setStatus('Automatic optimisation supports PNG, JPEG and WebP only. Choose a supported image.', 'error');
     clearSelectedFile();
+    return;
+  }
+
+  const requestedExtension = imageExtension(pathInput.value);
+  const selectedExtension = imageExtensionFromMime(original.type);
+  if (requestedExtension && requestedExtension !== 'webp') {
+    if (!extensionsMatch(requestedExtension, selectedExtension)) {
+      setStatus(`Thumbnail path ends in .${requestedExtension}, but the selected file is ${selectedExtension ? `.${selectedExtension}` : original.type}. Keep the path and file format the same.`, 'error');
+      clearSelectedFile();
+      return;
+    }
+
+    const state = original.size <= HARD_BYTES ? 'ok' : 'warning';
+    setStatus(
+      `Using ${original.name} unchanged at the exact ${pathInput.value.trim()} path (${formatBytes(original.size)}). No WebP rename or conversion will be applied.`,
+      state
+    );
     return;
   }
 
@@ -167,6 +187,8 @@ function clearSelectedFile() {
 
 function updateThumbnailPathToWebp(fileName = '') {
   const current = String(pathInput.value || '').trim();
+  if (current && !/\.webp$/i.test(current)) return;
+
   if (current) {
     pathInput.value = replaceExtension(current, 'webp');
   } else {
@@ -178,6 +200,24 @@ function updateThumbnailPathToWebp(fileName = '') {
   }
   pathInput.dispatchEvent(new Event('input', { bubbles: true }));
   pathInput.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+function imageExtension(value) {
+  const match = String(value || '').trim().toLowerCase().match(/\.(png|jpe?g|webp)$/i);
+  if (!match) return '';
+  return match[1] === 'jpeg' ? 'jpg' : match[1];
+}
+
+function imageExtensionFromMime(value) {
+  const mime = String(value || '').toLowerCase();
+  if (mime === 'image/jpeg') return 'jpg';
+  if (mime === 'image/png') return 'png';
+  if (mime === 'image/webp') return 'webp';
+  return '';
+}
+
+function extensionsMatch(left, right) {
+  return String(left || '').toLowerCase() === String(right || '').toLowerCase();
 }
 
 function replaceExtension(value, extension) {
