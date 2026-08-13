@@ -12,7 +12,8 @@ const AUDIO_EXT_RE = /\.(?:mp3|ogg|wav|flac|sid|mod|xm|s3m)$/i;
 const COMPOSER_ALIASES = new Map([
     ["chris hulsbeck", "Chris Hülsbeck"],
     ["chris huelsbeck", "Chris Hülsbeck"],
-    ["chris hülsbeck", "Chris Hülsbeck"]
+    ["chris hülsbeck", "Chris Hülsbeck"],
+    ["oisten eide", "Oisten Eide"]
 ]);
 
 function transliterateComposerText(value) {
