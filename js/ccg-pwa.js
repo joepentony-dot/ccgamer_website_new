@@ -323,7 +323,8 @@
         updateViaCache: "none"
       });
       watchRegistration(registration);
-      window.setTimeout(() => { void registration.update(); }, 4500);
+      // The browser already performs service-worker lifecycle checks during registration/navigation.
+      // Avoid an additional forced update request shortly after every page load.
     } catch (error) {
       console.warn("[ccg-pwa] Service worker registration unavailable", error);
     }
