@@ -1,7 +1,219 @@
 [
   {
-    "name": "Adam Bellin",
-    "slug": "adam-bellin",
+    "name": "Shahid Ahmad",
+    "slug": "shahid-ahmad",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Shahid Ahmad"
+    ],
+    "games": [
+      "floor-13"
+    ]
+  },
+  {
+    "name": "Ivan Allan",
+    "slug": "ivan-allan",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Ivan Allan"
+    ],
+    "games": [
+      "teenage-mutant-hero-turtles"
+    ]
+  },
+  {
+    "name": "Gregory Alper",
+    "slug": "gregory-alper",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Gregory Alper"
+    ],
+    "games": [
+      "darkseed"
+    ]
+  },
+  {
+    "name": "Denes Baan",
+    "slug": "denes-baan",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Denes Baan"
+    ],
+    "games": [
+      "dancing-monster"
+    ]
+  },
+  {
+    "name": "Clint Bajakain",
+    "slug": "clint-bajakain",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Clint Bajakain"
+    ],
+    "games": [
+      "monkey-island-2-lechucks-revenge"
+    ]
+  },
+  {
+    "name": "Andrew Barnabas",
+    "slug": "andrew-barnabas",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Andrew Barnabas"
+    ],
+    "games": [
+      "aladdin"
+    ]
+  },
+  {
+    "name": "Steve Barrett",
+    "slug": "steve-barrett",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Steve Barrett"
+    ],
+    "games": [
+      "knightmare",
+      "sas-combat-simulator",
+      "tilt"
+    ]
+  },
+  {
+    "name": "Bassbomb",
+    "slug": "bassbomb",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bassbomb"
+    ],
+    "games": [
+      "stardust"
+    ]
+  },
+  {
+    "name": "Stéphane Baudet",
+    "slug": "stephane-baudet",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Stéphane Baudet"
+    ],
+    "games": [
+      "north-south"
+    ]
+  },
+  {
+    "name": "Jean Baudlot",
+    "slug": "jean-baudlot",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1989,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jean Baudlot"
+    ],
+    "games": [
+      "flashback-the-quest-for-identity",
+      "future-wars"
+    ]
+  },
+  {
+    "name": "Wally Beben",
+    "slug": "wally-beben",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Wally Beben"
+    ],
+    "games": [
+      "first-samurai"
+    ]
+  },
+  {
+    "name": "Stephen Beck",
+    "slug": "stephen-beck",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -12,30 +224,10 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Adam Bellin"
+      "Stephen Beck"
     ],
     "games": [
-      "zenji"
-    ]
-  },
-  {
-    "name": "Adam Gilmore",
-    "slug": "adam-gilmore",
-    "count": 2,
-    "c64Count": 1,
-    "amigaCount": 1,
-    "firstYear": 1989,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Adam Gilmore"
-    ],
-    "games": [
-      "las-vegas-casino",
-      "santas-xmas-caper"
+      "breakdance"
     ]
   },
   {
@@ -58,8 +250,27 @@
     ]
   },
   {
-    "name": "Al Lowe",
-    "slug": "al-lowe",
+    "name": "Paul A. Bellamy",
+    "slug": "paul-a-bellamy",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Paul A. Bellamy"
+    ],
+    "games": [
+      "double-dare"
+    ]
+  },
+  {
+    "name": "Adam Bellin",
+    "slug": "adam-bellin",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -68,70 +279,232 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Al Lowe"
+      "Adam Bellin"
     ],
     "games": [
-      "donald-ducks-playground"
+      "zenji"
     ]
   },
   {
-    "name": "Alan McKean",
-    "slug": "alan-mckean",
+    "name": "Charles Benton",
+    "slug": "charles-benton",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Charles Benton"
+    ],
+    "games": [
+      "crossfire"
+    ]
+  },
+  {
+    "name": "Leonard Bertoni",
+    "slug": "leonard-bertoni",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Leonard Bertoni"
+    ],
+    "games": [
+      "dino-eggs"
+    ]
+  },
+  {
+    "name": "Gary Biasillo",
+    "slug": "gary-biasillo",
     "count": 2,
     "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1989,
+    "firstYear": 1987,
+    "lastYear": 1988,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Alan McKean"
+      "Gary Biasillo"
     ],
     "games": [
-      "caveman-ugh-lympics",
-      "project-firestart"
+      "joe-blade",
+      "target-renegade"
     ]
   },
   {
-    "name": "Alex Joseph",
-    "slug": "alex-joseph",
+    "name": "Stephen C. Biggs",
+    "slug": "stephen-c-biggs",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1995,
-    "lastYear": 1995,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Alex Joseph"
+      "Stephen C. Biggs"
     ],
     "games": [
-      "sensible-soccer"
+      "blue-max"
     ]
   },
   {
-    "name": "Alexandre Ekian",
-    "slug": "alexandre-ekian",
+    "name": "Dane Bigham",
+    "slug": "dane-bigham",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Alexandre Ekian"
+      "Dane Bigham"
     ],
     "games": [
-      "kgb"
+      "lode-runner"
+    ]
+  },
+  {
+    "name": "Johannes Bjerregaard",
+    "slug": "johannes-bjerregaard",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Johannes Bjerregaard"
+    ],
+    "games": [
+      "flimbos-quest",
+      "kamikaze"
+    ]
+  },
+  {
+    "name": "Andrew Blott",
+    "slug": "andrew-blott",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Andrew Blott"
+    ],
+    "games": [
+      "ghost-hunters"
+    ]
+  },
+  {
+    "name": "David Blott",
+    "slug": "david-blott",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David Blott"
+    ],
+    "games": [
+      "ghost-hunters"
+    ]
+  },
+  {
+    "name": "Ed Bogas",
+    "slug": "ed-bogas",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Ed Bogas"
+    ],
+    "games": [
+      "card-sharks",
+      "law-of-the-west",
+      "murder-on-the-mississippi",
+      "park-patrol"
+    ]
+  },
+  {
+    "name": "Bill Bogenreif",
+    "slug": "bill-bogenreif",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bill Bogenreif"
+    ],
+    "games": [
+      "jungle-hunt"
+    ]
+  },
+  {
+    "name": "Neil Brennan",
+    "slug": "neil-brennan",
+    "count": 7,
+    "c64Count": 7,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1988,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Neil Brennan"
+    ],
+    "games": [
+      "asterix-and-the-magic-cauldron",
+      "fist-2-the-legend-continues",
+      "judge-dredd",
+      "rock-n-wrestle",
+      "samurai-warrior-the-battles-of-usagi-yojimbo",
+      "street-hassle",
+      "the-way-of-the-exploding-fist"
     ]
   },
   {
@@ -165,65 +538,30 @@
     ]
   },
   {
-    "name": "Andrew Barnabas",
-    "slug": "andrew-barnabas",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
+    "name": "Jason C. Brooke",
+    "slug": "jason-c-brooke",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1988,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Andrew Barnabas"
+      "Jason C. Brooke"
     ],
     "games": [
-      "aladdin"
+      "andy-capp",
+      "gryzor",
+      "ikari-warriors",
+      "super-trolley"
     ]
   },
   {
-    "name": "Andrew Blott",
-    "slug": "andrew-blott",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Andrew Blott"
-    ],
-    "games": [
-      "ghost-hunters"
-    ]
-  },
-  {
-    "name": "Andrew Green",
-    "slug": "andrew-green",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Andrew Green"
-    ],
-    "games": [
-      "bounder"
-    ]
-  },
-  {
-    "name": "Andrew Parton",
-    "slug": "andrew-parton",
+    "name": "John Broomhall",
+    "slug": "john-broomhall",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
@@ -232,55 +570,76 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": false,
+    "indexable": true,
     "variants": [
-      "Andrew Parton"
+      "John Broomhall"
     ],
     "games": [
       "civilization"
     ]
   },
   {
-    "name": "Andrew Trott",
-    "slug": "andrew-trott",
+    "name": "Mike Brown",
+    "slug": "mike-brown",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
+    "firstYear": 1988,
+    "lastYear": 1988,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Andrew Trott"
+      "Mike Brown"
     ],
     "games": [
-      "quinx"
+      "joe-blade-2"
     ]
   },
   {
-    "name": "Andrián Pertout",
-    "slug": "andrian-pertout",
+    "name": "Michael Burdett",
+    "slug": "michael-burdett",
     "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Andrián Pertout"
+      "Michael Burdett"
     ],
     "games": [
-      "fighting-warrior"
+      "mega-lo-mania"
     ]
   },
   {
-    "name": "Andy Finkel",
-    "slug": "andy-finkel",
+    "name": "Paul Butler",
+    "slug": "paul-butler",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Paul Butler"
+    ],
+    "games": [
+      "ace-of-aces",
+      "apollo-18-mission-to-the-moon",
+      "the-train-escape-to-normandy"
+    ]
+  },
+  {
+    "name": "Mark Buttery",
+    "slug": "mark-buttery",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -291,15 +650,96 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Andy Finkel"
+      "Mark Buttery"
     ],
     "games": [
-      "lazarian"
+      "cosmic-convoy"
     ]
   },
   {
-    "name": "Andy Wilson",
-    "slug": "andy-wilson",
+    "name": "David Caballero",
+    "slug": "david-caballero",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David Caballero"
+    ],
+    "games": [
+      "galactic-gardener"
+    ]
+  },
+  {
+    "name": "Charles Callet",
+    "slug": "charles-callet",
+    "count": 3,
+    "c64Count": 0,
+    "amigaCount": 3,
+    "firstYear": 1988,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Charles Callet"
+    ],
+    "games": [
+      "hostages",
+      "north-south",
+      "ween-the-prophecy"
+    ]
+  },
+  {
+    "name": "Matthew Cannon",
+    "slug": "matthew-cannon",
+    "count": 4,
+    "c64Count": 3,
+    "amigaCount": 1,
+    "firstYear": 1986,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Matthew Cannon"
+    ],
+    "games": [
+      "batman-the-movie",
+      "civilization",
+      "nightbreed-the-action-game",
+      "the-untouchables"
+    ]
+  },
+  {
+    "name": "Bruce Carver",
+    "slug": "bruce-carver",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bruce Carver"
+    ],
+    "games": [
+      "raid-over-moscow"
+    ]
+  },
+  {
+    "name": "Marcus Charleville",
+    "slug": "marcus-charleville",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -310,48 +750,231 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Andy Wilson"
+      "Marcus Charleville"
     ],
     "games": [
-      "dan-dare-pilot-of-the-future"
+      "the-prince"
     ]
   },
   {
-    "name": "Anthony Lees",
-    "slug": "anthony-lees",
+    "name": "Paul Clansey",
+    "slug": "paul-clansey",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Paul Clansey"
+    ],
+    "games": [
+      "alien",
+      "give-my-regards-to-broad-street"
+    ]
+  },
+  {
+    "name": "Jon Clark",
+    "slug": "jon-clark",
     "count": 1,
     "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jon Clark"
+    ],
+    "games": [
+      "mean-streets"
+    ]
+  },
+  {
+    "name": "Peter Clarke",
+    "slug": "peter-clarke",
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": false,
+    "indexable": true,
     "variants": [
-      "Anthony Lees"
+      "Peter Clarke"
     ],
     "games": [
-      "the-last-ninja"
+      "bubble-bobble",
+      "head-over-heels"
     ]
   },
   {
-    "name": "Anthony Milas",
-    "slug": "anthony-milas",
+    "name": "Simon Clarke",
+    "slug": "simon-clarke",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Anthony Milas"
+      "Simon Clarke"
     ],
     "games": [
-      "skidmarks"
+      "spiky-harold"
+    ]
+  },
+  {
+    "name": "Sean Connolly",
+    "slug": "sean-connolly",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Sean Connolly"
+    ],
+    "games": [
+      "ninja-rabbits"
+    ]
+  },
+  {
+    "name": "Mark Cooksey",
+    "slug": "mark-cooksey",
+    "count": 9,
+    "c64Count": 9,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1988,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Mark Cooksey"
+    ],
+    "games": [
+      "1942",
+      "airwolf",
+      "bomb-jack",
+      "ghosts-n-goblins",
+      "ikari-warriors",
+      "live-and-let-die",
+      "mike-reads-computer-pop-quiz",
+      "paperboy",
+      "a-question-of-sport"
+    ]
+  },
+  {
+    "name": "Chris Cox",
+    "slug": "chris-cox",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Chris Cox"
+    ],
+    "games": [
+      "china-miner",
+      "doriath",
+      "tales-of-the-arabian-nights"
+    ]
+  },
+  {
+    "name": "Geoffrey J. Crammond",
+    "slug": "geoffrey-j-crammond",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Geoffrey J. Crammond"
+    ],
+    "games": [
+      "the-sentinel"
+    ]
+  },
+  {
+    "name": "Douglas Crockford",
+    "slug": "douglas-crockford",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Douglas Crockford"
+    ],
+    "games": [
+      "koronis-rift"
+    ]
+  },
+  {
+    "name": "Neil Crossley",
+    "slug": "neil-crossley",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Neil Crossley"
+    ],
+    "games": [
+      "shadow-dancer"
+    ]
+  },
+  {
+    "name": "Steve Crow",
+    "slug": "steve-crow",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Steve Crow"
+    ],
+    "games": [
+      "starquake"
     ]
   },
   {
@@ -376,86 +999,41 @@
     ]
   },
   {
-    "name": "Archer MacLean",
-    "slug": "archer-maclean",
+    "name": "Dave Cummins",
+    "slug": "dave-cummins",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
+    "firstYear": 1994,
+    "lastYear": 1994,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Archer MacLean"
+      "Dave Cummins"
     ],
     "games": [
-      "jimmy-whites-whirlwind-snooker"
+      "beneath-a-steel-sky"
     ]
   },
   {
-    "name": "Arti Haroutunian",
-    "slug": "arti-haroutunian",
+    "name": "Jim Cuomo",
+    "slug": "jim-cuomo",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
+    "firstYear": 1985,
+    "lastYear": 1985,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Arti Haroutunian"
+      "Jim Cuomo"
     ],
     "games": [
-      "slalom"
-    ]
-  },
-  {
-    "name": "Barry Leitch",
-    "slug": "barry-leitch",
-    "count": 8,
-    "c64Count": 5,
-    "amigaCount": 3,
-    "firstYear": 1988,
-    "lastYear": 1991,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Barry Leitch"
-    ],
-    "games": [
-      "double-dragon",
-      "emlyn-hughes-international-soccer",
-      "fiendish-freddys-big-top-o-fun",
-      "heroquest",
-      "lotus-turbo-challenge-2",
-      "nightbreed-the-interactive-movie",
-      "silkworm",
-      "super-cars-2"
-    ]
-  },
-  {
-    "name": "Bassbomb",
-    "slug": "bassbomb",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Bassbomb"
-    ],
-    "games": [
-      "stardust"
+      "raging-beast"
     ]
   },
   {
@@ -493,27 +1071,8 @@
     ]
   },
   {
-    "name": "Bill Bogenreif",
-    "slug": "bill-bogenreif",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Bill Bogenreif"
-    ],
-    "games": [
-      "jungle-hunt"
-    ]
-  },
-  {
-    "name": "Bill Groetzinger",
-    "slug": "bill-groetzinger",
+    "name": "David Darling",
+    "slug": "david-darling",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -524,73 +1083,34 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Bill Groetzinger"
+      "David Darling"
     ],
     "games": [
-      "below-the-root"
+      "magic-carpet"
     ]
   },
   {
-    "name": "Bill Mauchly",
-    "slug": "bill-mauchly",
+    "name": "Richard Darling",
+    "slug": "richard-darling",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
+    "firstYear": 1984,
+    "lastYear": 1984,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Bill Mauchly"
+      "Richard Darling"
     ],
     "games": [
-      "trains"
+      "magic-carpet"
     ]
   },
   {
-    "name": "Bjørn Lynne",
-    "slug": "bjorn-lynne",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1991,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Bjørn Lynne"
-    ],
-    "games": [
-      "escape-from-colditz",
-      "project-x"
-    ]
-  },
-  {
-    "name": "Blair Zuppicich",
-    "slug": "blair-zuppicich",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Blair Zuppicich"
-    ],
-    "games": [
-      "seek-destroy"
-    ]
-  },
-  {
-    "name": "Bob Keener",
-    "slug": "bob-keener",
+    "name": "John Darnell",
+    "slug": "john-darnell",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -601,50 +1121,48 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Bob Keener"
+      "John Darnell"
     ],
     "games": [
-      "rags-to-riches"
+      "kane-kane-2"
     ]
   },
   {
-    "name": "Bob Landwehr",
-    "slug": "bob-landwehr",
+    "name": "Charles Deenen",
+    "slug": "charles-deenen",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Bob Landwehr"
-    ],
-    "games": [
-      "go-for-the-gold"
-    ]
-  },
-  {
-    "name": "Bob Vieira",
-    "slug": "bob-vieira",
-    "count": 3,
-    "c64Count": 3,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1986,
+    "firstYear": 1988,
+    "lastYear": 1988,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Bob Vieira"
+      "Charles Deenen"
     ],
     "games": [
-      "the-movie-monster-game",
-      "summer-games-2",
-      "super-cycle"
+      "zamzara"
+    ]
+  },
+  {
+    "name": "Peter Dekany",
+    "slug": "peter-dekany",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Peter Dekany"
+    ],
+    "games": [
+      "dancing-monster"
     ]
   },
   {
@@ -668,65 +1186,8 @@
     ]
   },
   {
-    "name": "Brian Johnston",
-    "slug": "brian-johnston",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Brian Johnston"
-    ],
-    "games": [
-      "lemmings"
-    ]
-  },
-  {
-    "name": "Bruce Carver",
-    "slug": "bruce-carver",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Bruce Carver"
-    ],
-    "games": [
-      "raid-over-moscow"
-    ]
-  },
-  {
-    "name": "Bryce Morsello",
-    "slug": "bryce-morsello",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Bryce Morsello"
-    ],
-    "games": [
-      "caveman-ugh-lympics"
-    ]
-  },
-  {
-    "name": "Charles Benton",
-    "slug": "charles-benton",
+    "name": "Douglas D. Dragin",
+    "slug": "douglas-d-dragin",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -737,431 +1198,31 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Charles Benton"
+      "Douglas D. Dragin"
     ],
     "games": [
-      "crossfire"
+      "donkey-kong"
     ]
   },
   {
-    "name": "Charles Callet",
-    "slug": "charles-callet",
-    "count": 3,
-    "c64Count": 0,
-    "amigaCount": 3,
-    "firstYear": 1988,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Charles Callet"
-    ],
-    "games": [
-      "hostages",
-      "north-south",
-      "ween-the-prophecy"
-    ]
-  },
-  {
-    "name": "Charles Deenen",
-    "slug": "charles-deenen",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Charles Deenen"
-    ],
-    "games": [
-      "zamzara"
-    ]
-  },
-  {
-    "name": "Charlie Kellner",
-    "slug": "charlie-kellner",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Charlie Kellner"
-    ],
-    "games": [
-      "the-eidolon",
-      "rescue-on-fractalus"
-    ]
-  },
-  {
-    "name": "Chris Cox",
-    "slug": "chris-cox",
+    "name": "Tommy V. Dunbar",
+    "slug": "tommy-v-dunbar",
     "count": 3,
     "c64Count": 3,
     "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Chris Cox"
-    ],
-    "games": [
-      "china-miner",
-      "doriath",
-      "tales-of-the-arabian-nights"
-    ]
-  },
-  {
-    "name": "Chris Glaister",
-    "slug": "chris-glaister",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Chris Glaister"
-    ],
-    "games": [
-      "the-lost-patrol"
-    ]
-  },
-  {
-    "name": "Chris Grigg",
-    "slug": "chris-grigg",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Chris Grigg"
-    ],
-    "games": [
-      "california-games",
-      "maniac-mansion"
-    ]
-  },
-  {
-    "name": "Chris Hülsbeck",
-    "slug": "chris-huelsbeck",
-    "count": 6,
-    "c64Count": 5,
-    "amigaCount": 1,
-    "firstYear": 1987,
-    "lastYear": 1991,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Chris Hülsbeck"
-    ],
-    "games": [
-      "the-great-giana-sisters",
-      "the-secret-of-monkey-island",
-      "rtype",
-      "to-be-on-top",
-      "turrican",
-      "x-out"
-    ]
-  },
-  {
-    "name": "Chris Murray",
-    "slug": "chris-murray",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Chris Murray"
-    ],
-    "games": [
-      "henrys-house"
-    ]
-  },
-  {
-    "name": "Chris Newcombe",
-    "slug": "chris-newcombe",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Chris Newcombe"
-    ],
-    "games": [
-      "20-tons"
-    ]
-  },
-  {
-    "name": "Clint Bajakain",
-    "slug": "clint-bajakain",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Clint Bajakain"
-    ],
-    "games": [
-      "monkey-island-2-lechucks-revenge"
-    ]
-  },
-  {
-    "name": "Colin Porch",
-    "slug": "colin-porch",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Colin Porch"
-    ],
-    "games": [
-      "dragons-lair"
-    ]
-  },
-  {
-    "name": "Craig White",
-    "slug": "craig-white",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Craig White"
-    ],
-    "games": [
-      "apocalypse"
-    ]
-  },
-  {
-    "name": "Dane Bigham",
-    "slug": "dane-bigham",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
     "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Dane Bigham"
-    ],
-    "games": [
-      "lode-runner"
-    ]
-  },
-  {
-    "name": "Dave Cummins",
-    "slug": "dave-cummins",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Dave Cummins"
-    ],
-    "games": [
-      "beneath-a-steel-sky"
-    ]
-  },
-  {
-    "name": "Dave Lowe",
-    "slug": "dave-lowe",
-    "count": 3,
-    "c64Count": 2,
-    "amigaCount": 1,
-    "firstYear": 1988,
-    "lastYear": 1990,
+    "lastYear": 1985,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Dave Lowe"
+      "Tommy V. Dunbar"
     ],
     "games": [
-      "double-dragon-2-the-revenge",
-      "ik-amiga",
-      "power-drift"
-    ]
-  },
-  {
-    "name": "Dave Pridmore",
-    "slug": "dave-pridmore",
-    "count": 2,
-    "c64Count": 1,
-    "amigaCount": 1,
-    "firstYear": 1987,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Dave Pridmore"
-    ],
-    "games": [
-      "jack-the-nipper-2-in-coconut-capers",
-      "rick-dangerous"
-    ]
-  },
-  {
-    "name": "Dave Thomas",
-    "slug": "dave-thomas",
-    "count": 6,
-    "c64Count": 6,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1987,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Dave Thomas"
-    ],
-    "games": [
-      "blackwyche",
-      "buggy-boy",
-      "dragon-skulle",
-      "entombed",
-      "outlaws",
-      "the-staff-of-karnath"
-    ]
-  },
-  {
-    "name": "Dave Warhol",
-    "slug": "dave-warhol",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Dave Warhol"
-    ],
-    "games": [
-      "curse-of-the-azure-bonds",
-      "heart-of-africa",
-      "neuromancer",
-      "realm-of-impossibility"
-    ]
-  },
-  {
-    "name": "David Blott",
-    "slug": "david-blott",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Blott"
-    ],
-    "games": [
-      "ghost-hunters"
-    ]
-  },
-  {
-    "name": "David Caballero",
-    "slug": "david-caballero",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Caballero"
-    ],
-    "games": [
-      "galactic-gardener"
-    ]
-  },
-  {
-    "name": "David Darling",
-    "slug": "david-darling",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Darling"
-    ],
-    "games": [
-      "magic-carpet"
+      "archon-the-light-and-the-dark",
+      "barry-mcguigan-world-championship-boxing",
+      "mail-order-monsters"
     ]
   },
   {
@@ -1186,1486 +1247,6 @@
       "finders-keepers",
       "high-noon",
       "the-trap-door"
-    ]
-  },
-  {
-    "name": "David Hanlon",
-    "slug": "david-hanlon",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Hanlon"
-    ],
-    "games": [
-      "populous"
-    ]
-  },
-  {
-    "name": "David Lawrence",
-    "slug": "david-lawrence",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Lawrence"
-    ],
-    "games": [
-      "maniac-mansion"
-    ]
-  },
-  {
-    "name": "David Levine",
-    "slug": "david-levine",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David Levine"
-    ],
-    "games": [
-      "the-eidolon"
-    ]
-  },
-  {
-    "name": "David M. Martin Jr.",
-    "slug": "david-m-martin-jr",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "David M. Martin Jr."
-    ],
-    "games": [
-      "labyrinth"
-    ]
-  },
-  {
-    "name": "David Thiel",
-    "slug": "david-thiel",
-    "count": 4,
-    "c64Count": 2,
-    "amigaCount": 2,
-    "firstYear": 1985,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "David Thiel"
-    ],
-    "games": [
-      "championship-wrestling",
-      "ducktales-the-quest-for-gold",
-      "the-three-stooges",
-      "winter-games"
-    ]
-  },
-  {
-    "name": "David Whittaker",
-    "slug": "david-whittaker",
-    "count": 22,
-    "c64Count": 20,
-    "amigaCount": 2,
-    "firstYear": 1984,
-    "lastYear": 1989,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "David Whittaker"
-    ],
-    "games": [
-      "arcade-flight-simulator",
-      "bmx-simulator",
-      "dizzy",
-      "feud",
-      "fright-night",
-      "ghostbusters-2",
-      "grand-prix-simulator",
-      "grange-hill",
-      "knight-games",
-      "knight-tyme",
-      "lazy-jones",
-      "max-headroom",
-      "milk-race",
-      "the-real-ghostbusters",
-      "slaine",
-      "spitting-image",
-      "split-personalities",
-      "star-wars",
-      "stormbringer",
-      "super-robin-hood",
-      "weird-dreams",
-      "the-willow-pattern-adventure"
-    ]
-  },
-  {
-    "name": "Dean Evans",
-    "slug": "dean-evans",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Dean Evans"
-    ],
-    "games": [
-      "push-over"
-    ]
-  },
-  {
-    "name": "Dean M. Lock",
-    "slug": "dean-m-lock",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Dean M. Lock"
-    ],
-    "games": [
-      "black-hawk"
-    ]
-  },
-  {
-    "name": "Denes Baan",
-    "slug": "denes-baan",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Denes Baan"
-    ],
-    "games": [
-      "dancing-monster"
-    ]
-  },
-  {
-    "name": "Doug Fulton",
-    "slug": "doug-fulton",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Doug Fulton"
-    ],
-    "games": [
-      "the-immortal"
-    ]
-  },
-  {
-    "name": "Doug Smith",
-    "slug": "doug-smith",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Doug Smith"
-    ],
-    "games": [
-      "lode-runner"
-    ]
-  },
-  {
-    "name": "Douglas Crockford",
-    "slug": "douglas-crockford",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Douglas Crockford"
-    ],
-    "games": [
-      "koronis-rift"
-    ]
-  },
-  {
-    "name": "Douglas D. Dragin",
-    "slug": "douglas-d-dragin",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Douglas D. Dragin"
-    ],
-    "games": [
-      "donkey-kong"
-    ]
-  },
-  {
-    "name": "Ed Bogas",
-    "slug": "ed-bogas",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Ed Bogas"
-    ],
-    "games": [
-      "card-sharks",
-      "law-of-the-west",
-      "murder-on-the-mississippi",
-      "park-patrol"
-    ]
-  },
-  {
-    "name": "Edward R. Hobbs",
-    "slug": "edward-r-hobbs",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Edward R. Hobbs"
-    ],
-    "games": [
-      "the-castles-of-dr-creep"
-    ]
-  },
-  {
-    "name": "Eike Steffen",
-    "slug": "eike-steffen",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Eike Steffen"
-    ],
-    "games": [
-      "dynablaster"
-    ]
-  },
-  {
-    "name": "Fabrice Hautecloque",
-    "slug": "fabrice-hautecloque",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Fabrice Hautecloque"
-    ],
-    "games": [
-      "robinsons-requiem"
-    ]
-  },
-  {
-    "name": "Fabrice Visserot",
-    "slug": "fabrice-visserot",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Fabrice Visserot"
-    ],
-    "games": [
-      "flashback-the-quest-for-identity"
-    ]
-  },
-  {
-    "name": "Farook Joi",
-    "slug": "farook-joi",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Farook Joi"
-    ],
-    "games": [
-      "the-chaos-engine"
-    ]
-  },
-  {
-    "name": "Francis Mechner",
-    "slug": "francis-mechner",
-    "count": 2,
-    "c64Count": 1,
-    "amigaCount": 1,
-    "firstYear": 1985,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Francis Mechner"
-    ],
-    "games": [
-      "karateka",
-      "prince-of-persia"
-    ]
-  },
-  {
-    "name": "Franck Sauer",
-    "slug": "franck-sauer",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Franck Sauer"
-    ],
-    "games": [
-      "agony"
-    ]
-  },
-  {
-    "name": "Frank Klepacki",
-    "slug": "frank-klepacki",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1992,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Frank Klepacki"
-    ],
-    "games": [
-      "dune-2-the-battle-for-arrakis",
-      "eye-of-the-beholder-2-the-legend-of-darkmoon"
-    ]
-  },
-  {
-    "name": "Fred Gray",
-    "slug": "fred-gray",
-    "count": 13,
-    "c64Count": 13,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1988,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Fred Gray"
-    ],
-    "games": [
-      "army-moves",
-      "batman-the-caped-crusader",
-      "bc-bill",
-      "bounces",
-      "breakthru",
-      "frankie-goes-to-hollywood",
-      "nodes-of-yesod",
-      "road-runner",
-      "robin-of-the-wood",
-      "stairways",
-      "the-transformers",
-      "west-bank",
-      "zone-trooper"
-    ]
-  },
-  {
-    "name": "Frédéric Motte",
-    "slug": "frederic-motte",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Frédéric Motte"
-    ],
-    "games": [
-      "gobliiins"
-    ]
-  },
-  {
-    "name": "Fredrik Segerfalk",
-    "slug": "fredrik-segerfalk",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Fredrik Segerfalk"
-    ],
-    "games": [
-      "shadow-of-the-beast"
-    ]
-  },
-  {
-    "name": "Gary Biasillo",
-    "slug": "gary-biasillo",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Gary Biasillo"
-    ],
-    "games": [
-      "joe-blade",
-      "target-renegade"
-    ]
-  },
-  {
-    "name": "Gavin Raeburn",
-    "slug": "gavin-raeburn",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Gavin Raeburn"
-    ],
-    "games": [
-      "rock-star-ate-my-hamster"
-    ]
-  },
-  {
-    "name": "Geoffrey J. Crammond",
-    "slug": "geoffrey-j-crammond",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Geoffrey J. Crammond"
-    ],
-    "games": [
-      "the-sentinel"
-    ]
-  },
-  {
-    "name": "George Neophytou",
-    "slug": "george-neophytou",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "George Neophytou"
-    ],
-    "games": [
-      "the-faces-of-haarne",
-      "jet-set-willy"
-    ]
-  },
-  {
-    "name": "Gerard Gourley",
-    "slug": "gerard-gourley",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Gerard Gourley"
-    ],
-    "games": [
-      "wwf-wrestlemania"
-    ]
-  },
-  {
-    "name": "Graham Hansford",
-    "slug": "graham-hansford",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Graham Hansford"
-    ],
-    "games": [
-      "guzzler"
-    ]
-  },
-  {
-    "name": "Graham Jarvis",
-    "slug": "graham-jarvis",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Graham Jarvis"
-    ],
-    "games": [
-      "back-to-the-future",
-      "blade-runner",
-      "the-rocky-horror-show",
-      "shao-lins-road"
-    ]
-  },
-  {
-    "name": "Graham King",
-    "slug": "graham-king",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1995,
-    "lastYear": 1995,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Graham King"
-    ],
-    "games": [
-      "sensible-soccer"
-    ]
-  },
-  {
-    "name": "Graham Marsh",
-    "slug": "graham-marsh",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Graham Marsh"
-    ],
-    "games": [
-      "dan-dare-pilot-of-the-future",
-      "spiky-harold"
-    ]
-  },
-  {
-    "name": "Grant Harrison",
-    "slug": "grant-harrison",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Grant Harrison"
-    ],
-    "games": [
-      "underwurlde"
-    ]
-  },
-  {
-    "name": "Grant Irani",
-    "slug": "grant-irani",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Grant Irani"
-    ],
-    "games": [
-      "floyd-of-the-jungle"
-    ]
-  },
-  {
-    "name": "Greg A. Holmes",
-    "slug": "greg-a-holmes",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Greg A. Holmes"
-    ],
-    "games": [
-      "jack-the-nipper-2-in-coconut-capers"
-    ]
-  },
-  {
-    "name": "Gregory Alper",
-    "slug": "gregory-alper",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Gregory Alper"
-    ],
-    "games": [
-      "darkseed"
-    ]
-  },
-  {
-    "name": "Gregory Haggard",
-    "slug": "gregory-haggard",
-    "count": 3,
-    "c64Count": 0,
-    "amigaCount": 3,
-    "firstYear": 1989,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Gregory Haggard"
-    ],
-    "games": [
-      "it-came-from-the-desert",
-      "antheads-it-came-from-the-desert-2",
-      "wings"
-    ]
-  },
-  {
-    "name": "Haiko Ruttmann",
-    "slug": "haiko-ruttmann",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Haiko Ruttmann"
-    ],
-    "games": [
-      "the-settlers"
-    ]
-  },
-  {
-    "name": "Haroon Joi",
-    "slug": "haroon-joi",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Haroon Joi"
-    ],
-    "games": [
-      "the-chaos-engine"
-    ]
-  },
-  {
-    "name": "Henry Spragens",
-    "slug": "henry-spragens",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Henry Spragens"
-    ],
-    "games": [
-      "tapper"
-    ]
-  },
-  {
-    "name": "Ian Howe",
-    "slug": "ian-howe",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ian Howe"
-    ],
-    "games": [
-      "double-dragon"
-    ]
-  },
-  {
-    "name": "Ian Potts",
-    "slug": "ian-potts",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ian Potts"
-    ],
-    "games": [
-      "spartacus-the-swordslayer"
-    ]
-  },
-  {
-    "name": "Ian Thompson",
-    "slug": "ian-thompson",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ian Thompson"
-    ],
-    "games": [
-      "android-2"
-    ]
-  },
-  {
-    "name": "Ivan Allan",
-    "slug": "ivan-allan",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ivan Allan"
-    ],
-    "games": [
-      "teenage-mutant-hero-turtles"
-    ]
-  },
-  {
-    "name": "J. Steele",
-    "slug": "j-steele",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "J. Steele"
-    ],
-    "games": [
-      "hunchback"
-    ]
-  },
-  {
-    "name": "James Lisney",
-    "slug": "james-lisney",
-    "count": 3,
-    "c64Count": 3,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "James Lisney"
-    ],
-    "games": [
-      "hover-bovver",
-      "revenge-of-the-mutant-camels",
-      "sheep-in-space"
-    ]
-  },
-  {
-    "name": "Jason A. S. Whitely",
-    "slug": "jason-a-s-whitely",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jason A. S. Whitely"
-    ],
-    "games": [
-      "desert-strike",
-      "space-hulk"
-    ]
-  },
-  {
-    "name": "Jason C. Brooke",
-    "slug": "jason-c-brooke",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jason C. Brooke"
-    ],
-    "games": [
-      "andy-capp",
-      "gryzor",
-      "ikari-warriors",
-      "super-trolley"
-    ]
-  },
-  {
-    "name": "Jason H. Perkins",
-    "slug": "jason-h-perkins",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jason H. Perkins"
-    ],
-    "games": [
-      "frak"
-    ]
-  },
-  {
-    "name": "Jason Page",
-    "slug": "jason-page",
-    "count": 2,
-    "c64Count": 1,
-    "amigaCount": 1,
-    "firstYear": 1990,
-    "lastYear": 1995,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jason Page"
-    ],
-    "games": [
-      "sensible-soccer",
-      "ivan-ironman-stewarts-super-off-road"
-    ]
-  },
-  {
-    "name": "Jean Baudlot",
-    "slug": "jean-baudlot",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1989,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jean Baudlot"
-    ],
-    "games": [
-      "flashback-the-quest-for-identity",
-      "future-wars"
-    ]
-  },
-  {
-    "name": "Jean-François Freitas",
-    "slug": "jean-francois-freitas",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jean-François Freitas"
-    ],
-    "games": [
-      "another-world"
-    ]
-  },
-  {
-    "name": "Jeff McCord",
-    "slug": "jeff-mccord",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jeff McCord"
-    ],
-    "games": [
-      "the-sword-of-fargoal"
-    ]
-  },
-  {
-    "name": "Jeff Minter",
-    "slug": "jeff-minter",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jeff Minter"
-    ],
-    "games": [
-      "iridis-alpha"
-    ]
-  },
-  {
-    "name": "Jeff Rourke",
-    "slug": "jeff-rourke",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jeff Rourke"
-    ],
-    "games": [
-      "crystal-dragon"
-    ]
-  },
-  {
-    "name": "Jens-Christian Huus",
-    "slug": "jens-christian-huus",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jens-Christian Huus"
-    ],
-    "games": [
-      "pit-fighter"
-    ]
-  },
-  {
-    "name": "Jeroen Kimmel",
-    "slug": "jeroen-kimmel",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jeroen Kimmel"
-    ],
-    "games": [
-      "frightmare"
-    ]
-  },
-  {
-    "name": "Jeroen Tel",
-    "slug": "jeroen-tel",
-    "count": 9,
-    "c64Count": 8,
-    "amigaCount": 1,
-    "firstYear": 1988,
-    "lastYear": 1992,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jeroen Tel"
-    ],
-    "games": [
-      "after-burner",
-      "agony",
-      "cybernoid",
-      "dan-dare-iii-the-escape",
-      "golden-axe",
-      "hawkeye",
-      "myth-history-in-the-making",
-      "teenage-mutant-hero-turtles-the-coin-op",
-      "turbo-out-run"
-    ]
-  },
-  {
-    "name": "Jerry White",
-    "slug": "jerry-white",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jerry White"
-    ],
-    "games": [
-      "flip-and-flop"
-    ]
-  },
-  {
-    "name": "Jim Cuomo",
-    "slug": "jim-cuomo",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jim Cuomo"
-    ],
-    "games": [
-      "raging-beast"
-    ]
-  },
-  {
-    "name": "Jim Simmons",
-    "slug": "jim-simmons",
-    "count": 3,
-    "c64Count": 1,
-    "amigaCount": 2,
-    "firstYear": 1988,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jim Simmons"
-    ],
-    "games": [
-      "it-came-from-the-desert",
-      "antheads-it-came-from-the-desert-2",
-      "rocket-ranger"
-    ]
-  },
-  {
-    "name": "Jimmy Huey",
-    "slug": "jimmy-huey",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jimmy Huey"
-    ],
-    "games": [
-      "trolls-and-tribulations"
-    ]
-  },
-  {
-    "name": "Johannes Bjerregaard",
-    "slug": "johannes-bjerregaard",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Johannes Bjerregaard"
-    ],
-    "games": [
-      "flimbos-quest",
-      "kamikaze"
-    ]
-  },
-  {
-    "name": "John A. Fitzpatrick",
-    "slug": "john-a-fitzpatrick",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "John A. Fitzpatrick"
-    ],
-    "games": [
-      "barry-mcguigan-world-championship-boxing",
-      "bruce-lee",
-      "the-goonies",
-      "zorro"
-    ]
-  },
-  {
-    "name": "John Broomhall",
-    "slug": "john-broomhall",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "John Broomhall"
-    ],
-    "games": [
-      "civilization"
-    ]
-  },
-  {
-    "name": "John Darnell",
-    "slug": "john-darnell",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "John Darnell"
-    ],
-    "games": [
-      "kane-kane-2"
-    ]
-  },
-  {
-    "name": "John Hutchinson",
-    "slug": "john-hutchinson",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "John Hutchinson"
-    ],
-    "games": [
-      "cavelon"
-    ]
-  },
-  {
-    "name": "John Prince",
-    "slug": "john-prince",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "John Prince"
-    ],
-    "games": [
-      "mutant-monty"
-    ]
-  },
-  {
-    "name": "Jolyon Vincent Myers",
-    "slug": "jolyon-vincent-myers",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jolyon Vincent Myers"
-    ],
-    "games": [
-      "final-fight"
-    ]
-  },
-  {
-    "name": "Jon Clark",
-    "slug": "jon-clark",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jon Clark"
-    ],
-    "games": [
-      "mean-streets"
-    ]
-  },
-  {
-    "name": "Jon Hare",
-    "slug": "jon-hare",
-    "count": 4,
-    "c64Count": 0,
-    "amigaCount": 4,
-    "firstYear": 1993,
-    "lastYear": 1995,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jon Hare"
-    ],
-    "games": [
-      "cannon-fodder",
-      "cannon-fodder-2",
-      "sensible-golf",
-      "sensible-soccer"
-    ]
-  },
-  {
-    "name": "Jon Maskill",
-    "slug": "jon-maskill",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Jon Maskill"
-    ],
-    "games": [
-      "elidon"
     ]
   },
   {
@@ -2698,148 +1279,6 @@
     ]
   },
   {
-    "name": "Jori Olkkonen",
-    "slug": "jori-olkkonen",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Jori Olkkonen"
-    ],
-    "games": [
-      "bmx-kidz",
-      "uuno-turhapuro-muuttaa-maalle"
-    ]
-  },
-  {
-    "name": "Keith Harvey",
-    "slug": "keith-harvey",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Keith Harvey"
-    ],
-    "games": [
-      "into-the-eagles-nest"
-    ]
-  },
-  {
-    "name": "Keith Miller",
-    "slug": "keith-miller",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Keith Miller"
-    ],
-    "games": [
-      "cauldron",
-      "the-evil-dead"
-    ]
-  },
-  {
-    "name": "Keith Tinman",
-    "slug": "keith-tinman",
-    "count": 6,
-    "c64Count": 5,
-    "amigaCount": 1,
-    "firstYear": 1986,
-    "lastYear": 1992,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Keith Tinman"
-    ],
-    "games": [
-      "cabal",
-      "heartland",
-      "hudson-hawk",
-      "midnight-resistance",
-      "push-over",
-      "toki"
-    ]
-  },
-  {
-    "name": "Ken Lagace",
-    "slug": "ken-lagace",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Ken Lagace"
-    ],
-    "games": [
-      "airborne-ranger",
-      "project-stealth-fighter"
-    ]
-  },
-  {
-    "name": "Ken Melville",
-    "slug": "ken-melville",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ken Melville"
-    ],
-    "games": [
-      "wings"
-    ]
-  },
-  {
-    "name": "Kevin A. Moughtin",
-    "slug": "kevin-a-moughtin",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Kevin A. Moughtin"
-    ],
-    "games": [
-      "booty",
-      "thunderbirds"
-    ]
-  },
-  {
     "name": "Kevin Earl",
     "slug": "kevin-earl",
     "count": 1,
@@ -2859,89 +1298,68 @@
     ]
   },
   {
-    "name": "Kevin P. Pickell",
-    "slug": "kevin-p-pickell",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Kevin P. Pickell"
-    ],
-    "games": [
-      "gemstone-warrior"
-    ]
-  },
-  {
-    "name": "Kris Hatlelid",
-    "slug": "kris-hatlelid",
-    "count": 3,
-    "c64Count": 2,
-    "amigaCount": 1,
-    "firstYear": 1989,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Kris Hatlelid"
-    ],
-    "games": [
-      "grand-prix-circuit",
-      "teenage-mutant-hero-turtles",
-      "wings-of-fury"
-    ]
-  },
-  {
-    "name": "Kyle Granger",
-    "slug": "kyle-granger",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Kyle Granger"
-    ],
-    "games": [
-      "skate-or-die"
-    ]
-  },
-  {
-    "name": "Kyle Hodgetts",
-    "slug": "kyle-hodgetts",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Kyle Hodgetts"
-    ],
-    "games": [
-      "black-knight"
-    ]
-  },
-  {
-    "name": "Kyle Johnson",
-    "slug": "kyle-johnson",
+    "name": "Oisten Eide",
+    "slug": "oisten-eide",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Oisten Eide"
+    ],
+    "games": [
+      "robocop-3"
+    ]
+  },
+  {
+    "name": "Alexandre Ekian",
+    "slug": "alexandre-ekian",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Alexandre Ekian"
+    ],
+    "games": [
+      "kgb"
+    ]
+  },
+  {
+    "name": "Steve Elward",
+    "slug": "steve-elward",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Steve Elward"
+    ],
+    "games": [
+      "back-to-reality"
+    ]
+  },
+  {
+    "name": "Scott T. Etherton",
+    "slug": "scott-t-etherton",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
     "firstYear": 1990,
     "lastYear": 1990,
     "existing": false,
@@ -2949,72 +1367,34 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Kyle Johnson"
+      "Scott T. Etherton"
     ],
     "games": [
-      "ducktales-the-quest-for-gold"
+      "die-hard"
     ]
   },
   {
-    "name": "Lars Hård",
-    "slug": "lars-hard",
+    "name": "Dean Evans",
+    "slug": "dean-evans",
     "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Lars Hård"
+      "Dean Evans"
     ],
     "games": [
-      "blood-n-guts"
+      "push-over"
     ]
   },
   {
-    "name": "Lawson J.C. Pilling",
-    "slug": "lawson-j-c-pilling",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Lawson J.C. Pilling"
-    ],
-    "games": [
-      "rocket-ball"
-    ]
-  },
-  {
-    "name": "Leonard Bertoni",
-    "slug": "leonard-bertoni",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Leonard Bertoni"
-    ],
-    "games": [
-      "dino-eggs"
-    ]
-  },
-  {
-    "name": "Llaszlo Kiss",
-    "slug": "llaszlo-kiss",
+    "name": "Steve Evans",
+    "slug": "steve-evans",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -3025,34 +1405,15 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Llaszlo Kiss"
+      "Steve Evans"
     ],
     "games": [
-      "scarabaeus"
+      "who-dares-wins-2"
     ]
   },
   {
-    "name": "Marcus Charleville",
-    "slug": "marcus-charleville",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Marcus Charleville"
-    ],
-    "games": [
-      "the-prince"
-    ]
-  },
-  {
-    "name": "Mark Buttery",
-    "slug": "mark-buttery",
+    "name": "Andy Finkel",
+    "slug": "andy-finkel",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -3063,104 +1424,59 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Mark Buttery"
+      "Andy Finkel"
     ],
     "games": [
-      "cosmic-convoy"
+      "lazarian"
     ]
   },
   {
-    "name": "Mark Cooksey",
-    "slug": "mark-cooksey",
-    "count": 9,
-    "c64Count": 9,
+    "name": "John A. Fitzpatrick",
+    "slug": "john-a-fitzpatrick",
+    "count": 4,
+    "c64Count": 4,
     "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1988,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Mark Cooksey"
-    ],
-    "games": [
-      "1942",
-      "airwolf",
-      "bomb-jack",
-      "ghosts-n-goblins",
-      "ikari-warriors",
-      "live-and-let-die",
-      "mike-reads-computer-pop-quiz",
-      "paperboy",
-      "a-question-of-sport"
-    ]
-  },
-  {
-    "name": "Mark Harrison",
-    "slug": "mark-harrison",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1984,
     "lastYear": 1985,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": false,
+    "indexable": true,
     "variants": [
-      "Mark Harrison"
+      "John A. Fitzpatrick"
     ],
     "games": [
-      "ghetto-blaster"
+      "barry-mcguigan-world-championship-boxing",
+      "bruce-lee",
+      "the-goonies",
+      "zorro"
     ]
   },
   {
-    "name": "Mark Tait",
-    "slug": "mark-tait",
-    "count": 3,
-    "c64Count": 3,
+    "name": "Tim Follin",
+    "slug": "tim-follin",
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
     "firstYear": 1988,
-    "lastYear": 1989,
+    "lastYear": 1988,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Mark Tait"
+      "Tim Follin"
     ],
     "games": [
-      "indiana-jones-and-the-last-crusade-the-action-game",
-      "strider",
-      "thunder-blade"
+      "bionic-commando"
     ]
   },
   {
-    "name": "Markus Kludzuweit",
-    "slug": "markus-kludzuweit",
+    "name": "Jean-François Freitas",
+    "slug": "jean-francois-freitas",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Markus Kludzuweit"
-    ],
-    "games": [
-      "the-settlers"
-    ]
-  },
-  {
-    "name": "Markus Siebold",
-    "slug": "markus-siebold",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
     "firstYear": 1991,
     "lastYear": 1991,
     "existing": false,
@@ -3168,10 +1484,72 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Markus Siebold"
+      "Jean-François Freitas"
     ],
     "games": [
-      "turrican-2-the-final-fight"
+      "another-world"
+    ]
+  },
+  {
+    "name": "Simon PC Frost",
+    "slug": "simon-pc-frost",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Simon PC Frost"
+    ],
+    "games": [
+      "deactivators"
+    ]
+  },
+  {
+    "name": "Doug Fulton",
+    "slug": "doug-fulton",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Doug Fulton"
+    ],
+    "games": [
+      "the-immortal"
+    ]
+  },
+  {
+    "name": "Matt Furniss",
+    "slug": "matt-furniss",
+    "count": 6,
+    "c64Count": 6,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1991,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Matt Furniss"
+    ],
+    "games": [
+      "badlands",
+      "castle-master",
+      "chase-h-q",
+      "escape-from-the-planet-of-the-robot-monsters",
+      "klax",
+      "skull-crossbones"
     ]
   },
   {
@@ -3210,88 +1588,106 @@
     ]
   },
   {
-    "name": "Martin Iveson",
-    "slug": "martin-iveson",
-    "count": 2,
+    "name": "Raphaël Gesqua",
+    "slug": "raphael-gesqua",
+    "count": 1,
     "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1991,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Martin Iveson"
-    ],
-    "games": [
-      "agony",
-      "heimdall"
-    ]
-  },
-  {
-    "name": "Martin Walker",
-    "slug": "martin-walker",
-    "count": 3,
-    "c64Count": 2,
     "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Martin Walker"
-    ],
-    "games": [
-      "hunter",
-      "indiana-jones-and-the-fate-of-atlantis",
-      "swiv"
-    ]
-  },
-  {
-    "name": "Martin Wall",
-    "slug": "martin-wall",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
     "firstYear": 1992,
     "lastYear": 1992,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Martin Wall"
+      "Raphaël Gesqua"
     ],
     "games": [
-      "agony",
-      "robocop-3"
+      "flashback-the-quest-for-identity"
     ]
   },
   {
-    "name": "Martin Wheeler",
-    "slug": "martin-wheeler",
-    "count": 1,
-    "c64Count": 1,
+    "name": "Tony Gibson",
+    "slug": "tony-gibson",
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
+    "firstYear": 1983,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Tony Gibson"
+    ],
+    "games": [
+      "jammin",
+      "seaside-special"
+    ]
+  },
+  {
+    "name": "Adam Gilmore",
+    "slug": "adam-gilmore",
+    "count": 2,
+    "c64Count": 1,
+    "amigaCount": 1,
+    "firstYear": 1989,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Adam Gilmore"
+    ],
+    "games": [
+      "las-vegas-casino",
+      "santas-xmas-caper"
+    ]
+  },
+  {
+    "name": "Chris Glaister",
+    "slug": "chris-glaister",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1990,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Martin Wheeler"
+      "Chris Glaister"
     ],
     "games": [
-      "rebel"
+      "the-lost-patrol"
     ]
   },
   {
-    "name": "Marton Saghegyi",
-    "slug": "marton-saghegyi",
+    "name": "Randy Glover",
+    "slug": "randy-glover",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Randy Glover"
+    ],
+    "games": [
+      "jumpman",
+      "summer-games"
+    ]
+  },
+  {
+    "name": "Roy Glover",
+    "slug": "roy-glover",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -3302,34 +1698,79 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Marton Saghegyi"
+      "Roy Glover"
     ],
     "games": [
-      "arctic-shipwreck"
+      "mule"
     ]
   },
   {
-    "name": "Matt Furniss",
-    "slug": "matt-furniss",
-    "count": 6,
-    "c64Count": 6,
+    "name": "Gerard Gourley",
+    "slug": "gerard-gourley",
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1989,
+    "firstYear": 1991,
     "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Gerard Gourley"
+    ],
+    "games": [
+      "wwf-wrestlemania"
+    ]
+  },
+  {
+    "name": "Kyle Granger",
+    "slug": "kyle-granger",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Kyle Granger"
+    ],
+    "games": [
+      "skate-or-die"
+    ]
+  },
+  {
+    "name": "Fred Gray",
+    "slug": "fred-gray",
+    "count": 13,
+    "c64Count": 13,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
     "existing": true,
     "generated": false,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Matt Furniss"
+      "Fred Gray"
     ],
     "games": [
-      "badlands",
-      "castle-master",
-      "chase-h-q",
-      "escape-from-the-planet-of-the-robot-monsters",
-      "klax",
-      "skull-crossbones"
+      "army-moves",
+      "batman-the-caped-crusader",
+      "bc-bill",
+      "bounces",
+      "breakthru",
+      "frankie-goes-to-hollywood",
+      "nodes-of-yesod",
+      "road-runner",
+      "robin-of-the-wood",
+      "stairways",
+      "the-transformers",
+      "west-bank",
+      "zone-trooper"
     ]
   },
   {
@@ -3356,400 +1797,66 @@
     ]
   },
   {
-    "name": "Matt Nathan",
-    "slug": "matt-nathan",
+    "name": "Andrew Green",
+    "slug": "andrew-green",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Matt Nathan"
-    ],
-    "games": [
-      "darkseed"
-    ]
-  },
-  {
-    "name": "Matthew Cannon",
-    "slug": "matthew-cannon",
-    "count": 4,
-    "c64Count": 3,
-    "amigaCount": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
     "firstYear": 1986,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Matthew Cannon"
-    ],
-    "games": [
-      "batman-the-movie",
-      "civilization",
-      "nightbreed-the-action-game",
-      "the-untouchables"
-    ]
-  },
-  {
-    "name": "Matthew Kane",
-    "slug": "matthew-kane",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
+    "lastYear": 1986,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Matthew Kane"
+      "Andrew Green"
     ],
     "games": [
-      "zak-mckracken-and-the-alien-mindbenders"
+      "bounder"
     ]
   },
   {
-    "name": "Matthew Seldon",
-    "slug": "matthew-seldon",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1994,
-    "lastYear": 1994,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Matthew Seldon"
-    ],
-    "games": [
-      "dreamweb"
-    ]
-  },
-  {
-    "name": "Matthew Simmonds",
-    "slug": "matthew-simmonds",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Matthew Simmonds"
-    ],
-    "games": [
-      "agony"
-    ]
-  },
-  {
-    "name": "Media Sorcery",
-    "slug": "media-sorcery",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Media Sorcery"
-    ],
-    "games": [
-      "simon-the-sorcerer"
-    ]
-  },
-  {
-    "name": "Michael Burdett",
-    "slug": "michael-burdett",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Michael Burdett"
-    ],
-    "games": [
-      "mega-lo-mania"
-    ]
-  },
-  {
-    "name": "Michael J. Hanson",
-    "slug": "michael-j-hanson",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Michael J. Hanson"
-    ],
-    "games": [
-      "indiana-jones-in-the-lost-kingdom"
-    ]
-  },
-  {
-    "name": "Michael Z. Land",
-    "slug": "michael-z-land",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Michael Z. Land"
-    ],
-    "games": [
-      "monkey-island-2-lechucks-revenge"
-    ]
-  },
-  {
-    "name": "Mike Brown",
-    "slug": "mike-brown",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Mike Brown"
-    ],
-    "games": [
-      "joe-blade-2"
-    ]
-  },
-  {
-    "name": "Mike J. Sokyrka",
-    "slug": "mike-j-sokyrka",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Mike J. Sokyrka"
-    ],
-    "games": [
-      "teenage-mutant-hero-turtles"
-    ]
-  },
-  {
-    "name": "Mike John",
-    "slug": "mike-john",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Mike John"
-    ],
-    "games": [
-      "ant-attack"
-    ]
-  },
-  {
-    "name": "Miklós Herendi",
-    "slug": "miklos-herendi",
-    "count": 1,
-    "c64Count": 1,
+    "name": "Chris Grigg",
+    "slug": "chris-grigg",
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": false,
-    "variants": [
-      "Miklós Herendi"
-    ],
-    "games": [
-      "water-polo"
-    ]
-  },
-  {
-    "name": "Narciso Quintana Varo",
-    "slug": "narciso-quintana-varo",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 2023,
-    "lastYear": 2023,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Narciso Quintana Varo"
-    ],
-    "games": [
-      "the-smiths-are-dead"
-    ]
-  },
-  {
-    "name": "Nation 12",
-    "slug": "nation-12",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1990,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
     "indexable": true,
     "variants": [
-      "Nation 12"
+      "Chris Grigg"
     ],
     "games": [
-      "gods",
-      "speedball-2-brutal-deluxe"
+      "california-games",
+      "maniac-mansion"
     ]
   },
   {
-    "name": "Neil Brennan",
-    "slug": "neil-brennan",
-    "count": 7,
-    "c64Count": 7,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1988,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Neil Brennan"
-    ],
-    "games": [
-      "asterix-and-the-magic-cauldron",
-      "fist-2-the-legend-continues",
-      "judge-dredd",
-      "rock-n-wrestle",
-      "samurai-warrior-the-battles-of-usagi-yojimbo",
-      "street-hassle",
-      "the-way-of-the-exploding-fist"
-    ]
-  },
-  {
-    "name": "Neil Crossley",
-    "slug": "neil-crossley",
+    "name": "Bill Groetzinger",
+    "slug": "bill-groetzinger",
     "count": 1,
     "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Neil Crossley"
-    ],
-    "games": [
-      "shadow-dancer"
-    ]
-  },
-  {
-    "name": "Nick Jones",
-    "slug": "nick-jones",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Nick Jones"
-    ],
-    "games": [
-      "herberts-dummy-run"
-    ]
-  },
-  {
-    "name": "Nick Scarim",
-    "slug": "nick-scarim",
-    "count": 3,
-    "c64Count": 3,
     "amigaCount": 0,
     "firstYear": 1984,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Nick Scarim"
-    ],
-    "games": [
-      "spy-vs-spy",
-      "spy-vs-spy-2-the-island-caper",
-      "spy-vs-spy-3-arctic-antics"
-    ]
-  },
-  {
-    "name": "Nigel P. Johnstone",
-    "slug": "nigel-p-johnstone",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
+    "lastYear": 1984,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Nigel P. Johnstone"
+      "Bill Groetzinger"
     ],
     "games": [
-      "the-captive"
+      "below-the-root"
     ]
   },
   {
-    "name": "Oisten Eide",
-    "slug": "oisten-eide",
+    "name": "Sean Gugler",
+    "slug": "sean-gugler",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
@@ -3760,10 +1867,10 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Oisten Eide"
+      "Sean Gugler"
     ],
     "games": [
-      "robocop-3"
+      "d-generation"
     ]
   },
   {
@@ -3787,8 +1894,245 @@
     ]
   },
   {
-    "name": "Patrick Payne",
-    "slug": "patrick-payne",
+    "name": "Gregory Haggard",
+    "slug": "gregory-haggard",
+    "count": 3,
+    "c64Count": 0,
+    "amigaCount": 3,
+    "firstYear": 1989,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Gregory Haggard"
+    ],
+    "games": [
+      "it-came-from-the-desert",
+      "antheads-it-came-from-the-desert-2",
+      "wings"
+    ]
+  },
+  {
+    "name": "David Hanlon",
+    "slug": "david-hanlon",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David Hanlon"
+    ],
+    "games": [
+      "populous"
+    ]
+  },
+  {
+    "name": "Graham Hansford",
+    "slug": "graham-hansford",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Graham Hansford"
+    ],
+    "games": [
+      "guzzler"
+    ]
+  },
+  {
+    "name": "Michael J. Hanson",
+    "slug": "michael-j-hanson",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Michael J. Hanson"
+    ],
+    "games": [
+      "indiana-jones-in-the-lost-kingdom"
+    ]
+  },
+  {
+    "name": "Lars Hård",
+    "slug": "lars-hard",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Lars Hård"
+    ],
+    "games": [
+      "blood-n-guts"
+    ]
+  },
+  {
+    "name": "Jon Hare",
+    "slug": "jon-hare",
+    "count": 4,
+    "c64Count": 0,
+    "amigaCount": 4,
+    "firstYear": 1993,
+    "lastYear": 1995,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jon Hare"
+    ],
+    "games": [
+      "cannon-fodder",
+      "cannon-fodder-2",
+      "sensible-golf",
+      "sensible-soccer"
+    ]
+  },
+  {
+    "name": "Arti Haroutunian",
+    "slug": "arti-haroutunian",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Arti Haroutunian"
+    ],
+    "games": [
+      "slalom"
+    ]
+  },
+  {
+    "name": "Rob Harris",
+    "slug": "rob-harris",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Rob Harris"
+    ],
+    "games": [
+      "the-snowman"
+    ]
+  },
+  {
+    "name": "Grant Harrison",
+    "slug": "grant-harrison",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Grant Harrison"
+    ],
+    "games": [
+      "underwurlde"
+    ]
+  },
+  {
+    "name": "Mark Harrison",
+    "slug": "mark-harrison",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Mark Harrison"
+    ],
+    "games": [
+      "ghetto-blaster"
+    ]
+  },
+  {
+    "name": "Rob Hartshorne",
+    "slug": "rob-hartshorne",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Rob Hartshorne"
+    ],
+    "games": [
+      "back-to-the-future",
+      "blade-runner",
+      "the-rocky-horror-show",
+      "shao-lins-road"
+    ]
+  },
+  {
+    "name": "Stefan Hartwig",
+    "slug": "stefan-hartwig",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Stefan Hartwig"
+    ],
+    "games": [
+      "turrican",
+      "turrican-2-the-final-fight"
+    ]
+  },
+  {
+    "name": "Keith Harvey",
+    "slug": "keith-harvey",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -3799,70 +2143,107 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Patrick Payne"
+      "Keith Harvey"
     ],
     "games": [
-      "accolades-comics"
+      "into-the-eagles-nest"
     ]
   },
   {
-    "name": "Paul A. Bellamy",
-    "slug": "paul-a-bellamy",
+    "name": "Kris Hatlelid",
+    "slug": "kris-hatlelid",
+    "count": 3,
+    "c64Count": 2,
+    "amigaCount": 1,
+    "firstYear": 1989,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Kris Hatlelid"
+    ],
+    "games": [
+      "grand-prix-circuit",
+      "teenage-mutant-hero-turtles",
+      "wings-of-fury"
+    ]
+  },
+  {
+    "name": "Fabrice Hautecloque",
+    "slug": "fabrice-hautecloque",
     "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Paul A. Bellamy"
+      "Fabrice Hautecloque"
     ],
     "games": [
-      "double-dare"
+      "robinsons-requiem"
     ]
   },
   {
-    "name": "Paul Butler",
-    "slug": "paul-butler",
-    "count": 3,
-    "c64Count": 3,
+    "name": "Miklós Herendi",
+    "slug": "miklos-herendi",
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1986,
+    "firstYear": 1987,
     "lastYear": 1987,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Paul Butler"
+      "Miklós Herendi"
     ],
     "games": [
-      "ace-of-aces",
-      "apollo-18-mission-to-the-moon",
-      "the-train-escape-to-normandy"
+      "water-polo"
     ]
   },
   {
-    "name": "Paul Clansey",
-    "slug": "paul-clansey",
-    "count": 2,
-    "c64Count": 2,
+    "name": "Edward R. Hobbs",
+    "slug": "edward-r-hobbs",
+    "count": 1,
+    "c64Count": 1,
     "amigaCount": 0,
     "firstYear": 1984,
-    "lastYear": 1985,
+    "lastYear": 1984,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Paul Clansey"
+      "Edward R. Hobbs"
     ],
     "games": [
-      "alien",
-      "give-my-regards-to-broad-street"
+      "the-castles-of-dr-creep"
+    ]
+  },
+  {
+    "name": "Kyle Hodgetts",
+    "slug": "kyle-hodgetts",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Kyle Hodgetts"
+    ],
+    "games": [
+      "black-knight"
     ]
   },
   {
@@ -3889,467 +2270,41 @@
     ]
   },
   {
-    "name": "Paul Mudra",
-    "slug": "paul-mudra",
+    "name": "Greg A. Holmes",
+    "slug": "greg-a-holmes",
     "count": 1,
     "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Paul Mudra"
-    ],
-    "games": [
-      "a-nightmare-on-elm-street"
-    ]
-  },
-  {
-    "name": "Paul Norman",
-    "slug": "paul-norman",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Paul Norman"
-    ],
-    "games": [
-      "aztec-challenge",
-      "beyond-the-forbidden-forest",
-      "chomp",
-      "forbidden-forest"
-    ]
-  },
-  {
-    "name": "Paul Summers",
-    "slug": "paul-summers",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Paul Summers"
-    ],
-    "games": [
-      "predator"
-    ]
-  },
-  {
-    "name": "Paul Tonge",
-    "slug": "paul-tonge",
-    "count": 3,
-    "c64Count": 3,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Paul Tonge"
-    ],
-    "games": [
-      "narc",
-      "psycho-hopper",
-      "saint-dragon"
-    ]
-  },
-  {
-    "name": "Peter Clarke",
-    "slug": "peter-clarke",
-    "count": 2,
-    "c64Count": 2,
     "amigaCount": 0,
     "firstYear": 1987,
     "lastYear": 1987,
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Peter Clarke"
+      "Greg A. Holmes"
     ],
     "games": [
-      "bubble-bobble",
-      "head-over-heels"
+      "jack-the-nipper-2-in-coconut-capers"
     ]
   },
   {
-    "name": "Peter Dekany",
-    "slug": "peter-dekany",
+    "name": "Ian Howe",
+    "slug": "ian-howe",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
+    "firstYear": 1991,
+    "lastYear": 1991,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Peter Dekany"
+      "Ian Howe"
     ],
     "games": [
-      "dancing-monster"
-    ]
-  },
-  {
-    "name": "Peter McConnell",
-    "slug": "peter-mcconnell",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Peter McConnell"
-    ],
-    "games": [
-      "monkey-island-2-lechucks-revenge"
-    ]
-  },
-  {
-    "name": "R. Love",
-    "slug": "r-love",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "R. Love"
-    ],
-    "games": [
-      "flying-feathers"
-    ]
-  },
-  {
-    "name": "R.B. Stuart",
-    "slug": "r-b-stuart",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "R.B. Stuart"
-    ],
-    "games": [
-      "spy-hunter"
-    ]
-  },
-  {
-    "name": "R.W. Stevens",
-    "slug": "r-w-stevens",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1983,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "R.W. Stevens"
-    ],
-    "games": [
-      "super-gridder"
-    ]
-  },
-  {
-    "name": "Ramiro Vaca",
-    "slug": "ramiro-vaca",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Ramiro Vaca"
-    ],
-    "games": [
-      "rtype",
-      "turrican"
-    ]
-  },
-  {
-    "name": "Randy Glover",
-    "slug": "randy-glover",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Randy Glover"
-    ],
-    "games": [
-      "jumpman",
-      "summer-games"
-    ]
-  },
-  {
-    "name": "Raphaël Gesqua",
-    "slug": "raphael-gesqua",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Raphaël Gesqua"
-    ],
-    "games": [
-      "flashback-the-quest-for-identity"
-    ]
-  },
-  {
-    "name": "Ray Norrish",
-    "slug": "ray-norrish",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Ray Norrish"
-    ],
-    "games": [
-      "alcatraz"
-    ]
-  },
-  {
-    "name": "Raymond Usher",
-    "slug": "raymond-usher",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Raymond Usher"
-    ],
-    "games": [
-      "walker"
-    ]
-  },
-  {
-    "name": "Reyn Ouwehand",
-    "slug": "reyn-ouwehand",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Reyn Ouwehand"
-    ],
-    "games": [
-      "flimbos-quest"
-    ]
-  },
-  {
-    "name": "Richard Darling",
-    "slug": "richard-darling",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Richard Darling"
-    ],
-    "games": [
-      "magic-carpet"
-    ]
-  },
-  {
-    "name": "Richard Joseph",
-    "slug": "richard-joseph",
-    "count": 17,
-    "c64Count": 5,
-    "amigaCount": 12,
-    "firstYear": 1986,
-    "lastYear": 1995,
-    "existing": true,
-    "generated": false,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Richard Joseph"
-    ],
-    "games": [
-      "barbarian-the-ultimate-warrior",
-      "barbarian-2-the-dungeon-of-drax",
-      "brutal-sports-football",
-      "cadaver",
-      "cannon-fodder",
-      "cannon-fodder-2",
-      "cauldron-2-the-pumpkin-strikes-back",
-      "the-chaos-engine",
-      "defender-of-the-crown",
-      "james-pond-underwater-agent",
-      "lure-of-the-temptress",
-      "mega-lo-mania",
-      "moonstone-a-hard-days-knight",
-      "the-adventures-of-robin-hood",
-      "the-sacred-armour-of-antiriad",
-      "sensible-golf",
-      "sensible-soccer"
-    ]
-  },
-  {
-    "name": "Richard Rinn",
-    "slug": "richard-rinn",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Richard Rinn"
-    ],
-    "games": [
-      "quick-draw-mcgraw"
-    ]
-  },
-  {
-    "name": "Risto Vuori",
-    "slug": "risto-vuori",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1993,
-    "lastYear": 1993,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Risto Vuori"
-    ],
-    "games": [
-      "stardust"
-    ]
-  },
-  {
-    "name": "RMS Special",
-    "slug": "rms-special",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1989,
-    "lastYear": 1989,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "RMS Special"
-    ],
-    "games": [
-      "roller-coaster-rumbler"
-    ]
-  },
-  {
-    "name": "Rob Harris",
-    "slug": "rob-harris",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Rob Harris"
-    ],
-    "games": [
-      "the-snowman"
-    ]
-  },
-  {
-    "name": "Rob Hartshorne",
-    "slug": "rob-hartshorne",
-    "count": 4,
-    "c64Count": 4,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Rob Hartshorne"
-    ],
-    "games": [
-      "back-to-the-future",
-      "blade-runner",
-      "the-rocky-horror-show",
-      "shao-lins-road"
+      "double-dragon"
     ]
   },
   {
@@ -4403,69 +2358,73 @@
     ]
   },
   {
-    "name": "Rob Sisinni",
-    "slug": "rob-sisinni",
+    "name": "Jimmy Huey",
+    "slug": "jimmy-huey",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Rob Sisinni"
-    ],
-    "games": [
-      "force-seven"
-    ]
-  },
-  {
-    "name": "Robert Ling",
-    "slug": "robert-ling",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Robert Ling"
-    ],
-    "games": [
-      "agony"
-    ]
-  },
-  {
-    "name": "Robert Westgate",
-    "slug": "robert-westgate",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
     "firstYear": 1984,
-    "lastYear": 1988,
+    "lastYear": 1984,
     "existing": false,
     "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jimmy Huey"
+    ],
+    "games": [
+      "trolls-and-tribulations"
+    ]
+  },
+  {
+    "name": "Chris Hülsbeck",
+    "slug": "chris-huelsbeck",
+    "count": 6,
+    "c64Count": 5,
+    "amigaCount": 1,
+    "firstYear": 1987,
+    "lastYear": 1991,
+    "existing": true,
+    "generated": false,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Robert Westgate"
+      "Chris Hülsbeck"
     ],
     "games": [
-      "by-fair-means-or-foul",
-      "guzzler"
+      "the-great-giana-sisters",
+      "the-secret-of-monkey-island",
+      "rtype",
+      "to-be-on-top",
+      "turrican",
+      "x-out"
     ]
   },
   {
-    "name": "Roderic Mege",
-    "slug": "roderic-mege",
+    "name": "John Hutchinson",
+    "slug": "john-hutchinson",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "John Hutchinson"
+    ],
+    "games": [
+      "cavelon"
+    ]
+  },
+  {
+    "name": "Jens-Christian Huus",
+    "slug": "jens-christian-huus",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
     "firstYear": 1991,
     "lastYear": 1991,
     "existing": false,
@@ -4473,34 +2432,34 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Roderic Mege"
+      "Jens-Christian Huus"
     ],
     "games": [
-      "celtic-legends"
+      "pit-fighter"
     ]
   },
   {
-    "name": "Ronald Pieket Weeserik",
-    "slug": "ronald-pieket-weeserik",
+    "name": "Trevor Inns",
+    "slug": "trevor-inns",
     "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Ronald Pieket Weeserik"
+      "Trevor Inns"
     ],
     "games": [
-      "rodland"
+      "brian-bloodaxe"
     ]
   },
   {
-    "name": "Roy Glover",
-    "slug": "roy-glover",
+    "name": "Grant Irani",
+    "slug": "grant-irani",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -4511,30 +2470,572 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Roy Glover"
+      "Grant Irani"
     ],
     "games": [
-      "mule"
+      "floyd-of-the-jungle"
     ]
   },
   {
-    "name": "Rudolf Stember",
-    "slug": "rudolf-stember",
+    "name": "Martin Iveson",
+    "slug": "martin-iveson",
     "count": 2,
-    "c64Count": 1,
-    "amigaCount": 1,
-    "firstYear": 1990,
-    "lastYear": 1991,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1991,
+    "lastYear": 1992,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Rudolf Stember"
+      "Martin Iveson"
     ],
     "games": [
-      "curse-of-ra",
-      "the-secret-of-monkey-island"
+      "agony",
+      "heimdall"
+    ]
+  },
+  {
+    "name": "Graham Jarvis",
+    "slug": "graham-jarvis",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Graham Jarvis"
+    ],
+    "games": [
+      "back-to-the-future",
+      "blade-runner",
+      "the-rocky-horror-show",
+      "shao-lins-road"
+    ]
+  },
+  {
+    "name": "Mike John",
+    "slug": "mike-john",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Mike John"
+    ],
+    "games": [
+      "ant-attack"
+    ]
+  },
+  {
+    "name": "Kyle Johnson",
+    "slug": "kyle-johnson",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Kyle Johnson"
+    ],
+    "games": [
+      "ducktales-the-quest-for-gold"
+    ]
+  },
+  {
+    "name": "Brian Johnston",
+    "slug": "brian-johnston",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Brian Johnston"
+    ],
+    "games": [
+      "lemmings"
+    ]
+  },
+  {
+    "name": "Nigel P. Johnstone",
+    "slug": "nigel-p-johnstone",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Nigel P. Johnstone"
+    ],
+    "games": [
+      "the-captive"
+    ]
+  },
+  {
+    "name": "Farook Joi",
+    "slug": "farook-joi",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Farook Joi"
+    ],
+    "games": [
+      "the-chaos-engine"
+    ]
+  },
+  {
+    "name": "Haroon Joi",
+    "slug": "haroon-joi",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Haroon Joi"
+    ],
+    "games": [
+      "the-chaos-engine"
+    ]
+  },
+  {
+    "name": "Nick Jones",
+    "slug": "nick-jones",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Nick Jones"
+    ],
+    "games": [
+      "herberts-dummy-run"
+    ]
+  },
+  {
+    "name": "Alex Joseph",
+    "slug": "alex-joseph",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1995,
+    "lastYear": 1995,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Alex Joseph"
+    ],
+    "games": [
+      "sensible-soccer"
+    ]
+  },
+  {
+    "name": "Richard Joseph",
+    "slug": "richard-joseph",
+    "count": 17,
+    "c64Count": 5,
+    "amigaCount": 12,
+    "firstYear": 1986,
+    "lastYear": 1995,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Richard Joseph"
+    ],
+    "games": [
+      "barbarian-the-ultimate-warrior",
+      "barbarian-2-the-dungeon-of-drax",
+      "brutal-sports-football",
+      "cadaver",
+      "cannon-fodder",
+      "cannon-fodder-2",
+      "cauldron-2-the-pumpkin-strikes-back",
+      "the-chaos-engine",
+      "defender-of-the-crown",
+      "james-pond-underwater-agent",
+      "lure-of-the-temptress",
+      "mega-lo-mania",
+      "moonstone-a-hard-days-knight",
+      "the-adventures-of-robin-hood",
+      "the-sacred-armour-of-antiriad",
+      "sensible-golf",
+      "sensible-soccer"
+    ]
+  },
+  {
+    "name": "Matthew Kane",
+    "slug": "matthew-kane",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Matthew Kane"
+    ],
+    "games": [
+      "zak-mckracken-and-the-alien-mindbenders"
+    ]
+  },
+  {
+    "name": "Bob Keener",
+    "slug": "bob-keener",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bob Keener"
+    ],
+    "games": [
+      "rags-to-riches"
+    ]
+  },
+  {
+    "name": "Stephen R. Kellett",
+    "slug": "stephen-r-kellett",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Stephen R. Kellett"
+    ],
+    "games": [
+      "strontium-dog-and-the-death-gauntlet"
+    ]
+  },
+  {
+    "name": "Charlie Kellner",
+    "slug": "charlie-kellner",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Charlie Kellner"
+    ],
+    "games": [
+      "the-eidolon",
+      "rescue-on-fractalus"
+    ]
+  },
+  {
+    "name": "Jeroen Kimmel",
+    "slug": "jeroen-kimmel",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jeroen Kimmel"
+    ],
+    "games": [
+      "frightmare"
+    ]
+  },
+  {
+    "name": "Graham King",
+    "slug": "graham-king",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1995,
+    "lastYear": 1995,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Graham King"
+    ],
+    "games": [
+      "sensible-soccer"
+    ]
+  },
+  {
+    "name": "Llaszlo Kiss",
+    "slug": "llaszlo-kiss",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Llaszlo Kiss"
+    ],
+    "games": [
+      "scarabaeus"
+    ]
+  },
+  {
+    "name": "Frank Klepacki",
+    "slug": "frank-klepacki",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1992,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Frank Klepacki"
+    ],
+    "games": [
+      "dune-2-the-battle-for-arrakis",
+      "eye-of-the-beholder-2-the-legend-of-darkmoon"
+    ]
+  },
+  {
+    "name": "Markus Kludzuweit",
+    "slug": "markus-kludzuweit",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Markus Kludzuweit"
+    ],
+    "games": [
+      "the-settlers"
+    ]
+  },
+  {
+    "name": "Ken Lagace",
+    "slug": "ken-lagace",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Ken Lagace"
+    ],
+    "games": [
+      "airborne-ranger",
+      "project-stealth-fighter"
+    ]
+  },
+  {
+    "name": "Michael Z. Land",
+    "slug": "michael-z-land",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Michael Z. Land"
+    ],
+    "games": [
+      "monkey-island-2-lechucks-revenge"
+    ]
+  },
+  {
+    "name": "Bob Landwehr",
+    "slug": "bob-landwehr",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bob Landwehr"
+    ],
+    "games": [
+      "go-for-the-gold"
+    ]
+  },
+  {
+    "name": "David Lawrence",
+    "slug": "david-lawrence",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David Lawrence"
+    ],
+    "games": [
+      "maniac-mansion"
+    ]
+  },
+  {
+    "name": "Steve Lee",
+    "slug": "steve-lee",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Steve Lee"
+    ],
+    "games": [
+      "falcon-patrol"
+    ]
+  },
+  {
+    "name": "Anthony Lees",
+    "slug": "anthony-lees",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Anthony Lees"
+    ],
+    "games": [
+      "the-last-ninja"
+    ]
+  },
+  {
+    "name": "Barry Leitch",
+    "slug": "barry-leitch",
+    "count": 8,
+    "c64Count": 5,
+    "amigaCount": 3,
+    "firstYear": 1988,
+    "lastYear": 1991,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Barry Leitch"
+    ],
+    "games": [
+      "double-dragon",
+      "emlyn-hughes-international-soccer",
+      "fiendish-freddys-big-top-o-fun",
+      "heroquest",
+      "lotus-turbo-challenge-2",
+      "nightbreed-the-interactive-movie",
+      "silkworm",
+      "super-cars-2"
+    ]
+  },
+  {
+    "name": "David Levine",
+    "slug": "david-levine",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David Levine"
+    ],
+    "games": [
+      "the-eidolon"
     ]
   },
   {
@@ -4564,6 +3065,1319 @@
     ]
   },
   {
+    "name": "Robert Ling",
+    "slug": "robert-ling",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Robert Ling"
+    ],
+    "games": [
+      "agony"
+    ]
+  },
+  {
+    "name": "James Lisney",
+    "slug": "james-lisney",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "James Lisney"
+    ],
+    "games": [
+      "hover-bovver",
+      "revenge-of-the-mutant-camels",
+      "sheep-in-space"
+    ]
+  },
+  {
+    "name": "Dean M. Lock",
+    "slug": "dean-m-lock",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Dean M. Lock"
+    ],
+    "games": [
+      "black-hawk"
+    ]
+  },
+  {
+    "name": "Tom Loughry",
+    "slug": "tom-loughry",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Tom Loughry"
+    ],
+    "games": [
+      "alcazar-the-forgotten-fortress"
+    ]
+  },
+  {
+    "name": "R. Love",
+    "slug": "r-love",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "R. Love"
+    ],
+    "games": [
+      "flying-feathers"
+    ]
+  },
+  {
+    "name": "Al Lowe",
+    "slug": "al-lowe",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Al Lowe"
+    ],
+    "games": [
+      "donald-ducks-playground"
+    ]
+  },
+  {
+    "name": "Dave Lowe",
+    "slug": "dave-lowe",
+    "count": 3,
+    "c64Count": 2,
+    "amigaCount": 1,
+    "firstYear": 1988,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Dave Lowe"
+    ],
+    "games": [
+      "double-dragon-2-the-revenge",
+      "ik-amiga",
+      "power-drift"
+    ]
+  },
+  {
+    "name": "Sylvain Lozach",
+    "slug": "sylvain-lozach",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Sylvain Lozach"
+    ],
+    "games": [
+      "serenade"
+    ]
+  },
+  {
+    "name": "Bjørn Lynne",
+    "slug": "bjorn-lynne",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1991,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Bjørn Lynne"
+    ],
+    "games": [
+      "escape-from-colditz",
+      "project-x"
+    ]
+  },
+  {
+    "name": "Archer MacLean",
+    "slug": "archer-maclean",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Archer MacLean"
+    ],
+    "games": [
+      "jimmy-whites-whirlwind-snooker"
+    ]
+  },
+  {
+    "name": "Steve Mage",
+    "slug": "steve-mage",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Steve Mage"
+    ],
+    "games": [
+      "world-games"
+    ]
+  },
+  {
+    "name": "Graham Marsh",
+    "slug": "graham-marsh",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Graham Marsh"
+    ],
+    "games": [
+      "dan-dare-pilot-of-the-future",
+      "spiky-harold"
+    ]
+  },
+  {
+    "name": "David M. Martin Jr.",
+    "slug": "david-m-martin-jr",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "David M. Martin Jr."
+    ],
+    "games": [
+      "labyrinth"
+    ]
+  },
+  {
+    "name": "Jon Maskill",
+    "slug": "jon-maskill",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jon Maskill"
+    ],
+    "games": [
+      "elidon"
+    ]
+  },
+  {
+    "name": "Bill Mauchly",
+    "slug": "bill-mauchly",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bill Mauchly"
+    ],
+    "games": [
+      "trains"
+    ]
+  },
+  {
+    "name": "Peter McConnell",
+    "slug": "peter-mcconnell",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Peter McConnell"
+    ],
+    "games": [
+      "monkey-island-2-lechucks-revenge"
+    ]
+  },
+  {
+    "name": "Jeff McCord",
+    "slug": "jeff-mccord",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jeff McCord"
+    ],
+    "games": [
+      "the-sword-of-fargoal"
+    ]
+  },
+  {
+    "name": "Alan McKean",
+    "slug": "alan-mckean",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Alan McKean"
+    ],
+    "games": [
+      "caveman-ugh-lympics",
+      "project-firestart"
+    ]
+  },
+  {
+    "name": "Tom McMail",
+    "slug": "tom-mcmail",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Tom McMail"
+    ],
+    "games": [
+      "home-alone"
+    ]
+  },
+  {
+    "name": "Francis Mechner",
+    "slug": "francis-mechner",
+    "count": 2,
+    "c64Count": 1,
+    "amigaCount": 1,
+    "firstYear": 1985,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Francis Mechner"
+    ],
+    "games": [
+      "karateka",
+      "prince-of-persia"
+    ]
+  },
+  {
+    "name": "Roderic Mege",
+    "slug": "roderic-mege",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Roderic Mege"
+    ],
+    "games": [
+      "celtic-legends"
+    ]
+  },
+  {
+    "name": "Sid Meier",
+    "slug": "sid-meier",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Sid Meier"
+    ],
+    "games": [
+      "sid-meiers-pirates"
+    ]
+  },
+  {
+    "name": "Steve Mellin",
+    "slug": "steve-mellin",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Steve Mellin"
+    ],
+    "games": [
+      "the-young-ones"
+    ]
+  },
+  {
+    "name": "Ken Melville",
+    "slug": "ken-melville",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Ken Melville"
+    ],
+    "games": [
+      "wings"
+    ]
+  },
+  {
+    "name": "Zoltán Mericske",
+    "slug": "zoltan-mericske",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Zoltán Mericske"
+    ],
+    "games": [
+      "tour-de-france"
+    ]
+  },
+  {
+    "name": "Anthony Milas",
+    "slug": "anthony-milas",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Anthony Milas"
+    ],
+    "games": [
+      "skidmarks"
+    ]
+  },
+  {
+    "name": "Keith Miller",
+    "slug": "keith-miller",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Keith Miller"
+    ],
+    "games": [
+      "cauldron",
+      "the-evil-dead"
+    ]
+  },
+  {
+    "name": "Jeff Minter",
+    "slug": "jeff-minter",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jeff Minter"
+    ],
+    "games": [
+      "iridis-alpha"
+    ]
+  },
+  {
+    "name": "Thomas Mogensen",
+    "slug": "thomas-mogensen",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Thomas Mogensen"
+    ],
+    "games": [
+      "american-3d-pool"
+    ]
+  },
+  {
+    "name": "Bryce Morsello",
+    "slug": "bryce-morsello",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Bryce Morsello"
+    ],
+    "games": [
+      "caveman-ugh-lympics"
+    ]
+  },
+  {
+    "name": "Frédéric Motte",
+    "slug": "frederic-motte",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Frédéric Motte"
+    ],
+    "games": [
+      "gobliiins"
+    ]
+  },
+  {
+    "name": "Kevin A. Moughtin",
+    "slug": "kevin-a-moughtin",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Kevin A. Moughtin"
+    ],
+    "games": [
+      "booty",
+      "thunderbirds"
+    ]
+  },
+  {
+    "name": "Paul Mudra",
+    "slug": "paul-mudra",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Paul Mudra"
+    ],
+    "games": [
+      "a-nightmare-on-elm-street"
+    ]
+  },
+  {
+    "name": "Chris Murray",
+    "slug": "chris-murray",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Chris Murray"
+    ],
+    "games": [
+      "henrys-house"
+    ]
+  },
+  {
+    "name": "Jolyon Vincent Myers",
+    "slug": "jolyon-vincent-myers",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jolyon Vincent Myers"
+    ],
+    "games": [
+      "final-fight"
+    ]
+  },
+  {
+    "name": "Matt Nathan",
+    "slug": "matt-nathan",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Matt Nathan"
+    ],
+    "games": [
+      "darkseed"
+    ]
+  },
+  {
+    "name": "Nation 12",
+    "slug": "nation-12",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1990,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Nation 12"
+    ],
+    "games": [
+      "gods",
+      "speedball-2-brutal-deluxe"
+    ]
+  },
+  {
+    "name": "George Neophytou",
+    "slug": "george-neophytou",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "George Neophytou"
+    ],
+    "games": [
+      "the-faces-of-haarne",
+      "jet-set-willy"
+    ]
+  },
+  {
+    "name": "Chris Newcombe",
+    "slug": "chris-newcombe",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Chris Newcombe"
+    ],
+    "games": [
+      "20-tons"
+    ]
+  },
+  {
+    "name": "Paul Norman",
+    "slug": "paul-norman",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Paul Norman"
+    ],
+    "games": [
+      "aztec-challenge",
+      "beyond-the-forbidden-forest",
+      "chomp",
+      "forbidden-forest"
+    ]
+  },
+  {
+    "name": "Ray Norrish",
+    "slug": "ray-norrish",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Ray Norrish"
+    ],
+    "games": [
+      "alcatraz"
+    ]
+  },
+  {
+    "name": "Jori Olkkonen",
+    "slug": "jori-olkkonen",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jori Olkkonen"
+    ],
+    "games": [
+      "bmx-kidz",
+      "uuno-turhapuro-muuttaa-maalle"
+    ]
+  },
+  {
+    "name": "Reyn Ouwehand",
+    "slug": "reyn-ouwehand",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Reyn Ouwehand"
+    ],
+    "games": [
+      "flimbos-quest"
+    ]
+  },
+  {
+    "name": "Jason Page",
+    "slug": "jason-page",
+    "count": 2,
+    "c64Count": 1,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1995,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jason Page"
+    ],
+    "games": [
+      "sensible-soccer",
+      "ivan-ironman-stewarts-super-off-road"
+    ]
+  },
+  {
+    "name": "Andrew Parton",
+    "slug": "andrew-parton",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Andrew Parton"
+    ],
+    "games": [
+      "civilization"
+    ]
+  },
+  {
+    "name": "Patrick Payne",
+    "slug": "patrick-payne",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Patrick Payne"
+    ],
+    "games": [
+      "accolades-comics"
+    ]
+  },
+  {
+    "name": "Teijo Pellinen",
+    "slug": "teijo-pellinen",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Teijo Pellinen"
+    ],
+    "games": [
+      "painterboy"
+    ]
+  },
+  {
+    "name": "Jason H. Perkins",
+    "slug": "jason-h-perkins",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jason H. Perkins"
+    ],
+    "games": [
+      "frak"
+    ]
+  },
+  {
+    "name": "Andrián Pertout",
+    "slug": "andrian-pertout",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Andrián Pertout"
+    ],
+    "games": [
+      "fighting-warrior"
+    ]
+  },
+  {
+    "name": "Simon Pick",
+    "slug": "simon-pick",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Simon Pick"
+    ],
+    "games": [
+      "mad-nurse"
+    ]
+  },
+  {
+    "name": "Kevin P. Pickell",
+    "slug": "kevin-p-pickell",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Kevin P. Pickell"
+    ],
+    "games": [
+      "gemstone-warrior"
+    ]
+  },
+  {
+    "name": "Stéphane Picq",
+    "slug": "stephane-picq",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Stéphane Picq"
+    ],
+    "games": [
+      "dune"
+    ]
+  },
+  {
+    "name": "Lawson J.C. Pilling",
+    "slug": "lawson-j-c-pilling",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Lawson J.C. Pilling"
+    ],
+    "games": [
+      "rocket-ball"
+    ]
+  },
+  {
+    "name": "Colin Porch",
+    "slug": "colin-porch",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Colin Porch"
+    ],
+    "games": [
+      "dragons-lair"
+    ]
+  },
+  {
+    "name": "Ian Potts",
+    "slug": "ian-potts",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Ian Potts"
+    ],
+    "games": [
+      "spartacus-the-swordslayer"
+    ]
+  },
+  {
+    "name": "Dave Pridmore",
+    "slug": "dave-pridmore",
+    "count": 2,
+    "c64Count": 1,
+    "amigaCount": 1,
+    "firstYear": 1987,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Dave Pridmore"
+    ],
+    "games": [
+      "jack-the-nipper-2-in-coconut-capers",
+      "rick-dangerous"
+    ]
+  },
+  {
+    "name": "John Prince",
+    "slug": "john-prince",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "John Prince"
+    ],
+    "games": [
+      "mutant-monty"
+    ]
+  },
+  {
+    "name": "Gavin Raeburn",
+    "slug": "gavin-raeburn",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Gavin Raeburn"
+    ],
+    "games": [
+      "rock-star-ate-my-hamster"
+    ]
+  },
+  {
+    "name": "Richard Rinn",
+    "slug": "richard-rinn",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Richard Rinn"
+    ],
+    "games": [
+      "quick-draw-mcgraw"
+    ]
+  },
+  {
+    "name": "Stuart Rosen",
+    "slug": "stuart-rosen",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Stuart Rosen"
+    ],
+    "games": [
+      "the-dolphins-rune"
+    ]
+  },
+  {
+    "name": "Jeff Rourke",
+    "slug": "jeff-rourke",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jeff Rourke"
+    ],
+    "games": [
+      "crystal-dragon"
+    ]
+  },
+  {
+    "name": "Steve Rowlands",
+    "slug": "steve-rowlands",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Steve Rowlands"
+    ],
+    "games": [
+      "creatures",
+      "creatures-2-torture-trouble"
+    ]
+  },
+  {
+    "name": "Haiko Ruttmann",
+    "slug": "haiko-ruttmann",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Haiko Ruttmann"
+    ],
+    "games": [
+      "the-settlers"
+    ]
+  },
+  {
+    "name": "Marton Saghegyi",
+    "slug": "marton-saghegyi",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Marton Saghegyi"
+    ],
+    "games": [
+      "arctic-shipwreck"
+    ]
+  },
+  {
+    "name": "Franck Sauer",
+    "slug": "franck-sauer",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Franck Sauer"
+    ],
+    "games": [
+      "agony"
+    ]
+  },
+  {
+    "name": "Nick Scarim",
+    "slug": "nick-scarim",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Nick Scarim"
+    ],
+    "games": [
+      "spy-vs-spy",
+      "spy-vs-spy-2-the-island-caper",
+      "spy-vs-spy-3-arctic-antics"
+    ]
+  },
+  {
+    "name": "Fredrik Segerfalk",
+    "slug": "fredrik-segerfalk",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Fredrik Segerfalk"
+    ],
+    "games": [
+      "shadow-of-the-beast"
+    ]
+  },
+  {
+    "name": "Matthew Seldon",
+    "slug": "matthew-seldon",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Matthew Seldon"
+    ],
+    "games": [
+      "dreamweb"
+    ]
+  },
+  {
     "name": "Russell Shaw",
     "slug": "russell-shaw",
     "count": 1,
@@ -4583,65 +4397,8 @@
     ]
   },
   {
-    "name": "Scott T. Etherton",
-    "slug": "scott-t-etherton",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1990,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Scott T. Etherton"
-    ],
-    "games": [
-      "die-hard"
-    ]
-  },
-  {
-    "name": "Sean Connolly",
-    "slug": "sean-connolly",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Sean Connolly"
-    ],
-    "games": [
-      "ninja-rabbits"
-    ]
-  },
-  {
-    "name": "Sean Gugler",
-    "slug": "sean-gugler",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Sean Gugler"
-    ],
-    "games": [
-      "d-generation"
-    ]
-  },
-  {
-    "name": "Sean Townsend",
-    "slug": "sean-townsend",
+    "name": "Tim Shotter",
+    "slug": "tim-shotter",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -4652,15 +4409,34 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Sean Townsend"
+      "Tim Shotter"
     ],
     "games": [
-      "chuckie-egg"
+      "pitfall-2-lost-caverns"
     ]
   },
   {
-    "name": "Shahid Ahmad",
-    "slug": "shahid-ahmad",
+    "name": "Markus Siebold",
+    "slug": "markus-siebold",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Markus Siebold"
+    ],
+    "games": [
+      "turrican-2-the-final-fight"
+    ]
+  },
+  {
+    "name": "Matthew Simmonds",
+    "slug": "matthew-simmonds",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
@@ -4669,12 +4445,147 @@
     "existing": false,
     "generated": true,
     "credited": true,
-    "indexable": true,
+    "indexable": false,
     "variants": [
-      "Shahid Ahmad"
+      "Matthew Simmonds"
     ],
     "games": [
-      "floor-13"
+      "agony"
+    ]
+  },
+  {
+    "name": "Jim Simmons",
+    "slug": "jim-simmons",
+    "count": 3,
+    "c64Count": 1,
+    "amigaCount": 2,
+    "firstYear": 1988,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jim Simmons"
+    ],
+    "games": [
+      "it-came-from-the-desert",
+      "antheads-it-came-from-the-desert-2",
+      "rocket-ranger"
+    ]
+  },
+  {
+    "name": "Rob Sisinni",
+    "slug": "rob-sisinni",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Rob Sisinni"
+    ],
+    "games": [
+      "force-seven"
+    ]
+  },
+  {
+    "name": "Doug Smith",
+    "slug": "doug-smith",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Doug Smith"
+    ],
+    "games": [
+      "lode-runner"
+    ]
+  },
+  {
+    "name": "Mike J. Sokyrka",
+    "slug": "mike-j-sokyrka",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1990,
+    "lastYear": 1990,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Mike J. Sokyrka"
+    ],
+    "games": [
+      "teenage-mutant-hero-turtles"
+    ]
+  },
+  {
+    "name": "Media Sorcery",
+    "slug": "media-sorcery",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Media Sorcery"
+    ],
+    "games": [
+      "simon-the-sorcerer"
+    ]
+  },
+  {
+    "name": "Simon W. Sorsbie",
+    "slug": "simon-w-sorsbie",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Simon W. Sorsbie"
+    ],
+    "games": [
+      "freak-factory"
+    ]
+  },
+  {
+    "name": "Tony Sothcott",
+    "slug": "tony-sothcott",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Tony Sothcott"
+    ],
+    "games": [
+      "doctor-who-and-the-mines-of-terror"
     ]
   },
   {
@@ -4698,145 +4609,11 @@
     ]
   },
   {
-    "name": "Sid Meier",
-    "slug": "sid-meier",
+    "name": "RMS Special",
+    "slug": "rms-special",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1987,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Sid Meier"
-    ],
-    "games": [
-      "sid-meiers-pirates"
-    ]
-  },
-  {
-    "name": "Silas S. Warner",
-    "slug": "silas-s-warner",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Silas S. Warner"
-    ],
-    "games": [
-      "space-taxi"
-    ]
-  },
-  {
-    "name": "Simon Clarke",
-    "slug": "simon-clarke",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Simon Clarke"
-    ],
-    "games": [
-      "spiky-harold"
-    ]
-  },
-  {
-    "name": "Simon PC Frost",
-    "slug": "simon-pc-frost",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Simon PC Frost"
-    ],
-    "games": [
-      "deactivators"
-    ]
-  },
-  {
-    "name": "Simon Pick",
-    "slug": "simon-pick",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Simon Pick"
-    ],
-    "games": [
-      "mad-nurse"
-    ]
-  },
-  {
-    "name": "Simon W. Sorsbie",
-    "slug": "simon-w-sorsbie",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Simon W. Sorsbie"
-    ],
-    "games": [
-      "freak-factory"
-    ]
-  },
-  {
-    "name": "Stefan Hartwig",
-    "slug": "stefan-hartwig",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1990,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Stefan Hartwig"
-    ],
-    "games": [
-      "turrican",
-      "turrican-2-the-final-fight"
-    ]
-  },
-  {
-    "name": "Stéphane Baudet",
-    "slug": "stephane-baudet",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
     "firstYear": 1989,
     "lastYear": 1989,
     "existing": false,
@@ -4844,34 +4621,15 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Stéphane Baudet"
+      "RMS Special"
     ],
     "games": [
-      "north-south"
+      "roller-coaster-rumbler"
     ]
   },
   {
-    "name": "Stéphane Picq",
-    "slug": "stephane-picq",
-    "count": 1,
-    "c64Count": 0,
-    "amigaCount": 1,
-    "firstYear": 1992,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Stéphane Picq"
-    ],
-    "games": [
-      "dune"
-    ]
-  },
-  {
-    "name": "Stephen Beck",
-    "slug": "stephen-beck",
+    "name": "Henry Spragens",
+    "slug": "henry-spragens",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -4882,15 +4640,15 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Stephen Beck"
+      "Henry Spragens"
     ],
     "games": [
-      "breakdance"
+      "tapper"
     ]
   },
   {
-    "name": "Stephen C. Biggs",
-    "slug": "stephen-c-biggs",
+    "name": "J. Steele",
+    "slug": "j-steele",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -4901,15 +4659,73 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Stephen C. Biggs"
+      "J. Steele"
     ],
     "games": [
-      "blue-max"
+      "hunchback"
     ]
   },
   {
-    "name": "Stephen R. Kellett",
-    "slug": "stephen-r-kellett",
+    "name": "Eike Steffen",
+    "slug": "eike-steffen",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Eike Steffen"
+    ],
+    "games": [
+      "dynablaster"
+    ]
+  },
+  {
+    "name": "Rudolf Stember",
+    "slug": "rudolf-stember",
+    "count": 2,
+    "c64Count": 1,
+    "amigaCount": 1,
+    "firstYear": 1990,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Rudolf Stember"
+    ],
+    "games": [
+      "curse-of-ra",
+      "the-secret-of-monkey-island"
+    ]
+  },
+  {
+    "name": "R.W. Stevens",
+    "slug": "r-w-stevens",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "R.W. Stevens"
+    ],
+    "games": [
+      "super-gridder"
+    ]
+  },
+  {
+    "name": "R.B. Stuart",
+    "slug": "r-b-stuart",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -4920,93 +4736,128 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Stephen R. Kellett"
+      "R.B. Stuart"
     ],
     "games": [
-      "strontium-dog-and-the-death-gauntlet"
+      "spy-hunter"
     ]
   },
   {
-    "name": "Steve Barrett",
-    "slug": "steve-barrett",
+    "name": "Paul Summers",
+    "slug": "paul-summers",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1988,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Paul Summers"
+    ],
+    "games": [
+      "predator"
+    ]
+  },
+  {
+    "name": "Mark Tait",
+    "slug": "mark-tait",
     "count": 3,
     "c64Count": 3,
     "amigaCount": 0,
-    "firstYear": 1987,
+    "firstYear": 1988,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Mark Tait"
+    ],
+    "games": [
+      "indiana-jones-and-the-last-crusade-the-action-game",
+      "strider",
+      "thunder-blade"
+    ]
+  },
+  {
+    "name": "Jeroen Tel",
+    "slug": "jeroen-tel",
+    "count": 9,
+    "c64Count": 8,
+    "amigaCount": 1,
+    "firstYear": 1988,
+    "lastYear": 1992,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jeroen Tel"
+    ],
+    "games": [
+      "after-burner",
+      "agony",
+      "cybernoid",
+      "dan-dare-iii-the-escape",
+      "golden-axe",
+      "hawkeye",
+      "myth-history-in-the-making",
+      "teenage-mutant-hero-turtles-the-coin-op",
+      "turbo-out-run"
+    ]
+  },
+  {
+    "name": "David Thiel",
+    "slug": "david-thiel",
+    "count": 4,
+    "c64Count": 2,
+    "amigaCount": 2,
+    "firstYear": 1985,
     "lastYear": 1990,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Steve Barrett"
+      "David Thiel"
     ],
     "games": [
-      "knightmare",
-      "sas-combat-simulator",
-      "tilt"
+      "championship-wrestling",
+      "ducktales-the-quest-for-gold",
+      "the-three-stooges",
+      "winter-games"
     ]
   },
   {
-    "name": "Steve Crow",
-    "slug": "steve-crow",
-    "count": 1,
-    "c64Count": 1,
+    "name": "Dave Thomas",
+    "slug": "dave-thomas",
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
+    "firstYear": 1984,
+    "lastYear": 1987,
+    "existing": true,
+    "generated": false,
     "credited": true,
-    "indexable": false,
+    "indexable": true,
     "variants": [
-      "Steve Crow"
+      "Dave Thomas"
     ],
     "games": [
-      "starquake"
+      "blackwyche",
+      "buggy-boy",
+      "dragon-skulle",
+      "entombed",
+      "outlaws",
+      "the-staff-of-karnath"
     ]
   },
   {
-    "name": "Steve Elward",
-    "slug": "steve-elward",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Steve Elward"
-    ],
-    "games": [
-      "back-to-reality"
-    ]
-  },
-  {
-    "name": "Steve Evans",
-    "slug": "steve-evans",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Steve Evans"
-    ],
-    "games": [
-      "who-dares-wins-2"
-    ]
-  },
-  {
-    "name": "Steve Lee",
-    "slug": "steve-lee",
+    "name": "Ian Thompson",
+    "slug": "ian-thompson",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
@@ -5017,68 +4868,93 @@
     "credited": true,
     "indexable": false,
     "variants": [
-      "Steve Lee"
+      "Ian Thompson"
     ],
     "games": [
-      "falcon-patrol"
+      "android-2"
     ]
   },
   {
-    "name": "Steve Mage",
-    "slug": "steve-mage",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
+    "name": "Keith Tinman",
+    "slug": "keith-tinman",
+    "count": 6,
+    "c64Count": 5,
+    "amigaCount": 1,
     "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Steve Mage"
-    ],
-    "games": [
-      "world-games"
-    ]
-  },
-  {
-    "name": "Steve Mellin",
-    "slug": "steve-mellin",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Steve Mellin"
-    ],
-    "games": [
-      "the-young-ones"
-    ]
-  },
-  {
-    "name": "Steve Rowlands",
-    "slug": "steve-rowlands",
-    "count": 2,
-    "c64Count": 2,
-    "amigaCount": 0,
-    "firstYear": 1990,
     "lastYear": 1992,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Keith Tinman"
+    ],
+    "games": [
+      "cabal",
+      "heartland",
+      "hudson-hawk",
+      "midnight-resistance",
+      "push-over",
+      "toki"
+    ]
+  },
+  {
+    "name": "Paul Tonge",
+    "slug": "paul-tonge",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1990,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Steve Rowlands"
+      "Paul Tonge"
     ],
     "games": [
-      "creatures",
-      "creatures-2-torture-trouble"
+      "narc",
+      "psycho-hopper",
+      "saint-dragon"
+    ]
+  },
+  {
+    "name": "Sean Townsend",
+    "slug": "sean-townsend",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Sean Townsend"
+    ],
+    "games": [
+      "chuckie-egg"
+    ]
+  },
+  {
+    "name": "Andrew Trott",
+    "slug": "andrew-trott",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Andrew Trott"
+    ],
+    "games": [
+      "quinx"
     ]
   },
   {
@@ -5104,235 +4980,61 @@
     ]
   },
   {
-    "name": "Stuart Rosen",
-    "slug": "stuart-rosen",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Stuart Rosen"
-    ],
-    "games": [
-      "the-dolphins-rune"
-    ]
-  },
-  {
-    "name": "Sylvain Lozach",
-    "slug": "sylvain-lozach",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Sylvain Lozach"
-    ],
-    "games": [
-      "serenade"
-    ]
-  },
-  {
-    "name": "Teijo Pellinen",
-    "slug": "teijo-pellinen",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Teijo Pellinen"
-    ],
-    "games": [
-      "painterboy"
-    ]
-  },
-  {
-    "name": "Thomas Mogensen",
-    "slug": "thomas-mogensen",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1991,
-    "lastYear": 1991,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Thomas Mogensen"
-    ],
-    "games": [
-      "american-3d-pool"
-    ]
-  },
-  {
-    "name": "Tim Follin",
-    "slug": "tim-follin",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1988,
-    "lastYear": 1988,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Tim Follin"
-    ],
-    "games": [
-      "bionic-commando"
-    ]
-  },
-  {
-    "name": "Tim Shotter",
-    "slug": "tim-shotter",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1984,
-    "lastYear": 1984,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Tim Shotter"
-    ],
-    "games": [
-      "pitfall-2-lost-caverns"
-    ]
-  },
-  {
-    "name": "Timothy Brian Wright",
-    "slug": "timothy-brian-wright",
-    "count": 2,
-    "c64Count": 0,
-    "amigaCount": 2,
-    "firstYear": 1991,
-    "lastYear": 1992,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Timothy Brian Wright"
-    ],
-    "games": [
-      "agony",
-      "lemmings"
-    ]
-  },
-  {
-    "name": "Tom Loughry",
-    "slug": "tom-loughry",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": false,
-    "variants": [
-      "Tom Loughry"
-    ],
-    "games": [
-      "alcazar-the-forgotten-fortress"
-    ]
-  },
-  {
-    "name": "Tom McMail",
-    "slug": "tom-mcmail",
+    "name": "Raymond Usher",
+    "slug": "raymond-usher",
     "count": 1,
     "c64Count": 0,
     "amigaCount": 1,
-    "firstYear": 1991,
-    "lastYear": 1991,
+    "firstYear": 1993,
+    "lastYear": 1993,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Tom McMail"
+      "Raymond Usher"
     ],
     "games": [
-      "home-alone"
+      "walker"
     ]
   },
   {
-    "name": "Tommy V. Dunbar",
-    "slug": "tommy-v-dunbar",
-    "count": 3,
-    "c64Count": 3,
-    "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1985,
-    "existing": false,
-    "generated": true,
-    "credited": true,
-    "indexable": true,
-    "variants": [
-      "Tommy V. Dunbar"
-    ],
-    "games": [
-      "archon-the-light-and-the-dark",
-      "barry-mcguigan-world-championship-boxing",
-      "mail-order-monsters"
-    ]
-  },
-  {
-    "name": "Tony Gibson",
-    "slug": "tony-gibson",
+    "name": "Ramiro Vaca",
+    "slug": "ramiro-vaca",
     "count": 2,
     "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1983,
-    "lastYear": 1984,
+    "firstYear": 1988,
+    "lastYear": 1990,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Tony Gibson"
+      "Ramiro Vaca"
     ],
     "games": [
-      "jammin",
-      "seaside-special"
+      "rtype",
+      "turrican"
     ]
   },
   {
-    "name": "Tony Sothcott",
-    "slug": "tony-sothcott",
+    "name": "Narciso Quintana Varo",
+    "slug": "narciso-quintana-varo",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1986,
-    "lastYear": 1986,
+    "firstYear": 2023,
+    "lastYear": 2023,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Tony Sothcott"
+      "Narciso Quintana Varo"
     ],
     "games": [
-      "doctor-who-and-the-mines-of-terror"
+      "the-smiths-are-dead"
     ]
   },
   {
@@ -5352,6 +5054,303 @@
     ],
     "games": [
       "up-n-down"
+    ]
+  },
+  {
+    "name": "Bob Vieira",
+    "slug": "bob-vieira",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1986,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Bob Vieira"
+    ],
+    "games": [
+      "the-movie-monster-game",
+      "summer-games-2",
+      "super-cycle"
+    ]
+  },
+  {
+    "name": "Fabrice Visserot",
+    "slug": "fabrice-visserot",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Fabrice Visserot"
+    ],
+    "games": [
+      "flashback-the-quest-for-identity"
+    ]
+  },
+  {
+    "name": "Risto Vuori",
+    "slug": "risto-vuori",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Risto Vuori"
+    ],
+    "games": [
+      "stardust"
+    ]
+  },
+  {
+    "name": "Martin Walker",
+    "slug": "martin-walker",
+    "count": 3,
+    "c64Count": 2,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Martin Walker"
+    ],
+    "games": [
+      "hunter",
+      "indiana-jones-and-the-fate-of-atlantis",
+      "swiv"
+    ]
+  },
+  {
+    "name": "Martin Wall",
+    "slug": "martin-wall",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1992,
+    "lastYear": 1992,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Martin Wall"
+    ],
+    "games": [
+      "agony",
+      "robocop-3"
+    ]
+  },
+  {
+    "name": "Dave Warhol",
+    "slug": "dave-warhol",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1989,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Dave Warhol"
+    ],
+    "games": [
+      "curse-of-the-azure-bonds",
+      "heart-of-africa",
+      "neuromancer",
+      "realm-of-impossibility"
+    ]
+  },
+  {
+    "name": "Silas S. Warner",
+    "slug": "silas-s-warner",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Silas S. Warner"
+    ],
+    "games": [
+      "space-taxi"
+    ]
+  },
+  {
+    "name": "Ronald Pieket Weeserik",
+    "slug": "ronald-pieket-weeserik",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Ronald Pieket Weeserik"
+    ],
+    "games": [
+      "rodland"
+    ]
+  },
+  {
+    "name": "Robert Westgate",
+    "slug": "robert-westgate",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Robert Westgate"
+    ],
+    "games": [
+      "by-fair-means-or-foul",
+      "guzzler"
+    ]
+  },
+  {
+    "name": "Martin Wheeler",
+    "slug": "martin-wheeler",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Martin Wheeler"
+    ],
+    "games": [
+      "rebel"
+    ]
+  },
+  {
+    "name": "Craig White",
+    "slug": "craig-white",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Craig White"
+    ],
+    "games": [
+      "apocalypse"
+    ]
+  },
+  {
+    "name": "Jerry White",
+    "slug": "jerry-white",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": false,
+    "variants": [
+      "Jerry White"
+    ],
+    "games": [
+      "flip-and-flop"
+    ]
+  },
+  {
+    "name": "Jason A. S. Whitely",
+    "slug": "jason-a-s-whitely",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1993,
+    "lastYear": 1993,
+    "existing": false,
+    "generated": true,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "Jason A. S. Whitely"
+    ],
+    "games": [
+      "desert-strike",
+      "space-hulk"
+    ]
+  },
+  {
+    "name": "David Whittaker",
+    "slug": "david-whittaker",
+    "count": 22,
+    "c64Count": 20,
+    "amigaCount": 2,
+    "firstYear": 1984,
+    "lastYear": 1989,
+    "existing": true,
+    "generated": false,
+    "credited": true,
+    "indexable": true,
+    "variants": [
+      "David Whittaker"
+    ],
+    "games": [
+      "arcade-flight-simulator",
+      "bmx-simulator",
+      "dizzy",
+      "feud",
+      "fright-night",
+      "ghostbusters-2",
+      "grand-prix-simulator",
+      "grange-hill",
+      "knight-games",
+      "knight-tyme",
+      "lazy-jones",
+      "max-headroom",
+      "milk-race",
+      "the-real-ghostbusters",
+      "slaine",
+      "spitting-image",
+      "split-personalities",
+      "star-wars",
+      "stormbringer",
+      "super-robin-hood",
+      "weird-dreams",
+      "the-willow-pattern-adventure"
     ]
   },
   {
@@ -5376,60 +5375,61 @@
     ]
   },
   {
-    "name": "Trevor Inns",
-    "slug": "trevor-inns",
+    "name": "Andy Wilson",
+    "slug": "andy-wilson",
     "count": 1,
     "c64Count": 1,
     "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
+    "firstYear": 1986,
+    "lastYear": 1986,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Trevor Inns"
+      "Andy Wilson"
     ],
     "games": [
-      "brian-bloodaxe"
+      "dan-dare-pilot-of-the-future"
     ]
   },
   {
-    "name": "Wally Beben",
-    "slug": "wally-beben",
-    "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1992,
+    "name": "Timothy Brian Wright",
+    "slug": "timothy-brian-wright",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1991,
     "lastYear": 1992,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": true,
     "variants": [
-      "Wally Beben"
+      "Timothy Brian Wright"
     ],
     "games": [
-      "first-samurai"
+      "agony",
+      "lemmings"
     ]
   },
   {
-    "name": "Zoltán Mericske",
-    "slug": "zoltan-mericske",
+    "name": "Blair Zuppicich",
+    "slug": "blair-zuppicich",
     "count": 1,
-    "c64Count": 1,
-    "amigaCount": 0,
-    "firstYear": 1985,
-    "lastYear": 1985,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1993,
+    "lastYear": 1993,
     "existing": false,
     "generated": true,
     "credited": true,
     "indexable": false,
     "variants": [
-      "Zoltán Mericske"
+      "Blair Zuppicich"
     ],
     "games": [
-      "tour-de-france"
+      "seek-destroy"
     ]
   }
 ]
