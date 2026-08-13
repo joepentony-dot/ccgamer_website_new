@@ -22,11 +22,13 @@ function requireText(source, expected, message) {
 }
 
 const config = read("js/ccg-music-config.js");
+const composerUtils = read("js/music-composer-utils.js");
 const navigation = read("js/ccg-music-navigation.js");
 const navCore = read("js/ccg-nav-core.js");
 const navFit = read("js/ccg-nav-fit.js");
 const navFitCss = read("resources/css/ccg-nav-fit.css");
 const navViewportOverlay = read("resources/css/ccg-nav-viewport-overlay.css");
+const musicHubOmegaCss = read("resources/css/music-hub-omega.css");
 const homeCss = read("resources/css/home.css");
 const amigaIdentity = read("js/ccg-amiga-identity.js");
 const mobileAlignment = read("resources/css/ccg-amiga-mobile-alignment.css");
@@ -91,7 +93,19 @@ if (config.includes('slug: "reyn-ouwehand"')) {
     problems.push("Reyn Ouwehand has been reintroduced into the fixed Featured Composer manifest.");
 }
 
+requireText(composerUtils, 'const MUSIC_HUB_OMEGA_STYLES = "/resources/css/music-hub-omega.css"', "The Music Hub Omega stylesheet loader is missing.");
+requireText(composerUtils, "function bindMusicHubAccordion()", "The Music Hub does not bind its static accordion before archive hydration.");
+requireText(composerUtils, "requestAnimationFrame(apply)", "The Music Hub composer search is not frame-throttled.");
+requireText(composerUtils, 'grid.classList.add("composer-grid-featured-omega")', "The fixed Featured Composer grid is not protected from the expensive legacy hub renderer.");
+requireText(composerUtils, 'grid.classList.remove("composer-grid-featured")', "The legacy Featured Composer runtime hook is still active after the editorial grid is ready.");
+requireText(composerUtils, 'grid.dataset.ccgFeaturedManifest === "restored-20"', "The Omega grid lock can run before the 20-card editorial manifest is ready.");
+requireText(composerUtils, 'normalizeComposerName("Julie Dunn David Dunn")', "Julie Dunn is not searchable by both current and historical names in the Music Hub.");
+requireText(musicHubOmegaCss, ".composer-grid-featured-omega", "The Omega Featured Composer grid styling is missing.");
+requireText(musicHubOmegaCss, ".composer-accordion__header[aria-expanded=\"true\"]::after", "The Omega accordion does not expose a distinct expanded state.");
+requireText(musicHubOmegaCss, "contain: layout paint", "The Omega accordion groups are missing layout/paint containment.");
+
 requireText(musicHub, "/js/ccg-music-config.js", "The Music Hub does not load the music configuration bootstrap.");
+requireText(musicHub, "/js/music-composer-utils.js", "The Music Hub does not load the shared composer utilities needed for Omega discovery.");
 requireText(composerHub, "/js/ccg-music-config.js", "The composer hub does not load the music configuration bootstrap.");
 requireText(amigaIdentity, "/resources/css/ccg-amiga-mobile-alignment.css", "The mobile alignment layer is not loaded through the shared Amiga identity module.");
 requireText(mobileAlignment, "left: calc(50% + 3px)", "The mobile Amiga mode position is not explicitly aligned.");
@@ -104,4 +118,4 @@ if (problems.length) {
     process.exit(1);
 }
 
-console.log("Music navigation, Featured Composer restoration, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
+console.log("Music navigation, Omega Music Hub discovery, Featured Composer restoration, desktop More overflow, responsive drawer viewport and mobile mode audit passed.");
