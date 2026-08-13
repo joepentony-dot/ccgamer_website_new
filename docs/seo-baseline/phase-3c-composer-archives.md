@@ -4,7 +4,7 @@
 
 | Check | Count |
 |---|---:|
-| Game records scanned | **653** |
+| Game records scanned | **654** |
 | Credited composer entities | **270** |
 | Existing dedicated composer pages preserved | **20** |
 | Credited composers with an existing page | **20** |
