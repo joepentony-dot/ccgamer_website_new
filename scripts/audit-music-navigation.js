@@ -63,6 +63,7 @@ const expectedFeaturedSlugs = [
     "barry-leitch",
     "ben-daglish",
     "chris-huelsbeck",
+    "david-dunn",
     "david-whittaker",
     "fred-gray",
     "martin-galway",
@@ -84,7 +85,7 @@ expectedFeaturedSlugs.forEach((slug) => {
     requireText(config, `/resources/images/composers/${slug}.`, `Featured Composer manifest is missing the repository portrait for ${slug}.`);
 });
 requireText(config, "const FEATURED_SIGNATURE", "Featured Composer restoration is missing its exact-list signature guard.");
-requireText(config, 'grid.dataset.ccgFeaturedManifest = "restored-19"', "Featured Composer restoration is not marking the managed 19-card grid.");
+requireText(config, 'grid.dataset.ccgFeaturedManifest = "restored-20"', "Featured Composer restoration is not marking the managed 20-card grid.");
 requireText(config, "getFeaturedGridSignature(grid) === FEATURED_SIGNATURE", "Featured Composer restoration does not protect the exact card/image set from later renderer replacement.");
 if (config.includes('slug: "reyn-ouwehand"')) {
     problems.push("Reyn Ouwehand has been reintroduced into the fixed Featured Composer manifest.");
