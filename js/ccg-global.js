@@ -296,21 +296,23 @@ if (IS_ADMIN_PATH) {
 
             const startTop = getScrollTop();
             const maxScroll = getMaxScroll();
-            const isMouseWheel = !isMobileLike() && (event.deltaMode === 1 || event.deltaMode === 2 || Math.abs(deltaY) >= 80);
-            const dampenedDelta = isMouseWheel ? deltaY * 0.85 : deltaY;
-            const targetTop = Math.min(Math.max(startTop + dampenedDelta, 0), maxScroll);
+            const targetTop = Math.min(Math.max(startTop + deltaY, 0), maxScroll);
 
             if (targetTop === startTop || ticking) return;
             ticking = true;
 
+            // Let the browser handle ordinary wheel input.  Stepping the page
+            // in the same animation frame can compete with compositor scrolling
+            // and is what made a few desktop pages feel as though they were
+            // catching or jumping.  This remains a genuine failsafe, but only
+            // after two frames confirm that native scrolling did not move.
             requestAnimationFrame(() => {
-                const currentTop = getScrollTop();
-                if (currentTop === startTop) {
-                    window.scrollTo({ top: targetTop, behavior: "auto" });
-                } else if (isMouseWheel && Math.abs(currentTop - targetTop) > 2) {
-                    window.scrollTo({ top: targetTop, behavior: "auto" });
-                }
-                ticking = false;
+                requestAnimationFrame(() => {
+                    if (getScrollTop() === startTop) {
+                        window.scrollTo({ top: targetTop, behavior: "auto" });
+                    }
+                    ticking = false;
+                });
             });
         };
 
