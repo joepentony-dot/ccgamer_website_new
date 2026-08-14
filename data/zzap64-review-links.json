@@ -14,11 +14,11 @@
     "exactPages": 287,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 872,
-    "additionalReviewRecords": 585,
-    "gameReviewGames": 377,
-    "awardRecordsLinkedToGames": 105,
-    "unmatchedCachedReviewPages": 0
+    "reviewRecords": 829,
+    "additionalReviewRecords": 542,
+    "gameReviewGames": 344,
+    "awardRecordsLinkedToGames": 100,
+    "unmatchedCachedReviewPages": 27
   },
   "entries": {
     "1985|may|c64|Elite": {
@@ -251,10 +251,7 @@
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=3&page=96",
       "source": "cached-magazine-reference",
-      "lemonUrl": "https://www.lemon64.com/game/gribblys-day-out",
-      "gameSlug": "gribblys-day-out",
-      "gameTitle": "Gribbly's Day Out",
-      "gameSystem": "c64"
+      "lemonUrl": "https://www.lemon64.com/game/gribblys-day-out"
     },
     "1985|august|c64|Thing on a Spring": {
       "issue": 4,
@@ -560,10 +557,7 @@
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=10&page=28",
       "source": "cached-magazine-reference",
-      "lemonUrl": "https://www.lemon64.com/game/eidolon",
-      "gameSlug": "the-eidolon",
-      "gameTitle": "The Eidolon",
-      "gameSystem": "c64"
+      "lemonUrl": "https://www.lemon64.com/game/eidolon"
     },
     "1986|february|c64|REVS": {
       "issue": 10,
@@ -860,10 +854,7 @@
       "page": 18,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=18",
-      "source": "cached-magazine-reference",
-      "gameSlug": "ghosts-n-goblins",
-      "gameTitle": "Ghosts 'N Goblins",
-      "gameSystem": "c64"
+      "source": "cached-magazine-reference"
     },
     "1986|september|c64|Knight Games": {
       "issue": 17,
@@ -1099,10 +1090,7 @@
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=22&page=78",
       "source": "live-lemon64-magazine-reference",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2",
-      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
-      "gameTitle": "Dragon's Lair II : Escape From Singe'S Castle",
-      "gameSystem": "c64"
+      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2"
     },
     "1987|february|c64|Park Patrol": {
       "issue": 22,
@@ -2366,10 +2354,7 @@
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=53&page=9",
       "source": "cached-magazine-reference",
-      "lemonUrl": "https://www.lemon64.com/game/newzealand-story",
-      "gameSlug": "the-new-zealand-story",
-      "gameTitle": "The New Zealand Story",
-      "gameSystem": "c64"
+      "lemonUrl": "https://www.lemon64.com/game/newzealand-story"
     },
     "1989|september|amiga|Rainbow Islands": {
       "issue": 53,
@@ -2495,8 +2480,8 @@
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=9",
       "source": "cached-magazine-reference",
       "lemonUrl": "https://www.lemon64.com/game/batman",
-      "gameSlug": "batman-the-movie",
-      "gameTitle": "Batman: The Movie",
+      "gameSlug": "batman-the-caped-crusader",
+      "gameTitle": "Batman: The Caped Crusader",
       "gameSystem": "c64"
     },
     "1989|november|amiga|Batman: The Movie": {
@@ -2681,42 +2666,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/asterix-and-the-magic-cauldron"
     },
-    "1993|june|c64|Ivan 'Ironman' Stewart's Super Off Road": {
-      "issue": 98,
-      "page": 21,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=98&page=21",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ivan-ironman-stewarts-super-off-road",
-      "gameTitle": "Ivan 'Ironman' Stewart's Super Off Road",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ironman-super-off-road"
-    },
-    "1990|october|c64|Ivan 'Ironman' Stewart's Super Off Road": {
-      "issue": 66,
-      "page": 12,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=66&page=12",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ivan-ironman-stewarts-super-off-road",
-      "gameTitle": "Ivan 'Ironman' Stewart's Super Off Road",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ironman-super-off-road"
-    },
-    "1992|may|c64|Ivan 'Ironman' Stewart's Super Off Road": {
-      "issue": 85,
-      "page": 40,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=85&page=40",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ivan-ironman-stewarts-super-off-road",
-      "gameTitle": "Ivan 'Ironman' Stewart's Super Off Road",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ironman-super-off-road"
-    },
     "1992|december|c64|Deflektor": {
       "issue": 92,
       "page": 18,
@@ -2776,54 +2725,6 @@
       "gameTitle": "Arnie",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/arnie"
-    },
-    "1993|may|c64|Dragon's Lair II : Escape From Singe'S Castle": {
-      "issue": 97,
-      "page": 20,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=97&page=20",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
-      "gameTitle": "Dragon's Lair II : Escape From Singe'S Castle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2"
-    },
-    "1987|february|c64|Dragon's Lair II : Escape From Singe'S Castle": {
-      "issue": 22,
-      "page": 78,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=22&page=78",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
-      "gameTitle": "Dragon's Lair II : Escape From Singe'S Castle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2"
-    },
-    "1987|march|c64|Dragon's Lair II : Escape From Singe'S Castle": {
-      "issue": 23,
-      "page": 96,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=23&page=96",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
-      "gameTitle": "Dragon's Lair II : Escape From Singe'S Castle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2"
-    },
-    "1990|august|c64|Dragon's Lair II : Escape From Singe'S Castle": {
-      "issue": 64,
-      "page": 47,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=64&page=47",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair-2-escape-from-singes-castle",
-      "gameTitle": "Dragon's Lair II : Escape From Singe'S Castle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair-2"
     },
     "1985|june|c64|Blagger Goes To Hollywood": {
       "issue": 2,
@@ -2968,18 +2869,6 @@
       "gameTitle": "Spitting Image",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/spitting-image"
-    },
-    "1985|august|c64|Herbert's Dummy Run": {
-      "issue": 4,
-      "page": 104,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=104",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "herberts-dummy-run",
-      "gameTitle": "Herbert's Dummy Run",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/herberts-dummy-run"
     },
     "1993|june|c64|Strider": {
       "issue": 98,
@@ -3329,30 +3218,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/big-trouble-in-little-china"
     },
-    "1993|may|c64|720 Degrees": {
-      "issue": 97,
-      "page": 16,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=97&page=16",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "720-degrees",
-      "gameTitle": "720 Degrees",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/720-degrees"
-    },
-    "1988|february|c64|720 Degrees": {
-      "issue": 34,
-      "page": 78,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=34&page=78",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "720-degrees",
-      "gameTitle": "720 Degrees",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/720-degrees"
-    },
     "1993|march|c64|Creatures 2: Torture Trouble": {
       "issue": 95,
       "page": 20,
@@ -3436,18 +3301,6 @@
       "gameTitle": "He-Man and the Masters of the Universe: The Ilearth Stone",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/he-man-and-the-masters-of-the-universe"
-    },
-    "1985|may|c64|B.C.'S Quest For Tires": {
-      "issue": 1,
-      "page": 34,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=34",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "bcs-quest-for-tires",
-      "gameTitle": "B.C.'S Quest For Tires",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/bcs-quest-for-tires"
     },
     "1986|july|c64|Leader Board": {
       "issue": 15,
@@ -3533,54 +3386,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/shao-lins-road"
     },
-    "1993|may|c64|Ghosts 'N Goblins": {
-      "issue": 97,
-      "page": 22,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=97&page=22",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ghosts-n-goblins",
-      "gameTitle": "Ghosts 'N Goblins",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ghosts-n-goblins"
-    },
-    "1986|september|c64|Ghosts 'N Goblins": {
-      "issue": 17,
-      "page": 18,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=18",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ghosts-n-goblins",
-      "gameTitle": "Ghosts 'N Goblins",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ghosts-n-goblins"
-    },
-    "1988|december|c64|Ghosts 'N Goblins": {
-      "issue": 44,
-      "page": 90,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=44&page=90",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ghosts-n-goblins",
-      "gameTitle": "Ghosts 'N Goblins",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ghosts-n-goblins"
-    },
-    "1989|october|c64|Ghosts 'N Goblins": {
-      "issue": 54,
-      "page": 66,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=66",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "ghosts-n-goblins",
-      "gameTitle": "Ghosts 'N Goblins",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/ghosts-n-goblins"
-    },
     "1992|july|c64|Nightbreed: The Action Game": {
       "issue": 87,
       "page": 42,
@@ -3653,15 +3458,15 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/way-of-the-exploding-fist"
     },
-    "1986|april|c64|Master Of Magic": {
+    "1986|april|c64|Master Of The Lamps": {
       "issue": 12,
       "page": 106,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=12&page=106",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "master-of-magic",
-      "gameTitle": "Master Of Magic",
+      "gameSlug": "master-of-the-lamps",
+      "gameTitle": "Master Of The Lamps",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/master-of-magic"
     },
@@ -3808,18 +3613,6 @@
       "gameTitle": "Gary Lineker's Superstar Soccer",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/gary-linekers-superstar-soccer"
-    },
-    "1986|january|c64|The Last V8": {
-      "issue": 9,
-      "page": 21,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=9&page=21",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-last-v8",
-      "gameTitle": "The Last V8",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/last-v8"
     },
     "1985|may|c64|The Lords Of Midnight": {
       "issue": 1,
@@ -4097,27 +3890,27 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/moon-shuttle"
     },
-    "1989|november|c64|Indiana Jones And The Last Crusade: The Action Game": {
+    "1989|november|c64|Indiana Jones And The Fate Of Atlantis": {
       "issue": 55,
       "page": 16,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=16",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "indiana-jones-and-the-last-crusade-the-action-game",
-      "gameTitle": "Indiana Jones And The Last Crusade: The Action Game",
+      "gameSlug": "indiana-jones-and-the-fate-of-atlantis",
+      "gameTitle": "Indiana Jones And The Fate Of Atlantis",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/indiana-jones-and-the-last-crusade"
     },
-    "1991|september|c64|Indiana Jones And The Last Crusade: The Action Game": {
+    "1991|september|c64|Indiana Jones And The Fate Of Atlantis": {
       "issue": 77,
       "page": 74,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=77&page=74",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "indiana-jones-and-the-last-crusade-the-action-game",
-      "gameTitle": "Indiana Jones And The Last Crusade: The Action Game",
+      "gameSlug": "indiana-jones-and-the-fate-of-atlantis",
+      "gameTitle": "Indiana Jones And The Fate Of Atlantis",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/indiana-jones-and-the-last-crusade"
     },
@@ -4132,18 +3925,6 @@
       "gameTitle": "Track & Field",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/track-and-field"
-    },
-    "1992|october|c64|Bully's Sporting Darts": {
-      "issue": 90,
-      "page": 44,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=90&page=44",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "bullys-sporting-darts",
-      "gameTitle": "Bully's Sporting Darts",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/bullys-sporting-darts"
     },
     "1993|may|c64|Badlands": {
       "issue": 97,
@@ -4216,42 +3997,6 @@
       "gameTitle": "Pit-Fighter",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/pit-fighter"
-    },
-    "1993|march|c64|Flimbo's Quest": {
-      "issue": 95,
-      "page": 16,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=95&page=16",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "flimbos-quest",
-      "gameTitle": "Flimbo's Quest",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/flimbos-quest"
-    },
-    "1990|october|c64|Flimbo's Quest": {
-      "issue": 66,
-      "page": 14,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=66&page=14",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "flimbos-quest",
-      "gameTitle": "Flimbo's Quest",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/flimbos-quest"
-    },
-    "1992|august|c64|Flimbo's Quest": {
-      "issue": 88,
-      "page": 42,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=88&page=42",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "flimbos-quest",
-      "gameTitle": "Flimbo's Quest",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/flimbos-quest"
     },
     "1986|october|c64|Hollywood Or Bust": {
       "issue": 18,
@@ -4397,18 +4142,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/hawkeye"
     },
-    "1985|august|c64|The Captive": {
-      "issue": 4,
-      "page": 42,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=42",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-captive",
-      "gameTitle": "The Captive",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/captive"
-    },
     "1986|december|c64|Mad Nurse": {
       "issue": 20,
       "page": 132,
@@ -4541,27 +4274,27 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/paperboy"
     },
-    "1993|august|c64|Jack The Nipper II: In Coconut Capers": {
+    "1993|august|c64|Jack The Nipper": {
       "issue": 100,
       "page": 54,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=100&page=54",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "jack-the-nipper-2-in-coconut-capers",
-      "gameTitle": "Jack The Nipper II: In Coconut Capers",
+      "gameSlug": "jack-the-nipper",
+      "gameTitle": "Jack The Nipper",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/jack-the-nipper-2"
     },
-    "1988|january|c64|Jack The Nipper II: In Coconut Capers": {
+    "1988|january|c64|Jack The Nipper": {
       "issue": 33,
       "page": 20,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=33&page=20",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "jack-the-nipper-2-in-coconut-capers",
-      "gameTitle": "Jack The Nipper II: In Coconut Capers",
+      "gameSlug": "jack-the-nipper",
+      "gameTitle": "Jack The Nipper",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/jack-the-nipper-2"
     },
@@ -4588,18 +4321,6 @@
       "gameTitle": "Rampart",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/rampart"
-    },
-    "1986|january|c64|The Goonies": {
-      "issue": 9,
-      "page": 34,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=9&page=34",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-goonies",
-      "gameTitle": "The Goonies",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/goonies"
     },
     "1986|december|c64|Montezuma's Revenge": {
       "issue": 20,
@@ -5021,18 +4742,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/thing-on-a-spring"
     },
-    "1985|november|c64|The Rats": {
-      "issue": 7,
-      "page": 98,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=7&page=98",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-rats",
-      "gameTitle": "The Rats",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/rats"
-    },
     "1988|january|c64|Skate Or Die": {
       "issue": 33,
       "page": 160,
@@ -5297,39 +5006,51 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/hunchback-at-the-olympics"
     },
-    "1993|october|c64|Batman: The Movie": {
+    "1993|october|c64|Batman: The Caped Crusader": {
       "issue": 102,
       "page": 15,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=102&page=15",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "batman-the-movie",
-      "gameTitle": "Batman: The Movie",
+      "gameSlug": "batman-the-caped-crusader",
+      "gameTitle": "Batman: The Caped Crusader",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/batman"
     },
-    "1991|june|c64|Batman: The Movie": {
+    "1989|november|c64|Batman: The Caped Crusader": {
+      "issue": 55,
+      "page": 9,
+      "precision": "page",
+      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=55&page=9",
+      "source": "cached-game-magazine-reference",
+      "scope": "game-review",
+      "gameSlug": "batman-the-caped-crusader",
+      "gameTitle": "Batman: The Caped Crusader",
+      "gameSystem": "c64",
+      "lemonUrl": "https://www.lemon64.com/game/batman"
+    },
+    "1991|june|c64|Batman: The Caped Crusader": {
       "issue": 74,
       "page": 77,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=74&page=77",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "batman-the-movie",
-      "gameTitle": "Batman: The Movie",
+      "gameSlug": "batman-the-caped-crusader",
+      "gameTitle": "Batman: The Caped Crusader",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/batman"
     },
-    "1987|june|c64|The Activision Decathlon": {
+    "1987|june|c64|Daley Thompson's Decathlon": {
       "issue": 26,
       "page": 93,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=26&page=93",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "the-activision-decathlon",
-      "gameTitle": "The Activision Decathlon",
+      "gameSlug": "daley-thompsons-decathlon",
+      "gameTitle": "Daley Thompson's Decathlon",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/decathlon"
     },
@@ -5724,7 +5445,7 @@
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=92&page=45",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "popeye-c64-popeye-donpriestley",
+      "gameSlug": "popeye-c64",
       "gameTitle": "Popeye",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/popeye-piranha"
@@ -5736,7 +5457,7 @@
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=15&page=18",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "popeye-c64-popeye-donpriestley",
+      "gameSlug": "popeye-c64",
       "gameTitle": "Popeye",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/popeye-piranha"
@@ -6221,42 +5942,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/joe-blade-2"
     },
-    "1992|november|c64|Bad Dudes Vs Dragonninja": {
-      "issue": 91,
-      "page": 17,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=91&page=17",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "bad-dudes-vs-dragonninja",
-      "gameTitle": "Bad Dudes Vs Dragonninja",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragon-ninja"
-    },
-    "1989|march|c64|Bad Dudes Vs Dragonninja": {
-      "issue": 47,
-      "page": 26,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=47&page=26",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "bad-dudes-vs-dragonninja",
-      "gameTitle": "Bad Dudes Vs Dragonninja",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragon-ninja"
-    },
-    "1991|june|c64|Bad Dudes Vs Dragonninja": {
-      "issue": 74,
-      "page": 78,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=74&page=78",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "bad-dudes-vs-dragonninja",
-      "gameTitle": "Bad Dudes Vs Dragonninja",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragon-ninja"
-    },
     "1993|june|c64|Road Runner": {
       "issue": 98,
       "page": 19,
@@ -6629,18 +6314,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/shadow-dancer"
     },
-    "1985|august|c64|Zork Trilogy": {
-      "issue": 4,
-      "page": 86,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=4&page=86",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "zork-trilogy",
-      "gameTitle": "Zork Trilogy",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/zork-1-the-great-underground-empire"
-    },
     "1993|may|c64|Gryzor": {
       "issue": 97,
       "page": 23,
@@ -6820,42 +6493,6 @@
       "gameTitle": "Live And Let Die",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/live-and-let-die"
-    },
-    "1993|may|c64|Dragon's Lair": {
-      "issue": 97,
-      "page": 19,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=97&page=19",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair",
-      "gameTitle": "Dragon's Lair",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair"
-    },
-    "1986|september|c64|Dragon's Lair": {
-      "issue": 17,
-      "page": 28,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=17&page=28",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair",
-      "gameTitle": "Dragon's Lair",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair"
-    },
-    "1990|june|c64|Dragon's Lair": {
-      "issue": 62,
-      "page": 46,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=62&page=46",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "dragons-lair",
-      "gameTitle": "Dragon's Lair",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/dragons-lair"
     },
     "1987|december|c64|Beach-Head II": {
       "issue": 32,
@@ -7541,39 +7178,39 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/zorro"
     },
-    "1993|june|c64|The Real Ghostbusters": {
+    "1993|june|c64|Ghostbusters": {
       "issue": 98,
       "page": 19,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=98&page=19",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "the-real-ghostbusters",
-      "gameTitle": "The Real Ghostbusters",
+      "gameSlug": "ghostbusters",
+      "gameTitle": "Ghostbusters",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/real-ghostbusters"
     },
-    "1989|june|c64|The Real Ghostbusters": {
+    "1989|june|c64|Ghostbusters": {
       "issue": 50,
       "page": 41,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=50&page=41",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "the-real-ghostbusters",
-      "gameTitle": "The Real Ghostbusters",
+      "gameSlug": "ghostbusters",
+      "gameTitle": "Ghostbusters",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/real-ghostbusters"
     },
-    "1991|january|c64|The Real Ghostbusters": {
+    "1991|january|c64|Ghostbusters": {
       "issue": 69,
       "page": 57,
       "precision": "page",
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=69&page=57",
       "source": "cached-game-magazine-reference",
       "scope": "game-review",
-      "gameSlug": "the-real-ghostbusters",
-      "gameTitle": "The Real Ghostbusters",
+      "gameSlug": "ghostbusters",
+      "gameTitle": "Ghostbusters",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/real-ghostbusters"
     },
@@ -7793,30 +7430,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/kamikaze"
     },
-    "1987|march|c64|Blood 'N Guts": {
-      "issue": 23,
-      "page": 112,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=23&page=112",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "blood-n-guts",
-      "gameTitle": "Blood 'N Guts",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/blood-n-guts"
-    },
-    "1987|may|c64|Kobyashi Naru": {
-      "issue": 25,
-      "page": 62,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=25&page=62",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "kobyashi-naru",
-      "gameTitle": "Kobyashi Naru",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/kobayashi-naru"
-    },
     "1989|january|c64|By Fair Means Or Foul": {
       "issue": 45,
       "page": 26,
@@ -7864,30 +7477,6 @@
       "gameTitle": "Monty On The Run",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/monty-on-the-run"
-    },
-    "1993|march|c64|The New Zealand Story": {
-      "issue": 95,
-      "page": 19,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=95&page=19",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-new-zealand-story",
-      "gameTitle": "The New Zealand Story",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/newzealand-story"
-    },
-    "1991|august|c64|The New Zealand Story": {
-      "issue": 76,
-      "page": 81,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=76&page=81",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-new-zealand-story",
-      "gameTitle": "The New Zealand Story",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/newzealand-story"
     },
     "1993|june|c64|Friday The 13th": {
       "issue": 98,
@@ -8045,30 +7634,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/v-the-computer-game"
     },
-    "1993|october|c64|The Muncher": {
-      "issue": 102,
-      "page": 16,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=102&page=16",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-muncher",
-      "gameTitle": "The Muncher",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/muncher-eats-chewits"
-    },
-    "1989|june|c64|The Muncher": {
-      "issue": 50,
-      "page": 37,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=50&page=37",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "the-muncher",
-      "gameTitle": "The Muncher",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/muncher-eats-chewits"
-    },
     "1987|september|c64|Kikstart II": {
       "issue": 29,
       "page": 105,
@@ -8213,42 +7778,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/tir-na-nog"
     },
-    "1993|june|c64|Rock'n Wrestle": {
-      "issue": 98,
-      "page": 55,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=98&page=55",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "rock-n-wrestle",
-      "gameTitle": "Rock'n Wrestle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/rock-n-wrestle"
-    },
-    "1986|april|c64|Rock'n Wrestle": {
-      "issue": 12,
-      "page": 37,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=12&page=37",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "rock-n-wrestle",
-      "gameTitle": "Rock'n Wrestle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/rock-n-wrestle"
-    },
-    "1992|june|c64|Rock'n Wrestle": {
-      "issue": 86,
-      "page": 17,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=86&page=17",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "rock-n-wrestle",
-      "gameTitle": "Rock'n Wrestle",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/rock-n-wrestle"
-    },
     "1993|february|c64|Ace Of Aces": {
       "issue": 94,
       "page": 16,
@@ -8320,18 +7849,6 @@
       "gameTitle": "Kung-Fu Master",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/kung-fu-master"
-    },
-    "1985|may|c64|Up'N Down": {
-      "issue": 1,
-      "page": 124,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=1&page=124",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "up-n-down",
-      "gameTitle": "Up'N Down",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/up-n-down"
     },
     "1993|april|c64|Myth: History In The Making": {
       "issue": 96,
@@ -8524,18 +8041,6 @@
       "gameTitle": "Maniac Mansion",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/maniac-mansion"
-    },
-    "1990|december|c64|King's Bounty": {
-      "issue": 68,
-      "page": 43,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=68&page=43",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "kings-bounty",
-      "gameTitle": "King's Bounty",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/kings-bounty"
     },
     "1992|november|c64|First Samurai": {
       "issue": 91,
@@ -8776,18 +8281,6 @@
       "gameTitle": "Cauldron II: The Pumpkin Strikes Back",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/cauldron-2"
-    },
-    "1986|july|c64|Breakdance": {
-      "issue": 15,
-      "page": 98,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=15&page=98",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "breakdance",
-      "gameTitle": "Breakdance",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/break-dance-disk-version"
     },
     "1993|june|c64|Samantha Fox Strip Poker": {
       "issue": 98,
@@ -9269,18 +8762,6 @@
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/exile"
     },
-    "1986|march|c64|Kane & Kane 2": {
-      "issue": 11,
-      "page": 25,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=11&page=25",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "kane-kane-2",
-      "gameTitle": "Kane & Kane 2",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/kane"
-    },
     "1993|january|c64|Dropzone": {
       "issue": 93,
       "page": 19,
@@ -9580,18 +9061,6 @@
       "gameTitle": "Yogi Bear",
       "gameSystem": "c64",
       "lemonUrl": "https://www.lemon64.com/game/yogi-bear"
-    },
-    "1988|august|c64|Star Wars: Droids": {
-      "issue": 40,
-      "page": 88,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=40&page=88",
-      "source": "cached-game-magazine-reference",
-      "scope": "game-review",
-      "gameSlug": "star-wars-droids",
-      "gameTitle": "Star Wars: Droids",
-      "gameSystem": "c64",
-      "lemonUrl": "https://www.lemon64.com/game/droids-mad-mastertronic"
     },
     "1993|july|c64|Nosferatu The Vampyre": {
       "issue": 99,
