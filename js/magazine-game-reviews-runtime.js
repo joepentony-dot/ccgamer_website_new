@@ -2,7 +2,7 @@
    CCG MAGAZINE REVIEW SELECTOR
    ------------------------------------------------------------
    Combines verified multi-magazine records with the existing
-   Zzap!64 scan index. Lemon links remain separate resources.
+   Zzap!64 scan index. Game pages show magazine reviews only.
 ============================================================ */
 
 (function () {
@@ -248,7 +248,8 @@
 
     async function render() {
         if (applying) return;
-        const container = document.getElementById("gameLemonLinks");
+        const container = document.getElementById("gameMagazineReviews")
+            || document.getElementById("gameLemonLinks");
         if (!container) return;
         applying = true;
         if (observer) observer.disconnect();
@@ -264,7 +265,7 @@
             const card = document.getElementById("game-reading-card");
             const hub = document.getElementById("game-utility-hub-section");
             const title = card?.querySelector(".ccg-utility-card__title");
-            if (title) title.textContent = "Reviews & Resources";
+            if (title) title.textContent = "Magazine Reviews";
             if (card) card.hidden = false;
             if (hub) hub.hidden = false;
         } finally {
@@ -274,7 +275,8 @@
     }
 
     function observe() {
-        const container = document.getElementById("gameLemonLinks");
+        const container = document.getElementById("gameMagazineReviews")
+            || document.getElementById("gameLemonLinks");
         if (!container || observer) return;
         observer = new MutationObserver(() => {
             if (!applying) window.setTimeout(render, 0);
