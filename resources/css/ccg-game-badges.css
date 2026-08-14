@@ -1,7 +1,7 @@
 /* ============================================================
-   SINGLE GAME — PLATFORM AND ZZAP!64 AWARD BADGES
+   SINGLE GAME — ZZAP!64 AWARD BADGES
    ------------------------------------------------------------
-   Compact identity row beneath the existing game hero metadata.
+   Compact magazine award row beneath the game actions.
 ============================================================ */
 
 .ccg-game-badges {
@@ -28,28 +28,6 @@
     display: block;
     flex: 0 0 auto;
     object-fit: contain;
-}
-
-.ccg-game-badge--platform {
-    min-width: 128px;
-    justify-content: center;
-    background: rgba(255, 255, 255, .94);
-}
-
-.ccg-game-badge--platform-c64 {
-    background: rgba(15, 14, 12, .94);
-}
-
-.ccg-game-badge--platform-c64 .ccg-game-badge__image {
-    width: 126px;
-    height: auto;
-    max-height: 18px;
-}
-
-.ccg-game-badge--platform-amiga .ccg-game-badge__image {
-    width: 110px;
-    height: auto;
-    max-height: 42px;
 }
 
 .ccg-game-badge--award {
@@ -127,18 +105,6 @@
     .ccg-game-badge {
         min-height: 42px;
         padding: 6px 8px;
-    }
-
-    .ccg-game-badge--platform {
-        min-width: 112px;
-    }
-
-    .ccg-game-badge--platform-c64 .ccg-game-badge__image {
-        width: 108px;
-    }
-
-    .ccg-game-badge--platform-amiga .ccg-game-badge__image {
-        width: 96px;
     }
 
     .ccg-game-badge--gold .ccg-game-badge__image,

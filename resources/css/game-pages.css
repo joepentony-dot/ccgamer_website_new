@@ -247,6 +247,18 @@
     gap: clamp(8px, 0.9vw, 12px);
 }
 
+.ccg-page--single-game .game-hero__title-row {
+    display: block;
+}
+
+.ccg-page--single-game .game-hero__badges {
+    margin: 0;
+}
+
+.ccg-page--single-game .game-hero__actions {
+    width: auto;
+}
+
 .ccg-page--single-game .game-hero__box3d {
     max-width: clamp(170px, 15vw, 225px);
 }
@@ -274,8 +286,7 @@
 }
 
 .ccg-page--single-game #game-description-section,
-.ccg-page--single-game #game-discovery-links,
-.ccg-page--single-game .ccg-behind-pixels-inline {
+.ccg-page--single-game #game-discovery-links {
     width: min(980px, 94vw);
     margin-inline: auto;
 }
@@ -325,31 +336,44 @@
 
 .ccg-page--single-game .ccg-behind-pixels-inline {
     display: grid;
-    gap: 12px;
-    padding: clamp(14px, 1.7vw, 20px);
-    border-radius: 16px;
-    margin-block: clamp(10px, 1.5vw, 18px);
+    width: 100%;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    margin: 2px 0 0;
+    background: rgba(3, 8, 16, 0.58);
+    box-shadow: none;
 }
 
 .ccg-page--single-game .ccg-behind-pixels-inline__title {
-    text-align: center;
-    font-size: clamp(1rem, 1.3vw, 1.25rem);
-    color: var(--ccg-bright-2);
+    text-align: left;
+    font-size: 0.75rem;
+    color: var(--ccg-soft);
 }
 
 .ccg-page--single-game .ccg-behind-pixels-inline__list {
-    width: min(100%, 760px);
-    margin-inline: auto;
-    grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.3fr);
-    align-items: center;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 14px;
 }
 
-.ccg-page--single-game .ccg-behind-pixels-inline__list dt {
-    text-align: right;
+.ccg-page--single-game .ccg-behind-pixels-inline__item {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 8px;
+    align-items: baseline;
 }
 
-.ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+    text-align: left;
+    font-size: 0.66rem;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
     min-width: 0;
+    font-size: 0.82rem;
+    line-height: 1.35;
 }
 
 .ccg-page--single-game #game-discovery-links {
@@ -378,11 +402,11 @@
 
     .ccg-page--single-game .ccg-behind-pixels-inline__list {
         grid-template-columns: 1fr;
-        gap: 3px;
+        gap: 6px;
     }
 
-    .ccg-page--single-game .ccg-behind-pixels-inline__list dt {
-        text-align: left;
+    .ccg-page--single-game .ccg-behind-pixels-inline__item {
+        grid-template-columns: minmax(76px, max-content) minmax(0, 1fr);
     }
 }
 

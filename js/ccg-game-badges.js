@@ -1,9 +1,8 @@
 /* ============================================================
-   CCG SINGLE-GAME PLATFORM + ZZAP!64 BADGES
+   CCG SINGLE-GAME ZZAP!64 AWARD BADGES
    ------------------------------------------------------------
-   Adds a compact Commodore platform logo to every resolved game
-   page and adds supplied Gold Medal/Silver Medal/Sizzler artwork when that
-   game/platform appears in the verified Zzap!64 award archive.
+   Adds supplied Gold Medal/Silver Medal/Sizzler artwork when a game
+   appears in the verified Zzap!64 award archive.
    Award badges link directly to their verified original review scan.
 ============================================================ */
 
@@ -24,9 +23,7 @@
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
         silver: "/resources/images/zzap64/zzap64-silver-medal.svg",
-        sizzler: "/resources/images/zzap64/zzap64-sizzler.webp",
-        c64: "/resources/images/platforms/commodore-64-logo.webp",
-        amiga: "/resources/images/platforms/commodore-amiga-logo.webp"
+        sizzler: "/resources/images/zzap64/zzap64-sizzler.webp"
     });
 
     function ensureStylesheet() {
@@ -202,24 +199,6 @@
             });
     }
 
-    function createPlatformBadge(game, matcher) {
-        const system = matcher.systemKey(game.system || game.platform);
-        const isAmiga = system === "amiga";
-        const badge = document.createElement("div");
-        badge.className = `ccg-game-badge ccg-game-badge--platform ccg-game-badge--platform-${isAmiga ? "amiga" : "c64"}`;
-        badge.setAttribute("aria-label", isAmiga ? "Commodore Amiga game" : "Commodore 64 game");
-
-        const image = document.createElement("img");
-        image.className = "ccg-game-badge__image";
-        image.src = isAmiga ? ASSETS.amiga : ASSETS.c64;
-        image.alt = isAmiga ? "Commodore Amiga" : "Commodore 64";
-        image.width = isAmiga ? 170 : 180;
-        image.height = isAmiga ? 63 : 18;
-        image.decoding = "async";
-        badge.appendChild(image);
-        return badge;
-    }
-
     function createAwardBadge(entry) {
         const award = matcherText(entry.award);
         const isGold = award.includes("gold");
@@ -268,15 +247,20 @@
         return badge;
     }
 
-    function insertBadges(game, awards, matcher) {
-        const target = document.querySelector(".game-hero__meta") || document.querySelector(".game-hero__content");
+    function insertBadges(awards) {
+        const unique = uniqueAwards(awards);
+        if (!unique.length) return true;
+
+        const heroContent = document.querySelector(".game-hero__content");
+        const target = heroContent?.querySelector(".game-hero__actions")
+            || heroContent?.querySelector(".game-hero__badges")
+            || heroContent?.querySelector(".game-hero__title-row");
         if (!target || document.querySelector(".ccg-game-badges")) return false;
 
         const row = document.createElement("div");
         row.className = "ccg-game-badges";
-        row.setAttribute("aria-label", "Game platform and Zzap!64 awards");
-        row.appendChild(createPlatformBadge(game, matcher));
-        uniqueAwards(awards).forEach((entry) => row.appendChild(createAwardBadge(entry)));
+        row.setAttribute("aria-label", "Zzap!64 awards");
+        unique.forEach((entry) => row.appendChild(createAwardBadge(entry)));
         target.insertAdjacentElement("afterend", row);
         return true;
     }
@@ -319,8 +303,8 @@
 
             const entries = attachReviewLinks(rawEntries, reviewData, matcher);
             const awards = entries.filter((entry) => entryMatchesGame(entry, game, matcher));
-            if (!insertBadges(game, awards, matcher)) {
-                window.setTimeout(() => insertBadges(game, awards, matcher), 180);
+            if (!insertBadges(awards)) {
+                window.setTimeout(() => insertBadges(awards), 180);
             }
         } catch (error) {
             console.warn("[CCG] Game badge layer could not be loaded:", error);

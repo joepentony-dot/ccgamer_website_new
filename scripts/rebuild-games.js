@@ -11,6 +11,8 @@ const repoRoot = process.env.CCG_REPO_ROOT
 
 const steps = [
   ["validate-games-source.js"],
+  ["build-game-description-enrichments.js"],
+  ["audit-game-manuals.js"],
   ["build-magazine-review-chunks.js"],
   ["build-games.js"],
   ["ensure-magazine-review-runtime.js"],

@@ -711,8 +711,11 @@ async function fetchGamesLibrary() {
             }
 
             const payload = await response.json();
+            const enrichments = await fetchGameDescriptionEnrichments();
             return {
-                games: Array.isArray(payload) ? payload.map(normalizeGame) : [],
+                games: Array.isArray(payload)
+                    ? payload.map(game => normalizeGame(mergeGameDescriptionEnrichment(game, enrichments)))
+                    : [],
                 source: url
             };
         } catch (error) {
@@ -721,6 +724,50 @@ async function fetchGamesLibrary() {
     }
 
     throw lastError || new Error("Unable to load games.json from known paths.");
+}
+
+function resolveGameDescriptionEnrichmentUrls() {
+    const root = (typeof window !== "undefined" && typeof window.ccgGetSiteRoot === "function")
+        ? window.ccgGetSiteRoot()
+        : "/";
+    const urls = [];
+    const pushUnique = value => {
+        const candidate = String(value || "").trim();
+        if (candidate && !urls.includes(candidate)) urls.push(candidate);
+    };
+
+    pushUnique(`${root}data/game-description-enrichments.json`);
+    pushUnique("/data/game-description-enrichments.json");
+    pushUnique("../../data/game-description-enrichments.json");
+    pushUnique("../data/game-description-enrichments.json");
+    return urls;
+}
+
+async function fetchGameDescriptionEnrichments() {
+    for (const url of resolveGameDescriptionEnrichmentUrls()) {
+        try {
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) continue;
+            const payload = await response.json();
+            return payload?.games && typeof payload.games === "object"
+                ? payload.games
+                : (payload || {});
+        } catch (error) {
+            // Static fallbacks remain usable when the enrichment layer is unavailable.
+        }
+    }
+    return {};
+}
+
+function mergeGameDescriptionEnrichment(game, enrichments) {
+    const entry = enrichments?.[String(game?.slug || "").trim()];
+    const description = String(entry?.description || "").trim();
+    if (!description) return game;
+    return {
+        ...game,
+        description,
+        _ccgEnrichedDescription: true
+    };
 }
 
 function resolveSingleGameThumbBasePath() {
@@ -775,7 +822,11 @@ function resolvePrimaryLink(value) {
 }
 
 function resolveManualUrl(game) {
-    return resolvePrimaryLink(game.pdf || game.manual || game.manuals);
+    const candidate = resolvePrimaryLink(game.pdf || game.manual || game.manuals);
+    if (!candidate || !/^https:\/\//i.test(candidate)) return "";
+    const isDriveFile = /https?:\/\/drive\.google\.com\/file\/d\/[^/]+\//i.test(candidate);
+    const isPdfPath = /\.pdf(?:[?#].*)?$/i.test(candidate);
+    return (isDriveFile || isPdfPath) ? candidate : "";
 }
 
 function normaliseManualUrl(url) {
@@ -1520,10 +1571,11 @@ function renderGame(game) {
             heroThumb.height = 180;
         }
         if (heroTitle) heroTitle.textContent = resolveCanonicalGameTitle(game);
-        renderHeroMeta(game);
     }
-    renderGameRating(game);
+    renderHeroMeta();
+    renderGameRating();
     renderHeroBadges(game);
+    normaliseHeroIdentityLayout();
     void renderFavouriteAction(game);
     void renderHeroBox3d(game);
 
@@ -1531,7 +1583,10 @@ function renderGame(game) {
     const descriptionSection = document.getElementById("game-description-section");
     const descriptionEl = document.getElementById("gameDescription");
     const descriptionFilled = descriptionEl && descriptionEl.textContent.trim();
-    if (!preloaded || !descriptionFilled) {
+    if (game._ccgEnrichedDescription && descriptionEl) {
+        descriptionEl.textContent = game.description;
+        if (descriptionSection) descriptionSection.hidden = false;
+    } else if (!preloaded || !descriptionFilled) {
         if (game.description && descriptionEl) {
             descriptionEl.innerHTML = game.description;
             if (descriptionSection) descriptionSection.hidden = false;
@@ -1598,6 +1653,9 @@ function renderGame(game) {
     }
 
     const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
+    if (videoDescription && game._ccgEnrichedDescription) {
+        videoDescription.textContent = game.description;
+    }
     const videoIncludesOverview = !!(videoDescription && videoDescription.textContent.trim());
     if (hasVideo && videoIncludesOverview && descriptionSection) {
         descriptionSection.hidden = true;
@@ -1606,18 +1664,6 @@ function renderGame(game) {
 
     if (hasVideo && videoSection && descriptionSection && descriptionSection.parentNode === videoSection.parentNode) {
         descriptionSection.parentNode.insertBefore(videoSection, descriptionSection);
-    }
-
-    const credits = document.querySelector(".ccg-behind-pixels-inline");
-    if (credits) {
-        if (hasVideo && videoIncludesOverview && videoSection) {
-            insertAfter(videoSection, credits);
-        } else if (hasOverview && descriptionSection) {
-            insertAfter(descriptionSection, credits);
-        } else {
-            const hero = document.querySelector(".game-hero");
-            if (hero) insertAfter(hero, credits);
-        }
     }
 
     /* PLAY / LISTEN / DOWNLOAD HUB */
@@ -1749,7 +1795,7 @@ function renderGame(game) {
     const discoverySection = document.getElementById("game-discovery-links");
     const hasScreenshots = !!(screenshotsSection && !screenshotsSection.hidden);
     const hasRelated = !!(relatedSection && !relatedSection.hidden);
-    const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
+    const hasRating = !!document.querySelector(".game-hero__badges .game-badge--rating");
 
     if (discoverySection && !discoverySection.hidden) {
         const discoveryAnchor = (hasRelated && relatedSection)
@@ -1758,7 +1804,7 @@ function renderGame(game) {
             || readingSection
             || downloadSection
             || utilityHubSection
-            || credits;
+            || document.querySelector(".game-hero");
         if (discoveryAnchor) insertAfter(discoveryAnchor, discoverySection);
     }
 
@@ -1924,7 +1970,7 @@ function resolveCurrentGameSlug(game) {
 }
 
 function ensureFavouriteButton() {
-    const row = document.querySelector(".game-hero__title-row");
+    const row = document.querySelector(".game-hero__actions") || document.querySelector(".game-hero__title-row");
     if (!row) return null;
 
     let button = row.querySelector("[data-ccg-favourite-btn]");
@@ -2075,71 +2121,14 @@ async function renderFavouriteAction(game) {
     CCG_FAVOURITES_INIT = true;
 }
 
-function renderGameRating(game) {
-    const ratingContainer = document.querySelector("[data-ccg-rating]");
+function renderGameRating() {
     const heroRating = document.getElementById("gameHeroRating");
-    const starsEl = document.getElementById("gameRatingStars");
-    const statusEl = document.getElementById("gameRatingStatus");
-    const reasonEl = document.getElementById("gameRatingReason");
-
-    if (!ratingContainer || !starsEl || !statusEl || !reasonEl) return;
-
-    const ratingData = typeof window.ccgResolveRatingValue === "function"
-        ? window.ccgResolveRatingValue(game)
-        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
-
-    if (typeof window.ccgBuildRatingStars === "function") {
-        starsEl.innerHTML = window.ccgBuildRatingStars(ratingData);
-    }
-
-    if (ratingData.isRated) {
-        ratingContainer.hidden = false;
-        if (heroRating) heroRating.hidden = false;
-        statusEl.hidden = true;
-        ratingContainer.setAttribute("aria-label", `Cheeky Commodore Gamer Rating: ${ratingData.value}/10`);
-    } else {
-        ratingContainer.hidden = true;
-        if (heroRating) heroRating.hidden = true;
-    }
-
-    const reason = String(game?.ccg_rating_reason || "").replace(/\s+/g, " ").trim();
-    if (reason) {
-        reasonEl.textContent = reason;
-        reasonEl.hidden = false;
-    } else {
-        reasonEl.textContent = "";
-        reasonEl.hidden = true;
-    }
+    if (heroRating) heroRating.remove();
 }
 
-function renderHeroMeta(game) {
+function renderHeroMeta() {
     const meta = document.querySelector(".game-hero__meta");
-    const yearEl = document.getElementById("gameMetaYear");
-    const systemEl = document.getElementById("gameMetaSystem");
-    const developerEl = document.getElementById("gameMetaDeveloper");
-
-    if (!meta || !yearEl || !systemEl || !developerEl) return;
-
-    const year = String(game?.year || "").trim();
-    const system = String(game?.system || "").trim();
-    const developer = String(game?.publisher || game?.developer || "").trim();
-
-    yearEl.textContent = year;
-    yearEl.hidden = !year;
-    systemEl.textContent = system;
-    systemEl.hidden = !system;
-    developerEl.textContent = developer;
-    developerEl.hidden = !developer;
-
-    const separators = meta.querySelectorAll(".game-meta__sep");
-    const items = [yearEl, systemEl, developerEl];
-
-    if (separators.length >= 2) {
-        separators[0].hidden = !(items[0] && !items[0].hidden && items[1] && !items[1].hidden);
-        separators[1].hidden = !(items[1] && !items[1].hidden && items[2] && !items[2].hidden);
-    }
-
-    meta.hidden = items.every(item => item.hidden);
+    if (meta) meta.remove();
 }
 
 function renderHeroBadges(game) {
@@ -2150,13 +2139,13 @@ function renderHeroBadges(game) {
     if (!badgeWrap) {
         badgeWrap = document.createElement("div");
         badgeWrap.className = "game-hero__badges";
-        const title = heroContent.querySelector(".game-hero__title");
-        const insertParent = title && title.parentNode ? title.parentNode : heroContent;
-        if (title && insertParent && insertParent.contains(title)) {
-            insertParent.insertBefore(badgeWrap, title.nextSibling);
-        } else {
-            heroContent.appendChild(badgeWrap);
-        }
+    }
+
+    const titleRow = heroContent.querySelector(".game-hero__title-row");
+    if (titleRow) {
+        insertAfter(titleRow, badgeWrap);
+    } else if (!heroContent.contains(badgeWrap)) {
+        heroContent.prepend(badgeWrap);
     }
 
     badgeWrap.innerHTML = "";
@@ -2170,21 +2159,52 @@ function renderHeroBadges(game) {
     const topPick = hasTopPickGenre(game);
 
     const addBadge = (text, className) => {
-        if (!text) return;
+        if (!text) return null;
         const badge = document.createElement("span");
         badge.className = `game-badge ${className || ""}`.trim();
         badge.textContent = text;
         badgeWrap.appendChild(badge);
+        return badge;
     };
 
     addBadge(system, "game-badge--system");
     addBadge(year, "game-badge--year");
-    addBadge(ratingLabel, "game-badge--rating");
+    const ratingBadge = addBadge(ratingLabel, "game-badge--rating");
+    if (ratingBadge) {
+        ratingBadge.setAttribute("aria-label", `Cheeky Commodore Gamer rating: ${ratingLabel}`);
+        ratingBadge.title = "Cheeky Commodore Gamer rating";
+    }
     if (topPick) {
         addBadge("Top Picks", "game-badge--top");
     }
 
     badgeWrap.hidden = badgeWrap.children.length === 0;
+}
+
+function normaliseHeroIdentityLayout() {
+    const heroContent = document.querySelector(".game-hero__content");
+    const titleRow = heroContent?.querySelector(".game-hero__title-row");
+    if (!heroContent || !titleRow) return;
+
+    let actions = heroContent.querySelector(".game-hero__actions");
+    if (!actions) {
+        actions = document.createElement("div");
+        actions.className = "game-hero__actions ccg-share";
+        actions.setAttribute("data-ccg-share", "");
+    }
+
+    const shareButton = titleRow.querySelector("[data-ccg-share-btn]");
+    const shareStatus = titleRow.querySelector("[data-ccg-share-status]");
+    const favouriteButton = titleRow.querySelector("[data-ccg-favourite-btn]");
+    [shareButton, favouriteButton, shareStatus].forEach((element) => {
+        if (element) actions.appendChild(element);
+    });
+
+    titleRow.classList.remove("ccg-share");
+    titleRow.removeAttribute("data-ccg-share");
+
+    const badgeWrap = heroContent.querySelector(".game-hero__badges");
+    insertAfter(badgeWrap || titleRow, actions);
 }
 
 function resolveBox3dSlug(game) {
@@ -2368,12 +2388,15 @@ function renderCreditsPanel(game) {
         inlineCredits.hidden = true;
     } else {
         entries.forEach(entry => {
+            const item = document.createElement("div");
+            item.className = "ccg-behind-pixels-inline__item";
             const term = document.createElement("dt");
             term.textContent = entry.label;
             const detail = document.createElement("dd");
             detail.textContent = entry.value;
-            list.appendChild(term);
-            list.appendChild(detail);
+            item.appendChild(term);
+            item.appendChild(detail);
+            list.appendChild(item);
         });
 
         inlineCredits.hidden = false;
@@ -2383,7 +2406,7 @@ function renderCreditsPanel(game) {
         heroContent.appendChild(inlineCredits);
     }
 
-    const anchor = heroContent.querySelector(".game-hero__rating") || heroContent.querySelector(".game-hero__meta");
+    const anchor = heroContent.querySelector(".game-hero__actions") || heroContent.querySelector(".game-hero__badges");
     if (anchor) {
         insertAfter(anchor, inlineCredits);
     }
@@ -2783,7 +2806,7 @@ function handleQuickAction(action) {
     const videoSection = document.getElementById("game-video-section");
     const screenshotsSection = document.querySelector(".game-screenshots");
     const relatedSection = document.querySelector(".game-section--related");
-    const ratingSection = document.getElementById("gameHeroRating");
+    const ratingSection = document.querySelector(".game-hero");
     const shareBtn = document.querySelector("[data-ccg-share-btn]");
     const subscribeUrl = "https://www.youtube.com/@CheekyCommodoreGamer";
     const supportUrl = "https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL";

@@ -4,6 +4,10 @@
 
 const fs = require("fs");
 const path = require("path");
+const {
+  mergeGameDescriptionEnrichments,
+  readGameDescriptionEnrichments,
+} = require("./lib/game-description-enrichments");
 
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -131,8 +135,8 @@ function videoPresentation(game, metadata) {
   const metaTitle = stripHtml(metadata?.title || "");
   const videoTitle = truncate(metaTitle || generatedTitle, 100);
   const gameDescription = stripHtml(game?.description || game?.desc || "");
-  const intro = `Watch ${title} on ${platformLong(game)} with Cheeky Commodore Gamer video coverage, gameplay and commentary.`;
-  const description = truncate(gameDescription ? `${intro} ${gameDescription}` : intro, 2000);
+  const fallback = `Watch ${title} on ${platformLong(game)} with gameplay and commentary from Cheeky Commodore Gamer.`;
+  const description = truncate(gameDescription || fallback, 2000);
   return { title, videoTitle, description };
 }
 
@@ -170,7 +174,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
   const descriptionHtml = `<p class="ccg-section__intro" data-ccg-video-description>${escapeHtml(presentation.description)}</p>`;
   const existingDescriptionRe = /<p\b[^>]*data-ccg-video-description[^>]*>[\s\S]*?<\/p>/i;
   if (existingDescriptionRe.test(body)) {
-    body = body.replace(existingDescriptionRe, descriptionHtml);
+    body = body.replace(existingDescriptionRe, () => descriptionHtml);
   } else {
     body = body.replace(heading, `${heading}\n            ${descriptionHtml}`);
   }
@@ -196,7 +200,7 @@ function enhanceVideoSection(html, game, videoId, metadata) {
     body = body.replace(buttonRe, button);
   }
 
-  return html.replace(sectionRe, `${opening}${body}${match[4]}`);
+  return html.replace(sectionRe, () => `${opening}${body}${match[4]}`);
 }
 
 function enhanceGameGraph(html, game, videoId, metadata) {
@@ -259,8 +263,8 @@ function enhanceGameGraph(html, game, videoId, metadata) {
     .replace(/</g, "\\u003c")
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
-  const replacement = match[0].replace(match[3], json);
-  return html.replace(scriptRe, replacement);
+  const replacement = match[0].replace(match[3], () => json);
+  return html.replace(scriptRe, () => replacement);
 }
 
 function buildVideoSitemap(entries) {
@@ -295,7 +299,11 @@ function buildVideoSitemap(entries) {
 
 function main() {
   const gamesPayload = readJson(gamesJsonPath, []);
-  const games = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload.games || []);
+  const sourceGames = Array.isArray(gamesPayload) ? gamesPayload : (gamesPayload.games || []);
+  const games = mergeGameDescriptionEnrichments(
+    sourceGames,
+    readGameDescriptionEnrichments(repoRoot)
+  );
   const metadataById = loadMetadata();
   const entries = [];
   let updatedPages = 0;

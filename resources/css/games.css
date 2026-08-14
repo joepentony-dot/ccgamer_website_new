@@ -1383,13 +1383,11 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
     margin-bottom: 8px;
 }
 
-.game-hero__title { order: 1; }
-.game-hero__meta { order: 2; }
-.game-hero__rating { order: 3; }
-.ccg-behind-pixels-inline { order: 4; }
-.game-verdict { order: 5; }
-#game-description-section { order: 6; }
-.game-hero__badges { order: 7; }
+.game-hero__title-row { order: 1; }
+.game-hero__badges { order: 2; }
+.game-hero__actions { order: 3; }
+.ccg-game-badges { order: 4; }
+.ccg-behind-pixels-inline { order: 5; }
 
 .game-badge {
     display: inline-flex;
@@ -1710,8 +1708,17 @@ html[data-ccg-page="single-game"] .ccg-page--single-game {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
+    width: 100%;
+}
+
+.game-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
     width: 100%;
 }
 

@@ -36,13 +36,11 @@ const nav = requireFile("js/ccg-nav-core.js");
     "/data/zzap64-awards/",
     "/data/zzap64-review-links.json",
     "ccg-zzap64-matcher.js",
-    "commodore-64-logo.webp",
-    "commodore-amiga-logo.webp",
     "zzap64-gold-medal.webp",
     "zzap64-silver-medal.svg",
     "zzap64-sizzler.webp",
     "Silver Medal",
-    ".game-hero__meta",
+    ".game-hero__actions",
     ".ccg-game-badges",
     "reviewRecordKey",
     "reviewIssue",
@@ -55,8 +53,6 @@ const nav = requireFile("js/ccg-nav-core.js");
 
 [
     ".ccg-game-badges",
-    ".ccg-game-badge--platform-c64",
-    ".ccg-game-badge--platform-amiga",
     ".ccg-game-badge--gold",
     ".ccg-game-badge--silver",
     ".ccg-game-badge--sizzler",
@@ -72,7 +68,7 @@ if (!nav.includes("/js/ccg-game-badges.js")) {
 const games = JSON.parse(requireFile("games/games.json"));
 const gameList = Array.isArray(games) ? games : (games.games || []);
 const supported = gameList.filter((game) => /c64|commodore 64|amiga/i.test(String(game.system || game.platform || "")));
-if (!supported.length) problems.push("No C64 or Amiga games were found for platform badges.");
+if (!supported.length) problems.push("No C64 or Amiga games were found for magazine award matching.");
 
 const reviewData = JSON.parse(requireFile("data/zzap64-review-links.json") || "{}");
 const exactReviewCount = Object.values(reviewData.entries || {}).filter((record) => (
