@@ -1569,6 +1569,14 @@ function renderGame(game) {
         descriptionSection.parentNode.insertBefore(videoSection, descriptionSection);
     }
 
+    if (hasVideo && videoSection && descriptionSection) {
+        const heroDetails = document.querySelector(".game-hero__content");
+        const credits = heroDetails?.querySelector(".ccg-behind-pixels-inline");
+        const verdict = heroDetails?.querySelector(".game-verdict");
+        if (credits) insertAfter(descriptionSection, credits);
+        if (verdict) insertAfter(credits || descriptionSection, verdict);
+    }
+
     /* PLAY / LISTEN / DOWNLOAD HUB */
     const utilityHubSection = document.getElementById("game-utility-hub-section");
     const manualCard = document.getElementById("game-manual-card");
@@ -2345,13 +2353,8 @@ function renderVerdictPanel(game) {
 }
 
 function moveSpotlightSection() {
-    const heroContent = document.querySelector(".game-hero__content");
-    const descriptionSection = document.getElementById("game-description-section");
-    if (!heroContent || !descriptionSection) return;
-
-    if (!heroContent.contains(descriptionSection)) {
-        heroContent.appendChild(descriptionSection);
-    }
+    // Keep the hero focused on the game's identity, artwork and rating.
+    // The overview remains in the page flow, immediately after the video.
 }
 
 function toggleGameEmptyMessage(section, key, message) {
