@@ -8,6 +8,7 @@ const {
     getPublisherNames,
     normalizeSystem
 } = require("./publisher-utils");
+const { hasAuthorisedDownload } = require("./download-eligibility");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -127,6 +128,7 @@ function getDownloadRecords(games) {
         .map((game) => {
             const slug = String(game?.slug || "").trim();
             const title = String(game?.title || "").trim();
+            if (!hasAuthorisedDownload(game)) return null;
             const links = normalizeDownloadLinks(game?.disk)
                 .map(toDirectDownloadUrl)
                 .filter(Boolean);
@@ -377,8 +379,8 @@ function renderDownloadCard(game) {
 
 function renderDownloadsPage(games) {
     const canonicalUrl = `${SITE_ORIGIN}/games/downloads/`;
-    const title = "C64 & Amiga Game Downloads A–Z | Cheeky Commodore Gamer";
-    const description = "Browse and download C64 and Amiga games from a searchable A–Z archive, with compact thumbnails, publisher details and links to every game page.";
+    const title = "Authorised C64 & Amiga Downloads | Cheeky Commodore Gamer";
+    const description = "Browse authorised, public-domain and creator-approved freeware downloads for C64 and Amiga games.";
     const c64Count = games.filter((game) => game.system === "C64").length;
     const amigaCount = games.filter((game) => game.system === "Amiga").length;
     const fileCount = games.reduce((total, game) => total + game.downloadCount, 0);
@@ -395,7 +397,7 @@ function renderDownloadsPage(games) {
         "@graph": [
             {
                 "@type": "CollectionPage",
-                name: "C64 & Amiga Game Downloads A–Z",
+                name: "Authorised C64 & Amiga Downloads",
                 description,
                 url: canonicalUrl,
                 isPartOf: { "@type": "WebSite", name: "Cheeky Commodore Gamer", url: SITE_ORIGIN }
@@ -410,7 +412,7 @@ function renderDownloadsPage(games) {
             },
             {
                 "@type": "ItemList",
-                name: "C64 & Amiga games with downloads available",
+                name: "C64 & Amiga games with authorised downloads available",
                 numberOfItems: games.length,
                 itemListElement: games.map((game, index) => ({
                     "@type": "ListItem",
@@ -457,10 +459,10 @@ ${renderHead({ title, description, canonicalUrl, schema })}
 
         <main class="ccg-main ccg-downloads-main">
             <section class="ccg-downloads-hero">
-                <p class="ccg-downloads-hero__kicker">Download archive · C64 &amp; Amiga</p>
-                <h1 class="ccg-downloads-hero__title">Game Downloads A–Z</h1>
+                <p class="ccg-downloads-hero__kicker">Authorised downloads · C64 &amp; Amiga</p>
+                <h1 class="ccg-downloads-hero__title">Authorised Game Downloads</h1>
                 <p class="ccg-downloads-hero__intro">
-                    Choose a letter or search the archive. Each letter opens as a compact accordion, with direct game downloads and a separate link to the full game page.
+                    This archive only lists downloads verified as authorised by a rights holder, public domain or creator-approved freeware.
                 </p>
                 <div class="ccg-downloads-hero__stats">
                     <span><strong>${games.length}</strong> downloadable games</span>
@@ -474,7 +476,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 <a href="/games/">Games</a><span aria-hidden="true">›</span><span aria-current="page">Game Downloads</span>
             </nav>
 
-            <section class="ccg-downloads-tools" aria-label="Search and filter downloadable games">
+            <section class="ccg-downloads-tools" aria-label="Search and filter authorised downloadable games"${games.length ? "" : " hidden"}>
                 <div class="ccg-downloads-search">
                     <label class="visually-hidden" for="downloadSearchInput">Search downloadable games</label>
                     <input id="downloadSearchInput" type="search" placeholder="Search by game, publisher, platform or year…" autocomplete="off">
@@ -488,11 +490,11 @@ ${renderHead({ title, description, canonicalUrl, schema })}
                 <p class="ccg-downloads-visible-count"><strong id="downloadVisibleCount">${games.length}</strong> games shown</p>
             </section>
 
-            <nav class="ccg-downloads-alpha" aria-label="Open games by letter">${alphabet}</nav>
+            <nav class="ccg-downloads-alpha" aria-label="Open games by letter"${games.length ? "" : " hidden"}>${alphabet}</nav>
 
             <section class="ccg-downloads-notice" aria-labelledby="downloads-notice-title">
-                <h2 id="downloads-notice-title">Choose a letter</h2>
-                <p>The archive starts collapsed so hundreds of thumbnails are not loaded together. Open one letter at a time, or use search to jump to the first matching section.</p>
+                <h2 id="downloads-notice-title">${games.length ? "Choose a letter" : "No verified downloads listed yet"}</h2>
+                <p>${games.length ? "The archive starts collapsed so hundreds of thumbnails are not loaded together. Open one letter at a time, or use search to jump to the first matching section." : "Commercial games are kept as information, video and archive pages unless Cheeky Commodore Gamer has confirmed permission to publish a download."}</p>
             </section>
 
             <div class="ccg-downloads-archive" id="downloadArchive">${sections}</div>
@@ -500,7 +502,7 @@ ${renderHead({ title, description, canonicalUrl, schema })}
 
             <section class="ccg-downloads-rights" aria-labelledby="downloads-rights-title">
                 <h2 id="downloads-rights-title">Preservation and rights</h2>
-                <p>Game files remain the property of their respective rights holders. The archive links are presented for retro-computing preservation, research and personal use. Please contact Cheeky Commodore Gamer regarding any link that requires review.</p>
+                <p>Downloads are listed only where permission has been verified, or where a title is public domain or creator-approved freeware. Game files remain the property of their respective rights holders.</p>
             </section>
 
             <section class="ccg-downloads-wayfinding" aria-labelledby="downloads-explore-title">
@@ -527,15 +529,17 @@ function updateStaticPages() {
     const current = readJson(staticPagesPath, []);
     const list = Array.isArray(current) ? current.filter((entry) => typeof entry === "string") : [];
     const target = "games/downloads/index.html";
-    const next = [...list.filter((entry) => entry.trim() !== target), target];
-    const seen = new Set();
-    const deduped = next.filter((entry) => {
+    const seen = new Set([""]);
+    const deduped = [""];
+    list.forEach((entry) => {
         const normalized = entry.trim();
-        if (entry !== "" && !normalized) return false;
-        if (seen.has(normalized)) return false;
+        if (!normalized || normalized === target || seen.has(normalized)) return;
         seen.add(normalized);
-        return true;
+        deduped.push(normalized);
     });
+    const firstDeveloperIndex = deduped.findIndex((entry) => entry.startsWith("games/developers/"));
+    const insertionIndex = firstDeveloperIndex >= 0 ? firstDeveloperIndex : deduped.length;
+    deduped.splice(insertionIndex, 0, target);
 
     return writeFileIfChanged(staticPagesPath, `${JSON.stringify(deduped, null, 2)}\n`);
 }
@@ -545,13 +549,15 @@ function validateGeneratedPage(html, games) {
     const canonicalUrl = `${SITE_ORIGIN}/games/downloads/`;
 
     if (!html.includes(`<link rel="canonical" href="${canonicalUrl}">`)) problems.push("missing canonical URL");
-    if (!html.includes("<title>C64 &amp; Amiga Game Downloads A–Z | Cheeky Commodore Gamer</title>")) problems.push("missing expected SEO title");
+    if (!html.includes("<title>Authorised C64 &amp; Amiga Downloads | Cheeky Commodore Gamer</title>")) problems.push("missing expected SEO title");
     if (!html.includes('meta name="robots" content="index,follow"')) problems.push("missing index,follow robots directive");
     if (!html.includes('id="downloadSearchInput"')) problems.push("missing search input");
-    if (!html.includes("<details class=\"ccg-downloads-letter\"")) problems.push("missing accordion sections");
-    if (!html.includes("Download Game")) problems.push("missing direct download actions");
-    if (!html.includes("Game Page")) problems.push("missing game page actions");
-    if (!html.includes("data-src=")) problems.push("missing deferred thumbnail loading");
+    if (games.length) {
+        if (!html.includes("<details class=\"ccg-downloads-letter\"")) problems.push("missing accordion sections");
+        if (!html.includes("Download Game")) problems.push("missing direct download actions");
+        if (!html.includes("Game Page")) problems.push("missing game page actions");
+        if (!html.includes("data-src=")) problems.push("missing deferred thumbnail loading");
+    }
 
     games.forEach((game) => {
         if (!html.includes(`href="/games/${game.slug}/"`)) problems.push(`missing crawlable game link: ${game.slug}`);
@@ -570,8 +576,6 @@ function main() {
     if (!Array.isArray(sourceGames) || !sourceGames.length) fail("games/games.json must contain a non-empty top-level array.");
 
     const downloadableGames = getDownloadRecords(sourceGames);
-    if (!downloadableGames.length) fail("No games with download links were found in games/games.json.");
-
     const html = renderDownloadsPage(downloadableGames);
     const problems = validateGeneratedPage(html, downloadableGames);
     if (problems.length) fail(`Generated page validation failed: ${problems.join("; ")}`);

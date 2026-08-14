@@ -792,6 +792,8 @@ function normaliseManualUrl(url) {
 }
 
 function resolveDiskUrl(game) {
+    const status = String(game?.download_status || "").trim().toLowerCase();
+    if (!["authorised", "public-domain", "freeware"].includes(status)) return "";
     return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
@@ -2442,7 +2444,7 @@ function updateDownloadsFallback(section, hasManual, hasDisk) {
     }
     const messages = [];
     if (!hasManual) messages.push("Manual being archived…");
-    if (!hasDisk) messages.push("Download link coming soon…");
+    if (!hasDisk) messages.push("No authorised download is listed.");
     toggleGameEmptyMessage(section, "downloads", messages.join(" "));
 }
 

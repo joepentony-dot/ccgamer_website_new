@@ -164,7 +164,7 @@
     const link = document.createElement('a');
     link.className = 'ccg-btn ccg-btn--secondary';
     link.href = 'https://www.cheekycommodoregamer.co.uk/games/downloads/';
-    link.textContent = 'Game Downloads A–Z';
+    link.textContent = 'Authorised Downloads';
     shortcut.appendChild(link);
 
     stats.insertAdjacentElement('afterend', shortcut);

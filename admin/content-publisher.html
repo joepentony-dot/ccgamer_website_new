@@ -171,7 +171,16 @@
             <input type="url" data-game-field="zzapUrl" placeholder="https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=43&amp;page=24" />
             <small>Leave blank if Zzap!64 did not review the game. Use the direct original review scan URL when one is available; games already covered by the Zzap awards archive can also be linked automatically.</small>
           </label>
-          <label>Disk/download URLs
+          <label>Download permission
+            <select data-game-field="downloadStatus">
+              <option value="">No download / not verified</option>
+              <option value="authorised">Authorised by rights holder</option>
+              <option value="public-domain">Public domain</option>
+              <option value="freeware">Freeware / creator-approved</option>
+            </select>
+            <small>A download URL is published only when one of these statuses is selected. Do not use archive, abandonware or third-party ROM links without documented permission.</small>
+          </label>
+          <label>Authorised download URLs
             <textarea rows="3" data-game-field="disk" placeholder="One URL per line"></textarea>
           </label>
         </div>

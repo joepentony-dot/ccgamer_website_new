@@ -4,6 +4,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { hasAuthorisedDownload } = require("./download-eligibility");
 
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -50,12 +51,18 @@ function main() {
     const title = String(game?.title || "").trim();
     const platform = normalizePlatform(game?.system || game?.platform);
     const year = Number(game?.year);
+    const diskLinks = Array.isArray(game?.disk)
+      ? game.disk.filter((value) => String(value || "").trim())
+      : (String(game?.disk || "").trim() ? [game.disk] : []);
 
     if (!id) errors.push(`${label} is missing id`);
     if (!slug) errors.push(`${label} is missing slug`);
     if (!title) errors.push(`${label} is missing title`);
     if (!platform) errors.push(`${label} has unsupported platform: ${game?.system || game?.platform || "(missing)"}`);
     if (!Number.isInteger(year)) errors.push(`${label} has no usable release year`);
+    if (diskLinks.length && !hasAuthorisedDownload(game)) {
+      errors.push(`${label} has download links without an authorised, public-domain or freeware download status`);
+    }
 
     if (id) {
       if (!ids.has(id)) ids.set(id, []);

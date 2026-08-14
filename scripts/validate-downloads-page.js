@@ -4,6 +4,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { hasAuthorisedDownload } = require("./download-eligibility");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -47,7 +48,7 @@ function main() {
         .map((game) => ({
             slug: String(game?.slug || "").trim(),
             title: String(game?.title || "").trim(),
-            links: normalizeLinks(game?.disk)
+            links: hasAuthorisedDownload(game) ? normalizeLinks(game?.disk) : []
         }))
         .filter((game) => game.slug && game.title && game.links.length > 0);
 
@@ -64,7 +65,7 @@ function main() {
     }
 
     console.log(`[validate-downloads] ${expected.length} downloadable games are present in Game Downloads A-Z.`);
-    console.log("[validate-downloads] Any future game with a valid disk/download entry is now a required generated A-Z record.");
+    console.log("[validate-downloads] Only explicitly authorised, public-domain or freeware downloads are included in Game Downloads A-Z.");
 }
 
 main();
