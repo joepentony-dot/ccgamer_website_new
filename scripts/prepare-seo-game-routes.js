@@ -9,6 +9,10 @@ const {
   getImageMetadata,
   upsertSocialMeta,
 } = require("./generate-slug-pages");
+const {
+  mergeGameDescriptionEnrichments,
+  readGameDescriptionEnrichments,
+} = require("./lib/game-description-enrichments");
 
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -90,10 +94,6 @@ function firstText(values) {
 
 function resolvePublisher(game) {
   return firstText([game?.credits?.publisher, game?.publisher]);
-}
-
-function resolveDeveloper(game) {
-  return firstText([game?.credits?.developer, game?.developer, game?.credits?.publisher, game?.publisher]);
 }
 
 function buildRuntimeDescription(game, title) {
@@ -262,9 +262,6 @@ function removeStaticNotFoundCopy(html) {
 }
 
 function prefillStaticContent(html, game, title, imagePath) {
-  const year = String(game?.year || "").trim();
-  const system = detectPlatform(game);
-  const developer = resolveDeveloper(game);
   const description = stripHtml(game?.description || "");
 
   html = html.replace(
@@ -275,19 +272,6 @@ function prefillStaticContent(html, game, title, imagePath) {
     /<h1 id="gameHeroTitle" class="game-hero__title">[\s\S]*?<\/h1>/i,
     `<h1 id="gameHeroTitle" class="game-hero__title">${escapeHtml(title)}</h1>`
   );
-  html = html.replace(
-    /<span id="gameMetaYear" class="game-meta__item">[\s\S]*?<\/span>/i,
-    `<span id="gameMetaYear" class="game-meta__item">${escapeHtml(year)}</span>`
-  );
-  html = html.replace(
-    /<span id="gameMetaSystem" class="game-meta__item">[\s\S]*?<\/span>/i,
-    `<span id="gameMetaSystem" class="game-meta__item">${escapeHtml(system)}</span>`
-  );
-  html = html.replace(
-    /<span id="gameMetaDeveloper" class="game-meta__item">[\s\S]*?<\/span>/i,
-    `<span id="gameMetaDeveloper" class="game-meta__item">${escapeHtml(developer)}</span>`
-  );
-
   if (description) {
     html = html.replace(
       /<section id="game-description-section" class="game-section" hidden>/i,
@@ -407,7 +391,11 @@ function run(options = {}) {
   const outputRoot = path.resolve(options.outputRoot || sourceRoot);
   const gamesPath = path.join(sourceRoot, "games", "games.json");
   const shellPath = path.join(sourceRoot, "games", "game.html");
-  const games = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+  const sourceGames = JSON.parse(fs.readFileSync(gamesPath, "utf8"));
+  const games = mergeGameDescriptionEnrichments(
+    sourceGames,
+    readGameDescriptionEnrichments(sourceRoot)
+  );
   const shell = fs.readFileSync(shellPath, "utf8");
   validateGames(games);
 
