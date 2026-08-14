@@ -51,7 +51,7 @@ test("composer page presentation removes catalogue counts and platform identity 
 <p class="ccg-composer-profile__platform">Amiga</p>
 <p class="ccg-composer-profile__facts">1 linked game credit</p>
 <p class="ccg-composer-profile__factline"><strong>Born:</strong> 1956</p>
-<p class="ccg-composer-profile__bio">Example Composer wrote music. Reliable biographical sources give his birth year as 1956; a precise public birth date has not been established.</p>
+<p class="ccg-composer-profile__bio">Example Composer wrote music. Reliable biographical sources give his birth year as 1956; a precise public birth date has not been established.</p>          
 </div></article></div>
 <h2 class="ccg-composer-section-title">Games featuring Example Composer</h2>
 <ul id="composer-games"><li><span class="ccg-composer-game-title">Example Game</span></li></ul>
@@ -70,6 +70,7 @@ test("composer page presentation removes catalogue counts and platform identity 
   assert.doesNotMatch(result, /source references/i);
   assert.match(result, /composer-presentation-runtime\.js/);
   assert.doesNotMatch(result, /"birthDate": "1956"/);
+  assert.doesNotMatch(result, /[ \t]+$/m);
 });
 
 test("meta descriptions keep useful SEO wording but remove research notes", () => {
