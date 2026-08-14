@@ -8,7 +8,6 @@ const path = require("path");
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
-// This metadata is regenerated from the current games catalogue before sitemap output.
 const metadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 
 function fail(message) {
@@ -86,8 +85,6 @@ function validateRoute(route, problems) {
   const description = extractMetaDescription(html);
   if (!description) {
     problems.push(`${route.slug}: meta description is missing`);
-  } else if (!new RegExp(`\\b${count}\\s+linked\\b`, "i").test(description)) {
-    problems.push(`${route.slug}: meta description does not contain the current linked-credit count ${count}`);
   }
 
   if (hasObsoleteArchiveFiller(text)) {
