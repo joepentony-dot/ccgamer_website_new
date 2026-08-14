@@ -5,6 +5,7 @@
 const fs = require("fs");
 const path = require("path");
 const presentation = require("./normalize-composer-presentation");
+const metaCleanup = require("./cleanup-composer-meta-descriptions");
 
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -140,6 +141,9 @@ function validateRoute(route, problems) {
   if (/\bsource references\b/i.test(description) || /\bCheeky Commodore Gamer archive\b/i.test(description)) {
     problems.push(`${route.slug}: meta description still contains research/archive filler`);
   }
+  if (/\b(?:and|with)\s*[.!?…]$/i.test(description)) {
+    problems.push(`${route.slug}: meta description ends with a dangling conjunction`);
+  }
 }
 
 function main() {
@@ -148,6 +152,7 @@ function main() {
   if (!Array.isArray(metadata)) fail("Composer metadata must be an array");
 
   const normalized = presentation.normalizeAllComposerPages();
+  const metaResult = metaCleanup.cleanupAllComposerMetaDescriptions();
   const problems = [];
   metadata.forEach((route) => validateRoute(route, problems));
 
@@ -160,6 +165,7 @@ function main() {
     composerRoutesChecked: metadata.length,
     catalogueCreditsRetainedInternally: totalCredits,
     presentationFilesNormalized: normalized.changed,
+    metaDescriptionFilesCleaned: metaResult.changed,
     status: "synchronized"
   }, null, 2));
 }
