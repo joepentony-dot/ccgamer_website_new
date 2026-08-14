@@ -152,24 +152,6 @@
     )).join('');
   }
 
-  function addGamesDownloadsShortcut() {
-    const page = document.querySelector('.ccg-page--games-index');
-    const stats = page?.querySelector('.games-hero__stats');
-    if (!stats || page.querySelector('[data-games-downloads-shortcut]')) return;
-
-    const shortcut = document.createElement('div');
-    shortcut.className = 'games-hero__stats';
-    shortcut.setAttribute('data-games-downloads-shortcut', 'true');
-
-    const link = document.createElement('a');
-    link.className = 'ccg-btn ccg-btn--secondary';
-    link.href = 'https://www.cheekycommodoregamer.co.uk/games/downloads/';
-    link.textContent = 'Authorised Downloads';
-    shortcut.appendChild(link);
-
-    stats.insertAdjacentElement('afterend', shortcut);
-  }
-
   function normalizeButtons() {
     document.querySelectorAll('.ccg-btn').forEach(btn => {
       btn.style.borderRadius = '0px';
@@ -370,7 +352,6 @@
     ensureSkipLink();
     rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
     rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
-    addGamesDownloadsShortcut();
     document.querySelectorAll('.ccg-socials-fallback').forEach(el => {
       el.style.display = 'none';
     });

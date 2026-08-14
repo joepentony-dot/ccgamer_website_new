@@ -821,18 +821,12 @@ function setupSystemFilter() {
 }
 
 function setupYearFilter() {
-    const slider = document.getElementById("gamesYearSlider");
-    const yearInput = document.getElementById("gamesYearInput");
-    const valueEl = document.getElementById("gamesYearValue");
-    const spanButtons = Array.from(document.querySelectorAll("[data-year-span]"));
-    if (!slider || !yearInput || slider.dataset.ccgBound === "true") return;
-    slider.dataset.ccgBound = "true";
+    const yearSelect = document.getElementById("gamesYearSelect");
+    if (!yearSelect || yearSelect.dataset.ccgBound === "true") return;
+    yearSelect.dataset.ccgBound = "true";
 
     CCG_YEAR_FILTER_ELEMENTS = {
-        slider,
-        yearInput,
-        valueEl,
-        spanButtons,
+        yearSelect,
         rangePanel: document.querySelector("[data-games-year-filter]")
     };
 
@@ -847,14 +841,11 @@ function setupYearFilter() {
     CCG_ACTIVE_YEAR_FOCUS = CCG_YEAR_MAX;
     CCG_ACTIVE_YEAR_SPAN = "all";
 
-    slider.min = String(CCG_YEAR_MIN);
-    slider.max = String(CCG_YEAR_MAX);
-    slider.value = String(CCG_ACTIVE_YEAR_FOCUS);
-
-    yearInput.min = String(CCG_YEAR_MIN);
-    yearInput.max = String(CCG_YEAR_MAX);
-    yearInput.value = "";
-    yearInput.placeholder = "Any";
+    const availableYears = [...new Set(years)].sort((a, b) => b - a);
+    yearSelect.replaceChildren(
+        new Option("All years", "all"),
+        ...availableYears.map(year => new Option(String(year), String(year)))
+    );
 
     const clampYear = (value) => {
         if (!Number.isFinite(value)) return CCG_YEAR_MAX;
@@ -870,30 +861,16 @@ function setupYearFilter() {
     const setFocusYear = (value) => {
         const next = clampYear(Number.parseInt(value, 10));
         CCG_ACTIVE_YEAR_FOCUS = next;
-        slider.value = String(next);
-        yearInput.value = String(next);
-        if (CCG_ACTIVE_YEAR_SPAN === "all") {
-            CCG_ACTIVE_YEAR_SPAN = "0";
-        }
+        CCG_ACTIVE_YEAR_SPAN = "0";
         applyYearChange();
     };
 
-    const setSpan = (nextSpan) => {
-        setYearFilterSpan(nextSpan);
-    };
-
-    slider.addEventListener("input", () => setFocusYear(slider.value));
-    yearInput.addEventListener("input", () => {
-        if (!yearInput.value) return;
-        setFocusYear(yearInput.value);
-    });
-
-    spanButtons.forEach(btn => {
-        btn.dataset.ccgBound = "true";
-        btn.addEventListener("click", () => {
-            const span = btn.dataset.yearSpan || "all";
-            setSpan(span);
-        });
+    yearSelect.addEventListener("change", () => {
+        if (yearSelect.value === "all") {
+            setYearFilterSpan("all");
+            return;
+        }
+        setFocusYear(yearSelect.value);
     });
 
     updateYearFilterUI();
@@ -1190,28 +1167,18 @@ function updateYearFilterUI() {
     const elements = CCG_YEAR_FILTER_ELEMENTS;
     if (!elements) return;
 
-    elements.spanButtons.forEach(btn => {
-        const isActive = btn.dataset.yearSpan === String(CCG_ACTIVE_YEAR_SPAN);
-        btn.classList.toggle("is-active", isActive);
-        btn.setAttribute("aria-pressed", String(isActive));
-    });
-
     const isAllYears = CCG_ACTIVE_YEAR_SPAN === "all";
     if (elements.rangePanel) {
         elements.rangePanel.classList.toggle("is-active", !isAllYears);
         elements.rangePanel.classList.toggle("is-idle", isAllYears);
     }
 
-    if (elements.yearInput) {
-        if (isAllYears) {
-            elements.yearInput.value = "";
-            elements.yearInput.placeholder = "Any";
-        } else {
-            elements.yearInput.value = String(CCG_ACTIVE_YEAR_FOCUS ?? CCG_YEAR_MAX);
-        }
+    if (elements.yearSelect) {
+        elements.yearSelect.value = isAllYears
+            ? "all"
+            : String(CCG_ACTIVE_YEAR_FOCUS ?? CCG_YEAR_MAX);
     }
 
-    updateYearRangeLabel(elements.valueEl);
     updateBrowseHint();
 }
 

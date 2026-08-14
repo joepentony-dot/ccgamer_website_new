@@ -254,34 +254,11 @@
                 </div>
                 <div class="games-filter__range" data-games-year-filter>
                     <div class="games-filter__range-header">
-                        <span class="games-filter__range-label">Year</span>
-                        <span class="games-filter__range-value" id="gamesYearValue">All years</span>
+                        <label class="games-filter__range-label" for="gamesYearSelect">Year</label>
                     </div>
-                    <div class="games-filter__year-row">
-                        <label class="games-filter__year-slider">
-                            <span class="visually-hidden">Year</span>
-                            <input type="range" id="gamesYearSlider" min="1978" max="1999" step="1" value="1978" />
-                        </label>
-                        <label class="games-filter__year-input">
-                            <span>Year</span>
-                            <input type="number" id="gamesYearInput" min="1978" max="1999" step="1" inputmode="numeric" />
-                        </label>
-                    </div>
-                    <div class="games-filter__range-toggle" role="group" aria-label="Show range around year">
-                        <button class="games-filter__range-btn" type="button" data-year-span="0" aria-pressed="false">
-                            This year
-                        </button>
-                        <button class="games-filter__range-btn" type="button" data-year-span="5" aria-pressed="false">
-                            ±5 years
-                        </button>
-                        <button class="games-filter__range-btn" type="button" data-year-span="10" aria-pressed="false">
-                            ±10 years
-                        </button>
-                        <button class="games-filter__range-btn is-active" type="button" data-year-span="all" aria-pressed="true">
-                            All years
-                        </button>
-                    </div>
-                    <div class="games-filter__range-hint">All years shows the full library. Choose a year to activate a range.</div>
+                    <select id="gamesYearSelect" class="games-filter__year-select" aria-label="Filter games by release year">
+                        <option value="all">All years</option>
+                    </select>
                 </div>
                 <div class="games-filter__status" id="gamesBrowseHint">Browsing: All Games (C64 + Amiga)</div>
             </div>
