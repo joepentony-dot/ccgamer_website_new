@@ -273,6 +273,75 @@
     margin-inline: auto;
 }
 
+/* Keep the practical actions deliberately compact and centred. */
+.ccg-page--single-game .ccg-game-utility-hub {
+    width: min(980px, 94vw);
+    margin-inline: auto;
+    text-align: center;
+}
+
+.ccg-page--single-game .ccg-game-utility-hub .game-section__title {
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.ccg-page--single-game .ccg-game-utility-hub__grid {
+    width: min(100%, 860px);
+    margin-inline: auto;
+}
+
+.ccg-page--single-game .ccg-utility-card--manual {
+    grid-column: 1 / -1;
+    width: min(100%, 560px);
+    margin-inline: auto;
+}
+
+.ccg-page--single-game .ccg-utility-card--music,
+.ccg-page--single-game .ccg-utility-card--reading {
+    text-align: left;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline {
+    display: grid;
+    gap: 12px;
+    padding: clamp(14px, 1.7vw, 20px);
+    border-radius: 16px;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__title {
+    text-align: center;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list {
+    width: min(100%, 760px);
+    margin-inline: auto;
+    grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.3fr);
+    align-items: center;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+    text-align: right;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd {
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .ccg-page--single-game .ccg-game-utility-hub {
+        width: 100%;
+    }
+
+    .ccg-page--single-game .ccg-behind-pixels-inline__list {
+        grid-template-columns: 1fr;
+        gap: 3px;
+    }
+
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+        text-align: left;
+    }
+}
+
 @media (max-width: 900px) {
     .ccg-page--single-game .game-hero {
         padding: 14px;

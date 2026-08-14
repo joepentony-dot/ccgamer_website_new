@@ -1634,7 +1634,13 @@ function renderGame(game) {
     const hasUtilityHub = !!(hasManual || hasDisk || hasReading);
     if (utilityHubSection) {
         utilityHubSection.hidden = !hasUtilityHub;
+        const kicker = utilityHubSection.querySelector(".game-section__kicker");
+        const title = utilityHubSection.querySelector(".game-section__title");
+        if (kicker) kicker.hidden = true;
+        if (title) title.textContent = hasManual ? "Game Manual" : "Game Resources";
     }
+    const manualCardTitle = manualCard?.querySelector(".ccg-utility-card__title");
+    if (manualCardTitle) manualCardTitle.hidden = hasManual;
     void renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading });
 
     renderAffiliateSection(game);
@@ -1678,18 +1684,6 @@ function renderGame(game) {
     const hasScreenshots = !!(screenshotsSection && !screenshotsSection.hidden);
     const hasRelated = !!(relatedSection && !relatedSection.hidden);
     const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
-
-    try {
-        buildGameToc({
-            overview: descriptionSection,
-            video: videoSection,
-            downloads: utilityHubSection,
-            gallery: screenshotsSection,
-            related: relatedSection
-        });
-    } catch (error) {
-        console.warn("[CCG SINGLE] TOC render skipped.", error);
-    }
 
     try {
         initSingleGameUX({
@@ -2563,39 +2557,6 @@ function smoothScrollTo(target) {
 function resolveCreditValue(game, key) {
     const credits = (game?.credits && typeof game.credits === "object") ? game.credits : null;
     return formatFactValue(credits?.[key] || game?.[key]);
-}
-
-function buildGameToc(sections) {
-    const toc = document.querySelector("[data-game-toc]");
-    if (!toc) return;
-
-    toc.innerHTML = "";
-    toc.setAttribute("aria-label", "Game sections");
-
-    const entries = [
-        { key: "overview", label: "Overview", element: sections.overview, id: "game-description-section" },
-        { key: "video", label: "Video", element: sections.video, id: "game-video-section" },
-        { key: "downloads", label: "Downloads", element: sections.downloads, id: "game-downloads-section" },
-        { key: "music", label: "Music", element: sections.music, id: "game-music-section" },
-        { key: "gallery", label: "Gallery", element: sections.gallery, id: "game-screenshots-section" },
-        { key: "related", label: "Related", element: sections.related, id: "game-related-section" }
-    ];
-
-    let count = 0;
-    entries.forEach(entry => {
-        if (!entry.element || entry.element.hidden) return;
-        ensureSectionId(entry.element, entry.id);
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "game-toc__btn";
-        btn.textContent = entry.label;
-        btn.setAttribute("aria-label", `Jump to ${entry.label}`);
-        btn.addEventListener("click", () => smoothScrollTo(entry.element));
-        toc.appendChild(btn);
-        count += 1;
-    });
-
-    toc.hidden = count === 0;
 }
 
 function initSingleGameUX(state) {

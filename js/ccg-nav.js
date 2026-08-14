@@ -24,7 +24,9 @@
   ];
 
   const COMPOSER_INDEX_PATH = '/music/composers/composers.json';
+  const PUBLISHER_INDEX_PATH = '/games/publishers/publishers.json';
   let composerIndexPromise = null;
+  let publisherIndexPromise = null;
 
   const PUBLISHER_ALIASES = new Map([
     ['ocean', 'Ocean Software'],
@@ -271,12 +273,38 @@
     return composerIndexPromise;
   }
 
+  function loadPublisherIndex() {
+    if (publisherIndexPromise) return publisherIndexPromise;
+
+    publisherIndexPromise = fetch(PUBLISHER_INDEX_PATH, { cache: 'default' })
+      .then(response => {
+        if (!response.ok) throw new Error(`${PUBLISHER_INDEX_PATH} returned HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(rows => {
+        const index = new Map();
+        (Array.isArray(rows) ? rows : []).forEach(row => {
+          const name = String(row?.name || '').trim();
+          const slug = String(row?.slug || '').trim();
+          if (!name || !slug) return;
+          index.set(normalizePublisherKey(name), { name, slug });
+        });
+        return index;
+      })
+      .catch(error => {
+        console.warn('[CCG publisher links] Publisher index unavailable', error);
+        return new Map();
+      });
+
+    return publisherIndexPromise;
+  }
+
   function getSiteRoot() {
     const root = typeof window.ccgGetSiteRoot === 'function' ? window.ccgGetSiteRoot() : '/';
     return root.endsWith('/') ? root : `${root}/`;
   }
 
-  function linkPublisherCredits(game) {
+  async function linkPublisherCredits(game) {
     const publishers = getGamePublishers(game);
     if (!publishers.length) return;
 
@@ -285,17 +313,24 @@
     const publisherDetail = publisherTerm?.nextElementSibling;
     if (!publisherDetail || publisherDetail.dataset.ccgPublisherLinks === 'true') return;
 
+    const publisherIndex = await loadPublisherIndex();
+    if (!document.contains(publisherDetail)) return;
+
     publisherDetail.textContent = '';
     publishers.forEach((publisher, index) => {
       if (index > 0) publisherDetail.appendChild(document.createTextNode(', '));
 
       const canonicalName = canonicalizePublisherName(publisher);
-      const slug = slugifyPublisher(publisher);
+      const match = publisherIndex.get(normalizePublisherKey(canonicalName));
+      if (!match?.slug) {
+        publisherDetail.appendChild(document.createTextNode(publisher));
+        return;
+      }
       const link = document.createElement('a');
       link.className = 'ccg-composer-button ccg-publisher-credit-link';
-      link.href = `${getSiteRoot()}games/publishers/${slug}/`;
+      link.href = `${getSiteRoot()}games/publishers/${match.slug}/`;
       link.textContent = publisher;
-      link.setAttribute('aria-label', `Browse all ${canonicalName} games`);
+      link.setAttribute('aria-label', `Browse all ${match.name} games`);
       publisherDetail.appendChild(link);
     });
 
@@ -343,7 +378,7 @@
 
   window.addEventListener('ccg:game-loaded', event => {
     const game = event.detail?.game || null;
-    linkPublisherCredits(game);
+    void linkPublisherCredits(game);
     void linkMusicianCredits(game);
   });
 
