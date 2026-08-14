@@ -10,6 +10,7 @@ const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
 const baseReviewIndex = JSON.parse(fs.readFileSync('data/zzap64-review-links.json', 'utf8'));
 const reviewIndex = enricher.enrich(JSON.parse(JSON.stringify(baseReviewIndex))).output;
 const gameJs = fs.readFileSync('js/load-single-game.js', 'utf8');
+const magazineReviewJs = fs.readFileSync('js/magazine-game-reviews-runtime.js', 'utf8');
 const publisherHtml = fs.readFileSync('admin/content-publisher.html', 'utf8');
 const publisherJs = fs.readFileSync('admin/js/content-publisher.js', 'utf8');
 
@@ -69,12 +70,11 @@ test('Rambo uses its archive title while retaining both Zzap review links', () =
 });
 
 test('game runtime supports automatic, lightweight and optional Zzap review links', () => {
-  assert.match(gameJs, /\/data\/zzap64-review-links\.json/);
-  assert.match(gameJs, /ccg-zzap64-matcher\.js/);
-  assert.match(gameJs, /findAwardsForGame\(game, entries, \[game\]\)/);
-  assert.match(gameJs, /resolveZzapLinks/);
-  assert.match(gameJs, /ZZAP!64 REVIEW/);
-  assert.match(gameJs, /game-reading-card/);
+  assert.match(magazineReviewJs, /\/data\/zzap64-game-reviews\//);
+  assert.match(magazineReviewJs, /loadZzapRows/);
+  assert.match(magazineReviewJs, /Magazine Reviews/);
+  assert.match(magazineReviewJs, /game-reading-card/);
+  assert.match(gameJs, /magazine-game-reviews-runtime\.js/);
 });
 
 test('Content Publisher offers an optional direct Zzap review URL', () => {
