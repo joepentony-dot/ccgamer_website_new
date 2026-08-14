@@ -231,11 +231,6 @@ body[data-ccg-mode="amiga"] {
     box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.18);
 }
 
-.games-filter__range.is-idle .games-filter__year-row,
-.games-filter__range.is-idle .games-filter__range-toggle {
-    opacity: 0.75;
-}
-
 .games-filter__range-header {
     display: flex;
     align-items: center;
@@ -248,86 +243,26 @@ body[data-ccg-mode="amiga"] {
     color: var(--ccg-soft);
 }
 
-.games-filter__range-value {
-    font-family: var(--ccg-font-body);
-    font-size: calc(0.9rem * var(--ui-font-scale));
-    letter-spacing: 0.04em;
-    color: #fff;
-}
-
-.games-filter__year-row {
-    display: grid;
-    grid-template-columns: 1fr minmax(120px, 160px);
-    gap: calc(12px * var(--ui-density));
-    align-items: end;
-}
-
-.games-filter__year-slider input[type="range"] {
+.games-filter__year-select {
     width: 100%;
-    accent-color: rgba(var(--accent-rgb), 0.85);
-    height: 44px;
-}
-
-.games-filter__year-input {
-    display: grid;
-    gap: 6px;
-    font-family: var(--ccg-font-body);
-    font-size: calc(0.8rem * var(--ui-font-scale));
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ccg-soft);
-}
-
-.games-filter__year-input input[type="number"] {
-    width: 100%;
+    min-height: 44px;
+    padding: calc(8px * var(--ui-density)) calc(38px * var(--ui-density)) calc(8px * var(--ui-density)) calc(12px * var(--ui-density));
     border-radius: calc(10px * var(--ui-radius-scale));
     border: 1px solid rgba(255,255,255,0.14);
     background: rgba(0,0,0,0.35);
     color: #fff;
-    padding: calc(8px * var(--ui-density)) calc(10px * var(--ui-density));
     font-family: var(--ccg-font-body);
     font-size: calc(0.92rem * var(--ui-font-scale));
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
 }
 
-.games-filter__year-input input[type="number"]:focus-visible {
+.games-filter__year-select:focus-visible {
     outline: 2px solid rgba(var(--accent-rgb), 0.6);
     outline-offset: 2px;
     border-color: rgba(var(--accent-rgb), 0.7);
     box-shadow: 0 0 0 2px rgba(var(--accent-rgb), 0.2);
-}
-
-.games-filter__range-toggle {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: calc(10px * var(--ui-density));
-}
-
-.games-filter__range-btn {
-    min-height: 44px;
-    padding: calc(8px * var(--ui-density)) calc(12px * var(--ui-density));
-    border-radius: 999px;
-    border: 1px solid var(--ccg-border);
-    background: rgba(255,255,255,0.06);
-    color: #fff;
-    font-family: var(--ccg-font-body);
-    font-size: calc(0.82rem * var(--ui-font-scale));
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-}
-
-.games-filter__range-btn.is-active,
-.games-filter__range-btn:hover,
-.games-filter__range-btn:focus-visible {
-    border-color: rgba(var(--accent-rgb), 0.7);
-    box-shadow: 0 12px 26px rgba(0,0,0,0.6), 0 0 14px rgba(var(--accent-rgb),0.28);
-    transform: translateY(-1px);
-    outline: none;
-}
-
-.games-filter__range-hint {
-    font-size: calc(0.82rem * var(--ui-font-scale));
-    color: var(--ccg-soft);
 }
 
 .games-grid__more-wrap {
@@ -998,10 +933,6 @@ body[data-ccg-mode="amiga"] {
     .games-filter__range-header {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .games-filter__year-row {
-        grid-template-columns: 1fr;
     }
 
     .games-focus-panel {
