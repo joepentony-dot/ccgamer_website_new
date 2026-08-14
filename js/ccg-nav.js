@@ -194,8 +194,7 @@
       .replace(/^-+|-+$/g, '');
   }
 
-  function getGamePublishers(game) {
-    const raw = game?.credits?.publisher ?? game?.publisher ?? [];
+  function getPublisherCreditValues(raw) {
     const values = Array.isArray(raw) ? raw : [raw];
     const seen = new Set();
 
@@ -208,6 +207,14 @@
         seen.add(slug);
         return true;
       });
+  }
+
+  function getGamePublishers(game) {
+    return getPublisherCreditValues(game?.credits?.publisher ?? game?.publisher ?? []);
+  }
+
+  function getGameReReleasePublishers(game) {
+    return getPublisherCreditValues(game?.credits?.re_releaser ?? []);
   }
 
   function normalizeComposerKey(value) {
@@ -306,35 +313,44 @@
 
   async function linkPublisherCredits(game) {
     const publishers = getGamePublishers(game);
-    if (!publishers.length) return;
+    const reReleasePublishers = getGameReReleasePublishers(game);
+    if (!publishers.length && !reReleasePublishers.length) return;
 
     const terms = document.querySelectorAll('.ccg-behind-pixels-inline__list dt');
-    const publisherTerm = Array.from(terms).find(term => term.textContent.trim().toLowerCase() === 'publisher');
-    const publisherDetail = publisherTerm?.nextElementSibling;
-    if (!publisherDetail || publisherDetail.dataset.ccgPublisherLinks === 'true') return;
-
     const publisherIndex = await loadPublisherIndex();
-    if (!document.contains(publisherDetail)) return;
+    const creditGroups = [
+      { label: 'publisher', values: publishers },
+      { label: 're-release', values: reReleasePublishers }
+    ];
 
-    publisherDetail.textContent = '';
-    publishers.forEach((publisher, index) => {
-      if (index > 0) publisherDetail.appendChild(document.createTextNode(', '));
+    creditGroups.forEach(group => {
+      if (!group.values.length) return;
 
-      const canonicalName = canonicalizePublisherName(publisher);
-      const match = publisherIndex.get(normalizePublisherKey(canonicalName));
-      if (!match?.slug) {
-        publisherDetail.appendChild(document.createTextNode(publisher));
-        return;
-      }
-      const link = document.createElement('a');
-      link.className = 'ccg-composer-button ccg-publisher-credit-link';
-      link.href = `${getSiteRoot()}games/publishers/${match.slug}/`;
-      link.textContent = publisher;
-      link.setAttribute('aria-label', `Browse all ${match.name} games`);
-      publisherDetail.appendChild(link);
+      const term = Array.from(terms).find(item => item.textContent.trim().toLowerCase() === group.label);
+      const detail = term?.nextElementSibling;
+      if (!detail || detail.dataset.ccgPublisherLinks === 'true' || !document.contains(detail)) return;
+
+      detail.textContent = '';
+      group.values.forEach((publisher, index) => {
+        if (index > 0) detail.appendChild(document.createTextNode(', '));
+
+        const canonicalName = canonicalizePublisherName(publisher);
+        const match = publisherIndex.get(normalizePublisherKey(canonicalName));
+        if (!match?.slug) {
+          detail.appendChild(document.createTextNode(publisher));
+          return;
+        }
+
+        const link = document.createElement('a');
+        link.className = 'ccg-composer-button ccg-publisher-credit-link';
+        link.href = `${getSiteRoot()}games/publishers/${match.slug}/`;
+        link.textContent = publisher;
+        link.setAttribute('aria-label', `Browse all ${match.name} games`);
+        detail.appendChild(link);
+      });
+
+      detail.dataset.ccgPublisherLinks = 'true';
     });
-
-    publisherDetail.dataset.ccgPublisherLinks = 'true';
   }
 
   async function linkMusicianCredits(game) {
