@@ -9,7 +9,6 @@ const enrich = require("./enrich-generated-composer-pages");
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
-const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const metadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 const researchPath = path.join(repoRoot, "music", "composers", "research.json");
 const gamesPath = path.join(repoRoot, "games", "games.json");
@@ -21,8 +20,11 @@ function fail(message) {
 }
 
 function readJson(filePath) {
-  try { return JSON.parse(fs.readFileSync(filePath, "utf8")); }
-  catch (error) { fail(`Could not parse ${path.relative(repoRoot, filePath)}: ${error.message}`); }
+  try {
+    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+  } catch (error) {
+    fail(`Could not parse ${path.relative(repoRoot, filePath)}: ${error.message}`);
+  }
 }
 
 function htmlEscape(value) {
@@ -35,7 +37,10 @@ function htmlEscape(value) {
 }
 
 function replaceMetaDescription(html, description) {
-  return html.replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`);
+  return html
+    .replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
+    .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
+    .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
 }
 
 function replaceProfileHost(html, markup) {
@@ -44,8 +49,8 @@ function replaceProfileHost(html, markup) {
   return html.replace(host, `<div id="composer-content">\n      ${markup}\n    </div>`);
 }
 
-function injectEntitySchema(html, route, profile, archiveBio) {
-  const entity = enrich.buildEntitySchema(route, profile, archiveBio);
+function injectEntitySchema(html, route, profile) {
+  const entity = enrich.buildEntitySchema(route, profile);
   const schema = JSON.stringify({ "@context": "https://schema.org", ...entity }, null, 2).replace(/</g, "\\u003c");
   const block = `<script type="application/ld+json" data-ccg-composer-research-schema="true">\n${schema}\n</script>`;
   const existing = /<script\s+type="application\/ld\+json"\s+data-ccg-composer-research-schema="true">[\s\S]*?<\/script>/i;
@@ -73,6 +78,7 @@ function main() {
   const researchDoc = enrich.loadResearchDocument(researchPath);
   const games = readJson(gamesPath);
   if (!Array.isArray(metadata) || !Array.isArray(games)) fail("Invalid metadata or games JSON");
+
   const profiles = researchDoc?.profiles || {};
   const gameBySlug = new Map(games.filter(Boolean).map((game) => [game.slug, game]));
   const clientChanged = preserveStaticResearchProfile();
@@ -85,20 +91,24 @@ function main() {
     curated += 1;
     const profile = profiles[route.slug] || null;
     if (!profile) missingResearch.push(route.slug);
+
     const titles = (route.games || []).map((slug) => {
       const game = gameBySlug.get(slug);
       return game?.title || game?.name || String(slug).replace(/-/g, " ");
     }).filter(Boolean);
-    const archiveBio = enrich.archiveBiography(route, titles);
-    const markup = enrich.buildProfileMarkup(route, profile, archiveBio).replace(/^[ \t]+$/gm, "");
+
+    const markup = enrich.buildProfileMarkup(route, profile).replace(/^[ \t]+$/gm, "");
     const filePath = path.join(repoRoot, "music", route.slug, "index.html");
     if (!fs.existsSync(filePath)) fail(`Missing curated page: ${route.slug}`);
+
     let html = fs.readFileSync(filePath, "utf8");
     if (html.includes('data-generated-composer="true"')) fail(`Curated route unexpectedly marked generated: ${route.slug}`);
+
     let next = replaceProfileHost(html, markup);
     if (!next) fail(`Could not locate composer-content on curated page: ${route.slug}`);
     next = replaceMetaDescription(next, enrich.buildDescription(route, profile, titles));
-    next = injectEntitySchema(next, route, profile, archiveBio);
+    next = injectEntitySchema(next, route, profile);
+
     if (next !== html) {
       fs.writeFileSync(filePath, next, "utf8");
       changed += 1;

@@ -1,7 +1,7 @@
 {
-  "version": 1,
-  "lastResearched": "2026-08-12",
-  "policy": "Personal facts are included only when supported by a reasonably reliable source. Where sources conflict, disputed birth details are omitted. Every composer page may still use verified CCG game-credit data for its archive overview.",
+  "version": 2,
+  "lastResearched": "2026-08-14",
+  "policy": "Biographies and personal facts are published only when supported by a specific reliable source. Composer pages always retain verified linked-credit facts, but no generic Cheeky Commodore Gamer archive paragraph is generated when independent biography is unavailable.",
   "parts": [
     "../../data/composer-research/part-01.json",
     "../../data/composer-research/part-02.json",
@@ -12,5 +12,6 @@
     "../../data/composer-research/part-07.json",
     "../../data/composer-research/part-08.json",
     "../../data/composer-research/part-09.json"
-  ]
+  ],
+  "overrides": "../../data/composer-research/verified-overrides-2026-08-14.json"
 }
