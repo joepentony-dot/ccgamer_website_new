@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="analytics-growth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Analytics &amp; Growth | CCG Admin</title>
+  <meta name="description" content="Private CCG website impact dashboard combining registrations, Google Analytics and Search Console." />
+  <link rel="icon" href="../favicon.ico" />
+  <link rel="stylesheet" href="../resources/css/ccg-master.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mode.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-admin.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-mobile-lite.css" />
+  <link rel="stylesheet" href="../resources/css/ccg-analytics-growth.css" />
+</head>
+<body class="ccg-body ccg-admin" data-ccg-mode="c64" data-mode="c64">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="growth-centre ccg-page--admin" data-admin-shell>
+    <header class="growth-centre__header">
+      <p class="growth-centre__kicker">CCG Admin · Website Impact</p>
+      <h1>Analytics &amp; Growth</h1>
+      <p class="growth-centre__intro">One private view of whether the website is being discovered, which games and pages people use, where visitors arrive from, how many people register, and whether traffic moves between the website and YouTube.</p>
+    </header>
+
+    <section class="growth-toolbar" aria-label="Analytics controls">
+      <label>
+        Reporting window
+        <select data-growth-days>
+          <option value="7">Last 7 days</option>
+          <option value="28" selected>Last 28 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </label>
+      <label>
+        GA4 property
+        <select data-growth-property disabled>
+          <option value="">Connect Google data first</option>
+        </select>
+      </label>
+      <div class="growth-toolbar__actions">
+        <button type="button" class="ccg-btn ccg-btn--primary" data-growth-connect>Connect Google Data</button>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-growth-refresh>Refresh</button>
+      </div>
+    </section>
+
+    <section class="growth-notice" data-growth-status data-state="loading" aria-live="polite">
+      Checking administrator access and loading registration totals…
+    </section>
+
+    <section class="growth-impact" aria-labelledby="impact-title">
+      <div class="growth-section-heading">
+        <div>
+          <h2 id="impact-title">Website impact</h2>
+          <p>The figures below combine exact account totals with consent-based Google reporting. Google figures can be lower than real traffic because visitors may decline analytics.</p>
+        </div>
+      </div>
+      <div class="growth-stat-grid growth-stat-grid--impact">
+        <article class="growth-stat"><span>Tracked visitors</span><strong data-growth-stat="activeUsers">—</strong><small data-growth-change="activeUsers">Google Analytics</small></article>
+        <article class="growth-stat"><span>Sessions</span><strong data-growth-stat="sessions">—</strong><small data-growth-change="sessions">Google Analytics</small></article>
+        <article class="growth-stat"><span>Google clicks</span><strong data-growth-stat="searchClicks">—</strong><small data-growth-change="searchClicks">Search Console</small></article>
+        <article class="growth-stat"><span>New registrations</span><strong data-growth-stat="registrations">—</strong><small>Exact account data</small></article>
+        <article class="growth-stat"><span>YouTube → website</span><strong data-growth-stat="youtubeInbound">—</strong><small>Identifiable tracked sessions</small></article>
+        <article class="growth-stat"><span>Website → YouTube</span><strong data-growth-stat="youtubeOutbound">—</strong><small>Tracked YouTube link clicks</small></article>
+      </div>
+      <article class="growth-verdict" data-growth-verdict>
+        <strong>Assessment pending</strong>
+        <p>Connect Google data to judge the website using discovery, registrations, return visits and YouTube crossover.</p>
+      </article>
+    </section>
+
+    <section class="growth-section" aria-labelledby="members-title">
+      <div class="growth-section-heading">
+        <div>
+          <h2 id="members-title">Registrations</h2>
+          <p>These totals come from the account system rather than Google Analytics, so they remain exact even when analytics consent is declined.</p>
+        </div>
+      </div>
+      <div class="growth-stat-grid">
+        <article class="growth-stat"><span>Total accounts</span><strong data-member-stat="total">—</strong></article>
+        <article class="growth-stat"><span>Last 24 hours</span><strong data-member-stat="day">—</strong></article>
+        <article class="growth-stat"><span>Last 7 days</span><strong data-member-stat="week">—</strong></article>
+        <article class="growth-stat"><span>Last 30 days</span><strong data-member-stat="month">—</strong></article>
+      </div>
+      <p class="growth-source-note" data-member-note>Loading member totals…</p>
+    </section>
+
+    <section class="growth-section" data-growth-section="discovered" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>Recently discovered by Google</h2>
+          <p>Pages receiving Search Console impressions in the selected period after receiving none in the immediately preceding comparison period. This is a useful discovery signal, not a claim about Google’s first-ever crawl date.</p>
+        </div>
+        <span class="growth-count" data-growth-count="discovered">0</span>
+      </div>
+      <div data-growth-table="discovered"></div>
+    </section>
+
+    <section class="growth-section" data-growth-section="games" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>Most viewed games</h2>
+          <p>Individual game pages ranked by tracked GA4 views, with active users shown alongside them.</p>
+        </div>
+        <span class="growth-count" data-growth-count="games">0</span>
+      </div>
+      <div data-growth-table="games"></div>
+    </section>
+
+    <section class="growth-section" data-growth-section="content" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>Most viewed content</h2>
+          <p>The strongest tracked pages across games, publishers, music, Zzap!64 features, Retro Specials and the rest of the site.</p>
+        </div>
+        <span class="growth-count" data-growth-count="content">0</span>
+      </div>
+      <div data-growth-table="content"></div>
+    </section>
+
+    <section class="growth-section" data-growth-section="sources" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>How people find CCG</h2>
+          <p>Tracked sessions grouped by GA4 session source and medium, including Google, YouTube, social referrals and direct traffic where identifiable.</p>
+        </div>
+        <span class="growth-count" data-growth-count="sources">0</span>
+      </div>
+      <div data-growth-table="sources"></div>
+    </section>
+
+    <section class="growth-section growth-section--bridge" aria-labelledby="youtube-bridge-title">
+      <div class="growth-section-heading">
+        <div>
+          <h2 id="youtube-bridge-title">Website ↔ YouTube</h2>
+          <p>This is the core crossover report: identifiable YouTube sessions arriving on CCG and tracked clicks from CCG pages back to YouTube.</p>
+        </div>
+      </div>
+      <div class="growth-bridge-grid">
+        <article>
+          <h3>YouTube → website</h3>
+          <p class="growth-source-note" data-youtube-in-summary>Connect GA4 to load identifiable YouTube traffic.</p>
+          <div data-growth-table="youtubeInbound"></div>
+        </article>
+        <article>
+          <h3>Website → YouTube</h3>
+          <p class="growth-source-note" data-youtube-out-summary>GA4 outbound-link measurement is used here and remains subject to analytics consent.</p>
+          <div data-growth-table="youtubeOutbound"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="growth-section" data-growth-section="signups" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>Tracked registration sources</h2>
+          <p>Consent-based GA4 <code>sign_up</code> events grouped by the session source that led to registration. Exact registration totals remain in the account section above.</p>
+        </div>
+        <span class="growth-count" data-growth-count="signups">0</span>
+      </div>
+      <div data-growth-table="signups"></div>
+    </section>
+
+    <section class="growth-section" data-growth-section="audience" hidden>
+      <div class="growth-section-heading">
+        <div>
+          <h2>New vs returning visitors</h2>
+          <p>GA4 active users split by whether they had previous sessions. This helps show whether CCG is becoming somewhere people return to rather than a one-off search result.</p>
+        </div>
+      </div>
+      <div class="growth-stat-grid">
+        <article class="growth-stat"><span>New tracked users</span><strong data-audience-stat="new">—</strong></article>
+        <article class="growth-stat"><span>Returning tracked users</span><strong data-audience-stat="returning">—</strong></article>
+        <article class="growth-stat"><span>Average session</span><strong data-audience-stat="duration">—</strong></article>
+        <article class="growth-stat"><span>Engagement rate</span><strong data-audience-stat="engagement">—</strong></article>
+      </div>
+    </section>
+
+    <section class="growth-section growth-section--notes" aria-labelledby="measurement-notes-title">
+      <div class="growth-section-heading">
+        <div>
+          <h2 id="measurement-notes-title">Measurement notes</h2>
+        </div>
+      </div>
+      <ul>
+        <li><strong>Registrations:</strong> exact Supabase account figures.</li>
+        <li><strong>Google Analytics:</strong> consent-based, so figures represent tracked visitors rather than every visitor.</li>
+        <li><strong>Search discovery:</strong> Search Console uses finalized data and normally trails live traffic by a few days.</li>
+        <li><strong>YouTube attribution:</strong> identifiable referrals are shown automatically; UTM-tagged links in video descriptions and pinned comments make attribution stronger.</li>
+        <li><strong>Privacy:</strong> Google OAuth tokens stay in browser memory for the current admin session and are not stored in the public repository.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js" defer></script>
+  <script src="/js/ccg-supabase-client.js" defer></script>
+  <script src="/js/ccg-auth-ui.js" defer></script>
+  <script type="module" src="/admin/js/analytics-growth.js"></script>
+  <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
+</body>
+</html>

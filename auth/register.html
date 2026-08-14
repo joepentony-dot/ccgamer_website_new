@@ -71,6 +71,11 @@
     attachPasswordToggle(byId('togglePassword'), byId('password'));
     initAuthBadge();
 
+    function trackSuccessfulRegistration() {
+      if (!window.ccgConsentState?.analytics || typeof window.gtag !== 'function') return;
+      window.gtag('event', 'sign_up', { method: 'email' });
+    }
+
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
       setMessage(message, 'Creating account...', 'info');
@@ -99,6 +104,8 @@
         }
         return;
       }
+
+      trackSuccessfulRegistration();
 
       if (data?.user && !data?.session) {
         setMessage(
