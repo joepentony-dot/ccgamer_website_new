@@ -85,6 +85,112 @@ html.ccg-mobile-lite .ccg-main--home {
 }
 
 /* ============================================================
+   SHARED DESKTOP HEADER DENSITY
+   Keep the Omega command bar consistent across the public page
+   families.  Several older page styles were leaving an extra
+   social row or larger identity plate in place, creating needless
+   top padding and a visibly different first scroll position.
+============================================================ */
+@media (min-width: 1200px) {
+    .ccg-header {
+        padding: 8px clamp(12px, 1.5vw, 20px) !important;
+    }
+
+    .ccg-header .ccg-header-inner {
+        grid-template-columns: minmax(190px, 1fr) auto minmax(240px, 270px) auto !important;
+        grid-template-areas:
+            "auth brand mode socials"
+            "nav nav nav nav" !important;
+        column-gap: clamp(8px, 1vw, 14px) !important;
+        row-gap: 5px !important;
+    }
+
+    .ccg-header .ccg-mode-hint {
+        display: none !important;
+    }
+
+    .ccg-header .ccg-brand {
+        padding: 5px 8px !important;
+        gap: 8px !important;
+    }
+
+    .ccg-header .ccg-brand__logo {
+        height: 56px !important;
+        max-height: 56px !important;
+    }
+
+    .ccg-header .ccg-brand__kicker {
+        font-size: 0.58rem !important;
+        letter-spacing: 0.12em !important;
+    }
+
+    .ccg-header .ccg-brand__title {
+        font-size: 0.86rem !important;
+        letter-spacing: 0.065em !important;
+    }
+
+    .ccg-header .ccg-auth-slot {
+        justify-self: start !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        gap: 5px !important;
+    }
+
+    .ccg-header .ccg-profile-link {
+        max-width: 210px !important;
+        min-height: 34px !important;
+    }
+
+    .ccg-header .ccg-btn-auth {
+        min-height: 34px !important;
+        padding: 5px 8px !important;
+        font-size: 0.64rem !important;
+    }
+
+    .ccg-header .ccg-mode-toggle {
+        justify-self: end !important;
+        width: 260px !important;
+        max-width: 260px !important;
+        min-height: 34px !important;
+    }
+
+    .ccg-header .ccg-mode-toggle__label {
+        padding: 4px 6px !important;
+        font-size: 0.58rem !important;
+    }
+
+    .ccg-header .ccg-header-socials {
+        grid-area: socials !important;
+        justify-self: end !important;
+        margin: 0 !important;
+        gap: 5px !important;
+        padding: 0 !important;
+        min-height: 0 !important;
+        flex-wrap: nowrap !important;
+    }
+
+    .ccg-header .ccg-header-socials a {
+        width: 30px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        flex: 0 0 30px !important;
+    }
+
+    .ccg-header .ccg-nav {
+        grid-area: nav !important;
+        width: auto !important;
+        max-width: 100% !important;
+        padding: 4px 7px !important;
+    }
+
+    .ccg-header .ccg-nav__link,
+    .ccg-header .ccg-nav__more-toggle {
+        min-height: 34px !important;
+        padding-block: 5px !important;
+    }
+}
+
+/* ============================================================
    MAIN NAVIGATION PAGES — LOWER-DENSITY VISUAL PASS
    Scoped to the primary public pages only.
 ============================================================ */
