@@ -274,6 +274,7 @@ function normalizeComposerHtml(html, route) {
 
   next = normalizeJsonLd(next, name, removeBirth);
   next = injectRuntime(next);
+  next = next.replace(/[ \t]+$/gm, "");
   return next;
 }
 
