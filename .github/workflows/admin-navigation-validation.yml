@@ -7,11 +7,16 @@ on:
     paths:
       - "admin/admin.html"
       - "admin/dashboard.html"
+      - "admin/analytics-growth.html"
       - "admin/help.html"
       - "admin/js/admin-nav.js"
       - "admin/js/dashboard.js"
+      - "admin/js/analytics-growth.js"
+      - "auth/register.html"
       - "resources/css/ccg-admin.css"
+      - "resources/css/ccg-analytics-growth.css"
       - "tests/admin-navigation.test.mjs"
+      - "tests/analytics-growth.test.mjs"
       - ".github/workflows/admin-navigation-validation.yml"
   push:
     branches:
@@ -19,11 +24,16 @@ on:
     paths:
       - "admin/admin.html"
       - "admin/dashboard.html"
+      - "admin/analytics-growth.html"
       - "admin/help.html"
       - "admin/js/admin-nav.js"
       - "admin/js/dashboard.js"
+      - "admin/js/analytics-growth.js"
+      - "auth/register.html"
       - "resources/css/ccg-admin.css"
+      - "resources/css/ccg-analytics-growth.css"
       - "tests/admin-navigation.test.mjs"
+      - "tests/analytics-growth.test.mjs"
       - ".github/workflows/admin-navigation-validation.yml"
   workflow_dispatch:
 
@@ -49,9 +59,10 @@ jobs:
         run: |
           node --check admin/js/admin-nav.js
           node --check admin/js/dashboard.js
+          node --check admin/js/analytics-growth.js
 
-      - name: Run admin navigation regression tests
-        run: node --test tests/admin-navigation.test.mjs
+      - name: Run admin and analytics regression tests
+        run: node --test tests/admin-navigation.test.mjs tests/analytics-growth.test.mjs
 
       - name: Confirm protected site files are untouched
         shell: bash
