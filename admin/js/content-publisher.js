@@ -876,6 +876,7 @@ function buildGameEntry() {
     thumbnail,
     pdf: gameValue('pdf'),
     disk: parseLines(gameValue('disk')),
+    download_status: gameValue('downloadStatus'),
     lemon: gameValue('lemonUrl') ? [gameValue('lemonUrl')] : [],
     zzap: gameValue('zzapUrl') ? [gameValue('zzapUrl')] : [],
     description: gameValue('description'),
@@ -912,6 +913,12 @@ function validateGameEntry(entry) {
   if (!Number.isInteger(entry.ccg_rating) || entry.ccg_rating < 1 || entry.ccg_rating > 10) errors.push('CCG rating must be an integer from 1 to 10.');
   if (entry.pdf && !isHttpUrl(entry.pdf)) errors.push('PDF/manual URL is not valid.');
   entry.disk.forEach((url) => { if (!isHttpUrl(url)) errors.push(`Invalid disk/download URL: ${url}`); });
+  if (entry.disk.length && !['authorised', 'public-domain', 'freeware'].includes(entry.download_status)) {
+    errors.push('Select an authorised download permission before publishing download URLs.');
+  }
+  if (entry.download_status && !['authorised', 'public-domain', 'freeware'].includes(entry.download_status)) {
+    errors.push('Download permission is invalid.');
+  }
   entry.lemon.forEach((url) => { if (!isHttpUrl(url)) errors.push(`Invalid Lemon64 URL: ${url}`); });
   entry.zzap.forEach((url) => { if (!isValidZzapReviewUrl(url)) errors.push(`Zzap!64 review URL must be a direct zzap64.co.uk displaypage link: ${url}`); });
 
