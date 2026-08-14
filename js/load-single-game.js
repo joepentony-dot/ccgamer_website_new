@@ -1001,6 +1001,31 @@ function insertAfter(target, node) {
     }
 }
 
+function ensureGameResourceSection({ id, title, modifier, card, after }) {
+    if (!card) return null;
+
+    let section = document.getElementById(id);
+    if (!section) {
+        section = document.createElement("section");
+        section.id = id;
+        section.className = `game-section ccg-game-resource-section ${modifier}`;
+        section.hidden = true;
+        section.innerHTML = `
+            <h2 class="game-section__title">${title}</h2>
+            <div class="ccg-game-resource-section__body"></div>
+        `;
+    }
+
+    const body = section.querySelector(".ccg-game-resource-section__body") || section;
+    if (!body.contains(card)) body.appendChild(card);
+
+    const cardTitle = card.querySelector(".ccg-utility-card__title");
+    if (cardTitle) cardTitle.hidden = true;
+
+    if (after) insertAfter(after, section);
+    return section;
+}
+
 function resolveGenres(game) {
     const raw = game?.genres || game?.genre || [];
     if (Array.isArray(raw)) return raw.map(item => String(item || "").trim()).filter(Boolean);
@@ -1239,15 +1264,13 @@ async function renderGameMusicSection(game) {
     return rendered;
 }
 
-function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading }) {
+function renderGameMusicCard({ game, musicArchiveSection }) {
     const musicCard = document.getElementById("game-music-card");
     const musicSection = document.getElementById("gameMusicSection");
     const musicMetaEl = document.getElementById("gameMusicMeta");
     const musicTracksEl = document.getElementById("gameMusicTracks");
     if (!musicCard || !musicSection || !musicMetaEl || !musicTracksEl) {
-        if (utilityHubSection) {
-            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading);
-        }
+        if (musicArchiveSection) musicArchiveSection.hidden = true;
         return;
     }
 
@@ -1301,7 +1324,7 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
             relatedWrap.className = "ccg-music-related";
             const label = document.createElement("p");
             label.className = "ccg-music-related__label";
-            label.textContent = `More games by ${primaryComposer}`;
+            label.textContent = `More games with music by ${primaryComposer}`;
             relatedWrap.appendChild(label);
 
             const list = document.createElement("div");
@@ -1323,13 +1346,10 @@ function renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasR
         const hasPlayer = !!musicTracksEl.querySelector("audio");
         const hasUnavailableNotice = !!musicTracksEl.querySelector(".ccg-music-track-unavailable");
         const hasMetadata = !!musicMetaEl.querySelector(".ccg-music-composer, .ccg-music-related, .ccg-music-composer__hint");
-        const currentReadingCard = document.getElementById("game-reading-card");
-        const hasCurrentReading = !!(currentReadingCard && !currentReadingCard.hidden);
-        musicSection.style.display = hasPlayer || hasMetadata || hasUnavailableNotice ? "" : "none";
-        musicCard.hidden = !(hasPlayer || hasMetadata || hasUnavailableNotice);
-        if (utilityHubSection) {
-            utilityHubSection.hidden = !(hasManual || hasDisk || hasReading || hasCurrentReading || hasPlayer || hasMetadata);
-        }
+        const hasMusicContent = hasPlayer || hasMetadata || hasUnavailableNotice;
+        musicSection.style.display = hasMusicContent ? "" : "none";
+        musicCard.hidden = !hasMusicContent;
+        if (musicArchiveSection) musicArchiveSection.hidden = !hasMusicContent;
     };
 
     finalizeMusicVisibility();
@@ -1519,10 +1539,17 @@ function renderGame(game) {
             descriptionSection.hidden = true;
         }
     }
-    const hasOverview = !!(descriptionSection && !descriptionSection.hidden);
+    if (descriptionSection) {
+        const kicker = descriptionSection.querySelector(".game-section__kicker");
+        const title = descriptionSection.querySelector(".game-section__title");
+        if (kicker) kicker.textContent = "Game Overview";
+        if (title) title.textContent = "About the Game";
+    }
+    let hasOverview = !!(descriptionSection && !descriptionSection.hidden);
 
     renderCreditsPanel(game);
-    renderVerdictPanel(game);
+    const legacyVerdict = document.getElementById("gameVerdictSection");
+    if (legacyVerdict) legacyVerdict.remove();
     moveSpotlightSection();
     renderDiscoveryLinks(game);
 
@@ -1532,8 +1559,8 @@ function renderGame(game) {
     const videoEmbed = document.getElementById("game-video-embed");
     const videoActions = videoSection ? videoSection.querySelector(".game-video__actions") : null;
     const videoBtn = document.getElementById("gameVideoBtn");
-    const hasVideo = !!vid;
     const isDriveVideoGame = game.id === "the_happiest_days_of_your_life";
+    const hasVideo = !!vid || isDriveVideoGame;
 
     if (isDriveVideoGame) {
         if (videoEmbed) {
@@ -1561,20 +1588,36 @@ function renderGame(game) {
         }
         if (videoBtn) videoBtn.hidden = true;
         if (videoActions) videoActions.hidden = true;
-        toggleGameEmptyMessage(videoSection, "video", "Gameplay coming soon…");
+        toggleGameEmptyMessage(videoSection, "video", "");
     }
 
-    if (videoSection) videoSection.hidden = false;
+    if (videoSection) {
+        videoSection.hidden = !hasVideo;
+        const kicker = videoSection.querySelector(".game-section__kicker");
+        if (kicker && hasVideo) kicker.textContent = "Video Archive";
+    }
+
+    const videoDescription = videoSection?.querySelector("[data-ccg-video-description]");
+    const videoIncludesOverview = !!(videoDescription && videoDescription.textContent.trim());
+    if (hasVideo && videoIncludesOverview && descriptionSection) {
+        descriptionSection.hidden = true;
+        hasOverview = false;
+    }
+
     if (hasVideo && videoSection && descriptionSection && descriptionSection.parentNode === videoSection.parentNode) {
         descriptionSection.parentNode.insertBefore(videoSection, descriptionSection);
     }
 
-    if (hasVideo && videoSection && descriptionSection) {
-        const heroDetails = document.querySelector(".game-hero__content");
-        const credits = heroDetails?.querySelector(".ccg-behind-pixels-inline");
-        const verdict = heroDetails?.querySelector(".game-verdict");
-        if (credits) insertAfter(descriptionSection, credits);
-        if (verdict) insertAfter(credits || descriptionSection, verdict);
+    const credits = document.querySelector(".ccg-behind-pixels-inline");
+    if (credits) {
+        if (hasVideo && videoIncludesOverview && videoSection) {
+            insertAfter(videoSection, credits);
+        } else if (hasOverview && descriptionSection) {
+            insertAfter(descriptionSection, credits);
+        } else {
+            const hero = document.querySelector(".game-hero");
+            if (hero) insertAfter(hero, credits);
+        }
     }
 
     /* PLAY / LISTEN / DOWNLOAD HUB */
@@ -1582,6 +1625,28 @@ function renderGame(game) {
     const manualCard = document.getElementById("game-manual-card");
     const downloadCard = document.getElementById("game-download-card");
     const readingCard = document.getElementById("game-reading-card");
+    const musicCard = document.getElementById("game-music-card");
+    const downloadSection = ensureGameResourceSection({
+        id: "game-download-section",
+        title: "Authorised Game Download",
+        modifier: "ccg-game-resource-section--download",
+        card: downloadCard,
+        after: utilityHubSection
+    });
+    const readingSection = ensureGameResourceSection({
+        id: "game-reading-section",
+        title: "Magazine Reviews",
+        modifier: "ccg-game-resource-section--reading",
+        card: readingCard,
+        after: downloadSection || utilityHubSection
+    });
+    const musicArchiveSection = ensureGameResourceSection({
+        id: "game-music-archive-section",
+        title: "Game Music",
+        modifier: "ccg-game-resource-section--music",
+        card: musicCard,
+        after: readingSection || downloadSection || utilityHubSection
+    });
 
     const rawManual = resolveManualUrl(game);
     const manual = (typeof rawManual === "string" && rawManual.trim())
@@ -1626,22 +1691,22 @@ function renderGame(game) {
     if (downloadCard) {
         downloadCard.hidden = !hasDisk;
     }
+    if (downloadSection) downloadSection.hidden = !hasDisk;
 
     // Magazine review records are rendered by magazine-game-reviews-runtime.js.
     // Keep this loader independent of external review databases.
-    const hasReading = false;
     if (readingCard) readingCard.hidden = true;
-    const hasUtilityHub = !!(hasManual || hasDisk || hasReading);
+    if (readingSection) readingSection.hidden = true;
     if (utilityHubSection) {
-        utilityHubSection.hidden = !hasUtilityHub;
+        utilityHubSection.hidden = !hasManual;
         const kicker = utilityHubSection.querySelector(".game-section__kicker");
         const title = utilityHubSection.querySelector(".game-section__title");
         if (kicker) kicker.hidden = true;
-        if (title) title.textContent = hasManual ? "Game Manual" : "Game Resources";
+        if (title) title.textContent = "Game Manual";
     }
     const manualCardTitle = manualCard?.querySelector(".ccg-utility-card__title");
     if (manualCardTitle) manualCardTitle.hidden = hasManual;
-    void renderGameMusicCard({ game, utilityHubSection, hasManual, hasDisk, hasReading });
+    void renderGameMusicCard({ game, musicArchiveSection });
 
     renderAffiliateSection(game);
     initHardwareAccordion();
@@ -1681,9 +1746,21 @@ function renderGame(game) {
 
     const screenshotsSection = document.querySelector(".game-screenshots");
     const relatedSection = document.querySelector(".game-section--related");
+    const discoverySection = document.getElementById("game-discovery-links");
     const hasScreenshots = !!(screenshotsSection && !screenshotsSection.hidden);
     const hasRelated = !!(relatedSection && !relatedSection.hidden);
     const hasRating = !!(document.getElementById("gameHeroRating") && !document.getElementById("gameHeroRating").hidden);
+
+    if (discoverySection && !discoverySection.hidden) {
+        const discoveryAnchor = (hasRelated && relatedSection)
+            || (hasScreenshots && screenshotsSection)
+            || musicArchiveSection
+            || readingSection
+            || downloadSection
+            || utilityHubSection
+            || credits;
+        if (discoveryAnchor) insertAfter(discoveryAnchor, discoverySection);
+    }
 
     try {
         initSingleGameUX({
@@ -1749,12 +1826,24 @@ function slugifyBrowseToken(value) {
 }
 
 function renderDiscoveryLinks(game) {
+    const section = document.getElementById("game-discovery-links");
     const genreWrap = document.getElementById("gameGenreLinks");
     const collectionWrap = document.getElementById("gameCollectionLinks");
     if (!genreWrap && !collectionWrap) return;
 
     const genres = resolveGenres(game).map(item => String(item || "").trim()).filter(Boolean);
     const collections = resolveCollections(game).map(item => String(item || "").trim()).filter(Boolean);
+
+    if (section) {
+        const kicker = section.querySelector(".game-section__kicker");
+        const title = section.querySelector(".game-section__title");
+        const intro = section.querySelector(".ccg-section__intro");
+        if (kicker) kicker.textContent = "Continue Exploring";
+        if (title) title.textContent = "Browse Related Archives";
+        if (intro) {
+            intro.innerHTML = 'Browse this game\'s genres and collections, or return to the <a href="/games/index.html">full games library</a>.';
+        }
+    }
 
     if (genreWrap) {
         genreWrap.innerHTML = genres.slice(0, 4).map((genre) => (
@@ -1767,6 +1856,8 @@ function renderDiscoveryLinks(game) {
             `<a class="ccg-btn ccg-btn--ghost" href="/games/collections/${slugifyBrowseToken(collection)}.html">${collection}</a>`
         )).join("");
     }
+
+    if (section) section.hidden = !(genres.length || collections.length);
 }
 
 async function getFavouriteSupabaseClient() {
@@ -2259,11 +2350,11 @@ function renderCreditsPanel(game) {
 
     let inlineCredits = heroContent.querySelector(".ccg-behind-pixels-inline");
     if (!inlineCredits) {
-        inlineCredits = document.createElement("div");
+        inlineCredits = document.createElement("section");
         inlineCredits.className = "ccg-behind-pixels-inline";
         inlineCredits.hidden = true;
         inlineCredits.innerHTML = `
-            <p class="ccg-behind-pixels-inline__title">Behind the Pixels</p>
+            <h2 class="ccg-behind-pixels-inline__title">Game Credits</h2>
             <dl class="ccg-behind-pixels-inline__list"></dl>
         `;
     }
@@ -2295,54 +2386,6 @@ function renderCreditsPanel(game) {
     const anchor = heroContent.querySelector(".game-hero__rating") || heroContent.querySelector(".game-hero__meta");
     if (anchor) {
         insertAfter(anchor, inlineCredits);
-    }
-}
-
-function renderVerdictPanel(game) {
-    const ratingData = typeof window.ccgResolveRatingValue === "function"
-        ? window.ccgResolveRatingValue(game)
-        : { value: Number(game?.ccg_rating), isRated: Number.isFinite(Number(game?.ccg_rating)) };
-
-    let verdictSection = document.getElementById("gameVerdictSection");
-    if (!verdictSection) {
-        verdictSection = document.createElement("section");
-        verdictSection.id = "gameVerdictSection";
-        verdictSection.className = "game-section game-verdict";
-        verdictSection.hidden = true;
-        verdictSection.innerHTML = `
-            <p class="game-section__kicker">CCG Verdict</p>
-            <div class="game-verdict__body">
-                <div class="game-verdict__score" aria-label="Cheeky Commodore Gamer rating"></div>
-                <p class="game-verdict__reason"></p>
-            </div>
-        `;
-    }
-
-    if (!ratingData.isRated) {
-        verdictSection.hidden = true;
-        return;
-    }
-
-    const scoreEl = verdictSection.querySelector(".game-verdict__score");
-    const reasonEl = verdictSection.querySelector(".game-verdict__reason");
-    if (scoreEl) scoreEl.textContent = formatRatingValue(ratingData.value);
-
-    const reason = String(game?.ccg_rating_reason || "").replace(/\s+/g, " ").trim();
-    if (reasonEl) {
-        reasonEl.textContent = reason;
-        reasonEl.hidden = !reason;
-    }
-
-    verdictSection.hidden = false;
-
-    const heroContent = document.querySelector(".game-hero__content");
-    if (heroContent && !heroContent.contains(verdictSection)) {
-        const creditsBlock = heroContent.querySelector(".ccg-behind-pixels-inline");
-        if (creditsBlock) {
-            insertAfter(creditsBlock, verdictSection);
-        } else {
-            heroContent.appendChild(verdictSection);
-        }
     }
 }
 
