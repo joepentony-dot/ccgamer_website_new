@@ -78,7 +78,7 @@
 
     async function applyLinks() {
         if (applying) return;
-        const container = document.getElementById("gameLemonLinks");
+        const container = document.getElementById("gameMagazineReviews");
         if (!container) return;
         applying = true;
         try {
@@ -111,7 +111,7 @@
     }
 
     function observeReadingLinks() {
-        const container = document.getElementById("gameLemonLinks");
+        const container = document.getElementById("gameMagazineReviews");
         if (!container || observer) return;
         observer = new MutationObserver(() => {
             if (!applying) queueMicrotask(applyLinks);

@@ -133,6 +133,6 @@ test('front-end review features reuse the full compact dataset and filter awards
   assert.match(browser, /recordsByReview/);
   assert.match(linkFix, /\/data\/zzap64-game-reviews\//);
   assert.match(runtime, /\/data\/zzap64-game-reviews\//);
-  assert.match(runtime, /gameLemonLinks/);
+  assert.match(runtime, /gameMagazineReviews/);
   assert.match(schema, /magazine-game-reviews-runtime\.js/);
 });

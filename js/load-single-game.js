@@ -797,20 +797,6 @@ function resolveDiskUrl(game) {
     return resolvePrimaryLink(game.disk || game.tape || game.download);
 }
 
-function resolveLemonUrl(game) {
-    return resolvePrimaryLink(game.lemon || game.lemonlink || game.lemonlinks);
-}
-
-function resolveLemonLinks(game) {
-    const raw = game.lemon || game.lemonlink || game.lemonlinks;
-    if (!raw) return [];
-    if (Array.isArray(raw)) {
-        return raw.map(link => String(link || "").trim()).filter(Boolean);
-    }
-    const link = String(raw || "").trim();
-    return link ? [link] : [];
-}
-
 const CCG_ZZAP_REVIEW_INDEX_URL = "/data/zzap64-review-links.json";
 let CCG_ZZAP_REVIEW_DATA_PROMISE = null;
 let CCG_ZZAP_MATCHER_PROMISE = null;
@@ -953,53 +939,6 @@ function appendFurtherReadingButton(container, href, label, title) {
     anchor.textContent = label;
     if (title) anchor.title = title;
     container.appendChild(anchor);
-}
-
-function renderFurtherReadingLinks({ game, readingCard, container, utilityHubSection }) {
-    if (!readingCard || !container) return false;
-
-    const lemonLinks = resolveLemonLinks(game);
-    const explicitZzapLinks = resolveZzapLinks(game);
-
-    const render = (zzapLinks) => {
-        container.innerHTML = "";
-        const system = String(game?.system || "").trim().toUpperCase();
-        const baseLabel = system === "AMIGA" ? "LEMON AMIGA" : "LEMON 64";
-
-        Array.from(new Set(lemonLinks)).forEach((link, index, all) => {
-            appendFurtherReadingButton(
-                container,
-                link,
-                all.length > 1 ? `${baseLabel} LINK ${index + 1}` : baseLabel,
-                "Open the matching Lemon game database page"
-            );
-        });
-
-        dedupeZzapReviewRecords(zzapLinks).forEach((record) => {
-            const label = record.issue && record.page
-                ? `ZZAP!64 REVIEW · ISSUE ${record.issue} · P${record.page}`
-                : "ZZAP!64 REVIEW";
-            appendFurtherReadingButton(
-                container,
-                record.url,
-                label,
-                "Open the original Zzap!64 magazine review scan"
-            );
-        });
-
-        const hasReading = container.children.length > 0;
-        readingCard.hidden = !hasReading;
-        if (utilityHubSection && hasReading) utilityHubSection.hidden = false;
-        return hasReading;
-    };
-
-    const initialReading = render(explicitZzapLinks);
-
-    void resolveAutomaticZzapLinks(game).then((automaticLinks) => {
-        render([...explicitZzapLinks, ...automaticLinks]);
-    });
-
-    return initialReading;
 }
 
 function resolveCreditsEntries(game) {
@@ -1680,13 +1619,10 @@ function renderGame(game) {
         downloadCard.hidden = !hasDisk;
     }
 
-    const lemonLinksEl = document.getElementById("gameLemonLinks");
-    const hasReading = renderFurtherReadingLinks({
-        game,
-        readingCard,
-        container: lemonLinksEl,
-        utilityHubSection
-    });
+    // Magazine review records are rendered by magazine-game-reviews-runtime.js.
+    // Keep this loader independent of external review databases.
+    const hasReading = false;
+    if (readingCard) readingCard.hidden = true;
     const hasUtilityHub = !!(hasManual || hasDisk || hasReading);
     if (utilityHubSection) {
         utilityHubSection.hidden = !hasUtilityHub;
