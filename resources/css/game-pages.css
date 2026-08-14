@@ -267,20 +267,29 @@
     margin-top: 10px;
 }
 
-.ccg-page--single-game .ccg-behind-pixels-inline,
-.ccg-page--single-game .game-verdict {
-    width: min(1180px, 94vw);
+.ccg-page--single-game #game-video-section [data-ccg-video-description] {
+    width: min(100%, 920px);
+    margin: 0 auto 12px;
+    line-height: 1.55;
+}
+
+.ccg-page--single-game #game-description-section,
+.ccg-page--single-game #game-discovery-links,
+.ccg-page--single-game .ccg-behind-pixels-inline {
+    width: min(980px, 94vw);
     margin-inline: auto;
 }
 
 /* Keep the practical actions deliberately compact and centred. */
-.ccg-page--single-game .ccg-game-utility-hub {
+.ccg-page--single-game .game-shell > .ccg-game-utility-hub,
+.ccg-page--single-game .game-shell > .ccg-game-resource-section {
     width: min(980px, 94vw);
     margin-inline: auto;
     text-align: center;
 }
 
-.ccg-page--single-game .ccg-game-utility-hub .game-section__title {
+.ccg-page--single-game .ccg-game-utility-hub .game-section__title,
+.ccg-page--single-game .ccg-game-resource-section > .game-section__title {
     justify-content: center;
     margin-bottom: 12px;
 }
@@ -296,6 +305,19 @@
     margin-inline: auto;
 }
 
+.ccg-page--single-game .ccg-game-resource-section__body {
+    width: min(100%, 860px);
+    margin-inline: auto;
+}
+
+.ccg-page--single-game .ccg-game-resource-section--download .ccg-game-resource-section__body {
+    width: min(100%, 560px);
+}
+
+.ccg-page--single-game .ccg-game-resource-section--download .ccg-utility-card {
+    text-align: center;
+}
+
 .ccg-page--single-game .ccg-utility-card--music,
 .ccg-page--single-game .ccg-utility-card--reading {
     text-align: left;
@@ -306,10 +328,13 @@
     gap: 12px;
     padding: clamp(14px, 1.7vw, 20px);
     border-radius: 16px;
+    margin-block: clamp(10px, 1.5vw, 18px);
 }
 
 .ccg-page--single-game .ccg-behind-pixels-inline__title {
     text-align: center;
+    font-size: clamp(1rem, 1.3vw, 1.25rem);
+    color: var(--ccg-bright-2);
 }
 
 .ccg-page--single-game .ccg-behind-pixels-inline__list {
@@ -327,8 +352,27 @@
     min-width: 0;
 }
 
+.ccg-page--single-game #game-discovery-links {
+    padding: clamp(12px, 1.5vw, 18px);
+    text-align: center;
+}
+
+.ccg-page--single-game #game-discovery-links .game-section__title {
+    justify-content: center;
+}
+
+.ccg-page--single-game #game-discovery-links .ccg-section__intro {
+    margin: 0 auto 10px;
+    max-width: 720px;
+}
+
+.ccg-page--single-game #game-discovery-links .game-downloads {
+    justify-content: center;
+}
+
 @media (max-width: 640px) {
-    .ccg-page--single-game .ccg-game-utility-hub {
+    .ccg-page--single-game .game-shell > .ccg-game-utility-hub,
+    .ccg-page--single-game .game-shell > .ccg-game-resource-section {
         width: 100%;
     }
 
