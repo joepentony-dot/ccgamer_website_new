@@ -369,6 +369,9 @@ function buildAccordion(groups) {
         const hasC64 = systemBuckets.C64.length > 0;
         const hasAmiga = systemBuckets.AMIGA.length > 0;
         const hasMixedSystems = hasC64 && hasAmiga;
+        const systemSummary = hasMixedSystems
+            ? `${systemBuckets.C64.length} C64 · ${systemBuckets.AMIGA.length} Amiga`
+            : (hasC64 ? "Commodore 64" : "Amiga");
 
         const hintMarkup =
             CCG_ACTIVE_SYSTEM_FILTER === "all" && !hasMixedSystems
@@ -385,8 +388,9 @@ function buildAccordion(groups) {
 
         section.innerHTML = `
             <button class="ccg-btn ccg-btn--ghost games-accordion__header" data-letter="${letter}" type="button" id="${headerId}" aria-controls="${contentId}">
-                <span class="games-accordion__letter">${letter}${hintMarkup}</span>
-                <span class="games-accordion__meta">${gamesForLetter.length.toLocaleString("en-US")} titles</span>
+                <span class="games-accordion__letter"><span class="games-accordion__letter-mark">${letter}</span>${hintMarkup}</span>
+                <span class="games-accordion__meta"><strong>${gamesForLetter.length.toLocaleString("en-US")}</strong> titles <small>${systemSummary}</small></span>
+                <span class="games-accordion__action" aria-hidden="true">View titles</span>
                 <span class="games-accordion__chevron">⌄</span>
             </button>
             <div class="games-accordion__content" id="${contentId}" role="region" aria-labelledby="${headerId}" hidden>
