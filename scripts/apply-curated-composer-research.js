@@ -5,6 +5,7 @@
 const fs = require("fs");
 const path = require("path");
 const enrich = require("./enrich-generated-composer-pages");
+const presentation = require("./normalize-composer-presentation");
 
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -115,7 +116,15 @@ function main() {
     }
   }
 
-  console.log(JSON.stringify({ curatedRoutes: curated, changed, clientChanged, missingResearch }, null, 2));
+  const presentationResult = presentation.normalizeAllComposerPages();
+
+  console.log(JSON.stringify({
+    curatedRoutes: curated,
+    changed,
+    clientChanged,
+    presentationNormalized: presentationResult.changed,
+    missingResearch
+  }, null, 2));
   if (missingResearch.length) process.exitCode = 2;
 }
 

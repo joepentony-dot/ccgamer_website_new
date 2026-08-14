@@ -1,7 +1,7 @@
 {
-  "version": 2,
+  "version": 3,
   "lastResearched": "2026-08-14",
-  "policy": "Biographies and personal facts are published only when supported by a specific reliable source. Composer pages always retain verified linked-credit facts, but no generic Cheeky Commodore Gamer archive paragraph is generated when independent biography is unavailable.",
+  "policy": "Composer pages present independently sourced biography and personal facts without internal catalogue counts, platform labels, CCG archive wording or research-process commentary. If a personal fact cannot be stated confidently it is omitted from the published profile. Music/game entries retain their own platform, year and catalogue metadata.",
   "parts": [
     "../../data/composer-research/part-01.json",
     "../../data/composer-research/part-02.json",
