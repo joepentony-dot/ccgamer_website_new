@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-phase17b-v2-code-refresh";
+const CACHE_VERSION = "2026-08-home-nav-omega-v1";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -164,9 +164,9 @@ async function networkFirstAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
 
   try {
-    // Preserve network-first freshness while allowing the browser's normal HTTP cache
-    // to satisfy still-fresh code instead of forcing a revalidation on every request.
-    const response = await fetch(request);
+    // Code releases must revalidate against the network so an older browser
+    // HTTP cache cannot outlive a newly deployed navigation or layout bundle.
+    const response = await fetch(request, { cache: "reload" });
     if (canStoreResponse(response)) await cache.put(request, response.clone());
     return response;
   } catch (error) {
