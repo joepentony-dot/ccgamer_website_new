@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-08-14T10:32:02.348Z",
+  "updatedAt": "2026-08-14T21:53:54.494Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story – Did Ocean Get the Arcade Adventure Right on C64?",
@@ -4797,6 +4797,15 @@
       "uploadDate": "2024-10-28T18:30:17Z",
       "duration": "PT5M29S",
       "thumbnailUrl": "https://i.ytimg.com/vi/RminMJUn1gE/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "rn_hzXvVYes": {
+      "title": "Insects In Space – The Bizarre C64 Defender Clone That Scored 94%",
+      "description": "🕹️ Insects In Space (1989) – Commodore 64 Shoot-'Em-Up by Sensible Software\n🌐 Full game info & download:\n👉 https://www.cheekycommodoregamer.co.uk/game/insects-in-space\n\nReleased in 1989 by Hewson, Insects In Space is a bizarre Commodore 64 shooter from Sensible Software, heavily inspired by Defender. You take control of St. Helen, flying across a strange two-level landscape while battling giant alien insects and attempting to rescue helpless human babies.\n\nThe insects can grab the babies and carry them away, draining their life energy and eventually turning them into new creatures. A radar helps you keep track of what is happening across the playfield, while you race around trying to save as many babies as possible.\n\nRescuing the babies isn't simply about earning points either. They can provide useful power-ups, while a mysterious teleporting dust cloud can transport you around the landscape when you need to reach another part of the level quickly. Despite its wonderfully strange premise, Insects In Space was very well received by the C64 magazines. \n\n📰 Zzap!64 awarded it an impressive 94%, while The Games Machine gave it 86% and Commodore Force later gave it 90%.\n\nThe game was developed by Sensible Software, with programming by Chris Yates and music by legendary C64 composer Martin Galway. Interestingly, Insects In Space did not receive a conventional standalone release. The C64 version appeared as part of Hewson's 4th Dimension compilation alongside Head the Ball, Cyberdyne Warrior and Mission Impossibubble.\n\nThat makes this one of those fascinating examples of a game that was relatively easy to overlook at the time, despite being made by one of the most important British developers of the era and receiving a huge 94% from Zzap!64. There's plenty of Sensible Software personality here too, from the bizarre concept and chunky graphics to the frantic Defender-style gameplay, strange insect enemies and wonderfully noisy C64 sound effects.\n\n🎯 Is Insects In Space one of the best forgotten Defender-style games on the Commodore 64?\n💬 Did you play Insects In Space back in the day, and what did you think of this strange Sensible Software shooter?\n\n▶️ RELATED PLAYLISTS\nShoot ’Em Ups: https://www.youtube.com/playlist?list=PL_TYjnCNYSexllKa0rDyKSTdugcQXq77G\nHewson Games: https://www.youtube.com/playlist?list=PL_TYjnCNYSexrXm1eAntn9GK_8IxoonLn\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#InsectsInSpace #Commodore64 #C64 #RetroGaming #C64Gaming\n#SensibleSoftware #Hewson #1989Games #C64Longplay #C64Shooter",
+      "uploadDate": "2026-08-14T17:30:47Z",
+      "duration": "PT8M6S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/rn_hzXvVYes/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },
