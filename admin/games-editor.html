@@ -130,7 +130,16 @@
           <p class="inline-error" data-inline-error="collections"></p>
         </div>
         <label>PDF Link (optional)<input data-field="pdf" placeholder="https://..." /></label>
-        <label>Disk Links (optional, one URL per line)<textarea rows="3" data-field="disk"></textarea></label>
+        <label>Download permission
+          <select data-field="download_status">
+            <option value="">No download / not verified</option>
+            <option value="authorised">Authorised by rights holder</option>
+            <option value="public-domain">Public domain</option>
+            <option value="freeware">Freeware / creator-approved</option>
+          </select>
+        </label>
+        <label>Authorised download URLs (one URL per line)<textarea rows="3" data-field="disk"></textarea></label>
+        <p class="hint full">Only add a download after you have verified permission from the rights holder, or that the title is public domain or creator-approved freeware. Do not add archive or abandonware links as a substitute.</p>
         <div class="full">
           <h3>Credits (optional)</h3>
         </div>
