@@ -320,31 +320,9 @@
 
         <div class="game-media-anchor" data-game-media-anchor aria-hidden="true"></div>
 
-        <!-- DESCRIPTION -->
-        <section id="game-description-section" class="game-section" hidden>
-            <p class="game-section__kicker">Lore &amp; Overview</p>
-            <h2 class="game-section__title">In the Spotlight</h2>
-            <div id="gameDescription" class="game-description"></div>
-        </section>
-
-        <section id="game-discovery-links" class="game-section">
-            <p class="game-section__kicker">Explore More</p>
-            <h2 class="game-section__title">Browse by Genre &amp; Collection</h2>
-            <p class="ccg-section__intro">
-                Jump to <a href="/games/genres/index.html">all genres</a>, visit
-                <a href="/games/collections/index.html">curated collections</a>, or return to the
-                <a href="/games/index.html">full games library</a>.
-            </p>
-            <div id="gameGenreLinks" class="game-downloads"></div>
-            <div id="gameCollectionLinks" class="game-downloads"></div>
-            <noscript>
-                <p class="ccg-section__intro">JavaScript is disabled — use the crawlable links above to continue browsing.</p>
-            </noscript>
-        </section>
-
         <!-- VIDEO -->
         <section id="game-video-section" class="game-section" hidden>
-            <p class="game-section__kicker">Longplay / Review</p>
+            <p class="game-section__kicker">Video Archive</p>
             <h2 class="game-section__title">Watch the Action</h2>
 
             <div class="game-video">
@@ -360,6 +338,13 @@
             </div>
         </section>
 
+        <!-- DESCRIPTION: shown only when the video archive has no editorial summary -->
+        <section id="game-description-section" class="game-section" hidden>
+            <p class="game-section__kicker">Game Overview</p>
+            <h2 class="game-section__title">About the Game</h2>
+            <div id="gameDescription" class="game-description"></div>
+        </section>
+
         <section id="game-utility-hub-section" class="game-section ccg-game-utility-hub" hidden>
             <h2 class="game-section__title">Game Manual</h2>
 
@@ -368,17 +353,32 @@
                     <h3 class="ccg-utility-card__title">Manual</h3>
                     <a id="gameManualBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">View Manual / PDF</a>
                 </article>
+            </div>
+        </section>
 
+        <section id="game-download-section" class="game-section ccg-game-resource-section ccg-game-resource-section--download" hidden>
+            <h2 class="game-section__title">Authorised Game Download</h2>
+            <div class="ccg-game-resource-section__body">
                 <article id="game-download-card" class="ccg-utility-card ccg-utility-card--download" hidden>
                     <h3 class="ccg-utility-card__title">Download</h3>
                     <a id="gameDiskBtn" class="game-pill" href="#" hidden target="_blank" rel="noopener">Download Disk / Tape</a>
                 </article>
+            </div>
+        </section>
 
+        <section id="game-reading-section" class="game-section ccg-game-resource-section ccg-game-resource-section--reading" hidden>
+            <h2 class="game-section__title">Magazine Reviews</h2>
+            <div class="ccg-game-resource-section__body">
                 <article id="game-reading-card" class="ccg-utility-card ccg-utility-card--reading" hidden>
                     <h3 class="ccg-utility-card__title">Magazine Reviews</h3>
                     <div class="ccg-utility-card__actions" id="gameMagazineReviews"></div>
                 </article>
+            </div>
+        </section>
 
+        <section id="game-music-archive-section" class="game-section ccg-game-resource-section ccg-game-resource-section--music" hidden>
+            <h2 class="game-section__title">Game Music</h2>
+            <div class="ccg-game-resource-section__body">
                 <article id="game-music-card" class="ccg-utility-card ccg-utility-card--music" hidden>
                     <div id="gameMusicSection" class="game-music-section">
                         <h3 class="ccg-utility-card__title">Game Music</h3>
@@ -409,6 +409,23 @@
                 </div>
                 <button class="related-carousel__nav related-carousel__nav--next" type="button" aria-label="Next related games">›</button>
             </div>
+        </section>
+
+        <section id="game-discovery-links" class="game-section" hidden>
+            <p class="game-section__kicker">Continue Exploring</p>
+            <h2 class="game-section__title">Browse Related Archives</h2>
+            <p class="ccg-section__intro">
+                Browse this game&apos;s genres and collections, or return to the
+                <a href="/games/index.html">full games library</a>.
+            </p>
+            <div id="gameGenreLinks" class="game-downloads"></div>
+            <div id="gameCollectionLinks" class="game-downloads"></div>
+            <noscript>
+                <p class="ccg-section__intro">
+                    Explore <a href="/games/genres/index.html">all genres</a> or
+                    <a href="/games/collections/index.html">curated collections</a>.
+                </p>
+            </noscript>
         </section>
 
         <section
