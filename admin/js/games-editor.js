@@ -43,6 +43,7 @@ const EMPTY_DRAFT = {
   collections: [],
   pdf: '',
   disk: '',
+  download_status: '',
   creditsPublisher: '',
   creditsDeveloper: '',
   creditsCoder: '',
@@ -603,6 +604,9 @@ function validateStep2() {
   parseLines(state.draft.disk).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid disk URL: ${url}`);
   });
+  if (parseLines(state.draft.disk).length && !['authorised', 'public-domain', 'freeware'].includes(state.draft.download_status)) {
+    errors.push('Select an authorised download permission before adding download URLs.');
+  }
 
   parseLines(state.draft.externalLinks).forEach((url) => {
     if (!isValidUrl(url)) errors.push(`Invalid external link URL: ${url}`);
@@ -764,6 +768,7 @@ function buildPackageData() {
     thumbnail: normalizeThumbnailPath(state.draft.thumbnail, slug),
     pdf: state.draft.pdf.trim() || '',
     disk: parseLines(state.draft.disk),
+    download_status: state.draft.download_status,
     lemon: buildLemonLinks(state.draft.lemonUrl, state.draft.externalLinks),
     description: state.draft.description.trim(),
     ccg_rating: Number(state.draft.ccg_rating),
@@ -1602,7 +1607,7 @@ function validateGameEntrySchema(gameEntry) {
   const errors = [];
   const requiredOrder = [
     'system', 'id', 'slug', 'title', 'sorttitle', 'year', 'genres', 'collections',
-    'videoid', 'thumbnail', 'music', 'pdf', 'disk', 'lemon', 'description', 'ccg_rating',
+    'videoid', 'thumbnail', 'music', 'pdf', 'disk', 'download_status', 'lemon', 'description', 'ccg_rating',
     'ccg_rating_reason', 'credits', '_ccg_enforced', '_ccg_migrated'
   ];
 
@@ -1638,6 +1643,8 @@ function validateGameEntrySchema(gameEntry) {
   }
   if (typeof gameEntry.pdf !== 'string') errors.push('pdf must be a string.');
   if (!Array.isArray(gameEntry.disk)) errors.push('disk must be an array.');
+  if (typeof gameEntry.download_status !== 'string') errors.push('download_status must be a string.');
+  if (gameEntry.disk.length && !['authorised', 'public-domain', 'freeware'].includes(gameEntry.download_status)) errors.push('disk requires an authorised download_status.');
   if (!Array.isArray(gameEntry.lemon)) errors.push('lemon must be an array.');
   if (typeof gameEntry.description !== 'string') errors.push('description must be a string.');
   if (!Number.isInteger(gameEntry.ccg_rating) || gameEntry.ccg_rating < 0 || gameEntry.ccg_rating > 10) errors.push('ccg_rating must be an integer from 0 to 10.');
