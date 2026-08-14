@@ -88,8 +88,8 @@
         {
             pattern: /^\/games\/downloads\/?(?:index\.html)?$/i,
             key: "downloads",
-            name: "C64 & Amiga Game Downloads",
-            description: "Browse games with download files available in the CCG archive.",
+            name: "Authorised C64 & Amiga Downloads",
+            description: "Browse C64 and Amiga games with authorised, public-domain or creator-approved freeware downloads.",
             parent: "Games",
             itemKind: "games"
         },
