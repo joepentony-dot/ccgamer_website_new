@@ -218,6 +218,20 @@ body:not([data-collection="Retro Events"]) .ccg-page--collection-single .ccg-gen
     backdrop-filter: blur(4px);
 }
 
+/* Compact Omega archive entry: preserve the genre/collection atmosphere
+   while getting visitors to the game grid more quickly. */
+.ccg-page--genres-index .ccg-genre-hero,
+.ccg-page--genre-single .ccg-genre-hero,
+.ccg-page--collection-single .ccg-genre-hero {
+    min-height: clamp(170px, 18vw, 240px);
+}
+
+.ccg-page--genres-index .ccg-genre-hero__inner,
+.ccg-page--genre-single .ccg-genre-hero__inner,
+.ccg-page--collection-single .ccg-genre-hero__inner {
+    padding-block: clamp(18px, 2vw, 28px);
+}
+
 .ccg-page--genres-index .ccg-hero--genres {
     display: flex;
     align-items: center;

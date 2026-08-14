@@ -258,6 +258,23 @@ body.amiga-mode .ccg-page--collections-index {
     }
 }
 
+/* Compact Omega archive entry: retain the cinematic identity without
+   placing a large title wall ahead of the collections themselves. */
+.ccg-page--collections-index .ccg-hero--collections {
+    min-height: clamp(180px, 20vw, 250px);
+    padding: clamp(18px, 2vw, 28px) clamp(18px, 2.4vw, 34px);
+    margin-bottom: clamp(18px, 2vw, 26px);
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections {
+    padding: clamp(14px, 1.6vw, 22px);
+}
+
+.ccg-page--collections-index .ccg-hero-inner--collections .ccg-hero-tagline {
+    font-size: clamp(0.9rem, 1vw, 1rem);
+    line-height: 1.4;
+}
+
 @media (max-width: 768px) {
     .ccg-page--collections-index .ccg-hero--collections {
         padding: 22px 16px 26px;

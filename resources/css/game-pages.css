@@ -224,6 +224,70 @@
     margin-top: clamp(12px, 2vw, 20px);
 }
 
+/* ============================================================
+   OMEGA SINGLE-GAME COMPACT FLOW
+   ------------------------------------------------------------
+   Keep the first screen focused on the title, artwork and video.
+   Supporting detail follows immediately afterwards instead of
+   stretching the hero into a long preamble.
+============================================================ */
+
+.ccg-page--single-game .game-hero {
+    min-height: 0;
+    margin-top: clamp(4px, 1vw, 14px);
+    margin-bottom: clamp(8px, 1.2vw, 16px);
+    padding: clamp(14px, 1.5vw, 22px);
+}
+
+.ccg-page--single-game .game-hero__inner {
+    gap: clamp(14px, 1.6vw, 24px);
+}
+
+.ccg-page--single-game .game-hero__content {
+    gap: clamp(8px, 0.9vw, 12px);
+}
+
+.ccg-page--single-game .game-hero__box3d {
+    max-width: clamp(170px, 15vw, 225px);
+}
+
+.ccg-page--single-game #game-video-section {
+    width: min(1180px, 94vw);
+    margin-top: clamp(10px, 1.6vw, 20px);
+    margin-bottom: clamp(10px, 1.6vw, 20px);
+    padding: clamp(12px, 1.5vw, 18px);
+}
+
+.ccg-page--single-game #game-video-section .game-video {
+    width: min(100%, 1040px);
+    margin-inline: auto;
+}
+
+.ccg-page--single-game #game-video-section .game-video__actions {
+    margin-top: 10px;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline,
+.ccg-page--single-game .game-verdict {
+    width: min(1180px, 94vw);
+    margin-inline: auto;
+}
+
+@media (max-width: 900px) {
+    .ccg-page--single-game .game-hero {
+        padding: 14px;
+    }
+
+    .ccg-page--single-game .game-hero__box3d {
+        width: min(46vw, 190px);
+        margin-top: 0;
+    }
+
+    .ccg-page--single-game #game-video-section {
+        width: 100%;
+    }
+}
+
 @media (max-width: 640px) {
     .ccg-game-utility-hub__grid {
         grid-template-columns: 1fr;
