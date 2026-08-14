@@ -12,12 +12,18 @@ on:
       - "data/composer-research/**"
       - "js/music-composer-pages.js"
       - "js/music-composer-utils.js"
+      - "js/composer-presentation-runtime.js"
       - "scripts/composer-utils.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/enrich-generated-composer-pages.js"
       - "scripts/apply-curated-composer-research.js"
+      - "scripts/normalize-composer-presentation.js"
+      - "scripts/cleanup-composer-meta-descriptions.js"
+      - "scripts/validate-composer-count-sync.js"
       - "scripts/enable-static-composer-routes.js"
       - "scripts/preserve-sitemap-lastmods.js"
+      - "tests/composer-presentation.test.mjs"
+      - "tests/composer-meta-cleanup.test.mjs"
       - "tools/seo/static-pages.json"
       - ".github/workflows/composer-archives.yml"
   pull_request:
@@ -31,12 +37,18 @@ on:
       - "data/composer-research/**"
       - "js/music-composer-pages.js"
       - "js/music-composer-utils.js"
+      - "js/composer-presentation-runtime.js"
       - "scripts/composer-utils.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/enrich-generated-composer-pages.js"
       - "scripts/apply-curated-composer-research.js"
+      - "scripts/normalize-composer-presentation.js"
+      - "scripts/cleanup-composer-meta-descriptions.js"
+      - "scripts/validate-composer-count-sync.js"
       - "scripts/enable-static-composer-routes.js"
       - "scripts/preserve-sitemap-lastmods.js"
+      - "tests/composer-presentation.test.mjs"
+      - "tests/composer-meta-cleanup.test.mjs"
       - "tools/seo/static-pages.json"
       - ".github/workflows/composer-archives.yml"
   workflow_dispatch:
@@ -121,9 +133,14 @@ jobs:
           node --check scripts/generate-composer-pages.js
           node --check scripts/enrich-generated-composer-pages.js
           node --check scripts/apply-curated-composer-research.js
+          node --check scripts/normalize-composer-presentation.js
+          node --check scripts/cleanup-composer-meta-descriptions.js
+          node --check scripts/validate-composer-count-sync.js
           node --check scripts/enable-static-composer-routes.js
           node --check scripts/preserve-sitemap-lastmods.js
           node --check js/music-composer-pages.js
+          node --check js/composer-presentation-runtime.js
+          node --test tests/composer-presentation.test.mjs tests/composer-meta-cleanup.test.mjs
 
       - name: Enable static composer routing
         run: node scripts/enable-static-composer-routes.js
@@ -133,6 +150,9 @@ jobs:
 
       - name: Enrich generated composer profiles
         run: node scripts/enrich-generated-composer-pages.js
+
+      - name: Normalize and validate composer presentation
+        run: node scripts/validate-composer-count-sync.js
 
       - name: Rebuild sitemaps
         run: node scripts/generate-sitemaps.js
