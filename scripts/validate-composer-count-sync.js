@@ -8,7 +8,6 @@ const path = require("path");
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
   : path.resolve(__dirname, "..");
-// This metadata is regenerated from the current games catalogue before sitemap output.
 const metadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 
 function fail(message) {
@@ -51,6 +50,13 @@ function extractProfileFacts(html) {
   return match ? normalizeText(match[2]) : "";
 }
 
+function hasObsoleteArchiveFiller(text) {
+  const value = String(text || "");
+  return /represented in the Cheeky Commodore Gamer archive by one recorded\b/i.test(value)
+    || /In the Cheeky Commodore Gamer archive,\s*[^.]*linked to\s+\d+\s+recorded game-music credits?\b/i.test(value)
+    || /music-credit games in the CCG archive\b/i.test(value);
+}
+
 function validateRoute(route, problems) {
   if (!route || !route.slug) return;
 
@@ -79,19 +85,10 @@ function validateRoute(route, problems) {
   const description = extractMetaDescription(html);
   if (!description) {
     problems.push(`${route.slug}: meta description is missing`);
-  } else if (!new RegExp(`\\b${count}\\s+linked\\b`, "i").test(description)) {
-    problems.push(`${route.slug}: meta description does not contain the current linked-credit count ${count}`);
   }
 
-  if (count === 1) {
-    if (!/represented in the Cheeky Commodore Gamer archive by one recorded\b/i.test(text)) {
-      problems.push(`${route.slug}: archive summary does not reflect its single current credit`);
-    }
-  } else {
-    const summaryPattern = new RegExp(`linked to\\s+${count}\\s+recorded game-music credits\\b`, "i");
-    if (!summaryPattern.test(text)) {
-      problems.push(`${route.slug}: archive summary does not reflect the current count ${count}`);
-    }
+  if (hasObsoleteArchiveFiller(text)) {
+    problems.push(`${route.slug}: obsolete CCG archive filler is still present`);
   }
 }
 
@@ -120,6 +117,7 @@ if (require.main === module) main();
 module.exports = {
   extractMetaDescription,
   extractProfileFacts,
+  hasObsoleteArchiveFiller,
   normalizeText,
   validateRoute
 };

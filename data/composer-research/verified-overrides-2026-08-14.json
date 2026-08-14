@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "researched": "2026-08-14",
+  "purpose": "Verified biography additions and corrections. These entries extend or override the base research registry; unsupported composers remain credit-only.",
+  "profiles": {
+    "russell-lieblich": {
+      "name": "Russell Lieblich",
+      "entityType": "Person",
+      "birthPlace": "New York City, United States",
+      "deathDate": "2005-01-26",
+      "nationality": "American",
+      "aliases": ["Russ Lieblich", "Russel Lieblich"],
+      "bio": "Russell Lieblich was an American composer, musician, sound programmer and game designer whose career crossed Mattel Electronics, Activision and later Electronic Arts projects. After postgraduate study in music at the University of California, San Diego, he worked on Intellivision sound before joining Activision, where his game work included Web Dimension, Master of the Lamps, Little Computer People and Aliens; later credits included MechWarrior and PGA Tour titles.",
+      "seoDescription": "Russell Lieblich biography, Activision and Mattel game-music history, C64 credits, aliases and source references.",
+      "sources": [
+        {"title": "MobyGames — Russell Lieblich biography and credits", "url": "https://www.mobygames.com/person/342/russell-lieblich/"},
+        {"title": "MobyGames — Russell Lieblich audio credits", "url": "https://www.mobygames.com/person/342/russell-lieblich/credits/"}
+      ]
+    },
+    "shahid-ahmad": {
+      "name": "Shahid Ahmad",
+      "entityType": "Person",
+      "nationality": "British",
+      "aliases": ["Shahid Kamal Ahmad", "Quality Notch"],
+      "bio": "Shahid Ahmad is a British game programmer, composer, producer and games-industry executive who entered commercial development while still a teenager. His 1980s work includes the Commodore 64 conversion of Jet Set Willy and the game Chimera; he later spent a long period at Sony PlayStation working in developer relations and indie publishing.",
+      "seoDescription": "Shahid Ahmad biography covering Jet Set Willy, Chimera, C64 and Amiga work, Sony PlayStation career, aliases and source references.",
+      "sameAs": ["https://shhd.org/"],
+      "sources": [
+        {"title": "My Perfect Console — Shahid Ahmad profile and interview", "url": "https://shows.acast.com/my-perfect-console/episodes/shahid-ahmad-former-director-sony-playstation"},
+        {"title": "VGMPF — Shahid Ahmad", "url": "https://vgmpf.com/Wiki/index.php?title=Shahid_Ahmad"}
+      ]
+    },
+    "david-hanlon": {
+      "name": "David Hanlon",
+      "entityType": "Person",
+      "seoIndex": true,
+      "bio": "David Hanlon is a game musician and sound designer known for the Commodore 64 music for Druid and Druid II: Enlightenment. He later provided in-game sound for Bullfrog's Populous on the Amiga, and has described how the arrival of sampled Amiga audio changed his interests in computer sound.",
+      "seoDescription": "David Hanlon biography and sources for the C64 music of Druid and Druid II, plus his later Amiga sound work on Populous.",
+      "sources": [
+        {"title": "C64.COM interview with David Hanlon", "url": "https://www.c64.com/gt_display_interview.php?interview=7"},
+        {"title": "Lemon64 — Druid credits and David Hanlon note", "url": "https://www.lemon64.com/game/druid"}
+      ]
+    },
+    "raphael-gesqua": {
+      "name": "Raphaël Gesqua",
+      "entityType": "Person",
+      "birthDate": "1972-02-11",
+      "birthPlace": "Paris, France",
+      "nationality": "French",
+      "aliases": ["Audiomonster", "Raphael Gesqua"],
+      "seoIndex": true,
+      "bio": "Raphaël Gesqua is a French composer and sound designer who began in the 16-bit demoscene under the name Audiomonster before moving into commercial game audio. His early work includes the Amiga version of Flashback, followed by music and sound for Mr. Nutz, Shaq Fu, Fade to Black, Moto Racer and later film and game projects.",
+      "seoDescription": "Raphaël Gesqua biography: Audiomonster, Amiga demoscene, Flashback, Mr. Nutz, Fade to Black and Moto Racer game-music history.",
+      "sources": [
+        {"title": "MO5.COM — Raphaël Gesqua biography", "url": "https://mo5.com/en/artwork-artists/raphael-gesqua/"},
+        {"title": "Playscope interview with Raphaël Gesqua", "url": "https://www.playscope.com/interview-avec-raphael-gesqua-un-compositeur-autodidacte-qui-a-trouve-sa-voie/"},
+        {"title": "MobyGames — Raphaël Gesqua credits", "url": "https://www.mobygames.com/person/1577/raphael-gesqua/"}
+      ]
+    },
+    "matthew-simmonds": {
+      "name": "Matthew Simmonds",
+      "entityType": "Person",
+      "birthDate": "1974-03-15",
+      "aliases": ["Matt Simmonds", "4-Mat", "4mat"],
+      "seoIndex": true,
+      "bio": "Matthew Simmonds is a game composer and sound designer best known in the Amiga demoscene as 4-Mat. He began making music on the Commodore 64, became active with Amiga groups including Slipstream and Anarchy, and built a long professional audio career spanning game music, audio conversion, sound design and audio leadership.",
+      "seoDescription": "Matthew Simmonds (4-Mat) biography, Amiga demoscene history, game-music credits and later professional audio work.",
+      "sources": [
+        {"title": "C64.COM interview with 4-Mat / Matthew Simmonds", "url": "https://www.c64.com/scene_display_interview.php?interview=231"},
+        {"title": "Amiga Music Preservation — 4-Mat interview", "url": "https://amp.dascene.net/detail.php?detail=interview&view=10"},
+        {"title": "MobyGames — Matthew Simmonds credits", "url": "https://www.mobygames.com/person/133582/matthew-simmonds/"}
+      ]
+    },
+    "dean-evans": {
+      "name": "Dean Evans",
+      "entityType": "Person",
+      "nationality": "English",
+      "aliases": ["Semi Precious"],
+      "seoIndex": true,
+      "bio": "Dean Evans is an English composer and sound designer who joined Ocean Software in 1991, creating music and sound effects for home-computer and console games. His credits include Amiga work and the widely noted SNES soundtrack for Waterworld; he later became audio head at Warthog Games and founded Burnbrae Audio.",
+      "seoDescription": "Dean Evans biography covering Ocean Software, Amiga and SNES game audio, Waterworld, Semi Precious and Burnbrae Audio.",
+      "sources": [
+        {"title": "VGMPF — Dean Evans", "url": "https://www.vgmpf.com/Wiki/index.php/Dean_Evans"},
+        {"title": "VGMPF — Ocean Software audio personnel", "url": "https://www.vgmpf.com/Wiki/index.php?title=Ocean_Software"}
+      ]
+    },
+    "risto-vuori": {
+      "name": "Risto Vuori",
+      "entityType": "Person",
+      "aliases": ["Rib"],
+      "seoIndex": true,
+      "bio": "Risto Vuori is a game musician credited on the Amiga shooters Stardust and Super Stardust. His original Stardust-era music was later preserved as the retro soundtrack and credits music in Super Stardust HD, linking the early Amiga score with the later Housemarque series.",
+      "seoDescription": "Risto Vuori (Rib) game-music credits for Stardust and Super Stardust on Amiga, with later Super Stardust HD soundtrack use.",
+      "sources": [
+        {"title": "MobyGames — Risto Vuori", "url": "https://www.mobygames.com/person/184390/risto-vuori/"},
+        {"title": "MobyGames — Stardust Amiga credits", "url": "https://www.mobygames.com/game/13043/stardust/credits/amiga/"}
+      ]
+    },
+    "simon-pick": {
+      "name": "Simon Pick",
+      "entityType": "Person",
+      "birthDate": "1966",
+      "nationality": "British",
+      "aliases": ["Simon John Pick"],
+      "seoIndex": true,
+      "bio": "Simon Pick is a British game developer whose C64 career combined programming, design, graphics, music and sampled sound. He wrote games including Mad Nurse, worked on conversions such as Gradius and Shinobi, created the Micro Rhythm drum-machine software, and later held development roles at The Sales Curve and other studios.",
+      "seoDescription": "Simon Pick biography covering C64 programming, music and sampled sound, Micro Rhythm, Gradius, Shinobi and later game-development work.",
+      "sources": [
+        {"title": "Simon Pick — personal game history", "url": "https://simonpick.games/"},
+        {"title": "Lemon64 interview with Simon Pick", "url": "https://www.lemon64.com/page/simon-pick-interview"},
+        {"title": "C64-Wiki — Simon Pick", "url": "https://www.c64-wiki.de/wiki/Simon_Pick"}
+      ]
+    },
+    "frederic-motte": {
+      "name": "Frédéric Motte",
+      "entityType": "Person",
+      "birthDate": "1970",
+      "aliases": ["Fred Motte", "El Mobo", "ElMobo", "Moby"],
+      "seoIndex": true,
+      "bio": "Frédéric Motte is a French game composer, sound designer and demoscene musician also known as El Mobo. After early computer and demo music, he became an in-house musician and sound designer at Atreid Concept and later led audio at Kalisto Entertainment before founding his own studio.",
+      "seoDescription": "Frédéric Motte (El Mobo) biography, demoscene history, game composition and sound design at Atreid Concept and Kalisto Entertainment.",
+      "sources": [
+        {"title": "MobyGames — Frédéric Motte biography and credits", "url": "https://www.mobygames.com/person/36521/frederic-motte/"}
+      ]
+    },
+    "andrian-pertout": {
+      "name": "Andrián Pertout",
+      "entityType": "Person",
+      "birthPlace": "Chile",
+      "seoIndex": true,
+      "bio": "Andrián Pertout is a Chile-born composer based in Australia whose work spans concert music, film, television and computer games. His early game-music work came through Melbourne's Beam Software, where he composed for Commodore 64 projects before moving into a much broader composition career.",
+      "seoDescription": "Andrián Pertout biography covering his Chilean background, Australian career, Beam Software and early Commodore 64 game music.",
+      "sources": [
+        {"title": "C64.COM interview with Andrián Pertout", "url": "https://www.c64.com/gt_display_interview.php?interview=43"}
+      ]
+    },
+    "haiko-ruttmann": {
+      "name": "Haiko Ruttmann",
+      "entityType": "Person",
+      "seoIndex": true,
+      "bio": "Haiko Ruttmann is a composer, sound artist and audio producer whose game career began in 1989 with freelance music and sound effects for Blue Byte on Amiga and Atari ST. He later became Blue Byte's music director, composing for series including The Settlers and Battle Isle while also overseeing voice production and localization.",
+      "seoDescription": "Haiko Ruttmann biography covering Blue Byte, Amiga and Atari ST game audio, The Settlers, Battle Isle and music-director work.",
+      "sources": [
+        {"title": "IMDb — Haiko Ruttmann biography", "url": "https://www.imdb.com/name/nm0752192/"}
+      ]
+    },
+    "ray-norrish": {
+      "name": "Ray Norrish",
+      "entityType": "Person",
+      "aliases": ["NZO"],
+      "seoIndex": true,
+      "bio": "Ray Norrish is an Amiga scene musician and coder known by the handle NZO. Demozoo records extensive tracked-music activity and membership of groups including DMA Design and Dual Crew, with commercial game music including Blood Money.",
+      "seoDescription": "Ray Norrish (NZO) biography and Amiga demoscene history, including DMA Design links and tracked music for Blood Money.",
+      "sources": [
+        {"title": "Demozoo — NZO / Ray Norrish", "url": "https://demozoo.org/sceners/9894/"},
+        {"title": "Demozoo — Blood Money tracked music by Ray Norrish", "url": "https://demozoo.org/music/95061/"}
+      ]
+    },
+    "blair-zuppicich": {
+      "name": "Blair Zuppicich",
+      "entityType": "Person",
+      "seoIndex": true,
+      "bio": "Blair Zuppicich is a game musician whose credits include a run of Amiga titles for Vision and Acid Software, including Cybernetix, Woody's World, Roadkill and Zombie Apocalypse II, followed by music for the Windows strategy game 7th Legion.",
+      "seoDescription": "Blair Zuppicich game-music credits across Amiga titles including Cybernetix, Woody's World and Roadkill, plus 7th Legion.",
+      "sources": [
+        {"title": "MobyGames — Blair Zuppicich", "url": "https://www.mobygames.com/person/18845/blair-zuppicich/"}
+      ]
+    },
+    "jolyon-vincent-myers": {
+      "name": "Jolyon Vincent Myers",
+      "entityType": "Person",
+      "aliases": ["Jolyon Myers", "Jo Myers", "The Judge", "JVM"],
+      "seoIndex": true,
+      "bio": "Jolyon Vincent Myers is a British games-industry artist, musician and designer who worked under the name JVM and through JVM Design for sound and graphics projects. His later career expanded into game design and development on major console and PC productions.",
+      "seoDescription": "Jolyon Vincent Myers (JVM / The Judge) biography covering Amiga sound and graphics work, JVM Design and later game development.",
+      "sources": [
+        {"title": "MobyGames — Jolyon Myers", "url": "https://www.mobygames.com/person/25178/jolyon-myers/"},
+        {"title": "MobyGames — JVM Design history", "url": "https://www.mobygames.com/company/3470/jvm-design/"}
+      ]
+    },
+    "andy-finkel": {
+      "name": "Andy Finkel",
+      "entityType": "Person",
+      "birthDate": "1957",
+      "nationality": "American",
+      "aliases": ["Andy S. Finkel"],
+      "seoIndex": true,
+      "bio": "Andy Finkel is an American programmer, author and computer musician who joined Commodore around 1980 and worked across the VIC-20, Commodore 64 and Amiga eras. His early Commodore work included programming, software tools and the VIC-20 Music Composer, followed by later technical roles around Amiga systems.",
+      "seoDescription": "Andy Finkel biography covering Commodore, VIC-20, C64 and Amiga programming, computer music and the VIC-20 Music Composer.",
+      "sources": [
+        {"title": "C64-Wiki — Andy Finkel", "url": "https://www.c64-wiki.de/wiki/Andy_Finkel"},
+        {"title": "Andy Finkel remembers the VIC-20 — 1996 interview", "url": "https://www.geocities.ws/rmelick/12.htm"}
+      ]
+    },
+    "aidan-bell": {
+      "name": "Aidan Bell",
+      "entityType": "Person",
+      "seoIndex": true,
+      "bio": "Aidan Bell is the composer of the original Elite theme. For the Commodore 64 release, his composition was arranged and programmed for the SID by Julie Dunn, credited at the time as David Dunn; Bell later developed the Elite story into Elite: The Musical.",
+      "seoDescription": "Aidan Bell biography and sources for the original Elite theme, its Commodore 64 SID arrangement and Elite: The Musical.",
+      "sources": [
+        {"title": "MobyGames — Elite Commodore 64 credits", "url": "https://www.mobygames.com/game/1324/elite/credits/c64/"},
+        {"title": "C64.COM interview with Julie Dunn on the Elite theme", "url": "https://www.c64.com/gt_display_interview.php?interview=45"},
+        {"title": "C64-Wiki — Elite music credits", "url": "https://www.c64-wiki.de/wiki/Elite_%28Spiel%29"}
+      ]
+    },
+    "steve-crow": {
+      "name": "Stephen Crow",
+      "entityType": "Person",
+      "birthDate": "1965",
+      "nationality": "British",
+      "aliases": ["Steve Crow", "Steve J. Crow", "Steve Crown"],
+      "seoIndex": true,
+      "bio": "Stephen 'Steve' Crow is a British game programmer, artist and musician whose 1980s work included Starquake, for which he handled programming, graphics and music on the Commodore 64. His later career extended through game art and development work at studios including Blizzard Entertainment.",
+      "seoDescription": "Steve Crow biography covering Starquake programming, graphics and C64 music, plus his later games-industry career.",
+      "sources": [
+        {"title": "C64-Wiki — Stephen Crow", "url": "https://www.c64-wiki.de/wiki/Stephen_Crow"},
+        {"title": "MobyGames — Stephen Crow", "url": "https://www.mobygames.com/person/1896/stephen-crow/"}
+      ]
+    }
+  }
+}

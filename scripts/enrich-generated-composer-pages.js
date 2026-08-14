@@ -27,6 +27,21 @@ function readJson(filePath) {
   }
 }
 
+function mergeResearchProfiles(target, document, sourceLabel, allowOverrides = false) {
+  if (!document || !document.profiles || typeof document.profiles !== "object") {
+    fail(`Research source is missing profiles: ${sourceLabel}`);
+  }
+
+  for (const [slug, profile] of Object.entries(document.profiles)) {
+    if (!allowOverrides && Object.prototype.hasOwnProperty.call(target, slug)) {
+      fail(`Duplicate research profile: ${slug}`);
+    }
+    target[slug] = allowOverrides
+      ? { ...(target[slug] || {}), ...(profile || {}) }
+      : profile;
+  }
+}
+
 function loadResearchDocument(filePath) {
   const manifest = readJson(filePath);
   if (manifest && manifest.profiles && typeof manifest.profiles === "object") return manifest;
@@ -38,13 +53,21 @@ function loadResearchDocument(filePath) {
   for (const relativePart of manifest.parts) {
     const partPath = path.resolve(path.dirname(filePath), relativePart);
     const part = readJson(partPath);
-    if (!part || !part.profiles || typeof part.profiles !== "object") {
-      fail(`Research part is missing profiles: ${path.relative(repoRoot, partPath)}`);
-    }
-    for (const [slug, profile] of Object.entries(part.profiles)) {
-      if (Object.prototype.hasOwnProperty.call(profiles, slug)) fail(`Duplicate research profile: ${slug}`);
-      profiles[slug] = profile;
-    }
+    mergeResearchProfiles(profiles, part, path.relative(repoRoot, partPath));
+  }
+
+  const overrideEntries = manifest.overrides
+    ? (Array.isArray(manifest.overrides) ? manifest.overrides : [manifest.overrides])
+    : [];
+  for (const relativeOverride of overrideEntries) {
+    const overridePath = path.resolve(path.dirname(filePath), relativeOverride);
+    const overrideDocument = readJson(overridePath);
+    mergeResearchProfiles(
+      profiles,
+      overrideDocument,
+      path.relative(repoRoot, overridePath),
+      true
+    );
   }
 
   return { ...manifest, profiles };
@@ -95,52 +118,54 @@ function extractGameTitles(html) {
     .filter(Boolean);
 }
 
-function naturalList(items) {
-  const values = items.filter(Boolean);
-  if (values.length <= 1) return values[0] || "";
-  if (values.length === 2) return `${values[0]} and ${values[1]}`;
-  return `${values.slice(0, -1).join(", ")} and ${values[values.length - 1]}`;
+function firstSentence(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  const match = text.match(/^.*?[.!?](?:\s|$)/);
+  return (match ? match[0] : text).trim();
 }
 
-function archiveBiography(route, gameTitles) {
-  const label = platformLabel(route);
-  const years = route.firstYear && route.lastYear
-    ? (route.firstYear === route.lastYear ? String(route.firstYear) : `${route.firstYear}–${route.lastYear}`)
-    : "the archive period";
-  const examples = naturalList(gameTitles.slice(0, 4));
-  const creditWord = route.count === 1 ? "credit" : "credits";
-  const platformParts = [];
-  if (route.c64Count) platformParts.push(`${route.c64Count} C64`);
-  if (route.amigaCount) platformParts.push(`${route.amigaCount} Amiga`);
-
-  if (route.count === 1) {
-    return `${route.name} is represented in the Cheeky Commodore Gamer archive by one recorded ${label} music credit${examples ? `, ${examples}` : ""}${route.firstYear ? ` (${route.firstYear})` : ""}.`;
-  }
-
-  const breakdown = platformParts.length ? ` (${platformParts.join(" and ")})` : "";
-  return `In the Cheeky Commodore Gamer archive, ${route.name} is linked to ${route.count} recorded game-music ${creditWord}${breakdown} spanning ${years}${examples ? `. Linked releases include ${examples}` : ""}.`;
+function clampMetaDescription(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= 158) return text;
+  return `${text.slice(0, 155).replace(/[\s,;:.!-]+$/g, "")}…`;
 }
 
 function buildDescription(route, profile, titles) {
+  if (profile?.seoDescription) {
+    return clampMetaDescription(profile.seoDescription);
+  }
+
+  const firstTitle = titles[0] || "";
+  if (profile?.bio) {
+    let text = firstSentence(profile.bio);
+    if (text && !text.toLowerCase().includes(String(route.name || "").toLowerCase())) {
+      text = `${route.name}: ${text}`;
+    }
+    if (text.length < 112 && firstTitle) {
+      text += ` Game-music credits include ${firstTitle}.`;
+    }
+    return clampMetaDescription(text);
+  }
+
   const label = platformLabel(route);
-  const firstTitle = titles[0];
-  const personal = profile && profile.bio
-    ? `${route.name} biography and verified background, plus ${route.count} linked ${label} game-music ${route.count === 1 ? "credit" : "credits"}`
-    : `${route.name} ${label} game-music archive with ${route.count} linked ${route.count === 1 ? "credit" : "credits"}`;
-  const suffix = firstTitle ? `, including ${firstTitle}.` : ".";
-  const text = `${personal}${suffix}`;
-  return text.length <= 158 ? text : `${text.slice(0, 155).replace(/[\s,;:.!-]+$/g, "")}…`;
+  const example = firstTitle ? `, including ${firstTitle}` : "";
+  return clampMetaDescription(
+    `${route.name} ${label} game-music credits${example}, linked releases and playable tracks where available.`
+  );
 }
 
-function buildProfileMarkup(route, profile, archiveBio) {
+function buildProfileMarkup(route, profile) {
   const label = platformLabel(route);
-  const sources = profile && Array.isArray(profile.sources) ? profile.sources.filter(exactSource).slice(0, 4) : [];
+  const sources = profile && Array.isArray(profile.sources)
+    ? profile.sources.filter(exactSource).slice(0, 6)
+    : [];
   const aliases = profile && Array.isArray(profile.aliases) ? profile.aliases.filter(Boolean) : [];
-  const researchLevel = profile ? "verified" : "archive";
+  const researchLevel = profile ? "verified" : "credit-only";
   const gameWord = route.count === 1 ? "credit" : "credits";
 
   const sourceMarkup = sources.length
-    ? `<p class="ccg-composer-profile__factline"><strong>Research sources:</strong> ${sources.map((source) => `<a href="${htmlEscape(source.url)}" target="_blank" rel="noopener noreferrer">${htmlEscape(source.title || "Source")}</a>`).join(" · ")}</p>`
+    ? `<p class="ccg-composer-profile__factline"><strong>Sources:</strong> ${sources.map((source) => `<a href="${htmlEscape(source.url)}" target="_blank" rel="noopener noreferrer">${htmlEscape(source.title || "Source")}</a>`).join(" · ")}</p>`
     : "";
 
   return `<article class="ccg-composer-profile ccg-composer-profile--text-only" data-ccg-research-profile="true" data-research-level="${researchLevel}">
@@ -154,22 +179,23 @@ function buildProfileMarkup(route, profile, archiveBio) {
           ${profile?.nationality ? `<p class="ccg-composer-profile__factline"><strong>Nationality:</strong> ${htmlEscape(profile.nationality)}</p>` : ""}
           ${aliases.length ? `<p class="ccg-composer-profile__factline"><strong>Also known as:</strong> ${htmlEscape(aliases.join(", "))}</p>` : ""}
           ${profile?.bio ? `<p class="ccg-composer-profile__bio">${htmlEscape(profile.bio)}</p>` : ""}
-          <p class="ccg-composer-profile__bio">${htmlEscape(archiveBio)}</p>
           ${sourceMarkup}
         </div>
       </article>`;
 }
 
-function buildEntitySchema(route, profile, archiveBio) {
+function buildEntitySchema(route, profile) {
   const url = `${SITE_ORIGIN}/music/${route.slug}/`;
   const entityType = profile?.entityType === "MusicGroup" ? "MusicGroup" : "Person";
   const entity = {
     "@type": entityType,
     "@id": `${url}#${entityType === "MusicGroup" ? "group" : "person"}`,
     name: profile?.name || route.name,
-    description: profile?.bio ? `${profile.bio} ${archiveBio}` : archiveBio,
     url
   };
+
+  const entityDescription = profile?.bio || profile?.seoDescription || "";
+  if (entityDescription) entity.description = entityDescription;
 
   if (entityType === "Person") {
     if (profile?.birthDate && validStructuredDate(profile.birthDate)) entity.birthDate = profile.birthDate;
@@ -182,7 +208,11 @@ function buildEntitySchema(route, profile, archiveBio) {
   return entity;
 }
 
-function replaceJsonLd(html, route, profile, archiveBio) {
+function neutralPageDescription(route) {
+  return `Explore ${platformLabel(route)} game-music credits for ${route.name}, with linked releases and playable tracks where available.`;
+}
+
+function replaceJsonLd(html, route, profile) {
   const scriptPattern = /<script\s+type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/i;
   const match = html.match(scriptPattern);
   if (!match) return html;
@@ -190,10 +220,24 @@ function replaceJsonLd(html, route, profile, archiveBio) {
   try {
     const schema = JSON.parse(match[1]);
     if (!schema || !Array.isArray(schema["@graph"])) return html;
-    const entity = buildEntitySchema(route, profile, archiveBio);
-    const graph = schema["@graph"].filter((node) => !(node && typeof node === "object" && typeof node["@id"] === "string" && /#(?:person|group)$/.test(node["@id"])));
+
+    const entity = buildEntitySchema(route, profile);
+    const graph = schema["@graph"].filter((node) => !(
+      node &&
+      typeof node === "object" &&
+      typeof node["@id"] === "string" &&
+      /#(?:person|group)$/.test(node["@id"])
+    ));
+
     const page = graph.find((node) => node && node["@type"] === "CollectionPage");
-    if (page) page.about = { "@id": entity["@id"] };
+    if (page) {
+      page.description = neutralPageDescription(route);
+      page.about = { "@id": entity["@id"] };
+    }
+
+    const itemList = graph.find((node) => node && node["@type"] === "ItemList");
+    if (itemList) itemList.name = `${route.name} ${platformLabel(route)} game-music credits`;
+
     graph.push(entity);
     schema["@graph"] = graph;
     const replacement = `<script type="application/ld+json">\n${JSON.stringify(schema, null, 2).replace(/</g, "\\u003c")}\n  </script>`;
@@ -208,6 +252,11 @@ function replaceMetaDescription(html, description) {
   return html.replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
     .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
     .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
+}
+
+function replaceComposerIntro(html, route) {
+  const intro = `<p class="ccg-composer-intro">Explore ${htmlEscape(platformLabel(route))} game-music credits for ${htmlEscape(route.name)}, linked releases and playable tracks where available.</p>`;
+  return html.replace(/<p\s+class="ccg-composer-intro">[\s\S]*?<\/p>/i, intro);
 }
 
 function replaceProfile(html, markup) {
@@ -227,7 +276,7 @@ function main() {
 
   let generated = 0;
   let researched = 0;
-  let archiveOnly = 0;
+  let creditOnly = 0;
   let changed = 0;
   let seoIndexOverrides = 0;
   let metadataChanged = false;
@@ -243,14 +292,15 @@ function main() {
 
     const profile = profiles[route.slug] || null;
     if (profile) researched += 1;
-    else archiveOnly += 1;
+    else creditOnly += 1;
+
     const titles = extractGameTitles(html);
-    const archiveBio = archiveBiography(route, titles);
-    const markup = buildProfileMarkup(route, profile, archiveBio);
+    const markup = buildProfileMarkup(route, profile);
     let next = replaceProfile(html, markup);
     if (!next) fail(`Could not locate composer-content on ${route.slug}`);
+    next = replaceComposerIntro(next, route);
     next = replaceMetaDescription(next, buildDescription(route, profile, titles));
-    next = replaceJsonLd(next, route, profile, archiveBio);
+    next = replaceJsonLd(next, route, profile);
 
     if (profile?.seoIndex === true && !route.indexable) {
       next = next.replace(/<meta\s+name="robots"\s+content="noindex,follow">/i, '<meta name="robots" content="index,follow">');
@@ -275,43 +325,66 @@ function main() {
     const staticPages = readJson(staticPagesPath);
     if (!Array.isArray(staticPages)) fail("tools/seo/static-pages.json must contain an array");
     const seen = new Set(staticPages);
-    overrideStaticEntries.forEach((entry) => { if (!seen.has(entry)) { staticPages.push(entry); seen.add(entry); } });
+    overrideStaticEntries.forEach((entry) => {
+      if (!seen.has(entry)) {
+        staticPages.push(entry);
+        seen.add(entry);
+      }
+    });
     fs.writeFileSync(staticPagesPath, `${JSON.stringify(staticPages, null, 2)}\n`, "utf8");
   }
 
   if (fs.existsSync(reportPath)) {
     let report = fs.readFileSync(reportPath, "utf8");
-    report = report.replace(
-      "- No composer biographies, birth details or personal facts were invented.",
-      "- Composer biographies and personal facts are included only where backed by the research registry; unsupported facts are not invented."
-    );
-    const feature = "- Static research-backed composer profiles, archive summaries and Person/MusicGroup entity data on generated routes.";
+    report = report
+      .replace(
+        "- Static research-backed composer profiles, archive summaries and Person/MusicGroup entity data on generated routes.",
+        "- Static research-backed composer profiles, source references and Person/MusicGroup entity data on generated routes."
+      )
+      .replace(
+        "- Composer biographies and personal facts are included only where backed by the research registry; unsupported facts are not invented.",
+        "- Composer biographies and personal facts are included only where backed by specific research sources; unsupported profiles remain credit-only."
+      )
+      .replace(
+        "- No composer biographies, birth details or personal facts were invented.",
+        "- Composer biographies and personal facts are included only where backed by specific research sources; unsupported profiles remain credit-only."
+      );
+
+    const feature = "- Static research-backed composer profiles, source references and Person/MusicGroup entity data on generated routes.";
     if (!report.includes(feature)) {
       report = report.replace(
         "## Explicit exclusions",
-        `${feature}\n\n## Research enrichment\n\n- Externally researched generated profiles: **${researched}**\n- Archive-only generated profiles: **${archiveOnly}**\n- Research registry: \`music/composers/research.json\`\n- Research-backed single-credit SEO overrides: **${seoIndexOverrides}**\n\n## Explicit exclusions`
+        `${feature}\n\n## Research enrichment\n\n- Externally researched generated profiles: **${researched}**\n- Credit-only generated profiles: **${creditOnly}**\n- Research registry: \`music/composers/research.json\`\n- Research-backed single-credit SEO overrides: **${seoIndexOverrides}**\n\n## Explicit exclusions`
       );
     } else {
       report = report
         .replace(/- Externally researched generated profiles: \*\*\d+\*\*/, `- Externally researched generated profiles: **${researched}**`)
-        .replace(/- Archive-only generated profiles: \*\*\d+\*\*/, `- Archive-only generated profiles: **${archiveOnly}**`)
+        .replace(/- Archive-only generated profiles: \*\*\d+\*\*/, `- Credit-only generated profiles: **${creditOnly}**`)
+        .replace(/- Credit-only generated profiles: \*\*\d+\*\*/, `- Credit-only generated profiles: **${creditOnly}**`)
         .replace(/- Research-backed single-credit SEO overrides: \*\*\d+\*\*/, `- Research-backed single-credit SEO overrides: **${seoIndexOverrides}**`);
     }
     fs.writeFileSync(reportPath, report, "utf8");
   }
 
-  console.log(JSON.stringify({ generatedRoutes: generated, externallyResearched: researched, archiveOnly, seoIndexOverrides, changed }, null, 2));
+  console.log(JSON.stringify({
+    generatedRoutes: generated,
+    externallyResearched: researched,
+    creditOnly,
+    seoIndexOverrides,
+    changed
+  }, null, 2));
 }
 
 if (require.main === module) main();
 
 module.exports = {
-  archiveBiography,
   buildDescription,
   buildEntitySchema,
   buildProfileMarkup,
   exactSource,
   loadResearchDocument,
+  neutralPageDescription,
+  replaceComposerIntro,
   replaceJsonLd,
   replaceProfile,
   validStructuredDate
