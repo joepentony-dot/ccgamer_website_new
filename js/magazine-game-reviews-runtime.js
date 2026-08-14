@@ -263,11 +263,16 @@
 
             container.appendChild(buildPanel(rows));
             const card = document.getElementById("game-reading-card");
+            const section = document.getElementById("game-reading-section");
             const hub = document.getElementById("game-utility-hub-section");
             const title = card?.querySelector(".ccg-utility-card__title");
             if (title) title.textContent = "Magazine Reviews";
             if (card) card.hidden = false;
-            if (hub) hub.hidden = false;
+            if (section) {
+                section.hidden = false;
+            } else if (hub) {
+                hub.hidden = false;
+            }
         } finally {
             applying = false;
             if (observer && container.isConnected) observer.observe(container, { childList: true });
