@@ -141,6 +141,23 @@ if (IS_ADMIN_PATH) {
         return pathname;
     }
 
+    function getNavigationSection(path) {
+        const pathname = normalisePath(path).toLowerCase();
+
+        if (pathname.includes("/games/genres/")) return "genres";
+        if (pathname.includes("/games/publishers/")) return "publishers";
+        if (pathname.includes("/games/collections/")) return "collections";
+        if (pathname.includes("/games/")) return "games";
+        if (pathname.includes("/music/")) return "music";
+        if (pathname.includes("/quiz/")) return "quiz";
+        if (pathname.endsWith("/emulation.html") || pathname.includes("/resources/emulation-guide")) return "emulation";
+        if (pathname.endsWith("/about.html")) return "about";
+        if (pathname.endsWith("/contact.html")) return "contact";
+        if (pathname.endsWith("/home.html")) return "home";
+
+        return "";
+    }
+
     /* ======================================================
        GAME URL HELPERS
     ====================================================== */
@@ -179,6 +196,7 @@ if (IS_ADMIN_PATH) {
 
     function markActiveLinks(header) {
         const current = normalisePath(window.location.href);
+        const currentSection = getNavigationSection(current);
 
         const setActiveState = (link, isActive) => {
             link.classList.toggle("ccg-nav__link--active", isActive);
@@ -191,7 +209,14 @@ if (IS_ADMIN_PATH) {
 
         header.querySelectorAll(".ccg-nav__link").forEach(link => {
             const target = normalisePath(link.getAttribute("href") || "");
-            const isActive = current.endsWith(target) || current === target;
+            const targetSection = getNavigationSection(target);
+            const isExactMatch = current.endsWith(target) || current === target;
+            const isSectionMatch = Boolean(
+                currentSection &&
+                targetSection &&
+                currentSection === targetSection
+            );
+            const isActive = isExactMatch || isSectionMatch;
 
             setActiveState(link, isActive);
 
@@ -205,6 +230,8 @@ if (IS_ADMIN_PATH) {
             }
         });
     }
+
+    window.ccgMarkNavigationActive = markActiveLinks;
 
     function normalizeHeaderNavLinks() {
         const header = document.querySelector("[data-ccg-header]");
@@ -2423,19 +2450,16 @@ function setupFooterSignatureRotator() {
 }
 
     /* ======================================================
-       OMEGA FLOATING NAV (HOME + GENRES + COLLECTIONS)
+       OMEGA FLOATING NAV (SHARED PUBLIC-PAGE ROUTES)
     ====================================================== */
     function setupOmegaFloatingNav() {
         const root = document.documentElement;
         const pageType = root?.getAttribute("data-ccg-page") || "";
         const path = window.location.pathname || "";
-        const isTargetPage = pageType === "home"
-            || pageType.includes("games-index")
-            || pageType.includes("genre")
-            || pageType.includes("collection")
-            || /\/games\/(index\.html)?$/.test(path)
-            || path.includes("/games/genres/")
-            || path.includes("/games/collections/");
+        const isTargetPage = Boolean(document.querySelector("[data-ccg-header]"))
+            && pageType !== "intro"
+            && !path.includes("/admin/")
+            && !path.includes("/viewer/");
 
         if (!isTargetPage) return;
 
@@ -2456,24 +2480,24 @@ function setupFooterSignatureRotator() {
         nav.setAttribute("data-ccg-floating-nav", "");
         nav.innerHTML = `
             <nav class="ccg-floating-nav__bar" aria-label="Floating navigation">
-                <a class="ccg-floating-nav__btn" href="${buildUrl("games/index.html")}">
-                    <span class="ccg-floating-nav__icon" aria-hidden="true">📂</span>
-                    <span class="ccg-floating-nav__label">Browse Games</span>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("home.html")}" data-ccg-floating-section="home">
+                    <svg class="ccg-floating-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 11.2 12 4l8.5 7.2v8.3h-5.6v-5.3H9.1v5.3H3.5z"/></svg>
+                    <span class="ccg-floating-nav__label">Home</span>
                 </a>
-                <a class="ccg-floating-nav__btn" href="${buildUrl("games/collections/index.html")}">
-                    <span class="ccg-floating-nav__icon" aria-hidden="true">⭐</span>
-                    <span class="ccg-floating-nav__label">Collections</span>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/index.html")}" data-ccg-floating-section="games">
+                    <svg class="ccg-floating-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6.5h6l1.8 2H21v9.8H3z"/><path d="M3 6.5h6l1.2 1.3H3z"/></svg>
+                    <span class="ccg-floating-nav__label">Games</span>
                 </a>
-                <a class="ccg-floating-nav__btn" href="${buildUrl("games/genres/index.html")}">
-                    <span class="ccg-floating-nav__icon" aria-hidden="true">🗂️</span>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/genres/index.html")}" data-ccg-floating-section="genres">
+                    <svg class="ccg-floating-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z"/></svg>
                     <span class="ccg-floating-nav__label">Genres</span>
                 </a>
-                <a class="ccg-floating-nav__btn" href="${buildUrl("quiz/quiz.html")}">
-                    <span class="ccg-floating-nav__icon" aria-hidden="true">🎮</span>
-                    <span class="ccg-floating-nav__label">Quiz</span>
+                <a class="ccg-floating-nav__btn" href="${buildUrl("games/collections/index.html")}" data-ccg-floating-section="collections">
+                    <svg class="ccg-floating-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
+                    <span class="ccg-floating-nav__label">Collections</span>
                 </a>
                 <button class="ccg-floating-nav__btn" type="button" data-ccg-floating-top aria-label="Back to top">
-                    <span class="ccg-floating-nav__icon" aria-hidden="true">⬆️</span>
+                    <svg class="ccg-floating-nav__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 7 7-2.1 2.1-3.4-3.4V20h-3V9.7l-3.4 3.4L5 11z"/></svg>
                     <span class="ccg-floating-nav__label">Top</span>
                 </button>
             </nav>
@@ -2481,6 +2505,13 @@ function setupFooterSignatureRotator() {
 
         document.body.appendChild(nav);
         root.classList.add("ccg-has-floating-nav");
+
+        const currentSection = getNavigationSection(path);
+        const activeRoute = nav.querySelector(`[data-ccg-floating-section="${currentSection}"]`);
+        if (activeRoute) {
+            activeRoute.classList.add("ccg-floating-nav__btn--active");
+            activeRoute.setAttribute("aria-current", "page");
+        }
 
         const topButton = nav.querySelector("[data-ccg-floating-top]");
         if (topButton) {
