@@ -747,6 +747,253 @@ body[data-ccg-mode="amiga"] {
     border: 1px dashed rgba(var(--accent-rgb),0.4);
 }
 
+/* ============================================================
+   GAMES INDEX — SEARCH-FIRST ARCHIVE REFINEMENT
+   The hero now introduces the library only; the useful discovery
+   controls arrive immediately below it.  Index-only selectors keep
+   the established single-game presentation completely isolated.
+============================================================ */
+.ccg-page--games-index .games-hero {
+    margin-bottom: 8px;
+    padding: clamp(18px, 2.2vw, 26px) clamp(18px, 2.8vw, 34px);
+}
+
+.ccg-page--games-index .games-hero__inner {
+    gap: 6px;
+}
+
+.ccg-page--games-index .games-hero__subtitle {
+    max-width: 62ch;
+    line-height: 1.45;
+}
+
+.ccg-page--games-index .games-hero__stats {
+    width: fit-content;
+    margin-top: 4px;
+    padding: 6px 10px;
+    font-size: 0.82rem;
+}
+
+.ccg-page--games-index .games-tools {
+    margin-top: 0;
+    gap: 10px;
+}
+
+.ccg-page--games-index .games-search,
+.ccg-page--games-index .games-filter,
+.ccg-page--games-index .games-alpha {
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42);
+}
+
+.ccg-page--games-index .games-search {
+    padding: 10px 12px;
+}
+
+.ccg-page--games-index .games-search input[type="search"] {
+    min-height: 48px;
+    padding-inline: 15px;
+}
+
+.games-archive-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    padding: 2px 2px 0;
+    font-family: var(--ccg-font-body);
+}
+
+.games-archive-shortcuts__label {
+    margin-right: 4px;
+    color: var(--ccg-soft);
+    font-size: 0.74rem;
+    font-family: var(--ccg-font-main);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.games-archive-shortcuts a {
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.2);
+    color: rgba(235, 248, 255, 0.9);
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.games-archive-shortcuts a:hover,
+.games-archive-shortcuts a:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.72);
+    background: rgba(var(--accent-rgb), 0.12);
+    color: #fff;
+    outline: none;
+}
+
+/* Archive directory: left-weighted, information-rich, and calm when closed. */
+.ccg-page--games-index .games-library {
+    margin-top: 6px;
+}
+
+.ccg-page--games-index .games-focus-panel {
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    border-color: rgba(255, 255, 255, 0.14);
+    background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.11), rgba(6, 12, 26, 0.72) 44%);
+    box-shadow: inset 3px 0 0 rgba(var(--accent-rgb), 0.82), 0 14px 28px rgba(0, 0, 0, 0.32);
+}
+
+.ccg-page--games-index .games-accordion__section {
+    margin: 0 0 9px;
+    border: 1px solid rgba(255, 255, 255, 0.11);
+    border-radius: 12px;
+    background: rgba(5, 12, 26, 0.68);
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.26);
+}
+
+.ccg-page--games-index .games-accordion__section:not(.is-open) {
+    opacity: 1;
+    filter: none;
+}
+
+.ccg-page--games-index .games-accordion__section.is-open {
+    border-color: rgba(var(--accent-rgb), 0.76);
+    background: rgba(5, 17, 35, 0.9);
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.48), 0 0 22px rgba(var(--accent-rgb), 0.16);
+}
+
+.ccg-page--games-index .games-accordion__header {
+    display: grid;
+    grid-template-columns: minmax(76px, 0.48fr) minmax(180px, 1fr) auto 34px;
+    align-items: center;
+    gap: clamp(10px, 1.6vw, 24px);
+    width: 100%;
+    min-height: 76px;
+    padding: 10px clamp(14px, 2vw, 24px);
+    border: 0;
+    border-radius: 11px;
+    background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.1), rgba(255, 255, 255, 0.018) 42%, transparent);
+    text-align: left;
+}
+
+.ccg-page--games-index .games-accordion__header:hover,
+.ccg-page--games-index .games-accordion__header:focus-visible {
+    background: linear-gradient(90deg, rgba(var(--accent-rgb), 0.18), rgba(255, 255, 255, 0.035) 50%, transparent);
+    outline: none;
+}
+
+.ccg-page--games-index .games-accordion__letter {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.ccg-page--games-index .games-accordion__letter-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(var(--accent-rgb), 0.4);
+    border-radius: 9px;
+    background: rgba(0, 0, 0, 0.26);
+    color: #fff;
+    font-size: 1.32rem;
+    line-height: 1;
+    text-shadow: 0 0 13px rgba(var(--accent-rgb), 0.54);
+}
+
+.ccg-page--games-index .games-accordion__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    color: rgba(235, 246, 255, 0.88);
+    font-family: var(--ccg-font-main);
+    font-size: 0.86rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.ccg-page--games-index .games-accordion__meta strong {
+    color: rgb(var(--accent-rgb));
+    font-size: 1.14rem;
+}
+
+.ccg-page--games-index .games-accordion__meta small {
+    color: var(--ccg-soft);
+    font-family: var(--ccg-font-body);
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+.ccg-page--games-index .games-accordion__action {
+    color: var(--ccg-soft);
+    font-family: var(--ccg-font-main);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.ccg-page--games-index .games-accordion__chevron {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid rgba(var(--accent-rgb), 0.32);
+    border-radius: 50%;
+    color: rgb(var(--accent-rgb));
+}
+
+.ccg-page--games-index .games-accordion__section.is-open .games-accordion__action {
+    color: rgb(var(--accent-rgb));
+}
+
+.ccg-page--games-index .games-accordion__content {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.32));
+}
+
+@media (max-width: 720px) {
+    .ccg-page--games-index .games-accordion__header {
+        grid-template-columns: 58px minmax(0, 1fr) 30px;
+        min-height: 66px;
+        gap: 10px;
+        padding: 8px 12px;
+    }
+
+    .ccg-page--games-index .games-accordion__letter-mark {
+        width: 42px;
+        height: 42px;
+        font-size: 1.15rem;
+    }
+
+    .ccg-page--games-index .games-accordion__meta {
+        display: grid;
+        gap: 2px;
+        font-size: 0.76rem;
+    }
+
+    .ccg-page--games-index .games-accordion__meta small {
+        font-size: 0.72rem;
+    }
+
+    .ccg-page--games-index .games-accordion__action,
+    .ccg-page--games-index .games-accordion__hint {
+        display: none;
+    }
+
+    .games-archive-shortcuts {
+        gap: 6px;
+    }
+
+    .games-archive-shortcuts__label {
+        flex-basis: 100%;
+    }
+}
+
 @media (max-width: 720px) {
     .games-filter__range-header {
         flex-direction: column;
@@ -3181,4 +3428,20 @@ button,
     .affiliate-products-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Final index-only authority: games.css also serves single-game pages and
+   contains historic button resets later in the file. */
+.ccg-page--games-index .games-accordion__section,
+.ccg-page--games-index .games-accordion__header,
+.ccg-page--games-index .games-accordion__letter-mark {
+    border-radius: 12px !important;
+}
+
+.ccg-page--games-index .games-accordion__chevron {
+    border-radius: 50% !important;
+}
+
+.ccg-page--games-index .games-accordion__header {
+    border: 0 !important;
 }
