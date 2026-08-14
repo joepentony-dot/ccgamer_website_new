@@ -48,9 +48,20 @@ test("SEO description is neutral and does not repeat CCG archive copy", () => {
   const description = enrich.buildDescription(route, null, ["Example Game"]);
   assert.ok(description.length <= 158);
   assert.match(description, /Example Composer/);
+  assert.match(description, /1 linked Commodore 64 game-music credit/);
   assert.match(description, /Example Game/);
   assert.doesNotMatch(description, /Cheeky Commodore Gamer/i);
   assert.doesNotMatch(description, /\barchive\b/i);
+});
+
+
+
+test("researched SEO descriptions retain the live linked-credit count", () => {
+  const description = enrich.buildDescription(route, {
+    seoDescription: "Example Composer biography and verified game-music history."
+  }, ["Example Game"]);
+  assert.match(description, /1 linked Commodore 64 game-music credit/);
+  assert.doesNotMatch(description, /Cheeky Commodore Gamer/i);
 });
 
 test("unresearched schema does not invent a biography", () => {

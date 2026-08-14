@@ -132,27 +132,24 @@ function clampMetaDescription(value) {
 }
 
 function buildDescription(route, profile, titles) {
-  if (profile?.seoDescription) {
-    return clampMetaDescription(profile.seoDescription);
-  }
-
-  const firstTitle = titles[0] || "";
-  if (profile?.bio) {
-    let text = firstSentence(profile.bio);
-    if (text && !text.toLowerCase().includes(String(route.name || "").toLowerCase())) {
-      text = `${route.name}: ${text}`;
-    }
-    if (text.length < 112 && firstTitle) {
-      text += ` Game-music credits include ${firstTitle}.`;
-    }
-    return clampMetaDescription(text);
-  }
-
   const label = platformLabel(route);
-  const example = firstTitle ? `, including ${firstTitle}` : "";
-  return clampMetaDescription(
-    `${route.name} ${label} game-music credits${example}, linked releases and playable tracks where available.`
-  );
+  const creditWord = route.count === 1 ? "credit" : "credits";
+  const lead = `${route.name}: ${route.count} linked ${label} game-music ${creditWord}.`;
+  const firstTitle = titles[0] || "";
+
+  if (profile?.seoDescription) {
+    return clampMetaDescription(`${lead} ${String(profile.seoDescription).trim()}`);
+  }
+
+  if (profile?.bio) {
+    const summary = firstSentence(profile.bio);
+    return clampMetaDescription(`${lead} ${summary}`);
+  }
+
+  const detail = firstTitle
+    ? `Includes ${firstTitle}; linked releases and playable tracks where available.`
+    : "Linked releases and playable tracks where available.";
+  return clampMetaDescription(`${lead} ${detail}`);
 }
 
 function buildProfileMarkup(route, profile) {
@@ -213,7 +210,7 @@ function neutralPageDescription(route) {
 }
 
 function replaceJsonLd(html, route, profile) {
-  const scriptPattern = /<script\s+type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/i;
+  const scriptPattern = /<script\s+type="application\/ld\\json">\s*([\s\S]*?)\s*<\/script>/i;
   const match = html.match(scriptPattern);
   if (!match) return html;
 
@@ -249,7 +246,7 @@ function replaceJsonLd(html, route, profile) {
 }
 
 function replaceMetaDescription(html, description) {
-  return html.replace(/<meta\s+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
+  return html.replace(/<meta\r+name="description"\s+content="[^"]*">/i, `<meta name="description" content="${htmlEscape(description)}">`)
     .replace(/<meta\s+property="og:description"\s+content="[^"]*">/i, `<meta property="og:description" content="${htmlEscape(description)}">`)
     .replace(/<meta\s+name="twitter:description"\s+content="[^"]*">/i, `<meta name="twitter:description" content="${htmlEscape(description)}">`);
 }
@@ -303,7 +300,7 @@ function main() {
     next = replaceJsonLd(next, route, profile);
 
     if (profile?.seoIndex === true && !route.indexable) {
-      next = next.replace(/<meta\s+name="robots"\s+content="noindex,follow">/i, '<meta name="robots" content="index,follow">');
+      next = next.replace(/<meta\r+name="robots"\s+content="noindex,follow">/i, '<meta name="robots" content="index,follow">');
       route.indexable = true;
       metadataChanged = true;
       seoIndexOverrides += 1;
