@@ -278,28 +278,48 @@
 
                 <div class="home-video-grid home-explore-grid">
                     <a href="/games/discover/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--picks">
+                        <span class="home-highlight-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false">
+                                <circle cx="16" cy="16" r="10"></circle>
+                                <path d="M16 2v5M16 25v5M2 16h5M25 16h5M20.5 11.5l-2.7 6.3-6.3 2.7 2.7-6.3 6.3-2.7Z"></path>
+                            </svg>
+                        </span>
                         <div class="ccg-card__body">
                             <span class="home-highlight-card__eyebrow">Game finder</span>
                             <h3 class="ccg-card__title">Find Me a Game</h3>
-                            <p class="ccg-card__text">Choose a system, year, genre or publisher and let CCG find something from the archive for you.</p>
+                            <p class="ccg-card__text">Choose a system, year, genre or publisher and get a tailored archive pick.</p>
                             <span class="home-highlight-card__cta">Find a game →</span>
                         </div>
                     </a>
 
                     <a href="/games/genres/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--downloads">
+                        <span class="home-highlight-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false">
+                                <rect x="4" y="4" width="9" height="9" rx="1"></rect>
+                                <rect x="19" y="4" width="9" height="9" rx="1"></rect>
+                                <rect x="4" y="19" width="9" height="9" rx="1"></rect>
+                                <rect x="19" y="19" width="9" height="9" rx="1"></rect>
+                            </svg>
+                        </span>
                         <div class="ccg-card__body">
                             <span class="home-highlight-card__eyebrow">Browse your way</span>
                             <h3 class="ccg-card__title">Browse Genres</h3>
-                            <p class="ccg-card__text">Head straight to platformers, shooters, adventures, strategy and the rest of the C64 and Amiga catalogue.</p>
+                            <p class="ccg-card__text">Jump to platformers, shooters, adventures, strategy and more.</p>
                             <span class="home-highlight-card__cta">Browse genres →</span>
                         </div>
                     </a>
 
                     <a href="/zzap64/" class="ccg-card home-highlight-card home-highlight-card--feature home-highlight-card--zzap">
+                        <span class="home-highlight-card__icon" aria-hidden="true">
+                            <svg viewBox="0 0 32 32" focusable="false">
+                                <path d="M7 3h15l4 4v22H7V3Z"></path>
+                                <path d="M22 3v5h5M11 12h11M11 17h7M16 21l1.4 2.8 3.1.5-2.2 2.2.5 3.1-2.8-1.5-2.8 1.5.5-3.1-2.2-2.2 3.1-.5L16 21Z"></path>
+                            </svg>
+                        </span>
                         <div class="ccg-card__body">
                             <span class="home-highlight-card__eyebrow">Magazine archive</span>
                             <h3 class="ccg-card__title">Zzap!64 Awards</h3>
-                            <p class="ccg-card__text">Browse Sizzlers, Gold Medals and Silver Medals, with original review links and CCG coverage where available.</p>
+                            <p class="ccg-card__text">Explore Sizzlers, medals and original magazine review links.</p>
                             <span class="home-highlight-card__cta">Explore Zzap!64 →</span>
                         </div>
                     </a>
@@ -356,7 +376,7 @@
                 <div class="home-visitor-callout__inner">
                     <div class="home-visitor-callout__beam" aria-hidden="true"></div>
                     <p class="home-visitor-callout__kicker" id="visitor-callout-heading">Another visitor...</p>
-                    <p class="home-visitor-callout__headline home-visitor-callout__headline--interactive" role="button" tabindex="0" aria-label="Play stay a while, stay forever audio">Stay a while, stay forever!</p>
+                    <button type="button" class="home-visitor-callout__headline home-visitor-callout__headline--interactive" aria-label="Play stay a while, stay forever audio">Stay a while, stay forever!</button>
                 </div>
             </section>
 
@@ -367,12 +387,17 @@
         </div>
 
         <footer class="ccg-footer ccg-footer--home-compact">
-            <div class="ccg-footer-home-brand">THE CHEEKY COMMODORE GAMER ARCHIVE</div>
-            <p class="ccg-footer-home-summary">Independent Commodore 64 &amp; Amiga archive, reviews, videos and retro history.</p>
+            <div class="ccg-footer-home__grid">
+                <div class="ccg-footer-home__identity">
+                    <div class="ccg-footer-home-brand">THE CHEEKY COMMODORE GAMER ARCHIVE</div>
+                    <p class="ccg-footer-home-summary">Independent Commodore 64 &amp; Amiga archive, reviews, videos and retro history.</p>
+                </div>
 
-            <div class="ccg-footer__counter-wrap" aria-label="Visitor count">
-                <div class="ccg-footer__counter">
-                    <span id="ccg-visit-count">—</span> visitors
+                <div class="ccg-footer__counter-wrap" aria-label="Visitor count">
+                    <span class="ccg-footer-home__status">Archive visitors</span>
+                    <div class="ccg-footer__counter">
+                        <span id="ccg-visit-count">—</span>
+                    </div>
                 </div>
             </div>
 

@@ -101,8 +101,8 @@ rejectText(polishCss, 'body[data-ccg-mode="amiga"] .ccg-btn:hover', "Generic Ami
     "home-hero__actions--streamlined",
     "Browse Games",
     "Zzap!64 Awards",
-    "Game Downloads A–Z",
-    "CCG Top Picks",
+    "Find Me a Game",
+    "Browse Genres",
     "home-cta-upgrade--streamlined",
     "home-visitor-callout--compact",
     "ccg-footer--home-compact"

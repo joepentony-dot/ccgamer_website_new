@@ -403,6 +403,10 @@
     ensureSkipLink();
     rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
     rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
+    const header = document.querySelector('[data-ccg-header]');
+    if (header && typeof window.ccgMarkNavigationActive === 'function') {
+      window.ccgMarkNavigationActive(header);
+    }
     document.querySelectorAll('.ccg-socials-fallback').forEach(el => {
       el.style.display = 'none';
     });
