@@ -9,6 +9,7 @@
     const desktopQuery = window.matchMedia?.("(min-width: 1024px)");
     const finePointerQuery = window.matchMedia?.("(pointer: fine)");
     const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    const compactViewportQuery = window.matchMedia?.("(max-width: 1199px), (max-height: 700px)");
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     const saveData = Boolean(connection?.saveData);
 
@@ -142,7 +143,8 @@
 
     function shouldPauseDecorativeWork() {
         if (!state.visible) return true;
-        return state.idle && !state.scrolling;
+        if (state.scrolling) return true;
+        return state.idle;
     }
 
     function applyPauseState() {
@@ -236,17 +238,25 @@
         window.addEventListener("pagehide", dispatchSnapshot, { once: true });
     }
 
+    function bindCapabilityEvents() {
+        [desktopQuery, finePointerQuery, reducedMotionQuery, compactViewportQuery]
+            .filter(Boolean)
+            .forEach((query) => query.addEventListener?.("change", applyRootCapabilities));
+    }
+
     function applyRootCapabilities() {
         root.classList.add("ccg-perf-enabled");
         root.classList.toggle("ccg-perf-desktop", Boolean(desktopQuery?.matches && finePointerQuery?.matches));
         root.classList.toggle("ccg-perf-reduced-motion", Boolean(reducedMotionQuery?.matches));
         root.classList.toggle("ccg-perf-save-data", saveData);
+        root.classList.toggle("ccg-perf-compact", Boolean(compactViewportQuery?.matches));
     }
 
     function initialise() {
         normalizeMedia(document);
         observeDynamicMedia();
         bindActivityEvents();
+        bindCapabilityEvents();
         recordMetrics();
         resetIdleTimer();
         applyPauseState();

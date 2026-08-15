@@ -22,6 +22,19 @@
     cursor: pointer;
 }
 
+.ccg-global-search-trigger__copy {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.ccg-global-search-trigger__eyebrow,
+.ccg-global-search-trigger__label-full,
+.ccg-global-search-trigger__scope,
+.ccg-global-search-trigger__shortcut {
+    display: none;
+}
+
 .ccg-global-search-trigger:hover,
 .ccg-global-search-trigger:focus-visible {
     border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.9);
@@ -48,6 +61,141 @@
     background: currentColor;
     transform: rotate(45deg);
     transform-origin: left center;
+}
+
+/* ============================================================
+   HOME WHOLE-SITE SEARCH COMMAND
+   ------------------------------------------------------------
+   The home page promotes search as a compact archive control,
+   rather than leaving the generic header button in an empty row.
+============================================================ */
+
+.ccg-home-search-command {
+    position: relative;
+    isolation: isolate;
+    width: min(1180px, calc(100% - 20px));
+    margin: 8px auto 2px;
+    padding: 4px;
+    border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.28);
+    background:
+        linear-gradient(90deg, rgba(var(--accent-rgb, 0, 221, 255), 0.08), transparent 42%),
+        rgba(2, 7, 17, 0.72);
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.42),
+        0 0 16px rgba(var(--accent-rgb, 0, 221, 255), 0.10),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+    clip-path: polygon(9px 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%, 0 9px);
+}
+
+.ccg-home-search-command::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 7%;
+    right: 7%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb, 0, 221, 255), 0.95), transparent);
+    box-shadow: 0 0 11px rgba(var(--accent-rgb, 0, 221, 255), 0.58);
+    pointer-events: none;
+}
+
+.ccg-global-search-trigger--home {
+    position: relative;
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    min-height: 66px;
+    padding: 9px 13px;
+    border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.48);
+    background:
+        linear-gradient(105deg, rgba(var(--accent-rgb, 0, 221, 255), 0.17), transparent 48%),
+        rgba(3, 10, 23, 0.92);
+    text-align: left;
+    box-shadow:
+        inset 3px 0 0 rgba(var(--accent-rgb, 0, 221, 255), 0.92),
+        inset 0 0 22px rgba(var(--accent-rgb, 0, 221, 255), 0.06);
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__icon {
+    width: 27px;
+    height: 27px;
+    justify-self: center;
+    border-width: 3px;
+    color: rgba(var(--accent-rgb, 0, 221, 255), 1);
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb, 0, 221, 255), 0.58));
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__icon::after {
+    width: 10px;
+    height: 3px;
+    right: -8px;
+    bottom: -4px;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__copy {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__eyebrow,
+.ccg-global-search-trigger--home .ccg-global-search-trigger__label-full,
+.ccg-global-search-trigger--home .ccg-global-search-trigger__scope,
+.ccg-global-search-trigger--home .ccg-global-search-trigger__shortcut {
+    display: block;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__eyebrow {
+    color: rgba(var(--accent-rgb, 0, 221, 255), 0.92);
+    font-size: 0.58rem;
+    line-height: 1;
+    letter-spacing: 0.16em;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__label {
+    color: #fff;
+    font-size: clamp(0.86rem, 1.35vw, 1.04rem);
+    line-height: 1.12;
+    letter-spacing: 0.08em;
+    text-shadow: 0 0 12px rgba(var(--accent-rgb, 0, 221, 255), 0.34);
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__label-short {
+    display: none;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__scope {
+    overflow: hidden;
+    color: rgba(224, 236, 250, 0.70);
+    font: 600 0.68rem/1.25 "Roboto", sans-serif;
+    letter-spacing: 0.035em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ccg-global-search-trigger--home .ccg-global-search-trigger__shortcut {
+    min-width: 64px;
+    padding: 7px 8px;
+    border: 1px solid rgba(var(--accent-rgb, 0, 221, 255), 0.32);
+    background: rgba(0, 0, 0, 0.32);
+    color: rgba(232, 244, 255, 0.78);
+    font-size: 0.58rem;
+    line-height: 1;
+    letter-spacing: 0.09em;
+    text-align: center;
+}
+
+.ccg-global-search-trigger--home:hover,
+.ccg-global-search-trigger--home:focus-visible {
+    border-color: rgba(var(--accent-rgb, 0, 221, 255), 0.92);
+    background:
+        linear-gradient(105deg, rgba(var(--accent-rgb, 0, 221, 255), 0.25), transparent 52%),
+        rgba(3, 10, 23, 0.97);
+    box-shadow:
+        inset 3px 0 0 rgba(var(--accent-rgb, 0, 221, 255), 1),
+        0 0 20px rgba(var(--accent-rgb, 0, 221, 255), 0.22);
 }
 
 .ccg-global-search {
@@ -288,14 +436,67 @@ html.ccg-global-search-open body {
         grid-template-columns: 1fr;
     }
 
-    .ccg-global-search-trigger__label {
+    .ccg-header .ccg-global-search-trigger__label {
         display: none;
     }
 
-    .ccg-global-search-trigger {
+    .ccg-header .ccg-global-search-trigger {
         width: 42px;
         min-width: 42px;
         padding: 9px;
+    }
+
+    .ccg-home-search-command {
+        width: calc(100% - 12px);
+        margin-top: 6px;
+    }
+
+    .ccg-global-search-trigger--home {
+        grid-template-columns: 38px minmax(0, 1fr);
+        gap: 10px;
+        min-height: 64px;
+        padding: 8px 10px;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__shortcut {
+        display: none;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__label {
+        display: block;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__scope {
+        font-size: 0.63rem;
+    }
+}
+
+@media (max-width: 440px) {
+    .ccg-global-search-trigger--home {
+        grid-template-columns: 32px minmax(0, 1fr);
+        gap: 8px;
+        min-height: 62px;
+        padding-inline: 8px;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__icon {
+        width: 23px;
+        height: 23px;
+        border-width: 2px;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__eyebrow {
+        font-size: 0.50rem;
+        letter-spacing: 0.12em;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__label {
+        font-size: 0.76rem;
+        letter-spacing: 0.055em;
+    }
+
+    .ccg-global-search-trigger--home .ccg-global-search-trigger__scope {
+        font-size: 0.58rem;
     }
 }
 

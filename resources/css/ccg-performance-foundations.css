@@ -28,11 +28,27 @@ html.ccg-perf-paused .ccg-bg-grid,
 html.ccg-perf-paused .ccg-bg-crt-overlay,
 html.ccg-perf-paused .home-hero__scanlines,
 html.ccg-perf-paused .home-hero__crt-overlay,
+html.ccg-perf-paused .home-hero__bg,
+html.ccg-perf-paused .home-hero__content::after,
+html.ccg-perf-paused .home-hero__title,
+html.ccg-perf-paused .home-hero__mode-pill,
+html.ccg-perf-paused .home-random-cta,
+html.ccg-perf-paused .home-featured-videos .home-video-card,
+html.ccg-perf-paused .home-visitor-callout__beam,
+html.ccg-perf-paused .home-visitor-callout__headline--interactive,
 html.ccg-page-hidden .ccg-bg-starfield,
 html.ccg-page-hidden .ccg-bg-grid,
 html.ccg-page-hidden .ccg-bg-crt-overlay,
 html.ccg-page-hidden .home-hero__scanlines,
-html.ccg-page-hidden .home-hero__crt-overlay {
+html.ccg-page-hidden .home-hero__crt-overlay,
+html.ccg-page-hidden .home-hero__bg,
+html.ccg-page-hidden .home-hero__content::after,
+html.ccg-page-hidden .home-hero__title,
+html.ccg-page-hidden .home-hero__mode-pill,
+html.ccg-page-hidden .home-random-cta,
+html.ccg-page-hidden .home-featured-videos .home-video-card,
+html.ccg-page-hidden .home-visitor-callout__beam,
+html.ccg-page-hidden .home-visitor-callout__headline--interactive {
     animation-play-state: paused !important;
 }
 
@@ -43,6 +59,32 @@ html.ccg-perf-reduced-motion .ccg-bg-starfield,
 html.ccg-perf-reduced-motion .ccg-bg-grid,
 html.ccg-perf-reduced-motion .ccg-bg-crt-overlay {
     animation: none !important;
+}
+
+/* A narrowed or short browser window has much less compositing room than a
+   wide desktop. Keep the Omega artwork, but stop continuous decorative work
+   as soon as the viewport crosses into the compact layout. */
+html.ccg-perf-compact .ccg-bg-starfield,
+html.ccg-perf-compact .ccg-bg-grid,
+html.ccg-perf-compact .ccg-bg-crt-overlay,
+html.ccg-perf-compact .home-hero__bg,
+html.ccg-perf-compact .home-hero__scanlines,
+html.ccg-perf-compact .home-hero__crt-overlay,
+html.ccg-perf-compact .home-hero__content::after,
+html.ccg-perf-compact .home-hero__title,
+html.ccg-perf-compact .home-hero__mode-pill,
+html.ccg-perf-compact .home-random-cta,
+html.ccg-perf-compact .home-featured-videos .home-video-card,
+html.ccg-perf-compact .home-visitor-callout__beam,
+html.ccg-perf-compact .home-visitor-callout__headline--interactive {
+    animation: none !important;
+    will-change: auto !important;
+}
+
+html.ccg-perf-compact .home-hero__content,
+html.ccg-perf-compact .ccg-global-search__backdrop {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 @media (max-width: 820px) {
