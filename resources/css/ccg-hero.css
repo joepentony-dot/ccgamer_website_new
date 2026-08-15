@@ -361,3 +361,85 @@ body[data-mode="amiga"] .home-hero .ccg-hero-image {
     0%, 100% { opacity: 0.88; }
     50% { opacity: 1; }
 }
+
+/* ============================================================
+   OMEGA NON-HOME HERO DENSITY — SITE-WIDE AUTHORITY
+   ------------------------------------------------------------
+   The shared header is sticky and remains in normal document flow,
+   so inner pages do not need a second header-sized spacer before
+   their first hero. Keep the home page exactly as designed while
+   making every other shared hero more compact and useful.
+============================================================ */
+
+html:not([data-ccg-page="home"]),
+html:not([data-ccg-page="home"]) .ccg-page {
+    --ccg-hero-offset: clamp(14px, 1.5vw + 6px, 28px) !important;
+}
+
+html:not([data-ccg-page="home"]) :where(
+    .ccg-hero,
+    .games-hero,
+    .game-hero,
+    .ccg-genre-hero,
+    .ccg-info-hero,
+    .quiz-hero
+) {
+    min-height: clamp(190px, 23vw, 300px) !important;
+    margin-top: var(--ccg-hero-offset) !important;
+    margin-bottom: clamp(10px, 1.5vw, 18px) !important;
+}
+
+html:not([data-ccg-page="home"]) :where(
+    .games-hero__inner,
+    .game-hero__inner,
+    .ccg-genre-hero__inner,
+    .ccg-hero-inner--info,
+    .ccg-hero-inner--collections
+) {
+    padding: clamp(18px, 2.1vw, 26px) clamp(16px, 2.4vw, 28px) clamp(20px, 2.3vw, 28px) !important;
+}
+
+html:not([data-ccg-page="home"]) :where(
+    .ccg-info-hero,
+    .ccg-hero--collections,
+    .quiz-hero
+) {
+    padding: clamp(18px, 2.2vw, 28px) clamp(16px, 2.5vw, 30px) !important;
+}
+
+@media (max-width: 768px) {
+    html:not([data-ccg-page="home"]),
+    html:not([data-ccg-page="home"]) .ccg-page {
+        --ccg-hero-offset: clamp(8px, 2vw, 14px) !important;
+    }
+
+    html:not([data-ccg-page="home"]) :where(
+        .ccg-hero,
+        .games-hero,
+        .game-hero,
+        .ccg-genre-hero,
+        .ccg-info-hero,
+        .quiz-hero
+    ) {
+        min-height: clamp(160px, 40vw, 220px) !important;
+        margin-bottom: 10px !important;
+    }
+
+    html:not([data-ccg-page="home"]) :where(
+        .games-hero__inner,
+        .game-hero__inner,
+        .ccg-genre-hero__inner,
+        .ccg-hero-inner--info,
+        .ccg-hero-inner--collections
+    ) {
+        padding: 16px 14px 18px !important;
+    }
+
+    html:not([data-ccg-page="home"]) :where(
+        .ccg-info-hero,
+        .ccg-hero--collections,
+        .quiz-hero
+    ) {
+        padding: 16px 14px 18px !important;
+    }
+}
