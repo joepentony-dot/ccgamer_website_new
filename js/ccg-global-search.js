@@ -14,6 +14,9 @@
     const SEARCH_CSS = "/resources/css/ccg-global-search.css";
     const GAME_INDEX = "/games/games-search.json";
     const RETRO_INDEX = "/data/retro-specials.json";
+    const VIDEO_INDEX = "/videos/video-index.json";
+    const DEMO_MUSIC_INDEX = "/data/amiga-demo-music.json";
+    const RETRO_EVENTS_INDEX = "/data/retro-events.json";
     const MIN_QUERY_LENGTH = 2;
     const MAX_GROUP_RESULTS = 8;
 
@@ -25,6 +28,21 @@
         { title: "Amiga Demo Music", href: "/games/collections/amiga-demo-music.html", meta: "Amiga collection" },
         { title: "Retro Events", href: "/games/collections/retro-events.html", meta: "Event archive" },
         { title: "Retro Specials", href: "/games/collections/retro-specials.html", meta: "Video features" }
+    ];
+
+    const SITE_SECTIONS = [
+        { title: "Browse All Games", href: "/games/", meta: "Complete C64 and Amiga game archive", searchText: "games a to z archive commodore 64 amiga" },
+        { title: "Browse by Genre", href: "/games/genres/", meta: "Explore every game genre", searchText: "genres platform shooting adventure puzzle sports strategy" },
+        { title: "Publishers", href: "/games/publishers/", meta: "Publisher histories and game catalogues", searchText: "publishers companies software labels history" },
+        { title: "Collections", href: "/games/collections/", meta: "Curated CCG game and video collections", searchText: "collections cartridge licensed bpjs top picks retro specials" },
+        { title: "Music Hub", href: "/music/", meta: "Composers, game music and Amiga demo music", searchText: "music composers sid mod soundtrack musicians" },
+        { title: "Video Library", href: "/videos/", meta: "C64, Amiga and Retro Special videos", searchText: "videos youtube game reviews retro specials" },
+        { title: "Zzap!64 Reviews & Awards", href: "/zzap64/", meta: "Sizzlers, Gold Medals and magazine reviews", searchText: "zzap reviews awards sizzlers gold silver medals magazine" },
+        { title: "Find Me a Game", href: "/games/discover/", meta: "Choose a system, year, genre or publisher", searchText: "find discover recommend random game" },
+        { title: "CCG Quiz", href: "/quiz/quiz.html", meta: "Commodore and retro gaming trivia", searchText: "quiz questions trivia" },
+        { title: "Emulation Guide", href: "/emulation.html", meta: "Help playing C64 and Amiga games", searchText: "emulation emulator vice winuae guide help" },
+        { title: "About Cheeky Commodore Gamer", href: "/about.html", meta: "About the CCG archive and channel", searchText: "about cheeky commodore gamer channel" },
+        { title: "Contact CCG", href: "/contact.html", meta: "Contact Cheeky Commodore Gamer", searchText: "contact email message" }
     ];
 
     const GENRE_ROUTES = new Map([
@@ -54,7 +72,11 @@
         composers: [],
         genres: [],
         collections: COLLECTIONS,
+        sections: SITE_SECTIONS,
         specials: [],
+        videos: [],
+        demoMusic: [],
+        events: [],
         modal: null,
         input: null,
         results: null,
@@ -130,13 +152,25 @@
         renderLoading();
 
         try {
-            const [gamesResponse, specialsResponse] = await Promise.allSettled([
+            const [gamesResponse, specialsResponse, videosResponse, demoMusicResponse, eventsResponse] = await Promise.allSettled([
                 fetch(GAME_INDEX, { cache: "no-store" }).then((response) => {
                     if (!response.ok) throw new Error(`Game index HTTP ${response.status}`);
                     return response.json();
                 }),
                 fetch(RETRO_INDEX, { cache: "no-store" }).then((response) => {
                     if (!response.ok) throw new Error(`Retro index HTTP ${response.status}`);
+                    return response.json();
+                }),
+                fetch(VIDEO_INDEX, { cache: "no-store" }).then((response) => {
+                    if (!response.ok) throw new Error(`Video index HTTP ${response.status}`);
+                    return response.json();
+                }),
+                fetch(DEMO_MUSIC_INDEX, { cache: "no-store" }).then((response) => {
+                    if (!response.ok) throw new Error(`Demo music index HTTP ${response.status}`);
+                    return response.json();
+                }),
+                fetch(RETRO_EVENTS_INDEX, { cache: "no-store" }).then((response) => {
+                    if (!response.ok) throw new Error(`Retro events index HTTP ${response.status}`);
                     return response.json();
                 })
             ]);
@@ -188,6 +222,33 @@
                     title: String(item.title || "Retro Special"),
                     href: `/retro-specials/${String(item.slug || item.id || "").replace(/^\/+|\/+$/g, "")}/`,
                     meta: String(item.summary || "CCG Retro Special"),
+                    searchText: [item.title, item.summary, item.description].filter(Boolean).join(" ")
+                }));
+            }
+
+            if (videosResponse.status === "fulfilled" && Array.isArray(videosResponse.value?.items)) {
+                state.videos = videosResponse.value.items.map((item) => ({
+                    title: String(item.title || "CCG video"),
+                    href: String(item.url || "/videos/"),
+                    meta: [item.badge, item.platform, item.year].filter(Boolean).join(" · "),
+                    searchText: [item.title, item.description, item.platform, item.publisher, item.collectionLabel].filter(Boolean).join(" ")
+                }));
+            }
+
+            if (demoMusicResponse.status === "fulfilled" && Array.isArray(demoMusicResponse.value)) {
+                state.demoMusic = demoMusicResponse.value.map((item) => ({
+                    title: String(item.title || "Amiga demo music"),
+                    href: `/amiga-demo-music/${String(item.slug || item.id || "").replace(/^\/+|\/+$/g, "")}/`,
+                    meta: [item.composer, item.demo_group, item.year].filter(Boolean).join(" · "),
+                    searchText: [item.title, item.summary, item.description, item.composer, item.demo_group, item.year, item.format].filter(Boolean).join(" ")
+                }));
+            }
+
+            if (eventsResponse.status === "fulfilled" && Array.isArray(eventsResponse.value)) {
+                state.events = eventsResponse.value.map((item) => ({
+                    title: String(item.title || "Retro event"),
+                    href: `/retro-events/${String(item.slug || item.id || "").replace(/^\/+|\/+$/g, "")}/`,
+                    meta: "CCG Retro Event",
                     searchText: [item.title, item.summary, item.description].filter(Boolean).join(" ")
                 }));
             }
@@ -285,9 +346,9 @@
         if (query.length < MIN_QUERY_LENGTH) {
             const message = document.createElement("div");
             message.className = "ccg-global-search__empty";
-            message.textContent = "Type at least two characters to search games, publishers, composers, genres, collections and Retro Specials.";
+            message.textContent = "Type at least two characters to search games, publishers, composers, genres, videos, music, events and the main CCG sections.";
             state.results.appendChild(message);
-            if (state.status) state.status.textContent = "Search the full CCG archive.";
+            if (state.status) state.status.textContent = "Search every major part of the CCG website.";
             return;
         }
 
@@ -297,12 +358,16 @@
         }
 
         const groups = [
+            ["Website Sections", "Section", findMatches(state.sections, query)],
             ["Games", "Game", findMatches(state.games, query)],
+            ["Videos", "Video", findMatches(state.videos, query)],
             ["Publishers", "Publisher", findMatches(state.publishers, query)],
             ["Composers", "Composer", findMatches(state.composers, query)],
             ["Genres", "Genre", findMatches(state.genres, query)],
             ["Collections", "Collection", findMatches(state.collections, query)],
-            ["Retro Specials", "Special", findMatches(state.specials, query)]
+            ["Retro Specials", "Special", findMatches(state.specials, query)],
+            ["Amiga Demo Music", "Music", findMatches(state.demoMusic, query)],
+            ["Retro Events", "Event", findMatches(state.events, query)]
         ];
 
         const fragment = document.createDocumentFragment();
@@ -382,9 +447,9 @@
                 </header>
                 <div class="ccg-global-search__form">
                     <label class="visually-hidden" for="ccgGlobalSearchInput">Search the CCG website</label>
-                    <input class="ccg-global-search__input" id="ccgGlobalSearchInput" type="search" autocomplete="off" placeholder="Search games, publishers, composers…">
-                    <p class="ccg-global-search__help">Press Escape to close. Results open the existing archive pages.</p>
-                    <p class="ccg-global-search__status" id="ccgGlobalSearchStatus" aria-live="polite">Search the full CCG archive.</p>
+                    <input class="ccg-global-search__input" id="ccgGlobalSearchInput" type="search" autocomplete="off" placeholder="Search games, publishers, composers, videos, music…">
+                    <p class="ccg-global-search__help">Search across the CCG website. Press Escape to close.</p>
+                    <p class="ccg-global-search__status" id="ccgGlobalSearchStatus" aria-live="polite">Search every major part of the CCG website.</p>
                 </div>
                 <div class="ccg-global-search__results" id="ccgGlobalSearchResults"></div>
             </section>
@@ -413,21 +478,40 @@
 
     function createTrigger() {
         const actions = document.querySelector(".ccg-header-actions");
-        if (!actions || actions.querySelector("[data-ccg-global-search-trigger]")) return;
+        const homeMain = document.querySelector('html[data-ccg-page="home"] .ccg-main--home');
+        if ((!actions && !homeMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;
 
         const trigger = document.createElement("button");
         trigger.type = "button";
         trigger.className = "ccg-global-search-trigger";
         trigger.setAttribute("data-ccg-global-search-trigger", "true");
-        trigger.setAttribute("aria-label", "Search the CCG website");
+        trigger.setAttribute("aria-label", "Search the entire Cheeky Commodore Gamer website");
         trigger.innerHTML = `
             <span class="ccg-global-search-trigger__icon" aria-hidden="true"></span>
-            <span class="ccg-global-search-trigger__label">Search</span>
+            <span class="ccg-global-search-trigger__copy">
+                <span class="ccg-global-search-trigger__eyebrow">Search anything on CCG</span>
+                <span class="ccg-global-search-trigger__label">
+                    <span class="ccg-global-search-trigger__label-short">Search</span>
+                    <span class="ccg-global-search-trigger__label-full">Search the Entire CCG Website</span>
+                </span>
+                <span class="ccg-global-search-trigger__scope">Games · publishers · composers · videos · music · events &amp; more</span>
+            </span>
+            <span class="ccg-global-search-trigger__shortcut" aria-hidden="true">Ctrl K</span>
         `;
         trigger.addEventListener("click", openSearch);
 
-        const socialLinks = actions.querySelector(".ccg-header-socials");
-        actions.insertBefore(trigger, socialLinks || actions.firstChild);
+        if (homeMain) {
+            const command = document.createElement("div");
+            command.className = "ccg-home-search-command";
+            command.setAttribute("role", "search");
+            command.setAttribute("aria-label", "Search the CCG website");
+            trigger.classList.add("ccg-global-search-trigger--home");
+            command.appendChild(trigger);
+            homeMain.insertBefore(command, homeMain.firstChild);
+        } else {
+            const socialLinks = actions.querySelector(".ccg-header-socials");
+            actions.insertBefore(trigger, socialLinks || actions.firstChild);
+        }
         state.trigger = trigger;
     }
 
