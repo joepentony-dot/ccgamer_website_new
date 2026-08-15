@@ -12,11 +12,13 @@ Do Not Override
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
     const REQUIRED_STYLES = [
-        { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" }
+        { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" },
+        { href: "/resources/css/ccg-inner-page-density.css", marker: "data-ccg-inner-page-density-style" }
     ];
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
+        { src: "/js/ccg-search-command-placement.js", marker: "data-ccg-search-command-placement-loader" },
         { src: "/js/ccg-search-ranking.js", marker: "data-ccg-search-ranking-loader" },
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
         { src: "/js/ccg-smart-discovery.js", marker: "data-ccg-smart-discovery-loader" },

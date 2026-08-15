@@ -1,0 +1,48 @@
+/* ============================================================
+   CCG INNER-PAGE DENSITY AUTHORITY
+   ------------------------------------------------------------
+   Keeps home.html untouched while reducing oversized vertical
+   hero spacing on public Omega pages, including custom heroes
+   that do not use the shared ccg-hero class family.
+============================================================ */
+
+html:not([data-ccg-page="home"]) .ccg-main > [class*="hero"] {
+    min-height: 0 !important;
+    padding-top: clamp(18px, 2.2vw, 28px) !important;
+    padding-bottom: clamp(18px, 2.2vw, 28px) !important;
+    margin-top: clamp(10px, 1.2vw, 18px) !important;
+    margin-bottom: clamp(10px, 1.2vw, 18px) !important;
+}
+
+html:not([data-ccg-page="home"]) .ccg-main > .ccg-home-search-command {
+    margin-top: clamp(8px, 1vw, 14px) !important;
+    margin-bottom: clamp(8px, 1vw, 14px) !important;
+}
+
+html[data-ccg-page="publisher-index"] .ccg-publishers-main {
+    padding-top: clamp(10px, 1.2vw, 16px) !important;
+}
+
+html[data-ccg-page="publisher-index"] .ccg-publishers-hero {
+    padding-top: clamp(20px, 2.4vw, 30px) !important;
+    padding-bottom: clamp(20px, 2.4vw, 30px) !important;
+}
+
+@media (max-width: 820px) {
+    html:not([data-ccg-page="home"]) .ccg-main > [class*="hero"] {
+        padding-top: 14px !important;
+        padding-bottom: 16px !important;
+        margin-top: 8px !important;
+        margin-bottom: 10px !important;
+    }
+
+    html:not([data-ccg-page="home"]) .ccg-main > .ccg-home-search-command {
+        width: min(100%, calc(100% - 12px));
+        margin-top: 6px !important;
+        margin-bottom: 8px !important;
+    }
+
+    html[data-ccg-page="publisher-index"] .ccg-publishers-main {
+        padding-top: 8px !important;
+    }
+}
