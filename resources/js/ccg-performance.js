@@ -167,9 +167,17 @@
     }
 
     function handleScroll() {
-        state.scrolling = true;
-        document.body?.classList.add("scrolling");
-        applyPauseState();
+        /*
+         * Scroll events can fire dozens of times per frame on some mobile
+         * browsers. Only mutate the root/body classes when entering or leaving
+         * the scrolling state; subsequent events merely renew the quiet timer.
+         */
+        if (!state.scrolling) {
+            state.scrolling = true;
+            document.body?.classList.add("scrolling");
+            applyPauseState();
+        }
+
         window.clearTimeout(state.scrollTimer);
         state.scrollTimer = window.setTimeout(() => {
             state.scrolling = false;
