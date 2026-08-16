@@ -18,9 +18,11 @@
         scrolling: false,
         visible: !document.hidden,
         mutationObserver: null,
+        mutationScopes: new Set(),
         idleTimer: null,
         scrollTimer: null,
         mutationTimer: null,
+        pointerActivityAt: 0,
         metrics: {
             cls: 0,
             lcp: 0,
@@ -31,6 +33,7 @@
     const IDLE_DELAY = 5000;
     const SCROLL_IDLE_DELAY = 150;
     const MUTATION_DELAY = 80;
+    const POINTER_ACTIVITY_INTERVAL = 1000;
 
     function ensureStylesheet() {
         if (document.querySelector(`link[href="${STYLESHEET_PATH}"]`)) return;
@@ -117,26 +120,27 @@
         host.querySelectorAll?.("video").forEach(normalizeVideo);
     }
 
-    function scheduleMutationPass() {
+    function scheduleMutationPass(scope) {
+        if (scope instanceof Element) state.mutationScopes.add(scope);
         window.clearTimeout(state.mutationTimer);
-        state.mutationTimer = window.setTimeout(() => normalizeMedia(document), MUTATION_DELAY);
+        state.mutationTimer = window.setTimeout(() => {
+            const scopes = Array.from(state.mutationScopes);
+            state.mutationScopes.clear();
+            scopes.forEach(normalizeMedia);
+        }, MUTATION_DELAY);
     }
 
     function observeDynamicMedia() {
         if (!("MutationObserver" in window) || !document.body) return;
         state.mutationObserver = new MutationObserver((records) => {
-            let hasMedia = false;
             for (const record of records) {
                 for (const node of record.addedNodes) {
                     if (!(node instanceof Element)) continue;
                     if (node.matches("img, iframe, video") || node.querySelector("img, iframe, video")) {
-                        hasMedia = true;
-                        break;
+                        scheduleMutationPass(node);
                     }
                 }
-                if (hasMedia) break;
             }
-            if (hasMedia) scheduleMutationPass();
         });
         state.mutationObserver.observe(document.body, { childList: true, subtree: true });
     }
@@ -161,9 +165,17 @@
     }
 
     function markActive() {
+        const wasIdle = state.idle;
         state.idle = false;
-        applyPauseState();
+        if (wasIdle) applyPauseState();
         resetIdleTimer();
+    }
+
+    function markPointerActive() {
+        const now = Date.now();
+        if (!state.idle && now - state.pointerActivityAt < POINTER_ACTIVITY_INTERVAL) return;
+        state.pointerActivityAt = now;
+        markActive();
     }
 
     function handleScroll() {
@@ -236,9 +248,15 @@
 
     function bindActivityEvents() {
         const passive = { passive: true };
-        window.addEventListener("mousemove", markActive, passive);
-        window.addEventListener("pointermove", markActive, passive);
-        window.addEventListener("pointerdown", markActive, passive);
+
+        if ("PointerEvent" in window) {
+            window.addEventListener("pointermove", markPointerActive, passive);
+            window.addEventListener("pointerdown", markActive, passive);
+        } else {
+            window.addEventListener("mousemove", markPointerActive, passive);
+            window.addEventListener("mousedown", markActive, passive);
+        }
+
         window.addEventListener("keydown", markActive, passive);
         window.addEventListener("scroll", handleScroll, passive);
         window.addEventListener("focus", markActive, passive);
