@@ -285,3 +285,77 @@ body[data-ccg-mode="amiga"] .ccg-btn--secondary {
 body[data-ccg-mode="amiga"] .ccg-header {
     z-index: 10020 !important;
 }
+
+/* ============================================================
+   SITE-WIDE READING ALIGNMENT
+   ------------------------------------------------------------
+   Keep cinematic heroes, headings, controls, cards and navigation
+   presentation untouched. Long-form editorial copy is easier to
+   scan from a stable left edge, especially on narrow viewports.
+============================================================ */
+
+.ccg-main :where(
+    .game-description,
+    [data-ccg-video-description],
+    .about-copy,
+    .ccg-composer-profile,
+    .ccg-composer-profile__bio,
+    .retro-video-page__description,
+    .ccg-info-panel,
+    .ccg-prose,
+    .article-copy,
+    .bio-copy
+) {
+    text-align: left;
+}
+
+.ccg-main :where(
+    .game-description,
+    [data-ccg-video-description],
+    .ccg-composer-profile__bio,
+    .retro-video-page__description,
+    .ccg-prose,
+    .article-copy,
+    .bio-copy
+) {
+    max-width: 72ch;
+    line-height: 1.7;
+}
+
+.ccg-main :where(
+    .game-description,
+    [data-ccg-video-description],
+    .retro-video-page__description,
+    .ccg-prose,
+    .article-copy,
+    .bio-copy
+) {
+    margin-inline: auto;
+}
+
+@media (max-width: 640px) {
+    /* ccg-master centres .ccg-main on phones. Restore a natural reading
+       edge while explicitly centred hero/card/control rules keep winning. */
+    .ccg-main {
+        text-align: left;
+    }
+
+    .ccg-main :where(
+        .ccg-hero__inner,
+        .games-hero__inner,
+        .game-hero__inner,
+        .ccg-genre-hero__inner,
+        .ccg-hero-inner--collections,
+        .home-hero__content,
+        .home-section__header,
+        .ccg-hero-actions,
+        .ccg-header-actions,
+        .ccg-genre-meta,
+        .ccg-card,
+        .ccg-game-card,
+        .ccg-genre-tile,
+        .ccg-feature-card
+    ) {
+        text-align: center;
+    }
+}
