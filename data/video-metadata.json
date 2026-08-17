@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-08-14T21:53:54.494Z",
+  "updatedAt": "2026-08-17T19:09:20.024Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story – Did Ocean Get the Arcade Adventure Right on C64?",
@@ -684,6 +684,15 @@
       "uploadDate": "2023-08-03T17:30:00Z",
       "duration": "PT4M42S",
       "thumbnailUrl": "https://i.ytimg.com/vi/5Srsb1xM1bc/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "5tpXo_IEU_U": {
+      "title": "The Astonishing Adventures of Mr. Weems – The C64’s Bizarre Vampire Hunt!",
+      "description": "🧛‍♀️🕹️ The Astonishing Adventures of Mr. Weems and the She Vampires (1987) – Commodore 64\n🌐 Full game info, manual & more:\n👉 https://www.cheekycommodoregamer.co.uk/games/mr-weems-and-the-she-vampires/\n\nReleased in 1987 by Piranha, The Astonishing Adventures of Mr. Weems and the She Vampires is a bizarre Gauntlet-style Commodore 64 game from RamJam Corporation involving vampires, garlic and a bespectacled hero who looks considerably more suited to doing your accounts than clearing out a vampire-infested mansion.\n\nYou control Mr. Weems as he fights his way through six levels packed with She Vampires, bats and other nasties. His main weapon is a garlic gun, while keys are needed to open locked doors and make further progress through the mansion.\n\nSimply reaching the end isn't enough. Across the first five levels Weems must track down five essential objects — a stake, mallet, mega-garlic, mirror and crucifix — because he'll need the entire collection when he eventually reaches the lair of the Great She Vampire.\n\nThere are also garlic pills which temporarily make Weems immune to attack, giving him a brief advantage when the mansion starts filling up with enemies.\n\n📰 The C64 version certainly didn't impress Zzap!64, which awarded the game just 19%. By 1987 there were already plenty of Gauntlet-inspired games around, and Mr. Weems was criticised heavily for offering very little that hadn't been seen before.\n\nThe game was developed by RamJam Corporation and published by Piranha, the short-lived Macmillan software label responsible for games including The Trap Door, Through the Trap Door, The Colour of Magic and Flunky.\n\nIt was also released for the ZX Spectrum and Amstrad CPC and later appeared under the much shorter title She Vampires.\n\nWhatever you think of the game itself, there's certainly no shortage of personality in the idea. A bloke called Mr. Weems wandering around a mansion firing garlic at female vampires isn't a premise you're likely to confuse with too many other Commodore 64 games.\n\n🎯 Was Zzap!64's 19% verdict deserved, or is there more fun here than the reviewers gave it credit for?\n💬 Did you ever play Mr. Weems and the She Vampires back in the day?\n\n▶️ RELATED PLAYLISTS\nAlternative Software: https://www.youtube.com/playlist?list=PL_TYjnCNYSewh5oB_DzKYQ9XdLK_iRmdQ\nPiranha: https://www.youtube.com/playlist?list=PL_TYjnCNYSeye2kjp__RwkPbDng9qAVKS\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#MrWeems #SheVampires #Commodore64 #C64 #RetroGaming\n#PiranhaSoftware #RamJam #1987Games #C64Gaming #C64Games",
+      "uploadDate": "2026-08-17T17:30:01Z",
+      "duration": "PT6M42S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/5tpXo_IEU_U/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

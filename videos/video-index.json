@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "5tpXo_IEU_U",
+      "kind": "game",
+      "filter": "c64",
+      "badge": "C64 Game",
+      "title": "The Astonishing Adventures of Mr. Weems – The C64’s Bizarre Vampire Hunt!",
+      "description": "The Astonishing Adventures of Mr. Weems and the She Vampires is a 1987 Commodore 64 action game from Piranha. Guide Mr. Weems through a six-level vampire-filled mansion, collecting key obje…",
+      "url": "/games/mr-weems-and-the-she-vampires/",
+      "thumbnail": "https://i.ytimg.com/vi/5tpXo_IEU_U/maxresdefault.jpg",
+      "platform": "Commodore 64",
+      "year": 1987,
+      "publisher": "Piranha"
+    },
+    {
       "id": "rn_hzXvVYes",
       "kind": "game",
       "filter": "c64",
@@ -8959,19 +8972,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "5tpXo_IEU_U",
-      "kind": "game",
-      "filter": "c64",
-      "badge": "C64 Game",
-      "title": "Mr Weems And The She Vampires",
-      "description": "The Astonishing Adventures of Mr. Weems and the She Vampires is a 1987 Commodore 64 action game from Piranha. Guide Mr. Weems through a six-level vampire-filled mansion, collecting key obje…",
-      "url": "/games/mr-weems-and-the-she-vampires/",
-      "thumbnail": "https://i.ytimg.com/vi/5tpXo_IEU_U/hqdefault.jpg",
-      "platform": "Commodore 64",
-      "year": 1987,
-      "publisher": "Piranha"
     },
     {
       "id": "ght7u1k_tqw",
