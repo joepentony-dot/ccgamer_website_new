@@ -1871,6 +1871,17 @@ function slugifyBrowseToken(value) {
         .replace(/^-+|-+$/g, "");
 }
 
+const COLLECTION_ARCHIVE_SLUGS = Object.freeze({
+    bpjs: "bpjs-indexed-games",
+    cartridge: "cartridge-games",
+    licensed: "licensed-games"
+});
+
+function collectionArchiveSlug(value) {
+    const slug = slugifyBrowseToken(value);
+    return COLLECTION_ARCHIVE_SLUGS[slug] || slug;
+}
+
 function renderDiscoveryLinks(game) {
     const section = document.getElementById("game-discovery-links");
     const genreWrap = document.getElementById("gameGenreLinks");
@@ -1899,7 +1910,7 @@ function renderDiscoveryLinks(game) {
 
     if (collectionWrap) {
         collectionWrap.innerHTML = collections.slice(0, 4).map((collection) => (
-            `<a class="ccg-btn ccg-btn--ghost" href="/games/collections/${slugifyBrowseToken(collection)}.html">${collection}</a>`
+            `<a class="ccg-btn ccg-btn--ghost" href="/games/collections/${collectionArchiveSlug(collection)}.html">${collection}</a>`
         )).join("");
     }
 
