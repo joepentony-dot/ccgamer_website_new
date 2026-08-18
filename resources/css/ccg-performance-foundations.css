@@ -5,8 +5,6 @@
    Loaded by resources/js/ccg-performance.js.
 ============================================================ */
 
-html.ccg-perf-enabled .ccg-main > .ccg-chapter,
-html.ccg-perf-enabled .ccg-main > section:nth-of-type(n + 2),
 html.ccg-perf-enabled .games-accordion__section,
 html.ccg-perf-enabled .ccg-publisher-results,
 html.ccg-perf-enabled .ccg-developer-results,
@@ -88,19 +86,12 @@ html.ccg-perf-compact .ccg-global-search__backdrop {
 }
 
 /* ============================================================
-   COMPACT VIEWPORT SCROLL-STABILITY PASS
+   SCROLL-STABILITY PASS
    ------------------------------------------------------------
-   content-visibility is useful on long desktop pages, but on phones it can
-   make a section become paint-active exactly while the user is scrolling.
-   Keep large archive/result blocks deferred, while ordinary page chapters
-   stay rendered so finger scrolling does not hitch at section boundaries.
+   Ordinary chapters and page sections stay rendered before they enter the
+   viewport. Deferred rendering is reserved for explicit archive/result
+   surfaces so wheel and touch scrolling do not hitch at section boundaries.
 ============================================================ */
-
-html.ccg-perf-compact .ccg-main > .ccg-chapter,
-html.ccg-perf-compact .ccg-main > section:nth-of-type(n + 2) {
-    content-visibility: visible;
-    contain-intrinsic-size: none;
-}
 
 /* Keep the Omega look static rather than continuously recompositing hero and
    divider layers on compact/mobile viewports. */
@@ -152,17 +143,8 @@ html.ccg-perf-compact .ccg-global-search__results {
 }
 
 @media (max-width: 820px) {
-    html.ccg-perf-enabled .ccg-main > .ccg-chapter,
-    html.ccg-perf-enabled .ccg-main > section:nth-of-type(n + 2),
     html.ccg-perf-enabled [data-ccg-defer-render] {
         contain-intrinsic-size: auto 560px;
-    }
-
-    /* The compact override above intentionally wins for normal chapters. */
-    html.ccg-perf-compact .ccg-main > .ccg-chapter,
-    html.ccg-perf-compact .ccg-main > section:nth-of-type(n + 2) {
-        content-visibility: visible;
-        contain-intrinsic-size: none;
     }
 }
 
