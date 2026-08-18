@@ -27,24 +27,19 @@
     "verified_on": "2026-08-19",
     "sources": [
       {
-        "label": "Mastertronic Collectors Archive — republished software labels",
+        "label": "Mastertronic Collectors Archive — labels for republished software",
         "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
         "type": "specialist historical archive"
-      },
-      {
-        "label": "MobyGames — Kixx company profile",
-        "url": "https://www.mobygames.com/company/1271/kixx/",
-        "type": "game industry database"
       }
     ]
   },
   {
     "slug": "the-hit-squad",
-    "summary": "The Hit Squad was a budget re-release label used by Ocean Software, returning Ocean titles and games from other publishers to shops at lower prices. The label is strongly represented across 8-bit and 16-bit formats, with surviving releases covering arcade conversions, licensed games, sports titles and other catalogue reissues.",
+    "summary": "The Hit Squad was a budget re-release label used by Ocean Software, returning Ocean titles and games from other publishers to shops at lower prices. Surviving releases span the 8-bit and 16-bit era and include arcade conversions, licensed games, sports titles and other catalogue reissues.",
     "facts": [
-      "The Hit Squad was used as a budget label by Ocean Software.",
-      "MobyGames records the label as being used from 1989 to around 1996 for budget releases.",
-      "The label re-released games originally associated with Ocean and with other publishers including Domark, Activision, Electronic Arts, Taito and Virgin."
+      "The Hit Squad was used as a budget re-release label associated with Ocean Software.",
+      "The Centre for Computing History preserves a substantial archive of games published under The Hit Squad name.",
+      "The surviving catalogue includes re-releases across several home-computer formats and multiple game genres."
     ],
     "strengths": [
       "Budget re-releases",
@@ -66,14 +61,9 @@
     "verified_on": "2026-08-19",
     "sources": [
       {
-        "label": "Centre for Computing History — The Hit Squad game archive",
+        "label": "Centre for Computing History — The Hit Squad games archive",
         "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=The+Hit+Squad&type=Games",
         "type": "museum collection"
-      },
-      {
-        "label": "MobyGames — The Hit Squad company profile",
-        "url": "https://www.mobygames.com/company/5110/hit-squad-the/",
-        "type": "game industry database"
       }
     ]
   },
@@ -106,9 +96,9 @@
         "type": "specialist historical archive"
       },
       {
-        "label": "MobyGames — Ricochet company profile",
-        "url": "https://www.mobygames.com/company/5229/ricochet/",
-        "type": "game industry database"
+        "label": "Mastertronic Collectors Archive — labels for republished software",
+        "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
+        "type": "specialist historical archive"
       }
     ]
   }
