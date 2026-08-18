@@ -1,0 +1,253 @@
+/* ============================================================
+   CCG SITEWIDE LAYOUT OPTIMISATION — OMEGA FINAL PASS
+   ------------------------------------------------------------
+   Final public-page usability layer, loaded after the responsive
+   safety and page-polish contracts.
+
+   Scope:
+   • public pages only (loader excludes intro + admin)
+   • preserve page-specific artwork and Omega identity
+   • improve reading rhythm, viewport containment and touch UX
+   • keep the document as the owner of normal page scrolling
+============================================================ */
+
+:root {
+    --ccg-layout-readable: 78ch;
+    --ccg-layout-gutter: clamp(12px, 2.6vw, 26px);
+    --ccg-layout-touch: 44px;
+}
+
+/* ============================================================
+   DOCUMENT STABILITY
+============================================================ */
+
+html {
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+@media (min-width: 769px) {
+    html {
+        scrollbar-gutter: stable;
+    }
+}
+
+body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
+    overflow-anchor: auto;
+}
+
+:where(main, .ccg-main, .ccg-page) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Ordinary page regions must hand the wheel back to the document.
+   True overlays, drawers and dialogs retain their own contained scroll. */
+:where(main, .ccg-main, .ccg-page) :where(
+    section,
+    article,
+    .game-section,
+    .games-library,
+    .games-grid,
+    .home-section,
+    .home-video-grid,
+    .ccg-card-grid,
+    .ccg-collection-grid,
+    .ccg-publishers-grid,
+    .video-library__grid,
+    .member-panel,
+    .profile-library,
+    .retro-video-page__related
+) {
+    overscroll-behavior-y: auto;
+}
+
+/* ============================================================
+   FLEX / GRID SHRINK SAFETY
+============================================================ */
+
+:where(main, .ccg-main, .ccg-page) :where(
+    section,
+    article,
+    header,
+    footer,
+    nav,
+    form,
+    fieldset,
+    .ccg-card,
+    .ccg-card__body,
+    .ccg-panel,
+    .game-section,
+    .game-section__inner,
+    .games-grid,
+    .home-video-card,
+    .ccg-publisher-card,
+    .video-library-card,
+    .ccg-download-card,
+    .member-panel
+) {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+:where(main, .ccg-main, .ccg-page) :where(
+    [class$="__inner"],
+    [class$="__body"],
+    [class$="__content"],
+    [class$="__copy"],
+    [class$="__text"],
+    [class$="__meta"],
+    [class$="__actions"]
+) {
+    min-width: 0;
+}
+
+/* ============================================================
+   TYPOGRAPHY / READING RHYTHM
+============================================================ */
+
+:where(main, .ccg-main, .ccg-page) :where(h1, h2, h3) {
+    text-wrap: balance;
+}
+
+:where(main, .ccg-main, .ccg-page) :where(p, li, dd, blockquote) {
+    overflow-wrap: break-word;
+    text-wrap: pretty;
+}
+
+:where(main, .ccg-main, .ccg-page) p {
+    line-height: 1.6;
+}
+
+/* Long-form copy is easier to scan when lines do not run across an
+   ultrawide panel. This is a maximum only; cards keep their own width. */
+:where(
+    .game-description,
+    .game-review,
+    .game-section__copy,
+    .about-panel__body,
+    .ccg-info-panel__copy,
+    .retro-video-page__summary,
+    .member-content-card__copy,
+    .zzap-copy,
+    .ccg-long-copy
+) :where(p, li) {
+    max-width: var(--ccg-layout-readable);
+}
+
+/* ============================================================
+   MEDIA CONTAINMENT
+============================================================ */
+
+:where(main, .ccg-main, .ccg-page) :where(img, picture, video, canvas, iframe, svg) {
+    max-width: 100%;
+}
+
+:where(main, .ccg-main, .ccg-page) picture,
+:where(main, .ccg-main, .ccg-page) picture img {
+    min-width: 0;
+}
+
+:where(main, .ccg-main, .ccg-page) :where(iframe, video) {
+    box-sizing: border-box;
+}
+
+/* ============================================================
+   CONTROLS + ACCESSIBILITY
+============================================================ */
+
+:where(main, .ccg-main, .ccg-page) :where(input, select, textarea, button) {
+    min-width: 0;
+    max-width: 100%;
+}
+
+:where(main, .ccg-main, .ccg-page) :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    [role="button"]
+):focus-visible {
+    scroll-margin-block: 12px;
+}
+
+@media (max-width: 760px) {
+    :where(main, .ccg-main, .ccg-page) :where(
+        button,
+        .ccg-btn,
+        input:not([type="checkbox"]):not([type="radio"]),
+        select,
+        textarea
+    ) {
+        min-height: var(--ccg-layout-touch);
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-hero-actions,
+        .home-hero__actions,
+        .game-actions,
+        .ccg-info-actions,
+        .profile-actions,
+        .member-hub-shortcuts
+    ) {
+        gap: clamp(8px, 2.5vw, 12px);
+    }
+}
+
+/* ============================================================
+   SMALL-SCREEN DENSITY
+============================================================ */
+
+@media (max-width: 520px) {
+    :root {
+        --ccg-layout-gutter: 10px;
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(h1, h2, h3, h4, p) {
+        max-width: 100%;
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-card__body,
+        .game-section__inner,
+        .ccg-info-panel,
+        .member-panel,
+        .profile-subsection
+    ) {
+        padding-left: max(10px, env(safe-area-inset-left)) !important;
+        padding-right: max(10px, env(safe-area-inset-right)) !important;
+    }
+}
+
+/* ============================================================
+   HOVER ONLY WHERE A POINTER ACTUALLY EXISTS
+============================================================ */
+
+@media (hover: none), (pointer: coarse) {
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-card,
+        .ccg-game-card,
+        .home-video-card,
+        .ccg-publisher-card,
+        .video-library-card,
+        .ccg-download-card,
+        .related-card
+    ):hover {
+        transform: none !important;
+    }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    :where(main, .ccg-main, .ccg-page) *,
+    :where(main, .ccg-main, .ccg-page) *::before,
+    :where(main, .ccg-main, .ccg-page) *::after {
+        scroll-behavior: auto !important;
+    }
+}
