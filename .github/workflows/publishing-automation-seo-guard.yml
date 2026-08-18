@@ -1,0 +1,88 @@
+name: Publishing Automation and SEO Guard
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "robots.txt"
+      - "sitemap.xml"
+      - "sitemap-*.xml"
+      - "games/**"
+      - "retro-specials/**"
+      - "retro-events/**"
+      - "amiga-demo-music/**"
+      - "videos/**"
+      - "music/**"
+      - "data/retro-specials.json"
+      - "data/retro-events.json"
+      - "data/amiga-demo-music.json"
+      - "scripts/audit-publishing-automation.js"
+      - "scripts/rebuild-games.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - ".github/workflows/build-games-on-games-json-change.yml"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/seo.yml"
+      - ".github/workflows/publishing-automation-seo-guard.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "robots.txt"
+      - "sitemap.xml"
+      - "sitemap-*.xml"
+      - "games/**"
+      - "retro-specials/**"
+      - "retro-events/**"
+      - "amiga-demo-music/**"
+      - "videos/**"
+      - "music/**"
+      - "data/retro-specials.json"
+      - "data/retro-events.json"
+      - "data/amiga-demo-music.json"
+      - "scripts/audit-publishing-automation.js"
+      - "scripts/rebuild-games.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - ".github/workflows/build-games-on-games-json-change.yml"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/seo.yml"
+      - ".github/workflows/publishing-automation-seo-guard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+
+      - name: Validate publishing guard syntax
+        run: node --check scripts/audit-publishing-automation.js
+
+      - name: Validate sitemap tooling syntax
+        run: |
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/validate-sitemaps.js
+
+      - name: Audit publishing ownership and indexability
+        run: node scripts/audit-publishing-automation.js
+
+      - name: Validate current sitemap set
+        run: node scripts/validate-sitemaps.js
