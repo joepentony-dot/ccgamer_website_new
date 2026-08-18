@@ -276,6 +276,33 @@ if (IS_ADMIN_PATH) {
        delayed correction is required here. */
 
     /* ======================================================
+       EMBEDDED VIDEO SHARE PERMISSIONS
+       ------------------------------------------------------
+       YouTube's in-player copy/share control runs inside a
+       cross-origin iframe and needs explicit clipboard access.
+    ====================================================== */
+    function enableEmbeddedVideoSharePermissions() {
+        const frames = document.querySelectorAll([
+            "#game-video-embed",
+            "iframe[src*=\"youtube.com/embed\"]",
+            "iframe[src*=\"youtube-nocookie.com/embed\"]"
+        ].join(","));
+
+        frames.forEach(frame => {
+            const permissions = new Set(
+                String(frame.getAttribute("allow") || "")
+                    .split(";")
+                    .map(value => value.trim())
+                    .filter(Boolean)
+            );
+
+            permissions.add("clipboard-write");
+            permissions.add("web-share");
+            frame.setAttribute("allow", Array.from(permissions).join("; "));
+        });
+    }
+
+    /* ======================================================
        SCROLL PERFORMANCE PAUSE (DESKTOP-FIRST)
        ------------------------------------------------------
        • Temporarily pauses decorative animations during scroll
@@ -2718,6 +2745,7 @@ function setupFooterSignatureRotator() {
         }
 
         setupParticleField();
+        enableEmbeddedVideoSharePermissions();
         // Native browser wheel scrolling is authoritative. The previous
         // document-wide wheel fallback could add a delayed correction after
         // compositor scrolling and make physical mouse-wheel input feel uneven.
