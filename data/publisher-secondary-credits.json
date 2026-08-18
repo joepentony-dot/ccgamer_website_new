@@ -43,6 +43,23 @@
         { "title": "Whirlinurd" },
         { "title": "Zorro" }
       ]
+    },
+    {
+      "publisher": "Alternative Software",
+      "system": "C64",
+      "source": "https://www.lemon64.com/game/mr-weems-and-the-she-vampires",
+      "verified_on": "2026-08-18",
+      "note": "Lemon64 records Alternative Software as the C64 re-releaser while Piranha remains the original publisher. This additive association ensures the game appears under both publisher discovery pages.",
+      "titles": [
+        {
+          "title": "Mr Weems And The She Vampires",
+          "aliases": [
+            "The Astonishing Adventures of Mr. Weems and the She Vampires",
+            "Astonishing Adventures of Mr. Weems and the She Vampires, The",
+            "She Vampires"
+          ]
+        }
+      ]
     }
   ]
 }

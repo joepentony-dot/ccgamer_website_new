@@ -124,6 +124,8 @@ const PUBLISHER_ALIASES = new Map([
 
     ["alternative", "Alternative Software"],
     ["alternative software", "Alternative Software"],
+    ["alternative software ltd", "Alternative Software"],
+    ["alternative software limited", "Alternative Software"],
 
     ["americana", "Americana"],
     ["americana software", "Americana"],
@@ -303,10 +305,13 @@ function getSecondaryPublisherNames(game) {
 function getPublisherNames(game) {
     const creditValue = game?.credits?.publisher;
     const source = toList(creditValue).length ? toList(creditValue) : toList(game?.publisher);
+    const reReleaseLabels = toList(game?.credits?.re_releaser || game?.credits?.reReleaser);
     const supplemental = getSecondaryPublisherNames(game);
     const seen = new Set();
 
-    return [...source, ...supplemental]
+    // Publisher archives are discovery pages, so a game belongs under both its
+    // original publisher(s) and any explicitly recorded re-release label(s).
+    return [...source, ...reReleaseLabels, ...supplemental]
         .map(canonicalizePublisherName)
         .filter(Boolean)
         .filter((name) => {
