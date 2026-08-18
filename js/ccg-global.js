@@ -2789,7 +2789,9 @@ function setupFooterSignatureRotator() {
         }
 
         setupParticleField();
-        setupScrollFailsafe();
+        // Native browser wheel scrolling is authoritative. The previous
+        // document-wide wheel fallback could add a delayed correction after
+        // compositor scrolling and make physical mouse-wheel input feel uneven.
         setupScrollPerfPause();
 
         /* -------------------------------
