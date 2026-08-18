@@ -140,7 +140,8 @@ function ensureBrowseGamesShortcuts(html) {
 
     const developerBlock = /(\s*<div class="games-hero__stats" data-games-developers-shortcut="true">[\s\S]*?<\/div>)/;
     const downloadsBlock = /(\s*<div class="games-hero__stats" data-games-downloads-shortcut="true">[\s\S]*?<\/div>)/;
-    const anchor = html.match(developerBlock) || html.match(downloadsBlock);
+    const currentStatsBlock = /(\s*<div class="games-hero__stats"(?![^>]*data-games-)[^>]*>[\s\S]*?<\/div>)/;
+    const anchor = html.match(developerBlock) || html.match(downloadsBlock) || html.match(currentStatsBlock);
     if (!anchor) fail("Could not locate a bounded Browse Games shortcut insertion point.");
 
     return html.replace(anchor[0], `${anchor[0]}${renderBrowseShortcut()}`);

@@ -103,6 +103,7 @@ def synthetic_game(variant: dict[str, Any]) -> dict[str, Any]:
         "music": ["Phase 6B Test Composer"],
         "pdf": "",
         "disk": [f"https://example.com/{slug}.zip"],
+        "download_status": "authorised",
         "lemon": ["https://www.lemon64.com/game/phase-6b-test"],
         "description": "Synthetic record used only in a disposable worktree to test the complete publishing chain.",
         "ccg_rating": 6,
@@ -173,6 +174,7 @@ def files_containing(root: Path, directory: str, needle: str) -> list[str]:
 def count_anchor_href(html: str, href: str) -> int:
     pattern = re.compile(r'<a\b[^>]*\bhref=["\']' + re.escape(href) + r'["\']', re.I | re.S)
     return len(pattern.findall(html))
+
 
 def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
     temp_root = Path(tempfile.mkdtemp(prefix=f"ccg-{variant['key']}-"))
