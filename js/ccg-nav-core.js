@@ -34,7 +34,6 @@ Do Not Override
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
         { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
-        { src: "/js/ccg-personal-library-controls.js", marker: "data-ccg-personal-library-loader" },
         { src: "/js/ccg-member-library-sync-loader.js", marker: "data-ccg-member-library-sync-loader" },
         { src: "/js/ccg-member-community-loader.js", marker: "data-ccg-member-community-loader" },
         { src: "/js/ccg-member-public-preview-loader.js", marker: "data-ccg-member-public-preview-loader" },
