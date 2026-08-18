@@ -103,6 +103,7 @@ def synthetic_game(variant: dict[str, Any]) -> dict[str, Any]:
         "music": ["Phase 6B Test Composer"],
         "pdf": "",
         "disk": [f"https://example.com/{slug}.zip"],
+        "download_status": "authorised",
         "lemon": ["https://www.lemon64.com/game/phase-6b-test"],
         "description": "Synthetic record used only in a disposable worktree to test the complete publishing chain.",
         "ccg_rating": 6,
