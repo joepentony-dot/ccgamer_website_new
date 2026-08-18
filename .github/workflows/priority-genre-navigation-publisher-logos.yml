@@ -21,15 +21,17 @@ on:
       - "resources/images/publishers/**"
   workflow_dispatch:
 
+# Validation-only. Reliable Games Publishing owns generated archive output.
+# Pull-request checks must never write regenerated pages back into the source branch.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: priority-genre-publisher-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate-and-publish:
+  validate:
     runs-on: ubuntu-latest
     timeout-minutes: 60
 
@@ -122,23 +124,8 @@ jobs:
       - name: Confirm generated diff safety
         run: git diff --check
 
-      - name: Commit validated output
-        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+      - name: Confirm workflow is validation-only
         run: |
-          git add -A
-          git reset -- \
-            index.html \
-            home.html \
-            resources/css/intro.css \
-            js/index-intro.js \
-            games/games.json
-
-          if git diff --cached --quiet; then
-            echo "Priority correction output is already current."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Refresh validated publisher output"
-          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          echo "Priority genre/publisher output validated in the runner workspace."
+          echo "No generated files are committed from a pull-request validation run."
+          echo "Reliable Games Publishing remains the sole generated-output writer."
