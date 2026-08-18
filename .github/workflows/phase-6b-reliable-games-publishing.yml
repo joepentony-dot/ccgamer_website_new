@@ -17,6 +17,7 @@ on:
       - "scripts/validate-seo-genre-links.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/generate-year-platform-pages.js"
+      - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
       - "admin/games-editor.html"
       - "admin/js/games-editor.js"
@@ -27,10 +28,10 @@ on:
       - ".github/workflows/phase-6a-games-editor-publishing-audit.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
       - ".github/workflows/publisher-archives.yml"
-      - ".github/workflows/developer-archives.yml"
       - ".github/workflows/composer-archives.yml"
       - ".github/workflows/game-downloads.yml"
       - ".github/workflows/year-platform-archives.yml"
+      - "games/index.html"
       - "games/genres/**"
       - "games/publishers/**"
       - "games/developers/**"
@@ -108,6 +109,7 @@ jobs:
           node --check scripts/validate-seo-genre-links.js
           node --check scripts/generate-composer-pages.js
           node --check scripts/generate-year-platform-pages.js
+          node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
           node --check admin/js/games-editor.js
 
@@ -181,7 +183,6 @@ jobs:
               ".github/workflows/phase-6a-games-editor-publishing-audit.yml",
               ".github/workflows/phase-6b-reliable-games-publishing.yml",
               ".github/workflows/publisher-archives.yml",
-              ".github/workflows/developer-archives.yml",
               ".github/workflows/composer-archives.yml",
               ".github/workflows/game-downloads.yml",
               ".github/workflows/year-platform-archives.yml",
@@ -197,7 +198,9 @@ jobs:
               "scripts/build-games.js",
               "scripts/generate-composer-pages.js",
               "scripts/generate-year-platform-pages.js",
+              "scripts/integrate-year-platform-discovery.js",
               "scripts/validate-year-platform-discovery.js",
+              "games/index.html",
               "games/games-index.json",
               "games/games-search.json",
               "tools/seo/static-pages.json",
@@ -259,7 +262,9 @@ jobs:
             scripts/build-games.js \
             scripts/generate-composer-pages.js \
             scripts/generate-year-platform-pages.js \
+            scripts/integrate-year-platform-discovery.js \
             scripts/validate-year-platform-discovery.js \
+            games/index.html \
             games/games-index.json \
             games/games-search.json \
             games/publishers \
