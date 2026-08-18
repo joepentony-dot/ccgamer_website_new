@@ -186,14 +186,12 @@
          */
         if (!state.scrolling) {
             state.scrolling = true;
-            document.body?.classList.add("scrolling");
             applyPauseState();
         }
 
         window.clearTimeout(state.scrollTimer);
         state.scrollTimer = window.setTimeout(() => {
             state.scrolling = false;
-            document.body?.classList.remove("scrolling");
             applyPauseState();
         }, SCROLL_IDLE_DELAY);
     }
