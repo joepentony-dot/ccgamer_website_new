@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-08-17T19:09:20.024Z",
+  "updatedAt": "2026-08-18T12:12:35.729Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story – Did Ocean Get the Arcade Adventure Right on C64?",
@@ -3424,7 +3424,7 @@
       "verifiedBy": "youtube-data-api-v3"
     },
     "LJ2fo348JZQ": {
-      "title": "Short Circuit – Did Number 5 Survive His C64 Film Licence?",
+      "title": "Shinobi (C64) – Sega’s Arcade Ninja Classic on the Commodore 64!",
       "description": "🕹️ Shinobi (1989) – Commodore 64 Ninja Arcade Beat-’Em-Up\n🌐 Full game info, manual & download:\n👉 https://www.cheekycommodoregamer.co.uk/games/shinobi/\n\nReleased in 1989 by Virgin Games and developed by The Sales Curve, Shinobi brings Sega’s legendary arcade ninja action to the Commodore 64. You take control of Joe Musashi, a master ninja on a mission to dismantle the Zeed crime syndicate and rescue captured hostages across a series of dangerous locations.\n\nGameplay blends fast side-scrolling combat with precision timing. You fight waves of enemies using shurikens, close-range attacks, and powerful ninja magic, while keeping a close eye on hostage appearances. Rescuing them not only boosts your score but also rewards you with vital power-ups, adding tension and urgency to every encounter.\n\nEach stage introduces new enemy patterns and hazards, demanding sharp reactions and careful positioning. While the controls can feel unforgiving at times, success comes from learning enemy behaviour and committing to confident, decisive moves.\n\nVisually, the Commodore 64 version captures the spirit of the arcade original with strong sprite work and smooth animation. Tony Williams’ soundtrack drives the action forward with energetic, memorable tunes. Despite a few technical rough edges, Shinobi stands as one of the most recognisable and challenging arcade conversions on the C64, and remains a firm favourite among ninja action fans.\n\n💬 Did you rely more on shurikens, or save your ninja magic for emergencies?\n\n▶️ RELATED PLAYLISTS\nVirgin Games: https://www.youtube.com/playlist?list=PL_TYjnCNYSeyXKMndqZylemnB6eb9p5P1\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#shinobi #commodore64 #virgingames #thesalescurve #arcadeconversion\n#beatemup #ninjagame #retrogaming #classicc64 #cheekycommodoregamer",
       "uploadDate": "2023-02-04T13:46:30Z",
       "duration": "PT4M17S",
