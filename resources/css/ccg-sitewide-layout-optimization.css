@@ -118,7 +118,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
 }
 
 :where(main, .ccg-main, .ccg-page) p {
-    line-height: max(1.5, 1.5em);
+    line-height: 1.6;
 }
 
 /* Long-form copy is easier to scan when lines do not run across an
