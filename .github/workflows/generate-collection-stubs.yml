@@ -1,22 +1,17 @@
-name: Generate collection stubs
+name: Manual legacy collection stub validation
 
+# Historical stub generator retained only as a manual diagnostic.
+# SEO Automation (.github/workflows/seo.yml) is the authoritative automatic
+# writer for Retro Specials, Retro Events, Amiga Demo Music, video-library and
+# sitemap output after their source datasets change.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'data/retro-specials.json'
-      - 'data/retro-events.json'
-      - 'data/amiga-demo-music.json'
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  generate-stubs:
-    if: github.actor != 'github-actions[bot]'
+  validate-stubs:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,53 +25,16 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Generate collection stubs
+      - name: Validate stub generator syntax
+        run: node --check scripts/generate-collection-stubs.js
+
+      - name: Generate collection stubs in validation workspace
         run: node scripts/generate-collection-stubs.js
 
-      - name: Commit newly created stubs only
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Validate generated diff
+        run: git diff --check
+
+      - name: Explain publishing ownership
         run: |
-          set -euo pipefail
-          echo "[stubs] Detecting newly created stub files..."
-          mapfile -t NEW_FILES < <(git ls-files --others --exclude-standard -- \
-            'retro-specials/*.html' 'retro-specials/*/index.html' \
-            'retro-events/*.html' 'retro-events/*/index.html' \
-            'amiga-demo-music/*.html' 'amiga-demo-music/*/index.html')
-
-          if [ "${#NEW_FILES[@]}" -eq 0 ]; then
-            echo "[stubs] No new files to commit."
-            exit 0
-          fi
-
-          printf '%s\n' "${NEW_FILES[@]}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- "${NEW_FILES[@]}"
-          git commit -m "chore(stubs): add generated collection stub pages"
-
-          TARGET_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          if git push origin "HEAD:${TARGET_BRANCH}"; then
-            exit 0
-          fi
-
-          if [ "$TARGET_BRANCH" != "main" ]; then
-            echo "[stubs] Could not push generated output to ${TARGET_BRANCH}."
-            exit 1
-          fi
-
-          GENERATED_BRANCH="automation/collection-stubs-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git push origin "HEAD:refs/heads/${GENERATED_BRANCH}"
-
-          {
-            echo "Generated automatically after collection data changed on main."
-            echo
-            echo "## Files"
-            printf -- '- `%s`\n' "${NEW_FILES[@]}"
-          } > /tmp/collection-stubs-pr.md
-
-          gh pr create \
-            --base main \
-            --head "${GENERATED_BRANCH}" \
-            --title "Add generated collection stub pages" \
-            --body-file /tmp/collection-stubs-pr.md
+          echo "This workflow is validation-only."
+          echo "SEO Automation publishes full retro pages, video-library output and sitemaps."
