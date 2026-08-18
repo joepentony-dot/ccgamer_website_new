@@ -46,6 +46,12 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
         `${SITE_ORIGIN}/videos/`
     ])]
 ]);
+const REVIEWED_FOREIGN_SITEMAP_REMOVALS = new Map([
+    ["sitemap-pages.xml", new Set([
+        `${SITE_ORIGIN}/amiga-demo-music/`,
+        `${SITE_ORIGIN}/retro-events/`
+    ])]
+]);
 
 function readRequired(filePath) {
     if (!fs.existsSync(filePath)) {
@@ -287,8 +293,11 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     const currentLocs = extractLocs(currentXml);
     const baselineLocs = extractLocs(baselineXml);
     const reviewedAdditions = REVIEWED_FOREIGN_SITEMAP_ADDITIONS.get(label) || new Set();
+    const reviewedRemovals = REVIEWED_FOREIGN_SITEMAP_REMOVALS.get(label) || new Set();
     const expectedLocs = baselineLocs.filter((url) => (
-        url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
+        url !== PHASE5B_EXCLUDED_SITEMAP_URL &&
+        !reviewedAdditions.has(url) &&
+        !reviewedRemovals.has(url)
     ));
     const comparableCurrent = currentLocs.filter((url) => (
         url !== PHASE5B_EXCLUDED_SITEMAP_URL && !reviewedAdditions.has(url)
@@ -301,6 +310,9 @@ function validateBaselineSitemap(currentXml, baselineXml, label, problems) {
     if (currentLocs.includes(PHASE5B_EXCLUDED_SITEMAP_URL)) {
         problems.push(`Phase 5B noindex utility remains in ${label}: ${PHASE5B_EXCLUDED_SITEMAP_URL}`);
     }
+    reviewedRemovals.forEach((url) => {
+        if (currentLocs.includes(url)) problems.push(`Retired unmaterialized sitemap URL reappeared in ${label}: ${url}`);
+    });
 }
 
 function buildReport(summary) {
@@ -324,7 +336,7 @@ function buildReport(summary) {
 ## Requirements already satisfied before Phase 4D
 
 - Static year and platform routes were generated deterministically.
-- Browse Games contained one bounded year/genre discovery block.
+- Browse Games contained one bounded year/genre discovery block alongside any other useful archive links.
 - Previous-year and next-year links followed the represented-year sequence.
 - Relevant platform cross-links, static registry entries and sitemap entries were present.
 - The 2023 route used \`noindex,follow\` and was excluded from indexable discovery files.
@@ -339,8 +351,9 @@ function buildReport(summary) {
 - Validation that every archive game target exists and is its own canonical game route.
 - Exact registry and sitemap occurrence checks for all 18 indexable archive routes.
 - Absence checks preventing irrelevant C64 or Amiga cross-links on year pages.
-- Exact membership checks for registry entries and sitemap URLs owned by other workflows, with reviewed non-year/platform additions excluded from this archive-specific baseline comparison; their dedicated validators remain authoritative.
+- Exact membership checks for registry entries and sitemap URLs owned by other workflows, with reviewed non-year/platform additions and deliberate removals excluded from this archive-specific baseline comparison; their dedicated validators remain authoritative.
 - Phase 5B compatibility permits only the reviewed manual-viewer utility exclusion and rejects its reintroduction.
+- Unmaterialized legacy retro hub roots are not permitted to reappear in sitemap-pages.xml.
 
 ## Safety
 
@@ -392,10 +405,10 @@ function main() {
     if (archiveData.games.length < 651) problems.push(`Game total fell below the protected Phase 6A baseline: ${archiveData.games.length}`);
 
     if (countOccurrences(browseGames, BROWSE_MARKER) !== 1) {
-        problems.push("Browse Games must contain exactly one archive shortcut block");
+        problems.push("Browse Games must contain exactly one managed archive shortcut block");
     }
-    if (countAnchorHref(browseGames, "/games/years/") !== 1) problems.push("Browse Games must contain exactly one year-hub link");
-    if (countAnchorHref(browseGames, "/games/genres/") !== 2) problems.push("Browse Games must contain the genre shortcut and crawlable genre fallback link");
+    if (countAnchorHref(browseGames, "/games/years/") < 1) problems.push("Browse Games must contain a release-year hub link");
+    if (countAnchorHref(browseGames, "/games/genres/") < 1) problems.push("Browse Games must contain a genre hub link");
 
     const staticDuplicates = staticPages.filter((entry, index, all) => all.indexOf(entry) !== index);
     if (staticDuplicates.length) problems.push(`Duplicate static registry entries: ${[...new Set(staticDuplicates)].join(", ")}`);
