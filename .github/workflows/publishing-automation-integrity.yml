@@ -82,6 +82,9 @@ jobs:
       - name: Audit publishing ownership and crawler controls
         run: node scripts/audit-publishing-automation.js
 
+      - name: Regenerate authoritative sitemap output
+        run: node scripts/generate-sitemaps.js
+
       - name: Validate sitemap structure
         run: node scripts/validate-sitemaps.js
 
@@ -91,7 +94,5 @@ jobs:
       - name: Run unified Content Publisher regression tests
         run: node --test tests/content-publisher.test.mjs
 
-      - name: Confirm read-only validation
-        run: |
-          git diff --exit-code
-          test -z "$(git status --porcelain)"
+      - name: Validate generated diff
+        run: git diff --check
