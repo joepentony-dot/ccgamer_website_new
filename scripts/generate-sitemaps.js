@@ -9,6 +9,7 @@ const { spawnSync } = require("child_process");
 const SITE_ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const repoRoot = path.resolve(__dirname, "..");
 const sitemapIndexPath = path.join(repoRoot, "sitemap.xml");
+const sitemapPagesPath = path.join(repoRoot, "sitemap-pages.xml");
 const composerMetadataPath = path.join(repoRoot, "music", "composers", "composers.json");
 const CORE_SITEMAPS = new Set(["sitemap-pages.xml", "sitemap-games.xml"]);
 const CHILD_SITEMAP_PATTERN = /^sitemap-[a-z0-9-]+\.xml$/i;
@@ -127,6 +128,10 @@ function escapeXml(value) {
     .replace(/'/g, "&apos;");
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function restoreAdditionalSitemaps(entries) {
   if (!entries.length) return;
   let xml = fs.readFileSync(sitemapIndexPath, "utf8");
@@ -148,7 +153,38 @@ function restoreAdditionalSitemaps(entries) {
   console.log(`[generate-sitemaps] Restored additional sitemap children: ${missing.map((entry) => entry.loc).join(", ")}`);
 }
 
+function pruneUnmaterializedRetroHubUrls() {
+  if (!fs.existsSync(sitemapPagesPath)) return;
+  let xml = fs.readFileSync(sitemapPagesPath, "utf8");
+  const pruned = [];
+
+  for (const root of ["retro-events", "amiga-demo-music"]) {
+    const indexPath = path.join(repoRoot, root, "index.html");
+    if (fs.existsSync(indexPath)) continue;
+
+    const loc = `${SITE_ORIGIN}/${root}/`;
+    const pattern = new RegExp(
+      `\\s*<url>\\s*<loc>${escapeRegExp(escapeXml(loc))}<\\/loc>[\\s\\S]*?<\\/url>`,
+      "g"
+    );
+    const nextXml = xml.replace(pattern, "");
+    if (nextXml !== xml) {
+      xml = nextXml;
+      pruned.push(loc);
+    }
+  }
+
+  if (pruned.length) {
+    xml = xml.replace(/<urlset([^>]*)>\s*/, "<urlset$1>\n");
+    xml = xml.replace(/\n?<\/urlset>\s*$/, "\n</urlset>\n");
+    fs.writeFileSync(sitemapPagesPath, xml, "utf8");
+    console.log(`[generate-sitemaps] Removed unmaterialized retro hub URLs: ${pruned.join(", ")}`);
+  }
+}
+
 synchronizeComposerArchives();
 const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
+pruneUnmaterializedRetroHubUrls();
 restoreAdditionalSitemaps(additionalSitemaps);
+runNodeScript("audit-sitemap-indexability.js");

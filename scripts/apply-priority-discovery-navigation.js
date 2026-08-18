@@ -24,6 +24,12 @@ function replaceExact(source, oldValue, newValue, label) {
   return source.replace(oldValue, newValue);
 }
 
+function replaceLegacyOrAccept(source, oldValue, newValue, isCurrent, label) {
+  if (source.includes(newValue) || isCurrent(source)) return source;
+  if (!source.includes(oldValue)) fail(`${label} is neither legacy nor a recognised current implementation.`);
+  return source.replace(oldValue, newValue);
+}
+
 function writeIfChanged(filePath, content) {
   const current = fs.readFileSync(filePath, "utf8");
   if (current === content) return false;
@@ -53,7 +59,13 @@ const newRender = `function renderBrowseShortcut() {
                 </div>\`;
 }`;
 
-integration = replaceExact(integration, oldRender, newRender, "Browse shortcut renderer");
+integration = replaceLegacyOrAccept(
+  integration,
+  oldRender,
+  newRender,
+  (source) => source.includes('href="/games/genres/">Browse by Genre</a>') && source.includes("dedicated release-year pages and the complete genre library"),
+  "Browse shortcut renderer"
+);
 
 const oldEnsure = `function ensureBrowseGamesShortcuts(html) {
     if (html.includes(BROWSE_MARKER)) {
@@ -88,25 +100,34 @@ const newEnsure = `function ensureBrowseGamesShortcuts(html) {
     return html.replace(anchor[0], \`${"${anchor[0]}"}${"${renderBrowseShortcut()}"}\`);
 }`;
 
-integration = replaceExact(integration, oldEnsure, newEnsure, "Browse shortcut integration");
-integration = replaceExact(
+integration = replaceLegacyOrAccept(
+  integration,
+  oldEnsure,
+  newEnsure,
+  (source) => source.includes("const existingBlock =") && source.includes("html.replace(existingBlock, renderBrowseShortcut())") && source.includes("currentStatsBlock"),
+  "Browse shortcut integration"
+);
+integration = replaceLegacyOrAccept(
   integration,
   "- Added bounded Browse Games links to \\`/games/years/\\` and \\`/games/platforms/\\`.",
   "- Added bounded Browse Games links to \\`/games/years/\\` and \\`/games/genres/\\`.",
+  (source) => source.includes("/games/years/") && source.includes("/games/genres/"),
   "Phase 4C report navigation copy"
 );
 
 let validation = fs.readFileSync(validationPath, "utf8");
-validation = replaceExact(
+validation = replaceLegacyOrAccept(
   validation,
   'if (countAnchorHref(browseGames, "/games/platforms/") !== 1) problems.push("Browse Games must contain exactly one platform-hub link");',
   'if (countAnchorHref(browseGames, "/games/genres/") !== 2) problems.push("Browse Games must contain the genre shortcut and crawlable genre fallback link");',
+  (source) => source.includes('countAnchorHref(browseGames, "/games/genres/")') && source.includes("genre hub link"),
   "Browse Games validation"
 );
-validation = replaceExact(
+validation = replaceLegacyOrAccept(
   validation,
   "- Browse Games contained one bounded year/platform discovery block.",
   "- Browse Games contained one bounded year/genre discovery block.",
+  (source) => source.includes("Browse Games contained one bounded year/genre discovery block") || source.includes("managed archive shortcut block"),
   "Phase 4D report navigation copy"
 );
 

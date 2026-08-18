@@ -60,9 +60,10 @@
 /*.webm
   Cache-Control: public, max-age=31536000, immutable
 
-/games/*
-  X-Robots-Tag: index, follow
-
+# Do not apply a blanket index directive to /games/*: canonical game pages carry
+# their own index,follow metadata while legacy flat redirects deliberately use
+# noindex,follow. Keeping only specific exclusions avoids contradictory signals
+# if this header file is used by a future host.
 /games/game.html
   X-Robots-Tag: noindex, follow
 
