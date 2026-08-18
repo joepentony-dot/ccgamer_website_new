@@ -271,80 +271,9 @@ if (IS_ADMIN_PATH) {
     window.ccgGameSlugFromId = ccgGameSlugFromId;
     window.ccgBuildGameUrl = ccgBuildGameUrl;
 
-    /* ======================================================
-       SCROLL FAILSAFE (DESKTOP-FIRST)
-       ------------------------------------------------------
-       • Guarantees wheel scrolling even when layers block
-       • Does not override native scrolling unless blocked
-    ====================================================== */
-    function setupScrollFailsafe() {
-        const root = document.documentElement;
-        if (root?.matches?.('[data-ccg-page="intro"]')) return;
-        const shouldEnableFailsafe = () => !isMobileLike();
-        if (!shouldEnableFailsafe()) return;
-        const getScrollTop = () => window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-        const getMaxScroll = () => Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-        const canScroll = () => document.documentElement.scrollHeight - window.innerHeight > 1;
-
-        let ticking = false;
-
-        const isRelatedCarouselEvent = (event) => {
-            const target = event.target;
-            if (!(target instanceof Element)) return false;
-            return !!target.closest([
-                ".game-section--related",
-                ".related-carousel",
-                ".related-carousel__viewport",
-                ".related-carousel__track",
-                ".ccg-related",
-                ".ccg-related-track",
-                ".ccg-related-carousel"
-            ].join(","));
-        };
-
-        const normalizeDelta = (event) => {
-            let deltaY = event.deltaY || 0;
-            if (event.deltaMode === 1) {
-                deltaY *= 16;
-            } else if (event.deltaMode === 2) {
-                deltaY *= window.innerHeight;
-            }
-            return deltaY;
-        };
-
-        const handleWheel = (event) => {
-            if (event.defaultPrevented || event.ctrlKey) return;
-            if (!shouldEnableFailsafe()) return;
-            if (isRelatedCarouselEvent(event)) return;
-            if (!canScroll()) return;
-
-            const deltaY = normalizeDelta(event);
-            if (!deltaY) return;
-
-            const startTop = getScrollTop();
-            const maxScroll = getMaxScroll();
-            const targetTop = Math.min(Math.max(startTop + deltaY, 0), maxScroll);
-
-            if (targetTop === startTop || ticking) return;
-            ticking = true;
-
-            // Let the browser handle ordinary wheel input.  Stepping the page
-            // in the same animation frame can compete with compositor scrolling
-            // and is what made a few desktop pages feel as though they were
-            // catching or jumping.  This remains a genuine failsafe, but only
-            // after two frames confirm that native scrolling did not move.
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    if (getScrollTop() === startTop) {
-                        window.scrollTo({ top: targetTop, behavior: "auto" });
-                    }
-                    ticking = false;
-                });
-            });
-        };
-
-        window.addEventListener("wheel", handleWheel, { passive: true, capture: true });
-    }
+    /* Native browser wheel scrolling owns the document. Shared CSS keeps
+       html/body as the only vertical scroll root, so no wheel interception or
+       delayed correction is required here. */
 
     /* ======================================================
        SCROLL PERFORMANCE PAUSE (DESKTOP-FIRST)
