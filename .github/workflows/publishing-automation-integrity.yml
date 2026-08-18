@@ -1,0 +1,97 @@
+name: CCG Publishing Automation Integrity
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "robots.txt"
+      - "_headers"
+      - "sitemap.xml"
+      - "sitemap-*.xml"
+      - "scripts/audit-publishing-automation.js"
+      - "scripts/audit-sitemap-indexability.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - "tools/seo/generate-sitemap.js"
+      - "admin/CONTENT_PUBLISHER.md"
+      - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-status-reconciler.js"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/seo.yml"
+      - ".github/workflows/build-games-on-games-json-change.yml"
+      - ".github/workflows/generate-collection-stubs.yml"
+      - ".github/workflows/rebuild-retro-on-data-change.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
+      - ".github/workflows/publishing-automation-integrity.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "robots.txt"
+      - "_headers"
+      - "sitemap.xml"
+      - "sitemap-*.xml"
+      - "scripts/audit-publishing-automation.js"
+      - "scripts/audit-sitemap-indexability.js"
+      - "scripts/generate-sitemaps.js"
+      - "scripts/validate-sitemaps.js"
+      - "tools/seo/generate-sitemap.js"
+      - "admin/CONTENT_PUBLISHER.md"
+      - "admin/js/content-publisher.js"
+      - "admin/js/content-publisher-status-reconciler.js"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/seo.yml"
+      - ".github/workflows/build-games-on-games-json-change.yml"
+      - ".github/workflows/generate-collection-stubs.yml"
+      - ".github/workflows/rebuild-retro-on-data-change.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
+      - ".github/workflows/publishing-automation-integrity.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publishing-automation-integrity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate audit syntax
+        run: |
+          node --check scripts/audit-publishing-automation.js
+          node --check scripts/audit-sitemap-indexability.js
+          node --check scripts/generate-sitemaps.js
+          node --check scripts/validate-sitemaps.js
+
+      - name: Audit publishing ownership and crawler controls
+        run: node scripts/audit-publishing-automation.js
+
+      - name: Validate sitemap structure
+        run: node scripts/validate-sitemaps.js
+
+      - name: Audit sitemap indexability
+        run: node scripts/audit-sitemap-indexability.js
+
+      - name: Run unified Content Publisher regression tests
+        run: node --test tests/content-publisher.test.mjs
+
+      - name: Confirm read-only validation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
