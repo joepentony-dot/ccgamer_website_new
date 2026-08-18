@@ -1,48 +1,57 @@
-name: Build games outputs
+name: Manual game output recovery check
 
+# Recovery/diagnostic workflow only.
+# Automatic game publishing is owned by .github/workflows/games-publishing.yml,
+# which runs the complete validated archive/SEO/sitemap publishing chain.
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'games/games.json'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build-generated-games-assets:
+  verify-generated-games-assets:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - name: Build generated game assets
-        run: node scripts/build-games.js
-        env:
-          CI: '1'
-          CCG_BUILD_GAME_PAGES: '1'
-
-      - name: Commit generated files
+      - name: Validate generator syntax
         run: |
-          echo "[build-games] Checking for generated file changes..."
-          if git diff --quiet; then
-            echo "[build-games] No generated file changes."
-            exit 0
-          fi
+          node --check scripts/build-games.js
+          node --check scripts/rebuild-games.js
+          node --check scripts/validate-sitemaps.js
+          node --check scripts/audit-publishing-automation.js
 
-          echo "[build-games] Changes detected. Preparing commit..."
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add games/games-index.json games/games-search.json sitemap-games.xml games
-          git commit -m "chore(games): rebuild generated game assets"
-          echo "[build-games] Pushing generated assets commit..."
-          git push
+      - name: Run authoritative publishing chain in recovery mode
+        run: |
+          node scripts/rebuild-games.js
+          rm -f seo-audit-report.md
+
+      - name: Run publishing and indexing guard
+        run: node scripts/audit-publishing-automation.js
+
+      - name: Verify generated diff
+        run: git diff --check
+
+      - name: Report recovery output without publishing
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "Generated game/archive output is already current."
+          else
+            echo "Recovery check found generated differences."
+            echo "Use Reliable Games Publishing to publish them; this recovery workflow never pushes to main."
+            git status --short
+          fi
