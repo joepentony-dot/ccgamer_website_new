@@ -4,11 +4,23 @@
     COMMUNITY_RATINGS_ENABLED: true
   });
 
+  function ensureCommunityStylesheet() {
+    if (document.querySelector('link[href*="ccg-community.css"]')) return;
+
+    var stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '/resources/css/ccg-community.css';
+    stylesheet.setAttribute('data-ccg-community-styles', 'runtime');
+    document.head.appendChild(stylesheet);
+  }
+
   function ensureGameCommunitySection() {
     var root = document.documentElement;
     var shell = document.querySelector('.ccg-page--single-game .game-shell');
 
     if (!root || root.getAttribute('data-ccg-page') !== 'single-game' || !shell) return;
+
+    ensureCommunityStylesheet();
     if (document.getElementById('ccg-community-rating') && document.getElementById('ccg-community-comments')) return;
 
     var section = document.createElement('section');
