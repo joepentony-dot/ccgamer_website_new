@@ -41,6 +41,15 @@ function requireManualValidationOnly(relativePath, description) {
   }
 }
 
+function requirePullRequestValidationOnly(relativePath, description) {
+  const source = read(relativePath);
+  requirePattern(source, /^\s{2}pull_request:\s*$/m, `${description} is missing its pull-request validation trigger.`);
+  requirePattern(source, /permissions:\s*\n\s*contents:\s*read\b/, `${description} has repository write permission during validation.`);
+  if (/\bgit\s+push\b|\bgh\s+pr\s+(?:create|merge)\b/.test(source)) {
+    problems.push(`${description} can mutate the source branch or publish from a validation run.`);
+  }
+}
+
 const gamesPublishing = read(".github/workflows/games-publishing.yml");
 requireText(gamesPublishing, '"games/games.json"', "Reliable Games Publishing does not trigger from games/games.json.");
 requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Publishing does not run the authoritative rebuild command.");
@@ -66,6 +75,10 @@ requireManualValidationOnly(
 requireManualValidationOnly(
   ".github/workflows/generate-collection-stubs.yml",
   "Legacy retro collection stub builder"
+);
+requirePullRequestValidationOnly(
+  ".github/workflows/priority-genre-navigation-publisher-logos.yml",
+  "Priority genre/publisher validator"
 );
 
 const manualRetro = read(".github/workflows/rebuild-retro-on-data-change.yml");
@@ -138,4 +151,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Publishing automation ownership, robots, sitemap eligibility and admin workflow contracts passed.");
+console.log("Publishing automation ownership, robots, sitemap eligibility, validation-only PR workflows and admin workflow contracts passed.");
