@@ -36,9 +36,13 @@ function requireManualValidationOnly(relativePath, description) {
   if (/^\s{2}push:\s*$/m.test(source)) {
     problems.push(`${description} still has an automatic push trigger.`);
   }
+  if (/^\s{2}pull_request:\s*$/m.test(source)) {
+    problems.push(`${description} still has an automatic pull_request trigger.`);
+  }
   if (/\bgit\s+push\b|\bgh\s+pr\s+(?:create|merge)\b/.test(source)) {
     problems.push(`${description} can still publish generated output.`);
   }
+  return source;
 }
 
 const gamesPublishing = read(".github/workflows/games-publishing.yml");
@@ -71,14 +75,12 @@ requireManualValidationOnly(
   ".github/workflows/generate-collection-stubs.yml",
   "Legacy retro collection stub builder"
 );
-
-const priorityWorkflow = read(".github/workflows/priority-genre-navigation-publisher-logos.yml");
-requirePattern(priorityWorkflow, /permissions:\s*\n\s*contents:\s*read\b/, "Priority discovery PR validation has write permissions.");
-forbidText(priorityWorkflow, "Commit validated output", "Priority discovery PR validation can still commit generated output.");
-if (/\bgit\s+push\b|\bgh\s+pr\s+(?:create|merge)\b/.test(priorityWorkflow)) {
-  problems.push("Priority discovery PR validation can still push or publish generated output.");
-}
-requireText(priorityWorkflow, "node scripts/rebuild-games.js", "Priority discovery validation no longer tests the authoritative game rebuild.");
+const priorityWorkflow = requireManualValidationOnly(
+  ".github/workflows/priority-genre-navigation-publisher-logos.yml",
+  "Legacy priority genre/publisher validator"
+);
+requireText(priorityWorkflow, "node --check scripts/rebuild-games.js", "Legacy priority validation no longer checks the authoritative rebuild command syntax.");
+requireText(priorityWorkflow, "node scripts/apply-priority-discovery-navigation.js", "Legacy priority validation no longer checks its historical migration tooling.");
 
 const manualRetro = read(".github/workflows/rebuild-retro-on-data-change.yml");
 requireText(manualRetro, "workflow_dispatch:", "Manual retro recovery workflow is missing workflow_dispatch.");
