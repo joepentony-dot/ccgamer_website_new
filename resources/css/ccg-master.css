@@ -4279,10 +4279,9 @@ h2 {
     transform: translateZ(0);
 }
 
-/* Reduce effects while scrolling */
-body.scrolling * {
-    animation-play-state: paused !important;
-}
+/* Scroll-time animation pausing is scoped through
+   html.ccg-perf-paused in ccg-performance-foundations.css. Avoid a universal
+   descendant selector here: toggling it forces a full-page style recalculation. */
 
 @keyframes ccgShimmer {
     0% {
