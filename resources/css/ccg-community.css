@@ -1051,3 +1051,100 @@
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.36);
   }
 }
+
+
+/* OMEGA COMMUNITY REVIEWS — game page, home feed and member profile */
+.ccg-community-game-section {
+  display: grid;
+  gap: 1rem;
+}
+
+.ccg-community-game-section > .ccg-section__intro {
+  margin: 0 0 .35rem;
+}
+
+.home-community-latest {
+  margin: clamp(1.5rem, 4vw, 3rem) auto;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  border: 1px solid rgba(61, 230, 255, .34);
+  background: linear-gradient(135deg, rgba(4, 12, 34, .94), rgba(11, 24, 54, .82));
+  box-shadow: 0 0 24px rgba(0, 210, 255, .12);
+}
+
+.home-community-latest__header,
+.home-community-latest__card,
+.ccg-profile-community__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-community-latest__title {
+  margin: .25rem 0 0;
+}
+
+.home-community-latest__all,
+.home-community-latest__game,
+.ccg-profile-community__item a {
+  color: #6feeff;
+  font-weight: 700;
+}
+
+.home-community-latest__card {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.24);
+}
+
+.home-community-latest__copy {
+  min-width: 0;
+}
+
+.home-community-latest__review {
+  margin: .35rem 0;
+  color: rgba(255,255,255,.84);
+}
+
+.home-community-latest__meta,
+.ccg-profile-community__meta {
+  color: rgba(255,255,255,.6);
+  font-size: .86rem;
+}
+
+.ccg-profile-community__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+  margin-top: 1rem;
+}
+
+.ccg-profile-community__list {
+  display: grid;
+  gap: .7rem;
+}
+
+.ccg-profile-community__item {
+  padding: .8rem;
+  border: 1px solid rgba(61, 230, 255, .22);
+  background: rgba(3, 11, 28, .65);
+}
+
+.ccg-profile-community__body {
+  margin: .3rem 0 0;
+  color: rgba(255,255,255,.78);
+}
+
+@media (max-width: 760px) {
+  .home-community-latest__header,
+  .home-community-latest__card,
+  .ccg-profile-community__item {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .ccg-profile-community__grid {
+    grid-template-columns: 1fr;
+  }
+}
