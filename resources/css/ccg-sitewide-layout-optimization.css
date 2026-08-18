@@ -151,7 +151,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
 }
 
 :where(main, .ccg-main, .ccg-page) :where(iframe, video) {
-    border-box: box-sizing;
+    box-sizing: border-box;
 }
 
 /* ============================================================
