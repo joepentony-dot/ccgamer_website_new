@@ -551,3 +551,121 @@
     background: rgba(5, 18, 34, 0.48);
     color: rgba(214, 241, 255, 0.9);
 }
+
+/* OMEGA SINGLE-GAME EDITORIAL ALIGNMENT */
+.ccg-page--single-game .game-shell {
+    display: grid;
+    align-items: start;
+    gap: clamp(12px, 1.6vw, 22px);
+}
+
+.ccg-page--single-game .game-shell > .game-hero,
+.ccg-page--single-game .game-shell > .game-section {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.ccg-page--single-game :is(
+    #game-video-section,
+    #game-description-section,
+    #game-discovery-links,
+    .game-screenshots,
+    .game-section--related,
+    .affiliate-products-section,
+    .ccg-community-game-section
+) {
+    width: min(100%, 1180px);
+    justify-self: center;
+    padding: clamp(16px, 2vw, 24px);
+}
+
+.ccg-page--single-game :is(
+    #game-video-section,
+    #game-description-section,
+    #game-discovery-links,
+    .game-screenshots,
+    .game-section--related,
+    .affiliate-products-section,
+    .ccg-community-game-section
+) > :is(.game-section__kicker, .game-section__title) {
+    width: 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    overflow-wrap: anywhere;
+}
+
+.ccg-page--single-game :is(
+    [data-ccg-video-description],
+    .game-description,
+    .ccg-section__intro,
+    .affiliate-products-disclosure
+) {
+    max-width: 88ch;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: justify;
+    text-align-last: left;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+    line-height: 1.72;
+}
+
+.ccg-page--single-game .game-video {
+    width: min(100%, 1040px);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.ccg-page--single-game .game-video__actions,
+.ccg-page--single-game .game-downloads {
+    justify-content: center;
+}
+
+.ccg-page--single-game .ccg-community-game-section {
+    text-align: left;
+}
+
+.ccg-page--single-game .ccg-community-game-section > .ccg-section__intro {
+    width: 100%;
+    max-width: 88ch;
+    margin-bottom: 0.25rem;
+}
+
+.ccg-page--single-game .ccg-community-game-section .ccg-comments-panel {
+    width: 100%;
+}
+
+@media (max-width: 720px) {
+    .ccg-page--single-game .game-shell {
+        gap: 12px;
+    }
+
+    .ccg-page--single-game :is(
+        #game-video-section,
+        #game-description-section,
+        #game-discovery-links,
+        .game-screenshots,
+        .game-section--related,
+        .affiliate-products-section,
+        .ccg-community-game-section
+    ) {
+        padding: 14px;
+    }
+
+    .ccg-page--single-game :is(
+        [data-ccg-video-description],
+        .game-description,
+        .ccg-section__intro,
+        .affiliate-products-disclosure
+    ) {
+        text-align: left;
+        hyphens: none;
+        line-height: 1.65;
+    }
+
+    .ccg-page--single-game .ccg-comments-panel__summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
