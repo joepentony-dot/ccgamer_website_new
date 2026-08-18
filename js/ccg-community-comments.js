@@ -40,7 +40,7 @@
   function renderCommentsDisabled() {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">Comments are currently disabled.</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Member Reviews</h3><p class="ccg-community-muted">Comments are currently disabled.</p></div>';
   }
 
 
@@ -115,13 +115,13 @@
   function setDeferredMessage(message) {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Member Reviews</h3><p class="ccg-community-muted">' + (message || 'Preparing comments…') + '</p></div>';
   }
 
   function setFailureMessage(message) {
     const mount = getMount();
     if (!mount) return;
-    mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
+    mount.innerHTML = '<div class="ccg-community-card"><h3>Member Reviews</h3><p class="ccg-community-muted">' + (message || 'Not logged in') + '</p></div>';
   }
 
   function notify(message, type) {
@@ -157,7 +157,7 @@
     if (!mount) return;
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
-      '  <h3>User Comments</h3>' +
+      '  <h3>Member Reviews</h3>' +
       '  <p class="ccg-community-muted">' + (message || 'Log in to view comments.') + '</p>' +
       '  <p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>' +
       '</div>';
@@ -329,7 +329,7 @@
         return;
       }
       logEndpointFailure(COMMENT_ENDPOINTS.commentsByGame, error);
-      mount.innerHTML = '<div class="ccg-community-card"><h3>User Comments</h3><p class="ccg-community-muted">' + classifyStatusMessage(error, explainError(error, 'Server error')) + '</p></div>';
+      mount.innerHTML = '<div class="ccg-community-card"><h3>Member Reviews</h3><p class="ccg-community-muted">' + classifyStatusMessage(error, explainError(error, 'Server error')) + '</p></div>';
       scheduleRetry(isServerError(error) ? 3500 : 5000, 'load-error');
       return;
     }
@@ -367,17 +367,17 @@
 
     mount.innerHTML = '' +
       '<div class="ccg-community-card">' +
-      '  <h3>User Comments</h3>' +
+      '  <h3>Member Reviews</h3>' +
       '  <p class="ccg-community-muted">Status: ' + (user ? ('Logged in as @' + window.ccgCommunityAuth.esc((context.profile && context.profile.username) || (window.CCG_AUTH && window.CCG_AUTH.username) || 'member')) : 'Guest (read-only)') + '</p>' +
       (user
-        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Add your comment<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post comment</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
-        : '<p class="ccg-community-muted">Log in to post a comment.</p><p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>') +
+        ? '<form id="ccg-comment-form" class="ccg-community-form"><label>Write your review<textarea name="content" required maxlength="600"></textarea></label><button type="submit" class="ccg-community-btn"' + (canComment ? '' : ' disabled') + '>Post review</button><span id="ccg-comment-status" class="ccg-community-muted" aria-live="polite"></span></form>'
+        : '<p class="ccg-community-muted">Log in to post a review.</p><p><button class="ccg-community-btn" id="ccg-login-to-comment" type="button">Log in</button></p>') +
       '  <div class="ccg-comment-list">' +
       (comments.length
         ? comments.map(function (comment) {
           return commentCard(comment, context, reportState);
         }).join('')
-        : '<p class="ccg-community-muted">No comments yet. Start the discussion.</p>') +
+        : '<p class="ccg-community-muted">No reviews yet. Start the discussion.</p>') +
       '  </div>' +
       '</div>';
 
@@ -618,7 +618,7 @@
       const countRes = await supabase.from('comments').select('id', { count: 'exact', head: true }).eq('game_key', normalizeGameKey({ slug: game.slug, id: game.gameId }));
       if (!countRes.error) {
         const count = Number(countRes.count || 0);
-        meta.textContent = count === 1 ? '1 comment' : count + ' comments';
+        meta.textContent = count === 1 ? '1 review' : count + ' reviews';
       }
     } catch (_error) {}
   }
