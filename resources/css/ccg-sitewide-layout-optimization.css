@@ -13,8 +13,17 @@
 
 :root {
     --ccg-layout-readable: 78ch;
-    --ccg-layout-gutter: clamp(12px, 2.6vw, 26px);
+    --ccg-layout-gutter: clamp(10px, 2vw, 20px);
     --ccg-layout-touch: 44px;
+
+    /* Denser site-wide rhythm. Page-specific CSS can still opt out. */
+    --ccg-section-gap: clamp(14px, 2vw, 24px);
+    --ccg-section-gap-mobile: clamp(10px, 3vw, 18px);
+    --ccg-section-pad-y: clamp(9px, 1.6vw, 16px);
+    --ccg-section-pad-y-mobile: clamp(8px, 2.8vw, 14px);
+    --ccg-divider-gap: clamp(14px, 2.8vw, 26px);
+    --ccg-divider-gap-mobile: clamp(10px, 3.8vw, 20px);
+    --ccg-footer-gap: clamp(18px, 3vw, 32px);
 }
 
 /* ============================================================
@@ -118,7 +127,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
 }
 
 :where(main, .ccg-main, .ccg-page) p {
-    line-height: 1.6;
+    line-height: 1.55;
 }
 
 /* Long-form copy is easier to scan when lines do not run across an
@@ -171,7 +180,7 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
     textarea,
     [role="button"]
 ):focus-visible {
-    scroll-margin-block: 12px;
+    scroll-margin-block: 10px;
 }
 
 @media (max-width: 760px) {
@@ -193,17 +202,154 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
         .profile-actions,
         .member-hub-shortcuts
     ) {
-        gap: clamp(8px, 2.5vw, 12px);
+        gap: 8px;
     }
 }
 
 /* ============================================================
-   SMALL-SCREEN DENSITY
+   SITE-WIDE DENSITY
+   Reduce empty vertical space without flattening the Omega design.
 ============================================================ */
+
+:where(main, .ccg-main, .ccg-page) > :where(section, article) {
+    margin-block-start: 0;
+}
+
+:where(main, .ccg-main, .ccg-page) :where(
+    .ccg-section,
+    .home-section,
+    .game-section,
+    .ccg-info-section,
+    .member-panel,
+    .profile-subsection
+) {
+    margin-block: clamp(6px, 1vw, 12px);
+}
+
+:where(main, .ccg-main, .ccg-page) :where(
+    .ccg-section__header,
+    .home-section__header,
+    .game-section__header,
+    .video-library__section-heading
+) {
+    margin-bottom: clamp(8px, 1.2vw, 14px);
+}
+
+:where(main, .ccg-main, .ccg-page) :where(
+    .ccg-card__body,
+    .ccg-panel,
+    .ccg-info-panel,
+    .member-panel,
+    .profile-subsection
+) {
+    padding-block: clamp(10px, 1.6vw, 16px);
+}
+
+.ccg-omega-divider {
+    margin-block: clamp(8px, 1.2vw, 14px) !important;
+    min-height: 6px !important;
+}
+
+/* ============================================================
+   SMALL-SCREEN DENSITY + SCROLL PERFORMANCE
+============================================================ */
+
+@media (max-width: 760px), (pointer: coarse) {
+    html {
+        text-rendering: auto;
+    }
+
+    /* Mobile-lite already disables animations. This final layer also removes
+       the remaining paint-heavy effects that can make finger scrolling hitch. */
+    html.ccg-mobile-lite :where(
+        .ccg-panel,
+        .ccg-card,
+        .ccg-game-card,
+        .game-section,
+        .home-video-card,
+        .home-highlight-card,
+        .ccg-publisher-card,
+        .ccg-download-card,
+        .video-library-card,
+        .related-card,
+        .member-panel,
+        .profile-subsection
+    ) {
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        filter: none !important;
+    }
+
+    html.ccg-mobile-lite :where(
+        .ccg-panel,
+        .ccg-card,
+        .ccg-game-card,
+        .game-section,
+        .home-video-card,
+        .home-highlight-card,
+        .ccg-publisher-card,
+        .ccg-download-card,
+        .video-library-card,
+        .member-panel
+    )::before,
+    html.ccg-mobile-lite :where(
+        .ccg-panel,
+        .ccg-card,
+        .ccg-game-card,
+        .game-section,
+        .home-video-card,
+        .home-highlight-card,
+        .ccg-publisher-card,
+        .ccg-download-card,
+        .video-library-card,
+        .member-panel
+    )::after {
+        filter: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+    }
+
+    :where(main, .ccg-main, .ccg-page) {
+        padding-top: 6px !important;
+        padding-bottom: 14px !important;
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-section,
+        .home-section,
+        .game-section,
+        .ccg-info-section,
+        .member-panel,
+        .profile-subsection
+    ) {
+        margin-block: 5px;
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-card__body,
+        .game-section__inner,
+        .ccg-info-panel,
+        .member-panel,
+        .profile-subsection
+    ) {
+        padding-top: 9px !important;
+        padding-bottom: 9px !important;
+    }
+
+    .ccg-omega-divider {
+        margin-block: 6px !important;
+        min-height: 4px !important;
+    }
+}
 
 @media (max-width: 520px) {
     :root {
-        --ccg-layout-gutter: 10px;
+        --ccg-layout-gutter: 8px;
+        --ccg-section-gap-mobile: 10px;
+        --ccg-section-pad-y-mobile: 8px;
+        --ccg-divider-gap-mobile: 10px;
     }
 
     :where(main, .ccg-main, .ccg-page) :where(h1, h2, h3, h4, p) {
@@ -217,8 +363,17 @@ body:not(.ccg-body--locked):not(.ccg-body--nav-open) {
         .member-panel,
         .profile-subsection
     ) {
-        padding-left: max(10px, env(safe-area-inset-left)) !important;
-        padding-right: max(10px, env(safe-area-inset-right)) !important;
+        padding-left: max(8px, env(safe-area-inset-left)) !important;
+        padding-right: max(8px, env(safe-area-inset-right)) !important;
+    }
+
+    :where(main, .ccg-main, .ccg-page) :where(
+        .ccg-section__header,
+        .home-section__header,
+        .game-section__header,
+        .video-library__section-heading
+    ) {
+        margin-bottom: 7px;
     }
 }
 
