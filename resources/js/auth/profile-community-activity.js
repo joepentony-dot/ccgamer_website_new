@@ -150,6 +150,55 @@
       setStat("memberStatReviews", reviews.length);
       renderRatings(ratingsMount, ratings, titles);
       renderReviews(reviewsMount, reviews, titles);
+
+      const reviewerBadge = document.getElementById("memberBadgeReviewer");
+      const reviewerProgress = document.getElementById("memberBadgeReviewerProgress");
+      if (reviewerBadge) reviewerBadge.classList.toggle("is-earned", reviews.length >= 5);
+      if (reviewerProgress) reviewerProgress.textContent = Math.min(reviews.length, 5) + "/5 reviews posted";
+
+      const activity = document.getElementById("memberActivityFeed");
+      if (activity) {
+        activity.replaceChildren();
+        if (!ratings.length && !reviews.length) {
+          const empty = document.createElement("p");
+          empty.className = "member-empty";
+          empty.textContent = "Your ratings and reviews will appear here after you contribute on a game page.";
+          activity.append(empty);
+        } else {
+          const list = document.createElement("ul");
+          list.className = "member-benefit-list";
+          if (ratings.length) {
+            const item = document.createElement("li");
+            item.textContent = ratings.length + " game rating" + (ratings.length === 1 ? "" : "s") + " saved to your account";
+            list.append(item);
+          }
+          if (reviews.length) {
+            const item = document.createElement("li");
+            item.textContent = reviews.length + " community review" + (reviews.length === 1 ? "" : "s") + " posted";
+            list.append(item);
+          }
+          reviews.slice(0, 2).forEach((row) => {
+            const item = document.createElement("li");
+            item.textContent = "Reviewed " + displayTitle(row.game_key, titles);
+            list.append(item);
+          });
+          activity.append(list);
+        }
+      }
+
+      const displayName = value(document.getElementById("displayName")?.textContent).trim();
+      const favourites = Number(document.getElementById("memberStatFavourites")?.textContent || 0);
+      const hasName = Boolean(displayName && displayName !== "—" && displayName.toLowerCase() !== "member");
+      const completed = [hasName, favourites > 0, ratings.length > 0, reviews.length > 0].filter(Boolean).length;
+      const percent = Math.round((completed / 4) * 100);
+      const completionPercent = document.getElementById("memberCompletionPercent");
+      const completionFill = document.getElementById("memberCompletionFill");
+      const completionNote = document.getElementById("memberCompletionNote");
+      if (completionPercent) completionPercent.textContent = percent + "%";
+      if (completionFill) completionFill.style.width = percent + "%";
+      if (completionNote) completionNote.textContent = percent === 100
+        ? "Your Member Hub is fully set up."
+        : "Add favourites, ratings and reviews to build your CCG profile.";
     } catch (error) {
       console.error("[CCG PROFILE COMMUNITY] Could not load member activity", error);
       emptyState(ratingsMount, "Your ratings could not be loaded right now.");
