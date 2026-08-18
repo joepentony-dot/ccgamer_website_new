@@ -21,7 +21,33 @@
     if (!root || root.getAttribute('data-ccg-page') !== 'single-game' || !shell) return;
 
     ensureCommunityStylesheet();
-    if (document.getElementById('ccg-community-rating') && document.getElementById('ccg-community-comments')) return;
+
+    var existingRating = document.getElementById('ccg-community-rating');
+    var existingComments = document.getElementById('ccg-community-comments');
+    var existingSection = existingRating && existingComments
+      ? existingRating.closest('.ccg-community-game-section')
+      : null;
+
+    function positionCommunitySection(section) {
+      var peripherals = shell.querySelector('#affiliate-products-section');
+      if (peripherals) {
+        shell.insertBefore(section, peripherals);
+        return;
+      }
+
+      var quickActions = shell.querySelector('[data-game-quick-actions]');
+      if (quickActions) {
+        shell.insertBefore(section, quickActions);
+        return;
+      }
+
+      shell.appendChild(section);
+    }
+
+    if (existingSection) {
+      positionCommunitySection(existingSection);
+      return;
+    }
 
     var section = document.createElement('section');
     section.className = 'game-section ccg-community-game-section';
@@ -50,13 +76,7 @@
       '</details>'
     ].join('');
 
-    var quickActions = shell.querySelector('[data-game-quick-actions]');
-    if (quickActions) {
-      shell.insertBefore(section, quickActions);
-      return;
-    }
-
-    shell.appendChild(section);
+    positionCommunitySection(section);
   }
 
   ensureGameCommunitySection();

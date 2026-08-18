@@ -93,6 +93,8 @@ const protectedPaths = new Set([
 ]);
 
 const allowedPaths = new Set([
+    "js/ccg-global.js",
+    "resources/css/ccg-master.css",
     "resources/js/ccg-performance.js",
     "resources/css/ccg-performance-foundations.css",
     "scripts/audit-performance-foundations.js",

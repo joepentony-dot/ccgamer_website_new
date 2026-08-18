@@ -354,26 +354,39 @@
 .ccg-page--single-game .ccg-behind-pixels-inline__list {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 7px 14px;
+    grid-template-columns:
+        minmax(96px, max-content) minmax(0, 1fr)
+        minmax(96px, max-content) minmax(0, 1fr);
+    column-gap: clamp(10px, 1.4vw, 20px);
+    row-gap: 10px;
+    align-items: start;
+    margin: 0;
 }
 
 .ccg-page--single-game .ccg-behind-pixels-inline__item {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: 8px;
-    align-items: baseline;
+    display: contents;
 }
 
-.ccg-page--single-game .ccg-behind-pixels-inline__item dt {
+.ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+    margin: 0;
+    padding-top: 0.38rem;
     text-align: left;
     font-size: 0.66rem;
+    line-height: 1.3;
+    white-space: nowrap;
 }
 
-.ccg-page--single-game .ccg-behind-pixels-inline__item dd {
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd {
     min-width: 0;
+    margin: 0;
     font-size: 0.82rem;
-    line-height: 1.35;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.ccg-page--single-game .ccg-behind-pixels-inline__list dd .ccg-composer-button {
+    margin: 0 0.28rem 0.28rem 0;
+    vertical-align: middle;
 }
 
 .ccg-page--single-game #game-discovery-links {
@@ -401,12 +414,13 @@
     }
 
     .ccg-page--single-game .ccg-behind-pixels-inline__list {
-        grid-template-columns: 1fr;
-        gap: 6px;
+        grid-template-columns: minmax(86px, max-content) minmax(0, 1fr);
+        column-gap: 10px;
+        row-gap: 8px;
     }
 
-    .ccg-page--single-game .ccg-behind-pixels-inline__item {
-        grid-template-columns: minmax(76px, max-content) minmax(0, 1fr);
+    .ccg-page--single-game .ccg-behind-pixels-inline__list dt {
+        white-space: normal;
     }
 }
 
