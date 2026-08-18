@@ -382,7 +382,6 @@
   }
 
   function init() {
-    if (window.CCG_COMMUNITY_FLAGS?.COMMUNITY_COMMENTS_ENABLED || window.CCG_COMMUNITY_FLAGS?.COMMUNITY_RATINGS_ENABLED) return;
     if (!currentSlug()) return;
     requestAnimationFrame(render);
     setTimeout(render, 700);
