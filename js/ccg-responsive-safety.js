@@ -25,6 +25,10 @@
         {
             href: "/resources/css/ccg-responsive-page-polish.css",
             attr: "data-ccg-responsive-page-polish"
+        },
+        {
+            href: "/resources/css/ccg-sitewide-layout-optimization.css",
+            attr: "data-ccg-sitewide-layout-optimization"
         }
     ]);
 
