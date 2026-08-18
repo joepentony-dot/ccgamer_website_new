@@ -229,7 +229,7 @@ function compareComposerNames(a, b) {
     if (grid.querySelector('[data-slug="jon-hare"]')) return;
 
     const card = document.createElement("a");
-    card.href = `${resolveMusicHubSiteRoot()}music/jon-hare/`;
+    card.href = "/music/jon-hare/";
     card.className = "composer-card composer-card--featured";
     card.dataset.slug = "jon-hare";
     card.innerHTML = `
