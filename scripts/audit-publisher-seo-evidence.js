@@ -39,6 +39,15 @@ function extract(html, pattern) {
   return match ? String(match[1] || "").trim() : "";
 }
 
+function decodeHtmlText(value) {
+  return String(value || "")
+    .replace(/&amp;/gi, "&")
+    .replace(/&#39;|&#x27;|&apos;/gi, "'")
+    .replace(/&quot;/gi, '"')
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
+}
+
 function historyBlock(html) {
   const start = html.indexOf(HISTORY_START);
   const end = html.indexOf(HISTORY_END);
@@ -56,7 +65,11 @@ function genreStrengthLinks(block) {
   const pattern = /<a\b[^>]*href="([^"]+)"[^>]*data-ccg-genre-strength="([^"]+)"[^>]*>([^<]*)<\/a>/gi;
   let match;
   while ((match = pattern.exec(block))) {
-    links.push({ href: match[1], key: match[2], label: match[3].trim() });
+    links.push({
+      href: match[1],
+      key: match[2],
+      label: decodeHtmlText(match[3]).trim()
+    });
   }
   return links;
 }
@@ -144,7 +157,8 @@ for (const record of metadata) {
       for (const strength of Array.isArray(safeProfile.strengths) ? safeProfile.strengths : []) {
         const expected = resolveGenreLinkForStrength(strength);
         if (!expected) continue;
-        const found = actualGenreLinks.some((link) => link.href === expected.href && link.label === String(strength).trim());
+        const expectedLabel = String(strength).trim();
+        const found = actualGenreLinks.some((link) => link.href === expected.href && link.label === expectedLabel);
         failIf(!found, `${slug}: genre-compatible Archive Strength is not linked to ${expected.href}: ${strength}`);
       }
     }
