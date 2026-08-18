@@ -1,0 +1,115 @@
+[
+  {
+    "slug": "kixx",
+    "summary": "Kixx was U.S. Gold's budget-price re-release label, used to return older catalogue titles to retail at a lower price. Contemporary industry-history material records that U.S. Gold created the label after its earlier Americana budget arrangement, with former Bulldog and Mastertronic sales manager John Mearman running Kixx.",
+    "facts": [
+      "Kixx was a budget-price label of U.S. Gold.",
+      "The Mastertronic Collectors Archive records that U.S. Gold created Kixx after the Americana budget arrangement.",
+      "John Mearman, previously associated with Bulldog and Mastertronic, managed the Kixx label."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade conversions",
+      "Racing games"
+    ],
+    "related": [
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      },
+      {
+        "label": "Americana",
+        "slug": "americana"
+      }
+    ],
+    "note": "Kixx is treated as a separate re-release publisher archive so its budget editions remain discoverable without replacing the original publisher credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — republished software labels",
+        "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
+        "type": "specialist historical archive"
+      },
+      {
+        "label": "MobyGames — Kixx company profile",
+        "url": "https://www.mobygames.com/company/1271/kixx/",
+        "type": "game industry database"
+      }
+    ]
+  },
+  {
+    "slug": "the-hit-squad",
+    "summary": "The Hit Squad was a budget re-release label used by Ocean Software, returning Ocean titles and games from other publishers to shops at lower prices. The label is strongly represented across 8-bit and 16-bit formats, with surviving releases covering arcade conversions, licensed games, sports titles and other catalogue reissues.",
+    "facts": [
+      "The Hit Squad was used as a budget label by Ocean Software.",
+      "MobyGames records the label as being used from 1989 to around 1996 for budget releases.",
+      "The label re-released games originally associated with Ocean and with other publishers including Domark, Activision, Electronic Arts, Taito and Virgin."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade conversions",
+      "Sports games"
+    ],
+    "related": [
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      },
+      {
+        "label": "Imagine",
+        "slug": "imagine"
+      }
+    ],
+    "note": "Earlier Hit Squad-branded compilations also survive in collections; this profile focuses on the label's role as a budget re-release route in the CCG publisher archive.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Hit Squad game archive",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "MobyGames — The Hit Squad company profile",
+        "url": "https://www.mobygames.com/company/5110/hit-squad-the/",
+        "type": "game industry database"
+      }
+    ]
+  },
+  {
+    "slug": "ricochet",
+    "summary": "Ricochet was Mastertronic's budget re-release label for bringing previously full-price software back to market. The Mastertronic Collectors Archive dates the label to July 1987 and records licensed catalogue material from publishers including Martech, Activision and Melbourne House.",
+    "facts": [
+      "Ricochet was a budget re-release label run by Mastertronic.",
+      "The Mastertronic Collectors Archive dates the launch of Ricochet to July 1987.",
+      "Its catalogue drew on previously released games licensed from several full-price publishers."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade games",
+      "Adventure games"
+    ],
+    "related": [
+      {
+        "label": "Mastertronic",
+        "slug": "mastertronic"
+      }
+    ],
+    "note": "Ricochet remains a separate archive route because the re-release label is historically useful alongside each game's original publisher credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Mastertronic Collectors Archive — Ricochet game checklist",
+        "url": "https://mastertronic.co.uk/ricochet-game-checklist/",
+        "type": "specialist historical archive"
+      },
+      {
+        "label": "MobyGames — Ricochet company profile",
+        "url": "https://www.mobygames.com/company/5229/ricochet/",
+        "type": "game industry database"
+      }
+    ]
+  }
+]

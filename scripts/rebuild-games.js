@@ -26,6 +26,7 @@ const steps = [
   ["materialize-publisher-histories.js"],
   ["ensure-publisher-history-runtime.js"],
   ["audit-publisher-seo-evidence.js"],
+  ["audit-rerelease-publishers.js"],
   ["generate-developer-pages.js"],
   ["generate-composer-pages.js"],
   ["generate-year-platform-pages.js"],

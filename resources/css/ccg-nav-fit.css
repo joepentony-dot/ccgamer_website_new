@@ -90,11 +90,17 @@
         white-space: nowrap;
     }
 
+    /*
+       More is opt-in on desktop. It is visible only after ccg-nav-fit.js
+       has actually moved one or more links into the overflow menu. This
+       prevents an empty MORE control appearing on wide desktop layouts.
+    */
+    .ccg-header .ccg-nav__more,
     .ccg-header .ccg-nav__more[hidden] {
         display: none !important;
     }
 
-    .ccg-header .ccg-nav--has-overflow .ccg-nav__more {
+    .ccg-header .ccg-nav--has-overflow .ccg-nav__more[data-ccg-nav-fit-has-items="true"] {
         position: relative;
         display: inline-flex !important;
         align-items: center;

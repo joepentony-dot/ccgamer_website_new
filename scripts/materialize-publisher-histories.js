@@ -20,6 +20,24 @@ const HISTORY_CSS = '<link rel="stylesheet" href="/resources/css/publisher-histo
 const INTERNAL_FACT_PATTERN = /\b(?:CCG|Cheeky Commodore Gamer)\s+(?:publisher\s+)?(?:index|archive)\b/i;
 const INDEXABLE_MIN_GAMES = 2;
 
+const GENRE_ROUTES = Object.freeze([
+  { key: "action-adventure", label: "Action Adventure", href: "/games/genres/action-adventure-games.html", pattern: /\baction[- ]adventures?\b/i },
+  { key: "adventure", label: "Adventure", href: "/games/genres/adventure-games.html", pattern: /\badventure games?\b/i },
+  { key: "arcade", label: "Arcade", href: "/games/genres/arcade-games.html", pattern: /\barcade\b/i },
+  { key: "casino", label: "Casino Games", href: "/games/genres/casino-games.html", pattern: /\bcasino games?\b/i },
+  { key: "fighting", label: "Fighting Games", href: "/games/genres/fighting-games.html", pattern: /\bfighting games?\b/i },
+  { key: "horror", label: "Horror", href: "/games/genres/horror-games.html", pattern: /\bhorror games?\b/i },
+  { key: "platform", label: "Platform", href: "/games/genres/platform-games.html", pattern: /\bplatform(?: games?|ers?)\b/i },
+  { key: "puzzle", label: "Puzzle", href: "/games/genres/puzzle-games.html", pattern: /\bpuzzle games?\b/i },
+  { key: "racing", label: "Racing", href: "/games/genres/racing-games.html", pattern: /\b(?:racing|driving|motorsport)(?: games?| titles?| releases?| reissues?)?\b/i },
+  { key: "role-playing", label: "RPG", href: "/games/genres/role-playing-games.html", pattern: /\b(?:rpgs?|role[- ]playing)(?: games?)?\b/i },
+  { key: "quiz", label: "Quiz Games", href: "/games/genres/quiz-games.html", pattern: /\bquiz games?\b/i },
+  { key: "shooting", label: "Shooting", href: "/games/genres/shooting-games.html", pattern: /\b(?:shooting|shooters?|shoot[- ]?'?em[- ]?ups?|shmups?)(?: games?)?\b/i },
+  { key: "sports", label: "Sports", href: "/games/genres/sports-games.html", pattern: /\bsports(?: games?| titles?| releases?| reissues?)?\b/i },
+  { key: "strategy", label: "Strategy", href: "/games/genres/strategy-games.html", pattern: /\bstrategy(?: games?| titles?| releases?)?\b/i }
+]);
+const GENRE_ROUTE_SET = new Set(GENRE_ROUTES.map((entry) => entry.href));
+
 function fail(message) {
   console.error(`[publisher-history-static] ${message}`);
   process.exit(1);
@@ -186,9 +204,26 @@ function formatReviewDate(value) {
   }).format(date);
 }
 
+function resolveGenreLinkForStrength(value) {
+  const label = text(value);
+  if (!label) return null;
+
+  const matches = GENRE_ROUTES.filter((entry) => {
+    if (entry.key === "adventure" && /\baction[- ]adventures?\b/i.test(label)) return false;
+    return entry.pattern.test(label);
+  });
+  const unique = new Map(matches.map((entry) => [entry.href, entry]));
+  return unique.size === 1 ? Array.from(unique.values())[0] : null;
+}
+
 function renderTagList(values) {
   return `<ul class="ccg-publisher-history__tags">${(Array.isArray(values) ? values : [])
-    .map((value) => `<li class="ccg-publisher-history__tag">${htmlEscape(text(value))}</li>`)
+    .map((value) => {
+      const label = text(value);
+      const genre = resolveGenreLinkForStrength(label);
+      if (!genre) return `<li class="ccg-publisher-history__tag">${htmlEscape(label)}</li>`;
+      return `<li class="ccg-publisher-history__tag ccg-publisher-history__tag--linked"><a href="${htmlEscape(genre.href)}" data-ccg-genre-strength="${htmlEscape(genre.key)}" aria-label="${htmlEscape(`${label}: browse CCG ${genre.label} games`)}">${htmlEscape(label)}</a></li>`;
+    })
     .join("")}</ul>`;
 }
 
@@ -287,6 +322,13 @@ function replaceExistingHistory(html, section) {
   return `${html.slice(0, start)}${section}${html.slice(endIndex)}`;
 }
 
+function removeExistingHistory(html) {
+  const start = html.indexOf(HISTORY_START);
+  const end = html.indexOf(HISTORY_END);
+  if (start === -1 || end === -1 || end < start) return html;
+  return `${html.slice(0, start)}${html.slice(end + HISTORY_END.length)}`;
+}
+
 function insertHistory(html, section) {
   const replaced = replaceExistingHistory(html, section);
   if (replaced) return replaced;
@@ -350,25 +392,24 @@ function main() {
   let changed = 0;
   let sourceBackedCount = 0;
   let noIndependentSourceCount = 0;
+  let missingProfileCount = 0;
   let indexableCount = 0;
   let noindexCount = 0;
-  const missingProfiles = [];
 
   for (const record of metadata) {
     const slug = normaliseSlug(record?.slug);
     if (!slug) continue;
-    const profile = profileBySlug.get(slug);
-    if (!profile) {
-      missingProfiles.push(slug);
-      continue;
-    }
-
-    const safeProfile = sanitizeProfile(profile);
+    const profile = profileBySlug.get(slug) || null;
+    const safeProfile = profile ? sanitizeProfile(profile) : null;
     const indexable = isPublisherIndexable(record, safeProfile);
     record.indexable = indexable;
 
-    if (safeProfile.sourceBacked) sourceBackedCount += 1;
-    else noIndependentSourceCount += 1;
+    if (profile) {
+      if (safeProfile.sourceBacked) sourceBackedCount += 1;
+      else noIndependentSourceCount += 1;
+    } else {
+      missingProfileCount += 1;
+    }
     if (indexable) indexableCount += 1;
     else noindexCount += 1;
 
@@ -376,17 +417,19 @@ function main() {
     if (!fs.existsSync(filePath)) fail(`Missing generated publisher page: games/publishers/${slug}/index.html`);
 
     const original = fs.readFileSync(filePath, "utf8");
-    const section = renderHistorySection(profile, archiveMap);
-    const withHistory = ensureHistoryCss(insertHistory(original, section));
-    const next = setRobots(withHistory, indexable);
+    let next = original;
+    if (profile) {
+      const section = renderHistorySection(profile, archiveMap);
+      next = ensureHistoryCss(insertHistory(next, section));
+    } else {
+      next = removeExistingHistory(next);
+    }
+    next = setRobots(next, indexable);
+
     if (next !== original) {
       fs.writeFileSync(filePath, next, "utf8");
       changed += 1;
     }
-  }
-
-  if (missingProfiles.length) {
-    fail(`Current publisher routes without history profiles (${missingProfiles.length}): ${missingProfiles.join(", ")}`);
   }
 
   const metadataChanged = writeFileIfChanged(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`);
@@ -395,16 +438,20 @@ function main() {
   console.log(`[publisher-history-static] Publisher pages checked: ${metadata.length}`);
   console.log(`[publisher-history-static] Independent evidence profiles: ${sourceBackedCount}`);
   console.log(`[publisher-history-static] Profiles without reliable independent evidence: ${noIndependentSourceCount}`);
+  console.log(`[publisher-history-static] Publisher routes without researched profiles: ${missingProfileCount}`);
   console.log(`[publisher-history-static] Indexable publisher pages: ${indexableCount}`);
   console.log(`[publisher-history-static] Limited publisher pages (noindex,follow): ${noindexCount}`);
   console.log(`[publisher-history-static] Publisher pages updated: ${changed}`);
   console.log(`[publisher-history-static] Metadata updated: ${metadataChanged ? "yes" : "no"}; static pages updated: ${staticPagesChanged ? "yes" : "no"}`);
+  console.log("[publisher-history-static] Unresearched publishers keep factual catalogue pages only; no history text is invented.");
   console.log("[publisher-history-static] Self-referential CCG archive evidence is excluded from rendered history panels.");
 }
 
 if (require.main === module) main();
 
 module.exports = {
+  GENRE_ROUTES,
+  GENRE_ROUTE_SET,
   HISTORY_END,
   HISTORY_START,
   INDEXABLE_MIN_GAMES,
@@ -417,5 +464,6 @@ module.exports = {
   loadProfiles,
   normaliseSlug,
   renderHistorySection,
+  resolveGenreLinkForStrength,
   sanitizeProfile
 };

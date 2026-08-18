@@ -62,6 +62,25 @@
         setMoreOpenState(toggle, menu, false);
     }
 
+    function hasMoreItems(menu) {
+        return Boolean(menu?.querySelector("a[href]"));
+    }
+
+    function setMoreAvailability(nav, more, toggle, menu, available) {
+        const enabled = Boolean(available && hasMoreItems(menu));
+        if (enabled) {
+            more.dataset.ccgNavFitHasItems = "true";
+            more.hidden = false;
+            nav.classList.add("ccg-nav--has-overflow");
+            return;
+        }
+
+        delete more.dataset.ccgNavFitHasItems;
+        more.hidden = true;
+        nav.classList.remove("ccg-nav--has-overflow");
+        closeMore(toggle, menu);
+    }
+
     function bindMoreControls(toggle, menu) {
         if (!toggle || !menu || toggle.dataset.ccgNavFitBound === "true") return;
         toggle.dataset.ccgNavFitBound = "true";
@@ -69,6 +88,10 @@
         toggle.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
+            if (!hasMoreItems(menu)) {
+                closeMore(toggle, menu);
+                return;
+            }
             const opening = menu.hidden;
             menu.hidden = !opening;
             toggle.setAttribute("aria-expanded", opening ? "true" : "false");
@@ -146,6 +169,7 @@
         const items = allNavItems(nav);
         restoreItems(items);
         nav.classList.remove("ccg-nav--fit-compact", "ccg-nav--fit-tight", "ccg-nav--has-overflow");
+        delete more.dataset.ccgNavFitHasItems;
         more.hidden = true;
         menu.textContent = "";
         closeMore(toggle, menu);
@@ -164,6 +188,10 @@
 
         const hiddenItems = [];
         if (isOverflowing(header, nav)) {
+            // Reserve space for the More control while deciding which lower
+            // priority links must move into it. The final availability check
+            // below hides it again unless at least one real link was moved.
+            more.dataset.ccgNavFitHasItems = "true";
             more.hidden = false;
             nav.classList.add("ccg-nav--has-overflow");
 
@@ -187,11 +215,9 @@
         if (hiddenItems.length) {
             hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
             populateMore(menu, hiddenItems);
-            more.hidden = false;
-            nav.classList.add("ccg-nav--has-overflow");
+            setMoreAvailability(nav, more, toggle, menu, true);
         } else {
-            more.hidden = true;
-            nav.classList.remove("ccg-nav--has-overflow");
+            setMoreAvailability(nav, more, toggle, menu, false);
         }
 
         fitting = false;
@@ -214,10 +240,16 @@
         const nav = document.querySelector("[data-ccg-header] .ccg-nav");
         if (!nav) return;
 
-        bindMoreControls(
-            nav.querySelector("[data-ccg-more-toggle]"),
-            nav.querySelector("[data-ccg-more-menu]")
-        );
+        const more = nav.querySelector(".ccg-nav__more");
+        const toggle = nav.querySelector("[data-ccg-more-toggle]");
+        const menu = nav.querySelector("[data-ccg-more-menu]");
+        bindMoreControls(toggle, menu);
+
+        if (more && menu) {
+            delete more.dataset.ccgNavFitHasItems;
+            more.hidden = true;
+            closeMore(toggle, menu);
+        }
 
         scheduleFit();
         scheduleFit(120);

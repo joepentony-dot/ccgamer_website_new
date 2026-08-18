@@ -5,12 +5,14 @@
 const fs = require("fs");
 const path = require("path");
 const {
+  GENRE_ROUTE_SET,
   HISTORY_END,
   HISTORY_START,
   buildArchiveMap,
   isPublisherIndexable,
   loadProfiles,
   normaliseSlug,
+  resolveGenreLinkForStrength,
   sanitizeProfile
 } = require("./materialize-publisher-histories");
 
@@ -49,6 +51,16 @@ function sourcePanel(block) {
   return match ? match[0] : "";
 }
 
+function genreStrengthLinks(block) {
+  const links = [];
+  const pattern = /<a\b[^>]*href="([^"]+)"[^>]*data-ccg-genre-strength="([^"]+)"[^>]*>([^<]*)<\/a>/gi;
+  let match;
+  while ((match = pattern.exec(block))) {
+    links.push({ href: match[1], key: match[2], label: match[3].trim() });
+  }
+  return links;
+}
+
 function failIf(condition, message) {
   if (condition) failures.push(message);
 }
@@ -64,6 +76,8 @@ const profileBySlug = new Map(profiles.map((profile) => [profile.slug, profile])
 
 let sourceBackedCount = 0;
 let noIndependentSourceCount = 0;
+let missingProfileCount = 0;
+let linkedStrengthCount = 0;
 let indexableCount = 0;
 let noindexCount = 0;
 const titles = new Map();
@@ -76,18 +90,17 @@ for (const record of metadata) {
     continue;
   }
 
-  const profile = profileBySlug.get(slug);
-  if (!profile) {
-    failures.push(`${slug}: no publisher history profile`);
-    continue;
-  }
-
-  const safeProfile = sanitizeProfile(profile);
+  const profile = profileBySlug.get(slug) || null;
+  const safeProfile = profile ? sanitizeProfile(profile) : null;
   const expectedIndexable = isPublisherIndexable(record, safeProfile);
-  failIf(Boolean(record?.indexable) !== expectedIndexable, `${slug}: publisher metadata indexability does not match evidence-aware policy`);
+  failIf(Boolean(record?.indexable) !== expectedIndexable, `${slug}: publisher metadata indexability does not match evidence/archive-depth policy`);
 
-  if (safeProfile.sourceBacked) sourceBackedCount += 1;
-  else noIndependentSourceCount += 1;
+  if (profile) {
+    if (safeProfile.sourceBacked) sourceBackedCount += 1;
+    else noIndependentSourceCount += 1;
+  } else {
+    missingProfileCount += 1;
+  }
 
   const filePath = path.join(publishersDir, slug, "index.html");
   if (!fs.existsSync(filePath)) {
@@ -97,28 +110,46 @@ for (const record of metadata) {
 
   const html = fs.readFileSync(filePath, "utf8");
   const block = historyBlock(html);
-  failIf(!block, `${slug}: history is not embedded in the initial HTML`);
-  if (!block) continue;
 
-  failIf(/complete publisher index/i.test(block), `${slug}: rendered history still references the Complete Publisher Index`);
-  failIf(/CCG publisher index currently records/i.test(block), `${slug}: rendered history still exposes an internal archive fact`);
+  if (profile) {
+    failIf(!block, `${slug}: researched history is not embedded in the initial HTML`);
+    if (block) {
+      failIf(/complete publisher index/i.test(block), `${slug}: rendered history still references the Complete Publisher Index`);
+      failIf(/CCG publisher index currently records/i.test(block), `${slug}: rendered history still exposes an internal archive fact`);
 
-  const evidencePanel = sourcePanel(block);
-  if (safeProfile.sourceBacked) {
-    if (safeProfile.facts.length) {
-      failIf(!/Documented company facts/i.test(block), `${slug}: independently sourced profile is missing its documented facts`);
-    } else {
-      failIf(/Documented company facts/i.test(block), `${slug}: empty independent facts must not render a fact panel`);
+      const evidencePanel = sourcePanel(block);
+      if (safeProfile.sourceBacked) {
+        if (safeProfile.facts.length) {
+          failIf(!/Documented company facts/i.test(block), `${slug}: independently sourced profile is missing its documented facts`);
+        } else {
+          failIf(/Documented company facts/i.test(block), `${slug}: empty independent facts must not render a fact panel`);
+        }
+        failIf(!evidencePanel, `${slug}: independently sourced profile is missing its evidence panel`);
+        failIf(!/Source-backed publisher profile/i.test(block), `${slug}: independently sourced profile is missing its source-backed label`);
+      } else {
+        failIf(/Documented company facts/i.test(block), `${slug}: unsourced profile must not render a fact panel`);
+        failIf(Boolean(evidencePanel), `${slug}: unsourced profile must not render an evidence panel`);
+      }
+
+      if (evidencePanel) {
+        failIf(/cheekycommodoregamer\.co\.uk/i.test(evidencePanel), `${slug}: evidence panel contains a first-party CCG source`);
+      }
+
+      const actualGenreLinks = genreStrengthLinks(block);
+      linkedStrengthCount += actualGenreLinks.length;
+      actualGenreLinks.forEach((link) => {
+        failIf(!GENRE_ROUTE_SET.has(link.href), `${slug}: Archive Strengths links to a non-canonical genre route: ${link.href}`);
+      });
+
+      for (const strength of Array.isArray(safeProfile.strengths) ? safeProfile.strengths : []) {
+        const expected = resolveGenreLinkForStrength(strength);
+        if (!expected) continue;
+        const found = actualGenreLinks.some((link) => link.href === expected.href && link.label === String(strength).trim());
+        failIf(!found, `${slug}: genre-compatible Archive Strength is not linked to ${expected.href}: ${strength}`);
+      }
     }
-    failIf(!evidencePanel, `${slug}: independently sourced profile is missing its evidence panel`);
-    failIf(!/Source-backed publisher profile/i.test(block), `${slug}: independently sourced profile is missing its source-backed label`);
   } else {
-    failIf(/Documented company facts/i.test(block), `${slug}: unsourced profile must not render a fact panel`);
-    failIf(Boolean(evidencePanel), `${slug}: unsourced profile must not render an evidence panel`);
-  }
-
-  if (evidencePanel) {
-    failIf(/cheekycommodoregamer\.co\.uk/i.test(evidencePanel), `${slug}: evidence panel contains a first-party CCG source`);
+    failIf(Boolean(block), `${slug}: unresearched publisher must not render an invented history section`);
   }
 
   const title = extract(html, /<title>([^<]+)<\/title>/i);
@@ -130,7 +161,9 @@ for (const record of metadata) {
   failIf(!description, `${slug}: missing meta description`);
   failIf(!canonical, `${slug}: missing canonical URL`);
   failIf(!html.includes('type="application/ld+json"'), `${slug}: missing structured data`);
-  failIf(!html.includes('<link rel="stylesheet" href="/resources/css/publisher-history.css">'), `${slug}: publisher history CSS is not linked in initial HTML`);
+  if (profile) {
+    failIf(!html.includes('<link rel="stylesheet" href="/resources/css/publisher-history.css">'), `${slug}: publisher history CSS is not linked in initial HTML`);
+  }
 
   if (title) {
     const other = titles.get(title);
@@ -139,7 +172,7 @@ for (const record of metadata) {
   }
   if (description) {
     const other = descriptions.get(description);
-    if (other && other !== slug) failures.push(`${slug}: duplicate meta description also used by ${other}`);
+    if (other && other !== slug) failures.push(`${slug}: duplicate meta description also used by ${other}: ${description}`);
     else descriptions.set(description, slug);
   }
 
@@ -156,7 +189,7 @@ for (const record of metadata) {
     failIf(robots !== "noindex,follow", `${slug}: limited publisher has robots=${robots || "missing"}`);
     failIf(staticPageSet.has(staticPath), `${slug}: noindex publisher remains sitemap-eligible`);
     failIf(Number(record?.count || 0) !== 1, `${slug}: only limited one-game publisher pages may remain noindex`);
-    failIf(safeProfile.sourceBacked, `${slug}: independently sourced one-game publisher must be indexable`);
+    failIf(Boolean(safeProfile?.sourceBacked), `${slug}: independently sourced one-game publisher must be indexable`);
   }
 }
 
@@ -176,12 +209,14 @@ if (failures.length) {
 }
 
 console.log("Publisher SEO/evidence audit passed.");
-console.log(`- ${metadata.length} current publisher pages contain history in the initial HTML`);
-console.log(`- ${sourceBackedCount} current publisher pages have independent evidence`);
-console.log(`- ${noIndependentSourceCount} current publisher pages have no reliable independent evidence and render no facts/evidence panel`);
+console.log(`- ${metadata.length} current publisher pages checked`);
+console.log(`- ${sourceBackedCount} publisher pages have independent evidence`);
+console.log(`- ${noIndependentSourceCount} researched publisher pages have no reliable independent evidence and render no facts/evidence panel`);
+console.log(`- ${missingProfileCount} publisher pages have no researched profile and render factual archive content only`);
+console.log(`- ${linkedStrengthCount} Archive Strength links point only to existing CCG genre routes`);
 console.log(`- ${indexableCount} publisher pages are indexable`);
 console.log(`- ${noindexCount} limited one-game publisher pages remain noindex,follow`);
 console.log("- Publisher SEO titles and descriptions are unique");
-console.log("- Canonicals, structured data and publisher-history CSS are present");
+console.log("- Canonicals and structured data are present");
 console.log("- Sitemap eligibility matches publisher indexability");
 console.log("- The CCG Complete Publisher Index is excluded from rendered evidence panels");
