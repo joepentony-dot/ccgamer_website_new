@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css" />
   <link rel="stylesheet" href="/resources/css/auth.css" />
   <link rel="stylesheet" href="/resources/css/community-account.css" />
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" />
   <link rel="stylesheet" href="/resources/css/profile-lists.css" />
   <link rel="stylesheet" href="/resources/css/member-hub.css" />
 </head>
@@ -152,11 +153,11 @@
                 <div>
                   <p class="member-hub-kicker">Private member dashboard</p>
                   <h1 class="member-hub-title" id="memberHubTitle">Welcome, <span id="displayName">Member</span></h1>
-                  <p class="member-hub-subtitle">Your favourites, personal game lists, recent discoveries and account controls in one place.</p>
+                  <p class="member-hub-subtitle">Your favourites, game ratings, reviews, recent discoveries and account controls in one place.</p>
                   <div class="member-hub-meta">
                     <span class="member-hub-meta__item">Member since <strong id="joinDate">—</strong></span>
                     <span class="member-hub-meta__item">Preferred system: <strong id="memberPreferredSystemLabel">C64 &amp; Amiga</strong></span>
-                    <span class="member-hub-meta__item">Private by default</span>
+                    <span class="member-hub-meta__item">Community contributor</span>
                   </div>
                 </div>
               </div>
@@ -174,14 +175,14 @@
                 <strong id="memberCompletionPercent">25%</strong>
               </div>
               <div class="member-hub-completion__bar" aria-hidden="true"><span class="member-hub-completion__fill" id="memberCompletionFill"></span></div>
-              <p class="member-hub-completion__note" id="memberCompletionNote">Add favourites and personal lists to make this dashboard more useful.</p>
+              <p class="member-hub-completion__note" id="memberCompletionNote">Add favourites, ratings and reviews to make this dashboard more useful.</p>
             </aside>
           </section>
 
           <nav class="member-hub-nav" aria-label="Member Hub sections">
             <a href="#memberOverview">Overview</a>
             <a href="#memberFavourites">Favourites</a>
-            <a href="#personalGameLibrary">My Games</a>
+            <a href="#memberReviews">My Ratings &amp; Reviews</a>
             <a href="#memberAchievements">Badges</a>
             <a href="#memberCommunity">Community</a>
             <a href="#memberSettings">Account Settings</a>
@@ -190,10 +191,8 @@
           <section class="member-stats" id="memberOverview" aria-label="Member game statistics">
             <a class="member-stat" href="#memberFavourites"><strong class="member-stat__value" id="memberStatFavourites">0</strong><span class="member-stat__label">Favourites</span></a>
             <a class="member-stat" href="#memberFavourites"><strong class="member-stat__value" id="memberStatTopPicks">0</strong><span class="member-stat__label">Top Picks</span></a>
-            <a class="member-stat" href="#personalGameLibrary"><strong class="member-stat__value" id="memberStatPlayed">0</strong><span class="member-stat__label">Played</span></a>
-            <a class="member-stat" href="#personalGameLibrary"><strong class="member-stat__value" id="memberStatWant">0</strong><span class="member-stat__label">Want to Play</span></a>
-            <a class="member-stat" href="#personalGameLibrary"><strong class="member-stat__value" id="memberStatOwned">0</strong><span class="member-stat__label">Owned as a Kid</span></a>
-            <a class="member-stat" href="#personalGameLibrary"><strong class="member-stat__value" id="memberStatStill">0</strong><span class="member-stat__label">Still Own</span></a>
+            <a class="member-stat" href="#memberReviews"><strong class="member-stat__value" id="memberStatRatings">0</strong><span class="member-stat__label">Ratings</span></a>
+            <a class="member-stat" href="#memberReviews"><strong class="member-stat__value" id="memberStatReviews">0</strong><span class="member-stat__label">Reviews</span></a>
           </section>
 
           <div class="member-hub-grid">
@@ -253,25 +252,29 @@
             <ul id="favouriteGamesList" class="profile-favourites-list"></ul>
           </section>
 
-          <section id="personalGameLibrary" class="profile-library" aria-labelledby="personalGameLibraryTitle">
+          <section id="memberReviews" class="profile-library ccg-profile-community" aria-labelledby="memberReviewsTitle">
             <div class="profile-library__header">
               <div>
-                <p class="member-panel__kicker">Your private collection</p>
-                <h2 id="personalGameLibraryTitle" class="profile-library__title">My Personal Game Library</h2>
-                <p class="profile-library__note">Record what you played, what you want to try and the games you owned. Phase 2 will add account synchronisation; the existing browser data is preserved until then.</p>
+                <p class="member-panel__kicker">Your community contributions</p>
+                <h2 id="memberReviewsTitle" class="profile-library__title">My Ratings &amp; Reviews</h2>
+                <p class="profile-library__note">Your account-backed verdicts are collected here. Select a game to return to its page, update your score or continue the discussion.</p>
               </div>
-              <div class="profile-library__actions">
-                <button type="button" class="auth-btn" id="exportPersonalLibrary">Export lists</button>
-                <button type="button" class="auth-btn" id="clearPersonalLibrary">Clear local lists</button>
+              <a class="auth-btn" href="/games/">Rate another game</a>
+            </div>
+            <div class="ccg-profile-community__grid">
+              <div>
+                <h3>My Recent Ratings</h3>
+                <div id="profileCommunityRatings" class="ccg-profile-community__list" aria-live="polite">
+                  <p class="ccg-community-muted">Loading your ratings…</p>
+                </div>
+              </div>
+              <div>
+                <h3>My Recent Reviews</h3>
+                <div id="profileCommunityReviews" class="ccg-profile-community__list" aria-live="polite">
+                  <p class="ccg-community-muted">Loading your reviews…</p>
+                </div>
               </div>
             </div>
-            <div class="profile-library__tabs" role="group" aria-label="Personal game list">
-              <button type="button" class="profile-library__tab is-active" data-profile-list-tab="played" aria-pressed="true">Played</button>
-              <button type="button" class="profile-library__tab" data-profile-list-tab="want" aria-pressed="false">Want to Play</button>
-              <button type="button" class="profile-library__tab" data-profile-list-tab="owned" aria-pressed="false">Owned as a Kid</button>
-              <button type="button" class="profile-library__tab" data-profile-list-tab="still" aria-pressed="false">Still Own</button>
-            </div>
-            <ul id="personalGameLibraryList" class="profile-library__list"></ul>
           </section>
 
           <section class="member-panel member-panel--full" id="memberAchievements" aria-labelledby="memberAchievementsTitle">
@@ -402,7 +405,7 @@
   <script src="/js/ccg-supabase-client.js" defer></script>
   <script src="/js/ccg-auth-ui.js" defer></script>
   <script type="module" src="/resources/js/auth/profile-page.js?v=phase20b-20260806"></script>
-  <script src="/resources/js/auth/profile-lists.js" defer></script>
   <script src="/resources/js/auth/member-hub.js" defer></script>
+  <script src="/resources/js/auth/profile-community-activity.js" defer></script>
 </body>
 </html>
