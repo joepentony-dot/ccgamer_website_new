@@ -152,3 +152,4 @@ synchronizeComposerArchives();
 const additionalSitemaps = readAdditionalSitemaps();
 require("../tools/seo/generate-sitemap.js");
 restoreAdditionalSitemaps(additionalSitemaps);
+runNodeScript("audit-sitemap-indexability.js");
