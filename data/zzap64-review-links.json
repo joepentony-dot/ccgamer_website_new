@@ -10,11 +10,11 @@
     1989
   ],
   "totals": {
-    "awards": 287,
-    "exactPages": 287,
+    "awards": 286,
+    "exactPages": 286,
     "issueFallbacks": 0,
     "directCoveragePercent": 100,
-    "reviewRecords": 829,
+    "reviewRecords": 828,
     "additionalReviewRecords": 542,
     "gameReviewGames": 344,
     "awardRecordsLinkedToGames": 100,
@@ -2414,15 +2414,6 @@
       "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=12",
       "source": "live-lemon64-magazine-reference",
       "lemonUrl": "https://www.lemon64.com/game/tusker"
-    },
-    "1989|october|amiga|APB": {
-      "issue": 54,
-      "page": 18,
-      "precision": "page",
-      "url": "https://www.zzap64.co.uk/cgi-bin/displaypage.pl?issue=54&page=18",
-      "source": "official-zzap-bible",
-      "bibleTitle": "APB",
-      "bibleScore": 90
     },
     "1989|october|c64|APB": {
       "issue": 54,
