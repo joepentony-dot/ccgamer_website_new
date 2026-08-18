@@ -47,7 +47,11 @@ requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Pu
 requireText(gamesPublishing, "sitemap.xml", "Reliable Games Publishing does not stage the root sitemap index.");
 requireText(gamesPublishing, "sitemap-*.xml", "Reliable Games Publishing does not stage child sitemaps.");
 requireText(gamesPublishing, "gh pr merge", "Reliable Games Publishing does not merge its generated-output PR.");
-requireText(gamesPublishing, "games/games.json", "Reliable Games Publishing no longer protects the authoritative game database.");
+
+const rebuildGames = read("scripts/rebuild-games.js");
+requireText(rebuildGames, '["integrate-year-platform-discovery.js"]', "The authoritative game rebuild no longer integrates year/platform discovery.");
+requireText(rebuildGames, '["generate-sitemaps.js"]', "The authoritative game rebuild no longer regenerates sitemaps.");
+requireText(rebuildGames, '["validate-sitemaps.js"]', "The authoritative game rebuild no longer validates sitemaps.");
 
 const seoWorkflow = read(".github/workflows/seo.yml");
 requirePattern(seoWorkflow, /^\s{2}push:\s*$/m, "SEO Automation no longer runs on main pushes.");
@@ -68,6 +72,14 @@ requireManualValidationOnly(
   "Legacy retro collection stub builder"
 );
 
+const priorityWorkflow = read(".github/workflows/priority-genre-navigation-publisher-logos.yml");
+requirePattern(priorityWorkflow, /permissions:\s*\n\s*contents:\s*read\b/, "Priority discovery PR validation has write permissions.");
+forbidText(priorityWorkflow, "Commit validated output", "Priority discovery PR validation can still commit generated output.");
+if (/\bgit\s+push\b|\bgh\s+pr\s+(?:create|merge)\b/.test(priorityWorkflow)) {
+  problems.push("Priority discovery PR validation can still push or publish generated output.");
+}
+requireText(priorityWorkflow, "node scripts/rebuild-games.js", "Priority discovery validation no longer tests the authoritative game rebuild.");
+
 const manualRetro = read(".github/workflows/rebuild-retro-on-data-change.yml");
 requireText(manualRetro, "workflow_dispatch:", "Manual retro recovery workflow is missing workflow_dispatch.");
 if (/^\s{2}push:\s*$/m.test(manualRetro)) {
@@ -75,6 +87,12 @@ if (/^\s{2}push:\s*$/m.test(manualRetro)) {
 }
 requireText(manualRetro, "node scripts/generate-retro-pages.js", "Manual retro recovery no longer regenerates retro pages.");
 requireText(manualRetro, "node scripts/generate-sitemaps.js", "Manual retro recovery no longer regenerates sitemaps.");
+
+const zzapWorkflow = read(".github/workflows/zzap64-review-links-refresh.yml");
+requireText(zzapWorkflow, '"data/zzap64-awards/**"', "Zzap review refresh does not trigger when award-year source data changes.");
+requireText(zzapWorkflow, "node scripts/audit-zzap64-awards.js", "Zzap review refresh no longer audits award data.");
+requireText(zzapWorkflow, "node scripts/audit-game-badges.js", "Zzap review refresh no longer validates game award badges.");
+requireText(zzapWorkflow, "gh pr merge", "Zzap review refresh does not merge generated review-data output.");
 
 const deploy = read(".github/workflows/deploy-github-pages-omega-stable.yml");
 requirePattern(deploy, /^\s{2}push:\s*$/m, "GitHub Pages deployment no longer runs on main pushes.");
@@ -111,6 +129,7 @@ requireText(sitemapGenerator, "if (/noindex/i.test(seoMeta.robots))", "Sitemap g
 requireText(sitemapGenerator, "if (seoMeta.isRedirect)", "Sitemap generation no longer excludes redirect pages.");
 
 const sitemapCoordinator = read("scripts/generate-sitemaps.js");
+requireText(sitemapCoordinator, "pruneUnmaterializedRetroHubUrls()", "Sitemap generation no longer removes unmaterialized retro hub roots.");
 requireText(sitemapCoordinator, 'runNodeScript("audit-sitemap-indexability.js")', "Sitemap generation does not run the noindex/redirect eligibility audit.");
 
 const sitemapAudit = read("scripts/audit-sitemap-indexability.js");
@@ -127,6 +146,7 @@ requireText(publisherDocs, "data/amiga-demo-music.json", "Content Publisher docu
 const publisherJs = read("admin/js/content-publisher.js");
 requireText(publisherJs, "games-publishing.yml", "Content Publisher no longer monitors Reliable Games Publishing.");
 requireText(publisherJs, "seo.yml", "Content Publisher no longer monitors SEO Automation.");
+requireText(publisherJs, "data/zzap64-awards/", "Content Publisher no longer writes Zzap award-year source data to the expected directory.");
 
 const reconciler = read("admin/js/content-publisher-status-reconciler.js");
 requireText(reconciler, "actions/workflows/games-publishing.yml/runs", "Content Publisher status reconciler no longer targets Reliable Games Publishing.");
@@ -138,4 +158,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Publishing automation ownership, robots, sitemap eligibility and admin workflow contracts passed.");
+console.log("Publishing automation ownership, game/retro/Zzap pipelines, robots, sitemap eligibility and admin workflow contracts passed.");
