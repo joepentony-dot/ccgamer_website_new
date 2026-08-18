@@ -226,8 +226,14 @@
       meterMarkup(summary.averageValue, summary.count) +
       (user
         ? ('<form id="ccg-rating-form" class="ccg-community-inline-form">' +
-           '  <label>Your Rating (1–10)' +
-           '    <input type="number" min="1" max="10" step="1" value="' + yourRating + '" required name="rating">' +
+           '  <label>Your Rating (1–10 stars)' +
+           '    <select required name="rating" aria-label="Rate this game out of 10 stars">' +
+           '      <option value="">Choose a score</option>' +
+           Array.from({ length: 10 }, function (_unused, index) {
+             var score = index + 1;
+             return '<option value="' + score + '"' + (yourRating === String(score) ? ' selected' : '') + '>' + score + '/10 ' + '★'.repeat(score) + '</option>';
+           }).join('') +
+           '    </select>' +
            '  </label>' +
            '  <button class="ccg-community-btn" type="submit">Save rating</button>' +
            '  <span id="ccg-rating-status" class="ccg-community-muted" aria-live="polite"></span>' +
