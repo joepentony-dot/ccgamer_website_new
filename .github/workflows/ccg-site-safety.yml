@@ -74,6 +74,7 @@ jobs:
           node --check js/ccg-global-search.js
           node --check js/ccg-search-ranking.js
           node --check js/ccg-recently-viewed.js
+          node --check js/ccg-engagement-engine.js
           node --check js/ccg-archive-shortcuts.js
           node --check js/ccg-publisher-history.js
           node --check js/ccg-amiga-identity.js
