@@ -1,5 +1,17 @@
 [
   {
+    "name": "2.99 Classics",
+    "slug": "2-99-classics",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/2-99-classics/"
+  },
+  {
     "name": "21st Century Entertainment",
     "slug": "21st-century-entertainment",
     "count": 1,
@@ -38,8 +50,8 @@
   {
     "name": "Aackosoft",
     "slug": "aackosoft",
-    "count": 2,
-    "c64Count": 2,
+    "count": 4,
+    "c64Count": 4,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1985,
@@ -122,8 +134,8 @@
   {
     "name": "Alternative Software",
     "slug": "alternative-software",
-    "count": 5,
-    "c64Count": 5,
+    "count": 20,
+    "c64Count": 20,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1992,
@@ -264,12 +276,24 @@
     "url": "/games/publishers/audiogenic/"
   },
   {
-    "name": "Beyond",
-    "slug": "beyond",
+    "name": "Avantage",
+    "slug": "avantage",
     "count": 2,
     "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1984,
+    "lastYear": 1985,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/avantage/"
+  },
+  {
+    "name": "Beyond",
+    "slug": "beyond",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1984,
     "lastYear": 1986,
     "indexable": true,
     "playlist": "",
@@ -336,6 +360,18 @@
     "url": "/games/publishers/blue-byte/"
   },
   {
+    "name": "Blue Ribbon",
+    "slug": "blue-ribbon",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/blue-ribbon/"
+  },
+  {
     "name": "Brøderbund",
     "slug": "br-derbund",
     "count": 8,
@@ -358,6 +394,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/bubble-bus/"
+  },
+  {
+    "name": "Bug-Byte",
+    "slug": "bug-byte",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1987,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/bug-byte/"
   },
   {
     "name": "Bulldog Software",
@@ -456,6 +504,18 @@
     "url": "/games/publishers/commodore-plus/"
   },
   {
+    "name": "Compulogical",
+    "slug": "compulogical",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/compulogical/"
+  },
+  {
     "name": "Core Design",
     "slug": "core-design",
     "count": 1,
@@ -552,6 +612,18 @@
     "url": "/games/publishers/cyberdreams/"
   },
   {
+    "name": "Databyte",
+    "slug": "databyte",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1987,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/databyte/"
+  },
+  {
     "name": "Datamost",
     "slug": "datamost",
     "count": 2,
@@ -612,6 +684,18 @@
     "url": "/games/publishers/domark/"
   },
   {
+    "name": "Dro Soft",
+    "slug": "dro-soft",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/dro-soft/"
+  },
+  {
     "name": "Durell Software",
     "slug": "durell-software",
     "count": 3,
@@ -634,6 +718,30 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/dynabyte/"
+  },
+  {
+    "name": "ECP",
+    "slug": "ecp",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/ecp/"
+  },
+  {
+    "name": "EDOS",
+    "slug": "edos",
+    "count": 5,
+    "c64Count": 5,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1991,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/edos/"
   },
   {
     "name": "Electric Dreams",
@@ -684,6 +792,18 @@
     "url": "/games/publishers/empire-software/"
   },
   {
+    "name": "Encore",
+    "slug": "encore",
+    "count": 16,
+    "c64Count": 16,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1988,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/encore/"
+  },
+  {
     "name": "English Software",
     "slug": "english-software",
     "count": 2,
@@ -710,8 +830,8 @@
   {
     "name": "Epyx",
     "slug": "epyx",
-    "count": 17,
-    "c64Count": 17,
+    "count": 18,
+    "c64Count": 18,
     "amigaCount": 0,
     "firstYear": 1983,
     "lastYear": 1987,
@@ -720,10 +840,22 @@
     "url": "/games/publishers/epyx/"
   },
   {
+    "name": "Euro Gold",
+    "slug": "euro-gold",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1983,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/euro-gold/"
+  },
+  {
     "name": "Firebird",
     "slug": "firebird",
-    "count": 20,
-    "c64Count": 19,
+    "count": 31,
+    "c64Count": 30,
     "amigaCount": 1,
     "firstYear": 1984,
     "lastYear": 1989,
@@ -766,6 +898,30 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/gargoyle-games/"
+  },
+  {
+    "name": "GBH",
+    "slug": "gbh",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/gbh/"
+  },
+  {
+    "name": "GBH Gold",
+    "slug": "gbh-gold",
+    "count": 2,
+    "c64Count": 0,
+    "amigaCount": 2,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/gbh-gold/"
   },
   {
     "name": "GO!",
@@ -816,6 +972,18 @@
     "url": "/games/publishers/gremlin-interactive/"
   },
   {
+    "name": "Handic Software",
+    "slug": "handic-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/handic-software/"
+  },
+  {
     "name": "Hewson",
     "slug": "hewson",
     "count": 10,
@@ -830,10 +998,10 @@
   {
     "name": "Hi-Tec Software",
     "slug": "hi-tec-software",
-    "count": 1,
-    "c64Count": 1,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
-    "firstYear": 1990,
+    "firstYear": 1984,
     "lastYear": 1990,
     "indexable": true,
     "playlist": "",
@@ -960,6 +1128,18 @@
     "url": "/games/publishers/interdisc/"
   },
   {
+    "name": "Kixx",
+    "slug": "kixx",
+    "count": 49,
+    "c64Count": 49,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1992,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/kixx/"
+  },
+  {
     "name": "Konami",
     "slug": "konami",
     "count": 4,
@@ -970,6 +1150,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/konami/"
+  },
+  {
+    "name": "LK Avalon",
+    "slug": "lk-avalon",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/lk-avalon/"
   },
   {
     "name": "Llamasoft",
@@ -1010,10 +1202,10 @@
   {
     "name": "MAD (Mastertronic)",
     "slug": "mad-mastertronic",
-    "count": 6,
-    "c64Count": 6,
+    "count": 7,
+    "c64Count": 7,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1984,
     "lastYear": 1988,
     "indexable": true,
     "playlist": "",
@@ -1034,14 +1226,26 @@
   {
     "name": "Mastertronic",
     "slug": "mastertronic",
-    "count": 21,
-    "c64Count": 21,
+    "count": 23,
+    "c64Count": 23,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1989,
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/mastertronic/"
+  },
+  {
+    "name": "Mastertronic Plus",
+    "slug": "mastertronic-plus",
+    "count": 8,
+    "c64Count": 8,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1989,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/mastertronic-plus/"
   },
   {
     "name": "MC Lothlorien",
@@ -1104,6 +1308,18 @@
     "url": "/games/publishers/micro-power/"
   },
   {
+    "name": "Microdaft",
+    "slug": "microdaft",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/microdaft/"
+  },
+  {
     "name": "Microdeal",
     "slug": "microdeal",
     "count": 1,
@@ -1114,6 +1330,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/microdeal/"
+  },
+  {
+    "name": "Micropool",
+    "slug": "micropool",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1986,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/micropool/"
   },
   {
     "name": "MicroProse Software",
@@ -1202,8 +1430,8 @@
   {
     "name": "Mindscape",
     "slug": "mindscape",
-    "count": 12,
-    "c64Count": 9,
+    "count": 13,
+    "c64Count": 10,
     "amigaCount": 3,
     "firstYear": 1984,
     "lastYear": 1993,
@@ -1344,6 +1572,18 @@
     "url": "/games/publishers/orpheus/"
   },
   {
+    "name": "OziSoft",
+    "slug": "ozisoft",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/ozisoft/"
+  },
+  {
     "name": "Palace Software",
     "slug": "palace-software",
     "count": 7,
@@ -1380,6 +1620,18 @@
     "url": "/games/publishers/parker-brothers/"
   },
   {
+    "name": "Pick & Choose",
+    "slug": "pick-and-choose",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1984,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/pick-and-choose/"
+  },
+  {
     "name": "Piranha",
     "slug": "piranha",
     "count": 7,
@@ -1392,16 +1644,40 @@
     "url": "/games/publishers/piranha/"
   },
   {
+    "name": "Players Premier",
+    "slug": "players-premier",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1989,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/players-premier/"
+  },
+  {
     "name": "Players Software",
     "slug": "players-software",
-    "count": 3,
-    "c64Count": 3,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
-    "firstYear": 1987,
-    "lastYear": 1988,
+    "firstYear": 1986,
+    "lastYear": 1989,
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/players-software/"
+  },
+  {
+    "name": "Prism Leisure",
+    "slug": "prism-leisure",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/prism-leisure/"
   },
   {
     "name": "Psygnosis",
@@ -1418,8 +1694,8 @@
   {
     "name": "Quicksilva",
     "slug": "quicksilva",
-    "count": 5,
-    "c64Count": 5,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
     "firstYear": 1984,
     "lastYear": 1986,
@@ -1442,10 +1718,10 @@
   {
     "name": "Rack-It (Hewson)",
     "slug": "rack-it-hewson",
-    "count": 1,
-    "c64Count": 1,
+    "count": 2,
+    "c64Count": 2,
     "amigaCount": 0,
-    "firstYear": 1988,
+    "firstYear": 1986,
     "lastYear": 1988,
     "indexable": true,
     "playlist": "",
@@ -1476,6 +1752,18 @@
     "url": "/games/publishers/rainbow-arts/"
   },
   {
+    "name": "React Software",
+    "slug": "react-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/react-software/"
+  },
+  {
     "name": "Reaktör Software",
     "slug": "reaktor-software",
     "count": 2,
@@ -1500,6 +1788,18 @@
     "url": "/games/publishers/renegade/"
   },
   {
+    "name": "Ricochet",
+    "slug": "ricochet",
+    "count": 23,
+    "c64Count": 23,
+    "amigaCount": 0,
+    "firstYear": 1984,
+    "lastYear": 1988,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/ricochet/"
+  },
+  {
     "name": "Satchel Software",
     "slug": "satchel-software",
     "count": 1,
@@ -1522,6 +1822,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/sega/"
+  },
+  {
+    "name": "ShareData",
+    "slug": "sharedata",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/sharedata/"
   },
   {
     "name": "Sierra On-Line",
@@ -1560,6 +1872,18 @@
     "url": "/games/publishers/silmarils/"
   },
   {
+    "name": "Silverbird",
+    "slug": "silverbird",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1986,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/silverbird/"
+  },
+  {
     "name": "Simulmondo",
     "slug": "simulmondo",
     "count": 1,
@@ -1570,6 +1894,30 @@
     "indexable": false,
     "playlist": "",
     "url": "/games/publishers/simulmondo/"
+  },
+  {
+    "name": "SoftExpress",
+    "slug": "softexpress",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/softexpress/"
+  },
+  {
+    "name": "Softgold",
+    "slug": "softgold",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1987,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/softgold/"
   },
   {
     "name": "Software Projects",
@@ -1586,10 +1934,10 @@
   {
     "name": "Sparklers",
     "slug": "sparklers",
-    "count": 1,
-    "c64Count": 1,
+    "count": 6,
+    "c64Count": 6,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1984,
     "lastYear": 1985,
     "indexable": true,
     "playlist": "",
@@ -1644,6 +1992,18 @@
     "url": "/games/publishers/strategic-simulations-inc/"
   },
   {
+    "name": "Summit",
+    "slug": "summit",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1987,
+    "lastYear": 1988,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/summit/"
+  },
+  {
     "name": "Superior Software",
     "slug": "superior-software",
     "count": 1,
@@ -1690,6 +2050,18 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/system-3/"
+  },
+  {
+    "name": "System 4 Software",
+    "slug": "system-4-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/system-4-software/"
   },
   {
     "name": "Taito",
@@ -1776,6 +2148,18 @@
     "url": "/games/publishers/the-edge/"
   },
   {
+    "name": "The Hit Squad",
+    "slug": "the-hit-squad",
+    "count": 61,
+    "c64Count": 55,
+    "amigaCount": 6,
+    "firstYear": 1984,
+    "lastYear": 1993,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/the-hit-squad/"
+  },
+  {
     "name": "The One Amiga",
     "slug": "the-one-amiga",
     "count": 1,
@@ -1848,6 +2232,42 @@
     "url": "/games/publishers/titus-software/"
   },
   {
+    "name": "Top Ten",
+    "slug": "top-ten",
+    "count": 3,
+    "c64Count": 3,
+    "amigaCount": 0,
+    "firstYear": 1983,
+    "lastYear": 1984,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/top-ten/"
+  },
+  {
+    "name": "Topshots",
+    "slug": "topshots",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1991,
+    "lastYear": 1991,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/topshots/"
+  },
+  {
+    "name": "Tronix (Virgin Games)",
+    "slug": "tronix-virgin-games",
+    "count": 4,
+    "c64Count": 4,
+    "amigaCount": 0,
+    "firstYear": 1989,
+    "lastYear": 1990,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/tronix-virgin-games/"
+  },
+  {
     "name": "Tronix Publishing",
     "slug": "tronix-publishing",
     "count": 1,
@@ -1874,10 +2294,10 @@
   {
     "name": "Tynesoft",
     "slug": "tynesoft",
-    "count": 2,
-    "c64Count": 2,
+    "count": 3,
+    "c64Count": 3,
     "amigaCount": 0,
-    "firstYear": 1985,
+    "firstYear": 1984,
     "lastYear": 1989,
     "indexable": true,
     "playlist": "",
@@ -1956,6 +2376,18 @@
     "url": "/games/publishers/virgin-mastertronic/"
   },
   {
+    "name": "Wicked Software",
+    "slug": "wicked-software",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1985,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/wicked-software/"
+  },
+  {
     "name": "Windham Classics",
     "slug": "windham-classics",
     "count": 1,
@@ -1966,6 +2398,42 @@
     "indexable": true,
     "playlist": "",
     "url": "/games/publishers/windham-classics/"
+  },
+  {
+    "name": "World Wide Software",
+    "slug": "world-wide-software",
+    "count": 2,
+    "c64Count": 2,
+    "amigaCount": 0,
+    "firstYear": 1985,
+    "lastYear": 1987,
+    "indexable": true,
+    "playlist": "",
+    "url": "/games/publishers/world-wide-software/"
+  },
+  {
+    "name": "You Premier",
+    "slug": "you-premier",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/you-premier/"
+  },
+  {
+    "name": "Zafiro Software Division",
+    "slug": "zafiro-software-division",
+    "count": 1,
+    "c64Count": 1,
+    "amigaCount": 0,
+    "firstYear": 1986,
+    "lastYear": 1986,
+    "indexable": false,
+    "playlist": "",
+    "url": "/games/publishers/zafiro-software-division/"
   },
   {
     "name": "Zeppelin Games",
