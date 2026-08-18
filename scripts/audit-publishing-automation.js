@@ -81,9 +81,11 @@ forbidText(legacyBuild, "\n  push:", "Legacy game-output workflow must not auto-
 forbidText(legacyBuild, "git push\n", "Legacy recovery workflow must not push directly to main automatically.");
 
 const gamesPublishing = read(".github/workflows/games-publishing.yml");
+const rebuildGames = read("scripts/rebuild-games.js");
 requireText(gamesPublishing, '- "games/games.json"', "Reliable Games Publishing must trigger when games/games.json changes.");
 requireText(gamesPublishing, "node scripts/rebuild-games.js", "Reliable Games Publishing must run the authoritative rebuild command.");
-requireText(gamesPublishing, "node scripts/validate-sitemaps.js", "Reliable Games Publishing must validate sitemaps.");
+requireText(rebuildGames, '["generate-sitemaps.js"]', "The authoritative rebuild must regenerate all sitemap artifacts.");
+requireText(rebuildGames, '["validate-sitemaps.js"]', "The authoritative rebuild must validate all sitemap artifacts.");
 requireText(gamesPublishing, "sitemap.xml", "Reliable Games Publishing must stage the root sitemap index.");
 requireText(gamesPublishing, "sitemap-*.xml", "Reliable Games Publishing must stage child sitemaps.");
 requireText(gamesPublishing, "gh pr merge", "Reliable Games Publishing must merge generated output back to main after validation.");
@@ -144,4 +146,4 @@ if (problems.length) {
 }
 
 console.log(`Publishing automation / indexing guard passed (${sitemapFiles.length} sitemap files checked).`);
-console.log("Verified: single game publisher, retro/video SEO automation, robots policy, noindex separation, sitemap ownership and legacy-route exclusion.");
+console.log("Verified: single game publisher, authoritative sitemap regeneration/validation, retro/video SEO automation, robots policy, noindex separation, sitemap ownership and legacy-route exclusion.");
