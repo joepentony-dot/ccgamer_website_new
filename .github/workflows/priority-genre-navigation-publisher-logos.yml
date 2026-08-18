@@ -1,31 +1,16 @@
-name: Priority Genre Navigation and Publisher Logos
+name: Manual Priority Genre Navigation and Publisher Logo Validation
 
+# Historical correction workflow retained as a manual read-only diagnostic.
+# Reliable Games Publishing and the dedicated publisher archive workflow own
+# current automatic game/archive output. This workflow must never mutate a PR.
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/priority-genre-navigation-publisher-logos.yml"
-      - ".github/workflows/publisher-archives.yml"
-      - "scripts/rebuild-games.js"
-      - "scripts/apply-priority-discovery-navigation.js"
-      - "scripts/fetch-publisher-logos.js"
-      - "scripts/apply-publisher-logos.js"
-      - "scripts/validate-publisher-logo-output.js"
-      - "scripts/remove-invalid-publisher-labels.js"
-      - "scripts/integrate-year-platform-discovery.js"
-      - "scripts/validate-year-platform-discovery.js"
-      - "scripts/generate-publisher-pages.js"
-      - "data/publisher-logo-sources.json"
-      - "resources/css/publisher-logos.css"
-      - "resources/images/publishers/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: priority-genre-publisher-${{ github.ref }}
+  group: manual-priority-genre-publisher-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -34,16 +19,11 @@ jobs:
     timeout-minutes: 60
 
     steps:
-      - name: Check out source branch
+      - name: Check out selected branch
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
-          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 1
           show-progress: false
-
-      - name: Fetch main baseline
-        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -60,7 +40,7 @@ jobs:
             games/games.json \
             > "$RUNNER_TEMP/priority-fix-protected.sha256"
 
-      - name: Validate initial tooling
+      - name: Validate tooling
         run: |
           node --check scripts/rebuild-games.js
           node --check scripts/apply-priority-discovery-navigation.js
@@ -68,60 +48,20 @@ jobs:
           node --check scripts/apply-publisher-logos.js
           node --check scripts/validate-publisher-logo-output.js
           node --check scripts/remove-invalid-publisher-labels.js
-
-      - name: Fetch vetted publisher logos
-        env:
-          CCG_PUBLISHER_LOGOS_STRICT: "0"
-        run: node scripts/fetch-publisher-logos.js
-
-      - name: Apply permanent discovery source correction
-        run: |
-          node scripts/apply-priority-discovery-navigation.js
           node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
 
-      - name: Run authoritative games rebuild
-        run: |
-          node scripts/rebuild-games.js
-          rm -f seo-audit-report.md
+      - name: Apply historical discovery correction in runner workspace
+        run: node scripts/apply-priority-discovery-navigation.js
 
-      - name: Validate requested public output
-        shell: bash
-        run: |
-          node scripts/validate-publisher-logo-output.js
-
-          grep -q 'href="/games/genres/">Browse by Genre</a>' games/index.html
-          ! grep -q '>Browse by Platform</a>' games/index.html
-          grep -q 'dedicated release-year pages and the complete genre library' games/index.html
-
-          grep -q 'href="/resources/css/publisher-logos.css"' games/publishers/index.html
-          grep -q 'data-publisher-logo="activision"' games/publishers/index.html
-          grep -Eq 'src="/resources/images/publishers/activision\.(webp|png|svg|jpg|jpeg)"' games/publishers/index.html
-
-          grep -q 'href="/resources/css/publisher-logos.css"' games/publishers/activision/index.html
-          grep -q 'data-publisher-page-logo="activision"' games/publishers/activision/index.html
-          grep -Eq 'src="/resources/images/publishers/activision\.(webp|png|svg|jpg|jpeg)"' games/publishers/activision/index.html
-
-      - name: Verify deterministic repeat generation
-        shell: bash
-        run: |
-          git diff --binary > "$RUNNER_TEMP/priority-fix-first.diff"
-          node scripts/rebuild-games.js
-          rm -f seo-audit-report.md
-          git diff --binary > "$RUNNER_TEMP/priority-fix-second.diff"
-          if ! cmp -s "$RUNNER_TEMP/priority-fix-first.diff" "$RUNNER_TEMP/priority-fix-second.diff"; then
-            echo "Priority fix repeat-generation mismatch:"
-            diff -u "$RUNNER_TEMP/priority-fix-first.diff" "$RUNNER_TEMP/priority-fix-second.diff" || true
-            exit 1
-          fi
-          git diff --check
+      - name: Validate generated diff safety
+        run: git diff --check
 
       - name: Confirm protected files are unchanged
         run: sha256sum --check "$RUNNER_TEMP/priority-fix-protected.sha256"
 
-      - name: Confirm generated diff safety
-        run: git diff --check
-
-      - name: Confirm validation is read only
+      - name: Explain ownership
         run: |
-          echo "PR validation may generate files in the runner workspace, but it never commits or pushes them."
+          echo "This workflow is manual and validation-only."
+          echo "Reliable Games Publishing owns current automatic game/archive generation."
+          echo "Refresh Publisher Archives owns dedicated publisher archive generation."
