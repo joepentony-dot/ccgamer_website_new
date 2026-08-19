@@ -15,8 +15,9 @@
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
-    const PINNED_MORE_LABELS = new Set(["about", "about me", "contact"]);
+    const PINNED_MORE_LABELS = new Set(["install ccg app", "about", "about me", "contact"]);
     const BASE_MORE_LINKS = [
+        ["Install CCG App", "/install-app.html"],
         ["About Me", "/about.html"],
         ["Contact", "/contact.html"]
     ];

@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-19-public-release-v7";
+const CACHE_VERSION = "2026-08-19-public-release-v8";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -22,12 +22,16 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-nav-fit.css",
+  "/resources/css/ccg-global-search.css",
+  "/resources/css/zzap64-performance.css",
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
   "/js/ccg-nav-fit.js",
+  "/js/ccg-global-search.js",
+  "/js/zzap64-awards.js",
   "/js/ccg-header-auth-loader.js",
   "/js/ccg-auth.js",
   "/js/ccg-music-navigation.js",

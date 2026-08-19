@@ -5,6 +5,9 @@ import test from 'node:test';
 const navCore = fs.readFileSync('js/ccg-nav-core.js', 'utf8');
 const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');
 const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');
+const globalSearch = fs.readFileSync('js/ccg-global-search.js', 'utf8');
+const zzapAwards = fs.readFileSync('js/zzap64-awards.js', 'utf8');
+const zzapPerformanceCss = fs.readFileSync('resources/css/zzap64-performance.css', 'utf8');
 const modeIdentityCss = fs.readFileSync('resources/css/ccg-mode-identity.css', 'utf8');
 const legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');
 const musicNavigation = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
@@ -47,9 +50,10 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
-test('desktop More is functional and deliberately owns About Me and Contact', () => {
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
+test('desktop More is functional and deliberately owns Install CCG App, About Me and Contact', () => {
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
+  assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /\["About Me", "\/about\.html"\]/);
   assert.match(navFit, /\["Contact", "\/contact\.html"\]/);
   assert.match(navFit, /event\.stopImmediatePropagation\(\)/);
@@ -58,6 +62,7 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFit, /showPopover/);
   assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
+  assert.match(navFitCss, /a\[href="\/install-app\.html"\]/);
   assert.match(navFitCss, /a\[href="\/about\.html"\]/);
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
   assert.match(navFitCss, /z-index:\s*2147483000\s*!important/);
@@ -94,6 +99,21 @@ test('music waits for adaptive navigation CSS before exposing its injected heade
   assert.ok(musicNavigation.includes('"/resources/css/ccg-nav-fit.css"'), 'Music header must preload adaptive navigation CSS');
   assert.match(musicNavigation, /function waitForStyle\(href\)/);
   assert.match(musicNavigation, /await Promise\.all\(STYLES\.map\(waitForStyle\)\);[\s\S]*const header = ensureHeader\(\);/);
+});
+
+
+test('whole-site search is created directly in its final main-content command position', () => {
+  assert.match(globalSearch, /const commandMain = homeMain \|\| main/);
+  assert.match(globalSearch, /commandMain\.insertBefore\(command, commandMain\.firstChild\)/);
+});
+
+test('Zzap reviewed-game matching yields to navigation while progress continues', () => {
+  assert.match(zzapAwards, /function yieldToMainThread\(\)/);
+  assert.match(zzapAwards, /scheduler\.yield/);
+  assert.match(zzapAwards, /gameMatchCache: new Map\(\)/);
+  assert.match(zzapAwards, /await matchReviewedGamesResponsively\(\)/);
+  assert.match(zzapAwards, /await yieldToMainThread\(\)/);
+  assert.match(zzapPerformanceCss, /\.zzap-loading:not\(\[hidden\]\)[\s\S]*pointer-events:\s*none/);
 });
 
 test('Find Me a Game exposes no removed game-download filter or copy', () => {
@@ -133,7 +153,7 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
   assert.match(releaseCheck, /CCG update ready/);
-  assert.match(serviceWorker, /2026-08-19-public-release-v7/);
+  assert.match(serviceWorker, /2026-08-19-public-release-v8/);
   assert.match(headers, /\/js\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);

@@ -51,7 +51,10 @@ if (matcherPosition < 0 || archivePosition < 0 || matcherPosition > archivePosit
   ["updateProgress", "Zzap loading progress updates are missing."],
   ['cache: "default"', "Static Zzap data is not using normal browser caching."],
   ["await loadAwardEntries();", "Zzap award records are not loaded before game-link enrichment."],
-  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."]
+  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."],
+  ["matchReviewedGamesResponsively", "Zzap reviewed-game matching is not chunked responsively."],
+  ["await yieldToMainThread();", "Zzap reviewed-game matching does not yield to navigation/input."],
+  ["gameMatchCache", "Zzap reviewed-game matches are not cached before card rendering."]
 ].forEach(([needle, message]) => {
   if (!script.includes(needle)) problems.push(message);
 });
@@ -75,7 +78,8 @@ if (awardFetchPosition < 0 || gameFetchPosition < 0 || awardFetchPosition > game
   [".zzap-loading__bar", "Zzap progress fill styles are missing."],
   ["content-visibility: auto", "Off-screen Zzap cards are not render-contained."],
   ["contain-intrinsic-size", "Zzap cards lack intrinsic placeholder sizing."],
-  ["prefers-reduced-motion", "Zzap progress motion lacks a reduced-motion rule."]
+  ["prefers-reduced-motion", "Zzap progress motion lacks a reduced-motion rule."],
+  ["pointer-events: none", "Zzap progress strip can intercept site navigation while loading."]
 ].forEach(([needle, message]) => {
   if (!css.includes(needle)) problems.push(message);
 });

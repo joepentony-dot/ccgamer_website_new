@@ -13,6 +13,7 @@ const DRIVER_PORT = 9518;
 const BASE_URL = `http://${HOST}:${SITE_PORT}`;
 const CONTROL_PIXEL_TOLERANCE = 0.3;
 const PANEL_RANGE_TOLERANCE = 40;
+const CONTENT_TOP_TOLERANCE = 1;
 
 const MIME = Object.freeze({
   ".html": "text/html; charset=utf-8",
@@ -114,6 +115,9 @@ const EARLY_SAMPLER = `
       const ls = getComputedStyle(link);
       const nr = nav.getBoundingClientRect();
       const lr = link.getBoundingClientRect();
+      const main = document.querySelector('main.ccg-main, .ccg-main');
+      const contentAnchor = main ? Array.from(main.children).find((node) => !node.classList.contains('ccg-home-search-command')) : null;
+      const contentRect = contentAnchor ? contentAnchor.getBoundingClientRect() : null;
       window.__ccgHeaderFrames.push({
         frame,
         time: Math.round(performance.now() * 10) / 10,
@@ -126,7 +130,9 @@ const EARLY_SAMPLER = `
         linkHeight: Math.round(lr.height * 10) / 10,
         padding: ls.padding,
         fontSize: ls.fontSize,
-        letterSpacing: ls.letterSpacing
+        letterSpacing: ls.letterSpacing,
+        contentTop: contentRect ? Math.round(contentRect.top * 10) / 10 : null,
+        searchCommandPresent: Boolean(main?.querySelector(':scope > .ccg-home-search-command'))
       });
     }
     frame += 1;
@@ -184,6 +190,15 @@ function assertStableControls(samples, pathname, width) {
     violations.push(`nav panel width range ${panelRange.toFixed(1)}px exceeds ${PANEL_RANGE_TOLERANCE}px`);
   }
 
+  const contentSamples = samples.filter((sample) => Number.isFinite(Number(sample.contentTop)));
+  if (contentSamples.length > 1) {
+    const baseline = Number(contentSamples[0].contentTop);
+    const maxShift = Math.max(...contentSamples.map((sample) => Math.abs(Number(sample.contentTop) - baseline)));
+    if (maxShift > CONTENT_TOP_TOLERANCE) {
+      violations.push(`main content shifted ${maxShift.toFixed(1)}px after first paint`);
+    }
+  }
+
   if (violations.length) {
     throw new Error(`${width}px ${pathname} changed visible header geometry after first paint: ${violations.join("; ")}`);
   }
@@ -222,7 +237,7 @@ async function main() {
     });
     sessionId = session.sessionId;
     await cdp(sessionId, "Page.addScriptToEvaluateOnNewDocument", { source: EARLY_SAMPLER });
-    const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/"];
+    const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/", "/install-app.html"];
     for (const width of [1920, 1440]) {
       for (const pathname of pages) await auditPage(sessionId, pathname, width);
     }

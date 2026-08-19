@@ -328,6 +328,21 @@ async function main() {
     sessionId = session.sessionId;
 
     for (const width of [1440, 1920]) {
+      await clickMoreDestination(sessionId, width, "Install CCG App", "/install-app.html", "/install-app.html");
+      const installState = await execute(sessionId, `
+        return (function () {
+          const visibleSecondary = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li > .ccg-nav__link'))
+            .filter((link) => getComputedStyle(link.closest('li')).display !== 'none')
+            .map((link) => link.textContent.trim());
+          return {
+            emulationVisible: visibleSecondary.includes('Emulation'),
+            installVisible: visibleSecondary.includes('Install CCG App')
+          };
+        })();
+      `);
+      if (!installState.emulationVisible || installState.installVisible) {
+        throw new Error(`Install page desktop navigation is not stable at ${width}px: ${JSON.stringify(installState)}`);
+      }
       await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");
       await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");
     }
@@ -339,7 +354,7 @@ async function main() {
         const style = nav ? getComputedStyle(nav) : null;
         const pinned = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li')).filter((item) => {
           const href = item.querySelector('a')?.getAttribute('href');
-          return href === '/about.html' || href === '/contact.html';
+          return href === '/install-app.html' || href === '/about.html' || href === '/contact.html';
         });
         return {
           syncing: document.documentElement.classList.contains('ccg-nav-syncing'),
@@ -377,7 +392,8 @@ async function main() {
     console.log("- Canonical Omega navigation remains visible without an obsolete hide/show lifecycle");
     console.log("- Desktop About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
-    console.log("- About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- Install page keeps Emulation visible while Install CCG App remains inside More");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
   } finally {

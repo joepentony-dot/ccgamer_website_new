@@ -478,8 +478,10 @@
 
     function createTrigger() {
         const actions = document.querySelector(".ccg-header-actions");
+        const main = document.querySelector("main.ccg-main, .ccg-main");
         const homeMain = document.querySelector('html[data-ccg-page="home"] .ccg-main--home');
-        if ((!actions && !homeMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;
+        const commandMain = homeMain || main;
+        if ((!actions && !commandMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;
 
         const trigger = document.createElement("button");
         trigger.type = "button";
@@ -500,14 +502,17 @@
         `;
         trigger.addEventListener("click", openSearch);
 
-        if (homeMain) {
-            const command = document.createElement("div");
-            command.className = "ccg-home-search-command";
-            command.setAttribute("role", "search");
-            command.setAttribute("aria-label", "Search the CCG website");
+        if (commandMain) {
+            let command = commandMain.querySelector(":scope > .ccg-home-search-command");
+            if (!(command instanceof HTMLElement)) {
+                command = document.createElement("div");
+                command.className = "ccg-home-search-command";
+                command.setAttribute("role", "search");
+                command.setAttribute("aria-label", "Search the CCG website");
+            }
             trigger.classList.add("ccg-global-search-trigger--home");
             command.appendChild(trigger);
-            homeMain.insertBefore(command, homeMain.firstChild);
+            if (commandMain.firstElementChild !== command) commandMain.insertBefore(command, commandMain.firstChild);
         } else {
             const socialLinks = actions.querySelector(".ccg-header-socials");
             actions.insertBefore(trigger, socialLinks || actions.firstChild);

@@ -55,7 +55,8 @@
         renderToken: 0,
         filtersBound: false,
         progressTimer: null,
-        gamesPromise: null
+        gamesPromise: null,
+        gameMatchCache: new Map()
     };
 
     function escapeHtml(value) {
@@ -74,6 +75,13 @@
         } else {
             window.setTimeout(callback, 16);
         }
+    }
+
+    function yieldToMainThread() {
+        if (globalThis.scheduler && typeof globalThis.scheduler.yield === "function") {
+            return globalThis.scheduler.yield();
+        }
+        return new Promise((resolve) => window.setTimeout(resolve, 0));
     }
 
     function ensureScript(src) {
@@ -224,8 +232,31 @@
     }
 
     function findGame(entry) {
-        if (!state.gameIndex || state.linksStatus !== "ready") return null;
+        if (!state.gameIndex) return null;
+        const key = awardRecordKey(entry);
+        if (state.gameMatchCache.has(key)) return state.gameMatchCache.get(key);
+        if (state.linksStatus !== "ready") return null;
         return state.matcher.findGame(entry, state.gameIndex);
+    }
+
+    async function matchReviewedGamesResponsively() {
+        state.gameMatchCache.clear();
+        const total = state.entries.length;
+        let sliceStarted = performance.now();
+
+        for (let index = 0; index < total; index += 1) {
+            const entry = state.entries[index];
+            state.gameMatchCache.set(awardRecordKey(entry), state.matcher.findGame(entry, state.gameIndex));
+
+            const shouldYield = performance.now() - sliceStarted >= 8 || index + 1 === total;
+            if (shouldYield && index + 1 < total) {
+                const checked = index + 1;
+                const progress = 80 + Math.round((checked / Math.max(1, total)) * 16);
+                updateProgress(progress, "Matching review pages…", `${checked.toLocaleString("en-GB")} of ${total.toLocaleString("en-GB")} award records checked.`);
+                await yieldToMainThread();
+                sliceStarted = performance.now();
+            }
+        }
     }
 
     function sortTitle(value) {
@@ -597,8 +628,9 @@
             if (gameResult.error) throw gameResult.error;
             state.games = gameResult.games;
 
-            updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards.`);
+            updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards without blocking navigation.`);
             state.gameIndex = state.matcher.buildGameIndex(state.games);
+            await matchReviewedGamesResponsively();
             state.linksStatus = "ready";
             await render();
             setControlsEnabled(true);
