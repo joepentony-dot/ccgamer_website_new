@@ -29,6 +29,7 @@
         "/js/ccg-release-check.js",
         "/resources/css/ccg-nav.css",
         "/resources/css/ccg-nav-fit.css",
+        "/resources/css/ccg-mode-identity.css",
         "/resources/css/ccg-socials.css",
         "/resources/css/ccg-community.css",
         "/resources/css/ccg-master.css",
