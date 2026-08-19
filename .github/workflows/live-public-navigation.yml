@@ -31,7 +31,7 @@ jobs:
       - name: Check out repository release
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.head_ref }}
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
           fetch-depth: 1
 
       - name: Set up Node.js
@@ -42,7 +42,12 @@ jobs:
       - name: Validate browser audit syntax
         run: node --check scripts/audit-nav-more-browser.js
 
+      - name: Verify proposed navigation locally
+        if: github.event_name == 'pull_request'
+        run: node scripts/audit-nav-more-browser.js
+
       - name: Verify public custom-domain navigation release
+        if: github.event_name != 'pull_request'
         shell: bash
         env:
           CCG_NAV_AUDIT_BASE_URL: https://www.cheekycommodoregamer.co.uk
