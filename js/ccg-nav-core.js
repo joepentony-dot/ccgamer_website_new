@@ -11,11 +11,14 @@ Do Not Override
     "use strict";
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
+    const NAV_SYNC_STYLE_ID = "ccg-nav-sync-style";
     const REQUIRED_STYLES = [
         { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" },
-        { href: "/resources/css/ccg-inner-page-density.css", marker: "data-ccg-inner-page-density-style" }
+        { href: "/resources/css/ccg-inner-page-density.css", marker: "data-ccg-inner-page-density-style" },
+        { href: "/resources/css/ccg-scroll-authority.css", marker: "data-ccg-scroll-authority-style" }
     ];
     const OPTIONAL_MODULES = [
+        { src: "/js/ccg-nav-authority.js", marker: "data-ccg-nav-authority-loader" },
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
         { src: "/js/ccg-search-command-placement.js", marker: "data-ccg-search-command-placement-loader" },
@@ -50,6 +53,23 @@ Do Not Override
         { src: "/js/ccg-game-badges.js", marker: "data-ccg-game-badges-loader" },
         { src: "/js/ccg-responsive-safety.js", marker: "data-ccg-responsive-safety-loader" }
     ];
+
+    function installNavigationSyncGuard() {
+        const root = document.documentElement;
+        root.classList.add("ccg-nav-syncing");
+
+        if (!document.getElementById(NAV_SYNC_STYLE_ID)) {
+            const style = document.createElement("style");
+            style.id = NAV_SYNC_STYLE_ID;
+            style.textContent = "html.ccg-nav-syncing .ccg-header .ccg-nav{visibility:hidden!important}html.ccg-nav-ready .ccg-header .ccg-nav{visibility:visible!important}";
+            document.head.appendChild(style);
+        }
+
+        window.setTimeout(() => {
+            root.classList.remove("ccg-nav-syncing");
+            root.classList.add("ccg-nav-ready");
+        }, 1500);
+    }
 
     function isNavPillCandidate(el) {
         if (!(el instanceof HTMLElement)) return false;
@@ -127,7 +147,7 @@ Do Not Override
             if (hasModuleScript(src)) return;
             const script = document.createElement("script");
             script.src = src;
-            script.defer = true;
+            script.async = false;
             script.setAttribute(marker, "true");
             document.body.appendChild(script);
         });
@@ -162,6 +182,7 @@ Do Not Override
         loadOptionalModules();
     }
 
+    installNavigationSyncGuard();
     window.applyNavGlowPatch = applyNavGlowPatch;
     window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, applyNavGlowPatch });
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
