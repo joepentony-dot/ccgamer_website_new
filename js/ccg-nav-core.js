@@ -161,7 +161,7 @@ Do Not Override
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
-    window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, apply: applyNavGlowPatch });
+    window.CCGUnifiedNavCore = Object.freeze({ init: initUnifiedNavCore, applyNavGlowPatch });
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
     else initUnifiedNavCore();
 })();
