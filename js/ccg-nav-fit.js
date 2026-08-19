@@ -264,8 +264,7 @@
         ensureCss();
         const header = document.querySelector("[data-ccg-header]");
         const nav = header?.querySelector(".ccg-nav");
-        const menu = nav?.querySelector("[data-ccg-more-menu]");
-        if (!header || !nav || !menu) return;
+        if (!header || !nav) return;
 
         bindMoreControls(header);
         scheduleFit();
@@ -283,14 +282,6 @@
             if (!fitting) scheduleFit(10);
         });
         lists.forEach((list) => listObserver.observe(list, { childList: true, subtree: true }));
-
-        const menuObserver = new MutationObserver(() => {
-            if (fitting) return;
-            /* Any historical writer touching More is immediately replaced by
-               the authoritative fit result. */
-            scheduleFit(0);
-        });
-        menuObserver.observe(menu, { childList: true, subtree: true });
     }
 
     if (document.readyState === "loading") {
