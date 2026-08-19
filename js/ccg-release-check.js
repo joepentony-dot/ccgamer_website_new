@@ -20,7 +20,9 @@
     const RELEASE_ASSETS = [
         "/service-worker.js",
         "/js/ccg-nav-core.js",
+        "/js/ccg-nav.js",
         "/js/ccg-nav-fit.js",
+        "/js/ccg-pwa-visible-install.js",
         "/js/ccg-release-check.js",
         "/resources/css/ccg-nav.css",
         "/resources/css/ccg-socials.css",
