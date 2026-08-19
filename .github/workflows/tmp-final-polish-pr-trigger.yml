@@ -25,6 +25,18 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+
+          # Keep the v8 service-worker shell in parity with the release fingerprint.
+          sw_path = Path('service-worker.js')
+          sw = sw_path.read_text(encoding='utf-8')
+          css_anchor = '  "/resources/css/ccg-nav-fit.css",\n'
+          js_anchor = '  "/js/ccg-nav-fit.js",\n'
+          if sw.count(css_anchor) != 1 or sw.count(js_anchor) != 1:
+              raise SystemExit('Service-worker shell anchors are not unique.')
+          sw = sw.replace(css_anchor, css_anchor + '  "/resources/css/ccg-global-search.css",\n  "/resources/css/zzap64-performance.css",\n', 1)
+          sw = sw.replace(js_anchor, js_anchor + '  "/js/ccg-global-search.js",\n  "/js/zzap64-awards.js",\n', 1)
+          sw_path.write_text(sw, encoding='utf-8')
+
           text = Path('.github/workflows/tmp-final-polish-repair.yml').read_text(encoding='utf-8')
           start = '      - name: Apply bounded fixes\n        shell: python\n        run: |\n'
           end = '      - name: Commit bounded repair\n'
