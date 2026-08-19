@@ -97,6 +97,16 @@ jobs:
       - name: Run staged first-paint shell regressions
         run: node --test tests/public-header-stage-normalizer.test.mjs
 
+      - name: Exercise staged normalizer across all public HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$(mktemp -d)"
+          trap 'rm -rf "$stage"' EXIT
+          rsync -a --include='*/' --include='*.html' --exclude='*' ./ "$stage/"
+          node scripts/normalize-public-header-shell.js --root "$stage"
+          node scripts/normalize-public-header-shell.js --root "$stage" --check
+
       - name: Run desktop More browser interaction audit
         run: node scripts/audit-nav-more-browser.js
 
