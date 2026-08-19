@@ -483,3 +483,24 @@ button.ccg-nav-toggle.ccg-btn-ghost:not(:hover):not(:focus-visible):not(:active)
         transition: none;
     }
 }
+
+/* ============================================================
+   FIRST-PAINT HEADER CONTROL CONTRACT
+   ------------------------------------------------------------
+   Match ccg-nav-core.js hardenPill() before deferred JavaScript runs.
+   Without this, page-to-page navigation briefly paints rounded/filtered
+   controls and then snaps to the final Omega treatment a few frames later.
+============================================================ */
+:where(.ccg-header .ccg-nav__link,
+       .ccg-header .ccg-nav__more-toggle,
+       .ccg-header .ccg-nav-toggle,
+       .ccg-header .ccg-mode-toggle,
+       .ccg-header .ccg-community-profile-btn,
+       .ccg-header .ccg-btn-auth) {
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    background-clip: padding-box !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
