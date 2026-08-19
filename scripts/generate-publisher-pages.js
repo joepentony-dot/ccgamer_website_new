@@ -8,6 +8,7 @@ const {
     FEATURED_PUBLISHERS,
     buildPublisherGroups
 } = require("./publisher-utils");
+const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -25,6 +26,33 @@ const metadataPath = path.join(publishersDir, "publishers.json");
 function fail(message) {
     console.error(`[publishers] ${message}`);
     process.exit(1);
+}
+
+function canonicalizePublisherHtml(html, label) {
+    const result = normaliseHtml(html);
+    if (!result.applicable || result.malformed) {
+        fail(`${label} is missing the replaceable shared-header contract.`);
+    }
+
+    const output = result.html;
+    const required = [
+        `data-ccg-static-shell=\"${STATIC_SHELL_VERSION}\"`,
+        'class=\"ccg-auth-slot\" data-ccg-auth-pending=\"true\"',
+        'data-ccg-auth-snapshot-bootstrap=\"true\"',
+        'ccg-socials__icon--yt',
+        'ccg-socials__icon--patreon',
+        'ccg-socials__icon--paypal',
+        'ccg-socials__icon--x',
+        'ccg-socials__icon--fb',
+        'ccg-socials__icon--discord',
+        'src=\"/js/ccg-header-auth-loader.js\"'
+    ];
+    const missing = required.filter((snippet) => !output.includes(snippet));
+    if (missing.length) {
+        fail(`${label} is missing canonical shell requirements: ${missing.join(", ")}`);
+    }
+
+    return output;
 }
 
 function htmlEscape(value) {
@@ -739,7 +767,7 @@ function main() {
 
     let writes = 0;
 
-    const indexHtml = renderPublisherIndex(groups);
+    const indexHtml = canonicalizePublisherHtml(renderPublisherIndex(groups), "publisher index");
     const indexCanonical = `${SITE_ORIGIN}/games/publishers/`;
     const indexProblems = validateGeneratedPage(indexHtml, indexCanonical, "Browse Games by Publisher");
     if (indexProblems.length) {
@@ -748,7 +776,7 @@ function main() {
     if (writeFileIfChanged(path.join(publishersDir, "index.html"), indexHtml)) writes += 1;
 
     for (const group of groups) {
-        const html = renderPublisherPage(group, playlists);
+        const html = canonicalizePublisherHtml(renderPublisherPage(group, playlists), `publisher ${group.slug}`);
         const canonical = `${SITE_ORIGIN}/games/publishers/${group.slug}/`;
         const problems = validateGeneratedPage(
             html,

@@ -8,6 +8,7 @@ const {
     getPublisherNames,
     normalizeSystem
 } = require("./publisher-utils");
+const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -23,6 +24,32 @@ const LAZY_IMAGE_PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQ
 function fail(message) {
     console.error(`[manuals] ${message}`);
     process.exit(1);
+}
+
+function canonicalizeDownloadsHtml(html, label) {
+    const result = normaliseHtml(html);
+    if (!result.applicable || result.malformed) {
+        fail(`${label} is missing the replaceable shared-header contract.`);
+    }
+
+    const output = result.html;
+    const required = [
+        `data-ccg-static-shell=\"${STATIC_SHELL_VERSION}\"`,
+        'class=\"ccg-auth-slot\" data-ccg-auth-pending=\"true\"',
+        'data-ccg-auth-snapshot-bootstrap=\"true\"',
+        'ccg-socials__icon--yt',
+        'ccg-socials__icon--patreon',
+        'ccg-socials__icon--paypal',
+        'ccg-socials__icon--x',
+        'ccg-socials__icon--fb',
+        'ccg-socials__icon--discord',
+        'src=\"/js/ccg-header-auth-loader.js\"'
+    ];
+    const missing = required.filter((snippet) => !output.includes(snippet));
+    if (missing.length) {
+        fail(`${label} is missing canonical shell requirements: ${missing.join(", ")}`);
+    }
+    return output;
 }
 
 function htmlEscape(value) {
@@ -582,7 +609,7 @@ function main() {
     if (!Array.isArray(sourceGames) || !sourceGames.length) fail("games/games.json must contain a non-empty top-level array.");
 
     const manualGames = getDownloadRecords(sourceGames);
-    const html = renderDownloadsPage(manualGames);
+    const html = canonicalizeDownloadsHtml(renderDownloadsPage(manualGames), "manuals archive");
     const problems = validateGeneratedPage(html, manualGames);
     if (problems.length) fail(`Generated page validation failed: ${problems.join("; ")}`);
 

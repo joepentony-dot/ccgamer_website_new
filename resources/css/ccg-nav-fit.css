@@ -36,11 +36,29 @@
         contain: none !important;
     }
 
-    /* More is opt-in on desktop: the fit script exposes it only when a
-       real navigation item has been moved into the overflow menu. */
-    .ccg-header .ccg-nav:not(.ccg-nav--has-overflow) .ccg-nav__more,
-    .ccg-header .ccg-nav__more[hidden],
-    .ccg-header .ccg-nav__more:not(:has(.ccg-nav-fit__link)) {
+    /*
+       About Me and Contact are desktop More destinations. Hide their
+       secondary-list copies in CSS before JavaScript runs so the first
+       painted header already has the same geometry as the fitted header.
+       This removes the visible full-list -> More reflow during navigation.
+    */
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {
+        display: none !important;
+    }
+
+    /* Reserve the More control from first paint. The fit script owns its
+       contents and hidden state after startup, but the control itself must
+       not pop into the header a frame later. */
+    .ccg-header .ccg-nav__more {
+        position: relative;
+        display: inline-flex !important;
+        align-items: center;
+        flex: 0 0 auto;
+        z-index: 30;
+    }
+
+    .ccg-header .ccg-nav__more[hidden] {
         display: none !important;
     }
 
@@ -61,6 +79,14 @@
     .ccg-header.ccg-header--more-open .ccg-nav__more {
         overflow: visible !important;
         contain: none !important;
+    }
+
+    /* The opened dropdown must sit above mode hints, socials, hero media,
+       page overlays and other independently stacked content. */
+    .ccg-header.ccg-header--more-open {
+        position: relative !important;
+        z-index: 2147482000 !important;
+        isolation: isolate;
     }
 
     .ccg-header .ccg-nav__bar,
@@ -99,11 +125,7 @@
     }
 
     .ccg-header .ccg-nav--has-overflow .ccg-nav__more {
-        position: relative;
         display: inline-flex !important;
-        align-items: center;
-        flex: 0 0 auto;
-        z-index: 30;
     }
 
     .ccg-header .ccg-header-socials {
@@ -114,19 +136,19 @@
     .ccg-header.ccg-header--more-open .ccg-nav,
     .ccg-header .ccg-nav.ccg-nav--more-open {
         position: relative;
-        z-index: 1000 !important;
+        z-index: 2147482500 !important;
         isolation: isolate;
     }
 
     .ccg-header .ccg-nav.ccg-nav--more-open .ccg-nav__more {
-        z-index: 1010;
+        z-index: 2147482600 !important;
     }
 
     .ccg-header .ccg-nav__more-menu {
         position: absolute;
         top: calc(100% + 8px);
         right: 0;
-        z-index: 1020;
+        z-index: 2147483000 !important;
         display: grid;
         width: max-content;
         min-width: min(260px, 82vw);
@@ -135,6 +157,23 @@
         border: 1px solid rgba(var(--accent-rgb), 0.48);
         background: rgba(3, 7, 18, 0.98);
         box-shadow: 0 18px 42px rgba(0, 0, 0, 0.72), 0 0 22px rgba(var(--accent-rgb), 0.18);
+        pointer-events: auto !important;
+        isolation: isolate;
+    }
+
+    /* Modern browsers place manual popovers in the browser top layer. This
+       lets More escape every page/header clipping and stacking context while
+       keeping the menu in the same DOM location for accessibility and logic. */
+    .ccg-header .ccg-nav__more-menu[popover] {
+        position: fixed !important;
+        inset: auto;
+        right: auto;
+        margin: 0 !important;
+    }
+
+    .ccg-header .ccg-nav__more-menu[popover]:popover-open {
+        display: grid;
+        pointer-events: auto !important;
     }
 
     .ccg-header .ccg-nav__more-menu[hidden] {
@@ -142,6 +181,8 @@
     }
 
     .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link {
+        position: relative;
+        z-index: 1;
         display: block;
         width: 100%;
         min-height: 40px !important;
@@ -150,6 +191,7 @@
         border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
         text-align: left;
         white-space: normal;
+        pointer-events: auto !important;
     }
 
     .ccg-header .ccg-nav__more-menu .ccg-nav-fit__link:last-child {

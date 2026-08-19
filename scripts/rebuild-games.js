@@ -58,6 +58,7 @@ const steps = [
   ["ensure-secondary-publisher-runtime.js", "--check"],
   ["ensure-publisher-history-runtime.js", "--check"],
   ["validate-downloads-page.js"],
+  ["normalize-public-header-shell.js", "--root", ".", "--check"],
 ];
 
 function fail(message) {

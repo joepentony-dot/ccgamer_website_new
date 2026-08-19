@@ -7,6 +7,7 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
@@ -33,6 +34,7 @@ on:
     paths:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
+      - "scripts/normalize-public-header-shell.js"
       - "scripts/materialize-publisher-histories.js"
       - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
@@ -85,6 +87,7 @@ jobs:
         run: |
           node --check js/ccg-nav.js
           node --check scripts/generate-publisher-pages.js
+          node --check scripts/normalize-public-header-shell.js
           node --check scripts/materialize-publisher-histories.js
           node --check scripts/materialize-publisher-histories-tolerant.js
           node --check scripts/audit-publisher-seo-evidence.js
@@ -124,6 +127,9 @@ jobs:
 
       - name: Stabilize publisher sitemap eligibility ordering
         run: node scripts/stabilize-publisher-static-pages.js
+
+      - name: Require canonical publisher shell after all materialization
+        run: node scripts/normalize-public-header-shell.js --root games/publishers --check
 
       - name: Validate publisher SEO and evidence output
         run: node scripts/audit-publisher-seo-evidence-tolerant.js

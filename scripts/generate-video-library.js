@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 const { applyTemplate, readTemplate } = require("./template-engine");
 const { normalizeRetroSlug, verifiedMetadata } = require("./generate-retro-video-seo");
+const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
   ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -49,6 +50,23 @@ const DATASETS = [
 function fail(message) {
   console.error(`[video-library] ${message}`);
   process.exit(1);
+}
+
+function canonicalizeVideoLibraryHtml(html) {
+  const result = normaliseHtml(html);
+  if (!result.applicable || result.malformed) fail("Video library is missing the replaceable shared-header contract.");
+  const output = result.html;
+  const required = [
+    `data-ccg-static-shell=\"${STATIC_SHELL_VERSION}\"`,
+    'class=\"ccg-auth-slot\" data-ccg-auth-pending=\"true\"',
+    'data-ccg-auth-snapshot-bootstrap=\"true\"',
+    'ccg-socials__icon--yt', 'ccg-socials__icon--patreon', 'ccg-socials__icon--paypal',
+    'ccg-socials__icon--x', 'ccg-socials__icon--fb', 'ccg-socials__icon--discord',
+    'src=\"/js/ccg-header-auth-loader.js\"'
+  ];
+  const missing = required.filter((snippet) => !output.includes(snippet));
+  if (missing.length) fail(`Video library is missing canonical shell requirements: ${missing.join(", ")}`);
+  return output;
 }
 
 function readJson(filePath, fallback) {
@@ -507,7 +525,7 @@ function main() {
     INITIAL_CARDS: initial.map(buildCard).join("\n")
   });
 
-  writeFileIfChanged(outputHtmlPath, html);
+  writeFileIfChanged(outputHtmlPath, canonicalizeVideoLibraryHtml(html));
   writeFileIfChanged(outputIndexPath, `${JSON.stringify({
     version: 1,
     counts: {

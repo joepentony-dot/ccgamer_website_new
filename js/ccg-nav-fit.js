@@ -62,6 +62,46 @@
         return Boolean(menu?.querySelector(".ccg-nav-fit__link"));
     }
 
+    function supportsPopover(menu) {
+        return Boolean(menu && typeof menu.showPopover === "function" && typeof menu.hidePopover === "function");
+    }
+
+    function isPopoverOpen(menu) {
+        if (!supportsPopover(menu)) return false;
+        try { return menu.matches(":popover-open"); }
+        catch (_error) { return false; }
+    }
+
+    function clearPopoverPosition(menu) {
+        if (!menu) return;
+        menu.style.removeProperty("left");
+        menu.style.removeProperty("top");
+        menu.removeAttribute("data-ccg-more-top-layer");
+    }
+
+    function positionPopover(toggle, menu) {
+        if (!toggle || !menu || !isPopoverOpen(menu)) return;
+
+        const gap = 8;
+        const edge = 8;
+        const toggleRect = toggle.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+        let left = toggleRect.right - menuRect.width;
+        left = Math.max(edge, Math.min(left, viewportWidth - menuRect.width - edge));
+
+        let top = toggleRect.bottom + gap;
+        if (top + menuRect.height > viewportHeight - edge) {
+            top = Math.max(edge, toggleRect.top - gap - menuRect.height);
+        }
+
+        menu.style.left = `${Math.round(left)}px`;
+        menu.style.top = `${Math.round(top)}px`;
+        menu.setAttribute("data-ccg-more-top-layer", "true");
+    }
+
     function setMoreOpenState(toggle, menu, open) {
         const nav = toggle?.closest(".ccg-nav");
         const header = nav?.closest("[data-ccg-header]");
@@ -73,14 +113,33 @@
     function closeMore(toggle, menu) {
         if (!toggle || !menu) return;
         toggle.setAttribute("aria-expanded", "false");
+
+        if (isPopoverOpen(menu)) {
+            try { menu.hidePopover(); }
+            catch (_error) {}
+        }
+        clearPopoverPosition(menu);
         menu.hidden = true;
         setMoreOpenState(toggle, menu, false);
     }
 
     function openMore(toggle, menu) {
         if (!toggle || !menu || !menuHasOverflowLinks(menu)) return false;
+
         menu.hidden = false;
         toggle.setAttribute("aria-expanded", "true");
+
+        if (supportsPopover(menu)) {
+            try {
+                if (menu.getAttribute("popover") !== "manual") menu.setAttribute("popover", "manual");
+                if (!isPopoverOpen(menu)) menu.showPopover();
+                positionPopover(toggle, menu);
+            } catch (_error) {
+                menu.removeAttribute("popover");
+                clearPopoverPosition(menu);
+            }
+        }
+
         setMoreOpenState(toggle, menu, true);
         return true;
     }
@@ -122,6 +181,19 @@
             if (menu.hidden) openMore(toggle, menu);
             else closeMore(toggle, menu);
         }, true);
+
+        /* More links are ordinary anchors. Reset the visual open state when
+           one is activated, but never prevent or replace browser navigation. */
+        header.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const link = target?.closest("[data-ccg-more-menu] a[href]");
+            if (!link || !header.contains(link)) return;
+            const nav = header.querySelector(".ccg-nav");
+            closeMore(
+                nav?.querySelector("[data-ccg-more-toggle]"),
+                nav?.querySelector("[data-ccg-more-menu]")
+            );
+        });
 
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
@@ -222,7 +294,8 @@
         const menu = nav?.querySelector("[data-ccg-more-menu]");
         if (!header || !nav || !more || !toggle || !menu) return;
 
-        const restoreOpen = isDesktop()
+        const desktop = isDesktop();
+        const restoreOpen = desktop
             && toggle.getAttribute("aria-expanded") === "true"
             && !menu.hidden;
 
@@ -230,18 +303,24 @@
         const items = allNavItems(nav);
         restoreItems(items);
         nav.classList.remove("ccg-nav--fit-compact", "ccg-nav--fit-tight", "ccg-nav--has-overflow");
-        more.hidden = true;
-        toggle.disabled = true;
-        toggle.setAttribute("aria-hidden", "true");
         menu.textContent = "";
         closeMore(toggle, menu);
 
-        if (!isDesktop()) {
+        if (!desktop) {
+            more.hidden = true;
+            toggle.disabled = true;
+            toggle.setAttribute("aria-hidden", "true");
             syncMoreAvailability(nav, more, toggle, menu);
             fitting = false;
             announceFitted(nav);
             return;
         }
+
+        /* Keep the desktop More slot reserved throughout fitting. CSS has
+           already hidden the pinned secondary copies before first paint. */
+        more.hidden = false;
+        toggle.disabled = false;
+        toggle.setAttribute("aria-hidden", "false");
 
         const hiddenItems = [];
         items.filter(isPinnedMoreItem).forEach((item) => {
