@@ -21,6 +21,7 @@
         ["Contact", "/contact.html"]
     ];
     let fitFrame = 0;
+    let fitTimer = 0;
     let fitting = false;
 
     function ensureCss() {
@@ -76,6 +77,14 @@
         setMoreOpenState(toggle, menu, false);
     }
 
+    function openMore(toggle, menu) {
+        if (!toggle || !menu || !menuHasOverflowLinks(menu)) return false;
+        menu.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        setMoreOpenState(toggle, menu, true);
+        return true;
+    }
+
     function syncMoreAvailability(nav, more, toggle, menu) {
         if (!nav || !more || !toggle || !menu) return false;
         const hasOverflow = Boolean(isDesktop() && menuHasOverflowLinks(menu));
@@ -110,10 +119,8 @@
                 return;
             }
 
-            const opening = menu.hidden;
-            menu.hidden = !opening;
-            toggle.setAttribute("aria-expanded", opening ? "true" : "false");
-            setMoreOpenState(toggle, menu, opening);
+            if (menu.hidden) openMore(toggle, menu);
+            else closeMore(toggle, menu);
         }, true);
 
         document.addEventListener("click", (event) => {
@@ -215,6 +222,10 @@
         const menu = nav?.querySelector("[data-ccg-more-menu]");
         if (!header || !nav || !more || !toggle || !menu) return;
 
+        const restoreOpen = isDesktop()
+            && toggle.getAttribute("aria-expanded") === "true"
+            && !menu.hidden;
+
         fitting = true;
         const items = allNavItems(nav);
         restoreItems(items);
@@ -266,20 +277,30 @@
 
         hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
         populateMore(menu, hiddenItems);
-        syncMoreAvailability(nav, more, toggle, menu);
+        const available = syncMoreAvailability(nav, more, toggle, menu);
+        if (restoreOpen && available) openMore(toggle, menu);
         fitting = false;
         announceFitted(nav);
     }
 
-    function scheduleFit(delay) {
+    function scheduleFit(delay = 0) {
         if (fitFrame) cancelAnimationFrame(fitFrame);
+        if (fitTimer) {
+            clearTimeout(fitTimer);
+            fitTimer = 0;
+        }
+
         const run = () => {
             fitFrame = requestAnimationFrame(() => {
                 fitFrame = 0;
                 fitNavigation();
             });
         };
-        if (delay) window.setTimeout(run, delay);
+
+        if (delay > 0) fitTimer = window.setTimeout(() => {
+            fitTimer = 0;
+            run();
+        }, delay);
         else run();
     }
 
@@ -291,13 +312,15 @@
 
         bindMoreControls(header);
         scheduleFit();
-        scheduleFit(80);
-        scheduleFit(240);
 
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(() => scheduleFit()).catch(() => {});
+        }
+        window.addEventListener("load", () => scheduleFit(), { once: true, passive: true });
         window.addEventListener("resize", () => scheduleFit(30), { passive: true });
         window.addEventListener("orientationchange", () => scheduleFit(60), { passive: true });
         window.addEventListener("pageshow", () => scheduleFit(20), { passive: true });
-        document.addEventListener("ccg:navigation-ready", () => scheduleFit(0));
+        document.addEventListener("ccg:navigation-ready", () => scheduleFit());
         desktopMedia?.addEventListener?.("change", () => scheduleFit());
 
         const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");
