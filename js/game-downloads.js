@@ -96,7 +96,7 @@
 
                 const countLabel = section.querySelector(".ccg-downloads-letter__count");
                 if (countLabel) {
-                    countLabel.textContent = `${visibleSectionCards.length} ${visibleSectionCards.length === 1 ? "game" : "games"}`;
+                    countLabel.textContent = `${visibleSectionCards.length} ${visibleSectionCards.length === 1 ? "manual" : "manuals"}`;
                 }
 
                 if (!section.hidden && !firstVisibleSection) firstVisibleSection = section;
