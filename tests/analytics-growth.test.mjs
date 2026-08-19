@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const page = fs.readFileSync('admin/analytics-growth.html', 'utf8');
 const script = fs.readFileSync('admin/js/analytics-growth.js', 'utf8');
+const ga4Config = fs.readFileSync('admin/js/analytics-growth-ga4-config.js', 'utf8');
 const register = fs.readFileSync('auth/register.html', 'utf8');
 const nav = fs.readFileSync('admin/js/admin-nav.js', 'utf8');
 const dashboard = fs.readFileSync('admin/dashboard.html', 'utf8');
@@ -23,6 +24,32 @@ test('dashboard uses existing read-only Google OAuth configuration and current A
   assert.match(script, /analyticsdata\.googleapis\.com\/v1beta/);
   assert.match(script, /search-console-opportunities/);
   assert.doesNotMatch(script, /localStorage\.setItem\([^)]*google/i);
+});
+
+test('known CCG GA4 property bypasses external Analytics Admin discovery', () => {
+  assert.match(ga4Config, /PROPERTY_ID = "526769734"/);
+  assert.match(ga4Config, /MEASUREMENT_ID = "G-GT1JB7HMQ4"/);
+  assert.match(ga4Config, /PROPERTY_PATH = `properties\/\$\{PROPERTY_ID\}`/);
+  assert.match(ga4Config, /analyticsadmin\.googleapis\.com/);
+  assert.match(ga4Config, /\/v1beta\/accountSummaries/);
+  assert.match(ga4Config, /property: PROPERTY_PATH/);
+  assert.match(ga4Config, /return nativeFetch\(input, init\)/);
+
+  const configIndex = page.indexOf('/admin/js/analytics-growth-ga4-config.js');
+  const dashboardIndex = page.indexOf('/admin/js/analytics-growth.js');
+  assert.ok(configIndex >= 0, 'GA4 configuration bridge is loaded');
+  assert.ok(dashboardIndex > configIndex, 'GA4 configuration bridge loads before Analytics Growth');
+  assert.match(page, /does not require Analytics Admin API property discovery/);
+});
+
+test('Search Console and GA4 are loaded together from one temporary Google session', () => {
+  assert.match(script, /await loadSearchConsole\(\)/);
+  assert.match(script, /await loadAnalyticsProperties\(\)/);
+  assert.match(script, /await loadAnalytics\(\)/);
+  assert.match(script, /outcomes\.push\('Search Console loaded'\)/);
+  assert.match(script, /outcomes\.push\('GA4 loaded'\)/);
+  assert.match(script, /scope: `\$\{SEARCH_SCOPE\} \$\{ANALYTICS_SCOPE\}`/);
+  assert.match(script, /properties\/\$\{encodeURIComponent\(propertyId\)\}:runReport/);
 });
 
 test('member totals page safely beyond the existing 500-row RPC limit', () => {
