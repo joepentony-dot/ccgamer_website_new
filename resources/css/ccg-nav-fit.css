@@ -52,7 +52,7 @@
     .ccg-header .ccg-nav .ccg-nav__link,
     .ccg-header .ccg-nav .ccg-nav__more-toggle {
         min-height: 38px !important;
-        padding: 6px 5px !important;
+        padding: 6px 4px !important;
         font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
         letter-spacing: 0.035em !important;
         white-space: nowrap;
@@ -136,7 +136,7 @@
     .ccg-header .ccg-nav--fit-tight .ccg-nav__link,
     .ccg-header .ccg-nav--fit-tight .ccg-nav__more-toggle {
         min-height: 38px !important;
-        padding: 6px 5px !important;
+        padding: 6px 4px !important;
         font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
         letter-spacing: 0.035em !important;
         white-space: nowrap;
