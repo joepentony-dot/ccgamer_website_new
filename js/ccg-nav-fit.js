@@ -14,6 +14,7 @@
 
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
+    const WIDE_DESKTOP_MIN = 1600;
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     let fitFrame = 0;
     let fitting = false;
@@ -50,7 +51,8 @@
     function setMoreOpenState(toggle, menu, open) {
         const nav = toggle?.closest(".ccg-nav");
         const header = nav?.closest("[data-ccg-header]");
-        const isOpen = Boolean(open && menu && !menu.hidden);
+        const hasItems = Boolean(menu?.querySelector(".ccg-nav__link, .ccg-nav-fit__link, a[href]"));
+        const isOpen = Boolean(open && hasItems && menu && !menu.hidden);
         nav?.classList.toggle("ccg-nav--more-open", isOpen);
         header?.classList.toggle("ccg-header--more-open", isOpen);
     }
@@ -69,6 +71,10 @@
         toggle.addEventListener("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
+            if (!menu.querySelector(".ccg-nav__link, .ccg-nav-fit__link, a[href]")) {
+                closeMore(toggle, menu);
+                return;
+            }
             const opening = menu.hidden;
             menu.hidden = !opening;
             toggle.setAttribute("aria-expanded", opening ? "true" : "false");
@@ -91,6 +97,10 @@
     function isDesktop() {
         if (desktopMedia) return desktopMedia.matches;
         return window.innerWidth >= 1200;
+    }
+
+    function isWideDesktop() {
+        return window.innerWidth >= WIDE_DESKTOP_MIN;
     }
 
     function availableWidth(header) {
@@ -162,11 +172,19 @@
             nav.classList.add("ccg-nav--fit-tight");
         }
 
+        /* Wide desktop has enough horizontal room for the real destinations.
+           Do not manufacture a MORE control there: retain the full navigation
+           and reserve the overflow menu for narrower desktop widths. */
+        if (isWideDesktop()) {
+            more.hidden = true;
+            menu.textContent = "";
+            nav.classList.remove("ccg-nav--has-overflow");
+            fitting = false;
+            return;
+        }
+
         const hiddenItems = [];
         if (isOverflowing(header, nav)) {
-            more.hidden = false;
-            nav.classList.add("ccg-nav--has-overflow");
-
             const candidates = items
                 .map((item, index) => {
                     const link = item.querySelector(".ccg-nav__link");
@@ -187,8 +205,10 @@
         if (hiddenItems.length) {
             hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
             populateMore(menu, hiddenItems);
-            more.hidden = false;
-            nav.classList.add("ccg-nav--has-overflow");
+            const hasMenuLinks = Boolean(menu.querySelector(".ccg-nav__link, .ccg-nav-fit__link, a[href]"));
+            more.hidden = !hasMenuLinks;
+            nav.classList.toggle("ccg-nav--has-overflow", hasMenuLinks);
+            if (!hasMenuLinks) restoreItems(hiddenItems);
         } else {
             more.hidden = true;
             nav.classList.remove("ccg-nav--has-overflow");

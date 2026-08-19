@@ -44,7 +44,7 @@ function main() {
         if (!/^\d{4}-\d{2}-\d{2}$/.test(String(rule?.verified_on || ""))) fail(`${publisher}: verified_on must use YYYY-MM-DD.`);
 
         if (publisher === "Americana" && sourceTitles.length !== 34) {
-            fail(`Americana source catalogue must contain the 34 Lemon64 entries; found ${sourceTitles.length}.`);
+            fail(`Americana source catalogue must contain the 34 approved archive entries; found ${sourceTitles.length}.`);
         }
 
         const matches = games.filter((game) => {

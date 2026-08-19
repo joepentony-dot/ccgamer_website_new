@@ -1,0 +1,121 @@
+name: Validate Manual-Only Game Media Policy
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/rebuild-games.js"
+      - "scripts/build-games.js"
+      - "scripts/enforce-manual-only-game-pages.js"
+      - "scripts/generate-downloads-page.js"
+      - "scripts/validate-downloads-page.js"
+      - "scripts/ensure-downloads-discovery-links.js"
+      - "scripts/audit-game-manuals.js"
+      - "games/game.html"
+      - "games/*/index.html"
+      - "games/downloads/**"
+      - "js/game-downloads.js"
+      - "admin/games-editor.html"
+      - "admin/content-publisher.html"
+      - "resources/css/ccg-admin.css"
+      - ".github/workflows/game-downloads.yml"
+      - ".github/workflows/manual-only-game-media.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/rebuild-games.js"
+      - "scripts/build-games.js"
+      - "scripts/enforce-manual-only-game-pages.js"
+      - "scripts/generate-downloads-page.js"
+      - "scripts/validate-downloads-page.js"
+      - "scripts/ensure-downloads-discovery-links.js"
+      - "scripts/audit-game-manuals.js"
+      - "games/game.html"
+      - "games/*/index.html"
+      - "games/downloads/**"
+      - "js/game-downloads.js"
+      - "admin/games-editor.html"
+      - "admin/content-publisher.html"
+      - "resources/css/ccg-admin.css"
+      - ".github/workflows/game-downloads.yml"
+      - ".github/workflows/manual-only-game-media.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-only-game-media-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+          show-progress: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate policy scripts
+        run: |
+          node --check scripts/enforce-manual-only-game-pages.js
+          node --check scripts/generate-downloads-page.js
+          node --check scripts/validate-downloads-page.js
+          node --check scripts/ensure-downloads-discovery-links.js
+          node --check js/game-downloads.js
+
+      - name: Confirm admin game-entry tools do not expose download fields
+        shell: bash
+        run: |
+          grep -q 'data-field="download_status"' admin/games-editor.html
+          grep -q 'data-field="disk"' admin/games-editor.html
+          grep -q 'data-game-field="downloadStatus"' admin/content-publisher.html
+          grep -q 'data-game-field="disk"' admin/content-publisher.html
+          grep -q 'label:has(\[data-field="download_status"\])' resources/css/ccg-admin.css
+          grep -q 'label:has(\[data-field="disk"\])' resources/css/ccg-admin.css
+          grep -q 'label:has(\[data-game-field="downloadStatus"\])' resources/css/ccg-admin.css
+          grep -q 'label:has(\[data-game-field="disk"\])' resources/css/ccg-admin.css
+          echo "Legacy schema fields remain for compatibility but are hidden from game-entry interfaces."
+
+      - name: Build PDF-manual archive in validation workspace
+        run: |
+          node scripts/ensure-downloads-discovery-links.js
+          node scripts/generate-downloads-page.js
+          node scripts/update-downloads-static-pages.js
+          node scripts/validate-downloads-page.js
+
+      - name: Apply single-game media sanitizer in validation workspace
+        run: |
+          node scripts/enforce-manual-only-game-pages.js
+          node scripts/enforce-manual-only-game-pages.js --check
+
+      - name: Confirm manual-only rebuild ownership
+        run: |
+          node - <<'NODE'
+          const { steps } = require('./scripts/rebuild-games');
+          const names = steps.map((step) => step[0]);
+          for (const required of [
+            'audit-game-manuals.js',
+            'enforce-manual-only-game-pages.js',
+            'ensure-downloads-discovery-links.js',
+            'generate-downloads-page.js',
+            'validate-downloads-page.js'
+          ]) {
+            if (!names.includes(required)) throw new Error(`Missing manual-only rebuild step: ${required}`);
+          }
+          const checks = steps.filter((step) => step[0] === 'enforce-manual-only-game-pages.js' && step.includes('--check'));
+          if (checks.length !== 1) throw new Error('Final manual-only game-page check is missing or duplicated.');
+          console.log('Manual-only publishing ownership is present in rebuild-games.js.');
+          NODE

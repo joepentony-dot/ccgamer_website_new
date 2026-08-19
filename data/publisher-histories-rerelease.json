@@ -1,15 +1,17 @@
 [
   {
     "slug": "the-hit-squad",
-    "summary": "The Hit Squad was a prominent budget re-release label in the UK home-computer market, strongly associated with Ocean's catalogue. Its releases put older full-price and arcade-conversion titles back on sale at lower prices across machines including the Commodore 64.",
+    "summary": "The Hit Squad was a prominent budget re-release label in the UK home-computer market, strongly associated with Ocean's catalogue. Its releases put older full-price, licensed and arcade-derived titles back on sale at lower prices across machines including the Commodore 64 and Amiga.",
     "facts": [
       "The Centre for Computing History catalogues numerous The Hit Squad editions explicitly as budget re-releases, including Star Wars on the Commodore 64 and Yie Ar Kung Fu on the Commodore 16/Plus 4.",
-      "The museum catalogue includes many Ocean-associated titles under The Hit Squad label, including Rainbow Islands, Batman: The Caped Crusader and WWF WrestleMania."
+      "The museum catalogue includes many Ocean-associated titles under The Hit Squad label, including Rainbow Islands, Batman: The Caped Crusader and WWF WrestleMania.",
+      "The museum collection also preserves The Hit Squad releases for the Commodore Amiga alongside its substantial Commodore 64 catalogue."
     ],
     "strengths": [
       "Budget re-releases",
-      "Arcade conversions",
-      "Licensed games"
+      "Arcade games",
+      "Sports games",
+      "Racing games"
     ],
     "related": [
       {
@@ -35,20 +37,26 @@
   },
   {
     "slug": "kixx",
-    "summary": "Kixx was a major budget re-release label in the UK computer-games market. Its catalogue brought older titles back at lower prices across Commodore 64, Amiga, Spectrum, Atari ST and other formats, including many games previously released through U.S. Gold and other publishers.",
+    "summary": "Kixx was U.S. Gold's budget re-release label, returning established computer games to the shelves at lower prices across the late 1980s and 1990s on formats including the Commodore 64 and Amiga.",
     "facts": [
+      "The Mastertronic Collectors Archive records that U.S. Gold created its own budget label Kixx after previously supplying older full-price titles to third-party budget ranges.",
       "The Centre for Computing History identifies Kixx editions such as Indiana Jones and the Temple of Doom as re-releases of earlier U.S. Gold games.",
       "The museum's Kixx catalogue includes Commodore 64 and Amiga reissues across racing, shooting, sports, platform and arcade-derived games."
     ],
     "strengths": [
       "Budget re-releases",
-      "Arcade and action games",
-      "Multi-format catalogue"
+      "Arcade games",
+      "Sports games",
+      "Racing games"
     ],
     "related": [
       {
         "label": "US Gold",
         "slug": "us-gold"
+      },
+      {
+        "label": "Kixx XL",
+        "slug": "kixx-xl"
       }
     ],
     "note": "Kixx is additive in CCG: a Kixx re-release credit creates an additional publisher archive association without replacing the game's original publisher.",
@@ -56,13 +64,13 @@
     "verified_on": "2026-08-19",
     "sources": [
       {
-        "label": "Centre for Computing History — Kixx catalogue",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Kixx&type=Games",
-        "type": "museum collection"
+        "label": "Mastertronic Collectors Archive — republished software labels",
+        "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
+        "type": "specialist preservation archive"
       },
       {
-        "label": "Centre for Computing History — ZX Spectrum Kixx catalogue",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=ZX+Spectrum&publisher=Kixx&type=Games",
+        "label": "Centre for Computing History — Kixx catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Kixx&type=Games",
         "type": "museum collection"
       }
     ]
