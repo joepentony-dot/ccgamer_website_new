@@ -1,0 +1,69 @@
+name: CCG Header First Paint Repair One-Off
+
+on:
+  push:
+    branches:
+      - fix/sitewide-static-header-first-paint-20260819
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ccg-header-first-paint-repair-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/sitewide-static-header-first-paint-20260819
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Apply first-paint runtime contract
+        run: node scripts/apply-header-first-paint-contract.js
+
+      - name: Synchronize core public headers
+        run: node scripts/sync-core-public-header.js
+
+      - name: Regenerate generated composer pages and hubs
+        run: node scripts/generate-composer-pages.js
+
+      - name: Validate repaired source
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-nav-fit.js
+          node --check js/ccg-header-auth-loader.js
+          node --check js/ccg-music-config.js
+          node --check js/ccg-music-navigation.js
+          node --check js/ccg-release-check.js
+          node --check service-worker.js
+          node --check scripts/shared-public-header.js
+          node --check scripts/sync-core-public-header.js
+          node --check scripts/audit-header-source-parity.js
+          node --check scripts/generate-composer-pages.js
+          node scripts/audit-header-source-parity.js
+          node --test tests/nav-discovery-scroll.test.mjs
+          node scripts/audit-nav-more-browser.js
+
+      - name: Commit repaired source and generated outputs
+        shell: bash
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain --untracked-files=all)" ]; then
+            echo "Repair branch is already synchronized."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Stabilize sitewide header from first paint"
+          git push origin HEAD:fix/sitewide-static-header-first-paint-20260819
