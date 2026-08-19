@@ -12,6 +12,7 @@ const {
   SECONDARY_LINKS,
   REQUIRED_STYLES,
   REQUIRED_SCRIPTS,
+  AUTH_SNAPSHOT_KEY,
   normaliseHtml,
   processRoot,
   shouldExclude
@@ -67,6 +68,13 @@ test('normaliser replaces old first-paint navigation with the canonical shell', 
   }
 
   assert.match(result.html, /class="ccg-auth-slot" data-ccg-auth-pending="true"/);
+  assert.match(result.html, /data-ccg-auth-snapshot-bootstrap="true"/);
+  assert.ok(result.html.includes(`sessionStorage.getItem("${AUTH_SNAPSHOT_KEY}")`));
+  assert.match(result.html, /slot\.setAttribute\("data-ccg-auth-provisional", "true"\)/);
+  assert.match(result.html, /profile\.href = "\/community\/profile\.html"/);
+  assert.match(result.html, /logout\.textContent = "Logout"/);
+  assert.match(result.html, /login\.textContent = "Join \/ Login"/);
+
   assert.equal(count(result.html, 'ccg-socials__icon--yt'), 1);
   assert.equal(count(result.html, 'ccg-socials__icon--patreon'), 1);
   assert.equal(count(result.html, 'ccg-socials__icon--paypal'), 1);
@@ -97,12 +105,21 @@ test('normaliser makes all shell CSS and JS direct staged dependencies', () => {
   assert.match(result.html, /href="\/resources\/css\/ccg-community\.css" data-ccg-static-shell-style="true"/);
 });
 
-test('normalisation is idempotent', () => {
+test('a preload-only social stylesheet never counts as the direct first-paint stylesheet', () => {
+  const preload = '<link rel="preload" href="../resources/css/ccg-socials.css" as="style" onload="this.rel=\'stylesheet\'">';
+  const result = normaliseHtml(oldHeaderPage(preload));
+
+  assert.equal(count(result.html, 'rel="preload" href="../resources/css/ccg-socials.css"'), 1);
+  assert.equal(count(result.html, 'rel="stylesheet" href="/resources/css/ccg-socials.css" data-ccg-static-shell-style="true"'), 1);
+});
+
+test('normalisation is idempotent including inline auth bootstrap and direct styles', () => {
   const first = normaliseHtml(oldHeaderPage());
   const second = normaliseHtml(first.html);
   assert.equal(second.applicable, true);
   assert.equal(second.changed, false);
   assert.equal(second.html, first.html);
+  assert.equal(count(second.html, 'data-ccg-auth-snapshot-bootstrap="true"'), 1);
 });
 
 test('admin, auth and supabase paths stay outside the deployment normaliser', () => {
