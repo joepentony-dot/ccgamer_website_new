@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-19-public-release-v3";
+const CACHE_VERSION = "2026-08-19-public-release-v4";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -26,6 +26,8 @@ const PUBLIC_SHELL = Object.freeze([
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
   "/js/ccg-nav-fit.js",
+  "/js/ccg-auth.js",
+  "/js/ccg-header-auth-loader.js",
   "/js/ccg-pwa.js",
   "/js/ccg-pwa-visible-install.js",
   "/js/ccg-release-check.js"
