@@ -10,6 +10,9 @@
   background: rgba(3, 9, 24, 0.96);
   color: #dffaff;
   box-shadow: 0 9px 26px rgba(0, 0, 0, 0.26);
+  /* This is a display-only status strip. It must never sit in the pointer
+     path of a desktop navigation dropdown that visually overlaps it. */
+  pointer-events: none;
 }
 
 .ccg-mode-identity__inner {
@@ -24,6 +27,7 @@
   line-height: 1;
   letter-spacing: 0.09em;
   text-transform: uppercase;
+  pointer-events: none;
 }
 
 .ccg-mode-identity__name,
