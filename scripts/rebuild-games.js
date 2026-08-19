@@ -35,6 +35,7 @@ const steps = [
   ["generate-video-seo.js"],
   ["generate-video-library.js"],
   ["ensure-secondary-publisher-runtime.js"],
+  ["ensure-downloads-discovery-links.js"],
   ["generate-downloads-page.js"],
   ["update-downloads-static-pages.js"],
   ["validate-downloads-page.js"],
