@@ -2,7 +2,7 @@
    CCG ARCHIVE SHORTCUTS
    ------------------------------------------------------------
    Adds distinctive archive destinations to global search only.
-   Public navigation is owned exclusively by ccg-nav-authority.js;
+   Public navigation is owned exclusively by ccg-nav-core.js;
    this module must never inject or reorder navigation links.
 ============================================================ */
 
