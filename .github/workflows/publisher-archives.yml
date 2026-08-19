@@ -8,7 +8,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/materialize-publisher-histories.js"
+      - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
+      - "scripts/audit-publisher-seo-evidence-tolerant.js"
+      - "scripts/mark-rerelease-publishers.js"
+      - "scripts/link-publisher-strength-genres.js"
       - "scripts/apply-publisher-evidence-overrides.js"
       - "scripts/stabilize-publisher-static-pages.js"
       - "scripts/ensure-publisher-history-runtime.js"
@@ -23,6 +27,7 @@ on:
       - "data/publisher-playlists.json"
       - "resources/css/publisher-history.css"
       - "resources/css/publisher-logos.css"
+      - "resources/css/publisher-rerelease.css"
       - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
   pull_request:
@@ -32,7 +37,11 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/materialize-publisher-histories.js"
+      - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
+      - "scripts/audit-publisher-seo-evidence-tolerant.js"
+      - "scripts/mark-rerelease-publishers.js"
+      - "scripts/link-publisher-strength-genres.js"
       - "scripts/apply-publisher-evidence-overrides.js"
       - "scripts/stabilize-publisher-static-pages.js"
       - "scripts/ensure-publisher-history-runtime.js"
@@ -47,6 +56,7 @@ on:
       - "data/publisher-playlists.json"
       - "resources/css/publisher-history.css"
       - "resources/css/publisher-logos.css"
+      - "resources/css/publisher-rerelease.css"
       - "resources/images/publishers/**"
       - ".github/workflows/publisher-archives.yml"
   workflow_dispatch:
@@ -82,7 +92,11 @@ jobs:
           node --check js/ccg-nav.js
           node --check scripts/generate-publisher-pages.js
           node --check scripts/materialize-publisher-histories.js
+          node --check scripts/materialize-publisher-histories-tolerant.js
           node --check scripts/audit-publisher-seo-evidence.js
+          node --check scripts/audit-publisher-seo-evidence-tolerant.js
+          node --check scripts/mark-rerelease-publishers.js
+          node --check scripts/link-publisher-strength-genres.js
           node --check scripts/apply-publisher-evidence-overrides.js
           node --check scripts/stabilize-publisher-static-pages.js
           node --check scripts/ensure-publisher-history-runtime.js
@@ -110,8 +124,14 @@ jobs:
       - name: Verify publisher logo output
         run: node scripts/validate-publisher-logo-output.js
 
-      - name: Embed publisher histories in initial HTML
-        run: node scripts/materialize-publisher-histories.js
+      - name: Mark dedicated re-release publishers
+        run: node scripts/mark-rerelease-publishers.js
+
+      - name: Embed publisher histories without inventing missing bios
+        run: node scripts/materialize-publisher-histories-tolerant.js
+
+      - name: Link unambiguous archive strengths to canonical genres
+        run: node scripts/link-publisher-strength-genres.js
 
       - name: Restore publisher runtime parity
         run: node scripts/ensure-publisher-history-runtime.js
@@ -120,7 +140,7 @@ jobs:
         run: node scripts/stabilize-publisher-static-pages.js
 
       - name: Validate publisher SEO and evidence output
-        run: node scripts/audit-publisher-seo-evidence.js
+        run: node scripts/audit-publisher-seo-evidence-tolerant.js
 
       - name: Detect sitemap-impacting generated changes
         id: sitemap-impact
@@ -175,4 +195,4 @@ jobs:
             --base main \
             --head "${GENERATED_BRANCH}" \
             --title "Refresh generated publisher archives" \
-            --body "Automatically generated publisher archive output after publisher logo assets were added directly to main."
+            --body "Automatically generated publisher archive output after publisher source or logo assets changed on main."
