@@ -4,6 +4,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { LEGACY_COMPOSER_REDIRECTS } = require("./composer-utils");
 
 const ROOT = path.resolve(__dirname, "..");
 const problems = [];
@@ -49,6 +50,8 @@ const PINNED_MORE_LABELS = Object.freeze([
     "Contact"
 ]);
 
+const LEGACY_REDIRECT_SLUGS = new Set(Array.from(LEGACY_COMPOSER_REDIRECTS.keys()));
+
 function read(relativePath) {
     const filePath = path.join(ROOT, relativePath);
     if (!fs.existsSync(filePath)) {
@@ -58,8 +61,33 @@ function read(relativePath) {
     return fs.readFileSync(filePath, "utf8");
 }
 
+function decodeHtmlText(value) {
+    return String(value || "")
+        .replace(/&amp;/gi, "&")
+        .replace(/&quot;/gi, '"')
+        .replace(/&#39;|&apos;/gi, "'")
+        .replace(/&lt;/gi, "<")
+        .replace(/&gt;/gi, ">")
+        .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+        .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)));
+}
+
+function normalizeText(value) {
+    return decodeHtmlText(value).replace(/\s+/g, " ").trim();
+}
+
 function headerFrom(html) {
     return html.match(/<header\b(?=[^>]*\bclass=["'][^"']*\bccg-header\b[^"']*["'])(?=[^>]*\bdata-ccg-header\b)[^>]*>[\s\S]*?<\/header>/i)?.[0] || "";
+}
+
+function allHeaderLinkLabels(header) {
+    const labels = [];
+    const linkPattern = /<a\b[^>]*class=["'][^"']*\bccg-nav__link\b[^"']*["'][^>]*>([\s\S]*?)<\/a>/gi;
+    let match;
+    while ((match = linkPattern.exec(header))) {
+        labels.push(normalizeText(match[1].replace(/<[^>]+>/g, " ")));
+    }
+    return labels;
 }
 
 function visibleTopLevelLabels(header) {
@@ -68,13 +96,17 @@ function visibleTopLevelLabels(header) {
         header.match(/<ul\b[^>]*data-ccg-nav-secondary[^>]*>[\s\S]*?<\/ul>/i)?.[0] || ""
     ].join("\n");
     const labels = [];
-    const itemPattern = /<li\b([^>]*)>[\s\S]*?<a\b[^>]*class=["'][^"']*\bccg-nav__link\b[^"']*["'][^>]*>([^<]+)<\/a>[\s\S]*?<\/li>/gi;
+    const itemPattern = /<li\b([^>]*)>[\s\S]*?<a\b[^>]*class=["'][^"']*\bccg-nav__link\b[^"']*["'][^>]*>([\s\S]*?)<\/a>[\s\S]*?<\/li>/gi;
     let match;
     while ((match = itemPattern.exec(listHtml))) {
         if (/\bhidden\b/i.test(match[1])) continue;
-        labels.push(match[2].replace(/\s+/g, " ").trim());
+        labels.push(normalizeText(match[2].replace(/<[^>]+>/g, " ")));
     }
     return labels;
+}
+
+function escapeRegex(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function auditPage(relativePath) {
@@ -101,15 +133,17 @@ function auditPage(relativePath) {
         problems.push(`${relativePath}: first-paint navigation is not pre-fitted for More`);
     }
 
+    const headerLabels = allHeaderLinkLabels(header);
     REQUIRED_LABELS.forEach((label) => {
-        if (!header.includes(`>${label}</a>`)) problems.push(`${relativePath}: header is missing ${label}`);
+        if (!headerLabels.includes(label)) problems.push(`${relativePath}: header is missing ${label}`);
     });
+
     PINNED_MORE_LABELS.forEach((label) => {
-        const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = escapeRegex(label);
         const topLevel = new RegExp(`<li\\b[^>]*hidden[^>]*>[\\s\\S]*?>${escaped}<\\/a>`, "i");
-        if (!topLevel.test(header)) problems.push(`${relativePath}: ${label} is not pinned out of the first-paint top row`);
+        if (!topLevel.test(decodeHtmlText(header))) problems.push(`${relativePath}: ${label} is not pinned out of the first-paint top row`);
         const moreLink = new RegExp(`class=["'][^"']*\\bccg-nav-fit__link\\b[^"']*["'][^>]*>${escaped}<\\/a>`, "i");
-        if (!moreLink.test(header)) problems.push(`${relativePath}: ${label} is missing from first-paint More`);
+        if (!moreLink.test(decodeHtmlText(header))) problems.push(`${relativePath}: ${label} is missing from first-paint More`);
     });
 
     const visible = visibleTopLevelLabels(header);
@@ -123,7 +157,7 @@ function auditPage(relativePath) {
         "/resources/css/ccg-socials.css",
         "/resources/css/ccg-community.css"
     ].forEach((href) => {
-        const escaped = href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escaped = escapeRegex(href);
         if (!new RegExp(`<link\\b(?=[^>]*rel=["']stylesheet["'])(?=[^>]*href=["']${escaped}["'])`, "i").test(html)) {
             problems.push(`${relativePath}: synchronous first-paint stylesheet is missing: ${href}`);
         }
@@ -150,7 +184,7 @@ if (!musicNavigation.includes("if (document.body)")) {
 }
 
 const generatedComposerFiles = fs.readdirSync(path.join(ROOT, "music"), { withFileTypes: true })
-    .filter((entry) => entry.isDirectory() && entry.name !== "composers")
+    .filter((entry) => entry.isDirectory() && entry.name !== "composers" && !LEGACY_REDIRECT_SLUGS.has(entry.name))
     .map((entry) => path.join("music", entry.name, "index.html"))
     .filter((relativePath) => fs.existsSync(path.join(ROOT, relativePath)))
     .filter((relativePath) => read(relativePath).includes('data-generated-composer="true"'));
@@ -166,6 +200,21 @@ if (!generatedComposerFiles.length) {
     });
 }
 
+for (const [fromSlug, toSlug] of LEGACY_COMPOSER_REDIRECTS) {
+    const relativePath = path.join("music", fromSlug, "index.html");
+    const html = read(relativePath);
+    if (!html) continue;
+    if (!html.includes('name="robots" content="noindex,follow"')) {
+        problems.push(`${relativePath}: legacy composer redirect must remain noindex,follow`);
+    }
+    if (!html.includes(`/music/${toSlug}/`)) {
+        problems.push(`${relativePath}: legacy composer redirect does not target /music/${toSlug}/`);
+    }
+    if (html.includes('data-ccg-static-header="true"')) {
+        problems.push(`${relativePath}: lightweight legacy redirect should not carry the full public header`);
+    }
+}
+
 if (problems.length) {
     console.error("Header source parity audit failed:");
     problems.forEach((problem) => console.error(` - ${problem}`));
@@ -177,3 +226,4 @@ console.log("- header exists in source before first paint");
 console.log("- account and social structure is reserved consistently");
 console.log("- nav-fit/social styles are synchronous");
 console.log("- Emulation, Install, About and Contact begin in More instead of flashing across the top row");
+console.log(`- ${LEGACY_REDIRECT_SLUGS.size} intentional legacy composer redirect(s) remain lightweight noindex redirects`);
