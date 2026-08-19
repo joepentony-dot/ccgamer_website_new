@@ -98,6 +98,15 @@ test('desktop navigation paints at its settled density before fitting runs', () 
   assert.doesNotMatch(navFit, /clientWidth\s*\|\|\s*window\.innerWidth\)\s*-\s*12/);
 });
 
+test('mobile navigation cannot expose the desktop row before responsive runtime loads', () => {
+  assert.match(navFitCss, /@media \(max-width:\s*1199px\)[\s\S]*\.ccg-header \.ccg-nav-toggle\s*\{[\s\S]*display:\s*inline-flex\s*!important/);
+  assert.match(navFitCss, /@media \(max-width:\s*1199px\)[\s\S]*\.ccg-header \.ccg-nav\s*\{[\s\S]*display:\s*none\s*!important/);
+  assert.match(navFitCss, /@media \(max-width:\s*520px\)[\s\S]*grid-template-areas:\s*[\s\S]*"brand toggle"[\s\S]*"actions actions"/);
+  assert.match(navFitCss, /@media \(max-width:\s*520px\)[\s\S]*\.ccg-header \.ccg-brand__logo\s*\{[\s\S]*height:\s*40px\s*!important/);
+  assert.match(navFitCss, /@media \(max-width:\s*520px\)[\s\S]*\.ccg-header \.ccg-nav-toggle\s*\{[\s\S]*width:\s*44px\s*!important/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav-toggle__label\s*\{[\s\S]*display:\s*none\s*!important/);
+});
+
 test('music waits for adaptive navigation CSS before exposing its injected header', () => {
   assert.ok(musicNavigation.includes('"/resources/css/ccg-nav-fit.css"'), 'Music header must preload adaptive navigation CSS');
   assert.match(musicNavigation, /function waitForStyle\(href\)/);
@@ -136,12 +145,15 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(releaseCheck, /"\/js\/ccg-nav\.js"/);
   assert.match(releaseCheck, /"\/js\/ccg-pwa-visible-install\.js"/);
   assert.match(releaseCheck, /"\/resources\/css\/ccg-nav-fit\.css"/);
+  assert.match(releaseCheck, /"\/resources\/css\/ccg-responsive-safety\.css"/);
+  assert.match(releaseCheck, /"\/resources\/css\/ccg-responsive-page-polish\.css"/);
+  assert.match(releaseCheck, /"\/resources\/css\/ccg-sitewide-layout-optimization\.css"/);
   assert.match(releaseCheck, /"\/resources\/css\/ccg-mode-identity\.css"/);
   assert.match(releaseCheck, /cache: "no-store"/);
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
   assert.match(releaseCheck, /CCG update ready/);
-  assert.match(serviceWorker, /2026-08-19-public-release-v7/);
+  assert.match(serviceWorker, /2026-08-19-public-release-v8/);
   assert.match(headers, /\/js\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);
