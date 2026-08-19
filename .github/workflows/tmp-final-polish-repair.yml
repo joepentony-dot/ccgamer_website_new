@@ -1,0 +1,185 @@
+name: Temporary CCG Navigation Search Zzap Repair
+
+on:
+  push:
+    branches:
+      - fix/nav-search-zzap-polish-20260819
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply bounded fixes
+        shell: python
+        run: |
+          from pathlib import Path
+          import subprocess
+
+          def replace(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              found = text.count(old)
+              if found != count:
+                  raise SystemExit(f'{path}: expected {count} occurrence(s), found {found}: {old[:100]!r}')
+              p.write_text(text.replace(old, new, count), encoding='utf-8')
+
+          # Desktop More owns Install CCG App as well as About/Contact.
+          replace('js/ccg-nav-fit.js',
+              'const PINNED_MORE_LABELS = new Set(["about", "about me", "contact"]);',
+              'const PINNED_MORE_LABELS = new Set(["install ccg app", "about", "about me", "contact"]);')
+          replace('js/ccg-nav-fit.js',
+              'const BASE_MORE_LINKS = [\n        ["About Me", "/about.html"],\n        ["Contact", "/contact.html"]\n    ];',
+              'const BASE_MORE_LINKS = [\n        ["Install CCG App", "/install-app.html"],\n        ["About Me", "/about.html"],\n        ["Contact", "/contact.html"]\n    ];')
+          replace('resources/css/ccg-nav-fit.css',
+              '.ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),\n    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {',
+              '.ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/install-app.html"]),\n    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),\n    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {')
+          replace('resources/css/ccg-nav-fit.css',
+              'About Me and Contact are desktop More destinations. Hide their',
+              'Install CCG App, About Me and Contact are desktop More destinations. Hide their')
+
+          # Create whole-site search directly in its final main-content position.
+          p = Path('js/ccg-global-search.js')
+          text = p.read_text(encoding='utf-8')
+          old = '''    function createTrigger() {\n        const actions = document.querySelector(".ccg-header-actions");\n        const homeMain = document.querySelector('html[data-ccg-page="home"] .ccg-main--home');\n        if ((!actions && !homeMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;'''
+          new = '''    function createTrigger() {\n        const actions = document.querySelector(".ccg-header-actions");\n        const main = document.querySelector("main.ccg-main, .ccg-main");\n        const homeMain = document.querySelector('html[data-ccg-page="home"] .ccg-main--home');\n        const commandMain = homeMain || main;\n        if ((!actions && !commandMain) || document.querySelector("[data-ccg-global-search-trigger]")) return;'''
+          if text.count(old) != 1:
+              raise SystemExit('ccg-global-search.js: createTrigger preamble did not match')
+          text = text.replace(old, new, 1)
+          old = '''        if (homeMain) {\n            const command = document.createElement("div");\n            command.className = "ccg-home-search-command";\n            command.setAttribute("role", "search");\n            command.setAttribute("aria-label", "Search the CCG website");\n            trigger.classList.add("ccg-global-search-trigger--home");\n            command.appendChild(trigger);\n            homeMain.insertBefore(command, homeMain.firstChild);\n        } else {\n            const socialLinks = actions.querySelector(".ccg-header-socials");\n            actions.insertBefore(trigger, socialLinks || actions.firstChild);\n        }'''
+          new = '''        if (commandMain) {\n            let command = commandMain.querySelector(":scope > .ccg-home-search-command");\n            if (!(command instanceof HTMLElement)) {\n                command = document.createElement("div");\n                command.className = "ccg-home-search-command";\n                command.setAttribute("role", "search");\n                command.setAttribute("aria-label", "Search the CCG website");\n            }\n            trigger.classList.add("ccg-global-search-trigger--home");\n            command.appendChild(trigger);\n            if (commandMain.firstElementChild !== command) commandMain.insertBefore(command, commandMain.firstChild);\n        } else {\n            const socialLinks = actions.querySelector(".ccg-header-socials");\n            actions.insertBefore(trigger, socialLinks || actions.firstChild);\n        }'''
+          if text.count(old) != 1:
+              raise SystemExit('ccg-global-search.js: placement block did not match')
+          text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Zzap loader never owns pointer hits, and expensive title matching yields to the UI.
+          replace('resources/css/zzap64-performance.css',
+              '    transform: none;\n}',
+              '    transform: none;\n    pointer-events: none;\n}', 1)
+
+          p = Path('js/zzap64-awards.js')
+          text = p.read_text(encoding='utf-8')
+          replace_old = '        progressTimer: null,\n        gamesPromise: null\n'
+          replace_new = '        progressTimer: null,\n        gamesPromise: null,\n        gameMatchCache: new Map()\n'
+          if text.count(replace_old) != 1:
+              raise SystemExit('zzap64-awards.js: state block did not match')
+          text = text.replace(replace_old, replace_new, 1)
+          marker = '''    function nextFrame(callback) {\n        if (typeof window.requestAnimationFrame === "function") {\n            window.requestAnimationFrame(callback);\n        } else {\n            window.setTimeout(callback, 16);\n        }\n    }\n'''
+          insert = marker + '''\n    function yieldToMainThread() {\n        if (globalThis.scheduler && typeof globalThis.scheduler.yield === "function") {\n            return globalThis.scheduler.yield();\n        }\n        return new Promise((resolve) => window.setTimeout(resolve, 0));\n    }\n'''
+          if text.count(marker) != 1:
+              raise SystemExit('zzap64-awards.js: nextFrame marker did not match')
+          text = text.replace(marker, insert, 1)
+          old = '''    function findGame(entry) {\n        if (!state.gameIndex || state.linksStatus !== "ready") return null;\n        return state.matcher.findGame(entry, state.gameIndex);\n    }'''
+          new = '''    function findGame(entry) {\n        if (!state.gameIndex) return null;\n        const key = awardRecordKey(entry);\n        if (state.gameMatchCache.has(key)) return state.gameMatchCache.get(key);\n        if (state.linksStatus !== "ready") return null;\n        return state.matcher.findGame(entry, state.gameIndex);\n    }\n\n    async function matchReviewedGamesResponsively() {\n        state.gameMatchCache.clear();\n        const total = state.entries.length;\n        let sliceStarted = performance.now();\n\n        for (let index = 0; index < total; index += 1) {\n            const entry = state.entries[index];\n            state.gameMatchCache.set(awardRecordKey(entry), state.matcher.findGame(entry, state.gameIndex));\n\n            const shouldYield = performance.now() - sliceStarted >= 8 || index + 1 === total;\n            if (shouldYield && index + 1 < total) {\n                const checked = index + 1;\n                const progress = 80 + Math.round((checked / Math.max(1, total)) * 16);\n                updateProgress(progress, "Matching review pages…", `${checked.toLocaleString("en-GB")} of ${total.toLocaleString("en-GB")} award records checked.`);\n                await yieldToMainThread();\n                sliceStarted = performance.now();\n            }\n        }\n    }'''
+          if text.count(old) != 1:
+              raise SystemExit('zzap64-awards.js: findGame block did not match')
+          text = text.replace(old, new, 1)
+          old = '''            updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards.`);\n            state.gameIndex = state.matcher.buildGameIndex(state.games);\n            state.linksStatus = "ready";\n            await render();'''
+          new = '''            updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards without blocking navigation.`);\n            state.gameIndex = state.matcher.buildGameIndex(state.games);\n            await matchReviewedGamesResponsively();\n            state.linksStatus = "ready";\n            await render();'''
+          if text.count(old) != 1:
+              raise SystemExit('zzap64-awards.js: reviewed-game block did not match')
+          text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Release v8 includes every shared/runtime asset changed here.
+          replace('service-worker.js',
+              'const CACHE_VERSION = "2026-08-19-public-release-v7";',
+              'const CACHE_VERSION = "2026-08-19-public-release-v8";')
+          p = Path('js/ccg-release-check.js')
+          text = p.read_text(encoding='utf-8')
+          anchor = '        "/js/ccg-music-navigation.js",\n'
+          addition = anchor + '        "/js/ccg-global-search.js",\n        "/js/zzap64-awards.js",\n'
+          if text.count(anchor) != 1:
+              raise SystemExit('release-check: JS anchor missing')
+          text = text.replace(anchor, addition, 1)
+          anchor = '        "/resources/css/ccg-nav-fit.css",\n'
+          addition = anchor + '        "/resources/css/ccg-global-search.css",\n        "/resources/css/zzap64-performance.css",\n'
+          if text.count(anchor) != 1:
+              raise SystemExit('release-check: CSS anchor missing')
+          text = text.replace(anchor, addition, 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Regression tests encode the exact fixes.
+          p = Path('tests/nav-discovery-scroll.test.mjs')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');\n", "const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');\nconst globalSearch = fs.readFileSync('js/ccg-global-search.js', 'utf8');\nconst zzapAwards = fs.readFileSync('js/zzap64-awards.js', 'utf8');\nconst zzapPerformanceCss = fs.readFileSync('resources/css/zzap64-performance.css', 'utf8');\n", 1)
+          text = text.replace("test('desktop More is functional and deliberately owns About Me and Contact', () => {\n  assert.match(navFit, /PINNED_MORE_LABELS = new Set\\(\\[\"about\", \"about me\", \"contact\"\\]\\)/);", "test('desktop More is functional and deliberately owns Install CCG App, About Me and Contact', () => {\n  assert.match(navFit, /PINNED_MORE_LABELS = new Set\\(\\[\"install ccg app\", \"about\", \"about me\", \"contact\"\\]\\)/);", 1)
+          text = text.replace('  assert.match(navFit, /const BASE_MORE_LINKS/);\n', '  assert.match(navFit, /const BASE_MORE_LINKS/);\n  assert.match(navFit, /\\["Install CCG App", "\\/install-app\\.html"\\]/);\n', 1)
+          text = text.replace('  assert.match(navFitCss, /a\\[href="\\/about\\.html"\\]/);\n', '  assert.match(navFitCss, /a\\[href="\\/install-app\\.html"\\]/);\n  assert.match(navFitCss, /a\\[href="\\/about\\.html"\\]/);\n', 1)
+          insertion = '''\n\ntest('whole-site search is created directly in its final main-content command position', () => {\n  assert.match(globalSearch, /const commandMain = homeMain \\|\\| main/);\n  assert.match(globalSearch, /commandMain\\.insertBefore\\(command, commandMain\\.firstChild\\)/);\n});\n\ntest('Zzap reviewed-game matching yields to navigation while progress continues', () => {\n  assert.match(zzapAwards, /function yieldToMainThread\\(\\)/);\n  assert.match(zzapAwards, /scheduler\\.yield/);\n  assert.match(zzapAwards, /gameMatchCache: new Map\\(\\)/);\n  assert.match(zzapAwards, /await matchReviewedGamesResponsively\\(\\)/);\n  assert.match(zzapAwards, /await yieldToMainThread\\(\\)/);\n  assert.match(zzapPerformanceCss, /\\.zzap-loading:not\\(\\[hidden\\]\\)[\\s\\S]*pointer-events:\\s*none/);\n});\n'''
+          anchor = "\ntest('Find Me a Game exposes no removed game-download filter or copy', () => {"
+          if text.count(anchor) != 1:
+              raise SystemExit('nav test insertion anchor missing')
+          text = text.replace(anchor, insertion + anchor, 1)
+          text = text.replace('/2026-08-19-public-release-v7/', '/2026-08-19-public-release-v8/', 1)
+          p.write_text(text, encoding='utf-8')
+
+          p = Path('tests/global-shell-auth.test.mjs')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace("test('installed app release v7 watches the full global shell', () => {", "test('installed app release v8 watches the full global shell', () => {", 1)
+          text = text.replace('/2026-08-19-public-release-v7/', '/2026-08-19-public-release-v8/', 1)
+          text = text.replace("    '/js/ccg-music-navigation.js',\n", "    '/js/ccg-music-navigation.js',\n    '/js/ccg-global-search.js',\n    '/js/zzap64-awards.js',\n", 1)
+          text = text.replace("    '/resources/css/ccg-nav-fit.css',\n", "    '/resources/css/ccg-nav-fit.css',\n    '/resources/css/ccg-global-search.css',\n    '/resources/css/zzap64-performance.css',\n", 1)
+          p.write_text(text, encoding='utf-8')
+
+          p = Path('scripts/audit-zzap64-performance.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."]\n', '  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."],\n  ["matchReviewedGamesResponsively", "Zzap reviewed-game matching is not chunked responsively."],\n  ["await yieldToMainThread();", "Zzap reviewed-game matching does not yield to navigation/input."],\n  ["gameMatchCache", "Zzap reviewed-game matches are not cached before card rendering."]\n', 1)
+          text = text.replace('  ["prefers-reduced-motion", "Zzap progress motion lacks a reduced-motion rule."]\n', '  ["prefers-reduced-motion", "Zzap progress motion lacks a reduced-motion rule."],\n  ["pointer-events: none", "Zzap progress strip can intercept site navigation while loading."]\n', 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Extend browser More audit to include Install and guarantee Emulation remains visible there.
+          p = Path('scripts/audit-nav-more-browser.js')
+          text = p.read_text(encoding='utf-8')
+          old = '''    for (const width of [1440, 1920]) {\n      await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");\n      await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");\n    }'''
+          new = '''    for (const width of [1440, 1920]) {\n      await clickMoreDestination(sessionId, width, "Install CCG App", "/install-app.html", "/install-app.html");\n      const installState = await execute(sessionId, `\n        return (function () {\n          const visibleSecondary = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li > .ccg-nav__link'))\n            .filter((link) => getComputedStyle(link.closest('li')).display !== 'none')\n            .map((link) => link.textContent.trim());\n          return {\n            emulationVisible: visibleSecondary.includes('Emulation'),\n            installVisible: visibleSecondary.includes('Install CCG App')\n          };\n        })();\n      `);\n      if (!installState.emulationVisible || installState.installVisible) {\n        throw new Error(`Install page desktop navigation is not stable at ${width}px: ${JSON.stringify(installState)}`);\n      }\n      await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");\n      await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");\n    }'''
+          if text.count(old) != 1:
+              raise SystemExit('browser audit destination loop did not match')
+          text = text.replace(old, new, 1)
+          text = text.replace("return href === '/about.html' || href === '/contact.html';", "return href === '/install-app.html' || href === '/about.html' || href === '/contact.html';", 1)
+          text = text.replace('console.log("- About Me and Contact own their hit targets and navigate successfully at both widths");', 'console.log("- Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");\n    console.log("- Install page keeps Emulation visible while Install CCG App remains inside More");', 1)
+          p.write_text(text, encoding='utf-8')
+
+          # Extend first-90-frame audit so late search-command insertion cannot shift page content again.
+          p = Path('scripts/audit-header-frame-local.js')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace('const PANEL_RANGE_TOLERANCE = 40;\n', 'const PANEL_RANGE_TOLERANCE = 40;\nconst CONTENT_TOP_TOLERANCE = 1;\n', 1)
+          old = '''    if (nav && link && inner) {\n      const ls = getComputedStyle(link);\n      const nr = nav.getBoundingClientRect();\n      const lr = link.getBoundingClientRect();\n      window.__ccgHeaderFrames.push({'''
+          new = '''    if (nav && link && inner) {\n      const ls = getComputedStyle(link);\n      const nr = nav.getBoundingClientRect();\n      const lr = link.getBoundingClientRect();\n      const main = document.querySelector('main.ccg-main, .ccg-main');\n      const contentAnchor = main ? Array.from(main.children).find((node) => !node.classList.contains('ccg-home-search-command')) : null;\n      const contentRect = contentAnchor ? contentAnchor.getBoundingClientRect() : null;\n      window.__ccgHeaderFrames.push({'''
+          if text.count(old) != 1:
+              raise SystemExit('header frame sampler anchor missing')
+          text = text.replace(old, new, 1)
+          text = text.replace('''        letterSpacing: ls.letterSpacing\n      });''', '''        letterSpacing: ls.letterSpacing,\n        contentTop: contentRect ? Math.round(contentRect.top * 10) / 10 : null,\n        searchCommandPresent: Boolean(main?.querySelector(':scope > .ccg-home-search-command'))\n      });''', 1)
+          anchor = '''  const panelWidths = samples.map((sample) => Number(sample.navWidth)).filter(Number.isFinite);\n  const panelRange = panelWidths.length ? Math.max(...panelWidths) - Math.min(...panelWidths) : 0;\n  if (panelRange > PANEL_RANGE_TOLERANCE) {\n    violations.push(`nav panel width range ${panelRange.toFixed(1)}px exceeds ${PANEL_RANGE_TOLERANCE}px`);\n  }\n'''
+          addition = anchor + '''\n  const contentSamples = samples.filter((sample) => Number.isFinite(Number(sample.contentTop)));\n  if (contentSamples.length > 1) {\n    const baseline = Number(contentSamples[0].contentTop);\n    const maxShift = Math.max(...contentSamples.map((sample) => Math.abs(Number(sample.contentTop) - baseline)));\n    if (maxShift > CONTENT_TOP_TOLERANCE) {\n      violations.push(`main content shifted ${maxShift.toFixed(1)}px after first paint`);\n    }\n  }\n'''
+          if text.count(anchor) != 1:
+              raise SystemExit('header frame assertion anchor missing')
+          text = text.replace(anchor, addition, 1)
+          text = text.replace('const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/"];', 'const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/", "/install-app.html"];', 1)
+          p.write_text(text, encoding='utf-8')
+
+          for js in ['js/ccg-nav-fit.js','js/ccg-global-search.js','js/zzap64-awards.js','js/ccg-release-check.js','scripts/audit-header-frame-local.js','scripts/audit-nav-more-browser.js','scripts/audit-zzap64-performance.js']:
+              subprocess.run(['node','--check',js], check=True)
+          subprocess.run(['node','--test','tests/nav-discovery-scroll.test.mjs','tests/global-shell-auth.test.mjs'], check=True)
+          subprocess.run(['node','scripts/audit-zzap64-performance.js'], check=True)
+      - name: Commit bounded repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/ccg-nav-fit.js resources/css/ccg-nav-fit.css js/ccg-global-search.js js/zzap64-awards.js resources/css/zzap64-performance.css js/ccg-release-check.js service-worker.js tests/nav-discovery-scroll.test.mjs tests/global-shell-auth.test.mjs scripts/audit-zzap64-performance.js scripts/audit-nav-more-browser.js scripts/audit-header-frame-local.js
+          git diff --cached --check
+          git commit -m "Fix final navigation search and Zzap interaction faults [repair-bot]"
+          git push origin HEAD:fix/nav-search-zzap-polish-20260819
