@@ -20,6 +20,7 @@ function read(relativePath) {
 const html = read("zzap64/index.html");
 const script = read("js/zzap64-awards.js");
 const css = read("resources/css/zzap64-performance.css");
+const loaderGuardCss = read("resources/css/zzap64-loader-guard.css");
 
 [
   ['id="zzapLoading"', "Visible Zzap loading panel is missing."],
@@ -43,6 +44,7 @@ if (matcherPosition < 0 || archivePosition < 0 || matcherPosition > archivePosit
 
 [
   ["BATCH_SIZE", "Zzap card batching is missing."],
+  ['? 2 : 4', "Zzap matching batches are too large to keep the main thread responsive."],
   ["requestAnimationFrame", "Zzap rendering is not scheduled between browser frames."],
   ["createDocumentFragment", "Zzap rendering does not use document fragments."],
   ["linksStatus", "Zzap reviewed-game linking state is missing."],
@@ -51,7 +53,8 @@ if (matcherPosition < 0 || archivePosition < 0 || matcherPosition > archivePosit
   ["updateProgress", "Zzap loading progress updates are missing."],
   ['cache: "default"', "Static Zzap data is not using normal browser caching."],
   ["await loadAwardEntries();", "Zzap award records are not loaded before game-link enrichment."],
-  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."]
+  ["await loadReviewedGameLinks();", "Zzap reviewed-game links are not loaded as a separate stage."],
+  ["await new Promise((resolve) => nextFrame(resolve));", "Zzap enrichment does not yield to the browser before matching begins."]
 ].forEach(([needle, message]) => {
   if (!script.includes(needle)) problems.push(message);
 });
@@ -80,6 +83,10 @@ if (awardFetchPosition < 0 || gameFetchPosition < 0 || awardFetchPosition > game
   if (!css.includes(needle)) problems.push(message);
 });
 
+if (!/\.zzap-loading\.zzap-loading--top-guard:not\(\[hidden\]\)[\s\S]*?pointer-events:\s*none\s*!important/.test(loaderGuardCss)) {
+  problems.push("Zzap display-only loading strip can still intercept pointer input.");
+}
+
 if (css.includes("0 0 0 100vmax")) {
   problems.push("Zzap loading progress still dims the whole page instead of remaining a compact top strip.");
 }
@@ -90,4 +97,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Zzap progressive loading audit passed: cached data, staged enrichment, batched rendering and top-edge real progress verified.");
+console.log("Zzap progressive loading audit passed: cached data, cooperative matching batches, pointer-safe loading status, staged enrichment and render containment verified.");

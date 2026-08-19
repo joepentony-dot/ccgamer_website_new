@@ -78,7 +78,7 @@ async function webdriver(method, pathname, body) {
     method,
     headers: body === undefined ? undefined : { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(20000)
+    signal: AbortSignal.timeout(45000)
   });
   const text = await response.text();
   const payload = text ? JSON.parse(text) : {};
@@ -106,27 +106,55 @@ const EARLY_SAMPLER = `
 (() => {
   window.__ccgHeaderFrames = [];
   let frame = 0;
+  const round = (n) => Math.round(n * 10) / 10;
+  const widthOf = (el) => el ? round(el.getBoundingClientRect().width) : 0;
+  const visibleLabels = (root) => Array.from(root?.querySelectorAll(':scope > li') || [])
+    .filter((item) => getComputedStyle(item).display !== 'none' && item.getBoundingClientRect().width > 1)
+    .map((item) => item.textContent.replace(/\s+/g, ' ').trim());
   const sample = () => {
+    const header = document.querySelector('[data-ccg-header]');
     const nav = document.querySelector('[data-ccg-header] .ccg-nav');
     const link = document.querySelector('[data-ccg-nav-primary] .ccg-nav__link');
     const inner = document.querySelector('[data-ccg-header] .ccg-header-inner');
-    if (nav && link && inner) {
+    const bar = nav?.querySelector('.ccg-nav__bar');
+    const primary = nav?.querySelector('[data-ccg-nav-primary]');
+    const secondary = nav?.querySelector('[data-ccg-nav-secondary]');
+    const more = nav?.querySelector('.ccg-nav__more');
+    if (header && nav && link && inner && bar && primary && secondary && more) {
       const ls = getComputedStyle(link);
+      const ns = getComputedStyle(nav);
       const nr = nav.getBoundingClientRect();
       const lr = link.getBoundingClientRect();
+      const ir = inner.getBoundingClientRect();
+      const hr = header.getBoundingClientRect();
       window.__ccgHeaderFrames.push({
         frame,
-        time: Math.round(performance.now() * 10) / 10,
+        time: round(performance.now()),
         navClass: nav.className,
         linkClass: link.className,
-        navX: Math.round(nr.x * 10) / 10,
-        navWidth: Math.round(nr.width * 10) / 10,
+        navX: round(nr.x),
+        navWidth: round(nr.width),
         navScrollWidth: nav.scrollWidth,
-        linkWidth: Math.round(lr.width * 10) / 10,
-        linkHeight: Math.round(lr.height * 10) / 10,
+        navCssWidth: ns.width,
+        navMaxWidth: ns.maxWidth,
+        barWidth: widthOf(bar),
+        primaryWidth: widthOf(primary),
+        secondaryWidth: widthOf(secondary),
+        moreWidth: widthOf(more),
+        primaryLabels: visibleLabels(primary),
+        secondaryLabels: visibleLabels(secondary),
+        moreHidden: more.hidden,
+        innerX: round(ir.x),
+        innerWidth: round(ir.width),
+        headerWidth: round(hr.width),
+        viewportWidth: window.innerWidth,
+        linkWidth: round(lr.width),
+        linkHeight: round(lr.height),
         padding: ls.padding,
         fontSize: ls.fontSize,
-        letterSpacing: ls.letterSpacing
+        letterSpacing: ls.letterSpacing,
+        fontFamily: ls.fontFamily,
+        fontStatus: document.fonts ? document.fonts.status : 'unsupported'
       });
     }
     frame += 1;
@@ -137,12 +165,12 @@ const EARLY_SAMPLER = `
 `;
 
 function meaningfulChanges(samples) {
-  const fields = ["navX", "navWidth", "navScrollWidth", "linkWidth", "linkHeight", "padding", "fontSize", "letterSpacing"];
+  const fields = ["navX", "navWidth", "navScrollWidth", "navCssWidth", "barWidth", "primaryWidth", "secondaryWidth", "moreWidth", "primaryLabels", "secondaryLabels", "moreHidden", "innerX", "innerWidth", "headerWidth", "viewportWidth", "linkWidth", "linkHeight", "padding", "fontSize", "letterSpacing", "fontFamily", "fontStatus"];
   const output = [];
   for (let index = 1; index < samples.length; index += 1) {
     const before = samples[index - 1];
     const after = samples[index];
-    const changed = fields.filter((field) => before[field] !== after[field]);
+    const changed = fields.filter((field) => JSON.stringify(before[field]) !== JSON.stringify(after[field]));
     if (changed.length) output.push({
       from: before.frame,
       to: after.frame,
@@ -150,10 +178,12 @@ function meaningfulChanges(samples) {
       changed,
       beforeClass: before.navClass,
       afterClass: after.navClass,
-      beforeLink: { width: before.linkWidth, height: before.linkHeight, padding: before.padding, fontSize: before.fontSize, letterSpacing: before.letterSpacing },
-      afterLink: { width: after.linkWidth, height: after.linkHeight, padding: after.padding, fontSize: after.fontSize, letterSpacing: after.letterSpacing },
-      beforeNav: { x: before.navX, width: before.navWidth, scrollWidth: before.navScrollWidth },
-      afterNav: { x: after.navX, width: after.navWidth, scrollWidth: after.navScrollWidth }
+      beforeNav: { x: before.navX, width: before.navWidth, scrollWidth: before.navScrollWidth, cssWidth: before.navCssWidth, barWidth: before.barWidth, primaryWidth: before.primaryWidth, secondaryWidth: before.secondaryWidth, moreWidth: before.moreWidth, primaryLabels: before.primaryLabels, secondaryLabels: before.secondaryLabels, moreHidden: before.moreHidden },
+      afterNav: { x: after.navX, width: after.navWidth, scrollWidth: after.navScrollWidth, cssWidth: after.navCssWidth, barWidth: after.barWidth, primaryWidth: after.primaryWidth, secondaryWidth: after.secondaryWidth, moreWidth: after.moreWidth, primaryLabels: after.primaryLabels, secondaryLabels: after.secondaryLabels, moreHidden: after.moreHidden },
+      beforeLink: { width: before.linkWidth, height: before.linkHeight, padding: before.padding, fontSize: before.fontSize, letterSpacing: before.letterSpacing, fontFamily: before.fontFamily },
+      afterLink: { width: after.linkWidth, height: after.linkHeight, padding: after.padding, fontSize: after.fontSize, letterSpacing: after.letterSpacing, fontFamily: after.fontFamily },
+      beforeInner: { x: before.innerX, width: before.innerWidth, headerWidth: before.headerWidth, viewportWidth: before.viewportWidth, fontStatus: before.fontStatus },
+      afterInner: { x: after.innerX, width: after.innerWidth, headerWidth: after.headerWidth, viewportWidth: after.viewportWidth, fontStatus: after.fontStatus }
     });
   }
   return output;
@@ -164,29 +194,14 @@ function assertStableControls(samples, pathname, width) {
   const exactFields = ["padding", "fontSize", "letterSpacing"];
   const numericFields = ["linkWidth", "linkHeight"];
   const violations = [];
-
   for (const sample of samples.slice(1)) {
-    for (const field of exactFields) {
-      if (sample[field] !== first[field]) {
-        violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
-      }
-    }
-    for (const field of numericFields) {
-      if (Math.abs(Number(sample[field]) - Number(first[field])) > CONTROL_PIXEL_TOLERANCE) {
-        violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
-      }
-    }
+    for (const field of exactFields) if (sample[field] !== first[field]) violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
+    for (const field of numericFields) if (Math.abs(Number(sample[field]) - Number(first[field])) > CONTROL_PIXEL_TOLERANCE) violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
   }
-
   const panelWidths = samples.map((sample) => Number(sample.navWidth)).filter(Number.isFinite);
   const panelRange = panelWidths.length ? Math.max(...panelWidths) - Math.min(...panelWidths) : 0;
-  if (panelRange > PANEL_RANGE_TOLERANCE) {
-    violations.push(`nav panel width range ${panelRange.toFixed(1)}px exceeds ${PANEL_RANGE_TOLERANCE}px`);
-  }
-
-  if (violations.length) {
-    throw new Error(`${width}px ${pathname} changed visible header geometry after first paint: ${violations.join("; ")}`);
-  }
+  if (panelRange > PANEL_RANGE_TOLERANCE) violations.push(`nav panel width range ${panelRange.toFixed(1)}px exceeds ${PANEL_RANGE_TOLERANCE}px`);
+  if (violations.length) throw new Error(`${width}px ${pathname} changed visible header geometry after first paint: ${violations.join("; ")}`);
 }
 
 async function auditPage(sessionId, pathname, width) {
@@ -195,12 +210,19 @@ async function auditPage(sessionId, pathname, width) {
   await new Promise((resolve) => setTimeout(resolve, 1800));
   const samples = await execute(sessionId, "return window.__ccgHeaderFrames || [];");
   if (!samples.length) throw new Error(`${pathname} produced no samples.`);
-  assertStableControls(samples, pathname, width);
   const changes = meaningfulChanges(samples);
+  const widths = samples.map((sample) => sample.navWidth);
+  const minWidth = Math.min(...widths);
+  const maxWidth = Math.max(...widths);
+  const minSample = samples.find((sample) => sample.navWidth === minWidth);
+  const maxSample = samples.find((sample) => sample.navWidth === maxWidth);
   console.log(`HEADER FRAME VALIDATION ${width}px ${pathname}`);
   console.log(`first=${JSON.stringify(samples[0])}`);
+  console.log(`min=${JSON.stringify(minSample)}`);
+  console.log(`max=${JSON.stringify(maxSample)}`);
   console.log(`final=${JSON.stringify(samples[samples.length - 1])}`);
   console.log(`changes=${JSON.stringify(changes)}`);
+  assertStableControls(samples, pathname, width);
 }
 
 async function main() {
@@ -211,26 +233,15 @@ async function main() {
   try {
     await waitForDriver();
     const session = await webdriver("POST", "/session", {
-      capabilities: {
-        alwaysMatch: {
-          browserName: "chrome",
-          "goog:chromeOptions": {
-            args: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu", "--window-size=1920,1000"]
-          }
-        }
-      }
+      capabilities: { alwaysMatch: { browserName: "chrome", pageLoadStrategy: "eager", "goog:chromeOptions": { args: ["--headless=new", "--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu", "--window-size=1920,1000"] } } }
     });
     sessionId = session.sessionId;
     await cdp(sessionId, "Page.addScriptToEvaluateOnNewDocument", { source: EARLY_SAMPLER });
     const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/"];
-    for (const width of [1920, 1440]) {
-      for (const pathname of pages) await auditPage(sessionId, pathname, width);
-    }
+    for (const width of [1920, 1440]) for (const pathname of pages) await auditPage(sessionId, pathname, width);
     console.log("Header first-frame stability validation passed.");
   } finally {
-    if (sessionId) {
-      try { await webdriver("DELETE", `/session/${sessionId}`); } catch (_error) {}
-    }
+    if (sessionId) try { await webdriver("DELETE", `/session/${sessionId}`); } catch (_error) {}
     driver.kill("SIGTERM");
     await new Promise((resolve) => server.close(resolve));
   }

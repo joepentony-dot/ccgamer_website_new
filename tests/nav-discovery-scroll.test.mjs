@@ -47,9 +47,10 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
-test('desktop More is functional and deliberately owns About Me and Contact', () => {
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
+test('desktop More is functional and deliberately owns Install, About Me and Contact', () => {
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
+  assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /\["About Me", "\/about\.html"\]/);
   assert.match(navFit, /\["Contact", "\/contact\.html"\]/);
   assert.match(navFit, /event\.stopImmediatePropagation\(\)/);
@@ -58,6 +59,7 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFit, /showPopover/);
   assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
+  assert.match(navFitCss, /a\[href="\/install-app\.html"\]/);
   assert.match(navFitCss, /a\[href="\/about\.html"\]/);
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
   assert.match(navFitCss, /z-index:\s*2147483000\s*!important/);
@@ -81,10 +83,16 @@ test('navigation never hides during refresh or fitting', () => {
 
 test('desktop navigation paints at its settled density before fitting runs', () => {
   assert.ok(navFitCss.includes('.ccg-header .ccg-nav .ccg-nav__link'), 'First-frame nav selector must outrank late responsive polish');
+  assert.ok(navFitCss.includes('--ccg-nav-control-size: clamp(0.61rem, 0.57vw, 0.7rem)'), 'Settled desktop nav font size must be defined once for first-frame metrics');
+  assert.ok(navFitCss.includes('font-size: var(--ccg-nav-control-size) !important'), 'Controls must use the shared first-frame font-size metric');
   assert.ok(navFitCss.includes('min-height: 38px !important'), 'Settled desktop nav height must be present in first-frame CSS');
   assert.ok(navFitCss.includes('padding: 6px 5px !important'), 'Settled desktop nav padding must be present in first-frame CSS');
-  assert.ok(navFitCss.includes('font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important'), 'Settled desktop nav font size must be present in first-frame CSS');
   assert.ok(navFitCss.includes('letter-spacing: 0.035em !important'), 'Settled desktop nav letter spacing must be present in first-frame CSS');
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav\s*\{[\s\S]*gap:\s*6px\s*!important/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--primary\s*\{[\s\S]*min-width:\s*56\.87em/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--secondary\s*\{[\s\S]*min-width:\s*43\.67em/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*calc\(3\.97em \+ 20\.6px\)/);
+  assert.match(navFitCss, /@media \(min-width:\s*821px\)[\s\S]*html\[data-ccg-page\][\s\S]*scrollbar-gutter:\s*stable/);
   assert.ok(navFit.includes('Math.floor(inner?.clientWidth || window.innerWidth)'), 'Fitter must use the real header width');
   assert.ok(navFit.includes('required > allowed + 2'), 'Fitter must tolerate sub-pixel rounding without forcing a resize');
   assert.doesNotMatch(navFit, /clientWidth\s*\|\|\s*window\.innerWidth\)\s*-\s*12/);
