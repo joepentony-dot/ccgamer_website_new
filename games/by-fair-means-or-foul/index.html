@@ -124,6 +124,9 @@
     <meta name="twitter:image" id="game-twitter-image" content="https://www.cheekycommodoregamer.co.uk/resources/images/thumbnails/all/by_fair_means_or_foul.png">
     <meta name="twitter:image:alt" content="By Fair Means Or Foul – C64 | Review, Screens &amp; History game preview on Cheeky Commodore Gamer">
     <meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/by-fair-means-or-foul/">
+  <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-shell-style="true">
+  <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
+  <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
 </head>
 
 <body class="ccg-body game-page ccg-single-ready" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -175,63 +178,113 @@
             <span class="ccg-nav-toggle__label">Menu</span>
         </button>
 
-        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav" data-ccg-static-shell="2026-08-19-v1">
             <div class="ccg-nav__bar">
-                <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
-                    <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="/games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
-                </ul>
-                <div class="ccg-nav__more">
-                    <button class="ccg-nav__more-toggle"
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="ccg-more-menu"
-                            data-ccg-more-toggle>
-                        More <span aria-hidden="true">▾</span>
-                    </button>
-                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
-                </div>
+              <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+                <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+                <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
+                <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
+                <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+                <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
+              </ul>
+              <div class="ccg-nav__more">
+                <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>
+                  More <span aria-hidden="true">▾</span>
+                </button>
+                <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+              </div>
             </div>
             <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+                <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
                 <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
                 <li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
-                <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+                <li><a href="/install-app.html" class="ccg-nav__link" data-ccg-pwa-install-nav="true">Install CCG App</a></li>
+                <li><a href="/about.html" class="ccg-nav__link">About Me</a></li>
                 <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
             </ul>
-        </nav>
+          </nav>
 
-        <div class="ccg-header-actions">
-
-            <div class="ccg-auth-slot" aria-live="polite"></div>
+        <div class="ccg-header-actions" data-ccg-static-shell="2026-08-19-v1">
             <div class="ccg-mode-hint">Try different modes</div>
-            <button class="ccg-mode-toggle"
-                    type="button"
-                    aria-label="Toggle between C64 and Amiga modes"
-                    data-ccg-mode-toggle>
-                <span class="ccg-mode-toggle__pill">
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
-                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
-                    <span class="ccg-mode-toggle__thumb"></span>
-                </span>
+            <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
+              <span class="ccg-mode-toggle__pill">
+                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                <span class="ccg-mode-toggle__thumb"></span>
+              </span>
             </button>
-
+            <div class="ccg-auth-slot" data-ccg-auth-pending="true"></div>
             <div class="ccg-header-socials" aria-label="Social links">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-                <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+              <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+              <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+              <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+              <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+              <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+              <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
             </div>
-            <div class="ccg-socials-fallback">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
-                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
-                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
-            </div>
+            <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
+            <script data-ccg-auth-snapshot-bootstrap="true">
+              (function () {
+                "use strict";
+                try {
+                  var script = document.currentScript;
+                  var actions = script && script.parentElement;
+                  var slot = actions && actions.querySelector(".ccg-auth-slot");
+                  if (!slot) return;
 
-        </div>
+                  var raw = sessionStorage.getItem("ccg_header_auth_snapshot");
+                  if (!raw) return;
+                  var snapshot = JSON.parse(raw);
+                  if (!snapshot || typeof snapshot.loggedIn !== "boolean") return;
+
+                  slot.textContent = "";
+                  slot.removeAttribute("data-ccg-auth-pending");
+                  slot.setAttribute("data-ccg-auth-provisional", "true");
+
+                  if (snapshot.loggedIn) {
+                    var username = String(snapshot.username || "@member").trim();
+                    if (!username || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) username = "@member";
+
+                    var profile = document.createElement("a");
+                    profile.className = "ccg-btn ccg-btn-auth ccg-profile-link";
+                    profile.id = "ccg-auth-identity";
+                    profile.href = "/community/profile.html";
+                    profile.setAttribute("aria-label", "Open profile for " + username);
+
+                    var label = document.createElement("span");
+                    label.className = "ccg-profile-link__label";
+                    label.textContent = "Profile:";
+                    var name = document.createElement("span");
+                    name.className = "ccg-profile-link__name";
+                    name.textContent = username;
+                    profile.appendChild(label);
+                    profile.appendChild(document.createTextNode(" "));
+                    profile.appendChild(name);
+
+                    var logout = document.createElement("button");
+                    logout.type = "button";
+                    logout.className = "ccg-btn ccg-btn-auth";
+                    logout.id = "ccg-auth-logout";
+                    logout.setAttribute("data-logout", "");
+                    logout.textContent = "Logout";
+
+                    slot.appendChild(profile);
+                    slot.appendChild(logout);
+                    return;
+                  }
+
+                  var login = document.createElement("button");
+                  login.type = "button";
+                  login.className = "ccg-btn ccg-btn-auth";
+                  login.id = "join-login";
+                  login.textContent = "Join / Login";
+                  slot.appendChild(login);
+                } catch (_error) {}
+              })();
+            </script>
+          </div>
     </div>
 
     <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">

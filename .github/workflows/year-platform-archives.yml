@@ -173,11 +173,36 @@ jobs:
         if: github.event_name != 'push' || github.ref_name != 'main'
         shell: bash
         run: |
+          set -euo pipefail
+
+          # The intro stack remains fully immutable. home.html may differ only
+          # when it exactly equals the shared-shell normalizer applied to main.
           git diff --exit-code origin/main -- \
             index.html \
-            home.html \
             resources/css/intro.css \
             js/index-intro.js
+
+          if ! git diff --quiet origin/main -- home.html; then
+            node - <<'NODE'
+          const fs = require("fs");
+          const cp = require("child_process");
+          const { normaliseHtml } = require("./scripts/normalize-public-header-shell.js");
+
+          const baseline = cp.execFileSync(
+            "git",
+            ["show", "origin/main:home.html"],
+            { encoding: "utf8" }
+          );
+          const current = fs.readFileSync("home.html", "utf8");
+          const result = normaliseHtml(baseline);
+
+          if (!result.applicable || result.malformed || result.html !== current) {
+            console.error("home.html changed beyond the verified canonical shared-shell migration.");
+            process.exit(1);
+          }
+          console.log("home.html differs from main only by the verified canonical shared-shell migration.");
+          NODE
+          fi
 
       - name: Confirm bounded generated scope
         shell: bash
