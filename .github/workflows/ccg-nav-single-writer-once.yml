@@ -1,0 +1,418 @@
+name: CCG Nav Single Writer One-Off
+
+on:
+  push:
+    branches:
+      - fix/nav-single-writer-no-refresh-blank-20260819
+    paths:
+      - ".github/workflows/ccg-nav-single-writer-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/nav-single-writer-no-refresh-blank-20260819
+          fetch-depth: 0
+
+      - name: Reconcile navigation ownership
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def replace_once(text, old, new, label):
+              if old not in text:
+                  raise SystemExit(f"Missing expected block: {label}")
+              return text.replace(old, new, 1)
+
+          def regex_once(text, pattern, replacement, label, flags=0):
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=flags)
+              if count != 1:
+                  raise SystemExit(f"Expected one regex match for {label}, got {count}")
+              return updated
+
+          nav_path = Path('js/ccg-nav-core.js')
+          nav = nav_path.read_text(encoding='utf-8')
+          nav = replace_once(
+              nav,
+              '    const NAV_SYNC_STYLE_ID = "ccg-nav-sync-style";\n',
+              '',
+              'obsolete sync style constant'
+          )
+          nav = replace_once(
+              nav,
+              '''    const FINAL_SECONDARY = [
+        ["Find Me a Game", "/games/discover/"],
+        ["Zzap!64 Reviews & Awards", "/zzap64/"],
+        ["Quiz", "/quiz/quiz.html"],
+        ["Emulation", "/emulation.html"],
+        ["About Me", "/about.html"],
+        ["Contact", "/contact.html"]
+    ];
+
+    function installNavigationSyncGuard() {
+        const root = document.documentElement;
+        root.classList.add("ccg-nav-syncing");
+        root.classList.remove("ccg-nav-ready");
+
+        if (!document.getElementById(NAV_SYNC_STYLE_ID)) {
+            const style = document.createElement("style");
+            style.id = NAV_SYNC_STYLE_ID;
+            style.textContent = [
+                "html.ccg-nav-syncing .ccg-header .ccg-nav{visibility:hidden!important;opacity:0!important}",
+                "html.ccg-nav-ready .ccg-header .ccg-nav{visibility:visible!important;opacity:1!important}",
+                ".ccg-header .ccg-socials-fallback{display:none!important;visibility:hidden!important}",
+                ".ccg-header .ccg-nav__list>li[hidden]{display:none!important}"
+            ].join("");
+            document.head.appendChild(style);
+        }
+
+        window.setTimeout(() => revealNavigation(), 2500);
+    }
+
+    function revealNavigation() {
+        const root = document.documentElement;
+        root.classList.remove("ccg-nav-syncing");
+        root.classList.add("ccg-nav-ready");
+    }
+
+''',
+              '''    const FINAL_SECONDARY = [
+        ["Find Me a Game", "/games/discover/"],
+        ["Zzap!64 Reviews & Awards", "/zzap64/"],
+        ["Quiz", "/quiz/quiz.html"],
+        ["Emulation", "/emulation.html"],
+        ["Install CCG App", "/install-app.html"],
+        ["About Me", "/about.html"],
+        ["Contact", "/contact.html"]
+    ];
+
+    let navAuthorityObserver = null;
+    let navCoreInitialised = false;
+
+    function canonicalPath(value) {
+        try {
+            return new URL(value, window.location.href).pathname.replace(/\\/+$/, "") || "/";
+        } catch (error) {
+            return String(value || "").replace(/\\/+$/, "") || "/";
+        }
+    }
+
+    function listMatches(list, links) {
+        if (!list) return false;
+        const anchors = Array.from(list.children)
+            .map((item) => item.querySelector(".ccg-nav__link"))
+            .filter(Boolean);
+        if (anchors.length !== links.length) return false;
+        return anchors.every((link, index) => {
+            const [label, href] = links[index];
+            return link.textContent.trim() === label
+                && canonicalPath(link.getAttribute("href")) === canonicalPath(href);
+        });
+    }
+
+    function navigationStructureMatches() {
+        const nav = document.querySelector("[data-ccg-header] .ccg-nav");
+        if (!nav) return false;
+        return listMatches(nav.querySelector("[data-ccg-nav-primary]"), FINAL_PRIMARY)
+            && listMatches(nav.querySelector("[data-ccg-nav-secondary]"), FINAL_SECONDARY);
+    }
+
+''',
+              'sync guard replacement'
+          )
+          nav = replace_once(
+              nav,
+              '''    function buildList(list, links) {
+        if (!list) return;
+        const fragment = document.createDocumentFragment();
+        links.forEach(([label, href]) => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = href;
+            link.className = "ccg-nav__link";
+            link.textContent = label;
+            item.appendChild(link);
+            fragment.appendChild(item);
+        });
+        list.replaceChildren(fragment);
+    }
+
+    function synchroniseNavigationStructure() {
+        const header = document.querySelector("[data-ccg-header]");
+        const nav = header?.querySelector(".ccg-nav");
+        if (!header || !nav) return false;
+
+        buildList(nav.querySelector("[data-ccg-nav-primary]"), FINAL_PRIMARY);
+        buildList(nav.querySelector("[data-ccg-nav-secondary]"), FINAL_SECONDARY);
+
+        const menu = nav.querySelector("[data-ccg-more-menu]");
+        if (menu) {
+            menu.replaceChildren();
+            menu.hidden = true;
+        }
+
+        const toggle = nav.querySelector("[data-ccg-more-toggle]");
+        if (toggle) {
+            toggle.setAttribute("aria-expanded", "false");
+        }
+
+        if (typeof window.ccgMarkNavigationActive === "function") {
+            window.ccgMarkNavigationActive(header);
+        }
+        return true;
+    }
+
+''',
+              '''    function buildList(list, links) {
+        if (!list) return;
+        const fragment = document.createDocumentFragment();
+        links.forEach(([label, href]) => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = href;
+            link.className = "ccg-nav__link";
+            link.textContent = label;
+            if (canonicalPath(href) === "/install-app.html") {
+                link.setAttribute("data-ccg-pwa-install-nav", "true");
+            }
+            item.appendChild(link);
+            fragment.appendChild(item);
+        });
+        list.replaceChildren(fragment);
+    }
+
+    function synchroniseNavigationStructure() {
+        const header = document.querySelector("[data-ccg-header]");
+        const nav = header?.querySelector(".ccg-nav");
+        if (!header || !nav) return false;
+
+        const primary = nav.querySelector("[data-ccg-nav-primary]");
+        const secondary = nav.querySelector("[data-ccg-nav-secondary]");
+        let changed = false;
+
+        if (!listMatches(primary, FINAL_PRIMARY)) {
+            buildList(primary, FINAL_PRIMARY);
+            changed = true;
+        }
+        if (!listMatches(secondary, FINAL_SECONDARY)) {
+            buildList(secondary, FINAL_SECONDARY);
+            changed = true;
+        }
+
+        if (changed) {
+            const menu = nav.querySelector("[data-ccg-more-menu]");
+            if (menu) {
+                menu.replaceChildren();
+                menu.hidden = true;
+            }
+
+            const toggle = nav.querySelector("[data-ccg-more-toggle]");
+            if (toggle) {
+                toggle.setAttribute("aria-expanded", "false");
+            }
+        }
+
+        if (typeof window.ccgMarkNavigationActive === "function") {
+            window.ccgMarkNavigationActive(header);
+        }
+        return changed;
+    }
+
+    function installNavigationAuthorityObserver() {
+        if (navAuthorityObserver) return;
+        const nav = document.querySelector("[data-ccg-header] .ccg-nav");
+        if (!nav) return;
+        const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");
+        if (!lists.length) return;
+
+        navAuthorityObserver = new MutationObserver(() => {
+            if (navigationStructureMatches()) return;
+            if (!synchroniseNavigationStructure()) return;
+            applyNavGlowPatch();
+            document.dispatchEvent(new CustomEvent("ccg:navigation-ready", { detail: { nav } }));
+        });
+        lists.forEach((list) => navAuthorityObserver.observe(list, { childList: true, subtree: true }));
+    }
+
+''',
+              'single-writer synchroniser'
+          )
+          nav = replace_once(
+              nav,
+              '''    function initUnifiedNavCore() {
+        loadRequiredStyles();
+        synchroniseNavigationStructure();
+        applyNavGlowPatch();
+        bindStateReapply();
+        loadOptionalModules();
+        document.dispatchEvent(new CustomEvent("ccg:navigation-ready"));
+    }
+
+    installNavigationSyncGuard();
+    document.addEventListener("ccg:navigation-fitted", revealNavigation, { once: true });
+    window.applyNavGlowPatch = applyNavGlowPatch;
+    window.CCGUnifiedNavCore = Object.freeze({
+        init: initUnifiedNavCore,
+        sync: synchroniseNavigationStructure,
+        applyNavGlowPatch,
+        reveal: revealNavigation
+    });
+
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
+    else initUnifiedNavCore();
+''',
+              '''    function initUnifiedNavCore() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header || navCoreInitialised) return false;
+        navCoreInitialised = true;
+        loadRequiredStyles();
+        synchroniseNavigationStructure();
+        applyNavGlowPatch();
+        bindStateReapply();
+        installNavigationAuthorityObserver();
+        loadOptionalModules();
+        document.dispatchEvent(new CustomEvent("ccg:navigation-ready"));
+        return true;
+    }
+
+    window.applyNavGlowPatch = applyNavGlowPatch;
+    window.CCGUnifiedNavCore = Object.freeze({
+        init: initUnifiedNavCore,
+        sync: synchroniseNavigationStructure,
+        applyNavGlowPatch
+    });
+
+    if (document.querySelector("[data-ccg-header]")) initUnifiedNavCore();
+    else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
+    else initUnifiedNavCore();
+''',
+              'nav core bootstrap'
+          )
+          nav_path.write_text(nav, encoding='utf-8')
+
+          legacy_path = Path('js/ccg-nav.js')
+          legacy = legacy_path.read_text(encoding='utf-8')
+          legacy = regex_once(
+              legacy,
+              r"\n  const NAV_PRIMARY = \[.*?\n  \];\n\n  const NAV_SECONDARY = \[.*?\n  \];\n",
+              "\n",
+              'legacy navigation constants',
+              re.S
+          )
+          legacy = regex_once(
+              legacy,
+              r"\n  function rebuildList\(selector, links\) \{.*?\n  \}\n",
+              "\n",
+              'legacy rebuildList helper',
+              re.S
+          )
+          legacy = replace_once(
+              legacy,
+              "    rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);\n    rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);\n",
+              "",
+              'legacy DOMContentLoaded list rewrites'
+          )
+          legacy_path.write_text(legacy, encoding='utf-8')
+
+          release_path = Path('js/ccg-release-check.js')
+          release = release_path.read_text(encoding='utf-8')
+          release = replace_once(
+              release,
+              '''        "/js/ccg-nav-core.js",
+        "/js/ccg-nav-fit.js",
+        "/js/ccg-release-check.js",
+''',
+              '''        "/js/ccg-nav-core.js",
+        "/js/ccg-nav.js",
+        "/js/ccg-nav-fit.js",
+        "/js/ccg-pwa-visible-install.js",
+        "/js/ccg-release-check.js",
+''',
+              'release assets navigation writers'
+          )
+          release_path.write_text(release, encoding='utf-8')
+
+          sw_path = Path('service-worker.js')
+          sw = sw_path.read_text(encoding='utf-8')
+          sw = replace_once(
+              sw,
+              'const CACHE_VERSION = "2026-08-19-public-release-v2";',
+              'const CACHE_VERSION = "2026-08-19-public-release-v3";',
+              'service worker cache version'
+          )
+          sw_path.write_text(sw, encoding='utf-8')
+
+          test_path = Path('tests/nav-discovery-scroll.test.mjs')
+          tests = test_path.read_text(encoding='utf-8')
+          tests = replace_once(
+              tests,
+              "const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');\n",
+              "const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');\nconst legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');\nconst visibleInstall = fs.readFileSync('js/ccg-pwa-visible-install.js', 'utf8');\n",
+              'test source fixtures'
+          )
+          tests = replace_once(
+              tests,
+              '''  assert.match(navCore, /\["About Me", "\\/about\\.html"\]/);
+  assert.match(navCore, /\["Contact", "\\/contact\\.html"\]/);
+  assert.match(navCore, /synchroniseNavigationStructure\\(\\)/);
+''',
+              '''  assert.match(navCore, /\["Install CCG App", "\\/install-app\\.html"\]/);
+  assert.match(navCore, /\["About Me", "\\/about\\.html"\]/);
+  assert.match(navCore, /\["Contact", "\\/contact\\.html"\]/);
+  assert.match(navCore, /synchroniseNavigationStructure\\(\\)/);
+  assert.match(navCore, /installNavigationAuthorityObserver/);
+  assert.doesNotMatch(legacyNav, /const NAV_PRIMARY/);
+  assert.doesNotMatch(legacyNav, /const NAV_SECONDARY/);
+  assert.doesNotMatch(legacyNav, /rebuildList\\('/);
+  assert.match(navCore, /data-ccg-pwa-install-nav/);
+  assert.match(visibleInstall, /document\\.querySelector\\("\\[data-ccg-pwa-install-nav\\]"\\)/);
+''',
+              'single writer assertions'
+          )
+          tests = regex_once(
+              tests,
+              r"test\('navigation handoff suppresses every legacy header flash', \(\) => \{.*?\n\}\);",
+              '''test('navigation never hides during the refresh handoff', () => {
+  assert.doesNotMatch(navCore, /ccg-nav-syncing/);
+  assert.doesNotMatch(navCore, /ccg-nav-ready/);
+  assert.doesNotMatch(navCore, /visibility:hidden!important;opacity:0!important/);
+  assert.doesNotMatch(navCore, /installNavigationSyncGuard/);
+  assert.doesNotMatch(navCore, /revealNavigation/);
+  assert.match(navCore, /navigationStructureMatches/);
+  assert.match(navCore, /MutationObserver/);
+  assert.match(navCore, /if \(document\\.querySelector\("\\[data-ccg-header\\]"\)\) initUnifiedNavCore\(\)/);
+  assert.match(navCore, /\\/resources\\/css\\/ccg-nav-fit\\.css/);
+});''',
+              'refresh handoff regression',
+              re.S
+          )
+          test_path.write_text(tests, encoding='utf-8')
+          PY
+
+      - name: Validate patched JavaScript and regression tests
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-nav.js
+          node --check js/ccg-nav-fit.js
+          node --check js/ccg-pwa-visible-install.js
+          node --check js/ccg-release-check.js
+          node --check service-worker.js
+          node --test tests/nav-discovery-scroll.test.mjs
+          git diff --check
+
+      - name: Commit reconciliation
+        run: |
+          git config user.name "ccg-nav-repair-bot"
+          git config user.email "ccg-nav-repair-bot@users.noreply.github.com"
+          git add js/ccg-nav-core.js js/ccg-nav.js js/ccg-release-check.js service-worker.js tests/nav-discovery-scroll.test.mjs
+          git commit -m "Enforce single navigation writer without refresh blanking"
+          git push origin HEAD:fix/nav-single-writer-no-refresh-blank-20260819
