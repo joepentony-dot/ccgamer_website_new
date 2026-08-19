@@ -1,6 +1,6 @@
 name: Live Public Navigation Verification
 
-# Diagnostic trigger only: verify merged public release v7 on the custom domain.
+# Diagnostic trigger only: recheck merged public release v7 after Pages deployment settled.
 on:
   pull_request:
     branches:
