@@ -72,12 +72,13 @@ test('legacy social fallback cannot become a public display state', () => {
   assert.match(socialCss, /visibility:\s*hidden\s*!important/);
 });
 
-test('installed app release v4 watches the full global shell', () => {
-  assert.match(worker, /2026-08-19-public-release-v4/);
+test('installed app release v5 watches the full global shell', () => {
+  assert.match(worker, /2026-08-19-public-release-v5/);
   for (const asset of [
     '/js/ccg-header-auth-loader.js',
     '/js/ccg-auth.js',
     '/js/ccg-music-navigation.js',
+    '/resources/css/ccg-nav-fit.css',
     '/resources/css/ccg-socials.css'
   ]) {
     assert.ok(worker.includes(`"${asset}"`), `Service worker shell missing ${asset}`);
