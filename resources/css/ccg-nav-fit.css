@@ -41,16 +41,16 @@
        ---------------------------------------------------------
        The canonical desktop navigation always settles at the tight
        density because the shared header inner shell is capped at 1320px.
-       Apply that same settled geometry before deferred nav fitting runs,
-       so ccg-nav-fit.js can manage overflow/More without visibly resizing
-       every control after the first painted frame.
+       Use one extra nav-specific selector level so the late responsive
+       safety stylesheet cannot temporarily expand the controls before
+       ccg-nav-fit.js performs its next fit pass.
     */
-    .ccg-header .ccg-nav__list {
+    .ccg-header .ccg-nav .ccg-nav__list {
         gap: 4px !important;
     }
 
-    .ccg-header .ccg-nav__link,
-    .ccg-header .ccg-nav__more-toggle {
+    .ccg-header .ccg-nav .ccg-nav__link,
+    .ccg-header .ccg-nav .ccg-nav__more-toggle {
         min-height: 38px !important;
         padding: 6px clamp(6px, 0.55vw, 9px) !important;
         font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
