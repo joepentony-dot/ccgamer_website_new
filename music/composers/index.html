@@ -1687,13 +1687,13 @@
 }
   </script>
   <link rel="stylesheet" href="/resources/css/ccg-master.css">
-  <link rel="stylesheet" href="/resources/css/ccg-mode.css">
-  <link rel="stylesheet" href="/resources/css/ccg-nav.css">
-  <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css">
   <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
-  <link rel="stylesheet" href="/resources/css/ccg-socials.css">
-  <link rel="stylesheet" href="/resources/css/ccg-community.css">
   <link rel="stylesheet" href="/resources/css/music-composer.css">
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-nav.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-socials.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-header-style>
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <header class="ccg-header" data-ccg-header data-ccg-static-header="true">
@@ -1733,7 +1733,7 @@
                     <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
                     <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
                     <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
-                    <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
+                    <li><a href="/music/" class="ccg-nav__link ccg-nav__link--active" aria-current="page">Music Hub</a></li>
                 </ul>
                 <div class="ccg-nav__more">
                     <button class="ccg-nav__more-toggle"
@@ -2103,10 +2103,6 @@
       <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
     </div>
   </main>
-  <script src="/js/ccg-nav-core.js" defer></script>
-  <script src="/js/ccg-nav-core.js" defer></script>
-  <script src="/js/ccg-nav-core.js" defer></script>
-  <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-music-config.js" defer></script>
   <script src="/js/music-composer-utils.js" defer></script>

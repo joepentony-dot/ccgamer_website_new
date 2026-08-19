@@ -29,8 +29,120 @@
 <link rel="stylesheet" href="/resources/css/ccg-master.css">
 <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
 <link rel="stylesheet" href="/resources/css/music-composer.css">
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-nav.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-socials.css" data-ccg-static-header-style>
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-header-style>
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <header class="ccg-header" data-ccg-header data-ccg-static-header="true">
+    <div class="ccg-header-inner">
+        <a href="/home.html" class="ccg-brand">
+            <img src="/resources/images/ccgamer-logo.png"
+                 alt="Cheeky Commodore Gamer logo"
+                 class="ccg-brand__logo"
+                 width="1500"
+                 height="1032"
+                 decoding="async"
+                 sizes="(max-width: 720px) 200px, 320px">
+            <div class="ccg-brand__text">
+                <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+                <div class="ccg-brand__title">
+                    <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+                    <span class="ccg-brand__neon-sub">GAMER</span>
+                </div>
+            </div>
+        </a>
+
+        <button class="ccg-nav-toggle"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+                aria-controls="ccg-primary-nav"
+                data-ccg-nav-toggle>
+            <span class="ccg-nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span class="ccg-nav-toggle__label">Menu</span>
+        </button>
+
+        <nav class="ccg-nav ccg-nav--has-overflow" aria-label="Primary navigation" id="ccg-primary-nav">
+            <div class="ccg-nav__bar">
+                <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                    <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+                    <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
+                    <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="/music/" class="ccg-nav__link ccg-nav__link--active" aria-current="page">Music Hub</a></li>
+                </ul>
+                <div class="ccg-nav__more">
+                    <button class="ccg-nav__more-toggle"
+                            type="button"
+                            aria-expanded="false"
+                            aria-hidden="false"
+                            aria-controls="ccg-more-menu"
+                            data-ccg-more-toggle>
+                        More <span aria-hidden="true">▾</span>
+                    </button>
+                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu role="menu" hidden>
+                        <a href="/emulation.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Emulation</a>
+                        <a href="/install-app.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Install CCG App</a>
+                        <a href="/about.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">About Me</a>
+                        <a href="/contact.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Contact</a>
+                    </div>
+                </div>
+            </div>
+            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+                <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
+                <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/install-app.html" class="ccg-nav__link">Install CCG App</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/about.html" class="ccg-nav__link">About Me</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
+            </ul>
+        </nav>
+
+        <div class="ccg-header-actions">
+            <div class="ccg-auth-slot" data-ccg-auth-slot aria-live="polite"></div>
+            <div class="ccg-mode-hint">Try different modes</div>
+            <button class="ccg-mode-toggle"
+                    type="button"
+                    aria-label="Toggle between C64 and Amiga modes"
+                    data-ccg-mode-toggle>
+                <span class="ccg-mode-toggle__pill">
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                    <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                    <span class="ccg-mode-toggle__thumb"></span>
+                </span>
+            </button>
+
+            <div class="ccg-header-socials" aria-label="Social links">
+                <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+                <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+                <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+                <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+                <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+                <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+            </div>
+            <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+        <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close tabindex="-1"></div>
+        <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+            <div class="ccg-nav-drawer__header">
+                <span class="ccg-nav-drawer__title">Navigate</span>
+                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close><span aria-hidden="true">✕</span></button>
+            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary><div class="ccg-nav-drawer__label">Primary</div></div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary><div class="ccg-nav-drawer__label">Explore more</div></div>
+        </div>
+    </div>
+
+    <div class="ccg-header-neon-strip"></div>
+</header>
   <main class="ccg-main ccg-composer-page" data-composer-name="Russell Lieblich" data-composer-slug="russell-lieblich">
     <nav class="ccg-composer-breadcrumbs" aria-label="Breadcrumb">
       <div class="ccg-breadcrumb-nav">
@@ -88,6 +200,7 @@
       <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
     </div>
   </main>
+  <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-music-config.js" defer></script>
   <script src="/js/ccg-shared-music-player.js" defer></script>
   <script src="/js/music-composer-utils.js" defer></script>

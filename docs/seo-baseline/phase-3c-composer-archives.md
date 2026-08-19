@@ -59,9 +59,18 @@ The source records in `games/games.json` remain unchanged.
 - Existing player scripts and curated composer pages preserved.
 - Sitemap and static-page integration for indexable routes.
 
+- Static research-backed composer profiles, source references and Person/MusicGroup entity data on generated routes.
+
+## Research enrichment
+
+- Externally researched generated profiles: **95**
+- Credit-only generated profiles: **155**
+- Research registry: `music/composers/research.json`
+- Research-backed single-credit SEO overrides: **31**
+
 ## Explicit exclusions
 
-- No composer biographies, birth details or personal facts were invented.
+- Composer biographies and personal facts are included only where backed by specific research sources; unsupported profiles remain credit-only.
 - No existing curated composer page was rewritten.
 - No changes to `games/games.json`.
 - No homepage or intro-loader changes.
