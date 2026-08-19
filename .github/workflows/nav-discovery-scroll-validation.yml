@@ -7,15 +7,23 @@ on:
       - "_headers"
       - "service-worker.js"
       - "js/ccg-nav-core.js"
+      - "js/ccg-nav.js"
       - "js/ccg-nav-fit.js"
+      - "js/ccg-header-auth-loader.js"
+      - "js/ccg-auth.js"
+      - "js/ccg-music-navigation.js"
+      - "js/ccg-pwa-visible-install.js"
       - "js/ccg-release-check.js"
       - "js/ccg-archive-shortcuts.js"
       - "games/discover/index.html"
       - "js/game-discovery.js"
       - "resources/css/game-discovery.css"
       - "resources/css/ccg-scroll-authority.css"
+      - "resources/css/ccg-socials.css"
       - "scripts/audit-nav-more-browser.js"
+      - "scripts/audit-global-shell-browser.js"
       - "tests/nav-discovery-scroll.test.mjs"
+      - "tests/global-shell-auth.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
   push:
     branches: [main]
@@ -23,15 +31,23 @@ on:
       - "_headers"
       - "service-worker.js"
       - "js/ccg-nav-core.js"
+      - "js/ccg-nav.js"
       - "js/ccg-nav-fit.js"
+      - "js/ccg-header-auth-loader.js"
+      - "js/ccg-auth.js"
+      - "js/ccg-music-navigation.js"
+      - "js/ccg-pwa-visible-install.js"
       - "js/ccg-release-check.js"
       - "js/ccg-archive-shortcuts.js"
       - "games/discover/index.html"
       - "js/game-discovery.js"
       - "resources/css/game-discovery.css"
       - "resources/css/ccg-scroll-authority.css"
+      - "resources/css/ccg-socials.css"
       - "scripts/audit-nav-more-browser.js"
+      - "scripts/audit-global-shell-browser.js"
       - "tests/nav-discovery-scroll.test.mjs"
+      - "tests/global-shell-auth.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
 
 permissions:
@@ -40,7 +56,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -51,11 +67,16 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check js/ccg-nav-core.js
+          node --check js/ccg-nav.js
           node --check js/ccg-nav-fit.js
+          node --check js/ccg-header-auth-loader.js
+          node --check js/ccg-auth.js
+          node --check js/ccg-music-navigation.js
           node --check js/ccg-release-check.js
           node --check js/ccg-archive-shortcuts.js
           node --check js/game-discovery.js
           node --check scripts/audit-nav-more-browser.js
+          node --check scripts/audit-global-shell-browser.js
 
       - name: Confirm duplicate navigation authority is removed
         run: test ! -e js/ccg-nav-authority.js
@@ -63,8 +84,14 @@ jobs:
       - name: Run navigation discovery and scroll regressions
         run: node --test tests/nav-discovery-scroll.test.mjs
 
+      - name: Run global shell auth and parity regressions
+        run: node --test tests/global-shell-auth.test.mjs
+
       - name: Run desktop More browser interaction audit
         run: node scripts/audit-nav-more-browser.js
+
+      - name: Run multi-page global shell browser audit
+        run: node scripts/audit-global-shell-browser.js
 
       - name: Check whitespace
         run: git diff --check

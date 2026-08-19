@@ -2,12 +2,15 @@
   'use strict';
 
   const AUTH_EVENT = 'ccg:auth-state';
+  const AUTH_SNAPSHOT_KEY = 'ccg_header_auth_snapshot';
 
   const state = {
     initialized: false,
+    initPromise: null,
     profilePromise: null,
     profilePromiseUserId: '',
-    resolveRequestId: 0
+    resolveRequestId: 0,
+    authoritativeResolved: false
   };
 
   function readStoredUsername() {
@@ -31,6 +34,40 @@
     return String(value || '').replace(/[&<>"']/g, function (character) {
       return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character];
     });
+  }
+
+  function readAuthSnapshot() {
+    try {
+      const raw = sessionStorage.getItem(AUTH_SNAPSHOT_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.loggedIn !== 'boolean') return null;
+      return {
+        loggedIn: parsed.loggedIn,
+        username: readSafeValue(parsed.username) || ''
+      };
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function writeAuthSnapshot(auth) {
+    try {
+      sessionStorage.setItem(AUTH_SNAPSHOT_KEY, JSON.stringify({
+        loggedIn: Boolean(auth && auth.loggedIn),
+        username: readSafeValue(auth && auth.username) || ''
+      }));
+    } catch (_error) {
+      // ignore storage issues
+    }
+  }
+
+  function clearAuthSnapshot() {
+    try {
+      sessionStorage.removeItem(AUTH_SNAPSHOT_KEY);
+    } catch (_error) {
+      // ignore storage issues
+    }
   }
 
   function getDisplayName(profile, user) {
@@ -62,6 +99,7 @@
       session: session || null,
       username: username || ''
     };
+    state.authoritativeResolved = true;
 
     if (username && username !== '@member') {
       try {
@@ -71,8 +109,27 @@
       }
     }
 
+    writeAuthSnapshot(window.CCG_AUTH);
     window.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: window.CCG_AUTH }));
     return window.CCG_AUTH;
+  }
+
+  async function waitForAuthFoundation() {
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.init === 'function') {
+      try {
+        await window.ccgCommunityAuth.init();
+      } catch (_error) {
+        // Continue to Supabase readiness fallback below.
+      }
+    }
+
+    if (window.ccgSupabase && typeof window.ccgSupabase.waitForSessionReady === 'function') {
+      try {
+        await window.ccgSupabase.waitForSessionReady();
+      } catch (_error) {
+        // resolveAuthState still has safe fallbacks.
+      }
+    }
   }
 
   async function resolveAuthState() {
@@ -80,6 +137,8 @@
     let user = null;
     let profile = null;
     let session = null;
+
+    await waitForAuthFoundation();
 
     if (window.ccgSupabase && typeof window.ccgSupabase.getCurrentUserContext === 'function') {
       try {
@@ -113,14 +172,11 @@
           });
         }
         const resolvedProfile = await state.profilePromise;
-        if (resolvedProfile) {
-          profile = resolvedProfile;
-        }
+        if (resolvedProfile) profile = resolvedProfile;
       }
     }
 
     if (requestId !== state.resolveRequestId) return window.CCG_AUTH;
-
     return setGlobalAuth(user, profile, session);
   }
 
@@ -168,15 +224,16 @@
         }
       }
 
+      clearAuthSnapshot();
       await resolveAuthState();
       renderHeaderAuth();
     });
     button.dataset.ccgAuthBound = 'true';
   }
 
-  function renderHeaderAuth() {
+  function ensureAuthSlot() {
     const actions = document.querySelector('.ccg-header-actions');
-    if (!actions) return;
+    if (!actions) return null;
 
     let slot = actions.querySelector('.ccg-auth-slot');
     if (!slot) {
@@ -185,10 +242,14 @@
       const socials = actions.querySelector('.ccg-header-socials');
       actions.insertBefore(slot, socials || actions.firstChild);
     }
+    return slot;
+  }
 
-    const auth = window.CCG_AUTH || { loggedIn: false, username: '' };
+  function renderAuthValue(slot, auth, provisional) {
+    if (!slot) return;
+    slot.toggleAttribute('data-ccg-auth-provisional', Boolean(provisional));
 
-    if (auth.loggedIn) {
+    if (auth && auth.loggedIn) {
       const username = auth.username || '@member';
       const safeUsername = escapeHtml(username);
       slot.innerHTML = '' +
@@ -203,31 +264,60 @@
     bindAuthModalTrigger(slot.querySelector('#join-login'));
   }
 
+  function renderHeaderAuth() {
+    const slot = ensureAuthSlot();
+    if (!slot) return;
+
+    if (!state.authoritativeResolved) {
+      const snapshot = readAuthSnapshot();
+      if (snapshot) {
+        renderAuthValue(slot, snapshot, true);
+        return;
+      }
+      if (slot.children.length) return;
+      slot.dataset.ccgAuthPending = 'true';
+      return;
+    }
+
+    delete slot.dataset.ccgAuthPending;
+    renderAuthValue(slot, window.CCG_AUTH || { loggedIn: false, username: '' }, false);
+  }
+
   async function refreshUi() {
+    renderHeaderAuth();
     await resolveAuthState();
     renderHeaderAuth();
   }
 
   function init() {
-    if (state.initialized) return;
-    state.initialized = true;
+    if (state.initPromise) return state.initPromise;
 
-    refreshUi();
+    state.initPromise = (async function () {
+      if (state.initialized) return window.CCG_AUTH || null;
+      state.initialized = true;
 
-    window.addEventListener('ccg:auth-ready', refreshUi);
-    window.addEventListener('ccg:auth-changed', refreshUi);
-    window.addEventListener(AUTH_EVENT, renderHeaderAuth);
+      renderHeaderAuth();
+      await refreshUi();
+
+      window.addEventListener('ccg:auth-ready', refreshUi);
+      window.addEventListener('ccg:auth-changed', refreshUi);
+      window.addEventListener(AUTH_EVENT, renderHeaderAuth);
+      return window.CCG_AUTH || null;
+    })();
+
+    return state.initPromise;
   }
 
   window.CCGHeaderAuth = Object.freeze({
+    init: init,
     refresh: refreshUi,
     render: renderHeaderAuth,
     resolve: resolveAuthState
   });
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
+    document.addEventListener('DOMContentLoaded', function () { void init(); }, { once: true });
   } else {
-    init();
+    void init();
   }
 })();
