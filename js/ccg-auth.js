@@ -2,12 +2,18 @@
   'use strict';
 
   const AUTH_EVENT = 'ccg:auth-state';
+  const AUTH_HINT_KEY = 'ccg_auth_ui_hint_v1';
+  const MAX_DEPENDENCY_RETRIES = 24;
 
   const state = {
     initialized: false,
     profilePromise: null,
     profilePromiseUserId: '',
-    resolveRequestId: 0
+    resolveRequestId: 0,
+    resolved: false,
+    resolving: false,
+    retryCount: 0,
+    retryTimer: 0
   };
 
   function readStoredUsername() {
@@ -52,15 +58,86 @@
     return '@member';
   }
 
+  function readAuthHint() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(AUTH_HINT_KEY) || 'null');
+      if (!parsed || parsed.loggedIn !== true) return null;
+      const username = readSafeValue(parsed.username);
+      return { loggedIn: true, username: username || '@member' };
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function storeAuthHint(auth) {
+    try {
+      if (auth && auth.loggedIn) {
+        localStorage.setItem(AUTH_HINT_KEY, JSON.stringify({
+          loggedIn: true,
+          username: readSafeValue(auth.username) || '@member'
+        }));
+      } else {
+        localStorage.removeItem(AUTH_HINT_KEY);
+      }
+    } catch (_error) {
+      // UI hint storage is optional and never grants permissions.
+    }
+  }
+
+  function ensureAuthSlot() {
+    const actions = document.querySelector('.ccg-header-actions');
+    if (!actions) return null;
+
+    let slot = actions.querySelector('.ccg-auth-slot');
+    if (!slot) {
+      slot = document.createElement('div');
+      slot.className = 'ccg-auth-slot';
+      slot.setAttribute('data-ccg-auth-slot', 'true');
+      const socials = actions.querySelector('.ccg-header-socials');
+      actions.insertBefore(slot, socials || actions.firstChild);
+    }
+    return slot;
+  }
+
+  function renderPendingHeaderAuth() {
+    if (state.resolved) return;
+    const slot = ensureAuthSlot();
+    if (!slot) return;
+
+    const hint = readAuthHint();
+    slot.setAttribute('aria-busy', 'true');
+    slot.dataset.ccgAuthPending = 'true';
+
+    if (hint && hint.loggedIn) {
+      const safeUsername = escapeHtml(hint.username || '@member');
+      slot.innerHTML = '' +
+        '<a class="ccg-btn ccg-btn-auth ccg-profile-link" href="/community/profile.html" aria-label="Open member profile">' +
+        '<span class="ccg-profile-link__label">Profile:</span> <span class="ccg-profile-link__name">' + safeUsername + '</span></a>' +
+        '<button type="button" class="ccg-btn ccg-btn-auth" disabled aria-disabled="true">Logout</button>';
+      return;
+    }
+
+    slot.innerHTML = '<span class="ccg-btn ccg-btn-auth ccg-auth-pending" aria-live="polite">Account</span>';
+  }
+
   function setGlobalAuth(user, profile, session) {
     const loggedIn = Boolean(user);
     const username = getDisplayName(profile, user);
+    state.resolved = true;
+    state.resolving = false;
+    state.retryCount = 0;
+    if (state.retryTimer) {
+      window.clearTimeout(state.retryTimer);
+      state.retryTimer = 0;
+    }
+
     window.CCG_AUTH = {
       loggedIn: loggedIn,
       user: user || null,
       profile: profile || null,
       session: session || null,
-      username: username || ''
+      username: username || '',
+      resolved: true
     };
 
     if (username && username !== '@member') {
@@ -71,17 +148,44 @@
       }
     }
 
+    storeAuthHint(window.CCG_AUTH);
     window.dispatchEvent(new CustomEvent(AUTH_EVENT, { detail: window.CCG_AUTH }));
     return window.CCG_AUTH;
   }
 
+  function authDependenciesAvailable() {
+    return Boolean(
+      (window.ccgSupabase && typeof window.ccgSupabase.getCurrentUserContext === 'function') ||
+      (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getUser === 'function')
+    );
+  }
+
+  function queueDependencyRetry() {
+    if (state.resolved || state.retryTimer || state.retryCount >= MAX_DEPENDENCY_RETRIES) return;
+    state.retryCount += 1;
+    state.retryTimer = window.setTimeout(function () {
+      state.retryTimer = 0;
+      void refreshUi();
+    }, Math.min(1200, 90 + state.retryCount * 45));
+  }
+
   async function resolveAuthState() {
+    if (state.resolving) return window.CCG_AUTH || null;
+    if (!authDependenciesAvailable()) {
+      renderPendingHeaderAuth();
+      queueDependencyRetry();
+      return window.CCG_AUTH || null;
+    }
+
+    state.resolving = true;
     const requestId = ++state.resolveRequestId;
     let user = null;
     let profile = null;
     let session = null;
+    let attempted = false;
 
     if (window.ccgSupabase && typeof window.ccgSupabase.getCurrentUserContext === 'function') {
+      attempted = true;
       try {
         const context = await window.ccgSupabase.getCurrentUserContext();
         user = context && context.user ? context.user : null;
@@ -91,7 +195,17 @@
       }
     }
 
+    if (window.ccgCommunityAuth && typeof window.ccgCommunityAuth.init === 'function') {
+      attempted = true;
+      try {
+        await window.ccgCommunityAuth.init();
+      } catch (_error) {
+        // The session resolver below remains the source of truth.
+      }
+    }
+
     if (!user && window.ccgCommunityAuth && typeof window.ccgCommunityAuth.getUser === 'function') {
+      attempted = true;
       user = window.ccgCommunityAuth.getUser();
     }
 
@@ -113,13 +227,21 @@
           });
         }
         const resolvedProfile = await state.profilePromise;
-        if (resolvedProfile) {
-          profile = resolvedProfile;
-        }
+        if (resolvedProfile) profile = resolvedProfile;
       }
     }
 
-    if (requestId !== state.resolveRequestId) return window.CCG_AUTH;
+    if (requestId !== state.resolveRequestId) {
+      state.resolving = false;
+      return window.CCG_AUTH || null;
+    }
+
+    if (!attempted) {
+      state.resolving = false;
+      renderPendingHeaderAuth();
+      queueDependencyRetry();
+      return window.CCG_AUTH || null;
+    }
 
     return setGlobalAuth(user, profile, session);
   }
@@ -168,6 +290,9 @@
         }
       }
 
+      state.resolved = false;
+      storeAuthHint(null);
+      renderPendingHeaderAuth();
       await resolveAuthState();
       renderHeaderAuth();
     });
@@ -175,17 +300,16 @@
   }
 
   function renderHeaderAuth() {
-    const actions = document.querySelector('.ccg-header-actions');
-    if (!actions) return;
+    const slot = ensureAuthSlot();
+    if (!slot) return;
 
-    let slot = actions.querySelector('.ccg-auth-slot');
-    if (!slot) {
-      slot = document.createElement('div');
-      slot.className = 'ccg-auth-slot';
-      const socials = actions.querySelector('.ccg-header-socials');
-      actions.insertBefore(slot, socials || actions.firstChild);
+    if (!state.resolved) {
+      renderPendingHeaderAuth();
+      return;
     }
 
+    slot.removeAttribute('aria-busy');
+    delete slot.dataset.ccgAuthPending;
     const auth = window.CCG_AUTH || { loggedIn: false, username: '' };
 
     if (auth.loggedIn) {
@@ -204,6 +328,7 @@
   }
 
   async function refreshUi() {
+    if (!state.resolved) renderPendingHeaderAuth();
     await resolveAuthState();
     renderHeaderAuth();
   }
@@ -212,17 +337,24 @@
     if (state.initialized) return;
     state.initialized = true;
 
-    refreshUi();
+    renderPendingHeaderAuth();
+    void refreshUi();
 
     window.addEventListener('ccg:auth-ready', refreshUi);
     window.addEventListener('ccg:auth-changed', refreshUi);
+    window.addEventListener('ccg:header-auth-dependencies-ready', refreshUi);
     window.addEventListener(AUTH_EVENT, renderHeaderAuth);
+    window.addEventListener('pageshow', function () {
+      if (!state.resolved) void refreshUi();
+    });
   }
 
   window.CCGHeaderAuth = Object.freeze({
     refresh: refreshUi,
     render: renderHeaderAuth,
-    resolve: resolveAuthState
+    resolve: resolveAuthState,
+    prime: renderPendingHeaderAuth,
+    isResolved: function () { return state.resolved; }
   });
 
   if (document.readyState === 'loading') {
