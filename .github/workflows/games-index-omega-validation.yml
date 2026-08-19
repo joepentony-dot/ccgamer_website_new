@@ -1,0 +1,69 @@
+name: Games Index Omega Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "games/index.html"
+      - "js/ccg-nav-fit.js"
+      - "resources/css/ccg-nav-fit.css"
+      - "resources/css/ccg-games-index-omega.css"
+      - "scripts/upgrade-games-index.js"
+      - "scripts/rebuild-games.js"
+      - "tests/games-index-omega.test.mjs"
+      - ".github/workflows/games-index-omega-validation.yml"
+      - ".github/workflows/games-publishing.yml"
+  push:
+    branches: [main]
+    paths:
+      - "games/index.html"
+      - "js/ccg-nav-fit.js"
+      - "resources/css/ccg-nav-fit.css"
+      - "resources/css/ccg-games-index-omega.css"
+      - "scripts/upgrade-games-index.js"
+      - "scripts/rebuild-games.js"
+      - "tests/games-index-omega.test.mjs"
+      - ".github/workflows/games-index-omega-validation.yml"
+      - ".github/workflows/games-publishing.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-nav-fit.js
+          node --check scripts/upgrade-games-index.js
+          node --check scripts/rebuild-games.js
+
+      - name: Generate Games Index Omega in validation workspace
+        run: node scripts/upgrade-games-index.js
+
+      - name: Confirm generated Games Index is stable
+        run: node scripts/upgrade-games-index.js --check
+
+      - name: Run Games Index and nav regressions
+        run: node --test tests/games-index-omega.test.mjs
+
+      - name: Confirm generator scope
+        shell: bash
+        run: |
+          unexpected=$(git diff --name-only | grep -Ev '^games/index\.html$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected generated files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Check whitespace
+        run: git diff --check
