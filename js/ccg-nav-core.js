@@ -1,5 +1,5 @@
 /*
-CCG Unified Navigation Core
+CCG Unified Public Shell Core
 Global Source of Truth
 Master Layout: home.html
 Do Not Fork
@@ -17,6 +17,13 @@ Do Not Override
         { href: "/resources/css/ccg-scroll-authority.css", marker: "data-ccg-scroll-authority-style" },
         { href: "/resources/css/ccg-nav-fit.css", marker: "data-ccg-nav-fit-style" }
     ];
+
+    const CRITICAL_MODULES = [
+        { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
+        { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
+        { src: "/js/ccg-mode-engine.js", marker: "data-ccg-mode-engine-loader" }
+    ];
+
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
         { src: "/js/ccg-global-search.js", marker: "data-ccg-global-search-loader" },
@@ -32,11 +39,8 @@ Do Not Override
         { src: "/js/ccg-pwa.js", marker: "data-ccg-pwa-loader" },
         { src: "/js/ccg-pwa-visible-install.js", marker: "data-ccg-pwa-visible-install-loader" },
         { src: "/js/ccg-release-check.js", marker: "data-ccg-release-check-loader" },
-        { src: "/js/ccg-nav-fit.js", marker: "data-ccg-nav-fit-loader" },
-        { src: "/js/ccg-header-auth-loader.js", marker: "data-ccg-header-auth-loader" },
         { src: "/js/ccg-publisher-history.js", marker: "data-ccg-publisher-history-loader" },
         { src: "/js/ccg-ui-regression-fixes.js", marker: "data-ccg-ui-regression-fixes-loader" },
-        { src: "/js/ccg-mode-engine.js", marker: "data-ccg-mode-engine-loader" },
         { src: "/js/ccg-amiga-identity.js", marker: "data-ccg-amiga-identity-loader" },
         { src: "/js/ccg-mode-identity.js", marker: "data-ccg-mode-identity-loader" },
         { src: "/js/ccg-recent-content.js", marker: "data-ccg-recent-content-loader" },
@@ -73,8 +77,19 @@ Do Not Override
         ["Contact", "/contact.html"]
     ];
 
+    const SOCIAL_LINKS = [
+        ["YouTube", "https://www.youtube.com/@CheekyCommodoreGamer", "yt"],
+        ["Patreon", "https://patreon.com/CheekyCommodoreGamer", "patreon"],
+        ["PayPal", "https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL", "paypal"],
+        ["X/Twitter", "https://twitter.com/CheekyC64Gamer", "x"],
+        ["Facebook", "https://www.facebook.com/cheekycommodoregamer", "fb"],
+        ["Discord", "https://discord.gg/83Xw9ktAn4", "discord"]
+    ];
+
     let navAuthorityObserver = null;
+    let shellAuthorityObserver = null;
     let navCoreInitialised = false;
+    let shellRepairing = false;
 
     function canonicalPath(value) {
         try {
@@ -148,15 +163,171 @@ Do Not Override
             }
 
             const toggle = nav.querySelector("[data-ccg-more-toggle]");
-            if (toggle) {
-                toggle.setAttribute("aria-expanded", "false");
-            }
+            if (toggle) toggle.setAttribute("aria-expanded", "false");
         }
 
         if (typeof window.ccgMarkNavigationActive === "function") {
             window.ccgMarkNavigationActive(header);
         }
         return changed;
+    }
+
+    function createModeToggle() {
+        const button = document.createElement("button");
+        button.className = "ccg-mode-toggle";
+        button.type = "button";
+        button.setAttribute("aria-label", "Toggle between C64 and Amiga modes");
+        button.setAttribute("data-ccg-mode-toggle", "");
+        button.innerHTML = '<span class="ccg-mode-toggle__pill"><span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span><span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span><span class="ccg-mode-toggle__thumb"></span></span>';
+        return button;
+    }
+
+    function buildSocials(container) {
+        container.setAttribute("aria-label", "Social links");
+        const fragment = document.createDocumentFragment();
+        SOCIAL_LINKS.forEach(([label, href, icon]) => {
+            const link = document.createElement("a");
+            link.href = href;
+            link.setAttribute("aria-label", label);
+            const span = document.createElement("span");
+            span.className = `ccg-socials__icon ccg-socials__icon--${icon}`;
+            link.appendChild(span);
+            fragment.appendChild(link);
+        });
+        container.replaceChildren(fragment);
+    }
+
+    function socialStructureMatches(container) {
+        if (!container) return false;
+        const links = Array.from(container.querySelectorAll(":scope > a"));
+        if (links.length !== SOCIAL_LINKS.length) return false;
+        return links.every((link, index) => {
+            const [label, href, icon] = SOCIAL_LINKS[index];
+            const span = link.querySelector(".ccg-socials__icon");
+            return link.getAttribute("aria-label") === label
+                && link.href === new URL(href, window.location.href).href
+                && Boolean(span?.classList.contains(`ccg-socials__icon--${icon}`));
+        });
+    }
+
+    function synchroniseHeaderActions(header) {
+        const inner = header?.querySelector(".ccg-header-inner");
+        if (!inner) return false;
+
+        let changed = false;
+        let actions = inner.querySelector(".ccg-header-actions");
+        if (!actions) {
+            actions = document.createElement("div");
+            actions.className = "ccg-header-actions";
+            inner.appendChild(actions);
+            changed = true;
+        }
+
+        let authSlot = actions.querySelector(".ccg-auth-slot");
+        if (!authSlot) {
+            authSlot = document.createElement("div");
+            authSlot.className = "ccg-auth-slot";
+            authSlot.setAttribute("data-ccg-auth-slot", "true");
+            changed = true;
+        }
+
+        let modeHint = actions.querySelector(".ccg-mode-hint");
+        if (!modeHint) {
+            modeHint = document.createElement("div");
+            modeHint.className = "ccg-mode-hint";
+            modeHint.textContent = "Try different modes";
+            changed = true;
+        }
+
+        let modeToggle = actions.querySelector("[data-ccg-mode-toggle]");
+        if (!modeToggle) {
+            modeToggle = createModeToggle();
+            changed = true;
+        }
+
+        let socials = actions.querySelector(".ccg-header-socials");
+        if (!socials) {
+            socials = document.createElement("div");
+            socials.className = "ccg-header-socials";
+            buildSocials(socials);
+            changed = true;
+        } else if (!socialStructureMatches(socials)) {
+            buildSocials(socials);
+            changed = true;
+        }
+
+        header.querySelectorAll(".ccg-socials-fallback").forEach((fallback) => {
+            fallback.remove();
+            changed = true;
+        });
+
+        const desired = [authSlot, modeHint, modeToggle, socials];
+        const current = Array.from(actions.children);
+        const sameOrder = desired.length === current.length && desired.every((node, index) => current[index] === node);
+        if (!sameOrder) {
+            desired.forEach((node) => actions.appendChild(node));
+            Array.from(actions.children).forEach((node) => {
+                if (!desired.includes(node)) node.remove();
+            });
+            changed = true;
+        }
+
+        return changed;
+    }
+
+    function synchroniseBrand(header) {
+        const brand = header?.querySelector(".ccg-brand");
+        if (!brand) return false;
+        let changed = false;
+        if (brand.getAttribute("href") !== "/home.html") {
+            brand.setAttribute("href", "/home.html");
+            changed = true;
+        }
+        const logo = brand.querySelector(".ccg-brand__logo");
+        if (logo) {
+            if (canonicalPath(logo.getAttribute("src")) !== "/resources/images/ccgamer-logo.png") {
+                logo.setAttribute("src", "/resources/images/ccgamer-logo.png");
+                changed = true;
+            }
+            if (logo.getAttribute("loading") !== "eager") {
+                logo.setAttribute("loading", "eager");
+                changed = true;
+            }
+            if (!logo.getAttribute("width")) logo.setAttribute("width", "1500");
+            if (!logo.getAttribute("height")) logo.setAttribute("height", "1032");
+        }
+        return changed;
+    }
+
+    function shellStructureMatches() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return false;
+        const actions = header.querySelector(".ccg-header-actions");
+        if (!actions) return false;
+        if (!actions.querySelector(".ccg-auth-slot")) return false;
+        if (!actions.querySelector(".ccg-mode-hint")) return false;
+        if (!actions.querySelector("[data-ccg-mode-toggle]")) return false;
+        if (!socialStructureMatches(actions.querySelector(".ccg-header-socials"))) return false;
+        if (header.querySelector(".ccg-socials-fallback")) return false;
+        return navigationStructureMatches();
+    }
+
+    function synchroniseShellStructure() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header || shellRepairing) return false;
+        shellRepairing = true;
+        try {
+            const changed = Boolean(
+                synchroniseBrand(header)
+                | synchroniseHeaderActions(header)
+                | synchroniseNavigationStructure()
+            );
+            header.dataset.ccgShellAuthority = "true";
+            document.documentElement.classList.add("ccg-shell-ready");
+            return changed;
+        } finally {
+            shellRepairing = false;
+        }
     }
 
     function isNavPillCandidate(el) {
@@ -226,8 +397,8 @@ Do Not Override
         });
     }
 
-    function loadOptionalModules() {
-        OPTIONAL_MODULES.forEach(({ src, marker }) => {
+    function loadModules(modules) {
+        modules.forEach(({ src, marker }) => {
             if (hasModuleScript(src)) return;
             const script = document.createElement("script");
             script.src = src;
@@ -244,19 +415,16 @@ Do Not Override
         window.__ccgNavCoreBound = true;
         window.addEventListener("resize", queueApply, { passive: true });
         window.addEventListener("orientationchange", queueApply, { passive: true });
+        window.addEventListener("pageshow", () => {
+            synchroniseShellStructure();
+            queueApply();
+        });
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             if (target?.closest("[data-ccg-mode-toggle], [data-ccg-nav-toggle], [data-ccg-drawer-close], [data-ccg-more-toggle]")) {
                 queueApply();
-                setTimeout(queueApply, 120);
             }
         });
-        const header = document.querySelector("[data-ccg-header]");
-        if (header) {
-            new MutationObserver((mutations) => {
-                if (mutations.some((mutation) => mutation.type === "attributes" || mutation.type === "childList")) queueApply();
-            }).observe(header, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "aria-hidden", "hidden", "style", "data-mode", "data-ccg-mode"] });
-        }
     }
 
     function installNavigationAuthorityObserver() {
@@ -275,24 +443,41 @@ Do Not Override
         lists.forEach((list) => navAuthorityObserver.observe(list, { childList: true, subtree: true }));
     }
 
+    function installShellAuthorityObserver() {
+        if (shellAuthorityObserver) return;
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header) return;
+        shellAuthorityObserver = new MutationObserver(() => {
+            if (shellRepairing || shellStructureMatches()) return;
+            if (!synchroniseShellStructure()) return;
+            applyNavGlowPatch();
+            document.dispatchEvent(new CustomEvent("ccg:shell-ready", { detail: { header } }));
+        });
+        shellAuthorityObserver.observe(header, { childList: true, subtree: true });
+    }
+
     function initUnifiedNavCore() {
         const header = document.querySelector("[data-ccg-header]");
         if (!header || navCoreInitialised) return false;
         navCoreInitialised = true;
         loadRequiredStyles();
-        synchroniseNavigationStructure();
+        synchroniseShellStructure();
         applyNavGlowPatch();
         bindStateReapply();
         installNavigationAuthorityObserver();
-        loadOptionalModules();
-        document.dispatchEvent(new CustomEvent("ccg:navigation-ready"));
+        installShellAuthorityObserver();
+        loadModules(CRITICAL_MODULES);
+        loadModules(OPTIONAL_MODULES);
+        document.dispatchEvent(new CustomEvent("ccg:navigation-ready", { detail: { nav: header.querySelector(".ccg-nav") } }));
+        document.dispatchEvent(new CustomEvent("ccg:shell-ready", { detail: { header } }));
         return true;
     }
 
     window.applyNavGlowPatch = applyNavGlowPatch;
     window.CCGUnifiedNavCore = Object.freeze({
         init: initUnifiedNavCore,
-        sync: synchroniseNavigationStructure,
+        sync: synchroniseShellStructure,
+        syncNavigation: synchroniseNavigationStructure,
         applyNavGlowPatch
     });
 
