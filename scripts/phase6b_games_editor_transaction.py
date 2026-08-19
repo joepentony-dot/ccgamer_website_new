@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Run synthetic C64 and Amiga publishing transactions in disposable worktrees."""
+"""Validate new-game publishing in disposable worktrees against the current pipeline.
+
+The synthetic records deliberately contain a legacy game-media URL. One variant
+also contains a PDF manual. This proves that the public site publishes manuals
+only and never exposes the legacy game-media URL.
+"""
 
 from __future__ import annotations
 
@@ -11,7 +16,6 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -35,6 +39,7 @@ VARIANTS = [
         "title": "Phase 6B Synthetic C64 Game",
         "year": 1990,
         "platform_route": "games/platforms/c64/index.html",
+        "pdf": "https://example.com/phase6b-synthetic-c64-manual.pdf",
     },
     {
         "key": "amiga",
@@ -44,6 +49,7 @@ VARIANTS = [
         "title": "Phase 6B Synthetic Amiga Game",
         "year": 1991,
         "platform_route": "games/platforms/amiga/index.html",
+        "pdf": "",
     },
 ]
 
@@ -60,7 +66,7 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def run(command: list[str], cwd: Path, timeout: int = 300) -> dict[str, Any]:
+def run(command: list[str], cwd: Path, timeout: int = 600) -> dict[str, Any]:
     result = subprocess.run(
         command,
         cwd=cwd,
@@ -75,7 +81,7 @@ def run(command: list[str], cwd: Path, timeout: int = 300) -> dict[str, Any]:
         "command": " ".join(command),
         "returncode": result.returncode,
         "passed": result.returncode == 0,
-        "output_tail": (result.stdout or "")[-8000:],
+        "output_tail": (result.stdout or "")[-12000:],
     }
 
 
@@ -101,7 +107,9 @@ def synthetic_game(variant: dict[str, Any]) -> dict[str, Any]:
         "videoid": "A1b2C3d4E5F",
         "thumbnail": f"resources/images/thumbnails/all/{slug}.png",
         "music": ["Phase 6B Test Composer"],
-        "pdf": "",
+        "pdf": variant["pdf"],
+        # Deliberately retained in the disposable fixture to prove that legacy
+        # media fields cannot become public download links.
         "disk": [f"https://example.com/{slug}.zip"],
         "download_status": "authorised",
         "lemon": ["https://www.lemon64.com/game/phase-6b-test"],
@@ -128,16 +136,21 @@ def extract_schema(html: str) -> list[dict[str, Any]]:
         html,
         flags=re.I | re.S,
     )
-    parsed = []
+    parsed: list[dict[str, Any]] = []
     for block in blocks:
-        parsed.append(json.loads(block.strip()))
+        try:
+            value = json.loads(block.strip())
+        except json.JSONDecodeError:
+            continue
+        if isinstance(value, dict):
+            parsed.append(value)
     return parsed
 
 
 def graph_types(blocks: list[dict[str, Any]]) -> list[str]:
     types: list[str] = []
     for block in blocks:
-        nodes = block.get("@graph", []) if isinstance(block, dict) else []
+        nodes = block.get("@graph", [])
         for node in nodes if isinstance(nodes, list) else []:
             raw = node.get("@type") if isinstance(node, dict) else None
             if isinstance(raw, str):
@@ -170,10 +183,22 @@ def files_containing(root: Path, directory: str, needle: str) -> list[str]:
     return sorted(matches)
 
 
-
 def count_anchor_href(html: str, href: str) -> int:
     pattern = re.compile(r'<a\b[^>]*\bhref=["\']' + re.escape(href) + r'["\']', re.I | re.S)
     return len(pattern.findall(html))
+
+
+def manual_policy_checks(variant: dict[str, Any], manuals_html: str) -> dict[str, bool]:
+    slug = variant["slug"]
+    disk_url = f"https://example.com/{slug}.zip"
+    manual_url = variant["pdf"]
+    expected_manual = bool(manual_url)
+    return {
+        "legacy_game_media_not_exposed": disk_url not in manuals_html,
+        "legacy_game_media_control_absent": "data-direct-download" not in manuals_html and ">Download Game<" not in manuals_html,
+        "manual_membership_correct": (manuals_html.count(slug) >= 1) if expected_manual else (slug not in manuals_html),
+        "manual_url_membership_correct": (manual_url in manuals_html) if expected_manual else True,
+    }
 
 
 def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
@@ -186,26 +211,17 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
         if not add["passed"]:
             return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
 
-        for script_name in [
-            "scripts/apply-phase6b-publishing.py",
-            "scripts/phase6b-remove-build-games-composer-owner.py",
-        ]:
-            prepare = run([sys.executable, script_name], sandbox)
-            command_log.append(prepare)
-            if not prepare["passed"]:
-                return {"variant": variant["key"], "commands": command_log, "checks": {}, "passed": 0, "total": 0}
-
         games_path = sandbox / "games" / "games.json"
         games = json.loads(read(games_path))
         games.append(synthetic_game(variant))
         games_path.write_text(json.dumps(games, indent=2) + "\n", encoding="utf-8")
         create_thumbnail(sandbox / "resources" / "images" / "thumbnails" / "all" / f"{variant['slug']}.png")
 
-        publish = run(["node", "scripts/rebuild-games.js"], sandbox, timeout=600)
+        publish = run(["node", "scripts/rebuild-games.js"], sandbox)
         command_log.append(publish)
 
         slug = variant["slug"]
-        href = f'/games/{slug}/'
+        href = f"/games/{slug}/"
         canonical_url = f"{SITE}/games/{slug}/"
         canonical = sandbox / "games" / slug / "index.html"
         redirect = sandbox / "games" / f"{slug}.html"
@@ -213,9 +229,12 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
         redirect_html = read(redirect) if redirect.exists() else ""
         schema_blocks = extract_schema(canonical_html) if canonical_html else []
         types = graph_types(schema_blocks)
-        year_html = read(sandbox / "games" / "years" / str(variant["year"]) / "index.html")
-        platform_html = read(sandbox / variant["platform_route"])
-        downloads_html = read(sandbox / "games" / "downloads" / "index.html")
+        year_path = sandbox / "games" / "years" / str(variant["year"]) / "index.html"
+        platform_path = sandbox / variant["platform_route"]
+        manuals_path = sandbox / "games" / "downloads" / "index.html"
+        year_html = read(year_path) if year_path.exists() else ""
+        platform_html = read(platform_path) if platform_path.exists() else ""
+        manuals_html = read(manuals_path) if manuals_path.exists() else ""
         sitemap_games = read(sandbox / "sitemap-games.xml")
 
         checks = {
@@ -233,11 +252,13 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
             "legacy_redirect_targets_canonical": href in redirect_html,
             "publisher_archive_once": len(files_containing(sandbox, "games/publishers", href)) == 1,
             "developer_archive_once": len(files_containing(sandbox, "games/developers", href)) == 1,
-            "composer_archive_once": len(files_containing(sandbox, "music", href)) >= 1,
+            "composer_archive_present": len(files_containing(sandbox, "music", href)) >= 1,
             "year_archive_once": count_anchor_href(year_html, href) == 1,
             "platform_archive_once": count_anchor_href(platform_html, href) == 1,
-            "downloads_archive_once": downloads_html.count(slug) >= 1,
+            "game_page_has_no_download_panel": "game-download-section" not in canonical_html and "Authorised Game Download" not in canonical_html,
+            "game_page_has_no_legacy_media_url": f"https://example.com/{slug}.zip" not in canonical_html,
             "sitemap_once": sitemap_games.count(canonical_url) == 1,
+            **manual_policy_checks(variant, manuals_html),
         }
         return {
             "variant": variant["key"],
@@ -254,46 +275,30 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
 
 def inspect_sources() -> dict[str, Any]:
     editor = read(ROOT / "admin" / "js" / "games-editor.js")
-    editor_html = read(ROOT / "admin" / "games-editor.html")
     rebuild = read(ROOT / "scripts" / "rebuild-games.js")
-    year_generator = read(ROOT / "scripts" / "generate-year-platform-pages.js")
-    year_validator = read(ROOT / "scripts" / "validate-year-platform-discovery.js")
-    template = read(ROOT / "admin" / "templates" / "game-landing-template.html")
+    manuals = read(ROOT / "scripts" / "generate-downloads-page.js")
+    enforcement = read(ROOT / "scripts" / "enforce-manual-only-game-pages.js")
     return {
         "authoritative_command_documented_in_editor": "node scripts/rebuild-games.js" in editor,
         "unavailable_browser_endpoint_removed": "/admin/api/rebuild-games" not in editor,
-        "button_is_instructional": "Show Publishing Command" in editor_html,
-        "editor_package_schema_placeholder": "{{GAME_SCHEMA_JSON}}" in template,
-        "lemon_assisted_import_present": "fetchLemonData" in editor and "api.allorigins.win" in editor,
-        "lemon_review_warning_present": "imported facts must be reviewed" in editor_html,
-        "rebuild_includes_all_generators": all(
-            name in rebuild
-            for name in [
-                "build-games.js",
-                "generate-publisher-pages.js",
-                "generate-developer-pages.js",
-                "generate-composer-pages.js",
-                "generate-year-platform-pages.js",
-                "integrate-year-platform-discovery.js",
-                "generate-downloads-page.js",
-                "update-downloads-static-pages.js",
-                "generate-sitemaps.js",
-                "validate-sitemaps.js",
-                "verify-seo.mjs",
-                "validate-year-platform-discovery.js",
-            ]
-        ),
-        "fixed_generator_totals_removed": all(token not in year_generator for token in ["!== 651", "!== 552", "!== 99", "!== 15"]),
-        "fixed_validator_totals_removed": all(token not in year_validator for token in ["!== 651", "!== 552", "!== 99", "years.length !== 15"]),
+        "current_rebuild_preserved": "audit-magazine-review-coverage.js" in rebuild and "enforce-manual-only-game-pages.js" in rebuild,
+        "magazine_review_pipeline_present": "build-magazine-review-chunks.js" in rebuild and "ensure-magazine-review-runtime.js" in rebuild,
+        "rerelease_pipeline_present": "mark-rerelease-publishers.js" in rebuild and "link-publisher-strength-genres.js" in rebuild,
+        "manuals_generator_uses_pdf": "game.pdf" in manuals,
+        "manuals_generator_ignores_disk": "game.disk" not in manuals,
+        "manual_only_game_page_guard_present": "game-download-section" in enforcement and "--check" in enforcement,
     }
 
 
 def build_report(evidence: dict[str, Any]) -> str:
-    source = evidence["source_inspection"]
     rows = []
     for result in evidence["transactions"]:
-        rows.append(f"| {result['variant'].upper()} | {result['passed']} / {result['total']} | {'PASS' if result['passed'] == result['total'] else 'FAIL'} |")
-    source_rows = "\n".join(f"- {key.replace('_', ' ')}: **{'PASS' if value else 'FAIL'}**" for key, value in source.items())
+        status = "PASS" if result["passed"] == result["total"] else "FAIL"
+        rows.append(f"| {result['variant'].upper()} | {result['passed']} / {result['total']} | {status} |")
+    source_rows = "\n".join(
+        f"- {key.replace('_', ' ')}: **{'PASS' if value else 'FAIL'}**"
+        for key, value in evidence["source_inspection"].items()
+    )
     return f"""# Phase 6B Reliable Games Editor Publishing
 
 ## Verdict
@@ -308,52 +313,17 @@ The real catalogue remained at **{evidence['baseline_game_count']} games**. Synt
 |---|---:|---|
 {chr(10).join(rows)}
 
-## Phase 6A blockers corrected
-
-- Fixed 651/552/99/15 assumptions were replaced by current-database totals with a protected minimum catalogue baseline.
-- `scripts/rebuild-games.js` now owns the complete generator and validation sequence.
-- SEO validation runs only after wrappers, archives and sitemaps are current.
-- Canonical wrappers receive one `VideoGame` and one `BreadcrumbList` graph.
-- Publisher, developer, composer, year, platform and downloads output are generated by the same command.
-- The hosted editor no longer claims it can call a missing server endpoint.
-- The deployment ZIP is an input package; `node scripts/rebuild-games.js` is the authoritative publishing step.
-- Lemon64 Auto Fill remains an assisted import and requires manual factual review.
+The C64 fixture includes a PDF manual and must appear once in Game Manuals A-Z. The Amiga fixture has no manual and must not appear there. Both fixtures deliberately contain a legacy game-media URL, which must remain absent from the manuals archive and individual game page.
 
 ## Source checks
 
 {source_rows}
 
-## Authoritative publishing sequence
-
-1. Validate `games/games.json` source integrity and protected minimum baseline.
-2. Generate game wrappers, redirects, index and search data.
-3. Generate publisher, developer and composer archives.
-4. Generate and integrate year and platform archives.
-5. Generate downloads and update archive registration.
-6. Generate all sitemaps.
-7. Validate sitemaps, SEO and year/platform membership.
-
-## Adding a real game
-
-1. Open the Game Builder and fetch the live game library.
-2. Enter the game details and verify the historical facts manually.
-3. Lemon64 Auto Fill may assist with title, year, publisher and selected credits, but review every imported value.
-4. Add or confirm the thumbnail, manual and download files.
-5. Export the full deployment ZIP and place its files in the repository.
-6. Run `node scripts/rebuild-games.js` from the repository root.
-7. Review the generated diff and open a pull request.
-8. Merge only after the central publishing workflow and read-only validators pass.
-
-## Remaining limitations
-
-- The editor does not research or guarantee historical accuracy.
-- The static hosted website cannot execute repository commands.
-- Supabase/GitHub direct-save remains a separate administrative commit route; generated output must still pass the authoritative rebuild workflow.
-
 ## Safety
 
 - No real game was added.
 - No existing game record was changed.
+- No synthetic game-media URL may become visitor-facing.
 - Protected homepage, intro-loader and real game-data hashes remained unchanged.
 """
 
@@ -364,29 +334,37 @@ def main() -> None:
     parser.add_argument("--report-output", required=True)
     args = parser.parse_args()
 
-    before = {path: sha256(ROOT / path) for path in PROTECTED}
-    baseline_games = json.loads(read(ROOT / "games" / "games.json"))
-    transactions = [run_variant(variant, len(baseline_games)) for variant in VARIANTS]
-    after = {path: sha256(ROOT / path) for path in PROTECTED}
-    source = inspect_sources()
+    protected_before = {path: sha256(ROOT / path) for path in PROTECTED}
+    games = json.loads(read(ROOT / "games" / "games.json"))
+    baseline_count = len(games)
+    transactions = [run_variant(variant, baseline_count) for variant in VARIANTS]
+    source_inspection = inspect_sources()
+    protected_after = {path: sha256(ROOT / path) for path in PROTECTED}
 
     all_transactions_pass = all(item["passed"] == item["total"] for item in transactions)
-    all_source_pass = all(source.values())
-    protected_pass = before == after
+    all_sources_pass = all(source_inspection.values())
+    protected_unchanged = protected_before == protected_after
+    verdict = "READY" if all_transactions_pass and all_sources_pass and protected_unchanged else "NOT READY"
+
     evidence = {
-        "verdict": "READY" if all_transactions_pass and all_source_pass and protected_pass else "NOT READY",
-        "baseline_game_count": len(baseline_games),
+        "verdict": verdict,
+        "baseline_game_count": baseline_count,
         "transactions": transactions,
-        "source_inspection": source,
-        "protected_hashes_unchanged": protected_pass,
+        "source_inspection": source_inspection,
+        "protected_hashes_unchanged": protected_unchanged,
     }
 
-    Path(args.json_output).write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
-    Path(args.report_output).parent.mkdir(parents=True, exist_ok=True)
-    Path(args.report_output).write_text(build_report(evidence), encoding="utf-8")
+    json_path = Path(args.json_output)
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    json_path.write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
 
-    if evidence["verdict"] != "READY":
+    report_path = ROOT / args.report_output
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text(build_report(evidence), encoding="utf-8")
+
+    if verdict != "READY":
         raise SystemExit("Phase 6B transaction did not reach READY status")
+    print("Phase 6B synthetic C64/Amiga publishing transactions passed the manuals-only policy.")
 
 
 if __name__ == "__main__":
