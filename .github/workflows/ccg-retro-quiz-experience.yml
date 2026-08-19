@@ -13,6 +13,7 @@ on:
       - "admin/templates/retro-video-template.html"
       - "resources/css/retro-video-pages.css"
       - "scripts/generate-retro-pages.js"
+      - "scripts/normalize-public-header-shell.js"
       - ".github/workflows/rebuild-retro-on-data-change.yml"
       - ".github/workflows/deploy-github-pages-omega-stable.yml"
       - "quiz/quiz.html"
@@ -49,6 +50,7 @@ jobs:
           node --check js/amiga-demo-music-loader.js
           node --check resources/js/quiz-ui-fixes.js
           node --check scripts/generate-retro-pages.js
+          node --check scripts/normalize-public-header-shell.js
           node --check scripts/audit-retro-quiz-experience.js
 
       - name: Run source contract audit
@@ -82,11 +84,30 @@ jobs:
           do
             test -f "$page"
             grep -Fq 'class="ccg-header"' "$page"
+            grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' "$page"
+            grep -Fq '>Publishers</a>' "$page"
+            grep -Fq '>Music Hub</a>' "$page"
+            grep -Fq '>Find Me a Game</a>' "$page"
+            grep -Fq '>Zzap!64 Reviews &amp; Awards</a>' "$page"
+            grep -Fq '>Install CCG App</a>' "$page"
+            grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' "$page"
+            grep -Fq 'ccg-socials__icon--yt' "$page"
+            grep -Fq 'ccg-socials__icon--patreon' "$page"
+            grep -Fq 'ccg-socials__icon--paypal' "$page"
+            grep -Fq 'ccg-socials__icon--x' "$page"
+            grep -Fq 'ccg-socials__icon--fb' "$page"
+            grep -Fq 'ccg-socials__icon--discord' "$page"
+            grep -Fq 'src="/js/ccg-header-auth-loader.js"' "$page"
+            grep -Fq 'src="/js/ccg-nav-fit.js"' "$page"
             grep -Fq 'retro-video-page__hero-media' "$page"
             grep -Fq 'retro-video-page__watch' "$page"
             grep -Fq 'retro-video-page__related-media' "$page"
             grep -Fq 'data-ccg-mode-toggle' "$page"
           done
+
+          node scripts/normalize-public-header-shell.js --root "$site_root/retro-events" --check
+          node scripts/normalize-public-header-shell.js --root "$site_root/retro-specials" --check
+          node scripts/normalize-public-header-shell.js --root "$site_root/amiga-demo-music" --check
 
           grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/amiga-demo-music/red-sector-folow-me/"' "$site_root/amiga-demo-music/red-sector-folow-me/index.html"
           grep -Fq '<link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/retro-specials/50-essential-amiga-games/"' "$site_root/retro-specials/50-essential-amiga-games/index.html"
@@ -105,11 +126,24 @@ jobs:
             retro-specials/50-essential-amiga-games/index.html
           do
             grep -Fq 'class="ccg-header"' "$page"
+            grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' "$page"
+            grep -Fq '>Publishers</a>' "$page"
+            grep -Fq '>Music Hub</a>' "$page"
+            grep -Fq '>Find Me a Game</a>' "$page"
+            grep -Fq '>Zzap!64 Reviews &amp; Awards</a>' "$page"
+            grep -Fq '>Install CCG App</a>' "$page"
+            grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' "$page"
+            grep -Fq 'ccg-socials__icon--discord' "$page"
+            grep -Fq 'src="/js/ccg-header-auth-loader.js"' "$page"
             grep -Fq 'retro-video-page__hero-media' "$page"
             grep -Fq 'retro-video-page__watch' "$page"
             grep -Fq 'retro-video-page__related-media' "$page"
             grep -Fq 'data-ccg-mode-toggle' "$page"
           done
+
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Validate generated canonical URLs
         run: |
