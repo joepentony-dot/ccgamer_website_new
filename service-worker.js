@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-19-public-release-v3";
+const CACHE_VERSION = "2026-08-19-public-release-v4";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -15,17 +15,22 @@ const PUBLIC_SHELL = Object.freeze([
   "/install-app.html",
   "/games/",
   "/games/discover/",
+  "/music/",
   "/quiz/quiz.html",
   "/manifest.webmanifest",
   "/resources/images/ccg-app-icon.svg",
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-nav-fit.css",
+  "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
   "/js/ccg-nav-fit.js",
+  "/js/ccg-header-auth-loader.js",
+  "/js/ccg-auth.js",
+  "/js/ccg-music-navigation.js",
   "/js/ccg-pwa.js",
   "/js/ccg-pwa-visible-install.js",
   "/js/ccg-release-check.js"
