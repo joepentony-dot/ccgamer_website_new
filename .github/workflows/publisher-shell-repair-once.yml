@@ -1,4 +1,4 @@
-name: Temporary Public Shell Diagnostic
+name: Temporary Generated Shell Repair
 
 on:
   push:
@@ -9,14 +9,14 @@ on:
       - main
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: public-shell-diagnostic-${{ github.ref }}
+  group: generated-shell-repair-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  diagnose:
+  repair:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -31,13 +31,167 @@ jobs:
         with:
           node-version: "24"
 
-      - name: List every remaining noncanonical shared-header page
+      - name: Harden remaining generators at their write boundary
         shell: bash
         run: |
-          node scripts/normalize-public-header-shell.js --root .
-          echo '--- NONCANONICAL FILES ---'
-          git diff --name-only -- '*.html'
-          echo '--- GROUP COUNTS ---'
-          git diff --name-only -- '*.html' | awk -F/ '{ if (NF >= 2) print $1 "/" $2; else print $1 }' | sort | uniq -c | sort -nr
-          echo '--- TOTAL ---'
-          git diff --name-only -- '*.html' | wc -l
+          node <<'NODE'
+          const fs = require('fs');
+
+          function addNormalizerImport(source, anchor) {
+            if (source.includes('require("./normalize-public-header-shell")')) return source;
+            if (!source.includes(anchor)) throw new Error(`Import anchor not found: ${anchor}`);
+            return source.replace(anchor, `${anchor}\nconst { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");`);
+          }
+
+          function addCanonicalHelper(source, helperName) {
+            if (source.includes(`function ${helperName}(`)) return source;
+            const anchor = 'function htmlEscape(value) {';
+            if (!source.includes(anchor)) throw new Error(`Helper anchor not found for ${helperName}`);
+            const helper = `function ${helperName}(html, label) {\n    const result = normaliseHtml(html);\n    if (!result.applicable || result.malformed) {\n        fail(\`${'${label}'} is missing the replaceable shared-header contract.\`);\n    }\n\n    const output = result.html;\n    const required = [\n        \`data-ccg-static-shell=\\\"${'${STATIC_SHELL_VERSION}'}\\\"\`,\n        'class=\\\"ccg-auth-slot\\\" data-ccg-auth-pending=\\\"true\\\"',\n        'data-ccg-auth-snapshot-bootstrap=\\\"true\\\"',\n        'ccg-socials__icon--yt',\n        'ccg-socials__icon--patreon',\n        'ccg-socials__icon--paypal',\n        'ccg-socials__icon--x',\n        'ccg-socials__icon--fb',\n        'ccg-socials__icon--discord',\n        'src=\\\"/js/ccg-header-auth-loader.js\\\"'\n    ];\n    const missing = required.filter((snippet) => !output.includes(snippet));\n    if (missing.length) {\n        fail(\`${'${label}'} is missing canonical shell requirements: ${'${missing.join(", ")}'}\`);\n    }\n    return output;\n}\n\n`;
+            return source.replace(anchor, `${helper}${anchor}`);
+          }
+
+          function replaceRequired(source, from, to, label) {
+            if (source.includes(from)) return source.replace(from, to);
+            if (source.includes(to)) return source;
+            throw new Error(`${label} anchor not found.`);
+          }
+
+          // Developer archives.
+          {
+            const file = 'scripts/generate-developer-pages.js';
+            let source = fs.readFileSync(file, 'utf8');
+            source = addNormalizerImport(source, '} = require("./developer-utils");');
+            source = addCanonicalHelper(source, 'canonicalizeDeveloperHtml');
+            source = replaceRequired(
+              source,
+              'const indexHtml = renderDeveloperIndex(groups);',
+              'const indexHtml = canonicalizeDeveloperHtml(renderDeveloperIndex(groups), "developer index");',
+              'developer index'
+            );
+            source = replaceRequired(
+              source,
+              'const html = renderDeveloperPage(group);',
+              'const html = canonicalizeDeveloperHtml(renderDeveloperPage(group), `developer ${group.slug}`);',
+              'developer detail'
+            );
+            fs.writeFileSync(file, source, 'utf8');
+          }
+
+          // Year and platform archives.
+          {
+            const file = 'scripts/generate-year-platform-pages.js';
+            let source = fs.readFileSync(file, 'utf8');
+            const importAnchor = 'const path = require("path");';
+            if (!source.includes('require("./normalize-public-header-shell")')) {
+              if (!source.includes(importAnchor)) throw new Error('year/platform import anchor not found.');
+              source = source.replace(importAnchor, `${importAnchor}\nconst { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");`);
+            }
+            source = addCanonicalHelper(source, 'canonicalizeArchiveHtml');
+            source = replaceRequired(
+              source,
+              'const yearsIndex = renderYearsIndex(data);',
+              'const yearsIndex = canonicalizeArchiveHtml(renderYearsIndex(data), "year archive index");',
+              'year index'
+            );
+            source = replaceRequired(
+              source,
+              'const platformsIndex = renderPlatformsIndex(data);',
+              'const platformsIndex = canonicalizeArchiveHtml(renderPlatformsIndex(data), "platform archive index");',
+              'platform index'
+            );
+            source = replaceRequired(
+              source,
+              'const html = renderYearPage(group);',
+              'const html = canonicalizeArchiveHtml(renderYearPage(group), `year archive ${group.year}`);',
+              'year detail'
+            );
+            source = replaceRequired(
+              source,
+              'const html = renderPlatformPage(group);',
+              'const html = canonicalizeArchiveHtml(renderPlatformPage(group), `platform archive ${group.key}`);',
+              'platform detail'
+            );
+            fs.writeFileSync(file, source, 'utf8');
+          }
+
+          // Manuals/downloads archive.
+          {
+            const file = 'scripts/generate-downloads-page.js';
+            let source = fs.readFileSync(file, 'utf8');
+            source = addNormalizerImport(source, '} = require("./publisher-utils");');
+            source = addCanonicalHelper(source, 'canonicalizeDownloadsHtml');
+            source = replaceRequired(
+              source,
+              'const html = renderDownloadsPage(manualGames);',
+              'const html = canonicalizeDownloadsHtml(renderDownloadsPage(manualGames), "manuals archive");',
+              'downloads page'
+            );
+            fs.writeFileSync(file, source, 'utf8');
+          }
+
+          // Video library output. Its template is already canonical; this protects the write boundary too.
+          {
+            const file = 'scripts/generate-video-library.js';
+            let source = fs.readFileSync(file, 'utf8');
+            const importAnchor = 'const { normalizeRetroSlug, verifiedMetadata } = require("./generate-retro-video-seo");';
+            if (!source.includes('require("./normalize-public-header-shell")')) {
+              if (!source.includes(importAnchor)) throw new Error('video library import anchor not found.');
+              source = source.replace(importAnchor, `${importAnchor}\nconst { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");`);
+            }
+            if (!source.includes('function canonicalizeVideoLibraryHtml(')) {
+              const anchor = 'function readJson(filePath, fallback) {';
+              if (!source.includes(anchor)) throw new Error('video library helper anchor not found.');
+              const helper = `function canonicalizeVideoLibraryHtml(html) {\n  const result = normaliseHtml(html);\n  if (!result.applicable || result.malformed) fail("Video library is missing the replaceable shared-header contract.");\n  const output = result.html;\n  const required = [\n    \`data-ccg-static-shell=\\\"${'${STATIC_SHELL_VERSION}'}\\\"\`,\n    'class=\\\"ccg-auth-slot\\\" data-ccg-auth-pending=\\\"true\\\"',\n    'data-ccg-auth-snapshot-bootstrap=\\\"true\\\"',\n    'ccg-socials__icon--yt', 'ccg-socials__icon--patreon', 'ccg-socials__icon--paypal',\n    'ccg-socials__icon--x', 'ccg-socials__icon--fb', 'ccg-socials__icon--discord',\n    'src=\\\"/js/ccg-header-auth-loader.js\\\"'\n  ];\n  const missing = required.filter((snippet) => !output.includes(snippet));\n  if (missing.length) fail(\`Video library is missing canonical shell requirements: ${'${missing.join(", ")}'}\`);\n  return output;\n}\n\n`;
+              source = source.replace(anchor, `${helper}${anchor}`);
+            }
+            source = replaceRequired(
+              source,
+              'writeFileIfChanged(outputHtmlPath, html);',
+              'writeFileIfChanged(outputHtmlPath, canonicalizeVideoLibraryHtml(html));',
+              'video library output'
+            );
+            fs.writeFileSync(file, source, 'utf8');
+          }
+          NODE
+
+      - name: Canonicalize every remaining committed generated family
+        run: |
+          node scripts/normalize-public-header-shell.js --root games/developers
+          node scripts/normalize-public-header-shell.js --root games/years
+          node scripts/normalize-public-header-shell.js --root games/platforms
+          node scripts/normalize-public-header-shell.js --root games/downloads
+          node scripts/normalize-public-header-shell.js --root videos
+
+      - name: Validate generators and entire public source
+        run: |
+          node --check scripts/generate-developer-pages.js
+          node --check scripts/generate-year-platform-pages.js
+          node --check scripts/generate-downloads-page.js
+          node --check scripts/generate-video-library.js
+          node scripts/normalize-public-header-shell.js --root . --check
+          git diff --check
+
+      - name: Commit remaining repaired source
+        shell: bash
+        run: |
+          git add \
+            scripts/generate-developer-pages.js \
+            scripts/generate-year-platform-pages.js \
+            scripts/generate-downloads-page.js \
+            scripts/generate-video-library.js \
+            games/developers \
+            games/years \
+            games/platforms \
+            games/downloads \
+            videos/index.html
+
+          if git diff --cached --quiet; then
+            echo "Remaining generated source is already canonical."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Canonicalize remaining generated public shells"
+          git push origin HEAD:fix/pages-latest-deploy-wins-20260819
