@@ -81,14 +81,15 @@
     }
 
     function addSchema(item, kind) {
-        if (document.querySelector('script[data-ccg-category-schema]')) return;
+        if (document.querySelector('script[data-ccg-category-schema], script[data-ccg-category-static-schema]')) return;
         const canonical = document.querySelector('link[rel="canonical"]')?.href || `${ORIGIN}${path}`;
         const parentName = kind === "genre" ? "Genres" : "Collections";
         const parentUrl = kind === "genre" ? `${ORIGIN}/games/genres/` : `${ORIGIN}/games/collections/`;
+        const subject = item.name.replace(/ Games$/i, "");
         const schema = {
             "@context": "https://schema.org",
             "@graph": [
-                { "@type": "CollectionPage", "@id": `${canonical}#category`, url: canonical, name: kind === "genre" ? `${item.name} Games on Commodore 64 and Amiga` : `${item.name} – Commodore 64 and Amiga`, description: item.description, isPartOf: { "@type": "WebSite", name: SITE, url: `${ORIGIN}/` }, about: [{ "@type": "Thing", name: "Commodore 64" }, { "@type": "Thing", name: "Amiga" }, { "@type": "Thing", name: item.name }] },
+                { "@type": "CollectionPage", "@id": `${canonical}#category`, url: canonical, name: kind === "genre" ? `${subject} Games on Commodore 64 and Amiga` : `${item.name} – Commodore 64 and Amiga`, description: item.description, isPartOf: { "@type": "WebSite", name: SITE, url: `${ORIGIN}/` }, about: [{ "@type": "Thing", name: "Commodore 64" }, { "@type": "Thing", name: "Amiga" }, { "@type": "Thing", name: item.name }] },
                 { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Home", item: `${ORIGIN}/` }, { "@type": "ListItem", position: 2, name: "Games", item: `${ORIGIN}/games/` }, { "@type": "ListItem", position: 3, name: parentName, item: parentUrl }, { "@type": "ListItem", position: 4, name: item.name, item: canonical }] }
             ]
         };
