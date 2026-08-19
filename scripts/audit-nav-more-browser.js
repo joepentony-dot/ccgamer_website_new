@@ -101,7 +101,6 @@ async function verifyLiveReleaseAssets() {
 
   const assets = [
     ["/service-worker.js", "service-worker.js"],
-    ["/resources/css/ccg-nav.css", "resources/css/ccg-nav.css"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
     ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
