@@ -189,7 +189,7 @@
       </div>
       <ul>
         <li><strong>Registrations:</strong> exact Supabase account figures.</li>
-        <li><strong>Google Analytics:</strong> consent-based, so figures represent tracked visitors rather than every visitor.</li>
+        <li><strong>Google Analytics:</strong> consent-based, so figures represent tracked visitors rather than every visitor. CCG GA4 property <code>526769734</code> is configured directly, so Analytics Growth does not require Analytics Admin API property discovery.</li>
         <li><strong>Search discovery:</strong> Search Console uses finalized data and normally trails live traffic by a few days.</li>
         <li><strong>YouTube attribution:</strong> identifiable referrals are shown automatically; UTM-tagged links in video descriptions and pinned comments make attribution stronger.</li>
         <li><strong>Privacy:</strong> Google OAuth tokens stay in browser memory for the current admin session and are not stored in the public repository.</li>
@@ -200,6 +200,7 @@
   <script src="/js/ccg-supabase-config.js" defer></script>
   <script src="/js/ccg-supabase-client.js" defer></script>
   <script src="/js/ccg-auth-ui.js" defer></script>
+  <script src="/admin/js/analytics-growth-ga4-config.js"></script>
   <script type="module" src="/admin/js/analytics-growth.js"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
 </body>
