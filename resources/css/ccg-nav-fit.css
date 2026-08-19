@@ -32,7 +32,6 @@
 
 @media (min-width: 1200px) {
     .ccg-header .ccg-nav {
-        width: 100% !important;
         overflow: visible !important;
         contain: none !important;
     }
