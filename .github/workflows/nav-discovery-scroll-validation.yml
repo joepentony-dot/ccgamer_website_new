@@ -4,9 +4,11 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - "_headers"
+      - "service-worker.js"
       - "js/ccg-nav-core.js"
-      - "js/ccg-nav-authority.js"
       - "js/ccg-nav-fit.js"
+      - "js/ccg-release-check.js"
       - "js/ccg-archive-shortcuts.js"
       - "games/discover/index.html"
       - "js/game-discovery.js"
@@ -17,9 +19,11 @@ on:
   push:
     branches: [main]
     paths:
+      - "_headers"
+      - "service-worker.js"
       - "js/ccg-nav-core.js"
-      - "js/ccg-nav-authority.js"
       - "js/ccg-nav-fit.js"
+      - "js/ccg-release-check.js"
       - "js/ccg-archive-shortcuts.js"
       - "games/discover/index.html"
       - "js/game-discovery.js"
@@ -45,10 +49,13 @@ jobs:
       - name: Validate JavaScript syntax
         run: |
           node --check js/ccg-nav-core.js
-          node --check js/ccg-nav-authority.js
           node --check js/ccg-nav-fit.js
+          node --check js/ccg-release-check.js
           node --check js/ccg-archive-shortcuts.js
           node --check js/game-discovery.js
+
+      - name: Confirm duplicate navigation authority is removed
+        run: test ! -e js/ccg-nav-authority.js
 
       - name: Run navigation discovery and scroll regressions
         run: node --test tests/nav-discovery-scroll.test.mjs
