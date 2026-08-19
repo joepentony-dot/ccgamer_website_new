@@ -49,9 +49,7 @@ on:
       - "docs/seo-baseline/phase-6b-reliable-games-publishing.md"
   workflow_dispatch:
 
-# Phase 6B is deliberately validation-only. It must test the same authoritative
-# publishing chain used by production and must never rewrite that chain or push
-# generated output back into a pull request branch.
+# Validation only: test the production publishing chain exactly as committed.
 permissions:
   contents: read
 
@@ -172,7 +170,7 @@ jobs:
           ! grep -R "phase6b-synthetic" games/games.json games/games-index.json games/games-search.json
 
       - name: Confirm workflow is validation-only
+        shell: bash
         run: |
-          test "${{ github.event_name }}" != "pull_request" || true
-          ! grep -q "git push" .github/workflows/phase-6b-reliable-games-publishing.yml
+          ! grep -q "git"" push" .github/workflows/phase-6b-reliable-games-publishing.yml
           echo "Phase 6B validates production publishing without mutating or pushing the source branch."
