@@ -33,13 +33,31 @@ test('known CCG GA4 property bypasses external Analytics Admin discovery', () =>
   assert.match(ga4Config, /analyticsadmin\.googleapis\.com/);
   assert.match(ga4Config, /\/v1beta\/accountSummaries/);
   assert.match(ga4Config, /property: PROPERTY_PATH/);
-  assert.match(ga4Config, /return nativeFetch\(input, init\)/);
+  assert.match(ga4Config, /configuredPropertyResponse/);
 
   const configIndex = page.indexOf('/admin/js/analytics-growth-ga4-config.js');
   const dashboardIndex = page.indexOf('/admin/js/analytics-growth.js');
   assert.ok(configIndex >= 0, 'GA4 configuration bridge is loaded');
   assert.ok(dashboardIndex > configIndex, 'GA4 configuration bridge loads before Analytics Growth');
   assert.match(page, /does not require Analytics Admin API property discovery/);
+});
+
+test('GA4 bridge leaves real Data API reports untouched when Google accepts them', () => {
+  assert.match(ga4Config, /DATA_ORIGIN = "https:\/\/analyticsdata\.googleapis\.com"/);
+  assert.match(ga4Config, /DATA_SERVICE = "analyticsdata\.googleapis\.com"/);
+  assert.match(ga4Config, /const response = await nativeFetch\(input, init\)/);
+  assert.match(ga4Config, /if \(url\.origin === DATA_ORIGIN\) return conciseDataApiError\(response\)/);
+});
+
+test('SERVICE_DISABLED Data API errors identify the exact external Google Cloud gate', () => {
+  assert.match(ga4Config, /SERVICE_DISABLED/);
+  assert.match(ga4Config, /projectNumberFromError/);
+  assert.match(ga4Config, /projects\\\/\(\\d\+\)/);
+  assert.match(ga4Config, /CCG GA4 property \$\{PROPERTY_ID\} is configured correctly/);
+  assert.match(ga4Config, /Google Cloud project \$\{projectNumber\} is rejecting the Google Analytics Data API/);
+  assert.match(ga4Config, /Verify that exact project shows the Google Analytics Data API as Enabled/);
+  assert.match(ga4Config, /allow Google's service activation to propagate and retry/);
+  assert.match(ga4Config, /status: 403/);
 });
 
 test('Search Console and GA4 are loaded together from one temporary Google session', () => {
