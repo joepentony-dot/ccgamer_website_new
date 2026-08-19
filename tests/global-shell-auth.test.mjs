@@ -67,7 +67,7 @@ test('nav core remains the canonical structural source', () => {
 });
 
 test('legacy social fallback cannot become a public display state', () => {
-  assert.match(socialCss, /\.ccg-header \.ccg-socials-fallback/);
+  assert.match(socialCss, /\.ccg-socials-fallback\s*\{/);
   assert.match(socialCss, /display:\s*none\s*!important/);
   assert.match(socialCss, /visibility:\s*hidden\s*!important/);
 });
