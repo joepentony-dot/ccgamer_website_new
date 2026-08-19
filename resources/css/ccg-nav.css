@@ -1,3 +1,5 @@
+@import url("/resources/css/ccg-nav-fit.css");
+
 /* ============================================================
    CCG-NAV.CSS — GLOBAL NAV STABILITY LAYER
    ------------------------------------------------------------
@@ -262,6 +264,22 @@
         min-height: 38px !important;
         display: inline-flex !important;
         align-items: center !important;
+    }
+
+    /* First-paint density matches the fitted Omega desktop state.
+       The fit script may tighten further, but it no longer has to rescue
+       a large legacy button row after the page is already visible. */
+    .ccg-header .ccg-nav__list {
+        gap: clamp(4px, 0.4vw, 7px) !important;
+    }
+
+    .ccg-header .ccg-nav__link,
+    .ccg-header .ccg-nav__more-toggle {
+        min-height: 42px !important;
+        padding: 7px clamp(8px, 0.75vw, 11px) !important;
+        font-size: clamp(0.67rem, 0.64vw, 0.76rem) !important;
+        letter-spacing: 0.055em !important;
+        white-space: nowrap;
     }
 }
 
