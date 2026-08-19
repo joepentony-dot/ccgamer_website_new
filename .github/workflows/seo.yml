@@ -83,6 +83,12 @@ jobs:
           echo "[seo] Regenerating Retro Specials, Retro Events and Amiga Demo Music from their authoritative datasets..."
           node scripts/generate-retro-pages.js
 
+      - name: Require canonical shell on regenerated retro pages
+        run: |
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
+
       - name: Generate game video SEO
         run: |
           echo "[seo] Generating static game video markup and game video sitemap..."
@@ -114,6 +120,12 @@ jobs:
 
       - name: Validate video library and key moments
         run: npm run validate:video-library
+
+      - name: Recheck canonical shell after SEO enrichment
+        run: |
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Check generated output whitespace
         run: git diff --check

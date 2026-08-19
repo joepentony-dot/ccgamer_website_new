@@ -41,6 +41,7 @@ jobs:
       - name: Validate retro generator syntax
         run: |
           node --check scripts/generate-retro-pages.js
+          node --check scripts/normalize-public-header-shell.js
           node --check scripts/generate-retro-video-seo.js
           node --check scripts/validate-retro-video-seo.js
           node --check scripts/generate-video-library.js
@@ -52,6 +53,12 @@ jobs:
         run: |
           echo "[rebuild-retro] Generating Retro Events, Retro Specials and Amiga Demo Music pages..."
           node scripts/generate-retro-pages.js
+
+      - name: Require canonical shell on regenerated retro pages
+        run: |
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Generate retro watch-page video SEO
         run: |
@@ -69,6 +76,12 @@ jobs:
           node scripts/validate-sitemaps.js
           node scripts/validate-retro-video-seo.js
           node scripts/validate-video-library.js
+
+      - name: Recheck canonical shell after enrichment
+        run: |
+          node scripts/normalize-public-header-shell.js --root retro-events --check
+          node scripts/normalize-public-header-shell.js --root retro-specials --check
+          node scripts/normalize-public-header-shell.js --root amiga-demo-music --check
 
       - name: Check generated output whitespace
         run: git diff --check
