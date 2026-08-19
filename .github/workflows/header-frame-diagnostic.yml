@@ -1,0 +1,38 @@
+name: Header Frame Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/audit-header-frame-stability.js"
+      - ".github/workflows/header-frame-diagnostic.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: header-frame-diagnostic
+  cancel-in-progress: true
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out diagnostic branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate diagnostic syntax
+        run: node --check scripts/audit-header-frame-stability.js
+
+      - name: Sample live first animation frames
+        run: node scripts/audit-header-frame-stability.js
