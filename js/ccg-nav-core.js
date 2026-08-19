@@ -11,7 +11,6 @@ Do Not Override
     "use strict";
 
     const HARDENED_CLASS = "ccg-nav-contract-hardened";
-    const NAV_SYNC_STYLE_ID = "ccg-nav-sync-style";
     const REQUIRED_STYLES = [
         { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" },
         { href: "/resources/css/ccg-inner-page-density.css", marker: "data-ccg-inner-page-density-style" },
@@ -69,34 +68,40 @@ Do Not Override
         ["Zzap!64 Reviews & Awards", "/zzap64/"],
         ["Quiz", "/quiz/quiz.html"],
         ["Emulation", "/emulation.html"],
+        ["Install CCG App", "/install-app.html"],
         ["About Me", "/about.html"],
         ["Contact", "/contact.html"]
     ];
 
-    function installNavigationSyncGuard() {
-        const root = document.documentElement;
-        root.classList.add("ccg-nav-syncing");
-        root.classList.remove("ccg-nav-ready");
+    let navAuthorityObserver = null;
+    let navCoreInitialised = false;
 
-        if (!document.getElementById(NAV_SYNC_STYLE_ID)) {
-            const style = document.createElement("style");
-            style.id = NAV_SYNC_STYLE_ID;
-            style.textContent = [
-                "html.ccg-nav-syncing .ccg-header .ccg-nav{visibility:hidden!important;opacity:0!important}",
-                "html.ccg-nav-ready .ccg-header .ccg-nav{visibility:visible!important;opacity:1!important}",
-                ".ccg-header .ccg-socials-fallback{display:none!important;visibility:hidden!important}",
-                ".ccg-header .ccg-nav__list>li[hidden]{display:none!important}"
-            ].join("");
-            document.head.appendChild(style);
+    function canonicalPath(value) {
+        try {
+            return new URL(value, window.location.href).pathname.replace(/\/+$/, "") || "/";
+        } catch (error) {
+            return String(value || "").replace(/\/+$/, "") || "/";
         }
-
-        window.setTimeout(() => revealNavigation(), 2500);
     }
 
-    function revealNavigation() {
-        const root = document.documentElement;
-        root.classList.remove("ccg-nav-syncing");
-        root.classList.add("ccg-nav-ready");
+    function listMatches(list, links) {
+        if (!list) return false;
+        const anchors = Array.from(list.children)
+            .map((item) => item.querySelector(".ccg-nav__link"))
+            .filter(Boolean);
+        if (anchors.length !== links.length) return false;
+        return anchors.every((link, index) => {
+            const [label, href] = links[index];
+            return link.textContent.trim() === label
+                && canonicalPath(link.getAttribute("href")) === canonicalPath(href);
+        });
+    }
+
+    function navigationStructureMatches() {
+        const nav = document.querySelector("[data-ccg-header] .ccg-nav");
+        if (!nav) return false;
+        return listMatches(nav.querySelector("[data-ccg-nav-primary]"), FINAL_PRIMARY)
+            && listMatches(nav.querySelector("[data-ccg-nav-secondary]"), FINAL_SECONDARY);
     }
 
     function buildList(list, links) {
@@ -108,6 +113,9 @@ Do Not Override
             link.href = href;
             link.className = "ccg-nav__link";
             link.textContent = label;
+            if (canonicalPath(href) === "/install-app.html") {
+                link.setAttribute("data-ccg-pwa-install-nav", "true");
+            }
             item.appendChild(link);
             fragment.appendChild(item);
         });
@@ -119,24 +127,36 @@ Do Not Override
         const nav = header?.querySelector(".ccg-nav");
         if (!header || !nav) return false;
 
-        buildList(nav.querySelector("[data-ccg-nav-primary]"), FINAL_PRIMARY);
-        buildList(nav.querySelector("[data-ccg-nav-secondary]"), FINAL_SECONDARY);
+        const primary = nav.querySelector("[data-ccg-nav-primary]");
+        const secondary = nav.querySelector("[data-ccg-nav-secondary]");
+        let changed = false;
 
-        const menu = nav.querySelector("[data-ccg-more-menu]");
-        if (menu) {
-            menu.replaceChildren();
-            menu.hidden = true;
+        if (!listMatches(primary, FINAL_PRIMARY)) {
+            buildList(primary, FINAL_PRIMARY);
+            changed = true;
+        }
+        if (!listMatches(secondary, FINAL_SECONDARY)) {
+            buildList(secondary, FINAL_SECONDARY);
+            changed = true;
         }
 
-        const toggle = nav.querySelector("[data-ccg-more-toggle]");
-        if (toggle) {
-            toggle.setAttribute("aria-expanded", "false");
+        if (changed) {
+            const menu = nav.querySelector("[data-ccg-more-menu]");
+            if (menu) {
+                menu.replaceChildren();
+                menu.hidden = true;
+            }
+
+            const toggle = nav.querySelector("[data-ccg-more-toggle]");
+            if (toggle) {
+                toggle.setAttribute("aria-expanded", "false");
+            }
         }
 
         if (typeof window.ccgMarkNavigationActive === "function") {
             window.ccgMarkNavigationActive(header);
         }
-        return true;
+        return changed;
     }
 
     function isNavPillCandidate(el) {
@@ -239,25 +259,44 @@ Do Not Override
         }
     }
 
+    function installNavigationAuthorityObserver() {
+        if (navAuthorityObserver) return;
+        const nav = document.querySelector("[data-ccg-header] .ccg-nav");
+        if (!nav) return;
+        const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");
+        if (!lists.length) return;
+
+        navAuthorityObserver = new MutationObserver(() => {
+            if (navigationStructureMatches()) return;
+            if (!synchroniseNavigationStructure()) return;
+            applyNavGlowPatch();
+            document.dispatchEvent(new CustomEvent("ccg:navigation-ready", { detail: { nav } }));
+        });
+        lists.forEach((list) => navAuthorityObserver.observe(list, { childList: true, subtree: true }));
+    }
+
     function initUnifiedNavCore() {
+        const header = document.querySelector("[data-ccg-header]");
+        if (!header || navCoreInitialised) return false;
+        navCoreInitialised = true;
         loadRequiredStyles();
         synchroniseNavigationStructure();
         applyNavGlowPatch();
         bindStateReapply();
+        installNavigationAuthorityObserver();
         loadOptionalModules();
         document.dispatchEvent(new CustomEvent("ccg:navigation-ready"));
+        return true;
     }
 
-    installNavigationSyncGuard();
-    document.addEventListener("ccg:navigation-fitted", revealNavigation, { once: true });
     window.applyNavGlowPatch = applyNavGlowPatch;
     window.CCGUnifiedNavCore = Object.freeze({
         init: initUnifiedNavCore,
         sync: synchroniseNavigationStructure,
-        applyNavGlowPatch,
-        reveal: revealNavigation
+        applyNavGlowPatch
     });
 
-    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
+    if (document.querySelector("[data-ccg-header]")) initUnifiedNavCore();
+    else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initUnifiedNavCore, { once: true });
     else initUnifiedNavCore();
 })();
