@@ -317,7 +317,7 @@ async function main() {
       capabilities: {
         alwaysMatch: {
           browserName: "chrome",
-          pageLoadStrategy: "eager",
+          pageLoadStrategy: "none",
           "goog:chromeOptions": {
             args: [
               "--headless=new",
@@ -395,7 +395,7 @@ async function main() {
     console.log(`${LIVE_BASE_URL ? "Live" : "Local"} Navigation More browser audit passed.`);
     if (LIVE_BASE_URL) console.log(`- Public release assets match the repository release at ${LIVE_BASE_URL}`);
     console.log("- Canonical Omega navigation remains visible without an obsolete hide/show lifecycle");
-    console.log("- Desktop About Me and Contact copies stay out of the visible row while More keeps its slot");
+    console.log("- Desktop Install CCG App, About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
     console.log("- Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
     console.log("- Install page keeps Emulation visible while Install CCG App remains inside More");
