@@ -22,9 +22,12 @@ on:
       - "resources/css/ccg-socials.css"
       - "scripts/audit-nav-more-browser.js"
       - "scripts/audit-global-shell-browser.js"
+      - "scripts/normalize-public-header-shell.js"
       - "tests/nav-discovery-scroll.test.mjs"
       - "tests/global-shell-auth.test.mjs"
+      - "tests/public-header-stage-normalizer.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
   push:
     branches: [main]
     paths:
@@ -46,9 +49,12 @@ on:
       - "resources/css/ccg-socials.css"
       - "scripts/audit-nav-more-browser.js"
       - "scripts/audit-global-shell-browser.js"
+      - "scripts/normalize-public-header-shell.js"
       - "tests/nav-discovery-scroll.test.mjs"
       - "tests/global-shell-auth.test.mjs"
+      - "tests/public-header-stage-normalizer.test.mjs"
       - ".github/workflows/nav-discovery-scroll-validation.yml"
+      - ".github/workflows/deploy-github-pages-omega-stable.yml"
 
 permissions:
   contents: read
@@ -77,6 +83,7 @@ jobs:
           node --check js/game-discovery.js
           node --check scripts/audit-nav-more-browser.js
           node --check scripts/audit-global-shell-browser.js
+          node --check scripts/normalize-public-header-shell.js
 
       - name: Confirm duplicate navigation authority is removed
         run: test ! -e js/ccg-nav-authority.js
@@ -86,6 +93,19 @@ jobs:
 
       - name: Run global shell auth and parity regressions
         run: node --test tests/global-shell-auth.test.mjs
+
+      - name: Run staged first-paint shell regressions
+        run: node --test tests/public-header-stage-normalizer.test.mjs
+
+      - name: Exercise staged normalizer across all public HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          stage="$(mktemp -d)"
+          trap 'rm -rf "$stage"' EXIT
+          rsync -a --include='*/' --include='*.html' --exclude='*' ./ "$stage/"
+          node scripts/normalize-public-header-shell.js --root "$stage"
+          node scripts/normalize-public-header-shell.js --root "$stage" --check
 
       - name: Run desktop More browser interaction audit
         run: node scripts/audit-nav-more-browser.js
