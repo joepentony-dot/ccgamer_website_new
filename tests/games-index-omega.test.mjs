@@ -61,7 +61,8 @@ test('games index upgrade survives authoritative rebuilds', () => {
 test('desktop More is backed by real authoritative menu links from first paint', () => {
   assert.match(navFit, /function menuHasOverflowLinks\(menu\)/);
   assert.match(navFit, /menu\?\.querySelector\("\.ccg-nav-fit__link"\)/);
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["install ccg app", "about", "about me", "contact"\]\)/);
+  assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /more\.hidden = !hasOverflow/);
   assert.match(navFit, /toggle\.disabled = !hasOverflow/);
   assert.match(navFit, /toggle\.setAttribute\("aria-hidden", hasOverflow \? "false" : "true"\)/);
@@ -70,6 +71,7 @@ test('desktop More is backed by real authoritative menu links from first paint',
   assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /window\.addEventListener\("pageshow"/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav__more \{/);
+  assert.match(navFitCss, /a\[href="\/install-app\.html"\]/);
   assert.match(navFitCss, /\.ccg-nav__more\[hidden\]/);
   assert.match(navFitCss, /\.ccg-nav__more-menu\[popover\]:popover-open/);
 });
