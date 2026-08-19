@@ -1,0 +1,57 @@
+name: Navigation Discovery Scroll Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-nav-authority.js"
+      - "js/ccg-nav-fit.js"
+      - "js/ccg-archive-shortcuts.js"
+      - "games/discover/index.html"
+      - "js/game-discovery.js"
+      - "resources/css/game-discovery.css"
+      - "resources/css/ccg-scroll-authority.css"
+      - "tests/nav-discovery-scroll.test.mjs"
+      - ".github/workflows/nav-discovery-scroll-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-nav-authority.js"
+      - "js/ccg-nav-fit.js"
+      - "js/ccg-archive-shortcuts.js"
+      - "games/discover/index.html"
+      - "js/game-discovery.js"
+      - "resources/css/game-discovery.css"
+      - "resources/css/ccg-scroll-authority.css"
+      - "tests/nav-discovery-scroll.test.mjs"
+      - ".github/workflows/nav-discovery-scroll-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-nav-authority.js
+          node --check js/ccg-nav-fit.js
+          node --check js/ccg-archive-shortcuts.js
+          node --check js/game-discovery.js
+
+      - name: Run navigation discovery and scroll regressions
+        run: node --test tests/nav-discovery-scroll.test.mjs
+
+      - name: Check whitespace
+        run: git diff --check

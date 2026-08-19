@@ -58,18 +58,19 @@ test('games index upgrade survives authoritative rebuilds', () => {
   assert.match(generator, /CCG GAMES INDEX OMEGA DISCOVERY START/);
 });
 
-test('desktop More is impossible when the overflow menu is empty', () => {
+test('desktop More is backed by real authoritative menu links', () => {
   assert.match(navFit, /function menuHasOverflowLinks\(menu\)/);
   assert.match(navFit, /menu\?\.querySelector\("\.ccg-nav-fit__link"\)/);
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
   assert.match(navFit, /more\.hidden = !hasOverflow/);
   assert.match(navFit, /toggle\.disabled = !hasOverflow/);
   assert.match(navFit, /toggle\.setAttribute\("aria-hidden", hasOverflow \? "false" : "true"\)/);
-  assert.match(navFit, /menuObserver\.observe\(menu, \{ childList: true, subtree: true \}\)/);
   assert.match(navFit, /window\.addEventListener\("pageshow"/);
   assert.match(navFitCss, /\.ccg-nav__more:not\(:has\(\.ccg-nav-fit__link\)\)/);
 });
 
-test('More remains available when real overflow links exist', () => {
+test('More remains available for pinned and responsive overflow links', () => {
+  assert.match(navFit, /items\.filter\(isPinnedMoreItem\)/);
   assert.match(navFit, /populateMore\(menu, hiddenItems\)/);
   assert.match(navFit, /syncMoreAvailability\(nav, more, toggle, menu\)/);
   assert.match(navFitCss, /\.ccg-nav--has-overflow \.ccg-nav__more/);
