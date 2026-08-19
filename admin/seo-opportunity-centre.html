@@ -74,7 +74,7 @@
       <div class="seo-centre__section-header">
         <div>
           <h2>SEO Work Queue</h2>
-          <p>One prioritised list combining ranking, CTR, legacy-route and momentum signals. Priority is a 0–100 heuristic based on demand, current position, estimated click opportunity and the type of issue detected. It is a triage aid, not an instruction to change pages automatically.</p>
+          <p>One prioritised list combining ranking, CTR and momentum signals. Priority is a 0–100 heuristic based on demand, current position, estimated click opportunity and the type of issue detected. Intentional noindex legacy compatibility routes are kept out of this actionable queue and shown separately as retirement diagnostics.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="workQueue">0</span>
       </div>
@@ -84,8 +84,8 @@
     <section class="seo-centre__section" data-seo-section="legacy" hidden>
       <div class="seo-centre__section-header">
         <div>
-          <h2>Legacy URLs still appearing in Google</h2>
-          <p>Known legacy CCG route patterns that still received Search Console impressions. These are diagnostic items only: verify redirects and canonicals before changing or removing anything.</p>
+          <h2>Managed legacy URLs still appearing in Google</h2>
+          <p>Known CCG compatibility handlers that still received Search Console impressions. Routes intentionally retained with <code>noindex,follow</code> are diagnostic retirement items, not automatic SEO faults; investigate only when their canonical destination is wrong or visibility is not declining as expected.</p>
         </div>
         <span class="seo-centre__count" data-seo-count="legacy">0</span>
       </div>
@@ -174,6 +174,7 @@
   <script src="/js/ccg-auth-ui.js" defer></script>
   <script type="module" src="/admin/js/admin-nav.js"></script>
   <script type="module" src="/admin/js/seo-opportunity-centre.js"></script>
+  <script src="/admin/js/seo-opportunity-managed-routes.js"></script>
   <!-- ADMIN AUTH ISOLATION: do not include /js/ccg-global.js or /js/ccg-community-*.js on admin pages. -->
 </body>
 </html>
