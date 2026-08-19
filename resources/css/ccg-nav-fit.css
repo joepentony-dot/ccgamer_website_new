@@ -59,11 +59,13 @@
     }
 
     /*
-       About Me and Contact are desktop More destinations. Hide their
-       secondary-list copies in CSS before JavaScript runs so the first
-       painted header already has the same geometry as the fitted header.
-       This removes the visible full-list -> More reflow during navigation.
+       Install CCG App, About Me and Contact are permanent desktop More
+       destinations. Hide their secondary-list copies in CSS before
+       JavaScript runs so the first painted header already has the same
+       geometry as the fitted header. They remain available in the mobile
+       drawer because this rule is desktop-only.
     */
+    .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/install-app.html"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/about.html"]),
     .ccg-header [data-ccg-nav-secondary] > li:has(> a[href="/contact.html"]) {
         display: none !important;
