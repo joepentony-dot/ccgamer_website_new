@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - fix/pages-latest-deploy-wins-20260819
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 concurrency:
-  group: publisher-shell-repair-once
+  group: publisher-shell-repair-once-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
