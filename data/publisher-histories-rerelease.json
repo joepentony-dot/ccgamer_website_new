@@ -1,0 +1,70 @@
+[
+  {
+    "slug": "the-hit-squad",
+    "summary": "The Hit Squad was a budget re-release label used by Ocean Software. Its catalogue brought older full-price releases back to market at lower prices and included Ocean titles alongside games originally associated with other publishers and developers.",
+    "facts": [
+      "MobyGames release records identify The Hit Squad as an Ocean Software publishing label and describe multiple releases as budget re-releases.",
+      "The Centre for Computing History preserves a substantial The Hit Squad catalogue, including 32 Commodore 64 games in its collection."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade conversions",
+      "Licensed games"
+    ],
+    "related": [
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      }
+    ],
+    "note": "The Hit Squad is treated as a separate re-release label in CCG wherever that credit is explicitly recorded; it does not replace the original publisher credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "MobyGames — Cyberball release history",
+        "url": "https://www.mobygames.com/game/7789/cyberball/releases/",
+        "type": "release-history database"
+      }
+    ]
+  },
+  {
+    "slug": "kixx",
+    "summary": "Kixx was the budget-price label of U.S. Gold. It reissued older computer games at lower prices across Commodore 64, Amiga and other formats, extending the retail life of titles from U.S. Gold and other publishers.",
+    "facts": [
+      "MobyGames identifies Kixx as a budget-price label of U.S. Gold and records Kixx credits from 1988 to 1998.",
+      "The Centre for Computing History preserves more than 100 Kixx-published game records across multiple formats, including Commodore 64 and Amiga releases."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade and action games",
+      "Multi-format catalogue"
+    ],
+    "related": [
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
+    "note": "Kixx is additive in CCG: a Kixx re-release credit creates an additional publisher archive association without replacing the game's original publisher.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "MobyGames — Kixx company profile",
+        "url": "https://www.mobygames.com/company/1271/kixx/",
+        "type": "company database"
+      },
+      {
+        "label": "Centre for Computing History — Kixx catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=&publisher=Kixx&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
