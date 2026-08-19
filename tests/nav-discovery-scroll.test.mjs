@@ -5,6 +5,7 @@ import test from 'node:test';
 const navCore = fs.readFileSync('js/ccg-nav-core.js', 'utf8');
 const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');
 const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');
+const modeIdentityCss = fs.readFileSync('resources/css/ccg-mode-identity.css', 'utf8');
 const legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');
 const visibleInstall = fs.readFileSync('js/ccg-pwa-visible-install.js', 'utf8');
 const archiveShortcuts = fs.readFileSync('js/ccg-archive-shortcuts.js', 'utf8');
@@ -58,6 +59,8 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
   assert.match(navFitCss, /z-index:\s*2147483000\s*!important/);
   assert.match(navFitCss, /pointer-events:\s*auto\s*!important/);
+  assert.match(modeIdentityCss, /\.ccg-mode-identity\s*\{[\s\S]*pointer-events:\s*none/);
+  assert.match(modeIdentityCss, /\.ccg-mode-identity__inner\s*\{[\s\S]*pointer-events:\s*none/);
 });
 
 test('navigation never hides during refresh or fitting', () => {
@@ -103,6 +106,7 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(releaseCheck, /"\/js\/ccg-nav\.js"/);
   assert.match(releaseCheck, /"\/js\/ccg-pwa-visible-install\.js"/);
   assert.match(releaseCheck, /"\/resources\/css\/ccg-nav-fit\.css"/);
+  assert.match(releaseCheck, /"\/resources\/css\/ccg-mode-identity\.css"/);
   assert.match(releaseCheck, /cache: "no-store"/);
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
