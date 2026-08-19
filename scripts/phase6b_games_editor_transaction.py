@@ -105,7 +105,7 @@ def synthetic_game(variant: dict[str, Any]) -> dict[str, Any]:
         "disk": [],
         "download_status": "",
         "lemon": ["https://www.lemon64.com/game/phase-6b-test"],
-        "description": "Synthetic record used only in a disposable worktree to test the complete publishing chain.",
+        "description": "This synthetic validation record exists only inside a disposable Git worktree and is never committed to the public catalogue. It is designed to exercise the complete CCG publishing pipeline in the same shape as a newly added game, including canonical game generation, search indexing, archive membership, structured data, sitemap output, magazine-review handling, and PDF manual discovery. The record uses deliberately fictional publisher, developer, composer and credit information so it cannot be mistaken for historical research. Its thumbnail is also generated solely for the test. No playable game file, disk image, tape image, cartridge image or other copyrighted game media is supplied. Once validation finishes, the temporary worktree and every synthetic file are removed automatically.",
         "ccg_rating": 6,
         "ccg_rating_reason": "Synthetic validation record that is never committed to the real catalogue.",
         "credits": {
