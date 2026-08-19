@@ -120,7 +120,7 @@ async function webdriver(method, pathname, body) {
     method,
     headers: body === undefined ? undefined : { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
-    signal: AbortSignal.timeout(20000)
+    signal: AbortSignal.timeout(45000)
   });
 
   const text = await response.text();
@@ -293,6 +293,29 @@ async function clickMoreDestination(sessionId, width, label, href, expectedPath)
   }
 }
 
+async function assertInstallDestinationNavigation(sessionId, width) {
+  const state = await execute(sessionId, `
+    return (function () {
+      const secondaryItems = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li'));
+      const find = (href) => secondaryItems.find((item) => item.querySelector('a')?.getAttribute('href') === href);
+      const visible = (item) => Boolean(item && getComputedStyle(item).display !== 'none' && item.getBoundingClientRect().width > 1);
+      const menuHrefs = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href]')).map((link) => link.getAttribute('href'));
+      return {
+        pathname: window.location.pathname,
+        emulationVisible: visible(find('/emulation.html')),
+        installVisibleInRow: visible(find('/install-app.html')),
+        installInMore: menuHrefs.includes('/install-app.html'),
+        aboutInMore: menuHrefs.includes('/about.html'),
+        contactInMore: menuHrefs.includes('/contact.html')
+      };
+    })();
+  `);
+
+  if (state.pathname !== "/install-app.html" || !state.emulationVisible || state.installVisibleInRow || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
+    throw new Error(`Install destination navigation contract failed at ${width}px: ${JSON.stringify(state)}`);
+  }
+}
+
 async function main() {
   const driverPath = findChromeDriver();
   const siteServer = LIVE_BASE_URL ? null : createServer();
@@ -313,6 +336,7 @@ async function main() {
       capabilities: {
         alwaysMatch: {
           browserName: "chrome",
+          pageLoadStrategy: "eager",
           "goog:chromeOptions": {
             args: [
               "--headless=new",
@@ -330,6 +354,8 @@ async function main() {
     for (const width of [1440, 1920]) {
       await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");
       await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");
+      await clickMoreDestination(sessionId, width, "Install CCG App", "/install-app.html", "/install-app.html");
+      await assertInstallDestinationNavigation(sessionId, width);
     }
 
     await openHome(sessionId, 1440);
@@ -339,7 +365,7 @@ async function main() {
         const style = nav ? getComputedStyle(nav) : null;
         const pinned = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li')).filter((item) => {
           const href = item.querySelector('a')?.getAttribute('href');
-          return href === '/about.html' || href === '/contact.html';
+          return href === '/install-app.html' || href === '/about.html' || href === '/contact.html';
         });
         return {
           syncing: document.documentElement.classList.contains('ccg-nav-syncing'),
@@ -347,7 +373,7 @@ async function main() {
           visibility: style ? style.visibility : '',
           opacity: style ? style.opacity : '',
           display: style ? style.display : '',
-          pinnedHidden: pinned.every((item) => getComputedStyle(item).display === 'none'),
+          pinnedHidden: pinned.length === 3 && pinned.every((item) => getComputedStyle(item).display === 'none'),
           moreDisplay: getComputedStyle(document.querySelector('.ccg-nav__more')).display
         };
       })();
@@ -375,9 +401,10 @@ async function main() {
     console.log(`${LIVE_BASE_URL ? "Live" : "Local"} Navigation More browser audit passed.`);
     if (LIVE_BASE_URL) console.log(`- Public release assets match the repository release at ${LIVE_BASE_URL}`);
     console.log("- Canonical Omega navigation remains visible without an obsolete hide/show lifecycle");
-    console.log("- Desktop About Me and Contact copies stay out of the visible row while More keeps its slot");
+    console.log("- Desktop Install CCG App, About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
-    console.log("- About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- Emulation remains visible on the Install CCG App destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");
   } finally {
