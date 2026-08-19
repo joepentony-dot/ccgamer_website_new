@@ -83,18 +83,30 @@ function upsertSchema(html) {
 }
 
 function upgradeHero(html) {
-    html = html.replace(
-        /<h1 class="games-hero__title">[\s\S]*?<\/h1>/i,
-        '<p class="games-hero__kicker">The CCG Commodore Game Archive</p>\n                <h1 class="games-hero__title">C64 &amp; Amiga Games Archive</h1>'
-    );
+    const h1Pattern = /<h1 class="games-hero__title">[\s\S]*?<\/h1>/i;
+    if (!h1Pattern.test(html)) fail("games hero title not found");
+
+    const titleMarkup = '<h1 class="games-hero__title">C64 &amp; Amiga Games Archive</h1>';
+    if (/class="games-hero__kicker"/i.test(html)) {
+        html = html.replace(h1Pattern, titleMarkup);
+    } else {
+        html = html.replace(
+            h1Pattern,
+            `<p class="games-hero__kicker">The CCG Commodore Game Archive</p>\n                ${titleMarkup}`
+        );
+    }
+
     html = html.replace(
         /<p class="games-hero__subtitle">[\s\S]*?<\/p>/i,
         '<p class="games-hero__subtitle">\n                    Search and explore hundreds of Commodore 64 and Amiga games, with reviews, ratings, videos, publishers, genres, release years, collections and game manuals.\n                </p>'
     );
 
-    const countBlock = /<div class="games-hero__stats">\s*<strong id="gamesTotalCount">([\s\S]*?)<\/div>/i;
-    if (!countBlock.test(html)) fail("games hero count block not found");
-    html = html.replace(countBlock, (match) => match.replace('class="games-hero__stats"', 'class="games-hero__stats games-hero__stats--count"'));
+    const countBlock = /<div class="games-hero__stats(?: games-hero__stats--count)?">\s*<strong id="gamesTotalCount">[\s\S]*?<\/div>/i;
+    const countMatch = html.match(countBlock);
+    if (!countMatch) fail("games hero count block not found");
+    if (!/games-hero__stats--count/.test(countMatch[0])) {
+        html = html.replace(countBlock, (match) => match.replace('class="games-hero__stats"', 'class="games-hero__stats games-hero__stats--count"'));
+    }
 
     if (!html.includes('class="games-hero__actions"')) {
         const downloads = /\s*<div class="games-hero__stats" data-games-downloads-shortcut="true">[\s\S]*?<\/div>/i;
@@ -158,7 +170,7 @@ function upsertToolsHeading(html) {
 }
 
 function upgradeArchiveShortcuts(html) {
-    const pattern = /<nav class="games-archive-shortcuts" aria-label="More ways to browse the games archive">[\s\S]*?<\/nav>/i;
+    const pattern = /<nav class="games-archive-shortcuts" aria-label="More ways to browse[^"]*games archive">[\s\S]*?<\/nav>/i;
     if (!pattern.test(html)) fail("games archive shortcut nav not found");
     return html.replace(pattern, `<nav class="games-archive-shortcuts" aria-label="More ways to browse the C64 and Amiga games archive">
                 <span class="games-archive-shortcuts__label">More ways to browse</span>
