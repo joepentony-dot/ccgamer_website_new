@@ -1,9 +1,9 @@
 /* ============================================================
    CCG ADAPTIVE DESKTOP NAVIGATION
    ------------------------------------------------------------
-   Compresses the desktop navigation only when required and
-   moves lower-priority destinations into the existing More
-   menu before any link can be clipped off-screen.
+   Desktop More is owned here and nowhere else. About Me + Contact
+   are deliberately reserved for More, with additional destinations
+   moved there only when the visible navigation genuinely overflows.
 ============================================================ */
 
 (function () {
@@ -15,6 +15,7 @@
     const CSS_PATH = "/resources/css/ccg-nav-fit.css";
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
+    const PINNED_MORE_LABELS = new Set(["about", "about me", "contact"]);
     let fitFrame = 0;
     let fitting = false;
 
@@ -37,13 +38,13 @@
         if (label.includes("genre")) return 92;
         if (label.includes("publisher")) return 88;
         if (label.includes("collection")) return 84;
-        if (label.includes("zzap")) return 80;
-        if (label.includes("music")) return 76;
-        if (label.includes("find me a game")) return 72;
+        if (label.includes("music")) return 80;
+        if (label.includes("find me a game")) return 76;
+        if (label.includes("zzap")) return 72;
         if (label.includes("quiz")) return 56;
         if (label.includes("emulation")) return 46;
-        if (label.includes("about")) return 36;
-        if (label.includes("contact")) return 26;
+        if (label.includes("about")) return 12;
+        if (label.includes("contact")) return 10;
         return 42;
     }
 
@@ -82,18 +83,26 @@
         return hasOverflow;
     }
 
-    function bindMoreControls(toggle, menu) {
-        if (!toggle || !menu || toggle.dataset.ccgNavFitBound === "true") return;
-        toggle.dataset.ccgNavFitBound = "true";
+    function bindMoreControls(header) {
+        if (!header || header.dataset.ccgNavFitControlsBound === "true") return;
+        header.dataset.ccgNavFitControlsBound = "true";
 
-        toggle.addEventListener("click", (event) => {
+        /* Capture phase deliberately wins over the historical delegated More
+           handler in ccg-global.js. This prevents two scripts toggling the same
+           menu in opposite directions on one click. */
+        header.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const toggle = target?.closest("[data-ccg-more-toggle]");
+            if (!toggle || !header.contains(toggle)) return;
+
             event.preventDefault();
-            event.stopPropagation();
+            event.stopImmediatePropagation();
 
             const nav = toggle.closest(".ccg-nav");
             const more = toggle.closest(".ccg-nav__more");
-            if (!menuHasOverflowLinks(menu)) {
-                syncMoreAvailability(nav, more, toggle, menu);
+            const menu = nav?.querySelector("[data-ccg-more-menu]");
+            if (!nav || !more || !menu || !menuHasOverflowLinks(menu)) {
+                if (nav && more && menu) syncMoreAvailability(nav, more, toggle, menu);
                 return;
             }
 
@@ -101,16 +110,24 @@
             menu.hidden = !opening;
             toggle.setAttribute("aria-expanded", opening ? "true" : "false");
             setMoreOpenState(toggle, menu, opening);
-        });
+        }, true);
 
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             if (target?.closest("[data-ccg-more-toggle], [data-ccg-more-menu]")) return;
-            closeMore(toggle, menu);
+            const nav = header.querySelector(".ccg-nav");
+            closeMore(
+                nav?.querySelector("[data-ccg-more-toggle]"),
+                nav?.querySelector("[data-ccg-more-menu]")
+            );
         });
 
         document.addEventListener("keydown", (event) => {
-            if (event.key !== "Escape" || menu.hidden) return;
+            if (event.key !== "Escape") return;
+            const nav = header.querySelector(".ccg-nav");
+            const toggle = nav?.querySelector("[data-ccg-more-toggle]");
+            const menu = nav?.querySelector("[data-ccg-more-menu]");
+            if (!toggle || !menu || menu.hidden) return;
             closeMore(toggle, menu);
             toggle.focus({ preventScroll: true });
         });
@@ -137,10 +154,15 @@
         )).filter((item) => item.querySelector(".ccg-nav__link"));
     }
 
+    function isPinnedMoreItem(item) {
+        return PINNED_MORE_LABELS.has(normalizeLabel(item?.querySelector(".ccg-nav__link")?.textContent));
+    }
+
     function restoreItems(items) {
         items.forEach((item) => {
             item.hidden = false;
             item.removeAttribute("data-ccg-nav-fit-overflow");
+            item.removeAttribute("data-ccg-nav-fit-pinned");
         });
     }
 
@@ -152,6 +174,7 @@
             const link = source.cloneNode(true);
             link.classList.add("ccg-nav-fit__link");
             link.removeAttribute("id");
+            link.setAttribute("role", "menuitem");
             menu.appendChild(link);
         });
     }
@@ -181,6 +204,18 @@
             return;
         }
 
+        const hiddenItems = [];
+        items.filter(isPinnedMoreItem).forEach((item) => {
+            item.hidden = true;
+            item.setAttribute("data-ccg-nav-fit-pinned", "true");
+            hiddenItems.push(item);
+        });
+
+        if (hiddenItems.length) {
+            populateMore(menu, hiddenItems);
+            syncMoreAvailability(nav, more, toggle, menu);
+        }
+
         if (isOverflowing(header, nav)) {
             nav.classList.add("ccg-nav--fit-compact");
         }
@@ -188,9 +223,9 @@
             nav.classList.add("ccg-nav--fit-tight");
         }
 
-        const hiddenItems = [];
         if (isOverflowing(header, nav)) {
             const candidates = items
+                .filter((item) => !hiddenItems.includes(item))
                 .map((item, index) => {
                     const link = item.querySelector(".ccg-nav__link");
                     const active = link?.matches("[aria-current='page'], .ccg-nav__link--active") ? 1000 : 0;
@@ -207,11 +242,8 @@
             }
         }
 
-        if (hiddenItems.length) {
-            hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
-            populateMore(menu, hiddenItems);
-        }
-
+        hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
+        populateMore(menu, hiddenItems);
         syncMoreAvailability(nav, more, toggle, menu);
         fitting = false;
     }
@@ -230,31 +262,33 @@
 
     function init() {
         ensureCss();
-        const nav = document.querySelector("[data-ccg-header] .ccg-nav");
-        const more = nav?.querySelector(".ccg-nav__more");
-        const toggle = nav?.querySelector("[data-ccg-more-toggle]");
+        const header = document.querySelector("[data-ccg-header]");
+        const nav = header?.querySelector(".ccg-nav");
         const menu = nav?.querySelector("[data-ccg-more-menu]");
-        if (!nav || !more || !toggle || !menu) return;
+        if (!header || !nav || !menu) return;
 
-        bindMoreControls(toggle, menu);
-        syncMoreAvailability(nav, more, toggle, menu);
-
+        bindMoreControls(header);
         scheduleFit();
-        scheduleFit(120);
-        scheduleFit(500);
+        scheduleFit(80);
+        scheduleFit(240);
 
-        window.addEventListener("resize", () => scheduleFit(40), { passive: true });
-        window.addEventListener("orientationchange", () => scheduleFit(80), { passive: true });
+        window.addEventListener("resize", () => scheduleFit(30), { passive: true });
+        window.addEventListener("orientationchange", () => scheduleFit(60), { passive: true });
         window.addEventListener("pageshow", () => scheduleFit(20), { passive: true });
+        document.addEventListener("ccg:navigation-ready", () => scheduleFit(0));
         desktopMedia?.addEventListener?.("change", () => scheduleFit());
 
         const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");
-        const listObserver = new MutationObserver(() => scheduleFit(20));
+        const listObserver = new MutationObserver(() => {
+            if (!fitting) scheduleFit(10);
+        });
         lists.forEach((list) => listObserver.observe(list, { childList: true, subtree: true }));
 
         const menuObserver = new MutationObserver(() => {
             if (fitting) return;
-            syncMoreAvailability(nav, more, toggle, menu);
+            /* Any historical writer touching More is immediately replaced by
+               the authoritative fit result. */
+            scheduleFit(0);
         });
         menuObserver.observe(menu, { childList: true, subtree: true });
     }
