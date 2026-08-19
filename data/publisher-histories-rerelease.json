@@ -1,0 +1,78 @@
+[
+  {
+    "slug": "kixx",
+    "summary": "Kixx was U.S. Gold's budget-price re-release label, returning established computer games to the shelves at a lower price across the late 1980s and 1990s.",
+    "facts": [
+      "MobyGames identifies Kixx as a budget-price label of U.S. Gold and records the label from the late 1980s into the 1990s.",
+      "The Mastertronic Collectors Archive records that U.S. Gold created Kixx after previously supplying older full-price titles to third-party budget ranges.",
+      "Preserved Kixx releases include Commodore 64 and Amiga titles as well as releases on other home-computer formats."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade games",
+      "Sports games",
+      "Racing games"
+    ],
+    "related": [
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      },
+      {
+        "label": "Kixx XL",
+        "slug": "kixx-xl"
+      }
+    ],
+    "note": "Kixx is shown by CCG as a re-release publisher when a game record credits the label in its re-release field; the original publisher credit remains intact.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "MobyGames — Kixx",
+        "url": "https://www.mobygames.com/company/1271/kixx/",
+        "type": "game preservation database"
+      },
+      {
+        "label": "Mastertronic Collectors Archive — republished software labels",
+        "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
+        "type": "specialist preservation archive"
+      }
+    ]
+  },
+  {
+    "slug": "the-hit-squad",
+    "summary": "The Hit Squad became Ocean Software's major budget re-release label, bringing Ocean's own back catalogue and selected third-party titles back to market at lower prices.",
+    "facts": [
+      "MobyGames identifies The Hit Squad as a budget label of Ocean Software and records releases under the label across the late 1980s and 1990s.",
+      "The label was used not only for Ocean software but also for titles originally associated with publishers including Domark, Activision, Electronic Arts, Taito and Virgin.",
+      "The Centre for Computing History preserves Hit Squad editions on Commodore 64 and Amiga alongside releases for other home computers."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade games",
+      "Sports games",
+      "Racing games"
+    ],
+    "related": [
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      }
+    ],
+    "note": "The Hit Squad is shown by CCG as a re-release publisher when a game record credits the label in its re-release field; the original publisher credit remains intact.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "MobyGames — The Hit Squad",
+        "url": "https://www.mobygames.com/company/5110/hit-squad-the/",
+        "type": "game preservation database"
+      },
+      {
+        "label": "Centre for Computing History — The Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
