@@ -50,6 +50,9 @@ jobs:
       - name: Apply first-paint runtime contract
         run: node scripts/apply-header-first-paint-contract.js
 
+      - name: Normalize legacy music fallback template
+        run: node scripts/repair-migrated-music-navigation.js
+
       - name: Synchronize core public headers
         run: node scripts/sync-core-public-header.js
 
