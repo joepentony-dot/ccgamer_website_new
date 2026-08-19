@@ -44,6 +44,7 @@ const REQUIRED_SCRIPTS = Object.freeze([
 ]);
 
 const EXCLUDED_TOP_LEVEL = new Set(["admin", "auth", "supabase"]);
+const AUTH_SNAPSHOT_KEY = "ccg_header_auth_snapshot";
 
 function parseArgs(argv) {
   const args = { root: ".", check: false };
@@ -83,6 +84,12 @@ function classListFromTag(tagText) {
   return match[2].split(/\s+/).map((value) => value.trim()).filter(Boolean);
 }
 
+function attributeFromTag(tagText, attributeName) {
+  const pattern = new RegExp(`\\b${attributeName}\\s*=\\s*(["'])(.*?)\\1`, "i");
+  const match = String(tagText || "").match(pattern);
+  return match ? match[2] : "";
+}
+
 function findBalancedElement(html, tagName, requiredClass) {
   const openPattern = new RegExp(`<${tagName}\\b[^>]*>`, "ig");
   let openMatch;
@@ -96,7 +103,7 @@ function findBalancedElement(html, tagName, requiredClass) {
     let token;
 
     while ((token = tokenPattern.exec(html))) {
-      if (token[0].startsWith("</") || token[0].startsWith("</".toUpperCase())) depth -= 1;
+      if (token[0].startsWith("</")) depth -= 1;
       else depth += 1;
 
       if (depth === 0) {
@@ -141,6 +148,68 @@ ${SECONDARY_LINKS.map(linkMarkup).join("\n")}
           </nav>`;
 }
 
+function buildAuthSnapshotBootstrap() {
+  return `<script data-ccg-auth-snapshot-bootstrap="true">
+              (function () {
+                "use strict";
+                try {
+                  var script = document.currentScript;
+                  var actions = script && script.parentElement;
+                  var slot = actions && actions.querySelector(".ccg-auth-slot");
+                  if (!slot) return;
+
+                  var raw = sessionStorage.getItem("${AUTH_SNAPSHOT_KEY}");
+                  if (!raw) return;
+                  var snapshot = JSON.parse(raw);
+                  if (!snapshot || typeof snapshot.loggedIn !== "boolean") return;
+
+                  slot.textContent = "";
+                  slot.removeAttribute("data-ccg-auth-pending");
+                  slot.setAttribute("data-ccg-auth-provisional", "true");
+
+                  if (snapshot.loggedIn) {
+                    var username = String(snapshot.username || "@member").trim();
+                    if (!username || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(username)) username = "@member";
+
+                    var profile = document.createElement("a");
+                    profile.className = "ccg-btn ccg-btn-auth ccg-profile-link";
+                    profile.id = "ccg-auth-identity";
+                    profile.href = "/community/profile.html";
+                    profile.setAttribute("aria-label", "Open profile for " + username);
+
+                    var label = document.createElement("span");
+                    label.className = "ccg-profile-link__label";
+                    label.textContent = "Profile:";
+                    var name = document.createElement("span");
+                    name.className = "ccg-profile-link__name";
+                    name.textContent = username;
+                    profile.appendChild(label);
+                    profile.appendChild(document.createTextNode(" "));
+                    profile.appendChild(name);
+
+                    var logout = document.createElement("button");
+                    logout.type = "button";
+                    logout.className = "ccg-btn ccg-btn-auth";
+                    logout.id = "ccg-auth-logout";
+                    logout.setAttribute("data-logout", "");
+                    logout.textContent = "Logout";
+
+                    slot.appendChild(profile);
+                    slot.appendChild(logout);
+                    return;
+                  }
+
+                  var login = document.createElement("button");
+                  login.type = "button";
+                  login.className = "ccg-btn ccg-btn-auth";
+                  login.id = "join-login";
+                  login.textContent = "Join / Login";
+                  slot.appendChild(login);
+                } catch (_error) {}
+              })();
+            </script>`;
+}
+
 function buildCanonicalActions() {
   return `<div class="ccg-header-actions" data-ccg-static-shell="${STATIC_SHELL_VERSION}">
             <div class="ccg-mode-hint">Try different modes</div>
@@ -161,6 +230,7 @@ function buildCanonicalActions() {
               <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
             </div>
             <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
+            ${buildAuthSnapshotBootstrap()}
           </div>`;
 }
 
@@ -169,31 +239,48 @@ function collectAttributeValues(html, tagName, attributeName) {
   const tagPattern = new RegExp(`<${tagName}\\b[^>]*>`, "ig");
   let tag;
   while ((tag = tagPattern.exec(html))) {
-    const attributePattern = new RegExp(`\\b${attributeName}\\s*=\\s*(["'])(.*?)\\1`, "i");
-    const match = tag[0].match(attributePattern);
-    if (match) values.push(normaliseAssetPath(match[2]));
+    const value = attributeFromTag(tag[0], attributeName);
+    if (value) values.push(normaliseAssetPath(value));
   }
   return values;
 }
 
-function ensureHeadAsset(html, markup, assetPath, tagName, attributeName) {
-  const values = collectAttributeValues(html, tagName, attributeName);
-  if (values.includes(assetPath)) return html;
+function hasDirectStylesheet(html, assetPath) {
+  const linkPattern = /<link\b[^>]*>/ig;
+  let link;
+  while ((link = linkPattern.exec(html))) {
+    const href = normaliseAssetPath(attributeFromTag(link[0], "href"));
+    if (href !== assetPath) continue;
+    const rel = attributeFromTag(link[0], "rel").toLowerCase().split(/\s+/).filter(Boolean);
+    if (rel.includes("stylesheet")) return true;
+  }
+  return false;
+}
+
+function insertBeforeHeadClose(html, markup) {
   const closingHead = html.search(/<\/head\s*>/i);
   if (closingHead < 0) return html;
   return `${html.slice(0, closingHead)}  ${markup}\n${html.slice(closingHead)}`;
 }
 
+function ensureDirectStylesheet(html, href) {
+  if (hasDirectStylesheet(html, href)) return html;
+  return insertBeforeHeadClose(
+    html,
+    `<link rel="stylesheet" href="${href}" data-ccg-static-shell-style="true">`
+  );
+}
+
+function ensureHeadAsset(html, markup, assetPath, tagName, attributeName) {
+  const values = collectAttributeValues(html, tagName, attributeName);
+  if (values.includes(assetPath)) return html;
+  return insertBeforeHeadClose(html, markup);
+}
+
 function ensureRequiredAssets(html) {
   let output = html;
   REQUIRED_STYLES.forEach((href) => {
-    output = ensureHeadAsset(
-      output,
-      `<link rel="stylesheet" href="${href}" data-ccg-static-shell-style="true">`,
-      href,
-      "link",
-      "href"
-    );
+    output = ensureDirectStylesheet(output, href);
   });
 
   REQUIRED_SCRIPTS.forEach((src) => {
@@ -317,6 +404,7 @@ module.exports = {
   SECONDARY_LINKS,
   REQUIRED_STYLES,
   REQUIRED_SCRIPTS,
+  AUTH_SNAPSHOT_KEY,
   normaliseAssetPath,
   normaliseHtml,
   processRoot,
