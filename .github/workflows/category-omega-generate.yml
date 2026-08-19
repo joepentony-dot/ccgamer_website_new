@@ -1,0 +1,57 @@
+name: Category Omega Static Generation
+
+on:
+  push:
+    branches:
+      - upgrade/genre-seo-omega-20260819
+    paths:
+      - "scripts/upgrade-category-pages.js"
+      - "js/ccg-category-omega.js"
+      - "resources/css/ccg-category-omega.css"
+      - ".github/workflows/category-omega-generate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout upgrade branch
+        uses: actions/checkout@v4
+        with:
+          ref: upgrade/genre-seo-omega-20260819
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate generator and runtime syntax
+        run: |
+          node --check scripts/upgrade-category-pages.js
+          node --check js/ccg-category-omega.js
+
+      - name: Generate static genre and collection SEO
+        run: node scripts/upgrade-category-pages.js
+
+      - name: Validate generated output
+        run: |
+          node scripts/upgrade-category-pages.js --check
+          git diff --check
+
+      - name: Commit generated category pages
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No generated category changes required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add games/genres games/collections
+          git commit -m "Generate Category Omega SEO pages"
+          git push origin HEAD:upgrade/genre-seo-omega-20260819
