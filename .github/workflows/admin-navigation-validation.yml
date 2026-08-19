@@ -12,6 +12,7 @@ on:
       - "admin/js/admin-nav.js"
       - "admin/js/dashboard.js"
       - "admin/js/analytics-growth.js"
+      - "admin/js/analytics-growth-ga4-config.js"
       - "auth/register.html"
       - "resources/css/ccg-admin.css"
       - "resources/css/ccg-analytics-growth.css"
@@ -29,6 +30,7 @@ on:
       - "admin/js/admin-nav.js"
       - "admin/js/dashboard.js"
       - "admin/js/analytics-growth.js"
+      - "admin/js/analytics-growth-ga4-config.js"
       - "auth/register.html"
       - "resources/css/ccg-admin.css"
       - "resources/css/ccg-analytics-growth.css"
@@ -59,6 +61,7 @@ jobs:
         run: |
           node --check admin/js/admin-nav.js
           node --check admin/js/dashboard.js
+          node --check admin/js/analytics-growth-ga4-config.js
           node --check admin/js/analytics-growth.js
 
       - name: Run admin and analytics regression tests
