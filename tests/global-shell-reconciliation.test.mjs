@@ -49,7 +49,7 @@ test('unified core owns the complete visible public shell', () => {
   assert.match(navCore, /synchroniseBrand/);
   assert.match(navCore, /synchroniseShellStructure/);
   assert.match(navCore, /installShellAuthorityObserver/);
-  assert.match(navCore, /data\.ccgShellAuthority = "true"/);
+  assert.match(navCore, /header\.dataset\.ccgShellAuthority = "true"/);
   assert.match(navCore, /ccg-shell-ready/);
   assert.doesNotMatch(navCore, /ccg-nav-syncing/);
   assert.doesNotMatch(navCore, /visibility:hidden!important;opacity:0!important/);
