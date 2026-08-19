@@ -28,6 +28,26 @@ function escapeHtml(value) {
         .replace(/>/g, "&gt;");
 }
 
+function isCurrentGamesIndex(html) {
+    const signatures = [
+        `<title>${escapeHtml(TITLE)}</title>`,
+        `content="${escapeHtml(DESCRIPTION)}"`,
+        'name="robots" content="index,follow"',
+        STYLE,
+        'data-ccg-games-index-schema',
+        'class="games-hero__kicker"',
+        '<h1 class="games-hero__title">C64 &amp; Amiga Games Archive</h1>',
+        'games-hero__stats--count',
+        'class="games-hero__actions"',
+        'CCG GAMES INDEX OMEGA DISCOVERY START',
+        'Find C64 &amp; Amiga Games Your Way',
+        'CCG GAMES INDEX OMEGA SEARCH HEADING START',
+        'Search &amp; Filter C64 and Amiga Games',
+        'aria-label="More ways to browse the C64 and Amiga games archive"'
+    ];
+    return signatures.every((signature) => html.includes(signature));
+}
+
 function replaceTitle(html) {
     if (!/<title>[\s\S]*?<\/title>/i.test(html)) fail("games/index.html has no title element");
     return html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(TITLE)}</title>`);
@@ -189,6 +209,8 @@ function normalizeWhitespace(html) {
 }
 
 function build(input) {
+    if (isCurrentGamesIndex(input)) return input;
+
     let html = input;
     html = replaceTitle(html);
     html = upsertMeta(html, "name", "description", DESCRIPTION);
@@ -227,4 +249,4 @@ if (after !== before) {
     console.log("[upgrade-games-index] games/index.html already current.");
 }
 
-module.exports = { build };
+module.exports = { build, isCurrentGamesIndex };
