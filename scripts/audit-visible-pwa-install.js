@@ -22,6 +22,10 @@ function requireText(content, token, label) {
   if (!content.includes(token)) failures.push(`${label} is missing: ${token}`);
 }
 
+function forbidText(content, token, label) {
+  if (content.includes(token)) failures.push(`${label} must not contain: ${token}`);
+}
+
 function changedFiles() {
   for (const range of ["origin/main...HEAD", "HEAD^...HEAD"]) {
     try {
@@ -54,17 +58,19 @@ requireText(page, "never placed in the public offline cache", "Privacy explanati
 requireText(page, 'rel="manifest"', "Manifest link");
 requireText(page, 'href="https://www.cheekycommodoregamer.co.uk/install-app.html"', "Canonical URL");
 
-requireText(moduleCode, 'link.textContent = "Install CCG App"', "Permanent navigation label");
-requireText(moduleCode, 'link.href = INSTALL_PAGE', "Permanent navigation route");
 requireText(moduleCode, "beforeinstallprompt", "Native prompt capture");
 requireText(moduleCode, "appinstalled", "Installed-state handling");
 requireText(moduleCode, "isStandalone", "Standalone-state detection");
 requireText(moduleCode, "Add to Home Screen", "Apple fallback guidance");
 requireText(moduleCode, "Install this site as an app", "Desktop fallback guidance");
 requireText(moduleCode, "CCGPWAInstall", "Public installation controller");
-requireText(moduleCode, "data-ccg-pwa-install-nav", "Duplicate navigation prevention");
 requireText(moduleCode, "ccg-pwa-install-page.css", "Installation page stylesheet loader");
+forbidText(moduleCode, "ensureNavigationLink", "Visible-install module navigation ownership");
+forbidText(moduleCode, "data-ccg-nav-secondary", "Visible-install module navigation ownership");
+forbidText(moduleCode, 'dispatchEvent(new Event("resize"))', "Visible-install module forced refit");
 
+requireText(navCore, '["Install CCG App", "/install-app.html"]', "Permanent navigation label and route");
+requireText(navCore, "data-ccg-pwa-install-nav", "Canonical install-navigation marker");
 requireText(navCore, "/js/ccg-pwa-visible-install.js", "Shared visible-install loader");
 requireText(navCore, "data-ccg-pwa-visible-install-loader", "Shared loader marker");
 
@@ -118,7 +124,8 @@ if (failures.length) {
 }
 
 console.log("Visible PWA installation audit passed.");
-console.log("- Install CCG App is available through shared navigation");
+console.log("- Install CCG App is owned by the unified shared navigation");
+console.log("- The PWA helper does not append or refit public navigation");
 console.log("- Android, Windows and Apple installation guidance is present");
 console.log("- Native prompt and installed-state handling are present");
 console.log("- Private routes remain outside public offline storage");
