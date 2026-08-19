@@ -144,7 +144,7 @@ jobs:
           retention-days: 30
 
       - name: Commit current audit reports
-        if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           git add docs/seo-baseline/phase-4a-year-platform-archives.json docs/seo-baseline/phase-4a-year-platform-archives.md

@@ -43,7 +43,7 @@ Years represented in the game data without a detected static year archive: **Non
 - Static links to year archives: **43**
 - Static links to platform archives: **25**
 - Query-string year links: **0**
-- Query-string platform links: **37**
+- Query-string platform links: **36**
 - Year filter control detected on the current browse surface: **Yes**
 - Platform filter control detected on the current browse surface: **No**
 
