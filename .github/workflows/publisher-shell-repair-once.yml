@@ -1,4 +1,4 @@
-name: One-time Publisher Shell Source Repair
+name: Temporary Public Shell Diagnostic
 
 on:
   push:
@@ -9,14 +9,14 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: publisher-shell-repair-once-${{ github.ref }}
+  group: public-shell-diagnostic-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  repair:
+  diagnose:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -31,65 +31,13 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Harden publisher generator
+      - name: List every remaining noncanonical shared-header page
         shell: bash
         run: |
-          node <<'NODE'
-          const fs = require('fs');
-          const generatorPath = 'scripts/generate-publisher-pages.js';
-          let generator = fs.readFileSync(generatorPath, 'utf8');
-
-          if (!generator.includes('require("./normalize-public-header-shell")')) {
-            const importAnchor = '} = require("./publisher-utils");';
-            if (!generator.includes(importAnchor)) throw new Error('Publisher utils import anchor not found.');
-            generator = generator.replace(
-              importAnchor,
-              `${importAnchor}\nconst { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");`
-            );
-          }
-
-          if (!generator.includes('function canonicalizePublisherHtml(')) {
-            const helperAnchor = 'function htmlEscape(value) {';
-            if (!generator.includes(helperAnchor)) throw new Error('Publisher helper anchor not found.');
-            const helper = `function canonicalizePublisherHtml(html, label) {\n    const result = normaliseHtml(html);\n    if (!result.applicable || result.malformed) {\n        fail(\`${'${label}'} is missing the replaceable shared-header contract.\`);\n    }\n\n    const output = result.html;\n    const required = [\n        \`data-ccg-static-shell=\\\"${'${STATIC_SHELL_VERSION}'}\\\"\`,\n        'class=\\\"ccg-auth-slot\\\" data-ccg-auth-pending=\\\"true\\\"',\n        'data-ccg-auth-snapshot-bootstrap=\\\"true\\\"',\n        'ccg-socials__icon--yt',\n        'ccg-socials__icon--patreon',\n        'ccg-socials__icon--paypal',\n        'ccg-socials__icon--x',\n        'ccg-socials__icon--fb',\n        'ccg-socials__icon--discord',\n        'src=\\\"/js/ccg-header-auth-loader.js\\\"'\n    ];\n    const missing = required.filter((snippet) => !output.includes(snippet));\n    if (missing.length) {\n        fail(\`${'${label}'} is missing canonical shell requirements: ${'${missing.join(", ")}'}\`);\n    }\n\n    return output;\n}\n\n`;
-            generator = generator.replace(helperAnchor, `${helper}${helperAnchor}`);
-          }
-
-          const indexOld = 'const indexHtml = renderPublisherIndex(groups);';
-          const indexNew = 'const indexHtml = canonicalizePublisherHtml(renderPublisherIndex(groups), "publisher index");';
-          if (generator.includes(indexOld)) generator = generator.replace(indexOld, indexNew);
-          else if (!generator.includes(indexNew)) throw new Error('Publisher index render anchor not found.');
-
-          const pageOld = 'const html = renderPublisherPage(group, playlists);';
-          const pageNew = 'const html = canonicalizePublisherHtml(renderPublisherPage(group, playlists), `publisher ${group.slug}`);';
-          if (generator.includes(pageOld)) generator = generator.replace(pageOld, pageNew);
-          else if (!generator.includes(pageNew)) throw new Error('Publisher detail render anchor not found.');
-
-          fs.writeFileSync(generatorPath, generator, 'utf8');
-          NODE
-
-      - name: Canonicalize all committed publisher pages
-        run: |
-          node scripts/normalize-public-header-shell.js --root games/publishers
-          node scripts/normalize-public-header-shell.js --root games/publishers --check
-
-      - name: Validate repaired source
-        run: |
-          node --check scripts/generate-publisher-pages.js
-          node scripts/normalize-public-header-shell.js --root games/publishers --check
-          git diff --check
-
-      - name: Commit repaired publisher source
-        shell: bash
-        run: |
-          git add scripts/generate-publisher-pages.js games/publishers
-
-          if git diff --cached --quiet; then
-            echo "Publisher source is already canonical."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Canonicalize publisher archive shell at source"
-          git push origin HEAD:fix/pages-latest-deploy-wins-20260819
+          node scripts/normalize-public-header-shell.js --root .
+          echo '--- NONCANONICAL FILES ---'
+          git diff --name-only -- '*.html'
+          echo '--- GROUP COUNTS ---'
+          git diff --name-only -- '*.html' | awk -F/ '{ if (NF >= 2) print $1 "/" $2; else print $1 }' | sort | uniq -c | sort -nr
+          echo '--- TOTAL ---'
+          git diff --name-only -- '*.html' | wc -l
