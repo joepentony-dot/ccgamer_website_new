@@ -1,4 +1,4 @@
-name: Local Header Frame Validation
+name: Header First-Frame Stability
 
 on:
   pull_request:
@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - "resources/css/ccg-nav-fit.css"
+      - "js/ccg-nav-fit.js"
+      - "js/ccg-music-navigation.js"
       - "scripts/audit-header-frame-local.js"
       - ".github/workflows/header-frame-local.yml"
   workflow_dispatch:
@@ -14,7 +16,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: local-header-frame-validation
+  group: header-first-frame-stability
   cancel-in-progress: true
 
 jobs:
@@ -32,8 +34,8 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Validate diagnostic syntax
+      - name: Validate first-frame audit syntax
         run: node --check scripts/audit-header-frame-local.js
 
-      - name: Sample local first animation frames
+      - name: Enforce first-frame header stability
         run: node scripts/audit-header-frame-local.js
