@@ -9,6 +9,7 @@ on:
       - "games/game.html"
       - "games/games.json"
       - "games/genres/**"
+      - "games/collections/**"
       - "resources/images/thumbnails/all/**"
       - "resources/images/publishers/**"
       - "data/lemon-cache/**"
