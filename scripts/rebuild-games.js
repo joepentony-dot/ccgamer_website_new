@@ -21,6 +21,7 @@ const steps = [
   ["validate-secondary-publisher-credits.js"],
   ["apply-publisher-evidence-overrides.js"],
   ["generate-publisher-pages.js"],
+  ["mark-rerelease-publishers.js"],
   ["apply-publisher-logos.js"],
   ["validate-publisher-logo-output.js"],
   ["materialize-publisher-histories-tolerant.js"],
