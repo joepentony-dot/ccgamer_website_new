@@ -51,10 +51,20 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 12); do
             if node scripts/audit-nav-more-browser.js; then
-              exit 0
+              break
+            fi
+            if [ "$attempt" -eq 12 ]; then
+              echo "The public custom domain did not pass the deployed navigation interaction audit." >&2
+              exit 1
             fi
             echo "Public navigation release is not fully ready yet (attempt ${attempt}/12)."
             sleep 10
           done
-          echo "The public custom domain did not pass the deployed navigation interaction audit." >&2
-          exit 1
+
+      - name: Validate live first-frame audit syntax
+        run: node --check scripts/audit-header-frame-live.js
+
+      - name: Verify live v7 first-frame header stability
+        env:
+          CCG_HEADER_FRAME_BASE_URL: https://www.cheekycommodoregamer.co.uk
+        run: node scripts/audit-header-frame-live.js
