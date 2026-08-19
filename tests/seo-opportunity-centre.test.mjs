@@ -104,3 +104,14 @@ test('intentional noindex compatibility routes stay out of the actionable work q
   assert.match(managedRoutes, /Monitor Google retirement/);
   assert.match(managedRoutes, /Search Console impressions are not an SEO fault by themselves/);
 });
+
+test('visible CSV export uses the reconciled tables rather than hidden pre-reconciliation data', () => {
+  assert.match(page, /Export visible report CSV/);
+  assert.match(managedRoutes, /function visibleReportRows/);
+  assert.match(managedRoutes, /document\.querySelectorAll\("\[data-seo-section\]"\)/);
+  assert.match(managedRoutes, /if \(section\.hidden\) return/);
+  assert.match(managedRoutes, /function exportVisibleReport/);
+  assert.match(managedRoutes, /reconcile\(\)/);
+  assert.match(managedRoutes, /ccg-seo-visible-report-/);
+  assert.match(managedRoutes, /stopImmediatePropagation\(\)/);
+});
