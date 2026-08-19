@@ -4,6 +4,8 @@ import test from 'node:test';
 
 const navCore = fs.readFileSync('js/ccg-nav-core.js', 'utf8');
 const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');
+const legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');
+const visibleInstall = fs.readFileSync('js/ccg-pwa-visible-install.js', 'utf8');
 const archiveShortcuts = fs.readFileSync('js/ccg-archive-shortcuts.js', 'utf8');
 const releaseCheck = fs.readFileSync('js/ccg-release-check.js', 'utf8');
 const discoverHtml = fs.readFileSync('games/discover/index.html', 'utf8');
@@ -18,11 +20,22 @@ test('public navigation has one final authoritative structure', () => {
   assert.match(navCore, /const FINAL_SECONDARY/);
   assert.match(navCore, /\["Find Me a Game", "\/games\/discover\/"\]/);
   assert.match(navCore, /\["Zzap!64 Reviews & Awards", "\/zzap64\/"\]/);
+  assert.match(navCore, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navCore, /\["About Me", "\/about\.html"\]/);
   assert.match(navCore, /\["Contact", "\/contact\.html"\]/);
   assert.match(navCore, /synchroniseNavigationStructure\(\)/);
+  assert.match(navCore, /installNavigationAuthorityObserver/);
+  assert.match(navCore, /data-ccg-pwa-install-nav/);
+  assert.match(visibleInstall, /document\.querySelector\("\[data-ccg-pwa-install-nav\]"\)/);
   assert.doesNotMatch(archiveShortcuts, /function addNavigationLinks/);
   assert.doesNotMatch(archiveShortcuts, /data-ccg-nav-secondary/);
+});
+
+test('late legacy navigation mutations are corrected by the unified core', () => {
+  assert.match(legacyNav, /rebuildList\('\[data-ccg-nav-primary\]'/);
+  assert.match(navCore, /navigationStructureMatches/);
+  assert.match(navCore, /MutationObserver/);
+  assert.match(navCore, /synchroniseNavigationStructure/);
 });
 
 test('desktop More is functional and deliberately owns About Me and Contact', () => {
@@ -35,11 +48,13 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
 });
 
-test('navigation handoff suppresses every legacy header flash', () => {
-  assert.match(navCore, /ccg-nav-syncing/);
-  assert.match(navCore, /visibility:hidden!important;opacity:0!important/);
-  assert.match(navCore, /\.ccg-header \.ccg-socials-fallback\{display:none!important;visibility:hidden!important\}/);
-  assert.match(navCore, /document\.addEventListener\("ccg:navigation-fitted", revealNavigation/);
+test('navigation never hides during the refresh handoff', () => {
+  assert.doesNotMatch(navCore, /ccg-nav-syncing/);
+  assert.doesNotMatch(navCore, /ccg-nav-ready/);
+  assert.doesNotMatch(navCore, /visibility:hidden!important;opacity:0!important/);
+  assert.doesNotMatch(navCore, /installNavigationSyncGuard/);
+  assert.doesNotMatch(navCore, /revealNavigation/);
+  assert.match(navCore, /if \(document\.querySelector\("\[data-ccg-header\]"\)\) initUnifiedNavCore\(\)/);
   assert.match(navCore, /\/resources\/css\/ccg-nav-fit\.css/);
 });
 
