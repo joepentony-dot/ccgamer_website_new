@@ -8,6 +8,7 @@ const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');
 const auth = fs.readFileSync('js/ccg-auth.js', 'utf8');
 const authLoader = fs.readFileSync('js/ccg-header-auth-loader.js', 'utf8');
 const musicNavigation = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
+const publisherGenerator = fs.readFileSync('scripts/generate-publisher-pages.js', 'utf8');
 const zzap = fs.readFileSync('zzap64/index.html', 'utf8');
 const releaseCheck = fs.readFileSync('js/ccg-release-check.js', 'utf8');
 const serviceWorker = fs.readFileSync('service-worker.js', 'utf8');
@@ -90,6 +91,20 @@ test('music bootstrap starts from the same canonical shell', () => {
   assert.match(musicNavigation, /ccg-header-socials/);
   assert.match(musicNavigation, /data-ccg-pwa-install-nav/);
   assert.doesNotMatch(musicNavigation, /ccg-socials-fallback/);
+});
+
+test('publisher rebuilds emit the canonical shell rather than reviving legacy navigation', () => {
+  for (const [, href] of [...PRIMARY, ...SECONDARY]) {
+    assert.ok(publisherGenerator.includes(`href="${href}"`), `Publisher generator is missing ${href}`);
+  }
+  assert.match(publisherGenerator, /data-ccg-auth-slot="true"/);
+  assert.match(publisherGenerator, /ccg-auth-pending">Account</);
+  assert.match(publisherGenerator, /data-ccg-pwa-install-nav="true"/);
+  assert.match(publisherGenerator, /loading="eager"/);
+  assert.doesNotMatch(publisherGenerator, /href="\/games\/index\.html"/);
+  assert.doesNotMatch(publisherGenerator, /href="\/games\/genres\/index\.html"/);
+  assert.doesNotMatch(publisherGenerator, /href="\/games\/collections\/index\.html"/);
+  assert.doesNotMatch(publisherGenerator, /<script src="\/js\/ccg-auth\.js" defer><\/script>/);
 });
 
 test('Zzap archive no longer exposes a legacy header before the shell core runs', () => {
