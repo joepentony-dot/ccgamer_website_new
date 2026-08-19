@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "scripts/audit-nav-more-browser.js"
+      - "scripts/audit-header-frame-local.js"
       - ".github/workflows/live-public-navigation.yml"
   workflow_run:
     workflows:
@@ -40,7 +41,9 @@ jobs:
           node-version: "22"
 
       - name: Validate browser audit syntax
-        run: node --check scripts/audit-nav-more-browser.js
+        run: |
+          node --check scripts/audit-nav-more-browser.js
+          node --check scripts/audit-header-frame-local.js
 
       - name: Verify pull-request navigation locally
         if: github.event_name == 'pull_request'
@@ -62,3 +65,9 @@ jobs:
           done
           echo "The public custom domain did not pass the deployed navigation interaction audit." >&2
           exit 1
+
+      - name: Verify public first-frame layout stability
+        if: github.event_name != 'pull_request'
+        env:
+          CCG_HEADER_FRAME_BASE_URL: https://www.cheekycommodoregamer.co.uk
+        run: node scripts/audit-header-frame-local.js
