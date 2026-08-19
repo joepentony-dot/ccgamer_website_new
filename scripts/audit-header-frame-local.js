@@ -11,6 +11,8 @@ const HOST = "127.0.0.1";
 const SITE_PORT = 4181;
 const DRIVER_PORT = 9518;
 const BASE_URL = `http://${HOST}:${SITE_PORT}`;
+const CONTROL_PIXEL_TOLERANCE = 0.3;
+const PANEL_RANGE_TOLERANCE = 40;
 
 const MIME = Object.freeze({
   ".html": "text/html; charset=utf-8",
@@ -157,14 +159,45 @@ function meaningfulChanges(samples) {
   return output;
 }
 
+function assertStableControls(samples, pathname, width) {
+  const first = samples[0];
+  const exactFields = ["padding", "fontSize", "letterSpacing"];
+  const numericFields = ["linkWidth", "linkHeight"];
+  const violations = [];
+
+  for (const sample of samples.slice(1)) {
+    for (const field of exactFields) {
+      if (sample[field] !== first[field]) {
+        violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
+      }
+    }
+    for (const field of numericFields) {
+      if (Math.abs(Number(sample[field]) - Number(first[field])) > CONTROL_PIXEL_TOLERANCE) {
+        violations.push(`${field} ${first[field]} -> ${sample[field]} at frame ${sample.frame}`);
+      }
+    }
+  }
+
+  const panelWidths = samples.map((sample) => Number(sample.navWidth)).filter(Number.isFinite);
+  const panelRange = panelWidths.length ? Math.max(...panelWidths) - Math.min(...panelWidths) : 0;
+  if (panelRange > PANEL_RANGE_TOLERANCE) {
+    violations.push(`nav panel width range ${panelRange.toFixed(1)}px exceeds ${PANEL_RANGE_TOLERANCE}px`);
+  }
+
+  if (violations.length) {
+    throw new Error(`${width}px ${pathname} changed visible header geometry after first paint: ${violations.join("; ")}`);
+  }
+}
+
 async function auditPage(sessionId, pathname, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
   await webdriver("POST", `/session/${sessionId}/url`, { url: `${BASE_URL}${pathname}?ccg-local-frame=${Date.now()}` });
   await new Promise((resolve) => setTimeout(resolve, 1800));
   const samples = await execute(sessionId, "return window.__ccgHeaderFrames || [];");
   if (!samples.length) throw new Error(`${pathname} produced no samples.`);
+  assertStableControls(samples, pathname, width);
   const changes = meaningfulChanges(samples);
-  console.log(`LOCAL FRAME AUDIT ${width}px ${pathname}`);
+  console.log(`HEADER FRAME VALIDATION ${width}px ${pathname}`);
   console.log(`first=${JSON.stringify(samples[0])}`);
   console.log(`final=${JSON.stringify(samples[samples.length - 1])}`);
   console.log(`changes=${JSON.stringify(changes)}`);
@@ -193,6 +226,7 @@ async function main() {
     for (const width of [1920, 1440]) {
       for (const pathname of pages) await auditPage(sessionId, pathname, width);
     }
+    console.log("Header first-frame stability validation passed.");
   } finally {
     if (sessionId) {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (_error) {}
@@ -203,6 +237,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`Local header frame audit failed: ${error.message}`);
+  console.error(`Header first-frame stability validation failed: ${error.message}`);
   process.exit(1);
 });
