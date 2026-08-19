@@ -1,5 +1,6 @@
 name: Navigation Discovery Scroll Validation
 
+# Main-branch validation canonicalizes committed public shell HTML before regressions run.
 on:
   pull_request:
     branches: [main]
