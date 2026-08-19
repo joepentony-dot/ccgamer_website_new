@@ -23,6 +23,7 @@ Do Not Override
         { src: "/js/ccg-recently-viewed.js", marker: "data-ccg-recently-viewed-loader" },
         { src: "/js/ccg-smart-discovery.js", marker: "data-ccg-smart-discovery-loader" },
         { src: "/js/ccg-engagement-engine.js", marker: "data-ccg-engagement-engine-loader" },
+        { src: "/js/ccg-archive-pulse-randomizer.js", marker: "data-ccg-archive-pulse-randomizer-loader" },
         { src: "/js/ccg-archive-pulse-thumbnails.js", marker: "data-ccg-archive-pulse-thumbnails-loader" },
         { src: "/js/ccg-archive-shortcuts.js", marker: "data-ccg-archive-shortcuts-loader" },
         { src: "/js/ccg-archive-schema.js", marker: "data-ccg-archive-schema-loader" },

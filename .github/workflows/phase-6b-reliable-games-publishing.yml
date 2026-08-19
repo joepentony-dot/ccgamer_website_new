@@ -9,6 +9,9 @@ on:
       - "scripts/validate-games-source.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
+      - "scripts/upgrade-category-pages.js"
+      - "js/ccg-category-omega.js"
+      - "resources/css/ccg-category-omega.css"
       - "scripts/audit-game-manuals.js"
       - "scripts/enforce-manual-only-game-pages.js"
       - "scripts/ensure-downloads-discovery-links.js"
@@ -35,6 +38,7 @@ on:
       - ".github/workflows/year-platform-archives.yml"
       - "games/index.html"
       - "games/genres/**"
+      - "games/collections/**"
       - "games/publishers/**"
       - "games/developers/**"
       - "games/downloads/**"
@@ -96,6 +100,8 @@ jobs:
           node --check scripts/validate-games-source.js
           node --check scripts/rebuild-games.js
           node --check scripts/build-games.js
+          node --check scripts/upgrade-category-pages.js
+          node --check js/ccg-category-omega.js
           node --check scripts/audit-game-manuals.js
           node --check scripts/enforce-manual-only-game-pages.js
           node --check scripts/ensure-downloads-discovery-links.js

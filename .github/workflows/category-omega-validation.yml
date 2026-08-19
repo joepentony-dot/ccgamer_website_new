@@ -1,0 +1,73 @@
+name: Category Omega Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "games/genres/**"
+      - "games/collections/**"
+      - "music/index.html"
+      - "js/ccg-category-omega.js"
+      - "resources/css/ccg-category-omega.css"
+      - "scripts/upgrade-category-pages.js"
+      - "scripts/rebuild-games.js"
+      - "tests/category-omega.test.mjs"
+      - ".github/workflows/category-omega-validation.yml"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/phase-6b-reliable-games-publishing.yml"
+  push:
+    branches: [main]
+    paths:
+      - "games/genres/**"
+      - "games/collections/**"
+      - "music/index.html"
+      - "js/ccg-category-omega.js"
+      - "resources/css/ccg-category-omega.css"
+      - "scripts/upgrade-category-pages.js"
+      - "scripts/rebuild-games.js"
+      - "tests/category-omega.test.mjs"
+      - ".github/workflows/category-omega-validation.yml"
+      - ".github/workflows/games-publishing.yml"
+      - ".github/workflows/phase-6b-reliable-games-publishing.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check js/ccg-category-omega.js
+          node --check scripts/upgrade-category-pages.js
+          node --check scripts/rebuild-games.js
+
+      - name: Generate category SEO in validation workspace
+        run: node scripts/upgrade-category-pages.js
+
+      - name: Confirm generated category output is stable
+        run: node scripts/upgrade-category-pages.js --check
+
+      - name: Run Category Omega regression tests
+        run: node --test tests/category-omega.test.mjs
+
+      - name: Confirm generator touches only category HTML
+        shell: bash
+        run: |
+          unexpected=$(git diff --name-only | grep -Ev '^games/(genres|collections)/.*\.html$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected generated files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Check whitespace
+        run: git diff --check
