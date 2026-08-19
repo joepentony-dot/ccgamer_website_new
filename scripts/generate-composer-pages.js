@@ -366,6 +366,7 @@ ${jsonForHtml(composerPageSchema(route))}
   <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
+  <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-music-config.js" defer></script>
   <script src="/js/ccg-shared-music-player.js" defer></script>
   <script src="/js/music-composer-utils.js" defer></script>
@@ -537,6 +538,7 @@ ${jsonForHtml(hubSchema(routes, canonical, heading, description))}
       <span class="ccg-back-to-top__label" aria-hidden="true">Back to top</span>
     </div>
   </main>
+  <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
   <script src="/js/ccg-nav-core.js" defer></script>
