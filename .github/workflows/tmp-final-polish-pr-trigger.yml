@@ -1,0 +1,46 @@
+name: Temporary CCG Final Polish PR Trigger
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply-repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Execute bounded repair payload
+        shell: python
+        run: |
+          from pathlib import Path
+          text = Path('.github/workflows/tmp-final-polish-repair.yml').read_text(encoding='utf-8')
+          start = '      - name: Apply bounded fixes\n        shell: python\n        run: |\n'
+          end = '      - name: Commit bounded repair\n'
+          if start not in text or end not in text:
+              raise SystemExit('Bounded repair payload markers are missing.')
+          block = text.split(start, 1)[1].split(end, 1)[0]
+          lines = block.splitlines()
+          payload = '\n'.join(line[10:] if line.startswith('          ') else line for line in lines)
+          exec(compile(payload, 'tmp-final-polish-repair.py', 'exec'), {'__name__': '__main__'})
+      - name: Commit repaired files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/ccg-nav-fit.js resources/css/ccg-nav-fit.css js/ccg-global-search.js js/zzap64-awards.js resources/css/zzap64-performance.css js/ccg-release-check.js service-worker.js tests/nav-discovery-scroll.test.mjs tests/global-shell-auth.test.mjs scripts/audit-zzap64-performance.js scripts/audit-nav-more-browser.js scripts/audit-header-frame-local.js
+          git diff --cached --check
+          git commit -m "Fix final navigation search and Zzap interaction faults [repair-bot]"
+          git push origin HEAD:${{ github.head_ref }}
