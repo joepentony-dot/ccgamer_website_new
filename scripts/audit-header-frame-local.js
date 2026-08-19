@@ -107,13 +107,17 @@ const EARLY_SAMPLER = `
   window.__ccgHeaderFrames = [];
   let frame = 0;
   const sample = () => {
+    const header = document.querySelector('[data-ccg-header]');
     const nav = document.querySelector('[data-ccg-header] .ccg-nav');
     const link = document.querySelector('[data-ccg-nav-primary] .ccg-nav__link');
     const inner = document.querySelector('[data-ccg-header] .ccg-header-inner');
-    if (nav && link && inner) {
+    if (header && nav && link && inner) {
       const ls = getComputedStyle(link);
+      const ns = getComputedStyle(nav);
       const nr = nav.getBoundingClientRect();
       const lr = link.getBoundingClientRect();
+      const ir = inner.getBoundingClientRect();
+      const hr = header.getBoundingClientRect();
       window.__ccgHeaderFrames.push({
         frame,
         time: Math.round(performance.now() * 10) / 10,
@@ -122,11 +126,19 @@ const EARLY_SAMPLER = `
         navX: Math.round(nr.x * 10) / 10,
         navWidth: Math.round(nr.width * 10) / 10,
         navScrollWidth: nav.scrollWidth,
+        navCssWidth: ns.width,
+        navMaxWidth: ns.maxWidth,
+        innerX: Math.round(ir.x * 10) / 10,
+        innerWidth: Math.round(ir.width * 10) / 10,
+        headerWidth: Math.round(hr.width * 10) / 10,
+        viewportWidth: window.innerWidth,
         linkWidth: Math.round(lr.width * 10) / 10,
         linkHeight: Math.round(lr.height * 10) / 10,
         padding: ls.padding,
         fontSize: ls.fontSize,
-        letterSpacing: ls.letterSpacing
+        letterSpacing: ls.letterSpacing,
+        fontFamily: ls.fontFamily,
+        fontStatus: document.fonts ? document.fonts.status : 'unsupported'
       });
     }
     frame += 1;
@@ -137,7 +149,7 @@ const EARLY_SAMPLER = `
 `;
 
 function meaningfulChanges(samples) {
-  const fields = ["navX", "navWidth", "navScrollWidth", "linkWidth", "linkHeight", "padding", "fontSize", "letterSpacing"];
+  const fields = ["navX", "navWidth", "navScrollWidth", "navCssWidth", "innerX", "innerWidth", "headerWidth", "viewportWidth", "linkWidth", "linkHeight", "padding", "fontSize", "letterSpacing", "fontFamily", "fontStatus"];
   const output = [];
   for (let index = 1; index < samples.length; index += 1) {
     const before = samples[index - 1];
@@ -150,10 +162,12 @@ function meaningfulChanges(samples) {
       changed,
       beforeClass: before.navClass,
       afterClass: after.navClass,
-      beforeLink: { width: before.linkWidth, height: before.linkHeight, padding: before.padding, fontSize: before.fontSize, letterSpacing: before.letterSpacing },
-      afterLink: { width: after.linkWidth, height: after.linkHeight, padding: after.padding, fontSize: after.fontSize, letterSpacing: after.letterSpacing },
-      beforeNav: { x: before.navX, width: before.navWidth, scrollWidth: before.navScrollWidth },
-      afterNav: { x: after.navX, width: after.navWidth, scrollWidth: after.navScrollWidth }
+      beforeLink: { width: before.linkWidth, height: before.linkHeight, padding: before.padding, fontSize: before.fontSize, letterSpacing: before.letterSpacing, fontFamily: before.fontFamily },
+      afterLink: { width: after.linkWidth, height: after.linkHeight, padding: after.padding, fontSize: after.fontSize, letterSpacing: after.letterSpacing, fontFamily: after.fontFamily },
+      beforeNav: { x: before.navX, width: before.navWidth, scrollWidth: before.navScrollWidth, cssWidth: before.navCssWidth },
+      afterNav: { x: after.navX, width: after.navWidth, scrollWidth: after.navScrollWidth, cssWidth: after.navCssWidth },
+      beforeInner: { x: before.innerX, width: before.innerWidth, headerWidth: before.headerWidth, viewportWidth: before.viewportWidth, fontStatus: before.fontStatus },
+      afterInner: { x: after.innerX, width: after.innerWidth, headerWidth: after.headerWidth, viewportWidth: after.viewportWidth, fontStatus: after.fontStatus }
     });
   }
   return output;
@@ -195,12 +209,19 @@ async function auditPage(sessionId, pathname, width) {
   await new Promise((resolve) => setTimeout(resolve, 1800));
   const samples = await execute(sessionId, "return window.__ccgHeaderFrames || [];");
   if (!samples.length) throw new Error(`${pathname} produced no samples.`);
-  assertStableControls(samples, pathname, width);
   const changes = meaningfulChanges(samples);
+  const widths = samples.map((sample) => sample.navWidth);
+  const minWidth = Math.min(...widths);
+  const maxWidth = Math.max(...widths);
+  const minSample = samples.find((sample) => sample.navWidth === minWidth);
+  const maxSample = samples.find((sample) => sample.navWidth === maxWidth);
   console.log(`HEADER FRAME VALIDATION ${width}px ${pathname}`);
   console.log(`first=${JSON.stringify(samples[0])}`);
+  console.log(`min=${JSON.stringify(minSample)}`);
+  console.log(`max=${JSON.stringify(maxSample)}`);
   console.log(`final=${JSON.stringify(samples[samples.length - 1])}`);
   console.log(`changes=${JSON.stringify(changes)}`);
+  assertStableControls(samples, pathname, width);
 }
 
 async function main() {
