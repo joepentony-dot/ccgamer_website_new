@@ -16,7 +16,12 @@
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     const PINNED_MORE_LABELS = new Set(["about", "about me", "contact"]);
+    const BASE_MORE_LINKS = [
+        ["About Me", "/about.html"],
+        ["Contact", "/contact.html"]
+    ];
     let fitFrame = 0;
+    let fitTimer = 0;
     let fitting = false;
 
     function ensureCss() {
@@ -72,6 +77,14 @@
         setMoreOpenState(toggle, menu, false);
     }
 
+    function openMore(toggle, menu) {
+        if (!toggle || !menu || !menuHasOverflowLinks(menu)) return false;
+        menu.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        setMoreOpenState(toggle, menu, true);
+        return true;
+    }
+
     function syncMoreAvailability(nav, more, toggle, menu) {
         if (!nav || !more || !toggle || !menu) return false;
         const hasOverflow = Boolean(isDesktop() && menuHasOverflowLinks(menu));
@@ -87,9 +100,6 @@
         if (!header || header.dataset.ccgNavFitControlsBound === "true") return;
         header.dataset.ccgNavFitControlsBound = "true";
 
-        /* Capture phase deliberately wins over the historical delegated More
-           handler in ccg-global.js. This prevents two scripts toggling the same
-           menu in opposite directions on one click. */
         header.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             const toggle = target?.closest("[data-ccg-more-toggle]");
@@ -102,14 +112,15 @@
             const more = toggle.closest(".ccg-nav__more");
             const menu = nav?.querySelector("[data-ccg-more-menu]");
             if (!nav || !more || !menu || !menuHasOverflowLinks(menu)) {
-                if (nav && more && menu) syncMoreAvailability(nav, more, toggle, menu);
+                if (nav && more && menu) {
+                    populateMore(menu, []);
+                    syncMoreAvailability(nav, more, toggle, menu);
+                }
                 return;
             }
 
-            const opening = menu.hidden;
-            menu.hidden = !opening;
-            toggle.setAttribute("aria-expanded", opening ? "true" : "false");
-            setMoreOpenState(toggle, menu, opening);
+            if (menu.hidden) openMore(toggle, menu);
+            else closeMore(toggle, menu);
         }, true);
 
         document.addEventListener("click", (event) => {
@@ -166,17 +177,40 @@
         });
     }
 
+    function appendMoreLink(menu, label, href, seen) {
+        const absolute = new URL(href, window.location.href).href;
+        if (seen.has(absolute)) return;
+        const link = document.createElement("a");
+        link.href = href;
+        link.className = "ccg-nav__link ccg-nav-fit__link";
+        link.textContent = label;
+        link.setAttribute("role", "menuitem");
+        menu.appendChild(link);
+        seen.add(absolute);
+    }
+
     function populateMore(menu, hiddenItems) {
         menu.textContent = "";
+        const seen = new Set();
+
+        BASE_MORE_LINKS.forEach(([label, href]) => appendMoreLink(menu, label, href, seen));
+
         hiddenItems.forEach((item) => {
             const source = item.querySelector(".ccg-nav__link");
             if (!source) return;
+            const absolute = new URL(source.href, window.location.href).href;
+            if (seen.has(absolute)) return;
             const link = source.cloneNode(true);
             link.classList.add("ccg-nav-fit__link");
             link.removeAttribute("id");
             link.setAttribute("role", "menuitem");
             menu.appendChild(link);
+            seen.add(absolute);
         });
+    }
+
+    function announceFitted(nav) {
+        document.dispatchEvent(new CustomEvent("ccg:navigation-fitted", { detail: { nav } }));
     }
 
     function fitNavigation() {
@@ -187,6 +221,10 @@
         const toggle = nav?.querySelector("[data-ccg-more-toggle]");
         const menu = nav?.querySelector("[data-ccg-more-menu]");
         if (!header || !nav || !more || !toggle || !menu) return;
+
+        const restoreOpen = isDesktop()
+            && toggle.getAttribute("aria-expanded") === "true"
+            && !menu.hidden;
 
         fitting = true;
         const items = allNavItems(nav);
@@ -201,6 +239,7 @@
         if (!isDesktop()) {
             syncMoreAvailability(nav, more, toggle, menu);
             fitting = false;
+            announceFitted(nav);
             return;
         }
 
@@ -211,17 +250,11 @@
             hiddenItems.push(item);
         });
 
-        if (hiddenItems.length) {
-            populateMore(menu, hiddenItems);
-            syncMoreAvailability(nav, more, toggle, menu);
-        }
+        populateMore(menu, hiddenItems);
+        syncMoreAvailability(nav, more, toggle, menu);
 
-        if (isOverflowing(header, nav)) {
-            nav.classList.add("ccg-nav--fit-compact");
-        }
-        if (isOverflowing(header, nav)) {
-            nav.classList.add("ccg-nav--fit-tight");
-        }
+        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-compact");
+        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-tight");
 
         if (isOverflowing(header, nav)) {
             const candidates = items
@@ -244,19 +277,30 @@
 
         hiddenItems.sort((a, b) => items.indexOf(a) - items.indexOf(b));
         populateMore(menu, hiddenItems);
-        syncMoreAvailability(nav, more, toggle, menu);
+        const available = syncMoreAvailability(nav, more, toggle, menu);
+        if (restoreOpen && available) openMore(toggle, menu);
         fitting = false;
+        announceFitted(nav);
     }
 
-    function scheduleFit(delay) {
+    function scheduleFit(delay = 0) {
         if (fitFrame) cancelAnimationFrame(fitFrame);
+        if (fitTimer) {
+            clearTimeout(fitTimer);
+            fitTimer = 0;
+        }
+
         const run = () => {
             fitFrame = requestAnimationFrame(() => {
                 fitFrame = 0;
                 fitNavigation();
             });
         };
-        if (delay) window.setTimeout(run, delay);
+
+        if (delay > 0) fitTimer = window.setTimeout(() => {
+            fitTimer = 0;
+            run();
+        }, delay);
         else run();
     }
 
@@ -268,13 +312,15 @@
 
         bindMoreControls(header);
         scheduleFit();
-        scheduleFit(80);
-        scheduleFit(240);
 
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(() => scheduleFit()).catch(() => {});
+        }
+        window.addEventListener("load", () => scheduleFit(), { once: true, passive: true });
         window.addEventListener("resize", () => scheduleFit(30), { passive: true });
         window.addEventListener("orientationchange", () => scheduleFit(60), { passive: true });
         window.addEventListener("pageshow", () => scheduleFit(20), { passive: true });
-        document.addEventListener("ccg:navigation-ready", () => scheduleFit(0));
+        document.addEventListener("ccg:navigation-ready", () => scheduleFit());
         desktopMedia?.addEventListener?.("change", () => scheduleFit());
 
         const lists = nav.querySelectorAll("[data-ccg-nav-primary], [data-ccg-nav-secondary]");

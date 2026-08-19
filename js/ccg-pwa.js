@@ -17,8 +17,10 @@
   const CSS_PATH = "/resources/css/ccg-pwa.css";
   const VISIT_KEY = "ccg_pwa_public_visits";
   const DISMISS_KEY = "ccg_pwa_dismissed_until";
+  const UPDATE_CHECK_KEY = "ccg_pwa_last_update_check";
   const INSTALL_DELAY = 9000;
   const DISMISS_DAYS = 14;
+  const UPDATE_CHECK_INTERVAL = 5 * 60 * 1000;
   const PRIVATE_AREAS = ["/admin/", "/community/", "/auth/"];
 
   const state = {
@@ -27,7 +29,8 @@
     installPanel: null,
     updatePanel: null,
     reloadingForUpdate: false,
-    installTimer: null
+    installTimer: null,
+    updateCheckPromise: null
   };
 
   function isPrivateArea() {
@@ -313,6 +316,31 @@
     });
   }
 
+  function updateCheckDue(force = false) {
+    if (force) return true;
+    const last = Number.parseInt(storageGet(UPDATE_CHECK_KEY) || "0", 10);
+    return !Number.isFinite(last) || Date.now() - last >= UPDATE_CHECK_INTERVAL;
+  }
+
+  async function checkForServiceWorkerUpdate(registration, { force = false } = {}) {
+    if (!registration || !navigator.onLine || !updateCheckDue(force)) return;
+    if (state.updateCheckPromise) return state.updateCheckPromise;
+
+    storageSet(UPDATE_CHECK_KEY, Date.now());
+    state.updateCheckPromise = registration.update()
+      .then(() => {
+        if (registration.waiting && navigator.serviceWorker.controller) showUpdatePanel();
+      })
+      .catch((error) => {
+        console.warn("[ccg-pwa] Service worker update check unavailable", error);
+      })
+      .finally(() => {
+        state.updateCheckPromise = null;
+      });
+
+    return state.updateCheckPromise;
+  }
+
   async function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) return;
     if (!window.isSecureContext && !/^localhost$|^127\.0\.0\.1$/.test(window.location.hostname)) return;
@@ -323,8 +351,15 @@
         updateViaCache: "none"
       });
       watchRegistration(registration);
-      // The browser already performs service-worker lifecycle checks during registration/navigation.
-      // Avoid an additional forced update request shortly after every page load.
+      await checkForServiceWorkerUpdate(registration);
+      window.addEventListener("focus", () => {
+        void checkForServiceWorkerUpdate(registration);
+      }, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          void checkForServiceWorkerUpdate(registration);
+        }
+      });
     } catch (error) {
       console.warn("[ccg-pwa] Service worker registration unavailable", error);
     }
@@ -340,6 +375,7 @@
     window.addEventListener("appinstalled", () => {
       state.deferredPrompt = null;
       storageSet(DISMISS_KEY, 0);
+      storageSet(UPDATE_CHECK_KEY, 0);
       closeInstallPanel();
       document.dispatchEvent(new CustomEvent("ccg:pwa-installed"));
     });
@@ -354,7 +390,10 @@
     bindInstallEvents(visits);
     if (isIosSafari()) scheduleInstallPanel(visits);
 
-    window.addEventListener("online", () => showNetworkNotice(true));
+    window.addEventListener("online", () => {
+      showNetworkNotice(true);
+      if (state.registration) void checkForServiceWorkerUpdate(state.registration, { force: true });
+    });
     window.addEventListener("offline", () => showNetworkNotice(false));
   }
 

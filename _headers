@@ -9,16 +9,28 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Content-Security-Policy: default-src 'self' https: data: blob:; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' https: data: blob:; font-src 'self' https: data:; connect-src 'self' https:; frame-src https:; media-src 'self' https:; object-src 'none'; base-uri 'self';
 
-/resources/*
-  Cache-Control: public, max-age=31536000, immutable
+# Mutable shared code keeps stable filenames, so browsers must revalidate it.
+# This prevents an old navigation/layout bundle surviving a new deployment.
+/resources/css/*
+  Cache-Control: public, max-age=0, must-revalidate
 
 /js/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/service-worker.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Static visual/font assets can remain long-lived.
+/resources/images/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.css
+/resources/icons/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.js
+/resources/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 
 /*.png
