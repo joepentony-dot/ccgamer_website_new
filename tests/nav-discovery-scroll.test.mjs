@@ -88,6 +88,7 @@ test('desktop navigation paints at its settled density before fitting runs', () 
   assert.ok(navFitCss.includes('min-height: 38px !important'), 'Settled desktop nav height must be present in first-frame CSS');
   assert.ok(navFitCss.includes('padding: 6px 5px !important'), 'Settled desktop nav padding must be present in first-frame CSS');
   assert.ok(navFitCss.includes('letter-spacing: 0.035em !important'), 'Settled desktop nav letter spacing must be present in first-frame CSS');
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav\s*\{[\s\S]*gap:\s*6px\s*!important/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--primary\s*\{[\s\S]*min-width:\s*56\.87em/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--secondary\s*\{[\s\S]*min-width:\s*43\.67em/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*calc\(3\.97em \+ 20\.6px\)/);
