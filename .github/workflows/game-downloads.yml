@@ -97,12 +97,19 @@ jobs:
           grep -q 'data-games-downloads-shortcut="true"' games/index.html
           grep -q 'href="/games/downloads/"' games/index.html
           grep -q 'id="downloadSearchInput"' games/downloads/index.html
-          grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
-          grep -q 'data-src=' games/downloads/index.html
-          grep -q 'data-direct-download' games/downloads/index.html
-          grep -q '>Download Game<' games/downloads/index.html
-          grep -q '>Game Page<' games/downloads/index.html
-          ! grep -q 'View Game &amp; Download' games/downloads/index.html
+
+          if grep -q 'data-direct-download' games/downloads/index.html; then
+            echo "Authorised download records are present; validating the populated A-Z archive UI."
+            grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
+            grep -q 'data-src=' games/downloads/index.html
+            grep -q '>Download Game<' games/downloads/index.html
+            grep -q '>Game Page<' games/downloads/index.html
+            ! grep -q 'View Game &amp; Download' games/downloads/index.html
+          else
+            echo "No authorised download records are currently eligible; validating the intentional empty archive state."
+            ! grep -q '>Download Game<' games/downloads/index.html
+          fi
+
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
