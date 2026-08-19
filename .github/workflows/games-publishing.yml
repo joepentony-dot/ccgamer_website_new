@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - ".github/workflows/games-publishing.yml"
+      - "games/index.html"
       - "games/game.html"
       - "games/games.json"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
       - "resources/images/publishers/**"
+      - "resources/css/ccg-games-index-omega.css"
       - "data/lemon-cache/**"
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
@@ -21,6 +23,7 @@ on:
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
       - "resources/css/ccg-category-omega.css"
+      - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
