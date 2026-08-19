@@ -5,6 +5,7 @@
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
+const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -40,6 +41,32 @@ function readJson(filePath, fallback) {
     } catch (error) {
         fail(`Could not parse ${path.relative(repoRoot, filePath)}: ${error.message}`);
     }
+}
+
+function canonicalizeArchiveHtml(html, label) {
+    const result = normaliseHtml(html);
+    if (!result.applicable || result.malformed) {
+        fail(`${label} is missing the replaceable shared-header contract.`);
+    }
+
+    const output = result.html;
+    const required = [
+        `data-ccg-static-shell=\"${STATIC_SHELL_VERSION}\"`,
+        'class=\"ccg-auth-slot\" data-ccg-auth-pending=\"true\"',
+        'data-ccg-auth-snapshot-bootstrap=\"true\"',
+        'ccg-socials__icon--yt',
+        'ccg-socials__icon--patreon',
+        'ccg-socials__icon--paypal',
+        'ccg-socials__icon--x',
+        'ccg-socials__icon--fb',
+        'ccg-socials__icon--discord',
+        'src=\"/js/ccg-header-auth-loader.js\"'
+    ];
+    const missing = required.filter((snippet) => !output.includes(snippet));
+    if (missing.length) {
+        fail(`${label} is missing canonical shell requirements: ${missing.join(", ")}`);
+    }
+    return output;
 }
 
 function htmlEscape(value) {
@@ -1230,18 +1257,18 @@ function main() {
 
     let writes = 0;
 
-    const yearsIndex = renderYearsIndex(data);
+    const yearsIndex = canonicalizeArchiveHtml(renderYearsIndex(data), "year archive index");
     let problems = validatePage(yearsIndex, `${SITE_ORIGIN}/games/years/`, "Browse Games by Year");
     if (problems.length) fail(`Year hub validation failed: ${problems.join("; ")}`);
     if (writeFileIfChanged(path.join(yearsDir, "index.html"), yearsIndex)) writes += 1;
 
-    const platformsIndex = renderPlatformsIndex(data);
+    const platformsIndex = canonicalizeArchiveHtml(renderPlatformsIndex(data), "platform archive index");
     problems = validatePage(platformsIndex, `${SITE_ORIGIN}/games/platforms/`, "Browse Games by Platform");
     if (problems.length) fail(`Platform hub validation failed: ${problems.join("; ")}`);
     if (writeFileIfChanged(path.join(platformsDir, "index.html"), platformsIndex)) writes += 1;
 
     data.years.forEach((group) => {
-        const html = renderYearPage(group);
+        const html = canonicalizeArchiveHtml(renderYearPage(group), `year archive ${group.year}`);
         const canonical = `${SITE_ORIGIN}${group.url}`;
         const pageProblems = validatePage(html, canonical, `${group.year} Games`, group.games.map((game) => game.slug));
         if (pageProblems.length) fail(`${group.year} validation failed: ${pageProblems.join("; ")}`);
@@ -1249,7 +1276,7 @@ function main() {
     });
 
     data.platforms.forEach((group) => {
-        const html = renderPlatformPage(group);
+        const html = canonicalizeArchiveHtml(renderPlatformPage(group), `platform archive ${group.key}`);
         const canonical = `${SITE_ORIGIN}${group.url}`;
         const pageProblems = validatePage(html, canonical, `${group.name} Games`, group.games.map((game) => game.slug));
         if (pageProblems.length) fail(`${group.name} validation failed: ${pageProblems.join("; ")}`);

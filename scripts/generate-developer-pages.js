@@ -8,6 +8,7 @@ const {
     DEVELOPER_ALIASES,
     buildDeveloperGroups
 } = require("./developer-utils");
+const { normaliseHtml, STATIC_SHELL_VERSION } = require("./normalize-public-header-shell");
 
 const repoRoot = process.env.CCG_REPO_ROOT
     ? path.resolve(process.env.CCG_REPO_ROOT)
@@ -24,6 +25,32 @@ const reportPath = path.join(repoRoot, "docs", "seo-baseline", "phase-3b-develop
 function fail(message) {
     console.error(`[developers] ${message}`);
     process.exit(1);
+}
+
+function canonicalizeDeveloperHtml(html, label) {
+    const result = normaliseHtml(html);
+    if (!result.applicable || result.malformed) {
+        fail(`${label} is missing the replaceable shared-header contract.`);
+    }
+
+    const output = result.html;
+    const required = [
+        `data-ccg-static-shell=\"${STATIC_SHELL_VERSION}\"`,
+        'class=\"ccg-auth-slot\" data-ccg-auth-pending=\"true\"',
+        'data-ccg-auth-snapshot-bootstrap=\"true\"',
+        'ccg-socials__icon--yt',
+        'ccg-socials__icon--patreon',
+        'ccg-socials__icon--paypal',
+        'ccg-socials__icon--x',
+        'ccg-socials__icon--fb',
+        'ccg-socials__icon--discord',
+        'src=\"/js/ccg-header-auth-loader.js\"'
+    ];
+    const missing = required.filter((snippet) => !output.includes(snippet));
+    if (missing.length) {
+        fail(`${label} is missing canonical shell requirements: ${missing.join(", ")}`);
+    }
+    return output;
 }
 
 function htmlEscape(value) {
@@ -691,14 +718,14 @@ function main() {
     fs.mkdirSync(developersDir, { recursive: true });
     let writes = 0;
 
-    const indexHtml = renderDeveloperIndex(groups);
+    const indexHtml = canonicalizeDeveloperHtml(renderDeveloperIndex(groups), "developer index");
     const indexCanonical = `${SITE_ORIGIN}/games/developers/`;
     const indexProblems = validateGeneratedPage(indexHtml, indexCanonical, "Browse Games by Developer");
     if (indexProblems.length) fail(`Developer index validation failed: ${indexProblems.join("; ")}`);
     if (writeFileIfChanged(path.join(developersDir, "index.html"), indexHtml)) writes += 1;
 
     for (const group of groups) {
-        const html = renderDeveloperPage(group);
+        const html = canonicalizeDeveloperHtml(renderDeveloperPage(group), `developer ${group.slug}`);
         const canonical = `${SITE_ORIGIN}/games/developers/${group.slug}/`;
         const problems = validateGeneratedPage(html, canonical, group.name, group.games.map((game) => game.slug));
         if (problems.length) fail(`${group.name} validation failed: ${problems.join("; ")}`);
