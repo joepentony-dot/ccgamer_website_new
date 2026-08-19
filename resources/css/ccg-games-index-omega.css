@@ -1,0 +1,406 @@
+/* ============================================================
+   CCG GAMES INDEX — OMEGA ARCHIVE LANDING
+   ------------------------------------------------------------
+   High-level presentation for /games/ only.
+   Keeps existing search, filters and accordion behaviour intact.
+============================================================ */
+
+.ccg-page--games-index {
+    --games-omega-surface: rgba(7, 11, 23, 0.94);
+    --games-omega-border: rgba(var(--accent-rgb), 0.28);
+    --games-omega-soft: rgba(255, 255, 255, 0.72);
+}
+
+.ccg-page--games-index .games-hero {
+    width: min(1240px, 95vw);
+    margin-top: var(--ccg-hero-offset);
+    padding: clamp(24px, 4vw, 44px);
+    border-radius: 18px;
+    border: 1px solid rgba(var(--accent-rgb), 0.44);
+    background:
+        linear-gradient(112deg, rgba(4, 8, 20, 0.98) 0%, rgba(5, 10, 24, 0.88) 54%, rgba(4, 7, 18, 0.92) 100%),
+        radial-gradient(circle at 10% 12%, rgba(var(--accent-rgb), 0.28), transparent 42%);
+    box-shadow:
+        0 26px 72px rgba(0, 0, 0, 0.68),
+        0 0 34px rgba(var(--accent-rgb), 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.035);
+    isolation: isolate;
+}
+
+.ccg-page--games-index .games-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(rgba(var(--accent-rgb), 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--accent-rgb), 0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: linear-gradient(to right, rgba(0,0,0,0.92), transparent 88%);
+    pointer-events: none;
+}
+
+.ccg-page--games-index .games-hero::after {
+    inset: auto -4% -52% auto;
+    width: clamp(260px, 34vw, 520px);
+    height: clamp(260px, 34vw, 520px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(var(--accent-rgb), 0.22), transparent 68%);
+    filter: blur(34px);
+    opacity: 0.86;
+}
+
+.ccg-page--games-index .games-hero__inner {
+    max-width: 1040px;
+    gap: 10px;
+}
+
+.ccg-page--games-index .games-hero__kicker,
+.ccg-page--games-index .games-tools__eyebrow,
+.ccg-page--games-index .games-omega-discovery__eyebrow {
+    margin: 0;
+    color: rgba(var(--accent-rgb), 0.96);
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(0.68rem, 0.9vw, 0.82rem);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.ccg-page--games-index .games-hero__title {
+    max-width: 20ch;
+    margin: 0;
+    font-size: clamp(2rem, 4.4vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: 0.025em;
+    text-wrap: balance;
+    text-transform: none;
+    text-shadow:
+        0 5px 22px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(var(--accent-rgb), 0.24);
+}
+
+.ccg-page--games-index .games-hero__subtitle {
+    max-width: 74ch;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: clamp(0.98rem, 1.25vw, 1.12rem);
+    line-height: 1.62;
+}
+
+.ccg-page--games-index .games-hero__stats--count {
+    width: fit-content;
+    margin-top: 4px;
+    gap: 12px;
+    padding: 8px 12px;
+    border-color: rgba(var(--accent-rgb), 0.26);
+    background: rgba(0, 0, 0, 0.34);
+}
+
+.ccg-page--games-index .games-hero__stats--count strong {
+    color: #fff;
+    font-size: 1.08em;
+}
+
+.ccg-page--games-index .games-hero__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.ccg-page--games-index .games-hero__actions > .games-hero__stats {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border-color: rgba(var(--accent-rgb), 0.22);
+    background: rgba(255, 255, 255, 0.035);
+    font-size: 0.84rem;
+    line-height: 1.45;
+}
+
+.ccg-page--games-index .games-hero__actions .ccg-btn {
+    min-height: 38px;
+    white-space: nowrap;
+}
+
+/* ============================================================
+   ARCHIVE DISCOVERY GRID
+============================================================ */
+
+.ccg-page--games-index .games-omega-discovery {
+    width: min(1240px, 95vw);
+    margin: 16px auto 18px;
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid var(--games-omega-border);
+    border-radius: 16px;
+    background:
+        radial-gradient(circle at 8% 0%, rgba(var(--accent-rgb), 0.12), transparent 34%),
+        linear-gradient(145deg, rgba(9, 13, 28, 0.96), rgba(4, 7, 17, 0.96));
+    box-shadow: 0 22px 52px rgba(0, 0, 0, 0.5);
+}
+
+.ccg-page--games-index .games-omega-discovery__header {
+    display: grid;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.ccg-page--games-index .games-omega-discovery__header h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(1.2rem, 2.2vw, 1.7rem);
+    line-height: 1.22;
+}
+
+.ccg-page--games-index .games-omega-discovery__header p {
+    max-width: 82ch;
+    margin: 0;
+    color: var(--games-omega-soft);
+    line-height: 1.58;
+}
+
+.ccg-page--games-index .games-omega-discovery__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.ccg-page--games-index .games-omega-discovery__card {
+    position: relative;
+    display: grid;
+    min-height: 132px;
+    align-content: end;
+    gap: 5px;
+    padding: 14px;
+    overflow: hidden;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 12px;
+    background:
+        linear-gradient(to bottom, rgba(255,255,255,0.025), rgba(0,0,0,0.28)),
+        rgba(255,255,255,0.025);
+    color: #fff;
+    text-decoration: none;
+    transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+
+.ccg-page--games-index .games-omega-discovery__card::before {
+    content: attr(data-archive-mark);
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    color: rgba(var(--accent-rgb), 0.18);
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.ccg-page--games-index .games-omega-discovery__card strong {
+    position: relative;
+    z-index: 1;
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: 0.92rem;
+    line-height: 1.25;
+}
+
+.ccg-page--games-index .games-omega-discovery__card span {
+    position: relative;
+    z-index: 1;
+    color: rgba(255,255,255,0.68);
+    font-size: 0.78rem;
+    line-height: 1.42;
+}
+
+.ccg-page--games-index .games-omega-discovery__card:hover,
+.ccg-page--games-index .games-omega-discovery__card:focus-visible {
+    transform: translateY(-2px);
+    border-color: rgba(var(--accent-rgb), 0.62);
+    background: rgba(var(--accent-rgb), 0.08);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.46), 0 0 18px rgba(var(--accent-rgb),0.12);
+    outline: none;
+}
+
+/* ============================================================
+   SEARCH / FILTER HIERARCHY
+============================================================ */
+
+.ccg-page--games-index .games-tools {
+    margin-top: 14px;
+    gap: 12px;
+}
+
+.ccg-page--games-index .games-tools__heading {
+    display: grid;
+    gap: 5px;
+    padding: 4px 2px 2px;
+}
+
+.ccg-page--games-index .games-tools__heading h2 {
+    margin: 0;
+    color: #fff;
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: clamp(1.12rem, 2vw, 1.55rem);
+}
+
+.ccg-page--games-index .games-tools__heading p {
+    max-width: 78ch;
+    margin: 0;
+    color: rgba(255,255,255,0.67);
+    line-height: 1.52;
+}
+
+.ccg-page--games-index .games-search,
+.ccg-page--games-index .games-filter,
+.ccg-page--games-index .games-alpha {
+    border-color: rgba(var(--accent-rgb), 0.20);
+    background: rgba(6, 10, 22, 0.92);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.42);
+}
+
+.ccg-page--games-index .games-search {
+    position: relative;
+    padding: 10px 12px;
+}
+
+.ccg-page--games-index .games-search::before {
+    content: "SEARCH";
+    flex: 0 0 auto;
+    color: rgba(var(--accent-rgb), 0.9);
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+}
+
+.ccg-page--games-index .games-search input[type="search"] {
+    min-height: 48px;
+    border-radius: 9px;
+    border-color: rgba(var(--accent-rgb), 0.22);
+    background: rgba(255,255,255,0.045);
+}
+
+.ccg-page--games-index .games-filter__btn,
+.ccg-page--games-index .games-filter__year-select {
+    border-radius: 8px;
+}
+
+.ccg-page--games-index .games-archive-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 13px;
+    border: 1px solid rgba(var(--accent-rgb), 0.18);
+    border-radius: 10px;
+    background: rgba(0,0,0,0.26);
+}
+
+.ccg-page--games-index .games-archive-shortcuts__label {
+    margin-right: 4px;
+    color: rgba(255,255,255,0.55);
+    font-family: var(--ccg-font-main, Orbitron, system-ui, sans-serif);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.ccg-page--games-index .games-archive-shortcuts a {
+    display: inline-flex;
+    min-height: 34px;
+    align-items: center;
+    padding: 6px 10px;
+    border: 1px solid rgba(var(--accent-rgb), 0.20);
+    border-radius: 7px;
+    background: rgba(255,255,255,0.03);
+    color: rgba(255,255,255,0.84);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ccg-page--games-index .games-archive-shortcuts a:hover,
+.ccg-page--games-index .games-archive-shortcuts a:focus-visible {
+    border-color: rgba(var(--accent-rgb), 0.62);
+    background: rgba(var(--accent-rgb), 0.09);
+    color: #fff;
+    outline: none;
+}
+
+.ccg-page--games-index .games-focus-panel {
+    border-color: rgba(var(--accent-rgb), 0.22);
+    background: rgba(5, 9, 19, 0.88);
+}
+
+/* Keep crawlable fallback useful to search engines and no-JS visitors,
+   but visually secondary once the interactive archive is available. */
+.ccg-page--games-index .games-static-fallback {
+    border-top: 1px solid rgba(var(--accent-rgb), 0.16);
+    margin-top: 22px;
+    padding-top: 20px;
+}
+
+@media (max-width: 980px) {
+    .ccg-page--games-index .games-omega-discovery__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ccg-page--games-index .games-hero__actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 620px) {
+    .ccg-page--games-index .games-hero {
+        padding: 20px 16px;
+        border-radius: 13px;
+    }
+
+    .ccg-page--games-index .games-hero__title {
+        font-size: clamp(1.75rem, 9vw, 2.5rem);
+    }
+
+    .ccg-page--games-index .games-hero__stats--count {
+        display: grid;
+        width: 100%;
+        gap: 3px;
+    }
+
+    .ccg-page--games-index .games-hero__actions > .games-hero__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--games-index .games-omega-discovery {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .ccg-page--games-index .games-omega-discovery__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ccg-page--games-index .games-omega-discovery__card {
+        min-height: 104px;
+    }
+
+    .ccg-page--games-index .games-search {
+        display: grid;
+        grid-template-columns: 1fr auto;
+    }
+
+    .ccg-page--games-index .games-search::before {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ccg-page--games-index .games-omega-discovery__card {
+        transition: none;
+    }
+}
