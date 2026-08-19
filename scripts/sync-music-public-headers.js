@@ -30,16 +30,20 @@ function ensureHeaderStyles(html) {
 }
 
 function ensureSingleNavCore(html) {
-    const navCorePattern = /\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi;
-    let next = html.replace(navCorePattern, "\n");
-    const navCore = '  <script src="/js/ccg-nav-core.js" defer></script>\n';
+    const navCoreLinePattern = /^[ \t]*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>[ \t]*(?:\r?\n)?/gim;
+    let next = html.replace(navCoreLinePattern, "");
 
-    const musicConfigPattern = /(\s*<script\b[^>]*\bsrc=["']\/js\/ccg-music-config\.js(?:[?#][^"']*)?["'][^>]*><\/script>)/i;
-    if (musicConfigPattern.test(next)) {
-        return next.replace(musicConfigPattern, `\n${navCore}$1`);
+    const musicConfigLinePattern = /^([ \t]*)(<script\b[^>]*\bsrc=["']\/js\/ccg-music-config\.js(?:[?#][^"']*)?["'][^>]*><\/script>)[ \t]*$/im;
+    const configMatch = next.match(musicConfigLinePattern);
+    if (configMatch) {
+        const indent = configMatch[1] || "";
+        const configTag = configMatch[2];
+        const canonicalBlock = `${indent}<script src="/js/ccg-nav-core.js" defer></script>\n${indent}${configTag}`;
+        return next.replace(musicConfigLinePattern, canonicalBlock);
     }
+
     if (!/<\/body>/i.test(next)) throw new Error("Document is missing </body>.");
-    return next.replace(/<\/body>/i, `${navCore}</body>`);
+    return next.replace(/<\/body>/i, `  <script src="/js/ccg-nav-core.js" defer></script>\n</body>`);
 }
 
 function upsertHeader(html) {
