@@ -123,6 +123,19 @@
             else closeMore(toggle, menu);
         }, true);
 
+        /* More links are ordinary anchors. Reset the visual open state when
+           one is activated, but never prevent or replace browser navigation. */
+        header.addEventListener("click", (event) => {
+            const target = event.target instanceof Element ? event.target : null;
+            const link = target?.closest("[data-ccg-more-menu] a[href]");
+            if (!link || !header.contains(link)) return;
+            const nav = header.querySelector(".ccg-nav");
+            closeMore(
+                nav?.querySelector("[data-ccg-more-toggle]"),
+                nav?.querySelector("[data-ccg-more-menu]")
+            );
+        });
+
         document.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             if (target?.closest("[data-ccg-more-toggle], [data-ccg-more-menu]")) return;
@@ -222,7 +235,8 @@
         const menu = nav?.querySelector("[data-ccg-more-menu]");
         if (!header || !nav || !more || !toggle || !menu) return;
 
-        const restoreOpen = isDesktop()
+        const desktop = isDesktop();
+        const restoreOpen = desktop
             && toggle.getAttribute("aria-expanded") === "true"
             && !menu.hidden;
 
@@ -230,18 +244,24 @@
         const items = allNavItems(nav);
         restoreItems(items);
         nav.classList.remove("ccg-nav--fit-compact", "ccg-nav--fit-tight", "ccg-nav--has-overflow");
-        more.hidden = true;
-        toggle.disabled = true;
-        toggle.setAttribute("aria-hidden", "true");
         menu.textContent = "";
         closeMore(toggle, menu);
 
-        if (!isDesktop()) {
+        if (!desktop) {
+            more.hidden = true;
+            toggle.disabled = true;
+            toggle.setAttribute("aria-hidden", "true");
             syncMoreAvailability(nav, more, toggle, menu);
             fitting = false;
             announceFitted(nav);
             return;
         }
+
+        /* Keep the desktop More slot reserved throughout fitting. CSS has
+           already hidden the pinned secondary copies before first paint. */
+        more.hidden = false;
+        toggle.disabled = false;
+        toggle.setAttribute("aria-hidden", "false");
 
         const hiddenItems = [];
         items.filter(isPinnedMoreItem).forEach((item) => {
