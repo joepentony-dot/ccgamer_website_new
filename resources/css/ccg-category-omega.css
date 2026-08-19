@@ -1,0 +1,309 @@
+/* ============================================================
+   CCG CATEGORY OMEGA — GENRES + COLLECTIONS
+   Shared presentation layer loaded only on archive category pages.
+============================================================ */
+
+body[data-ccg-category-kind] {
+    --ccg-category-accent: var(--accent-rgb, 0, 220, 255);
+    --ccg-category-accent-2: 255, 255, 255;
+    --ccg-category-glow: rgba(var(--ccg-category-accent), 0.24);
+}
+
+body[data-ccg-category-theme="racing"] { --ccg-category-accent: 255, 82, 32; --ccg-category-accent-2: 255, 207, 64; }
+body[data-ccg-category-theme="shooting"] { --ccg-category-accent: 255, 54, 54; --ccg-category-accent-2: 255, 184, 64; }
+body[data-ccg-category-theme="fighting"] { --ccg-category-accent: 226, 54, 255; --ccg-category-accent-2: 255, 116, 82; }
+body[data-ccg-category-theme="horror"] { --ccg-category-accent: 173, 38, 59; --ccg-category-accent-2: 126, 92, 255; }
+body[data-ccg-category-theme="sports"] { --ccg-category-accent: 55, 214, 128; --ccg-category-accent-2: 94, 186, 255; }
+body[data-ccg-category-theme="strategy"] { --ccg-category-accent: 75, 166, 255; --ccg-category-accent-2: 187, 154, 255; }
+body[data-ccg-category-theme="puzzle"] { --ccg-category-accent: 255, 195, 57; --ccg-category-accent-2: 90, 230, 223; }
+body[data-ccg-category-theme="platform"] { --ccg-category-accent: 62, 211, 255; --ccg-category-accent-2: 255, 100, 190; }
+body[data-ccg-category-theme="arcade"] { --ccg-category-accent: 255, 72, 193; --ccg-category-accent-2: 70, 221, 255; }
+body[data-ccg-category-theme="adventure"] { --ccg-category-accent: 100, 167, 255; --ccg-category-accent-2: 255, 195, 94; }
+body[data-ccg-category-theme="action-adventure"] { --ccg-category-accent: 255, 118, 49; --ccg-category-accent-2: 75, 200, 255; }
+body[data-ccg-category-theme="rpg"] { --ccg-category-accent: 165, 111, 255; --ccg-category-accent-2: 255, 192, 86; }
+body[data-ccg-category-theme="quiz"] { --ccg-category-accent: 91, 212, 255; --ccg-category-accent-2: 255, 108, 212; }
+body[data-ccg-category-theme="casino"] { --ccg-category-accent: 48, 205, 112; --ccg-category-accent-2: 255, 202, 76; }
+body[data-ccg-category-theme="misc"] { --ccg-category-accent: 127, 150, 255; --ccg-category-accent-2: 255, 119, 196; }
+body[data-ccg-category-theme="cartridge"] { --ccg-category-accent: 255, 151, 50; --ccg-category-accent-2: 255, 226, 95; }
+body[data-ccg-category-theme="licensed"] { --ccg-category-accent: 236, 77, 82; --ccg-category-accent-2: 255, 196, 74; }
+body[data-ccg-category-theme="bpjs"] { --ccg-category-accent: 71, 199, 255; --ccg-category-accent-2: 109, 255, 199; }
+body[data-ccg-category-theme="top-picks"] { --ccg-category-accent: 255, 189, 42; --ccg-category-accent-2: 255, 105, 197; }
+body[data-ccg-category-theme="amiga-demo"] { --ccg-category-accent: 76, 174, 255; --ccg-category-accent-2: 255, 91, 184; }
+body[data-ccg-category-theme="retro-events"] { --ccg-category-accent: 69, 220, 188; --ccg-category-accent-2: 121, 157, 255; }
+body[data-ccg-category-theme="retro-specials"] { --ccg-category-accent: 255, 103, 187; --ccg-category-accent-2: 85, 201, 255; }
+
+/* ============================================================
+   SINGLE GENRE / COLLECTION HERO
+============================================================ */
+
+.ccg-category-omega__hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(var(--ccg-category-accent), 0.48);
+    box-shadow:
+        0 28px 72px rgba(0, 0, 0, 0.72),
+        0 0 34px rgba(var(--ccg-category-accent), 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.ccg-category-omega__hero::after {
+    content: attr(data-ccg-category-icon);
+    position: absolute;
+    right: clamp(18px, 4vw, 58px);
+    top: 50%;
+    z-index: 2;
+    transform: translateY(-50%);
+    font-family: Orbitron, system-ui, sans-serif;
+    font-size: clamp(4rem, 12vw, 10rem);
+    line-height: 1;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.06);
+    text-shadow: 0 0 34px rgba(var(--ccg-category-accent), 0.28);
+    pointer-events: none;
+    user-select: none;
+}
+
+.ccg-category-omega__hero .ccg-genre-hero__overlay {
+    background:
+        linear-gradient(105deg, rgba(4, 7, 18, 0.96) 4%, rgba(5, 8, 20, 0.70) 48%, rgba(4, 6, 15, 0.28) 82%),
+        radial-gradient(circle at 16% 24%, rgba(var(--ccg-category-accent), 0.30), transparent 42%),
+        radial-gradient(circle at 78% 18%, rgba(var(--ccg-category-accent-2), 0.16), transparent 40%),
+        repeating-linear-gradient(105deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 18px),
+        linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.68));
+    opacity: 1;
+}
+
+.ccg-category-omega__hero .ccg-genre-hero__inner {
+    max-width: min(1020px, 94vw);
+    gap: 10px;
+}
+
+.ccg-category-omega__kicker,
+.ccg-category-omega__eyebrow {
+    margin: 0;
+    color: rgba(var(--ccg-category-accent-2), 0.94);
+    font-family: Orbitron, system-ui, sans-serif;
+    font-size: clamp(0.68rem, 1vw, 0.82rem);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+.ccg-category-omega__hero .ccg-genre-hero__title {
+    max-width: 19ch;
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 3.6rem);
+    line-height: 1.06;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+    text-shadow:
+        0 4px 18px rgba(0,0,0,0.92),
+        0 0 30px rgba(var(--ccg-category-accent), 0.32);
+}
+
+.ccg-category-omega__hero .ccg-genre-hero__tagline {
+    max-width: 65ch;
+    margin: 0;
+    font-size: clamp(0.96rem, 1.4vw, 1.12rem);
+    line-height: 1.55;
+    color: rgba(255,255,255,0.88);
+}
+
+.ccg-category-omega__hero .ccg-genre-meta {
+    margin-top: 6px;
+    border-top: 1px solid rgba(var(--ccg-category-accent), 0.22);
+    padding-top: 10px;
+}
+
+/* Racing receives a subtle track-style streak; other themes retain the
+   shared Omega treatment without extra page weight or additional images. */
+body[data-ccg-category-theme="racing"] .ccg-category-omega__hero::before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    right: -4%;
+    bottom: 16%;
+    width: 48%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(var(--ccg-category-accent-2),0.72), transparent);
+    box-shadow: 0 14px 0 rgba(var(--ccg-category-accent),0.32), 0 -14px 0 rgba(255,255,255,0.08);
+    transform: skewX(-24deg);
+    pointer-events: none;
+}
+
+body[data-ccg-category-theme="strategy"] .ccg-category-omega__hero,
+body[data-ccg-category-theme="puzzle"] .ccg-category-omega__hero {
+    background-image:
+        linear-gradient(rgba(var(--ccg-category-accent),0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(var(--ccg-category-accent),0.035) 1px, transparent 1px);
+    background-size: 28px 28px;
+}
+
+body[data-ccg-category-theme="arcade"] .ccg-category-omega__hero,
+body[data-ccg-category-theme="amiga-demo"] .ccg-category-omega__hero {
+    box-shadow:
+        0 28px 72px rgba(0,0,0,0.72),
+        0 0 26px rgba(var(--ccg-category-accent),0.22),
+        0 0 54px rgba(var(--ccg-category-accent-2),0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* ============================================================
+   INTERNAL DISCOVERY / SEO PANEL
+============================================================ */
+
+.ccg-category-omega__discovery {
+    position: relative;
+    margin: clamp(18px, 3vw, 32px) 0 clamp(24px, 4vw, 42px);
+    padding: clamp(18px, 3vw, 28px);
+    border: 1px solid rgba(var(--ccg-category-accent), 0.28);
+    border-radius: 16px;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(var(--ccg-category-accent), 0.13), transparent 42%),
+        linear-gradient(145deg, rgba(9,12,25,0.94), rgba(3,5,14,0.96));
+    box-shadow: 0 20px 46px rgba(0,0,0,0.44);
+    overflow: hidden;
+}
+
+.ccg-category-omega__discovery::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: linear-gradient(to bottom, transparent, rgba(var(--ccg-category-accent), 0.92), transparent);
+}
+
+.ccg-category-omega__discovery-heading h2 {
+    margin: 6px 0 8px;
+    font-family: Orbitron, system-ui, sans-serif;
+    font-size: clamp(1.1rem, 2vw, 1.55rem);
+    line-height: 1.25;
+    color: #fff;
+}
+
+.ccg-category-omega__discovery-heading p {
+    margin: 0;
+    max-width: 84ch;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.78);
+}
+
+.ccg-category-omega__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.ccg-category-omega__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    padding: 7px 11px;
+    border: 1px solid rgba(var(--ccg-category-accent), 0.26);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.035);
+    color: rgba(255,255,255,0.88);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.ccg-category-omega__link:hover,
+.ccg-category-omega__link:focus-visible {
+    transform: translateY(-1px);
+    border-color: rgba(var(--ccg-category-accent), 0.72);
+    background: rgba(var(--ccg-category-accent), 0.10);
+}
+
+.ccg-category-omega__link--core {
+    border-color: rgba(var(--ccg-category-accent-2), 0.28);
+}
+
+/* ============================================================
+   GENRE / COLLECTION INDEX CARDS
+============================================================ */
+
+body[data-ccg-category-kind="genre-index"] .ccg-genre-card,
+body[data-ccg-category-kind="collection-index"] .ccg-collection-card {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(var(--accent-rgb), 0.22);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+body[data-ccg-category-kind="genre-index"] .ccg-genre-card:hover,
+body[data-ccg-category-kind="collection-index"] .ccg-collection-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(var(--accent-rgb), 0.58);
+    box-shadow: 0 18px 40px rgba(0,0,0,0.52), 0 0 20px rgba(var(--accent-rgb),0.12);
+}
+
+body[data-ccg-category-kind="genre-index"] .ccg-genre-card > span:not(.ccg-collection-card__content) {
+    display: block;
+    padding-bottom: 4px;
+}
+
+.ccg-category-omega__card-description {
+    display: block;
+    margin: 0;
+    padding: 0 14px 14px;
+    color: rgba(255,255,255,0.70);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+body[data-ccg-category-kind="collection-index"] .ccg-collection-card__description {
+    color: rgba(255,255,255,0.72);
+    line-height: 1.45;
+}
+
+/* ============================================================
+   RESPONSIVE / PERFORMANCE
+============================================================ */
+
+@media (max-width: 760px) {
+    .ccg-category-omega__hero::after {
+        right: 12px;
+        top: 20px;
+        transform: none;
+        font-size: clamp(3rem, 18vw, 5rem);
+        opacity: 0.7;
+    }
+
+    .ccg-category-omega__hero .ccg-genre-hero__title {
+        max-width: 100%;
+        font-size: clamp(1.55rem, 7.2vw, 2.35rem);
+    }
+
+    .ccg-category-omega__discovery {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    .ccg-category-omega__links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ccg-category-omega__link {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (max-width: 460px) {
+    .ccg-category-omega__links {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-ccg-category-kind] .ccg-genre-card,
+    body[data-ccg-category-kind] .ccg-collection-card,
+    .ccg-category-omega__link {
+        transition: none;
+    }
+}
