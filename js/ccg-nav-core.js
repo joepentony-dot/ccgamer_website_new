@@ -15,7 +15,9 @@ Do Not Override
         { href: "/resources/css/ccg-nav-viewport-overlay.css", marker: "data-ccg-nav-viewport-overlay-style" },
         { href: "/resources/css/ccg-inner-page-density.css", marker: "data-ccg-inner-page-density-style" },
         { href: "/resources/css/ccg-scroll-authority.css", marker: "data-ccg-scroll-authority-style" },
-        { href: "/resources/css/ccg-nav-fit.css", marker: "data-ccg-nav-fit-style" }
+        { href: "/resources/css/ccg-nav-fit.css", marker: "data-ccg-nav-fit-style" },
+        { href: "/resources/css/ccg-socials.css", marker: "data-ccg-socials-style" },
+        { href: "/resources/css/ccg-community.css", marker: "data-ccg-community-style" }
     ];
     const OPTIONAL_MODULES = [
         { src: "/js/ccg-legacy-url-consolidation.js", marker: "data-ccg-legacy-url-loader" },
@@ -73,6 +75,14 @@ Do Not Override
         ["Contact", "/contact.html"]
     ];
 
+    const DEFAULT_MORE_LABELS = new Set(["emulation", "install ccg app", "about me", "contact"]);
+    const DEFAULT_MORE_LINKS = [
+        ["Emulation", "/emulation.html"],
+        ["Install CCG App", "/install-app.html"],
+        ["About Me", "/about.html"],
+        ["Contact", "/contact.html"]
+    ];
+
     let navAuthorityObserver = null;
     let navCoreInitialised = false;
 
@@ -113,6 +123,10 @@ Do Not Override
             link.href = href;
             link.className = "ccg-nav__link";
             link.textContent = label;
+            if (DEFAULT_MORE_LABELS.has(String(label || "").trim().toLowerCase())) {
+                item.hidden = true;
+                item.setAttribute("data-ccg-nav-fit-pinned", "true");
+            }
             if (canonicalPath(href) === "/install-app.html") {
                 link.setAttribute("data-ccg-pwa-install-nav", "true");
             }
@@ -120,6 +134,58 @@ Do Not Override
             fragment.appendChild(item);
         });
         list.replaceChildren(fragment);
+    }
+
+    function ensureHeaderSupportStructure() {
+        const actions = document.querySelector("[data-ccg-header] .ccg-header-actions");
+        if (!actions) return;
+
+        if (!actions.querySelector(".ccg-auth-slot")) {
+            const auth = document.createElement("div");
+            auth.className = "ccg-auth-slot";
+            auth.setAttribute("data-ccg-auth-slot", "true");
+            auth.setAttribute("aria-live", "polite");
+            actions.insertBefore(auth, actions.firstChild);
+        }
+
+        if (!actions.querySelector(".ccg-header-socials")) {
+            const socials = document.createElement("div");
+            socials.className = "ccg-header-socials";
+            socials.setAttribute("aria-label", "Social links");
+            socials.innerHTML = [
+                '<a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>',
+                '<a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>',
+                '<a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>',
+                '<a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>',
+                '<a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>',
+                '<a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>'
+            ].join("");
+            actions.appendChild(socials);
+        }
+    }
+
+    function prepareDefaultMoreState(nav) {
+        const more = nav?.querySelector(".ccg-nav__more");
+        const toggle = nav?.querySelector("[data-ccg-more-toggle]");
+        const menu = nav?.querySelector("[data-ccg-more-menu]");
+        if (!more || !toggle || !menu) return;
+
+        menu.replaceChildren();
+        DEFAULT_MORE_LINKS.forEach(([label, href]) => {
+            const link = document.createElement("a");
+            link.href = href;
+            link.className = "ccg-nav__link ccg-nav-fit__link";
+            link.textContent = label;
+            link.setAttribute("role", "menuitem");
+            menu.appendChild(link);
+        });
+        menu.setAttribute("role", "menu");
+        menu.hidden = true;
+        more.hidden = false;
+        toggle.disabled = false;
+        toggle.setAttribute("aria-hidden", "false");
+        toggle.setAttribute("aria-expanded", "false");
+        nav.classList.add("ccg-nav--has-overflow");
     }
 
     function synchroniseNavigationStructure() {
@@ -140,17 +206,8 @@ Do Not Override
             changed = true;
         }
 
-        if (changed) {
-            const menu = nav.querySelector("[data-ccg-more-menu]");
-            if (menu) {
-                menu.replaceChildren();
-                menu.hidden = true;
-            }
-
-            const toggle = nav.querySelector("[data-ccg-more-toggle]");
-            if (toggle) {
-                toggle.setAttribute("aria-expanded", "false");
-            }
+        if (changed || !window.CCG_NAV_FIT_READY) {
+            prepareDefaultMoreState(nav);
         }
 
         if (typeof window.ccgMarkNavigationActive === "function") {
@@ -280,6 +337,7 @@ Do Not Override
         if (!header || navCoreInitialised) return false;
         navCoreInitialised = true;
         loadRequiredStyles();
+        ensureHeaderSupportStructure();
         synchroniseNavigationStructure();
         applyNavGlowPatch();
         bindStateReapply();

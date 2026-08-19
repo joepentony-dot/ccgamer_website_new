@@ -519,6 +519,7 @@
   }
 
   function ensureMusicNavigation() {
+    if (document.querySelector("[data-ccg-header]")) return;
     if (window.CCG_MUSIC_NAVIGATION_READY) return;
     const exists = Array.from(document.scripts).some((script) => {
       const source = script.getAttribute("src") || "";
@@ -532,7 +533,7 @@
 
     const script = document.createElement("script");
     script.src = MUSIC_NAVIGATION_SCRIPT;
-    script.defer = true;
+    script.async = false;
     script.dataset.ccgMusicNavigationLoader = "true";
     document.body.appendChild(script);
   }
@@ -556,9 +557,9 @@
     repairComposerTrackCards: verifyComposerTrackCards
   });
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
+  if (document.body) {
     init();
+  } else {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
   }
 })();

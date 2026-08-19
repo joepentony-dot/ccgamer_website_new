@@ -88,6 +88,9 @@
 
     <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
     <link rel="stylesheet" href="/resources/css/ccg-buttons.css" />
+    <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-header-style>
+    <link rel="stylesheet" href="/resources/css/ccg-socials.css" data-ccg-static-header-style>
+    <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-header-style>
 </head>
 
 <body class="ccg-body page-home" data-ccg-mode="c64" data-mode="c64" id="top">
@@ -99,17 +102,16 @@
 
     <div class="ccg-page ccg-page--home">
 
-<header class="ccg-header" data-ccg-header>
+<header class="ccg-header" data-ccg-header data-ccg-static-header="true">
     <div class="ccg-header-inner">
-
-        <a href="home.html" class="ccg-brand">
-            <img src="resources/images/ccgamer-logo.png"
+        <a href="/home.html" class="ccg-brand">
+            <img src="/resources/images/ccgamer-logo.png"
                  alt="Cheeky Commodore Gamer logo"
                  class="ccg-brand__logo"
                  width="1500"
                  height="1032"
-                 decoding="async" srcset="resources/images/ccgamer-logo.png 1500w" sizes="(max-width: 720px) 200px, 320px">
-
+                 decoding="async"
+                 sizes="(max-width: 720px) 200px, 320px">
             <div class="ccg-brand__text">
                 <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
                 <div class="ccg-brand__title">
@@ -125,42 +127,50 @@
                 aria-expanded="false"
                 aria-controls="ccg-primary-nav"
                 data-ccg-nav-toggle>
-            <span class="ccg-nav-toggle__bars" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-            </span>
+            <span class="ccg-nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
             <span class="ccg-nav-toggle__label">Menu</span>
         </button>
 
-        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav">
+        <nav class="ccg-nav ccg-nav--has-overflow" aria-label="Primary navigation" id="ccg-primary-nav">
             <div class="ccg-nav__bar">
                 <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
-                    <li><a href="home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="/games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
-                    <li><a href="games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="/home.html" class="ccg-nav__link ccg-nav__link--active" aria-current="page">Home</a></li>
+                    <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
+                    <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
                 </ul>
                 <div class="ccg-nav__more">
                     <button class="ccg-nav__more-toggle"
                             type="button"
                             aria-expanded="false"
+                            aria-hidden="false"
                             aria-controls="ccg-more-menu"
                             data-ccg-more-toggle>
                         More <span aria-hidden="true">▾</span>
                     </button>
-                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+                    <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu role="menu" hidden>
+                        <a href="/emulation.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Emulation</a>
+                        <a href="/install-app.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Install CCG App</a>
+                        <a href="/about.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">About Me</a>
+                        <a href="/contact.html" class="ccg-nav__link ccg-nav-fit__link" role="menuitem">Contact</a>
+                    </div>
                 </div>
             </div>
             <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+                <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
                 <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
-                <li><a href="emulation.html" class="ccg-nav__link">Emulation</a></li>
-                <li><a href="about.html" class="ccg-nav__link">About</a></li>
-                <li><a href="contact.html" class="ccg-nav__link">Contact</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/install-app.html" class="ccg-nav__link">Install CCG App</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/about.html" class="ccg-nav__link">About Me</a></li>
+                <li hidden data-ccg-nav-fit-pinned="true"><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
             </ul>
         </nav>
 
         <div class="ccg-header-actions">
+            <div class="ccg-auth-slot" data-ccg-auth-slot aria-live="polite"></div>
             <div class="ccg-mode-hint">Try different modes</div>
             <button class="ccg-mode-toggle"
                     type="button"
@@ -181,11 +191,7 @@
                 <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
                 <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
             </div>
-            <div class="ccg-socials-fallback">
-                <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
-                <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">Twitter</a>
-                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
-            </div>
+            <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
         </div>
     </div>
 
@@ -194,16 +200,10 @@
         <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
             <div class="ccg-nav-drawer__header">
                 <span class="ccg-nav-drawer__title">Navigate</span>
-                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close>
-                    <span aria-hidden="true">✕</span>
-                </button>
+                <button class="ccg-nav-drawer__close" type="button" aria-label="Close menu" data-ccg-drawer-close><span aria-hidden="true">✕</span></button>
             </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary>
-                <div class="ccg-nav-drawer__label">Primary</div>
-            </div>
-            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary>
-                <div class="ccg-nav-drawer__label">Explore more</div>
-            </div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-primary><div class="ccg-nav-drawer__label">Primary</div></div>
+            <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary><div class="ccg-nav-drawer__label">Explore more</div></div>
         </div>
     </div>
 

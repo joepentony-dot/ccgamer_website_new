@@ -79,9 +79,11 @@
         }
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
+    if (document.querySelector("[data-ccg-header] .ccg-header-actions")) {
+        void init();
+    } else if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => void init(), { once: true });
     } else {
-        init();
+        void init();
     }
 })();
