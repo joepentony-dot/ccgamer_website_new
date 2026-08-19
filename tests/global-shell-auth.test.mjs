@@ -58,6 +58,8 @@ test('music injected header matches the global navigation and action contract', 
   }
   assert.match(music, /data-ccg-pwa-install-nav="true"/);
   assert.match(music, /\/js\/ccg-nav-core\.js/);
+  assert.match(music, /\/resources\/css\/ccg-nav-fit\.css/);
+  assert.match(music, /await Promise\.all\(STYLES\.map\(waitForStyle\)\);[\s\S]*ensureHeader\(\)/);
 });
 
 test('nav core remains the canonical structural source', () => {
@@ -72,8 +74,8 @@ test('legacy social fallback cannot become a public display state', () => {
   assert.match(socialCss, /visibility:\s*hidden\s*!important/);
 });
 
-test('installed app release v5 watches the full global shell', () => {
-  assert.match(worker, /2026-08-19-public-release-v5/);
+test('installed app release v7 watches the full global shell', () => {
+  assert.match(worker, /2026-08-19-public-release-v7/);
   for (const asset of [
     '/js/ccg-header-auth-loader.js',
     '/js/ccg-auth.js',

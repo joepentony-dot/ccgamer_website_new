@@ -37,6 +37,28 @@
     }
 
     /*
+       FIRST-FRAME DESKTOP DENSITY CONTRACT
+       ---------------------------------------------------------
+       The canonical desktop navigation always settles at the tight
+       density because the shared header inner shell is capped at 1320px.
+       Use one extra nav-specific selector level so the late responsive
+       safety stylesheet cannot temporarily expand the controls before
+       ccg-nav-fit.js performs its next fit pass.
+    */
+    .ccg-header .ccg-nav .ccg-nav__list {
+        gap: 3px !important;
+    }
+
+    .ccg-header .ccg-nav .ccg-nav__link,
+    .ccg-header .ccg-nav .ccg-nav__more-toggle {
+        min-height: 38px !important;
+        padding: 6px 5px !important;
+        font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
+        letter-spacing: 0.035em !important;
+        white-space: nowrap;
+    }
+
+    /*
        About Me and Contact are desktop More destinations. Hide their
        secondary-list copies in CSS before JavaScript runs so the first
        painted header already has the same geometry as the fitted header.
@@ -94,10 +116,6 @@
         min-width: 0;
     }
 
-    .ccg-header .ccg-nav__list {
-        gap: clamp(5px, 0.55vw, 10px) !important;
-    }
-
     .ccg-header .ccg-nav--fit-compact .ccg-nav__list {
         gap: clamp(4px, 0.4vw, 7px) !important;
     }
@@ -112,13 +130,13 @@
     }
 
     .ccg-header .ccg-nav--fit-tight .ccg-nav__list {
-        gap: 4px !important;
+        gap: 3px !important;
     }
 
     .ccg-header .ccg-nav--fit-tight .ccg-nav__link,
     .ccg-header .ccg-nav--fit-tight .ccg-nav__more-toggle {
         min-height: 38px !important;
-        padding: 6px clamp(6px, 0.55vw, 9px) !important;
+        padding: 6px 5px !important;
         font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
         letter-spacing: 0.035em !important;
         white-space: nowrap;

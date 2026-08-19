@@ -218,7 +218,7 @@
 
     function availableWidth(header) {
         const inner = header.querySelector(".ccg-header-inner");
-        return Math.max(0, Math.floor((inner?.clientWidth || window.innerWidth) - 12));
+        return Math.max(0, Math.floor(inner?.clientWidth || window.innerWidth));
     }
 
     function isOverflowing(header, nav) {
@@ -228,7 +228,7 @@
         const innerRect = header.querySelector(".ccg-header-inner")?.getBoundingClientRect();
         const clippedRight = innerRect ? navRect.right > innerRect.right + 1 : false;
         const clippedLeft = innerRect ? navRect.left < innerRect.left - 1 : false;
-        return required > allowed || clippedRight || clippedLeft;
+        return required > allowed + 2 || clippedRight || clippedLeft;
     }
 
     function allNavItems(nav) {
