@@ -32,32 +32,143 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Normalize migration source endings
+      - name: Restore untouched music content and generator from main
+        shell: bash
+        run: |
+          git fetch --no-tags origin main
+          git checkout origin/main -- \
+            music \
+            docs/seo-baseline/phase-3c-composer-archives.md \
+            tools/seo/static-pages.json \
+            scripts/generate-composer-pages.js
+
+      - name: Snapshot non-header music content
         shell: bash
         run: |
           node - <<'NODE'
           const fs = require('fs');
-          for (const file of [
-            'js/ccg-music-config.js',
-            'js/ccg-music-navigation.js',
-            'js/ccg-header-auth-loader.js'
-          ]) {
-            const source = fs.readFileSync(file, 'utf8');
-            if (!source.endsWith('\n')) fs.writeFileSync(file, source + '\n', 'utf8');
+          const path = require('path');
+          const crypto = require('crypto');
+          const { LEGACY_COMPOSER_REDIRECTS } = require('./scripts/composer-utils');
+
+          const legacy = new Set(Array.from(LEGACY_COMPOSER_REDIRECTS.keys()));
+          const root = process.cwd();
+          const files = ['music/index.html', 'music/composers/index.html'];
+
+          for (const entry of fs.readdirSync('music', { withFileTypes: true })) {
+            if (!entry.isDirectory() || entry.name === 'composers' || legacy.has(entry.name)) continue;
+            const file = path.join('music', entry.name, 'index.html');
+            if (!fs.existsSync(file)) continue;
+            const html = fs.readFileSync(file, 'utf8');
+            if (/data-ccg-page\s*=\s*(["'])music-composer\1/i.test(html)
+                || /data-generated-composer\s*=\s*(["'])true\1/i.test(html)
+                || /class\s*=\s*(["'])[^"']*\bccg-composer-page\b/i.test(html)) {
+              files.push(file.replace(/\\/g, '/'));
+            }
           }
+
+          const removableStyles = [
+            '/resources/css/ccg-mode.css',
+            '/resources/css/ccg-nav.css',
+            '/resources/css/ccg-nav-fit.css',
+            '/resources/css/ccg-buttons.css',
+            '/resources/css/ccg-socials.css',
+            '/resources/css/ccg-community.css'
+          ];
+
+          function escapeRegex(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+
+          function normalize(html) {
+            let next = String(html).replace(/\r\n/g, '\n');
+            next = next.replace(/<header\b(?=[^>]*\bclass=["'][^"']*\bccg-header\b[^"']*["'])(?=[^>]*\bdata-ccg-header\b)[^>]*>[\s\S]*?<\/header>/gi, '');
+            for (const href of removableStyles) {
+              const pattern = new RegExp(`\\s*<link\\b(?=[^>]*\\brel=["']stylesheet["'])(?=[^>]*\\bhref=["']${escapeRegex(href)}["'])[^>]*>\\s*`, 'gi');
+              next = next.replace(pattern, '\n');
+            }
+            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, '\n');
+            return next
+              .replace(/[ \t]+\n/g, '\n')
+              .replace(/\n{3,}/g, '\n\n')
+              .trim();
+          }
+
+          const records = files.sort().map((file) => {
+            const normalized = normalize(fs.readFileSync(path.join(root, file), 'utf8'));
+            return {
+              file,
+              sha256: crypto.createHash('sha256').update(normalized).digest('hex')
+            };
+          });
+
+          fs.writeFileSync('/tmp/ccg-music-content-before.json', JSON.stringify(records, null, 2));
+          console.log(`Protected non-header content for ${records.length} music pages.`);
           NODE
 
-      - name: Apply first-paint runtime contract
-        run: node scripts/apply-header-first-paint-contract.js
-
-      - name: Normalize legacy music fallback template
-        run: node scripts/repair-migrated-music-navigation.js
+      - name: Patch future composer output for static headers
+        run: node scripts/patch-composer-generator-static-header.js
 
       - name: Synchronize core public headers
         run: node scripts/sync-core-public-header.js
 
-      - name: Regenerate generated composer pages and hubs
-        run: node scripts/generate-composer-pages.js
+      - name: Synchronize existing music headers in place
+        run: node scripts/sync-music-public-headers.js
+
+      - name: Prove music content was not rewritten
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const crypto = require('crypto');
+
+          const records = JSON.parse(fs.readFileSync('/tmp/ccg-music-content-before.json', 'utf8'));
+          const removableStyles = [
+            '/resources/css/ccg-mode.css',
+            '/resources/css/ccg-nav.css',
+            '/resources/css/ccg-nav-fit.css',
+            '/resources/css/ccg-buttons.css',
+            '/resources/css/ccg-socials.css',
+            '/resources/css/ccg-community.css'
+          ];
+
+          function escapeRegex(value) {
+            return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          }
+
+          function normalize(html) {
+            let next = String(html).replace(/\r\n/g, '\n');
+            next = next.replace(/<header\b(?=[^>]*\bclass=["'][^"']*\bccg-header\b[^"']*["'])(?=[^>]*\bdata-ccg-header\b)[^>]*>[\s\S]*?<\/header>/gi, '');
+            for (const href of removableStyles) {
+              const pattern = new RegExp(`\\s*<link\\b(?=[^>]*\\brel=["']stylesheet["'])(?=[^>]*\\bhref=["']${escapeRegex(href)}["'])[^>]*>\\s*`, 'gi');
+              next = next.replace(pattern, '\n');
+            }
+            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, '\n');
+            return next
+              .replace(/[ \t]+\n/g, '\n')
+              .replace(/\n{3,}/g, '\n\n')
+              .trim();
+          }
+
+          const failures = [];
+          for (const record of records) {
+            if (!fs.existsSync(record.file)) {
+              failures.push(`${record.file}: file disappeared`);
+              continue;
+            }
+            const normalized = normalize(fs.readFileSync(record.file, 'utf8'));
+            const digest = crypto.createHash('sha256').update(normalized).digest('hex');
+            if (digest !== record.sha256) failures.push(`${record.file}: non-header content changed`);
+          }
+
+          if (failures.length) {
+            console.error('Music content-preservation check failed:');
+            failures.forEach((failure) => console.error(` - ${failure}`));
+            process.exit(1);
+          }
+          console.log(`Verified ${records.length} music pages: biography, metadata, schema, game/music content and presentation source preserved.`);
+          NODE
 
       - name: Validate repaired source
         run: |
@@ -70,13 +181,17 @@ jobs:
           node --check service-worker.js
           node --check scripts/shared-public-header.js
           node --check scripts/sync-core-public-header.js
+          node --check scripts/sync-music-public-headers.js
           node --check scripts/audit-header-source-parity.js
           node --check scripts/generate-composer-pages.js
+          node scripts/sync-core-public-header.js --check
+          node scripts/sync-music-public-headers.js --check
           node scripts/audit-header-source-parity.js
+          node scripts/audit-music-navigation.js
           node --test tests/nav-discovery-scroll.test.mjs
           node scripts/audit-nav-more-browser.js
 
-      - name: Commit repaired source and generated outputs
+      - name: Commit content-preserving header repair
         shell: bash
         run: |
           if git diff --quiet && [ -z "$(git status --porcelain --untracked-files=all)" ]; then
@@ -87,5 +202,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Stabilize sitewide header from first paint"
+          git commit -m "Preserve music content while stabilizing headers"
           git push origin HEAD:fix/sitewide-static-header-first-paint-20260819
