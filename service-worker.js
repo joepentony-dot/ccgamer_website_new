@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-home-nav-omega-v1";
+const CACHE_VERSION = "2026-08-19-public-release-v2";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -20,12 +20,15 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/images/ccg-app-icon.svg",
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
+  "/resources/css/ccg-nav-fit.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
+  "/js/ccg-nav-fit.js",
   "/js/ccg-pwa.js",
-  "/js/ccg-pwa-visible-install.js"
+  "/js/ccg-pwa-visible-install.js",
+  "/js/ccg-release-check.js"
 ]);
 
 const PRIVATE_PATH_PREFIXES = Object.freeze([
@@ -164,8 +167,6 @@ async function networkFirstAsset(request) {
   const cache = await caches.open(ASSET_CACHE);
 
   try {
-    // Code releases must revalidate against the network so an older browser
-    // HTTP cache cannot outlive a newly deployed navigation or layout bundle.
     const response = await fetch(request, { cache: "reload" });
     if (canStoreResponse(response)) await cache.put(request, response.clone());
     return response;
