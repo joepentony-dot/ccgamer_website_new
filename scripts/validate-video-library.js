@@ -90,6 +90,32 @@ function findVideoObject(html) {
   });
 }
 
+function assertCanonicalLibraryShell(libraryHtml) {
+  assert(libraryHtml.includes('data-ccg-static-shell="2026-08-19-v1"'), "Video Library is missing the canonical static shell marker.");
+  assert(libraryHtml.includes('>Publishers</a>'), "Video Library canonical navigation is missing Publishers.");
+  assert(libraryHtml.includes('>Music Hub</a>'), "Video Library canonical navigation is missing Music Hub.");
+  assert(libraryHtml.includes('>Find Me a Game</a>'), "Video Library canonical navigation is missing Find Me a Game.");
+  assert(libraryHtml.includes('>Zzap!64 Reviews &amp; Awards</a>'), "Video Library canonical navigation is missing Zzap!64 Reviews & Awards.");
+  assert(libraryHtml.includes('>Install CCG App</a>'), "Video Library canonical navigation is missing Install CCG App.");
+  assert(libraryHtml.includes('>About Me</a>'), "Video Library canonical navigation is missing About Me.");
+  assert(libraryHtml.includes('>Contact</a>'), "Video Library canonical navigation is missing Contact.");
+  assert(libraryHtml.includes('class="ccg-auth-slot" data-ccg-auth-pending="true"'), "Video Library is missing the canonical auth slot.");
+  assert(libraryHtml.includes('data-ccg-auth-snapshot-bootstrap="true"'), "Video Library is missing the first-paint auth snapshot bootstrap.");
+  assert(libraryHtml.includes('src="/js/ccg-header-auth-loader.js"'), "Video Library is missing the shared auth loader.");
+  assert(libraryHtml.includes('src="/js/ccg-nav-fit.js"'), "Video Library is missing the shared nav-fit loader.");
+
+  for (const socialClass of [
+    'ccg-socials__icon--yt',
+    'ccg-socials__icon--patreon',
+    'ccg-socials__icon--paypal',
+    'ccg-socials__icon--x',
+    'ccg-socials__icon--fb',
+    'ccg-socials__icon--discord'
+  ]) {
+    assert(libraryHtml.includes(socialClass), `Video Library is missing canonical social icon ${socialClass}.`);
+  }
+}
+
 function main() {
   assert(fs.existsSync(libraryPath), "videos/index.html is missing. Run generate-video-library.js first.");
   assert(fs.existsSync(indexPath), "videos/video-index.json is missing. Run generate-video-library.js first.");
@@ -100,6 +126,7 @@ function main() {
   assert(libraryHtml.includes('/resources/css/video-library.css'), "Video Library stylesheet is missing.");
   assert(libraryHtml.includes('/js/video-library.js'), "Video Library script is missing.");
   assert(libraryHtml.includes('data-video-results'), "Video Library result grid is missing.");
+  assertCanonicalLibraryShell(libraryHtml);
 
   const staticPages = readJson(staticPagesPath, []);
   assert(Array.isArray(staticPages) && staticPages.includes("videos/index.html"), "videos/index.html is not registered in tools/seo/static-pages.json.");
