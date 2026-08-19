@@ -1,26 +1,19 @@
 (function () {
   'use strict';
 
+  /*
+   * CCG legacy navigation helpers.
+   *
+   * Navigation structure is owned exclusively by js/ccg-nav-core.js.
+   * This file keeps the accessibility and game-credit helpers that
+   * existing pages still use, but it must never rebuild, append or
+   * reorder public navigation links.
+   */
+
   const REQUIRED_CSS = [
     '/resources/css/ccg-nav.css',
     '/resources/css/ccg-buttons.css',
     '/resources/css/ccg-mode.css'
-  ];
-
-  const NAV_PRIMARY = [
-    ['Home', 'https://www.cheekycommodoregamer.co.uk/home.html'],
-    ['Browse Games', 'https://www.cheekycommodoregamer.co.uk/games/index.html'],
-    ['Browse by Genre', 'https://www.cheekycommodoregamer.co.uk/games/genres/index.html'],
-    ['Publishers', 'https://www.cheekycommodoregamer.co.uk/games/publishers/'],
-    ['Collections', 'https://www.cheekycommodoregamer.co.uk/games/collections/index.html'],
-    ['Music Hub', 'https://www.cheekycommodoregamer.co.uk/music/index.html']
-  ];
-
-  const NAV_SECONDARY = [
-    ['Quiz', 'https://www.cheekycommodoregamer.co.uk/quiz/quiz.html'],
-    ['Emulation', 'https://www.cheekycommodoregamer.co.uk/emulation.html'],
-    ['About', 'https://www.cheekycommodoregamer.co.uk/about.html'],
-    ['Contact', 'https://www.cheekycommodoregamer.co.uk/contact.html']
   ];
 
   const COMPOSER_INDEX_PATH = '/music/composers/composers.json';
@@ -109,9 +102,7 @@
   function ensureRequiredCSS() {
     REQUIRED_CSS.forEach(path => {
       const hasPath = Array.from(document.styleSheets).some(sheet => sheet.href && sheet.href.includes(path));
-      if (!hasPath) {
-        console.warn(`Missing CSS: ${path}`);
-      }
+      if (!hasPath) console.warn(`Missing CSS: ${path}`);
     });
   }
 
@@ -120,7 +111,6 @@
 
     const main = document.querySelector('main, [role="main"]');
     if (!main) return;
-
     if (!main.id) main.id = 'ccg-main-content';
 
     const skipLink = document.createElement('a');
@@ -144,14 +134,6 @@
     });
 
     document.body.insertBefore(skipLink, document.body.firstChild);
-  }
-
-  function rebuildList(selector, links) {
-    const list = document.querySelector(selector);
-    if (!list) return;
-    list.innerHTML = links.map(([label, href]) => (
-      `<li><a href="${href}" class="ccg-nav__link">${label}</a></li>`
-    )).join('');
   }
 
   function normalizeButtons() {
@@ -398,18 +380,18 @@
     void linkMusicianCredits(game);
   });
 
-  document.addEventListener('DOMContentLoaded', function () {
+  function initHelpers() {
     ensureRequiredCSS();
     ensureSkipLink();
-    rebuildList('[data-ccg-nav-primary]', NAV_PRIMARY);
-    rebuildList('[data-ccg-nav-secondary]', NAV_SECONDARY);
-    const header = document.querySelector('[data-ccg-header]');
-    if (header && typeof window.ccgMarkNavigationActive === 'function') {
-      window.ccgMarkNavigationActive(header);
-    }
     document.querySelectorAll('.ccg-socials-fallback').forEach(el => {
       el.style.display = 'none';
     });
     normalizeButtons();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initHelpers, { once: true });
+  } else {
+    initHelpers();
+  }
 })();
