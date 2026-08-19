@@ -1,0 +1,39 @@
+name: Archive Pulse Rotation Validation
+
+on:
+  pull_request:
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-engagement-engine.js"
+      - "js/ccg-archive-pulse-randomizer.js"
+      - "js/ccg-archive-pulse-thumbnails.js"
+      - "tests/archive-pulse-randomizer.test.mjs"
+      - ".github/workflows/archive-pulse-randomizer-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "js/ccg-nav-core.js"
+      - "js/ccg-engagement-engine.js"
+      - "js/ccg-archive-pulse-randomizer.js"
+      - "js/ccg-archive-pulse-thumbnails.js"
+      - "tests/archive-pulse-randomizer.test.mjs"
+      - ".github/workflows/archive-pulse-randomizer-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: JavaScript syntax
+        run: |
+          node --check js/ccg-nav-core.js
+          node --check js/ccg-archive-pulse-randomizer.js
+      - name: Archive Pulse regression tests
+        run: node --test tests/archive-pulse-randomizer.test.mjs
