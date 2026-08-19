@@ -14,6 +14,7 @@ const steps = [
   ["build-game-description-enrichments.js"],
   ["audit-game-manuals.js"],
   ["build-magazine-review-chunks.js"],
+  ["audit-magazine-review-coverage.js"],
   ["build-games.js"],
   ["ensure-magazine-review-runtime.js"],
   ["prepare-seo-game-routes.js", "--output-root", "."],
