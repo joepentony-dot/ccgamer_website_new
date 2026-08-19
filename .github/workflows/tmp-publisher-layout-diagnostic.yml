@@ -28,6 +28,7 @@ jobs:
           p = Path('scripts/audit-header-frame-local.js')
           text = p.read_text(encoding='utf-8')
           text = text.replace('const CONTENT_TOP_TOLERANCE = 1;', 'const CONTENT_TOP_TOLERANCE = 1000;')
+          text = text.replace('const PANEL_RANGE_TOLERANCE = 40;', 'const PANEL_RANGE_TOLERANCE = 1000;')
           old = '''      const contentRect = contentAnchor ? contentAnchor.getBoundingClientRect() : null;\n      window.__ccgHeaderFrames.push({'''
           new = '''      const contentRect = contentAnchor ? contentAnchor.getBoundingClientRect() : null;\n      const headerRect = document.querySelector('[data-ccg-header]')?.getBoundingClientRect() || null;\n      const modeRect = document.querySelector('.ccg-mode-identity')?.getBoundingClientRect() || null;\n      const commandRect = main?.querySelector(':scope > .ccg-home-search-command')?.getBoundingClientRect() || null;\n      const mainRect = main?.getBoundingClientRect() || null;\n      window.__ccgHeaderFrames.push({'''
           if old not in text:
@@ -38,7 +39,6 @@ jobs:
           if old not in text:
               raise SystemExit('Sample field anchor missing')
           text = text.replace(old, new, 1)
-          # Only measure Publisher and Music to keep logs concise.
           text = text.replace('const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/", "/install-app.html"];', 'const pages = ["/games/publishers/", "/music/"];')
           p.write_text(text, encoding='utf-8')
           subprocess.run(['node','--check',str(p)], check=True)
