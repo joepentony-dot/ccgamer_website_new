@@ -32,6 +32,7 @@
 
 @media (min-width: 1200px) {
     .ccg-header .ccg-nav {
+        --ccg-nav-control-size: clamp(0.61rem, 0.57vw, 0.7rem);
         overflow: visible !important;
         contain: none !important;
     }
@@ -47,15 +48,40 @@
     */
     .ccg-header .ccg-nav .ccg-nav__list {
         gap: 3px !important;
+        font-size: var(--ccg-nav-control-size);
     }
 
     .ccg-header .ccg-nav .ccg-nav__link,
     .ccg-header .ccg-nav .ccg-nav__more-toggle {
         min-height: 38px !important;
         padding: 6px 5px !important;
-        font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
+        font-size: var(--ccg-nav-control-size) !important;
         letter-spacing: 0.035em !important;
         white-space: nowrap;
+    }
+
+    /*
+       Orbitron arrives after the first HTML/CSS paint on a cold document.
+       The fallback face is narrower, so a content-sized centered nav used
+       to contract and then grow by roughly 40px even though every control
+       already had its final height/padding/font-size. Reserve the measured
+       settled group metrics in em units so the reservation follows the
+       responsive control size at 1200, 1440 and 1920 rather than imposing
+       one fixed desktop width. Once Orbitron is available the real content
+       naturally fills the same space, so there is no visual width handoff.
+    */
+    .ccg-header .ccg-nav .ccg-nav__list--primary {
+        min-width: 56.87em;
+    }
+
+    .ccg-header .ccg-nav .ccg-nav__list--secondary {
+        min-width: 43.67em;
+    }
+
+    .ccg-header .ccg-nav .ccg-nav__more {
+        min-width: 5.85em;
+        font-size: var(--ccg-nav-control-size);
+        justify-content: center;
     }
 
     /*
@@ -139,7 +165,7 @@
     .ccg-header .ccg-nav--fit-tight .ccg-nav__more-toggle {
         min-height: 38px !important;
         padding: 6px 5px !important;
-        font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important;
+        font-size: var(--ccg-nav-control-size) !important;
         letter-spacing: 0.035em !important;
         white-space: nowrap;
     }
