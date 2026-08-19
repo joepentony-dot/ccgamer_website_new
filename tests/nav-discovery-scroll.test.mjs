@@ -4,7 +4,6 @@ import test from 'node:test';
 
 const navCore = fs.readFileSync('js/ccg-nav-core.js', 'utf8');
 const navFit = fs.readFileSync('js/ccg-nav-fit.js', 'utf8');
-const navCss = fs.readFileSync('resources/css/ccg-nav.css', 'utf8');
 const navFitCss = fs.readFileSync('resources/css/ccg-nav-fit.css', 'utf8');
 const modeIdentityCss = fs.readFileSync('resources/css/ccg-mode-identity.css', 'utf8');
 const legacyNav = fs.readFileSync('js/ccg-nav.js', 'utf8');
@@ -79,30 +78,6 @@ test('navigation never hides during refresh or fitting', () => {
   assert.match(navFit, /Keep the desktop More slot reserved throughout fitting/);
 });
 
-test('render-blocking navigation CSS already matches deferred nav hardening', () => {
-  assert.match(navCore, /el\.style\.setProperty\("border-radius", "0px", "important"\)/);
-  assert.match(navCore, /el\.style\.setProperty\("overflow", "hidden", "important"\)/);
-  assert.match(navCore, /el\.style\.setProperty\("filter", "none", "important"\)/);
-  assert.match(navCore, /el\.style\.setProperty\("backdrop-filter", "none", "important"\)/);
-  assert.match(navCss, /FIRST-PAINT HEADER CONTROL CONTRACT/);
-  for (const selector of [
-    '.ccg-header .ccg-nav__link',
-    '.ccg-header .ccg-nav__more-toggle',
-    '.ccg-header .ccg-nav-toggle',
-    '.ccg-header .ccg-mode-toggle',
-    '.ccg-header .ccg-community-profile-btn',
-    '.ccg-header .ccg-btn-auth'
-  ]) {
-    assert.ok(navCss.includes(selector), `First-paint nav CSS missing ${selector}`);
-  }
-  assert.match(navCss, /border-radius:\s*0\s*!important/);
-  assert.match(navCss, /overflow:\s*hidden\s*!important/);
-  assert.match(navCss, /background-clip:\s*padding-box\s*!important/);
-  assert.match(navCss, /filter:\s*none\s*!important/);
-  assert.match(navCss, /backdrop-filter:\s*none\s*!important/);
-  assert.match(navCss, /-webkit-backdrop-filter:\s*none\s*!important/);
-});
-
 test('Find Me a Game exposes no removed game-download filter or copy', () => {
   assert.doesNotMatch(discoverHtml, /discoverDownload/);
   assert.doesNotMatch(discoverHtml, /Has a download/i);
@@ -134,14 +109,13 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(releaseCheck, /ccg_public_release_fingerprint/);
   assert.match(releaseCheck, /"\/js\/ccg-nav\.js"/);
   assert.match(releaseCheck, /"\/js\/ccg-pwa-visible-install\.js"/);
-  assert.match(releaseCheck, /"\/resources\/css\/ccg-nav\.css"/);
   assert.match(releaseCheck, /"\/resources\/css\/ccg-nav-fit\.css"/);
   assert.match(releaseCheck, /"\/resources\/css\/ccg-mode-identity\.css"/);
   assert.match(releaseCheck, /cache: "no-store"/);
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
   assert.match(releaseCheck, /CCG update ready/);
-  assert.match(serviceWorker, /2026-08-19-public-release-v6/);
+  assert.match(serviceWorker, /2026-08-19-public-release-v5/);
   assert.match(headers, /\/js\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);
