@@ -62,6 +62,46 @@
         return Boolean(menu?.querySelector(".ccg-nav-fit__link"));
     }
 
+    function supportsPopover(menu) {
+        return Boolean(menu && typeof menu.showPopover === "function" && typeof menu.hidePopover === "function");
+    }
+
+    function isPopoverOpen(menu) {
+        if (!supportsPopover(menu)) return false;
+        try { return menu.matches(":popover-open"); }
+        catch (_error) { return false; }
+    }
+
+    function clearPopoverPosition(menu) {
+        if (!menu) return;
+        menu.style.removeProperty("left");
+        menu.style.removeProperty("top");
+        menu.removeAttribute("data-ccg-more-top-layer");
+    }
+
+    function positionPopover(toggle, menu) {
+        if (!toggle || !menu || !isPopoverOpen(menu)) return;
+
+        const gap = 8;
+        const edge = 8;
+        const toggleRect = toggle.getBoundingClientRect();
+        const menuRect = menu.getBoundingClientRect();
+        const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+        const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+
+        let left = toggleRect.right - menuRect.width;
+        left = Math.max(edge, Math.min(left, viewportWidth - menuRect.width - edge));
+
+        let top = toggleRect.bottom + gap;
+        if (top + menuRect.height > viewportHeight - edge) {
+            top = Math.max(edge, toggleRect.top - gap - menuRect.height);
+        }
+
+        menu.style.left = `${Math.round(left)}px`;
+        menu.style.top = `${Math.round(top)}px`;
+        menu.setAttribute("data-ccg-more-top-layer", "true");
+    }
+
     function setMoreOpenState(toggle, menu, open) {
         const nav = toggle?.closest(".ccg-nav");
         const header = nav?.closest("[data-ccg-header]");
@@ -73,14 +113,33 @@
     function closeMore(toggle, menu) {
         if (!toggle || !menu) return;
         toggle.setAttribute("aria-expanded", "false");
+
+        if (isPopoverOpen(menu)) {
+            try { menu.hidePopover(); }
+            catch (_error) {}
+        }
+        clearPopoverPosition(menu);
         menu.hidden = true;
         setMoreOpenState(toggle, menu, false);
     }
 
     function openMore(toggle, menu) {
         if (!toggle || !menu || !menuHasOverflowLinks(menu)) return false;
+
         menu.hidden = false;
         toggle.setAttribute("aria-expanded", "true");
+
+        if (supportsPopover(menu)) {
+            try {
+                if (menu.getAttribute("popover") !== "manual") menu.setAttribute("popover", "manual");
+                if (!isPopoverOpen(menu)) menu.showPopover();
+                positionPopover(toggle, menu);
+            } catch (_error) {
+                menu.removeAttribute("popover");
+                clearPopoverPosition(menu);
+            }
+        }
+
         setMoreOpenState(toggle, menu, true);
         return true;
     }
