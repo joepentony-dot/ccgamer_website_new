@@ -1,11 +1,47 @@
 [
   {
+    "slug": "the-hit-squad",
+    "summary": "The Hit Squad was a prominent budget re-release label in the UK home-computer market, strongly associated with Ocean's catalogue. Its releases put older full-price, licensed and arcade-derived titles back on sale at lower prices across machines including the Commodore 64 and Amiga.",
+    "facts": [
+      "The Centre for Computing History catalogues numerous The Hit Squad editions explicitly as budget re-releases, including Star Wars on the Commodore 64 and Yie Ar Kung Fu on the Commodore 16/Plus 4.",
+      "The museum catalogue includes many Ocean-associated titles under The Hit Squad label, including Rainbow Islands, Batman: The Caped Crusader and WWF WrestleMania.",
+      "The museum collection also preserves The Hit Squad releases for the Commodore Amiga alongside its substantial Commodore 64 catalogue."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade games",
+      "Sports games",
+      "Racing games"
+    ],
+    "related": [
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      }
+    ],
+    "note": "The Hit Squad is treated as a separate re-release label in CCG wherever that credit is explicitly recorded; it does not replace the original publisher credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Commodore 64 Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
     "slug": "kixx",
-    "summary": "Kixx was U.S. Gold's budget re-release label, returning established computer games to the shelves at a lower price across the late 1980s and 1990s.",
+    "summary": "Kixx was U.S. Gold's budget re-release label, returning established computer games to the shelves at lower prices across the late 1980s and 1990s on formats including the Commodore 64 and Amiga.",
     "facts": [
       "The Mastertronic Collectors Archive records that U.S. Gold created its own budget label Kixx after previously supplying older full-price titles to third-party budget ranges.",
-      "The Centre for Computing History preserves Kixx releases across home-computer formats, including Commodore 64 and Commodore Amiga editions.",
-      "The preserved Kixx catalogue includes explicit re-releases of earlier games alongside arcade, sports and racing titles."
+      "The Centre for Computing History identifies Kixx editions such as Indiana Jones and the Temple of Doom as re-releases of earlier U.S. Gold games.",
+      "The museum's Kixx catalogue includes Commodore 64 and Amiga reissues across racing, shooting, sports, platform and arcade-derived games."
     ],
     "strengths": [
       "Budget re-releases",
@@ -23,7 +59,7 @@
         "slug": "kixx-xl"
       }
     ],
-    "note": "Kixx is shown by CCG as a re-release publisher when a game record credits the label in its re-release field; the original publisher credit remains intact.",
+    "note": "Kixx is additive in CCG: a Kixx re-release credit creates an additional publisher archive association without replacing the game's original publisher.",
     "confidence": "high",
     "verified_on": "2026-08-19",
     "sources": [
@@ -34,43 +70,7 @@
       },
       {
         "label": "Centre for Computing History — Kixx catalogue",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Kixx&type=Games",
-        "type": "museum collection"
-      }
-    ]
-  },
-  {
-    "slug": "the-hit-squad",
-    "summary": "The Hit Squad was a prominent budget re-release range associated with Ocean-era home-computer software, returning established titles to market across several computer formats.",
-    "facts": [
-      "The Centre for Computing History preserves a large catalogue of releases published under The Hit Squad name across several home-computer formats.",
-      "Its Commodore 64 collection includes titles explicitly described by the museum as budget re-releases, alongside arcade conversions, film licences and sports games.",
-      "The museum collection also preserves The Hit Squad releases for the Commodore Amiga, including games associated with Ocean Software and other developers or publishers."
-    ],
-    "strengths": [
-      "Budget re-releases",
-      "Arcade games",
-      "Sports games",
-      "Racing games"
-    ],
-    "related": [
-      {
-        "label": "Ocean Software",
-        "slug": "ocean-software"
-      }
-    ],
-    "note": "The Hit Squad is shown by CCG as a re-release publisher when a game record credits the label in its re-release field; the original publisher credit remains intact.",
-    "confidence": "high",
-    "verified_on": "2026-08-19",
-    "sources": [
-      {
-        "label": "Centre for Computing History — The Hit Squad catalogue",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=The+Hit+Squad&type=Games",
-        "type": "museum collection"
-      },
-      {
-        "label": "Centre for Computing History — C64 Hit Squad catalogue",
-        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Hit+Squad&type=Games",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Kixx&type=Games",
         "type": "museum collection"
       }
     ]
