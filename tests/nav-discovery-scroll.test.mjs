@@ -1,3 +1,4 @@
+// fixed first-paint More destinations
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
@@ -27,6 +28,9 @@ test('public navigation has one final authoritative structure', () => {
   assert.match(navCore, /data-ccg-pwa-install-nav/);
   assert.match(navCore, /installNavigationAuthorityObserver/);
   assert.match(navCore, /synchroniseNavigationStructure\(\)/);
+  assert.match(navCore, /DEFAULT_MORE_LABELS/);
+  assert.match(navCore, /prepareDefaultMoreState/);
+  assert.match(navCore, /ensureHeaderSupportStructure/);
   assert.doesNotMatch(archiveShortcuts, /function addNavigationLinks/);
   assert.doesNotMatch(archiveShortcuts, /data-ccg-nav-secondary/);
 });
@@ -44,9 +48,11 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
-test('desktop More is functional and deliberately owns About Me and Contact', () => {
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
+test('desktop More is functional and deliberately owns fixed first-paint More destinations', () => {
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["emulation", "install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
+  assert.match(navFit, /\["Emulation", "\/emulation\.html"\]/);
+  assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /\["About Me", "\/about\.html"\]/);
   assert.match(navFit, /\["Contact", "\/contact\.html"\]/);
   assert.match(navFit, /event\.stopImmediatePropagation\(\)/);
@@ -94,12 +100,15 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(navCore, /\/js\/ccg-release-check\.js/);
   assert.match(releaseCheck, /ccg_public_release_fingerprint/);
   assert.match(releaseCheck, /"\/js\/ccg-nav\.js"/);
+  assert.match(releaseCheck, /"\/js\/ccg-header-auth-loader\.js"/);
+  assert.match(releaseCheck, /"\/js\/ccg-music-config\.js"/);
+  assert.match(releaseCheck, /"\/js\/ccg-music-navigation\.js"/);
   assert.match(releaseCheck, /"\/js\/ccg-pwa-visible-install\.js"/);
   assert.match(releaseCheck, /cache: "no-store"/);
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
   assert.match(releaseCheck, /CCG update ready/);
-  assert.match(serviceWorker, /2026-08-19-public-release-v3/);
+  assert.match(serviceWorker, /const CACHE_VERSION = "\d{4}-\d{2}-\d{2}-public-release-v\d+";/);
   assert.match(headers, /\/js\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);
