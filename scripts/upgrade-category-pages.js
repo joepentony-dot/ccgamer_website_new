@@ -83,6 +83,7 @@ function replaceFirstIntro(html, value) {
 function categorySchema({ canonical, name, description, kind }) {
   const parentName = kind === "genre" ? "Genres" : "Collections";
   const parentUrl = kind === "genre" ? `${ORIGIN}/games/genres/` : `${ORIGIN}/games/collections/`;
+  const subject = name.replace(/ Games$/i, "");
   return JSON.stringify({
     "@context": "https://schema.org",
     "@graph": [
@@ -90,7 +91,7 @@ function categorySchema({ canonical, name, description, kind }) {
         "@type": "CollectionPage",
         "@id": `${canonical}#ccg-category`,
         url: canonical,
-        name: kind === "genre" ? `${name} Games on Commodore 64 and Amiga` : `${name} – Commodore 64 and Amiga`,
+        name: kind === "genre" ? `${subject} Games on Commodore 64 and Amiga` : `${name} – Commodore 64 and Amiga`,
         description,
         isPartOf: { "@type": "WebSite", name: SITE, url: `${ORIGIN}/` },
         about: [
