@@ -5,16 +5,20 @@ on:
     branches:
       - main
     paths:
-      - "scripts/apply-phase6b-publishing.py"
-      - "scripts/phase6b-remove-build-games-composer-owner.py"
       - "scripts/phase6b_games_editor_transaction.py"
       - "scripts/validate-games-source.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
-      - "scripts/prepare-seo-game-routes.js"
-      - "scripts/validate-seo-game-routes.js"
-      - "scripts/prepare-seo-genre-links.js"
-      - "scripts/validate-seo-genre-links.js"
+      - "scripts/audit-game-manuals.js"
+      - "scripts/enforce-manual-only-game-pages.js"
+      - "scripts/ensure-downloads-discovery-links.js"
+      - "scripts/generate-downloads-page.js"
+      - "scripts/validate-downloads-page.js"
+      - "scripts/build-magazine-review-chunks.js"
+      - "scripts/audit-magazine-review-coverage.js"
+      - "scripts/ensure-magazine-review-runtime.js"
+      - "scripts/mark-rerelease-publishers.js"
+      - "scripts/link-publisher-strength-genres.js"
       - "scripts/generate-composer-pages.js"
       - "scripts/generate-year-platform-pages.js"
       - "scripts/integrate-year-platform-discovery.js"
@@ -24,8 +28,6 @@ on:
       - "admin/templates/game-landing-template.html"
       - "admin/GAMES_EDITOR.md"
       - ".github/workflows/games-publishing.yml"
-      - ".github/workflows/phase-5b-internal-discovery.yml"
-      - ".github/workflows/phase-6a-games-editor-publishing-audit.yml"
       - ".github/workflows/phase-6b-reliable-games-publishing.yml"
       - ".github/workflows/publisher-archives.yml"
       - ".github/workflows/composer-archives.yml"
@@ -47,8 +49,9 @@ on:
       - "docs/seo-baseline/phase-6b-reliable-games-publishing.md"
   workflow_dispatch:
 
+# Validation only: test the production publishing chain exactly as committed.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: phase-6b-reliable-games-publishing-${{ github.ref }}
@@ -66,9 +69,6 @@ jobs:
           ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 1
           show-progress: false
-
-      - name: Fetch main baseline
-        run: git fetch --no-tags --depth=1 origin main:refs/remotes/origin/main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -90,33 +90,32 @@ jobs:
             games/games.json \
             > "$RUNNER_TEMP/protected.sha256"
 
-      - name: Apply bounded Phase 6B changes
+      - name: Validate current publishing syntax
         run: |
-          python scripts/apply-phase6b-publishing.py
-          python scripts/phase6b-remove-build-games-composer-owner.py
-
-      - name: Validate syntax
-        run: |
-          python -m py_compile scripts/apply-phase6b-publishing.py
-          python -m py_compile scripts/phase6b-remove-build-games-composer-owner.py
           python -m py_compile scripts/phase6b_games_editor_transaction.py
           node --check scripts/validate-games-source.js
           node --check scripts/rebuild-games.js
           node --check scripts/build-games.js
-          node --check scripts/prepare-seo-game-routes.js
-          node --check scripts/validate-seo-game-routes.js
-          node --check scripts/prepare-seo-genre-links.js
-          node --check scripts/validate-seo-genre-links.js
+          node --check scripts/audit-game-manuals.js
+          node --check scripts/enforce-manual-only-game-pages.js
+          node --check scripts/ensure-downloads-discovery-links.js
+          node --check scripts/generate-downloads-page.js
+          node --check scripts/validate-downloads-page.js
+          node --check scripts/build-magazine-review-chunks.js
+          node --check scripts/audit-magazine-review-coverage.js
+          node --check scripts/ensure-magazine-review-runtime.js
+          node --check scripts/mark-rerelease-publishers.js
+          node --check scripts/link-publisher-strength-genres.js
           node --check scripts/generate-composer-pages.js
           node --check scripts/generate-year-platform-pages.js
           node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
           node --check admin/js/games-editor.js
 
-      - name: Run existing editor package regression
+      - name: Run editor package regression
         run: node --test tests/games-editor-package.test.mjs
 
-      - name: Run current catalogue publishing chain
+      - name: Run current catalogue publishing chain unchanged
         run: |
           node scripts/rebuild-games.js
           rm -f seo-audit-report.md
@@ -135,7 +134,7 @@ jobs:
           fi
           git diff --check
 
-      - name: Run synthetic C64 and Amiga transactions
+      - name: Run synthetic C64 and Amiga manuals-only transactions
         shell: bash
         run: |
           set +e
@@ -170,125 +169,8 @@ jobs:
         run: |
           ! grep -R "phase6b-synthetic" games/games.json games/games-index.json games/games-search.json
 
-      - name: Confirm exact Phase 6B scope
+      - name: Confirm workflow is validation-only
         shell: bash
         run: |
-          python - <<'PY'
-          import json
-          import subprocess
-
-          allowed_exact = {
-              ".github/workflows/games-publishing.yml",
-              ".github/workflows/phase-5b-internal-discovery.yml",
-              ".github/workflows/phase-6a-games-editor-publishing-audit.yml",
-              ".github/workflows/phase-6b-reliable-games-publishing.yml",
-              ".github/workflows/publisher-archives.yml",
-              ".github/workflows/composer-archives.yml",
-              ".github/workflows/game-downloads.yml",
-              ".github/workflows/year-platform-archives.yml",
-              "admin/GAMES_EDITOR.md",
-              "admin/games-editor.html",
-              "admin/js/games-editor.js",
-              "admin/templates/game-landing-template.html",
-              "scripts/apply-phase6b-publishing.py",
-              "scripts/phase6b-remove-build-games-composer-owner.py",
-              "scripts/phase6b_games_editor_transaction.py",
-              "scripts/validate-games-source.js",
-              "scripts/rebuild-games.js",
-              "scripts/build-games.js",
-              "scripts/generate-composer-pages.js",
-              "scripts/generate-year-platform-pages.js",
-              "scripts/integrate-year-platform-discovery.js",
-              "scripts/validate-year-platform-discovery.js",
-              "games/index.html",
-              "games/games-index.json",
-              "games/games-search.json",
-              "tools/seo/static-pages.json",
-              "sitemap.xml",
-              "sitemap-pages.xml",
-              "sitemap-games.xml",
-              "docs/seo-baseline/phase-3c-composer-archives.md",
-              "docs/seo-baseline/phase-4b-year-platform-archives.md",
-              "docs/seo-baseline/phase-4c-year-platform-discovery.md",
-              "docs/seo-baseline/phase-4d-year-platform-validation.md",
-              "docs/seo-baseline/phase-6b-reliable-games-publishing.md",
-          }
-          allowed_prefixes = (
-              "games/publishers/",
-              "games/developers/",
-              "games/genres/",
-              "games/downloads/",
-              "games/platforms/",
-              "games/years/",
-          )
-          with open("games/games.json", encoding="utf-8") as handle:
-              games = json.load(handle)
-          allowed_game_routes = set()
-          for game in games:
-              slug = str(game.get("slug") or "").strip()
-              if not slug:
-                  continue
-              allowed_game_routes.add(f"games/{slug}/index.html")
-              allowed_game_routes.add(f"games/{slug}.html")
-
-          tracked = subprocess.check_output(["git", "diff", "--name-only", "HEAD"], text=True).splitlines()
-          untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], text=True).splitlines()
-          changed = sorted({*tracked, *untracked})
-          unexpected = [
-              path for path in changed
-              if path not in allowed_exact
-              and path not in allowed_game_routes
-              and not path.startswith(allowed_prefixes)
-          ]
-          if unexpected:
-              raise SystemExit(f"Unexpected Phase 6B generated paths: {unexpected}")
-          print(f"Validated bounded Phase 6B generated scope ({len(changed)} files).")
-          PY
-
-      - name: Commit generated Phase 6B output
-        if: github.event_name == 'workflow_dispatch'
-        shell: bash
-        run: |
-          git add \
-            admin/GAMES_EDITOR.md \
-            admin/games-editor.html \
-            admin/js/games-editor.js \
-            admin/templates/game-landing-template.html \
-            scripts/apply-phase6b-publishing.py \
-            scripts/phase6b-remove-build-games-composer-owner.py \
-            scripts/phase6b_games_editor_transaction.py \
-            scripts/validate-games-source.js \
-            scripts/rebuild-games.js \
-            scripts/build-games.js \
-            scripts/generate-composer-pages.js \
-            scripts/generate-year-platform-pages.js \
-            scripts/integrate-year-platform-discovery.js \
-            scripts/validate-year-platform-discovery.js \
-            games/index.html \
-            games/games-index.json \
-            games/games-search.json \
-            games/publishers \
-            games/developers \
-            games/genres \
-            games/downloads \
-            games/platforms \
-            games/years \
-            tools/seo/static-pages.json \
-            sitemap.xml \
-            sitemap-pages.xml \
-            sitemap-games.xml \
-            docs/seo-baseline/phase-3c-composer-archives.md \
-            docs/seo-baseline/phase-4b-year-platform-archives.md \
-            docs/seo-baseline/phase-4c-year-platform-discovery.md \
-            docs/seo-baseline/phase-4d-year-platform-validation.md \
-            docs/seo-baseline/phase-6b-reliable-games-publishing.md
-
-          if git diff --cached --quiet; then
-            echo "Phase 6B output is already current."
-            exit 0
-          fi
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Apply Phase 6B reliable game publishing"
-          git push origin "HEAD:${GITHUB_HEAD_REF}"
+          ! grep -q "git"" push" .github/workflows/phase-6b-reliable-games-publishing.yml
+          echo "Phase 6B validates production publishing without mutating or pushing the source branch."

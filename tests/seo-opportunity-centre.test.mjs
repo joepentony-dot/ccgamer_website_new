@@ -4,6 +4,7 @@ import test from 'node:test';
 
 const page = fs.readFileSync('admin/seo-opportunity-centre.html', 'utf8');
 const controller = fs.readFileSync('admin/js/seo-opportunity-centre.js', 'utf8');
+const managedRoutes = fs.readFileSync('admin/js/seo-opportunity-managed-routes.js', 'utf8');
 const edge = fs.readFileSync('supabase/functions/search-console-opportunities/index.ts', 'utf8');
 const nav = fs.readFileSync('admin/js/admin-nav.js', 'utf8');
 
@@ -84,10 +85,33 @@ test('mixed trend signals are separated from growth and decline', () => {
   assert.match(controller, /hasPositiveTrend\(row\) && !hasNegativeTrend\(row\)/);
 });
 
-test('legacy route detection is conservative and diagnostic only', () => {
-  assert.match(page, /Legacy URLs still appearing in Google/);
+test('legacy route detection remains conservative and diagnostic only', () => {
+  assert.match(page, /Managed legacy URLs still appearing in Google/);
   assert.match(controller, /\/games\\\/game\\\.html/);
   assert.match(controller, /\/music\\\/composer\\\.html/);
   assert.match(controller, /Do not remove the old URL blindly/);
   assert.doesNotMatch(controller, /location\.replace|location\.assign|fetch\([^\n]+method:\s*['"](?:PUT|PATCH|DELETE)/i);
+});
+
+test('intentional noindex compatibility routes stay out of the actionable work queue', () => {
+  assert.match(page, /Intentional noindex legacy compatibility routes are kept out of this actionable queue/);
+  assert.match(page, /noindex,follow/);
+  assert.match(page, /seo-opportunity-managed-routes\.js/);
+  assert.match(managedRoutes, /\["\/games\/game\.html", "Managed noindex,follow game handler"\]/);
+  assert.match(managedRoutes, /\["\/music\/composer\.html", "Managed noindex,follow composer handler"\]/);
+  assert.match(managedRoutes, /reconcileWorkQueue/);
+  assert.match(managedRoutes, /row\.remove\(\)/);
+  assert.match(managedRoutes, /Monitor Google retirement/);
+  assert.match(managedRoutes, /Search Console impressions are not an SEO fault by themselves/);
+});
+
+test('visible CSV export uses the reconciled tables rather than hidden pre-reconciliation data', () => {
+  assert.match(page, /Export visible report CSV/);
+  assert.match(managedRoutes, /function visibleReportRows/);
+  assert.match(managedRoutes, /document\.querySelectorAll\("\[data-seo-section\]"\)/);
+  assert.match(managedRoutes, /if \(section\.hidden\) return/);
+  assert.match(managedRoutes, /function exportVisibleReport/);
+  assert.match(managedRoutes, /reconcile\(\)/);
+  assert.match(managedRoutes, /ccg-seo-visible-report-/);
+  assert.match(managedRoutes, /stopImmediatePropagation\(\)/);
 });

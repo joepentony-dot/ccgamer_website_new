@@ -5,6 +5,7 @@ on:
     paths:
       - "admin/seo-opportunity-centre.html"
       - "admin/js/seo-opportunity-centre.js"
+      - "admin/js/seo-opportunity-managed-routes.js"
       - "admin/js/admin-nav.js"
       - "admin/dashboard.html"
       - "resources/css/ccg-seo-opportunity-centre.css"
@@ -17,6 +18,7 @@ on:
     paths:
       - "admin/seo-opportunity-centre.html"
       - "admin/js/seo-opportunity-centre.js"
+      - "admin/js/seo-opportunity-managed-routes.js"
       - "admin/js/admin-nav.js"
       - "admin/dashboard.html"
       - "resources/css/ccg-seo-opportunity-centre.css"
@@ -38,6 +40,8 @@ jobs:
         with:
           node-version: 20
       - name: JavaScript syntax
-        run: node --check admin/js/seo-opportunity-centre.js
+        run: |
+          node --check admin/js/seo-opportunity-centre.js
+          node --check admin/js/seo-opportunity-managed-routes.js
       - name: SEO Opportunity Centre regression tests
         run: node --test tests/seo-opportunity-centre.test.mjs tests/admin-navigation.test.mjs
