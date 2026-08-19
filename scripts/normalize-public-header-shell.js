@@ -29,6 +29,7 @@ const SECONDARY_LINKS = Object.freeze([
 const REQUIRED_STYLES = Object.freeze([
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-nav-fit.css",
+  "/resources/css/ccg-global-search.css",
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-community.css",
   "/resources/css/ccg-mode.css",
@@ -295,6 +296,21 @@ function ensureRequiredAssets(html) {
   return output;
 }
 
+function ensureSearchCommandSlot(html) {
+  if (/\bdata-ccg-search-command-slot\s*=\s*["']true["']/i.test(html)) return html;
+  if (/\bclass\s*=\s*["'][^"']*\bccg-home-search-command\b[^"']*["']/i.test(html)) return html;
+
+  const tagPattern = /<([a-z][a-z0-9:-]*)\b[^>]*>/ig;
+  let match;
+  while ((match = tagPattern.exec(html))) {
+    if (!classListFromTag(match[0]).includes("ccg-main")) continue;
+    const markup = `
+    <div class="ccg-home-search-command" role="search" aria-label="Search the CCG website" data-ccg-search-command-slot="true"></div>`;
+    return `${html.slice(0, tagPattern.lastIndex)}${markup}${html.slice(tagPattern.lastIndex)}`;
+  }
+  return html;
+}
+
 function normaliseHtml(html) {
   if (!/<header\b[^>]*\bdata-ccg-header\b/i.test(html)) {
     return { html, applicable: false, changed: false };
@@ -311,6 +327,7 @@ function normaliseHtml(html) {
   }
 
   output = ensureRequiredAssets(output);
+  output = ensureSearchCommandSlot(output);
   return { html: output, applicable: true, changed: output !== html, malformed: false };
 }
 
@@ -407,6 +424,7 @@ module.exports = {
   AUTH_SNAPSHOT_KEY,
   normaliseAssetPath,
   normaliseHtml,
+  ensureSearchCommandSlot,
   processRoot,
   shouldExclude
 };

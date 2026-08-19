@@ -103,7 +103,11 @@ async function verifyLiveReleaseAssets() {
     ["/service-worker.js", "service-worker.js"],
     ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
     ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
-    ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
+    ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"],
+    ["/js/ccg-global-search.js", "js/ccg-global-search.js"],
+    ["/js/zzap64-awards.js", "js/zzap64-awards.js"],
+    ["/resources/css/ccg-global-search.css", "resources/css/ccg-global-search.css"],
+    ["/resources/css/zzap64-performance.css", "resources/css/zzap64-performance.css"]
   ];
 
   for (const [remotePath, localPath] of assets) {
@@ -313,6 +317,7 @@ async function main() {
       capabilities: {
         alwaysMatch: {
           browserName: "chrome",
+          pageLoadStrategy: "eager",
           "goog:chromeOptions": {
             args: [
               "--headless=new",

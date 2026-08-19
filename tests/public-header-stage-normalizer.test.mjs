@@ -14,6 +14,7 @@ const {
   REQUIRED_SCRIPTS,
   AUTH_SNAPSHOT_KEY,
   normaliseHtml,
+  ensureSearchCommandSlot,
   processRoot,
   shouldExclude
 } = require('../scripts/normalize-public-header-shell.js');
@@ -43,7 +44,7 @@ function oldHeaderPage(extraHead = '', extraBody = '') {
       </div>
     </div>
   </header>
-  ${extraBody}
+  <main class="ccg-main">${extraBody}</main>
 </body>
 </html>`;
 }
@@ -82,6 +83,8 @@ test('normaliser replaces old first-paint navigation with the canonical shell', 
   assert.equal(count(result.html, 'ccg-socials__icon--fb'), 1);
   assert.equal(count(result.html, 'ccg-socials__icon--discord'), 1);
   assert.match(result.html, /class="ccg-socials-fallback" hidden aria-hidden="true"><\/div>/);
+  assert.match(result.html, /class="ccg-home-search-command" role="search" aria-label="Search the CCG website" data-ccg-search-command-slot="true"><\/div>/);
+  assert.equal(ensureSearchCommandSlot(result.html), result.html);
 });
 
 test('normaliser makes all shell CSS and JS direct staged dependencies', () => {
@@ -103,6 +106,7 @@ test('normaliser makes all shell CSS and JS direct staged dependencies', () => {
   assert.match(result.html, /src="\/js\/ccg-header-auth-loader\.js" defer data-ccg-static-shell-script="true"/);
   assert.match(result.html, /href="\/resources\/css\/ccg-socials\.css" data-ccg-static-shell-style="true"/);
   assert.match(result.html, /href="\/resources\/css\/ccg-community\.css" data-ccg-static-shell-style="true"/);
+  assert.match(result.html, /href="\/resources\/css\/ccg-global-search\.css" data-ccg-static-shell-style="true"/);
 });
 
 test('a preload-only social stylesheet never counts as the direct first-paint stylesheet', () => {
