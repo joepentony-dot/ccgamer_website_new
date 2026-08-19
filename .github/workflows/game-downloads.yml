@@ -8,6 +8,7 @@ on:
       - "games/games.json"
       - "home.html"
       - "games/index.html"
+      - "scripts/audit-game-manuals.js"
       - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
@@ -26,6 +27,7 @@ on:
       - "games/games.json"
       - "home.html"
       - "games/index.html"
+      - "scripts/audit-game-manuals.js"
       - "scripts/ensure-downloads-discovery-links.js"
       - "scripts/generate-downloads-page.js"
       - "scripts/update-downloads-sitemap.js"
@@ -39,9 +41,9 @@ on:
       - ".github/workflows/game-downloads.yml"
   workflow_dispatch:
 
-# This workflow is deliberately validation-only. Reliable Games Publishing owns
-# generated Game Downloads A-Z output and merges it through the protected-main
-# publishing route. Keeping one writer prevents competing automation commits.
+# This workflow remains validation-only. The historical /games/downloads/ route
+# is now a PDF-manual archive; Reliable Games Publishing owns generated output
+# and merges it through the protected-main publishing route.
 permissions:
   contents: read
 
@@ -67,8 +69,9 @@ jobs:
         with:
           node-version: "24"
 
-      - name: Validate downloads source files
+      - name: Validate manuals source files
         run: |
+          node --check scripts/audit-game-manuals.js
           node --check scripts/ensure-downloads-discovery-links.js
           node --check scripts/generate-downloads-page.js
           node --check scripts/update-downloads-sitemap.js
@@ -77,36 +80,57 @@ jobs:
           node --check js/game-downloads.js
           node --check js/ccg-nav.js
 
-      - name: Build downloads output in validation workspace
+      - name: Validate manual source fields
+        run: node scripts/audit-game-manuals.js
+
+      - name: Build PDF manuals output in validation workspace
         run: |
           node scripts/ensure-downloads-discovery-links.js
           node scripts/generate-downloads-page.js
           node scripts/update-downloads-static-pages.js
           node scripts/update-downloads-sitemap.js
 
-      - name: Verify downloads discovery and accordion archive
+      - name: Verify manuals discovery and archive policy
         shell: bash
         run: |
           test -s games/downloads/index.html
           if grep -q 'home-explore-grid' home.html; then
-            echo "Streamlined homepage detected; downloads discovery is intentionally routed through Browse Games."
+            echo "Streamlined homepage detected; manuals discovery is intentionally routed through Browse Games."
           else
             grep -q 'data-home-downloads-card="true"' home.html
             grep -q 'href="/games/downloads/"' home.html
+            grep -q 'Game Manuals A–Z' home.html
           fi
           grep -q 'data-games-downloads-shortcut="true"' games/index.html
           grep -q 'href="/games/downloads/"' games/index.html
+          grep -q 'Game Manuals A–Z' games/index.html
           grep -q 'id="downloadSearchInput"' games/downloads/index.html
-          grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
-          grep -q 'data-src=' games/downloads/index.html
-          grep -q 'data-direct-download' games/downloads/index.html
-          grep -q '>Download Game<' games/downloads/index.html
-          grep -q '>Game Page<' games/downloads/index.html
-          ! grep -q 'View Game &amp; Download' games/downloads/index.html
+          grep -q 'Documentation only' games/downloads/index.html
+          grep -q 'PDF manual' games/downloads/index.html
+          ! grep -q 'data-direct-download' games/downloads/index.html
+          ! grep -q '>Download Game<' games/downloads/index.html
+          ! grep -Eiq 'href="[^"]+\.(adf|adz|d64|d71|d81|g64|t64|tap|tzx|prg|crt|ipf|hdf|lha|rom)([?#][^"]*)?"' games/downloads/index.html
+          grep -q '>Game Page<' games/downloads/index.html || true
+
+          MANUAL_COUNT="$(node - <<'NODE'
+          const fs = require('fs');
+          const { getDownloadRecords } = require('./scripts/generate-downloads-page');
+          const games = JSON.parse(fs.readFileSync('games/games.json', 'utf8'));
+          process.stdout.write(String(getDownloadRecords(games).length));
+          NODE
+          )"
+          echo "PDF manuals expected: ${MANUAL_COUNT}"
+          if [ "${MANUAL_COUNT}" -gt 0 ]; then
+            grep -q '<details class="ccg-downloads-letter"' games/downloads/index.html
+            grep -q 'data-src=' games/downloads/index.html
+            grep -q 'data-manual-download' games/downloads/index.html
+            grep -q 'Open / Download PDF Manual' games/downloads/index.html
+          fi
+
           test "$(grep -c 'https://www.cheekycommodoregamer.co.uk/games/downloads/' sitemap-pages.xml)" -eq 1
           node -e 'const pages=require("./tools/seo/static-pages.json"); if (pages[0] !== "" || !pages.includes("games/downloads/index.html")) process.exit(1);'
 
-      - name: Validate every downloadable game is in A-Z
+      - name: Validate every PDF manual is in A-Z and no game media leaks
         run: node scripts/validate-downloads-page.js
 
       - name: Verify shared archive registrations survive
@@ -127,13 +151,13 @@ jobs:
             }
           }
 
-          console.log(`[downloads] Preserved ${developerEntries.length} developer sitemap registrations.`);
+          console.log(`[manuals] Preserved ${developerEntries.length} developer sitemap registrations.`);
           NODE
 
       - name: Validate sitemaps
         run: node scripts/validate-sitemaps.js
 
-      - name: Confirm bounded downloads scope
+      - name: Confirm bounded manuals scope
         run: |
           python - <<'PY'
           import subprocess
@@ -158,11 +182,11 @@ jobs:
           }
           unexpected = sorted(path for path in paths if path not in allowed)
           if unexpected:
-              raise SystemExit(f"Unexpected downloads workflow paths: {unexpected}")
-          print(f"Validated {len(paths)} downloads workflow paths.")
+              raise SystemExit(f"Unexpected manuals workflow paths: {unexpected}")
+          print(f"Validated {len(paths)} manuals workflow paths.")
           PY
 
       - name: Confirm workflow is validation-only
         run: |
-          echo "Downloads output validated. No files are committed by this workflow."
+          echo "PDF manuals output validated. No files are committed by this workflow."
           echo "Reliable Games Publishing remains the sole generated-output writer."
