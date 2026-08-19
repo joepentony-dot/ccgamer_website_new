@@ -12,6 +12,8 @@ const HOST = "127.0.0.1";
 const SITE_PORT = 4179;
 const DRIVER_PORT = 9516;
 const W3C_ELEMENT_KEY = "element-6066-11e4-a52e-4f735466cecf";
+const LIVE_BASE_URL = String(process.env.CCG_NAV_AUDIT_BASE_URL || "").trim().replace(/\/+$/, "");
+const LOCAL_BASE_URL = `http://${HOST}:${SITE_PORT}`;
 
 const MIME = Object.freeze({
   ".html": "text/html; charset=utf-8",
@@ -28,6 +30,14 @@ const MIME = Object.freeze({
   ".woff": "font/woff",
   ".woff2": "font/woff2"
 });
+
+function auditBaseUrl() {
+  return LIVE_BASE_URL || LOCAL_BASE_URL;
+}
+
+function normalizeText(value) {
+  return String(value || "").replace(/\r\n/g, "\n");
+}
 
 function commandPath(command) {
   const result = spawnSync("bash", ["-lc", `command -v ${command}`], { encoding: "utf8" });
@@ -73,6 +83,36 @@ function createServer() {
     res.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
     res.end(fs.readFileSync(filePath));
   });
+}
+
+async function fetchLiveText(relativePath) {
+  const separator = relativePath.includes("?") ? "&" : "?";
+  const response = await fetch(`${LIVE_BASE_URL}${relativePath}${separator}ccg-nav-audit=${Date.now()}`, {
+    cache: "no-store",
+    headers: { "cache-control": "no-cache" },
+    signal: AbortSignal.timeout(30000)
+  });
+  if (!response.ok) throw new Error(`Live ${relativePath} returned ${response.status}.`);
+  return response.text();
+}
+
+async function verifyLiveReleaseAssets() {
+  if (!LIVE_BASE_URL) return;
+
+  const assets = [
+    ["/service-worker.js", "service-worker.js"],
+    ["/js/ccg-nav-fit.js", "js/ccg-nav-fit.js"],
+    ["/resources/css/ccg-nav-fit.css", "resources/css/ccg-nav-fit.css"],
+    ["/resources/css/ccg-mode-identity.css", "resources/css/ccg-mode-identity.css"]
+  ];
+
+  for (const [remotePath, localPath] of assets) {
+    const expected = normalizeText(fs.readFileSync(path.join(ROOT, localPath), "utf8"));
+    const actual = normalizeText(await fetchLiveText(remotePath));
+    if (actual !== expected) {
+      throw new Error(`Live ${remotePath} does not match the repository release being audited.`);
+    }
+  }
 }
 
 async function webdriver(method, pathname, body) {
@@ -134,7 +174,9 @@ async function clickElement(sessionId, selector) {
 
 async function openHome(sessionId, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
-  await webdriver("POST", `/session/${sessionId}/url`, { url: `http://${HOST}:${SITE_PORT}/home.html` });
+  await webdriver("POST", `/session/${sessionId}/url`, {
+    url: `${auditBaseUrl()}/home.html?ccg-nav-audit=${Date.now()}`
+  });
 
   const canonicalNavExpression = `
     (function () {
@@ -253,8 +295,10 @@ async function clickMoreDestination(sessionId, width, label, href, expectedPath)
 
 async function main() {
   const driverPath = findChromeDriver();
-  const siteServer = createServer();
-  await new Promise((resolve) => siteServer.listen(SITE_PORT, HOST, resolve));
+  const siteServer = LIVE_BASE_URL ? null : createServer();
+  if (siteServer) await new Promise((resolve) => siteServer.listen(SITE_PORT, HOST, resolve));
+
+  await verifyLiveReleaseAssets();
 
   const driver = spawn(driverPath, [`--port=${DRIVER_PORT}`, "--allowed-ips="], {
     stdio: ["ignore", "ignore", "pipe"]
@@ -328,7 +372,8 @@ async function main() {
     `);
     if (fallbackVisible) throw new Error("Legacy text-social fallback is visible after navigation finalisation.");
 
-    console.log("Navigation More browser audit passed.");
+    console.log(`${LIVE_BASE_URL ? "Live" : "Local"} Navigation More browser audit passed.`);
+    if (LIVE_BASE_URL) console.log(`- Public release assets match the repository release at ${LIVE_BASE_URL}`);
     console.log("- Canonical Omega navigation remains visible without an obsolete hide/show lifecycle");
     console.log("- Desktop About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
@@ -340,7 +385,7 @@ async function main() {
       try { await webdriver("DELETE", `/session/${sessionId}`); } catch (error) {}
     }
     driver.kill("SIGTERM");
-    await new Promise((resolve) => siteServer.close(resolve));
+    if (siteServer) await new Promise((resolve) => siteServer.close(resolve));
     if (driverError && process.env.CCG_NAV_AUDIT_DEBUG === "1") process.stderr.write(driverError);
   }
 }
