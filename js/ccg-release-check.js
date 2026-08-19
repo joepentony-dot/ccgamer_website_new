@@ -23,6 +23,7 @@
         "/js/ccg-nav-fit.js",
         "/js/ccg-release-check.js",
         "/resources/css/ccg-nav.css",
+        "/resources/css/ccg-socials.css",
         "/resources/css/ccg-master.css",
         "/resources/css/ccg-mode.css"
     ];
