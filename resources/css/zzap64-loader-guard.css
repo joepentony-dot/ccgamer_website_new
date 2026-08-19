@@ -29,6 +29,7 @@ html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard:not([h
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     isolation: isolate;
+    pointer-events: none !important;
 }
 
 html[data-ccg-page="zzap64-awards"] .zzap-loading.zzap-loading--top-guard::before {
