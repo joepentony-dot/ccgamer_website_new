@@ -90,7 +90,7 @@ test('desktop navigation paints at its settled density before fitting runs', () 
   assert.ok(navFitCss.includes('letter-spacing: 0.035em !important'), 'Settled desktop nav letter spacing must be present in first-frame CSS');
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--primary\s*\{[\s\S]*min-width:\s*56\.87em/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--secondary\s*\{[\s\S]*min-width:\s*43\.67em/);
-  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*5\.85em/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*calc\(3\.97em \+ 20\.6px\)/);
   assert.ok(navFit.includes('Math.floor(inner?.clientWidth || window.innerWidth)'), 'Fitter must use the real header width');
   assert.ok(navFit.includes('required > allowed + 2'), 'Fitter must tolerate sub-pixel rounding without forcing a resize');
   assert.doesNotMatch(navFit, /clientWidth\s*\|\|\s*window\.innerWidth\)\s*-\s*12/);
