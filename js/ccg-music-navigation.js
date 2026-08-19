@@ -17,6 +17,7 @@
         "/resources/css/ccg-mode.css",
         "/resources/css/ccg-effects.css",
         "/resources/css/ccg-nav.css",
+        "/resources/css/ccg-nav-fit.css",
         "/resources/css/ccg-buttons.css",
         "/resources/css/ccg-footer.css",
         "/resources/css/ccg-community.css",
@@ -35,14 +36,32 @@
     }
 
     function ensureStyle(href) {
-        const exists = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]'))
-            .some((link) => normaliseAssetPath(link.getAttribute("href")) === href);
-        if (exists) return;
+        const existing = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]'))
+            .find((link) => normaliseAssetPath(link.getAttribute("href")) === href);
+        if (existing) return existing;
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = href;
         link.dataset.ccgMusicNavigationStyle = "true";
         document.head.appendChild(link);
+        return link;
+    }
+
+    function waitForStyle(href) {
+        const link = ensureStyle(href);
+        if (link.sheet) return Promise.resolve();
+
+        return new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                resolve();
+            };
+            link.addEventListener("load", finish, { once: true });
+            link.addEventListener("error", finish, { once: true });
+            window.setTimeout(finish, 2000);
+        });
     }
 
     function ensureScript(src) {
@@ -250,8 +269,8 @@
         });
     }
 
-    function init() {
-        STYLES.forEach(ensureStyle);
+    async function init() {
+        await Promise.all(STYLES.map(waitForStyle));
         const header = ensureHeader();
         if (!header) return;
         bindDrawer(header);
@@ -260,8 +279,8 @@
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
+        document.addEventListener("DOMContentLoaded", () => void init(), { once: true });
     } else {
-        init();
+        void init();
     }
 })();
