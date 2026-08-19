@@ -26,6 +26,8 @@ function requireText(source, expected, message) {
 const html = read("community/profile.html");
 const css = read("resources/css/member-hub.css");
 const script = read("resources/js/auth/member-hub.js");
+const profileLists = read("resources/js/auth/profile-lists.js");
+const interfaceScript = read("js/ccg-member-library-interface.js");
 const syncCss = read("resources/css/member-library-sync.css");
 const syncScript = read("resources/js/auth/member-library-sync.js");
 const syncLoader = read("js/ccg-member-library-sync-loader.js");
@@ -38,7 +40,6 @@ const deletionMigration = read("supabase/migrations/20260805_member_hub_deletion
   'id="memberHub"',
   'id="memberOverview"',
   'id="memberFavourites"',
-  'id="personalGameLibrary"',
   'id="memberAchievements"',
   'id="memberCommunity"',
   'id="memberSettings"',
@@ -48,10 +49,36 @@ const deletionMigration = read("supabase/migrations/20260805_member_hub_deletion
   '/js/ccg-nav-core.js',
   '/js/ccg-mode-engine.js',
   '/resources/js/auth/profile-page.js',
-  '/resources/js/auth/profile-lists.js',
   '/resources/js/auth/member-hub.js'
 ].forEach((needle) => {
   requireText(html, needle, `Member Hub HTML is missing: ${needle}.`);
+});
+
+[
+  'PROFILE_LISTS_SRC = "/resources/js/auth/profile-lists.js"',
+  'section.id = "personalGameLibrary"',
+  'id="personalGameLibraryList"',
+  'data-profile-list-tab="played"',
+  'data-profile-list-tab="want"',
+  'data-profile-list-tab="owned"',
+  'data-profile-list-tab="still"',
+  'function ensureLibrarySection()',
+  'function ensureProfileListsScript()',
+  'ccg:member-library-interface-ready'
+].forEach((needle) => {
+  requireText(interfaceScript, needle, `Restored Member Hub library interface is missing: ${needle}.`);
+});
+
+if (!navCore.includes('/js/ccg-member-library-interface.js')) {
+  problems.push("The shared module system does not load the restored Member Hub library interface.");
+}
+
+[
+  "ccgPersonalGameLibraryV1",
+  "profile-list",
+  "personalGameLibraryList"
+].forEach((needle) => {
+  requireText(profileLists, needle, `Profile lists module is missing: ${needle}.`);
 });
 
 const ids = Array.from(html.matchAll(/\sid="([^"]+)"/g), (match) => match[1]);
@@ -151,4 +178,4 @@ if (problems.length) {
   process.exit(1);
 }
 
-console.log("Member Hub audit passed with tombstone-safe account synchronisation.");
+console.log("Member Hub audit passed with the restored shared library interface and tombstone-safe account synchronisation.");
