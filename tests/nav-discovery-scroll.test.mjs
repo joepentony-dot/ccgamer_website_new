@@ -54,11 +54,15 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFit, /event\.stopImmediatePropagation\(\)/);
   assert.match(navFit, /appendMoreLink\(menu, label, href, seen\)/);
   assert.match(navFit, /\[data-ccg-more-menu\] a\[href\]/);
+  assert.match(navFit, /showPopover/);
+  assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
   assert.match(navFitCss, /a\[href="\/about\.html"\]/);
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
   assert.match(navFitCss, /z-index:\s*2147483000\s*!important/);
   assert.match(navFitCss, /pointer-events:\s*auto\s*!important/);
+  assert.match(navFitCss, /\[popover\]/);
+  assert.match(navFitCss, /:popover-open/);
   assert.match(modeIdentityCss, /\.ccg-mode-identity\s*\{[\s\S]*pointer-events:\s*none/);
   assert.match(modeIdentityCss, /\.ccg-mode-identity__inner\s*\{[\s\S]*pointer-events:\s*none/);
 });
