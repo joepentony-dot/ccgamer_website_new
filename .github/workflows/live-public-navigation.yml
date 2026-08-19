@@ -1,5 +1,6 @@
 name: Live Public Navigation Verification
 
+# Diagnostic trigger only: verify merged public release v7 on the custom domain.
 on:
   pull_request:
     branches:
