@@ -6,6 +6,16 @@
    established drawer layout.
 ============================================================ */
 
+/* The full scroll authority is installed by the shared runtime, but the
+   desktop gutter must exist before that deferred script runs. Reserving it
+   here prevents a 10px document-width handoff (and 5px centered-header
+   shift) on pages whose vertical overflow is discovered after first paint. */
+@media (min-width: 821px) {
+    html[data-ccg-page] {
+        scrollbar-gutter: stable;
+    }
+}
+
 .ccg-header .ccg-auth-slot {
     min-width: 0;
 }
