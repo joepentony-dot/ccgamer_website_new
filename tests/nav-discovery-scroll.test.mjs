@@ -83,10 +83,14 @@ test('navigation never hides during refresh or fitting', () => {
 
 test('desktop navigation paints at its settled density before fitting runs', () => {
   assert.ok(navFitCss.includes('.ccg-header .ccg-nav .ccg-nav__link'), 'First-frame nav selector must outrank late responsive polish');
+  assert.ok(navFitCss.includes('--ccg-nav-control-size: clamp(0.61rem, 0.57vw, 0.7rem)'), 'Settled desktop nav font size must be defined once for first-frame metrics');
+  assert.ok(navFitCss.includes('font-size: var(--ccg-nav-control-size) !important'), 'Controls must use the shared first-frame font-size metric');
   assert.ok(navFitCss.includes('min-height: 38px !important'), 'Settled desktop nav height must be present in first-frame CSS');
   assert.ok(navFitCss.includes('padding: 6px 5px !important'), 'Settled desktop nav padding must be present in first-frame CSS');
-  assert.ok(navFitCss.includes('font-size: clamp(0.61rem, 0.57vw, 0.7rem) !important'), 'Settled desktop nav font size must be present in first-frame CSS');
   assert.ok(navFitCss.includes('letter-spacing: 0.035em !important'), 'Settled desktop nav letter spacing must be present in first-frame CSS');
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--primary\s*\{[\s\S]*min-width:\s*56\.87em/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--secondary\s*\{[\s\S]*min-width:\s*43\.67em/);
+  assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*5\.85em/);
   assert.ok(navFit.includes('Math.floor(inner?.clientWidth || window.innerWidth)'), 'Fitter must use the real header width');
   assert.ok(navFit.includes('required > allowed + 2'), 'Fitter must tolerate sub-pixel rounding without forcing a resize');
   assert.doesNotMatch(navFit, /clientWidth\s*\|\|\s*window\.innerWidth\)\s*-\s*12/);
