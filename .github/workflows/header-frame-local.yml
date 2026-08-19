@@ -1,0 +1,39 @@
+name: Local Header Frame Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "resources/css/ccg-nav-fit.css"
+      - "scripts/audit-header-frame-local.js"
+      - ".github/workflows/header-frame-local.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: local-header-frame-validation
+  cancel-in-progress: true
+
+jobs:
+  validate-frame-stability:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out proposed release
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate diagnostic syntax
+        run: node --check scripts/audit-header-frame-local.js
+
+      - name: Sample local first animation frames
+        run: node scripts/audit-header-frame-local.js
