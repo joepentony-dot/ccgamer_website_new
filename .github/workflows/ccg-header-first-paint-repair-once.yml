@@ -32,6 +32,21 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Normalize migration source endings
+        shell: bash
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          for (const file of [
+            'js/ccg-music-config.js',
+            'js/ccg-music-navigation.js',
+            'js/ccg-header-auth-loader.js'
+          ]) {
+            const source = fs.readFileSync(file, 'utf8');
+            if (!source.endsWith('\n')) fs.writeFileSync(file, source + '\n', 'utf8');
+          }
+          NODE
+
       - name: Apply first-paint runtime contract
         run: node scripts/apply-header-first-paint-contract.js
 
