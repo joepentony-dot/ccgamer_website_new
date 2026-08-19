@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-19-public-release-v7";
+const CACHE_VERSION = "2026-08-19-public-release-v8";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -22,6 +22,9 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-nav-fit.css",
+  "/resources/css/ccg-responsive-safety.css",
+  "/resources/css/ccg-responsive-page-polish.css",
+  "/resources/css/ccg-sitewide-layout-optimization.css",
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",
