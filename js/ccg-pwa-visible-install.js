@@ -1,8 +1,9 @@
 /* ============================================================
    CCG VISIBLE APP INSTALLATION
    ------------------------------------------------------------
-   Adds a permanent navigation route and controls the dedicated
-   installation page without changing the restrained prompt.
+   Controls the dedicated installation page. The public navigation
+   route itself is owned exclusively by js/ccg-nav-core.js so this
+   module must never append, rebuild or reorder navigation links.
 ============================================================ */
 
 (function () {
@@ -11,7 +12,6 @@
   if (window.CCG_PWA_VISIBLE_INSTALL_READY) return;
   window.CCG_PWA_VISIBLE_INSTALL_READY = true;
 
-  const INSTALL_PAGE = "/install-app.html";
   const INSTALL_CSS = "/resources/css/ccg-pwa-install-page.css";
   const state = {
     deferredPrompt: null,
@@ -40,26 +40,6 @@
     link.href = INSTALL_CSS;
     link.setAttribute("data-ccg-pwa-install-page-styles", "true");
     document.head.appendChild(link);
-  }
-
-  function ensureNavigationLink() {
-    if (document.querySelector("[data-ccg-pwa-install-nav]")) return;
-    const list = document.querySelector("[data-ccg-nav-secondary]");
-    if (!list) return;
-
-    const item = document.createElement("li");
-    const link = document.createElement("a");
-    link.href = INSTALL_PAGE;
-    link.className = "ccg-nav__link";
-    link.textContent = "Install CCG App";
-    link.setAttribute("data-ccg-pwa-install-nav", "true");
-    item.appendChild(link);
-    list.appendChild(item);
-
-    window.requestAnimationFrame(() => {
-      window.CCGUnifiedNavCore?.applyNavGlowPatch?.();
-      window.dispatchEvent(new Event("resize"));
-    });
   }
 
   function statusNodes() {
@@ -148,7 +128,6 @@
 
   function init() {
     ensureInstallStyles();
-    ensureNavigationLink();
     bindInstallPage();
   }
 
