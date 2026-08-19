@@ -6,12 +6,14 @@ on:
       - main
     paths:
       - ".github/workflows/games-publishing.yml"
+      - "games/index.html"
       - "games/game.html"
       - "games/games.json"
       - "games/genres/**"
       - "games/collections/**"
       - "resources/images/thumbnails/all/**"
       - "resources/images/publishers/**"
+      - "resources/css/ccg-games-index-omega.css"
       - "data/lemon-cache/**"
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
@@ -21,6 +23,7 @@ on:
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
       - "resources/css/ccg-category-omega.css"
+      - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
       - "scripts/build-games.js"
@@ -190,7 +193,8 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded."
+          )
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
