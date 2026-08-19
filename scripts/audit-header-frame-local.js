@@ -189,6 +189,28 @@ function assertStableControls(samples, pathname, width) {
   }
 }
 
+async function assertDesktopDestinationContract(sessionId, pathname, width) {
+  if (width < 1200) return;
+  const state = await execute(sessionId, `
+    return (() => {
+      const secondary = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li'));
+      const rowLink = (href) => secondary.find((item) => item.querySelector('a')?.getAttribute('href') === href);
+      const visible = (item) => Boolean(item && getComputedStyle(item).display !== 'none' && item.getBoundingClientRect().width > 1);
+      const moreLinks = Array.from(document.querySelectorAll('[data-ccg-more-menu] a[href]')).map((link) => link.getAttribute('href'));
+      return {
+        installVisibleInRow: visible(rowLink('/install-app.html')),
+        emulationVisibleInRow: visible(rowLink('/emulation.html')),
+        moreLinks
+      };
+    })();
+  `);
+  if (state.installVisibleInRow) throw new Error(`${width}px ${pathname} exposes Install CCG App outside More.`);
+  if (!state.emulationVisibleInRow) throw new Error(`${width}px ${pathname} hides Emulation from the desktop navigation.`);
+  for (const href of ['/install-app.html', '/about.html', '/contact.html']) {
+    if (!state.moreLinks.includes(href)) throw new Error(`${width}px ${pathname} More is missing ${href}.`);
+  }
+}
+
 async function auditPage(sessionId, pathname, width) {
   await webdriver("POST", `/session/${sessionId}/window/rect`, { width, height: 1000 });
   await webdriver("POST", `/session/${sessionId}/url`, { url: `${BASE_URL}${pathname}?ccg-local-frame=${Date.now()}` });
@@ -196,6 +218,7 @@ async function auditPage(sessionId, pathname, width) {
   const samples = await execute(sessionId, "return window.__ccgHeaderFrames || [];");
   if (!samples.length) throw new Error(`${pathname} produced no samples.`);
   assertStableControls(samples, pathname, width);
+  await assertDesktopDestinationContract(sessionId, pathname, width);
   const changes = meaningfulChanges(samples);
   console.log(`HEADER FRAME VALIDATION ${width}px ${pathname}`);
   console.log(`first=${JSON.stringify(samples[0])}`);
@@ -222,7 +245,7 @@ async function main() {
     });
     sessionId = session.sessionId;
     await cdp(sessionId, "Page.addScriptToEvaluateOnNewDocument", { source: EARLY_SAMPLER });
-    const pages = ["/home.html", "/games/publishers/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/"];
+    const pages = ["/home.html", "/games/publishers/", "/games/collections/", "/music/", "/about.html", "/contact.html", "/games/discover/", "/zzap64/", "/quiz/quiz.html", "/emulation.html", "/install-app.html"];
     for (const width of [1920, 1440]) {
       for (const pathname of pages) await auditPage(sessionId, pathname, width);
     }
