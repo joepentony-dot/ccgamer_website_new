@@ -92,6 +92,7 @@ test('desktop navigation paints at its settled density before fitting runs', () 
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--primary\s*\{[\s\S]*min-width:\s*56\.87em/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__list--secondary\s*\{[\s\S]*min-width:\s*43\.67em/);
   assert.match(navFitCss, /\.ccg-header \.ccg-nav \.ccg-nav__more\s*\{[\s\S]*min-width:\s*calc\(3\.97em \+ 20\.6px\)/);
+  assert.match(navFitCss, /@media \(min-width:\s*821px\)[\s\S]*html\[data-ccg-page\][\s\S]*scrollbar-gutter:\s*stable/);
   assert.ok(navFit.includes('Math.floor(inner?.clientWidth || window.innerWidth)'), 'Fitter must use the real header width');
   assert.ok(navFit.includes('required > allowed + 2'), 'Fitter must tolerate sub-pixel rounding without forcing a resize');
   assert.doesNotMatch(navFit, /clientWidth\s*\|\|\s*window\.innerWidth\)\s*-\s*12/);
