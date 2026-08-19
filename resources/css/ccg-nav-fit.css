@@ -36,6 +36,13 @@
         contain: none !important;
     }
 
+    /* More is opt-in on desktop: the fit script exposes it only when a
+       real navigation item has been moved into the overflow menu. */
+    .ccg-header .ccg-nav:not(.ccg-nav--has-overflow) .ccg-nav__more,
+    .ccg-header .ccg-nav__more[hidden] {
+        display: none !important;
+    }
+
     /*
        Desktop More menus must be allowed to escape the visual header
        panel. The Home header normally uses overflow: clip on its inner
@@ -90,10 +97,6 @@
         white-space: nowrap;
     }
 
-    .ccg-header .ccg-nav__more[hidden] {
-        display: none !important;
-    }
-
     .ccg-header .ccg-nav--has-overflow .ccg-nav__more {
         position: relative;
         display: inline-flex !important;
@@ -102,11 +105,6 @@
         z-index: 30;
     }
 
-    /*
-       The social bar follows the navigation in the desktop grid, so it
-       normally paints later. While More is open, lift the nav stacking
-       context above the socials without hiding or moving the social icons.
-    */
     .ccg-header .ccg-header-socials {
         position: relative;
         z-index: 10;

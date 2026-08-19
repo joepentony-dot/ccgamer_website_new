@@ -7,6 +7,9 @@
    Publisher relationships are link-safe: a relationship becomes
    clickable only when the generated publisher metadata confirms
    a populated archive route. Other historical labels remain text.
+
+   Archive strengths use a deliberately conservative mapping to
+   the canonical CCG genre routes. Unmatched strengths stay text.
 ============================================================ */
 
 (function () {
@@ -23,9 +26,27 @@
     "/data/publisher-histories-i-m.json",
     "/data/publisher-histories-n-s.json",
     "/data/publisher-histories-t-z.json",
-    "/data/publisher-histories-completion.json"
+    "/data/publisher-histories-completion.json",
+    "/data/publisher-histories-rerelease.json"
   ];
   const METADATA_PATH = "/games/publishers/publishers.json";
+
+  const GENRE_ROUTES = [
+    { test: /\baction[-\s]?adventure\b/i, label: "Action Adventure", href: "/games/genres/action-adventure-games.html" },
+    { test: /\b(?:driving|racing|motorsport)\b/i, label: "Racing", href: "/games/genres/racing-games.html" },
+    { test: /\b(?:shoot(?:er|ing)?|shoot[ -]?'?em[ -]?up)\b/i, label: "Shooting", href: "/games/genres/shooting-games.html" },
+    { test: /\b(?:fighting|beat[ -]?'?em[ -]?up)\b/i, label: "Fighting Games", href: "/games/genres/fighting-games.html" },
+    { test: /\b(?:role[-\s]?playing|rpg)\b/i, label: "RPG", href: "/games/genres/role-playing-games.html" },
+    { test: /\bstrategy\b/i, label: "Strategy", href: "/games/genres/strategy-games.html" },
+    { test: /\bsports?\b/i, label: "Sports", href: "/games/genres/sports-games.html" },
+    { test: /\barcade\b/i, label: "Arcade", href: "/games/genres/arcade-games.html" },
+    { test: /\bplatform(?:er|ing|ers)?\b/i, label: "Platform", href: "/games/genres/platform-games.html" },
+    { test: /\bpuzzle\b/i, label: "Puzzle", href: "/games/genres/puzzle-games.html" },
+    { test: /\bhorror\b/i, label: "Horror", href: "/games/genres/horror-games.html" },
+    { test: /\bquiz\b/i, label: "Quiz Games", href: "/games/genres/quiz-games.html" },
+    { test: /\bcasino\b/i, label: "Casino Games", href: "/games/genres/casino-games.html" },
+    { test: /\badventure\b/i, label: "Adventure", href: "/games/genres/adventure-games.html" }
+  ];
 
   function currentPublisherSlug() {
     const match = window.location.pathname.match(/\/games\/publishers\/([^/]+)\/?(?:index\.html)?$/i);
@@ -57,6 +78,38 @@
     }
   }
 
+  function genreRouteForStrength(value) {
+    const label = text(value);
+    if (!label) return null;
+    return GENRE_ROUTES.find((entry) => entry.test.test(label)) || null;
+  }
+
+  function makeStrengthContent(item, value) {
+    const label = text(value);
+    const genre = genreRouteForStrength(label);
+    item.textContent = "";
+
+    if (!genre) {
+      item.textContent = label;
+      return;
+    }
+
+    const link = document.createElement("a");
+    link.href = genre.href;
+    link.textContent = label;
+    link.className = "ccg-publisher-history__genre-link";
+    link.dataset.ccgGenre = genre.label;
+    link.setAttribute("aria-label", `${label}: browse ${genre.label} games in the CCG genre archive`);
+    item.appendChild(link);
+  }
+
+  function enhanceExistingStrengthLinks() {
+    document.querySelectorAll(".ccg-publisher-history__tags .ccg-publisher-history__tag").forEach((item) => {
+      if (item.querySelector("a")) return;
+      makeStrengthContent(item, item.textContent);
+    });
+  }
+
   function targetContainer() {
     return document.querySelector(
       ".ccg-publisher-playlist, .ccg-publishers-tools, #publisherGameGrid, .ccg-publisher-game-grid, .ccg-publishers-wayfinding"
@@ -76,7 +129,7 @@
     (Array.isArray(values) ? values : []).forEach((value) => {
       const item = document.createElement("li");
       item.className = "ccg-publisher-history__tag";
-      item.textContent = text(value);
+      makeStrengthContent(item, value);
       list.appendChild(item);
     });
 
@@ -331,6 +384,7 @@
     const slug = currentPublisherSlug();
     if (!slug) return;
     ensureCss();
+    enhanceExistingStrengthLinks();
 
     try {
       const results = await Promise.allSettled([
@@ -347,6 +401,7 @@
         : new Map();
 
       insertProfile(profile, archiveMap);
+      enhanceExistingStrengthLinks();
     } catch (error) {
       console.warn("[ccg-publisher-history] Publisher profile unavailable", error);
     }

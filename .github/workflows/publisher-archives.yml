@@ -8,7 +8,9 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/materialize-publisher-histories.js"
+      - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
+      - "scripts/audit-publisher-seo-evidence-tolerant.js"
       - "scripts/apply-publisher-evidence-overrides.js"
       - "scripts/stabilize-publisher-static-pages.js"
       - "scripts/ensure-publisher-history-runtime.js"
@@ -32,7 +34,9 @@ on:
       - "js/ccg-nav.js"
       - "scripts/generate-publisher-pages.js"
       - "scripts/materialize-publisher-histories.js"
+      - "scripts/materialize-publisher-histories-tolerant.js"
       - "scripts/audit-publisher-seo-evidence.js"
+      - "scripts/audit-publisher-seo-evidence-tolerant.js"
       - "scripts/apply-publisher-evidence-overrides.js"
       - "scripts/stabilize-publisher-static-pages.js"
       - "scripts/ensure-publisher-history-runtime.js"
@@ -82,7 +86,9 @@ jobs:
           node --check js/ccg-nav.js
           node --check scripts/generate-publisher-pages.js
           node --check scripts/materialize-publisher-histories.js
+          node --check scripts/materialize-publisher-histories-tolerant.js
           node --check scripts/audit-publisher-seo-evidence.js
+          node --check scripts/audit-publisher-seo-evidence-tolerant.js
           node --check scripts/apply-publisher-evidence-overrides.js
           node --check scripts/stabilize-publisher-static-pages.js
           node --check scripts/ensure-publisher-history-runtime.js
@@ -110,8 +116,8 @@ jobs:
       - name: Verify publisher logo output
         run: node scripts/validate-publisher-logo-output.js
 
-      - name: Embed publisher histories in initial HTML
-        run: node scripts/materialize-publisher-histories.js
+      - name: Embed available publisher histories without inventing missing biographies
+        run: node scripts/materialize-publisher-histories-tolerant.js
 
       - name: Restore publisher runtime parity
         run: node scripts/ensure-publisher-history-runtime.js
@@ -120,7 +126,7 @@ jobs:
         run: node scripts/stabilize-publisher-static-pages.js
 
       - name: Validate publisher SEO and evidence output
-        run: node scripts/audit-publisher-seo-evidence.js
+        run: node scripts/audit-publisher-seo-evidence-tolerant.js
 
       - name: Detect sitemap-impacting generated changes
         id: sitemap-impact

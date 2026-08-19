@@ -9,6 +9,7 @@ on:
       - "js/ccg-publisher-history.js"
       - "resources/css/publisher-history.css"
       - "scripts/audit-source-backed-publishers.js"
+      - "scripts/audit-source-backed-publishers-tolerant.js"
       - "docs/phase-18-source-backed-publisher-histories.md"
       - ".github/workflows/ccg-source-backed-publishers.yml"
   workflow_dispatch:
@@ -30,7 +31,7 @@ jobs:
       - name: Validate JavaScript and publisher JSON syntax
         run: |
           node --check js/ccg-publisher-history.js
-          node --check scripts/audit-source-backed-publishers.js
+          node --check scripts/audit-source-backed-publishers-tolerant.js
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
@@ -44,7 +45,7 @@ jobs:
           NODE
 
       - name: Run publisher evidence audit
-        run: node scripts/audit-source-backed-publishers.js
+        run: node scripts/audit-source-backed-publishers-tolerant.js
 
       - name: Confirm audit made no repository changes
         run: |

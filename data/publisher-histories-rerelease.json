@@ -1,0 +1,70 @@
+[
+  {
+    "slug": "the-hit-squad",
+    "summary": "The Hit Squad was a prominent budget re-release label in the UK home-computer market, strongly associated with Ocean's catalogue. Its releases put older full-price and arcade-conversion titles back on sale at lower prices across machines including the Commodore 64.",
+    "facts": [
+      "The Centre for Computing History catalogues numerous The Hit Squad editions explicitly as budget re-releases, including Star Wars on the Commodore 64 and Yie Ar Kung Fu on the Commodore 16/Plus 4.",
+      "The museum catalogue includes many Ocean-associated titles under The Hit Squad label, including Rainbow Islands, Batman: The Caped Crusader and WWF WrestleMania."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade conversions",
+      "Licensed games"
+    ],
+    "related": [
+      {
+        "label": "Ocean Software",
+        "slug": "ocean-software"
+      }
+    ],
+    "note": "The Hit Squad is treated as a separate re-release label in CCG wherever that credit is explicitly recorded; it does not replace the original publisher credit.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Centre for Computing History — The Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — Commodore 64 Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  },
+  {
+    "slug": "kixx",
+    "summary": "Kixx was a major budget re-release label in the UK computer-games market. Its catalogue brought older titles back at lower prices across Commodore 64, Amiga, Spectrum, Atari ST and other formats, including many games previously released through U.S. Gold and other publishers.",
+    "facts": [
+      "The Centre for Computing History identifies Kixx editions such as Indiana Jones and the Temple of Doom as re-releases of earlier U.S. Gold games.",
+      "The museum's Kixx catalogue includes Commodore 64 and Amiga reissues across racing, shooting, sports, platform and arcade-derived games."
+    ],
+    "strengths": [
+      "Budget re-releases",
+      "Arcade and action games",
+      "Multi-format catalogue"
+    ],
+    "related": [
+      {
+        "label": "US Gold",
+        "slug": "us-gold"
+      }
+    ],
+    "note": "Kixx is additive in CCG: a Kixx re-release credit creates an additional publisher archive association without replacing the game's original publisher.",
+    "confidence": "high",
+    "verified_on": "2026-08-19",
+    "sources": [
+      {
+        "label": "Centre for Computing History — Kixx catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=Kixx&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — ZX Spectrum Kixx catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=ZX+Spectrum&publisher=Kixx&type=Games",
+        "type": "museum collection"
+      }
+    ]
+  }
+]
