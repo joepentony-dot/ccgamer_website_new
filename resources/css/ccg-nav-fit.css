@@ -33,6 +33,7 @@
 @media (min-width: 1200px) {
     .ccg-header .ccg-nav {
         --ccg-nav-control-size: clamp(0.61rem, 0.57vw, 0.7rem);
+        gap: 6px !important;
         overflow: visible !important;
         contain: none !important;
     }
@@ -79,7 +80,7 @@
     }
 
     .ccg-header .ccg-nav .ccg-nav__more {
-        min-width: 5.85em;
+        min-width: calc(3.97em + 20.6px);
         font-size: var(--ccg-nav-control-size);
         justify-content: center;
     }
