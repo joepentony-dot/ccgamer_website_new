@@ -85,9 +85,65 @@
     observer.observe(host, { childList: true, subtree: true });
   }
 
+  function csvCell(value) {
+    const text = String(value ?? "").replace(/\s+/g, " ").trim();
+    return `"${text.replace(/"/g, '""')}"`;
+  }
+
+  function visibleReportRows() {
+    const output = [];
+    document.querySelectorAll("[data-seo-section]").forEach((section) => {
+      if (section.hidden) return;
+      const table = section.querySelector("table");
+      if (!table) return;
+
+      const sectionName = section.querySelector("h2")?.textContent?.trim() || "SEO report";
+      const headers = Array.from(table.querySelectorAll("thead th"), (cell) => cell.textContent || "");
+      if (!headers.length) return;
+      output.push([sectionName, ...headers]);
+
+      table.querySelectorAll("tbody tr").forEach((row) => {
+        const cells = Array.from(row.cells || [], (cell) => cell.textContent || "");
+        output.push([sectionName, ...cells]);
+      });
+    });
+    return output;
+  }
+
+  function exportVisibleReport() {
+    reconcile();
+    const rows = visibleReportRows();
+    if (!rows.length) return;
+
+    const csv = rows.map((row) => row.map(csvCell).join(",")).join("\r\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
+    link.href = url;
+    link.download = `ccg-seo-visible-report-${stamp}.csv`;
+    link.hidden = true;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  function interceptVisibleExport() {
+    const button = document.querySelector("[data-seo-export]");
+    if (!button || button.dataset.managedExport === "true") return;
+    button.dataset.managedExport = "true";
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      exportVisibleReport();
+    }, true);
+  }
+
   function init() {
     observeHost('[data-seo-table="workQueue"]');
     observeHost('[data-seo-table="legacy"]');
+    interceptVisibleExport();
     reconcile();
   }
 
