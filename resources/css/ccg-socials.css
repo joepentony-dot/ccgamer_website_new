@@ -115,13 +115,11 @@
     }
 }
 
-
+/* Historical text-link fallback. It must never become a visible public-header
+   state while deferred navigation/social scripts are initialising. */
 .ccg-socials-fallback {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-    flex-wrap: wrap;
+    display: none !important;
+    visibility: hidden !important;
 }
 
 .ccg-socials-fallback a {
