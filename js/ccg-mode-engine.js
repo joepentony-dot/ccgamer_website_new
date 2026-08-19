@@ -33,7 +33,7 @@
         c64: {
             path: `/resources/css/audio/c64_speech_stayawhile.mp3?v=${AUDIO_CACHE_BUSTER}`,
             volume: 0.38,
-            stopAfterMs: 1500
+            stopAfterMs: 1350
         }
     });
 
