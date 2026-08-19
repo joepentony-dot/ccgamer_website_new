@@ -16,6 +16,10 @@
     const DESKTOP_QUERY = "(min-width: 1200px)";
     const desktopMedia = window.matchMedia ? window.matchMedia(DESKTOP_QUERY) : null;
     const PINNED_MORE_LABELS = new Set(["about", "about me", "contact"]);
+    const BASE_MORE_LINKS = [
+        ["About Me", "/about.html"],
+        ["Contact", "/contact.html"]
+    ];
     let fitFrame = 0;
     let fitting = false;
 
@@ -87,9 +91,6 @@
         if (!header || header.dataset.ccgNavFitControlsBound === "true") return;
         header.dataset.ccgNavFitControlsBound = "true";
 
-        /* Capture phase deliberately wins over the historical delegated More
-           handler in ccg-global.js. This prevents two scripts toggling the same
-           menu in opposite directions on one click. */
         header.addEventListener("click", (event) => {
             const target = event.target instanceof Element ? event.target : null;
             const toggle = target?.closest("[data-ccg-more-toggle]");
@@ -102,7 +103,10 @@
             const more = toggle.closest(".ccg-nav__more");
             const menu = nav?.querySelector("[data-ccg-more-menu]");
             if (!nav || !more || !menu || !menuHasOverflowLinks(menu)) {
-                if (nav && more && menu) syncMoreAvailability(nav, more, toggle, menu);
+                if (nav && more && menu) {
+                    populateMore(menu, []);
+                    syncMoreAvailability(nav, more, toggle, menu);
+                }
                 return;
             }
 
@@ -166,17 +170,40 @@
         });
     }
 
+    function appendMoreLink(menu, label, href, seen) {
+        const absolute = new URL(href, window.location.href).href;
+        if (seen.has(absolute)) return;
+        const link = document.createElement("a");
+        link.href = href;
+        link.className = "ccg-nav__link ccg-nav-fit__link";
+        link.textContent = label;
+        link.setAttribute("role", "menuitem");
+        menu.appendChild(link);
+        seen.add(absolute);
+    }
+
     function populateMore(menu, hiddenItems) {
         menu.textContent = "";
+        const seen = new Set();
+
+        BASE_MORE_LINKS.forEach(([label, href]) => appendMoreLink(menu, label, href, seen));
+
         hiddenItems.forEach((item) => {
             const source = item.querySelector(".ccg-nav__link");
             if (!source) return;
+            const absolute = new URL(source.href, window.location.href).href;
+            if (seen.has(absolute)) return;
             const link = source.cloneNode(true);
             link.classList.add("ccg-nav-fit__link");
             link.removeAttribute("id");
             link.setAttribute("role", "menuitem");
             menu.appendChild(link);
+            seen.add(absolute);
         });
+    }
+
+    function announceFitted(nav) {
+        document.dispatchEvent(new CustomEvent("ccg:navigation-fitted", { detail: { nav } }));
     }
 
     function fitNavigation() {
@@ -201,6 +228,7 @@
         if (!isDesktop()) {
             syncMoreAvailability(nav, more, toggle, menu);
             fitting = false;
+            announceFitted(nav);
             return;
         }
 
@@ -211,17 +239,11 @@
             hiddenItems.push(item);
         });
 
-        if (hiddenItems.length) {
-            populateMore(menu, hiddenItems);
-            syncMoreAvailability(nav, more, toggle, menu);
-        }
+        populateMore(menu, hiddenItems);
+        syncMoreAvailability(nav, more, toggle, menu);
 
-        if (isOverflowing(header, nav)) {
-            nav.classList.add("ccg-nav--fit-compact");
-        }
-        if (isOverflowing(header, nav)) {
-            nav.classList.add("ccg-nav--fit-tight");
-        }
+        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-compact");
+        if (isOverflowing(header, nav)) nav.classList.add("ccg-nav--fit-tight");
 
         if (isOverflowing(header, nav)) {
             const candidates = items
@@ -246,6 +268,7 @@
         populateMore(menu, hiddenItems);
         syncMoreAvailability(nav, more, toggle, menu);
         fitting = false;
+        announceFitted(nav);
     }
 
     function scheduleFit(delay) {
