@@ -161,6 +161,21 @@
         isolation: isolate;
     }
 
+    /* Modern browsers place manual popovers in the browser top layer. This
+       lets More escape every page/header clipping and stacking context while
+       keeping the menu in the same DOM location for accessibility and logic. */
+    .ccg-header .ccg-nav__more-menu[popover] {
+        position: fixed !important;
+        inset: auto;
+        right: auto;
+        margin: 0 !important;
+    }
+
+    .ccg-header .ccg-nav__more-menu[popover]:popover-open {
+        display: grid;
+        pointer-events: auto !important;
+    }
+
     .ccg-header .ccg-nav__more-menu[hidden] {
         display: none !important;
     }
