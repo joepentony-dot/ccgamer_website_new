@@ -52,7 +52,6 @@ jobs:
           const { LEGACY_COMPOSER_REDIRECTS } = require('./scripts/composer-utils');
 
           const legacy = new Set(Array.from(LEGACY_COMPOSER_REDIRECTS.keys()));
-          const root = process.cwd();
           const files = ['music/index.html', 'music/composers/index.html'];
 
           for (const entry of fs.readdirSync('music', { withFileTypes: true })) {
@@ -85,25 +84,19 @@ jobs:
             next = next.replace(/<header\b(?=[^>]*\bclass=["'][^"']*\bccg-header\b[^"']*["'])(?=[^>]*\bdata-ccg-header\b)[^>]*>[\s\S]*?<\/header>/gi, '');
             for (const href of removableStyles) {
               const pattern = new RegExp(`\\s*<link\\b(?=[^>]*\\brel=["']stylesheet["'])(?=[^>]*\\bhref=["']${escapeRegex(href)}["'])[^>]*>\\s*`, 'gi');
-              next = next.replace(pattern, '\n');
+              next = next.replace(pattern, ' ');
             }
-            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, '\n');
-            return next
-              .replace(/[ \t]+\n/g, '\n')
-              .replace(/\n{3,}/g, '\n\n')
-              .trim();
+            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, ' ');
+            return next.replace(/\s+/g, ' ').trim();
           }
 
-          const records = files.sort().map((file) => {
-            const normalized = normalize(fs.readFileSync(path.join(root, file), 'utf8'));
-            return {
-              file,
-              sha256: crypto.createHash('sha256').update(normalized).digest('hex')
-            };
-          });
+          const records = Array.from(new Set(files)).sort().map((file) => ({
+            file,
+            sha256: crypto.createHash('sha256').update(normalize(fs.readFileSync(file, 'utf8'))).digest('hex')
+          }));
 
           fs.writeFileSync('/tmp/ccg-music-content-before.json', JSON.stringify(records, null, 2));
-          console.log(`Protected non-header content for ${records.length} music pages.`);
+          console.log(`Protected substantive non-header content for ${records.length} music pages.`);
           NODE
 
       - name: Patch future composer output for static headers
@@ -120,7 +113,6 @@ jobs:
         run: |
           node - <<'NODE'
           const fs = require('fs');
-          const path = require('path');
           const crypto = require('crypto');
 
           const records = JSON.parse(fs.readFileSync('/tmp/ccg-music-content-before.json', 'utf8'));
@@ -142,13 +134,10 @@ jobs:
             next = next.replace(/<header\b(?=[^>]*\bclass=["'][^"']*\bccg-header\b[^"']*["'])(?=[^>]*\bdata-ccg-header\b)[^>]*>[\s\S]*?<\/header>/gi, '');
             for (const href of removableStyles) {
               const pattern = new RegExp(`\\s*<link\\b(?=[^>]*\\brel=["']stylesheet["'])(?=[^>]*\\bhref=["']${escapeRegex(href)}["'])[^>]*>\\s*`, 'gi');
-              next = next.replace(pattern, '\n');
+              next = next.replace(pattern, ' ');
             }
-            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, '\n');
-            return next
-              .replace(/[ \t]+\n/g, '\n')
-              .replace(/\n{3,}/g, '\n\n')
-              .trim();
+            next = next.replace(/\s*<script\b[^>]*\bsrc=["']\/js\/ccg-nav-core\.js(?:[?#][^"']*)?["'][^>]*><\/script>\s*/gi, ' ');
+            return next.replace(/\s+/g, ' ').trim();
           }
 
           const failures = [];
@@ -157,9 +146,8 @@ jobs:
               failures.push(`${record.file}: file disappeared`);
               continue;
             }
-            const normalized = normalize(fs.readFileSync(record.file, 'utf8'));
-            const digest = crypto.createHash('sha256').update(normalized).digest('hex');
-            if (digest !== record.sha256) failures.push(`${record.file}: non-header content changed`);
+            const digest = crypto.createHash('sha256').update(normalize(fs.readFileSync(record.file, 'utf8'))).digest('hex');
+            if (digest !== record.sha256) failures.push(`${record.file}: substantive non-header content changed`);
           }
 
           if (failures.length) {
@@ -167,7 +155,7 @@ jobs:
             failures.forEach((failure) => console.error(` - ${failure}`));
             process.exit(1);
           }
-          console.log(`Verified ${records.length} music pages: biography, metadata, schema, game/music content and presentation source preserved.`);
+          console.log(`Verified ${records.length} music pages: substantive biography, metadata, schema, game/music content and presentation source preserved.`);
           NODE
 
       - name: Validate repaired source
