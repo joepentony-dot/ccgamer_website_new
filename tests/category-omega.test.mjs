@@ -44,6 +44,15 @@ test('representative genre output carries strong static C64 and Amiga SEO', () =
   assert.match(html, /ccg-category-omega\.js/);
   assert.match(html, /data-ccg-category-static-schema/);
   assert.match(html, /CollectionPage/);
+  assert.match(html, /"name":"Racing Games on Commodore 64 and Amiga"/);
+  assert.doesNotMatch(html, /Games Games on Commodore 64 and Amiga/);
+});
+
+test('runtime respects static category schema and cannot add a duplicate schema block', () => {
+  assert.match(runtime, /script\[data-ccg-category-schema\], script\[data-ccg-category-static-schema\]/);
+  assert.match(runtime, /const subject = item\.name\.replace\(\/ Games\$\/i, ""\)/);
+  assert.match(runtime, /`\$\{subject\} Games on Commodore 64 and Amiga`/);
+  assert.doesNotMatch(runtime, /`\$\{item\.name\} Games on Commodore 64 and Amiga`/);
 });
 
 test('representative collection output carries strong static C64 and Amiga SEO', () => {
