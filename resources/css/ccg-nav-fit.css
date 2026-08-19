@@ -39,7 +39,8 @@
     /* More is opt-in on desktop: the fit script exposes it only when a
        real navigation item has been moved into the overflow menu. */
     .ccg-header .ccg-nav:not(.ccg-nav--has-overflow) .ccg-nav__more,
-    .ccg-header .ccg-nav__more[hidden] {
+    .ccg-header .ccg-nav__more[hidden],
+    .ccg-header .ccg-nav__more:not(:has(.ccg-nav-fit__link)) {
         display: none !important;
     }
 
