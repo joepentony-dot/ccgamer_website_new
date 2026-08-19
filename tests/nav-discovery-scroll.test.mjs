@@ -47,9 +47,10 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
-test('desktop More is functional and deliberately owns About Me and Contact', () => {
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["about", "about me", "contact"\]\)/);
+test('desktop More is functional and deliberately owns Install, About Me and Contact', () => {
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
+  assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /\["About Me", "\/about\.html"\]/);
   assert.match(navFit, /\["Contact", "\/contact\.html"\]/);
   assert.match(navFit, /event\.stopImmediatePropagation\(\)/);
@@ -58,6 +59,7 @@ test('desktop More is functional and deliberately owns About Me and Contact', ()
   assert.match(navFit, /showPopover/);
   assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
+  assert.match(navFitCss, /a\[href="\/install-app\.html"\]/);
   assert.match(navFitCss, /a\[href="\/about\.html"\]/);
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
   assert.match(navFitCss, /z-index:\s*2147483000\s*!important/);
