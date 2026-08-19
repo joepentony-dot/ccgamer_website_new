@@ -101,6 +101,7 @@
     <link rel="stylesheet" href="/resources/css/ccg-modal.css">
     <link rel="stylesheet" href="/resources/css/games.css">
     <link rel="stylesheet" href="/resources/css/game-pages.css">
+    <link rel="stylesheet" href="/resources/css/ccg-community.css">
     <link rel="stylesheet" href="/resources/css/ccg-footer.css" />
     <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
     <link rel="stylesheet" href="/resources/css/ccg-nav.css" />
@@ -310,7 +311,7 @@
                 <iframe id="game-video-embed"
                         class="game-video__frame"
                         title="Trains C64 video by Cheeky Commodore Gamer"
-                        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                         allowfullscreen loading="lazy" width="560" height="315" src="https://www.youtube-nocookie.com/embed/qxPej8Nd4uo" data-video-id="qxPej8Nd4uo"></iframe>
 
                 <div class="game-video__actions">
@@ -409,6 +410,33 @@
             </noscript>
         </section>
 
+        <section class="game-section ccg-community-game-section" aria-labelledby="ccg-community-game-title">
+            <p class="game-section__kicker">The CCG Community</p>
+            <h2 class="game-section__title" id="ccg-community-game-title">Rate &amp; Review This Game</h2>
+            <p class="ccg-section__intro">Share your verdict with other Commodore fans. Everyone can read the reviews; members must log in to rate or comment.</p>
+
+            <details class="ccg-comments-panel" id="ccg-community-rating-panel">
+                <summary class="ccg-comments-panel__summary">
+                    <span>Community Rating</span>
+                    <span class="ccg-comments-panel__meta" id="ccg-rating-summary-meta">Loading rating…</span>
+                </summary>
+                <div class="ccg-comments-panel__body" id="ccg-community-rating">
+                    <div class="ccg-community-card"><p class="ccg-community-muted">Preparing ratings…</p></div>
+                </div>
+            </details>
+
+            <details class="ccg-comments-panel" id="ccg-community-comments-panel">
+                <summary class="ccg-comments-panel__summary">
+                    <span>Member Reviews</span>
+                    <span class="ccg-comments-panel__meta" id="ccg-comments-summary-meta">Loading reviews…</span>
+                </summary>
+                <div class="ccg-comments-panel__body" id="ccg-community-comments">
+                    <div class="ccg-community-card"><p class="ccg-community-muted">Preparing reviews…</p></div>
+                </div>
+            </details>
+        </section>
+
+
         <section
             class="game-facts game-section affiliate-products-section"
             id="affiliate-products-section"
@@ -436,7 +464,6 @@
                 </div>
             </div>
         </section>
-
 
         <div class="game-quick-actions" data-game-quick-actions hidden>
             <button type="button" class="ccg-btn ccg-btn--primary game-cta" data-action="video" aria-label="Jump to video section">Watch</button>
@@ -501,6 +528,7 @@
 <script src="/js/ccg-shared-music-player.js" defer></script>
 <script src="/js/ccg-game-music-player.js" defer></script>
 <script src="/js/load-single-game.js" defer></script>
+<script src="/js/game-secondary-publisher-runtime.js" defer></script>
 <script src="/js/magazine-game-reviews-runtime.js" defer></script>
 <script src="/js/affiliate-products.js" defer></script>
 <script src="/resources/js/ccg-share.js" defer></script>
