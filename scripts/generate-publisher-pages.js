@@ -171,7 +171,7 @@ function renderHeader() {
             <img src="/resources/images/ccgamer-logo.png"
                  alt="Cheeky Commodore Gamer logo"
                  class="ccg-brand__logo"
-                 loading="lazy"
+                 loading="eager"
                  width="1500"
                  height="1032"
                  sizes="(max-width: 720px) 200px, 320px">
@@ -200,10 +200,11 @@ function renderHeader() {
             <div class="ccg-nav__bar">
                 <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
                     <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
-                    <li><a href="/games/index.html" class="ccg-nav__link">Browse Games</a></li>
-                    <li><a href="/games/genres/index.html" class="ccg-nav__link">Browse by Genre</a></li>
+                    <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+                    <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
                     <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
-                    <li><a href="/games/collections/index.html" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+                    <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
                 </ul>
                 <div class="ccg-nav__more">
                     <button class="ccg-nav__more-toggle"
@@ -217,15 +218,20 @@ function renderHeader() {
                 </div>
             </div>
             <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
-                <li><a href="/music/index.html" class="ccg-nav__link">Music Hub</a></li>
+                <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+                <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
                 <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
                 <li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
-                <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+                <li><a href="/install-app.html" class="ccg-nav__link" data-ccg-pwa-install-nav="true">Install CCG App</a></li>
+                <li><a href="/about.html" class="ccg-nav__link">About Me</a></li>
                 <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
             </ul>
         </nav>
 
         <div class="ccg-header-actions">
+            <div class="ccg-auth-slot" data-ccg-auth-slot="true" aria-busy="true">
+                <span class="ccg-btn ccg-btn-auth ccg-auth-pending">Account</span>
+            </div>
             <div class="ccg-mode-hint">Try different modes</div>
             <button class="ccg-mode-toggle"
                     type="button"
@@ -286,7 +292,6 @@ function renderScripts() {
 <script src="/js/ccg-mode-engine.js" defer></script>
 <script src="/resources/js/ccg-performance.js" defer></script>
 <script src="/js/ccg-nav.js" defer></script>
-<script src="/js/ccg-auth.js" defer></script>
 <script src="/js/ccg-mode.js" defer></script>
 <script src="/js/publisher-pages.js" defer></script>
 <script
