@@ -1,11 +1,11 @@
 [
   {
     "slug": "kixx",
-    "summary": "Kixx was U.S. Gold's budget-price re-release label, returning established computer games to the shelves at a lower price across the late 1980s and 1990s.",
+    "summary": "Kixx was U.S. Gold's budget re-release label, returning established computer games to the shelves at a lower price across the late 1980s and 1990s.",
     "facts": [
-      "MobyGames identifies Kixx as a budget-price label of U.S. Gold and records the label from the late 1980s into the 1990s.",
-      "The Mastertronic Collectors Archive records that U.S. Gold created Kixx after previously supplying older full-price titles to third-party budget ranges.",
-      "Preserved Kixx releases include Commodore 64 and Amiga titles as well as releases on other home-computer formats."
+      "The Mastertronic Collectors Archive records that U.S. Gold created its own budget label Kixx after previously supplying older full-price titles to third-party budget ranges.",
+      "The Centre for Computing History preserves Kixx releases across home-computer formats, including Commodore 64 and Commodore Amiga editions.",
+      "The preserved Kixx catalogue includes explicit re-releases of earlier games alongside arcade, sports and racing titles."
     ],
     "strengths": [
       "Budget re-releases",
@@ -28,24 +28,24 @@
     "verified_on": "2026-08-19",
     "sources": [
       {
-        "label": "MobyGames — Kixx",
-        "url": "https://www.mobygames.com/company/1271/kixx/",
-        "type": "game preservation database"
-      },
-      {
         "label": "Mastertronic Collectors Archive — republished software labels",
         "url": "https://mastertronic.co.uk/mastertronic-style-part-5-labels-for-republished-software-ricochet-americana-rack-it-rebound/",
         "type": "specialist preservation archive"
+      },
+      {
+        "label": "Centre for Computing History — Kixx catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Date&platform=&publisher=Kixx&type=Games",
+        "type": "museum collection"
       }
     ]
   },
   {
     "slug": "the-hit-squad",
-    "summary": "The Hit Squad became Ocean Software's major budget re-release label, bringing Ocean's own back catalogue and selected third-party titles back to market at lower prices.",
+    "summary": "The Hit Squad was a prominent budget re-release range associated with Ocean-era home-computer software, returning established titles to market across several computer formats.",
     "facts": [
-      "MobyGames identifies The Hit Squad as a budget label of Ocean Software and records releases under the label across the late 1980s and 1990s.",
-      "The label was used not only for Ocean software but also for titles originally associated with publishers including Domark, Activision, Electronic Arts, Taito and Virgin.",
-      "The Centre for Computing History preserves Hit Squad editions on Commodore 64 and Amiga alongside releases for other home computers."
+      "The Centre for Computing History preserves a large catalogue of releases published under The Hit Squad name across several home-computer formats.",
+      "Its Commodore 64 collection includes titles explicitly described by the museum as budget re-releases, alongside arcade conversions, film licences and sports games.",
+      "The museum collection also preserves The Hit Squad releases for the Commodore Amiga, including games associated with Ocean Software and other developers or publishers."
     ],
     "strengths": [
       "Budget re-releases",
@@ -64,13 +64,13 @@
     "verified_on": "2026-08-19",
     "sources": [
       {
-        "label": "MobyGames — The Hit Squad",
-        "url": "https://www.mobygames.com/company/5110/hit-squad-the/",
-        "type": "game preservation database"
-      },
-      {
         "label": "Centre for Computing History — The Hit Squad catalogue",
         "url": "https://www.computinghistory.org.uk/cgi/archive.pl?author=&order=Publisher&platform=&publisher=The+Hit+Squad&type=Games",
+        "type": "museum collection"
+      },
+      {
+        "label": "Centre for Computing History — C64 Hit Squad catalogue",
+        "url": "https://www.computinghistory.org.uk/cgi/archive.pl?platform=Commodore+64&publisher=The+Hit+Squad&type=Games",
         "type": "museum collection"
       }
     ]
