@@ -67,6 +67,7 @@ export async function initAdminNav({ pageLabel = "Dashboard", active = "dashboar
           <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
         </div>
 
+        <a href="/home.html" class="ccg-btn ccg-btn--ghost omega-admin-links__exit" data-nav="exit" title="Return to the public website without signing out">Exit Admin</a>
         <button type="button" class="ccg-btn ccg-btn--ghost omega-admin-links__logout" data-nav="logout" data-admin-logout>Logout</button>
       </nav>
 

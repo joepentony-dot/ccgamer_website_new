@@ -29,42 +29,43 @@ test('non-manual pages are left untouched by the publisher normalizer', () => {
   assert.equal(injectManualViewerPolish(source), source);
 });
 
-test('manual runtime anchors the viewer to the button that launched it', () => {
-  assert.match(runtime, /#\$\{BUTTON_ID\}/);
-  assert.match(runtime, /getBoundingClientRect\(\)/);
-  assert.match(runtime, /--ccg-manual-anchor-top/);
-  assert.match(runtime, /positionViewerNearButton\(button\)/);
-  assert.match(runtime, /document\.addEventListener\("click"[\s\S]*\{ capture: true \}\)/);
+test('manual runtime stores the source internally and removes it from the public button', () => {
+  assert.match(runtime, /const MANUAL_URLS = new WeakMap\(\)/);
+  assert.match(runtime, /delete button\.dataset\.manualUrl/);
+  assert.match(runtime, /button\.setAttribute\("href", `#\$\{MODAL_ID\}`\)/);
+  assert.match(runtime, /button\.removeAttribute\("target"\)/);
+  assert.match(runtime, /button\.removeAttribute\("rel"\)/);
+  assert.match(runtime, /MutationObserver/);
 });
 
-test('manual runtime releases the page scroll lock and tracks the live page position', () => {
-  assert.match(runtime, /body\.classList\.remove\("modal-open"\)/);
-  assert.match(runtime, /body\.style\.top = ""/);
-  assert.match(runtime, /window\.addEventListener\("scroll", syncScrollRestorePoint, \{ passive: true \}\)/);
-  assert.match(runtime, /body\.dataset\.modalScrollTop = String\(currentScrollTop\(\)\)/);
-  assert.doesNotMatch(runtime, /body\.classList\.add\("modal-open"\)/);
-  assert.doesNotMatch(runtime, /body\.style\.top = `-\$\{scrollTop\}px`/);
+test('manual runtime never exposes an external-tab fallback', () => {
+  assert.doesNotMatch(runtime, /Open manual in new tab/i);
+  assert.doesNotMatch(runtime, /target="_blank"/i);
+  assert.doesNotMatch(runtime, /noopener noreferrer/i);
+  assert.doesNotMatch(runtime, /data-ccg-manual-open-external/i);
+});
+
+test('manual runtime takes over the manual click without moving the page to the top', () => {
+  assert.match(runtime, /document\.addEventListener\("click"[\s\S]*\{ capture: true \}\)/);
+  assert.match(runtime, /event\.preventDefault\(\)/);
+  assert.match(runtime, /event\.stopPropagation\(\)/);
+  assert.match(runtime, /frame\.src = manualUrl/);
+  assert.match(runtime, /body\.classList\.add\("modal-open"\)/);
   assert.doesNotMatch(runtime, /window\.scrollTo\(\{ top: 0/);
 });
 
-test('manual runtime supplies an external PDF fallback without affecting other media modals', () => {
-  assert.match(runtime, /Open manual in new tab/);
-  assert.match(runtime, /target="_blank"/);
-  assert.match(runtime, /rel="noopener noreferrer"/);
-  assert.doesNotMatch(runtime, /ccgModal|box3d/i);
+test('manual runtime keeps failure messaging inside the viewer', () => {
+  assert.match(runtime, /Manual failed to load\. Close the viewer and try again\./);
+  assert.doesNotMatch(runtime, /new tab/i);
 });
 
-test('manual viewer presentation is non-blocking and uses an anchored reading surface', () => {
-  assert.match(css, /data-ccg-manual-anchored="true"/);
-  assert.match(css, /position: absolute !important/);
-  assert.match(css, /pointer-events: none !important/);
-  assert.match(css, /\.manual-content[\s\S]*pointer-events: auto !important/);
-  assert.match(css, /background: transparent !important/);
-  assert.match(css, /background: #f3f5f7/);
-});
-
-test('mobile manual viewer stays bounded instead of taking over the full viewport', () => {
-  assert.match(css, /@media \(max-width: 700px\)/);
-  assert.match(css, /height: min\(68dvh, 620px\) !important/);
-  assert.doesNotMatch(css, /height: 100dvh/);
+test('manual viewer fills the viewport and leaves PDF controls inside the popup', () => {
+  assert.match(css, /#manualModal\.ccg-modal--doc[\s\S]*position: fixed !important/);
+  assert.match(css, /inset: 0 !important/);
+  assert.match(css, /width: 100vw !important/);
+  assert.match(css, /height: 100dvh !important/);
+  assert.match(css, /#manualModal \.manual-content[\s\S]*height: 100dvh !important/);
+  assert.match(css, /#manualModal \.ccg-pdf-frame[\s\S]*flex: 1 1 auto !important/);
+  assert.match(runtime, /Use the PDF toolbar to zoom, print or download/);
+  assert.doesNotMatch(css, /data-ccg-manual-anchored/);
 });

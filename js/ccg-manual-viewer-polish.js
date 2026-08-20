@@ -4,30 +4,41 @@
     const MODAL_ID = "manualModal";
     const BUTTON_ID = "gameManualBtn";
     const FRAME_ID = "gameManualEmbed";
-    const LINK_ATTR = "data-ccg-manual-open-external";
     const TOOLBAR_ATTR = "data-ccg-manual-toolbar";
-    const ANCHORED_ATTR = "data-ccg-manual-anchored";
-    const ANCHOR_VAR = "--ccg-manual-anchor-top";
-
-    let pendingScrollTop = null;
-    let activeButton = null;
+    const MANUAL_URLS = new WeakMap();
 
     function currentScrollTop() {
         return window.scrollY || document.documentElement.scrollTop || 0;
     }
 
-    function viewportHeight() {
-        const visualHeight = window.visualViewport?.height;
-        return Math.max(1, visualHeight || window.innerHeight || document.documentElement.clientHeight || 1);
-    }
-
-    function isCompactViewport() {
-        return !!window.matchMedia?.("(max-width: 700px)").matches;
-    }
-
-    function resolveManualUrl(button) {
+    function readManualUrl(button) {
         if (!button) return "";
-        return String(button.dataset.manualUrl || button.getAttribute("href") || "").trim();
+        const remembered = MANUAL_URLS.get(button);
+        if (remembered) return remembered;
+
+        const dataUrl = String(button.dataset.manualUrl || "").trim();
+        if (dataUrl) return dataUrl;
+
+        const href = String(button.getAttribute("href") || "").trim();
+        return href && !href.startsWith("#") ? href : "";
+    }
+
+    function hideManualSourceFromButton(button) {
+        if (!button) return "";
+
+        const manualUrl = readManualUrl(button);
+        if (manualUrl) MANUAL_URLS.set(button, manualUrl);
+
+        if (button.dataset.manualUrl) delete button.dataset.manualUrl;
+        if (button.getAttribute("href") !== `#${MODAL_ID}`) {
+            button.setAttribute("href", `#${MODAL_ID}`);
+        }
+        if (button.hasAttribute("target")) button.removeAttribute("target");
+        if (button.hasAttribute("rel")) button.removeAttribute("rel");
+        button.setAttribute("aria-haspopup", "dialog");
+        button.setAttribute("title", "Open manual viewer");
+
+        return manualUrl;
     }
 
     function ensureToolbar() {
@@ -43,96 +54,92 @@
             toolbar.setAttribute(TOOLBAR_ATTR, "true");
             toolbar.innerHTML = `
                 <span class="ccg-manual-toolbar__label">Game Manual</span>
-                <a class="ccg-manual-toolbar__external ccg-btn ccg-btn--ghost"
-                   ${LINK_ATTR}="true"
-                   target="_blank"
-                   rel="noopener noreferrer">Open manual in new tab</a>
+                <span class="ccg-manual-toolbar__hint">Scroll the PDF here. Use the PDF toolbar to zoom, print or download.</span>
             `;
             content.insertBefore(toolbar, frame);
         }
 
+        toolbar.querySelectorAll("a[href]").forEach((link) => link.remove());
         return toolbar;
     }
 
-    function updateExternalLink(url) {
-        const toolbar = ensureToolbar();
-        const link = toolbar?.querySelector(`[${LINK_ATTR}]`);
-        if (!link) return;
-
-        if (url) {
-            link.href = url;
-            link.hidden = false;
-            link.removeAttribute("aria-disabled");
-        } else {
-            link.removeAttribute("href");
-            link.hidden = true;
-            link.setAttribute("aria-disabled", "true");
-        }
+    function ensureModalAtDocumentRoot(modal) {
+        if (!modal || !document.body) return;
+        if (modal.parentElement !== document.body) document.body.appendChild(modal);
     }
 
-    function estimatePanelHeight() {
-        const height = viewportHeight();
-        return Math.min(height * (isCompactViewport() ? 0.68 : 0.72), isCompactViewport() ? 620 : 760);
-    }
-
-    function positionViewerNearButton(button) {
-        const modal = document.getElementById(MODAL_ID);
-        if (!modal || !button?.getBoundingClientRect) return;
-
-        const rect = button.getBoundingClientRect();
-        const height = viewportHeight();
-        const panelHeight = estimatePanelHeight();
-        const margin = isCompactViewport() ? 8 : 12;
-        const gap = isCompactViewport() ? 8 : 10;
-        const maxTop = Math.max(margin, height - panelHeight - margin);
-        const belowTop = rect.bottom + gap;
-        const aboveTop = rect.top - gap - panelHeight;
-
-        let viewportTop;
-        if (belowTop <= maxTop) {
-            viewportTop = belowTop;
-        } else if (aboveTop >= margin) {
-            viewportTop = aboveTop;
-        } else {
-            viewportTop = Math.min(Math.max(rect.top, margin), maxTop);
-        }
-
-        const documentTop = Math.max(0, currentScrollTop() + viewportTop);
-        modal.style.setProperty(ANCHOR_VAR, `${Math.round(documentTop)}px`);
-    }
-
-    function releaseManualPageLock(scrollTop) {
+    function lockPageAtCurrentPosition() {
         const body = document.body;
-        const modal = document.getElementById(MODAL_ID);
-        if (!body || !modal || !modal.classList.contains("open")) return;
+        if (!body) return;
 
-        const desiredScrollTop = Number.isFinite(scrollTop) ? scrollTop : currentScrollTop();
+        const scrollTop = currentScrollTop();
+        body.dataset.modalScrollTop = String(scrollTop);
+        body.classList.add("modal-open");
 
-        body.classList.remove("modal-open");
-        body.style.top = "";
-        body.dataset.modalScrollTop = String(desiredScrollTop);
-
-        if (Math.abs(currentScrollTop() - desiredScrollTop) > 1) {
-            window.scrollTo({ top: desiredScrollTop, behavior: "auto" });
+        if (window.CSS?.supports?.("(-webkit-touch-callout: none)")) {
+            body.style.top = `-${scrollTop}px`;
         }
     }
 
-    function scheduleOpenSync() {
-        queueMicrotask(() => {
-            const modal = document.getElementById(MODAL_ID);
-            if (!modal?.classList.contains("open")) return;
+    function openManualViewer(button, manualUrl) {
+        const modal = document.getElementById(MODAL_ID);
+        const frame = document.getElementById(FRAME_ID);
+        const status = document.getElementById("manualModalStatus");
+        const closeButton = document.getElementById("manualModalClose");
+        if (!modal || !frame || !manualUrl) return;
 
-            syncFromButton();
-            if (activeButton) positionViewerNearButton(activeButton);
-            releaseManualPageLock(pendingScrollTop);
+        ensureModalAtDocumentRoot(modal);
+        ensureToolbar();
+        lockPageAtCurrentPosition();
 
-            requestAnimationFrame(() => {
-                if (!modal.classList.contains("open")) return;
-                releaseManualPageLock(
-                    Number.parseInt(document.body?.dataset.modalScrollTop || "", 10)
-                );
+        if (status) {
+            status.textContent = "Loading manual…";
+            status.hidden = false;
+        }
+
+        frame.removeAttribute("data-manual-loaded");
+        frame.src = manualUrl;
+        modal.classList.add("open", "active");
+        modal.setAttribute("aria-hidden", "false");
+        modal.removeAttribute("data-ccg-manual-anchored");
+        button?.setAttribute("aria-expanded", "true");
+
+        requestAnimationFrame(() => closeButton?.focus({ preventScroll: true }));
+    }
+
+    function bindManualButtonObserver(button) {
+        if (!button || button.dataset.ccgManualSourceObserved === "true") return;
+
+        const observer = new MutationObserver(() => {
+            hideManualSourceFromButton(button);
+        });
+        observer.observe(button, {
+            attributes: true,
+            attributeFilter: ["href", "target", "rel", "data-manual-url", "hidden"]
+        });
+        button.dataset.ccgManualSourceObserved = "true";
+    }
+
+    function syncManualButton() {
+        const button = document.getElementById(BUTTON_ID);
+        if (!button) return;
+        hideManualSourceFromButton(button);
+        bindManualButtonObserver(button);
+    }
+
+    function bindSafeLoadErrorMessage() {
+        const frame = document.getElementById(FRAME_ID);
+        const status = document.getElementById("manualModalStatus");
+        if (!frame || frame.dataset.ccgManualSafeErrorBound === "true") return;
+
+        frame.addEventListener("error", () => {
+            queueMicrotask(() => {
+                if (!status) return;
+                status.hidden = false;
+                status.textContent = "Manual failed to load. Close the viewer and try again.";
             });
         });
+        frame.dataset.ccgManualSafeErrorBound = "true";
     }
 
     document.addEventListener("click", (event) => {
@@ -141,62 +148,24 @@
             : null;
         if (!button) return;
 
-        const manualUrl = resolveManualUrl(button);
+        const manualUrl = hideManualSourceFromButton(button);
         if (!manualUrl) return;
 
-        pendingScrollTop = currentScrollTop();
-        activeButton = button;
-        positionViewerNearButton(button);
-        updateExternalLink(manualUrl);
-        scheduleOpenSync();
+        event.preventDefault();
+        event.stopPropagation();
+        openManualViewer(button, manualUrl);
     }, { capture: true });
-
-    function syncFromButton() {
-        const button = document.getElementById(BUTTON_ID);
-        updateExternalLink(resolveManualUrl(button));
-    }
-
-    function syncScrollRestorePoint() {
-        const modal = document.getElementById(MODAL_ID);
-        const body = document.body;
-        if (!modal?.classList.contains("open") || !body) return;
-        body.dataset.modalScrollTop = String(currentScrollTop());
-    }
 
     function init() {
         const modal = document.getElementById(MODAL_ID);
         if (!modal) return;
 
-        modal.setAttribute(ANCHORED_ATTR, "true");
-
-        const content = modal.querySelector(".manual-content");
-        if (content) content.setAttribute("aria-modal", "false");
-
+        modal.removeAttribute("data-ccg-manual-anchored");
         ensureToolbar();
-        syncFromButton();
+        bindSafeLoadErrorMessage();
+        syncManualButton();
 
-        if (modal.dataset.ccgManualPolishObserved === "true") return;
-
-        const observer = new MutationObserver(() => {
-            if (modal.classList.contains("open")) {
-                syncFromButton();
-                if (!activeButton) activeButton = document.getElementById(BUTTON_ID);
-                if (activeButton) positionViewerNearButton(activeButton);
-                scheduleOpenSync();
-            } else {
-                pendingScrollTop = null;
-                activeButton = null;
-            }
-        });
-        observer.observe(modal, { attributes: true, attributeFilter: ["class", "aria-hidden"] });
-
-        window.addEventListener("scroll", syncScrollRestorePoint, { passive: true });
-        window.addEventListener("resize", () => {
-            if (!modal.classList.contains("open") || !activeButton) return;
-            positionViewerNearButton(activeButton);
-        }, { passive: true });
-
-        modal.dataset.ccgManualPolishObserved = "true";
+        window.addEventListener("ccg:game-loaded", syncManualButton);
     }
 
     if (document.readyState === "loading") {

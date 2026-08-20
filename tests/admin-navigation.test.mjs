@@ -20,6 +20,13 @@ test('shared admin navigation makes Content Publisher primary', () => {
   assert.doesNotMatch(nav, /Game Builder Wizard \(Primary\)/);
 });
 
+test('shared admin navigation provides a non-logout exit to the public site', () => {
+  assert.match(nav, /href="\/home\.html"[^>]*data-nav="exit"[^>]*>Exit Admin<\/a>/);
+  assert.match(nav, /omega-admin-links__exit/);
+  assert.match(nav, /data-admin-logout>Logout<\/button>/);
+  assert.match(nav, /window\.location\.href = "\/admin\/login\.html"/);
+});
+
 test('dashboard follows the automated publishing workflow', () => {
   assert.match(dashboard, /Open CCG Content Publisher/);
   assert.match(dashboard, /automated repository workflows regenerate/i);

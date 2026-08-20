@@ -1,143 +1,162 @@
 /* ============================================================
-   CCG MANUAL VIEWER — ANCHORED READING SURFACE
-   Opens beside the manual launch point without locking page scroll.
+   CCG MANUAL VIEWER — FULL-SCREEN EMBEDDED PDF
+   The source URL stays out of the visible interface. The PDF is
+   read, scrolled and optionally downloaded inside the viewer.
 ============================================================ */
 
-#manualModal.ccg-modal--doc[data-ccg-manual-anchored="true"] {
-    position: absolute !important;
-    inset: auto 0 auto 0 !important;
-    top: var(--ccg-manual-anchor-top, 0px) !important;
-    width: 100% !important;
-    height: 0 !important;
+#manualModal.ccg-modal--doc {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
     min-height: 0 !important;
+    max-width: none !important;
     max-height: none !important;
-    padding: 0 !important;
-    overflow: visible !important;
-    background: transparent !important;
-    backdrop-filter: none !important;
-    pointer-events: none !important;
-}
-
-#manualModal.ccg-modal--doc[data-ccg-manual-anchored="true"].open,
-#manualModal.ccg-modal--doc[data-ccg-manual-anchored="true"].active {
-    display: block !important;
-}
-
-#manualModal[data-ccg-manual-anchored="true"] .manual-content {
-    position: absolute !important;
-    top: 0 !important;
-    left: 50% !important;
-    right: auto !important;
-    bottom: auto !important;
-    transform: translateX(-50%) !important;
-    box-sizing: border-box;
-    width: min(1180px, calc(100vw - 24px)) !important;
-    height: min(72vh, 760px) !important;
-    height: min(72dvh, 760px) !important;
-    min-height: min(56vh, 520px) !important;
-    max-height: min(72vh, 760px) !important;
-    max-height: min(72dvh, 760px) !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
-    pointer-events: auto !important;
-    border: 1px solid rgba(119, 215, 255, 0.32);
-    border-radius: 14px;
+    background: rgba(2, 5, 12, 0.94) !important;
+    backdrop-filter: blur(8px);
+    z-index: 2147483000 !important;
+}
+
+#manualModal.ccg-modal--doc.open,
+#manualModal.ccg-modal--doc.active {
+    display: block !important;
+}
+
+#manualModal .manual-content {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    transform: none !important;
+    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    border-radius: 0 !important;
     background: #f3f5f7;
-    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.55);
+    box-shadow: none !important;
 }
 
 #manualModal .ccg-manual-toolbar {
-    min-height: 54px;
+    flex: 0 0 56px;
+    min-height: 56px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 9px 58px 9px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    gap: 18px;
+    padding: 8px 64px 8px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
     background: #0c1324;
     color: #f6fbff;
 }
 
 #manualModal .ccg-manual-toolbar__label {
-    min-width: 0;
+    flex: 0 0 auto;
     font-weight: 800;
     letter-spacing: 0.04em;
 }
 
-#manualModal .ccg-manual-toolbar__external {
-    flex: 0 0 auto;
-    min-height: 36px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
+#manualModal .ccg-manual-toolbar__hint {
+    min-width: 0;
+    color: rgba(246, 251, 255, 0.72);
+    font-size: 0.82rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#manualModal .ccg-modal-close {
+    position: fixed !important;
+    top: 8px !important;
+    right: 12px !important;
+    z-index: 2147483002 !important;
+    display: grid !important;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.24);
+    color: #ffffff !important;
+    font-size: 2rem;
+    line-height: 1;
+    opacity: 1 !important;
+    text-shadow: none !important;
+}
+
+#manualModal .ccg-modal-close:hover,
+#manualModal .ccg-modal-close:focus-visible {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.48);
+    outline: none;
 }
 
 #manualModal .manual-loading {
-    z-index: 4;
-    top: 66px;
-    left: 50%;
-    transform: translateX(-50%);
-    margin: 0;
+    position: fixed !important;
+    z-index: 2147483003 !important;
+    top: 68px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
     padding: 8px 12px;
     border-radius: 999px;
-    background: rgba(12, 19, 36, 0.9);
+    background: rgba(12, 19, 36, 0.92);
     color: #f6fbff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-#manualModal .ccg-modal-close {
-    top: 11px;
-    right: 13px;
-    color: #f6fbff;
-    text-shadow: none;
-}
-
 #manualModal .ccg-pdf-frame {
-    display: block;
-    width: 100%;
-    height: calc(100% - 54px);
-    min-height: 0;
-    border: 0;
-    border-radius: 0;
+    position: static !important;
+    flex: 1 1 auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
     background: #f3f5f7;
 }
 
 @media (max-width: 700px) {
-    #manualModal[data-ccg-manual-anchored="true"] .manual-content {
-        width: calc(100vw - 16px) !important;
-        height: min(68vh, 620px) !important;
-        height: min(68dvh, 620px) !important;
-        min-height: min(52vh, 430px) !important;
-        max-height: min(68vh, 620px) !important;
-        max-height: min(68dvh, 620px) !important;
-        border-radius: 10px;
-    }
-
     #manualModal .ccg-manual-toolbar {
-        min-height: 64px;
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 6px;
-        padding: 8px 50px 8px 10px;
+        flex-basis: 52px;
+        min-height: 52px;
+        padding: 7px 58px 7px 12px;
     }
 
-    #manualModal .ccg-manual-toolbar__external {
-        width: auto;
-        min-height: 32px;
-        padding-block: 5px;
-        font-size: 0.82rem;
+    #manualModal .ccg-manual-toolbar__hint {
+        display: none;
+    }
+
+    #manualModal .ccg-modal-close {
+        top: 6px !important;
+        right: 8px !important;
+        width: 38px;
+        height: 38px;
     }
 
     #manualModal .manual-loading {
-        top: 74px;
-        max-width: calc(100% - 24px);
+        top: 62px !important;
+        max-width: calc(100vw - 24px);
         white-space: normal;
         text-align: center;
-    }
-
-    #manualModal .ccg-pdf-frame {
-        height: calc(100% - 64px);
     }
 }
