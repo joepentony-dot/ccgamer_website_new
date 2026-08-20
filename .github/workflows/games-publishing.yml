@@ -14,6 +14,7 @@ on:
       - "resources/images/thumbnails/all/**"
       - "resources/images/publishers/**"
       - "resources/css/ccg-games-index-omega.css"
+      - "resources/css/ccg-manual-viewer-polish.css"
       - "data/lemon-cache/**"
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
@@ -22,6 +23,7 @@ on:
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
+      - "js/ccg-manual-viewer-polish.js"
       - "resources/css/ccg-category-omega.css"
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
@@ -31,6 +33,7 @@ on:
       - "scripts/import-amiga-magazine-reviews.js"
       - "scripts/refresh-lemon-game-cache.js"
       - "scripts/ensure-magazine-review-runtime.js"
+      - "scripts/ensure-manual-viewer-polish.js"
       - "scripts/ensure-secondary-publisher-runtime.js"
       - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/migrate-mr-weems-thumbnail.js"
@@ -67,6 +70,7 @@ on:
       - "scripts/normalize-public-header-shell.js"
       - "tests/magazine-publishing-pipeline.test.mjs"
       - "tests/cloudflare-audio-admin.test.mjs"
+      - "tests/manual-viewer-polish.test.mjs"
       - "tools/seo/static-pages.json"
   workflow_dispatch:
 
@@ -102,6 +106,9 @@ jobs:
 
       - name: Validate Cloudflare audio admin integration
         run: node --test tests/cloudflare-audio-admin.test.mjs
+
+      - name: Validate manual viewer publishing contract
+        run: node --test tests/manual-viewer-polish.test.mjs
 
       - name: Repair historical Mr Weems thumbnail source
         run: node scripts/migrate-mr-weems-thumbnail.js
@@ -197,7 +204,7 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
