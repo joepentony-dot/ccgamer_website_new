@@ -1,0 +1,34 @@
+name: Arcade Visual Runtime Tune
+
+on:
+  push:
+    branches:
+      - codex/arcade-quest-foundation
+    paths:
+      - 'arcade/.visual-runtime-trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  tune:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout arcade branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/arcade-quest-foundation
+
+      - name: Apply visual runtime integration
+        run: python scripts/apply-arcade-visual-runtime.py
+
+      - name: Commit visual runtime
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arcade/quest/game/main-v2.js scripts/validate-arcade-quest.js
+          if ! git diff --cached --quiet; then
+            git commit -m "Integrate arcade sprite sheets and scenery layers"
+            git push origin HEAD:codex/arcade-quest-foundation
+          fi
