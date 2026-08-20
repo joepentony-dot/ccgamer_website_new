@@ -8,7 +8,11 @@ on:
       - "resources/css/ccg-nav-fit.css"
       - "js/ccg-nav-fit.js"
       - "js/ccg-music-navigation.js"
+      - "scripts/normalize-public-header-shell.js"
+      - "scripts/normalize-public-header-shell-core.js"
       - "scripts/audit-header-frame-local.js"
+      - "scripts/audit-music-first-paint.js"
+      - "tests/music-first-paint-stage.test.mjs"
       - ".github/workflows/header-frame-local.yml"
   workflow_dispatch:
 
@@ -35,7 +39,17 @@ jobs:
           node-version: "22"
 
       - name: Validate first-frame audit syntax
-        run: node --check scripts/audit-header-frame-local.js
+        run: |
+          node --check scripts/audit-header-frame-local.js
+          node --check scripts/audit-music-first-paint.js
+          node --check scripts/normalize-public-header-shell.js
+          node --check scripts/normalize-public-header-shell-core.js
+
+      - name: Validate staged Music first-paint shell
+        run: node --test tests/music-first-paint-stage.test.mjs
 
       - name: Enforce first-frame header stability
         run: node scripts/audit-header-frame-local.js
+
+      - name: Enforce Music navigation first-paint stability
+        run: node scripts/audit-music-first-paint.js

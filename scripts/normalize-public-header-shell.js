@@ -4,47 +4,15 @@
 
 const fs = require("fs");
 const path = require("path");
+const core = require("./normalize-public-header-shell-core.js");
 
-const STATIC_SHELL_VERSION = "2026-08-19-v1";
-
-const PRIMARY_LINKS = Object.freeze([
-  ["Home", "/home.html"],
-  ["Browse Games", "/games/"],
-  ["Browse by Genre", "/games/genres/"],
-  ["Publishers", "/games/publishers/"],
-  ["Collections", "/games/collections/"],
-  ["Music Hub", "/music/"]
+const MUSIC_PAGE_PATTERN = /^music(?:-|$)/i;
+const MUSIC_GLOBAL_FIRST_PAINT_STYLES = Object.freeze([
+  "/resources/css/ccg-mode-identity.css",
+  "/resources/css/ccg-responsive-safety.css",
+  "/resources/css/ccg-responsive-page-polish.css",
+  "/resources/css/ccg-sitewide-layout-optimization.css"
 ]);
-
-const SECONDARY_LINKS = Object.freeze([
-  ["Find Me a Game", "/games/discover/"],
-  ["Zzap!64 Reviews & Awards", "/zzap64/"],
-  ["Quiz", "/quiz/quiz.html"],
-  ["Emulation", "/emulation.html"],
-  ["Install CCG App", "/install-app.html"],
-  ["About Me", "/about.html"],
-  ["Contact", "/contact.html"]
-]);
-
-const REQUIRED_STYLES = Object.freeze([
-  "/resources/css/ccg-nav.css",
-  "/resources/css/ccg-nav-fit.css",
-  "/resources/css/ccg-socials.css",
-  "/resources/css/ccg-community.css",
-  "/resources/css/ccg-mode.css",
-  "/resources/css/ccg-buttons.css"
-]);
-
-const REQUIRED_SCRIPTS = Object.freeze([
-  "/js/ccg-nav.js",
-  "/js/ccg-nav-core.js",
-  "/js/ccg-mode-engine.js",
-  "/js/ccg-nav-fit.js",
-  "/js/ccg-header-auth-loader.js"
-]);
-
-const EXCLUDED_TOP_LEVEL = new Set(["admin", "auth", "supabase"]);
-const AUTH_SNAPSHOT_KEY = "ccg_header_auth_snapshot";
 
 function parseArgs(argv) {
   const args = { root: ".", check: false };
@@ -64,260 +32,197 @@ function parseArgs(argv) {
   return args;
 }
 
-function normaliseAssetPath(value) {
-  const raw = String(value || "").trim();
-  if (!raw) return "";
-  try {
-    if (/^https?:\/\//i.test(raw)) return new URL(raw).pathname;
-  } catch (_error) {}
-
-  let cleaned = raw.split(/[?#]/, 1)[0].replace(/\\/g, "/");
-  cleaned = cleaned.replace(/^\.\//, "");
-  while (cleaned.startsWith("../")) cleaned = cleaned.slice(3);
-  if (cleaned.startsWith("resources/") || cleaned.startsWith("js/")) cleaned = `/${cleaned}`;
-  return cleaned;
+function pageType(html) {
+  const htmlTag = String(html || "").match(/<html\b[^>]*>/i)?.[0] || "";
+  return core.attributeFromTag
+    ? core.attributeFromTag(htmlTag, "data-ccg-page")
+    : (htmlTag.match(/\bdata-ccg-page\s*=\s*(["'])(.*?)\1/i)?.[2] || "");
 }
 
-function classListFromTag(tagText) {
-  const match = String(tagText || "").match(/\bclass\s*=\s*(["'])(.*?)\1/i);
-  if (!match) return [];
-  return match[2].split(/\s+/).map((value) => value.trim()).filter(Boolean);
+function isMusicPage(html) {
+  return MUSIC_PAGE_PATTERN.test(pageType(html));
 }
 
-function attributeFromTag(tagText, attributeName) {
-  const pattern = new RegExp(`\\b${attributeName}\\s*=\\s*(["'])(.*?)\\1`, "i");
-  const match = String(tagText || "").match(pattern);
-  return match ? match[2] : "";
+function hasPublicHeader(html) {
+  return /<header\b[^>]*\bdata-ccg-header\b/i.test(String(html || ""));
 }
 
-function findBalancedElement(html, tagName, requiredClass) {
-  const openPattern = new RegExp(`<${tagName}\\b[^>]*>`, "ig");
-  let openMatch;
-  while ((openMatch = openPattern.exec(html))) {
-    if (!classListFromTag(openMatch[0]).includes(requiredClass)) continue;
+function hasModeIdentityBar(html) {
+  return /\bid\s*=\s*(["'])ccgModeIdentityBar\1/i.test(String(html || ""));
+}
 
-    const start = openMatch.index;
-    const tokenPattern = new RegExp(`<${tagName}\\b[^>]*>|<\\/${tagName}\\s*>`, "ig");
-    tokenPattern.lastIndex = start;
-    let depth = 0;
-    let token;
+function isSourceRepositoryRoot(root) {
+  const absoluteRoot = path.resolve(root);
+  return fs.existsSync(path.join(absoluteRoot, ".git"))
+    && fs.existsSync(path.join(absoluteRoot, "scripts", "normalize-public-header-shell-core.js"))
+    && fs.existsSync(path.join(absoluteRoot, "js", "ccg-music-navigation.js"));
+}
 
-    while ((token = tokenPattern.exec(html))) {
-      if (token[0].startsWith("</")) depth -= 1;
-      else depth += 1;
+function resolveMusicHeaderSource(root) {
+  const requestedRoot = path.resolve(root);
+  const repositoryRoot = path.resolve(__dirname, "..");
+  const candidates = [
+    path.join(requestedRoot, "js", "ccg-music-navigation.js"),
+    path.join(repositoryRoot, "js", "ccg-music-navigation.js")
+  ];
+  return candidates.find((candidate, index) => fs.existsSync(candidate) && candidates.indexOf(candidate) === index) || "";
+}
 
-      if (depth === 0) {
-        return { start, end: tokenPattern.lastIndex };
-      }
-    }
-    return null;
+function readMusicNavigationSource(root) {
+  const sourcePath = resolveMusicHeaderSource(root);
+  if (!sourcePath) {
+    throw new Error(`Music navigation source is missing for staged root: ${path.resolve(root)}`);
   }
-  return null;
+  return fs.readFileSync(sourcePath, "utf8");
 }
 
-function replaceBalancedElement(html, tagName, requiredClass, replacement) {
-  const range = findBalancedElement(html, tagName, requiredClass);
-  if (!range) return { html, replaced: false };
-  return {
-    html: `${html.slice(0, range.start)}${replacement}${html.slice(range.end)}`,
-    replaced: true
-  };
-}
-
-function linkMarkup([label, href]) {
-  const installMarker = href === "/install-app.html" ? ' data-ccg-pwa-install-nav="true"' : "";
-  return `                <li><a href="${href}" class="ccg-nav__link"${installMarker}>${label.replace("&", "&amp;")}</a></li>`;
-}
-
-function buildCanonicalNav() {
-  return `<nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav" data-ccg-static-shell="${STATIC_SHELL_VERSION}">
-            <div class="ccg-nav__bar">
-              <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
-${PRIMARY_LINKS.map(linkMarkup).join("\n")}
-              </ul>
-              <div class="ccg-nav__more">
-                <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>
-                  More <span aria-hidden="true">▾</span>
-                </button>
-                <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
-              </div>
-            </div>
-            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
-${SECONDARY_LINKS.map(linkMarkup).join("\n")}
-            </ul>
-          </nav>`;
-}
-
-function buildAuthSnapshotBootstrap() {
-  return `<script data-ccg-auth-snapshot-bootstrap="true">
-              (function () {
-                "use strict";
-                try {
-                  var script = document.currentScript;
-                  var actions = script && script.parentElement;
-                  var slot = actions && actions.querySelector(".ccg-auth-slot");
-                  if (!slot) return;
-
-                  var raw = sessionStorage.getItem("${AUTH_SNAPSHOT_KEY}");
-                  if (!raw) return;
-                  var snapshot = JSON.parse(raw);
-                  if (!snapshot || typeof snapshot.loggedIn !== "boolean") return;
-
-                  slot.textContent = "";
-                  slot.removeAttribute("data-ccg-auth-pending");
-                  slot.setAttribute("data-ccg-auth-provisional", "true");
-
-                  if (snapshot.loggedIn) {
-                    var username = String(snapshot.username || "@member").trim();
-                    if (!username || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(username)) username = "@member";
-
-                    var profile = document.createElement("a");
-                    profile.className = "ccg-btn ccg-btn-auth ccg-profile-link";
-                    profile.id = "ccg-auth-identity";
-                    profile.href = "/community/profile.html";
-                    profile.setAttribute("aria-label", "Open profile for " + username);
-
-                    var label = document.createElement("span");
-                    label.className = "ccg-profile-link__label";
-                    label.textContent = "Profile:";
-                    var name = document.createElement("span");
-                    name.className = "ccg-profile-link__name";
-                    name.textContent = username;
-                    profile.appendChild(label);
-                    profile.appendChild(document.createTextNode(" "));
-                    profile.appendChild(name);
-
-                    var logout = document.createElement("button");
-                    logout.type = "button";
-                    logout.className = "ccg-btn ccg-btn-auth";
-                    logout.id = "ccg-auth-logout";
-                    logout.setAttribute("data-logout", "");
-                    logout.textContent = "Logout";
-
-                    slot.appendChild(profile);
-                    slot.appendChild(logout);
-                    return;
-                  }
-
-                  var login = document.createElement("button");
-                  login.type = "button";
-                  login.className = "ccg-btn ccg-btn-auth";
-                  login.id = "join-login";
-                  login.textContent = "Join / Login";
-                  slot.appendChild(login);
-                } catch (_error) {}
-              })();
-            </script>`;
-}
-
-function buildCanonicalActions() {
-  return `<div class="ccg-header-actions" data-ccg-static-shell="${STATIC_SHELL_VERSION}">
-            <div class="ccg-mode-hint">Try different modes</div>
-            <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
-              <span class="ccg-mode-toggle__pill">
-                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
-                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
-                <span class="ccg-mode-toggle__thumb"></span>
-              </span>
-            </button>
-            <div class="ccg-auth-slot" data-ccg-auth-pending="true"></div>
-            <div class="ccg-header-socials" aria-label="Social links">
-              <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
-              <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
-              <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
-              <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
-              <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
-              <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
-            </div>
-            <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
-            ${buildAuthSnapshotBootstrap()}
-          </div>`;
-}
-
-function collectAttributeValues(html, tagName, attributeName) {
-  const values = [];
-  const tagPattern = new RegExp(`<${tagName}\\b[^>]*>`, "ig");
-  let tag;
-  while ((tag = tagPattern.exec(html))) {
-    const value = attributeFromTag(tag[0], attributeName);
-    if (value) values.push(normaliseAssetPath(value));
+function extractMusicHeaderMarkup(root) {
+  const source = readMusicNavigationSource(root);
+  const match = source.match(/function\s+headerMarkup\s*\(\)\s*\{\s*return\s*`([\s\S]*?)`;\s*\}/);
+  if (!match) {
+    throw new Error("Could not extract the canonical Music header markup from js/ccg-music-navigation.js.");
   }
-  return values;
+
+  return match[1]
+    .replace(
+      'class="ccg-header ccg-header--music-injected" data-ccg-header data-ccg-music-header',
+      'class="ccg-header ccg-header--music-static" data-ccg-header data-ccg-music-header data-ccg-music-static-header="true"'
+    );
 }
 
-function hasDirectStylesheet(html, assetPath) {
-  const linkPattern = /<link\b[^>]*>/ig;
-  let link;
-  while ((link = linkPattern.exec(html))) {
-    const href = normaliseAssetPath(attributeFromTag(link[0], "href"));
-    if (href !== assetPath) continue;
-    const rel = attributeFromTag(link[0], "rel").toLowerCase().split(/\s+/).filter(Boolean);
-    if (rel.includes("stylesheet")) return true;
+function extractMusicStylePaths(root) {
+  const source = readMusicNavigationSource(root);
+  const match = source.match(/const\s+STYLES\s*=\s*\[([\s\S]*?)\];/);
+  if (!match) {
+    throw new Error("Could not extract the Music stylesheet contract from js/ccg-music-navigation.js.");
   }
-  return false;
+
+  const styles = Array.from(match[1].matchAll(/["'](\/resources\/css\/[^"']+\.css)["']/g), (entry) => entry[1]);
+  if (!styles.length) {
+    throw new Error("The Music stylesheet contract is empty.");
+  }
+  return Array.from(new Set(styles));
+}
+
+function buildModeIdentityMarkup() {
+  return `<aside id="ccgModeIdentityBar" class="ccg-mode-identity" role="status" aria-live="polite" aria-label="Current Commodore display mode" data-mode="c64" data-ccg-music-static-mode-identity="true">
+  <div class="ccg-mode-identity__inner">
+    <div class="ccg-mode-identity__name">
+      <span class="ccg-mode-identity__icon" aria-hidden="true">
+        <span class="ccg-mode-identity__c64-mark"><i></i><i></i><i></i><i></i></span>
+        <span class="ccg-mode-identity__amiga-mark"><i></i></span>
+      </span>
+      <span class="ccg-mode-identity__eyebrow">COMMODORE 64 MODE</span>
+      <span class="ccg-mode-identity__primary">READY.</span>
+    </div>
+    <div class="ccg-mode-identity__details">
+      <span class="ccg-mode-identity__secondary">64K RAM SYSTEM</span>
+      <span class="ccg-mode-identity__separator">•</span>
+      <span class="ccg-mode-identity__tertiary">C64 ARCHIVE ONLINE</span>
+    </div>
+  </div>
+</aside>`;
+}
+
+function insertAfterBodyOpen(html, markup) {
+  const body = String(html || "").match(/<body\b[^>]*>/i);
+  if (!body || typeof body.index !== "number") return html;
+  const insertAt = body.index + body[0].length;
+  return `${html.slice(0, insertAt)}\n${markup}\n${html.slice(insertAt)}`;
+}
+
+function insertAfterPublicHeader(html, markup) {
+  const source = String(html || "");
+  const headerStart = source.search(/<header\b[^>]*\bdata-ccg-header\b[^>]*>/i);
+  if (headerStart < 0) return html;
+  const headerEndMatch = source.slice(headerStart).match(/<\/header\s*>/i);
+  if (!headerEndMatch || typeof headerEndMatch.index !== "number") return html;
+  const insertAt = headerStart + headerEndMatch.index + headerEndMatch[0].length;
+  return `${source.slice(0, insertAt)}\n${markup}\n${source.slice(insertAt)}`;
 }
 
 function insertBeforeHeadClose(html, markup) {
-  const closingHead = html.search(/<\/head\s*>/i);
+  const closingHead = String(html || "").search(/<\/head\s*>/i);
   if (closingHead < 0) return html;
   return `${html.slice(0, closingHead)}  ${markup}\n${html.slice(closingHead)}`;
 }
 
-function ensureDirectStylesheet(html, href) {
-  if (hasDirectStylesheet(html, href)) return html;
-  return insertBeforeHeadClose(
-    html,
-    `<link rel="stylesheet" href="${href}" data-ccg-static-shell-style="true">`
-  );
+function hasDirectStylesheet(html, href) {
+  const escaped = href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`<link\\b(?=[^>]*\\brel\\s*=\\s*(["'])[^"']*stylesheet[^"']*\\1)(?=[^>]*\\bhref\\s*=\\s*(["'])${escaped}(?:[?#][^"']*)?\\2)[^>]*>`, "i");
+  return pattern.test(String(html || ""));
 }
 
-function ensureHeadAsset(html, markup, assetPath, tagName, attributeName) {
-  const values = collectAttributeValues(html, tagName, attributeName);
-  if (values.includes(assetPath)) return html;
-  return insertBeforeHeadClose(html, markup);
-}
-
-function ensureRequiredAssets(html) {
+function ensureMusicFirstPaintStyles(html, stylePaths) {
   let output = html;
-  REQUIRED_STYLES.forEach((href) => {
-    output = ensureDirectStylesheet(output, href);
-  });
-
-  REQUIRED_SCRIPTS.forEach((src) => {
-    output = ensureHeadAsset(
+  stylePaths.forEach((href) => {
+    if (hasDirectStylesheet(output, href)) return;
+    output = insertBeforeHeadClose(
       output,
-      `<script src="${src}" defer data-ccg-static-shell-script="true"></script>`,
-      src,
-      "script",
-      "src"
+      `<link rel="stylesheet" href="${href}" data-ccg-music-first-paint-style="true">`
     );
   });
   return output;
 }
 
-function normaliseHtml(html) {
-  if (!/<header\b[^>]*\bdata-ccg-header\b/i.test(html)) {
-    return { html, applicable: false, changed: false };
+function prepareMusicFirstPaintShell(html, options = {}) {
+  if (!isMusicPage(html)) {
+    return {
+      html,
+      applicable: false,
+      changed: false,
+      headerInserted: false,
+      modeIdentityInserted: false
+    };
   }
 
-  let output = html;
-  const navResult = replaceBalancedElement(output, "nav", "ccg-nav", buildCanonicalNav());
-  output = navResult.html;
-  const actionsResult = replaceBalancedElement(output, "div", "ccg-header-actions", buildCanonicalActions());
-  output = actionsResult.html;
+  const root = options.root || path.resolve(__dirname, "..");
+  const musicStyles = options.musicStylePaths || extractMusicStylePaths(root);
+  const stylePaths = Array.from(new Set([...musicStyles, ...MUSIC_GLOBAL_FIRST_PAINT_STYLES]));
+  let output = ensureMusicFirstPaintStyles(html, stylePaths);
+  let headerInserted = false;
+  let modeIdentityInserted = false;
 
-  if (!navResult.replaced || !actionsResult.replaced) {
-    return { html, applicable: false, changed: false, malformed: true };
+  if (!hasPublicHeader(output)) {
+    const headerMarkup = options.musicHeaderMarkup || extractMusicHeaderMarkup(root);
+    output = insertAfterBodyOpen(output, headerMarkup);
+    headerInserted = true;
   }
 
-  output = ensureRequiredAssets(output);
-  return { html: output, applicable: true, changed: output !== html, malformed: false };
+  if (!hasPublicHeader(output)) {
+    throw new Error("Music page has no usable <body> element for first-paint header insertion.");
+  }
+
+  if (!hasModeIdentityBar(output)) {
+    output = insertAfterPublicHeader(output, buildModeIdentityMarkup());
+    modeIdentityInserted = true;
+  }
+
+  if (!hasModeIdentityBar(output)) {
+    throw new Error("Music page has no usable public header for first-paint mode identity insertion.");
+  }
+
+  return {
+    html: output,
+    applicable: true,
+    changed: output !== html,
+    headerInserted,
+    modeIdentityInserted
+  };
 }
 
-function shouldExclude(relativePath) {
-  const normalised = String(relativePath || "").replace(/\\/g, "/").replace(/^\/+/, "");
-  const topLevel = normalised.split("/", 1)[0].toLowerCase();
-  return EXCLUDED_TOP_LEVEL.has(topLevel);
+function normaliseHtml(html, options = {}) {
+  const staged = prepareMusicFirstPaintShell(html, options);
+  const output = staged.changed ? staged.html : html;
+  const result = core.normaliseHtml(output);
+
+  return {
+    ...result,
+    html: result.html,
+    changed: result.html !== html,
+    musicStaticHeaderInserted: staged.headerInserted,
+    musicStaticModeIdentityInserted: staged.modeIdentityInserted
+  };
 }
 
 function walkHtmlFiles(root) {
@@ -341,24 +246,42 @@ function processRoot(root, { check = false } = {}) {
     throw new Error(`Root directory does not exist: ${absoluteRoot}`);
   }
 
+  const sourceRepositoryRoot = isSourceRepositoryRoot(absoluteRoot);
   const summary = {
     scanned: 0,
     applicable: 0,
     changed: 0,
+    musicHeadersInserted: 0,
+    musicModeIdentitiesInserted: 0,
     malformed: [],
     excluded: 0
   };
 
+  let musicHeaderMarkup = "";
+  let musicStylePaths = null;
   walkHtmlFiles(absoluteRoot).forEach((filePath) => {
     const relative = path.relative(absoluteRoot, filePath).replace(/\\/g, "/");
     summary.scanned += 1;
-    if (shouldExclude(relative)) {
+    if (core.shouldExclude(relative)) {
       summary.excluded += 1;
       return;
     }
 
     const original = fs.readFileSync(filePath, "utf8");
-    const result = normaliseHtml(original);
+    const stagedMusicPage = !sourceRepositoryRoot && isMusicPage(original);
+    if (stagedMusicPage && !musicStylePaths) {
+      musicStylePaths = extractMusicStylePaths(absoluteRoot);
+      musicHeaderMarkup = extractMusicHeaderMarkup(absoluteRoot);
+    }
+
+    const result = sourceRepositoryRoot
+      ? core.normaliseHtml(original)
+      : normaliseHtml(original, {
+          root: absoluteRoot,
+          musicHeaderMarkup: stagedMusicPage ? musicHeaderMarkup : undefined,
+          musicStylePaths: stagedMusicPage ? musicStylePaths : undefined
+        });
+
     if (result.malformed) {
       summary.malformed.push(relative);
       return;
@@ -366,6 +289,8 @@ function processRoot(root, { check = false } = {}) {
     if (!result.applicable) return;
 
     summary.applicable += 1;
+    if (result.musicStaticHeaderInserted) summary.musicHeadersInserted += 1;
+    if (result.musicStaticModeIdentityInserted) summary.musicModeIdentitiesInserted += 1;
     if (!result.changed) return;
     summary.changed += 1;
     if (!check) fs.writeFileSync(filePath, result.html, "utf8");
@@ -380,7 +305,12 @@ function processRoot(root, { check = false } = {}) {
 
 function printSummary(summary, check) {
   const mode = check ? "check" : "normalise";
-  console.log(`Public header shell ${mode}: scanned ${summary.scanned} HTML files; ${summary.applicable} shared-header pages; ${summary.changed} ${check ? "would change" : "changed"}; ${summary.excluded} excluded.`);
+  console.log(
+    `Public header shell ${mode}: scanned ${summary.scanned} HTML files; ${summary.applicable} shared-header pages; ` +
+    `${summary.musicHeadersInserted} Music first-paint header insertions; ` +
+    `${summary.musicModeIdentitiesInserted} Music first-paint mode identity insertions; ` +
+    `${summary.changed} ${check ? "would change" : "changed"}; ${summary.excluded} excluded.`
+  );
 }
 
 function main() {
@@ -399,16 +329,21 @@ function main() {
 }
 
 module.exports = {
-  STATIC_SHELL_VERSION,
-  PRIMARY_LINKS,
-  SECONDARY_LINKS,
-  REQUIRED_STYLES,
-  REQUIRED_SCRIPTS,
-  AUTH_SNAPSHOT_KEY,
-  normaliseAssetPath,
+  ...core,
+  MUSIC_GLOBAL_FIRST_PAINT_STYLES,
+  isMusicPage,
+  hasPublicHeader,
+  hasModeIdentityBar,
+  isSourceRepositoryRoot,
+  resolveMusicHeaderSource,
+  readMusicNavigationSource,
+  extractMusicHeaderMarkup,
+  extractMusicStylePaths,
+  buildModeIdentityMarkup,
+  ensureMusicFirstPaintStyles,
+  prepareMusicFirstPaintShell,
   normaliseHtml,
-  processRoot,
-  shouldExclude
+  processRoot
 };
 
 if (require.main === module) {
