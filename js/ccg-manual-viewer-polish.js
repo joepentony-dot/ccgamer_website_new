@@ -6,11 +6,23 @@
     const FRAME_ID = "gameManualEmbed";
     const LINK_ATTR = "data-ccg-manual-open-external";
     const TOOLBAR_ATTR = "data-ccg-manual-toolbar";
+    const ANCHORED_ATTR = "data-ccg-manual-anchored";
+    const ANCHOR_VAR = "--ccg-manual-anchor-top";
 
     let pendingScrollTop = null;
+    let activeButton = null;
 
     function currentScrollTop() {
         return window.scrollY || document.documentElement.scrollTop || 0;
+    }
+
+    function viewportHeight() {
+        const visualHeight = window.visualViewport?.height;
+        return Math.max(1, visualHeight || window.innerHeight || document.documentElement.clientHeight || 1);
+    }
+
+    function isCompactViewport() {
+        return !!window.matchMedia?.("(max-width: 700px)").matches;
     }
 
     function resolveManualUrl(button) {
@@ -58,27 +70,68 @@
         }
     }
 
-    function repairLockedScrollPosition(scrollTop) {
+    function estimatePanelHeight() {
+        const height = viewportHeight();
+        return Math.min(height * (isCompactViewport() ? 0.68 : 0.72), isCompactViewport() ? 620 : 760);
+    }
+
+    function positionViewerNearButton(button) {
+        const modal = document.getElementById(MODAL_ID);
+        if (!modal || !button?.getBoundingClientRect) return;
+
+        const rect = button.getBoundingClientRect();
+        const height = viewportHeight();
+        const panelHeight = estimatePanelHeight();
+        const margin = isCompactViewport() ? 8 : 12;
+        const gap = isCompactViewport() ? 8 : 10;
+        const maxTop = Math.max(margin, height - panelHeight - margin);
+        const belowTop = rect.bottom + gap;
+        const aboveTop = rect.top - gap - panelHeight;
+
+        let viewportTop;
+        if (belowTop <= maxTop) {
+            viewportTop = belowTop;
+        } else if (aboveTop >= margin) {
+            viewportTop = aboveTop;
+        } else {
+            viewportTop = Math.min(Math.max(rect.top, margin), maxTop);
+        }
+
+        const documentTop = Math.max(0, currentScrollTop() + viewportTop);
+        modal.style.setProperty(ANCHOR_VAR, `${Math.round(documentTop)}px`);
+    }
+
+    function releaseManualPageLock(scrollTop) {
         const body = document.body;
         const modal = document.getElementById(MODAL_ID);
         if (!body || !modal || !modal.classList.contains("open")) return;
 
-        body.dataset.modalScrollTop = String(scrollTop);
+        const desiredScrollTop = Number.isFinite(scrollTop) ? scrollTop : currentScrollTop();
 
-        const style = window.getComputedStyle(body);
-        if (style.position === "fixed") {
-            body.style.top = `-${scrollTop}px`;
-            return;
-        }
+        body.classList.remove("modal-open");
+        body.style.top = "";
+        body.dataset.modalScrollTop = String(desiredScrollTop);
 
-        if (Math.abs(currentScrollTop() - scrollTop) > 1) {
-            window.scrollTo({ top: scrollTop, behavior: "auto" });
+        if (Math.abs(currentScrollTop() - desiredScrollTop) > 1) {
+            window.scrollTo({ top: desiredScrollTop, behavior: "auto" });
         }
     }
 
-    function scheduleScrollRepair(scrollTop) {
+    function scheduleOpenSync() {
         queueMicrotask(() => {
-            requestAnimationFrame(() => repairLockedScrollPosition(scrollTop));
+            const modal = document.getElementById(MODAL_ID);
+            if (!modal?.classList.contains("open")) return;
+
+            syncFromButton();
+            if (activeButton) positionViewerNearButton(activeButton);
+            releaseManualPageLock(pendingScrollTop);
+
+            requestAnimationFrame(() => {
+                if (!modal.classList.contains("open")) return;
+                releaseManualPageLock(
+                    Number.parseInt(document.body?.dataset.modalScrollTop || "", 10)
+                );
+            });
         });
     }
 
@@ -92,8 +145,10 @@
         if (!manualUrl) return;
 
         pendingScrollTop = currentScrollTop();
+        activeButton = button;
+        positionViewerNearButton(button);
         updateExternalLink(manualUrl);
-        scheduleScrollRepair(pendingScrollTop);
+        scheduleOpenSync();
     }, { capture: true });
 
     function syncFromButton() {
@@ -101,23 +156,46 @@
         updateExternalLink(resolveManualUrl(button));
     }
 
+    function syncScrollRestorePoint() {
+        const modal = document.getElementById(MODAL_ID);
+        const body = document.body;
+        if (!modal?.classList.contains("open") || !body) return;
+        body.dataset.modalScrollTop = String(currentScrollTop());
+    }
+
     function init() {
-        if (!document.getElementById(MODAL_ID)) return;
+        const modal = document.getElementById(MODAL_ID);
+        if (!modal) return;
+
+        modal.setAttribute(ANCHORED_ATTR, "true");
+
+        const content = modal.querySelector(".manual-content");
+        if (content) content.setAttribute("aria-modal", "false");
+
         ensureToolbar();
         syncFromButton();
 
-        const modal = document.getElementById(MODAL_ID);
-        if (!modal || modal.dataset.ccgManualPolishObserved === "true") return;
+        if (modal.dataset.ccgManualPolishObserved === "true") return;
 
         const observer = new MutationObserver(() => {
             if (modal.classList.contains("open")) {
                 syncFromButton();
-                if (pendingScrollTop !== null) scheduleScrollRepair(pendingScrollTop);
+                if (!activeButton) activeButton = document.getElementById(BUTTON_ID);
+                if (activeButton) positionViewerNearButton(activeButton);
+                scheduleOpenSync();
             } else {
                 pendingScrollTop = null;
+                activeButton = null;
             }
         });
         observer.observe(modal, { attributes: true, attributeFilter: ["class", "aria-hidden"] });
+
+        window.addEventListener("scroll", syncScrollRestorePoint, { passive: true });
+        window.addEventListener("resize", () => {
+            if (!modal.classList.contains("open") || !activeButton) return;
+            positionViewerNearButton(activeButton);
+        }, { passive: true });
+
         modal.dataset.ccgManualPolishObserved = "true";
     }
 
