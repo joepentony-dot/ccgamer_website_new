@@ -5,12 +5,16 @@
   "description": "Explore Commodore 64 and Amiga games, videos, music, collections and quizzes.",
   "lang": "en-GB",
   "dir": "ltr",
-  "start_url": "/home.html?source=pwa",
+  "start_url": "/app-launch.html?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "any",
   "background_color": "#020711",
-  "theme_color": "#020b1d",
+  "theme_color": "#020711",
   "categories": [
     "games",
     "entertainment"
@@ -18,20 +22,20 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "/resources/images/ccg-app-icon.svg",
+      "src": "/resources/images/ccg-app-icon-v2.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/resources/images/ccg-app-icon.svg",
+      "src": "/resources/images/ccg-app-icon-v2.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/resources/images/ccg-app-icon.svg",
-      "sizes": "any",
+      "src": "/resources/images/ccg-app-icon-maskable-v2.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "maskable"
     }
@@ -44,7 +48,7 @@
       "url": "/games/?source=pwa-shortcut",
       "icons": [
         {
-          "src": "/resources/images/ccg-app-icon.svg",
+          "src": "/resources/images/ccg-app-icon-v2.svg",
           "sizes": "any",
           "type": "image/svg+xml"
         }
@@ -57,7 +61,7 @@
       "url": "/games/discover/?source=pwa-shortcut",
       "icons": [
         {
-          "src": "/resources/images/ccg-app-icon.svg",
+          "src": "/resources/images/ccg-app-icon-v2.svg",
           "sizes": "any",
           "type": "image/svg+xml"
         }
@@ -70,7 +74,7 @@
       "url": "/quiz/quiz.html?source=pwa-shortcut",
       "icons": [
         {
-          "src": "/resources/images/ccg-app-icon.svg",
+          "src": "/resources/images/ccg-app-icon-v2.svg",
           "sizes": "any",
           "type": "image/svg+xml"
         }

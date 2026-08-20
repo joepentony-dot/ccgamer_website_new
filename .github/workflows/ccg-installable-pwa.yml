@@ -6,13 +6,17 @@ on:
       - "manifest.webmanifest"
       - "service-worker.js"
       - "offline.html"
+      - "app-launch.html"
       - "_headers"
+      - "js/ccg-app-launch.js"
       - "js/ccg-pwa.js"
       - "js/ccg-release-check.js"
       - "js/ccg-nav-core.js"
       - "js/ccg-nav-fit.js"
+      - "resources/css/ccg-app-launch.css"
       - "resources/css/ccg-pwa.css"
-      - "resources/images/ccg-app-icon.svg"
+      - "resources/images/ccg-app-icon-v2.svg"
+      - "resources/images/ccg-app-icon-maskable-v2.svg"
       - "scripts/audit-installable-pwa.js"
       - "docs/phase-17-installable-pwa.md"
       - ".github/workflows/ccg-installable-pwa.yml"
@@ -35,6 +39,7 @@ jobs:
       - name: Validate JavaScript and manifest syntax
         run: |
           node --check service-worker.js
+          node --check js/ccg-app-launch.js
           node --check js/ccg-pwa.js
           node --check js/ccg-release-check.js
           node --check js/ccg-nav-core.js

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Cheeky Commodore Gamer maskable app icon</title>
+  <desc id="desc">A full-bleed dark CCG app icon with the brand mark kept inside the Android maskable safe area.</desc>
+  <defs>
+    <linearGradient id="bg" x1="70" y1="70" x2="954" y2="954" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0b2853"/>
+      <stop offset="0.5" stop-color="#020817"/>
+      <stop offset="1" stop-color="#1b0829"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="250" y1="230" x2="774" y2="794" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43efff"/>
+      <stop offset="0.55" stop-color="#557cff"/>
+      <stop offset="1" stop-color="#d94cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="512" cy="512" r="390" fill="#020817" stroke="#173c68" stroke-width="12"/>
+  <circle cx="512" cy="512" r="334" fill="#07162c" stroke="url(#rim)" stroke-width="20"/>
+
+  <g opacity="0.5" stroke="#153c67" stroke-width="5">
+    <path d="M258 354H766M258 434H766M258 514H766M258 594H766"/>
+    <path d="M354 258V674M434 238V694M514 228V704M594 238V694M674 258V674"/>
+  </g>
+
+  <text x="512" y="522" text-anchor="middle" fill="#ecfbff" stroke="#219fd5" stroke-width="3" paint-order="stroke" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="224" font-weight="900" letter-spacing="-20">CCG</text>
+  <text x="512" y="610" text-anchor="middle" fill="#c9f7ff" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="800" letter-spacing="10">COMMODORE</text>
+  <text x="512" y="670" text-anchor="middle" fill="#d47cff" font-family="Arial, Helvetica, sans-serif" font-size="36" font-weight="800" letter-spacing="15">GAMER</text>
+
+  <g transform="translate(302 730)">
+    <rect width="72" height="18" rx="9" fill="#ef5069"/>
+    <rect x="84" width="72" height="18" rx="9" fill="#ff9147"/>
+    <rect x="168" width="72" height="18" rx="9" fill="#ffd75a"/>
+    <rect x="252" width="72" height="18" rx="9" fill="#5ad88c"/>
+    <rect x="336" width="84" height="18" rx="9" fill="#5d9dff"/>
+  </g>
+</svg>

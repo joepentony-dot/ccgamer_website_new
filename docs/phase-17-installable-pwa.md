@@ -4,7 +4,7 @@
 
 Make the public Cheeky Commodore Gamer website installable as a Progressive Web App while preserving the existing multi-page site and protecting all account and administrator traffic from offline storage.
 
-The implementation follows the current MDN and web.dev PWA guidance: a web app manifest supplies install identity and launch behaviour, while a service worker supplies a small public offline shell and navigation fallback.
+The installation uses a web app manifest for identity and launch behaviour plus a service worker for a deliberately small public offline shell.
 
 ## Installation identity
 
@@ -13,30 +13,64 @@ The implementation follows the current MDN and web.dev PWA guidance: a web app m
 - stable app ID and root scope;
 - **Cheeky Commodore Gamer** and short name **CCG**;
 - standalone display;
-- `/home.html?source=pwa` as the launch route;
-- C64-styled theme and background colours;
+- `/app-launch.html?source=pwa` as the installed-app launch route;
+- a dark CCG launch and theme colour of `#020711`;
 - Games and Entertainment categories;
 - shortcuts to Browse Games, Find Me a Game and the Commodore Quiz;
-- a square scalable CCG app icon.
+- separate standard and maskable launcher artwork.
 
-The manifest includes explicit 192×192 and 512×512 declarations plus an `any` maskable declaration. The source is SVG so the same artwork remains sharp at different sizes and stays within a generous masking safe area.
+The launcher artwork uses versioned filenames:
 
-SVG is supported by modern manifest implementations, but raster PNG variants can still improve compatibility on some older operating-system launchers. This phase does not claim universal legacy icon support.
+- `/resources/images/ccg-app-icon-v2.svg` for standard launcher use;
+- `/resources/images/ccg-app-icon-maskable-v2.svg` for Android maskable-icon use.
+
+The versioned names are intentional because static images use long-lived immutable caching. Reusing the previous filename could leave an installed phone showing the old blurred artwork after deployment.
+
+Both new SVGs avoid the Gaussian blur/filter used by the previous app icon. The maskable variant uses a full-bleed dark background while keeping the CCG mark inside a conservative central safe area.
+
+## Two-stage launch experience
+
+Installed CCG now uses a two-stage launch.
+
+### Stage 1 — operating-system splash
+
+Android/Chromium can build its system splash from the manifest `background_color`, `theme_color` and launcher icon. The dark `#020711` background and crisp versioned artwork are intended to prevent the previous white screen with an enlarged blurred mark.
+
+### Stage 2 — CCG launch bridge
+
+The manifest then opens `/app-launch.html?source=pwa` instead of loading the full home page immediately.
+
+The launch bridge is deliberately lightweight and independent from the normal site shell. It loads only:
+
+- `/resources/css/ccg-app-launch.css`;
+- `/js/ccg-app-launch.js`;
+- `/resources/images/ccg-app-icon-v2.svg`.
+
+The portrait-first screen provides C64/Amiga identity, the **Stay a while, stay forever!** line, a restrained archive-loading animation, safe-area support and a direct Enter link. It hands off to `/home.html?source=pwa` after roughly one second using `location.replace`, so it does not pollute browser/app history.
+
+`prefers-reduced-motion` removes the decorative motion and shortens the handoff delay.
+
+This launch route is for the installed app only. It does not replace or modify the normal website intro or the established home-page presentation.
 
 ## Manifest delivery
 
-The shared `js/ccg-pwa.js` module injects the manifest link and mobile-app metadata on pages using the established shared navigation core. This avoids modifying the protected home and intro files while still giving normal CCG routes the same install identity.
+The shared `js/ccg-pwa.js` module injects the manifest and mobile-app metadata on pages using the established navigation core. It now uses the versioned v2 launcher icon for injected favicon/apple-touch-icon metadata as well.
 
 ## Public offline shell
 
-The service worker precaches a deliberately small public shell:
+The service worker precaches a deliberately small public shell including:
 
+- the app launch bridge;
+- its launch CSS and JavaScript;
+- standard and maskable v2 icons;
 - Home;
 - Games;
 - Find Me a Game;
+- Music;
 - Quiz;
+- the install page;
 - the offline page;
-- the manifest and app icon;
+- the manifest;
 - essential shared navigation and presentation files.
 
 Public navigation uses a network-first strategy. When the network is unavailable, a previously cached page is used; otherwise `/offline.html` is shown.
@@ -80,9 +114,11 @@ A dismissal is remembered for fourteen days. Chromium-family browsers use the st
 
 New service-worker versions do not force a reload. When an update is waiting, the site displays a compact **CCG update ready** panel. The visitor chooses when to reload, at which point the waiting worker receives `SKIP_WAITING` and the page refreshes after control changes.
 
+The mobile-launch release bumps the public cache version so existing installations can receive the new launch shell rather than remaining on the previous cached package.
+
 ## Connection status
 
-A temporary accessible notice appears when the browser goes offline or comes back online. The permanent offline page also provides Retry, Home, Games and Find Me a Game controls.
+A temporary accessible notice appears when the browser goes offline or comes back online. The permanent offline page also provides Retry, Home, Games and Find Me a Game controls and now uses the same v2 app identity.
 
 ## Safety
 

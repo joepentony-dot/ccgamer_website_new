@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-labelledby="title desc">
+  <title id="title">Cheeky Commodore Gamer app icon</title>
+  <desc id="desc">A crisp dark retro badge with CCG lettering and Commodore-inspired colour bars.</desc>
+  <defs>
+    <linearGradient id="bg" x1="120" y1="90" x2="904" y2="934" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0b2550"/>
+      <stop offset="0.48" stop-color="#031126"/>
+      <stop offset="1" stop-color="#160922"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="180" y1="160" x2="848" y2="864" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#43efff"/>
+      <stop offset="0.52" stop-color="#4b7dff"/>
+      <stop offset="1" stop-color="#d94cff"/>
+    </linearGradient>
+    <linearGradient id="word" x1="0" y1="330" x2="0" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#baf8ff"/>
+      <stop offset="1" stop-color="#56d9ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <rect x="68" y="68" width="888" height="888" rx="184" fill="#020817" stroke="url(#rim)" stroke-width="22"/>
+  <rect x="122" y="122" width="780" height="780" rx="136" fill="#061328" stroke="#214e7f" stroke-width="8"/>
+
+  <g opacity="0.55" stroke="#14365d" stroke-width="5">
+    <path d="M172 238H852M172 318H852M172 398H852M172 478H852M172 558H852M172 638H852"/>
+    <path d="M236 176V696M316 176V696M396 176V696M476 176V696M556 176V696M636 176V696M716 176V696M796 176V696"/>
+  </g>
+
+  <rect x="170" y="176" width="684" height="520" rx="68" fill="none" stroke="#28bce8" stroke-width="12"/>
+  <path d="M232 742H792L846 834H178Z" fill="#0b1d36" stroke="#315d89" stroke-width="10"/>
+  <rect x="300" y="782" width="424" height="24" rx="12" fill="#1a426d"/>
+
+  <text x="512" y="486" text-anchor="middle" fill="url(#word)" stroke="#1a99d1" stroke-width="3" paint-order="stroke" font-family="Arial Black, Arial, Helvetica, sans-serif" font-size="236" font-weight="900" letter-spacing="-22">CCG</text>
+  <text x="512" y="574" text-anchor="middle" fill="#f4fbff" font-family="Arial, Helvetica, sans-serif" font-size="44" font-weight="800" letter-spacing="11">COMMODORE</text>
+  <text x="512" y="634" text-anchor="middle" fill="#cf74ff" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="800" letter-spacing="15">GAMER</text>
+
+  <g transform="translate(246 864)">
+    <rect width="92" height="20" rx="10" fill="#ef5069"/>
+    <rect x="104" width="92" height="20" rx="10" fill="#ff9147"/>
+    <rect x="208" width="92" height="20" rx="10" fill="#ffd75a"/>
+    <rect x="312" width="92" height="20" rx="10" fill="#5ad88c"/>
+    <rect x="416" width="116" height="20" rx="10" fill="#5d9dff"/>
+  </g>
+</svg>

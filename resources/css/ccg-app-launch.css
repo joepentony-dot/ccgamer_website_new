@@ -1,0 +1,369 @@
+/* ============================================================
+   CCG INSTALLED APP LAUNCH SCREEN
+   ------------------------------------------------------------
+   Lightweight portrait-first bridge between the operating-
+   system PWA splash and the full public home page.
+============================================================ */
+
+:root {
+  color-scheme: dark;
+  --launch-bg: #020711;
+  --launch-panel: rgba(4, 13, 31, 0.92);
+  --launch-cyan: #45edff;
+  --launch-blue: #4f82ff;
+  --launch-purple: #d45bff;
+  --launch-white: #f3fbff;
+  --launch-muted: #8fa9bd;
+  font-family: "Arial Narrow", Arial, Helvetica, sans-serif;
+  background: var(--launch-bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--launch-bg);
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--launch-white);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.ccg-app-launch {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding:
+    max(22px, env(safe-area-inset-top))
+    max(18px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom))
+    max(18px, env(safe-area-inset-left));
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 15%, rgba(49, 154, 255, 0.19), transparent 32%),
+    radial-gradient(circle at 82% 84%, rgba(205, 70, 255, 0.15), transparent 34%),
+    linear-gradient(155deg, #051126 0%, #020711 48%, #0b0615 100%);
+}
+
+.ccg-app-launch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background-image:
+    linear-gradient(rgba(63, 181, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(63, 181, 255, 0.035) 1px, transparent 1px);
+  background-size: 42px 42px;
+  transform: perspective(500px) rotateX(58deg) scale(1.55) translateY(26%);
+  transform-origin: center bottom;
+  opacity: 0.7;
+}
+
+.ccg-app-launch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.016) 0,
+    rgba(255, 255, 255, 0.016) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  mix-blend-mode: screen;
+  opacity: 0.28;
+}
+
+.ccg-app-launch__stars,
+.ccg-app-launch__stars::before,
+.ccg-app-launch__stars::after {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  pointer-events: none;
+  background-repeat: no-repeat;
+}
+
+.ccg-app-launch__stars {
+  background-image:
+    radial-gradient(circle at 14% 19%, rgba(255,255,255,0.86) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 78% 14%, rgba(105,229,255,0.82) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 69% 39%, rgba(255,255,255,0.55) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 23% 66%, rgba(217,120,255,0.65) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 86% 72%, rgba(255,255,255,0.62) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 41% 88%, rgba(89,204,255,0.7) 0 1px, transparent 1.6px);
+  opacity: 0.7;
+}
+
+.ccg-app-launch__card {
+  position: relative;
+  width: min(440px, 92vw);
+  min-height: min(650px, 82dvh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(30px, 6vh, 54px) clamp(22px, 6vw, 38px);
+  border: 1px solid rgba(69, 237, 255, 0.42);
+  background:
+    linear-gradient(155deg, rgba(10, 30, 62, 0.78), rgba(2, 8, 22, 0.94) 54%, rgba(18, 6, 28, 0.91)),
+    var(--launch-panel);
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, 0.72),
+    0 0 0 1px rgba(255,255,255,0.035) inset,
+    0 0 30px rgba(69, 237, 255, 0.1),
+    0 0 56px rgba(212, 91, 255, 0.06);
+  overflow: hidden;
+}
+
+.ccg-app-launch__card::before,
+.ccg-app-launch__card::after {
+  content: "";
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  pointer-events: none;
+}
+
+.ccg-app-launch__card::before {
+  top: 12px;
+  left: 12px;
+  border-top: 2px solid var(--launch-cyan);
+  border-left: 2px solid var(--launch-cyan);
+}
+
+.ccg-app-launch__card::after {
+  right: 12px;
+  bottom: 12px;
+  border-right: 2px solid var(--launch-purple);
+  border-bottom: 2px solid var(--launch-purple);
+}
+
+.ccg-app-launch__eyebrow {
+  margin: 0 0 18px;
+  color: #75eaff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(0.66rem, 2.6vw, 0.76rem);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ccg-app-launch__mark-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(132px, 37vw, 172px);
+  aspect-ratio: 1;
+  margin-bottom: 22px;
+}
+
+.ccg-app-launch__mark-wrap::before,
+.ccg-app-launch__mark-wrap::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 1px solid rgba(69, 237, 255, 0.3);
+  transform: rotate(45deg);
+  animation: ccg-launch-frame 1800ms ease-in-out infinite alternate;
+}
+
+.ccg-app-launch__mark-wrap::after {
+  inset: -20px;
+  border-color: rgba(212, 91, 255, 0.16);
+  animation-delay: -900ms;
+}
+
+.ccg-app-launch__mark {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+}
+
+.ccg-app-launch__title {
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 0.94;
+}
+
+.ccg-app-launch__title-main,
+.ccg-app-launch__title-sub {
+  display: block;
+}
+
+.ccg-app-launch__title-main {
+  color: #eafbff;
+  font-size: clamp(1.75rem, 8vw, 2.55rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 18px rgba(69, 237, 255, 0.26);
+}
+
+.ccg-app-launch__title-sub {
+  margin-top: 9px;
+  color: #b9eefe;
+  font-size: clamp(0.86rem, 4vw, 1.08rem);
+  font-weight: 800;
+  letter-spacing: 0.23em;
+}
+
+.ccg-app-launch__slogan {
+  margin: 20px 0 0;
+  color: rgba(236, 250, 255, 0.76);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(0.7rem, 3vw, 0.84rem);
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.ccg-app-launch__platforms {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.67rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ccg-app-launch__platforms span:first-child {
+  color: var(--launch-cyan);
+}
+
+.ccg-app-launch__platforms span:last-child {
+  color: #df7aff;
+}
+
+.ccg-app-launch__platform-divider {
+  width: 36px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--launch-cyan), var(--launch-purple));
+}
+
+.ccg-app-launch__boot {
+  width: min(310px, 82%);
+  margin-top: 28px;
+}
+
+.ccg-app-launch__boot-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--launch-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ccg-app-launch__boot-track {
+  position: relative;
+  height: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(107, 216, 255, 0.24);
+  background: rgba(0, 0, 0, 0.46);
+}
+
+.ccg-app-launch__boot-bar {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: linear-gradient(90deg, var(--launch-cyan), var(--launch-blue) 58%, var(--launch-purple));
+  box-shadow: 0 0 16px rgba(69, 237, 255, 0.42);
+  animation: ccg-launch-progress 1050ms cubic-bezier(.2,.75,.2,1) forwards;
+}
+
+.ccg-app-launch__enter {
+  margin-top: 24px;
+  color: rgba(208, 229, 242, 0.58);
+  font-size: 0.65rem;
+  letter-spacing: 0.11em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.ccg-app-launch__enter:focus-visible {
+  outline: 2px solid var(--launch-cyan);
+  outline-offset: 6px;
+  color: #fff;
+}
+
+@keyframes ccg-launch-progress {
+  0% { width: 4%; }
+  28% { width: 31%; }
+  68% { width: 73%; }
+  100% { width: 100%; }
+}
+
+@keyframes ccg-launch-frame {
+  from { opacity: 0.28; transform: rotate(45deg) scale(0.98); }
+  to { opacity: 0.72; transform: rotate(45deg) scale(1.02); }
+}
+
+@media (max-height: 700px) {
+  .ccg-app-launch__card {
+    min-height: 0;
+    padding-block: 26px;
+  }
+
+  .ccg-app-launch__mark-wrap {
+    width: 118px;
+    margin-bottom: 16px;
+  }
+
+  .ccg-app-launch__eyebrow {
+    margin-bottom: 12px;
+  }
+
+  .ccg-app-launch__slogan,
+  .ccg-app-launch__platforms {
+    margin-top: 14px;
+  }
+
+  .ccg-app-launch__boot {
+    margin-top: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccg-app-launch__mark-wrap::before,
+  .ccg-app-launch__mark-wrap::after,
+  .ccg-app-launch__boot-bar {
+    animation: none;
+  }
+
+  .ccg-app-launch__boot-bar {
+    width: 100%;
+  }
+}

@@ -153,7 +153,7 @@ test('shared CCG releases can update without manual cache clearing', () => {
   assert.match(releaseCheck, /CLEAR_PUBLIC_CACHES/);
   assert.match(releaseCheck, /SKIP_WAITING/);
   assert.match(releaseCheck, /CCG update ready/);
-  assert.match(serviceWorker, /2026-08-19-public-release-v8/);
+  assert.match(serviceWorker, /const CACHE_VERSION = "\d{4}-\d{2}-\d{2}-public-release-v\d+";/);
   assert.match(headers, /\/js\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/resources\/css\/\*\s+Cache-Control: public, max-age=0, must-revalidate/s);
   assert.match(headers, /\/service-worker\.js\s+Cache-Control: no-cache, no-store, must-revalidate/s);

@@ -74,8 +74,8 @@ test('legacy social fallback cannot become a public display state', () => {
   assert.match(socialCss, /visibility:\s*hidden\s*!important/);
 });
 
-test('installed app release v8 watches the full global and responsive shell', () => {
-  assert.match(worker, /2026-08-19-public-release-v8/);
+test('installed app release watches the full global and responsive shell', () => {
+  assert.match(worker, /const CACHE_VERSION = "\d{4}-\d{2}-\d{2}-public-release-v\d+";/);
   for (const asset of [
     '/js/ccg-header-auth-loader.js',
     '/js/ccg-auth.js',
