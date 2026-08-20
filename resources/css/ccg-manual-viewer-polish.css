@@ -1,58 +1,60 @@
 /* ============================================================
-   CCG MANUAL VIEWER — FULL-SCREEN EMBEDDED PDF
-   The source URL stays out of the visible interface. The PDF is
-   read, scrolled and optionally downloaded inside the viewer.
+   CCG MANUAL VIEWER — NATIVE TOP-LAYER PDF DIALOG
+   showModal() places the PDF outside transformed/contained page
+   wrappers so it always opens in the user's current viewport.
 ============================================================ */
 
+/* Legacy manual modal remains in generated page markup for compatibility,
+   but the dedicated top-layer dialog is now the only active manual viewer. */
 #manualModal.ccg-modal--doc {
-    position: fixed !important;
-    inset: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    min-height: 0 !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    background: rgba(2, 5, 12, 0.94) !important;
-    backdrop-filter: blur(8px);
-    z-index: 2147483000 !important;
+    display: none !important;
 }
 
-#manualModal.ccg-modal--doc.open,
-#manualModal.ccg-modal--doc.active {
-    display: block !important;
-}
-
-#manualModal .manual-content {
-    position: fixed !important;
-    inset: 0 !important;
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    transform: none !important;
+.ccg-manual-dialog {
+    position: fixed;
+    inset: 0;
     box-sizing: border-box;
-    display: flex !important;
-    flex-direction: column;
-    width: 100vw !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-    min-height: 0 !important;
-    max-width: none !important;
-    max-height: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: #f3f5f7;
-    box-shadow: none !important;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #f6fbff;
+    overflow: hidden;
 }
 
-#manualModal .ccg-manual-toolbar {
+.ccg-manual-dialog:not([open]) {
+    display: none;
+}
+
+.ccg-manual-dialog[open] {
+    display: block;
+}
+
+.ccg-manual-dialog::backdrop {
+    background: rgba(2, 5, 12, 0.94);
+    backdrop-filter: blur(8px);
+}
+
+.ccg-manual-dialog__content {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+    background: #f3f5f7;
+}
+
+.ccg-manual-dialog__toolbar {
+    position: relative;
     flex: 0 0 56px;
     min-height: 56px;
     display: flex;
@@ -64,13 +66,13 @@
     color: #f6fbff;
 }
 
-#manualModal .ccg-manual-toolbar__label {
+.ccg-manual-dialog__label {
     flex: 0 0 auto;
     font-weight: 800;
     letter-spacing: 0.04em;
 }
 
-#manualModal .ccg-manual-toolbar__hint {
+.ccg-manual-dialog__hint {
     min-width: 0;
     color: rgba(246, 251, 255, 0.72);
     font-size: 0.82rem;
@@ -79,41 +81,45 @@
     text-overflow: ellipsis;
 }
 
-#manualModal .ccg-modal-close {
-    position: fixed !important;
-    top: 8px !important;
-    right: 12px !important;
-    z-index: 2147483002 !important;
-    display: grid !important;
+.ccg-manual-dialog__close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    z-index: 2;
+    display: grid;
     place-items: center;
     width: 40px;
     height: 40px;
-    margin: 0 !important;
-    padding: 0 !important;
+    min-height: 40px;
+    margin: 0;
+    padding: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 999px;
     background: rgba(0, 0, 0, 0.24);
-    color: #ffffff !important;
+    color: #ffffff;
+    font: inherit;
     font-size: 2rem;
     line-height: 1;
-    opacity: 1 !important;
-    text-shadow: none !important;
+    cursor: pointer;
+    opacity: 1;
+    text-shadow: none;
 }
 
-#manualModal .ccg-modal-close:hover,
-#manualModal .ccg-modal-close:focus-visible {
+.ccg-manual-dialog__close:hover,
+.ccg-manual-dialog__close:focus-visible {
     background: rgba(255, 255, 255, 0.12);
     border-color: rgba(255, 255, 255, 0.48);
-    outline: none;
+    outline: 2px solid rgba(255, 255, 255, 0.72);
+    outline-offset: 2px;
 }
 
-#manualModal .manual-loading {
-    position: fixed !important;
-    z-index: 2147483003 !important;
-    top: 68px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    margin: 0 !important;
+.ccg-manual-dialog__status {
+    position: absolute;
+    z-index: 3;
+    top: 68px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
     padding: 8px 12px;
     border-radius: 999px;
     background: rgba(12, 19, 36, 0.92);
@@ -121,42 +127,52 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
-#manualModal .ccg-pdf-frame {
-    position: static !important;
-    flex: 1 1 auto !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    margin: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
+.ccg-manual-dialog__status[hidden] {
+    display: none !important;
+}
+
+.ccg-manual-dialog__frame {
+    flex: 1 1 auto;
+    display: block;
+    width: 100%;
+    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+    border: 0;
     background: #f3f5f7;
+    overscroll-behavior: contain;
 }
 
 @media (max-width: 700px) {
-    #manualModal .ccg-manual-toolbar {
+    .ccg-manual-dialog__toolbar {
         flex-basis: 52px;
         min-height: 52px;
         padding: 7px 58px 7px 12px;
     }
 
-    #manualModal .ccg-manual-toolbar__hint {
+    .ccg-manual-dialog__hint {
         display: none;
     }
 
-    #manualModal .ccg-modal-close {
-        top: 6px !important;
-        right: 8px !important;
+    .ccg-manual-dialog__close {
+        top: 6px;
+        right: 8px;
         width: 38px;
         height: 38px;
+        min-height: 38px;
     }
 
-    #manualModal .manual-loading {
-        top: 62px !important;
+    .ccg-manual-dialog__status {
+        top: 62px;
         max-width: calc(100vw - 24px);
         white-space: normal;
         text-align: center;
+    }
+
+    .ccg-manual-dialog__frame {
+        height: calc(100vh - 52px);
+        height: calc(100dvh - 52px);
     }
 }
