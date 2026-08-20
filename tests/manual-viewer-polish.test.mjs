@@ -40,10 +40,18 @@ test('manual runtime keeps an authoritative in-memory source across hydration', 
 
 test('manual runtime removes the source from the public button', () => {
   assert.match(runtime, /delete button\.dataset\.manualUrl/);
-  assert.match(runtime, /button\.setAttribute\("href", `#\$\{MODAL_ID\}`\)/);
+  assert.match(runtime, /button\.setAttribute\("href", `#\$\{DIALOG_ID\}`\)/);
   assert.match(runtime, /button\.removeAttribute\("target"\)/);
   assert.match(runtime, /button\.removeAttribute\("rel"\)/);
   assert.match(runtime, /MutationObserver/);
+});
+
+test('manual runtime uses native top-layer dialog instead of the document modal', () => {
+  assert.match(runtime, /document\.createElement\("dialog"\)/);
+  assert.match(runtime, /dialog\.showModal\(\)/);
+  assert.match(runtime, /dialog\.addEventListener\("close"/);
+  assert.match(runtime, /stopImmediatePropagation/);
+  assert.doesNotMatch(runtime, /window\.scrollTo/);
 });
 
 test('manual runtime never exposes an external-tab fallback', () => {
@@ -53,28 +61,12 @@ test('manual runtime never exposes an external-tab fallback', () => {
   assert.doesNotMatch(runtime, /data-ccg-manual-open-external/i);
 });
 
-test('manual runtime takes over the manual click without moving the page to the top', () => {
-  assert.match(runtime, /document\.addEventListener\("click"[\s\S]*\{ capture: true \}\)/);
-  assert.match(runtime, /event\.preventDefault\(\)/);
-  assert.match(runtime, /event\.stopPropagation\(\)/);
-  assert.match(runtime, /frame\.src = manualUrl/);
-  assert.match(runtime, /body\.classList\.add\("modal-open"\)/);
-  assert.doesNotMatch(runtime, /window\.scrollTo\(\{ top: 0/);
-});
-
-test('manual runtime keeps failure messaging inside the viewer', () => {
-  assert.match(runtime, /Manual failed to load\. Close the viewer and try again\./);
-  assert.doesNotMatch(runtime, /new tab/i);
-});
-
-test('manual viewer fills the viewport and leaves PDF controls inside the popup', () => {
-  assert.match(css, /#manualModal\.ccg-modal--doc[\s\S]*position: fixed !important/);
-  assert.match(css, /inset: 0 !important/);
-  assert.match(css, /width: 100vw !important/);
-  assert.match(css, /height: 100dvh !important/);
-  assert.match(css, /#manualModal \.manual-content[\s\S]*height: 100dvh !important/);
-  assert.match(css, /#manualModal \.ccg-pdf-frame[\s\S]*flex: 1 1 auto !important/);
-  assert.match(runtime, /Use the PDF toolbar to zoom, print or download/);
+test('manual viewer CSS uses the browser top layer and disables the legacy document modal', () => {
+  assert.match(css, /#manualModal\.ccg-modal--doc\s*\{\s*display: none !important;/);
+  assert.match(css, /\.ccg-manual-dialog\s*\{[\s\S]*position: fixed;/);
+  assert.match(css, /\.ccg-manual-dialog::backdrop/);
+  assert.match(css, /height: 100dvh;/);
+  assert.match(css, /\.ccg-manual-dialog__frame[\s\S]*flex: 1 1 auto;/);
   assert.doesNotMatch(css, /data-ccg-manual-anchored/);
 });
 
@@ -109,12 +101,17 @@ class FakeElement {
     this.style = {};
     this.hidden = false;
     this.listeners = new Map();
-    this.innerHTML = '';
     this.src = '';
+    this.textContent = '';
+    this.type = '';
+    this.open = false;
+    this.showModalCalls = 0;
+    this.closeCalls = 0;
   }
 
   setAttribute(name, value) {
     this.attributes.set(name, String(value));
+    if (name === 'id') this.id = String(value);
   }
 
   getAttribute(name) {
@@ -127,6 +124,7 @@ class FakeElement {
 
   removeAttribute(name) {
     this.attributes.delete(name);
+    if (name === 'src') this.src = '';
   }
 
   addEventListener(name, handler) {
@@ -139,17 +137,13 @@ class FakeElement {
     return child;
   }
 
-  insertBefore(child, reference) {
-    child.parentElement = this;
-    const index = this.children.indexOf(reference);
-    if (index < 0) this.children.push(child);
-    else this.children.splice(index, 0, child);
-    return child;
-  }
-
   querySelector(selector) {
-    if (selector === '.manual-content' && this.className.split(/\s+/).includes('manual-content')) return this;
-    if (selector === '[data-ccg-manual-toolbar]' && this.hasAttribute('data-ccg-manual-toolbar')) return this;
+    const attrMatch = selector.match(/^\[([^\]]+)\]$/);
+    if (attrMatch && this.hasAttribute(attrMatch[1])) return this;
+
+    if (selector.startsWith('.') && this.className.split(/\s+/).includes(selector.slice(1))) {
+      return this;
+    }
 
     for (const child of this.children) {
       const match = child.querySelector(selector);
@@ -158,41 +152,50 @@ class FakeElement {
     return null;
   }
 
-  querySelectorAll() {
-    return [];
-  }
-
   closest(selector) {
     return selector === `#${this.id}` ? this : null;
   }
 
   focus() {}
+
+  showModal() {
+    this.open = true;
+    this.showModalCalls += 1;
+    this.setAttribute('open', '');
+  }
+
+  close() {
+    if (!this.open) return;
+    this.open = false;
+    this.closeCalls += 1;
+    this.removeAttribute('open');
+    const handler = this.listeners.get('close');
+    if (handler) handler({ target: this });
+  }
 }
 
 function createManualRuntimeHarness() {
   const documentListeners = new Map();
   const windowListeners = new Map();
   const elements = new Map();
+  const scrollToCalls = [];
+
+  const documentElement = new FakeElement('html', 'html');
+  documentElement.scrollTop = 0;
 
   const body = new FakeElement('body', 'body');
   const button = new FakeElement('a', 'gameManualBtn');
   button.setAttribute('href', '#');
+  body.appendChild(button);
 
-  const modal = new FakeElement('div', 'manualModal');
-  modal.setAttribute('aria-hidden', 'true');
-  const content = new FakeElement('div');
-  content.className = 'manual-content';
-  const status = new FakeElement('p', 'manualModalStatus');
-  const close = new FakeElement('button', 'manualModalClose');
-  const frame = new FakeElement('iframe', 'gameManualEmbed');
+  const legacyModal = new FakeElement('div', 'manualModal');
+  legacyModal.classList.add('ccg-modal--doc');
+  legacyModal.setAttribute('aria-hidden', 'true');
+  const legacyFrame = new FakeElement('iframe', 'gameManualEmbed');
+  legacyModal.appendChild(legacyFrame);
+  body.appendChild(legacyModal);
 
-  content.appendChild(status);
-  content.appendChild(close);
-  content.appendChild(frame);
-  modal.appendChild(content);
-  body.appendChild(modal);
-
-  [button, modal, status, close, frame].forEach((element) => elements.set(element.id, element));
+  [button, legacyModal, legacyFrame].forEach((element) => elements.set(element.id, element));
 
   class FakeMutationObserver {
     constructor(callback) {
@@ -204,9 +207,21 @@ function createManualRuntimeHarness() {
   const document = {
     readyState: 'complete',
     body,
-    documentElement: { scrollTop: 0 },
+    documentElement,
     getElementById(id) {
-      return elements.get(id) || null;
+      if (elements.has(id)) return elements.get(id);
+      const walk = (node) => {
+        if (node.id === id) return node;
+        for (const child of node.children) {
+          const match = walk(child);
+          if (match) return match;
+        }
+        return null;
+      };
+      return walk(body);
+    },
+    querySelector(selector) {
+      return body.querySelector(selector);
     },
     createElement(tagName) {
       return new FakeElement(tagName);
@@ -217,10 +232,12 @@ function createManualRuntimeHarness() {
   };
 
   const window = {
-    scrollY: 480,
-    CSS: { supports: () => false },
+    scrollY: 3180,
     addEventListener(name, handler) {
       windowListeners.set(name, handler);
+    },
+    scrollTo(...args) {
+      scrollToCalls.push(args);
     },
   };
 
@@ -230,25 +247,26 @@ function createManualRuntimeHarness() {
     Element: FakeElement,
     MutationObserver: FakeMutationObserver,
     requestAnimationFrame: (callback) => callback(),
-    queueMicrotask,
     console,
-    URL,
-    URLSearchParams,
   };
 
   vm.runInNewContext(runtime, context, { filename: 'ccg-manual-viewer-polish.js' });
 
   return {
-    button,
-    modal,
-    frame,
     body,
+    button,
+    legacyModal,
+    legacyFrame,
+    document,
+    documentElement,
     documentListeners,
+    window,
     windowListeners,
+    scrollToCalls,
   };
 }
 
-test('hydrated manual button opens the full-screen viewer on click', () => {
+test('hydrated manual opens in native top layer while the page is deeply scrolled', () => {
   const harness = createManualRuntimeHarness();
   const rawDriveUrl = 'https://drive.google.com/file/d/abc123xyz/view?usp=drive_link';
   const previewUrl = 'https://drive.google.com/file/d/abc123xyz/preview';
@@ -257,28 +275,72 @@ test('hydrated manual button opens the full-screen viewer on click', () => {
   assert.equal(typeof gameLoaded, 'function');
   gameLoaded({ detail: { game: { manual: rawDriveUrl } } });
 
-  assert.equal(harness.button.getAttribute('href'), '#manualModal');
+  assert.equal(harness.button.getAttribute('href'), '#ccgManualDialog');
   assert.equal(harness.button.hasAttribute('target'), false);
   assert.equal(harness.button.hasAttribute('rel'), false);
   assert.equal(harness.button.dataset.manualUrl, undefined);
 
   let prevented = false;
   let stopped = false;
+  let stoppedImmediate = false;
   const clickHandler = harness.documentListeners.get('click');
   assert.equal(typeof clickHandler, 'function');
+
   clickHandler({
     target: harness.button,
     preventDefault() { prevented = true; },
     stopPropagation() { stopped = true; },
+    stopImmediatePropagation() { stoppedImmediate = true; },
   });
+
+  const dialog = harness.document.querySelector('[data-ccg-manual-dialog]');
+  const frame = dialog?.querySelector('[data-ccg-manual-frame]');
 
   assert.equal(prevented, true);
   assert.equal(stopped, true);
-  assert.equal(harness.frame.src, previewUrl);
-  assert.equal(harness.modal.classList.contains('open'), true);
-  assert.equal(harness.modal.classList.contains('active'), true);
-  assert.equal(harness.modal.getAttribute('aria-hidden'), 'false');
-  assert.equal(harness.body.classList.contains('modal-open'), true);
-  assert.equal(harness.body.dataset.modalScrollTop, '480');
+  assert.equal(stoppedImmediate, true);
+  assert.ok(dialog);
+  assert.equal(dialog.tagName, 'DIALOG');
+  assert.equal(dialog.parentElement, harness.body);
+  assert.equal(dialog.open, true);
+  assert.equal(dialog.showModalCalls, 1);
+  assert.equal(frame.src, previewUrl);
+  assert.equal(harness.legacyModal.classList.contains('open'), false);
+  assert.equal(harness.legacyModal.getAttribute('aria-hidden'), 'true');
   assert.equal(harness.button.getAttribute('aria-expanded'), 'true');
+  assert.equal(harness.documentElement.style.overflow, 'hidden');
+  assert.equal(harness.body.style.overflow, 'hidden');
+  assert.equal(harness.window.scrollY, 3180);
+  assert.equal(harness.scrollToCalls.length, 0);
+});
+
+test('closing the native manual dialog restores page scrolling without changing page position', () => {
+  const harness = createManualRuntimeHarness();
+  const gameLoaded = harness.windowListeners.get('ccg:game-loaded');
+  gameLoaded({
+    detail: {
+      game: {
+        manual: 'https://drive.google.com/file/d/abc123xyz/view?usp=drive_link',
+      },
+    },
+  });
+
+  const clickHandler = harness.documentListeners.get('click');
+  clickHandler({
+    target: harness.button,
+    preventDefault() {},
+    stopPropagation() {},
+    stopImmediatePropagation() {},
+  });
+
+  const dialog = harness.document.querySelector('[data-ccg-manual-dialog]');
+  assert.equal(dialog.open, true);
+  dialog.close();
+
+  assert.equal(dialog.open, false);
+  assert.equal(harness.documentElement.style.overflow, undefined);
+  assert.equal(harness.body.style.overflow, undefined);
+  assert.equal(harness.window.scrollY, 3180);
+  assert.equal(harness.scrollToCalls.length, 0);
+  assert.equal(harness.button.getAttribute('aria-expanded'), 'false');
 });
