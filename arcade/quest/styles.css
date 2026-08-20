@@ -1,0 +1,20 @@
+:root { color-scheme: dark; --bg:#05040b; --line:rgba(110,223,255,.32); }
+* { box-sizing:border-box; }
+html,body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--bg); }
+body { font-family:Consolas,"Courier New",monospace; }
+#game-shell { position:fixed; inset:0; display:grid; place-items:center; overflow:hidden; background:radial-gradient(circle at 50% 35%,#16122d 0,#070611 50%,#020205 100%); }
+#game { display:block; width:min(100vw,calc(100dvh * 16 / 9)); height:min(100dvh,calc(100vw * 9 / 16)); max-width:100vw; max-height:100dvh; aspect-ratio:16/9; outline:none; box-shadow:0 0 0 1px rgba(110,223,255,.14),0 0 70px rgba(58,166,255,.1); image-rendering:auto; background:#05040b; }
+.loading { position:fixed; inset:0; display:grid; place-items:center; z-index:10; background:#05040b; color:#7ee8ff; letter-spacing:.12em; font-weight:800; }
+.loading.is-hidden { display:none; }
+.corner-controls { position:fixed; z-index:8; top:max(10px,env(safe-area-inset-top)); right:max(10px,env(safe-area-inset-right)); display:flex; gap:7px; opacity:.34; transition:opacity .18s ease; }
+.corner-controls:hover,.corner-controls:focus-within { opacity:1; }
+.corner-controls button { border:1px solid rgba(255,255,255,.2); border-radius:8px; background:rgba(4,4,12,.72); color:#f3f3ff; padding:7px 9px; cursor:pointer; font:700 11px/1 Consolas,"Courier New",monospace; backdrop-filter:blur(6px); }
+.corner-controls button:hover,.corner-controls button:focus-visible { border-color:#6de7ff; background:rgba(18,28,46,.9); }
+.corner-controls .danger { border-color:rgba(255,84,103,.45); color:#ffb0b9; }
+.touch { display:none; position:fixed; z-index:7; inset:auto 12px max(12px,env(safe-area-inset-bottom)); justify-content:space-between; pointer-events:none; }
+.touch>div { display:flex; gap:10px; pointer-events:auto; }
+.touch button { width:68px; height:58px; border:1px solid rgba(255,255,255,.25); border-radius:15px; background:rgba(6,6,18,.72); color:#fff; font:800 12px/1 Consolas,monospace; }
+@media (pointer:coarse),(max-width:820px) { .touch { display:flex; } .corner-controls { top:6px; right:6px; gap:4px; } .corner-controls button { padding:6px; font-size:9px; } }
+@media (max-height:560px) { .corner-controls { opacity:.18; } }
+.touch button[data-touch="fire"] { width:96px; }
+.touch button[data-touch="kick"] { width:74px; }

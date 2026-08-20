@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Commodore Quest Visual Manager</title>
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
+  <link href="./css/arcade-assets.css?v=arcade-20260820b" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg"><div class="ccg-bg-starfield"></div><div class="ccg-bg-grid"></div><div class="ccg-bg-crt-overlay"></div></div>
+  <main class="arcade-admin-wrap omega-admin-shell" data-admin-shell>
+    <header class="arcade-admin-header">
+      <div>
+        <p class="admin-auth-kicker">CCG Arcade Development</p>
+        <h1>Commodore Quest Visual Manager</h1>
+        <p>Replace backgrounds, layered scenery, sprite sheets, bosses, hazards, collectibles, sound effects and music without editing the game code.</p>
+      </div>
+      <a class="ccg-btn ccg-btn--primary" href="/games/commodore-quest/" target="_blank" rel="noopener">Open Game</a>
+    </header>
+
+    <section class="arcade-admin-grid">
+      <article class="arcade-panel">
+        <h2>Upload / Replace Asset</h2>
+        <p class="arcade-muted">Images: PNG, JPG, WebP, GIF or SVG. Audio: MP3, OGG or WAV. Transparent PNG/WebP is recommended for sprites.</p>
+        <form id="arcade-asset-form" class="arcade-form">
+          <label>Asset slot<select id="arcade-slot" required></select></label>
+          <label>File<input id="arcade-file" type="file" required /></label>
+
+          <fieldset id="arcade-sprite-settings" class="arcade-sprite-settings" hidden>
+            <legend>Sprite sheet settings</legend>
+            <div class="arcade-meta-grid">
+              <label>Frame width<input id="arcade-frame-width" type="number" min="1" step="1" placeholder="128" /></label>
+              <label>Frame height<input id="arcade-frame-height" type="number" min="1" step="1" placeholder="192" /></label>
+              <label>Columns<input id="arcade-columns" type="number" min="1" step="1" placeholder="8" /></label>
+              <label>FPS<input id="arcade-fps" type="number" min="1" max="60" step="0.5" value="8" /></label>
+            </div>
+            <label>Animation map
+              <textarea id="arcade-animations" rows="9" spellcheck="false" placeholder='{"idle":[0,1],"run":[2,3,4,5,6,7],"jump":[8],"fall":[9],"duck":[10],"fire":[11],"duckFire":[12],"punch":[13,14,15],"kick":[16,17,18],"hit":[19]}'></textarea>
+            </label>
+            <p class="arcade-muted">Frame numbers start at 0 and run left-to-right, top-to-bottom. I can work these values out for you from any sprite sheet you supply.</p>
+          </fieldset>
+
+          <label>Notes <span class="arcade-muted">(optional)</span><input id="arcade-notes" type="text" maxlength="180" placeholder="e.g. Bedroom foreground v2" /></label>
+          <label class="arcade-check"><input id="arcade-enabled" type="checkbox" checked /> Enable immediately</label>
+          <div id="arcade-preview" class="arcade-preview" aria-live="polite"><span>Select a file to preview it.</span></div>
+          <button class="ccg-btn ccg-btn--primary" type="submit" id="arcade-upload">Upload Asset</button>
+          <p id="arcade-status" class="arcade-status" data-state="info">Waiting for admin session…</p>
+        </form>
+      </article>
+
+      <article class="arcade-panel">
+        <h2>Recommended visual workflow</h2>
+        <ul class="arcade-help">
+          <li><strong>Main background:</strong> one full 1600×900 scene image.</li>
+          <li><strong>Back / Mid / Front layers:</strong> transparent PNG/WebP/GIF overlays for depth, lights, signs, desks, snow, CRT animation and foreground scenery.</li>
+          <li><strong>Sprite sheets:</strong> keep every animation frame in one transparent image and map frame numbers here.</li>
+          <li><strong>GitHub remains the fallback:</strong> deleting or disabling an upload immediately restores the bundled asset.</li>
+          <li><strong>Supabase Storage holds live uploads:</strong> no GitHub credentials are exposed to the browser.</li>
+        </ul>
+        <div class="arcade-callout"><strong>Animated images:</strong> animated GIF/WebP can be used for scenery and effects. For characters, sprite sheets are preferred because the game controls the exact animation state and timing.</div>
+      </article>
+    </section>
+
+    <section class="arcade-panel arcade-library-panel">
+      <div class="arcade-library-head">
+        <div><h2>Current Game Assets</h2><p class="arcade-muted">Custom overrides currently available to Commodore Quest.</p></div>
+        <button type="button" class="ccg-btn ccg-btn--ghost" id="arcade-refresh">Refresh</button>
+      </div>
+      <div id="arcade-library" class="arcade-library" aria-live="polite"><p class="arcade-muted">Loading assets…</p></div>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/arcade-assets.js?v=arcade-20260820b"></script>
+</body>
+</html>

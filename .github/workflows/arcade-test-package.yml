@@ -1,0 +1,32 @@
+name: Arcade Test Package
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/**'
+      - '.github/workflows/arcade-test-package.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build arcade-only test ZIP
+        shell: bash
+        run: |
+          zip -r ccg-arcade-test.zip arcade \
+            -x 'arcade/**/.DS_Store' \
+            -x 'arcade/**/Thumbs.db'
+
+      - name: Upload arcade test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ccg-arcade-test
+          path: ccg-arcade-test.zip
+          if-no-files-found: error
+          retention-days: 7

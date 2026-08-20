@@ -1,0 +1,65 @@
+name: Arcade Quest Validation
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/**'
+      - 'admin/arcade-assets.html'
+      - 'admin/js/arcade-assets.js'
+      - 'admin/js/admin-nav.js'
+      - 'admin/css/arcade-assets.css'
+      - 'supabase/migrations/20260820_arcade_asset_manager.sql'
+      - 'scripts/validate-arcade-quest.js'
+      - '.github/workflows/arcade-quest-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/**'
+      - 'admin/arcade-assets.html'
+      - 'admin/js/arcade-assets.js'
+      - 'admin/js/admin-nav.js'
+      - 'admin/css/arcade-assets.css'
+      - 'supabase/migrations/20260820_arcade_asset_manager.sql'
+      - 'scripts/validate-arcade-quest.js'
+      - '.github/workflows/arcade-quest-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JavaScript syntax
+        shell: bash
+        run: |
+          node --check arcade/quest/game/core.js
+          node --check arcade/quest/game/balance.js
+          node --check arcade/quest/game/assets-config.js
+          node --check arcade/quest/game/remote-assets.js
+          node --check arcade/quest/game/stages.js
+          node --check arcade/quest/game/audio.js
+          node --check arcade/quest/game/achievements.js
+          node --check arcade/quest/game/main-v2.js
+          node --check admin/js/arcade-assets.js
+          node --check scripts/validate-arcade-quest.js
+
+      - name: Validate final balance rules
+        shell: bash
+        run: |
+          grep -F "fireOnly" arcade/quest/game/balance.js
+          grep -F "extraAt = [4, 9, 14]" arcade/quest/game/balance.js
+          grep -F "mode === 'invaders'" arcade/quest/game/balance.js
+          grep -F 'src="game/balance.js"' arcade/quest/index.html
+
+      - name: Validate Arcade Quest contract
+        run: node scripts/validate-arcade-quest.js

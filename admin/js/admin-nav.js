@@ -59,6 +59,7 @@ export async function initAdminNav({ pageLabel = "Dashboard", active = "dashboar
 
         <div class="omega-admin-links__group omega-admin-links__group--tools" aria-label="Admin tools and diagnostics">
           <span class="omega-admin-links__label">Tools</span>
+          <a href="/admin/arcade-assets.html" data-nav="arcade">Arcade Asset Manager</a>
           <a href="/admin/analytics-growth.html" data-nav="analytics">Analytics &amp; Growth</a>
           <a href="/admin/seo-opportunity-centre.html" data-nav="seo">SEO Opportunity Centre</a>
           <a href="/admin/member-hub-health.html" data-nav="health">Member Hub Health</a>
