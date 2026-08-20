@@ -37,6 +37,12 @@
 
 .ccg-pwa-panel--update {
   border-color: #c778ff;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.ccg-pwa-panel--update .ccg-pwa-panel__copy,
+.ccg-pwa-panel--update .ccg-pwa-panel__actions {
+  grid-column: 1 / -1;
 }
 
 .ccg-pwa-panel__icon {
@@ -63,6 +69,8 @@
   color: rgba(224, 242, 252, 0.78);
   font-size: 0.88rem;
   line-height: 1.48;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .ccg-pwa-panel__actions {
@@ -148,8 +156,29 @@
     right: max(12px, env(safe-area-inset-right));
     bottom: max(12px, env(safe-area-inset-bottom));
     width: auto;
+    max-height: calc(100dvh - max(24px, env(safe-area-inset-top) + env(safe-area-inset-bottom)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     grid-template-columns: 44px minmax(0, 1fr);
     padding: 14px;
+  }
+
+  .ccg-pwa-panel--update {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ccg-pwa-panel--update .ccg-pwa-panel__copy,
+  .ccg-pwa-panel--update .ccg-pwa-panel__actions {
+    width: 100%;
+    min-width: 0;
+    grid-column: 1 / -1;
+  }
+
+  .ccg-pwa-panel--update .ccg-pwa-panel__message {
+    max-width: none;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .ccg-pwa-panel__icon {

@@ -18,7 +18,7 @@
     const MATCHER_PATH = "/js/ccg-zzap64-matcher.js";
     const REVIEW_LINKS_PATH = "/data/zzap64-review-links.json";
     const ZZAP_HOST = "www.zzap64.co.uk";
-    const BATCH_SIZE = window.matchMedia?.("(max-width: 520px)")?.matches ? 12 : 24;
+    const BATCH_SIZE = window.matchMedia?.("(max-width: 520px)")?.matches ? 2 : 4;
     const ASSETS = Object.freeze({
         gold: "/resources/images/zzap64/zzap64-gold-medal.webp",
         silver: "/resources/images/zzap64/zzap64-silver-medal.svg",
@@ -598,6 +598,7 @@
             state.games = gameResult.games;
 
             updateProgress(80, "Matching review pages…", `Checking ${state.games.length.toLocaleString("en-GB")} game records against the awards.`);
+            await new Promise((resolve) => nextFrame(resolve));
             state.gameIndex = state.matcher.buildGameIndex(state.games);
             state.linksStatus = "ready";
             await render();

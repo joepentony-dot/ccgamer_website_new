@@ -2,9 +2,9 @@
    CCG MUSIC HEADER BOOTSTRAP
    ------------------------------------------------------------
    Adds the established public header to music pages that were
-   built with local breadcrumbs only. The bootstrap owns the
-   drawer and mode controls because it may load after the normal
-   DOMContentLoaded event on generated and curated music pages.
+   built with local breadcrumbs only. The injected markup mirrors
+   the global public shell so music pages no longer present a
+   separate header/auth/social/navigation composition.
 ============================================================ */
 
 (function () {
@@ -17,9 +17,11 @@
         "/resources/css/ccg-mode.css",
         "/resources/css/ccg-effects.css",
         "/resources/css/ccg-nav.css",
+        "/resources/css/ccg-nav-fit.css",
         "/resources/css/ccg-buttons.css",
         "/resources/css/ccg-footer.css",
         "/resources/css/ccg-community.css",
+        "/resources/css/ccg-socials.css",
         "/resources/css/ccg-mobile-lite.css",
         "/resources/css/ccg-amiga-mode.css",
         "/resources/css/ccg-amiga-mobile-fix.css"
@@ -34,14 +36,32 @@
     }
 
     function ensureStyle(href) {
-        const exists = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]'))
-            .some((link) => normaliseAssetPath(link.getAttribute("href")) === href);
-        if (exists) return;
+        const existing = Array.from(document.querySelectorAll('link[rel="stylesheet"][href]'))
+            .find((link) => normaliseAssetPath(link.getAttribute("href")) === href);
+        if (existing) return existing;
         const link = document.createElement("link");
         link.rel = "stylesheet";
         link.href = href;
         link.dataset.ccgMusicNavigationStyle = "true";
         document.head.appendChild(link);
+        return link;
+    }
+
+    function waitForStyle(href) {
+        const link = ensureStyle(href);
+        if (link.sheet) return Promise.resolve();
+
+        return new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                resolve();
+            };
+            link.addEventListener("load", finish, { once: true });
+            link.addEventListener("error", finish, { once: true });
+            window.setTimeout(finish, 2000);
+        });
     }
 
     function ensureScript(src) {
@@ -50,7 +70,7 @@
         if (exists) return;
         const script = document.createElement("script");
         script.src = src;
-        script.defer = true;
+        script.async = false;
         script.dataset.ccgMusicNavigationScript = "true";
         document.body.appendChild(script);
     }
@@ -85,23 +105,25 @@
           <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
           <li><a href="/music/" class="ccg-nav__link ccg-nav__link--active" aria-current="page">Music Hub</a></li>
         </ul>
-        <div class="ccg-nav__more" hidden>
+        <div class="ccg-nav__more">
           <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>More <span aria-hidden="true">▾</span></button>
           <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
         </div>
       </div>
 
       <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
-        <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Awards</a></li>
         <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+        <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
         <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
         <li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
-        <li><a href="/about.html" class="ccg-nav__link">About</a></li>
+        <li><a href="/install-app.html" class="ccg-nav__link" data-ccg-pwa-install-nav="true">Install CCG App</a></li>
+        <li><a href="/about.html" class="ccg-nav__link">About Me</a></li>
         <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
       </ul>
     </nav>
 
     <div class="ccg-header-actions">
+      <div class="ccg-mode-hint">Try different modes</div>
       <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
         <span class="ccg-mode-toggle__pill">
           <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
@@ -109,6 +131,20 @@
           <span class="ccg-mode-toggle__thumb"></span>
         </span>
       </button>
+
+      <div class="ccg-header-socials" aria-label="Social links">
+        <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+        <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+        <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+        <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+        <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+      </div>
+      <div class="ccg-socials-fallback" aria-hidden="true">
+        <a href="https://www.youtube.com/@CheekyCommodoreGamer" target="_blank" rel="noopener noreferrer">YouTube</a>
+        <a href="https://twitter.com/CheekyC64Gamer" target="_blank" rel="noopener noreferrer">Twitter</a>
+        <a href="https://www.facebook.com/cheekycommodoregamer" target="_blank" rel="noopener noreferrer">Facebook</a>
+      </div>
     </div>
   </div>
 
@@ -168,7 +204,7 @@
 
         const close = () => {
             header.classList.remove("ccg-header--nav-open");
-            document.body.classList.remove("ccg-body--nav-open");
+            document.body.classList.remove("ccg-body--nav-open", "ccg-body--locked");
             toggle.setAttribute("aria-expanded", "false");
             drawer.setAttribute("aria-hidden", "true");
         };
@@ -176,7 +212,7 @@
         const open = () => {
             populateDrawer(header);
             header.classList.add("ccg-header--nav-open");
-            document.body.classList.add("ccg-body--nav-open");
+            document.body.classList.add("ccg-body--nav-open", "ccg-body--locked");
             toggle.setAttribute("aria-expanded", "true");
             drawer.setAttribute("aria-hidden", "false");
         };
@@ -233,8 +269,8 @@
         });
     }
 
-    function init() {
-        STYLES.forEach(ensureStyle);
+    async function init() {
+        await Promise.all(STYLES.map(waitForStyle));
         const header = ensureHeader();
         if (!header) return;
         bindDrawer(header);
@@ -243,8 +279,8 @@
     }
 
     if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init, { once: true });
+        document.addEventListener("DOMContentLoaded", () => void init(), { once: true });
     } else {
-        init();
+        void init();
     }
 })();

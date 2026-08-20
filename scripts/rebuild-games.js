@@ -35,6 +35,7 @@ const steps = [
   ["generate-composer-pages.js"],
   ["generate-year-platform-pages.js"],
   ["integrate-year-platform-discovery.js"],
+  ["upgrade-games-index.js"],
   ["generate-video-seo.js"],
   ["generate-video-library.js"],
   ["ensure-secondary-publisher-runtime.js"],
@@ -50,12 +51,14 @@ const steps = [
   ["validate-seo-game-routes.js", "--root", "."],
   ["validate-seo-genre-links.js", "--root", "."],
   ["validate-year-platform-discovery.js"],
+  ["upgrade-games-index.js", "--check"],
   ["upgrade-category-pages.js", "--check"],
   ["enforce-manual-only-game-pages.js", "--check"],
   ["ensure-magazine-review-runtime.js", "--check"],
   ["ensure-secondary-publisher-runtime.js", "--check"],
   ["ensure-publisher-history-runtime.js", "--check"],
   ["validate-downloads-page.js"],
+  ["normalize-public-header-shell.js", "--root", ".", "--check"],
 ];
 
 function fail(message) {

@@ -1,0 +1,64 @@
+name: Live Public Navigation Verification
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/audit-nav-more-browser.js"
+      - ".github/workflows/live-public-navigation.yml"
+  workflow_run:
+    workflows:
+      - "Deploy GitHub Pages (Omega Stable)"
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: live-public-navigation
+  cancel-in-progress: true
+
+jobs:
+  verify-live-navigation:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Check out repository release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.head_ref || 'main' }}
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate browser audit syntax
+        run: node --check scripts/audit-nav-more-browser.js
+
+      - name: Verify proposed navigation locally
+        if: github.event_name == 'pull_request'
+        run: node scripts/audit-nav-more-browser.js
+
+      - name: Verify public custom-domain navigation release
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          CCG_NAV_AUDIT_BASE_URL: https://www.cheekycommodoregamer.co.uk
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 12); do
+            if node scripts/audit-nav-more-browser.js; then
+              exit 0
+            fi
+            echo "Public navigation release is not fully ready yet (attempt ${attempt}/12)."
+            sleep 10
+          done
+          echo "The public custom domain did not pass the deployed navigation interaction audit." >&2
+          exit 1

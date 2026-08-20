@@ -12,6 +12,7 @@
  *   - unexpected body scroll locking
  *   - excessive shared-header height
  *   - physical overlap between top-level header controls
+ *   - semantic shared-navigation state at responsive breakpoints
  */
 
 "use strict";
@@ -106,6 +107,15 @@ return (function () {
         body.classList.contains("modal-open")
     );
 
+    var sharedNav = header ? header.querySelector(".ccg-nav") : null;
+    var navToggle = header ? header.querySelector("[data-ccg-nav-toggle]") : null;
+    var navDrawer = header ? header.querySelector("[data-ccg-nav-drawer]") : null;
+    var visibleDesktopNavLinks = sharedNav
+        ? Array.from(sharedNav.querySelectorAll(".ccg-nav__link")).filter(visible).map(function (link) {
+            return link.textContent.replace(/\s+/g, " ").trim();
+        })
+        : [];
+
     var overflowOffenders = [];
     if (body) {
         Array.from(body.querySelectorAll("*")).forEach(function (el) {
@@ -161,7 +171,14 @@ return (function () {
         bodyOverflowY: bodyStyle ? bodyStyle.overflowY : "",
         bodyLocked: Boolean(locked),
         headerHeight: headerRect ? Math.round(headerRect.height) : 0,
-        headerOverlaps: headerOverlaps
+        headerOverlaps: headerOverlaps,
+        hasSharedHeader: Boolean(header),
+        navVisible: visible(sharedNav),
+        navToggleVisible: visible(navToggle),
+        navToggleExpanded: navToggle ? navToggle.getAttribute("aria-expanded") : null,
+        drawerPresent: Boolean(navDrawer),
+        drawerAriaHidden: navDrawer ? navDrawer.getAttribute("aria-hidden") : null,
+        visibleDesktopNavLinks: visibleDesktopNavLinks
     };
 })();`;
 
@@ -364,6 +381,26 @@ function validateResult(result, page, viewport) {
         failures.push(`header controls overlap: ${result.headerOverlaps.map((item) => `${item.a} ↔ ${item.b}`).join(", ")}`);
     }
 
+    if (result.hasSharedHeader) {
+        if (viewport.width <= 1199) {
+            if (result.navVisible) failures.push("desktop shared navigation is visible at a responsive Menu width");
+            if (!result.navToggleVisible) failures.push("responsive Menu toggle is not visible");
+            if (Array.isArray(result.visibleDesktopNavLinks) && result.visibleDesktopNavLinks.length) {
+                failures.push(`desktop navigation links remain visible: ${result.visibleDesktopNavLinks.join(", ")}`);
+            }
+            if (!result.drawerPresent) failures.push("responsive navigation drawer is missing");
+            if (result.drawerPresent && result.drawerAriaHidden !== "true") {
+                failures.push(`navigation drawer is not closed at rest (aria-hidden=${result.drawerAriaHidden})`);
+            }
+            if (result.navToggleExpanded !== "false") {
+                failures.push(`Menu toggle is not collapsed at rest (aria-expanded=${result.navToggleExpanded})`);
+            }
+        } else {
+            if (!result.navVisible) failures.push("desktop shared navigation is not visible");
+            if (result.navToggleVisible) failures.push("responsive Menu toggle remains visible on desktop");
+        }
+    }
+
     if (failures.length) {
         const offenderText = result.overflowOffenders && result.overflowOffenders.length
             ? ` | overflow candidates: ${result.overflowOffenders.map((item) => `${item.element}[${item.left},${item.right}]`).join(", ")}`
@@ -415,7 +452,10 @@ async function main() {
                     const result = await executeDiagnostics(sessionId);
                     validateResult(result, page, viewport);
                     widestHeader = Math.max(widestHeader, result.headerHeight || 0);
-                    console.log(`PASS ${viewport.label.padEnd(17)} ${page} | overflow ${result.horizontalOverflow}px | header ${result.headerHeight}px`);
+                    const navState = result.hasSharedHeader
+                        ? ` | nav ${result.navVisible ? "desktop" : "menu"}`
+                        : "";
+                    console.log(`PASS ${viewport.label.padEnd(17)} ${page} | overflow ${result.horizontalOverflow}px | header ${result.headerHeight}px${navState}`);
                 } catch (error) {
                     failures.push(error.message);
                     console.error(`FAIL ${error.message}`);

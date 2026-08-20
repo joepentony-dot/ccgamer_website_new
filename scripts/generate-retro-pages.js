@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const { applyTemplate, readTemplate } = require('./template-engine');
+const { normaliseHtml, STATIC_SHELL_VERSION } = require('./normalize-public-header-shell');
 
 function resolveRootArgument() {
   const rootIndex = process.argv.indexOf('--root');
@@ -220,6 +221,18 @@ function validateGeneratedHtml(html, canonicalUrl) {
   const problems = [];
   if (!html.includes('class="retro-video-page')) problems.push('generated HTML missing retro-video-page root class');
   if (!html.includes('class="ccg-header"')) problems.push('generated HTML missing the shared site header');
+  if (!html.includes(`data-ccg-static-shell="${STATIC_SHELL_VERSION}"`)) problems.push('generated HTML missing canonical static-shell version');
+  if (!html.includes('>Publishers</a>')) problems.push('generated HTML missing canonical Publishers navigation');
+  if (!html.includes('>Music Hub</a>')) problems.push('generated HTML missing canonical Music Hub navigation');
+  if (!html.includes('>Find Me a Game</a>')) problems.push('generated HTML missing canonical discovery navigation');
+  if (!html.includes('>Zzap!64 Reviews &amp; Awards</a>')) problems.push('generated HTML missing canonical Zzap navigation');
+  if (!html.includes('>Install CCG App</a>')) problems.push('generated HTML missing canonical PWA navigation');
+  if (!html.includes('class="ccg-auth-slot" data-ccg-auth-pending="true"')) problems.push('generated HTML missing canonical auth slot');
+  for (const socialClass of ['ccg-socials__icon--yt', 'ccg-socials__icon--patreon', 'ccg-socials__icon--paypal', 'ccg-socials__icon--x', 'ccg-socials__icon--fb', 'ccg-socials__icon--discord']) {
+    if (!html.includes(socialClass)) problems.push(`generated HTML missing canonical social icon ${socialClass}`);
+  }
+  if (!html.includes('src="/js/ccg-header-auth-loader.js"')) problems.push('generated HTML missing canonical auth loader');
+  if (!html.includes('src="/js/ccg-nav-fit.js"')) problems.push('generated HTML missing canonical nav-fit loader');
   if (!html.includes('retro-video-page__hero-media')) problems.push('generated HTML missing the visual feature hero');
   if (!html.includes('retro-video-page__watch')) problems.push('generated HTML missing the dedicated watch panel');
   if (!html.includes('/resources/css/retro-video-pages.css')) problems.push('generated HTML missing retro-video-pages.css');
@@ -276,7 +289,7 @@ function generateDatasetPages(config, template) {
     const { seoTitle, seoDescription } = buildSeo(entry, entry.title || '', description);
     const relatedItemsHtml = buildRelatedItems(normalizedItems, slug, config.pagePrefix);
 
-    const html = applyTemplate(template, {
+    const renderedHtml = applyTemplate(template, {
       SEO_TITLE: escapeHtml(seoTitle),
       SEO_DESCRIPTION: escapeHtml(seoDescription),
       CANONICAL_URL: canonicalUrl,
@@ -301,6 +314,14 @@ function generateDatasetPages(config, template) {
       MEMBERS_BADGE: entry.membersOnly ? '<p class="game-tag">Members only</p>' : '',
       RELATED_ITEMS: relatedItemsHtml
     });
+
+    const shellResult = normaliseHtml(renderedHtml);
+    if (!shellResult.applicable || shellResult.malformed) {
+      skippedCount += 1;
+      console.error(`[retro] BLOCKED HTML ${config.label}:${label}: generated page cannot be canonicalized to the shared shell`);
+      return;
+    }
+    const html = shellResult.html;
 
     const htmlProblems = validateGeneratedHtml(html, canonicalUrl);
     if (htmlProblems.length) {

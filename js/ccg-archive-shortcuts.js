@@ -1,7 +1,9 @@
 /* ============================================================
    CCG ARCHIVE SHORTCUTS
-   Adds distinctive archive destinations without rewriting the
-   duplicated static navigation markup on generated pages.
+   ------------------------------------------------------------
+   Adds distinctive archive destinations to global search only.
+   Public navigation is owned exclusively by ccg-nav-core.js;
+   this module must never inject or reorder navigation links.
 ============================================================ */
 
 (function () {
@@ -24,21 +26,6 @@
 
     function normalize(value) {
         return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-    }
-
-    function addNavigationLinks() {
-        document.querySelectorAll("[data-ccg-nav-secondary]").forEach((list) => {
-            SHORTCUTS.forEach((shortcut) => {
-                if (list.querySelector(`a[href="${shortcut.href}"]`)) return;
-                const li = document.createElement("li");
-                const link = document.createElement("a");
-                link.className = "ccg-nav__link";
-                link.href = shortcut.href;
-                link.textContent = shortcut.label;
-                li.appendChild(link);
-                list.prepend(li);
-            });
-        });
     }
 
     function createSearchResult(shortcut) {
@@ -92,10 +79,8 @@
     }
 
     function init() {
-        addNavigationLinks();
         if (bindSearch()) return;
         const observer = new MutationObserver(() => {
-            addNavigationLinks();
             if (bindSearch()) observer.disconnect();
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });

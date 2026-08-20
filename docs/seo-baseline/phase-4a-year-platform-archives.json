@@ -439,6 +439,13 @@
         "has_platform_control": false
       },
       {
+        "file": "js/ccg-header-auth-loader.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
         "file": "js/ccg-mobile-lite.js",
         "mentions_year": false,
         "mentions_platform_or_system": false,
@@ -461,6 +468,13 @@
       },
       {
         "file": "js/ccg-nav-core.js",
+        "mentions_year": false,
+        "mentions_platform_or_system": false,
+        "has_year_control": false,
+        "has_platform_control": false
+      },
+      {
+        "file": "js/ccg-nav-fit.js",
         "mentions_year": false,
         "mentions_platform_or_system": false,
         "has_year_control": false,

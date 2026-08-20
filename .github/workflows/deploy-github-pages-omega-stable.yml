@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build-and-deploy:
@@ -82,6 +82,13 @@ jobs:
           node scripts/validate-seo-genre-links.js --root _site
           (cd _site && node ../scripts/validate-sitemaps.js)
 
+      - name: Canonicalize first-paint public header shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/normalize-public-header-shell.js --root _site
+          node scripts/normalize-public-header-shell.js --root _site --check
+
       - name: Verify staged public features
         shell: bash
         run: |
@@ -98,6 +105,35 @@ jobs:
           grep -Fq 'Content Announcements' _site/admin/announce.html
           grep -Fq 'announceContentFilter' _site/admin/announce.html
           grep -Fq 'RETRO_SPECIALS_DATA_PATH' _site/admin/js/announce.js
+
+          # Every representative public shell must be canonical before upload, not repaired after first paint.
+          shell_pages=(
+            _site/home.html
+            _site/games/index.html
+            _site/zzap64/index.html
+            _site/quiz/quiz.html
+            _site/emulation.html
+            _site/games/1942/index.html
+            _site/community/profile.html
+          )
+          for page in "${shell_pages[@]}"; do
+            test -f "$page"
+            grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' "$page"
+            grep -Fq '>Publishers</a>' "$page"
+            grep -Fq '>Music Hub</a>' "$page"
+            grep -Fq '>Find Me a Game</a>' "$page"
+            grep -Fq '>Zzap!64 Reviews &amp; Awards</a>' "$page"
+            grep -Fq '>Install CCG App</a>' "$page"
+            grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' "$page"
+            grep -Fq 'ccg-socials__icon--yt' "$page"
+            grep -Fq 'ccg-socials__icon--patreon' "$page"
+            grep -Fq 'ccg-socials__icon--paypal' "$page"
+            grep -Fq 'ccg-socials__icon--x' "$page"
+            grep -Fq 'ccg-socials__icon--fb' "$page"
+            grep -Fq 'ccg-socials__icon--discord' "$page"
+            grep -Fq 'src="/js/ccg-header-auth-loader.js"' "$page"
+            grep -Fq 'src="/js/ccg-nav-fit.js"' "$page"
+          done
 
           # Retro editorial collections must publish the unified collection presentation.
           for page in \
@@ -247,6 +283,15 @@ jobs:
             "${PAGE_URL%/}/amiga-demo-music/red-sector-folow-me/?deployment=${GITHUB_SHA}"
             "${PAGE_URL%/}/retro-specials/50-essential-amiga-games/?deployment=${GITHUB_SHA}"
           )
+          shell_targets=(
+            "${PAGE_URL%/}/home.html?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/games/?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/zzap64/?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/quiz/quiz.html?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/emulation.html?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/games/1942/?deployment=${GITHUB_SHA}"
+            "${PAGE_URL%/}/community/profile.html?deployment=${GITHUB_SHA}"
+          )
 
           for attempt in $(seq 1 18); do
             announcement_body="$(curl --fail --silent --show-error --location --max-time 30 "$announcement_target" || true)"
@@ -266,6 +311,22 @@ jobs:
                 || printf '%s' "$game_body" | grep -Fq '/games/game.html?id=' \
                 || printf '%s' "$game_body" | grep -Fqi 'http-equiv="refresh"'; then
                 games_ok=false
+                break
+              fi
+            done
+
+            shell_ok=true
+            for target in "${shell_targets[@]}"; do
+              shell_body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
+              if ! printf '%s' "$shell_body" | grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' \
+                || ! printf '%s' "$shell_body" | grep -Fq '>Publishers</a>' \
+                || ! printf '%s' "$shell_body" | grep -Fq '>Music Hub</a>' \
+                || ! printf '%s' "$shell_body" | grep -Fq '>Find Me a Game</a>' \
+                || ! printf '%s' "$shell_body" | grep -Fq '>Install CCG App</a>' \
+                || ! printf '%s' "$shell_body" | grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' \
+                || ! printf '%s' "$shell_body" | grep -Fq 'ccg-socials__icon--discord' \
+                || ! printf '%s' "$shell_body" | grep -Fq 'src="/js/ccg-header-auth-loader.js"'; then
+                shell_ok=false
                 break
               fi
             done
@@ -315,11 +376,12 @@ jobs:
               && ! printf '%s' "$shop_body" | grep -Fq 'Retro Merchandise' \
               && ! printf '%s' "$shop_body" | grep -Fq 'Digital Products' \
               && [ "$games_ok" = true ] \
+              && [ "$shell_ok" = true ] \
               && [ "$genre_ok" = true ] \
               && [ "$retro_ok" = true ] \
               && [ "$retro_assets_ok" = true ] \
               && [ "$quiz_ok" = true ]; then
-              echo "Verified announcement, support pages, canonical game routes, crawlable genre links, retro detail layouts, collection assets, and quiz experience assets."
+              echo "Verified canonical first-paint public shell, announcement and support pages, canonical game routes, crawlable genre links, retro detail layouts, collection assets, and quiz experience assets."
               exit 0
             fi
 
@@ -327,5 +389,5 @@ jobs:
             sleep 10
           done
 
-          echo "The deployment completed, but the expected public pages, canonical game routes, genre fallbacks, retro layouts, or quiz experience were not visible after three minutes." >&2
+          echo "The deployment completed, but the canonical first-paint shell or another expected public feature was not visible after three minutes." >&2
           exit 1

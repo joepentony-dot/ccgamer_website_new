@@ -1,0 +1,7 @@
+CCG Pages release marker
+
+Requested release: canonical public shell source cleanse
+Source baseline: 34cd94ffe3e44745451734d9baf42c6260451607
+Release date: 2026-08-19
+
+This file is intentionally kept under .github/ so it is excluded from the public Pages artifact. Updating this marker provides a safe explicit Pages redeploy trigger when workflow_dispatch is not available through the connected GitHub tool.

@@ -10,8 +10,8 @@
    report requests continue to go directly to Google's Data API.
 
    If Google returns SERVICE_DISABLED for the Data API, the wrapper
-   preserves the 403 but replaces the huge raw payload with a short,
-   actionable diagnostic containing the exact Cloud project/service.
+   preserves the 403, identifies the exact Google Cloud project and
+   adds a direct recovery control to the admin page.
 ============================================================ */
 
 (function () {
@@ -27,6 +27,7 @@
   const DATA_ORIGIN = "https://analyticsdata.googleapis.com";
   const DATA_SERVICE = "analyticsdata.googleapis.com";
   const nativeFetch = window.fetch.bind(window);
+  let blockedProjectNumber = "";
 
   window.CCG_ANALYTICS_GROWTH_CONFIG = Object.freeze({
     ga4PropertyId: PROPERTY_ID,
@@ -78,8 +79,88 @@
     return messageMatch ? messageMatch[1] : "";
   }
 
+  function dataApiConsoleUrl(projectNumber) {
+    const project = encodeURIComponent(String(projectNumber || ""));
+    return `https://console.cloud.google.com/apis/library/${DATA_SERVICE}${project ? `?project=${project}` : ""}`;
+  }
+
+  function ensureRecoveryStyles() {
+    if (document.getElementById("ccg-ga4-data-api-recovery-styles")) return;
+    const style = document.createElement("style");
+    style.id = "ccg-ga4-data-api-recovery-styles";
+    style.textContent = `
+      .growth-data-api-recovery{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin:-4px 0 18px;padding:14px 16px;border:1px solid rgba(255,184,77,.55);border-radius:12px;background:rgba(255,184,77,.07)}
+      .growth-data-api-recovery__copy{min-width:min(100%,520px);flex:1 1 560px}.growth-data-api-recovery__copy strong,.growth-data-api-recovery__copy span{display:block}.growth-data-api-recovery__copy span{margin-top:4px;line-height:1.45;opacity:.82}.growth-data-api-recovery__actions{display:flex;flex-wrap:wrap;gap:8px}.growth-data-api-recovery__actions .ccg-btn{white-space:nowrap}@media(max-width:620px){.growth-data-api-recovery__actions,.growth-data-api-recovery__actions .ccg-btn{width:100%}}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function removeRecoveryUi() {
+    document.querySelector("[data-growth-data-api-recovery]")?.remove();
+  }
+
+  function renderRecoveryUi(projectNumber) {
+    const status = document.querySelector("[data-growth-status]");
+    if (!status) return;
+    ensureRecoveryStyles();
+
+    let panel = document.querySelector("[data-growth-data-api-recovery]");
+    if (!panel) {
+      panel = document.createElement("section");
+      panel.className = "growth-data-api-recovery";
+      panel.dataset.growthDataApiRecovery = "true";
+      status.insertAdjacentElement("afterend", panel);
+    }
+
+    const project = String(projectNumber || "the OAuth Cloud project");
+    panel.innerHTML = `
+      <div class="growth-data-api-recovery__copy">
+        <strong>GA4 needs one Google Cloud switch enabled</strong>
+        <span>CCG property ${PROPERTY_ID} is already configured. Project ${escapeHtml(project)} is blocking ${DATA_SERVICE}; enable the Google Analytics Data API there, then reconnect this report.</span>
+      </div>
+      <div class="growth-data-api-recovery__actions">
+        <a class="ccg-btn ccg-btn--primary" href="${escapeHtml(dataApiConsoleUrl(projectNumber))}" target="_blank" rel="noopener noreferrer">Enable Google Analytics Data API</a>
+        <button type="button" class="ccg-btn ccg-btn--ghost" data-growth-data-api-retry>Reconnect Google Data</button>
+      </div>`;
+
+    panel.querySelector("[data-growth-data-api-retry]")?.addEventListener("click", () => {
+      document.querySelector("[data-growth-connect]")?.click();
+    });
+  }
+
+  function simplifyBlockedStatus() {
+    const status = document.querySelector("[data-growth-status]");
+    if (!status || !blockedProjectNumber) return;
+    const text = String(status.textContent || "");
+    if (!/GA4 unavailable|Data API report failed \(403\)|analyticsdata\.googleapis\.com/i.test(text)) return;
+
+    const concise = `Search Console loaded · GA4 blocked by Google Cloud project ${blockedProjectNumber}: Google Analytics Data API is disabled. Enable it below, then reconnect Google Data.`;
+    if (status.textContent !== concise) status.textContent = concise;
+    status.dataset.state = "error";
+    renderRecoveryUi(blockedProjectNumber);
+  }
+
+  function installStatusObserver() {
+    const start = Date.now();
+    const timer = window.setInterval(() => {
+      const status = document.querySelector("[data-growth-status]");
+      if (!status) {
+        if (Date.now() - start > 10000) window.clearInterval(timer);
+        return;
+      }
+      window.clearInterval(timer);
+      const observer = new MutationObserver(() => simplifyBlockedStatus());
+      observer.observe(status, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["data-state"] });
+      simplifyBlockedStatus();
+    }, 50);
+  }
+
   async function conciseDataApiError(response) {
-    if (response.status !== 403) return response;
+    if (response.status !== 403) {
+      blockedProjectNumber = "";
+      removeRecoveryUi();
+      return response;
+    }
 
     let payload = null;
     try {
@@ -99,6 +180,12 @@
     if (!isDataApiDisabled) return response;
 
     const projectNumber = projectNumberFromError(payload, info) || "the OAuth Cloud project";
+    blockedProjectNumber = projectNumber;
+    window.setTimeout(() => {
+      renderRecoveryUi(projectNumber);
+      simplifyBlockedStatus();
+    }, 0);
+
     const diagnostic = [
       `CCG GA4 property ${PROPERTY_ID} is configured correctly`,
       `but Google Cloud project ${projectNumber} is rejecting the Google Analytics Data API (${DATA_SERVICE})`,
@@ -117,6 +204,16 @@
         "X-CCG-Google-Project": projectNumber
       }
     });
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[char]));
   }
 
   window.fetch = async function ccgAnalyticsGrowthConfiguredFetch(input, init) {
@@ -138,4 +235,6 @@
     if (url.origin === DATA_ORIGIN) return conciseDataApiError(response);
     return response;
   };
+
+  installStatusObserver();
 })();
