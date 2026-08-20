@@ -1,0 +1,57 @@
+/* ============================================================
+   CCG HOME — INSTALL APP CTA
+   ------------------------------------------------------------
+   Scoped only to the compact support strip on home.html.
+============================================================ */
+
+html[data-ccg-page="home"] .home-support-strip__app {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 190px;
+    color: #f7fbff;
+    border-color: rgba(104, 226, 255, 0.72);
+    background:
+        linear-gradient(135deg, rgba(17, 96, 177, 0.96), rgba(88, 46, 155, 0.94));
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04),
+        0 0 18px rgba(40, 194, 255, 0.22),
+        0 10px 24px rgba(0, 0, 0, 0.32);
+}
+
+html[data-ccg-page="home"] .home-support-strip__app-icon {
+    display: block;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    border-radius: 7px;
+    object-fit: contain;
+    box-shadow: 0 0 10px rgba(88, 220, 255, 0.26);
+}
+
+html[data-ccg-page="home"] .home-support-strip__app span {
+    line-height: 1;
+    white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    html[data-ccg-page="home"] .home-support-strip__app:hover,
+    html[data-ccg-page="home"] .home-support-strip__app:focus-visible {
+        color: #ffffff;
+        border-color: rgba(159, 239, 255, 0.96);
+        background:
+            linear-gradient(135deg, rgba(22, 118, 211, 0.98), rgba(111, 55, 190, 0.98));
+        box-shadow:
+            0 0 0 1px rgba(255, 255, 255, 0.08),
+            0 0 24px rgba(40, 194, 255, 0.34),
+            0 12px 28px rgba(0, 0, 0, 0.38);
+    }
+}
+
+@media (max-width: 620px) {
+    html[data-ccg-page="home"] .home-support-strip__app {
+        width: 100%;
+        min-width: 0;
+    }
+}

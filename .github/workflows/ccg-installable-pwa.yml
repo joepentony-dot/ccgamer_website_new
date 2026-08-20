@@ -15,9 +15,11 @@ on:
       - "js/ccg-nav-fit.js"
       - "resources/css/ccg-app-launch.css"
       - "resources/css/ccg-pwa.css"
+      - "resources/css/ccg-pwa-home-cta.css"
       - "resources/images/ccg-app-icon-v2.svg"
       - "resources/images/ccg-app-icon-maskable-v2.svg"
       - "scripts/audit-installable-pwa.js"
+      - "tests/home-pwa-cta.test.mjs"
       - "docs/phase-17-installable-pwa.md"
       - ".github/workflows/ccg-installable-pwa.yml"
   workflow_dispatch:
@@ -49,6 +51,9 @@ jobs:
 
       - name: Run installable app audit
         run: node scripts/audit-installable-pwa.js
+
+      - name: Run home install CTA regression
+        run: node --test tests/home-pwa-cta.test.mjs
 
       - name: Confirm audit made no repository changes
         run: |
