@@ -1,0 +1,546 @@
+{
+  "version": "2026-08-20",
+  "source": "SEO Opportunity Centre recommendations",
+  "notes": [
+    "This public plan intentionally stores no clicks, impressions, positions, CTR values, or exported Search Console rows.",
+    "Growth-only routes are preserved unless another action also requires intervention.",
+    "Legacy query-string handlers are retirement diagnostics and map to canonical routes rather than being strengthened."
+  ],
+  "targets": [
+    {
+      "observedRoute": "/retro-specials/50-essential-amiga-games/",
+      "actions": [
+        "improveSnippet",
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "best Amiga games",
+      "seoTitle": "Best Amiga Games – 50 Essential Amiga Games | CCG",
+      "seoDescription": "Discover 50 of the best Amiga games ever made, from arcade action and strategy to adventures, simulations and essential Commodore Amiga classics."
+    },
+    {
+      "observedRoute": "/games/cavelon/",
+      "actions": [
+        "improveSnippet",
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Cavelon",
+      "seoTitle": "Cavelon C64 – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Cavelon on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/skidmarks/",
+      "actions": [
+        "improveSnippet",
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Skidmarks Amiga",
+      "seoTitle": "Skidmarks Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Skidmarks on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/another-world/",
+      "actions": [
+        "improveSnippet",
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Another World Amiga",
+      "seoTitle": "Another World Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Another World on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/retro-specials/c64-vs-zx-spectrum/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "C64 vs ZX Spectrum",
+      "seoTitle": "C64 vs ZX Spectrum – Commodore 64 vs Spectrum | CCG",
+      "seoDescription": "C64 vs ZX Spectrum: compare the Commodore 64 and Sinclair ZX Spectrum through their games, strengths, differences and enduring 8-bit rivalry."
+    },
+    {
+      "observedRoute": "/games/aliens-the-computer-game/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Aliens: The Computer Game",
+      "seoTitle": "Aliens: The Computer Game C64 – Review & Gameplay | CCG",
+      "descriptionLead": "Aliens: The Computer Game on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/north-south/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "North & South Amiga",
+      "seoTitle": "North & South Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "North & South on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/action-biker/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Action Biker",
+      "seoTitle": "Action Biker C64 – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Action Biker on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/wings/",
+      "actions": [
+        "strengthenRelevance",
+        "investigateDecline"
+      ],
+      "focusPhrase": "Wings Amiga",
+      "seoTitle": "Wings Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Wings on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/music/david-whittaker/",
+      "actions": [
+        "strengthenRelevance"
+      ],
+      "focusPhrase": "David Whittaker born 1957",
+      "seoTitle": "David Whittaker – C64 Composer, Biography & Game Music | CCG",
+      "seoDescription": "David Whittaker, born in 1957, is an English video-game composer and programmer. Explore his C64 and Amiga music, biography and game credits."
+    },
+    {
+      "observedRoute": "/games/ninja-rabbits/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Ninja Rabbits manual PDF",
+      "seoTitle": "Ninja Rabbits C64 – Manual, Review & Gameplay | CCG",
+      "descriptionLead": "Ninja Rabbits on Commodore 64 — manual, review, screenshots and gameplay video."
+    },
+    {
+      "observedRoute": "/games/dizzy/",
+      "actions": [
+        "strengthenRelevance",
+        "investigateDecline"
+      ],
+      "focusPhrase": "Dizzy C64",
+      "seoTitle": "Dizzy C64 – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Dizzy on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/battle-chess/",
+      "actions": [
+        "strengthenRelevance",
+        "reviewMixedSignal"
+      ],
+      "focusPhrase": "Battle Chess Amiga",
+      "seoTitle": "Battle Chess Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Battle Chess on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/hunter/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Hunter Amiga",
+      "seoTitle": "Hunter Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Hunter on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/music/keith-tinman/",
+      "actions": [
+        "strengthenRelevance"
+      ],
+      "focusPhrase": "Keith Tinman",
+      "seoTitle": "Keith Tinman – C64 & Amiga Game Music Composer | CCG",
+      "seoDescription": "Explore Keith Tinman’s Commodore 64 and Amiga game-music credits, composer profile and linked games in the Cheeky Commodore Gamer archive."
+    },
+    {
+      "observedRoute": "/games/cadaver/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Cadaver Amiga",
+      "seoTitle": "Cadaver Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Cadaver on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/heimdall/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Heimdall Amiga",
+      "seoTitle": "Heimdall Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Heimdall on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/chuckie-egg/",
+      "actions": [
+        "strengthenRelevance"
+      ],
+      "focusPhrase": "Chuckie Egg",
+      "seoTitle": "Chuckie Egg C64 – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Chuckie Egg on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/retro-specials/50-essential-commodore-64-games/",
+      "actions": [
+        "strengthenRelevance",
+        "protectGrowth"
+      ],
+      "focusPhrase": "best C64 games",
+      "seoTitle": "Best C64 Games – 50 Essential Commodore 64 Games | CCG",
+      "seoDescription": "Discover 50 of the best Commodore 64 games ever made, covering essential C64 classics across arcade action, adventure, strategy, racing and more."
+    },
+    {
+      "observedRoute": "/games/the-last-v8/",
+      "actions": [
+        "improveSnippet"
+      ],
+      "focusPhrase": "The Last V8",
+      "seoTitle": "The Last V8 C64 – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "The Last V8 on Commodore 64 — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/robocop-3/",
+      "actions": [
+        "improveSnippet",
+        "protectGrowth"
+      ],
+      "focusPhrase": "RoboCop 3 Amiga",
+      "seoTitle": "RoboCop 3 Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "RoboCop 3 on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/dune/",
+      "actions": [
+        "improveSnippet",
+        "protectGrowth"
+      ],
+      "focusPhrase": "Dune Amiga",
+      "seoTitle": "Dune Amiga – Review, Manual & Gameplay | CCG",
+      "descriptionLead": "Dune on Amiga — review, screenshots, manual and gameplay video."
+    },
+    {
+      "observedRoute": "/games/west-bank/",
+      "actions": [
+        "reviewMixedSignal"
+      ]
+    },
+    {
+      "observedRoute": "/games/barbarian-the-ultimate-warrior/",
+      "actions": [
+        "reviewMixedSignal"
+      ]
+    },
+    {
+      "observedRoute": "/quiz/quiz.html",
+      "actions": [
+        "reviewMixedSignal"
+      ],
+      "focusPhrase": "Commodore 64 quiz",
+      "seoTitle": "Commodore 64 Quiz – Test Your C64 Knowledge | CCG",
+      "seoDescription": "Test your Commodore 64 knowledge with CCG's C64 quiz packs, timed retro trivia questions and final score summaries."
+    },
+    {
+      "observedRoute": "/retro-specials/zzap64-gold-medals-sizzlers-1986/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/samurai-warrior-the-battles-of-usagi-yojimbo/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/terminator-2-judgment-day/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/retro-specials/top-15-commodore-64-games/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/dynablaster/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/it-came-from-the-desert/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/emulation.html",
+      "actions": [
+        "investigateDecline"
+      ],
+      "focusPhrase": "Commodore 64 emulator",
+      "seoTitle": "Commodore 64 Emulator & Amiga Emulation Guide | CCG",
+      "seoDescription": "Learn how to play Commodore 64 and Amiga games today with emulator setup, browser options, THEC64 Mini/THEC64 guidance and modern hardware tips."
+    },
+    {
+      "observedRoute": "/games/street-fighter/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/crystal-dragon/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/shinobi/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/the-settlers/",
+      "actions": [
+        "investigateDecline"
+      ]
+    },
+    {
+      "observedRoute": "/games/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/laser-squad/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/hostages/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/defender/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/arkanoid/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/sensible-golf/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/heart-of-africa/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/the-human-race/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/ghostbusters/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/beyond-the-forbidden-forest/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/lotus-turbo-challenge-2/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/music/composer.html?name=Russell+Lieblich",
+      "actions": [
+        "retireLegacy",
+        "protectGrowth"
+      ],
+      "canonicalTarget": "/music/russell-lieblich/"
+    },
+    {
+      "observedRoute": "/games/mega-lo-mania/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/cabal/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/up-n-down/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/music/composer.html?name=Jeroen+Tel",
+      "actions": [
+        "retireLegacy",
+        "protectGrowth"
+      ],
+      "canonicalTarget": "/music/jeroen-tel/"
+    },
+    {
+      "observedRoute": "/games/chiller/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/cauldron-2-the-pumpkin-strikes-back/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/",
+      "actions": [
+        "protectGrowth"
+      ],
+      "protected": true
+    },
+    {
+      "observedRoute": "/games/rock-n-wrestle/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/knight-games/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/music/composer.html?name=Matt+Gray",
+      "actions": [
+        "retireLegacy",
+        "protectGrowth"
+      ],
+      "canonicalTarget": "/music/matt-gray/"
+    },
+    {
+      "observedRoute": "/games/silent-service/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/back-to-the-future/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/heroquest/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/music/composer.html?name=Richard+Joseph",
+      "actions": [
+        "retireLegacy",
+        "protectGrowth"
+      ],
+      "canonicalTarget": "/music/richard-joseph/"
+    },
+    {
+      "observedRoute": "/about.html",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/emlyn-hughes-international-soccer/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/amiga-demo-music/9-fingers-spaceballs/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/spelunker/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/starquake/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/pole-position/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/pitfall-2-lost-caverns/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/combat-school/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/road-runner/",
+      "actions": [
+        "protectGrowth"
+      ]
+    },
+    {
+      "observedRoute": "/games/apollo-18-mission-to-the-moon/",
+      "actions": [
+        "protectGrowth"
+      ]
+    }
+  ]
+}

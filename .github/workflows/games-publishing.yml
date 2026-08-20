@@ -19,6 +19,7 @@ on:
       - "data/magazine-review-records/**"
       - "data/publisher-secondary-credits.json"
       - "data/publisher-histories*.json"
+      - "data/seo-opportunity-targets.json"
       - "admin/js/content-publisher-image-optimizer.js"
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
@@ -28,6 +29,7 @@ on:
       - "scripts/upgrade-games-index.js"
       - "scripts/upgrade-category-pages.js"
       - "scripts/rebuild-games.js"
+      - "scripts/apply-seo-opportunity-plan.js"
       - "scripts/build-games.js"
       - "scripts/build-magazine-review-chunks.js"
       - "scripts/import-amiga-magazine-reviews.js"
@@ -71,7 +73,10 @@ on:
       - "tests/magazine-publishing-pipeline.test.mjs"
       - "tests/cloudflare-audio-admin.test.mjs"
       - "tests/manual-viewer-polish.test.mjs"
+      - "tests/seo-opportunity-plan.test.mjs"
       - "tools/seo/static-pages.json"
+      - "emulation.html"
+      - "quiz/quiz.html"
   workflow_dispatch:
 
 env:
@@ -109,6 +114,9 @@ jobs:
 
       - name: Validate manual viewer publishing contract
         run: node --test tests/manual-viewer-polish.test.mjs
+
+      - name: Validate SEO opportunity plan
+        run: node --test tests/seo-opportunity-plan.test.mjs
 
       - name: Repair historical Mr Weems thumbnail source
         run: node scripts/migrate-mr-weems-thumbnail.js
@@ -169,6 +177,8 @@ jobs:
             retro-events \
             retro-specials \
             amiga-demo-music \
+            emulation.html \
+            quiz/quiz.html \
             tools/seo/static-pages.json \
             sitemap.xml \
             sitemap-*.xml \

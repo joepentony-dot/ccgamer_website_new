@@ -48,6 +48,10 @@ jobs:
           node --check scripts/validate-video-library.js
           node --check scripts/generate-sitemaps.js
           node --check scripts/validate-sitemaps.js
+          node --check scripts/apply-seo-opportunity-plan.js
+
+      - name: Validate SEO opportunity plan
+        run: node --test tests/seo-opportunity-plan.test.mjs
 
       - name: Regenerate retro feature pages
         run: |
@@ -64,6 +68,11 @@ jobs:
         run: |
           echo "[rebuild-retro] Applying dedicated watch-page markup and building the retro video sitemap..."
           node scripts/generate-retro-video-seo.js
+
+      - name: Reapply Search Console opportunity metadata
+        run: |
+          node scripts/apply-seo-opportunity-plan.js --scope retro
+          node scripts/apply-seo-opportunity-plan.js --scope retro --check
 
       - name: Generate video library and key moments
         run: |
