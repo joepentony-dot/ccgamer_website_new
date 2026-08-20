@@ -34,9 +34,12 @@ function injectManualViewerPolish(html) {
   return output;
 }
 
-function canonicalGameFiles(root) {
+function canonicalGameFiles(root, { templateOnly = false } = {}) {
+  const template = path.join(root, "games", "game.html");
+  if (templateOnly) return [template];
+
   const gamesJsonPath = path.join(root, "games", "games.json");
-  const files = [path.join(root, "games", "game.html")];
+  const files = [template];
 
   if (!fs.existsSync(gamesJsonPath)) return files;
 
@@ -50,13 +53,13 @@ function canonicalGameFiles(root) {
   return files;
 }
 
-function run({ root, check = false } = {}) {
+function run({ root, check = false, templateOnly = false } = {}) {
   const resolvedRoot = path.resolve(root || path.resolve(__dirname, ".."));
   let checked = 0;
   let changed = 0;
   const missing = [];
 
-  for (const filePath of canonicalGameFiles(resolvedRoot)) {
+  for (const filePath of canonicalGameFiles(resolvedRoot, { templateOnly })) {
     if (!fs.existsSync(filePath)) {
       missing.push(path.relative(resolvedRoot, filePath));
       continue;
@@ -77,9 +80,10 @@ function run({ root, check = false } = {}) {
 function main(argv = process.argv.slice(2)) {
   const root = readArg(argv, "--root", path.resolve(__dirname, ".."));
   const check = argv.includes("--check");
-  const result = run({ root, check });
+  const templateOnly = argv.includes("--template-only");
+  const result = run({ root, check, templateOnly });
 
-  console.log(`[manual-viewer-polish] Checked ${result.checked} game shell/page file(s).`);
+  console.log(`[manual-viewer-polish] Checked ${result.checked} ${templateOnly ? "game template" : "game shell/page"} file(s).`);
   console.log(`[manual-viewer-polish] ${check ? "Would change" : "Changed"}: ${result.changed}.`);
 
   if (result.missing.length) {
@@ -97,6 +101,7 @@ if (require.main === module) main();
 module.exports = {
   SCRIPT_SRC,
   STYLE_HREF,
+  canonicalGameFiles,
   injectManualViewerPolish,
   run,
 };
