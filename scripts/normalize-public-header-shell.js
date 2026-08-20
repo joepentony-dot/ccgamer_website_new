@@ -48,10 +48,20 @@ function isSourceRepositoryRoot(root) {
     && fs.existsSync(path.join(absoluteRoot, "js", "ccg-music-navigation.js"));
 }
 
+function resolveMusicHeaderSource(root) {
+  const requestedRoot = path.resolve(root);
+  const repositoryRoot = path.resolve(__dirname, "..");
+  const candidates = [
+    path.join(requestedRoot, "js", "ccg-music-navigation.js"),
+    path.join(repositoryRoot, "js", "ccg-music-navigation.js")
+  ];
+  return candidates.find((candidate, index) => fs.existsSync(candidate) && candidates.indexOf(candidate) === index) || "";
+}
+
 function extractMusicHeaderMarkup(root) {
-  const sourcePath = path.join(path.resolve(root), "js", "ccg-music-navigation.js");
-  if (!fs.existsSync(sourcePath)) {
-    throw new Error(`Music navigation source is missing: ${sourcePath}`);
+  const sourcePath = resolveMusicHeaderSource(root);
+  if (!sourcePath) {
+    throw new Error(`Music navigation source is missing for staged root: ${path.resolve(root)}`);
   }
 
   const source = fs.readFileSync(sourcePath, "utf8");
@@ -212,6 +222,7 @@ module.exports = {
   isMusicPage,
   hasPublicHeader,
   isSourceRepositoryRoot,
+  resolveMusicHeaderSource,
   extractMusicHeaderMarkup,
   prepareMusicFirstPaintShell,
   normaliseHtml,
