@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
+import vm from 'node:vm';
 
 const script = fs.readFileSync('admin/js/seo-opportunity-managed-routes.js', 'utf8');
 const css = fs.readFileSync('resources/css/ccg-seo-opportunity-centre.css', 'utf8');
@@ -51,6 +52,79 @@ test('resolution observer cannot recursively watch its own table decorations', (
   assert.doesNotMatch(script, /observe\(host, \{ childList: true, subtree: true \}\)/);
   assert.match(script, /if \(button\.textContent !== label\) button\.textContent = label/);
   assert.match(script, /if \(button\.disabled !== disabled\) button\.disabled = disabled/);
+});
+
+test('observer bursts coalesce to one reconciliation task at runtime', async () => {
+  const observers = [];
+  const queued = [];
+  const host = {
+    querySelector: () => null,
+    querySelectorAll: () => [],
+  };
+
+  const document = {
+    readyState: 'complete',
+    querySelector(selector) {
+      if (selector === '[data-seo-table="workQueue"]') return host;
+      if (selector === '[data-seo-table="legacy"]') return host;
+      return null;
+    },
+    querySelectorAll: () => [],
+    addEventListener: () => {},
+  };
+
+  class FakeMutationObserver {
+    constructor(callback) {
+      this.callback = callback;
+      observers.push(this);
+    }
+
+    observe(target, options) {
+      this.target = target;
+      this.options = options;
+    }
+  }
+
+  const chain = {
+    select() { return this; },
+    eq() { return this; },
+    order() { return this; },
+    async limit() { return { data: [], error: null }; },
+  };
+  const supabase = {
+    auth: { async getUser() { return { data: { user: { id: 'admin-test' } }, error: null }; } },
+    from() { return chain; },
+  };
+
+  vm.runInNewContext(script, {
+    window: {
+      location: { origin: 'https://www.cheekycommodoregamer.co.uk' },
+      ccgSupabase: { async getClient() { return supabase; } },
+    },
+    document,
+    MutationObserver: FakeMutationObserver,
+    queueMicrotask(callback) { queued.push(callback); },
+    setTimeout,
+    URL,
+    Date,
+    Blob,
+    navigator: { clipboard: { async writeText() {} } },
+    console,
+  });
+
+  assert.equal(observers.length, 2);
+  for (const observer of observers) {
+    assert.deepEqual(observer.options, { childList: true });
+  }
+
+  for (let index = 0; index < 100; index += 1) observers[0].callback([]);
+  assert.equal(queued.length, 1, 'a mutation burst should queue one reconciliation');
+
+  queued.shift()();
+  for (let index = 0; index < 100; index += 1) observers[0].callback([]);
+  assert.equal(queued.length, 1, 'a later mutation burst should queue one new reconciliation');
+
+  await new Promise((resolve) => setImmediate(resolve));
 });
 
 test('resolution presentation lives in the stylesheet rather than runtime style injection', () => {
