@@ -74,12 +74,17 @@ expectContains('arcade/quest/game/main-v2.js', main, 'MEMORY BOX', 'secondary Gu
 expectContains('arcade/quest/game/main-v2.js', main, "if(S.stage>=2)", 'later-stage bidirectional enemy spawns');
 expectContains('arcade/quest/game/main-v2.js', main, "S.stage===2?.7:.5", 'Christmas left-side spawn bias');
 expectContains('arcade/quest/game/main-v2.js', main, 'S.enemySpawn-=dt', 'additional ambient 8-bit enemies');
+expectContains('arcade/quest/game/main-v2.js', main, "input.tap('KeyZ','ControlLeft')&&P.fire<=0", 'single-press player firing');
+expectContains('arcade/quest/game/main-v2.js', main, "if(input.tap('KeyZ','ControlLeft')&&g.fire<=0)", 'single-press Alien Formation firing');
+expectContains('arcade/quest/game/main-v2.js', main, 'leftMarks=[5.5,10.5,15.5,20.5,24.5]', 'five scheduled left-side Electric Bead attacks');
+expectContains('arcade/quest/game/main-v2.js', main, 'enemyCool:.58', 'faster opening Alien Formation fire');
+expectContains('arcade/quest/game/main-v2.js', main, 'g.enemyCool=rand(Math.max(.22,.54-ratio*.18)', 'shorter Alien Formation firing gaps');
 
 expectContains('arcade/quest/game/main-v2.js', main, 'startInvaders', 'Alien Formation interlude');
 expectContains('arcade/quest/game/main-v2.js', main, 'r<5;r++)for(let c=0;c<9', '45-alien tougher formation');
 expectContains('arcade/quest/game/main-v2.js', main, 'bunkers=[330,650,970,1290]', 'destructible Alien Formation cover');
-expectContains('arcade/quest/game/main-v2.js', main, 'count=ratio>.62?3:ratio>.3?2:1', 'late-wave multi-shot Alien Formation pressure');
-expectContains('arcade/quest/game/main-v2.js', main, 'aim=Math.random()<(.28+ratio*.35)', 'aimed Alien Formation shots');
+expectContains('arcade/quest/game/main-v2.js', main, 'count=ratio>.5?3:ratio>.12?2:1', 'stronger multi-shot Alien Formation pressure');
+expectContains('arcade/quest/game/main-v2.js', main, 'aim=Math.random()<(.34+ratio*.42)', 'more frequent aimed Alien Formation shots');
 expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_alien'+(a.row+1))", 'custom Alien Formation row sprites');
 expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_ship')", 'custom Alien Formation ship sprite');
 
