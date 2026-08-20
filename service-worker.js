@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-19-public-release-v8";
+const CACHE_VERSION = "2026-08-20-public-release-v9";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -11,6 +11,7 @@ const OFFLINE_URL = "/offline.html";
 
 const PUBLIC_SHELL = Object.freeze([
   OFFLINE_URL,
+  "/app-launch.html",
   "/home.html",
   "/install-app.html",
   "/games/",
@@ -18,7 +19,9 @@ const PUBLIC_SHELL = Object.freeze([
   "/music/",
   "/quiz/quiz.html",
   "/manifest.webmanifest",
-  "/resources/images/ccg-app-icon.svg",
+  "/resources/images/ccg-app-icon-v2.svg",
+  "/resources/images/ccg-app-icon-maskable-v2.svg",
+  "/resources/css/ccg-app-launch.css",
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
   "/resources/css/ccg-nav-fit.css",
@@ -28,6 +31,7 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-socials.css",
   "/resources/css/ccg-footer.css",
   "/resources/css/ccg-pwa-install-page.css",
+  "/js/ccg-app-launch.js",
   "/js/ccg-nav.js",
   "/js/ccg-nav-core.js",
   "/js/ccg-nav-fit.js",
