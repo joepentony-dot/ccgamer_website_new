@@ -10,6 +10,7 @@ const normalizer = require('../scripts/normalize-public-header-shell.js');
 
 const root = path.resolve('.');
 const musicHeaderSource = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
+const musicStylePaths = normalizer.extractMusicStylePaths(root);
 
 function assertStaticMusicShell(html, label) {
   const headerIndex = html.indexOf('data-ccg-header');
@@ -25,9 +26,13 @@ function assertStaticMusicShell(html, label) {
   assert.match(html, /src="\/js\/ccg-nav-core\.js"/);
   assert.match(html, /href="\/resources\/css\/ccg-nav-fit\.css"/);
   assert.doesNotMatch(html, /ccg-header--music-injected/);
+
+  for (const href of musicStylePaths) {
+    assert.ok(html.includes(`rel="stylesheet" href="${href}"`), `${label} must load ${href} before first paint`);
+  }
 }
 
-test('Music hub receives the canonical header before first visible content', () => {
+test('Music hub receives the canonical header and final geometry before first visible content', () => {
   const source = fs.readFileSync('music/index.html', 'utf8');
   assert.doesNotMatch(source, /data-ccg-header/);
 
@@ -38,6 +43,23 @@ test('Music hub receives the canonical header before first visible content', () 
 
   const second = normalizer.normaliseHtml(result.html, { root });
   assert.equal(second.changed, false, 'Music first-paint normalization must be idempotent');
+});
+
+test('Music first-paint styles are sourced from the maintained Music bootstrap contract', () => {
+  assert.ok(musicHeaderSource.includes('const STYLES = ['));
+  assert.deepEqual(musicStylePaths, [
+    '/resources/css/ccg-mode.css',
+    '/resources/css/ccg-effects.css',
+    '/resources/css/ccg-nav.css',
+    '/resources/css/ccg-nav-fit.css',
+    '/resources/css/ccg-buttons.css',
+    '/resources/css/ccg-footer.css',
+    '/resources/css/ccg-community.css',
+    '/resources/css/ccg-socials.css',
+    '/resources/css/ccg-mobile-lite.css',
+    '/resources/css/ccg-amiga-mode.css',
+    '/resources/css/ccg-amiga-mobile-fix.css'
+  ]);
 });
 
 test('generated and curated composer routes receive the same static first-paint shell', () => {
