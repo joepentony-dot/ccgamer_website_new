@@ -79,3 +79,16 @@ test("static emulation and quiz routes use restrained query-aligned snippets", (
   assert.match(quiz.seoTitle, /Commodore 64 Quiz/);
   assert.match(quiz.seoDescription, /C64 quiz packs/i);
 });
+
+test("opportunity application preserves the established genre fallback ordering contract", () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "scripts", "apply-seo-opportunity-plan.js"),
+    "utf8"
+  );
+
+  assert.match(source, /Genre fallback ordering preserved by existing publishing contract/);
+  assert.doesNotMatch(
+    source,
+    /const genreResult = scope === "all"\s*\?\s*prioritizeGenreFallbacks/
+  );
+});
