@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+  <defs><radialGradient id="g" cx="50%" cy="42%" r="70%"><stop stop-color="#26104b"/><stop offset="1" stop-color="#07020f"/></radialGradient></defs>
+  <rect width="1600" height="900" fill="url(#g)"/>
+  <g opacity=".2" stroke="#6b72ff" fill="none"><path d="M120 120H1480V780H120Z" stroke-width="4"/><path d="M250 200H1350M250 700H1350" stroke-width="2"/></g>
+  <text x="800" y="840" text-anchor="middle" font-family="monospace" font-size="24" fill="#654d91">CCG MAZE GRID</text>
+</svg>
