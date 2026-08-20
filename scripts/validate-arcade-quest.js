@@ -57,8 +57,8 @@ expectContains('arcade/quest/game/assets-config.js', config, 'CUSTOM_ASSETS', 'c
   read(`arcade/quest/assets/backgrounds/${scene}.svg`);
 });
 
-expectContains('admin/arcade-assets.html', adminPage, "ensureRole", 'admin role guard bootstrap');
-expectContains('admin/arcade-assets.html', adminPage, 'arcade-assets.js', 'Arcade Asset Manager controller');
+expectContains('admin/arcade-assets.html', adminPage, '/admin/js/arcade-assets.js', 'Arcade Asset Manager controller');
+expectContains('admin/js/arcade-assets.js', adminJs, "import { ensureRole, startAccessMonitor } from './guard.js'", 'existing admin guard import');
 expectContains('admin/js/arcade-assets.js', adminJs, "ensureRole(['admin','superadmin'])", 'admin/superadmin access check');
 expectContains('admin/js/arcade-assets.js', adminJs, "const BUCKET='ccg-arcade-assets'", 'arcade storage bucket');
 expectContains('admin/js/admin-nav.js', adminNav, '/admin/arcade-assets.html', 'Arcade Asset Manager navigation link');
