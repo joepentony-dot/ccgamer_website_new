@@ -13,7 +13,7 @@
 
   const MANIFEST_PATH = "/manifest.webmanifest";
   const SERVICE_WORKER_PATH = "/service-worker.js";
-  const ICON_PATH = "/resources/images/ccg-app-icon.svg";
+  const ICON_PATH = "/resources/images/ccg-app-icon-v2.svg";
   const CSS_PATH = "/resources/css/ccg-pwa.css";
   const VISIT_KEY = "ccg_pwa_public_visits";
   const DISMISS_KEY = "ccg_pwa_dismissed_until";
