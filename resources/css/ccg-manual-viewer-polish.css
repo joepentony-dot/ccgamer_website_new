@@ -1,0 +1,118 @@
+/* ============================================================
+   CCG MANUAL VIEWER — READING SURFACE + RESPONSIVE TOOLBAR
+============================================================ */
+
+#manualModal.ccg-modal--doc {
+    padding: clamp(10px, 2vw, 24px);
+    background: rgba(2, 5, 12, 0.86);
+    backdrop-filter: blur(8px);
+}
+
+#manualModal .manual-content {
+    width: min(1180px, 100%);
+    height: min(92dvh, 980px);
+    max-height: 92dvh;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid rgba(119, 215, 255, 0.32);
+    border-radius: 14px;
+    background: #f3f5f7;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.55);
+}
+
+#manualModal .ccg-manual-toolbar {
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 58px 9px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: #0c1324;
+    color: #f6fbff;
+}
+
+#manualModal .ccg-manual-toolbar__label {
+    min-width: 0;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+#manualModal .ccg-manual-toolbar__external {
+    flex: 0 0 auto;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+#manualModal .manual-loading {
+    z-index: 4;
+    top: 66px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(12, 19, 36, 0.9);
+    color: #f6fbff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+#manualModal .ccg-modal-close {
+    top: 11px;
+    right: 13px;
+    color: #f6fbff;
+    text-shadow: none;
+}
+
+#manualModal .ccg-pdf-frame {
+    display: block;
+    width: 100%;
+    height: calc(100% - 54px);
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    background: #f3f5f7;
+}
+
+@media (max-width: 700px) {
+    #manualModal.ccg-modal--doc {
+        padding: 0;
+    }
+
+    #manualModal .manual-content {
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        border: 0;
+        border-radius: 0;
+    }
+
+    #manualModal .ccg-manual-toolbar {
+        min-height: 64px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+        padding: 8px 50px 8px 10px;
+    }
+
+    #manualModal .ccg-manual-toolbar__external {
+        width: auto;
+        min-height: 32px;
+        padding-block: 5px;
+        font-size: 0.82rem;
+    }
+
+    #manualModal .manual-loading {
+        top: 74px;
+        max-width: calc(100% - 24px);
+        white-space: normal;
+        text-align: center;
+    }
+
+    #manualModal .ccg-pdf-frame {
+        height: calc(100% - 64px);
+    }
+}
