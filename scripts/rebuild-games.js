@@ -19,6 +19,7 @@ const steps = [
   ["enforce-manual-only-game-pages.js"],
   ["ensure-magazine-review-runtime.js"],
   ["prepare-seo-game-routes.js", "--output-root", "."],
+  ["ensure-manual-viewer-polish.js", "--root", "."],
   ["prepare-seo-genre-links.js", "--root", "."],
   ["upgrade-category-pages.js"],
   ["validate-secondary-publisher-credits.js"],
@@ -57,6 +58,7 @@ const steps = [
   ["ensure-magazine-review-runtime.js", "--check"],
   ["ensure-secondary-publisher-runtime.js", "--check"],
   ["ensure-publisher-history-runtime.js", "--check"],
+  ["ensure-manual-viewer-polish.js", "--root", ".", "--check"],
   ["validate-downloads-page.js"],
   ["normalize-public-header-shell.js", "--root", ".", "--check"],
 ];
