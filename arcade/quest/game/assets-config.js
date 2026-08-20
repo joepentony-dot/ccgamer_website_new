@@ -17,6 +17,7 @@
     powers:{shield:null,speed:null,double:null},
     hazards:{bedroom:null,budget:null,christmas:null,amiga:null,guru:null},
     fighter:{enemy:null,enemyPunch:null,enemyKick:null,enemyHit:null},
+    invaders:{alien1:null,alien2:null,alien3:null,alien4:null,alien5:null,ship:null,bunker:null,enemyShot:null,playerShot:null},
     player:{
       mascot:null,
       head:null,
