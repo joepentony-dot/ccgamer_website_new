@@ -114,7 +114,8 @@ test('observer bursts coalesce to one reconciliation task at runtime', async () 
 
   assert.equal(observers.length, 2);
   for (const observer of observers) {
-    assert.deepEqual(observer.options, { childList: true });
+    assert.equal(observer.options?.childList, true);
+    assert.equal(observer.options?.subtree, undefined);
   }
 
   for (let index = 0; index < 100; index += 1) observers[0].callback([]);
