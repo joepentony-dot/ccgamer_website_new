@@ -1,52 +1,36 @@
-# Cheeky Commodore Quest — Adventure Development Build
+# Cheeky Commodore Quest — Exploration Test Build
 
-This folder is intentionally **development-only**. It is not linked from the public CCG site, remains `noindex`, and must stay on the `dev/ccg-quest-stealth` branch until the game is explicitly approved for release.
+This folder is **development-only** on branch `dev/ccg-quest-stealth`. It is not linked from the public CCG site and the page remains `noindex,nofollow,noarchive`. Do not merge it to `main` until the game has been explicitly approved for release.
 
-## Test locally from the repository
+## Test locally
 
-Run:
-
-`dev/ccg-quest/TEST-GAME.bat`
-
-The launcher serves the **whole repository** at `http://localhost:8765/` and opens:
+From the repository root run `dev/ccg-quest/TEST-GAME.bat`, then open:
 
 `http://localhost:8765/dev/ccg-quest/`
 
-It does not terminate Chrome or any existing browser windows.
+## Current test focus
 
-## Adventure-build features now under test
+- 128 × 84 procedural BSP dungeon with substantially more rooms and logical corridors
+- camera tracks from the centre of each viewport instead of waiting for the player to reach a screen edge
+- F key / Fullscreen button for a larger play view
+- strict fog-of-war: 10-tile diameter normally, 20-tile diameter while a flaming torch is active
+- enemies outside the lit area are not drawn and are not exposed by radar/minimap
+- enemies detect players by direct unobstructed line-of-sight OR by sharing the same defined room
+- enemies accelerate and attack after discovery, then search the last-known position and eventually give up
+- Swanh8ter has a real multi-tile charge attack
+- diagonal player movement and diagonal firing
+- much larger ammo reserve and ammo packs
+- 10-second anti-loitering system now periodically targets the player's exact position for damaging blasts
+- bronze-key side doors leading to isolated optional treasure rooms
+- locked chests containing weapon upgrades, armour, potions, torches, ammo, rapid fire and health
+- main vault keys never spawn behind an optional locked door
+- large pickup-information banners for every collectible
+- themed rooms including C64 Archive, 1541 Workshop, Budget Bin, Demo Lounge, Joystick Armoury, CPU Kitchen, SID Reactor, Warp Gallery, Zzap! Library, Tape Store, Cartridge Bay and Cracked Intro Chamber
+- local two-player split-screen with independent cameras and friendly fire
+- room-code multiplayer retained for local testing and CCG Supabase Realtime deployment
 
-- enemies require line-of-sight before acquiring players
-- slow patrol behaviour while unaware
-- substantially faster pursuit once alerted
-- melee and ranged attacks after detection
-- last-known-position chase, local search and eventual give-up behaviour
-- torchlight increases visibility but makes players detectable from farther away
-- persistent fog-of-war with heavily shadowed explored areas
-- 10-second anti-camping warning and mini-explosion system
-- local two-player split-screen with independent cameras
-- friendly fire in local split-screen
-- existing room-code co-op and CCG Supabase Realtime transport retained
-- large pickup-information banners
-- weapon upgrades through level 3
-- armour that absorbs damage before health
-- stored restoration potions
-- rapid-fire and radar boosts
-- bronze keys and optional locked treasure rooms
-- main vault keys deliberately excluded from optional locked areas
-- themed rooms: C64 Archive, 1541 Workshop, Budget Bin, Demo Lounge, Joystick Armoury, CPU Kitchen, SID Reactor, Warp Gallery, Zzap! Library and Treasure Vaults
-- contextual room/surroundings messages
-- C64 rescue and exploration side quests
-- named follower enemies: Peter Cortens, Swanh8ter, Syragar, Parsnip Celery, CPU and Yoshi Yoshi
-- Yoshi Yoshi short-range fire breath
-- CPU support/healing behaviour
+## Controls
 
-## Validation
-
-The Adventure systems were checked across 60 generated dungeon seeds. All three main keys and the main exit remained reachable while every optional bronze door was locked. Line-of-sight blocking, chase acceleration and melee attacks also have automated checks.
-
-The next required step is hands-on browser testing of this integrated branch build, especially local split-screen controls and real gameplay balance.
-
-See `VALIDATION.md` for the current test record.
-
-**Do not merge this branch to `main` until the game has passed the release checklist and has been explicitly approved to go live.**
+P1: WASD / arrows, Space fire, Left Shift dash, E potion.
+P2: IJKL, Enter fire, Right Ctrl dash, O potion.
+P pauses, M toggles sound, F toggles fullscreen.
