@@ -11,13 +11,17 @@ const normalizer = require('../scripts/normalize-public-header-shell.js');
 const root = path.resolve('.');
 const musicHeaderSource = fs.readFileSync('js/ccg-music-navigation.js', 'utf8');
 const musicStylePaths = normalizer.extractMusicStylePaths(root);
+const completeFirstPaintStyles = [...musicStylePaths, ...normalizer.MUSIC_GLOBAL_FIRST_PAINT_STYLES];
 
 function assertStaticMusicShell(html, label) {
   const headerIndex = html.indexOf('data-ccg-header');
+  const identityIndex = html.indexOf('id="ccgModeIdentityBar"');
   const mainIndex = html.indexOf('<main');
   assert.ok(headerIndex >= 0, `${label} must contain the shared CCG header in staged HTML`);
-  assert.ok(mainIndex > headerIndex, `${label} shared header must precede visible main content`);
+  assert.ok(identityIndex > headerIndex, `${label} mode identity must follow the shared header`);
+  assert.ok(mainIndex > identityIndex, `${label} mode identity must precede visible main content`);
   assert.match(html, /data-ccg-music-static-header="true"/);
+  assert.match(html, /data-ccg-music-static-mode-identity="true"/);
   assert.match(html, /data-ccg-static-shell="2026-08-19-v1"/);
   assert.match(html, /class="ccg-auth-slot" data-ccg-auth-pending="true"/);
   assert.match(html, />Browse Games<\/a>/);
@@ -25,27 +29,31 @@ function assertStaticMusicShell(html, label) {
   assert.match(html, />Zzap!64 Reviews &amp; Awards<\/a>/);
   assert.match(html, /src="\/js\/ccg-nav-core\.js"/);
   assert.match(html, /href="\/resources\/css\/ccg-nav-fit\.css"/);
+  assert.match(html, /href="\/resources\/css\/ccg-mode-identity\.css"/);
+  assert.match(html, /href="\/resources\/css\/ccg-responsive-page-polish\.css"/);
   assert.doesNotMatch(html, /ccg-header--music-injected/);
 
-  for (const href of musicStylePaths) {
+  for (const href of completeFirstPaintStyles) {
     assert.ok(html.includes(`rel="stylesheet" href="${href}"`), `${label} must load ${href} before first paint`);
   }
 }
 
-test('Music hub receives the canonical header and final geometry before first visible content', () => {
+test('Music hub receives the complete canonical shell before first visible content', () => {
   const source = fs.readFileSync('music/index.html', 'utf8');
   assert.doesNotMatch(source, /data-ccg-header/);
+  assert.doesNotMatch(source, /ccgModeIdentityBar/);
 
   const result = normalizer.normaliseHtml(source, { root });
   assert.equal(result.applicable, true);
   assert.equal(result.musicStaticHeaderInserted, true);
+  assert.equal(result.musicStaticModeIdentityInserted, true);
   assertStaticMusicShell(result.html, 'Music hub');
 
   const second = normalizer.normaliseHtml(result.html, { root });
   assert.equal(second.changed, false, 'Music first-paint normalization must be idempotent');
 });
 
-test('Music first-paint styles are sourced from the maintained Music bootstrap contract', () => {
+test('Music first-paint styles include maintained Music and global final-layout contracts', () => {
   assert.ok(musicHeaderSource.includes('const STYLES = ['));
   assert.deepEqual(musicStylePaths, [
     '/resources/css/ccg-mode.css',
@@ -60,6 +68,28 @@ test('Music first-paint styles are sourced from the maintained Music bootstrap c
     '/resources/css/ccg-amiga-mode.css',
     '/resources/css/ccg-amiga-mobile-fix.css'
   ]);
+  assert.deepEqual(normalizer.MUSIC_GLOBAL_FIRST_PAINT_STYLES, [
+    '/resources/css/ccg-mode-identity.css',
+    '/resources/css/ccg-responsive-safety.css',
+    '/resources/css/ccg-responsive-page-polish.css',
+    '/resources/css/ccg-sitewide-layout-optimization.css'
+  ]);
+});
+
+test('staged mode identity matches the runtime element contract so runtime updates instead of inserting', () => {
+  const markup = normalizer.buildModeIdentityMarkup();
+  assert.match(markup, /id="ccgModeIdentityBar"/);
+  assert.match(markup, /class="ccg-mode-identity"/);
+  assert.match(markup, /ccg-mode-identity__inner/);
+  assert.match(markup, /ccg-mode-identity__eyebrow/);
+  assert.match(markup, /COMMODORE 64 MODE/);
+  assert.match(markup, /64K RAM SYSTEM/);
+  assert.match(markup, /C64 ARCHIVE ONLINE/);
+
+  const runtime = fs.readFileSync('js/ccg-mode-identity.js', 'utf8');
+  assert.match(runtime, /const BAR_ID = "ccgModeIdentityBar"/);
+  assert.match(runtime, /const existing = document\.getElementById\(BAR_ID\);/);
+  assert.match(runtime, /if \(existing\) return existing;/);
 });
 
 test('generated and curated composer routes receive the same static first-paint shell', () => {
@@ -87,7 +117,7 @@ test('non-Music pages without a public header are not force-wrapped', () => {
   assert.equal(result.html, html);
 });
 
-test('root processing writes Music first-paint shell and then passes check mode', () => {
+test('root processing writes the complete Music first-paint shell then passes check mode', () => {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ccg-music-first-paint-'));
   try {
     fs.mkdirSync(path.join(temp, 'music'), { recursive: true });
@@ -97,6 +127,7 @@ test('root processing writes Music first-paint shell and then passes check mode'
 
     const written = normalizer.processRoot(temp, { check: false });
     assert.equal(written.musicHeadersInserted, 1);
+    assert.equal(written.musicModeIdentitiesInserted, 1);
     assert.equal(written.changed, 1);
 
     const staged = fs.readFileSync(path.join(temp, 'music', 'index.html'), 'utf8');
@@ -105,6 +136,7 @@ test('root processing writes Music first-paint shell and then passes check mode'
     const checked = normalizer.processRoot(temp, { check: true });
     assert.equal(checked.changed, 0);
     assert.equal(checked.musicHeadersInserted, 0);
+    assert.equal(checked.musicModeIdentitiesInserted, 0);
   } finally {
     fs.rmSync(temp, { recursive: true, force: true });
   }
