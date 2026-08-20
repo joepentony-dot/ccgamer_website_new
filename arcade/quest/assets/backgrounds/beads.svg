@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<rect width="1600" height="900" fill="#2f235e"/><rect y="710" width="1600" height="190" fill="#131221"/>
+<g fill="#5dd5dc" stroke="#1f253a" stroke-width="8"><rect x="80" y="160" width="350" height="65"/><rect x="530" y="300" width="360" height="65"/><rect x="1040" y="175" width="420" height="65"/><rect x="220" y="510" width="420" height="65"/><rect x="860" y="500" width="470" height="65"/></g>
+<g stroke="#76e8ee" stroke-width="16"><path d="M245 225v285M1160 240v260"/><path d="M210 270h70M210 320h70M210 370h70M210 420h70M210 470h70M1125 285h70M1125 335h70M1125 385h70M1125 435h70"/></g>
+<g fill="#7651a9" stroke="#34244c" stroke-width="6"><rect x="0" y="85" width="1600" height="48"/><rect x="0" y="630" width="1600" height="60"/></g>
+<g fill="#9e78d2"><rect x="20" y="95" width="90" height="28"/><rect x="145" y="95" width="90" height="28"/><rect x="270" y="95" width="90" height="28"/><rect x="395" y="95" width="90" height="28"/><rect x="520" y="95" width="90" height="28"/><rect x="645" y="95" width="90" height="28"/><rect x="770" y="95" width="90" height="28"/><rect x="895" y="95" width="90" height="28"/><rect x="1020" y="95" width="90" height="28"/><rect x="1145" y="95" width="90" height="28"/><rect x="1270" y="95" width="90" height="28"/><rect x="1395" y="95" width="90" height="28"/></g>
+<path d="M0 745h1600" stroke="#65f1ff" stroke-width="8"/><path d="M0 760q40-30 80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0t80 0" fill="none" stroke="#b5ffff" stroke-width="5"/>
+<text x="800" y="70" text-anchor="middle" fill="#ffe26a" font-family="monospace" font-size="38" font-weight="bold">ELECTRIC BEAD RUN</text><text x="800" y="855" text-anchor="middle" fill="#b7a7df" font-family="monospace" font-size="18">TIME THE JUMP · DON'T TRUST THE FLOOR</text>
+</svg>
