@@ -41,6 +41,13 @@ function hasPublicHeader(html) {
   return /<header\b[^>]*\bdata-ccg-header\b/i.test(String(html || ""));
 }
 
+function isSourceRepositoryRoot(root) {
+  const absoluteRoot = path.resolve(root);
+  return fs.existsSync(path.join(absoluteRoot, ".git"))
+    && fs.existsSync(path.join(absoluteRoot, "scripts", "normalize-public-header-shell-core.js"))
+    && fs.existsSync(path.join(absoluteRoot, "js", "ccg-music-navigation.js"));
+}
+
 function extractMusicHeaderMarkup(root) {
   const sourcePath = path.join(path.resolve(root), "js", "ccg-music-navigation.js");
   if (!fs.existsSync(sourcePath)) {
@@ -124,6 +131,7 @@ function processRoot(root, { check = false } = {}) {
     throw new Error(`Root directory does not exist: ${absoluteRoot}`);
   }
 
+  const sourceRepositoryRoot = isSourceRepositoryRoot(absoluteRoot);
   const summary = {
     scanned: 0,
     applicable: 0,
@@ -143,15 +151,17 @@ function processRoot(root, { check = false } = {}) {
     }
 
     const original = fs.readFileSync(filePath, "utf8");
-    const musicNeedsHeader = isMusicPage(original) && !hasPublicHeader(original);
+    const musicNeedsHeader = !sourceRepositoryRoot && isMusicPage(original) && !hasPublicHeader(original);
     if (musicNeedsHeader && !musicHeaderMarkup) {
       musicHeaderMarkup = extractMusicHeaderMarkup(absoluteRoot);
     }
 
-    const result = normaliseHtml(original, {
-      root: absoluteRoot,
-      musicHeaderMarkup: musicNeedsHeader ? musicHeaderMarkup : undefined
-    });
+    const result = sourceRepositoryRoot
+      ? core.normaliseHtml(original)
+      : normaliseHtml(original, {
+          root: absoluteRoot,
+          musicHeaderMarkup: musicNeedsHeader ? musicHeaderMarkup : undefined
+        });
 
     if (result.malformed) {
       summary.malformed.push(relative);
@@ -201,6 +211,7 @@ module.exports = {
   ...core,
   isMusicPage,
   hasPublicHeader,
+  isSourceRepositoryRoot,
   extractMusicHeaderMarkup,
   prepareMusicFirstPaintShell,
   normaliseHtml,
