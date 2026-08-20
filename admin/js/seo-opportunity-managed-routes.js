@@ -11,6 +11,8 @@
     ["/music/composer.html", "Managed noindex,follow composer handler"]
   ]);
   const resolutionState = { client: null, userId: "", loaded: false, items: new Map(), active: null, transitions: new Set() };
+  let reconcileQueued = false;
+  let reconciling = false;
 
   function routeInfo(value) {
     try {
@@ -232,14 +234,45 @@
       if (resolutionState.loaded && saved?.status === "resolved") autoTransition(item, "open", "Previously resolved Search Console signal has returned.");
       let cell = row.querySelector("[data-resolve-cell]"); if (!cell) { cell = document.createElement("td"); cell.dataset.resolveCell = "true"; row.appendChild(cell); }
       let button = cell.querySelector("button"); if (!button) { button = document.createElement("button"); button.type = "button"; button.className = "ccg-btn ccg-btn--ghost seo-resolve-button"; cell.appendChild(button); }
-      button.textContent = resolutionState.loaded ? "Resolve" : "Loading…"; button.disabled = !resolutionState.loaded; button.onclick = () => openDialog(item);
+      const label = resolutionState.loaded ? "Resolve" : "Loading…";
+      const disabled = !resolutionState.loaded;
+      if (button.textContent !== label) button.textContent = label;
+      if (button.disabled !== disabled) button.disabled = disabled;
+      button.onclick = () => openDialog(item);
     });
     setCount("workQueue", Array.from(table.querySelectorAll("tbody tr")).filter((row) => !row.hidden).length);
     if (resolutionState.loaded) resolutionState.items.forEach((saved, fingerprint) => { if (saved.status === "monitoring" && expired(saved) && !current.has(fingerprint)) autoTransition(fromSaved(saved), "resolved", "Monitoring period ended and the Search Console work-queue signal is no longer present."); });
   }
 
-  function reconcile() { reconcileWorkQueue(); reconcileLegacyDiagnostics(); addResolutionControls(); renderResolutionMonitor(); }
-  function observeHost(selector) { const host = document.querySelector(selector); if (!host) return; new MutationObserver(() => reconcile()).observe(host, { childList: true, subtree: true }); }
+  function reconcile() {
+    if (reconciling) return;
+    reconciling = true;
+    try {
+      reconcileWorkQueue();
+      reconcileLegacyDiagnostics();
+      addResolutionControls();
+      renderResolutionMonitor();
+    } finally {
+      reconciling = false;
+    }
+  }
+
+  function scheduleReconcile() {
+    if (reconcileQueued) return;
+    reconcileQueued = true;
+    queueMicrotask(() => {
+      reconcileQueued = false;
+      reconcile();
+    });
+  }
+
+  function observeHost(selector) {
+    const host = document.querySelector(selector);
+    if (!host) return;
+    // Search Console replaces the table host itself. Watching the full subtree would
+    // also observe our own Resolve controls and can create a mutation feedback loop.
+    new MutationObserver(() => scheduleReconcile()).observe(host, { childList: true });
+  }
 
   function csvCell(value) { const text = String(value ?? "").replace(/\s+/g, " ").trim(); return `"${text.replace(/"/g, '""')}"`; }
   function visibleReportRows() {
