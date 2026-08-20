@@ -143,14 +143,29 @@ const EARLY_SAMPLER = `
     return style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity || 1) > 0 && rect.width > 1 && rect.height > 1;
   };
   const round = (value) => Math.round(Number(value || 0) * 10) / 10;
+  const heightOf = (el) => round(el?.getBoundingClientRect().height);
   const sample = () => {
     if (location.pathname.startsWith('/music/')) {
       const header = document.querySelector('[data-ccg-header]');
       const shell = document.querySelector('[data-ccg-static-shell="2026-08-19-v1"]');
       const main = document.querySelector('main');
       const breadcrumbs = document.querySelector('.ccg-composer-breadcrumbs');
+      const inner = header?.querySelector('.ccg-header-inner');
+      const brand = header?.querySelector('.ccg-brand');
+      const nav = header?.querySelector('.ccg-nav');
+      const actions = header?.querySelector('.ccg-header-actions');
+      const auth = header?.querySelector('.ccg-auth-slot');
+      const mode = header?.querySelector('.ccg-mode-toggle');
+      const socials = header?.querySelector('.ccg-header-socials');
       const headerRect = header?.getBoundingClientRect();
       const mainRect = main?.getBoundingClientRect();
+      const headerStyle = header ? getComputedStyle(header) : null;
+      const mainStyle = main ? getComputedStyle(main) : null;
+      const bodyStyle = getComputedStyle(document.body);
+      const loadedSheets = Array.from(document.styleSheets).map((sheet) => {
+        try { return sheet.href ? new URL(sheet.href, location.href).pathname : ''; }
+        catch (_error) { return ''; }
+      }).filter(Boolean);
       window.__ccgMusicFirstPaintFrames.push({
         frame,
         time: round(performance.now()),
@@ -159,7 +174,26 @@ const EARLY_SAMPLER = `
         mainVisible: visible(main),
         breadcrumbsVisible: visible(breadcrumbs),
         headerHeight: round(headerRect?.height),
-        mainTop: round(mainRect?.top)
+        innerHeight: heightOf(inner),
+        brandHeight: heightOf(brand),
+        navHeight: heightOf(nav),
+        actionsHeight: heightOf(actions),
+        authHeight: heightOf(auth),
+        authChildren: auth?.children?.length || 0,
+        modeHeight: heightOf(mode),
+        socialsHeight: heightOf(socials),
+        mainTop: round(mainRect?.top),
+        mainMarginTop: mainStyle?.marginTop || '',
+        mainPaddingTop: mainStyle?.paddingTop || '',
+        headerPaddingTop: headerStyle?.paddingTop || '',
+        headerPaddingBottom: headerStyle?.paddingBottom || '',
+        headerClass: header?.className || '',
+        bodyClass: document.body.className || '',
+        htmlClass: document.documentElement.className || '',
+        bodyPosition: bodyStyle.position || '',
+        scrollY: round(window.scrollY),
+        fontStatus: document.fonts ? document.fonts.status : 'unsupported',
+        loadedSheets
       });
     }
     frame += 1;
@@ -181,13 +215,22 @@ function assertFrames(frames, width) {
   if (!visibleFrames.length) throw new Error(`${width}px Music never reached a visible canonical shell.`);
 
   const mainTops = visibleFrames.map((sample) => sample.mainTop).filter(Number.isFinite);
-  const range = Math.max(...mainTops) - Math.min(...mainTops);
+  const minTop = Math.min(...mainTops);
+  const maxTop = Math.max(...mainTops);
+  const range = maxTop - minTop;
+  const minSample = visibleFrames.find((sample) => sample.mainTop === minTop);
+  const maxSample = visibleFrames.find((sample) => sample.mainTop === maxTop);
+  const first = visibleFrames[0];
+  const final = visibleFrames[visibleFrames.length - 1];
+
+  console.log(`MUSIC FIRST-PAINT ${width}px first=${JSON.stringify(first)}`);
+  console.log(`MUSIC FIRST-PAINT ${width}px min=${JSON.stringify(minSample)}`);
+  console.log(`MUSIC FIRST-PAINT ${width}px max=${JSON.stringify(maxSample)}`);
+  console.log(`MUSIC FIRST-PAINT ${width}px final=${JSON.stringify(final)} mainTopRange=${range.toFixed(1)}px`);
+
   if (range > MAIN_TOP_TOLERANCE) {
     throw new Error(`${width}px Music main content jumped ${range.toFixed(1)}px after first paint (limit ${MAIN_TOP_TOLERANCE}px).`);
   }
-
-  const first = visibleFrames[0];
-  console.log(`MUSIC FIRST-PAINT ${width}px first=${JSON.stringify(first)} final=${JSON.stringify(visibleFrames[visibleFrames.length - 1])} mainTopRange=${range.toFixed(1)}px`);
 }
 
 async function auditTransition(sessionId, width) {
