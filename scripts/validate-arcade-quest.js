@@ -40,6 +40,7 @@ const migration = read('supabase/migrations/20260820_arcade_asset_manager.sql');
   'game/core.js',
   'game/assets-config.js',
   'game/remote-assets.js',
+  'game/sprite-runtime.js',
   'game/stages.js',
   'game/audio.js',
   'game/achievements.js',
@@ -107,6 +108,11 @@ expectContains('arcade/quest/game/main-v2.js', main, 'speed=rand(360,455)', 'sli
 expectContains('arcade/quest/game/main-v2.js', main, 'updatePlayer(dt,true)', 'shooting enabled in Electric Bead Run');
 
 expectContains('arcade/quest/game/main-v2.js', main, 'player_avatar', 'member avatar head rendering');
+expectContains('arcade/quest/game/main-v2.js', main, "assets.get('sheet_player')", 'player sprite sheet renderer');
+expectContains('arcade/quest/game/main-v2.js', main, "assets.get('sheet_fighter')", 'Tier-Tex sprite sheet renderer');
+expectContains('arcade/quest/game/main-v2.js', main, "assets.get('sheet_enemy')", '8-bit enemy sprite sheet renderer');
+expectContains('arcade/quest/game/main-v2.js', main, "drawLayer(id,'Back')", 'layered background renderer');
+expectContains('arcade/quest/game/main-v2.js', main, "foreground(id)", 'foreground scenery renderer');
 expectContains('arcade/quest/game/main-v2.js', main, 'vx=930*dir', 'manual straight player fire contract');
 expectContains('arcade/quest/game/main-v2.js', main, '28 SECONDS', 'extended Electric Bead Run');
 expectContains('arcade/quest/game/main-v2.js', main, 'NEXT:', 'next-level HUD indicator');
