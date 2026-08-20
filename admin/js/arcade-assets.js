@@ -2,19 +2,33 @@ import { ensureRole, startAccessMonitor } from './guard.js';
 import { initAdminNav } from './admin-nav.js';
 
 const BUCKET = 'ccg-arcade-assets';
+const SCENES = ['bedroom', 'beads', 'budget', 'fighter', 'invaders', 'christmas', 'maze', 'amiga', 'guru'];
+const SCENE_LABELS = {
+  bedroom: 'Bedroom', beads: 'Electric Bead Run', budget: 'Budget Rack', fighter: '36% Bout',
+  invaders: 'Alien Formation', christmas: 'Christmas Morning', maze: 'Dot-Maze', amiga: 'Amiga Upgrade', guru: 'Guru Meditation',
+};
+
+const layerSlots = [];
+for (const scene of SCENES) {
+  for (const [suffix, label] of [['Back', 'Back Layer'], ['Mid', 'Mid Layer'], ['Front', 'Front / Foreground Layer']]) {
+    layerSlots.push(['layers', `${scene}${suffix}`, `${SCENE_LABELS[scene]} — ${label}`]);
+  }
+}
+
 const SLOT_GROUPS = [
-  ['Backgrounds', [
-    ['backgrounds', 'bedroom', 'Bedroom Background'],
-    ['backgrounds', 'beads', 'Electric Bead Background'],
-    ['backgrounds', 'budget', 'Budget Rack Background'],
-    ['backgrounds', 'fighter', '36% Bout Background'],
-    ['backgrounds', 'invaders', 'Alien Formation Background'],
-    ['backgrounds', 'christmas', 'Christmas Background'],
-    ['backgrounds', 'maze', 'Dot-Maze Background'],
-    ['backgrounds', 'amiga', 'Amiga Background'],
-    ['backgrounds', 'guru', 'Guru Background'],
+  ['Main Backgrounds', SCENES.map((scene) => ['backgrounds', scene, `${SCENE_LABELS[scene]} Background`])],
+  ['Background Layers', layerSlots],
+  ['Sprite Sheets', [
+    ['spritesheets', 'player', 'Cheeky Player Animation Sheet'],
+    ['spritesheets', 'fighter', 'Tier-Tex Animation Sheet'],
+    ['spritesheets', 'enemy', '8-Bit Enemy Animation Sheet'],
+    ['spritesheets', 'bossBedroom', 'Load Error Boss Animation Sheet'],
+    ['spritesheets', 'bossBudget', 'Full Price Boss Animation Sheet'],
+    ['spritesheets', 'bossChristmas', "We're Leaving Now Boss Animation Sheet"],
+    ['spritesheets', 'bossAmiga', 'Disk Read Error Boss Animation Sheet'],
+    ['spritesheets', 'bossGuru', 'Guru Meditation Boss Animation Sheet'],
   ]],
-  ['Bosses', [
+  ['Bosses — Static Fallbacks', [
     ['bosses', 'bedroom', 'Load Error Boss'],
     ['bosses', 'budget', 'Full Price Boss'],
     ['bosses', 'christmas', "We're Leaving Now Boss"],
@@ -39,14 +53,14 @@ const SLOT_GROUPS = [
     ['powers', 'speed', 'Competition Pro Speed'],
     ['powers', 'double', 'Double Fire / Score'],
   ]],
-  ['Cheeky Player Rig', [
+  ['Cheeky Player Rig — Static Fallbacks', [
     ['player', 'head', 'Default Cheeky Head / Face'],
     ['player', 'body', 'Cheeky Torso / Shirt'],
     ['player', 'arm', 'Cheeky Arm Limb'],
     ['player', 'leg', 'Cheeky Leg Limb'],
     ['player', 'mascot', 'Legacy Full Mascot Source'],
   ]],
-  ['36% Bout Opponent', [
+  ['36% Bout Opponent — Static Fallbacks', [
     ['fighter', 'enemy', 'Tier-Tex Idle / Base Sprite'],
     ['fighter', 'enemyPunch', 'Tier-Tex Punch Sprite'],
     ['fighter', 'enemyKick', 'Tier-Tex Kick Sprite'],
@@ -62,6 +76,18 @@ const SLOT_GROUPS = [
     ['invaders', 'bunker', 'Alien Formation Bunker / Cover'],
     ['invaders', 'enemyShot', 'Alien Formation Enemy Shot'],
     ['invaders', 'playerShot', 'Alien Formation Player Shot'],
+  ]],
+  ['Sound Effects', [
+    ['sfx', 'jump', 'Jump'],
+    ['sfx', 'pickup', 'Collect / Pickup'],
+    ['sfx', 'hit', 'Player / Enemy Hit'],
+    ['sfx', 'shot', 'Player / Boss Shot'],
+    ['sfx', 'bosswarn', 'Boss Warning'],
+    ['sfx', 'shield', 'Action Replay Shield'],
+    ['sfx', 'shieldlow', 'Shield Low Warning'],
+    ['sfx', 'unlock', 'Achievement Unlock'],
+    ['sfx', 'punch', 'Punch'],
+    ['sfx', 'kick', 'Kick'],
   ]],
   ['Music', [
     ['music', 'title', 'Title Music'],
@@ -97,20 +123,16 @@ function setStatus(text, state = 'info') {
 }
 
 function safeName(name) {
-  return String(name || 'asset')
-    .replace(/[^a-z0-9._-]+/gi, '-')
-    .replace(/-+/g, '-')
-    .slice(0, 100);
+  return String(name || 'asset').replace(/[^a-z0-9._-]+/gi, '-').replace(/-+/g, '-').slice(0, 100);
 }
 
-function isMusic(group) {
-  return group === 'music';
-}
+function isAudio(group) { return group === 'music' || group === 'sfx'; }
+function isSpriteSheet(group) { return group === 'spritesheets'; }
 
 function validFile(group, file) {
   if (!file) return false;
-  if (isMusic(group)) return /^audio\/(mpeg|ogg|wav|x-wav)$/i.test(file.type);
-  return /^image\/(png|jpeg|webp|svg\+xml)$/i.test(file.type);
+  if (isAudio(group)) return /^audio\/(mpeg|ogg|wav|x-wav)$/i.test(file.type);
+  return /^image\/(png|jpeg|webp|gif|svg\+xml)$/i.test(file.type);
 }
 
 function formatBytes(n) {
@@ -121,9 +143,7 @@ function formatBytes(n) {
 }
 
 function escapeHtml(v) {
-  return String(v ?? '').replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  }[c]));
+  return String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function buildSlots() {
@@ -140,14 +160,16 @@ function buildSlots() {
     }
     select.appendChild(group);
   }
-  updateAccept();
+  updateSlotUi();
 }
 
-function updateAccept() {
+function updateSlotUi() {
   const slot = slotMap.get($('#arcade-slot').value);
-  $('#arcade-file').accept = slot && isMusic(slot.group)
+  if (!slot) return;
+  $('#arcade-file').accept = isAudio(slot.group)
     ? '.mp3,.ogg,.wav,audio/mpeg,audio/ogg,audio/wav'
-    : '.png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml';
+    : '.png,.jpg,.jpeg,.webp,.gif,.svg,image/png,image/jpeg,image/webp,image/gif,image/svg+xml';
+  $('#arcade-sprite-settings').hidden = !isSpriteSheet(slot.group);
 }
 
 function previewLocal() {
@@ -155,19 +177,11 @@ function previewLocal() {
   const slot = slotMap.get($('#arcade-slot').value);
   const host = $('#arcade-preview');
   host.textContent = '';
-
-  if (!file || !slot) {
-    host.textContent = 'Select a file to preview it.';
-    return;
-  }
-
-  if (!validFile(slot.group, file)) {
-    host.textContent = 'This file type is not valid for the selected slot.';
-    return;
-  }
+  if (!file || !slot) { host.textContent = 'Select a file to preview it.'; return; }
+  if (!validFile(slot.group, file)) { host.textContent = 'This file type is not valid for the selected slot.'; return; }
 
   const url = URL.createObjectURL(file);
-  if (isMusic(slot.group)) {
+  if (isAudio(slot.group)) {
     const audio = document.createElement('audio');
     audio.controls = true;
     audio.src = url;
@@ -180,32 +194,57 @@ function previewLocal() {
   }
 }
 
+function positiveInt(selector, label, required = true) {
+  const raw = $(selector).value.trim();
+  if (!raw && !required) return null;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n <= 0) throw new Error(`${label} must be a positive whole number.`);
+  return n;
+}
+
+function buildAssetMeta(slot) {
+  if (!isSpriteSheet(slot.group)) return {};
+  const frameWidth = positiveInt('#arcade-frame-width', 'Frame width');
+  const frameHeight = positiveInt('#arcade-frame-height', 'Frame height');
+  const columns = positiveInt('#arcade-columns', 'Columns', false);
+  const fps = Number($('#arcade-fps').value || 8);
+  if (!Number.isFinite(fps) || fps <= 0 || fps > 60) throw new Error('FPS must be between 1 and 60.');
+
+  const raw = $('#arcade-animations').value.trim();
+  let animations = { idle: [0] };
+  if (raw) {
+    try { animations = JSON.parse(raw); } catch (_error) { throw new Error('Animation map must be valid JSON.'); }
+    if (!animations || Array.isArray(animations) || typeof animations !== 'object') throw new Error('Animation map must be a JSON object.');
+  }
+
+  return { frameWidth, frameHeight, columns: columns || undefined, fps, animations, loop: true };
+}
+
 async function getClient() {
   if (!window.ccgSupabase?.getClient) throw new Error('Supabase bootstrap unavailable.');
   return window.ccgSupabase.getClient();
+}
+
+function assetMetaSummary(row) {
+  if (row.asset_group !== 'spritesheets' || !row.asset_meta) return '';
+  const meta = row.asset_meta;
+  const states = meta.animations && typeof meta.animations === 'object' ? Object.keys(meta.animations) : [];
+  return `<p class="arcade-asset-card__meta">Frames: ${escapeHtml(meta.frameWidth || '?')}×${escapeHtml(meta.frameHeight || '?')} · ${escapeHtml(meta.fps || 8)} FPS${meta.columns ? ` · ${escapeHtml(meta.columns)} columns` : ''}<br>States: ${escapeHtml(states.join(', ') || 'idle')}</p>`;
 }
 
 async function loadAssets() {
   const host = $('#arcade-library');
   host.innerHTML = '<p class="arcade-muted">Loading assets…</p>';
   const { data, error } = await supabase.from('arcade_assets').select('*').order('asset_group').order('asset_key');
-
-  if (error) {
-    host.innerHTML = `<p class="arcade-status" data-state="error">${escapeHtml(error.message)}</p>`;
-    return;
-  }
-
-  if (!data?.length) {
-    host.innerHTML = '<p class="arcade-muted">No custom arcade assets uploaded yet. The game is using its GitHub fallbacks.</p>';
-    return;
-  }
+  if (error) { host.innerHTML = `<p class="arcade-status" data-state="error">${escapeHtml(error.message)}</p>`; return; }
+  if (!data?.length) { host.innerHTML = '<p class="arcade-muted">No custom arcade assets uploaded yet. The game is using its GitHub fallbacks.</p>'; return; }
 
   host.textContent = '';
   for (const row of data) {
     const slot = slotMap.get(`${row.asset_group}:${row.asset_key}`);
     const card = document.createElement('article');
     card.className = 'arcade-asset-card';
-    const preview = isMusic(row.asset_group)
+    const preview = isAudio(row.asset_group)
       ? `<audio controls preload="none" src="${escapeHtml(row.public_url)}"></audio>`
       : `<img loading="lazy" src="${escapeHtml(row.public_url)}" alt="${escapeHtml(slot?.label || row.asset_key)} preview">`;
 
@@ -217,6 +256,7 @@ async function loadAssets() {
           <span class="arcade-pill ${row.enabled ? '' : 'is-off'}">${row.enabled ? 'ACTIVE' : 'DISABLED'}</span>
         </div>
         <p class="arcade-asset-card__meta">${escapeHtml(row.mime_type || 'unknown')} · ${formatBytes(row.size_bytes)}<br>${escapeHtml(row.file_path || '')}</p>
+        ${assetMetaSummary(row)}
         ${row.notes ? `<p>${escapeHtml(row.notes)}</p>` : ''}
         <div class="arcade-asset-card__actions">
           <button class="arcade-mini" data-action="toggle" data-group="${escapeHtml(row.asset_group)}" data-key="${escapeHtml(row.asset_key)}" data-enabled="${row.enabled ? '1' : '0'}">${row.enabled ? 'Disable' : 'Enable'}</button>
@@ -231,32 +271,22 @@ async function uploadAsset(event) {
   event.preventDefault();
   const slot = slotMap.get($('#arcade-slot').value);
   const file = $('#arcade-file').files?.[0];
-
   if (!slot || !file) return setStatus('Choose a slot and file.', 'error');
-  if (!validFile(slot.group, file)) {
-    return setStatus(isMusic(slot.group)
-      ? 'Music slots accept MP3, OGG or WAV.'
-      : 'Graphic slots accept PNG, JPG, WebP or SVG.', 'error');
-  }
+  if (!validFile(slot.group, file)) return setStatus(isAudio(slot.group) ? 'Audio slots accept MP3, OGG or WAV.' : 'Graphic slots accept PNG, JPG, WebP, GIF or SVG.', 'error');
   if (file.size > 25 * 1024 * 1024) return setStatus('Maximum upload size is 25 MB.', 'error');
+
+  let assetMeta;
+  try { assetMeta = buildAssetMeta(slot); } catch (error) { return setStatus(error.message, 'error'); }
 
   const btn = $('#arcade-upload');
   btn.disabled = true;
   setStatus(`Uploading ${file.name}…`);
 
   try {
-    const { data: existing } = await supabase
-      .from('arcade_assets')
-      .select('file_path')
-      .eq('asset_group', slot.group)
-      .eq('asset_key', slot.key)
-      .maybeSingle();
-
+    const { data: existing } = await supabase.from('arcade_assets').select('file_path').eq('asset_group', slot.group).eq('asset_key', slot.key).maybeSingle();
     const ext = (file.name.split('.').pop() || 'bin').toLowerCase();
     const path = `${slot.group}/${slot.key}/${Date.now()}-${safeName(file.name.replace(/\.[^.]+$/, ''))}.${ext}`;
-    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, {
-      cacheControl: '3600', upsert: false, contentType: file.type,
-    });
+    const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type });
     if (upErr) throw upErr;
 
     const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
@@ -272,80 +302,57 @@ async function uploadAsset(event) {
       size_bytes: file.size,
       enabled: $('#arcade-enabled').checked,
       notes: $('#arcade-notes').value.trim() || null,
+      asset_meta: assetMeta,
       updated_at: new Date().toISOString(),
     };
 
     const { error: dbErr } = await supabase.from('arcade_assets').upsert(record, { onConflict: 'asset_group,asset_key' });
-    if (dbErr) {
-      await supabase.storage.from(BUCKET).remove([path]);
-      throw dbErr;
-    }
-
-    if (existing?.file_path && existing.file_path !== path) {
-      await supabase.storage.from(BUCKET).remove([existing.file_path]);
-    }
+    if (dbErr) { await supabase.storage.from(BUCKET).remove([path]); throw dbErr; }
+    if (existing?.file_path && existing.file_path !== path) await supabase.storage.from(BUCKET).remove([existing.file_path]);
 
     setStatus(`${slot.label} updated. Reload the game to use it.`, 'success');
     event.target.reset();
     $('#arcade-enabled').checked = true;
+    $('#arcade-fps').value = '8';
     buildSlots();
     previewLocal();
     await loadAssets();
   } catch (error) {
     console.error('[arcade-admin] upload failed', error);
     setStatus(error?.message || 'Upload failed.', 'error');
-  } finally {
-    btn.disabled = false;
-  }
+  } finally { btn.disabled = false; }
 }
 
 async function handleLibraryClick(event) {
   const btn = event.target.closest('button[data-action]');
   if (!btn) return;
-
   const group = btn.dataset.group;
   const key = btn.dataset.key;
 
   if (btn.dataset.action === 'toggle') {
     const enabled = btn.dataset.enabled !== '1';
-    const { error } = await supabase
-      .from('arcade_assets')
-      .update({ enabled, updated_at: new Date().toISOString() })
-      .eq('asset_group', group)
-      .eq('asset_key', key);
-
+    const { error } = await supabase.from('arcade_assets').update({ enabled, updated_at: new Date().toISOString() }).eq('asset_group', group).eq('asset_key', key);
     if (error) setStatus(error.message, 'error');
-    else {
-      setStatus(`${group}:${key} ${enabled ? 'enabled' : 'disabled'}.`, 'success');
-      await loadAssets();
-    }
+    else { setStatus(`${group}:${key} ${enabled ? 'enabled' : 'disabled'}.`, 'success'); await loadAssets(); }
   } else if (btn.dataset.action === 'delete') {
     if (!window.confirm(`Delete the custom asset for ${group}:${key}? The game will fall back to its GitHub asset.`)) return;
     const path = btn.dataset.path;
     if (path) await supabase.storage.from(BUCKET).remove([path]);
     const { error } = await supabase.from('arcade_assets').delete().eq('asset_group', group).eq('asset_key', key);
-
     if (error) setStatus(error.message, 'error');
-    else {
-      setStatus(`${group}:${key} removed. GitHub fallback restored.`, 'success');
-      await loadAssets();
-    }
+    else { setStatus(`${group}:${key} removed. GitHub fallback restored.`, 'success'); await loadAssets(); }
   }
 }
 
 async function init() {
   const access = await ensureRole(['admin', 'superadmin']);
   if (!access) return;
-
   await initAdminNav({ pageLabel: 'Arcade Asset Manager', active: 'arcade' });
   await startAccessMonitor();
   supabase = await getClient();
 
   buildSlots();
-  $('#arcade-slot').addEventListener('change', () => {
-    updateAccept();
-    previewLocal();
-  });
+  $('#arcade-slot').addEventListener('change', () => { updateSlotUi(); previewLocal(); });
   $('#arcade-file').addEventListener('change', previewLocal);
   $('#arcade-asset-form').addEventListener('submit', uploadAsset);
   $('#arcade-library').addEventListener('click', handleLibraryClick);
