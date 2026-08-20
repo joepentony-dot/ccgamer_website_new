@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#05040b">
+  <meta name="robots" content="index,follow">
+  <base href="/arcade/quest/">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/commodore-quest/">
+  <title>Cheeky's Commodore Quest | Free C64 &amp; Amiga Browser Game</title>
+  <meta name="description" content="Play Cheeky's Commodore Quest, the free Cheeky Commodore Gamer browser arcade adventure inspired by Commodore 64 and Amiga gaming." />
+  <meta property="og:title" content="Cheeky's Commodore Quest | Cheeky Commodore Gamer" />
+  <meta property="og:description" content="A free C64 and Amiga-inspired browser arcade adventure from Cheeky Commodore Gamer." />
+  <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/commodore-quest/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Cheeky Commodore Gamer" />
+  <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cheeky's Commodore Quest" />
+  <meta name="twitter:description" content="Play the free C64 and Amiga-inspired Cheeky Commodore Gamer browser arcade adventure." />
+  <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="/js/analytics.js" defer></script>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"VideoGame",
+    "name":"Cheeky's Commodore Quest",
+    "url":"https://www.cheekycommodoregamer.co.uk/games/commodore-quest/",
+    "description":"A free browser arcade adventure inspired by Commodore 64 and Amiga gaming.",
+    "gamePlatform":"Web browser",
+    "applicationCategory":"Game",
+    "operatingSystem":"Any modern web browser",
+    "publisher":{"@type":"Organization","name":"Cheeky Commodore Gamer","url":"https://www.cheekycommodoregamer.co.uk/"},
+    "isAccessibleForFree":true
+  }
+  </script>
+</head>
+<body>
+  <main id="game-shell" aria-label="Cheeky's Commodore Quest">
+    <canvas id="game" width="1600" height="900" tabindex="0" aria-label="Cheeky's Commodore Quest game canvas"></canvas>
+    <div id="loading" class="loading">LOADING COMMODORE QUEST…</div>
+    <div class="corner-controls" aria-label="Game controls">
+      <button id="btn-pause" type="button">Pause</button>
+      <button id="btn-level" type="button">Level Select</button>
+      <button id="btn-quit" class="danger" type="button">Quit Game</button>
+      <button id="btn-fullscreen" type="button">Fullscreen</button>
+    </div>
+    <div id="touch" class="touch" aria-hidden="true">
+      <div><button data-touch="left">◀</button><button data-touch="right">▶</button></div>
+      <div><button data-touch="jump">JUMP</button><button data-touch="duck">DUCK</button><button data-touch="fire">FIRE / PUNCH</button><button data-touch="kick">KICK</button></div>
+    </div>
+  </main>
+  <script defer src="game/core.js"></script>
+  <script defer src="game/balance.js"></script>
+  <script defer src="game/assets-config.js"></script>
+  <script defer src="game/remote-assets.js"></script>
+  <script defer src="game/sprite-runtime.js"></script>
+  <script defer src="game/stages.js"></script>
+  <script defer src="game/audio.js"></script>
+  <script defer src="game/achievements.js"></script>
+  <script defer src="game/main-v2.js"></script>
+</body>
+</html>
