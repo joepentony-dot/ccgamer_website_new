@@ -7,6 +7,12 @@ const path = require("path");
 const core = require("./normalize-public-header-shell-core.js");
 
 const MUSIC_PAGE_PATTERN = /^music(?:-|$)/i;
+const MUSIC_GLOBAL_FIRST_PAINT_STYLES = Object.freeze([
+  "/resources/css/ccg-mode-identity.css",
+  "/resources/css/ccg-responsive-safety.css",
+  "/resources/css/ccg-responsive-page-polish.css",
+  "/resources/css/ccg-sitewide-layout-optimization.css"
+]);
 
 function parseArgs(argv) {
   const args = { root: ".", check: false };
@@ -39,6 +45,10 @@ function isMusicPage(html) {
 
 function hasPublicHeader(html) {
   return /<header\b[^>]*\bdata-ccg-header\b/i.test(String(html || ""));
+}
+
+function hasModeIdentityBar(html) {
+  return /\bid\s*=\s*(["'])ccgModeIdentityBar\1/i.test(String(html || ""));
 }
 
 function isSourceRepositoryRoot(root) {
@@ -94,11 +104,41 @@ function extractMusicStylePaths(root) {
   return Array.from(new Set(styles));
 }
 
+function buildModeIdentityMarkup() {
+  return `<aside id="ccgModeIdentityBar" class="ccg-mode-identity" role="status" aria-live="polite" aria-label="Current Commodore display mode" data-mode="c64" data-ccg-music-static-mode-identity="true">
+  <div class="ccg-mode-identity__inner">
+    <div class="ccg-mode-identity__name">
+      <span class="ccg-mode-identity__icon" aria-hidden="true">
+        <span class="ccg-mode-identity__c64-mark"><i></i><i></i><i></i><i></i></span>
+        <span class="ccg-mode-identity__amiga-mark"><i></i></span>
+      </span>
+      <span class="ccg-mode-identity__eyebrow">COMMODORE 64 MODE</span>
+      <span class="ccg-mode-identity__primary">READY.</span>
+    </div>
+    <div class="ccg-mode-identity__details">
+      <span class="ccg-mode-identity__secondary">64K RAM SYSTEM</span>
+      <span class="ccg-mode-identity__separator">•</span>
+      <span class="ccg-mode-identity__tertiary">C64 ARCHIVE ONLINE</span>
+    </div>
+  </div>
+</aside>`;
+}
+
 function insertAfterBodyOpen(html, markup) {
   const body = String(html || "").match(/<body\b[^>]*>/i);
   if (!body || typeof body.index !== "number") return html;
   const insertAt = body.index + body[0].length;
   return `${html.slice(0, insertAt)}\n${markup}\n${html.slice(insertAt)}`;
+}
+
+function insertAfterPublicHeader(html, markup) {
+  const source = String(html || "");
+  const headerStart = source.search(/<header\b[^>]*\bdata-ccg-header\b[^>]*>/i);
+  if (headerStart < 0) return html;
+  const headerEndMatch = source.slice(headerStart).match(/<\/header\s*>/i);
+  if (!headerEndMatch || typeof headerEndMatch.index !== "number") return html;
+  const insertAt = headerStart + headerEndMatch.index + headerEndMatch[0].length;
+  return `${source.slice(0, insertAt)}\n${markup}\n${source.slice(insertAt)}`;
 }
 
 function insertBeforeHeadClose(html, markup) {
@@ -127,13 +167,21 @@ function ensureMusicFirstPaintStyles(html, stylePaths) {
 
 function prepareMusicFirstPaintShell(html, options = {}) {
   if (!isMusicPage(html)) {
-    return { html, applicable: false, changed: false, headerInserted: false };
+    return {
+      html,
+      applicable: false,
+      changed: false,
+      headerInserted: false,
+      modeIdentityInserted: false
+    };
   }
 
   const root = options.root || path.resolve(__dirname, "..");
-  const stylePaths = options.musicStylePaths || extractMusicStylePaths(root);
+  const musicStyles = options.musicStylePaths || extractMusicStylePaths(root);
+  const stylePaths = Array.from(new Set([...musicStyles, ...MUSIC_GLOBAL_FIRST_PAINT_STYLES]));
   let output = ensureMusicFirstPaintStyles(html, stylePaths);
   let headerInserted = false;
+  let modeIdentityInserted = false;
 
   if (!hasPublicHeader(output)) {
     const headerMarkup = options.musicHeaderMarkup || extractMusicHeaderMarkup(root);
@@ -145,11 +193,21 @@ function prepareMusicFirstPaintShell(html, options = {}) {
     throw new Error("Music page has no usable <body> element for first-paint header insertion.");
   }
 
+  if (!hasModeIdentityBar(output)) {
+    output = insertAfterPublicHeader(output, buildModeIdentityMarkup());
+    modeIdentityInserted = true;
+  }
+
+  if (!hasModeIdentityBar(output)) {
+    throw new Error("Music page has no usable public header for first-paint mode identity insertion.");
+  }
+
   return {
     html: output,
     applicable: true,
     changed: output !== html,
-    headerInserted
+    headerInserted,
+    modeIdentityInserted
   };
 }
 
@@ -158,19 +216,12 @@ function normaliseHtml(html, options = {}) {
   const output = staged.changed ? staged.html : html;
   const result = core.normaliseHtml(output);
 
-  if (!result.applicable) {
-    return {
-      ...result,
-      html: result.html,
-      changed: result.html !== html,
-      musicStaticHeaderInserted: staged.headerInserted
-    };
-  }
-
   return {
     ...result,
+    html: result.html,
     changed: result.html !== html,
-    musicStaticHeaderInserted: staged.headerInserted
+    musicStaticHeaderInserted: staged.headerInserted,
+    musicStaticModeIdentityInserted: staged.modeIdentityInserted
   };
 }
 
@@ -201,6 +252,7 @@ function processRoot(root, { check = false } = {}) {
     applicable: 0,
     changed: 0,
     musicHeadersInserted: 0,
+    musicModeIdentitiesInserted: 0,
     malformed: [],
     excluded: 0
   };
@@ -238,6 +290,7 @@ function processRoot(root, { check = false } = {}) {
 
     summary.applicable += 1;
     if (result.musicStaticHeaderInserted) summary.musicHeadersInserted += 1;
+    if (result.musicStaticModeIdentityInserted) summary.musicModeIdentitiesInserted += 1;
     if (!result.changed) return;
     summary.changed += 1;
     if (!check) fs.writeFileSync(filePath, result.html, "utf8");
@@ -254,8 +307,9 @@ function printSummary(summary, check) {
   const mode = check ? "check" : "normalise";
   console.log(
     `Public header shell ${mode}: scanned ${summary.scanned} HTML files; ${summary.applicable} shared-header pages; ` +
-    `${summary.musicHeadersInserted} Music first-paint header insertions; ${summary.changed} ${check ? "would change" : "changed"}; ` +
-    `${summary.excluded} excluded.`
+    `${summary.musicHeadersInserted} Music first-paint header insertions; ` +
+    `${summary.musicModeIdentitiesInserted} Music first-paint mode identity insertions; ` +
+    `${summary.changed} ${check ? "would change" : "changed"}; ${summary.excluded} excluded.`
   );
 }
 
@@ -276,13 +330,16 @@ function main() {
 
 module.exports = {
   ...core,
+  MUSIC_GLOBAL_FIRST_PAINT_STYLES,
   isMusicPage,
   hasPublicHeader,
+  hasModeIdentityBar,
   isSourceRepositoryRoot,
   resolveMusicHeaderSource,
   readMusicNavigationSource,
   extractMusicHeaderMarkup,
   extractMusicStylePaths,
+  buildModeIdentityMarkup,
   ensureMusicFirstPaintStyles,
   prepareMusicFirstPaintShell,
   normaliseHtml,
