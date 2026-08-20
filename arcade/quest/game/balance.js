@@ -13,11 +13,25 @@
   */
 
   // One physical press = one shot. Holding Z/Ctrl no longer creates autofire.
+  // Alien Formation also has a short hard cooldown so rapid tapping cannot
+  // turn the player's ship into a machine gun.
+  const ALIEN_PLAYER_FIRE_COOLDOWN_MS = 320;
+  let lastAlienPlayerShot = -Infinity;
   const originalDown = Q.Input.prototype.down;
   Q.Input.prototype.down = function(...codes) {
     const fireOnly = codes.length > 0 && codes.every((code) => code === 'KeyZ' || code === 'ControlLeft');
-    if (fireOnly) return this.tap(...codes);
-    return originalDown.apply(this, codes);
+    if (!fireOnly) return originalDown.apply(this, codes);
+
+    const pressed = this.tap(...codes);
+    if (!pressed) return false;
+
+    const mode = window.CCGQuestDebug?.getState?.().mode;
+    if (mode !== 'invaders') return true;
+
+    const t = Q.now();
+    if (t - lastAlienPlayerShot < ALIEN_PLAYER_FIRE_COOLDOWN_MS) return false;
+    lastAlienPlayerShot = t;
+    return true;
   };
 
   // Alien Formation fires roughly a third more often while preserving the
