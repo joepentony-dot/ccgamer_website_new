@@ -48,7 +48,7 @@ jobs:
           node --check arcade/quest/game/stages.js
           node --check arcade/quest/game/audio.js
           node --check arcade/quest/game/achievements.js
-          node --check arcade/quest/game/main.js
+          node --check arcade/quest/game/main-v2.js
           node --check admin/js/arcade-assets.js
           node --check scripts/validate-arcade-quest.js
 
