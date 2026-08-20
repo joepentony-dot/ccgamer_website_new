@@ -52,6 +52,17 @@ const SLOT_GROUPS = [
     ['fighter', 'enemyKick', 'Tier-Tex Kick Sprite'],
     ['fighter', 'enemyHit', 'Tier-Tex Hit / Stagger Sprite'],
   ]],
+  ['Alien Formation Sprites', [
+    ['invaders', 'alien1', 'Alien Formation Row 1 Sprite'],
+    ['invaders', 'alien2', 'Alien Formation Row 2 Sprite'],
+    ['invaders', 'alien3', 'Alien Formation Row 3 Sprite'],
+    ['invaders', 'alien4', 'Alien Formation Row 4 Sprite'],
+    ['invaders', 'alien5', 'Alien Formation Row 5 Sprite'],
+    ['invaders', 'ship', 'Alien Formation CCG Ship'],
+    ['invaders', 'bunker', 'Alien Formation Bunker / Cover'],
+    ['invaders', 'enemyShot', 'Alien Formation Enemy Shot'],
+    ['invaders', 'playerShot', 'Alien Formation Player Shot'],
+  ]],
   ['Music', [
     ['music', 'title', 'Title Music'],
     ['music', 'bedroom', 'Bedroom Music'],
