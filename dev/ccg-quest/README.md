@@ -34,3 +34,7 @@ From the repository root run `dev/ccg-quest/TEST-GAME.bat`, then open:
 P1: WASD / arrows, Space fire, Left Shift dash, E potion.
 P2: IJKL, Enter fire, Right Ctrl dash, O potion.
 P pauses, M toggles sound, F toggles fullscreen.
+
+## Release gate
+
+This build is for hands-on testing only. Keep PR #1635 as a draft and leave `main` untouched until the game is explicitly approved for release.
