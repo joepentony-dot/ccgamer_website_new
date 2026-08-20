@@ -58,13 +58,16 @@ function resolveMusicHeaderSource(root) {
   return candidates.find((candidate, index) => fs.existsSync(candidate) && candidates.indexOf(candidate) === index) || "";
 }
 
-function extractMusicHeaderMarkup(root) {
+function readMusicNavigationSource(root) {
   const sourcePath = resolveMusicHeaderSource(root);
   if (!sourcePath) {
     throw new Error(`Music navigation source is missing for staged root: ${path.resolve(root)}`);
   }
+  return fs.readFileSync(sourcePath, "utf8");
+}
 
-  const source = fs.readFileSync(sourcePath, "utf8");
+function extractMusicHeaderMarkup(root) {
+  const source = readMusicNavigationSource(root);
   const match = source.match(/function\s+headerMarkup\s*\(\)\s*\{\s*return\s*`([\s\S]*?)`;\s*\}/);
   if (!match) {
     throw new Error("Could not extract the canonical Music header markup from js/ccg-music-navigation.js.");
@@ -77,6 +80,20 @@ function extractMusicHeaderMarkup(root) {
     );
 }
 
+function extractMusicStylePaths(root) {
+  const source = readMusicNavigationSource(root);
+  const match = source.match(/const\s+STYLES\s*=\s*\[([\s\S]*?)\];/);
+  if (!match) {
+    throw new Error("Could not extract the Music stylesheet contract from js/ccg-music-navigation.js.");
+  }
+
+  const styles = Array.from(match[1].matchAll(/["'](\/resources\/css\/[^"']+\.css)["']/g), (entry) => entry[1]);
+  if (!styles.length) {
+    throw new Error("The Music stylesheet contract is empty.");
+  }
+  return Array.from(new Set(styles));
+}
+
 function insertAfterBodyOpen(html, markup) {
   const body = String(html || "").match(/<body\b[^>]*>/i);
   if (!body || typeof body.index !== "number") return html;
@@ -84,19 +101,56 @@ function insertAfterBodyOpen(html, markup) {
   return `${html.slice(0, insertAt)}\n${markup}\n${html.slice(insertAt)}`;
 }
 
+function insertBeforeHeadClose(html, markup) {
+  const closingHead = String(html || "").search(/<\/head\s*>/i);
+  if (closingHead < 0) return html;
+  return `${html.slice(0, closingHead)}  ${markup}\n${html.slice(closingHead)}`;
+}
+
+function hasDirectStylesheet(html, href) {
+  const escaped = href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(`<link\\b(?=[^>]*\\brel\\s*=\\s*(["'])[^"']*stylesheet[^"']*\\1)(?=[^>]*\\bhref\\s*=\\s*(["'])${escaped}(?:[?#][^"']*)?\\2)[^>]*>`, "i");
+  return pattern.test(String(html || ""));
+}
+
+function ensureMusicFirstPaintStyles(html, stylePaths) {
+  let output = html;
+  stylePaths.forEach((href) => {
+    if (hasDirectStylesheet(output, href)) return;
+    output = insertBeforeHeadClose(
+      output,
+      `<link rel="stylesheet" href="${href}" data-ccg-music-first-paint-style="true">`
+    );
+  });
+  return output;
+}
+
 function prepareMusicFirstPaintShell(html, options = {}) {
-  if (!isMusicPage(html) || hasPublicHeader(html)) {
-    return { html, applicable: false, changed: false };
+  if (!isMusicPage(html)) {
+    return { html, applicable: false, changed: false, headerInserted: false };
   }
 
   const root = options.root || path.resolve(__dirname, "..");
-  const headerMarkup = options.musicHeaderMarkup || extractMusicHeaderMarkup(root);
-  const output = insertAfterBodyOpen(html, headerMarkup);
-  if (output === html || !hasPublicHeader(output)) {
+  const stylePaths = options.musicStylePaths || extractMusicStylePaths(root);
+  let output = ensureMusicFirstPaintStyles(html, stylePaths);
+  let headerInserted = false;
+
+  if (!hasPublicHeader(output)) {
+    const headerMarkup = options.musicHeaderMarkup || extractMusicHeaderMarkup(root);
+    output = insertAfterBodyOpen(output, headerMarkup);
+    headerInserted = true;
+  }
+
+  if (!hasPublicHeader(output)) {
     throw new Error("Music page has no usable <body> element for first-paint header insertion.");
   }
 
-  return { html: output, applicable: true, changed: true };
+  return {
+    html: output,
+    applicable: true,
+    changed: output !== html,
+    headerInserted
+  };
 }
 
 function normaliseHtml(html, options = {}) {
@@ -109,14 +163,14 @@ function normaliseHtml(html, options = {}) {
       ...result,
       html: result.html,
       changed: result.html !== html,
-      musicStaticHeaderInserted: staged.changed
+      musicStaticHeaderInserted: staged.headerInserted
     };
   }
 
   return {
     ...result,
     changed: result.html !== html,
-    musicStaticHeaderInserted: staged.changed
+    musicStaticHeaderInserted: staged.headerInserted
   };
 }
 
@@ -152,6 +206,7 @@ function processRoot(root, { check = false } = {}) {
   };
 
   let musicHeaderMarkup = "";
+  let musicStylePaths = null;
   walkHtmlFiles(absoluteRoot).forEach((filePath) => {
     const relative = path.relative(absoluteRoot, filePath).replace(/\\/g, "/");
     summary.scanned += 1;
@@ -161,8 +216,9 @@ function processRoot(root, { check = false } = {}) {
     }
 
     const original = fs.readFileSync(filePath, "utf8");
-    const musicNeedsHeader = !sourceRepositoryRoot && isMusicPage(original) && !hasPublicHeader(original);
-    if (musicNeedsHeader && !musicHeaderMarkup) {
+    const stagedMusicPage = !sourceRepositoryRoot && isMusicPage(original);
+    if (stagedMusicPage && !musicStylePaths) {
+      musicStylePaths = extractMusicStylePaths(absoluteRoot);
       musicHeaderMarkup = extractMusicHeaderMarkup(absoluteRoot);
     }
 
@@ -170,7 +226,8 @@ function processRoot(root, { check = false } = {}) {
       ? core.normaliseHtml(original)
       : normaliseHtml(original, {
           root: absoluteRoot,
-          musicHeaderMarkup: musicNeedsHeader ? musicHeaderMarkup : undefined
+          musicHeaderMarkup: stagedMusicPage ? musicHeaderMarkup : undefined,
+          musicStylePaths: stagedMusicPage ? musicStylePaths : undefined
         });
 
     if (result.malformed) {
@@ -223,7 +280,10 @@ module.exports = {
   hasPublicHeader,
   isSourceRepositoryRoot,
   resolveMusicHeaderSource,
+  readMusicNavigationSource,
   extractMusicHeaderMarkup,
+  extractMusicStylePaths,
+  ensureMusicFirstPaintStyles,
   prepareMusicFirstPaintShell,
   normaliseHtml,
   processRoot
