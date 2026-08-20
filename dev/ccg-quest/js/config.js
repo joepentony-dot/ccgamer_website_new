@@ -1,0 +1,54 @@
+window.CCG_CONFIG=Object.freeze({
+  tile:30,
+  worldWidth:80,
+  worldHeight:52,
+  keyTarget:3,
+  maxPlayers:4,
+  logoAsset:"/resources/images/ccgamer-logo.png",
+  logoFallback:"assets/ccgamer-logo-fallback.svg",
+  player:{
+    maxHealth:6,
+    maxMana:12,
+    moveDelay:105,
+    fireDelay:220,
+    dashDelay:340,
+    maxProjectiles:2
+  },
+  enemy:{
+    thinkDelay:180,
+    lineOfSightRange:11,
+    contactRange:1,
+    alertMemory:{
+      scout:2600,
+      hunter:5200,
+      ambusher:3400,
+      guard:2200,
+      charger:3000,
+      ranger:3300,
+      root:3600,
+      cook:3000,
+      firebreather:3200,
+      ghost:2500
+    },
+    searchTime:2600,
+    idleStepMin:1700,
+    idleStepMax:2900
+  },
+  camping:{
+    graceMs:10000,
+    warningMs:1200,
+    blastIntervalMs:850,
+    resetDistance:5,
+    blastRadius:1,
+    zoneRadius:4
+  },
+  followerElites:[
+    {name:"Peter Cortens",initials:"PC",kind:"hunter",hp:8,avatar:"embedded:Peter Cortens"},
+    {name:"Swanh8ter",initials:"SH",kind:"charger",hp:6,avatar:"embedded:Swanh8ter"},
+    {name:"Syragar",initials:"SY",kind:"ranger",hp:6,avatar:"embedded:Syragar"},
+    {name:"Parsnip Celery",initials:"PS",kind:"root",hp:7,avatar:"embedded:Parsnip Celery"},
+    {name:"CPU",initials:"CPU",kind:"cook",hp:9,avatar:"embedded:CPU"},
+    {name:"Yoshi Yoshi",initials:"YY",kind:"firebreather",hp:7,avatar:"embedded:Yoshi Yoshi"}
+  ],
+  c64Loot:["Impossible Mission","Wizball","Paradroid","Boulder Dash","Bruce Lee","Uridium","The Last Ninja","Bubble Bobble"]
+});
