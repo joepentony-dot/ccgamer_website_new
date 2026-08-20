@@ -7,7 +7,7 @@ const css = fs.readFileSync('resources/css/ccg-seo-opportunity-centre.css', 'utf
 
 test('SEO work queue exposes a real resolution action column', () => {
   assert.match(script, /th\.textContent = "Resolve"/);
-  assert.match(script, /button\.textContent = resolutionState\.loaded \? "Resolve" : "Loading…"/);
+  assert.match(script, /const label = resolutionState\.loaded \? "Resolve" : "Loading…"/);
   assert.match(script, /Resolve SEO opportunity/);
   assert.match(script, /Mark fixed &amp; monitor/);
   assert.match(script, /Dismiss \/ intentional/);
@@ -39,6 +39,18 @@ test('resolution monitor allows manual reopening and keeps intentional legacy ro
   assert.match(script, /Managed noindex,follow game handler/);
   assert.match(script, /Managed noindex,follow composer handler/);
   assert.match(script, /Monitor Google retirement/);
+});
+
+test('resolution observer cannot recursively watch its own table decorations', () => {
+  assert.match(script, /let reconcileQueued = false/);
+  assert.match(script, /let reconciling = false/);
+  assert.match(script, /if \(reconciling\) return/);
+  assert.match(script, /if \(reconcileQueued\) return/);
+  assert.match(script, /queueMicrotask\(\(\) =>/);
+  assert.match(script, /new MutationObserver\(\(\) => scheduleReconcile\(\)\)\.observe\(host, \{ childList: true \}\)/);
+  assert.doesNotMatch(script, /observe\(host, \{ childList: true, subtree: true \}\)/);
+  assert.match(script, /if \(button\.textContent !== label\) button\.textContent = label/);
+  assert.match(script, /if \(button\.disabled !== disabled\) button\.disabled = disabled/);
 });
 
 test('resolution presentation lives in the stylesheet rather than runtime style injection', () => {
