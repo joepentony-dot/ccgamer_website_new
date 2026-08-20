@@ -19,12 +19,6 @@ window.CCGAI=(()=>{
     return true;
   }
 
-  function targetReason(e,p,map,host){
-    if(W.sameRoom(host?.worldRef||host?.__world||window.__CCG_WORLD||{},e,p))return "room";
-    const range=p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange;
-    return lineOfSight(map,e,p,range,host)?"sight":null;
-  }
-
   function visibleTarget(e,map,players,host,world){
     let best=null,bestD=Infinity,bestReason=null;
     for(const p of players.filter(p=>p&&p.health>0)){
