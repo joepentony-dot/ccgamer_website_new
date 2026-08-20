@@ -238,13 +238,6 @@
     if (resolutionState.loaded) resolutionState.items.forEach((saved, fingerprint) => { if (saved.status === "monitoring" && expired(saved) && !current.has(fingerprint)) autoTransition(fromSaved(saved), "resolved", "Monitoring period ended and the Search Console work-queue signal is no longer present."); });
   }
 
-  function styles() {
-    if (document.getElementById("seo-resolution-style")) return;
-    const style = document.createElement("style"); style.id = "seo-resolution-style";
-    style.textContent = `.seo-resolution-message{margin:0 20px 14px;padding:10px 12px;border:1px solid rgba(255,255,255,.16);border-radius:10px}.seo-resolution-message[data-state="error"]{border-color:rgba(255,94,94,.55)}.seo-resolve-button,.seo-reopen{white-space:nowrap}.seo-resolution-dialog{width:min(820px,calc(100% - 24px));max-height:88vh;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:16px;background:#080c18;color:inherit}.seo-resolution-dialog::backdrop{background:rgba(0,0,0,.72)}.seo-resolution-dialog__panel{padding:22px;overflow:auto}.seo-resolution-dialog header{display:flex;justify-content:space-between;gap:12px}.seo-resolution-dialog h2{margin:3px 0 0}.seo-resolution-close{border:0;background:transparent;color:inherit;font-size:2rem}.seo-resolution-dialog dl{display:grid;gap:8px}.seo-resolution-dialog dl div{padding-top:8px;border-top:1px solid rgba(255,255,255,.09)}.seo-resolution-dialog dt{font-weight:800}.seo-resolution-dialog dd{margin:3px 0 0;overflow-wrap:anywhere}.seo-resolution-dialog label{display:grid;gap:6px;font-weight:800}.seo-resolution-dialog textarea{box-sizing:border-box;width:100%;padding:10px;border:1px solid rgba(255,255,255,.18);border-radius:8px;background:rgba(0,0,0,.3);color:inherit}.seo-resolution-links,.seo-resolution-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}@media(max-width:620px){.seo-resolution-links .ccg-btn,.seo-resolution-actions .ccg-btn{width:100%}}`;
-    document.head.appendChild(style);
-  }
-
   function reconcile() { reconcileWorkQueue(); reconcileLegacyDiagnostics(); addResolutionControls(); renderResolutionMonitor(); }
   function observeHost(selector) { const host = document.querySelector(selector); if (!host) return; new MutationObserver(() => reconcile()).observe(host, { childList: true, subtree: true }); }
 
@@ -269,6 +262,6 @@
   function interceptVisibleExport() { const button = document.querySelector("[data-seo-export]"); if (!button || button.dataset.managedExport === "true") return; button.dataset.managedExport = "true"; button.addEventListener("click", (event) => { event.preventDefault(); event.stopImmediatePropagation(); exportVisibleReport(); }, true); }
   function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
 
-  function init() { styles(); observeHost('[data-seo-table="workQueue"]'); observeHost('[data-seo-table="legacy"]'); interceptVisibleExport(); reconcile(); void loadResolutions(); }
+  function init() { observeHost('[data-seo-table="workQueue"]'); observeHost('[data-seo-table="legacy"]'); interceptVisibleExport(); reconcile(); void loadResolutions(); }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true }); else init();
 })();

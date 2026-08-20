@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 const script = fs.readFileSync('admin/js/seo-opportunity-managed-routes.js', 'utf8');
+const css = fs.readFileSync('resources/css/ccg-seo-opportunity-centre.css', 'utf8');
 
 test('SEO work queue exposes a real resolution action column', () => {
   assert.match(script, /th\.textContent = "Resolve"/);
@@ -38,4 +39,12 @@ test('resolution monitor allows manual reopening and keeps intentional legacy ro
   assert.match(script, /Managed noindex,follow game handler/);
   assert.match(script, /Managed noindex,follow composer handler/);
   assert.match(script, /Monitor Google retirement/);
+});
+
+test('resolution presentation lives in the stylesheet rather than runtime style injection', () => {
+  assert.doesNotMatch(script, /createElement\(["']style["']\)/);
+  assert.doesNotMatch(script, /seo-resolution-style/);
+  assert.match(css, /\.seo-resolution-message\s*\{/);
+  assert.match(css, /\.seo-resolution-dialog\s*\{/);
+  assert.match(css, /\.seo-resolution-actions/);
 });

@@ -11,6 +11,7 @@ on:
       - "resources/css/ccg-seo-opportunity-centre.css"
       - "supabase/functions/search-console-opportunities/**"
       - "tests/seo-opportunity-centre.test.mjs"
+      - "tests/seo-opportunity-resolution-workflow.test.mjs"
       - "tests/admin-navigation.test.mjs"
       - ".github/workflows/seo-opportunity-centre-validation.yml"
   push:
@@ -24,6 +25,7 @@ on:
       - "resources/css/ccg-seo-opportunity-centre.css"
       - "supabase/functions/search-console-opportunities/**"
       - "tests/seo-opportunity-centre.test.mjs"
+      - "tests/seo-opportunity-resolution-workflow.test.mjs"
       - "tests/admin-navigation.test.mjs"
       - ".github/workflows/seo-opportunity-centre-validation.yml"
 
@@ -44,4 +46,4 @@ jobs:
           node --check admin/js/seo-opportunity-centre.js
           node --check admin/js/seo-opportunity-managed-routes.js
       - name: SEO Opportunity Centre regression tests
-        run: node --test tests/seo-opportunity-centre.test.mjs tests/admin-navigation.test.mjs
+        run: node --test tests/seo-opportunity-centre.test.mjs tests/seo-opportunity-resolution-workflow.test.mjs tests/admin-navigation.test.mjs
