@@ -11,7 +11,7 @@
     to be converted to SVG simply to be usable by the game.
   */
   Q.CUSTOM_ASSETS={
-    backgrounds:{bedroom:null,beads:null,budget:null,fighter:null,christmas:null,amiga:null,guru:null},
+    backgrounds:{bedroom:null,beads:null,budget:null,fighter:null,invaders:null,christmas:null,maze:null,amiga:null,guru:null},
     bosses:{bedroom:null,budget:null,christmas:null,amiga:null,guru:null},
     collectibles:{tape:null,disk:null,zzap:null,joystick:null},
     powers:{shield:null,speed:null,double:null},
@@ -20,11 +20,12 @@
     player:{
       mascot:null,
       head:null,
+      avatar:null,
       body:null,
       arm:null,
       leg:null
     },
-    music:{bedroom:null,bedroomBoss:null,beads:null,budget:null,budgetBoss:null,fighter:null,christmas:null,christmasBoss:null,amiga:null,amigaBoss:null,guru:null,guruBoss:null,title:null}
+    music:{bedroom:null,bedroomBoss:null,beads:null,budget:null,budgetBoss:null,fighter:null,invaders:null,christmas:null,christmasBoss:null,maze:null,amiga:null,amigaBoss:null,guru:null,guruBoss:null,title:null}
   };
 
   Q.customAsset=function(group,key){return Q.CUSTOM_ASSETS?.[group]?.[key] || null;};
