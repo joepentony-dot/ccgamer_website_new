@@ -19,8 +19,8 @@ From the repository root run `dev/ccg-quest/TEST-GAME.bat`, then open:
 - enemies accelerate and attack after discovery, then search the last-known position and eventually give up
 - Swanh8ter has a real multi-tile charge attack
 - diagonal player movement and diagonal firing
-- much larger ammo reserve and ammo packs
-- 10-second anti-loitering system now periodically targets the player's exact position for damaging blasts
+- 60-shot starting ammo reserve plus ammo packs
+- 10-second anti-loitering system periodically targets the player's exact position for damaging blasts
 - bronze-key side doors leading to isolated optional treasure rooms
 - locked chests containing weapon upgrades, armour, potions, torches, ammo, rapid fire and health
 - main vault keys never spawn behind an optional locked door
@@ -29,12 +29,12 @@ From the repository root run `dev/ccg-quest/TEST-GAME.bat`, then open:
 - local two-player split-screen with independent cameras and friendly fire
 - room-code multiplayer retained for local testing and CCG Supabase Realtime deployment
 
+## Controller structure
+
+The game controller is deliberately split into `game-core.js`, `game-network.js`, `game-play.js`, `game-render.js` and `game-main.js`. This replaces the earlier oversized controller and makes individual systems easier to test and extend.
+
 ## Controls
 
-P1: WASD / arrows, Space fire, Left Shift dash, E potion.
-P2: IJKL, Enter fire, Right Ctrl dash, O potion.
+P1: WASD / arrows, Space fire, Left Shift dash, E potion.  
+P2: IJKL, Enter fire, Right Ctrl dash, O potion.  
 P pauses, M toggles sound, F toggles fullscreen.
-
-## Release gate
-
-This build is for hands-on testing only. Keep PR #1635 as a draft and leave `main` untouched until the game is explicitly approved for release.
