@@ -1,0 +1,73 @@
+{
+  "canvas": {"width": 1600, "height": 900, "aspectRatio": "16:9"},
+  "backgrounds": {
+    "bedroom": {"width": 1600, "height": 900, "status": "uploadable"},
+    "beads": {"width": 1600, "height": 900, "status": "uploadable"},
+    "budget": {"width": 1600, "height": 900, "status": "uploadable"},
+    "fighter": {"width": 1600, "height": 900, "status": "uploadable"},
+    "invaders": {"width": 1600, "height": 900, "status": "uploadable"},
+    "christmas": {"width": 1600, "height": 900, "status": "uploadable"},
+    "maze": {"width": 1600, "height": 900, "status": "uploadable"},
+    "amiga": {"width": 1600, "height": 900, "status": "uploadable"},
+    "guru": {"width": 1600, "height": 900, "status": "uploadable"}
+  },
+  "layers": {"width": 1600, "height": 900, "transparent": true, "status": "uploadable"},
+  "sprites": {
+    "cheeky": {"drawWidth": 150, "drawHeight": 190, "suggestedStates": ["idle","run","jump","fall","duck","duckFire","fire","punch","kick","hit"], "status": "uploadable"},
+    "cheekyHead": {"drawWidth": 92, "drawHeight": 92, "suggestedSource": "256x256+ square", "status": "uploadable/member-avatar"},
+    "tierTex": {"drawWidth": 124, "drawHeight": 158, "suggestedStates": ["idle","walk","jump","guard","punch","kick","hit"], "status": "uploadable"},
+    "enemyNormal": {"drawWidth": 70, "drawHeight": 70, "state": "run", "status": "uploadable-via-enemy-sheet"},
+    "enemyLow": {"drawWidth": 78, "drawHeight": 48, "state": "low", "status": "uploadable-via-enemy-sheet"},
+    "boss": {"drawWidth": 205, "drawHeight": 180, "suggestedStates": ["idle","charge"], "status": "uploadable-per-boss"}
+  },
+  "collectibles": {"drawWidth": 54, "drawHeight": 54, "suggestedSource": "128x128 transparent", "status": "uploadable"},
+  "powers": {"drawWidth": 64, "drawHeight": 64, "suggestedSource": "128x128 transparent", "status": "uploadable"},
+  "invaders": {
+    "alien": {"drawWidth": 56, "drawHeight": 36, "suggestedSource": "112x72", "status": "uploadable-five-row-slots"},
+    "ship": {"drawWidth": 104, "drawHeight": 65, "suggestedSource": "208x130", "status": "uploadable"},
+    "bunker": {"drawWidth": 120, "drawHeight": 34, "suggestedSource": "240x68", "status": "uploadable"},
+    "shot": {"drawWidth": 16, "drawHeight": 24, "suggestedSource": "32x48", "status": "uploadable-separate-player-enemy"}
+  },
+  "procedural": {
+    "electricBead": {"drawWidth": 44, "drawHeight": 44, "suggestedSource": "88x88 transparent", "status": "dedicated-upload-slot-needed"},
+    "mazeCell": {"drawWidth": 54, "drawHeight": 54, "suggestedSource": "108x108 tile", "status": "dedicated-upload-slots-needed"},
+    "mazeBug": {"drawWidth": 38, "drawHeight": 38, "suggestedSource": "76x76 transparent", "status": "dedicated-upload-slots-needed"},
+    "standardPlayerShot": {"diameter": 16, "duckDiameter": 14, "status": "dedicated-upload-slot-needed"},
+    "bossShot": {"diameter": 34, "guruDiameter": 30, "status": "dedicated-upload-slot-needed"}
+  },
+  "hazards": {
+    "bedroom": [
+      {"name":"Load Error","width":108,"height":92},
+      {"name":"Load Error Duck","width":118,"height":56},
+      {"name":"Tape Tangle","width":82,"height":68},
+      {"name":"Cassette Case Duck","width":140,"height":54}
+    ],
+    "budget": [
+      {"name":"Full Price £9.99","width":132,"height":112},
+      {"name":"£9.99 Price Tag Duck","width":152,"height":55},
+      {"name":"Shelf Edge","width":180,"height":52},
+      {"name":"Price Card Duck","width":150,"height":54},
+      {"name":"Budget Bin","width":210,"height":66}
+    ],
+    "christmas": [
+      {"name":"Rolling Present","width":84,"height":84},
+      {"name":"Gran's House","width":145,"height":118},
+      {"name":"Coat On Duck","width":150,"height":56},
+      {"name":"Christmas Dinner","width":126,"height":94},
+      {"name":"Tinsel Duck","width":180,"height":50}
+    ],
+    "amiga": [
+      {"name":"Bouncing Disk","width":88,"height":88},
+      {"name":"Read Error Duck","width":135,"height":56},
+      {"name":"Disk 1/2 of 11","width":92,"height":78},
+      {"name":"Workbench Window Duck","width":170,"height":56}
+    ],
+    "guru": [
+      {"name":"Guru Glitch Beam","width":86,"height":315},
+      {"name":"Corrupt Block","width":104,"height":96},
+      {"name":"Guru Box Jump","width":118,"height":112},
+      {"name":"Memory Box","width":96,"height":82}
+    ],
+    "status": "one-static-override-per-stage-currently"
+  }
+}
