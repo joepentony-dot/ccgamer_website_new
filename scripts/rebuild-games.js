@@ -15,6 +15,7 @@ const steps = [
   ["audit-game-manuals.js"],
   ["build-magazine-review-chunks.js"],
   ["audit-magazine-review-coverage.js"],
+  ["ensure-manual-viewer-polish.js", "--root", ".", "--template-only"],
   ["build-games.js"],
   ["enforce-manual-only-game-pages.js"],
   ["ensure-magazine-review-runtime.js"],
