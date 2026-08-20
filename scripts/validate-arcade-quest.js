@@ -78,13 +78,15 @@ expectContains('arcade/quest/game/main-v2.js', main, "input.tap('KeyZ','ControlL
 expectContains('arcade/quest/game/main-v2.js', main, "if(input.tap('KeyZ','ControlLeft')&&g.fire<=0)", 'single-press Alien Formation firing');
 expectContains('arcade/quest/game/main-v2.js', main, 'leftMarks=[5.5,10.5,15.5,20.5,24.5]', 'five scheduled left-side Electric Bead attacks');
 expectContains('arcade/quest/game/main-v2.js', main, 'enemyCool:.58', 'faster opening Alien Formation fire');
+expectContains('arcade/quest/game/main-v2.js', main, 'dir:1,speed:72,aliens', 'slower Alien Formation base movement');
+expectContains('arcade/quest/game/main-v2.js', main, 'spd=g.speed+ratio*145', 'slower Alien Formation late-wave movement');
 expectContains('arcade/quest/game/main-v2.js', main, 'g.enemyCool=rand(Math.max(.22,.54-ratio*.18)', 'shorter Alien Formation firing gaps');
 
 expectContains('arcade/quest/game/main-v2.js', main, 'startInvaders', 'Alien Formation interlude');
 expectContains('arcade/quest/game/main-v2.js', main, 'r<5;r++)for(let c=0;c<9', '45-alien tougher formation');
 expectContains('arcade/quest/game/main-v2.js', main, 'bunkers=[330,650,970,1290]', 'destructible Alien Formation cover');
 expectContains('arcade/quest/game/main-v2.js', main, 'count=ratio>.5?3:ratio>.12?2:1', 'stronger multi-shot Alien Formation pressure');
-expectContains('arcade/quest/game/main-v2.js', main, 'aim=Math.random()<(.34+ratio*.42)', 'more frequent aimed Alien Formation shots');
+expectContains('arcade/quest/game/main-v2.js', main, 'vy=270+ratio*125,vx=0', 'straight-down slower Alien Formation shots');
 expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_alien'+(a.row+1))", 'custom Alien Formation row sprites');
 expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_ship')", 'custom Alien Formation ship sprite');
 
@@ -101,6 +103,7 @@ expectContains('arcade/quest/game/main-v2.js', main, 'CONTACT STILL HURTS', 'Dot
 expectContains('arcade/quest/game/main-v2.js', main, 'beadLeftShots', 'left-side Electric Bead attacks');
 expectContains('arcade/quest/game/main-v2.js', main, 'w:44,h:44', 'smaller Electric Beads');
 expectContains('arcade/quest/game/main-v2.js', main, 'S.beadEnemyTimer-=dt', '8-bit enemies in Electric Bead Run');
+expectContains('arcade/quest/game/main-v2.js', main, 'speed=rand(360,455)', 'slightly slower Electric Bead speed');
 expectContains('arcade/quest/game/main-v2.js', main, 'updatePlayer(dt,true)', 'shooting enabled in Electric Bead Run');
 
 expectContains('arcade/quest/game/main-v2.js', main, 'player_avatar', 'member avatar head rendering');
