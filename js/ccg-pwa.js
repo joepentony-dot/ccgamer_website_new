@@ -15,6 +15,7 @@
   const SERVICE_WORKER_PATH = "/service-worker.js";
   const ICON_PATH = "/resources/images/ccg-app-icon-v2.svg";
   const CSS_PATH = "/resources/css/ccg-pwa.css";
+  const HOME_CTA_CSS_PATH = "/resources/css/ccg-pwa-home-cta.css";
   const VISIT_KEY = "ccg_pwa_public_visits";
   const DISMISS_KEY = "ccg_pwa_dismissed_until";
   const UPDATE_CHECK_KEY = "ccg_pwa_last_update_check";
@@ -96,11 +97,39 @@
     ensureLink("icon", ICON_PATH, { type: "image/svg+xml" });
     ensureLink("apple-touch-icon", ICON_PATH);
     ensureLink("stylesheet", CSS_PATH);
+    ensureLink("stylesheet", HOME_CTA_CSS_PATH);
     ensureMeta("application-name", "Cheeky Commodore Gamer");
     ensureMeta("apple-mobile-web-app-capable", "yes");
     ensureMeta("apple-mobile-web-app-status-bar-style", "black-translucent");
     ensureMeta("apple-mobile-web-app-title", "CCG");
     ensureMeta("mobile-web-app-capable", "yes");
+  }
+
+  function ensureHomeInstallCta() {
+    if (!document.documentElement.matches?.('[data-ccg-page="home"]')) return;
+
+    const actions = document.querySelector(".home-support-strip__actions");
+    if (!actions || actions.querySelector("[data-ccg-home-install-app]")) return;
+
+    const link = document.createElement("a");
+    link.href = "/install-app.html";
+    link.className = "ccg-btn home-support-strip__app";
+    link.setAttribute("data-ccg-home-install-app", "true");
+    link.setAttribute("aria-label", "Install CCG App");
+
+    const icon = document.createElement("img");
+    icon.className = "home-support-strip__app-icon";
+    icon.src = ICON_PATH;
+    icon.alt = "";
+    icon.width = 28;
+    icon.height = 28;
+    icon.decoding = "async";
+
+    const label = document.createElement("span");
+    label.textContent = "Install CCG App";
+
+    link.append(icon, label);
+    actions.appendChild(link);
   }
 
   function publicVisitCount() {
@@ -383,6 +412,7 @@
 
   function init() {
     ensureMetadata();
+    ensureHomeInstallCta();
     void registerServiceWorker();
 
     if (isPrivateArea()) return;
