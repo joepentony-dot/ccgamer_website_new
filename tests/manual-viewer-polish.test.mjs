@@ -29,12 +29,21 @@ test('non-manual pages are left untouched by the publisher normalizer', () => {
   assert.equal(injectManualViewerPolish(source), source);
 });
 
-test('manual runtime preserves the pre-open scroll position and repairs the existing modal lock', () => {
+test('manual runtime anchors the viewer to the button that launched it', () => {
   assert.match(runtime, /#\$\{BUTTON_ID\}/);
-  assert.match(runtime, /currentScrollTop\(\)/);
+  assert.match(runtime, /getBoundingClientRect\(\)/);
+  assert.match(runtime, /--ccg-manual-anchor-top/);
+  assert.match(runtime, /positionViewerNearButton\(button\)/);
   assert.match(runtime, /document\.addEventListener\("click"[\s\S]*\{ capture: true \}\)/);
-  assert.match(runtime, /body\.dataset\.modalScrollTop = String\(scrollTop\)/);
-  assert.match(runtime, /window\.scrollTo\(\{ top: scrollTop, behavior: "auto" \}\)/);
+});
+
+test('manual runtime releases the page scroll lock and tracks the live page position', () => {
+  assert.match(runtime, /body\.classList\.remove\("modal-open"\)/);
+  assert.match(runtime, /body\.style\.top = ""/);
+  assert.match(runtime, /window\.addEventListener\("scroll", syncScrollRestorePoint, \{ passive: true \}\)/);
+  assert.match(runtime, /body\.dataset\.modalScrollTop = String\(currentScrollTop\(\)\)/);
+  assert.doesNotMatch(runtime, /body\.classList\.add\("modal-open"\)/);
+  assert.doesNotMatch(runtime, /body\.style\.top = `-\$\{scrollTop\}px`/);
   assert.doesNotMatch(runtime, /window\.scrollTo\(\{ top: 0/);
 });
 
@@ -45,10 +54,17 @@ test('manual runtime supplies an external PDF fallback without affecting other m
   assert.doesNotMatch(runtime, /ccgModal|box3d/i);
 });
 
-test('manual viewer presentation uses a light reading surface and a mobile viewport contract', () => {
-  assert.match(css, /#manualModal \.manual-content/);
+test('manual viewer presentation is non-blocking and uses an anchored reading surface', () => {
+  assert.match(css, /data-ccg-manual-anchored="true"/);
+  assert.match(css, /position: absolute !important/);
+  assert.match(css, /pointer-events: none !important/);
+  assert.match(css, /\.manual-content[\s\S]*pointer-events: auto !important/);
+  assert.match(css, /background: transparent !important/);
   assert.match(css, /background: #f3f5f7/);
-  assert.match(css, /#manualModal \.ccg-pdf-frame/);
+});
+
+test('mobile manual viewer stays bounded instead of taking over the full viewport', () => {
   assert.match(css, /@media \(max-width: 700px\)/);
-  assert.match(css, /height: 100dvh/);
+  assert.match(css, /height: min\(68dvh, 620px\) !important/);
+  assert.doesNotMatch(css, /height: 100dvh/);
 });
