@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Arcade Asset Manager</title>
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
+  <link href="./css/arcade-assets.css?v=arcade-20260820" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg"><div class="ccg-bg-starfield"></div><div class="ccg-bg-grid"></div><div class="ccg-bg-crt-overlay"></div></div>
+  <main class="arcade-admin-wrap omega-admin-shell" data-admin-shell>
+    <header class="arcade-admin-header">
+      <div><p class="admin-auth-kicker">CCG Arcade Development</p><h1>Commodore Quest Asset Manager</h1><p>Upload and replace game backgrounds, bosses, hazards, collectibles, power-ups, fighter artwork and level music without editing the game code.</p></div>
+      <a class="ccg-btn ccg-btn--primary" href="/arcade/quest/" target="_blank" rel="noopener">Open Game</a>
+    </header>
+    <section class="arcade-admin-grid">
+      <article class="arcade-panel"><h2>Upload / Replace Asset</h2><p class="arcade-muted">Images: PNG, JPG, WebP or SVG. Music: MP3, OGG or WAV. Transparent PNG is recommended for sprites.</p><form id="arcade-asset-form" class="arcade-form"><label>Asset slot<select id="arcade-slot" required></select></label><label>File<input id="arcade-file" type="file" required /></label><label>Notes <span class="arcade-muted">(optional)</span><input id="arcade-notes" type="text" maxlength="180" placeholder="e.g. Final bedroom background v2" /></label><label class="arcade-check"><input id="arcade-enabled" type="checkbox" checked /> Enable immediately</label><div id="arcade-preview" class="arcade-preview" aria-live="polite"><span>Select a file to preview it.</span></div><button class="ccg-btn ccg-btn--primary" type="submit" id="arcade-upload">Upload Asset</button><p id="arcade-status" class="arcade-status" data-state="info">Waiting for admin session…</p></form></article>
+      <article class="arcade-panel"><h2>How the game uses assets</h2><ul class="arcade-help"><li><strong>GitHub remains the fallback.</strong> Removing a custom asset immediately returns that slot to the bundled artwork.</li><li><strong>Supabase Storage holds live uploads.</strong> No GitHub token is exposed in the browser.</li><li><strong>One active file per slot.</strong> Replacing a slot removes the old stored file after the new record is saved.</li><li><strong>Music loops by level.</strong> Game sound effects continue over uploaded music.</li></ul><div class="arcade-callout"><strong>Graphics workflow:</strong> upload source art here. Detailed raster art should normally stay PNG/WebP. Flat logos/icons can be vectorised to SVG when that improves scaling.</div></article>
+    </section>
+    <section class="arcade-panel arcade-library-panel"><div class="arcade-library-head"><div><h2>Current Game Assets</h2><p class="arcade-muted">These are the custom overrides currently available to the live game.</p></div><button type="button" class="ccg-btn ccg-btn--ghost" id="arcade-refresh">Refresh</button></div><div id="arcade-library" class="arcade-library" aria-live="polite"><p class="arcade-muted">Loading assets…</p></div></section>
+  </main>
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script><script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script><script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script><script type="module" src="/admin/js/arcade-assets.js?v=arcade-20260820"></script>
+</body>
+</html>
