@@ -5,29 +5,56 @@
     const BUTTON_ID = "gameManualBtn";
     const FRAME_ID = "gameManualEmbed";
     const TOOLBAR_ATTR = "data-ccg-manual-toolbar";
-    const MANUAL_URLS = new WeakMap();
+
+    let activeManualUrl = "";
 
     function currentScrollTop() {
         return window.scrollY || document.documentElement.scrollTop || 0;
     }
 
-    function readManualUrl(button) {
-        if (!button) return "";
-        const remembered = MANUAL_URLS.get(button);
-        if (remembered) return remembered;
-
-        const dataUrl = String(button.dataset.manualUrl || "").trim();
-        if (dataUrl) return dataUrl;
-
-        const href = String(button.getAttribute("href") || "").trim();
-        return href && !href.startsWith("#") ? href : "";
+    function resolvePrimaryLink(value) {
+        if (Array.isArray(value) && value.length) {
+            return value.find(Boolean) || "";
+        }
+        if (typeof value === "string") return value.trim();
+        return "";
     }
 
-    function hideManualSourceFromButton(button) {
+    function normaliseManualUrl(url) {
+        const trimmed = String(url || "").trim();
+        if (!trimmed) return "";
+
+        const driveMatch = trimmed.match(/https?:\/\/drive\.google\.com\/file\/d\/([^/]+)\//i);
+        if (driveMatch && driveMatch[1]) {
+            return `https://drive.google.com/file/d/${driveMatch[1]}/preview`;
+        }
+
+        return trimmed;
+    }
+
+    function resolveManualUrlFromGame(game) {
+        const candidate = resolvePrimaryLink(game?.pdf || game?.manual || game?.manuals);
+        if (!candidate || !/^https:\/\//i.test(candidate)) return "";
+
+        const isDriveFile = /https?:\/\/drive\.google\.com\/file\/d\/[^/]+\//i.test(candidate);
+        const isPdfPath = /\.pdf(?:[?#].*)?$/i.test(candidate);
+        if (!isDriveFile && !isPdfPath) return "";
+
+        return normaliseManualUrl(candidate);
+    }
+
+    function readManualUrlFromButton(button) {
         if (!button) return "";
 
-        const manualUrl = readManualUrl(button);
-        if (manualUrl) MANUAL_URLS.set(button, manualUrl);
+        const dataUrl = String(button.dataset.manualUrl || "").trim();
+        if (dataUrl) return normaliseManualUrl(dataUrl);
+
+        const href = String(button.getAttribute("href") || "").trim();
+        return href && !href.startsWith("#") ? normaliseManualUrl(href) : "";
+    }
+
+    function scrubManualSourceFromButton(button) {
+        if (!button) return;
 
         if (button.dataset.manualUrl) delete button.dataset.manualUrl;
         if (button.getAttribute("href") !== `#${MODAL_ID}`) {
@@ -37,8 +64,13 @@
         if (button.hasAttribute("rel")) button.removeAttribute("rel");
         button.setAttribute("aria-haspopup", "dialog");
         button.setAttribute("title", "Open manual viewer");
+    }
 
-        return manualUrl;
+    function captureManualSource(button, preferredUrl = "") {
+        const candidate = normaliseManualUrl(preferredUrl) || readManualUrlFromButton(button);
+        if (candidate) activeManualUrl = candidate;
+        scrubManualSourceFromButton(button);
+        return activeManualUrl;
     }
 
     function ensureToolbar() {
@@ -86,7 +118,7 @@
         const frame = document.getElementById(FRAME_ID);
         const status = document.getElementById("manualModalStatus");
         const closeButton = document.getElementById("manualModalClose");
-        if (!modal || !frame || !manualUrl) return;
+        if (!modal || !frame || !manualUrl) return false;
 
         ensureModalAtDocumentRoot(modal);
         ensureToolbar();
@@ -105,13 +137,14 @@
         button?.setAttribute("aria-expanded", "true");
 
         requestAnimationFrame(() => closeButton?.focus({ preventScroll: true }));
+        return true;
     }
 
     function bindManualButtonObserver(button) {
         if (!button || button.dataset.ccgManualSourceObserved === "true") return;
 
         const observer = new MutationObserver(() => {
-            hideManualSourceFromButton(button);
+            captureManualSource(button);
         });
         observer.observe(button, {
             attributes: true,
@@ -120,10 +153,12 @@
         button.dataset.ccgManualSourceObserved = "true";
     }
 
-    function syncManualButton() {
+    function syncManualButton(event) {
         const button = document.getElementById(BUTTON_ID);
         if (!button) return;
-        hideManualSourceFromButton(button);
+
+        const eventManualUrl = resolveManualUrlFromGame(event?.detail?.game);
+        captureManualSource(button, eventManualUrl);
         bindManualButtonObserver(button);
     }
 
@@ -148,10 +183,11 @@
             : null;
         if (!button) return;
 
-        const manualUrl = hideManualSourceFromButton(button);
+        const manualUrl = captureManualSource(button);
+        event.preventDefault();
+
         if (!manualUrl) return;
 
-        event.preventDefault();
         event.stopPropagation();
         openManualViewer(button, manualUrl);
     }, { capture: true });
