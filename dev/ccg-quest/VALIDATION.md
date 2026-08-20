@@ -16,5 +16,6 @@
 - PASS: Swanh8ter charge test moved three tiles in one aggressive charge.
 - PASS: strict configured light radii are 5 tiles (10 diameter) and 10 tiles with a torch (20 diameter).
 - PASS: downloadable build contains all locally referenced PNG/SVG/CSS/JS assets.
+- PASS: GitHub branch integration verified after the Exploration commit; config and game controller blob SHAs match the prepared build.
 
 Hands-on browser gameplay remains the next test gate. The development branch must not be merged to `main` yet.
