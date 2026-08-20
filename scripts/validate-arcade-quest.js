@@ -49,11 +49,17 @@ const migration = read('supabase/migrations/20260820_arcade_asset_manager.sql');
 expectContains('arcade/index.html', arcadeIndex, '/arcade/quest/', 'Quest launch link');
 expectContains('arcade/quest/game/main-v2.js', main, 'hydrateRemoteAssets', 'remote asset hydration before startup');
 expectContains('arcade/quest/game/main-v2.js', main, "input.down('ArrowDown','KeyS')", 'duck control');
-expectContains('arcade/quest/game/main-v2.js', main, "lane==='duck'", 'real duck-height hazard lane');
+expectContains('arcade/quest/game/main-v2.js', main, "lane==='duck')return Q.GROUND-P.h-10", 'raised but still mandatory duck-hazard lane');
 expectContains('arcade/quest/game/main-v2.js', main, 'hazardReleaseAt', 'hazard release spacing gate');
+expectContains('arcade/quest/game/main-v2.js', main, 'sy=P.duck&&P.ground?P.y+103:P.y+58', 'low firing while ducking');
+expectContains('arcade/quest/game/main-v2.js', main, "variant:low?'low':'normal'", 'low 8-bit enemy type');
+expectContains('arcade/quest/game/main-v2.js', main, 'LOW 8BIT', 'low enemy visual treatment');
 expectContains('arcade/quest/game/main-v2.js', main, "fighterPlayerAttack('punch')", 'fighter punch state');
 expectContains('arcade/quest/game/main-v2.js', main, "fighterPlayerAttack('kick')", 'fighter kick state');
 expectContains('arcade/quest/game/main-v2.js', main, 'chooseFighterAI', 'adaptive fighter AI');
+expectContains('arcade/quest/game/main-v2.js', main, 'fighterAttackBox', 'frame-aware fighter hitboxes');
+expectContains('arcade/quest/game/main-v2.js', main, '22+72*kk', 'reduced Tier-Tex kick visual extension');
+expectContains('arcade/quest/game/main-v2.js', main, '48+58*pn', 'reduced Tier-Tex punch visual extension');
 expectContains('arcade/quest/game/main-v2.js', main, "f.vx=f.face*155", 'Tier-Tex attack step-in pressure');
 expectContains('arcade/quest/game/main-v2.js', main, "r<.88", 'aggressive close-range Tier-Tex pressure');
 expectContains('arcade/quest/game/main-v2.js', main, 'BOSS_PROFILE', 'progressive boss difficulty profiles');
@@ -67,10 +73,31 @@ expectContains('arcade/quest/game/main-v2.js', main, 'GURU BOX — JUMP', 'addit
 expectContains('arcade/quest/game/main-v2.js', main, 'MEMORY BOX', 'secondary Guru box encounter');
 expectContains('arcade/quest/game/main-v2.js', main, "if(S.stage>=2)", 'later-stage bidirectional enemy spawns');
 expectContains('arcade/quest/game/main-v2.js', main, "S.stage===2?.7:.5", 'Christmas left-side spawn bias');
+expectContains('arcade/quest/game/main-v2.js', main, 'S.enemySpawn-=dt', 'additional ambient 8-bit enemies');
+
 expectContains('arcade/quest/game/main-v2.js', main, 'startInvaders', 'Alien Formation interlude');
+expectContains('arcade/quest/game/main-v2.js', main, 'r<5;r++)for(let c=0;c<9', '45-alien tougher formation');
+expectContains('arcade/quest/game/main-v2.js', main, 'bunkers=[330,650,970,1290]', 'destructible Alien Formation cover');
+expectContains('arcade/quest/game/main-v2.js', main, 'count=ratio>.62?3:ratio>.3?2:1', 'late-wave multi-shot Alien Formation pressure');
+expectContains('arcade/quest/game/main-v2.js', main, 'aim=Math.random()<(.28+ratio*.35)', 'aimed Alien Formation shots');
+expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_alien'+(a.row+1))", 'custom Alien Formation row sprites');
+expectContains('arcade/quest/game/main-v2.js', main, "assets.get('invader_ship')", 'custom Alien Formation ship sprite');
+
 expectContains('arcade/quest/game/main-v2.js', main, 'startMaze', 'Dot-Maze interlude');
 expectContains('arcade/quest/game/main-v2.js', main, 'target:110', 'extended Dot-Maze target');
-expectContains('arcade/quest/game/main-v2.js', main, 'COLLECT 110 DOTS', 'extended Dot-Maze instructions');
+expectContains('arcade/quest/game/main-v2.js', main, 'mazeDistance', 'pathfinding-aware Dot-Maze bug AI');
+expectContains('arcade/quest/game/main-v2.js', main, "role:'ambush'", 'Dot-Maze ambush bug role');
+expectContains('arcade/quest/game/main-v2.js', main, "role:'pincer'", 'Dot-Maze pincer bug role');
+expectContains('arcade/quest/game/main-v2.js', main, "role:'guard'", 'Dot-Maze power-cell guard bug role');
+expectContains('arcade/quest/game/main-v2.js', main, 'm.powered=4.2', 'shorter Dot-Maze power effect');
+expectContains('arcade/quest/game/main-v2.js', main, 'damage=powered?12:30', 'enemy contact always has consequences in Dot-Maze');
+expectContains('arcade/quest/game/main-v2.js', main, 'CONTACT STILL HURTS', 'Dot-Maze power-state warning');
+
+expectContains('arcade/quest/game/main-v2.js', main, 'beadLeftShots', 'left-side Electric Bead attacks');
+expectContains('arcade/quest/game/main-v2.js', main, 'w:44,h:44', 'smaller Electric Beads');
+expectContains('arcade/quest/game/main-v2.js', main, 'S.beadEnemyTimer-=dt', '8-bit enemies in Electric Bead Run');
+expectContains('arcade/quest/game/main-v2.js', main, 'updatePlayer(dt,true)', 'shooting enabled in Electric Bead Run');
+
 expectContains('arcade/quest/game/main-v2.js', main, 'player_avatar', 'member avatar head rendering');
 expectContains('arcade/quest/game/main-v2.js', main, 'vx=930*dir', 'manual straight player fire contract');
 expectContains('arcade/quest/game/main-v2.js', main, '28 SECONDS', 'extended Electric Bead Run');
@@ -81,6 +108,7 @@ expectContains('arcade/quest/game/remote-assets.js', remote, "get_my_public_prof
 expectContains('arcade/quest/game/remote-assets.js', remote, 'avatar_url', 'member avatar URL hydration');
 expectContains('arcade/quest/game/assets-config.js', config, 'CUSTOM_ASSETS', 'custom asset configuration');
 expectContains('arcade/quest/game/assets-config.js', config, 'avatar:null', 'runtime player avatar slot');
+expectContains('arcade/quest/game/assets-config.js', config, 'invaders:{alien1:null', 'Alien Formation sprite asset group');
 expectContains('arcade/quest/game/stages.js', stages, "['invaders','Alien Formation']", 'Alien Formation level select entry');
 expectContains('arcade/quest/game/stages.js', stages, "['maze','Dot-Maze Run']", 'Dot-Maze level select entry');
 expectContains('arcade/quest/game/achievements.js', achievements, 'Formation Breaker', 'Alien Formation achievement');
@@ -104,6 +132,12 @@ expectContains('arcade/quest/game/achievements.js', achievements, 'Dot Gobbler',
   expectContains('arcade/quest/game/assets-config.js', config, `${slot}:null`, `${slot} custom asset slot`);
   expectContains('admin/js/arcade-assets.js', adminJs, `'${slot}'`, `${slot} admin upload slot`);
 });
+
+['alien1', 'alien2', 'alien3', 'alien4', 'alien5', 'ship', 'bunker', 'enemyShot', 'playerShot'].forEach((slot) => {
+  expectContains('arcade/quest/game/assets-config.js', config, `${slot}:null`, `Alien Formation ${slot} asset slot`);
+  expectContains('admin/js/arcade-assets.js', adminJs, `'${slot}'`, `Alien Formation ${slot} admin upload slot`);
+});
+expectContains('admin/js/arcade-assets.js', adminJs, 'Alien Formation Sprites', 'Alien Formation sprite admin group');
 
 expectContains('admin/arcade-assets.html', adminPage, 'arcade-assets.js', 'Arcade Asset Manager controller');
 expectContains('admin/js/arcade-assets.js', adminJs, "ensureRole(['admin', 'superadmin'])", 'admin/superadmin access check');
