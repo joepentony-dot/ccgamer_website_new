@@ -26,9 +26,11 @@ function expectContains(rel, source, needle, description = needle) {
 
 const gameIndex = read('arcade/quest/index.html');
 const arcadeIndex = read('arcade/index.html');
-const main = read('arcade/quest/game/main.js');
+const main = read('arcade/quest/game/main-v2.js');
 const remote = read('arcade/quest/game/remote-assets.js');
 const config = read('arcade/quest/game/assets-config.js');
+const stages = read('arcade/quest/game/stages.js');
+const achievements = read('arcade/quest/game/achievements.js');
 const adminPage = read('admin/arcade-assets.html');
 const adminJs = read('admin/js/arcade-assets.js');
 const adminNav = read('admin/js/admin-nav.js');
@@ -41,28 +43,38 @@ const migration = read('supabase/migrations/20260820_arcade_asset_manager.sql');
   'game/stages.js',
   'game/audio.js',
   'game/achievements.js',
-  'game/main.js',
+  'game/main-v2.js',
 ].forEach((src) => expectContains('arcade/quest/index.html', gameIndex, `src="${src}"`, `script ${src}`));
 
 expectContains('arcade/index.html', arcadeIndex, '/arcade/quest/', 'Quest launch link');
-expectContains('arcade/quest/game/main.js', main, 'hydrateRemoteAssets', 'remote asset hydration before startup');
-expectContains('arcade/quest/game/main.js', main, "input.down('ArrowDown', 'KeyS')", 'duck control');
-expectContains('arcade/quest/game/main.js', main, "fighterPlayerAttack('punch')", 'fighter punch state');
-expectContains('arcade/quest/game/main.js', main, "fighterPlayerAttack('kick')", 'fighter kick state');
-expectContains('arcade/quest/game/main.js', main, 'bossAttack()', 'boss attack state machine');
-expectContains('arcade/quest/game/main.js', main, 'Player fire is deliberately straight', 'manual straight player fire contract');
-expectContains('arcade/quest/game/main.js', main, '24 SECONDS', 'extended Electric Bead Run');
-expectContains('arcade/quest/game/main.js', main, 'GLITCH IN', 'Guru warning countdown');
-expectContains('arcade/quest/game/main.js', main, 'THREE-WAY FAN', 'final boss fan attack');
-expectContains('arcade/quest/game/main.js', main, 'Final boss crosses the whole arena', 'final boss arena traversal');
-expectContains('arcade/quest/game/main.js', main, 'Christmas attacks from the left', 'reversed Christmas flow');
-expectContains('arcade/quest/game/main.js', main, 'Keep fighters apart enough', 'fighter spacing / anti-button-mash contract');
-expectContains('arcade/quest/game/main.js', main, 'NEXT:', 'next-level HUD indicator');
-expectContains('arcade/quest/game/main.js', main, "Use only the mascot's head/cap/face", 'articulated mascot rig source crop');
-expectContains('arcade/quest/game/remote-assets.js', remote, ".from('arcade_assets')", 'Supabase arcade asset manifest query');
-expectContains('arcade/quest/game/assets-config.js', config, 'CUSTOM_ASSETS', 'custom asset configuration');
+expectContains('arcade/quest/game/main-v2.js', main, 'hydrateRemoteAssets', 'remote asset hydration before startup');
+expectContains('arcade/quest/game/main-v2.js', main, "input.down('ArrowDown','KeyS')", 'duck control');
+expectContains('arcade/quest/game/main-v2.js', main, "lane==='duck'", 'real duck-height hazard lane');
+expectContains('arcade/quest/game/main-v2.js', main, 'hazardReleaseAt', 'hazard release spacing gate');
+expectContains('arcade/quest/game/main-v2.js', main, "fighterPlayerAttack('punch')", 'fighter punch state');
+expectContains('arcade/quest/game/main-v2.js', main, "fighterPlayerAttack('kick')", 'fighter kick state');
+expectContains('arcade/quest/game/main-v2.js', main, 'chooseFighterAI', 'adaptive fighter AI');
+expectContains('arcade/quest/game/main-v2.js', main, 'BOSS_PROFILE', 'progressive boss difficulty profiles');
+expectContains('arcade/quest/game/main-v2.js', main, 'guruBeam(false)', 'two-second Guru stage beam contract');
+expectContains('arcade/quest/game/main-v2.js', main, 'guruBeam(true)', 'separate final-boss Guru hazard contract');
+expectContains('arcade/quest/game/main-v2.js', main, 'startInvaders', 'Alien Formation interlude');
+expectContains('arcade/quest/game/main-v2.js', main, 'startMaze', 'Dot-Maze interlude');
+expectContains('arcade/quest/game/main-v2.js', main, 'player_avatar', 'member avatar head rendering');
+expectContains('arcade/quest/game/main-v2.js', main, 'vx=930*dir', 'manual straight player fire contract');
+expectContains('arcade/quest/game/main-v2.js', main, '28 SECONDS', 'extended Electric Bead Run');
+expectContains('arcade/quest/game/main-v2.js', main, 'NEXT:', 'next-level HUD indicator');
 
-['bedroom', 'beads', 'budget', 'fighter', 'christmas', 'amiga', 'guru'].forEach((scene) => {
+expectContains('arcade/quest/game/remote-assets.js', remote, ".from('arcade_assets')", 'Supabase arcade asset manifest query');
+expectContains('arcade/quest/game/remote-assets.js', remote, "get_my_public_profile_preview", 'signed-in member avatar profile query');
+expectContains('arcade/quest/game/remote-assets.js', remote, 'avatar_url', 'member avatar URL hydration');
+expectContains('arcade/quest/game/assets-config.js', config, 'CUSTOM_ASSETS', 'custom asset configuration');
+expectContains('arcade/quest/game/assets-config.js', config, 'avatar:null', 'runtime player avatar slot');
+expectContains('arcade/quest/game/stages.js', stages, "['invaders','Alien Formation']", 'Alien Formation level select entry');
+expectContains('arcade/quest/game/stages.js', stages, "['maze','Dot-Maze Run']", 'Dot-Maze level select entry');
+expectContains('arcade/quest/game/achievements.js', achievements, 'Formation Breaker', 'Alien Formation achievement');
+expectContains('arcade/quest/game/achievements.js', achievements, 'Dot Gobbler', 'Dot-Maze achievement');
+
+['bedroom', 'beads', 'budget', 'fighter', 'invaders', 'christmas', 'maze', 'amiga', 'guru'].forEach((scene) => {
   read(`arcade/quest/assets/backgrounds/${scene}.svg`);
 });
 
@@ -74,6 +86,11 @@ expectContains('arcade/quest/game/assets-config.js', config, 'CUSTOM_ASSETS', 'c
 ['enemyPunch', 'enemyKick', 'enemyHit'].forEach((part) => {
   expectContains('arcade/quest/game/assets-config.js', config, `${part}:null`, `fighter ${part} asset slot`);
   expectContains('admin/js/arcade-assets.js', adminJs, `'${part}'`, `admin fighter ${part} upload slot`);
+});
+
+['invaders', 'maze'].forEach((slot) => {
+  expectContains('arcade/quest/game/assets-config.js', config, `${slot}:null`, `${slot} custom asset slot`);
+  expectContains('admin/js/arcade-assets.js', adminJs, `'${slot}'`, `${slot} admin upload slot`);
 });
 
 expectContains('admin/arcade-assets.html', adminPage, 'arcade-assets.js', 'Arcade Asset Manager controller');
