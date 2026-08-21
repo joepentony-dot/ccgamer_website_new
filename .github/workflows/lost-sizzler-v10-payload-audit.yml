@@ -23,111 +23,148 @@ jobs:
         shell: python
         run: |
           import base64
+          import binascii
           import gzip
           import hashlib
           import pathlib
           import re
+          import subprocess
 
           root = pathlib.Path('games/the-lost-sizzler/payload-parts')
           parts = [root / f'part-{i:02d}.txt' for i in range(5)]
-          encoded = ''.join(re.sub(r'\s+', '', p.read_text(encoding='utf-8')) for p in parts)
-          packed = base64.b64decode(encoded, validate=True)
-          text = gzip.decompress(packed).decode('utf-8')
+          expected_git_blobs = {
+              'part-00.txt':'613a4bd9d85f2e8dd1a6be97ed6c80f54be2591e',
+              'part-01.txt':'89d519a46a6fb65a946c5ba6cae019c61cd37bd2',
+              'part-02.txt':'42adc3b82d55c1c52bb01a0072c2f9fa10ab2277',
+              'part-03.txt':'5bbec9cb09f7d9599397541191775915a4038622',
+              'part-04.txt':'aff014b9c2c77b919ecfc6169fecd223cc7fb56c',
+          }
+          whitespace = set(b' \t\r\n\f\v')
+          alphabet = set(b'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
 
-          print('PAYLOAD_PARTS=', ','.join(p.name for p in parts))
-          print('PACKED_BYTES=', len(packed))
-          print('TEXT_CHARS=', len(text))
-          print('PACKED_SHA256=', hashlib.sha256(packed).hexdigest())
-          print('TEXT_SHA256=', hashlib.sha256(text.encode()).hexdigest())
+          raw_parts=[]
+          print('===== PART INTEGRITY =====')
+          for p in parts:
+              raw=p.read_bytes()
+              raw_parts.append(raw)
+              git_sha=subprocess.check_output(['git','hash-object',str(p)], text=True).strip()
+              bad=[]
+              for i,b in enumerate(raw):
+                  if b not in alphabet and b not in whitespace:
+                      bad.append((i,b,repr(bytes([b]))))
+              print(p.name, 'bytes=',len(raw), 'git_blob=',git_sha, 'expected=',expected_git_blobs[p.name], 'blob_match=',git_sha==expected_git_blobs[p.name], 'bad_count=',len(bad), 'bad_first=',bad[:20])
+              print(p.name, 'head=',repr(raw[:60]), 'tail=',repr(raw[-60:]))
 
-          markers = [
+          combined=b''.join(raw_parts)
+          clean=bytes(b for b in combined if b not in whitespace)
+          bad_combined=[(i,b,repr(bytes([b]))) for i,b in enumerate(clean) if b not in alphabet]
+          print('COMBINED_RAW_BYTES=',len(combined))
+          print('COMBINED_CLEAN_BYTES=',len(clean))
+          print('CLEAN_MOD4=',len(clean)%4)
+          print('BAD_COMBINED_COUNT=',len(bad_combined))
+          print('BAD_COMBINED_FIRST=',bad_combined[:50])
+          print('EQUALS_POSITIONS_FIRST=',[i for i,b in enumerate(clean) if b==ord('=')][:50])
+          print('CLEAN_HEAD=',repr(clean[:100]))
+          print('CLEAN_TAIL=',repr(clean[-100:]))
+
+          if bad_combined:
+              for i,b,_ in bad_combined[:20]:
+                  lo=max(0,i-40); hi=min(len(clean),i+41)
+                  print('BAD_CONTEXT',i,b,repr(clean[lo:hi]))
+              raise SystemExit('Non-base64 bytes exist in the exact package files; browser atob would not safely accept this payload.')
+
+          try:
+              packed=base64.b64decode(clean, validate=True)
+          except binascii.Error as exc:
+              print('STRICT_BASE64_ERROR=',repr(exc))
+              # Also test non-strict decoding only to distinguish alphabet problems from padding/chunk-boundary problems.
+              try:
+                  loose=base64.b64decode(clean, validate=False)
+                  print('NONSTRICT_DECODE_BYTES=',len(loose),'sha256=',hashlib.sha256(loose).hexdigest())
+              except Exception as loose_exc:
+                  print('NONSTRICT_BASE64_ERROR=',repr(loose_exc))
+              raise
+
+          print('PACKED_BYTES=',len(packed))
+          print('PACKED_SHA256=',hashlib.sha256(packed).hexdigest())
+          try:
+              payload=gzip.decompress(packed)
+          except Exception as exc:
+              print('GZIP_ERROR=',repr(exc))
+              raise
+          text=payload.decode('utf-8')
+          print('TEXT_CHARS=',len(text))
+          print('TEXT_SHA256=',hashlib.sha256(payload).hexdigest())
+
+          markers=[
               '/*__CCG_PAYLOAD_CSS_7C2F__*/',
               '/*__CCG_PAYLOAD_CORE_19A4__*/',
               '/*__CCG_PAYLOAD_GAME_37B1__*/',
               '/*__CCG_PAYLOAD_MOBILE_8E5C__*/',
           ]
-          print('MARKERS=', {m: text.count(m) for m in markers})
+          print('MARKERS=',{m:text.count(m) for m in markers})
 
-          def compact(s):
-              return re.sub(r'\s+', ' ', s).strip()
-
-          def contexts(label, pattern, max_hits=10, radius=180, flags=re.I):
+          def compact(s): return re.sub(r'\s+',' ',s).strip()
+          def contexts(label,pattern,max_hits=12,radius=220,flags=re.I):
               print(f'\n===== {label} =====')
-              hits = list(re.finditer(pattern, text, flags))
-              print('COUNT=', len(hits))
-              seen = set()
-              shown = 0
+              hits=list(re.finditer(pattern,text,flags))
+              print('COUNT=',len(hits))
+              shown=[]
               for m in hits:
-                  ctx = compact(text[max(0, m.start()-radius):min(len(text), m.end()+radius)])
-                  key = ctx.lower()
-                  if key in seen:
-                      continue
-                  seen.add(key)
-                  print(f'[{shown+1}] {ctx}')
-                  shown += 1
-                  if shown >= max_hits:
-                      break
+                  ctx=compact(text[max(0,m.start()-radius):min(len(text),m.end()+radius)])
+                  if ctx.lower() not in [x.lower() for x in shown]: shown.append(ctx)
+                  if len(shown)>=max_hits: break
+              for i,ctx in enumerate(shown,1): print(f'[{i}] {ctx}')
 
-          scans = [
-              ('VERSION', r'v10(?:\.\d+)?|version|build'),
-              ('TITLE_ART', r'lost-sizzler|sizzler\.(?:webp|png|jpg|jpeg|svg)|title(?:Art|Image|Logo)?'),
-              ('LIGHT_VISIBILITY', r'light|visibility|vision|fog|radius'),
-              ('TORCH', r'torch|flaming'),
-              ('INACTIVITY', r'inactiv|idle|loiter|punish'),
-              ('AMMO', r'ammo|ammunition|shots?'),
-              ('DAILY_DUNGEON', r'daily dungeon|dailyDungeon|daily_run|dailyRun|one attempt|one life'),
-              ('QUIT_ESCAPE', r'quit|escape|continue'),
-              ('DEATH_CACHE', r'death cache|deathCache|recover your stash|xp lost|stash|dropped loot'),
-              ('ARTEFACT', r'artefact|artifact|trading|trade'),
-              ('GENERATOR', r'generator|spawned creatures|active enemies|diminishing'),
-              ('NAMED_ENEMIES', r'named enem|dossier|encounter|enemy name'),
-              ('VOID_STALKER', r'void stalker|death stalker|stalker'),
-              ('BANISHMENT', r'banishment flask|banish'),
-              ('IMMUNE', r'immune|immunity'),
-              ('SIGIL', r'sigil|gauntlet'),
-              ('SECRETS_SWITCHES', r'secret|switch|clue'),
-              ('ROOMS_SCENERY', r'furniture|scenery|bookcase|chair|pillar|room shading|shade'),
-              ('DOORS', r'door|hinge|swing'),
-              ('INFO_POPUPS', r'\binfo\b|popup|banner|message strip|notification'),
-              ('HUD_RADAR_DOSSIER', r'hud|radar|dossier|command deck|command-deck'),
-              ('PICKUPS', r'pickup|collected|neon'),
-              ('POTION', r'potion'),
-              ('MULTIPLAYER', r'multiplayer|co-op|create room|join room|room code|room-code|create / join'),
-              ('GAMEPAD', r'gamepad|controller'),
-              ('RULEBOOK_DONATE', r'rulebook|donate'),
-              ('MOBILE_ROTATE', r'rotate phone|orientation|portrait|landscape|100dvh|safe-area'),
-              ('FLOORS', r'five floors|5 floors|floor [1-5]|currentFloor|floorIndex'),
-              ('PUZZLES', r'puzzle'),
+          scans=[
+              ('VERSION',r'v10(?:\.\d+)?|version|build'),
+              ('TITLE_ART',r'lost-sizzler|sizzler\.(?:webp|png|jpg|jpeg|svg)|title(?:Art|Image|Logo)?'),
+              ('LIGHT_VISIBILITY',r'light|visibility|vision|fog|radius'),
+              ('TORCH',r'torch|flaming'),
+              ('INACTIVITY',r'inactiv|idle|loiter|punish'),
+              ('AMMO',r'ammo|ammunition|shots?'),
+              ('DAILY_DUNGEON',r'daily dungeon|dailyDungeon|daily_run|dailyRun|one attempt|one life'),
+              ('QUIT_ESCAPE',r'quit|escape|continue'),
+              ('DEATH_CACHE',r'death cache|deathCache|recover your stash|xp lost|stash|dropped loot'),
+              ('ARTEFACT',r'artefact|artifact|trading|trade'),
+              ('GENERATOR',r'generator|spawned creatures|active enemies|diminishing'),
+              ('NAMED_ENEMIES',r'named enem|dossier|encounter|enemy name'),
+              ('VOID_STALKER',r'void stalker|death stalker|stalker'),
+              ('BANISHMENT',r'banishment flask|banish'),
+              ('IMMUNE',r'immune|immunity'),
+              ('SIGIL',r'sigil|gauntlet'),
+              ('SECRETS_SWITCHES',r'secret|switch|clue'),
+              ('ROOMS_SCENERY',r'furniture|scenery|bookcase|chair|pillar|room shading|shade'),
+              ('DOORS',r'door|hinge|swing'),
+              ('INFO_POPUPS',r'\binfo\b|popup|banner|message strip|notification'),
+              ('HUD_RADAR_DOSSIER',r'hud|radar|dossier|command deck|command-deck'),
+              ('PICKUPS',r'pickup|collected|neon'),
+              ('POTION',r'potion'),
+              ('MULTIPLAYER',r'multiplayer|co-op|create room|join room|room code|room-code|create / join'),
+              ('GAMEPAD',r'gamepad|controller'),
+              ('RULEBOOK_DONATE',r'rulebook|donate'),
+              ('MOBILE_ROTATE',r'rotate phone|orientation|portrait|landscape|100dvh|safe-area'),
+              ('FLOORS',r'five floors|5 floors|floor [1-5]|currentFloor|floorIndex'),
+              ('PUZZLES',r'puzzle'),
           ]
-          for label, pat in scans:
-              contexts(label, pat)
+          for label,pat in scans: contexts(label,pat)
 
-          print('\n===== NUMERIC_ASSIGNMENTS =====')
-          numeric_patterns = [
-              r'\b[A-Za-z_$][\w$]*(?:light|Light|vision|Vision|radius|Radius|torch|Torch|ammo|Ammo|idle|Idle|inactivity|Inactivity|spawn|Spawn|enemy|Enemy|daily|Daily)[\w$]*\s*[:=]\s*-?\d+(?:\.\d+)?',
-              r'\b(?:light|vision|torch|ammo|idle|inactivity|enemy|spawn|daily)[\w ._-]{0,35}\b(?:is|of|to|=|:)\s*\d+(?:\.\d+)?',
+          print('\n===== NUMERIC ASSIGNMENTS / NEARBY CONSTANTS =====')
+          patterns=[
+              r'\b[A-Za-z_$][\w$]*(?:light|Light|vision|Vision|radius|Radius|torch|Torch|ammo|Ammo|idle|Idle|inactivity|Inactivity|spawn|Spawn|enemy|Enemy|daily|Daily|generator|Generator)[\w$]*\s*[:=]\s*-?\d+(?:\.\d+)?',
+              r'\b(?:light|vision|torch|ammo|idle|inactivity|enemy|spawn|daily|generator)[\w ._-]{0,40}\b(?:is|of|to|=|:)\s*\d+(?:\.\d+)?',
           ]
-          found = []
-          for pat in numeric_patterns:
-              for m in re.finditer(pat, text, re.I):
-                  v = compact(m.group(0))
-                  if v not in found:
-                      found.append(v)
-          for v in found[:200]:
-              print(v)
+          found=[]
+          for pat in patterns:
+              for m in re.finditer(pat,text,re.I):
+                  v=compact(m.group(0))
+                  if v not in found: found.append(v)
+          for v in found[:300]: print(v)
 
-          print('\n===== REQUIRED_EXACT_TEXT =====')
-          required = [
-              'ROTATE PHONE TO LANDSCAPE',
-              'RECOVER YOUR STASH',
-              'XP LOST',
-              'Q = TORCH',
-              'Banishment Flask',
-              'Void Stalker',
-              'Death Stalker',
-              'Daily Dungeon',
-              'Rulebook',
-              'Donate',
+          print('\n===== REQUIRED EXACT / SEMI-EXACT TEXT =====')
+          required=[
+              'ROTATE PHONE TO LANDSCAPE','RECOVER YOUR STASH','XP LOST','Q = TORCH',
+              'Banishment Flask','Void Stalker','Death Stalker','Daily Dungeon','Rulebook','Donate',
+              'Create Room','Join Room','room code','SIGIL'
           ]
-          for s in required:
-              print(repr(s), '=>', text.lower().count(s.lower()))
+          for s in required: print(repr(s),'=>',text.lower().count(s.lower()))
