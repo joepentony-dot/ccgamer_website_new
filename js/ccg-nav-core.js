@@ -64,6 +64,7 @@ Do Not Override
     ];
 
     const FINAL_SECONDARY = [
+        ["CCG Games", "/games/ccg-games/"],
         ["Find Me a Game", "/games/discover/"],
         ["Zzap!64 Reviews & Awards", "/zzap64/"],
         ["Quiz", "/quiz/quiz.html"],

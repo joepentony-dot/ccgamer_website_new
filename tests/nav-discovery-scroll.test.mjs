@@ -13,6 +13,7 @@ const archiveShortcuts = fs.readFileSync('js/ccg-archive-shortcuts.js', 'utf8');
 const releaseCheck = fs.readFileSync('js/ccg-release-check.js', 'utf8');
 const serviceWorker = fs.readFileSync('service-worker.js', 'utf8');
 const discoverHtml = fs.readFileSync('games/discover/index.html', 'utf8');
+const ccgGamesHub = fs.readFileSync('games/ccg-games/index.html', 'utf8');
 const discoverJs = fs.readFileSync('js/game-discovery.js', 'utf8');
 const discoverCss = fs.readFileSync('resources/css/game-discovery.css', 'utf8');
 const scrollCss = fs.readFileSync('resources/css/ccg-scroll-authority.css', 'utf8');
@@ -22,6 +23,7 @@ test('public navigation has one final authoritative structure', () => {
   assert.doesNotMatch(navCore, /\/js\/ccg-nav-authority\.js/);
   assert.match(navCore, /const FINAL_PRIMARY/);
   assert.match(navCore, /const FINAL_SECONDARY/);
+  assert.match(navCore, /\["CCG Games", "\/games\/ccg-games\/"\]/);
   assert.match(navCore, /\["Find Me a Game", "\/games\/discover\/"\]/);
   assert.match(navCore, /\["Zzap!64 Reviews & Awards", "\/zzap64\/"\]/);
   assert.match(navCore, /\["Install CCG App", "\/install-app\.html"\]/);
@@ -47,9 +49,10 @@ test('legacy helpers and PWA installation cannot rewrite public navigation', () 
   assert.match(navCore, /MutationObserver/);
 });
 
-test('desktop More is functional and deliberately owns Install, About Me and Contact', () => {
-  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["install ccg app", "about", "about me", "contact"\]\)/);
+test('desktop More is functional and deliberately owns CCG Games, Install, About Me and Contact', () => {
+  assert.match(navFit, /PINNED_MORE_LABELS = new Set\(\["ccg games", "install ccg app", "about", "about me", "contact"\]\)/);
   assert.match(navFit, /const BASE_MORE_LINKS/);
+  assert.match(navFit, /\["CCG Games", "\/games\/ccg-games\/"\]/);
   assert.match(navFit, /\["Install CCG App", "\/install-app\.html"\]/);
   assert.match(navFit, /\["About Me", "\/about\.html"\]/);
   assert.match(navFit, /\["Contact", "\/contact\.html"\]/);
@@ -59,6 +62,7 @@ test('desktop More is functional and deliberately owns Install, About Me and Con
   assert.match(navFit, /showPopover/);
   assert.match(navFit, /data-ccg-more-top-layer/);
   assert.match(navFit, /document\.dispatchEvent\(new CustomEvent\("ccg:navigation-fitted"/);
+  assert.match(navFitCss, /a\[href="\/games\/ccg-games\/"\]/);
   assert.match(navFitCss, /a\[href="\/install-app\.html"\]/);
   assert.match(navFitCss, /a\[href="\/about\.html"\]/);
   assert.match(navFitCss, /a\[href="\/contact\.html"\]/);
@@ -68,6 +72,12 @@ test('desktop More is functional and deliberately owns Install, About Me and Con
   assert.match(navFitCss, /:popover-open/);
   assert.match(modeIdentityCss, /\.ccg-mode-identity\s*\{[\s\S]*pointer-events:\s*none/);
   assert.match(modeIdentityCss, /\.ccg-mode-identity__inner\s*\{[\s\S]*pointer-events:\s*none/);
+});
+
+test('CCG Games hub links the public Commodore Quest route', () => {
+  assert.match(ccgGamesHub, /<link rel="canonical" href="https:\/\/www\.cheekycommodoregamer\.co\.uk\/games\/ccg-games\/">/);
+  assert.match(ccgGamesHub, /href="\/games\/commodore-quest\/"/);
+  assert.match(ccgGamesHub, /Cheeky's Commodore Quest/);
 });
 
 test('navigation never hides during refresh or fitting', () => {
