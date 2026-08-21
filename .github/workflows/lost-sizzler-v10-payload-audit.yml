@@ -1,0 +1,130 @@
+name: Lost Sizzler V10 Payload Audit
+
+on:
+  push:
+    branches:
+      - "audit/lost-sizzler-v10-3-payload"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-payload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out audit branch
+        uses: actions/checkout@v4
+
+      - name: Decode and inspect packaged Lost Sizzler
+        shell: python
+        run: |
+          import base64
+          import gzip
+          import hashlib
+          import pathlib
+          import re
+
+          root = pathlib.Path('games/the-lost-sizzler/payload-parts')
+          parts = [root / f'part-{i:02d}.txt' for i in range(5)]
+          encoded = ''.join(re.sub(r'\s+', '', p.read_text(encoding='utf-8')) for p in parts)
+          packed = base64.b64decode(encoded, validate=True)
+          text = gzip.decompress(packed).decode('utf-8')
+
+          print('PAYLOAD_PARTS=', ','.join(p.name for p in parts))
+          print('PACKED_BYTES=', len(packed))
+          print('TEXT_CHARS=', len(text))
+          print('PACKED_SHA256=', hashlib.sha256(packed).hexdigest())
+          print('TEXT_SHA256=', hashlib.sha256(text.encode()).hexdigest())
+
+          markers = [
+              '/*__CCG_PAYLOAD_CSS_7C2F__*/',
+              '/*__CCG_PAYLOAD_CORE_19A4__*/',
+              '/*__CCG_PAYLOAD_GAME_37B1__*/',
+              '/*__CCG_PAYLOAD_MOBILE_8E5C__*/',
+          ]
+          print('MARKERS=', {m: text.count(m) for m in markers})
+
+          def compact(s):
+              return re.sub(r'\s+', ' ', s).strip()
+
+          def contexts(label, pattern, max_hits=10, radius=180, flags=re.I):
+              print(f'\n===== {label} =====')
+              hits = list(re.finditer(pattern, text, flags))
+              print('COUNT=', len(hits))
+              seen = set()
+              shown = 0
+              for m in hits:
+                  ctx = compact(text[max(0, m.start()-radius):min(len(text), m.end()+radius)])
+                  key = ctx.lower()
+                  if key in seen:
+                      continue
+                  seen.add(key)
+                  print(f'[{shown+1}] {ctx}')
+                  shown += 1
+                  if shown >= max_hits:
+                      break
+
+          scans = [
+              ('VERSION', r'v10(?:\.\d+)?|version|build'),
+              ('TITLE_ART', r'lost-sizzler|sizzler\.(?:webp|png|jpg|jpeg|svg)|title(?:Art|Image|Logo)?'),
+              ('LIGHT_VISIBILITY', r'light|visibility|vision|fog|radius'),
+              ('TORCH', r'torch|flaming'),
+              ('INACTIVITY', r'inactiv|idle|loiter|punish'),
+              ('AMMO', r'ammo|ammunition|shots?'),
+              ('DAILY_DUNGEON', r'daily dungeon|dailyDungeon|daily_run|dailyRun|one attempt|one life'),
+              ('QUIT_ESCAPE', r'quit|escape|continue'),
+              ('DEATH_CACHE', r'death cache|deathCache|recover your stash|xp lost|stash|dropped loot'),
+              ('ARTEFACT', r'artefact|artifact|trading|trade'),
+              ('GENERATOR', r'generator|spawned creatures|active enemies|diminishing'),
+              ('NAMED_ENEMIES', r'named enem|dossier|encounter|enemy name'),
+              ('VOID_STALKER', r'void stalker|death stalker|stalker'),
+              ('BANISHMENT', r'banishment flask|banish'),
+              ('IMMUNE', r'immune|immunity'),
+              ('SIGIL', r'sigil|gauntlet'),
+              ('SECRETS_SWITCHES', r'secret|switch|clue'),
+              ('ROOMS_SCENERY', r'furniture|scenery|bookcase|chair|pillar|room shading|shade'),
+              ('DOORS', r'door|hinge|swing'),
+              ('INFO_POPUPS', r'\binfo\b|popup|banner|message strip|notification'),
+              ('HUD_RADAR_DOSSIER', r'hud|radar|dossier|command deck|command-deck'),
+              ('PICKUPS', r'pickup|collected|neon'),
+              ('POTION', r'potion'),
+              ('MULTIPLAYER', r'multiplayer|co-op|create room|join room|room code|room-code|create / join'),
+              ('GAMEPAD', r'gamepad|controller'),
+              ('RULEBOOK_DONATE', r'rulebook|donate'),
+              ('MOBILE_ROTATE', r'rotate phone|orientation|portrait|landscape|100dvh|safe-area'),
+              ('FLOORS', r'five floors|5 floors|floor [1-5]|currentFloor|floorIndex'),
+              ('PUZZLES', r'puzzle'),
+          ]
+          for label, pat in scans:
+              contexts(label, pat)
+
+          print('\n===== NUMERIC_ASSIGNMENTS =====')
+          numeric_patterns = [
+              r'\b[A-Za-z_$][\w$]*(?:light|Light|vision|Vision|radius|Radius|torch|Torch|ammo|Ammo|idle|Idle|inactivity|Inactivity|spawn|Spawn|enemy|Enemy|daily|Daily)[\w$]*\s*[:=]\s*-?\d+(?:\.\d+)?',
+              r'\b(?:light|vision|torch|ammo|idle|inactivity|enemy|spawn|daily)[\w ._-]{0,35}\b(?:is|of|to|=|:)\s*\d+(?:\.\d+)?',
+          ]
+          found = []
+          for pat in numeric_patterns:
+              for m in re.finditer(pat, text, re.I):
+                  v = compact(m.group(0))
+                  if v not in found:
+                      found.append(v)
+          for v in found[:200]:
+              print(v)
+
+          print('\n===== REQUIRED_EXACT_TEXT =====')
+          required = [
+              'ROTATE PHONE TO LANDSCAPE',
+              'RECOVER YOUR STASH',
+              'XP LOST',
+              'Q = TORCH',
+              'Banishment Flask',
+              'Void Stalker',
+              'Death Stalker',
+              'Daily Dungeon',
+              'Rulebook',
+              'Donate',
+          ]
+          for s in required:
+              print(repr(s), '=>', text.lower().count(s.lower()))
