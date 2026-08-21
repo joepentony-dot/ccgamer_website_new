@@ -14,6 +14,7 @@ const DRIVER_PORT = 9518;
 const PAGES = [
   ["Home", "/home.html"],
   ["Games", "/games/"],
+  ["CCG Games", "/games/ccg-games/"],
   ["Publishers", "/games/publishers/"],
   ["Music", "/music/"],
   ["Zzap", "/zzap64/"],
@@ -128,7 +129,7 @@ const canonicalExpression = `
   const style = getComputedStyle(nav);
   const rect = nav.getBoundingClientRect();
   return primary === 'Home|Browse Games|Browse by Genre|Publishers|Collections|Music Hub'
-    && secondary === 'Find Me a Game|Zzap!64 Reviews & Awards|Quiz|Emulation|Install CCG App|About Me|Contact'
+    && secondary === 'CCG Games|Find Me a Game|Zzap!64 Reviews & Awards|Quiz|Emulation|Install CCG App|About Me|Contact'
     && style.display !== 'none'
     && style.visibility !== 'hidden'
     && Number(style.opacity || 1) > 0

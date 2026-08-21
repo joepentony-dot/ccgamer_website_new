@@ -192,7 +192,7 @@ async function openHome(sessionId, width) {
         && rect.width > 1
         && rect.height > 1
         && primary.join('|') === 'Home|Browse Games|Browse by Genre|Publishers|Collections|Music Hub'
-        && secondary.join('|') === 'Find Me a Game|Zzap!64 Reviews & Awards|Quiz|Emulation|Install CCG App|About Me|Contact';
+        && secondary.join('|') === 'CCG Games|Find Me a Game|Zzap!64 Reviews & Awards|Quiz|Emulation|Install CCG App|About Me|Contact';
     })()
   `;
 
@@ -303,7 +303,9 @@ async function assertInstallDestinationNavigation(sessionId, width) {
       return {
         pathname: window.location.pathname,
         emulationVisible: visible(find('/emulation.html')),
+        ccgGamesVisibleInRow: visible(find('/games/ccg-games/')),
         installVisibleInRow: visible(find('/install-app.html')),
+        ccgGamesInMore: menuHrefs.includes('/games/ccg-games/'),
         installInMore: menuHrefs.includes('/install-app.html'),
         aboutInMore: menuHrefs.includes('/about.html'),
         contactInMore: menuHrefs.includes('/contact.html')
@@ -311,7 +313,7 @@ async function assertInstallDestinationNavigation(sessionId, width) {
     })();
   `);
 
-  if (state.pathname !== "/install-app.html" || !state.emulationVisible || state.installVisibleInRow || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
+  if (state.pathname !== "/install-app.html" || !state.emulationVisible || state.ccgGamesVisibleInRow || state.installVisibleInRow || !state.ccgGamesInMore || !state.installInMore || !state.aboutInMore || !state.contactInMore) {
     throw new Error(`Install destination navigation contract failed at ${width}px: ${JSON.stringify(state)}`);
   }
 }
@@ -352,6 +354,7 @@ async function main() {
     sessionId = session.sessionId;
 
     for (const width of [1440, 1920]) {
+      await clickMoreDestination(sessionId, width, "CCG Games", "/games/ccg-games/", "/games/ccg-games/");
       await clickMoreDestination(sessionId, width, "About Me", "/about.html", "/about.html");
       await clickMoreDestination(sessionId, width, "Contact", "/contact.html", "/contact.html");
       await clickMoreDestination(sessionId, width, "Install CCG App", "/install-app.html", "/install-app.html");
@@ -365,7 +368,7 @@ async function main() {
         const style = nav ? getComputedStyle(nav) : null;
         const pinned = Array.from(document.querySelectorAll('[data-ccg-nav-secondary] > li')).filter((item) => {
           const href = item.querySelector('a')?.getAttribute('href');
-          return href === '/install-app.html' || href === '/about.html' || href === '/contact.html';
+          return href === '/games/ccg-games/' || href === '/install-app.html' || href === '/about.html' || href === '/contact.html';
         });
         return {
           syncing: document.documentElement.classList.contains('ccg-nav-syncing'),
@@ -373,7 +376,7 @@ async function main() {
           visibility: style ? style.visibility : '',
           opacity: style ? style.opacity : '',
           display: style ? style.display : '',
-          pinnedHidden: pinned.length === 3 && pinned.every((item) => getComputedStyle(item).display === 'none'),
+          pinnedHidden: pinned.length === 4 && pinned.every((item) => getComputedStyle(item).display === 'none'),
           moreDisplay: getComputedStyle(document.querySelector('.ccg-nav__more')).display
         };
       })();
@@ -401,9 +404,9 @@ async function main() {
     console.log(`${LIVE_BASE_URL ? "Live" : "Local"} Navigation More browser audit passed.`);
     if (LIVE_BASE_URL) console.log(`- Public release assets match the repository release at ${LIVE_BASE_URL}`);
     console.log("- Canonical Omega navigation remains visible without an obsolete hide/show lifecycle");
-    console.log("- Desktop Install CCG App, About Me and Contact copies stay out of the visible row while More keeps its slot");
+    console.log("- Desktop CCG Games, Install CCG App, About Me and Contact copies stay out of the visible row while More keeps its slot");
     console.log("- Real WebDriver pointer clicks open More at 1440px and 1920px");
-    console.log("- Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
+    console.log("- CCG Games, Install CCG App, About Me and Contact own their hit targets and navigate successfully at both widths");
     console.log("- Emulation remains visible on the Install CCG App destination at both widths");
     console.log("- Destination pages retain the canonical shared header");
     console.log("- Legacy text-social fallback is not visible");

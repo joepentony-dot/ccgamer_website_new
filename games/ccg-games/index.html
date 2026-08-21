@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-ccg-page="ccg-games-hub">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('ccg-mode');
+        if (!saved) return;
+        document.documentElement.setAttribute('data-ccg-mode', saved);
+        document.documentElement.setAttribute('data-mode', saved);
+      } catch (e) {}
+    })();
+  </script>
+  <title>CCG Games | Original Browser Games | Cheeky Commodore Gamer</title>
+  <meta name="description" content="Play original Cheeky Commodore Gamer browser games, including Cheeky's Commodore Quest, the C64 and Amiga-inspired arcade adventure.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/">
+  <meta property="og:title" content="CCG Games | Original Browser Games | Cheeky Commodore Gamer">
+  <meta property="og:description" content="Play original Cheeky Commodore Gamer browser games, including Cheeky's Commodore Quest, the C64 and Amiga-inspired arcade adventure.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/ccg-games/">
+  <meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="CCG Games | Original Browser Games | Cheeky Commodore Gamer">
+  <meta name="twitter:description" content="Play original Cheeky Commodore Gamer browser games, including Cheeky's Commodore Quest, the C64 and Amiga-inspired arcade adventure.">
+  <meta name="twitter:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/resources/css/ccg-master.css">
+  <link rel="stylesheet" href="/resources/css/ccg-mode.css">
+  <link rel="stylesheet" href="/resources/css/ccg-effects.css">
+  <link rel="stylesheet" href="/resources/css/ccg-nav.css">
+  <link rel="stylesheet" href="/resources/css/ccg-buttons.css">
+  <link rel="stylesheet" href="/resources/css/ccg-footer.css">
+  <link rel="stylesheet" href="/resources/css/ccg-mobile-lite.css">
+  <link rel="stylesheet" href="/resources/css/ccg-games-hub.css">
+  <link rel="stylesheet" href="/resources/css/ccg-nav-fit.css" data-ccg-static-shell-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-socials.css" data-ccg-static-shell-style="true">
+  <link rel="stylesheet" href="/resources/css/ccg-community.css" data-ccg-static-shell-style="true">
+  <script src="/js/analytics.js" defer></script>
+  <script src="/js/ccg-mobile-lite.js" defer></script>
+  <script src="/js/ccg-nav-fit.js" defer data-ccg-static-shell-script="true"></script>
+  <script src="/js/ccg-header-auth-loader.js" defer data-ccg-static-shell-script="true"></script>
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64" id="top">
+  <div class="ccg-bg" aria-hidden="true">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <div class="ccg-page">
+    <header class="ccg-header" data-ccg-header>
+      <div class="ccg-header-inner">
+        <a href="/home.html" class="ccg-brand">
+          <img src="/resources/images/ccgamer-logo.png" alt="Cheeky Commodore Gamer logo" class="ccg-brand__logo" loading="lazy" width="1500" height="1032">
+          <div class="ccg-brand__text">
+            <div class="ccg-brand__kicker">Stay a while, stay forever!</div>
+            <div class="ccg-brand__title">
+              <span class="ccg-brand__neon-cheeky">CHEEKY COMMODORE</span>
+              <span class="ccg-brand__neon-sub">GAMER</span>
+            </div>
+          </div>
+        </a>
+
+        <button class="ccg-nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="ccg-primary-nav" data-ccg-nav-toggle>
+          <span class="ccg-nav-toggle__bars"><span></span><span></span><span></span></span>
+          <span class="ccg-nav-toggle__label">Menu</span>
+        </button>
+
+        <nav class="ccg-nav" aria-label="Primary navigation" id="ccg-primary-nav" data-ccg-static-shell="2026-08-19-v1">
+            <div class="ccg-nav__bar">
+              <ul class="ccg-nav__list ccg-nav__list--primary" data-ccg-nav-primary>
+                <li><a href="/home.html" class="ccg-nav__link">Home</a></li>
+                <li><a href="/games/" class="ccg-nav__link">Browse Games</a></li>
+                <li><a href="/games/genres/" class="ccg-nav__link">Browse by Genre</a></li>
+                <li><a href="/games/publishers/" class="ccg-nav__link">Publishers</a></li>
+                <li><a href="/games/collections/" class="ccg-nav__link">Collections</a></li>
+                <li><a href="/music/" class="ccg-nav__link">Music Hub</a></li>
+              </ul>
+              <div class="ccg-nav__more">
+                <button class="ccg-nav__more-toggle" type="button" aria-expanded="false" aria-controls="ccg-more-menu" data-ccg-more-toggle>
+                  More <span aria-hidden="true">▾</span>
+                </button>
+                <div class="ccg-nav__more-menu" id="ccg-more-menu" data-ccg-more-menu hidden></div>
+              </div>
+            </div>
+            <ul class="ccg-nav__list ccg-nav__list--secondary" data-ccg-nav-secondary>
+                <li><a href="/games/discover/" class="ccg-nav__link">Find Me a Game</a></li>
+                <li><a href="/zzap64/" class="ccg-nav__link">Zzap!64 Reviews &amp; Awards</a></li>
+                <li><a href="/quiz/quiz.html" class="ccg-nav__link">Quiz</a></li>
+                <li><a href="/emulation.html" class="ccg-nav__link">Emulation</a></li>
+                <li><a href="/install-app.html" class="ccg-nav__link" data-ccg-pwa-install-nav="true">Install CCG App</a></li>
+                <li><a href="/about.html" class="ccg-nav__link">About Me</a></li>
+                <li><a href="/contact.html" class="ccg-nav__link">Contact</a></li>
+            </ul>
+          </nav>
+
+        <div class="ccg-header-actions" data-ccg-static-shell="2026-08-19-v1">
+            <div class="ccg-mode-hint">Try different modes</div>
+            <button class="ccg-mode-toggle" type="button" aria-label="Toggle between C64 and Amiga modes" data-ccg-mode-toggle>
+              <span class="ccg-mode-toggle__pill">
+                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--c64">C64 MODE</span>
+                <span class="ccg-mode-toggle__label ccg-mode-toggle__label--amiga">AMIGA MODE</span>
+                <span class="ccg-mode-toggle__thumb"></span>
+              </span>
+            </button>
+            <div class="ccg-auth-slot" data-ccg-auth-pending="true"></div>
+            <div class="ccg-header-socials" aria-label="Social links">
+              <a href="https://www.youtube.com/@CheekyCommodoreGamer" aria-label="YouTube"><span class="ccg-socials__icon ccg-socials__icon--yt"></span></a>
+              <a href="https://patreon.com/CheekyCommodoreGamer" aria-label="Patreon"><span class="ccg-socials__icon ccg-socials__icon--patreon"></span></a>
+              <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" aria-label="PayPal"><span class="ccg-socials__icon ccg-socials__icon--paypal"></span></a>
+              <a href="https://twitter.com/CheekyC64Gamer" aria-label="X/Twitter"><span class="ccg-socials__icon ccg-socials__icon--x"></span></a>
+              <a href="https://www.facebook.com/cheekycommodoregamer" aria-label="Facebook"><span class="ccg-socials__icon ccg-socials__icon--fb"></span></a>
+              <a href="https://discord.gg/83Xw9ktAn4" aria-label="Discord"><span class="ccg-socials__icon ccg-socials__icon--discord"></span></a>
+            </div>
+            <div class="ccg-socials-fallback" hidden aria-hidden="true"></div>
+            <script data-ccg-auth-snapshot-bootstrap="true">
+              (function () {
+                "use strict";
+                try {
+                  var script = document.currentScript;
+                  var actions = script && script.parentElement;
+                  var slot = actions && actions.querySelector(".ccg-auth-slot");
+                  if (!slot) return;
+
+                  var raw = sessionStorage.getItem("ccg_header_auth_snapshot");
+                  if (!raw) return;
+                  var snapshot = JSON.parse(raw);
+                  if (!snapshot || typeof snapshot.loggedIn !== "boolean") return;
+
+                  slot.textContent = "";
+                  slot.removeAttribute("data-ccg-auth-pending");
+                  slot.setAttribute("data-ccg-auth-provisional", "true");
+
+                  if (snapshot.loggedIn) {
+                    var username = String(snapshot.username || "@member").trim();
+                    if (!username || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) username = "@member";
+
+                    var profile = document.createElement("a");
+                    profile.className = "ccg-btn ccg-btn-auth ccg-profile-link";
+                    profile.id = "ccg-auth-identity";
+                    profile.href = "/community/profile.html";
+                    profile.setAttribute("aria-label", "Open profile for " + username);
+
+                    var label = document.createElement("span");
+                    label.className = "ccg-profile-link__label";
+                    label.textContent = "Profile:";
+                    var name = document.createElement("span");
+                    name.className = "ccg-profile-link__name";
+                    name.textContent = username;
+                    profile.appendChild(label);
+                    profile.appendChild(document.createTextNode(" "));
+                    profile.appendChild(name);
+
+                    var logout = document.createElement("button");
+                    logout.type = "button";
+                    logout.className = "ccg-btn ccg-btn-auth";
+                    logout.id = "ccg-auth-logout";
+                    logout.setAttribute("data-logout", "");
+                    logout.textContent = "Logout";
+
+                    slot.appendChild(profile);
+                    slot.appendChild(logout);
+                    return;
+                  }
+
+                  var login = document.createElement("button");
+                  login.type = "button";
+                  login.className = "ccg-btn ccg-btn-auth";
+                  login.id = "join-login";
+                  login.textContent = "Join / Login";
+                  slot.appendChild(login);
+                } catch (_error) {}
+              })();
+            </script>
+          </div>
+      </div>
+
+      <div class="ccg-nav-drawer" data-ccg-nav-drawer aria-hidden="true">
+        <div class="ccg-nav-drawer__backdrop" data-ccg-drawer-close></div>
+        <div class="ccg-nav-drawer__panel" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div class="ccg-nav-drawer__header">
+            <span class="ccg-nav-drawer__title">Navigate</span>
+            <button class="ccg-nav-drawer__close" type="button" data-ccg-drawer-close aria-label="Close menu">✕</button>
+          </div>
+          <div class="ccg-nav-drawer__section" data-ccg-drawer-primary><div class="ccg-nav-drawer__label">Primary</div></div>
+          <div class="ccg-nav-drawer__section" data-ccg-drawer-secondary><div class="ccg-nav-drawer__label">Explore more</div></div>
+        </div>
+      </div>
+      <div class="ccg-header-neon-strip"></div>
+    </header>
+
+    <main class="ccg-main">
+      <div class="ccg-games-hub">
+        <section class="ccg-games-hub__hero">
+          <p class="ccg-games-hub__kicker">CCG Originals</p>
+          <h1 class="ccg-games-hub__title">CCG Games</h1>
+          <p class="ccg-games-hub__intro">A home for original Cheeky Commodore Gamer browser games. These are built to be played here in the site, with a distinctly Commodore flavour rather than another page full of screenshots.</p>
+          <div class="ccg-games-hub__actions">
+            <a class="ccg-games-hub__button" href="/games/commodore-quest/">Play Commodore Quest</a>
+          </div>
+        </section>
+
+        <section class="ccg-games-hub__section" aria-labelledby="ccg-originals-title">
+          <div class="ccg-games-hub__section-heading">
+            <h2 id="ccg-originals-title">Playable now</h2>
+            <p>More CCG originals can join the cabinet here later.</p>
+          </div>
+          <div class="ccg-games-grid">
+            <article class="ccg-original-card">
+              <div class="ccg-original-card__top">
+                <span class="ccg-original-card__badge">Public test</span>
+                <span class="ccg-original-card__platform">Browser game</span>
+              </div>
+              <div class="ccg-original-card__body">
+                <h3>Cheeky's Commodore Quest</h3>
+                <p>Run, jump, duck and fight through a sequence of Commodore-themed arcade stages, collecting power-ups and taking on enemies and bosses.</p>
+                <div class="ccg-original-card__tags" aria-label="Game features">
+                  <span>C64 &amp; Amiga-inspired</span>
+                  <span>Arcade action</span>
+                  <span>Multiple stages</span>
+                  <span>Keyboard &amp; touch</span>
+                </div>
+              </div>
+              <a class="ccg-original-card__link" href="/games/commodore-quest/">Play the public test</a>
+            </article>
+          </div>
+          <p class="ccg-games-hub__note">This area is for games made for CCG itself. The main Browse Games archive remains the place for the C64 and Amiga catalogue.</p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="ccg-footer"><div class="ccg-footer__inner"><p>Cheeky Commodore Gamer · Commodore 64 &amp; Amiga archive</p></div></footer>
+  </div>
+
+  <script src="/js/ccg-global.js" defer></script>
+  <script src="/js/ccg-nav.js" defer></script>
+  <script src="/js/ccg-nav-core.js" defer></script>
+  <script src="/js/ccg-mode-engine.js" defer></script>
+</body>
+</html>
