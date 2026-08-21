@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
 
   if (insertError || !row?.id) return json(req,{success:false,error:"Feedback could not be saved"},500);
 
-  let emailStatus = "skipped";
+  let emailStatus: "sent" | "failed" = "failed";
   let emailError: string | null = null;
   if (resendKey && from) {
     const subject = `[The Lost Sizzler] ${feedbackType === "bug" ? "Bug report" : "Game suggestion"}`;
@@ -95,7 +95,7 @@ Deno.serve(async (req: Request) => {
       emailError = error instanceof Error ? error.message.slice(0,1000) : String(error).slice(0,1000);
     }
   } else {
-    emailStatus = "not_configured";
+    emailStatus = "failed";
     emailError = "RESEND_API_KEY or EMAIL_FROM missing";
   }
 
