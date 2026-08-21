@@ -2,6 +2,7 @@
   "use strict";
   const Q=window.CCGQuest=window.CCGQuest||{};
   const TAG='[CCG QUEST ASSETS]';
+  const REMOTE_GROUPS=new Set(['backgrounds','music','sfx']);
 
   function normalizePath(value){try{return new URL(value,window.location.origin).pathname;}catch(_e){return String(value||'');}}
   function loadScript(src){
@@ -45,7 +46,7 @@
           const group=String(row.asset_group||'').trim();
           const key=String(row.asset_key||'').trim();
           const url=String(row.public_url||'').trim();
-          if(!group||!key||!url||!Q.CUSTOM_ASSETS?.[group]||!(key in Q.CUSTOM_ASSETS[group]))continue;
+          if(!group||!key||!url||!REMOTE_GROUPS.has(group)||!Q.CUSTOM_ASSETS?.[group]||!(key in Q.CUSTOM_ASSETS[group]))continue;
           Q.CUSTOM_ASSETS[group][key]=url;
           if(row.asset_meta&&typeof row.asset_meta==='object')Q.CUSTOM_ASSET_META[`${group}:${key}`]=row.asset_meta;
         }

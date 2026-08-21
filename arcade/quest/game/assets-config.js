@@ -1,40 +1,31 @@
 (function(){
   "use strict";
   const Q=window.CCGQuest=window.CCGQuest||{};
+  const A='assets/production';
 
-  /*
-    CUSTOM ASSET SLOTS
-    ------------------
-    Leave a value as null to use the bundled artwork/audio.
-    Live overrides are normally hydrated from Supabase by remote-assets.js.
-    PNG, JPG, WEBP, GIF and SVG are supported for visual assets.
-  */
   Q.CUSTOM_ASSETS={
     backgrounds:{bedroom:null,beads:null,budget:null,fighter:null,invaders:null,christmas:null,maze:null,amiga:null,guru:null},
-    layers:{
-      bedroomBack:null,bedroomMid:null,bedroomFront:null,
-      beadsBack:null,beadsMid:null,beadsFront:null,
-      budgetBack:null,budgetMid:null,budgetFront:null,
-      fighterBack:null,fighterMid:null,fighterFront:null,
-      invadersBack:null,invadersMid:null,invadersFront:null,
-      christmasBack:null,christmasMid:null,christmasFront:null,
-      mazeBack:null,mazeMid:null,mazeFront:null,
-      amigaBack:null,amigaMid:null,amigaFront:null,
-      guruBack:null,guruMid:null,guruFront:null
-    },
-    bosses:{bedroom:null,budget:null,christmas:null,amiga:null,guru:null},
-    collectibles:{tape:null,disk:null,zzap:null,joystick:null},
-    powers:{shield:null,speed:null,double:null},
-    hazards:{bedroom:null,budget:null,christmas:null,amiga:null,guru:null},
+    layers:{bedroomBack:null,bedroomMid:null,bedroomFront:null,beadsBack:null,beadsMid:null,beadsFront:null,budgetBack:null,budgetMid:null,budgetFront:null,fighterBack:null,fighterMid:null,fighterFront:null,invadersBack:null,invadersMid:null,invadersFront:null,christmasBack:null,christmasMid:null,christmasFront:null,mazeBack:null,mazeMid:null,mazeFront:null,amigaBack:null,amigaMid:null,amigaFront:null,guruBack:null,guruMid:null,guruFront:null},
+    bosses:{bedroom:`${A}/bosses/bedroom.png`,budget:`${A}/bosses/budget.png`,christmas:`${A}/bosses/christmas.png`,amiga:`${A}/bosses/amiga.png`,guru:`${A}/bosses/guru.png`},
+    collectibles:{tape:`${A}/collectibles/tape.png`,disk:`${A}/collectibles/disk.png`,zzap:`${A}/collectibles/zzap.png`,joystick:`${A}/collectibles/joystick.png`},
+    powers:{shield:`${A}/powers/shield.png`,speed:`${A}/powers/speed.png`,double:`${A}/powers/double.png`},
+    hazards:{bedroom:`${A}/hazards/bedroom.png`,budget:`${A}/hazards/budget.png`,christmas:`${A}/hazards/christmas.png`,amiga:`${A}/hazards/amiga.png`,guru:`${A}/hazards/guru.png`},
     fighter:{enemy:null,enemyPunch:null,enemyKick:null,enemyHit:null},
-    invaders:{alien1:null,alien2:null,alien3:null,alien4:null,alien5:null,ship:null,bunker:null,enemyShot:null,playerShot:null},
-    spritesheets:{player:null,fighter:null,enemy:null,bossBedroom:null,bossBudget:null,bossChristmas:null,bossAmiga:null,bossGuru:null},
-    player:{mascot:null,head:null,avatar:null,body:null,arm:null,leg:null},
+    invaders:{alien1:`${A}/invaders/alien-row-1.png`,alien2:`${A}/invaders/alien-row-2.png`,alien3:`${A}/invaders/alien-row-3.png`,alien4:`${A}/invaders/alien-row-4.png`,alien5:`${A}/invaders/alien-row-5.png`,ship:`${A}/invaders/player-ship.png`,bunker:`${A}/invaders/bunker.png`,enemyShot:`${A}/invaders/enemy-shot.png`,playerShot:`${A}/invaders/player-shot.png`},
+    spritesheets:{player:`${A}/player/cheeky-main-sheet.png`,playerFight:`${A}/player/cheeky-fight-sheet.png`,fighter:`${A}/fighter/retsu-sheet.png`,enemy:`${A}/enemies/8bit-enemy-sheet.png`,bossBedroom:`${A}/bosses/bedroom-sheet.png`,bossBudget:`${A}/bosses/budget-sheet.png`,bossChristmas:`${A}/bosses/christmas-sheet.png`,bossAmiga:`${A}/bosses/amiga-sheet.png`,bossGuru:`${A}/bosses/guru-sheet.png`},
+    player:{mascot:`${A}/player/cheeky-mascot.png`,head:`${A}/player/cheeky-head.png`,avatar:null,body:`${A}/player/cheeky-body.png`,arm:`${A}/player/cheeky-arm.png`,leg:`${A}/player/cheeky-leg.png`},
     music:{bedroom:null,bedroomBoss:null,beads:null,budget:null,budgetBoss:null,fighter:null,invaders:null,christmas:null,christmasBoss:null,maze:null,amiga:null,amigaBoss:null,guru:null,guruBoss:null,title:null},
     sfx:{jump:null,pickup:null,hit:null,shot:null,bosswarn:null,shield:null,shieldlow:null,unlock:null,punch:null,kick:null}
   };
-
-  Q.CUSTOM_ASSET_META={};
+  const bedroomBossMeta={frameWidth:256,frameHeight:224,columns:4,fps:6,drawWidth:205,drawHeight:180,animations:{idle:[0,1],charge:[2,3,4],hit:[5,6],defeat:[7]},loop:true};
+  const bossMeta={frameWidth:256,frameHeight:224,columns:4,fps:7,drawWidth:205,drawHeight:180,animations:{idle:[0,1],charge:[2,3,4],hit:[5,6],defeat:[7]},loop:true};
+  Q.CUSTOM_ASSET_META={
+    'spritesheets:player':{frameWidth:256,frameHeight:320,columns:4,fps:10,drawWidth:150,drawHeight:190,avatarHead:false,animations:{idle:[0,1],run:[2,3,4,5],jumpTakeoff:[6],jumpRise:[7],jumpApex:[8],jump:[7,8],fall:[9],land:[10],duck:[11],fire:[12],duckFire:[13],hit:[14],victory:[15]},loop:true},
+    'spritesheets:playerFight':{frameWidth:248,frameHeight:316,columns:4,fps:8,drawWidth:238,drawHeight:302,avatarHead:false,animations:{idle:[0,1],walk:[2],run:[2],jump:[3],guard:[4],duck:[4],punch:[5],kick:[6],hit:[7]},loop:true},
+    'spritesheets:fighter':{frameWidth:248,frameHeight:316,columns:4,fps:8,drawWidth:230,drawHeight:300,animations:{idle:[0,1],walk:[2],jump:[3],guard:[4],punch:[5],kick:[6],hit:[7]},loop:true},
+    'spritesheets:enemy':{frameWidth:128,frameHeight:128,columns:4,fps:10,animations:{run:[0,1,2,3],low:[4,5,6,7]},loop:true},
+    'spritesheets:bossBedroom':{...bedroomBossMeta},'spritesheets:bossBudget':{...bossMeta},'spritesheets:bossChristmas':{...bossMeta},'spritesheets:bossAmiga':{...bossMeta},'spritesheets:bossGuru':{...bossMeta}
+  };
   Q.customAsset=function(group,key){return Q.CUSTOM_ASSETS?.[group]?.[key] || null;};
   Q.customAssetMeta=function(group,key){return Q.CUSTOM_ASSET_META?.[`${group}:${key}`] || null;};
 })();
