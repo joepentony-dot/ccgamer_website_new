@@ -328,6 +328,13 @@ window.CCGSystems=(()=>{
     if(traderRoom){const q=freeInRoom(world,traderRoom,used);host.trader={id:"secret-artefact-trader",...q,roomId:traderRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"hidden",title:"SECRET ARTEFACT TRADER",scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.trader);traderRoom.traderRoom=true}
     if((run.floor||1)>1){const startRoom=world.rooms[world.startRoomId],q=startRoom&&freeNear(world,startRoom,world.start,used,2,5);if(startRoom&&q){host.startShop={id:`floor-${run.floor}-entrance-shop`,...q,roomId:startRoom.id,active:true,cost:C.stalker.flaskArtefacts,shopType:"entrance",title:`FLOOR ${run.floor} SUPPLY DESK`,scorePurchases:0,sold:{potion:false,bronze:false,torch:false,ammo:false,armour:false,weapon:false}};host.shops.push(host.startShop);startRoom.shopRoom=true}}
 
+    // One jackpot treasure room appears on exactly one randomly selected floor from 2–5 per run.
+    host.jackpotTreasureRoom=null;
+    if((run.floor||1)===(run.treasureFloor||0)){
+      const treasureRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId&&r.id!==host.trader?.roomId).sort((a,b)=>(b.w*b.h)-(a.w*a.h))[0]||rooms.find(r=>r.id!==world.startRoomId&&r.id!==world.exitRoomId);
+      if(treasureRoom){treasureRoom.theme="TREASURE_VAULT";treasureRoom.jackpotRoom=true;host.jackpotTreasureRoom={roomId:treasureRoom.id,discovered:false};const prizes=["xpOrb","credits","xpOrb","ammo","health","xpOrb","credits","armour","potion","weapon","teleport","credits"];for(let i=0;i<prizes.length;i++){const q=freeInRoom(world,treasureRoom,used);host.items.push({id:`jackpot-${run.floor}-${i}`,...q,kind:prizes[i],active:true,title:prizes[i]==="xpOrb"?"TREASURE XP ORB":prizes[i]==="credits"?"TREASURE GOLD COIN":"TREASURE CACHE"})}}
+    }
+
     // V10.2 retains the optional puzzle chain. These rooms never replace the mandatory objective or Sigil route.
     installOptionalPuzzles(world,host,run,rooms,used);
 
@@ -346,7 +353,7 @@ window.CCGSystems=(()=>{
     if(world.rooms[world.startRoomId])world.rooms[world.startRoomId].theme=floorInfo.theme;
     for(const e of host.enemies){
       if(!e.guardian)e.maxHp=Math.max(1,Math.ceil(e.maxHp*diff.enemyHp*hpFloor*armoured));
-      if(e.follower){e.maxHp=Math.max(1,Math.ceil(e.maxHp*(1+levelSteps*C.enemy.namedHpPerLevel)));const armourScale=(1+(Math.max(1,run.floor)-1)*.08)*Math.max(.9,Math.sqrt(diff.enemyHp))*(1+levelSteps*C.enemy.namedArmorPerLevel);e.maxArmor=Math.max(1,Math.ceil((e.maxArmor||e.armor||1)*armourScale));e.armor=e.maxArmor;e.namedDamageScale=1+levelSteps*C.enemy.namedDamagePerLevel;e.namedCadenceScale=Math.max(.65,1-levelSteps*C.enemy.namedCadencePerLevel);e.namedPotionHeal=Math.max(3,Math.round(3+(run.floor||1)*.55+levelSteps*C.enemy.namedPotionPerLevel));e.restorePotion=true;e.restoreUsed=false;e.retreating=false}
+      if(e.follower){e.maxHp=Math.max(1,Math.ceil(e.maxHp*(1+levelSteps*C.enemy.namedHpPerLevel)));const armourScale=(1+(Math.max(1,run.floor)-1)*.08)*Math.max(.9,Math.sqrt(diff.enemyHp))*(1+levelSteps*C.enemy.namedArmorPerLevel);e.maxArmor=Math.max(1,Math.ceil((e.maxArmor||e.armor||1)*armourScale));e.armor=e.maxArmor;e.namedDamageScale=1+levelSteps*C.enemy.namedDamagePerLevel;e.namedCadenceScale=Math.max(.65,1-levelSteps*C.enemy.namedCadencePerLevel);e.namedPotionHeal=Math.max(3,Math.round(3+(run.floor||1)*.55+levelSteps*C.enemy.namedPotionPerLevel));e.restorePotion=true;e.restoreUsed=false;e.retreating=false;if(e.ccgBoss){e.maxHp=20;e.maxArmor=5;e.armor=5;e.namedDamageScale=2;e.namedCadenceScale=.65;e.moveSpeedScale=.5}}
       e.hp=e.maxHp;
     }
     // Resource pressure: ammunition remains finite, but every floor now contains visible supply packs.

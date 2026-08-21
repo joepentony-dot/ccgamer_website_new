@@ -12,13 +12,13 @@ window.CCGSound=(()=>{
   const sanctuaryMelody=[262,330,392,0,330,392,523,0,392,330,294,0,262,330,392,0];
   function namedMusicKey(){const f=(C.followerElites||[]).find(x=>x.name===namedEnemy);return f?.musicKey||String(namedEnemy||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
   function musicUrlFor(state){
-    const admin=window.CCG_ADMIN_AUDIO||{};
-    if(state==="stalker")return admin.stalker||C.adminAudio?.stalker||ASSETS.music?.stalker;
-    if(state==="danger")return admin.dangerRoom||C.adminAudio?.dangerRoom||ASSETS.music?.danger;
-    if(state==="sanctuary")return admin.sanctuary||C.adminAudio?.sanctuary||ASSETS.music?.sanctuary;
-    if(state==="named"){const key=namedMusicKey();return admin.namedEnemies?.[key]||C.adminAudio?.namedEnemies?.[key]||ASSETS.music?.namedEnemies?.[key]||admin.namedEnemy||ASSETS.music?.named}
-    if(ASSETS.music?.rooms?.[state])return ASSETS.music.rooms[state];
-    return admin.exploration||ASSETS.music?.normal;
+    const override=window.CCG_ASSET_OVERRIDES?.audio||{},admin=window.CCG_ADMIN_AUDIO||{};
+    if(state==="stalker")return override.music?.stalker||admin.stalker||C.adminAudio?.stalker||ASSETS.music?.stalker;
+    if(state==="danger")return override.music?.danger||admin.dangerRoom||C.adminAudio?.dangerRoom||ASSETS.music?.danger;
+    if(state==="sanctuary")return override.music?.sanctuary||admin.sanctuary||C.adminAudio?.sanctuary||ASSETS.music?.sanctuary;
+    if(state==="named"){const key=namedMusicKey();return override.music?.namedEnemies?.[key]||admin.namedEnemies?.[key]||C.adminAudio?.namedEnemies?.[key]||ASSETS.music?.namedEnemies?.[key]||override.music?.named||admin.namedEnemy||ASSETS.music?.named}
+    if(override.music?.rooms?.[state])return override.music.rooms[state];if(ASSETS.music?.rooms?.[state])return ASSETS.music.rooms[state];
+    return override.music?.exploration||admin.exploration||ASSETS.music?.normal;
   }
   function desiredMusicState(){return stalkerNear?"stalker":roomMood}
   function syncAssetMusic(){
@@ -28,7 +28,7 @@ window.CCGSound=(()=>{
     const a=new Audio(url);a.loop=true;a.preload="auto";a.playbackRate=state==="stalker"&&stalkerSight ? .88 : 1;a.volume=Math.max(0,Math.min(.55,state==="stalker"?musicLevel*(stalkerSight?3.7:2.2):state==="named"?musicLevel*1.45:state==="danger"?musicLevel*1.3:musicLevel));musicAsset=a;musicAssetState=identity;a.play().catch(()=>{});
   }
   function playAssetSfx(name,fallback){
-    const url=window.CCG_ADMIN_AUDIO?.sfx?.[name]||ASSETS.sfx?.[name];if(!url){if(fallback)fallback();return}
+    const url=window.CCG_ASSET_OVERRIDES?.audio?.sfx?.[name]||window.CCG_ADMIN_AUDIO?.sfx?.[name]||ASSETS.sfx?.[name];if(!url){if(fallback)fallback();return}
     try{const a=new Audio(url);a.preload="auto";a.volume=.7;activeSfx.add(a);const done=()=>activeSfx.delete(a);a.addEventListener("ended",done,{once:true});a.addEventListener("error",()=>{done();if(fallback)fallback()},{once:true});a.play().catch(()=>{done();if(fallback)fallback()})}catch(_){if(fallback)fallback()}
   }
   function ensure(){

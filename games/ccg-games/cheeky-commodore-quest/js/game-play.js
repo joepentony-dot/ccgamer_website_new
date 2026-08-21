@@ -131,7 +131,7 @@ function damageGenerator(g,power,p){
 }
 function hitStalker(b){
   const s=host.stalker;if(!s?.awake||s.stunMs>0)return false;if(Math.round(b.x)!==s.x||Math.round(b.y)!==s.y)return false;
-  s.stunMs=C.stalker.stunOnShotMs;s.x=Math.max(1,Math.min(C.worldWidth-2,s.x-b.dx));s.y=Math.max(1,Math.min(C.worldHeight-2,s.y-b.dy));showToast(`${C.stalker.name.toUpperCase()} IS INDESTRUCTIBLE`,`FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY`,"red",6500);S.sfx("stalker");return true
+  s.stunMs=Math.min(120,C.stalker.stunOnShotMs);showToast(`${C.stalker.name.toUpperCase()} CANNOT BE KNOCKED BACK`,`Weapons cannot damage or move him. FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY`,"red",6500);S.sfx("stalker");return true
 }
 function projectilePathClear(b,nx,ny){
   // Closed, locked and still-opening doors are solid to gunfire as well as movement.
@@ -161,7 +161,7 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
   p.health-=left;p.hpBarMs=3000;run.stats.damageTaken+=left;if(friendly)run.stats.friendlyFire+=left;p.invuln=800;shake=10;damageFlash=.5;S.sfx("hurt");burst(p.x,p.y,P.red,16,1.4);ring(p.x,p.y,P.red,30);
   if(friendly){showToast("FRIENDLY FIRE",`${source} just shot a team-mate. The monsters are delighted.`,"red");say("<strong>FRIENDLY FIRE.</strong> Try pointing the dangerous end elsewhere.","red")}
   if(p.health<=0){
-    S.sfx("playerDeath");if(run.daily){run.dailyFailed=true;p.health=0;showToast("DAILY DUNGEON — RUN OVER","Daily Dungeon death is final. There is no respawn on this attempt.","red",9000);endRun("Daily Dungeon ended on death");return}
+    S.sfx("playerDeath");if(run.daily){run.dailyFailed=true;p.health=0;showToast("WEEKLY VAULT — RUN OVER","Death is final in the Weekly High-Score Vault. Your score is being recorded; try again after the next weekly reset.","red",9000);endRun("Weekly High-Score Vault ended on death");return}
     const deathX=p.x,deathY=p.y,cache=PGR.createDeathCache(p,run,deathX,deathY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED","You have burned through every XP point you had earned. This run is over.","red",10000);endRun("Your XP reserve reached zero after repeated deaths");return}
     p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;setTimeout(()=>{if(S.isEnabled())S.sfx("respawn")},520);
@@ -227,6 +227,7 @@ function updateStalker(dt){
   s.spawnTimer-=dt;if(!s.awake&&s.spawnTimer<=0){s.awake=true;s.seen=false;s.hp=s.maxHp;s.vulnerableMs=0;s._banishWarned=false;S.sfx("stalker");showToast("SOMETHING HAS ENTERED THE VAULT","FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY","red",9000);logEvent("The normal music seems suddenly less confident.","red",10000)}if(!s.awake)return;
   if(s.stunMs>0){s.stunMs-=dt;return}s.moveCooldown-=dt;const targets=localPlayers(),target=targets.sort((a,b)=>md(a,s)-md(b,s))[0];if(!target)return;const sees=W.sameRoom(world,s,target)||A.lineOfSight(world.map,s,target,C.enemy.lineOfSightRange,host);if(sees)s.seen=true;
   if(s.seen&&s.moveCooldown<=0){const next=SYS.pathStep(world,host,s,target,true);if(next){s.x=next.x;s.y=next.y}s.moveCooldown=C.stalker.moveMs/PGR.difficulty(run).stalker}if(md(s,target)<=1)hurtPlayer(target,C.stalker.hitDamage,false,C.stalker.name);
+  if(md(s,target)<=C.stalker.drainDistance){s.drainTimer=(s.drainTimer??1000)-dt;while(s.drainTimer<=0){s.drainTimer+=1000;const drain=C.stalker.drainPerSecond||10;score=Math.max(0,score-drain);target.totalXp=Math.max(0,(target.totalXp||0)-drain);target.xp=Math.max(0,(target.xp||0)-drain);run.floorXP=Math.max(0,(run.floorXP||0)-drain);floatText(target.x,target.y,`-${drain} SCORE / XP`,P.red);S.sfx("stalker")}}else s.drainTimer=1000;
   const near=md(s,target)<=C.stalker.nearDistance||W.sameRoom(world,s,target);if(near!==s.near){s.near=near;S.setStalkerNear(near||Boolean(host.voidStalkerInSight));if(near)showToast(`${C.stalker.name.toUpperCase()} IS NEAR`,`FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY`,"red",8000)}
 }
 function updateBanishment(){const threats=(host.enemies||[]).filter(e=>e.alive&&e.deathStalker),sight=threats.some(e=>localPlayers().some(p=>Math.hypot(e.x-p.x,e.y-p.y)<=C.enemy.torchSightRange&&A.lineOfSight(world.map,p,e,C.enemy.torchSightRange,host)));host.voidStalkerInSight=sight;S.setStalkerSight?.(sight);S.setStalkerNear(sight||Boolean(host.stalker?.near))}

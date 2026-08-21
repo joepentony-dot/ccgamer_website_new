@@ -10,7 +10,7 @@ window.CCG_CONFIG=Object.freeze({
   logoFallback:"assets/ccgamer-logo-fallback.svg",
   player:{
     maxHealth:8,maxMana:120,moveDelay:112,fireDelay:175,dashDelay:460,maxProjectiles:5,
-    sightRadius:6,torchRadius:22.5,torchMs:56000,inventorySlots:6,
+    sightRadius:6,torchRadius:22.5,torchMs:56000,startingInventorySlots:3,inventorySlots:6,
     emergencyAmmo:15,emergencyRechargeMs:3500,ammoFlashMs:1150,hitStunMs:180
   },
   enemy:{
@@ -21,7 +21,7 @@ window.CCG_CONFIG=Object.freeze({
     chaseStep:{scout:760,hunter:560,ambusher:620,guard:999999,charger:430,ranger:760,root:820,cook:860,firebreather:680,ghost:720,guardian:560,champion:620,treasure:520}
   },
   stalker:{
-    enabled:true,name:"Count Loadula",startFloor:2,moveMs:1450,nearDistance:18,attackDistance:1.25,
+    enabled:true,name:"Count Loadula",startFloor:2,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
     hitDamage:3,stunOnShotMs:500,spawnDelayMs:42000,musicKey:"count-loadula-default",
     banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,banishedRespawnMs:30000,banishPromptDistance:8
   },
@@ -47,7 +47,8 @@ window.CCG_CONFIG=Object.freeze({
     {name:"Syragar",initials:"SY",kind:"ranger",hp:7,armor:4,avatar:"assets/syragar.png",musicKey:"syragar"},
     {name:"Parsnip Celery",initials:"PS",kind:"root",hp:8,armor:5,avatar:"assets/parsnip-celery.png",musicKey:"parsnip-celery"},
     {name:"CPU",initials:"CPU",kind:"cook",hp:10,armor:6,avatar:"assets/cpu.png",musicKey:"cpu"},
-    {name:"Yoshi Yoshi",initials:"YY",kind:"firebreather",hp:8,armor:5,avatar:"assets/yoshi-yoshi.png",musicKey:"yoshi-yoshi"}
+    {name:"Yoshi Yoshi",initials:"YY",kind:"firebreather",hp:8,armor:5,avatar:"assets/yoshi-yoshi.png",musicKey:"yoshi-yoshi"},
+    {name:"CCG",initials:"CCG",kind:"hunter",hp:20,armor:5,avatar:"",musicKey:"ccg",ccgBoss:true,moveSpeedScale:.5,namedDamageScale:2}
   ],
   c64Loot:["Impossible Mission","Wizball","Paradroid","Boulder Dash","Bruce Lee","Uridium","The Last Ninja","Bubble Bobble","IK+","Turrican","Armalyte","Mayhem in Monsterland","Monty on the Run","Creatures","The Great Giana Sisters","Dropzone","Delta","Hawkeye","R-Type","Ghouls 'n Ghosts","California Games","World Games","Summer Games II","Winter Games","Pitstop II","Spy vs Spy","Nebulus","Cybernoid","Ghosts 'n Goblins","The Sentinel","International Karate","Elite"],
   roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE"],

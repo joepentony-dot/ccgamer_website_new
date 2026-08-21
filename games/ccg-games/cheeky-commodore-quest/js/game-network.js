@@ -41,7 +41,7 @@ function elementalDamage(e,power,element){if(!e.weakness)return power;if(e.weakn
 function isDeathStalkerEnemy(e){return Boolean(e?.deathStalker&&e?.voidStalker)}
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
-  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;S.sfx("stalker");floatText(e.x,e.y,"INDESTRUCTIBLE",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY.","red",8500);return}
+  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY.","red",8500);return}
   power=elementalDamage(e,power,element);e.flash=160;e.hpBarMs=2800;e.hitStunMs=Math.max(e.hitStunMs||0,C.enemy.hitStunMs||1000);
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
@@ -63,6 +63,7 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   if(e.follower){
     const guaranteed=Math.random()<.45?{kind:"artefact",rarity:"SIZZLER",name:`${e.follower.name} Dossier Artefact`,xp:220}:PGR.lootForChest({depth:10+(run.floor||1)},run,()=>Math.random()*.72);
     host.items.push({id:`named-loot-${Date.now()}-${Math.random()}`,x:e.x,y:e.y,kind:"loot",loot:guaranteed,active:true,title:guaranteed.weapon?.displayName||guaranteed.name||"Named Enemy Cache"});
+    if(PGR.inventoryCapacity(attacker||p1)<C.player.inventorySlots&&Math.random()<.015)host.items.push({id:`inventory-slot-${Date.now()}-${Math.random()}`,x:e.x,y:e.y,kind:"inventorySlot",active:true,title:"RARE INVENTORY EXPANSION"});
     S.sfx("elite");showToast(`${e.follower.name.toUpperCase()} FREED`,`You did not kill ${e.follower.name}; the dungeon corruption broke. A meaningful loot drop is guaranteed and the rescue is recorded in your dossier.`,"green",7600);if(!run.namedDossierAutoShown){run.namedDossierAutoShown=true;setTimeout(()=>{if(mode==="playing")showNamedDossier(e.follower.name,true)},320)}if(e.follower.name==="CPU")host.items.push({id:`food-${Date.now()}`,x:e.x,y:e.y,kind:"health",active:true,title:"CPU's Emergency Roast"})
   }else S.sfx("death");
   if(attacker?.weapon?.vampiric){attacker.killsSinceHeal=(attacker.killsSinceHeal||0)+1;if(attacker.killsSinceHeal>=8){attacker.killsSinceHeal=0;attacker.health=Math.min(attacker.maxHealth,attacker.health+1);attacker.hpBarMs=2800;showToast("VAMPIRIC WEAPON","Eight kills return 1 health.","green")}}
@@ -87,7 +88,7 @@ function applyLoot(loot,p){
   else if(loot.kind==="armour"){p.armor=Math.min(12,p.armor+(loot.amount||2));S.sfx("armour");showToast(loot.name||"ARMOUR",`+${loot.amount||2} armour.`,"cyan")}
   else if(loot.kind==="ammo"){const n=Math.round((loot.amount||40)*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;showToast(loot.name||"AMMO CACHE",`+${n} ammunition.`,"cyan")}
   else if(loot.kind==="potion")storeConsumable(p,{kind:"potion",name:loot.name||"Restoration Potion",short:"POTION"},loot.name||"RESTORATION POTION","Added to your inventory stack.","green");
-  else if(loot.kind==="torch")storeConsumable(p,{kind:"torch",name:loot.name||"Flaming Torch",short:"TORCH"},loot.name||"FLAMING TORCH","Stacked in inventory. Press Q to light a torch.","gold");
+  else if(loot.kind==="torch")storeConsumable(p,{kind:"torch",name:loot.name||"Flaming Torch",short:"TORCH"},loot.name||"FLAMING TORCH","Stored in its own slot. Press Q to light a torch.","gold");
   else if(loot.kind==="teleport")storeConsumable(p,{kind:"teleport",name:loot.name||"Teleport Spell",short:"WARP"},loot.name||"TELEPORT SPELL","Stacked in inventory. Press R to warp to a safe explored room.","purple");
   else if(loot.kind==="banishment")storeConsumable(p,{kind:"banishment",name:loot.name||"Banishment Flask",short:"BANISH"},loot.name||"BANISHMENT FLASK","Stacked in inventory. A flashing B prompt appears when a Death Stalker or Count Loadula is within Banishment range.","purple");
   else if(loot.kind==="rapid"){p.rapidMs=14000;S.sfx("weapon");showToast(loot.name||"RAPID FIRE","Fire delay reduced temporarily.","gold")}
@@ -103,13 +104,14 @@ function applyItem(i,p){
   else if(i.kind==="game"){score+=250;stats.games++;run.floorGames.push(i.title);S.sfx("pickup");awardXP(p,100,"C64 game rescued");showToast(`C64 RESCUED: ${i.title}`,"Unbanked until this floor is cleared or you extract. +250 score.","gold",6500)}
   else if(i.kind==="credits"){score+=125;S.sfx("pickup");showToast("GOLD SCORE COIN","+125 score.","gold")}
   else if(i.kind==="xpOrb"){S.sfx("pickup");awardXP(p,175,"XP Orb collected");showToast("XP ORB","+175 XP unless your current floor cap has been reached.","cyan")}
-  else if(i.kind==="torch")storeConsumable(p,{kind:"torch",name:"Flaming Torch",short:"TORCH"},"FLAMING TORCH","Stacked in inventory. Press Q to light it.","gold");
+  else if(i.kind==="torch")storeConsumable(p,{kind:"torch",name:"Flaming Torch",short:"TORCH"},"FLAMING TORCH","Stored in its own inventory slot. Press Q to light it.","gold");
   else if(i.kind==="teleport")storeConsumable(p,{kind:"teleport",name:"Teleport Spell",short:"WARP"},"TELEPORT SPELL","Stored. Press R to warp to a safe explored room.","purple");
   else if(i.kind==="banishment")storeConsumable(p,{kind:"banishment",name:"Banishment Flask",short:"BANISH"},"BANISHMENT FLASK","Stacked in inventory. Watch for the flashing Banishment prompt near a Death Stalker or Count Loadula.","purple");
   else if(i.kind==="armour"){p.armor=Math.min(12,p.armor+2);S.sfx("armour");showToast("ARMOUR PLATE",`${who} gains 2 armour.`,"cyan")}
   else if(i.kind==="potion")storeConsumable(p,{kind:"potion",name:"Restoration Potion",short:"POTION"},"RESTORATION POTION","Stored. Press E to drink it.","green");
   else if(i.kind==="weapon")equipWeapon(p,PGR.generateWeapon(world.rooms[W.roomAt(world,p.x,p.y)]?.depth||0,run.floor,Math.random));
   else if(i.kind==="rapid"){p.rapidMs=12000;S.sfx("weapon");showToast("RAPID FIRE","Fire delay reduced for 12 seconds.","gold")}
+  else if(i.kind==="inventorySlot"){const before=PGR.inventoryCapacity(p);p.inventorySlots=Math.min(C.player.inventorySlots,before+1);S.sfx("level");showToast("RARE INVENTORY EXPANSION",p.inventorySlots>before?`Inventory expanded to ${p.inventorySlots} slots for this run.`:"Inventory is already fully expanded.","gold",8000)}
   else if(i.kind==="bronze"){p.bronzeKeys++;S.sfx("bronze");showToast("BRONZE KEY","Opens one bronze door or locked chest. Main objectives never depend on these.","gold")}
   else if(i.kind==="exitSigil"){host.exitSigilCollected=true;score+=650;S.sfx("exitSigil");shake=9;awardXP(p,260,"Exit Sigil recovered");SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100));showToast("EXIT SIGIL ACQUIRED","The floor exit can now be unlocked once the main objective is complete. Getting back alive is the final problem.","gold",10000)}
   else if(i.kind==="key"){score+=400;S.sfx("mainKey");shake=7;awardXP(p,140,"Main vault key");showToast("MAIN VAULT KEY",`${host.keysCollected}/${C.keyTarget} recovered. The Exit Sigil is a separate requirement.`,"gold",9000)}

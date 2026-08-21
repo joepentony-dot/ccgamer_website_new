@@ -86,10 +86,11 @@ function drawExit(){
   ctx.restore();
   if(md(world.exit,focus)<4){const text=ready?(run.floor<C.maxFloors?"DESCENT":"FINAL EXIT"):host.objective?.complete&&!host.exitSigilCollected?"NEEDS EXIT SIGIL":!host.objective?.complete?"OBJECTIVE LOCKED":"SEALED EXIT";label(text,{x:s.x,y:s.y-1},ready?P.purple:P.gold)}
 }
-function itemInfo(i){if(i.kind==="loot")return["★",i.loot?.rarity==="GOLD MEDAL"?P.gold:i.loot?.rarity==="ZZAP! 97%"?P.pink:P.cyan];return{key:["KEY",P.gold],exitSigil:["SIG",P.gold],health:["+",P.green],mana:["AM",P.cyan],ammo:["AM",P.cyan],game:["C64",P.white],credits:["COIN",P.gold],xpOrb:["XP",P.cyan],torch:["T",P.gold],teleport:["WARP",P.purple],banishment:["B",P.purple],armour:["A",P.blue],potion:["P",P.green],weapon:["W",P.orange],rapid:["RF",P.orange],bronze:["BK",P.gold]}[i.kind]||["?",P.white]}
+function itemInfo(i){if(i.kind==="loot")return["★",i.loot?.rarity==="GOLD MEDAL"?P.gold:i.loot?.rarity==="ZZAP! 97%"?P.pink:P.cyan];return{key:["KEY",P.gold],exitSigil:["SIG",P.gold],health:["+",P.green],mana:["AM",P.cyan],ammo:["AM",P.cyan],game:["C64",P.white],credits:["COIN",P.gold],xpOrb:["XP",P.cyan],torch:["T",P.gold],teleport:["WARP",P.purple],banishment:["B",P.purple],inventorySlot:["SLOT",P.gold],armour:["A",P.blue],potion:["P",P.green],weapon:["W",P.orange],rapid:["RF",P.orange],bronze:["BK",P.gold]}[i.kind]||["?",P.white]}
 function drawPickupGlyph(i,col){
   ctx.save();ctx.lineWidth=2;ctx.strokeStyle=col;ctx.fillStyle=col;
   const k=i.kind;
+  const custom=pickupOverrideImages.get(k);if(custom?.complete&&custom.naturalWidth){ctx.drawImage(custom,-14,-14,28,28);ctx.restore();return}
   if(k==="health"){ctx.fillRect(-3,-10,6,20);ctx.fillRect(-10,-3,20,6)}
   else if(k==="mana"||k==="ammo"){ctx.strokeRect(-11,-7,22,14);ctx.fillRect(-7,-3,5,6);ctx.fillRect(2,-3,5,6)}
   else if(k==="potion"){ctx.strokeRect(-7,-5,14,14);ctx.fillRect(-4,-10,8,5);ctx.fillRect(-5,1,10,6)}
@@ -103,6 +104,7 @@ function drawPickupGlyph(i,col){
   else if(k==="game"){ctx.save();ctx.shadowColor=col;ctx.shadowBlur=10;ctx.fillStyle="rgba(10,5,16,.82)";ctx.fillRect(-13,-9,26,18);ctx.strokeStyle=col;ctx.strokeRect(-13,-9,26,18);ctx.fillStyle=col;ctx.fillRect(-10,-6,20,3);ctx.strokeRect(-9,-1,18,6);ctx.beginPath();ctx.arc(-4,2,2,0,Math.PI*2);ctx.arc(4,2,2,0,Math.PI*2);ctx.stroke();ctx.font='bold 5px "Courier New"';ctx.textAlign="center";ctx.fillText("C64",0,-3);ctx.fillRect(-10,7,20,2);ctx.restore()}
   else if(k==="credits"){ctx.fillStyle="#9a6718";ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(0,0,8,0,Math.PI*2);ctx.fill();ctx.fillStyle="#51350c";ctx.font='bold 11px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("S",0,1)}
   else if(k==="xpOrb"){const g=ctx.createRadialGradient(-3,-3,1,0,0,12);g.addColorStop(0,"#fff");g.addColorStop(.35,P.cyan);g.addColorStop(1,"#2d3ea0");ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.fillStyle="#08101d";ctx.font='bold 9px Consolas';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("XP",0,1)}
+  else if(k==="inventorySlot"){ctx.strokeRect(-11,-9,22,18);ctx.strokeRect(-7,-5,6,6);ctx.strokeRect(2,-5,6,6);ctx.strokeRect(-7,3,6,6);ctx.strokeRect(2,3,6,6)}
   else if(k==="loot"){ctx.beginPath();for(let n=0;n<8;n++){const a=-Math.PI/2+n*Math.PI/4,r=n%2?4:11,x=Math.cos(a)*r,y=Math.sin(a)*r;if(n===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)}ctx.closePath();ctx.fill()}
   else{ctx.fillRect(-8,-8,16,16)}ctx.restore()
 }

@@ -186,7 +186,7 @@ window.CCGAI=(()=>{
     }else if(e.aiState==="search")moved=randomStep(e,host,map,world);
     else moved=randomStep(e,host,map,world);
 
-    e.moveCooldown=e.aiState==="chase"?Math.max(260,chaseInterval(e)*(e.follower?.72:1)):e.aiState==="search"?850+Math.random()*650:idleInterval();
+    e.moveCooldown=e.aiState==="chase"?Math.max(170,chaseInterval(e)*(e.follower?.72:1)*(e.moveSpeedScale||1)):e.aiState==="search"?(850+Math.random()*650)*(e.moveSpeedScale||1):idleInterval()*(e.moveSpeedScale||1);
     return moved||changed;
   }
 

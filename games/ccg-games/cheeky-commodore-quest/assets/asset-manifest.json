@@ -1,0 +1,30 @@
+{
+  "instructions": "Edit js/asset-overrides.js: replace a null value with a site-relative image or WAV path. Unchanged null values continue to use the defaults below.",
+  "images": {
+    "logo": "assets/ccgamer-logo-fallback.svg",
+    "namedEnemies": {
+      "Peter Cortens": "assets/peter-cortens.png",
+      "Swanh8ter": "assets/swanh8ter.png",
+      "Syragar": "assets/syragar.png",
+      "Parsnip Celery": "assets/parsnip-celery.png",
+      "CPU": "assets/cpu.png",
+      "Yoshi Yoshi": "assets/yoshi-yoshi.png",
+      "CCG": "canvas-generated creature unless overridden"
+    },
+    "items": "Items use canvas artwork by default. Any images.items key in js/asset-overrides.js can replace its matching floor collectible."
+  },
+  "music": {
+    "exploration": "assets/audio/music/exploration.wav",
+    "danger": "assets/audio/music/danger.wav",
+    "sanctuary": "assets/audio/music/sanctuary.wav",
+    "named": "assets/audio/music/named-enemy.wav",
+    "stalker": "assets/audio/music/count-loadula.wav",
+    "ccg": "assets/audio/music/danger.wav",
+    "namedEnemyFolder": "assets/audio/music/",
+    "roomOverrides": "Use audio.music.rooms in js/asset-overrides.js with room mood keys such as archive, workshop, budget, reactor, library, crypt or crt."
+  },
+  "sfx": {
+    "folder": "assets/audio/sfx/",
+    "overrideKeys": ["fire", "hit", "death", "playerDeath", "elite", "hurt", "pickup", "key", "exitSigil", "bronze", "dash", "enemy", "alert", "search", "food", "flame", "wall", "open", "heal", "empty", "respawn", "win", "join", "warp", "door", "dooropen", "locked", "weapon", "armour", "potion", "torch", "room", "campwarn", "explosion", "lowhealth", "cloak", "level", "shrine", "stalker", "trap", "generator", "secret"]
+  }
+}

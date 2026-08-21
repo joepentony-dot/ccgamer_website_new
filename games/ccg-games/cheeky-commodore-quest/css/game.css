@@ -231,6 +231,7 @@ body{padding:0;font-family:Consolas,"Lucida Console","Courier New",monospace;bac
   .panel{width:min(100%,680px)!important;max-height:calc(100dvh - 16px)!important}
   .v10-info-panel{width:min(100%,680px)!important;max-height:calc(100dvh - 16px)!important}
 }
+.weekly-leaderboard{margin:.45rem 0 0;padding:.5rem .7rem .5rem 2rem;max-height:10rem;overflow:auto;border:1px solid rgba(185,120,255,.3);background:rgba(6,3,12,.56);font-size:.72rem}.weekly-leaderboard li{display:list-item;padding:.18rem 0;color:var(--muted)}.weekly-leaderboard li span{float:right;color:var(--gold)}
 
 /* USER-FEEDBACK COMPONENTS: field reports, utility/key HUD, dossiers and item information. */
 .ccg-game{grid-template-rows:auto auto auto auto auto minmax(0,1fr)!important}

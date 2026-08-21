@@ -31,7 +31,7 @@
     <div class="critical-card potion-card"><kbd>E</kbd><div><b>POTION</b><strong id="quick-potion">0 HELD</strong><span>FAST HEAL</span></div></div>
     <div class="critical-card torch-card"><kbd>Q</kbd><div><b>TORCH</b><strong id="quick-utility">0 HELD</strong><span>LIGHT THE DUNGEON</span></div></div>
     <div class="critical-card keys-card"><svg class="keyring-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="10" r="4"/><path d="M11 10h10M17 10v4M20 10v3"/></svg><div><b>KEYS HELD</b><strong id="hud-bronze">0</strong><span id="quick-keyring">MAIN 0/3 • BRONZE 0 • SIGIL 0</span></div></div>
-    <div class="critical-card inventory-card"><kbd>TAB</kbd><div><b>INVENTORY</b><strong>6 STACK SLOTS</strong><span>OBJECTIVE · ITEM INFO · DOSSIER</span></div></div>
+    <div class="critical-card inventory-card"><kbd>TAB</kbd><div><b>INVENTORY</b><strong>3–6 SLOTS</strong><span>EXPAND IN SHOPS · ITEM INFO</span></div></div>
     <div id="banish-alert" class="banish-context hidden" aria-live="assertive"><kbd>B</kbd><div><b>BANISHMENT READY</b><span id="banish-alert-text">DEATH STALKER IN RANGE — PRESS B</span></div></div>
   </section>
 
@@ -75,10 +75,12 @@
         </div>
         <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
         <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
-        <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Daily Dungeon — Same Challenge Today</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
+        <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
+        <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
+        <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
-        <p id="collection-summary" class="collection-summary">Permanent C64 collection: 0 games rescued.</p>
+        <p id="collection-summary" class="collection-summary">Banked C64 collection: 0 distinct games rescued on this browser.</p>
         <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Daily Dungeon uses one local/browser attempt per day, Arcade rules, and death ends the attempt. Sound begins when play starts.</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE FIRE • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER FIRE • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
       </div>
@@ -113,11 +115,11 @@
       <small id="save-note">Saves are floor-entry checkpoints rather than mid-room quick saves.</small>
     </div></div>
 
-    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><h2>Inventory & Objective</h2><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>Six stack slots. Matching consumables and artefacts share a slot with an ×N counter. The icons below match the symbols used on the dungeon floor.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 6</button><button id="inventory-close" class="primary">Close</button></div></div></div>
+    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><h2>Inventory & Objective</h2><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
 
     <div id="item-info-panel" class="overlay hidden sub-overlay"><div class="panel compact item-info-card"><div id="item-info-icon" class="item-info-hero"></div><h2 id="item-info-title">Item</h2><div id="item-info-text" class="item-info-copy"></div><button id="item-info-close" class="primary">Back to Inventory</button></div></div>
 
-    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><h2>Named Enemy Dossier</h2><p>All six named enemies. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
+    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><h2>Named Enemy Dossier</h2><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
 
 
     <div id="rulebook-panel" class="overlay hidden"><div class="panel v10-info-panel">
@@ -182,6 +184,10 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
+<script src="/js/ccg-supabase-config.js"></script>
+<script src="/js/ccg-supabase-client.js"></script>
+<script src="js/weekly-challenge.js"></script>
+<script src="js/asset-overrides.js"></script>
 <script src="js/avatar-data.js"></script>
 <script src="js/config.js"></script>
 <script src="js/progression.js"></script>

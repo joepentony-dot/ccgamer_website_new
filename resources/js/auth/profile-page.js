@@ -55,7 +55,8 @@ function profileDefaults(user) {
       || user.user_metadata?.name
       || 'Member',
     notify_new_games: false,
-    notify_newsletter: false
+    notify_newsletter: false,
+    notify_weekly_challenge: true
   };
 }
 
@@ -113,6 +114,9 @@ function renderProfile(user, profile) {
 
   const notifyNewsletter = document.getElementById('notifyNewsletter');
   if (notifyNewsletter) notifyNewsletter.checked = Boolean(profile.notify_newsletter);
+
+  const notifyWeeklyChallenge = document.getElementById('notifyWeeklyChallenge');
+  if (notifyWeeklyChallenge) notifyWeeklyChallenge.checked = profile.notify_weekly_challenge !== false;
 }
 
 function normalizeSlugCandidate(candidate) {
@@ -354,10 +358,12 @@ async function fetchTopPicks(supabaseClient, userId) {
 async function savePreferences({ supabaseClient, user, messageBox }) {
   const notifyNewGames = Boolean(document.getElementById('notifyNewGames')?.checked);
   const notifyNewsletter = Boolean(document.getElementById('notifyNewsletter')?.checked);
+  const notifyWeeklyChallenge = Boolean(document.getElementById('notifyWeeklyChallenge')?.checked);
 
   const updates = {
     notify_new_games: notifyNewGames,
-    notify_newsletter: notifyNewsletter
+    notify_newsletter: notifyNewsletter,
+    notify_weekly_challenge: notifyWeeklyChallenge
   };
   const { error: updateError } = await supabaseClient
     .from('profiles')

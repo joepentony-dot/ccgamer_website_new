@@ -189,7 +189,10 @@ window.CCGWorld=(()=>{
       }
     }
     const eliteRooms=[...openRooms].sort((a,b)=>b.depth-a.depth);
-    C.followerElites.forEach((f,i)=>{const room=eliteRooms[(i*4+2)%eliteRooms.length]||openRooms[i%openRooms.length],p=pickInRoom(w,room,used);enemies.push({id:`f${i}`,...p,kind:f.kind,hp:f.hp,maxHp:f.hp,armor:f.armor||0,maxArmor:f.armor||0,alive:true,follower:f,...aiFields(w)})});
+    const regularNamed=C.followerElites.filter(f=>!f.ccgBoss);
+    regularNamed.forEach((f,i)=>{const room=eliteRooms[(i*4+2)%eliteRooms.length]||openRooms[i%openRooms.length],p=pickInRoom(w,room,used);enemies.push({id:`f${i}`,...p,kind:f.kind,hp:f.hp,maxHp:f.hp,armor:f.armor||0,maxArmor:f.armor||0,alive:true,follower:f,...aiFields(w)})});
+    const ccg=C.followerElites.find(f=>f.ccgBoss),floor=Math.max(1,Math.min(5,Number(w.floor)||1)),ccgChance=[0,.03,.15,.38,.72,1][floor];
+    if(ccg&&w.random()<ccgChance){const room=eliteRooms[(floor*5+1)%eliteRooms.length]||openRooms[0],p=pickInRoom(w,room,used);enemies.push({id:`ccg-f${floor}`,...p,kind:ccg.kind,hp:20,maxHp:20,armor:5,maxArmor:5,alive:true,follower:ccg,ccgBoss:true,moveSpeedScale:.5,namedDamageScale:2,...aiFields(w)})}
 
     const items=[];
     const keyRooms=[...openRooms].sort((a,b)=>b.depth-a.depth).filter((r,i)=>i%2===0).slice(0,C.keyTarget);

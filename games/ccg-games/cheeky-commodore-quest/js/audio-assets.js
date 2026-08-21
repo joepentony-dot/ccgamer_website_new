@@ -58,7 +58,8 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
       "syragar":"assets/audio/music/named-syragar.wav",
       "parsnip-celery":"assets/audio/music/named-parsnip-celery.wav",
       "cpu":"assets/audio/music/named-cpu.wav",
-      "yoshi-yoshi":"assets/audio/music/named-yoshi-yoshi.wav"
+      "yoshi-yoshi":"assets/audio/music/named-yoshi-yoshi.wav",
+      "ccg":"assets/audio/music/danger.wav"
     }),
     stalker:"assets/audio/music/count-loadula.wav"
   })
