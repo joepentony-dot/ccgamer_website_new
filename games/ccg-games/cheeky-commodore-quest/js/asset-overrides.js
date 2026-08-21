@@ -15,3 +15,25 @@ window.CCG_ASSET_OVERRIDES={
     sfx:{}
   }
 };
+
+/* V10.4 is intentionally loaded after the established V10.3 engine. */
+window.addEventListener("load",()=>{
+  if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+  const queue=[
+    ["js/v10-4-patch.js","ccgLostSizzlerV104"],
+    ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
+    ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
+    ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
+    ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"]
+  ];
+  const loadNext=index=>{
+    if(index>=queue.length)return;
+    const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+    if(document.querySelector(selector)){loadNext(index+1);return}
+    const script=document.createElement("script");
+    script.src=src;script.dataset[key]="true";script.async=false;
+    script.onload=()=>loadNext(index+1);
+    document.body.appendChild(script);
+  };
+  loadNext(0);
+},{once:true});
