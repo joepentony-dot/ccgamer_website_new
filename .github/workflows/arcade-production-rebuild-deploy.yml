@@ -32,19 +32,28 @@ jobs:
       - name: Install Pillow
         run: python -m pip install --disable-pip-version-check pillow
 
-      - name: Repair and compile-check temporary artwork generator
+      - name: Repair and compile-check one-time rebuild helpers
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          path = Path('scripts/arcade-rebuild-assets.py')
-          source = path.read_text(encoding='utf-8')
+
+          asset_path = Path('scripts/arcade-rebuild-assets.py')
+          source = asset_path.read_text(encoding='utf-8')
           bad = "        ellipse(d,(34,18,126,82),c,width=6); for x in (48,80,112): d.line((x,72,x-10,94),fill=c,width=9)"
           good = "        ellipse(d,(34,18,126,82),c,width=6)\n        for x in (48,80,112):\n            d.line((x,72,x-10,94),fill=c,width=9)"
           if bad not in source:
-              raise SystemExit('Expected temporary generator line was not found.')
-          path.write_text(source.replace(bad, good), encoding='utf-8')
+              raise SystemExit('Expected temporary artwork-generator line was not found.')
+          asset_path.write_text(source.replace(bad, good), encoding='utf-8')
+
+          runtime_path = Path('scripts/arcade-rebuild-main.py')
+          runtime = runtime_path.read_text(encoding='utf-8')
+          old = '''    pat=rf"function {name}\\([^\\n]*?\\)\\{{.*?\\}}\\n(?=function {next_name}\\()"'''
+          new = '''    if name=='updateEntities':\n        pat=r"function updateEntities\\([^\\n]*?\\)\\{.*?\\}\\n(?=const BOSS_PROFILE=)"\n    else:\n        pat=rf"function {name}\\([^\\n]*?\\)\\{{.*?\\}}\\n(?=function {next_name}\\()"'''
+          if old not in runtime:
+              raise SystemExit('Expected temporary runtime matcher was not found.')
+          runtime_path.write_text(runtime.replace(old, new), encoding='utf-8')
           PY
           python -m py_compile scripts/arcade-rebuild-assets.py scripts/arcade-rebuild-main.py scripts/arcade-rebuild-admin-mobile.py
 
