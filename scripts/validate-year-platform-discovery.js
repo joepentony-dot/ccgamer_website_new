@@ -35,6 +35,8 @@ const PHASE5B_EXCLUDED_REGISTRY_ENTRY = "viewer/manual.html";
 const PHASE5B_EXCLUDED_SITEMAP_URL = `${SITE_ORIGIN}/viewer/manual.html`;
 const REVIEWED_FOREIGN_REGISTRY_ADDITIONS = new Set([
     "games/discover/index.html",
+    "games/ccg-games/index.html",
+    "games/commodore-quest/index.html",
     "videos/index.html"
 ]);
 const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
@@ -43,6 +45,8 @@ const REVIEWED_FOREIGN_SITEMAP_ADDITIONS = new Map([
     ])],
     ["sitemap-pages.xml", new Set([
         `${SITE_ORIGIN}/games/discover/`,
+        `${SITE_ORIGIN}/games/ccg-games/`,
+        `${SITE_ORIGIN}/games/commodore-quest/`,
         `${SITE_ORIGIN}/videos/`
     ])]
 ]);

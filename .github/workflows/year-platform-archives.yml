@@ -208,6 +208,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
+          import pathlib
           import subprocess
 
           output = subprocess.check_output(
@@ -234,14 +235,26 @@ jobs:
               "sitemap-pages.xml",
               "tools/seo/static-pages.json",
           }
-          unexpected = sorted(
-              changed_path for changed_path in paths
-              if changed_path not in allowed_exact
-              and not changed_path.startswith("games/years/")
-              and not changed_path.startswith("games/platforms/")
-          )
+          unexpected = []
+          for changed_path in paths:
+              if changed_path in allowed_exact:
+                  continue
+              if changed_path.startswith("games/years/") or changed_path.startswith("games/platforms/"):
+                  continue
+
+              # generate-sitemaps.js also runs the established composer presentation
+              # normalizer. Permit only recognised composer route pages, matching the
+              # dedicated composer workflow's bounded-scope rule.
+              candidate = pathlib.Path(changed_path)
+              if len(candidate.parts) == 3 and candidate.parts[0] == "music" and candidate.parts[2] == "index.html":
+                  text = candidate.read_text(encoding="utf-8", errors="ignore") if candidate.exists() else ""
+                  if 'data-generated-composer="true"' in text or 'data-ccg-research-profile="true"' in text:
+                      continue
+
+              unexpected.append(changed_path)
+
           if unexpected:
-              raise SystemExit(f"Unexpected Phase 4D generated paths: {unexpected}")
+              raise SystemExit(f"Unexpected Phase 4D generated paths: {sorted(unexpected)}")
           print(f"Validated {len(paths)} generated Phase 4D paths.")
           PY
 
