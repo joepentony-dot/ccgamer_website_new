@@ -12,6 +12,14 @@
   <main id="game-shell" aria-label="Cheeky's Commodore Quest">
     <canvas id="game" width="1600" height="900" tabindex="0" aria-label="Cheeky's Commodore Quest game canvas"></canvas>
     <div id="loading" class="loading">LOADING COMMODORE QUEST…</div>
+    <div class="rotate-prompt" role="status" aria-live="polite">
+      <div class="rotate-prompt__card">
+        <div class="rotate-prompt__phone" aria-hidden="true">▯ ↻</div>
+        <strong>ROTATE YOUR PHONE</strong>
+        <span>Cheeky’s Commodore Quest is designed for landscape play.</span>
+        <small>Turn your phone sideways for the largest playing area and touch controls.</small>
+      </div>
+    </div>
     <div class="corner-controls" aria-label="Game controls">
       <button id="btn-pause" type="button">Pause</button>
       <button id="btn-level" type="button">Level Select</button>
