@@ -19,10 +19,10 @@ jobs:
       - name: Check out audit branch
         uses: actions/checkout@v4
 
-      - name: Reconstruct and audit V10.3 payload
+      - name: Reconstruct final V10.3 payload and audit features
         shell: python
         run: |
-          import base64, gzip, hashlib, re, subprocess, zlib, difflib
+          import base64, gzip, hashlib, re, subprocess, zlib
           release='origin/release/commodore-quest-v10-3-public'
           subprocess.run(['git','fetch','origin','release/commodore-quest-v10-3-public:refs/remotes/origin/release/commodore-quest-v10-3-public','--depth=30'],check=True)
           base='games/commodore-quest/payload-parts/'
@@ -30,66 +30,39 @@ jobs:
           def get(n): return subprocess.check_output(['git','show',f'{release}:{base}{n}'])
           def clean(x): return bytes(b for b in x if b not in ws)
           p={f'{i:02d}':clean(get(f'part-{i:02d}.txt')) for i in range(11)}
-          probe=clean(get('probe-00.txt')); pf=clean(get('probe-formatted.txt'))
-          marker=b'[...ELLIPSIZATION...]'; mi=p['00'].find(marker); suffix=p['00'][mi+len(marker):]
+          pf=clean(get('probe-formatted.txt'))
 
-          print('pf_len',len(pf),'probe_len',len(probe),'marker',mi,'suffix_len',len(suffix))
-          print('pf_is_probe_prefix',pf==probe[:len(pf)])
-          print('part01_overlap_verified',probe[8000:10000]==p['01'][:2000])
-          print('part05_len',len(p['05']),'part05_head',repr(p['05'][:80]),'part05_tail',repr(p['05'][-80:]))
-          print('suffix_head',repr(suffix[:80]),'suffix_tail',repr(suffix[-80:]))
-          pos=suffix.find(p['05'][:200])
-          print('part05_first200_in_preserved_suffix_at',pos)
-          if pos>=0:
-              print('suffix_from_pos_len',len(suffix[pos:]),'part05_equals_suffix_from_pos',p['05']==suffix[pos:])
-          tail8000=suffix[-8000:]
-          print('part05_equals_tail8000_minus_first',p['05']==tail8000[1:])
-          print('part05_equals_tail8000_minus_last',p['05']==tail8000[:-1])
-          sm=difflib.SequenceMatcher(None,p['05'],tail8000,autojunk=False)
-          print('part05_vs_tail8000_ratio',sm.ratio())
-          print('opcodes',sm.get_opcodes()[:20])
-
-          def padded(c): return c+b'='*((-len(c))%4)
-          def test(label,c,allow_partial=False):
-              print('\nCANDIDATE',label,'chars',len(c),'mod4',len(c)%4,'pad',(-len(c))%4,'sha',hashlib.sha256(c).hexdigest())
+          orders={
+            'COMMIT_ORDER':['01','02','03','04','05','06','07','08','09','10'],
+            'MIDDLE_THEN_TAIL':['01','02','03','04','06','07','08','09','10','05'],
+          }
+          winner=None; text=None; winning_encoded=None
+          for label,order in orders.items():
+              enc=pf+b''.join(p[x] for x in order)
+              encpad=enc+b'='*((-len(enc))%4)
+              print('\nCANDIDATE',label,'order',order,'chars',len(enc),'mod4',len(enc)%4,'pad',(-len(enc))%4,'enc_sha',hashlib.sha256(enc).hexdigest())
               try:
-                  packed=base64.b64decode(padded(c),validate=True)
-                  print('BASE64_OK',len(packed),hashlib.sha256(packed).hexdigest())
-                  if allow_partial:
-                      d=zlib.decompressobj(16+zlib.MAX_WBITS)
-                      out=d.decompress(packed)
-                      print('STREAM_OK out',len(out),'eof',d.eof,'unused',len(d.unused_data),'tail',repr(out[-100:]))
-                      return out.decode('utf-8','replace') if d.eof else None
+                  packed=base64.b64decode(encpad,validate=True)
+                  print('BASE64_OK bytes',len(packed),'sha',hashlib.sha256(packed).hexdigest())
+                  d=zlib.decompressobj(16+zlib.MAX_WBITS)
+                  partial=d.decompress(packed)
+                  print('STREAM out',len(partial),'eof',d.eof,'unused',len(d.unused_data),'tail',repr(partial[-120:]))
                   out=gzip.decompress(packed)
-                  text=out.decode('utf-8')
-                  print('GZIP_OK',len(text),hashlib.sha256(out).hexdigest())
-                  return text
+                  candidate=out.decode('utf-8')
+                  print('GZIP_UTF8_OK chars',len(candidate),'sha',hashlib.sha256(out).hexdigest())
+                  winner=label; text=candidate; winning_encoded=enc
+                  break
               except Exception as e:
                   print('FAIL',type(e).__name__,repr(str(e)))
-                  return None
+          if text is None: raise SystemExit('Neither chunk ordering reconstructs a complete gzip payload.')
 
-          # Verify each sequential prefix remains a valid gzip stream prefix.
-          for end in range(1,6):
-              c=pf+b''.join(p[f'{i:02d}'] for i in range(1,end+1))
-              test(f'PREFIX_00_TO_{end:02d}',c,allow_partial=True)
-
-          candidates={
-              'PF_PLUS_01_05':pf+b''.join(p[f'{i:02d}'] for i in range(1,6)),
-              'PF_PLUS_01_04_PLUS_SUFFIX_LAST8000':pf+b''.join(p[f'{i:02d}'] for i in range(1,5))+tail8000,
-              'PF_PLUS_01_04_PLUS_SUFFIX_FROM_PART05_HEAD':pf+b''.join(p[f'{i:02d}'] for i in range(1,5))+(suffix[pos:] if pos>=0 else b''),
-              'PF_PLUS_01_10':pf+b''.join(p[f'{i:02d}'] for i in range(1,11)),
-          }
-          winner=None; text=None
-          for label,c in candidates.items():
-              t=test(label,c)
-              if t is not None and winner is None: winner=label; text=t
-          if text is None: raise SystemExit('No complete V10.3 candidate reconstructed.')
           print('\nWINNER',winner)
-
+          print('ENCODED_CHARS',len(winning_encoded))
           markers=['/*__CCG_PAYLOAD_CSS_7C2F__*/','/*__CCG_PAYLOAD_CORE_19A4__*/','/*__CCG_PAYLOAD_GAME_37B1__*/','/*__CCG_PAYLOAD_MOBILE_8E5C__*/']
           print('MARKERS',{m:text.count(m) for m in markers})
+
           def compact(s): return re.sub(r'\s+',' ',s).strip()
-          def contexts(label,pat,max_hits=12,radius=230):
+          def contexts(label,pat,max_hits=14,radius=250):
               hits=list(re.finditer(pat,text,re.I)); print('\n===',label,'count',len(hits),'===')
               seen=[]
               for m in hits:
@@ -97,6 +70,7 @@ jobs:
                   if ctx.lower() not in [x.lower() for x in seen]: seen.append(ctx)
                   if len(seen)>=max_hits: break
               for i,x in enumerate(seen,1): print(i,x)
+
           scans=[
             ('VERSION',r'v10(?:\.\d+)?|version|build'),('TITLE_ART',r'lost-sizzler|sizzler\.(?:webp|png|jpg|jpeg|svg)|title(?:Art|Image|Logo)?'),
             ('LIGHT',r'light|visibility|vision|fog|radius'),('TORCH',r'torch|flaming'),('INACTIVITY',r'inactiv|idle|loiter|punish'),('AMMO',r'ammo|ammunition|shots?'),
@@ -113,7 +87,8 @@ jobs:
           for line in text.splitlines():
               if re.search(r'(light|vision|radius|torch|ammo|idle|inactiv|generator|spawn|daily|death|enemy)',line,re.I) and re.search(r'\d',line):
                   s=compact(line)
-                  if len(s)<650: print(s)
+                  if len(s)<750: print(s)
+
           print('\n=== EXACT TEXT COUNTS ===')
-          req=['ROTATE PHONE TO LANDSCAPE','RECOVER YOUR STASH','XP LOST','Q = TORCH','Banishment Flask','Void Stalker','Death Stalker','Daily Dungeon','Rulebook','Donate','Create Room','Join Room','room code','SIGIL']
+          req=['ROTATE PHONE TO LANDSCAPE','RECOVER YOUR STASH','XP LOST','Q = TORCH','Banishment Flask','Void Stalker','Death Stalker','Daily Dungeon','Rulebook','Donate','Create Room','Join Room','room code','SIGIL','lost-sizzler.webp']
           for s in req: print(repr(s),text.lower().count(s.lower()))
