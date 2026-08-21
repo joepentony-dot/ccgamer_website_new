@@ -81,7 +81,7 @@
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
         <p id="collection-summary" class="collection-summary">Banked C64 collection: 0 distinct games rescued on this browser.</p>
-        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Daily Dungeon uses one local/browser attempt per day, Arcade rules, and death ends the attempt. Sound begins when play starts.</p>
+        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE FIRE • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER FIRE • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
       </div>
     </div>
@@ -93,7 +93,7 @@
     <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
       <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
       <p id="artefact-choice-name">Choose how to convert this rare reward.</p>
-      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Daily Dungeon rankings</span></button><button id="artefact-xp-btn"><b>2,000 XP</b><span>Best for faster run progression</span></button></div>
+      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Weekly Vault rankings</span></button><button id="artefact-xp-btn"><b>2,000 XP</b><span>Best for faster run progression</span></button></div>
     </div></div>
 
     <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
@@ -132,7 +132,7 @@
         <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Normal weapons cannot kill it. Trade 3 artefacts for a Banishment Flask, press B nearby, then choose 10,000 score or 2,000 XP.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies use open doors but cannot open them. Press C beside an open door to close it. Cracked walls hide reduced, off-centre secrets.</p></section>
         <section><div class="rulebook-icon">★</div><h3>LOOT &amp; SURVIVAL</h3><p>E drinks a potion, Q lights a torch, R casts Teleport, Tab manages six stacks. Shops remain marked after discovery.</p></section>
-        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; DAILY RUNS</h3><p>Normal death halves score and leaves a recoverable cache. Daily Dungeon death ends that day’s attempt. XP stops completely at the floor cap.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death halves score and leaves a recoverable cache. Weekly Vault death ends that week’s attempt. XP stops completely at the floor cap.</p></section>
         <section><div class="rulebook-icon">?</div><h3>OPTIONAL CHALLENGES</h3><p>Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
       </div>
       <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
