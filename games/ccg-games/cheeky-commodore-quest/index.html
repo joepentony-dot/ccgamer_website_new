@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09040f">
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="Play Cheeky Commodore Quest: The Lost Sizzler, a neon procedural arcade dungeon adventure from Cheeky Commodore Gamer.">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/cheeky-commodore-quest/">
+  <title>Cheeky Commodore Quest — The Lost Sizzler</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/game.css">
+</head>
+<body data-game-ready="false">
+<main class="ccg-game">
+  <header class="topbar v102-topbar">
+    <div class="brand v102-brand">
+      <img src="assets/ccgamer-logo-fallback.svg" alt="Cheeky Commodore Gamer">
+      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.3</p></div>
+    </div>
+    <div class="system-buttons">
+      <span id="net-status" class="status">SOLO</span>
+      <span class="build-badge">BUILD V10.3</span>
+      <button id="sound-btn" class="sound-toggle" type="button">SOUND ON</button>
+      <button id="fullscreen-btn" class="sound-toggle" type="button">FULLSCREEN</button>
+      <button id="quit-btn" class="sound-toggle danger-toggle" type="button">QUIT</button>
+    </div>
+  </header>
+
+  <section class="critical-strip" aria-label="Critical controls and carried essentials">
+    <div class="critical-card potion-card"><kbd>E</kbd><div><b>POTION</b><strong id="quick-potion">0 HELD</strong><span>FAST HEAL</span></div></div>
+    <div class="critical-card torch-card"><kbd>Q</kbd><div><b>TORCH</b><strong id="quick-utility">0 HELD</strong><span>LIGHT THE DUNGEON</span></div></div>
+    <div class="critical-card keys-card"><svg class="keyring-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="10" r="4"/><path d="M11 10h10M17 10v4M20 10v3"/></svg><div><b>KEYS HELD</b><strong id="hud-bronze">0</strong><span id="quick-keyring">MAIN 0/3 • BRONZE 0 • SIGIL 0</span></div></div>
+    <div class="critical-card inventory-card"><kbd>TAB</kbd><div><b>INVENTORY</b><strong>6 STACK SLOTS</strong><span>OBJECTIVE · ITEM INFO · DOSSIER</span></div></div>
+    <div id="banish-alert" class="banish-context hidden" aria-live="assertive"><kbd>B</kbd><div><b>BANISHMENT READY</b><span id="banish-alert-text">DEATH STALKER IN RANGE — PRESS B</span></div></div>
+  </section>
+
+  <section class="mission v102-mission">
+    <strong>MISSION</strong><span id="mission-text">Explore the dungeon.</span>
+  </section>
+  <div id="fullscreen-hint" class="fullscreen-hint"><b>NOT FULLSCREEN</b> — STARTING A RUN WILL REQUEST FULLSCREEN · PRESS <kbd>F</kbd> IF NEEDED</div>
+
+  <section class="tactical-zone" aria-label="Dungeon intelligence">
+    <section class="reference-card radar-card v102-radar-card">
+      <h3>TACTICAL RADAR — TRACKING VIEW</h3>
+      <canvas id="radar-canvas" width="480" height="240" aria-label="Explored dungeon radar"></canvas>
+      <div class="radar-legend"><span><i class="radar-player"></i>YOU</span><span><i class="radar-sigil"></i><b id="radar-sigil-label">SIGIL</b></span><span><i class="radar-shop"></i>SHOP</span><span><i class="radar-cache"></i>DEATH CACHE</span><span><i class="radar-exit"></i>EXIT</span></div>
+    </section>
+    <section class="reference-card dossier-card">
+      <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
+      <div id="named-enemy-guide" class="named-enemy-guide"></div>
+      <div class="reference-tip"><b>Death Stalker:</b> collect 3 artefacts, trade for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
+    </section>
+  </section>
+
+  <section class="game-area v102-game-area">
+    <div class="canvas-wrap">
+      <canvas id="game" width="1280" height="720" aria-label="Cheeky Commodore Quest"></canvas>
+    </div>
+    <aside class="game-message-rail" aria-label="Live dungeon reports">
+      <div class="game-message-context"><b>CURRENT ROOM</b><span id="surroundings">C64 Archive — visibility is limited until you find a torch.</span></div>
+      <div id="pickup-toast" class="pickup-toast" aria-live="polite"><b id="pickup-title">DUNGEON READY</b><span id="pickup-text">Important discoveries and warnings appear here.</span></div>
+      <p id="message" class="game-message-line">The dungeon is listening. This is rarely a positive sign.</p>
+      <div id="quest-list" class="quest-list game-quest-list"></div>
+    </aside>
+    <div id="menu" class="overlay">
+      <div class="panel">
+        <img class="hero-logo" src="assets/lost-sizzler.webp" alt="The Lost Sizzler">
+        <h2>The Lost Sizzler</h2>
+        <p>A multi-floor arcade dungeon crawl with procedural rooms, fog, locked routes, shootable switches, traps, monster generators, rare artefacts, XP, death recovery, a reinforced Sigil gauntlet, optional puzzle chambers and things in the dark that require more than ordinary ammunition.</p>
+        <div class="feature-strip">
+          <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
+          <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
+          <span><b>DEATH STALKERS</b>Artefacts can buy a Banishment Flask. When one gets close enough, the contextual B prompt appears.</span>
+        </div>
+        <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
+        <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
+        <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Daily Dungeon — Same Challenge Today</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
+        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button></div>
+        <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
+        <p id="collection-summary" class="collection-summary">Permanent C64 collection: 0 games rescued.</p>
+        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Daily Dungeon uses one local/browser attempt per day, Arcade rules, and death ends the attempt. Sound begins when play starts.</p>
+        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE FIRE • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER FIRE • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
+      </div>
+    </div>
+
+    <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>The monsters have reluctantly agreed to wait. Count Loadula has not signed anything.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button></div></div></div>
+
+    <div id="level-up" class="overlay hidden"><div class="panel compact"><h2>Level Up</h2><p id="level-up-copy">Choose an upgrade.</p><div id="level-up-choices" class="choice-grid"></div></div></div>
+
+    <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
+      <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
+      <p id="artefact-choice-name">Choose how to convert this rare reward.</p>
+      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Daily Dungeon rankings</span></button><button id="artefact-xp-btn"><b>2,000 XP</b><span>Best for faster run progression</span></button></div>
+    </div></div>
+
+    <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
+
+
+    <div id="shop-panel" class="overlay hidden"><div class="panel v10-info-panel shop-panel-card">
+      <h2 id="shop-title">Dungeon Supply Shop</h2>
+      <p id="shop-copy">Choose what you actually need. Score-priced stock becomes more expensive after each purchase at this shop.</p>
+      <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ARTEFACTS <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
+      <div id="shop-items" class="shop-grid"></div>
+      <p class="shop-note">Each shop carries one of every score item. Prices rise by 1000 after each purchase and reset at a different shop. Stock: Potion, Torch, Teleport Spell, Ammo, Armour and Weapon Cache. The Banishment Flask costs 3 artefacts.</p>
+      <button id="shop-close" class="primary">Leave Shop</button>
+    </div></div>
+
+    <div id="save-panel" class="overlay hidden"><div class="panel compact save-panel-card">
+      <h2 id="save-title">Floor Checkpoint</h2>
+      <p id="save-copy">Save this floor-entry checkpoint so you can continue another day.</p>
+      <div class="menu-buttons"><button id="save-now-btn" class="primary">Save Checkpoint</button><button id="save-continue-btn">Continue Without Saving</button><button id="save-return-btn" class="hidden">Save &amp; Return to Menu</button></div>
+      <small id="save-note">Saves are floor-entry checkpoints rather than mid-room quick saves.</small>
+    </div></div>
+
+    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><h2>Inventory & Objective</h2><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>Six stack slots. Matching consumables and artefacts share a slot with an ×N counter. The icons below match the symbols used on the dungeon floor.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 6</button><button id="inventory-close" class="primary">Close</button></div></div></div>
+
+    <div id="item-info-panel" class="overlay hidden sub-overlay"><div class="panel compact item-info-card"><div id="item-info-icon" class="item-info-hero"></div><h2 id="item-info-title">Item</h2><div id="item-info-text" class="item-info-copy"></div><button id="item-info-close" class="primary">Back to Inventory</button></div></div>
+
+    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><h2>Named Enemy Dossier</h2><p>All six named enemies. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
+
+
+    <div id="rulebook-panel" class="overlay hidden"><div class="panel v10-info-panel">
+      <h2>Objectives &amp; Rulebook</h2>
+      <p class="rulebook-lead">One route, three clear steps. Optional rooms make you stronger; they never block the exit.</p>
+      <div class="rulebook-grid rulebook-cards">
+        <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
+        <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL CHAMBER</h3><p>Enter the opened gate. It locks and summons two named enemies. Defeat every defender, then collect the Exit Sigil.</p></section>
+        <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Normal weapons cannot kill it. Trade 3 artefacts for a Banishment Flask, press B nearby, then choose 10,000 score or 2,000 XP.</p></section>
+        <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies use open doors but cannot open them. Press C beside an open door to close it. Cracked walls hide reduced, off-centre secrets.</p></section>
+        <section><div class="rulebook-icon">★</div><h3>LOOT &amp; SURVIVAL</h3><p>E drinks a potion, Q lights a torch, R casts Teleport, Tab manages six stacks. Shops remain marked after discovery.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; DAILY RUNS</h3><p>Normal death halves score and leaves a recoverable cache. Daily Dungeon death ends that day’s attempt. XP stops completely at the floor cap.</p></section>
+        <section><div class="rulebook-icon">?</div><h3>OPTIONAL CHALLENGES</h3><p>Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
+      </div>
+      <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
+    </div></div>
+
+    <div id="support-panel" class="overlay hidden"><div class="panel v10-info-panel support-panel-card">
+      <h2>Support / Donate / Share</h2>
+      <p>Cheeky Commodore Gamer remains free to use. These are the same existing CCG support destinations used by the website.</p>
+      <div class="support-grid">
+        <a href="https://www.patreon.com/CheekyCommodoreGamer?utm_campaign=creatorshare_creator" target="_blank" rel="noopener noreferrer"><b>Patreon</b><span>Early access and behind-the-scenes CCG support.</span></a>
+        <a href="https://www.youtube.com/@CheekyCommodoreGamer/join" target="_blank" rel="noopener noreferrer"><b>YouTube Membership</b><span>Support CCG without leaving YouTube.</span></a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer"><b>Buy Joe a Beer</b><span>Optional one-off PayPal contribution.</span></a>
+        <a href="https://www.cheekycommodoregamer.co.uk/support.html" target="_blank" rel="noopener noreferrer"><b>CCG Support Page</b><span>View the current support information on the main site.</span></a>
+      </div>
+      <div class="menu-buttons"><button id="share-btn">Share Cheeky Commodore Quest</button><button id="support-close-btn" class="primary">Close</button></div>
+      <p class="support-note">Watching, commenting and sharing also helps and costs nothing.</p>
+    </div></div>
+
+    <div id="end" class="overlay hidden"><div class="panel compact"><h2 id="end-title">Run Complete</h2><p id="end-text"></p><button id="again-btn" class="primary">Return to Menu</button></div></div>
+  </section>
+
+  <section class="player-hub" aria-label="Player combat hub">
+    <div class="core-stats">
+      <div class="hub-stat health-stat"><span>HEALTH</span><b id="hud-health">8/8</b></div>
+      <div class="hub-stat armour-stat"><span>ARMOUR</span><b id="hud-p2">ARM 0</b></div>
+      <div class="hub-stat ammo-stat"><span>AMMO</span><b id="hud-mana">120/120</b></div>
+      <div class="hub-stat weapon-stat"><span>WEAPON</span><b id="hud-weapon">PULSE</b></div>
+    </div>
+    <div class="hub-inventory">
+      <div class="hub-inventory-head"><b>QUICK INVENTORY — STACKS</b><span id="quick-specials">NO SPECIAL ITEMS</span></div>
+      <div id="quick-slots" class="quick-slots" aria-label="Inventory stack slots"></div>
+    </div>
+    <div class="hub-progress">
+      <div class="priority-xp">
+        <div class="priority-xp-head"><b id="quick-level">LEVEL 1</b><strong id="quick-xp-text">XP TOTAL 0</strong></div>
+        <div class="xp-track"><i id="quick-xp-fill"></i></div>
+        <small id="quick-xp-next">515 TO NEXT · FLOOR CAP 5</small>
+      </div>
+      <div class="run-stat"><span>OBJECTIVE</span><b id="hud-keys">0/3</b></div>
+      <div class="run-stat"><span>SCORE</span><b id="hud-score">000000</b></div>
+      <div class="run-stat"><span>FLOOR</span><b id="hud-room">F1</b></div>
+    </div>
+    <aside class="hub-telemetry" aria-label="Combat telemetry">
+      <div><span>WEAPON POWER</span><b id="hud-power">1</b></div>
+      <div><span>ENEMIES SLAIN</span><b id="hud-kills">0</b></div>
+      <div><span>RUN TIME</span><b id="hud-time">00:00</b></div>
+      <div><span>ALERT</span><b id="hud-alert">0%</b></div>
+    </aside>
+    <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
+  </section>
+</main>
+<script src="js/avatar-data.js"></script>
+<script src="js/config.js"></script>
+<script src="js/progression.js"></script>
+<script src="js/audio-assets.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/network.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/game-core.js"></script>
+<script src="js/game-network.js"></script>
+<script src="js/game-play.js"></script>
+<script src="js/game-render.js"></script>
+<script src="js/game-main.js"></script>
+</body>
+</html>
