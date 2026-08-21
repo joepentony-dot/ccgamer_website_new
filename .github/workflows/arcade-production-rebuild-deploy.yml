@@ -1,0 +1,60 @@
+name: Arcade Production Rebuild Apply
+
+on:
+  push:
+    branches:
+      - codex/arcade-production-rebuild-20260821
+    paths:
+      - '.ccg-tmp/arcade-production-rebuild.trigger'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout rebuild branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/arcade-production-rebuild-20260821
+          fetch-depth: 0
+
+      - name: Restore production rebuild payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .ccg-tmp/arcade-production-rebuild-part-*.txt | base64 --decode > /tmp/arcade-production-rebuild.zip
+          unzip -o /tmp/arcade-production-rebuild.zip -d .
+
+      - name: Validate rebuild
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check arcade/quest/game/main-v2.js
+          node --check arcade/quest/game/assets-config.js
+          node --check arcade/quest/game/remote-assets.js
+          node --check admin/js/arcade-assets.js
+          node --check scripts/validate-arcade-quest.js
+          node scripts/validate-arcade-quest.js
+
+      - name: Remove one-time transport files
+        shell: bash
+        run: |
+          rm -f .ccg-tmp/arcade-production-rebuild-part-*.txt
+          rm -f .ccg-tmp/arcade-production-rebuild.trigger
+          rm -f .github/workflows/arcade-production-rebuild-deploy.yml
+
+      - name: Commit production rebuild
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No rebuild changes to commit.'
+            exit 0
+          fi
+          git commit -m "Rebuild Commodore Quest production art and mobile play"
+          git push origin HEAD:codex/arcade-production-rebuild-20260821
