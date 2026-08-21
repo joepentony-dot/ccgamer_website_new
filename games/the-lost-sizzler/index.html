@@ -1,78 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09040f">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <title>Cheeky Commodore Quest — Exploration Test Build</title>
-  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/game.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09040f">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Cheeky Commodore Quest: The Lost Sizzler — Website Test Build</title>
+<meta name="description" content="Unlisted website test build of Cheeky Commodore Quest: The Lost Sizzler, the later five-floor C64-inspired browser dungeon crawler with procedural rooms, puzzles, loot and co-op.">
+<meta property="og:title" content="Cheeky Commodore Quest: The Lost Sizzler — Website Test Build">
+<meta property="og:description" content="Unlisted hands-on test build of the later five-floor dungeon crawler iteration.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.cheekycommodoregamer.co.uk/games/the-lost-sizzler/">
+<meta property="og:image" content="https://www.cheekycommodoregamer.co.uk/resources/images/og/c64_neon.png">
+<meta name="twitter:card" content="summary_large_image">
+<script src="/js/analytics.js" defer></script>
 </head>
 <body data-game-ready="false">
-<main class="ccg-game">
-  <header class="topbar">
-    <div class="brand">
-      <img src="/resources/images/ccgamer-logo.png" onerror="this.onerror=null;this.src='assets/ccgamer-logo-fallback.svg'" alt="Cheeky Commodore Gamer">
-      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — EXPLORATION TEST BUILD</p></div>
-    </div>
-    <div class="hud">
-      <div><b id="hud-health">8/8</b><span>P1 HEALTH</span></div>
-      <div><b id="hud-p2">ARM 0</b><span>P2 / ARMOUR</span></div>
-      <div><b id="hud-mana">60/60</b><span>P1 AMMO</span></div>
-      <div><b id="hud-keys">0/3</b><span>VAULT KEYS</span></div>
-      <div><b id="hud-bronze">0</b><span>BRONZE KEYS</span></div>
-      <div><b id="hud-weapon">LV1</b><span>WEAPON</span></div>
-      <div><b id="hud-score">000000</b><span>SCORE</span></div>
-      <div><b id="hud-room">SOLO</b><span>MODE</span></div>
-    </div>
-  </header>
-  <section class="mission">
-    <strong>MISSION</strong><span id="mission-text">Find three vault keys, then reach the purple exit.</span>
-    <span id="net-status" class="status">SOLO</span>
-    <button id="sound-btn" class="sound-toggle" type="button">SOUND ON</button>
-    <button id="fullscreen-btn" class="sound-toggle" type="button">FULLSCREEN</button>
-  </section>
-  <section class="game-area">
-    <canvas id="game" width="1280" height="720" aria-label="Cheeky Commodore Quest"></canvas>
-    <div id="pickup-toast" class="pickup-toast" aria-live="polite"><b id="pickup-title"></b><span id="pickup-text"></span></div>
-    <div id="menu" class="overlay">
-      <div class="panel">
-        <img class="hero-logo" src="/resources/images/ccgamer-logo.png" onerror="this.onerror=null;this.src='assets/ccgamer-logo-fallback.svg'" alt="Cheeky Commodore Gamer">
-        <h2>The Lost Sizzler</h2>
-        <p>A much larger procedural dungeon with logical rooms and corridors, strict fog-of-war, torchlight, locked doors and chests, weapon upgrades, armour, potions, aggressive enemies and friendly-fire co-op.</p>
-        <div class="feature-strip">
-          <span><b>ROOM + SIGHT AI</b>Enemies wake when they see you or share your room</span>
-          <span><b>LOCAL 2P</b>Split-screen on one keyboard with friendly fire</span>
-          <span><b>BIG BSP DUNGEON</b>More rooms, locked branches, chests, upgrades and secrets</span>
-        </div>
-        <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
-        <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
-        <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
-        <p id="menu-note" class="note">Sound begins when the game starts. Local split-screen works on one machine. Room codes still work between browser tabs locally and will use CCG Supabase Realtime on the website.</p>
-        <div class="keys-help"><kbd>P1: WASD / ARROWS • SPACE FIRE • L-SHIFT DASH • E POTION</kbd><kbd>P2: IJKL • ENTER FIRE • R-CTRL DASH • O POTION</kbd><kbd>P PAUSE • M SOUND • F FULLSCREEN</kbd></div>
-      </div>
-    </div>
-    <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>Even Swanh8ter has stopped moving. Make the most of it.</p><button id="resume-btn" class="primary">Resume</button></div></div>
-    <div id="end" class="overlay hidden"><div class="panel compact"><h2 id="end-title">Vault Cleared</h2><p id="end-text"></p><button id="again-btn" class="primary">Play Again</button></div></div>
-  </section>
-  <section class="lower">
-    <div><h3>CCG COMMENTARY</h3><p id="message">Find the keys. Keep an ear out for anything moving in the dark.</p></div>
-    <div><h3>SIDE QUESTS</h3><div id="quest-list"></div></div>
-    <div><h3>LOADOUT</h3><div id="loadout">Weapon LV1 • Armour 0 • Potions 0</div><div id="player-list"></div></div>
-    <div><h3>SURROUNDINGS</h3><p id="surroundings">C64 Archive — visibility is limited until you find a torch.</p></div>
-  </section>
-</main>
-<script src="js/avatar-data.js"></script>
-<script src="js/config.js"></script>
-<script src="js/audio.js"></script>
-<script src="js/world.js"></script>
-<script src="js/network.js"></script>
-<script src="js/ai.js"></script>
-<script src="js/game-core.js"></script>
-<script src="js/game-network.js"></script>
-<script src="js/game-play.js"></script>
-<script src="js/game-render.js"></script>
-<script src="js/game-main.js"></script>
+<div id="ccg-game-loading" style="min-height:100vh;display:grid;place-items:center;background:#050307;color:#ffd85a;font:700 14px monospace;text-align:center;padding:24px">LOADING THE LOST SIZZLER TEST BUILD…</div>
+<script src="loader.js"></script>
 </body>
 </html>
