@@ -11,7 +11,7 @@
 | Platform routes registered | **2** |
 | Total archive entries managed in static registry | **18** |
 | New archive entries appended this run | **0** |
-| Existing non-archive registry entries preserved in order | **296** |
+| Existing non-archive registry entries preserved in order | **298** |
 
 ## Discovery integration
 
