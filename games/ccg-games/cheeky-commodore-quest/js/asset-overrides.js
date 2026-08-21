@@ -19,25 +19,20 @@ window.CCG_ASSET_OVERRIDES={
 /* V10.4 is intentionally loaded after the established V10.3 engine. */
 window.addEventListener("load",()=>{
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
-  const gameplay=document.createElement("script");
-  gameplay.src="js/v10-4-patch.js";
-  gameplay.dataset.ccgLostSizzlerV104="true";
-  gameplay.async=false;
-  gameplay.onload=()=>{
-    if(document.querySelector('script[data-ccg-lost-sizzler-cache-v104="true"]'))return;
-    const cache=document.createElement("script");
-    cache.src="js/v10-4-death-cache.js";
-    cache.dataset.ccgLostSizzlerCacheV104="true";
-    cache.async=false;
-    cache.onload=()=>{
-      if(document.querySelector('script[data-ccg-lost-sizzler-final-v104="true"]'))return;
-      const finalUi=document.createElement("script");
-      finalUi.src="js/v10-4-final-ui.js";
-      finalUi.dataset.ccgLostSizzlerFinalV104="true";
-      finalUi.async=false;
-      document.body.appendChild(finalUi);
-    };
-    document.body.appendChild(cache);
+  const queue=[
+    ["js/v10-4-patch.js","ccgLostSizzlerV104"],
+    ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
+    ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
+    ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"]
+  ];
+  const loadNext=index=>{
+    if(index>=queue.length)return;
+    const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+    if(document.querySelector(selector)){loadNext(index+1);return}
+    const script=document.createElement("script");
+    script.src=src;script.dataset[key]="true";script.async=false;
+    script.onload=()=>loadNext(index+1);
+    document.body.appendChild(script);
   };
-  document.body.appendChild(gameplay);
+  loadNext(0);
 },{once:true});
