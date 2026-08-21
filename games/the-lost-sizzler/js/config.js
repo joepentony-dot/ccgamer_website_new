@@ -1,0 +1,89 @@
+window.CCG_CONFIG=Object.freeze({
+  tile:28,
+  worldWidth:128,
+  worldHeight:84,
+  keyTarget:3,
+  maxPlayers:4,
+  logoAsset:"/resources/images/ccgamer-logo.png",
+  logoFallback:"assets/ccgamer-logo-fallback.svg",
+  player:{
+    maxHealth:8,
+    maxMana:60,
+    moveDelay:92,
+    fireDelay:175,
+    dashDelay:420,
+    maxProjectiles:5,
+    sightRadius:5,
+    torchRadius:10,
+    torchMs:24000
+  },
+  enemy:{
+    thinkDelay:90,
+    lineOfSightRange:14,
+    torchSightRange:20,
+    contactRange:1,
+    alertMemory:{
+      scout:2300,
+      hunter:4200,
+      ambusher:3000,
+      guard:2400,
+      charger:3200,
+      ranger:3200,
+      root:3500,
+      cook:3100,
+      firebreather:3200,
+      ghost:2600
+    },
+    searchTime:3000,
+    idleStepMin:1900,
+    idleStepMax:3400,
+    chaseStep:{
+      scout:620,
+      hunter:430,
+      ambusher:500,
+      guard:999999,
+      charger:300,
+      ranger:620,
+      root:680,
+      cook:720,
+      firebreather:520,
+      ghost:560
+    }
+  },
+  camping:{
+    graceMs:10000,
+    warningMs:650,
+    blastIntervalMs:650,
+    resetDistance:6,
+    blastRadius:1.75,
+    zoneRadius:3,
+    damage:2,
+    directBlastEvery:3
+  },
+  dungeon:{
+    minLeaf:18,
+    maxLeaf:32,
+    roomMargin:3,
+    targetRooms:34,
+    maxLockedBranches:8,
+    chestCount:14
+  },
+  followerElites:[
+    {name:"Peter Cortens",initials:"PC",kind:"hunter",hp:9,avatar:"embedded:Peter Cortens"},
+    {name:"Swanh8ter",initials:"SH",kind:"charger",hp:7,avatar:"embedded:Swanh8ter"},
+    {name:"Syragar",initials:"SY",kind:"ranger",hp:7,avatar:"embedded:Syragar"},
+    {name:"Parsnip Celery",initials:"PS",kind:"root",hp:8,avatar:"embedded:Parsnip Celery"},
+    {name:"CPU",initials:"CPU",kind:"cook",hp:10,avatar:"embedded:CPU"},
+    {name:"Yoshi Yoshi",initials:"YY",kind:"firebreather",hp:8,avatar:"embedded:Yoshi Yoshi"}
+  ],
+  c64Loot:[
+    "Impossible Mission","Wizball","Paradroid","Boulder Dash",
+    "Bruce Lee","Uridium","The Last Ninja","Bubble Bobble",
+    "IK+","Turrican","Armalyte","Mayhem in Monsterland"
+  ],
+  roomThemes:[
+    "C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY",
+    "CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE",
+    "CARTRIDGE_BAY","CRACKED_INTRO"
+  ]
+});
