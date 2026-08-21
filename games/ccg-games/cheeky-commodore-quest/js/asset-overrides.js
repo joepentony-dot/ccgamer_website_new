@@ -23,7 +23,8 @@ window.addEventListener("load",()=>{
     ["js/v10-4-patch.js","ccgLostSizzlerV104"],
     ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
     ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
-    ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"]
+    ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
+    ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;
