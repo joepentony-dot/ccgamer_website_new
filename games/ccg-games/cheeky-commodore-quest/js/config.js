@@ -5,7 +5,7 @@ window.CCG_CONFIG=Object.freeze({
   keyTarget:3,
   maxPlayers:4,
   maxFloors:5,
-  levelCaps:[5,8,11,14,18],
+  levelCaps:[5,10,15,20,25],
   logoAsset:"assets/ccgamer-logo-fallback.svg",
   logoFallback:"assets/ccgamer-logo-fallback.svg",
   player:{
@@ -25,7 +25,7 @@ window.CCG_CONFIG=Object.freeze({
     hitDamage:3,stunOnShotMs:500,spawnDelayMs:42000,musicKey:"count-loadula-default",
     banishVulnerableMs:12000,banishHpBase:8,flaskArtefacts:3,banishedRespawnMs:30000,banishPromptDistance:8
   },
-  camping:{graceMs:60000,warningMs:650,blastIntervalMs:650,resetDistance:6,blastRadius:1.75,zoneRadius:3,damage:2,directBlastEvery:3},
+  camping:{graceMs:60000,warningMs:650,blastIntervalMs:650,resetDistance:6,zoneRadius:3,damage:2,directBlastEvery:3},
   dungeon:{minLeaf:18,maxLeaf:32,roomMargin:3,targetRooms:34,maxLockedBranches:8,chestCount:10,secretRooms:3,secretPassages:2,sanctuaryRooms:2,wallTorchRooms:5,trapCount:20,generatorCount:3,generatorSpawnCap:3,sigilDefendersMin:3,standardEnemyTarget:44,ammoPacks:24,furnitureMin:5,furnitureMax:9,grandHallCount:1,boulderFloor:4,clueFloor:2,memoryPuzzleFloor:3,torchPuzzleFloor:4,weightBridgeFloor:5},
   loot:{rarities:["COMMON","UNCOMMON","SIZZLER","GOLD MEDAL","ZZAP! 97%"]},
   difficulty:{
