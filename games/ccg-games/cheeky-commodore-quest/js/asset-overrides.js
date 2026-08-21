@@ -15,3 +15,12 @@ window.CCG_ASSET_OVERRIDES={
     sfx:{}
   }
 };
+
+/* V10.4 is intentionally loaded after the established V10.3 engine. */
+window.addEventListener("load",()=>{
+  if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+  const s=document.createElement("script");
+  s.src="js/v10-4-patch.js";
+  s.dataset.ccgLostSizzlerV104="true";
+  document.body.appendChild(s);
+},{once:true});
