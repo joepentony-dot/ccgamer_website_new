@@ -1,17 +1,21 @@
 name: Arcade Production Rebuild Apply
 
 on:
-  push:
-    branches:
-      - codex/arcade-production-rebuild-20260821
+  pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - '.ccg-tmp/arcade-production-rebuild.trigger'
+      - '.github/workflows/arcade-production-rebuild-deploy.yml'
+      - 'scripts/arcade-rebuild-assets.py'
+      - 'scripts/arcade-rebuild-main.py'
+      - 'scripts/arcade-rebuild-admin-mobile.py'
 
 permissions:
   contents: write
 
 jobs:
   apply:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'codex/arcade-production-rebuild-20260821'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout rebuild branch
