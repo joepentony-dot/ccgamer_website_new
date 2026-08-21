@@ -19,10 +19,10 @@ jobs:
       - name: Check out audit branch
         uses: actions/checkout@v4
 
-      - name: Reconstruct final V10.3 payload and audit features
+      - name: Exhaustively reconstruct V10.3 and audit features
         shell: python
         run: |
-          import base64, gzip, hashlib, re, subprocess, zlib
+          import base64, gzip, hashlib, itertools, re, subprocess, zlib
           release='origin/release/commodore-quest-v10-3-public'
           subprocess.run(['git','fetch','origin','release/commodore-quest-v10-3-public:refs/remotes/origin/release/commodore-quest-v10-3-public','--depth=30'],check=True)
           base='games/commodore-quest/payload-parts/'
@@ -31,36 +31,47 @@ jobs:
           def clean(x): return bytes(b for b in x if b not in ws)
           p={f'{i:02d}':clean(get(f'part-{i:02d}.txt')) for i in range(11)}
           pf=clean(get('probe-formatted.txt'))
+          fixed=pf+b''.join(p[f'{i:02d}'] for i in range(1,5))
+          print('FIXED_PREFIX_CHARS',len(fixed),'sha',hashlib.sha256(fixed).hexdigest())
+          # Confirm fixed prefix itself is a valid gzip prefix.
+          fixed_packed=base64.b64decode(fixed,validate=True)
+          d=zlib.decompressobj(16+zlib.MAX_WBITS)
+          fixed_out=d.decompress(fixed_packed)
+          print('FIXED_PREFIX_STREAM_OK out',len(fixed_out),'eof',d.eof,'tail',repr(fixed_out[-120:]))
 
-          orders={
-            'COMMIT_ORDER':['01','02','03','04','05','06','07','08','09','10'],
-            'MIDDLE_THEN_TAIL':['01','02','03','04','06','07','08','09','10','05'],
-          }
-          winner=None; text=None; winning_encoded=None
-          for label,order in orders.items():
-              enc=pf+b''.join(p[x] for x in order)
+          unresolved=['05','06','07','08','09','10']
+          successes=[]; deepest=[]
+          for idx,perm in enumerate(itertools.permutations(unresolved),1):
+              enc=fixed+b''.join(p[x] for x in perm)
               encpad=enc+b'='*((-len(enc))%4)
-              print('\nCANDIDATE',label,'order',order,'chars',len(enc),'mod4',len(enc)%4,'pad',(-len(enc))%4,'enc_sha',hashlib.sha256(enc).hexdigest())
               try:
                   packed=base64.b64decode(encpad,validate=True)
-                  print('BASE64_OK bytes',len(packed),'sha',hashlib.sha256(packed).hexdigest())
-                  d=zlib.decompressobj(16+zlib.MAX_WBITS)
-                  partial=d.decompress(packed)
-                  print('STREAM out',len(partial),'eof',d.eof,'unused',len(d.unused_data),'tail',repr(partial[-120:]))
-                  out=gzip.decompress(packed)
-                  candidate=out.decode('utf-8')
-                  print('GZIP_UTF8_OK chars',len(candidate),'sha',hashlib.sha256(out).hexdigest())
-                  winner=label; text=candidate; winning_encoded=enc
-                  break
-              except Exception as e:
-                  print('FAIL',type(e).__name__,repr(str(e)))
-          if text is None: raise SystemExit('Neither chunk ordering reconstructs a complete gzip payload.')
+                  dz=zlib.decompressobj(16+zlib.MAX_WBITS)
+                  out=dz.decompress(packed)
+                  score=len(out)
+                  if len(deepest)<12 or score>deepest[-1][0]:
+                      deepest.append((score,perm,dz.eof,repr(out[-80:])))
+                      deepest=sorted(deepest,reverse=True)[:12]
+                  if dz.eof:
+                      # Full gzip validation including CRC/trailer.
+                      full=gzip.decompress(packed)
+                      text=full.decode('utf-8')
+                      successes.append((perm,enc,packed,text))
+                      print('SUCCESS_ORDER',perm,'encoded',len(enc),'packed',len(packed),'text',len(text),'text_sha',hashlib.sha256(full).hexdigest())
+              except Exception:
+                  pass
+          print('PERMUTATIONS_TESTED',idx)
+          print('SUCCESS_COUNT',len(successes))
+          print('DEEPEST_STREAMS')
+          for x in deepest: print(x)
+          if not successes:
+              raise SystemExit('No permutation of parts 05-10 yields a complete valid V10.3 gzip payload.')
+          perm,winning_encoded,packed,text=successes[0]
+          print('\nWINNING_ORDER',('PF','01','02','03','04')+perm)
+          print('ENCODED_CHARS',len(winning_encoded),'ENC_SHA',hashlib.sha256(winning_encoded).hexdigest(),'PACKED_SHA',hashlib.sha256(packed).hexdigest())
 
-          print('\nWINNER',winner)
-          print('ENCODED_CHARS',len(winning_encoded))
           markers=['/*__CCG_PAYLOAD_CSS_7C2F__*/','/*__CCG_PAYLOAD_CORE_19A4__*/','/*__CCG_PAYLOAD_GAME_37B1__*/','/*__CCG_PAYLOAD_MOBILE_8E5C__*/']
           print('MARKERS',{m:text.count(m) for m in markers})
-
           def compact(s): return re.sub(r'\s+',' ',s).strip()
           def contexts(label,pat,max_hits=14,radius=250):
               hits=list(re.finditer(pat,text,re.I)); print('\n===',label,'count',len(hits),'===')
@@ -70,7 +81,6 @@ jobs:
                   if ctx.lower() not in [x.lower() for x in seen]: seen.append(ctx)
                   if len(seen)>=max_hits: break
               for i,x in enumerate(seen,1): print(i,x)
-
           scans=[
             ('VERSION',r'v10(?:\.\d+)?|version|build'),('TITLE_ART',r'lost-sizzler|sizzler\.(?:webp|png|jpg|jpeg|svg)|title(?:Art|Image|Logo)?'),
             ('LIGHT',r'light|visibility|vision|fog|radius'),('TORCH',r'torch|flaming'),('INACTIVITY',r'inactiv|idle|loiter|punish'),('AMMO',r'ammo|ammunition|shots?'),
