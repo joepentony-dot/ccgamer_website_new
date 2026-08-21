@@ -29,6 +29,14 @@ window.addEventListener("load",()=>{
     cache.src="js/v10-4-death-cache.js";
     cache.dataset.ccgLostSizzlerCacheV104="true";
     cache.async=false;
+    cache.onload=()=>{
+      if(document.querySelector('script[data-ccg-lost-sizzler-final-v104="true"]'))return;
+      const finalUi=document.createElement("script");
+      finalUi.src="js/v10-4-final-ui.js";
+      finalUi.dataset.ccgLostSizzlerFinalV104="true";
+      finalUi.async=false;
+      document.body.appendChild(finalUi);
+    };
     document.body.appendChild(cache);
   };
   document.body.appendChild(gameplay);
