@@ -16,7 +16,7 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
-/* V10.4 is intentionally loaded after the established V10.3 engine. */
+/* V10.4/V10.5 layers are loaded after the established engine. */
 window.addEventListener("load",()=>{
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
   const queue=[
@@ -24,7 +24,9 @@ window.addEventListener("load",()=>{
     ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
     ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
     ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
-    ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"]
+    ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
+    ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
+    ["js/v10-5-multiplayer.js","ccgLostSizzlerMultiplayerV105"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;
