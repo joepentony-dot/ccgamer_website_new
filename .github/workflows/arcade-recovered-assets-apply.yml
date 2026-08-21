@@ -66,3 +66,5 @@ jobs:
           fi
           git commit -m "Recover Commodore Quest uploaded assets and ducking"
           git push origin HEAD:codex/arcade-recovered-assets-fix
+
+# Trigger recovery after the workflow is present on the branch.
