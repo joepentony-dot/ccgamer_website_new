@@ -29,6 +29,7 @@
     const originalHurtPlayer=window.hurtPlayer;
     window.hurtPlayer=function hurtPlayerV104SingleCache(){
       const before=activeCaches().map(cache=>cache.id);
+      const beforeSet=new Set(before);
       const deathsBefore=Number(run?.stats?.deaths||0);
       const weekly=Boolean(run?.daily);
       const result=originalHurtPlayer.apply(this,arguments);
@@ -36,10 +37,11 @@
 
       if(!weekly&&deathsAfter>deathsBefore&&host&&Array.isArray(host.deathCaches)){
         const after=activeCaches();
-        const newest=after.length?after[after.length-1]:null;
-        const replaced=before.some(id=>!newest||id!==newest.id);
+        const newlyCreated=after.filter(cache=>!beforeSet.has(cache.id));
+        const newest=newlyCreated.length?newlyCreated[newlyCreated.length-1]:null;
+        const previousWasLost=before.length>0;
         removeAllDeathCachesExcept(newest);
-        if(replaced)previousCacheLostPopup();
+        if(previousWasLost)previousCacheLostPopup();
       }
       return result;
     };
