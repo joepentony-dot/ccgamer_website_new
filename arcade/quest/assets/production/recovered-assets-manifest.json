@@ -1,0 +1,277 @@
+{
+  "assets": [
+    {
+      "destination": "fighter/tiertex-idle.png",
+      "outputSha256": "7df4f789f0498c9dfbd78192c0b66ef119e17b23f41845cdf8c9e6aeba76f8c5",
+      "source": "fighter/enemy/1787258700065-tiertex-idle.png",
+      "sourceSha256": "7df4f789f0498c9dfbd78192c0b66ef119e17b23f41845cdf8c9e6aeba76f8c5",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "fighter/tiertex-punch.png",
+      "outputSha256": "a39737f23215ddb6923482b82d2ea1fbbe9c11785fa1adb47c95c9c1d698295b",
+      "source": "fighter/enemyPunch/1787258720490-tiertex-punch.png",
+      "sourceSha256": "a39737f23215ddb6923482b82d2ea1fbbe9c11785fa1adb47c95c9c1d698295b",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "fighter/tiertex-kick.png",
+      "outputSha256": "cb18978cda1aca754126e8ebd01559f2c40bbbb0937a24dc2e0ed973b3e24bdc",
+      "source": "fighter/enemyKick/1787258739761-tiertex-kick.png",
+      "sourceSha256": "cb18978cda1aca754126e8ebd01559f2c40bbbb0937a24dc2e0ed973b3e24bdc",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "fighter/tiertex-hit.png",
+      "outputSha256": "e364115c5f6d47710cc10860a848603a8f93ef55d877e6a91ec78a967196c06c",
+      "source": "fighter/enemyHit/1787258762308-tiertex-hit.png",
+      "sourceSha256": "e364115c5f6d47710cc10860a848603a8f93ef55d877e6a91ec78a967196c06c",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "collectibles/tape.png",
+      "outputSha256": "a5d4af3a144a28af7e23e6a188ed266dde1427899e70e64c2ed9134883109829",
+      "source": "collectibles/tape/1787258419343-tape.png",
+      "sourceSha256": "a5d4af3a144a28af7e23e6a188ed266dde1427899e70e64c2ed9134883109829",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "collectibles/disk.png",
+      "outputSha256": "c8710b48def8b76f2de26a71fef4555d95b19b9afdc9a343aa0a7b61a7fc3929",
+      "source": "collectibles/disk/1787258431972-disk.png",
+      "sourceSha256": "c8710b48def8b76f2de26a71fef4555d95b19b9afdc9a343aa0a7b61a7fc3929",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "collectibles/zzap.png",
+      "outputSha256": "36fc23861af600c9dbcf67d57c7b813e6a4a1f3b493daad8cc3e619d012b593e",
+      "source": "collectibles/zzap/1787258444253-zzap.png",
+      "sourceSha256": "36fc23861af600c9dbcf67d57c7b813e6a4a1f3b493daad8cc3e619d012b593e",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "collectibles/joystick.png",
+      "outputSha256": "79359e44288d720eef5e5476d028547f6774540eedd25de94732c4adc0d238a3",
+      "source": "collectibles/joystick/1787258455320-joystick.png",
+      "sourceSha256": "79359e44288d720eef5e5476d028547f6774540eedd25de94732c4adc0d238a3",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "powers/shield.png",
+      "outputSha256": "13296a3e4b2e5373518cbd799819edb517edc6f516ea8108ddfdfa7a88626a00",
+      "source": "powers/shield/1787258495642-shield.png",
+      "sourceSha256": "13296a3e4b2e5373518cbd799819edb517edc6f516ea8108ddfdfa7a88626a00",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "powers/speed.png",
+      "outputSha256": "c12a21e687357a41b62ceb18a8c7cac43fe3fda5768566c45118ccde9b54cae5",
+      "source": "powers/speed/1787258512423-speed.png",
+      "sourceSha256": "c12a21e687357a41b62ceb18a8c7cac43fe3fda5768566c45118ccde9b54cae5",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "powers/double.png",
+      "outputSha256": "a2805a63a8434dd002f5449853efde59c1c4c63d7a118f52055860ff008cbea2",
+      "source": "powers/double/1787258530974-double.png",
+      "sourceSha256": "a2805a63a8434dd002f5449853efde59c1c4c63d7a118f52055860ff008cbea2",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "hazards/bedroom.png",
+      "outputSha256": "3543df78e9e10874cb22ee7fef1490bc7301ffb667d3f589bf8e78290b4d140a",
+      "source": "hazards/bedroom/1787259122445-bedroom.png",
+      "sourceSha256": "3543df78e9e10874cb22ee7fef1490bc7301ffb667d3f589bf8e78290b4d140a",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "hazards/budget.png",
+      "outputSha256": "bb3dee2372a91c42b84aa9cfa149e5779960e2574af632c396393c396ce183ef",
+      "source": "hazards/budget/1787259140321-budget.png",
+      "sourceSha256": "bb3dee2372a91c42b84aa9cfa149e5779960e2574af632c396393c396ce183ef",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "hazards/christmas.png",
+      "outputSha256": "44f57a049d91a3cd69d24dab7b197ec2c3d810ddb0d8a128fde9ee00d937d5f3",
+      "source": "hazards/christmas/1787259064420-christmas.png",
+      "sourceSha256": "44f57a049d91a3cd69d24dab7b197ec2c3d810ddb0d8a128fde9ee00d937d5f3",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "hazards/amiga.png",
+      "outputSha256": "dee66bf73754aeffd17e9725657e942c034429762cb48896e55ccdb33d990c9d",
+      "source": "hazards/amiga/1787259168057-amiga.png",
+      "sourceSha256": "dee66bf73754aeffd17e9725657e942c034429762cb48896e55ccdb33d990c9d",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "hazards/guru.png",
+      "outputSha256": "5a41296e637e75682b6ac59ed8ec7e724cb8e68a6a18be4f69ca0e14b9fb1a62",
+      "source": "hazards/guru/1787259185501-guru.png",
+      "sourceSha256": "5a41296e637e75682b6ac59ed8ec7e724cb8e68a6a18be4f69ca0e14b9fb1a62",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "bosses/bedroom.png",
+      "outputSha256": "7b5985c2053ffaedd89a3ad6b3b7d23e25ea28856b7a83ddb0f8e03787d7426d",
+      "source": "bosses/bedroom/1787259006497-bedroom.png",
+      "sourceSha256": "7b5985c2053ffaedd89a3ad6b3b7d23e25ea28856b7a83ddb0f8e03787d7426d",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "bosses/budget.png",
+      "outputSha256": "f2f6756266cfe19eee2aab10a54525049fd8ce3f1c41cc1b90b0c43e7e0bedd7",
+      "source": "bosses/budget/1787259052191-budget.png",
+      "sourceSha256": "f2f6756266cfe19eee2aab10a54525049fd8ce3f1c41cc1b90b0c43e7e0bedd7",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "bosses/christmas.png",
+      "outputSha256": "2fbdb603c38a8bf5cb4ea87100b15a1e058a4b265f64fbedb36ae56375c4d132",
+      "source": "bosses/christmas/1787259156448-christmas.png",
+      "sourceSha256": "2fbdb603c38a8bf5cb4ea87100b15a1e058a4b265f64fbedb36ae56375c4d132",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "bosses/amiga.png",
+      "outputSha256": "edd1319e86ac9a41b5c04e7e4831c470e787b3d4079c9db26c143c3d506ab0f4",
+      "source": "bosses/amiga/1787259082919-amiga.png",
+      "sourceSha256": "edd1319e86ac9a41b5c04e7e4831c470e787b3d4079c9db26c143c3d506ab0f4",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "bosses/guru.png",
+      "outputSha256": "de296eec09d0e1d79c72b6075ebb942bc96f2727100a74c50f03ee38cbf4c009",
+      "source": "bosses/guru/1787259094994-guru.png",
+      "sourceSha256": "de296eec09d0e1d79c72b6075ebb942bc96f2727100a74c50f03ee38cbf4c009",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/alien-row-1.png",
+      "outputSha256": "f09cb473faa5e923e51c950b9b750e90600a383742e8247667898f6b73b34c93",
+      "source": "invaders/alien1/1787258877050-alien-row-1.png",
+      "sourceSha256": "f09cb473faa5e923e51c950b9b750e90600a383742e8247667898f6b73b34c93",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/alien-row-2.png",
+      "outputSha256": "1e59548fe21752c919d3b55e06e3a57abded2b1d4507b6ebf6b297c1ef3ea08e",
+      "source": "invaders/alien2/1787258887413-alien-row-2.png",
+      "sourceSha256": "1e59548fe21752c919d3b55e06e3a57abded2b1d4507b6ebf6b297c1ef3ea08e",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/alien-row-3.png",
+      "outputSha256": "220f683485c7a6425c00d68a517b6dbf12d364eaddc9ade4924c59db4721eb80",
+      "source": "invaders/alien3/1787258899530-alien-row-3.png",
+      "sourceSha256": "220f683485c7a6425c00d68a517b6dbf12d364eaddc9ade4924c59db4721eb80",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/alien-row-4.png",
+      "outputSha256": "6fd97ccc359fe4289b79449e79cbdcde24a341db87bca51a004521be43980ca8",
+      "source": "invaders/alien4/1787258911862-alien-row-4.png",
+      "sourceSha256": "6fd97ccc359fe4289b79449e79cbdcde24a341db87bca51a004521be43980ca8",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/player-ship.png",
+      "outputSha256": "36b4cae7d77fe18678eaada119f61f5b4e36fef4e2f8ea76a0ba6dbb490a4a15",
+      "source": "invaders/ship/1787258937642-player-ship.png",
+      "sourceSha256": "36b4cae7d77fe18678eaada119f61f5b4e36fef4e2f8ea76a0ba6dbb490a4a15",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/bunker.png",
+      "outputSha256": "da0803b280aa11051c20cebf9c2dadfc3bf5e16e7ba784794be528c7637f1298",
+      "source": "invaders/bunker/1787258951804-bunker.png",
+      "sourceSha256": "da0803b280aa11051c20cebf9c2dadfc3bf5e16e7ba784794be528c7637f1298",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/enemy-shot.png",
+      "outputSha256": "24a6626869446b19f5ce536ae44d2d60b63fe64d1157cb379a438a3c377edecf",
+      "source": "invaders/enemyShot/1787258962941-enemy-shot.png",
+      "sourceSha256": "24a6626869446b19f5ce536ae44d2d60b63fe64d1157cb379a438a3c377edecf",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/player-shot.png",
+      "outputSha256": "8637a834bdabb9cac393bc3a809d85f62555feab2c0cb1eb32225abefad858b8",
+      "source": "invaders/playerShot/1787258977377-player-shot.png",
+      "sourceSha256": "8637a834bdabb9cac393bc3a809d85f62555feab2c0cb1eb32225abefad858b8",
+      "transform": "exact-copy"
+    },
+    {
+      "destination": "invaders/alien-row-5.png",
+      "outputSha256": "6fd97ccc359fe4289b79449e79cbdcde24a341db87bca51a004521be43980ca8",
+      "source": "invaders/alien4/1787258911862-alien-row-4.png",
+      "sourceSha256": "6fd97ccc359fe4289b79449e79cbdcde24a341db87bca51a004521be43980ca8",
+      "transform": "exact-copy-reused-for-fifth-gameplay-row"
+    },
+    {
+      "destination": "enemies/8bit-enemy-sheet.png",
+      "outputSha256": "50d6a2234a44ef54010eb924776a52ae275025c35de56c3856f151c71d6609f4",
+      "source": "spritesheets/enemy/1787258574654-8bit-enemy-sheet.png",
+      "sourceSha256": "6ac046a73edd26fb5da8e88bfc1d916fdf884064568a52c0be03d88e4ab711ee",
+      "transform": "cell-cleanup+horizontal-mirror"
+    },
+    {
+      "destination": "player/cheeky-fight-sheet.png",
+      "outputSha256": "8403f11d67afb660d94a21974a1387dda1b66aea1ae798394e4a556c96c36b1e",
+      "source": "spritesheets/player/1787258799512-cheeky-player-sheet.png",
+      "sourceSha256": "a45c01d2f09759cc6a0f6637f89a9489417cc0a93937f9a2ae80270b298f4510",
+      "transform": "cell-cleanup"
+    },
+    {
+      "destination": "fighter/retsu-sheet.png",
+      "outputSha256": "aab2b96ae2653c5e344291d6ef85bdc2d820aab8a2e453d3ba256bfa9f5681d1",
+      "source": "spritesheets/fighter/1787258645257-tiertex-sheet.png",
+      "sourceSha256": "2ee2c0569a506bf86a5f6ed421cf1b8f06bc384f0288c5a45ea713839cb9ba09",
+      "transform": "cell-cleanup"
+    },
+    {
+      "destination": "bosses/bedroom-sheet.png",
+      "outputSha256": "e9e01599476e1865dca16767013a112fc3f6b98d48b418e65cdbed74d0347bf6",
+      "source": "bosses/bedroom/1787259006497-bedroom.png",
+      "sourceSha256": "7b5985c2053ffaedd89a3ad6b3b7d23e25ea28856b7a83ddb0f8e03787d7426d",
+      "transform": "8-frame-animation-from-isolated-upload"
+    },
+    {
+      "destination": "bosses/budget-sheet.png",
+      "outputSha256": "b2f62f92b85a57bb9562eb91c785835ac525e24df792a6f43faf8f0f5dafbf26",
+      "source": "bosses/budget/1787259052191-budget.png",
+      "sourceSha256": "f2f6756266cfe19eee2aab10a54525049fd8ce3f1c41cc1b90b0c43e7e0bedd7",
+      "transform": "8-frame-animation-from-isolated-upload"
+    },
+    {
+      "destination": "bosses/christmas-sheet.png",
+      "outputSha256": "693ff60c035f5f0ee15327f7a7faa885ab55913761013c23f2d3e046d00343f1",
+      "source": "bosses/christmas/1787259156448-christmas.png",
+      "sourceSha256": "2fbdb603c38a8bf5cb4ea87100b15a1e058a4b265f64fbedb36ae56375c4d132",
+      "transform": "8-frame-animation-from-isolated-upload"
+    },
+    {
+      "destination": "bosses/amiga-sheet.png",
+      "outputSha256": "3bdc873e8007d1b766ed952d7cd032268dad00b519b73678ccaff387b25cb819",
+      "source": "bosses/amiga/1787259082919-amiga.png",
+      "sourceSha256": "edd1319e86ac9a41b5c04e7e4831c470e787b3d4079c9db26c143c3d506ab0f4",
+      "transform": "8-frame-animation-from-isolated-upload"
+    },
+    {
+      "destination": "bosses/guru-sheet.png",
+      "outputSha256": "cab8238a4f380b2d4bbe6905989756ba1294c6ba428723bee532f40b4f7410b3",
+      "source": "bosses/guru/1787259094994-guru.png",
+      "sourceSha256": "de296eec09d0e1d79c72b6075ebb942bc96f2727100a74c50f03ee38cbf4c009",
+      "transform": "8-frame-animation-from-isolated-upload"
+    }
+  ],
+  "policy": {
+    "backgrounds": "Pinned current Admin URLs provide standalone fallback; live runtime may override them from enabled Admin rows.",
+    "gameplayArt": "Recovered upload snapshots are versioned with the game.",
+    "musicAndSfx": "Remain Admin-managed runtime overrides."
+  },
+  "source": "Supabase Arcade Asset Manager uploads recovered 2026-08-21",
+  "version": 1
+}
