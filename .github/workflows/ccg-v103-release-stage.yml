@@ -1,0 +1,38 @@
+name: CCG v10.3 release staging
+
+on:
+  push:
+    branches:
+      - release/cheeky-commodore-quest-v10-3
+    paths:
+      - .ccg-release-stage/READY
+
+permissions:
+  contents: write
+
+jobs:
+  unpack-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/cheeky-commodore-quest-v10-3
+      - name: Reconstruct production game
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .ccg-release-stage/chunk-* > /tmp/ccg-v103.b64
+          base64 --decode /tmp/ccg-v103.b64 > /tmp/ccg-v103.tar.gz
+          rm -rf games/the-lost-sizzler
+          mkdir -p games/the-lost-sizzler
+          tar -xzf /tmp/ccg-v103.tar.gz -C games/the-lost-sizzler
+          test -f games/the-lost-sizzler/index.html
+          test -f games/the-lost-sizzler/js/game-main.js
+          test -f games/the-lost-sizzler/css/game.css
+          rm -rf .ccg-release-stage
+          rm -f .github/workflows/ccg-v103-release-stage.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- games/the-lost-sizzler .ccg-release-stage .github/workflows/ccg-v103-release-stage.yml
+          git commit -m "Release The Lost Sizzler v10.3 [skip ci]"
+          git push origin HEAD:release/cheeky-commodore-quest-v10-3
