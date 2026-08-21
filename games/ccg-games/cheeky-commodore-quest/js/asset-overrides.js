@@ -19,8 +19,17 @@ window.CCG_ASSET_OVERRIDES={
 /* V10.4 is intentionally loaded after the established V10.3 engine. */
 window.addEventListener("load",()=>{
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
-  const s=document.createElement("script");
-  s.src="js/v10-4-patch.js";
-  s.dataset.ccgLostSizzlerV104="true";
-  document.body.appendChild(s);
+  const gameplay=document.createElement("script");
+  gameplay.src="js/v10-4-patch.js";
+  gameplay.dataset.ccgLostSizzlerV104="true";
+  gameplay.async=false;
+  gameplay.onload=()=>{
+    if(document.querySelector('script[data-ccg-lost-sizzler-cache-v104="true"]'))return;
+    const cache=document.createElement("script");
+    cache.src="js/v10-4-death-cache.js";
+    cache.dataset.ccgLostSizzlerCacheV104="true";
+    cache.async=false;
+    document.body.appendChild(cache);
+  };
+  document.body.appendChild(gameplay);
 },{once:true});
