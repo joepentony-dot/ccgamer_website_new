@@ -63,7 +63,8 @@ window.addEventListener("load",()=>{
     [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
     ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
-    ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"]
+    ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
+    ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;
