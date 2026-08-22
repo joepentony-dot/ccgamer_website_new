@@ -47,6 +47,7 @@ window.addEventListener("load",()=>{
     ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
     ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
     ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
+    ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
     ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
     ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
