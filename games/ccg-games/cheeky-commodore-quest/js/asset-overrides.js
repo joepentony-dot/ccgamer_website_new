@@ -13,20 +13,24 @@ window.CCG_ASSET_OVERRIDES={
   audio:{music:{exploration:null,danger:null,sanctuary:null,named:null,stalker:null,playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}},sfx:{}}
 };
 
-const CCG_V106_HUD_REV="20260822f";
+const CCG_V106_HUD_REV="20260822g";
 const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260822d";
-const CCG_RUN_HARDENING_REV="20260822a";
+const CCG_RUN_HARDENING_REV="20260822b";
+const CCG_NOTIFICATION_RAIL_REV="20260822a";
 
 (()=>{
-  if(!document.querySelector('link[data-ccg-v106-ui="true"]')){const link=document.createElement("link");link.rel="stylesheet";link.href="css/v10-6-ui-polish.css";link.dataset.ccgV106Ui="true";document.head.appendChild(link)}
-  if(!document.querySelector('link[data-ccg-v106-inventory-hud="true"]')){const link=document.createElement("link");link.rel="stylesheet";link.href=`css/v10-6-inventory-hud-fix.css?v=${CCG_V106_HUD_REV}`;link.dataset.ccgV106InventoryHud="true";document.head.appendChild(link)}
-  if(!document.querySelector('link[data-ccg-v106-sidebar-fix="true"]')){const link=document.createElement("link");link.rel="stylesheet";link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;link.dataset.ccgV106SidebarFix="true";document.head.appendChild(link)}
+  const stylesheet=(selector,href,key)=>{if(document.querySelector(selector))return;const link=document.createElement("link");link.rel="stylesheet";link.href=href;link.dataset[key]="true";document.head.appendChild(link)};
+  stylesheet('link[data-ccg-v106-ui="true"]',"css/v10-6-ui-polish.css","ccgV106Ui");
+  stylesheet('link[data-ccg-v106-inventory-hud="true"]',`css/v10-6-inventory-hud-fix.css?v=${CCG_V106_HUD_REV}`,"ccgV106InventoryHud");
+  stylesheet('link[data-ccg-v106-sidebar-fix="true"]',`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`,"ccgV106SidebarFix");
+  stylesheet('link[data-ccg-v108-notifications="true"]',`css/v10-8-notification-rail.css?v=${CCG_NOTIFICATION_RAIL_REV}`,"ccgV108Notifications");
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){const script=document.createElement("script");script.src="js/admin-audio-overrides.js";script.dataset.ccgAdminAudio="true";script.async=true;document.head.appendChild(script)}
 })();
 
 window.addEventListener("load",()=>{
-  if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+  if(window.__CCG_LATE_PATCH_QUEUE_STARTED__)return;
+  window.__CCG_LATE_PATCH_QUEUE_STARTED__=true;
   const queue=[
     [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
     ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
@@ -44,8 +48,17 @@ window.addEventListener("load",()=>{
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
     ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
-    [`js/v10-8-run-hardening.js?v=${CCG_RUN_HARDENING_REV}`,"ccgLostSizzlerHardeningV108"]
+    [`js/v10-8-run-hardening.js?v=${CCG_RUN_HARDENING_REV}`,"ccgLostSizzlerHardeningV108"],
+    [`js/v10-8-notification-rail.js?v=${CCG_NOTIFICATION_RAIL_REV}`,"ccgLostSizzlerNotificationRailV108"]
   ];
-  const loadNext=index=>{if(index>=queue.length)return;const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;if(document.querySelector(selector)){loadNext(index+1);return}const script=document.createElement("script");script.src=src;script.dataset[key]="true";script.async=false;script.onload=()=>loadNext(index+1);document.body.appendChild(script)};
+  const loadNext=index=>{
+    if(index>=queue.length){window.__CCG_LATE_PATCH_QUEUE_READY__=true;window.dispatchEvent(new CustomEvent("ccg:late-patches-ready"));return}
+    const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+    if(document.querySelector(selector)){loadNext(index+1);return}
+    const script=document.createElement("script");script.src=src;script.dataset[key]="true";script.async=false;
+    script.onload=()=>loadNext(index+1);
+    script.onerror=()=>{console.error(`[Lost Sizzler] optional patch failed to load: ${src}`);loadNext(index+1)};
+    document.body.appendChild(script);
+  };
   loadNext(0);
 },{once:true});
