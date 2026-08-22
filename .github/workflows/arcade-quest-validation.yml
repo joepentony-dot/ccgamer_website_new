@@ -14,11 +14,14 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -37,11 +40,14 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -79,8 +85,10 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate final balance rules
@@ -103,6 +111,9 @@ jobs:
 
       - name: Validate Lost Sizzler sealed-room death recovery
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
+
+      - name: Validate Lost Sizzler persistent inventory HUD
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
 
       - name: Validate Arcade Quest contract
         run: node scripts/validate-arcade-quest.js
