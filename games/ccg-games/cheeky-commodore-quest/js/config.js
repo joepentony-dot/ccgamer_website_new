@@ -18,7 +18,7 @@ window.CCG_CONFIG=Object.freeze({
     alertMemory:{scout:2300,hunter:4200,ambusher:3000,guard:2400,charger:3200,ranger:3200,root:3500,cook:3100,firebreather:3200,ghost:2600,guardian:5200,champion:4300,treasure:1200},
     searchTime:5000,idleStepMin:2220,idleStepMax:4070,followerLightRadius:10,namedAttackMultiplier:.70,
     namedHpPerLevel:.13,namedArmorPerLevel:.09,namedDamagePerLevel:.075,namedPotionPerLevel:.45,namedCadencePerLevel:.025,hitStunMs:1000,
-    chaseStep:{scout:940,hunter:690,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
+    chaseStep:{scout:940,hunter:780,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
   },
   stalker:{
     enabled:true,name:"Count Loadula",startFloor:2,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,

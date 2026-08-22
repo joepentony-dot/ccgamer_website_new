@@ -80,11 +80,29 @@ function drawDoors(){
   }
 }
 function drawExit(){
-  const s=ws(world.exit.x,world.exit.y),t=performance.now()/220,ready=Boolean(host.exitOpen);
-  ctx.save();ctx.translate(s.x+C.tile/2,s.y+C.tile/2);ctx.strokeStyle=ready?P.purple:"#66586e";ctx.lineWidth=3;ctx.shadowColor=ready?P.purple:"transparent";ctx.shadowBlur=ready?15:0;ctx.strokeRect(-10,-12,20,24);ctx.strokeRect(-5,-7,10,14);
-  if(ready){ctx.rotate(t);ctx.beginPath();ctx.arc(0,0,18,-.4,1.5);ctx.stroke()}else{ctx.fillStyle="#2a2230";ctx.fillRect(-3,-5,6,10);ctx.fillStyle=host.exitSigilCollected?P.green:P.gold;ctx.fillRect(-1,-2,2,4)}
+  const s=ws(world.exit.x,world.exit.y),now=performance.now(),t=now/850,ready=Boolean(host.exitOpen),hasObjective=Boolean(host.objective?.complete),hasSigil=Boolean(host.exitSigilCollected),cx=s.x+C.tile/2,cy=s.y+C.tile/2,pulse=.5+.5*Math.sin(now/180),primary=ready?P.purple:hasObjective?P.gold:"#81728b",accent=ready?P.cyan:hasSigil?P.green:P.gold;
+  ctx.save();
+  // A broad animated aura and floor seal make the destination read as a landmark
+  // from several tiles away without changing collision or hiding nearby objects.
+  const aura=ctx.createRadialGradient(cx,cy,4,cx,cy,ready?C.tile*2.8:C.tile*1.9);aura.addColorStop(0,ready?`rgba(185,120,255,${.34+pulse*.12})`:`rgba(255,216,90,${.12+pulse*.04})`);aura.addColorStop(.46,ready?"rgba(108,236,255,.12)":"rgba(117,91,128,.08)");aura.addColorStop(1,"rgba(20,8,30,0)");ctx.fillStyle=aura;ctx.fillRect(cx-C.tile*3,cy-C.tile*3,C.tile*6,C.tile*6);
+  ctx.translate(cx,cy);ctx.lineCap="square";ctx.lineJoin="miter";
+  ctx.globalAlpha=ready ? .9 : .58;ctx.strokeStyle=primary;ctx.lineWidth=2;ctx.shadowColor=primary;ctx.shadowBlur=ready?18:7;
+  for(let ring=0;ring<3;ring++){const r=26+ring*11+(ready?Math.sin(t*3+ring)*2:0);ctx.save();ctx.rotate((ring%2?-1:1)*t*(.18+ring*.04));ctx.strokeRect(-r/1.4,-r/1.4,r*1.42,r*1.42);ctx.restore()}
+  ctx.globalAlpha=1;ctx.shadowBlur=ready?22:9;
+  // Raised rune dais.
+  ctx.fillStyle="#100918";ctx.beginPath();ctx.moveTo(-37,20);ctx.lineTo(-26,29);ctx.lineTo(26,29);ctx.lineTo(37,20);ctx.lineTo(28,13);ctx.lineTo(-28,13);ctx.closePath();ctx.fill();ctx.strokeStyle=primary;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle=ready?"rgba(108,236,255,.16)":"rgba(255,216,90,.08)";ctx.fillRect(-24,17,48,7);
+  for(const side of [-1,1]){const x=side*29;ctx.fillStyle="#21132b";ctx.fillRect(x-6,-17,12,39);ctx.fillStyle="#3f2852";ctx.fillRect(x-8,-20,16,6);ctx.fillRect(x-8,19,16,6);ctx.strokeStyle=primary;ctx.strokeRect(x-6,-17,12,39);ctx.fillStyle=accent;ctx.fillRect(x-2,-12,4,4)}
+  // Monumental arch and central portal surface.
+  ctx.fillStyle="#190e22";ctx.strokeStyle=primary;ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-24,18);ctx.lineTo(-24,-7);ctx.quadraticCurveTo(-23,-34,0,-40);ctx.quadraticCurveTo(23,-34,24,-7);ctx.lineTo(24,18);ctx.stroke();
+  ctx.save();ctx.beginPath();ctx.moveTo(-18,16);ctx.lineTo(-18,-6);ctx.quadraticCurveTo(-17,-27,0,-32);ctx.quadraticCurveTo(17,-27,18,-6);ctx.lineTo(18,16);ctx.closePath();ctx.clip();
+  if(ready){const portal=ctx.createRadialGradient(-5,-10,2,0,-3,31);portal.addColorStop(0,"rgba(238,251,255,.98)");portal.addColorStop(.18,"rgba(108,236,255,.92)");portal.addColorStop(.55,"rgba(142,76,218,.88)");portal.addColorStop(1,"rgba(17,4,31,.98)");ctx.fillStyle=portal;ctx.fillRect(-20,-35,40,55);for(let band=0;band<5;band++){ctx.globalAlpha=.24+band*.08;ctx.strokeStyle=band%2?P.cyan:P.white;ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(Math.sin(t*2+band)*3,-5+band*4,15-band*1.7,5+Math.sin(t*3+band)*2,t+band,0,Math.PI*2);ctx.stroke()}}else{ctx.fillStyle="#09060d";ctx.fillRect(-20,-35,40,55);ctx.globalAlpha=.72;ctx.fillStyle=hasObjective?"#261d18":"#18121d";for(let y=-23;y<18;y+=8)ctx.fillRect(-18,y,36,3);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-17,-24);ctx.lineTo(17,14);ctx.moveTo(17,-24);ctx.lineTo(-17,14);ctx.stroke()}
+  ctx.restore();ctx.globalAlpha=1;
+  // Crown, status core and drifting pixels reinforce the locked/ready state.
+  ctx.fillStyle=primary;ctx.beginPath();ctx.moveTo(0,-48);ctx.lineTo(7,-41);ctx.lineTo(0,-34);ctx.lineTo(-7,-41);ctx.closePath();ctx.fill();ctx.fillStyle=accent;ctx.fillRect(-2,-43,4,4);
+  if(!ready){ctx.fillStyle="#07050a";ctx.fillRect(-7,-2,14,13);ctx.strokeStyle=accent;ctx.lineWidth=2;ctx.strokeRect(-7,-2,14,13);ctx.beginPath();ctx.arc(0,-3,5,Math.PI,Math.PI*2);ctx.stroke();ctx.fillStyle=accent;ctx.fillRect(-1,2,2,5)}
+  for(let n=0;n<(ready?12:5);n++){const a=t*(ready?1.15:.45)+n*2.399,r=ready?34+(n%3)*8:30+(n%2)*5,x=Math.cos(a)*r,y=Math.sin(a*1.17)*24-7;ctx.globalAlpha=ready ? .45+.5*((n+Math.floor(t*5))%3)/2 : .25;ctx.fillStyle=n%3?primary:accent;const size=ready?2+(n%2):2;ctx.fillRect(Math.round(x),Math.round(y),size,size)}
   ctx.restore();
-  if(md(world.exit,focus)<4){const text=ready?(run.floor<C.maxFloors?"DESCENT":"FINAL EXIT"):host.objective?.complete&&!host.exitSigilCollected?"NEEDS EXIT SIGIL":!host.objective?.complete?"OBJECTIVE LOCKED":"SEALED EXIT";label(text,{x:s.x,y:s.y-1},ready?P.purple:P.gold)}
+  if(md(world.exit,focus)<5){const text=ready?(run.floor<C.maxFloors?"FLOOR EXIT READY — ENTER PORTAL":"FINAL EXIT READY — ENTER PORTAL"):hasObjective&&!hasSigil?"FLOOR EXIT — NEEDS EXIT SIGIL":!hasObjective?"FLOOR EXIT — OBJECTIVE REQUIRED":"FLOOR EXIT — POWERING UP";label(text,{x:s.x,y:s.y-36},ready?P.cyan:P.gold)}
 }
 function itemInfo(i){if(i.kind==="loot")return["★",i.loot?.rarity==="GOLD MEDAL"?P.gold:i.loot?.rarity==="ZZAP! 97%"?P.pink:P.cyan];return{key:["KEY",P.gold],exitSigil:["SIG",P.gold],health:["+",P.green],mana:["AM",P.cyan],ammo:["AM",P.cyan],game:["C64",P.white],credits:["COIN",P.gold],xpOrb:["XP",P.cyan],torch:["T",P.gold],teleport:["WARP",P.purple],banishment:["B",P.purple],inventorySlot:["SLOT",P.gold],armour:["A",P.blue],potion:["P",P.green],weapon:["W",P.orange],rapid:["RF",P.orange],bronze:["BK",P.gold]}[i.kind]||["?",P.white]}
 function drawPickupGlyph(i,col){

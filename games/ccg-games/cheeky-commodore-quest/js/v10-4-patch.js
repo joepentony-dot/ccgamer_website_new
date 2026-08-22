@@ -35,10 +35,25 @@
     return h >>> 0;
   }
 
-  function gcd(a, b) {
-    a = Math.abs(a); b = Math.abs(b);
-    while (b) [a, b] = [b, a % b];
-    return a || 1;
+  function seededRandom(seedText) {
+    let state = hashText(seedText) || 0x6d2b79f5;
+    return function nextRandom() {
+      state = (state + 0x6d2b79f5) >>> 0;
+      let value = state;
+      value = Math.imul(value ^ (value >>> 15), value | 1);
+      value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+      return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  function shuffledCatalogue(seed) {
+    const deck = gameCatalogue.map((title, catalogueIndex) => ({ title, catalogueIndex }));
+    const random = seededRandom(`${seed || "CCG"}|COLLECTIBLE-DECK`);
+    for (let i = deck.length - 1; i > 0; i--) {
+      const j = Math.floor(random() * (i + 1));
+      [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
   }
 
   function catalogueTitles(payload) {
@@ -92,16 +107,15 @@
     if (!hostState?.items?.length || !gameCatalogue.length) return;
     const items = hostState.items.filter((item) => item?.kind === "game");
     if (!items.length) return;
-    const n = gameCatalogue.length;
-    let step = (hashText(`${runState?.seed || "CCG"}|COLLECTIBLE-STEP`) % Math.max(1, n - 1)) + 1;
-    while (n > 1 && gcd(step, n) !== 1) step = (step % n) + 1;
-    const start = hashText(`${runState?.seed || "CCG"}|COLLECTIBLE-START`) % n;
+    const deck = shuffledCatalogue(runState?.seed || "CCG");
+    const n = deck.length;
     const floor = Math.max(1, Number(runState?.floor || 1));
     const floorStride = 16;
     items.forEach((item, index) => {
-      const deckIndex = (start + (((floor - 1) * floorStride) + index) * step) % n;
-      item.title = gameCatalogue[deckIndex];
-      item.catalogueIndex = deckIndex;
+      const deckIndex = (((floor - 1) * floorStride) + index) % n;
+      const entry = deck[deckIndex];
+      item.title = entry.title;
+      item.catalogueIndex = entry.catalogueIndex;
       item.catalogueSize = n;
     });
   }

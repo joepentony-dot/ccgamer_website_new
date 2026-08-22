@@ -50,7 +50,7 @@
     <section class="reference-card dossier-card">
       <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
       <div id="named-enemy-guide" class="named-enemy-guide"></div>
-      <div class="reference-tip"><b>Death Stalker:</b> collect 3 artefacts, trade for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
+      <div class="reference-tip"><b>Death Stalker:</b> trade 3 artefacts or pay 10,000 score at a shop for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
     </section>
   </section>
 
@@ -72,7 +72,7 @@
         <div class="feature-strip">
           <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
-          <span><b>DEATH STALKERS</b>Artefacts can buy a Banishment Flask. When one gets close enough, the contextual B prompt appears.</span>
+          <span><b>DEATH STALKERS</b>Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask. The contextual B prompt appears in range.</span>
         </div>
         <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
         <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
@@ -84,7 +84,7 @@
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/">Exit to CCG Games</a></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
-        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
+        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE FIRE • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER FIRE • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
       </div>
     </div>
@@ -115,7 +115,7 @@
       <p id="shop-copy">Choose what you actually need. Score-priced stock becomes more expensive after each purchase at this shop.</p>
       <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ARTEFACTS <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
       <div id="shop-items" class="shop-grid"></div>
-      <p class="shop-note">Each shop carries one of every score item. Prices rise by 1000 after each purchase and reset at a different shop. Stock: Potion, Torch, Teleport Spell, Ammo, Armour and Weapon Cache. The Banishment Flask costs 3 artefacts.</p>
+      <p class="shop-note">Each shop carries one of every normal score item. Their prices rise by 1000 after each purchase and reset at a different shop. Stock: Potion, Torch, Teleport Spell, Ammo, Armour and Weapon Cache. A Banishment Flask can be traded repeatedly for 3 artefacts or bought once per shop for a fixed 10,000 score.</p>
       <button id="shop-close" class="primary">Leave Shop</button>
     </div></div>
 
@@ -140,11 +140,11 @@
         <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
         <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL CHAMBER</h3><p>Enter the opened gate. It locks and summons two named enemies. Defeat every defender, then collect the Exit Sigil.</p></section>
         <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
-        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. Trade 3 artefacts for a Banishment Flask, then press B nearby.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
         <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>Pickups give 1–10 XP, one-time openings such as hidden walls, locked doors, chests, switches and puzzle vaults give 10 XP, ordinary enemies give 100 XP and named enemies give 250 XP. Entering rooms, repeatable doors and objectives give no XP. The first upgrade requires 1,425 XP.</p></section>
         <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache. You can lose at most one level and your most recent upgrade. Weekly Vault death ends that week’s attempt.</p></section>
-        <section><div class="rulebook-icon">?</div><h3>OPTIONAL CHALLENGES</h3><p>Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
+        <section><div class="rulebook-icon">?</div><h3>ENEMY TACTICS &amp; OPTIONAL CHALLENGES</h3><p>Enemies can reposition, flank and hide behind solid furniture. Tougher enemies assess cover more often and re-plan faster, but smarter tactics do not grant extra speed or damage. Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
       </div>
       <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
     </div></div>

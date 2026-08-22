@@ -59,14 +59,14 @@ function recordEnemyDefeat(e,attacker,displayName=""){
 }
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
-  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY.","red",8500);return}
+  if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. Trade 3 artefacts or pay 10,000 score at a shop for the Flask that destroys it.","red",8500);return}
   power=elementalDamage(e,power,element);e.flash=160;e.hpBarMs=2800;e.hitStunMs=Math.max(e.hitStunMs||0,C.enemy.hitStunMs||1000);
   let hpDamage=power;
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
   if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e))knockEnemyAway(e,attacker)}
   if(e.hp>0)return;
   e.hp=0;e.alive=false;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
-  let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?600:120;
+  let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?15000:120;
   let xp=e.follower?250:100;
   let reason=e.exitWarden?"Sigil Warden defeated":e.guardian?"Guardian defeated":e.follower?`${e.follower.name} freed`:isDeathStalkerEnemy(e)?"Death Stalker banished":e.champion?"Champion defeated":"Enemy defeated";
   if(e.generatorId){const g=(host.generators||[]).find(x=>x.id===e.generatorId);if(g){g.spawnKills=(g.spawnKills||0)+1;killScore=g.spawnKills<=3?65:10;reason=g.spawnKills<=3?`Generator spawn ${g.spawnKills}/3`:`Generator spawn defeated`}}
@@ -144,7 +144,7 @@ function claimBanishmentArtefact(choice){const reward=pendingBanishmentReward;if
 function permanentlyBanish(target,p){
   const name=target===host.stalker?C.stalker.name:"Death Stalker";
   if(target===host.stalker){target.awake=false;target.near=false;target.permanentlyBanished=true;target.spawnTimer=Number.POSITIVE_INFINITY;S.setStalkerNear(false)}else{target.alive=false;target.hp=0;target.permanentlyBanished=true;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(target.id))host.defeatedDeathStalkers.push(target.id);const tr=(host.timedRooms||[]).find(t=>t.hunterId===target.id);if(tr)tr.stalkerDefeated=true}run.stats.kills++;recordEnemyDefeat(target,p,name);
-  dropBanishmentArtefact(target,name);awardXP(p,250,`${name} permanently banished`);S.sfx("elite");burst(target.x,target.y,P.purple,30,1.8);ring(target.x,target.y,P.gold,46);floatText(target.x,target.y,"BANISHED!",P.gold);showToast(`${name.toUpperCase()} DESTROYED`,`Permanently removed from this floor. A Banishment Artefact has dropped — collect it and choose 10,000 SCORE or 10 XP.`,"green",10500);host.revision++;broadcastWorld()
+  score+=15000;dropBanishmentArtefact(target,name);awardXP(p,250,`${name} permanently banished`);S.sfx("elite");burst(target.x,target.y,P.purple,30,1.8);ring(target.x,target.y,P.gold,46);floatText(target.x,target.y,"BANISHED! +15,000 SCORE",P.gold);showToast(`${name.toUpperCase()} DESTROYED`,`15,000 score and 250 XP awarded. Permanently removed from this floor. A Banishment Artefact has also dropped — collect it and choose 10,000 SCORE or 10 XP.`,"green",10500);host.revision++;broadcastWorld()
 }
 function activateBanishment(p){
   const ix=PGR.firstInventory(p,"banishment");if(ix<0){S.sfx("empty");return false}const state=banishmentState(p);if(!state.ready){showToast("BANISHMENT OUT OF RANGE",`Move within ${state.range} tiles of a Death Stalker or Count Loadula. The B prompt will flash when the potion can kill it.`,"cyan",5600);return false}
