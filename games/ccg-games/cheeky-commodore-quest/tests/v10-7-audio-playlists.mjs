@@ -6,6 +6,7 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,'../../../..');
 const read=relative=>fs.readFileSync(path.join(repo,relative),'utf8');
 const patch=read('games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js');
+const continuity=read('games/ccg-games/cheeky-commodore-quest/js/v10-7-continuous-exploration.js');
 const core=read('games/ccg-games/cheeky-commodore-quest/js/game-core.js');
 const assets=read('games/ccg-games/cheeky-commodore-quest/js/audio-assets.js');
 const overrides=read('games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js');
@@ -37,5 +38,17 @@ assert(patch.includes('window.CCGSound=base'),'Playlist patch must retain the or
 assert(!patch.includes('window.CCGSound={\n    ...base'),'Playlist patch must not replace the cached CCGSound object.');
 assert(patch.includes('original.stopMusic?.()'),'Playlist wrapper must call the captured base stop method without recursion.');
 assert(patch.includes('original.toggle'),'Playlist wrapper must call the captured base toggle method without recursion.');
+
+// Ordinary room themes and corridors must all remain the same Exploration state.
+// Only genuine special-room flags may change room-based music; named enemies and
+// Count Loadula continue to override through their separate encounter logic.
+assert(owner.includes('v10-7-continuous-exploration.js'),'Continuous exploration guard is not loaded by the game.');
+assert(continuity.includes('if(room.sanctuary)return "sanctuary"'),'Sanctuary rooms must retain their dedicated music state.');
+assert(continuity.includes('if(room.dangerous)return "danger"'),'Danger/combat rooms must retain their dedicated music state.');
+assert(continuity.includes('return "normal";'),'Ordinary rooms and corridors must resolve to Exploration.');
+assert(continuity.includes('roomMoodFor=continuousRoomMoodFor'),'Continuous exploration guard must replace the legacy room-theme music map.');
+for(const legacy of ['C64_ARCHIVE','1541_WORKSHOP','BUDGET_BIN','DEMO_LOUNGE','ARMOURY','CPU_KITCHEN','SID_REACTOR','WARP_GALLERY','ZZAP_LIBRARY','TAPE_STORE','CARTRIDGE_BAY','CRACKED_INTRO','PIXEL_FOUNDRY','MODEM_EXCHANGE','HIGH_SCORE_CRYPT','CRT_MAZE','TREASURE_VAULT']){
+  assert(!continuity.includes(legacy),`Legacy area music state ${legacy} must not return in the continuity guard.`);
+}
 
 console.log('Lost Sizzler multi-track playlist contract passed.');
