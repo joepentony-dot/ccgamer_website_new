@@ -603,7 +603,15 @@
       const radarLabel = document.getElementById("radar-sigil-label");
       if (radarLabel && typeof run !== "undefined" && run) radarLabel.textContent = run.floor === CONFIG.maxFloors ? "SIZZLER" : "SIGIL";
       const touch = document.getElementById("v104-touch-controls");
-      if (touch) touch.classList.toggle("active", document.getElementById("menu")?.classList.contains("hidden") === true);
+      if (touch) {
+        touch.classList.toggle("active", document.getElementById("menu")?.classList.contains("hidden") === true);
+        const itemActions={potion:["POTION","potion"],torch:["TORCH","torch"],warp:["WARP","teleport"],banish:["BANISH","banishment"]};
+        for(const [action,[label,kind]] of Object.entries(itemActions)){
+          const button=touch.querySelector(`[data-action="${action}"]`);if(!button)continue;
+          const count=typeof p1!=="undefined"&&p1?PROG.inventoryKindCount(p1,kind):0;
+          button.classList.toggle("touch-item-unavailable",count===0);button.innerHTML=`<span>${label}</span><small>${count>0?`${count} HELD`:"NONE"}</small>`;button.setAttribute("aria-label",`${label}: ${count>0?`${count} held`:"none held; tap for help"}`)
+        }
+      }
     } catch (error) {
       console.warn("Lost Sizzler V10.4 UI refresh failed", error);
     }

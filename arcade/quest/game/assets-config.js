@@ -1,19 +1,20 @@
 (function(){
   "use strict";
   const Q=window.CCGQuest=window.CCGQuest||{};
-  const A='assets/production';
+  const ASSET_REVISION='v20260822';
+  const asset=path=>`assets/production/${path}?v=${ASSET_REVISION}`;
 
   Q.CUSTOM_ASSETS={
     backgrounds:{bedroom:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/bedroom/1787232895204-bedroom.webp',beads:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/beads/1787233614399-electric-bead-run.webp',budget:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/budget/1787235091047-budget-rack.webp',fighter:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/fighter/1787235832987-36-percent-bout.webp',invaders:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/invaders/1787235456157-alien_formation.webp',christmas:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/christmas/1787238986811-christmasmorning.webp',maze:null,amiga:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/amiga/1787236613103-amiga-upgrade.webp',guru:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/guru/1787236226252-guru-meditation.webp'},
     layers:{bedroomBack:null,bedroomMid:null,bedroomFront:null,beadsBack:null,beadsMid:null,beadsFront:null,budgetBack:null,budgetMid:null,budgetFront:null,fighterBack:null,fighterMid:null,fighterFront:null,invadersBack:null,invadersMid:null,invadersFront:null,christmasBack:null,christmasMid:null,christmasFront:null,mazeBack:null,mazeMid:null,mazeFront:null,amigaBack:null,amigaMid:null,amigaFront:null,guruBack:null,guruMid:null,guruFront:null},
-    bosses:{bedroom:`${A}/bosses/bedroom.png`,budget:`${A}/bosses/budget.png`,christmas:`${A}/bosses/christmas.png`,amiga:`${A}/bosses/amiga.png`,guru:`${A}/bosses/guru.png`},
-    collectibles:{tape:`${A}/collectibles/tape.png`,disk:`${A}/collectibles/disk.png`,zzap:`${A}/collectibles/zzap.png`,joystick:`${A}/collectibles/joystick.png`},
-    powers:{shield:`${A}/powers/shield.png`,speed:`${A}/powers/speed.png`,double:`${A}/powers/double.png`},
-    hazards:{bedroom:`${A}/hazards/bedroom.png`,budget:`${A}/hazards/budget.png`,christmas:`${A}/hazards/christmas.png`,amiga:`${A}/hazards/amiga.png`,guru:`${A}/hazards/guru.png`},
-    fighter:{enemy:`${A}/fighter/tiertex-idle.png`,enemyPunch:`${A}/fighter/tiertex-punch.png`,enemyKick:`${A}/fighter/tiertex-kick.png`,enemyHit:`${A}/fighter/tiertex-hit.png`},
-    invaders:{alien1:`${A}/invaders/alien-row-1.png`,alien2:`${A}/invaders/alien-row-2.png`,alien3:`${A}/invaders/alien-row-3.png`,alien4:`${A}/invaders/alien-row-4.png`,alien5:`${A}/invaders/alien-row-5.png`,ship:`${A}/invaders/player-ship.png`,bunker:`${A}/invaders/bunker.png`,enemyShot:`${A}/invaders/enemy-shot.png`,playerShot:`${A}/invaders/player-shot.png`},
-    spritesheets:{player:`${A}/player/cheeky-main-sheet.png`,playerFight:`${A}/player/cheeky-fight-sheet.png`,fighter:`${A}/fighter/retsu-sheet.png`,enemy:`${A}/enemies/8bit-enemy-sheet.png`,bossBedroom:`${A}/bosses/bedroom-sheet.png`,bossBudget:`${A}/bosses/budget-sheet.png`,bossChristmas:`${A}/bosses/christmas-sheet.png`,bossAmiga:`${A}/bosses/amiga-sheet.png`,bossGuru:`${A}/bosses/guru-sheet.png`},
-    player:{mascot:`${A}/player/cheeky-mascot.png`,head:`${A}/player/cheeky-head.png`,avatar:null,body:`${A}/player/cheeky-body.png`,arm:`${A}/player/cheeky-arm.png`,leg:`${A}/player/cheeky-leg.png`},
+    bosses:{bedroom:asset('bosses/bedroom.png'),budget:asset('bosses/budget.png'),christmas:asset('bosses/christmas.png'),amiga:asset('bosses/amiga.png'),guru:asset('bosses/guru.png')},
+    collectibles:{tape:asset('collectibles/tape.png'),disk:asset('collectibles/disk.png'),zzap:asset('collectibles/zzap.png'),joystick:asset('collectibles/joystick.png')},
+    powers:{shield:asset('powers/shield.png'),speed:asset('powers/speed.png'),double:asset('powers/double.png')},
+    hazards:{bedroom:asset('hazards/bedroom.png'),budget:asset('hazards/budget.png'),christmas:asset('hazards/christmas.png'),amiga:asset('hazards/amiga.png'),guru:asset('hazards/guru.png')},
+    fighter:{enemy:asset('fighter/tiertex-idle.png'),enemyPunch:asset('fighter/tiertex-punch.png'),enemyKick:asset('fighter/tiertex-kick.png'),enemyHit:asset('fighter/tiertex-hit.png')},
+    invaders:{alien1:asset('invaders/alien-row-1.png'),alien2:asset('invaders/alien-row-2.png'),alien3:asset('invaders/alien-row-3.png'),alien4:asset('invaders/alien-row-4.png'),alien5:asset('invaders/alien-row-5.png'),ship:asset('invaders/player-ship.png'),bunker:asset('invaders/bunker.png'),enemyShot:asset('invaders/enemy-shot.png'),playerShot:asset('invaders/player-shot.png')},
+    spritesheets:{player:asset('player/cheeky-main-sheet.png'),playerFight:asset('player/cheeky-fight-sheet.png'),fighter:asset('fighter/retsu-sheet.png'),enemy:asset('enemies/8bit-enemy-sheet.png'),bossBedroom:asset('bosses/bedroom-sheet.png'),bossBudget:asset('bosses/budget-sheet.png'),bossChristmas:asset('bosses/christmas-sheet.png'),bossAmiga:asset('bosses/amiga-sheet.png'),bossGuru:asset('bosses/guru-sheet.png')},
+    player:{mascot:asset('player/cheeky-mascot.png'),head:asset('player/cheeky-head.png'),avatar:null,body:asset('player/cheeky-body.png'),arm:asset('player/cheeky-arm.png'),leg:asset('player/cheeky-leg.png')},
     music:{bedroom:null,bedroomBoss:null,beads:null,budget:null,budgetBoss:null,fighter:null,invaders:null,christmas:null,christmasBoss:null,maze:null,amiga:null,amigaBoss:null,guru:null,guruBoss:null,title:null},
     sfx:{jump:null,pickup:null,hit:null,shot:null,bosswarn:null,shield:null,shieldlow:null,unlock:null,punch:null,kick:null}
   };

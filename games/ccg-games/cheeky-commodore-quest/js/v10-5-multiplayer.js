@@ -55,7 +55,7 @@
   }
 
   function setMenuNote(text){if(UI?.note)UI.note.textContent=text}
-  function setMenuVisible(visible){UI?.menu?.classList.toggle("hidden",!visible)}
+  function setMenuVisible(visible){UI?.menu?.classList.toggle("hidden",!visible);setRunPresentation(!visible)}
   function onlineError(title,error){
     const message=String(error?.message||error||"Online multiplayer could not connect.");
     setMenuNote(message);

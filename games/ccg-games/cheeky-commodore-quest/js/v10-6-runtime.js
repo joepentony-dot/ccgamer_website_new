@@ -11,7 +11,7 @@
   const inviteFor=code=>{const url=new URL(location.href);url.searchParams.set("room",code);url.hash="";return url.toString()};
 
   function setBuild(){document.querySelectorAll(".build-badge").forEach(n=>n.textContent="BUILD V10.6");const p=document.querySelector(".brand p");if(p)p.textContent="THE LOST SIZZLER — V10.6"}
-  function showLobby(){lobbyOpen=true;mode="lobby";playMode="online";UI.menu?.classList.add("hidden");lobby?.classList.remove("hidden");updateLobby()}
+  function showLobby(){lobbyOpen=true;mode="lobby";playMode="online";setRunPresentation(false);UI.menu?.classList.add("hidden");lobby?.classList.remove("hidden");updateLobby()}
   function hideLobby(){lobbyOpen=false;lobby?.classList.add("hidden")}
   function updateLobby(){
     if(!lobbyOpen||!net)return;const members=net.getMembers(),code=net.roomCode||clean(UI.roomCode?.value);
@@ -22,24 +22,24 @@
   }
   function onlineError(title,error){const message=String(error?.message||error||"Online multiplayer could not connect.");setNote(message);try{showToast(title,message,"red",10000)}catch(_){}}
   async function leaveLobby(message="Online lobby closed."){
-    try{await net.leave()}catch(_){}hideLobby();playMode="solo";mode="menu";net.setSolo(playerName());UI.menu?.classList.remove("hidden");setNote(message);sync?.()
+    try{await net.leave()}catch(_){}hideLobby();playMode="solo";mode="menu";setRunPresentation(false);net.setSolo(playerName());UI.menu?.classList.remove("hidden");setNote(message);sync?.()
   }
   function runMeta(){return{roomCode:net.roomCode,seed:net.roomCode,floor:1,difficulty:UI.difficulty?.value||"ARCADE",modifier:null,startedAt:Date.now(),build:"V10.6"}}
   function prepareRun(meta={}){
-    run=PGR.makeRun({difficulty:meta.difficulty||UI.difficulty?.value||"ARCADE",seed:meta.seed||net.roomCode});run.floor=Math.max(1,Number(meta.floor||1));run.deepest=run.floor;run.modifier=meta.modifier?{...meta.modifier}:PGR.chooseFloorModifier(run,Math.random);playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";hideLobby();UI.menu?.classList.add("hidden");S.start();S.startMusic();sync()
+    run=PGR.makeRun({difficulty:meta.difficulty||UI.difficulty?.value||"ARCADE",seed:meta.seed||net.roomCode});run.floor=Math.max(1,Number(meta.floor||1));run.deepest=run.floor;run.modifier=meta.modifier?{...meta.modifier}:PGR.chooseFloorModifier(run,Math.random);playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";setRunPresentation(true);hideLobby();UI.menu?.classList.add("hidden");S.start();S.startMusic();sync()
   }
   async function createLobbyRoom(){
     setNote("Creating verified internet room…");let created=null,code="";
     try{for(let attempt=0;attempt<4&&!created;attempt++){code=net.createCode();try{created=await net.createOnlineRoom(code,playerName())}catch(error){if(!/already in use/i.test(String(error?.message||"")))throw error}}if(!created)throw new Error("Could not allocate an unused room code. Please try again.");UI.roomCode.value=code;startHandled=false;showLobby();showToast("ONLINE ROOM READY",`Share the invite for room ${code}. The dungeon will not begin until you press Start Dungeon.`,"green",9000)}catch(error){await leaveLobby(String(error?.message||error));onlineError("ONLINE ROOM NOT CREATED",error)}
   }
   async function joinLobbyRoom(){
-    const code=clean(UI.roomCode?.value);if(code.length<4){setNote("Enter the room code from the host.");return}S.start();requestPlayFullscreen();setNote(`Finding room ${code}…`);
+    const code=clean(UI.roomCode?.value);if(code.length<4){setNote("Enter the room code from the host.");return}S.start();setNote(`Finding room ${code}…`);
     try{const joined=await net.joinExistingRoom(code,playerName());if(joined.transport!=="supabase")throw new Error("This is not a verified internet room.");UI.roomCode.value=code;startHandled=false;showLobby();showToast("ONLINE ROOM JOINED",`Room ${code} is waiting for its host to start.`,"green",8000)}catch(error){await leaveLobby(String(error?.message||error));onlineError("ONLINE ROOM JOIN FAILED",error)}
   }
   function startHostedRun(){
     if(!lobbyOpen||!net.isHost||startHandled)return;startHandled=true;requestPlayFullscreen();const meta=runMeta();prepareRun(meta);net.send("v106_lobby_start",meta);setTimeout(()=>broadcastWorld(),60);showToast("ONLINE DUNGEON STARTED",`${net.getMembers().length}/${C.maxPlayers} players entered room ${net.roomCode}.`,"green",7500)
   }
-  function receiveStart(meta){if(net.isHost||startHandled)return;startHandled=true;prepareRun(meta);net.send("hello",{id:net.sessionId,name:playerName(),roomCode:net.roomCode,wantsWorld:true,build:"V10.6"});showToast("HOST STARTED THE DUNGEON",`Room ${net.roomCode} is live.`,"green",7000)}
+  function receiveStart(meta){if(net.isHost||startHandled)return;startHandled=true;requestPlayFullscreen();prepareRun(meta);net.send("hello",{id:net.sessionId,name:playerName(),roomCode:net.roomCode,wantsWorld:true,build:"V10.6"});showToast("HOST STARTED THE DUNGEON",`Room ${net.roomCode} is live.`,"green",7000)}
 
   const originalMembers=net.cb.onMembers;
   net.cb.onMembers=function onMembersV106(members,isHost,changed){const result=originalMembers?.(members,isHost,changed);updateLobby();if(changed&&isHost&&lobbyOpen)showToast("YOU ARE NOW HOST","The previous host disconnected. You can start the dungeon when everyone is ready.","cyan",8500);return result};

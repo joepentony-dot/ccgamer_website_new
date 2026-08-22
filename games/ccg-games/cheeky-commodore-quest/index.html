@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="css/game.css">
   <link rel="stylesheet" href="css/v10-6-gameplay.css">
 </head>
-<body data-game-ready="false">
+<body data-game-ready="false" data-run-active="false">
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
@@ -69,6 +69,7 @@
         <img class="hero-logo" src="assets/lost-sizzler.webp" alt="The Lost Sizzler">
         <h2>The Lost Sizzler</h2>
         <p>A multi-floor arcade dungeon crawl with procedural rooms, fog, locked routes, shootable switches, traps, monster generators, rare artefacts, XP, death recovery, a reinforced Sigil gauntlet, optional puzzle chambers and things in the dark that require more than ordinary ammunition.</p>
+        <p class="desktop-play-recommendation"><strong>BETTER PLAYED ON DESKTOP PC</strong><span>Mobile play is supported, but a larger screen and keyboard give the best experience.</span></p>
         <div class="feature-strip">
           <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
@@ -81,7 +82,7 @@
         <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
         <div id="weekly-auth-actions" class="weekly-auth-actions"><a href="/auth/register.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F" target="_blank" rel="noopener noreferrer">Create CCG Account</a><a href="/auth/login.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F">Sign In</a></div>
         <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
-        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/">Exit to CCG Games</a></div>
+        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
@@ -97,7 +98,7 @@
       <div class="lobby-columns"><section><h3>PLAYERS</h3><ol id="lobby-player-list"></ol></section><section><h3>HOW IT WORKS</h3><p>The host controls the start. Guests remain in this lobby until the host begins. A room holds four players; disconnected guests are removed and the earliest remaining player becomes host.</p></section></div>
     </div></div>
 
-    <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>The monsters have reluctantly agreed to wait. Count Loadula has not signed anything.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button></div></div></div>
+    <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>Continue the run, abandon its unsaved live state and return to the title screen, or leave The Lost Sizzler completely.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div><small>Saved floor checkpoints and permanently banked C64 titles are not removed.</small></div></div>
 
     <div id="level-up" class="overlay hidden"><div class="panel compact"><h2>Level Up</h2><p id="level-up-copy">Choose an upgrade.</p><div id="level-up-choices" class="choice-grid"></div></div></div>
 
@@ -126,11 +127,11 @@
       <small id="save-note">Saves are floor-entry checkpoints rather than mid-room quick saves.</small>
     </div></div>
 
-    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><h2>Inventory & Objective</h2><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
+    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><div class="mobile-panel-head"><h2>Inventory & Objective</h2><button id="inventory-close-top" class="primary" type="button">Back to Game</button></div><p id="inventory-mobile-notice" class="inventory-mobile-notice" aria-live="polite">Tap a locked or empty slot for an explanation.</p><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
 
     <div id="item-info-panel" class="overlay hidden sub-overlay"><div class="panel compact item-info-card"><div id="item-info-icon" class="item-info-hero"></div><h2 id="item-info-title">Item</h2><div id="item-info-text" class="item-info-copy"></div><button id="item-info-close" class="primary">Back to Inventory</button></div></div>
 
-    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><h2>Named Enemy Dossier</h2><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
+    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><div class="mobile-panel-head"><h2>Named Enemy Dossier</h2><button id="named-dossier-close-top" class="primary" type="button">Back to Game</button></div><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
 
 
     <div id="rulebook-panel" class="overlay hidden"><div class="panel v10-info-panel">
