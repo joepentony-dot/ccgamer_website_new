@@ -19,6 +19,10 @@ window.CCGWorld=(()=>{
     MODEM_EXCHANGE:{name:"Modem Exchange",floor:"#0d171b",alt:"#10242a",wall:"#326474",hi:"#59a9bd",accent:"#6cecff",message:"Carrier tones leak from stacked terminals. Something has answered from the other end.",motif:"terminals"},
     HIGH_SCORE_CRYPT:{name:"High Score Crypt",floor:"#18130d",alt:"#261d0e",wall:"#756328",hi:"#c2aa43",accent:"#ffd85a",message:"Initials glow on stone cabinets. None of the holders appear willing to surrender first place.",motif:"scores"},
     CRT_MAZE:{name:"CRT Maze",floor:"#101513",alt:"#14211d",wall:"#386a58",hi:"#62ab8e",accent:"#72ff9b",message:"Curved glass screens repeat the room at impossible angles and every reflection is half a second late.",motif:"screens"},
+    IRON_KEEP:{name:"Iron Joystick Keep",floor:"#211b18",alt:"#2a211c",wall:"#6f4d3d",hi:"#b37c5d",accent:"#ffb45e",message:"Iron rings hang from burgundy and ochre brickwork. Something armoured is dragging a sword nearby.",motif:"keep"},
+    MOSS_CRYPT:{name:"Mossy Tape Crypt",floor:"#162019",alt:"#1d291e",wall:"#4d6144",hi:"#80916d",accent:"#a8d56b",message:"Green mortar and damp flagstones have swallowed the labels on the oldest tapes.",motif:"crypt"},
+    EMBER_DUNGEON:{name:"Ember Disk Dungeon",floor:"#241712",alt:"#301d15",wall:"#743b2d",hi:"#b96345",accent:"#ff7848",message:"Rust-red bricks breathe furnace heat through their cracks. The floor plates do not look trustworthy.",motif:"dungeon"},
+    SPIDER_NEST:{name:"Dustweb Nest",floor:"#0b090d",alt:"#151018",wall:"#362d3b",hi:"#6e5b72",accent:"#bfc7d8",message:"Webs pulse in the draught. Dozens of tiny feet are answering from the shelves.",motif:"webs"},
     TREASURE_VAULT:{name:"Locked Treasure Vault",floor:"#171b12",alt:"#222b18",wall:"#65712f",hi:"#a5bb50",accent:"#ffd85a",message:"A bonus chamber behind a bronze lock. The main quest never depends on what is inside.",motif:"vault"}
   };
 
@@ -106,14 +110,14 @@ window.CCGWorld=(()=>{
     if(x1<2||y1<2||x2>=C.worldWidth-2||y2>=C.worldHeight-2)return false;
     for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++)if(map[y][x]===0)return false;return true;
   }
-  function attachBonusRoom(map,source,index,rooms){
+  function attachBonusRoom(map,source,index,rooms,sizes=[[12,9],[7,6]]){
     const cx=source.x+2+((source.id*7+index*3)%Math.max(1,source.w-3)),cy=source.y+2+((source.id*5+index*7)%Math.max(1,source.h-3));
-    const opts=[
-      {door:{x:source.x+source.w+1,y:cy},box:{x1:source.x+source.w+2,y1:cy-3,x2:source.x+source.w+9,y2:cy+3}},
-      {door:{x:source.x-1,y:cy},box:{x1:source.x-9,y1:cy-3,x2:source.x-2,y2:cy+3}},
-      {door:{x:cx,y:source.y+source.h+1},box:{x1:cx-3,y1:source.y+source.h+2,x2:cx+3,y2:source.y+source.h+8}},
-      {door:{x:cx,y:source.y-1},box:{x1:cx-3,y1:source.y-8,x2:cx+3,y2:source.y-2}}
-    ];
+    const opts=[];for(const [rw,rh] of sizes){const hw=Math.floor(rw/2),hh=Math.floor(rh/2);opts.push(
+      {door:{x:source.x+source.w+1,y:cy},box:{x1:source.x+source.w+2,y1:cy-hh,x2:source.x+source.w+2+rw,y2:cy-hh+rh}},
+      {door:{x:source.x-1,y:cy},box:{x1:source.x-2-rw,y1:cy-hh,x2:source.x-2,y2:cy-hh+rh}},
+      {door:{x:cx,y:source.y+source.h+1},box:{x1:cx-hw,y1:source.y+source.h+2,x2:cx-hw+rw,y2:source.y+source.h+2+rh}},
+      {door:{x:cx,y:source.y-1},box:{x1:cx-hw,y1:source.y-2-rh,x2:cx-hw+rw,y2:source.y-2}}
+    )}
     for(const o of opts){
       if(map[o.door.y]?.[o.door.x]!==1||!areaAllWalls(map,o.box.x1-1,o.box.y1-1,o.box.x2+1,o.box.y2+1))continue;
       carveCell(map,o.door.x,o.door.y);const room={id:rooms.length,x:o.box.x1,y:o.box.y1,w:o.box.x2-o.box.x1,h:o.box.y2-o.box.y1,theme:"TREASURE_VAULT",optional:true,depth:(source.depth||0)+1};carveRoom(map,room);rooms.push(room);
@@ -136,13 +140,30 @@ window.CCGWorld=(()=>{
   function generate(seedText){
     const random=rng(hash(seedText));
     const map=Array.from({length:C.worldHeight},()=>Array(C.worldWidth).fill(1));
-    const root={rect:{x:1,y:1,w:C.worldWidth-2,h:C.worldHeight-2},random};splitBSP(root.rect,root,0);
+    // Reserve a southern band for one isolated great hall. This gives the
+    // Sigil Praetorian encounter a guaranteed large one-door annex without
+    // overwriting an ordinary room or severing the critical route.
+    const root={rect:{x:1,y:1,w:C.worldWidth-2,h:C.worldHeight-14},random};splitBSP(root.rect,root,0);
     const rooms=[],edges=[];createRooms(root,map,rooms,random);connectTree(root,map,rooms,edges,random);
     const graph=graphFor(rooms,edges);
     let startRoom=0,best=Infinity;for(const r of rooms){const c=centre(r),v=c.x+c.y;if(v<best){best=v;startRoom=r.id}}
     const gd=graphDistances(graph,startRoom);let exitRoom=startRoom,maxD=-1;for(let i=0;i<gd.d.length;i++)if(gd.d[i]!==Infinity&&gd.d[i]>maxD){maxD=gd.d[i];exitRoom=i}
     rooms[startRoom].theme="C64_ARCHIVE";rooms[exitRoom].theme="ZZAP_LIBRARY";
     rooms.forEach(r=>r.depth=gd.d[r.id]===Infinity?0:gd.d[r.id]);
+    // Each ordinary corridor gets a deterministic one-in-twenty haunting roll.
+    // At most one corridor per floor is selected so the encounter remains rare,
+    // memorable and tied to one adjoining spider nest rather than becoming noise.
+    let hauntedCorridor=null;
+    for(const edge of edges){
+      if(random()>=.05)continue;
+      const adjoining=[rooms[edge.a],rooms[edge.b]].filter(room=>room&&room.id!==startRoom&&room.id!==exitRoom).sort((a,b)=>(b.depth||0)-(a.depth||0));
+      const nest=adjoining[0];if(!nest)continue;
+      const path=edge.path.filter(point=>!rooms.some(room=>inside(room,point)));
+      if(path.length<2)continue;
+      nest.originalTheme=nest.theme;nest.theme="SPIDER_NEST";nest.spiderNest=true;
+      hauntedCorridor={id:`haunted-${edge.a}-${edge.b}`,a:edge.a,b:edge.b,roomId:nest.id,cells:path.map(point=>({x:point.x,y:point.y})),triggeredBy:[],torchExtinguishedFor:[]};
+      break;
+    }
     // Classic wrap tunnel on an ordinary connected corridor row.
     let tunnelY=Math.floor(C.worldHeight*.55),found=false;
     for(let off=0;off<22&&!found;off++)for(const y of [tunnelY+off,tunnelY-off]){
@@ -157,6 +178,8 @@ window.CCGWorld=(()=>{
     const critical=pathRooms(gd.parent,startRoom,exitRoom),doorSpecs=[],optionalCells=new Set(),lockedRooms=new Set();
     const sourceRooms=[...rooms].filter(r=>r.id!==startRoom&&r.id!==exitRoom).sort((a,b)=>b.depth-a.depth);
     let bonusIndex=0;
+    const southernSources=[...sourceRooms].sort((a,b)=>(b.y+b.h)-(a.y+a.h));
+    for(const source of southernSources){const d=attachBonusRoom(map,source,bonusIndex,rooms,[[12,9]]);if(!d)continue;doorSpecs.push(d);lockedRooms.add(d.roomId);const room=rooms[d.roomId];for(let y=room.y;y<=room.y+room.h;y++)for(let x=room.x;x<=room.x+room.w;x++)optionalCells.add(cell(x,y));optionalCells.add(cell(d.x,d.y));bonusIndex++;break}
     for(let pass=0;pass<3&&bonusIndex<C.dungeon.maxLockedBranches;pass++){
       for(const source of sourceRooms){
         if(bonusIndex>=C.dungeon.maxLockedBranches)break;
@@ -166,7 +189,7 @@ window.CCGWorld=(()=>{
       }
     }
 
-    while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms};
+    while(graph.length<rooms.length)graph.push([]);return{map,rooms,edges,graph,start:centre(rooms[startRoom]),exit:centre(rooms[exitRoom]),startRoomId:startRoom,exitRoomId:exitRoom,random,tunnelY,doorSpecs,optionalCells,lockedRooms,hauntedCorridor};
   }
 
   function allFloorCells(w,allowOptional=false){const a=[];for(let y=1;y<C.worldHeight-1;y++)for(let x=1;x<C.worldWidth-1;x++)if(w.map[y][x]===0&&(allowOptional||!w.optionalCells.has(cell(x,y))))a.push({x,y});return a}

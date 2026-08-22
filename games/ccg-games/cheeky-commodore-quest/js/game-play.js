@@ -24,7 +24,7 @@ function updateGamepad(){
 function setDir(p,code){const m=p===p2?{KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}}:{ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};if(m[code])p.dir=m[code]}
 function beginDoorOpening(d,delay=900){
   const now=performance.now(),leaves=d.groupId?(host.doors||[]).filter(x=>x.groupId===d.groupId):[d];if(leaves.every(x=>x.open||x.opening))return;
-  for(const leaf of leaves){leaf.locked=d.locked;leaf.opening=true;leaf.openingStart=now;leaf.openAt=now+delay;leaf.open=false;leaf.openSoundDone=false}S.sfx("dooropen");host.revision++;
+  for(const leaf of leaves){leaf.locked=d.locked;leaf.opening=true;leaf.openingStart=now;leaf.openAt=now+delay;leaf.open=false;leaf.openSoundDone=false}S.sfx("dooropen");S.sfx("creak");host.revision++;
 }
 function updateDoors(){
   const now=performance.now();for(const d of host.doors||[])if(d.opening&&now>=d.openAt){d.opening=false;d.open=true;d.openingStart=0;d.openAt=0;if(!d.openSoundDone){d.openSoundDone=true;S.sfx("door")}host.revision++}
@@ -93,7 +93,8 @@ function triggerWeightBridge(p){const b=host.weightBridge;if(!b||b.stabilized||b
 
 function triggerBoulder(p){const b=host.boulderTrap;if(!b||b.cleared||b.triggered||W.roomAt(world,p.x,p.y)!==b.roomId)return;const da=md(p,b.start),db=md(p,b.end),from=da>=db?b.start:b.end,to=da>=db?b.end:b.start;b.x=from.x;b.y=from.y;b.target={...to};b.dx=Math.sign(to.x-from.x);b.dy=Math.sign(to.y-from.y);b.warningMs=1000;b.moveMs=0;b.active=true;b.triggered=true;S.sfx("trap");showToast("BOULDER CORRIDOR — RUN!","A stone boulder has broken loose at the far end of the hall. Keep moving and get out of its lane before it reaches you.","red",7600);host.revision++;broadcastWorld()}
 function updateBoulder(dt){const b=host.boulderTrap;if(!b?.active||b.cleared)return;if(b.warningMs>0){b.warningMs=Math.max(0,b.warningMs-dt);return}b.moveMs-=dt;if(b.moveMs>0)return;b.moveMs=b.stepMs||155;b.x+=b.dx;b.y+=b.dy;shake=Math.max(shake,3);for(const p of localPlayers())if(p.x===b.x&&p.y===b.y){hurtPlayer(p,b.damage||2,false,"rolling boulder");const nx=p.x+b.dx,ny=p.y+b.dy;if(W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}if(b.x===b.target.x&&b.y===b.target.y){b.active=false;b.cleared=true;score+=250;S.sfx("door");showToast("BOULDER CORRIDOR SURVIVED","The boulder crashes into the far wall. +250 score.","green",7000)}host.revision++}
-function movementTriggers(p){triggerSwitch(p);triggerTrader(p);triggerDeathCache(p);triggerBloodClue(p);triggerMemoryPuzzle(p);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);triggerTrap(p);triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p)}
+function triggerHauntedCorridor(p){const nest=host.spiderNest;if(!nest||(nest.corridorCells||[]).every(q=>q.x!==p.x||q.y!==p.y))return;nest.whistledPlayers=nest.whistledPlayers||[];nest.extinguishedPlayers=nest.extinguishedPlayers||[];if(!nest.whistledPlayers.includes(p.id)){nest.whistledPlayers.push(p.id);S.windWhistle?.();showToast("A WIND WHISTLES THROUGH THE STONE","A one-in-twenty haunted corridor is feeding air into a nearby Dustweb Nest. The draught can extinguish an active torch.","cyan",9000)}if(p.torchMs>0&&!nest.extinguishedPlayers.includes(p.id)){nest.extinguishedPlayers.push(p.id);p.torchMs=0;S.sfx("pssst");for(let i=0;i<26;i++)particles.push({x:p.x*C.tile+C.tile/2,y:p.y*C.tile+C.tile/2,vx:1.2+Math.random()*3.2,vy:(Math.random()-.5)*2.2,life:300+Math.random()*520,col:i%2?"#c8d7e8":"#6cecff",size:1+Math.random()*3,drag:.975});floatText(p.x,p.y,"TORCH OUT!",P.cyan);showToast("PSST — TORCH EXTINGUISHED","The windy corridor has blown out your active torch. Spare torches in your inventory are untouched.","red",8500)}host.revision++}
+function movementTriggers(p){triggerSwitch(p);triggerTrader(p);triggerDeathCache(p);triggerBloodClue(p);triggerMemoryPuzzle(p);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);triggerTrap(p);triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p)}
 function movePlayer(p,dx,dy,dash=false){
   if(mode!=="playing"||!p||(p.hitStunMs||0)>0)return;p.dir={x:dx,y:dy};const ox=p.x,oy=p.y;
   for(let n=0;n<(dash?2:1);n++){
@@ -143,9 +144,16 @@ function projectilePathClear(b,nx,ny){
   }
   return true;
 }
+function damageFurnitureAt(x,y,power=1){
+  const blocker=(host.blockingDecor||[]).find(d=>d.x===Math.round(x)&&d.y===Math.round(y));if(!blocker)return false;
+  if(!net.isHost)return true;if(blocker.structural){S.sfx("wall");floatText(blocker.x,blocker.y,"SOLID",P.grey);return true}
+  blocker.hp=Math.max(0,Number(blocker.hp??2)-Math.max(1,Number(power)||1));const decor=(world.decor||[]).find(d=>d.id===blocker.id);if(decor)decor.hp=blocker.hp;
+  if(blocker.hp>0){S.sfx("woodhit");burst(blocker.x,blocker.y,"#c49355",10,1);floatText(blocker.x,blocker.y,"CRACK!",P.gold);host.revision++;return true}
+  host.blockingDecor=host.blockingDecor.filter(d=>d!==blocker);if(decor)decor.destroyed=true;S.sfx("woodbreak");shake=Math.max(shake,5);const fx={type:"furniture",x:blocker.x,y:blocker.y,color:"#c89052"};onFX(fx);if(playMode==="online")net.send("fx",fx);host.revision++;broadcastWorld();return true
+}
 function stepProjectiles(){
   for(const b of bullets){
-    if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(!projectilePathClear(b,nx,ny)){b.ttl=0;burst(b.x,b.y,b.element==="shock"?P.cyan:b.element==="fire"?P.orange:P.gold,14,1);ring(b.x,b.y,b.element==="shock"?P.cyan:P.orange,20);S.sfx("wall");continue}b.x=nx;b.y=ny;b.ttl--;const trailCol=b.element==="fire"?P.orange:b.element==="shock"?P.cyan:b.element==="physical"?P.white:P.gold;for(let n=0;n<3;n++)particles.push({x:(nx-b.dx*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,y:(ny-b.dy*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,vx:-b.dx*(.4+Math.random()*.8)+(Math.random()-.5)*.5,vy:-b.dy*(.4+Math.random()*.8)+(Math.random()-.5)*.5,life:130+n*45,col:trailCol,size:1.4+n*.7,drag:.91,glow:7});
+    if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(damageFurnitureAt(nx,ny,b.power)){b.ttl=0;continue}if(!projectilePathClear(b,nx,ny)){b.ttl=0;burst(b.x,b.y,b.element==="shock"?P.cyan:b.element==="fire"?P.orange:P.gold,14,1);ring(b.x,b.y,b.element==="shock"?P.cyan:P.orange,20);S.sfx("wall");continue}b.x=nx;b.y=ny;b.ttl--;const trailCol=b.element==="fire"?P.orange:b.element==="shock"?P.cyan:b.element==="physical"?P.white:P.gold;for(let n=0;n<3;n++)particles.push({x:(nx-b.dx*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,y:(ny-b.dy*(.15+n*.18))*C.tile+C.tile/2+(Math.random()-.5)*4,vx:-b.dx*(.4+Math.random()*.8)+(Math.random()-.5)*.5,vy:-b.dy*(.4+Math.random()*.8)+(Math.random()-.5)*.5,life:130+n*45,col:trailCol,size:1.4+n*.7,drag:.91,glow:7});
     const puzzleTorch=(host.sequenceTorchPuzzle?.torches||[]).find(t=>t.x===Math.round(nx)&&t.y===Math.round(ny));if(puzzleTorch&&!host.sequenceTorchPuzzle?.solved){activateSequenceTorch(puzzleTorch,findLocal(b.owner)||p1,true);b.ttl=0;continue}
     const sw=(host.switches||[]).find(s=>s.active&&s.x===Math.round(nx)&&s.y===Math.round(ny));if(sw){activateSwitch(sw,findLocal(b.owner)||p1,true);b.ttl=0;continue}
     if(hitStalker(b)){b.ttl=0;continue}
@@ -165,7 +173,14 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     if(/death stalker/i.test(String(source))){for(const stalker of host.enemies||[])if(stalker.alive&&stalker.deathStalker){stalker.x=Number(stalker.x0??stalker.x);stalker.y=Number(stalker.y0??stalker.y);stalker.aiState="idle";stalker.hunting=false;stalker.lastSeen=null;stalker.memoryMs=0;stalker.searchMs=0;stalker.moveCooldown=3200;stalker.attackCooldown=3200}}
     if(new RegExp(C.stalker.name,"i").test(String(source))&&host.stalker){host.stalker.x=Number(host.stalker.x0??host.stalker.x);host.stalker.y=Number(host.stalker.y0??host.stalker.y);host.stalker.moveCooldown=3200;host.stalker.near=false}
     S.sfx("playerDeath");if(run.daily){run.dailyFailed=true;p.health=0;showToast("WEEKLY VAULT — RUN OVER","Death is final in the Weekly High-Score Vault. Your score is being recorded; try again after the next weekly reset.","red",9000);endRun("Weekly High-Score Vault ended on death");return}
-    const deathX=p.x,deathY=p.y,cache=PGR.createDeathCache(p,run,deathX,deathY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.active=cache.active||cache.score>0||cache.xp>0;run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
+    const deathX=p.x,deathY=p.y,inSigil=W.roomAt(world,deathX,deathY)===host.sigilRoomId;let cacheX=deathX,cacheY=deathY;
+    if(inSigil){
+      host.sigilLockdown=false;const gates=(host.doors||[]).filter(gate=>gate.sigilGate);for(const gate of gates){gate.locked=false;gate.open=true;gate.opening=false;gate.openAt=0;gate.openingStart=0}
+      const candidates=[];for(const gate of gates)for(let radius=1;radius<=6;radius++)for(let dy=-radius;dy<=radius;dy++)for(let dx=-radius;dx<=radius;dx++){if(Math.abs(dx)+Math.abs(dy)!==radius)continue;const x=gate.x+dx,y=gate.y+dy;if(world.map[y]?.[x]!==0||W.roomAt(world,x,y)===host.sigilRoomId||(host.blockingDecor||[]).some(d=>d.x===x&&d.y===y))continue;candidates.push({x,y,d:radius})}candidates.sort((a,b)=>a.d-b.d);if(candidates[0]){cacheX=candidates[0].x;cacheY=candidates[0].y}
+      const room=world.rooms[host.sigilRoomId],resetCells=[];if(room)for(let y=room.y+2;y<room.y+room.h-1;y++)for(let x=room.x+2;x<room.x+room.w-1;x++)if(world.map[y]?.[x]===0&&!host.blockingDecor?.some(d=>d.x===x&&d.y===y))resetCells.push({x,y});let resetIndex=0;for(const defender of SYS.sigilDefendersAlive(host)){defender.aiState="idle";defender.lastSeen=null;defender.memoryMs=0;defender.searchMs=0;defender.targetId=null;defender.attackCooldown=1400;defender.moveCooldown=1400;defender.hp=defender.maxHp;if(defender.maxArmor!=null)defender.armor=defender.maxArmor;const q=resetCells[(resetIndex*5+2)%Math.max(1,resetCells.length)];if(q){defender.x=q.x;defender.y=q.y}resetIndex++}
+      S.sfx("dooropen");showToast("SIGIL LOCKDOWN RESET","The reinforced gate reopened. Your death cache has been moved outside and surviving defenders have reset for another attempt.","gold",10000)
+    }
+    const cache=PGR.createDeathCache(p,run,cacheX,cacheY),penalty=PGR.applyDeathPenalty(p,score,run);score=penalty.score;cache.score=penalty.scoreLost||0;cache.xp=penalty.xpLost||0;cache.active=cache.active||cache.score>0||cache.xp>0;run.stats.deaths=(run.stats.deaths||0)+1;run.consecutiveDeaths=(run.consecutiveDeaths||0)+1;
     if(penalty.gameOver){p.health=0;run.xpGameOver=true;host.deathCaches=[];PGR.clearCheckpoint();showToast("XP RESERVE EXHAUSTED — GAME OVER","This is the second death that left your XP reserve at zero. Your final XP warning was already used, so the run is over.","red",12000);endRun("Game over: XP reached zero for the second time after the final warning");return}
     if(cache.active){host.deathCaches=host.deathCaches||[];host.deathCaches.push(cache)}
     p.health=p.maxHealth;p.hpBarMs=3200;p.mana=Math.max(35,Math.floor(p.maxMana*.6));p.ammoFlashMs=C.player.ammoFlashMs;p.x=world.start.x;p.y=world.start.y;p.rx=p.x;p.ry=p.y;setTimeout(()=>{if(S.isEnabled())S.sfx("respawn")},520);
@@ -179,7 +194,7 @@ function roomMoodFor(roomId){
   const room=world.rooms[roomId];if(!room)return "normal";
   if(room.sanctuary)return "sanctuary";
   if(room.dangerous)return "danger";
-  return {C64_ARCHIVE:"archive","1541_WORKSHOP":"workshop",BUDGET_BIN:"budget",DEMO_LOUNGE:"demo",ARMOURY:"armoury",CPU_KITCHEN:"kitchen",SID_REACTOR:"reactor",WARP_GALLERY:"warp",ZZAP_LIBRARY:"library",TAPE_STORE:"tape",CARTRIDGE_BAY:"cartridge",CRACKED_INTRO:"cracked",PIXEL_FOUNDRY:"foundry",MODEM_EXCHANGE:"modem",HIGH_SCORE_CRYPT:"crypt",CRT_MAZE:"crt",TREASURE_VAULT:"vault"}[room.theme]||"normal";
+  return {C64_ARCHIVE:"archive","1541_WORKSHOP":"workshop",BUDGET_BIN:"budget",DEMO_LOUNGE:"demo",ARMOURY:"armoury",CPU_KITCHEN:"kitchen",SID_REACTOR:"reactor",WARP_GALLERY:"warp",ZZAP_LIBRARY:"library",TAPE_STORE:"tape",CARTRIDGE_BAY:"cartridge",CRACKED_INTRO:"cracked",PIXEL_FOUNDRY:"foundry",MODEM_EXCHANGE:"modem",HIGH_SCORE_CRYPT:"crypt",CRT_MAZE:"crt",IRON_KEEP:"armoury",MOSS_CRYPT:"crypt",EMBER_DUNGEON:"danger",SPIDER_NEST:"danger",TREASURE_VAULT:"vault"}[room.theme]||"normal";
 }
 function updateRoomMessage(p,force){
   const r=W.roomAt(world,p.x,p.y);if(!force&&r===p.lastRoom)return;p.lastRoom=r;
@@ -187,11 +202,16 @@ function updateRoomMessage(p,force){
   UI.surroundings.innerHTML=`<strong>${th.name}</strong> — ${th.message}${room?.sanctuary?" <b>PERMANENTLY LIT SANCTUARY.</b>":room?.sigilRoom?" <b>SIGIL WARDEN TERRITORY.</b>":room?.dangerous?" <b>DANGER ROOM.</b>":""}`;
   if(p===p1)S.setRoomMood(roomMoodFor(r));
   if(force)return;
-  S.sfx("room");
+  S.sfx("room");if(room?.fireplace)S.sfx("fireplace");
   if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"Permanent wall torches illuminate this room. Ordinary monsters will not enter, but Death Stalkers do not respect comfortable assumptions.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
+  else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
+  else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}
+  else if(room?.dedicatedHazard){const hazard=(host.hazardRooms||[]).find(h=>h.roomId===r);showToast(hazard?.title||"HAZARD CHAMBER","Amber floor signals warn which lane is about to activate; red means move now. Each hit costs 1 HP.","red",9500)}
   else if(room?.dangerous)showToast(`DANGER — ${th.name}`,"This room contains an active hazard, challenge or major threat. Watch the floor before charging in.","red",8500);
 }
+
+function updateDedicatedHazards(dt){for(const p of localPlayers()){p.hazardHitCooldown=Math.max(0,(p.hazardHitCooldown||0)-dt);if(p.hazardHitCooldown>0)continue;for(const hazard of host.hazardRooms||[]){if(W.roomAt(world,p.x,p.y)!==hazard.roomId)continue;const state=SYS.hazardCellState(hazard,p.x,p.y,host.floorElapsed||run.elapsed);if(!state.active)continue;p.hazardHitCooldown=1050;S.sfx("trap");burst(p.x,p.y,hazard.type==="embers"?P.orange:P.red,18,1.3);floatText(p.x,p.y,"HAZARD -1",P.red);hurtPlayer(p,1,false,hazard.title||"hazard chamber");break}}}
 function surroundingsTick(){
   if(!p1)return;const room=W.roomAt(world,p1.x,p1.y),hidden=host.enemies.filter(e=>e.alive&&W.roomAt(world,e.x,e.y)===room&&!visibleTo(p1,e.x,e.y)).length;
   let text;
@@ -266,7 +286,7 @@ function floatText(tx,ty,text,col=P.white,opts={}){const life=opts.life||720;flo
 function floatPickupText(p,text,col=P.gold){if(!p||!text)return;floatText(p.x,p.y,String(text).toUpperCase(),col,{ownerId:p.id,pickup:true,life:1250,startScale:.42,endScale:1.28})}
 function muzzle(tx,ty,d){const x=tx*C.tile+C.tile/2+d.x*13,y=ty*C.tile+C.tile/2+d.y*13;for(let i=0;i<18;i++){const hot=i<7;particles.push({x,y,vx:d.x*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),vy:d.y*(2.2+Math.random()*4)+(Math.random()-.5)*(hot?1.2:2.4),life:hot?120+Math.random()*110:190+Math.random()*220,col:hot?(i%3?P.gold:"#fff7c8"):(i%2?P.orange:"#9a7290"),size:hot?2+Math.random()*3:1.5+Math.random()*2.5,drag:hot ? .91 : .96,glow:hot?12:4})}rings.push({x,y,r:2,max:17,life:170,col:P.gold})}
 function trailBetween(x1,y1,x2,y2,col){for(let i=0;i<8;i++){const t=i/7;particles.push({x:(x1+(x2-x1)*t)*C.tile+C.tile/2,y:(y1+(y2-y1)*t)*C.tile+C.tile/2,vx:0,vy:0,life:220+i*12,col,size:3,drag:.97})}}
-function updateEffects(dt){for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0)particles.splice(i,1);if(particles.length>900)particles.splice(0,particles.length-900);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0)rings.splice(i,1);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0)floaters.splice(i,1)}
+function updateEffects(dt){for(const q of particles){q.x+=q.vx;q.y+=q.vy;q.vx*=q.drag;q.vy*=q.drag;q.angle=(q.angle||0)+(q.spin||0);q.life-=dt}for(let i=particles.length-1;i>=0;i--)if(particles[i].life<=0)particles.splice(i,1);if(particles.length>900)particles.splice(0,particles.length-900);for(const r of rings){r.life-=dt;r.r+=(r.max-r.r)*.12}for(let i=rings.length-1;i>=0;i--)if(rings[i].life<=0)rings.splice(i,1);for(const f of floaters){f.life-=dt;if(!f.ownerId)f.y-=dt*.018}for(let i=floaters.length-1;i>=0;i--)if(floaters[i].life<=0)floaters.splice(i,1)}
 function updateEmergencyAmmo(p,dt){
   if(p.mana>0){p.emergencyRechargeMs=0;return}
   if(!(p.emergencyRechargeMs>0))p.emergencyRechargeMs=C.player.emergencyRechargeMs;
@@ -276,17 +296,18 @@ function updateEmergencyAmmo(p,dt){
     showToast("EMERGENCY CAPACITOR READY",`${C.player.emergencyAmmo} reserve shots restored. It is enough to keep fighting, not enough to ignore ammunition.`,"cyan",8000);
   }
 }
+function updateLastResortHealth(p,dt){const healthRemains=(host.items||[]).some(i=>i.active&&i.kind==="health");if(healthRemains||p.health>=p.maxHealth){p.healthRegenMs=0;return}p.healthRegenMs=(p.healthRegenMs||0)+dt;if(p.healthRegenMs<120000)return;p.healthRegenMs-=120000;p.health=Math.min(p.maxHealth,p.health+1);p.hpBarMs=3000;S.sfx("heal");floatText(p.x,p.y,"+1 HP",P.green);showToast("LAST-RESORT RECOVERY","No health pickups remain on this floor. Two minutes survived: +1 health.","green",7000)}
 function update(dt){
   if(mode!=="playing")return;enemyCD-=dt;projectileCD-=dt;sendCD-=dt;worldCD-=dt;surroundCD-=dt;specialCD-=dt;move1-=dt;move2-=dt;fire1-=dt;fire2-=dt;lowHealthCD-=dt;updateToast(dt);updateDoors();updateGamepad();
   for(const p of localPlayers()){
     if(p.invuln>0)p.invuln-=dt;if(p.hitStunMs>0)p.hitStunMs=Math.max(0,p.hitStunMs-dt);if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);if(p.torchMs>0)p.torchMs=Math.max(0,p.torchMs-dt);if(p.rapidMs>0)p.rapidMs=Math.max(0,p.rapidMs-dt);if(p.ammoFlashMs>0)p.ammoFlashMs=Math.max(0,p.ammoFlashMs-dt);
-    updateEmergencyAmmo(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
+    updateEmergencyAmmo(p,dt);updateLastResortHealth(p,dt);p.rx+=(p.x-p.rx)*.32;p.ry+=(p.y-p.ry)*.32;updateCamping(p,dt);reveal(p);markRoomVisit(p);rememberTrail(p)
   }
   for(const p of remote.values()){if(p.hpBarMs>0)p.hpBarMs=Math.max(0,p.hpBarMs-dt);p.rx+=(p.x-p.rx)*.28;p.ry+=(p.y-p.ry)*.28}
   for(const e of host.enemies||[])if(e.hpBarMs>0)e.hpBarMs=Math.max(0,e.hpBarMs-dt);for(const g of host.generators||[])if(g.hpBarMs>0)g.hpBarMs=Math.max(0,g.hpBarMs-dt)
   if(input.has("Space")&&fire1<=0)firePlayer(p1,d1());if(p2&&input.has("Enter")&&fire2<=0)firePlayer(p2,d2());if(move1<=0){const d=d1();if(d){movePlayer(p1,d.x,d.y);move1=C.player.moveDelay*(p1.moveMultiplier||1)}}if(p2&&move2<=0){const d=d2();if(d){movePlayer(p2,d.x,d.y);move2=C.player.moveDelay*(p2.moveMultiplier||1)}}
   if(projectileCD<=0){stepProjectiles();projectileCD=70}if(enemyCD<=0){hostEnemyStep(C.enemy.thinkDelay);enemyCD=C.enemy.thinkDelay}if(sendCD<=0){sendPlayer();sendCD=100}if(worldCD<=0&&net.isHost){broadcastWorld();worldCD=350}
-  updateHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
+  updateHazards(dt);updateDedicatedHazards(dt);updateEffects(dt);updateGenerators(dt);updateArena();updateTimed(dt);updateBoulder(dt);updateMemoryPuzzle(dt);updateRescue();updateBanishment(dt);updateStalker(dt);updateFloorObjective();updateAlert(dt);updateRoomEvents(dt);processAchievements();
   if(surroundCD<=0){surroundingsTick();surroundCD=20000}inventoryReminderMs-=dt;if(inventoryReminderMs<=0){inventoryReminderMs=300000;showToast("DON'T FORGET TO HIT TAB TO CHECK YOUR INVENTORY","TAB ALSO EXPLAINS ARTEFACTS, THE BANISHMENT FLASK AND YOUR CURRENT OBJECTIVE.","cyan",8000)}
   const seen=host.enemies.filter(e=>e.alive&&e.aiState==="chase"&&localPlayers().some(p=>visibleTo(p,e.x,e.y))).length;S.setDanger(Math.min(1,(seen+run.alert/45)/4));updateNamedEncounters();
   const critical=localPlayers().find(p=>p.health<=2);if(critical&&lowHealthCD<=0){S.sfx("lowhealth");const hasPotion=PGR.firstInventory(critical,"potion")>=0;showToast("LOW HEALTH",hasPotion?"PRESS E TO USE POTION":"NO HEALING POTION AVAILABLE — FIND HEALTH OR BREAK CONTACT.","red",7000);lowHealthCD=8000}sync()

@@ -334,20 +334,55 @@ body[data-ccg-mode="amiga"] .ccg-header {
 }
 
 /* Homepage launch spotlight for the owner's current beta game. */
+.home-hero__game-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(180px, 0.85fr);
+    gap: 10px;
+    width: min(760px, 100%);
+    margin: 10px auto 0;
+}
 .home-hero__beta-cta,
 body[data-ccg-mode="c64"] .home-hero__beta-cta,
 body[data-ccg-mode="amiga"] .home-hero__beta-cta {
     display: flex;
     flex-direction: column;
-    width: min(500px, 100%);
+    width: 100%;
     min-height: 58px;
-    margin: 10px auto 0;
+    margin: 0;
     padding: 9px 18px;
     color: #190f00 !important;
     background: linear-gradient(180deg, #fff27a 0%, #ffd63d 55%, #f0ae00 100%) !important;
     border: 2px solid #fff4a5 !important;
     box-shadow: 0 0 0 2px #402700, 0 0 26px rgba(255, 214, 61, 0.72), 0 10px 22px rgba(0, 0, 0, 0.58) !important;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+}
+
+.home-hero__leaderboard-cta,
+body[data-ccg-mode="c64"] .home-hero__leaderboard-cta,
+body[data-ccg-mode="amiga"] .home-hero__leaderboard-cta {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 58px;
+    margin: 0;
+    padding: 9px 15px;
+    color: #eaffff !important;
+    background: linear-gradient(180deg, #174f6c 0%, #10374f 58%, #081d2d 100%) !important;
+    border: 2px solid #6cecff !important;
+    box-shadow: 0 0 0 2px #07131b, 0 0 24px rgba(108, 236, 255, 0.48), 0 10px 22px rgba(0, 0, 0, 0.58) !important;
+    text-shadow: 0 0 8px rgba(108, 236, 255, 0.72) !important;
+}
+.home-hero__leaderboard-cta span { font-size: 0.72rem; letter-spacing: 0.13em; }
+.home-hero__leaderboard-cta strong { font-size: 0.82rem; letter-spacing: 0.06em; }
+.home-hero__leaderboard-cta:hover,
+.home-hero__leaderboard-cta:focus-visible {
+    color: #fff !important;
+    background: linear-gradient(180deg, #21749a 0%, #15506d 58%, #0b2b40 100%) !important;
+    box-shadow: 0 0 0 2px #07131b, 0 0 36px rgba(108, 236, 255, 0.78), 0 14px 28px rgba(0, 0, 0, 0.66) !important;
+}
+
+@media (max-width: 720px) {
+    .home-hero__game-actions { grid-template-columns: 1fr; }
 }
 
 .home-hero__beta-cta span { font-size: 0.78rem; letter-spacing: 0.18em; }

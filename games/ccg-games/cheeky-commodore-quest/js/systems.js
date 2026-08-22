@@ -112,6 +112,10 @@ window.CCGSystems=(()=>{
     MODEM_EXCHANGE:["terminal","desk","cable","cabinet","roundChair"],
     HIGH_SCORE_CRYPT:["statue","pedestal","cabinet","pillar","candleSconce"],
     CRT_MAZE:["display","terminal","console","cable","roundChair"],
+    IRON_KEEP:["shield","rack","bench","pillar","candleSconce"],
+    MOSS_CRYPT:["statue","pedestal","pillar","bench","candleSconce"],
+    EMBER_DUNGEON:["anvil","rack","crate","pillar","candleSconce"],
+    SPIDER_NEST:["bookcase","tapeStack","crate","candleSconce"],
     TREASURE_VAULT:["pedestal","crate","statue","chestPile","pillar"]
   };
   const nonBlockingDecor=new Set(["cable","pipe","lightBar","candleSconce"]);
@@ -125,24 +129,34 @@ window.CCGSystems=(()=>{
     room.grandHall=true;room.grandHallAxis=room.w>=room.h?"horizontal":"vertical";room.grandHallTitle=(run?.floor||1)>=5?"ZZAP! GRAND HALL":"COMMODORE GRAND HALL";return room
   }
   function decorateFurniture(world,host,rooms,used,run){
-    world.decor=[];host.blockingDecor=[];const reserved=new Set((world.wallLights||[]).map(x=>cell(x.x,x.y))),doors=host.doors||[],grand=chooseGrandHall(world,host,run);
+    world.decor=[];world.fireplaces=[];host.blockingDecor=[];const reserved=new Set((world.wallLights||[]).map(x=>cell(x.x,x.y))),doors=host.doors||[],grand=chooseGrandHall(world,host,run);
     const tooCloseToDoor=q=>doors.some(d=>md(d,q)<=2);
     const tooCloseToUsed=q=>used.has(cell(q.x,q.y))||used.has(cell(q.x-1,q.y))||used.has(cell(q.x+1,q.y))||used.has(cell(q.x,q.y-1))||used.has(cell(q.x,q.y+1));
     const addDecor=(room,q,type,variant=0,blocking=decorBlocking(type))=>{
       if(!q||world.map[q.y]?.[q.x]!==0||used.has(cell(q.x,q.y))||reserved.has(cell(q.x,q.y)))return false;
       if(blocking&&(tooCloseToDoor(q)||tooCloseToUsed(q)))return false;
-      if(blocking){used.add(cell(q.x,q.y));host.blockingDecor.push({x:q.x,y:q.y,type,roomId:room.id})}
-      reserved.add(cell(q.x,q.y));world.decor.push({id:`decor-${room.id}-${world.decor.length}`,x:q.x,y:q.y,roomId:room.id,type,variant,blocking});return true
+      const id=`decor-${room.id}-${world.decor.length}`,structural=type==="fireplace"||type==="pillar",hp=structural?999:2;
+      if(blocking){used.add(cell(q.x,q.y));host.blockingDecor.push({id,x:q.x,y:q.y,type,roomId:room.id,hp,maxHp:hp,structural})}
+      reserved.add(cell(q.x,q.y));world.decor.push({id,x:q.x,y:q.y,roomId:room.id,type,variant,blocking,structural,hp,maxHp:hp});return true
     };
+    // Two occupied rooms on every floor receive a wall-backed hearth. They are
+    // installed before loose furniture so the fire never blocks a door or a
+    // critical object and always has enough space to read as a landmark.
+    const hearthRooms=rooms.filter(room=>!room.optional&&!room.sigilRoom&&!room.spiderNest&&!room.dedicatedHazard&&room.id!==world.startRoomId&&room.id!==world.exitRoomId);
+    for(const room of hearthRooms){
+      if(world.fireplaces.length>=2)break;const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),spots=[{x:cx,y:room.y+1,side:"north"},{x:cx,y:room.y+room.h-1,side:"south"},{x:room.x+1,y:cy,side:"west"},{x:room.x+room.w-1,y:cy,side:"east"}];
+      for(let x=room.x+2;x<=room.x+room.w-2;x++){spots.push({x,y:room.y+1,side:"north"},{x,y:room.y+room.h-1,side:"south"})}for(let y=room.y+2;y<=room.y+room.h-2;y++){spots.push({x:room.x+1,y,side:"west"},{x:room.x+room.w-1,y,side:"east"})}
+      for(const q of spots)if(addDecor(room,q,"fireplace",room.id%4,true)){const hearth=world.decor[world.decor.length-1];hearth.side=q.side;room.fireplace=true;world.fireplaces.push({id:hearth.id,x:q.x,y:q.y,roomId:room.id,side:q.side});break}
+    }
     for(const room of world.rooms){
       room.variant=(room.id*5+(run?.floor||1)*3+(room.depth||0))%7;room.signature=(room.id*37+(run?.floor||1)*53+(room.depth||0)*11)%256;
-      const list=furnitureByTheme[room.theme]||["crate","bench","terminal","roundChair"],target=C.dungeon.furnitureMin+((room.id+room.variant)%Math.max(1,C.dungeon.furnitureMax-C.dungeon.furnitureMin+1)),spots=[];
+      const list=furnitureByTheme[room.theme]||["crate","bench","terminal","roundChair"],target=room.dedicatedHazard?2:C.dungeon.furnitureMin+((room.id+room.variant)%Math.max(1,C.dungeon.furnitureMax-C.dungeon.furnitureMin+1)),spots=[];
       for(let x=room.x+2;x<=room.x+room.w-2;x++){spots.push({x,y:room.y+1},{x,y:room.y+room.h-1})}
       for(let y=room.y+2;y<=room.y+room.h-2;y++){spots.push({x:room.x+1,y},{x:room.x+room.w-1,y})}
       let placed=0;
       for(let tries=0;tries<spots.length*3&&placed<target;tries++){const q=spots[(room.id*11+tries*7+room.variant*3)%spots.length];if(!q)continue;const type=list[(placed+room.variant+tries)%list.length];if(addDecor(room,q,type,(placed+room.id)%4)){placed++}}
       // A few recognisable interior objects make rooms read as places rather than empty boxes.
-      if(!room.optional&&!room.sigilRoom&&room.w>=9&&room.h>=7){
+      if(!room.optional&&!room.sigilRoom&&!room.dedicatedHazard&&room.w>=9&&room.h>=7){
         const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2),interiors=[
           {x:cx-2,y:cy+2,type:"roundChair"},{x:cx+2,y:cy+2,type:"roundChair"},
           {x:cx,y:cy+2,type:(room.id+room.variant)%5===0?"pool":"table"}
@@ -230,6 +244,43 @@ window.CCGSystems=(()=>{
     if(floor===C.dungeon.torchPuzzleFloor){for(const room of pool){const torches=torchSetForRoom(world,room,used);if(!torches)continue;for(const q of torches)used.add(cell(q.x,q.y));let reward=firstFreeCell(world,room,used,q=>torches.every(t=>md(t,q)>2));if(!reward)continue;used.add(cell(reward.x,reward.y));const chest={id:"sequence-torch-vault",...reward,locked:false,active:false,depth:(room.depth||0)+9,roomId:room.id,torchPuzzleReward:true};host.chests.push(chest);host.sequenceTorchPuzzle={id:"sequence-torch-puzzle",roomId:room.id,sequence:[...seq],torches:torches.map(q=>({...q,lit:false})),progress:0,solved:false,failures:0,rewardPos:{...reward},chestId:chest.id};room.sequenceTorchRoom=true;break}}
     if(floor===C.dungeon.weightBridgeFloor){const choices=world.rooms.filter(r=>r.optional&&r.id!==host.sigilRoomId&&r.id!==host.trader?.roomId).map(room=>({room,gate:(host.doors||[]).find(d=>d.roomId===room.id&&!d.sigilGate)})).filter(x=>x.gate).sort((a,b)=>(b.room.depth||0)-(a.room.depth||0));for(const x of choices){const b=makeWeightBridge(world,host,x.room,x.gate,used);if(b){host.weightBridge=b;break}}}
   }
+  function hazardCellState(hazard,x,y,elapsed=0){
+    if(!hazard||(hazard.cells||[]).every(q=>q.x!==x||q.y!==y))return{active:false,warning:false,group:-1};
+    const period=hazard.period||2300,warningMs=hazard.warningMs||700,activeMs=hazard.activeMs||620,groups=Math.max(2,hazard.groups||2),time=Math.max(0,Number(elapsed||0)+Number(hazard.phase||0)),step=Math.floor(time/period),within=time%period,group=step%groups,cell=(hazard.cells||[]).find(q=>q.x===x&&q.y===y),selected=cell?.group===group;
+    return{active:Boolean(selected&&within>=warningMs&&within<warningMs+activeMs),warning:Boolean(selected&&within<warningMs),group}
+  }
+  function installDedicatedHazardRooms(world,host,run,rooms,used){
+    const floor=Math.max(1,run?.floor||1),count=floor>=3?2:1,busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
+    for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);if(host.guardian)busy.add(W.roomAt(world,host.guardian.x,host.guardian.y));
+    for(const feature of [host.bloodClue,host.memoryPuzzle,host.sequenceTorchPuzzle,host.weightBridge])if(feature?.roomId!=null)busy.add(feature.roomId);
+    const choices=rooms.filter(room=>!room.optional&&!room.sanctuary&&!room.sigilRoom&&!room.spiderNest&&!busy.has(room.id)&&room.w>=8&&room.h>=7).map(room=>({room,key:world.random()})).sort((a,b)=>a.key-b.key),types=["blade","embers","arrows"];host.hazardRooms=[];
+    for(let i=0;i<count&&choices.length;i++){
+      const room=choices.shift().room,type=types[(floor+i)%types.length],groups=type==="embers"?2:type==="blade"?3:4,cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++){
+        const group=type==="embers"?(x+y)%2:type==="blade"?(x-room.x)%3:(y-room.y)%4;cells.push({x,y,group})
+      }
+      const hazard={id:`hazard-${floor}-${i}`,roomId:room.id,type,cells,groups,period:type==="arrows"?2050:type==="blade"?2300:2550,warningMs:type==="arrows"?780:700,activeMs:type==="embers"?760:560,phase:Math.floor(world.random()*1200),title:type==="blade"?"PENDULUM BLADE GALLERY":type==="embers"?"EMBER-TILE VAULT":"ARROW-SLIT CROSSING"};host.hazardRooms.push(hazard);room.dedicatedHazard=true;room.hazardType=type;room.dangerous=true;
+      host.traps=(host.traps||[]).filter(trap=>trap.roomId!==room.id);
+      const q=freeInRoom(world,room,used),hp=10+floor*2,armour=5+floor;host.enemies.push({id:`archive-knight-${floor}-${i}`,...q,kind:"knight",hp,maxHp:hp,armor:armour,maxArmor:armour,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:980,attackCooldown:800,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,knight:true,meleeOnly:true,moveSpeedScale:1.18})
+    }
+  }
+
+  function installSkeletonHorde(world,host,run,rooms,used){
+    const floor=Math.max(1,run?.floor||1),busy=new Set([world.startRoomId,world.exitRoomId,host.sigilRoomId,host.trader?.roomId,host.startShop?.roomId,host.spiderNest?.roomId].filter(x=>x!=null));
+    for(const h of host.hazardRooms||[])busy.add(h.roomId);for(const g of host.generators||[])busy.add(g.roomId);for(const a of host.arenas||[])busy.add(a.roomId);for(const t of host.timedRooms||[])busy.add(t.roomId);if(host.rescue)busy.add(host.rescue.roomId);
+    const room=rooms.filter(r=>!r.optional&&!r.sanctuary&&!r.sigilRoom&&!busy.has(r.id)&&r.w>=8&&r.h>=7).map(r=>({r,key:world.random()})).sort((a,b)=>a.key-b.key)[0]?.r||null;
+    host.skeletonHorde=null;if(!room)return null;room.skeletonHorde=true;room.dangerous=true;room.theme=room.theme==="SPIDER_NEST"?room.theme:"MOSS_CRYPT";
+    const available=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0&&!used.has(cell(x,y)))available.push({x,y});
+    const wanted=Math.min(12,8+floor),ids=[];for(let i=0;i<wanted&&available.length;i++){const pick=Math.floor(world.random()*available.length),q=available.splice(pick,1)[0];used.add(cell(q.x,q.y));const hp=2;host.enemies.push({id:`bone-horde-${floor}-${i}`,...q,kind:"skeleton",hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:i%2?1:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:680+Math.floor(world.random()*360),attackCooldown:850+Math.floor(world.random()*300),chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,skeleton:true,skeletonHordeId:`bone-horde-floor-${floor}`});ids.push(`bone-horde-${floor}-${i}`)}
+    host.skeletonHorde={id:`bone-horde-floor-${floor}`,roomId:room.id,enemyIds:ids,revealed:false,cleared:false};return host.skeletonHorde
+  }
+  function expandSigilAnnex(world,room,gate){
+    if(!room||!gate)return false;const targetW=12,targetH=9;if(room.w>=targetW&&room.h>=targetH)return true;const old={x:room.x,y:room.y,w:room.w,h:room.h},side=gate.x<room.x?"west":gate.x>room.x+room.w?"east":gate.y<room.y?"north":"south";
+    let x1=old.x,y1=old.y;if(side==="east")x1=old.x+old.w-targetW;else if(side!=="west")x1=Math.floor(old.x+old.w/2-targetW/2);if(side==="south")y1=old.y+old.h-targetH;else if(side!=="north")y1=Math.floor(old.y+old.h/2-targetH/2);const x2=x1+targetW,y2=y1+targetH;
+    if(x1<2||y1<2||x2>=C.worldWidth-2||y2>=C.worldHeight-2)return false;const inOld=(x,y)=>x>=old.x&&x<=old.x+old.w&&y>=old.y&&y<=old.y+old.h;
+    for(let y=y1-1;y<=y2+1;y++)for(let x=x1-1;x<=x2+1;x++){if(inOld(x,y)||x===gate.x&&y===gate.y)continue;if(world.map[y]?.[x]!==1)return false}
+    for(let y=y1;y<=y2;y++)for(let x=x1;x<=x2;x++){world.map[y][x]=0;world.optionalCells?.add(cell(x,y))}room.x=x1;room.y=y1;room.w=targetW;room.h=targetH;room.theme="IRON_KEEP";room.sigilGreatHall=true;return true
+  }
 
   function decorate(world,host,run){
     host.worldRef=world;
@@ -302,13 +353,12 @@ window.CCGSystems=(()=>{
     // The Sigil chamber uses a generated optional annex rather than an ordinary BSP room.
     // Optional annexes are carved as isolated one-door pockets, so sealing this gate cannot sever
     // the main dungeon route even when unrelated corridors cross elsewhere in the carved map.
-    const sigilChoices=world.rooms.filter(r=>r.optional).map(room=>({room,gate:host.doors.find(d=>d.roomId===room.id&&d.type!=="room")})).filter(x=>x.gate).sort((a,b)=>{
-      const ap=a.gate.type==="bronze"?1:0,bp=b.gate.type==="bronze"?1:0;return bp-ap||((b.room.depth||0)-(a.room.depth||0))
-    });
+    const sigilChoices=world.rooms.filter(r=>r.optional).map(room=>({room,gate:host.doors.find(d=>d.roomId===room.id&&d.type!=="room")})).filter(x=>x.gate).sort((a,b)=>(b.room.w*b.room.h)-(a.room.w*a.room.h)||((b.room.depth||0)-(a.room.depth||0)));
     const sigilChoice=sigilChoices[0]||null,wardenRoom=sigilChoice?.room||null;
     host.sigilRoomId=wardenRoom?.id??null;host.sigilLockdown=false;host.sigilResolved=false;host.sigilDropPos=null;host.sigilDefenderIds=[];host.sigilGateIds=[];
     if(wardenRoom&&sigilChoice?.gate){
       const gate=sigilChoice.gate;gate.type="room";gate.hidden=false;gate.discovered=true;gate.locked=true;gate.open=false;gate.opening=false;gate.sigilGate=true;gate.sigilAnnex=true;host.sigilGateIds=[gate.id];wardenRoom.sigilRoom=true;wardenRoom.sigilAnnex=true;
+      expandSigilAnnex(world,wardenRoom,gate);
       // Later optional passage carving can occasionally graze an annex wall. Reseal the
       // annex perimeter here, preserving only its intentional Sigil gate.
       for(let y=wardenRoom.y-1;y<=wardenRoom.y+wardenRoom.h+1;y++)for(let x=wardenRoom.x-1;x<=wardenRoom.x+wardenRoom.w+1;x++){const edge=x===wardenRoom.x-1||x===wardenRoom.x+wardenRoom.w+1||y===wardenRoom.y-1||y===wardenRoom.y+wardenRoom.h+1;if(!edge||(x===gate.x&&y===gate.y)||W.roomAt?.(world,x,y)>=0)continue;if(world.map[y]?.[x]===0)world.map[y][x]=1}
@@ -340,6 +390,25 @@ window.CCGSystems=(()=>{
     // V10.2 retains the optional puzzle chain. These rooms never replace the mandatory objective or Sigil route.
     installOptionalPuzzles(world,host,run,rooms,used);
 
+    // A rare windy corridor can feed one adjoining Dustweb Nest. Spiders are
+    // numerous and mobile, but each has exactly 1 HP and a small vermin reward
+    // so the room is tense without becoming an XP-level shortcut.
+    host.spiderNest=null;
+    if(world.hauntedCorridor){
+      const haunted=world.hauntedCorridor,candidates=[world.rooms[haunted.a],world.rooms[haunted.b]].filter(room=>room&&room.id!==world.startRoomId&&room.id!==world.exitRoomId&&!roomHasCoreFeature(host,room.id)).sort((a,b)=>(b.depth||0)-(a.depth||0)),room=candidates[0];
+      if(room){
+        for(const candidate of [world.rooms[haunted.a],world.rooms[haunted.b]])if(candidate?.spiderNest&&candidate!==room){candidate.spiderNest=false;candidate.theme=candidate.originalTheme||"C64_ARCHIVE"}
+        haunted.roomId=room.id;room.theme="SPIDER_NEST";room.spiderNest=true;room.dangerous=true;room.verminRoom=true;
+        const cells=[];for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(world.map[y]?.[x]===0&&!used.has(cell(x,y)))cells.push({x,y});
+        const wanted=Math.max(10,Math.min(18,Math.floor(room.w*room.h/6)+7)),spawned=[];
+        for(let i=0;i<wanted&&cells.length;i++){const pick=Math.floor(world.random()*cells.length),q=cells.splice(pick,1)[0];used.add(cell(q.x,q.y));const e={id:`dustweb-spider-${run.floor||1}-${i}`,...q,kind:"spider",hp:1,maxHp:1,alive:true,aiState:"idle",facing:{x:i%2?1:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:520+Math.floor(world.random()*420),attackCooldown:760+Math.floor(world.random()*420),chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,spider:true,vermin:true,xpValue:10,scoreValue:15,spiderNestId:haunted.id};host.enemies.push(e);spawned.push(e.id)}
+        host.spiderNest={id:haunted.id,roomId:room.id,corridorCells:haunted.cells.map(q=>({...q})),enemyIds:spawned,revealed:false,cleared:false,whistledPlayers:[],extinguishedPlayers:[]};
+      }else world.hauntedCorridor=null
+    }
+
+    installDedicatedHazardRooms(world,host,run,rooms,used);
+    installSkeletonHorde(world,host,run,rooms,used);
+
     // Count Loadula remains separate from ordinary enemies. A Banishment Flask can make him vulnerable briefly.
     const stalkRoom=rooms[0]||world.rooms[world.exitRoomId],sq=freeInRoom(world,stalkRoom,used);
     host.stalker={id:"count-loadula",name:C.stalker.name,...sq,x0:sq.x,y0:sq.y,active:false,seen:false,awake:false,moveCooldown:C.stalker.moveMs,stunMs:0,vulnerableMs:0,hp:C.stalker.banishHpBase+(run.floor||1)*2,maxHp:C.stalker.banishHpBase+(run.floor||1)*2,spawnTimer:(run.modifier?.id==="STALKER_ACTIVE"?9000:C.stalker.spawnDelayMs),near:false};
@@ -355,7 +424,7 @@ window.CCGSystems=(()=>{
     const floorInfo=PGR.floorInfo(run),diff=PGR.difficulty(run),hpFloor=1+(Math.max(1,run.floor)-1)*.12,armoured=run.modifier?.id==="ARMOURED_ENEMIES"?1.3:1,playerLevel=Math.max(1,run.playerLevelHint||1),levelSteps=playerLevel-1;
     if(world.rooms[world.startRoomId])world.rooms[world.startRoomId].theme=floorInfo.theme;
     for(const e of host.enemies){
-      if(!e.guardian)e.maxHp=Math.max(1,Math.ceil(e.maxHp*diff.enemyHp*hpFloor*armoured));
+      if(e.spider)e.maxHp=1;else if(e.skeleton)e.maxHp=2;else if(!e.guardian)e.maxHp=Math.max(1,Math.ceil(e.maxHp*diff.enemyHp*hpFloor*armoured));
       if(e.follower){e.maxHp=Math.max(1,Math.ceil(e.maxHp*(1+levelSteps*C.enemy.namedHpPerLevel)));const armourScale=(1+(Math.max(1,run.floor)-1)*.08)*Math.max(.9,Math.sqrt(diff.enemyHp))*(1+levelSteps*C.enemy.namedArmorPerLevel);e.maxArmor=Math.max(1,Math.ceil((e.maxArmor||e.armor||1)*armourScale)-1);e.armor=e.maxArmor;e.namedDamageScale=1+levelSteps*C.enemy.namedDamagePerLevel;e.namedCadenceScale=Math.max(.78,1-levelSteps*C.enemy.namedCadencePerLevel);e.namedPotionHeal=Math.max(3,Math.round(3+(run.floor||1)*.55+levelSteps*C.enemy.namedPotionPerLevel));e.restorePotion=true;e.restoreUsed=false;e.retreating=false;if(e.ccgBoss){e.maxHp=18;e.maxArmor=4;e.armor=4;e.namedDamageScale=2;e.namedCadenceScale=.78;e.moveSpeedScale=1.35}}
       e.hp=e.maxHp;
     }
@@ -379,7 +448,7 @@ window.CCGSystems=(()=>{
     for(const d of host.doors||[])used.add(cell(d.x,d.y));
     decorateFurniture(world,host,rooms,used,run);
     installBoulderTrap(world,host,run);
-    for(const room of world.rooms){room.dangerous=false;room.verminRoom=false;room.voidRoom=false}
+    for(const room of world.rooms){room.dangerous=Boolean(room.spiderNest||room.dedicatedHazard||room.skeletonHorde);room.verminRoom=Boolean(room.spiderNest);room.voidRoom=false}
     for(const t of host.traps||[]){const r=world.rooms[t.roomId];if(r)r.dangerous=true}
     for(const g of host.generators||[]){const r=world.rooms[g.roomId];if(r)r.dangerous=true}
     for(const a of host.arenas||[]){const r=world.rooms[a.roomId];if(r)r.dangerous=true}
@@ -450,5 +519,5 @@ window.CCGSystems=(()=>{
     host.exitOpen=done&&Boolean(host.exitSigilCollected);return host.exitOpen;
   }
 
-  return{decorate,enforceDeathStalkerSingleton,isPermanentLit,inSanctuary,trapActive,lockRoomDoors,roomDoorIds,pathStep,objectiveText,updateObjective,sigilDefendersAlive};
+  return{decorate,enforceDeathStalkerSingleton,isPermanentLit,inSanctuary,trapActive,hazardCellState,lockRoomDoors,roomDoorIds,pathStep,objectiveText,updateObjective,sigilDefendersAlive};
 })();
