@@ -270,3 +270,22 @@ html[data-ccg-page="home"] .home-featured-videos .home-video-card:nth-child(2) .
         height: 38px;
     }
 }
+
+/* ============================================================
+   HOME HERO — KEEP THE LOST SIZZLER AS THE SINGLE GAME CTA
+   ------------------------------------------------------------
+   The Weekly Vault leaderboard remains available inside the game itself, but
+   it must not compete with the Lost Sizzler beta button on the home page.
+============================================================ */
+
+html[data-ccg-page="home"] .home-hero__leaderboard-cta {
+    display: none !important;
+}
+
+html[data-ccg-page="home"] .home-hero__game-actions {
+    grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-ccg-page="home"] .home-hero__beta-cta {
+    width: 100% !important;
+}
