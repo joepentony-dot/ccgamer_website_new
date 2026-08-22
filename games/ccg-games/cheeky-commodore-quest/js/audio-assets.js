@@ -49,6 +49,13 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     danger:"assets/audio/music/danger.wav",
     sanctuary:"assets/audio/music/sanctuary.wav",
     named:"assets/audio/music/named-enemy.wav",
-    stalker:"assets/audio/music/count-loadula.wav"
+    stalker:"assets/audio/music/count-loadula.wav",
+    playlists:Object.freeze({
+      normal:Object.freeze(["assets/audio/music/exploration.wav"]),
+      danger:Object.freeze(["assets/audio/music/danger.wav"]),
+      sanctuary:Object.freeze(["assets/audio/music/sanctuary.wav"]),
+      named:Object.freeze(["assets/audio/music/named-enemy.wav"]),
+      stalker:Object.freeze(["assets/audio/music/count-loadula.wav"])
+    })
   })
 });
