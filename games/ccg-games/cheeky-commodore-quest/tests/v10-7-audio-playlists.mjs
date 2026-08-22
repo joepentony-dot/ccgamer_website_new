@@ -41,8 +41,7 @@ assert(patch.includes('original.stopMusic?.()'),'Playlist wrapper must call the 
 assert(patch.includes('original.toggle'),'Playlist wrapper must call the captured base toggle method without recursion.');
 
 // Ordinary room themes and corridors must all remain the same Exploration state.
-// Only genuine special-room flags may change room-based music; named enemies and
-// Count Loadula continue to override through their separate encounter logic.
+// Only genuine special-room flags may change room-based music.
 assert(owner.includes('v10-7-continuous-exploration.js'),'Continuous exploration guard is not loaded by the game.');
 assert(continuity.includes('if(room.sanctuary)return "sanctuary"'),'Sanctuary rooms must retain their dedicated music state.');
 assert(continuity.includes('if(room.dangerous)return "danger"'),'Danger/combat rooms must retain their dedicated music state.');
@@ -52,39 +51,54 @@ for(const legacy of ['C64_ARCHIVE','1541_WORKSHOP','BUDGET_BIN','DEMO_LOUNGE','A
   assert(!continuity.includes(legacy),`Legacy area music state ${legacy} must not return in the continuity guard.`);
 }
 
-// Repeat Exploration requests caused by ordinary room/corridor boundaries must
-// never advance the playlist. Rotation is allowed only when the current song
-// naturally reaches its end or fails and the engine explicitly advances it.
-assert(patch.includes('function transition(force=false,advance=false)'),'Playlist transition must distinguish forced refresh from natural track advance.');
-assert(patch.includes('if(state==="normal"&&!advance){updateVolume();return}'),'Active Exploration must survive repeat normal-state requests unchanged.');
-assert(patch.includes('transition(true,true)'),'Natural track completion must still be able to advance the playlist.');
-assert(patch.includes('if(next==="normal"&&current?.state==="normal"&&!current.audio.paused)'),'Repeated corridor/ordinary-room Exploration state requests must be ignored.');
-assert(patch.includes('name==="room"?undefined'),'Room-boundary audio cue must not interrupt the continuous Exploration soundtrack.');
+// Exploration is a persistent deck. Special themes may interrupt it, but the
+// exact same Exploration Audio object and currentTime must resume afterwards.
+// Only natural track completion/error may choose another Exploration song.
+assert(patch.includes('let explorationSlot=null'),'Playlist must retain a persistent Exploration slot.');
+assert(patch.includes('function parkExploration(slot)'),'Interrupted Exploration must be parked rather than destroyed.');
+assert(patch.includes('function resumeExploration(previous)'),'Returning to Exploration must resume the parked track.');
+assert(patch.includes('if(state==="normal"&&!advance)'),'Normal/corridor requests must take the persistent Exploration path.');
+assert(patch.includes('if(explorationSlot&&resumeExploration(current))return'),'Special-theme exit must resume the existing Exploration slot.');
+assert(patch.includes('transition(true,true)'),'Natural track completion must still advance the playlist.');
+assert(patch.includes('setDanger:()=>{}'),'Legacy per-frame danger intensity must not control music.');
+assert(patch.includes('name==="room"?undefined'),'Room-boundary audio cue must remain suppressed.');
 assert(assets.includes('room:"assets/audio/sfx/room-enter.wav"'),'Room-enter asset remains documented even though boundary playback is suppressed.');
+assert(patch.includes('stopImmediatePropagation'),'Admin music readiness must not trigger the old stop/start refresh listener.');
+assert(patch.includes('failedUrls=new Set'),'Failed uploaded tracks must be quarantined for the current session.');
+assert(patch.includes('return groups.bundled.filter'),'Bundled tracks must remain the fallback when custom uploads fail.');
 
-// Behavioural regression: actually execute the wrapper against a fake Audio
-// implementation. Room -> corridor -> ordinary room must keep one Exploration
-// audio instance. A real Danger transition is still allowed to create a new one.
+// Behavioural regression against a fake browser Audio implementation.
 class FakeAudio{
   static instances=[];
-  constructor(url){this.url=url;this.paused=true;this.volume=0;this.currentTime=0;this.duration=180;this.listeners={};FakeAudio.instances.push(this)}
+  constructor(url){
+    this.url=url;
+    this.paused=true;
+    this.volume=0;
+    this.currentTime=0;
+    this.duration=180;
+    this.listeners={};
+    FakeAudio.instances.push(this);
+  }
   play(){this.paused=false;return Promise.resolve()}
   pause(){this.paused=true}
   removeAttribute(){}
   load(){}
   addEventListener(name,fn){(this.listeners[name]||(this.listeners[name]=[])).push(fn)}
+  emit(name){for(const fn of this.listeners[name]||[])fn()}
 }
 const sfxCalls=[];
+let legacyDangerCalls=0;
 const baseSound={
   start:async()=>true,
   startMusic:()=>{},
   stopMusic:()=>{},
   toggle:()=>true,
   isEnabled:()=>true,
-  setDanger:()=>{},
+  setDanger:()=>{legacyDangerCalls++},
   sfx:name=>sfxCalls.push(name),
   windWhistle:()=>{}
 };
+const eventListeners=new Map();
 const fakeWindow={
   CCGSound:baseSound,
   CCG_AUDIO_ASSETS:{music:{
@@ -93,7 +107,16 @@ const fakeWindow={
   }},
   CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}}}},
   CCG_ADMIN_AUDIO:{},
-  addEventListener:()=>{}
+  addEventListener(name,fn){
+    if(!eventListeners.has(name))eventListeners.set(name,[]);
+    eventListeners.get(name).push(fn);
+  },
+  dispatchEvent(event){
+    for(const fn of eventListeners.get(event.type)||[]){
+      fn(event);
+      if(event.__stopped)break;
+    }
+  }
 };
 const sandbox={
   window:fakeWindow,
@@ -106,27 +129,68 @@ const sandbox={
   console
 };
 vm.runInNewContext(patch,sandbox,{filename:'lost-sizzler-playlist-audio.js'});
+
 await fakeWindow.CCGSound.start();
 await Promise.resolve();
 assert(FakeAudio.instances.length===1,'Starting Exploration should create exactly one music instance.');
-const firstExploration=FakeAudio.instances[0].url;
+const firstExploration=FakeAudio.instances[0];
+firstExploration.currentTime=47.25;
+
+// Room -> corridor -> ordinary room: no replacement and no position reset.
 fakeWindow.CCGSound.setRoomMood('normal');
-fakeWindow.CCGSound.setRoomMood('archive'); // legacy ordinary-room state normalises to Exploration
-fakeWindow.CCGSound.setRoomMood('normal'); // corridor / ordinary-room boundary
+fakeWindow.CCGSound.setRoomMood('archive');
+fakeWindow.CCGSound.setRoomMood('normal');
+await Promise.resolve();
 assert(FakeAudio.instances.length===1,'Room/corridor Exploration requests must not create a replacement track.');
-assert(FakeAudio.instances[0].url===firstExploration,'The current Exploration track must remain unchanged across corridors.');
+assert(FakeAudio.instances[0]===firstExploration,'Corridors must keep the exact same Exploration Audio object.');
+assert(firstExploration.currentTime===47.25,'Corridor entry must not reset Exploration playback position.');
+
+// The old room-enter cue and per-frame procedural danger hook must not control music.
 fakeWindow.CCGSound.sfx('room');
 assert(!sfxCalls.includes('room'),'Room-entry boundary cue must be suppressed.');
 fakeWindow.CCGSound.sfx('pickup');
 assert(sfxCalls.includes('pickup'),'Normal gameplay SFX must remain available.');
+fakeWindow.CCGSound.setDanger(.9);
+assert(legacyDangerCalls===0,'Legacy per-frame danger intensity must not reach the old music engine.');
+
+// Admin source readiness may update future choices, but must not stop/start the
+// currently playing Exploration track through the old V10.6 refresh listener.
+let legacyAdminRefreshCalls=0;
+fakeWindow.addEventListener('ccg:admin-audio-ready',()=>{legacyAdminRefreshCalls++});
+const adminReadyEvent={
+  type:'ccg:admin-audio-ready',
+  stopImmediatePropagation(){this.__stopped=true}
+};
+fakeWindow.dispatchEvent(adminReadyEvent);
+await Promise.resolve();
+assert(legacyAdminRefreshCalls===0,'Playlist handler must block the old admin stop/start refresh listener.');
+assert(FakeAudio.instances.length===1,'Admin readiness must not replace the active Exploration song.');
+
+// A real special theme can interrupt Exploration.
 fakeWindow.CCGSound.setRoomMood('danger');
 await Promise.resolve();
-assert(FakeAudio.instances.length===2,'Danger must still be allowed to replace Exploration with its own theme.');
+assert(FakeAudio.instances.length===2,'Danger must still create its own theme.');
+assert(fakeWindow.CCGLostSizzlerPlaylistAudio.getState().state==='danger','Danger state must become active.');
+
+// Returning to a corridor/ordinary room resumes the exact same Exploration song
+// at the same playback position instead of selecting a new Exploration track.
 fakeWindow.CCGSound.setRoomMood('normal');
 await Promise.resolve();
-assert(FakeAudio.instances.length===3,'Returning from Danger must restore an Exploration theme.');
-fakeWindow.CCGSound.setRoomMood('normal');
+const resumed=fakeWindow.CCGLostSizzlerPlaylistAudio.getState();
+assert(FakeAudio.instances.length===2,'Returning from Danger must reuse the retained Exploration Audio object.');
+assert(resumed.url===firstExploration.url,'Returning from Danger must resume the same Exploration URL.');
+assert(firstExploration.currentTime===47.25,'Returning from Danger must preserve Exploration playback position.');
+assert(!firstExploration.paused,'Retained Exploration track must be playing again.');
+
 fakeWindow.CCGSound.setRoomMood('archive');
-assert(FakeAudio.instances.length===3,'Further corridor/ordinary-room movement must keep the restored Exploration track.');
+fakeWindow.CCGSound.setRoomMood('normal');
+await Promise.resolve();
+assert(FakeAudio.instances.length===2,'Further corridor movement must keep the resumed Exploration track.');
+
+// Natural completion is the one time Exploration may rotate to another song.
+firstExploration.emit('ended');
+await Promise.resolve();
+assert(FakeAudio.instances.length===3,'Natural Exploration completion must advance to another track.');
+assert(FakeAudio.instances[2].url!==firstExploration.url,'Natural advance should avoid an immediate Exploration repeat.');
 
 console.log('Lost Sizzler multi-track playlist contract passed.');
