@@ -3,9 +3,16 @@ net=new window.CCGNetwork.RoomNetwork({onMembers,onPacket});
 
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
+function clearAbandonedRun(){
+  world=null;host=null;p1=null;p2=null;run=null;window.__CCG_WORLD=null;score=0;won=false;floorEntryCheckpoint=null;savePromptReason="";pendingBanishmentReward=null;activeShop=null;
+  for(const list of [bullets,enemyBullets,particles,rings,floaters,hazards,levelQueue,toastQueue])list.length=0;
+  for(const collection of [pendingItems,questDone,remote,enemyVisuals,cameras,explored,campStates,roomVisits,playerTrails])collection.clear();
+  for(const key of Object.keys(stats))stats[key]=0;enemyCD=projectileCD=sendCD=worldCD=surroundCD=specialCD=0;move1=move2=fire1=fire2=0;toastTimer=0;lowHealthCD=0;inventoryReminderMs=300000;lastAmbientMessage="";shake=0;damageFlash=0;input.clear();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);
+  const radar=$("radar-canvas"),radarContext=radar?.getContext?.("2d");radarContext?.clearRect(0,0,radar.width,radar.height);
+}
 async function quitToMenu(){
   hideStaticPanels();closeInventoryForMenu();UI.pause.classList.add("hidden");UI.floorComplete?.classList.add("hidden");UI.levelUp?.classList.add("hidden");UI.end.classList.add("hidden");
-  await net.leave();mode="menu";p2=null;run=null;input.clear();S.setStalkerNear(false);S.setNamedEnemy?.(null);S.startMusic();UI.menu.classList.remove("hidden");refreshCollection();syncFullscreenState()
+  await net.leave();mode="menu";clearAbandonedRun();setRunPresentation(false);net.setSolo(playerName());S.setStalkerNear(false);S.setNamedEnemy?.(null);S.startMusic();UI.menu.classList.remove("hidden");refreshCollection();syncFullscreenState()
 }
 function showRulebook(){UI.support?.classList.add("hidden");UI.rulebook?.classList.remove("hidden")}
 function showSupport(){UI.rulebook?.classList.add("hidden");UI.support?.classList.remove("hidden")}
@@ -41,5 +48,5 @@ addEventListener("keydown",e=>{
 },{passive:false});
 addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 refreshCollection();
-run=PGR.makeRun({difficulty:"ARCADE",seed:"TITLE"});run.modifier=null;net.setSolo("TITLE");startWorld("TITLE-F1",false,false);mode="menu";document.body.dataset.gameReady="true";requestAnimationFrame(loop);
+net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
 addEventListener("resize",()=>requestAnimationFrame(resizeGameCanvas));document.addEventListener("fullscreenchange",syncFullscreenState);if(window.ResizeObserver){new ResizeObserver(()=>resizeGameCanvas()).observe(document.querySelector(".game-area"))}requestAnimationFrame(()=>{resizeGameCanvas();syncFullscreenState()});
