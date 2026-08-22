@@ -4,11 +4,27 @@
   window.__CCG_LOST_SIZZLER_PLAYLIST_AUDIO__=true;
 
   const base=window.CCGSound;
+  /*
+   * game-core.js caches window.CCGSound in its `S` constant before this late
+   * V10.7 layer is loaded. Keep references to the original functions, then
+   * mutate the existing sound object in place below. Replacing window.CCGSound
+   * with a new object would leave the game calling the stale cached instance.
+   */
+  const original={
+    start:typeof base.start==="function"?base.start.bind(base):null,
+    startMusic:typeof base.startMusic==="function"?base.startMusic.bind(base):null,
+    stopMusic:typeof base.stopMusic==="function"?base.stopMusic.bind(base):null,
+    toggle:typeof base.toggle==="function"?base.toggle.bind(base):null,
+    isEnabled:typeof base.isEnabled==="function"?base.isEnabled.bind(base):null,
+    setDanger:typeof base.setDanger==="function"?base.setDanger.bind(base):null,
+    sfx:typeof base.sfx==="function"?base.sfx.bind(base):null,
+    windWhistle:typeof base.windWhistle==="function"?base.windWhistle.bind(base):null
+  };
   const assets=window.CCG_AUDIO_ASSETS||{music:{}};
   const FADE_MS=2500;
   const STATE_KEYS=["normal","danger","sanctuary","named","stalker"];
   const LEGACY_ADMIN_KEYS={normal:"exploration",danger:"danger",sanctuary:"sanctuary",named:"named",stalker:"stalker"};
-  let enabled=typeof base.isEnabled==="function"?Boolean(base.isEnabled()):true;
+  let enabled=original.isEnabled?Boolean(original.isEnabled()):true;
   let started=false;
   let roomMood="normal";
   let stalkerNear=false;
@@ -134,7 +150,7 @@
 
   async function start(){
     started=true;
-    try{base.stopMusic?.()}catch(_){ }
+    try{original.stopMusic?.()}catch(_){ }
     transition(false);
     return true;
   }
@@ -146,7 +162,7 @@
     if(fadeTimer){clearInterval(fadeTimer);fadeTimer=null}
     stopSlot(current);stopSlot(fadingOut);
     current=null;fadingOut=null;
-    try{base.stopMusic?.()}catch(_){ }
+    try{original.stopMusic?.()}catch(_){ }
   }
 
   function setRoomMood(value){
@@ -174,22 +190,25 @@
   }
 
   function toggle(){
-    try{enabled=Boolean(base.toggle?.())}catch(_){enabled=!enabled}
-    try{base.stopMusic?.()}catch(_){ }
+    try{enabled=original.toggle?Boolean(original.toggle()):!enabled}catch(_){enabled=!enabled}
+    try{original.stopMusic?.()}catch(_){ }
     if(enabled){started=true;transition(false)}else stopMusic();
     return enabled;
   }
 
   function windWhistle(...args){
-    const result=base.windWhistle?.(...args);
-    setTimeout(()=>{try{base.stopMusic?.()}catch(_){ }},0);
+    const result=original.windWhistle?.(...args);
+    setTimeout(()=>{try{original.stopMusic?.()}catch(_){ }},0);
     return result;
   }
 
-  try{base.stopMusic?.()}catch(_){ }
+  try{original.stopMusic?.()}catch(_){ }
 
-  window.CCGSound={
-    ...base,
+  /*
+   * IMPORTANT: mutate the object rather than assigning a replacement object.
+   * game-core.js has already cached this exact object as `S` by this point.
+   */
+  Object.assign(base,{
     start,
     startMusic,
     stopMusic,
@@ -200,10 +219,11 @@
     setNamedEnemy:()=>{},
     setStalkerNear,
     setStalkerSight,
-    setDanger:value=>base.setDanger?.(value),
-    sfx:(...args)=>base.sfx?.(...args),
+    setDanger:value=>original.setDanger?.(value),
+    sfx:(...args)=>original.sfx?.(...args),
     windWhistle
-  };
+  });
+  window.CCGSound=base;
 
   window.CCGLostSizzlerPlaylistAudio={
     refresh:()=>transition(true),
