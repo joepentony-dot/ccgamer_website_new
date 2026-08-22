@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
@@ -50,5 +51,82 @@ assert(continuity.includes('roomMoodFor=continuousRoomMoodFor'),'Continuous expl
 for(const legacy of ['C64_ARCHIVE','1541_WORKSHOP','BUDGET_BIN','DEMO_LOUNGE','ARMOURY','CPU_KITCHEN','SID_REACTOR','WARP_GALLERY','ZZAP_LIBRARY','TAPE_STORE','CARTRIDGE_BAY','CRACKED_INTRO','PIXEL_FOUNDRY','MODEM_EXCHANGE','HIGH_SCORE_CRYPT','CRT_MAZE','TREASURE_VAULT']){
   assert(!continuity.includes(legacy),`Legacy area music state ${legacy} must not return in the continuity guard.`);
 }
+
+// Repeat Exploration requests caused by ordinary room/corridor boundaries must
+// never advance the playlist. Rotation is allowed only when the current song
+// naturally reaches its end or fails and the engine explicitly advances it.
+assert(patch.includes('function transition(force=false,advance=false)'),'Playlist transition must distinguish forced refresh from natural track advance.');
+assert(patch.includes('if(state==="normal"&&!advance){updateVolume();return}'),'Active Exploration must survive repeat normal-state requests unchanged.');
+assert(patch.includes('transition(true,true)'),'Natural track completion must still be able to advance the playlist.');
+assert(patch.includes('if(next==="normal"&&current?.state==="normal"&&!current.audio.paused)'),'Repeated corridor/ordinary-room Exploration state requests must be ignored.');
+assert(patch.includes('name==="room"?undefined'),'Room-boundary audio cue must not interrupt the continuous Exploration soundtrack.');
+assert(assets.includes('room:"assets/audio/sfx/room-enter.wav"'),'Room-enter asset remains documented even though boundary playback is suppressed.');
+
+// Behavioural regression: actually execute the wrapper against a fake Audio
+// implementation. Room -> corridor -> ordinary room must keep one Exploration
+// audio instance. A real Danger transition is still allowed to create a new one.
+class FakeAudio{
+  static instances=[];
+  constructor(url){this.url=url;this.paused=true;this.volume=0;this.currentTime=0;this.duration=180;this.listeners={};FakeAudio.instances.push(this)}
+  play(){this.paused=false;return Promise.resolve()}
+  pause(){this.paused=true}
+  removeAttribute(){}
+  load(){}
+  addEventListener(name,fn){(this.listeners[name]||(this.listeners[name]=[])).push(fn)}
+}
+const sfxCalls=[];
+const baseSound={
+  start:async()=>true,
+  startMusic:()=>{},
+  stopMusic:()=>{},
+  toggle:()=>true,
+  isEnabled:()=>true,
+  setDanger:()=>{},
+  sfx:name=>sfxCalls.push(name),
+  windWhistle:()=>{}
+};
+const fakeWindow={
+  CCGSound:baseSound,
+  CCG_AUDIO_ASSETS:{music:{
+    normal:'explore-a.mp3',danger:'danger-a.mp3',sanctuary:'safe-a.mp3',named:'named-a.mp3',stalker:'loadula-a.mp3',
+    playlists:{normal:['explore-a.mp3','explore-b.mp3'],danger:['danger-a.mp3'],sanctuary:['safe-a.mp3'],named:['named-a.mp3'],stalker:['loadula-a.mp3']}
+  }},
+  CCG_ASSET_OVERRIDES:{audio:{music:{playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}}}},
+  CCG_ADMIN_AUDIO:{},
+  addEventListener:()=>{}
+};
+const sandbox={
+  window:fakeWindow,
+  Audio:FakeAudio,
+  performance:{now:()=>0},
+  setInterval:()=>1,
+  clearInterval:()=>{},
+  setTimeout:fn=>{fn();return 1},
+  clearTimeout:()=>{},
+  console
+};
+vm.runInNewContext(patch,sandbox,{filename:'lost-sizzler-playlist-audio.js'});
+await fakeWindow.CCGSound.start();
+await Promise.resolve();
+assert(FakeAudio.instances.length===1,'Starting Exploration should create exactly one music instance.');
+const firstExploration=FakeAudio.instances[0].url;
+fakeWindow.CCGSound.setRoomMood('normal');
+fakeWindow.CCGSound.setRoomMood('archive'); // legacy ordinary-room state normalises to Exploration
+fakeWindow.CCGSound.setRoomMood('normal'); // corridor / ordinary-room boundary
+assert(FakeAudio.instances.length===1,'Room/corridor Exploration requests must not create a replacement track.');
+assert(FakeAudio.instances[0].url===firstExploration,'The current Exploration track must remain unchanged across corridors.');
+fakeWindow.CCGSound.sfx('room');
+assert(!sfxCalls.includes('room'),'Room-entry boundary cue must be suppressed.');
+fakeWindow.CCGSound.sfx('pickup');
+assert(sfxCalls.includes('pickup'),'Normal gameplay SFX must remain available.');
+fakeWindow.CCGSound.setRoomMood('danger');
+await Promise.resolve();
+assert(FakeAudio.instances.length===2,'Danger must still be allowed to replace Exploration with its own theme.');
+fakeWindow.CCGSound.setRoomMood('normal');
+await Promise.resolve();
+assert(FakeAudio.instances.length===3,'Returning from Danger must restore an Exploration theme.');
+fakeWindow.CCGSound.setRoomMood('normal');
+fakeWindow.CCGSound.setRoomMood('archive');
+assert(FakeAudio.instances.length===3,'Further corridor/ordinary-room movement must keep the restored Exploration track.');
 
 console.log('Lost Sizzler multi-track playlist contract passed.');

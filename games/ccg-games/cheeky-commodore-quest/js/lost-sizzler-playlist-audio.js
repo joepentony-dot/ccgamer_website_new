@@ -115,21 +115,29 @@
       if(current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
       if(slot.audio.duration-slot.audio.currentTime>FADE_MS/1000+.2)return;
       slot.advancing=true;
-      transition(true);
+      transition(true,true);
     };
     slot.audio.addEventListener("timeupdate",advance);
     slot.audio.addEventListener("ended",()=>{
-      if(current===slot&&!slot.advancing){slot.advancing=true;transition(true)}
+      if(current===slot&&!slot.advancing){slot.advancing=true;transition(true,true)}
     },{once:true});
     slot.audio.addEventListener("error",()=>{
-      if(current===slot){slot.advancing=true;transition(true)}
+      if(current===slot){slot.advancing=true;transition(true,true)}
     },{once:true});
   }
 
-  function transition(force=false){
+  /*
+   * `advance` is true only when the current song itself has reached its end (or
+   * failed to load). A normal Exploration request caused by room/corridor
+   * movement must never be allowed to pick another Exploration song.
+   */
+  function transition(force=false,advance=false){
     if(!enabled||!started)return;
     const state=desiredState();
-    if(!force&&current&&current.state===state&&!current.audio.paused){updateVolume();return}
+    if(current&&current.state===state&&!current.audio.paused){
+      if(state==="normal"&&!advance){updateVolume();return}
+      if(!force){updateVolume();return}
+    }
     const url=pickTrack(state);
     if(!url)return;
     if(!force&&current&&current.state===state&&current.url===url&&!current.audio.paused)return;
@@ -144,18 +152,18 @@
     const previous=current;
     current=next;
     audio.play().then(()=>fadeBetween(previous,next)).catch(()=>{
-      if(current===next){current=previous;setTimeout(()=>transition(true),250)}
+      if(current===next){current=previous;setTimeout(()=>transition(true,true),250)}
     });
   }
 
   async function start(){
     started=true;
     try{original.stopMusic?.()}catch(_){ }
-    transition(false);
+    transition(false,false);
     return true;
   }
 
-  function startMusic(){started=true;transition(false)}
+  function startMusic(){started=true;transition(false,false)}
 
   function stopMusic(){
     started=false;
@@ -167,16 +175,26 @@
 
   function setRoomMood(value){
     const next=normaliseState(value);
+    /*
+     * Corridors and every ordinary room resolve to `normal`. Repeated normal
+     * requests are deliberately ignored so crossing a room boundary cannot
+     * restart or rotate the Exploration playlist.
+     */
+    if(next==="normal"&&current?.state==="normal"&&!current.audio.paused){
+      roomMood="normal";
+      updateVolume();
+      return;
+    }
     if(next===roomMood)return;
     roomMood=next;
-    transition(false);
+    transition(false,false);
   }
 
   function setStalkerNear(value){
     const next=Boolean(value);
     if(next===stalkerNear)return;
     stalkerNear=next;
-    transition(false);
+    transition(false,false);
   }
 
   function setStalkerSight(value){
@@ -192,7 +210,7 @@
   function toggle(){
     try{enabled=original.toggle?Boolean(original.toggle()):!enabled}catch(_){enabled=!enabled}
     try{original.stopMusic?.()}catch(_){ }
-    if(enabled){started=true;transition(false)}else stopMusic();
+    if(enabled){started=true;transition(false,false)}else stopMusic();
     return enabled;
   }
 
@@ -220,19 +238,24 @@
     setStalkerNear,
     setStalkerSight,
     setDanger:value=>original.setDanger?.(value),
-    sfx:(...args)=>original.sfx?.(...args),
+    /*
+     * The old room-enter WAV fired once entering a corridor and again entering
+     * the next room. It sounded like a music interruption, so room-boundary
+     * audio is suppressed while all actual gameplay SFX remain untouched.
+     */
+    sfx:(name,...args)=>name==="room"?undefined:original.sfx?.(name,...args),
     windWhistle
   });
   window.CCGSound=base;
 
   window.CCGLostSizzlerPlaylistAudio={
-    refresh:()=>transition(true),
+    refresh:()=>transition(true,false),
     getState:()=>({state:desiredState(),url:current?.url||"",enabled,started}),
     getPlaylist:state=>categorySources(normaliseState(state)),
     crossfadeMs:FADE_MS
   };
 
   window.addEventListener("ccg:admin-audio-ready",()=>{
-    if(started&&enabled)transition(true);
+    if(started&&enabled)transition(true,false);
   });
 })();
