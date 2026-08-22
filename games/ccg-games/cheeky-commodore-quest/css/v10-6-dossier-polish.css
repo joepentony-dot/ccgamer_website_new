@@ -28,7 +28,7 @@
    The repeated explanatory paragraph on every freed enemy is intentionally removed. */
 #named-dossier-list .dossier-lore{display:none!important}
 
-@media(max-width:700px){
+@media(max-width:700px),(hover:none) and (pointer:coarse){
   .dossier-scroll-cue{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){
