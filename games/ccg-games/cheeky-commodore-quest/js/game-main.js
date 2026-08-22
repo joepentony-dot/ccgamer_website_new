@@ -22,7 +22,13 @@ async function shareQuest(){
   showToast("SHARE LINK",String(location.href||"Cheeky's Commodore Quest"),"cyan")
 }
 
-$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn").addEventListener("click",()=>pause(true));$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",()=>{if(["playing","inventory"].includes(mode)){closeInventoryForMenu();if(mode==="playing")pause()}else if(mode==="paused")UI.pause.classList.remove("hidden")});
+function handleHeaderQuit(){
+  if(mode==="menu"){location.assign("/games/ccg-games/");return}
+  if(mode==="lobby"){window.CCGLostSizzlerV106?.leaveLobby?.("You left the online room.");return}
+  if(mode==="ended"){quitToMenu();return}
+  openPauseMenu()
+}
+$("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEventListener("click",resumeSavedRun);$("daily-btn")?.addEventListener("click",startDaily);$("split-btn").addEventListener("click",startSplit);$("create-btn").addEventListener("click",createRoom);$("join-btn").addEventListener("click",joinRoom);$("resume-btn").addEventListener("click",()=>pause(true));$("pause-quit-btn")?.addEventListener("click",quitToMenu);$("quit-btn")?.addEventListener("click",handleHeaderQuit);
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("artefact-score-btn")?.addEventListener("click",()=>claimBanishmentArtefact("score"));$("artefact-xp-btn")?.addEventListener("click",()=>claimBanishmentArtefact("xp"));
@@ -32,6 +38,7 @@ $("again-btn").addEventListener("click",quitToMenu);
 addEventListener("keydown",e=>{
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(e.code==="Escape"){
+    if(mode==="paused"){pause();return}
     if(UI.itemInfo&&!UI.itemInfo.classList.contains("hidden")){hideItemInfo();return}
     if(UI.namedDossier&&!UI.namedDossier.classList.contains("hidden")){hideNamedDossier();return}
     if(UI.rulebook&&!UI.rulebook.classList.contains("hidden")){UI.rulebook.classList.add("hidden");return}

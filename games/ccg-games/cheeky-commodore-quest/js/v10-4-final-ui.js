@@ -64,11 +64,11 @@
     const entries=[...counts.entries()];
     const block=entries.length
       ? entries.map(([title,count])=>{const slug=gameSlugs.get(normalTitle(title)),link=slug?`<a href="/games/${encodeURIComponent(slug)}/" target="_blank" rel="noopener noreferrer">View game page</a>`:"";return `<div class="v104-credit-game"><span>▸ ${esc(title)}</span><span class="v104-credit-actions">${count>1?`<b>×${count}</b>`:""}${link}</span></div>`}).join("")
-      : '<div class="v104-credit-empty">No game collectibles were found on this run.</div>';
+      : '<div class="v104-credit-empty"><b>None collected.</b> Look for glowing boxed pickups marked C64 and labelled with a game title, then walk over one to register it. Keys, ammo, doors and ordinary loot do not count.</div>';
     const note=entries.length?'<small>Every title you picked up during this run is shown here, even if it was later lost with an unrecovered death cache.</small>':"";
     const old=document.getElementById("v104-retro-credits");
     if(old)old.remove();
-    UI.endText.insertAdjacentHTML("beforeend",`<section id="v104-retro-credits" class="v104-retro-credits"><h3>GAMES COLLECTED THIS RUN — ${history.length}</h3>${block}${note}</section>`);
+    UI.endText.insertAdjacentHTML("beforeend",`<section id="v104-retro-credits" class="v104-retro-credits"><h3>C64 GAME PICKUPS COLLECTED THIS RUN — ${history.length}</h3>${block}${note}</section>`);
   }
 
   if(typeof endRun==="function"){
