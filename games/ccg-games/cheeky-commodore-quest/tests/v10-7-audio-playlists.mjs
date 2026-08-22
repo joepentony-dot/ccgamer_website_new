@@ -51,4 +51,14 @@ for(const legacy of ['C64_ARCHIVE','1541_WORKSHOP','BUDGET_BIN','DEMO_LOUNGE','A
   assert(!continuity.includes(legacy),`Legacy area music state ${legacy} must not return in the continuity guard.`);
 }
 
+// Repeat Exploration requests caused by ordinary room/corridor boundaries must
+// never advance the playlist. Rotation is allowed only when the current song
+// naturally reaches its end or fails and the engine explicitly advances it.
+assert(patch.includes('function transition(force=false,advance=false)'),'Playlist transition must distinguish forced refresh from natural track advance.');
+assert(patch.includes('if(state==="normal"&&!advance){updateVolume();return}'),'Active Exploration must survive repeat normal-state requests unchanged.');
+assert(patch.includes('transition(true,true)'),'Natural track completion must still be able to advance the playlist.');
+assert(patch.includes('if(next==="normal"&&current?.state==="normal"&&!current.audio.paused)'),'Repeated corridor/ordinary-room Exploration state requests must be ignored.');
+assert(patch.includes('name==="room"?undefined'),'Room-boundary audio cue must not interrupt the continuous Exploration soundtrack.');
+assert(assets.includes('room:"assets/audio/sfx/room-enter.wav"'),'Room-enter asset remains documented even though boundary playback is suppressed.');
+
 console.log('Lost Sizzler multi-track playlist contract passed.');
