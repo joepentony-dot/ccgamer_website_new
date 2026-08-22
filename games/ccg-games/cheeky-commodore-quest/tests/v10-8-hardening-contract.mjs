@@ -69,7 +69,8 @@ assert.match(hard,/press E or its Quick Inventory number/);
 
 // 13 — uploaded audio failures are quarantined and bundled tracks remain a fallback.
 assert.match(audio,/failedUrls=new Set/);
-assert.match(audio,/custom\.length\?custom:g\.bundled/);
+assert.match(audio,/if\(custom\.length\)return custom/,'healthy custom music remains preferred');
+assert.match(audio,/return groups\.bundled\.filter/,'bundled music remains available when custom uploads fail');
 assert.match(audio,/failedUrls\.add/);
 assert.match(audio,/clearFailed/);
 
