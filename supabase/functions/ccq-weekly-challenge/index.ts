@@ -24,11 +24,11 @@ Deno.serve(async (req: Request) => {
   const auth=(req.headers.get("authorization")||"").replace(/^Bearer\s+/i,"");let user:any=null;if(auth){const result=await service.auth.getUser(auth);user=result.data?.user||null}
   const action=String(payload.action||"status");
   if(action==="status"){
-    if(!user)return json(req,{ok:true,ready:true,signedIn:false,locked:false,weekStart:week,leaderboard:leaders||[]});
+    if(!user)return json(req,{ok:true,ready:true,signedIn:false,locked:false,weekStart:week,seed,leaderboard:leaders||[]});
     const {data:profile}=await service.from("profiles").select("username,display_name,banned").eq("id",user.id).maybeSingle();
     const {data:attempt}=await service.from("ccq_weekly_attempts").select("id,status,started_at,finished_at,score,deepest_floor").eq("week_start",week).eq("user_id",user.id).maybeSingle();
     const playerName=String(profile?.username||profile?.display_name||"").trim();
-    return json(req,{ok:true,ready:true,signedIn:Boolean(playerName&&!profile?.banned),locked:Boolean(attempt),weekStart:week,playerName,attempt,leaderboard:leaders||[]});
+    return json(req,{ok:true,ready:true,signedIn:Boolean(playerName&&!profile?.banned),locked:Boolean(attempt),weekStart:week,seed,playerName,attempt,leaderboard:leaders||[]});
   }
   if(!user)return json(req,{ok:false,error:"Sign in with a registered CCG website account first"},401);
   const {data:profile,error:profileError}=await service.from("profiles").select("username,display_name,banned").eq("id",user.id).maybeSingle();
