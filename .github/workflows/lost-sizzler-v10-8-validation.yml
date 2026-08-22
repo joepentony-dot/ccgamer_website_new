@@ -1,0 +1,59 @@
+name: Lost Sizzler V10.8 Validation
+
+on:
+  pull_request:
+    paths:
+      - 'games/ccg-games/cheeky-commodore-quest/**'
+      - 'supabase/functions/ccq-weekly-challenge/**'
+      - '.github/workflows/lost-sizzler-v10-8-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'games/ccg-games/cheeky-commodore-quest/**'
+      - 'supabase/functions/ccq-weekly-challenge/**'
+      - '.github/workflows/lost-sizzler-v10-8-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax check changed Lost Sizzler hardening files
+        run: |
+          node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-8-run-hardening.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-8-notification-rail.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-8-hardening-contract.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-8-layout-browser.mjs
+
+      - name: Hardening contract
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-8-hardening-contract.mjs
+
+      - name: Existing inventory HUD regression
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
+
+      - name: Existing death room recovery regression
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
+
+      - name: Existing Stalker and shop regression
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
+
+      - name: Existing tactical sidebar regression
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
+
+      - name: Playlist/audio regression
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-7-audio-playlists.mjs
+
+      - name: Browser layout matrix
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-8-layout-browser.mjs
