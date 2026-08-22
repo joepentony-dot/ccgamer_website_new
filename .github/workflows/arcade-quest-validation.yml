@@ -18,13 +18,17 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-sidebar-layout-fix.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
@@ -48,13 +52,17 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-sidebar-layout-fix.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
@@ -95,9 +103,12 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js
           node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
           node --check scripts/generate-lost-sizzler-audio.mjs
           node --check scripts/validate-arcade-quest.js
 
@@ -131,6 +142,12 @@ jobs:
 
       - name: Validate Lost Sizzler persistent inventory HUD
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
+
+      - name: Validate Lost Sizzler Stalker reward/shop balance
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
+
+      - name: Validate Lost Sizzler tactical sidebar layout
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
 
       - name: Validate Arcade Quest contract
         run: node scripts/validate-arcade-quest.js

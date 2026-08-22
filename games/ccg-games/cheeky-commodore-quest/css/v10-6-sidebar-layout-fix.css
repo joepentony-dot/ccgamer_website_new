@@ -1,0 +1,60 @@
+/* The Lost Sizzler V10.6 — tactical sidebar geometry correction.
+ *
+ * The persistent inventory HUD is loaded after the main V10.6 gameplay layout.
+ * Its previous absolute-position fallback reintroduced an old 194px sidebar cap,
+ * which let the inventory panel begin on top of the radar. This final layer
+ * restores the intended full-height two-row sidebar: radar above, inventory below.
+ */
+
+.ccg-game>.tactical-zone{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:minmax(190px,52%) minmax(0,1fr)!important;
+  grid-auto-flow:row!important;
+  gap:7px!important;
+  padding:7px!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:hidden!important;
+}
+
+.ccg-game>.tactical-zone>.radar-card{
+  position:relative!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  align-self:stretch!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  z-index:2!important;
+}
+
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock{
+  position:relative!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:2!important;
+  align-self:stretch!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+  z-index:3!important;
+}
+
+/* Shorter desktop viewports still keep both panels separate. The inventory list
+ * remains scrollable, so the radar never has to surrender its own space. */
+@media(max-height:720px){
+  .ccg-game>.tactical-zone{
+    grid-template-rows:minmax(150px,44%) minmax(0,1fr)!important;
+  }
+}
