@@ -35,6 +35,13 @@
       const result=originalHurtPlayer.apply(this,arguments);
       const deathsAfter=Number(run?.stats?.deaths||0);
 
+      // A second zero-XP death ends the run outright; no old or newly-created
+      // recovery box survives the final strike and no cache-loss popup obscures it.
+      if(run?.xpGameOver){
+        removeAllDeathCachesExcept(null);
+        return result;
+      }
+
       if(!weekly&&deathsAfter>deathsBefore&&host&&Array.isArray(host.deathCaches)){
         const after=activeCaches();
         const newlyCreated=after.filter(cache=>!beforeSet.has(cache.id));

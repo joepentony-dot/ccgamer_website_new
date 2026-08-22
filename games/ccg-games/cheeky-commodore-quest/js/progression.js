@@ -57,7 +57,7 @@ window.CCGProgression=(()=>{
       bankedXP:0,floorXP:0,deepest:1,bankedGames:[],floorGames:[],modifier:null,
       enemyDefeats:[],
       stats:{kills:0,champions:0,secrets:0,damageTaken:0,friendlyFire:0,rooms:0,chests:0,shrines:0,generators:0,stalkerEscapes:0,floors:0,namedEncounters:0,namedDefeats:0,deathCachesRecovered:0,deaths:0},
-      achievementQueue:[],floorComplete:false,runComplete:false,torchClueSeen:false,torchSequence:null,everEarnedXp:false,xpPeak:0,consecutiveDeaths:0
+      achievementQueue:[],floorComplete:false,runComplete:false,torchClueSeen:false,torchSequence:null,everEarnedXp:false,xpPeak:0,xpZeroDeaths:0,xpZeroDeathsByPlayer:{},consecutiveDeaths:0
     };
   }
   function floorInfo(run){return C.floors[Math.max(0,Math.min(C.floors.length-1,run.floor-1))]}
@@ -155,8 +155,8 @@ window.CCGProgression=(()=>{
     if(loss<progressBefore)player.xp=progressBefore-loss;
     else if(levelBefore>1){const deficit=Math.max(1,loss-progressBefore),newLevel=levelBefore-1;player.level=newLevel;player.xp=Math.max(0,levelNeed(newLevel)-deficit);levelLost=true;lostSkill=removeLastSkill(player)}
     else player.xp=0;
-    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;if(run){const floorLoss=Math.min(Math.max(0,Number(run.floorXP||0)),loss),bankedLoss=loss-floorLoss;run.floorXP=Math.max(0,Number(run.floorXP||0)-floorLoss);run.bankedXP=Math.max(0,Number(run.bankedXP||0)-bankedLoss);run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before)}
-    return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,gameOver:false}
+    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;const zeroKey=String(player?.id||"solo");let xpZeroDeaths=Math.max(0,Number(run?.xpZeroDeathsByPlayer?.[zeroKey]??(zeroKey==="solo"?(run?.xpZeroDeaths||0):0))),zeroWarning=false,gameOver=false;if(run){const floorLoss=Math.min(Math.max(0,Number(run.floorXP||0)),loss),bankedLoss=loss-floorLoss;run.floorXP=Math.max(0,Number(run.floorXP||0)-floorLoss);run.bankedXP=Math.max(0,Number(run.bankedXP||0)-bankedLoss);run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before);run.xpZeroDeathsByPlayer=run.xpZeroDeathsByPlayer&&typeof run.xpZeroDeathsByPlayer==="object"?run.xpZeroDeathsByPlayer:{};if(run.everEarnedXp&&player.totalXp===0){xpZeroDeaths=run.xpZeroDeathsByPlayer[zeroKey]=xpZeroDeaths+1;run.xpZeroDeaths=Math.max(run.xpZeroDeaths||0,...Object.values(run.xpZeroDeathsByPlayer).map(Number));zeroWarning=xpZeroDeaths===1;gameOver=xpZeroDeaths>=2}}
+    return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,xpZeroDeaths,zeroWarning,gameOver}
   }
   function createDeathCache(player,run,x,y){
     const carried=(player.inventory||[]).filter(it=>!it.quest).map(cloneItem),kept=(player.inventory||[]).filter(it=>it.quest).map(cloneItem),games=[...(run.floorGames||[])];
