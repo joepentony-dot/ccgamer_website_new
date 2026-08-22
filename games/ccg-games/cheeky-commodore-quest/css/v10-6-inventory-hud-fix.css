@@ -1,6 +1,6 @@
-/* The Lost Sizzler V10.6 — persistent inventory/key sidebar and quick keyring. */
+/* The Lost Sizzler V10.6 — persistent inventory/key sidebar + numbered Quick Inventory. */
 
-/* The lower tactical area is deliberately reserved for held items and keys. */
+/* The lower tactical area is deliberately reserved for carried items and keys. */
 .ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock{
   display:flex!important;
   visibility:visible!important;
@@ -11,14 +11,15 @@
   border:1px solid #503862!important;
   background:linear-gradient(180deg,#0d0813,#07040a)!important;
 }
-.inventory-live-dock .shortcut-dock-head{flex:0 0 auto!important}
+.inventory-live-dock .shortcut-dock-head{flex:0 0 auto!important;padding-bottom:4px!important}
 .inventory-live-dock .item-shortcuts{
   order:1!important;
   flex:1 1 auto!important;
   min-height:0!important;
   overflow:auto!important;
-  margin:5px 0!important;
+  margin:4px 0!important;
   padding-right:3px!important;
+  scrollbar-width:thin;
 }
 .inventory-live-dock .inventory-dock-controls{
   order:2!important;
@@ -26,41 +27,76 @@
   grid-template-columns:1fr 1fr!important;
   gap:4px!important;
   flex:0 0 auto!important;
+  margin:0!important;
+  padding-top:4px!important;
 }
-.inventory-live-dock .inventory-dock-controls>span{min-height:28px!important}
-.inventory-live-dock .inventory-dock-controls kbd{min-width:34px!important}
+.inventory-live-dock .inventory-dock-controls>span{min-height:27px!important;padding:3px 4px!important}
+.inventory-live-dock .inventory-dock-controls kbd{min-width:34px!important;padding:3px!important}
 
 .carried-section-label{
   position:sticky;
   top:0;
   z-index:3;
   padding:3px 5px;
+  border-top:1px solid #30213a;
   border-bottom:1px solid #3b2b47;
-  background:rgba(9,4,15,.96);
+  background:rgba(9,4,15,.97);
   color:#6cecff;
-  font-size:6.5px;
+  font-size:6px;
   font-weight:900;
-  letter-spacing:.8px;
+  letter-spacing:.45px;
+  line-height:1.2;
 }
-.carried-empty{
-  padding:7px 8px;
-  border:1px dashed #3d2d49;
-  background:rgba(5,3,8,.66);
-  color:#91869c;
-  font-size:6.5px;
-  line-height:1.3;
+.carried-item{
+  grid-template-columns:36px minmax(0,1fr) auto!important;
+  gap:6px!important;
+  min-height:40px!important;
+  padding:4px 5px!important;
 }
-.carried-empty b{display:block;margin-bottom:2px;color:#c8becf;font-size:6.5px}
-.carried-empty span{display:block}
-.carried-empty.compact{padding:5px 7px}
+.carried-item .item-art-wrap{width:34px!important;height:34px!important;padding:2px!important;flex:0 0 auto!important}
+.carried-copy b{font-size:7px!important}.carried-copy span{margin-top:2px!important;font-size:6px!important;line-height:1.15!important}
+.carried-zero{opacity:.43!important;filter:saturate(.55)}
+.carried-zero:hover{opacity:.72!important}
+.carried-meta{min-width:48px!important;gap:2px!important}
+.carried-meta strong{font-size:7px!important}
+.carried-action-keys{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:2px!important;max-width:92px!important;flex-wrap:wrap!important}
+.carried-action-keys kbd{min-width:20px!important;padding:2px 3px!important;border-width:1px!important;font-size:6.5px!important;line-height:1!important;text-align:center!important}
+.carried-action-keys .primary-item-key{border-color:#6cecff!important;color:#6cecff!important;background:#061018!important}
+.carried-action-keys .number-item-key{border-color:#ffd85a!important;color:#ffd85a!important;background:#1b1503!important}
+.carried-action-keys .key-or{color:#766b80!important;font-size:5px!important;font-weight:900!important}
 
-/* AUTO / TRADE labels are informational actions rather than keyboard shortcuts. */
-.carried-meta kbd{max-width:50px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-.carried-item .item-art-wrap{flex:0 0 auto!important}
-
-/* The bottom quick inventory keeps stack icons, while this tiny keyring makes
-   non-slot items such as bronze keys visible at a glance as well. */
+/* The bottom Quick Inventory keeps the graphical slot item and makes the number
+   key an unmistakable second activation route. The existing E/Q/R/B badge stays
+   in the opposite corner as the item's dedicated shortcut. */
 .hub-inventory{overflow:hidden!important}
+.ccg-game>.player-hub .hub-inventory-head b{font-size:6.5px!important;letter-spacing:.15px!important}
+.ccg-game>.player-hub .quick-slot{position:relative!important;height:43px!important;padding-top:4px!important}
+.ccg-game>.player-hub .quick-slot .item-art-wrap{width:31px!important;height:31px!important}
+.quick-slot-number{
+  position:absolute!important;
+  left:2px!important;
+  top:2px!important;
+  z-index:6!important;
+  display:grid!important;
+  place-items:center!important;
+  min-width:17px!important;
+  height:17px!important;
+  padding:0 3px!important;
+  border:1px solid #ffd85a!important;
+  background:#1b1503!important;
+  color:#ffd85a!important;
+  font-size:8px!important;
+  line-height:1!important;
+  box-shadow:0 0 7px rgba(255,216,90,.13)!important;
+}
+.quick-slot.number-usable .quick-slot-number{background:#201902!important;box-shadow:0 0 9px rgba(255,216,90,.28)!important}
+.quick-slot.number-usable{border-color:#66552a!important}
+.quick-slot-key{right:2px!important;top:2px!important;min-width:17px!important;padding:2px!important;font-size:7px!important}
+.quick-slot .stack-name{bottom:1px!important;font-size:5.5px!important}
+.quick-slot .stack-count{right:2px!important;bottom:1px!important;font-size:6px!important}
+
+/* Non-slot keys sit immediately below the Quick Inventory slots so a bronze key
+   never looks as though it vanished simply because it is not an inventory stack. */
 .quick-keyring-icons{
   display:flex!important;
   align-items:center!important;
@@ -84,14 +120,11 @@
   white-space:nowrap!important;
 }
 .quick-key-chip .item-art-wrap{width:13px!important;height:13px!important;border:0!important;background:transparent!important;padding:0!important}
-.quick-key-chip b{color:#ffd85a!important;font-size:5.5px!important}
-.quick-key-chip strong{color:#fff!important;font-size:5.5px!important}
-
-/* Keep enough room in the 94px player hub for the icon row without crushing
-   the quick-slot artwork. */
-.ccg-game>.player-hub .quick-slot{height:43px!important}
-.ccg-game>.player-hub .quick-slot .item-art-wrap{width:31px!important;height:31px!important}
+.quick-key-chip b{color:#ffd85a!important;font-size:5.5px!important}.quick-key-chip strong{color:#fff!important;font-size:5.5px!important}
 
 @media(max-width:900px){
   .quick-keyring-icons{display:none!important}
+  .carried-item{grid-template-columns:32px minmax(0,1fr) auto!important;min-height:36px!important}
+  .carried-item .item-art-wrap{width:30px!important;height:30px!important}
+  .carried-copy span{font-size:5.5px!important}
 }

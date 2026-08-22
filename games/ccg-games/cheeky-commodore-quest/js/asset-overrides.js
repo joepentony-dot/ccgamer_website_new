@@ -16,6 +16,11 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
+/* Cache-bust the rapidly iterating V10.6 HUD layer. Static hosting can retain an
+   older copy for several minutes after a merge, which made a newly added carried
+   item panel appear missing even though main already contained the fix. */
+const CCG_V106_HUD_REV="20260822d";
+
 /* Load the final V10.6 UI layers before first paint settles, and begin resolving
    any owner-uploaded Lost Sizzler music from the existing Arcade Asset store. */
 (()=>{
@@ -29,7 +34,7 @@ window.CCG_ASSET_OVERRIDES={
   if(!document.querySelector('link[data-ccg-v106-inventory-hud="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="css/v10-6-inventory-hud-fix.css";
+    link.href=`css/v10-6-inventory-hud-fix.css?v=${CCG_V106_HUD_REV}`;
     link.dataset.ccgV106InventoryHud="true";
     document.head.appendChild(link);
   }
@@ -56,7 +61,7 @@ window.addEventListener("load",()=>{
     ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
     ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
     ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
-    ["js/v10-6-inventory-hud-fix.js","ccgLostSizzlerInventoryHudV106"],
+    [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
     ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"]
