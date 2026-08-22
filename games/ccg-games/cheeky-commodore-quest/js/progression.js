@@ -107,7 +107,9 @@ window.CCGProgression=(()=>{
   }
   function colourForRarity(r){return rarityColour[r]||rarityColour.COMMON}
 
-  function xpNeed(level){return 300+level*180+level*level*35}
+  // The XP curve is calibrated around 100 XP ordinary kills, 250 XP named kills,
+  // and 1–10 XP pickups. A first upgrade takes roughly 14 ordinary victories.
+  function xpNeed(level){level=Math.max(1,Math.floor(Number(level)||1));return 1000+level*350+level*level*75}
   function floorLevelCap(run){const floor=Math.max(1,Math.min(C.maxFloors,run?.floor||1));return C.levelCaps?.[floor-1]||Math.max(5,floor*3+2)}
   function xpCapacityToCap(player,cap){let level=Math.max(1,player?.level||1),xp=Math.max(0,player?.xp||0),capacity=0;if(level>=cap)return 0;while(level<cap){capacity+=Math.max(0,xpNeed(level)-xp);level++;xp=0}return capacity}
   function gainXP(player,run,amount,reason="Exploration"){
@@ -153,21 +155,21 @@ window.CCGProgression=(()=>{
     if(loss<progressBefore)player.xp=progressBefore-loss;
     else if(levelBefore>1){const deficit=Math.max(1,loss-progressBefore),newLevel=levelBefore-1;player.level=newLevel;player.xp=Math.max(0,levelNeed(newLevel)-deficit);levelLost=true;lostSkill=removeLastSkill(player)}
     else player.xp=0;
-    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;if(run){run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before)}
+    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;if(run){const floorLoss=Math.min(Math.max(0,Number(run.floorXP||0)),loss),bankedLoss=loss-floorLoss;run.floorXP=Math.max(0,Number(run.floorXP||0)-floorLoss);run.bankedXP=Math.max(0,Number(run.bankedXP||0)-bankedLoss);run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before)}
     return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,gameOver:false}
   }
   function createDeathCache(player,run,x,y){
     const carried=(player.inventory||[]).filter(it=>!it.quest).map(cloneItem),kept=(player.inventory||[]).filter(it=>it.quest).map(cloneItem),games=[...(run.floorGames||[])];
     player.inventory=kept;run.floorGames=[];
-    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,score:0,createdFloor:run.floor||1};
+    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,score:0,xp:0,createdFloor:run.floor||1};
   }
   function recoverDeathCache(player,run,cache){
     if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0};let recovered=0;const remaining=[];
     for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
-    const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0));cache.inventory=remaining;cache.games=[];cache.score=0;cache.active=remaining.length>0;
+    const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0)),cachedXP=Math.max(0,Math.floor(Number(cache.xp)||0)),xpResult=cachedXP?gainXP(player,run,cachedXP,"Death cache recovered"):{amount:0,discarded:0,levels:[]},reservedXP=Math.max(0,cachedXP-Number(xpResult.amount||0));if(reservedXP){player.totalXp=(player.totalXp||0)+reservedXP;run.floorXP=(run.floorXP||0)+reservedXP}cache.inventory=remaining;cache.games=[];cache.score=0;cache.xp=0;cache.active=remaining.length>0;
     if(!cache.active)run.stats.deathCachesRecovered=(run.stats.deathCachesRecovered||0)+1;
-    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore};
+    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore,xp:cachedXP,levels:xpResult.levels||[]};
   }
   function loseFloorProgress(player,run){const cache=createDeathCache(player,run,player?.x||0,player?.y||0);return{lostXP:0,lostItem:cache.inventory?.[0]||null,cache}}
   function persistentCollection(){try{return JSON.parse(localStorage.getItem("ccg-quest-collection")||"[]")}catch(_){return[]}}

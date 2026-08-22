@@ -94,6 +94,13 @@ window.CCGAI=(()=>{
     const options=[];for(const d of host?.blockingDecor||[]){if(man(e,d)>8||man(p,d)<2)continue;for(const [dx,dy] of DIRS){const q={x:d.x+dx,y:d.y+dy};if(!passable(e,host,map,q.x,q.y,world)||man(p,q)<3||man(e,q)>9)continue;if(lineOfSight(map,p,q,C.enemy.torchSightRange,host))continue;options.push({...q,score:man(e,q)+Math.abs(6-man(p,q))*.35})}}
     options.sort((a,b)=>a.score-b.score);return options[0]||null
   }
+  function tacticalSkill(e){
+    const k=kind(e);let skill=.16;
+    if(k==="hunter")skill=.28;else if(k==="ambusher")skill=.46;else if(["ranger","root","cook","firebreather"].includes(k))skill=.42;else if(k==="charger")skill=.24;else if(k==="ghost")skill=.34;
+    if(e.champion)skill=Math.max(skill,.64);if(e.guardian||e.exitWarden)skill=Math.max(skill,.74);if(e.follower)skill=Math.max(skill,.82);if(e.ccgBoss)skill=.92;if(e.deathStalker)skill=.88;
+    const durability=Math.max(0,Number(e.maxHp||e.hp||0)-4)+Math.max(0,Number(e.maxArmor||e.armor||0));
+    return Math.max(.12,Math.min(.95,skill+Math.min(.1,durability*.008)))
+  }
   function flankPoint(e,p,host,map,world){
     const vx=Math.sign(p.x-e.x),vy=Math.sign(p.y-e.y),sideA={x:p.x-vy*3-vx*2,y:p.y+vx*3-vy*2},sideB={x:p.x+vy*3-vx*2,y:p.y-vx*3-vy*2};
     const options=[sideA,sideB,...DIRS.map(([dx,dy])=>({x:p.x+dx*3,y:p.y+dy*3}))].filter(q=>passable(e,host,map,q.x,q.y,world));
@@ -168,10 +175,12 @@ window.CCGAI=(()=>{
       const was=e.aiState;e.aiState="chase";e.lastSeen={x:seen.x,y:seen.y};e.memoryMs=memory(e);e.searchMs=0;e.targetId=seen.id;
       if(was!=="chase")hooks.alert?.(e,"alert",reason);
       if(e.tacticalDecisionMs<=0){
-        const named=Boolean(e.follower),ranged=["ranger","root","cook","firebreather"].includes(kind(e)),cover=(named||ranged||kind(e)==="ambusher")&&range>=3?coverPoint(e,seen,host,map,world):null;
-        if(cover&&Math.random()<(named ? .78 : .42)){e.coverTarget=cover;e.tacticalHoldMs=named?850+Math.random()*900:500+Math.random()*650;e.tacticalMode="cover"}
-        else if(range>2&&Math.random()<(named ? .72 : .28)){e.flankTarget=flankPoint(e,seen,host,map,world);e.tacticalMode="flank"}
-        e.tacticalDecisionMs=named?700+Math.random()*850:1200+Math.random()*1200;
+        const skill=tacticalSkill(e),wounded=Number(e.hp||0)<Number(e.maxHp||1)*.48,cover=range>=3&&skill>=.2?coverPoint(e,seen,host,map,world):null,coverChance=.12+skill*.66+(wounded?.12:0),flankChance=.12+skill*.58;
+        e.coverTarget=null;e.flankTarget=null;
+        if(cover&&Math.random()<coverChance){e.coverTarget=cover;e.tacticalHoldMs=420+skill*1050+Math.random()*520;e.tacticalMode="cover"}
+        else if(range>2&&Math.random()<flankChance){e.flankTarget=flankPoint(e,seen,host,map,world);e.tacticalMode="flank"}
+        else e.tacticalMode="pressure";
+        e.tacticalSkill=skill;e.tacticalDecisionMs=1650-skill*900+Math.random()*(900-skill*420);
       }
     }else if(e.aiState==="chase"){
       e.memoryMs-=dt;if(e.memoryMs<=0){e.aiState="search";e.searchMs=C.enemy.searchTime;hooks.alert?.(e,"search")}
@@ -187,7 +196,7 @@ window.CCGAI=(()=>{
 
     let moved=false,k=kind(e);
     if(seen){
-      const named=Boolean(e.follower),burstSteps=named?1:(Math.random()<.22?2:1);
+      const skill=tacticalSkill(e),burstSteps=e.deathStalker?1:(!e.follower&&skill<.3&&Math.random()<.1?2:1);
       if(e.coverTarget){
         if(e.x!==e.coverTarget.x||e.y!==e.coverTarget.y)moved=moveBurst(e,host,map,e.coverTarget,world,Math.min(2,burstSteps));
         else if(e.tacticalHoldMs>0){e.facing=shotDirection(e,seen);e.moveCooldown=180+Math.random()*180;return changed}
@@ -201,7 +210,7 @@ window.CCGAI=(()=>{
       }else if(!moved&&k==="firebreather"){
         if(range>4)moved=moveBurst(e,host,map,flankPoint(e,seen,host,map,world),world,Math.min(2,burstSteps));else moved=randomStep(e,host,map,world);
       }else if(!moved&&k==="ambusher")moved=moveBurst(e,host,map,predicted(seen,map,3),world,burstSteps);
-      else if(!moved)moved=moveBurst(e,host,map,Math.random()<(named ? .55 : .2)?flankPoint(e,seen,host,map,world):seen,world,burstSteps);
+      else if(!moved){const flankChance=.18+skill*.58;moved=moveBurst(e,host,map,Math.random()<flankChance?flankPoint(e,seen,host,map,world):seen,world,burstSteps)}
       if(moved&&man(e,seen)<=1)changed=attack(e,map,seen,dist(e,seen),host,hooks)||changed;
     }else if(e.aiState==="chase"&&e.lastSeen){
       moved=moveToward(e,host,map,e.lastSeen,world);if(e.x===e.lastSeen.x&&e.y===e.lastSeen.y){e.aiState="search";e.searchMs=C.enemy.searchTime;hooks.alert?.(e,"search")}
@@ -216,5 +225,5 @@ window.CCGAI=(()=>{
     if(!host?.enemies||!world)return;host.enteredRoomIds=host.enteredRoomIds||[];for(const p of players||[]){const roomId=p?W.roomAt(world,p.x,p.y):-1;if(roomId>=0&&!host.enteredRoomIds.includes(roomId))host.enteredRoomIds.push(roomId)}let changed=false;for(const e of host.enemies)changed=stepOne(e,host,map,players,dt,hooks,world)||changed;if(changed)host.revision++;
   }
   function alertEnemy(e,x,y){if(!e?.alive)return;e.aiState="chase";e.lastSeen={x,y};e.memoryMs=memory(e);e.searchMs=0;e.moveCooldown=Math.min(e.moveCooldown,180)}
-  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,stepEnemies,stageUnenteredEnemies,roomEnteredForTest:roomEntered,stalkerDoorForTest:stalkerDoor,alertEnemy,kindOf:kind};
+  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,tacticalSkillForTest:tacticalSkill,stepEnemies,stageUnenteredEnemies,roomEnteredForTest:roomEntered,stalkerDoorForTest:stalkerDoor,alertEnemy,kindOf:kind};
 })();

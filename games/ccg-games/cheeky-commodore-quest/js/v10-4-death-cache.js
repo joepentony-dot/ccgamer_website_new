@@ -60,6 +60,7 @@
       cache.inventory=[];
       cache.games=[];
       cache.score=0;
+      cache.xp=0;
       removeAllDeathCachesExcept(null);
       S.sfx?.("pickup");
 
@@ -70,10 +71,11 @@
         : " The recovery box has now disappeared.";
       showToast(
         "DEATH CACHE RECOVERED",
-        `${itemCount} carried item${itemCount===1?"":"s"}, ${gameCount} rescued game${gameCount===1?"":"s"} and ${Math.max(0,Number(recovered?.score||0)).toLocaleString()} score recovered.${suffix}`,
+        `${itemCount} carried item${itemCount===1?"":"s"}, ${gameCount} rescued game${gameCount===1?"":"s"}, ${Math.max(0,Number(recovered?.score||0)).toLocaleString()} score and ${Math.max(0,Number(recovered?.xp||0)).toLocaleString()} XP recovered.${suffix}`,
         lost?"cyan":"green",
         9500
       );
+      if(recovered?.levels?.length){S.sfx?.("level");if(typeof queueLevelChoice==="function")queueLevelChoice(player)}
     };
   }
 })();
