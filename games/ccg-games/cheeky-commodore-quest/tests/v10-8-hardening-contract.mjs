@@ -9,6 +9,9 @@ const hard=read('js/v10-8-run-hardening.js');
 const weekly=read('js/weekly-challenge.js');
 const audio=read('js/lost-sizzler-playlist-audio.js');
 const hud=read('js/v10-6-inventory-hud-fix.js');
+const ui=read('js/v10-6-ui-polish.js');
+const notices=read('js/v10-8-notification-rail.js');
+const noticeCss=read('css/v10-8-notification-rail.css');
 const assets=read('js/asset-overrides.js');
 
 // 1 — ranked score durability and idempotent retry client.
@@ -18,34 +21,41 @@ assert.match(weekly,/window\.addEventListener\("online"/);
 assert.match(weekly,/submissionId/);
 assert.doesNotMatch(weekly,/disabled=!state\.ready\|\|\(state\.signedIn&&state\.locked\)/,'used ranked attempt no longer disables unranked weekly play');
 
-// 2/3 — route watchdog and safe death-cache relocation.
+// 2/3 — route watchdog and safe/reachable death-cache relocation.
 assert.match(hard,/validateCriticalRoute/);
 assert.match(hard,/bridgeDoorFor/);
+assert.match(hard,/activeChallengeLock/,'watchdog protects legitimate active arena/Sigil locks');
 assert.match(hard,/secureDeathCaches/);
-assert.match(hard,/nearestSafe/);
+assert.match(hard,/nearestReachableSafe/);
 
-// 4/5 — focus pause and spawn grace.
+// 4/5 — focus pause and spawn grace that ends early when the player fires.
 assert.match(hard,/window\.addEventListener\("blur",pauseForFocusLoss\)/);
 assert.match(hard,/playMode==="online"/);
 assert.match(hard,/p\.invuln=Math\.max\(Number\(p\.invuln\)\|\|0,1500\)/);
+assert.match(hard,/_v108RespawnGraceUntil/);
+assert.match(hard,/firePlayer=function/);
 
 // 6/7 — multiplayer state/collect integrity.
 assert.match(hard,/migration_probe/);
 assert.match(hard,/migration_snapshot/);
-assert.match(hard,/candidates\.filter/);
+assert.match(hard,/sort\(\(a,b\)=>b\.revision-a\.revision\)/);
 assert.match(hard,/hostClaims=new Set/);
 assert.match(hard,/clientCollections=new Set/);
+assert.match(hard,/hostClaims\.delete\(id\)/,'rejected pickups release their claim for a later retry');
 
-// 8 — Weekly Dungeon presentation has one authoritative path; old observer layer is no longer loaded.
+// 8 — Weekly Dungeon has one authoritative click path; old observer layer is not loaded.
 assert.doesNotMatch(assets,/v10-6-menu-runtime-fix\.js/);
-assert.match(hard,/Guests play unranked/);
+assert.match(hard,/startWeeklyUnified/);
+assert.match(hard,/addEventListener\("click",startWeeklyUnified,true\)/);
+assert.doesNotMatch(ui,/startGuestWeekly/,'UI polish no longer competes for Weekly Dungeon clicks');
 
-// 9 — HUD follows sync/events, not a permanent 250ms polling loop.
-assert.match(hud,/const oldSync=typeof sync/);
+// 9 — HUD follows sync/events and signatures, not permanent DOM polling.
+assert.match(hud,/lastSignature/);
 assert.match(hud,/ccg:inventory-refresh/);
 assert.doesNotMatch(hud,/setInterval\(/);
+assert.doesNotMatch(ui,/renderCarriedItems/,'UI polish no longer performs a second carried-items render');
 
-// 10 — retired reward choice is physically removed at runtime and intermediate extraction remains owned by the final balance layer.
+// 10 — retired reward choice is removed while final-floor Finish Run remains owned by the balance layer.
 assert.match(hard,/artefactChoice\?\.remove/);
 
 // 11 — checkpoint schema guard.
@@ -63,9 +73,22 @@ assert.match(audio,/custom\.length\?custom:g\.bundled/);
 assert.match(audio,/failedUrls\.add/);
 assert.match(audio,/clearFailed/);
 
-// Hardening layer loads after the established gameplay/balance layers.
+// 14 + notification restoration — right-side overlay and multi-resolution crash guard.
+assert.match(notices,/tactical-notification-layer/);
+assert.match(notices,/displayToast=function/);
+assert.match(notices,/originalSay/,'important room reports can be promoted to the notification rail');
+assert.match(noticeCss,/temporarily cover the inventory/i);
+assert.match(noticeCss,/\.pickup-toast\.green/);
+assert.match(noticeCss,/\.pickup-toast\.cyan/);
+assert.match(noticeCss,/\.pickup-toast\.red/);
+assert.match(hard,/MAX_CANVAS_PIXELS=1920\*1080/,'4K/5K canvas backing allocation is capped');
+assert.match(assets,/v10-8-notification-rail\.js/);
+assert.match(assets,/v10-8-notification-rail\.css/);
+assert.match(assets,/__CCG_LATE_PATCH_QUEUE_STARTED__/,'late patch stack has a duplicate-load guard');
+
 const hardIndex=assets.indexOf('v10-8-run-hardening.js');
 const balanceIndex=assets.indexOf('v10-6-stalker-shop-balance.js');
-assert.ok(hardIndex>balanceIndex&&balanceIndex>=0,'run hardening loads after established balance/runtime layers');
+const noticeIndex=assets.indexOf('v10-8-notification-rail.js');
+assert.ok(hardIndex>balanceIndex&&noticeIndex>hardIndex,'hardening loads after balance and notifications load last');
 
-console.log('Lost Sizzler V10.8 hardening contract checks passed.');
+console.log('Lost Sizzler V10.8 hardening and notification contract checks passed.');
