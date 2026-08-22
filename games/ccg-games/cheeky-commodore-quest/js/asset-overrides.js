@@ -58,6 +58,7 @@ window.addEventListener("load",()=>{
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
   const queue=[
     [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
+    ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
     ["js/v10-4-patch.js","ccgLostSizzlerV104"],
     ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
     ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
