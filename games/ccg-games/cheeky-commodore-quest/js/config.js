@@ -15,10 +15,10 @@ window.CCG_CONFIG=Object.freeze({
   },
   enemy:{
     thinkDelay:90,lineOfSightRange:14,torchSightRange:20,contactRange:1,
-    alertMemory:{scout:2300,hunter:4200,ambusher:3000,guard:2400,charger:3200,ranger:3200,root:3500,cook:3100,firebreather:3200,ghost:2600,guardian:5200,champion:4300,treasure:1200},
+    alertMemory:{spider:1800,skeleton:2300,knight:4800,scout:2300,hunter:4200,ambusher:3000,guard:2400,charger:3200,ranger:3200,root:3500,cook:3100,firebreather:3200,ghost:2600,guardian:5200,champion:4300,treasure:1200},
     searchTime:5000,idleStepMin:2220,idleStepMax:4070,followerLightRadius:10,namedAttackMultiplier:.70,
     namedHpPerLevel:.13,namedArmorPerLevel:.09,namedDamagePerLevel:.075,namedPotionPerLevel:.45,namedCadencePerLevel:.025,hitStunMs:1000,
-    chaseStep:{scout:940,hunter:780,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
+    chaseStep:{spider:720,skeleton:820,knight:980,scout:940,hunter:780,ambusher:765,guard:999999,charger:530,ranger:940,root:1010,cook:1060,firebreather:840,ghost:890,guardian:690,champion:765,treasure:640}
   },
   stalker:{
     enabled:true,name:"Count Loadula",startFloor:2,moveMs:850,nearDistance:18,attackDistance:1.25,drainDistance:6,drainPerSecond:10,
@@ -51,6 +51,6 @@ window.CCG_CONFIG=Object.freeze({
     {name:"CCG",initials:"CCG",kind:"hunter",hp:18,armor:4,avatar:"",musicKey:"ccg",ccgBoss:true,moveSpeedScale:1.35,namedDamageScale:2,strength:"Heavy armour, high health and double named-enemy damage.",weakness:"Deliberately slow — maintain range and keep moving around cover."}
   ],
   c64Loot:["Impossible Mission","Wizball","Paradroid","Boulder Dash","Bruce Lee","Uridium","The Last Ninja","Bubble Bobble","IK+","Turrican","Armalyte","Mayhem in Monsterland","Monty on the Run","Creatures","The Great Giana Sisters","Dropzone","Delta","Hawkeye","R-Type","Ghouls 'n Ghosts","California Games","World Games","Summer Games II","Winter Games","Pitstop II","Spy vs Spy","Nebulus","Cybernoid","Ghosts 'n Goblins","The Sentinel","International Karate","Elite"],
-  roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE"],
+  roomThemes:["C64_ARCHIVE","1541_WORKSHOP","BUDGET_BIN","DEMO_LOUNGE","ARMOURY","CPU_KITCHEN","SID_REACTOR","WARP_GALLERY","ZZAP_LIBRARY","TAPE_STORE","CARTRIDGE_BAY","CRACKED_INTRO","PIXEL_FOUNDRY","MODEM_EXCHANGE","HIGH_SCORE_CRYPT","CRT_MAZE","IRON_KEEP","MOSS_CRYPT","EMBER_DUNGEON"],
   adminAudio:{stalker:null,dangerRoom:null,sanctuary:null,namedEnemies:{}}
 });

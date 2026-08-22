@@ -96,6 +96,7 @@ window.CCGAI=(()=>{
   }
   function tacticalSkill(e){
     const k=kind(e);let skill=.16;
+    if(k==="spider")skill=.12;else if(k==="skeleton")skill=.18;else if(k==="knight")skill=.58;
     if(k==="hunter")skill=.28;else if(k==="ambusher")skill=.46;else if(["ranger","root","cook","firebreather"].includes(k))skill=.42;else if(k==="charger")skill=.24;else if(k==="ghost")skill=.34;
     if(e.champion)skill=Math.max(skill,.64);if(e.guardian||e.exitWarden)skill=Math.max(skill,.74);if(e.follower)skill=Math.max(skill,.82);if(e.ccgBoss)skill=.92;if(e.deathStalker)skill=.88;
     const durability=Math.max(0,Number(e.maxHp||e.hp||0)-4)+Math.max(0,Number(e.maxArmor||e.armor||0));
@@ -136,7 +137,7 @@ window.CCGAI=(()=>{
   function attackDelay(e,base){const named=e.follower?(C.enemy.namedAttackMultiplier||.7)*(e.namedCadenceScale||1):1;return Math.max(240,Math.round(base*named))}
   function attack(e,map,p,range,host,hooks){
     if(!p||e.attackCooldown>0)return false;const world=host?.worldRef||window.__CCG_WORLD,enemyRoom=W.roomAt(world,e.x,e.y),playerRoom=W.roomAt(world,p.x,p.y);if(enemyRoom>=0&&playerRoom<0&&!roomEntered(host,enemyRoom))return false;const k=kind(e),hasLOS=lineOfSight(map,e,p,p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange,host);
-    if(["scout","hunter","ambusher","charger","ghost","guardian","champion"].includes(k)&&range<=1.5){e.attackCooldown=attackDelay(e,k==="guardian"?520:k==="hunter"?700:k==="charger"?850:950);hooks.melee?.(e,p,k==="guardian"?3:(k==="hunter"||k==="charger"||e.champion)?2:1);return true}
+    if(["spider","skeleton","knight","scout","hunter","ambusher","charger","ghost","guardian","champion"].includes(k)&&range<=1.5){e.attackCooldown=attackDelay(e,k==="guardian"?520:k==="hunter"?700:k==="charger"?850:k==="spider"?820:k==="skeleton"?930:k==="knight"?1080:950);if(k==="knight")e.meleeSwingMs=420;hooks.melee?.(e,p,k==="guardian"?3:(k==="knight"||k==="hunter"||k==="charger"||e.champion)?2:1);return true}
     if(!hasLOS)return false;
     if(k==="ranger"&&range<=10){shootAt(e,p,"normal",1,13,hooks);e.attackCooldown=attackDelay(e,1000);return true}
     if(k==="root"&&range<=9){shootAt(e,p,"root",1,11,hooks);e.attackCooldown=attackDelay(e,1220);return true}
@@ -160,8 +161,9 @@ window.CCGAI=(()=>{
   }
 
   function stepOne(e,host,map,players,dt,hooks,world){
-    if(!e.alive)return false;e.attackCooldown-=dt;e.chargeCooldown=(e.chargeCooldown||0)-dt;e.moveCooldown-=dt;e.tacticalDecisionMs=(e.tacticalDecisionMs||0)-dt;e.tacticalHoldMs=Math.max(0,(e.tacticalHoldMs||0)-dt);if(e.flash>0)e.flash=Math.max(0,e.flash-dt);
+    if(!e.alive)return false;e.attackCooldown-=dt;e.chargeCooldown=(e.chargeCooldown||0)-dt;e.moveCooldown-=dt;e.tacticalDecisionMs=(e.tacticalDecisionMs||0)-dt;e.tacticalHoldMs=Math.max(0,(e.tacticalHoldMs||0)-dt);e.meleeSwingMs=Math.max(0,(e.meleeSwingMs||0)-dt);if(e.flash>0)e.flash=Math.max(0,e.flash-dt);
     if((e.hitStunMs||0)>0){e.hitStunMs=Math.max(0,e.hitStunMs-dt);e.attackCooldown=Math.max(e.attackCooldown,e.hitStunMs);return false}
+    if(e.deathStalker){const lit=players.filter(p=>p&&p.health>0&&p.torchMs>0&&(W.sameRoom(world,e,p)||dist(e,p)<=Math.max(6,C.player?.torchRadius||6))).sort((a,b)=>dist(e,a)-dist(e,b))[0];if(lit){e.hunting=false;e.aiState="idle";e.lastSeen=null;e.targetId=null;e.memoryMs=0;e.searchMs=0;e.attackCooldown=Math.max(e.attackCooldown,900);if(e.moveCooldown<=0){const opts=DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy,dx,dy,d:dist({x:e.x+dx,y:e.y+dy},lit)})).filter(q=>passable(e,host,map,q.x,q.y,world)).sort((a,b)=>b.d-a.d);if(opts[0]){e.x=opts[0].x;e.y=opts[0].y;e.facing={x:opts[0].dx,y:opts[0].dy};e.moveCooldown=760;return true}}return false}}
     let [seen,range,reason]=visibleTarget(e,map,players,host,world);if(e.deathStalker&&seen)e.hunting=true;if(e.deathStalker&&e.hunting&&!seen){seen=players.filter(p=>p&&p.health>0).sort((a,b)=>dist(e,a)-dist(e,b))[0]||null;if(seen){range=dist(e,seen);reason="hunt"}}
     if((e.chargeTelegraphMs||0)>0){e.chargeTelegraphMs-=dt;if(e.chargeTelegraphMs<=0&&seen){const moved=executeCharge(e,seen,host,map,hooks);e.moveCooldown=chaseInterval(e);return moved||true}return true}
     if(retreatAndRestore(e,seen,host,map,hooks,world))return true;

@@ -52,6 +52,11 @@
       <div id="named-enemy-guide" class="named-enemy-guide"></div>
       <div class="reference-tip"><b>Death Stalker:</b> trade 3 artefacts or pay 10,000 score at a shop for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
     </section>
+    <section class="shortcut-dock" aria-labelledby="shortcut-dock-title">
+      <div class="shortcut-dock-head"><h3 id="shortcut-dock-title">COMMAND DECK</h3><span>LIVE KEYS</span></div>
+      <div class="command-grid" aria-label="Keyboard shortcuts"><span><kbd>WASD</kbd><b>MOVE</b></span><span><kbd>SPACE</kbd><b>FIRE</b></span><span><kbd>SHIFT</kbd><b>DASH</b></span><span><kbd>TAB</kbd><b>ITEMS</b></span></div>
+      <div id="item-shortcuts" class="item-shortcuts" aria-live="polite"></div>
+    </section>
   </section>
 
   <section class="game-area v102-game-area">
@@ -60,7 +65,7 @@
     </div>
     <aside class="game-message-rail" aria-label="Live dungeon reports">
       <div class="game-message-context"><b>CURRENT ROOM</b><span id="surroundings">C64 Archive — visibility is limited until you find a torch.</span></div>
-      <div id="pickup-toast" class="pickup-toast" aria-live="polite"><b id="pickup-title">DUNGEON READY</b><span id="pickup-text">Important discoveries and warnings appear here.</span></div>
+      <div id="pickup-toast" class="pickup-toast" aria-live="polite"><div id="pickup-icon" class="pickup-toast-icon" aria-hidden="true">!</div><div class="pickup-toast-copy"><b id="pickup-title">DUNGEON READY</b><span id="pickup-text">Important discoveries and warnings appear here.</span></div></div>
       <p id="message" class="game-message-line">The dungeon is listening. This is rarely a positive sign.</p>
       <div id="quest-list" class="quest-list game-quest-list"></div>
     </aside>
@@ -79,9 +84,13 @@
         <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
         <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
         <section class="online-howto" aria-label="Online multiplayer instructions"><h3>ONLINE MULTIPLAYER — UP TO 4 PLAYERS</h3><div><p><b>HOST</b> Create a room, send the invite, wait in the lobby, then press Start Dungeon.</p><p><b>JOIN</b> Open the invite or enter its room code. The host starts the shared run when everyone is ready.</p></div></section>
+        <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
+        <h3 id="weekly-vault-title">WEEKLY HIGH-SCORE VAULT LEADERBOARD</h3>
+        <p class="weekly-leaderboard-note">Check this leaderboard throughout the week to see who is winning. If nobody completes an attempt or nobody plays, no winner is declared and nothing is awarded or announced for that week.</p>
         <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
-        <div id="weekly-auth-actions" class="weekly-auth-actions"><a href="/auth/register.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F" target="_blank" rel="noopener noreferrer">Create CCG Account</a><a href="/auth/login.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F">Sign In</a></div>
+        <div id="weekly-auth-actions" class="weekly-auth-actions"><a href="/auth/register.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault">Create Free Website Account</a><a href="/auth/login.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault">Sign In</a></div>
         <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
+        </section>
         <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
         <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
@@ -139,13 +148,17 @@
       <p class="rulebook-lead">One route, three clear steps. Optional rooms make you stronger; they never block the exit.</p>
       <div class="rulebook-grid rulebook-cards">
         <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
-        <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL CHAMBER</h3><p>Enter the opened gate. It locks and summons two named enemies. Defeat every defender, then collect the Exit Sigil.</p></section>
+        <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL GREAT HALL</h3><p>Enter the opened reinforced gate. It locks behind you while the Sigil Warden, its Praetorian and their minions defend the great hall. Defeat every defender, then collect the Exit Sigil.</p></section>
         <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
-        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. A lit carried torch frightens it away and stops its pursuit until the flame expires or is extinguished. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
         <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>Pickups give 1–10 XP, one-time openings such as hidden walls, locked doors, chests, switches and puzzle vaults give 10 XP, ordinary enemies give 100 XP and named enemies give 250 XP. Entering rooms, repeatable doors and objectives give no XP. The first upgrade requires 1,425 XP.</p></section>
         <section><div class="rulebook-icon">⚠</div><h3>DEATH, ZERO XP &amp; WEEKLY VAULT</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache. You can lose at most one level and your most recent upgrade. The first death that leaves your total XP at zero gives a final warning. If any later death leaves total XP at zero a second time, the run ends—even if you recovered the earlier cache. Weekly Vault death ends that week’s attempt immediately.</p></section>
-        <section><div class="rulebook-icon">?</div><h3>ENEMY TACTICS &amp; OPTIONAL CHALLENGES</h3><p>Enemies can reposition, flank and hide behind solid furniture. Tougher enemies assess cover more often and re-plan faster, but smarter tactics do not grant extra speed or damage. Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
+        <section><div class="rulebook-icon">?</div><h3>ENEMY TACTICS &amp; OPTIONAL CHALLENGES</h3><p>Enemies can reposition, flank and hide behind solid furniture. Tougher enemies assess cover more often and re-plan faster, but smarter tactics do not grant extra speed or damage. Player shots can smash ordinary furniture to open a route; enemy fire cannot destroy it. Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
+        <section><div class="rulebook-icon">♨</div><h3>WIND, SPIDERS &amp; FIRELIGHT</h3><p>About one corridor in twenty becomes a haunted windy passage. Its whistle warns of an adjoining webbed chamber crowded with fragile one-HP spiders. The wind snuffs an active torch with a pssst and visible gust, while fireplaces illuminate two rooms on every floor.</p></section>
+        <section><div class="rulebook-icon">☠</div><h3>HORDES &amp; ARMOURED KNIGHTS</h3><p>One low-health skeleton horde can rise on each floor and bursts into flying bones when defeated. Archive Knights carry heavy armour and high health: they cannot shoot, but their sword strike is dangerous at close range.</p></section>
+        <section><div class="rulebook-icon">⚔</div><h3>TREACHEROUS HAZARD ROOMS</h3><p>Floors 1–2 contain one dedicated hazard room; floors 3–5 contain two. Timed blade galleries, ember floors and arrow halls signal their cycle before striking for 1 HP. Watch the pattern, move between safe tiles and do not rush the warning phase.</p></section>
+        <section><div class="rulebook-icon">♥</div><h3>LAST-RESORT RECOVERY</h3><p>If every health pickup on the current floor has been consumed, an injured player regenerates 1 HP every two minutes. During a failed Sigil Lockdown, its gate reopens, surviving defenders reset and the death cache is placed outside the chamber so the challenge can be attempted again.</p></section>
       </div>
       <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
     </div></div>
