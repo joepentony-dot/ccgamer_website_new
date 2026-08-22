@@ -25,11 +25,11 @@ window.CCGWeeklyChallenge=(()=>{
   function render(){
     const b=button(),s=statusEl(),actions=authActions(),list=boardEl();
     if(b){
-      b.disabled=!state.ready||(state.signedIn&&state.locked);
+      b.disabled=!state.ready;
       b.textContent=!state.ready
         ?"Weekly Dungeon — Checking…"
         :state.signedIn&&state.locked
-          ?"Weekly Dungeon — Try Next Week"
+          ?"Weekly Dungeon — Unranked Replay"
           :state.signedIn
             ?"Weekly Dungeon — Ranked Run"
             :"Weekly Dungeon";
@@ -40,7 +40,7 @@ window.CCGWeeklyChallenge=(()=>{
         :!state.signedIn
           ?"Play the Weekly Dungeon without an account. Sign in only if you want your score submitted to the weekly leaderboard."
           :state.locked
-            ?`Ranked attempt used for week beginning ${state.weekStart}. The leaderboard resets Monday at 00:00 UTC.`
+            ?`Your ranked attempt for week beginning ${state.weekStart} is complete. You can keep replaying the Weekly Dungeon unranked.`
             :`Signed in as ${state.playerName}. Your next Weekly Dungeon run is your one ranked attempt for this week.`;
     }
     actions?.classList.toggle("hidden",Boolean(state.signedIn));
