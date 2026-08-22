@@ -19,7 +19,7 @@ window.CCG_ASSET_OVERRIDES={
 /* Cache-bust the rapidly iterating V10.6 HUD layer. Static hosting can retain an
    older copy for several minutes after a merge, which made a newly added carried
    item panel appear missing even though main already contained the fix. */
-const CCG_V106_HUD_REV="20260822d";
+const CCG_V106_HUD_REV="20260822e";
 
 /* Load the final V10.6 UI layers before first paint settles, and begin resolving
    any owner-uploaded Lost Sizzler music from the existing Arcade Asset store. */
