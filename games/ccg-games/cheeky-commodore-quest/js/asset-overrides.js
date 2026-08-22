@@ -11,7 +11,7 @@ window.CCG_ASSET_OVERRIDES={
     items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
   },
   audio:{
-    music:{exploration:null,danger:null,sanctuary:null,named:null,stalker:null,rooms:{},namedEnemies:{"peter-cortens":null,"swanh8ter":null,"syragar":null,"parsnip-celery":null,"cpu":null,"yoshi-yoshi":null,"ccg":null}},
+    music:{exploration:null,danger:null,sanctuary:null,named:null,stalker:null},
     sfx:{}
   }
 };

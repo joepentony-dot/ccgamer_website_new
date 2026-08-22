@@ -10,6 +10,9 @@ on:
       - 'admin/css/arcade-assets.css'
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
@@ -23,6 +26,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
+      - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
   push:
@@ -36,6 +40,9 @@ on:
       - 'admin/css/arcade-assets.css'
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
@@ -49,6 +56,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
+      - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
 
@@ -81,6 +89,7 @@ jobs:
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/audio-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
@@ -89,6 +98,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
+          node --check scripts/generate-lost-sizzler-audio.mjs
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate final balance rules
@@ -103,7 +113,14 @@ jobs:
         shell: bash
         run: |
           grep -F "lostSizzlerExploration" admin/js/arcade-assets.js
-          grep -F "lostSizzlerRoomVault" admin/js/arcade-assets.js
+          grep -F "lostSizzlerDanger" admin/js/arcade-assets.js
+          grep -F "lostSizzlerSanctuary" admin/js/arcade-assets.js
+          grep -F "lostSizzlerNamed" admin/js/arcade-assets.js
+          grep -F "lostSizzlerStalker" admin/js/arcade-assets.js
+          ! grep -F "lostSizzlerRoomVault" admin/js/arcade-assets.js
+          ! grep -F "rooms:Object.freeze" games/ccg-games/cheeky-commodore-quest/js/audio-assets.js
+          ! grep -F "namedEnemies:Object.freeze" games/ccg-games/cheeky-commodore-quest/js/audio-assets.js
+          test "$(find games/ccg-games/cheeky-commodore-quest/assets/audio/music -maxdepth 1 -type f | wc -l)" -eq 5
           grep -F "admin-audio-overrides.js" games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js

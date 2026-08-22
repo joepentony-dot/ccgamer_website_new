@@ -49,18 +49,6 @@ window.CCG_AUDIO_ASSETS=Object.freeze({
     danger:"assets/audio/music/danger.wav",
     sanctuary:"assets/audio/music/sanctuary.wav",
     named:"assets/audio/music/named-enemy.wav",
-    rooms:Object.freeze({
-      archive:"assets/audio/music/exploration.wav",workshop:"assets/audio/music/named-syragar.wav",budget:"assets/audio/music/named-cpu.wav",demo:"assets/audio/music/named-yoshi-yoshi.wav",armoury:"assets/audio/music/danger.wav",kitchen:"assets/audio/music/named-parsnip-celery.wav",reactor:"assets/audio/music/danger.wav",warp:"assets/audio/music/named-swanh8ter.wav",library:"assets/audio/music/named-peter-cortens.wav",tape:"assets/audio/music/exploration.wav",cartridge:"assets/audio/music/sanctuary.wav",cracked:"assets/audio/music/named-enemy.wav",foundry:"assets/audio/music/named-yoshi-yoshi.wav",modem:"assets/audio/music/named-syragar.wav",crypt:"assets/audio/music/named-peter-cortens.wav",crt:"assets/audio/music/named-swanh8ter.wav",vault:"assets/audio/music/named-enemy.wav"
-    }),
-    namedEnemies:Object.freeze({
-      "peter-cortens":"assets/audio/music/named-peter-cortens.wav",
-      "swanh8ter":"assets/audio/music/named-swanh8ter.wav",
-      "syragar":"assets/audio/music/named-syragar.wav",
-      "parsnip-celery":"assets/audio/music/named-parsnip-celery.wav",
-      "cpu":"assets/audio/music/named-cpu.wav",
-      "yoshi-yoshi":"assets/audio/music/named-yoshi-yoshi.wav",
-      "ccg":"assets/audio/music/danger.wav"
-    }),
     stalker:"assets/audio/music/count-loadula.wav"
   })
 });
