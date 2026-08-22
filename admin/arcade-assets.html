@@ -21,7 +21,7 @@
       <div>
         <p class="admin-auth-kicker">CCG Arcade Development</p>
         <h1>Commodore Quest Asset Manager</h1>
-        <p>Manage scene backgrounds, sound effects and your own game music. The Lost Sizzler now has dedicated music slots for exploration, combat, safe rooms, named enemies, Death Stalkers and individual room types.</p>
+        <p>Manage scene backgrounds, sound effects and your own game music. The Lost Sizzler now uses five dedicated music slots: exploration, combat, safe rooms, named enemies and Death Stalker / Count Loadula encounters.</p>
       </div>
       <div class="arcade-asset-card__actions">
         <a class="ccg-btn ccg-btn--primary" href="/games/ccg-games/cheeky-commodore-quest/" target="_blank" rel="noopener">Open The Lost Sizzler</a>
@@ -35,7 +35,7 @@
         <form id="arcade-asset-form" class="arcade-form">
           <label>Asset slot<select id="arcade-slot" required></select></label>
           <label>File<input id="arcade-file" type="file" required /></label>
-          <label>Notes <span class="arcade-muted">(optional)</span><input id="arcade-notes" type="text" maxlength="180" placeholder="e.g. Lost Sizzler Vault music v2" /></label>
+          <label>Notes <span class="arcade-muted">(optional)</span><input id="arcade-notes" type="text" maxlength="180" placeholder="e.g. Lost Sizzler exploration music v2" /></label>
           <label class="arcade-check"><input id="arcade-enabled" type="checkbox" checked /> Enable immediately</label>
           <div id="arcade-preview" class="arcade-preview" aria-live="polite"><span>Select a file to preview it.</span></div>
           <button class="ccg-btn ccg-btn--primary" type="submit" id="arcade-upload">Upload Asset</button>
@@ -45,14 +45,15 @@
       <article class="arcade-panel">
         <h2>Background &amp; Audio Workflow</h2>
         <ul class="arcade-help">
-          <li><strong>Lost Sizzler music:</strong> choose a slot under <em>Lost Sizzler Music</em>, then upload an MP3, OGG or WAV. Reload the game and that track replaces the bundled music for that situation or room.</li>
+          <li><strong>Lost Sizzler music:</strong> choose one of the five slots under <em>Lost Sizzler Music</em>, then upload an MP3, OGG or WAV. Reload the game and that track replaces the bundled music for that situation.</li>
+          <li><strong>Exploration is the default:</strong> general exploration music plays throughout normal rooms and automatically resumes when a special encounter state ends.</li>
           <li><strong>Fallbacks stay intact:</strong> leave a music slot empty, disabled or delete it and The Lost Sizzler automatically uses its bundled soundtrack instead.</li>
           <li><strong>Main backgrounds:</strong> use one finished 1600×900 scene image for each Arcade Quest game section.</li>
           <li><strong>Animated scenery:</strong> GIF or WebP can be used if you want movement in a background.</li>
           <li><strong>Gameplay art is protected:</strong> production character animation, enemies, bosses, hazards, collectibles and power-ups remain versioned with the games so collision and animation behaviour cannot be broken by an accidental upload.</li>
           <li><strong>Supabase Storage:</strong> keeps live background and audio overrides without exposing GitHub credentials.</li>
         </ul>
-        <div class="arcade-callout"><strong>Music tip:</strong> you do not need to fill every Lost Sizzler slot. Add only the tracks you want to replace; all other rooms and encounters continue using the built-in music.</div>
+        <div class="arcade-callout"><strong>Music tip:</strong> MP3 is the most practical format for longer tracks. Aim for seamless loops so returning to exploration never produces an obvious pause or jump.</div>
       </article>
     </section>
     <section class="arcade-panel arcade-library-panel">
@@ -66,6 +67,6 @@
   <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
-  <script type="module" src="/admin/js/arcade-assets.js?v=lost-sizzler-music-20260822"></script>
+  <script type="module" src="/admin/js/arcade-assets.js?v=lost-sizzler-five-track-20260822"></script>
 </body>
 </html>
