@@ -1,0 +1,97 @@
+/* The Lost Sizzler V10.6 — persistent inventory/key sidebar and quick keyring. */
+
+/* The lower tactical area is deliberately reserved for held items and keys. */
+.ccg-game>.tactical-zone>.shortcut-dock.inventory-live-dock{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  border:1px solid #503862!important;
+  background:linear-gradient(180deg,#0d0813,#07040a)!important;
+}
+.inventory-live-dock .shortcut-dock-head{flex:0 0 auto!important}
+.inventory-live-dock .item-shortcuts{
+  order:1!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:auto!important;
+  margin:5px 0!important;
+  padding-right:3px!important;
+}
+.inventory-live-dock .inventory-dock-controls{
+  order:2!important;
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  gap:4px!important;
+  flex:0 0 auto!important;
+}
+.inventory-live-dock .inventory-dock-controls>span{min-height:28px!important}
+.inventory-live-dock .inventory-dock-controls kbd{min-width:34px!important}
+
+.carried-section-label{
+  position:sticky;
+  top:0;
+  z-index:3;
+  padding:3px 5px;
+  border-bottom:1px solid #3b2b47;
+  background:rgba(9,4,15,.96);
+  color:#6cecff;
+  font-size:6.5px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.carried-empty{
+  padding:7px 8px;
+  border:1px dashed #3d2d49;
+  background:rgba(5,3,8,.66);
+  color:#91869c;
+  font-size:6.5px;
+  line-height:1.3;
+}
+.carried-empty b{display:block;margin-bottom:2px;color:#c8becf;font-size:6.5px}
+.carried-empty span{display:block}
+.carried-empty.compact{padding:5px 7px}
+
+/* AUTO / TRADE labels are informational actions rather than keyboard shortcuts. */
+.carried-meta kbd{max-width:50px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.carried-item .item-art-wrap{flex:0 0 auto!important}
+
+/* The bottom quick inventory keeps stack icons, while this tiny keyring makes
+   non-slot items such as bronze keys visible at a glance as well. */
+.hub-inventory{overflow:hidden!important}
+.quick-keyring-icons{
+  display:flex!important;
+  align-items:center!important;
+  gap:3px!important;
+  min-height:17px!important;
+  margin-top:2px!important;
+  overflow:hidden!important;
+}
+.quick-keyring-icons.hidden{display:none!important}
+.quick-key-chip{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:3px!important;
+  min-width:0!important;
+  padding:1px 4px!important;
+  border:1px solid #4a3856!important;
+  background:#08050c!important;
+  color:#cfc4d8!important;
+  font-size:5.5px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.quick-key-chip .item-art-wrap{width:13px!important;height:13px!important;border:0!important;background:transparent!important;padding:0!important}
+.quick-key-chip b{color:#ffd85a!important;font-size:5.5px!important}
+.quick-key-chip strong{color:#fff!important;font-size:5.5px!important}
+
+/* Keep enough room in the 94px player hub for the icon row without crushing
+   the quick-slot artwork. */
+.ccg-game>.player-hub .quick-slot{height:43px!important}
+.ccg-game>.player-hub .quick-slot .item-art-wrap{width:31px!important;height:31px!important}
+
+@media(max-width:900px){
+  .quick-keyring-icons{display:none!important}
+}
