@@ -65,8 +65,10 @@ window.CCGSystems=(()=>{
     const c=centre(room);return[{x:room.x+1,y:c.y},{x:room.x+room.w-1,y:c.y}].filter(p=>p.x>0&&p.y>0);
   }
   function carveSecretPassages(world,host,used,run){
-    const desired=Math.max(0,C.dungeon.secretPassages||0),made=[];if(!desired)return made;
-    const candidates=deepRooms(world).filter(r=>!r.sanctuary&&r.id!==world.startRoomId&&r.id!==world.exitRoomId);
+    const secretRoomIds=new Set((host.doors||[]).filter(d=>d.type==="secret").map(d=>d.roomId));
+    const deep=deepRooms(world).filter(r=>!r.sanctuary&&r.id!==world.startRoomId&&r.id!==world.exitRoomId),secretRooms=world.rooms.filter(r=>secretRoomIds.has(r.id)&&r.id!==world.startRoomId&&r.id!==world.exitRoomId),nested=secretRooms.filter(()=>world.random()<.05);
+    const desired=Math.max(0,C.dungeon.secretPassages||0)+nested.length,made=[];if(!desired)return made;
+    const candidates=[...nested,...deep];
     const allWalls=(cells)=>cells.every(q=>q.x>2&&q.y>2&&q.x<C.worldWidth-3&&q.y<C.worldHeight-3&&world.map[q.y]?.[q.x]===1);
     for(const room of candidates){
       if(made.length>=desired)break;
@@ -86,7 +88,7 @@ window.CCGSystems=(()=>{
         else{for(let xx=end.x-1;xx<=end.x+1;xx++)for(let yy=end.y;yy<=end.y+side.dy*2;yy+=side.dy)pocket.push({x:xx,y:yy})}
         const carve=[...path,...pocket].filter((q,i,a)=>a.findIndex(z=>z.x===q.x&&z.y===q.y)===i);if(!allWalls(carve))continue;
         for(const q of carve)world.map[q.y][q.x]=0;
-        const id=`secret-passage-${made.length}`,door={id,x:side.door.x,y:side.door.y,roomId:room.id,locked:true,type:"secret",hidden:true,cracked:true,open:false,opening:false,openingStart:0,openAt:0,orientation:side.orientation,side:side.name,secretPassage:true};host.doors.push(door);used.add(cell(door.x,door.y));
+        const id=`secret-passage-${made.length}`,door={id,x:side.door.x,y:side.door.y,roomId:room.id,locked:true,type:"secret",hidden:true,cracked:true,open:false,opening:false,openingStart:0,openAt:0,orientation:side.orientation,side:side.name,secretPassage:true,nestedSecret:secretRoomIds.has(room.id)};host.doors.push(door);used.add(cell(door.x,door.y));
         const chestPos={x:end.x+side.dx,y:end.y+side.dy};host.chests.push({id:`${id}-chest`,...chestPos,locked:false,active:true,depth:(room.depth||0)+5,roomId:room.id,secretPassage:true});used.add(cell(chestPos.x,chestPos.y));made.push(door);built=true;break;
       }
       if(built&&made.length>=desired)break;
@@ -332,7 +334,7 @@ window.CCGSystems=(()=>{
     host.jackpotTreasureRoom=null;
     if((run.floor||1)===(run.treasureFloor||0)){
       const treasureRoom=[...world.rooms].filter(r=>r.optional&&r.id!==host.sigilRoomId&&r.id!==host.trader?.roomId).sort((a,b)=>(b.w*b.h)-(a.w*a.h))[0]||rooms.find(r=>r.id!==world.startRoomId&&r.id!==world.exitRoomId);
-      if(treasureRoom){treasureRoom.theme="TREASURE_VAULT";treasureRoom.jackpotRoom=true;host.jackpotTreasureRoom={roomId:treasureRoom.id,discovered:false};const prizes=["xpOrb","credits","xpOrb","ammo","health","xpOrb","credits","armour","potion","weapon","teleport","credits"];for(let i=0;i<prizes.length;i++){const q=freeInRoom(world,treasureRoom,used);host.items.push({id:`jackpot-${run.floor}-${i}`,...q,kind:prizes[i],active:true,title:prizes[i]==="xpOrb"?"TREASURE XP ORB":prizes[i]==="credits"?"TREASURE GOLD COIN":"TREASURE CACHE"})}}
+      if(treasureRoom){treasureRoom.theme="TREASURE_VAULT";treasureRoom.jackpotRoom=true;host.jackpotTreasureRoom={roomId:treasureRoom.id,discovered:false};const prizes=["xpOrb","credits","xpOrb","game","health","xpOrb","credits","armour","potion","weapon","teleport","credits"];for(let i=0;i<prizes.length;i++){const q=freeInRoom(world,treasureRoom,used);host.items.push({id:`jackpot-${run.floor}-${i}`,...q,kind:prizes[i],active:true,title:prizes[i]==="xpOrb"?"TREASURE XP ORB":prizes[i]==="credits"?"TREASURE GOLD COIN":"TREASURE CACHE"})}}
     }
 
     // V10.2 retains the optional puzzle chain. These rooms never replace the mandatory objective or Sigil route.
@@ -340,20 +342,21 @@ window.CCGSystems=(()=>{
 
     // Count Loadula remains separate from ordinary enemies. A Banishment Flask can make him vulnerable briefly.
     const stalkRoom=rooms[0]||world.rooms[world.exitRoomId],sq=freeInRoom(world,stalkRoom,used);
-    host.stalker={id:"count-loadula",name:C.stalker.name,...sq,active:false,seen:false,awake:false,moveCooldown:C.stalker.moveMs,stunMs:0,vulnerableMs:0,hp:C.stalker.banishHpBase+(run.floor||1)*2,maxHp:C.stalker.banishHpBase+(run.floor||1)*2,spawnTimer:(run.modifier?.id==="STALKER_ACTIVE"?9000:C.stalker.spawnDelayMs),near:false};
+    host.stalker={id:"count-loadula",name:C.stalker.name,...sq,x0:sq.x,y0:sq.y,active:false,seen:false,awake:false,moveCooldown:C.stalker.moveMs,stunMs:0,vulnerableMs:0,hp:C.stalker.banishHpBase+(run.floor||1)*2,maxHp:C.stalker.banishHpBase+(run.floor||1)*2,spawnTimer:(run.modifier?.id==="STALKER_ACTIVE"?9000:C.stalker.spawnDelayMs),near:false};
 
-    // Death Stalkers begin appearing deeper in the run. Only this explicit class uses the ordinary-fire immunity.
+    // Exactly one Death Stalker exists on every floor. Only this explicit class uses ordinary-fire immunity.
     host.voidStalkers=[];{
       const room=rooms[((run.floor||1)*7+3)%Math.max(1,rooms.length)]||rooms[0],vq=freeInRoom(world,room,used),vhp=6+(run.floor||1)*2,id=`death-stalker-floor-${run.floor||1}`;
-      const v={id,...vq,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.enemies.push(v);host.voidStalkers.push(v.id)
+      const v={id,...vq,x0:vq.x,y0:vq.y,kind:"ghost",hp:vhp,maxHp:vhp,alive:true,aiState:"idle",facing:{x:-1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:720,chargeCooldown:0,healCooldown:999999,flash:0,hpBarMs:0,voidStalker:true,deathStalker:true,stalker:true,permanentlyBanished:false};host.enemies.push(v);host.voidStalkers.push(v.id)
     }
+    enforceDeathStalkerSingleton(host);
 
     // Floor identity and difficulty tuning.
     const floorInfo=PGR.floorInfo(run),diff=PGR.difficulty(run),hpFloor=1+(Math.max(1,run.floor)-1)*.12,armoured=run.modifier?.id==="ARMOURED_ENEMIES"?1.3:1,playerLevel=Math.max(1,run.playerLevelHint||1),levelSteps=playerLevel-1;
     if(world.rooms[world.startRoomId])world.rooms[world.startRoomId].theme=floorInfo.theme;
     for(const e of host.enemies){
       if(!e.guardian)e.maxHp=Math.max(1,Math.ceil(e.maxHp*diff.enemyHp*hpFloor*armoured));
-      if(e.follower){e.maxHp=Math.max(1,Math.ceil(e.maxHp*(1+levelSteps*C.enemy.namedHpPerLevel)));const armourScale=(1+(Math.max(1,run.floor)-1)*.08)*Math.max(.9,Math.sqrt(diff.enemyHp))*(1+levelSteps*C.enemy.namedArmorPerLevel);e.maxArmor=Math.max(1,Math.ceil((e.maxArmor||e.armor||1)*armourScale));e.armor=e.maxArmor;e.namedDamageScale=1+levelSteps*C.enemy.namedDamagePerLevel;e.namedCadenceScale=Math.max(.65,1-levelSteps*C.enemy.namedCadencePerLevel);e.namedPotionHeal=Math.max(3,Math.round(3+(run.floor||1)*.55+levelSteps*C.enemy.namedPotionPerLevel));e.restorePotion=true;e.restoreUsed=false;e.retreating=false;if(e.ccgBoss){e.maxHp=20;e.maxArmor=5;e.armor=5;e.namedDamageScale=2;e.namedCadenceScale=.65;e.moveSpeedScale=.5}}
+      if(e.follower){e.maxHp=Math.max(1,Math.ceil(e.maxHp*(1+levelSteps*C.enemy.namedHpPerLevel)));const armourScale=(1+(Math.max(1,run.floor)-1)*.08)*Math.max(.9,Math.sqrt(diff.enemyHp))*(1+levelSteps*C.enemy.namedArmorPerLevel);e.maxArmor=Math.max(1,Math.ceil((e.maxArmor||e.armor||1)*armourScale)-1);e.armor=e.maxArmor;e.namedDamageScale=1+levelSteps*C.enemy.namedDamagePerLevel;e.namedCadenceScale=Math.max(.78,1-levelSteps*C.enemy.namedCadencePerLevel);e.namedPotionHeal=Math.max(3,Math.round(3+(run.floor||1)*.55+levelSteps*C.enemy.namedPotionPerLevel));e.restorePotion=true;e.restoreUsed=false;e.retreating=false;if(e.ccgBoss){e.maxHp=18;e.maxArmor=4;e.armor=4;e.namedDamageScale=2;e.namedCadenceScale=.78;e.moveSpeedScale=1.35}}
       e.hp=e.maxHp;
     }
     // Resource pressure: ammunition remains finite, but every floor now contains visible supply packs.
@@ -391,6 +394,12 @@ window.CCGSystems=(()=>{
     // Convert chest placeholders to data-driven loot.
     for(const chest of host.chests||[]){const room=world.rooms[chest.roomId];chest.depth=room?.depth||0;chest.loot=PGR.lootForChest(chest,run,world.random);chest.reward=null}
     return host;
+  }
+
+  function enforceDeathStalkerSingleton(host){
+    if(!host)return null;const stalkers=(host.enemies||[]).filter(e=>e?.deathStalker&&e?.voidStalker),keep=stalkers[0]||null;
+    if(stalkers.length>1)host.enemies=(host.enemies||[]).filter(e=>!(e?.deathStalker&&e?.voidStalker)||e===keep);
+    host.voidStalkers=keep?[keep.id]:[];host.deathStalkerId=keep?.id||null;return keep
   }
 
   function isPermanentLit(world,x,y){return (world.wallLights||[]).some(l=>Math.hypot(x-l.x,y-l.y)<=l.radius&&W.roomAt(world,x,y)===l.roomId)}
@@ -441,5 +450,5 @@ window.CCGSystems=(()=>{
     host.exitOpen=done&&Boolean(host.exitSigilCollected);return host.exitOpen;
   }
 
-  return{decorate,isPermanentLit,inSanctuary,trapActive,lockRoomDoors,roomDoorIds,pathStep,objectiveText,updateObjective,sigilDefendersAlive};
+  return{decorate,enforceDeathStalkerSingleton,isPermanentLit,inSanctuary,trapActive,lockRoomDoors,roomDoorIds,pathStep,objectiveText,updateObjective,sigilDefendersAlive};
 })();

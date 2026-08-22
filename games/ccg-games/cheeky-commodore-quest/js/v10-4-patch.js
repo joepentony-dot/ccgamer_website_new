@@ -191,9 +191,9 @@
       if (!enemy?.alive || enemy.deathStalker || enemy.treasureGoblin) continue;
       if (!Number.isFinite(enemy.maxHp) || enemy.maxHp <= 0) continue;
       if (!enemy._v104BaseMaxHp) enemy._v104BaseMaxHp = enemy.maxHp;
-      const baseBoost = enemy.follower ? 1.1 : enemy.guardian ? 1.14 : enemy.champion ? 1.16 : 1.22;
-      const adaptiveShare = enemy.follower ? 0.58 : enemy.guardian ? 0.72 : 1;
-      const desiredScale = Math.min(1.86, baseBoost + (weaponGrowth + levelGrowth) * adaptiveShare);
+      const baseBoost = enemy.follower ? 0.96 : enemy.guardian ? 1.02 : enemy.champion ? 1.03 : 1;
+      const adaptiveShare = enemy.follower ? 0.42 : enemy.guardian ? 0.62 : 0.82;
+      const desiredScale = Math.min(1.62, baseBoost + (weaponGrowth + levelGrowth) * adaptiveShare);
       const oldMax = enemy.maxHp;
       const desiredMax = Math.max(oldMax, Math.ceil(enemy._v104BaseMaxHp * desiredScale));
       if (desiredMax <= oldMax) continue;

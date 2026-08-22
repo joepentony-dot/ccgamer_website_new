@@ -54,10 +54,12 @@
       if(!cache)return;
 
       const recovered=PGR.recoverDeathCache(player,run,cache);
+      score+=Math.max(0,Number(recovered?.score||0));
       const lost=Math.max(0,Number(recovered?.remaining||0));
       cache.active=false;
       cache.inventory=[];
       cache.games=[];
+      cache.score=0;
       removeAllDeathCachesExcept(null);
       S.sfx?.("pickup");
 
@@ -68,7 +70,7 @@
         : " The recovery box has now disappeared.";
       showToast(
         "DEATH CACHE RECOVERED",
-        `${itemCount} carried item${itemCount===1?"":"s"} and ${gameCount} rescued game${gameCount===1?"":"s"} recovered.${suffix}`,
+        `${itemCount} carried item${itemCount===1?"":"s"}, ${gameCount} rescued game${gameCount===1?"":"s"} and ${Math.max(0,Number(recovered?.score||0)).toLocaleString()} score recovered.${suffix}`,
         lost?"cyan":"green",
         9500
       );

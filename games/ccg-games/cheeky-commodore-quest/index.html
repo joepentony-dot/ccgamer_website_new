@@ -10,17 +10,18 @@
   <title>Cheeky Commodore Quest — The Lost Sizzler</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="css/game.css">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css">
 </head>
 <body data-game-ready="false">
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
       <img src="assets/ccgamer-logo-fallback.svg" alt="Cheeky Commodore Gamer">
-      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.3</p></div>
+      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.6</p></div>
     </div>
     <div class="system-buttons">
       <span id="net-status" class="status">SOLO</span>
-      <span class="build-badge">BUILD V10.3</span>
+      <span class="build-badge">BUILD V10.6</span>
       <button id="sound-btn" class="sound-toggle" type="button">SOUND ON</button>
       <button id="fullscreen-btn" class="sound-toggle" type="button">FULLSCREEN</button>
       <button id="quit-btn" class="sound-toggle danger-toggle" type="button">QUIT</button>
@@ -76,15 +77,24 @@
         <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
         <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
         <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
+        <section class="online-howto" aria-label="Online multiplayer instructions"><h3>ONLINE MULTIPLAYER — UP TO 4 PLAYERS</h3><div><p><b>HOST</b> Create a room, send the invite, wait in the lobby, then press Start Dungeon.</p><p><b>JOIN</b> Open the invite or enter its room code. The host starts the shared run when everyone is ready.</p></div></section>
         <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
         <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
-        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button></div>
+        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/">Exit to CCG Games</a></div>
         <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
-        <p id="collection-summary" class="collection-summary">Banked C64 collection: 0 distinct games rescued on this browser.</p>
+        <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
         <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
         <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE FIRE • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER FIRE • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
       </div>
     </div>
+
+    <div id="online-lobby" class="overlay hidden" aria-live="polite"><div class="panel online-lobby-card">
+      <p class="lobby-kicker">ONLINE MULTIPLAYER</p><h2>ROOM <span id="lobby-room-code">-----</span></h2>
+      <p id="lobby-status">1/4 players connected</p>
+      <label class="field lobby-invite"><span>INVITE LINK</span><input id="lobby-invite-url" readonly></label>
+      <div class="menu-buttons lobby-actions"><button id="lobby-copy-btn">Copy Invite</button><button id="lobby-share-btn">Share Invite</button><button id="lobby-start-btn" class="primary">Start Dungeon</button><button id="lobby-cancel-btn" class="danger-button">Cancel</button></div>
+      <div class="lobby-columns"><section><h3>PLAYERS</h3><ol id="lobby-player-list"></ol></section><section><h3>HOW IT WORKS</h3><p>The host controls the start. Guests remain in this lobby until the host begins. A room holds four players; disconnected guests are removed and the earliest remaining player becomes host.</p></section></div>
+    </div></div>
 
     <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>The monsters have reluctantly agreed to wait. Count Loadula has not signed anything.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button></div></div></div>
 
@@ -129,10 +139,10 @@
         <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
         <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL CHAMBER</h3><p>Enter the opened gate. It locks and summons two named enemies. Defeat every defender, then collect the Exit Sigil.</p></section>
         <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
-        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Normal weapons cannot kill it. Trade 3 artefacts for a Banishment Flask, press B nearby, then choose 10,000 score or 2,000 XP.</p></section>
-        <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies use open doors but cannot open them. Press C beside an open door to close it. Cracked walls hide reduced, off-centre secrets.</p></section>
-        <section><div class="rulebook-icon">★</div><h3>LOOT &amp; SURVIVAL</h3><p>E drinks a potion, Q lights a torch, R casts Teleport, Tab manages six stacks. Shops remain marked after discovery.</p></section>
-        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death halves score and leaves a recoverable cache. Weekly Vault death ends that week’s attempt. XP stops completely at the floor cap.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. Trade 3 artefacts for a Banishment Flask, then press B nearby.</p></section>
+        <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
+        <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>Pickups give 1–10 XP, ordinary enemies 100 XP and named enemies 250 XP. Entering rooms gives no XP. Ammo is scarce, but every run starts with a 240-round capacity.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death puts half your score in a recoverable cache and removes 15% of the current level requirement. You can lose at most one level and your most recent upgrade. Weekly Vault death ends that week’s attempt.</p></section>
         <section><div class="rulebook-icon">?</div><h3>OPTIONAL CHALLENGES</h3><p>Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
       </div>
       <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
@@ -151,14 +161,14 @@
       <p class="support-note">Watching, commenting and sharing also helps and costs nothing.</p>
     </div></div>
 
-    <div id="end" class="overlay hidden"><div class="panel compact"><h2 id="end-title">Run Complete</h2><p id="end-text"></p><button id="again-btn" class="primary">Return to Menu</button></div></div>
+    <div id="end" class="overlay hidden"><div class="panel compact"><h2 id="end-title">Run Complete</h2><div id="end-text"></div><button id="again-btn" class="primary">Return to Menu</button></div></div>
   </section>
 
   <section class="player-hub" aria-label="Player combat hub">
     <div class="core-stats">
       <div class="hub-stat health-stat"><span>HEALTH</span><b id="hud-health">8/8</b></div>
       <div class="hub-stat armour-stat"><span>ARMOUR</span><b id="hud-p2">ARM 0</b></div>
-      <div class="hub-stat ammo-stat"><span>AMMO</span><b id="hud-mana">120/120</b></div>
+      <div class="hub-stat ammo-stat"><span>AMMO</span><b id="hud-mana">240/240</b></div>
       <div class="hub-stat weapon-stat"><span>WEAPON</span><b id="hud-weapon">PULSE</b></div>
     </div>
     <div class="hub-inventory">

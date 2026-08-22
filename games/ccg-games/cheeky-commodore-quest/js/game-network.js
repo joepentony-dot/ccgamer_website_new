@@ -14,7 +14,7 @@ function serialWorld(){return{
   traps:(host.traps||[]).map(x=>({...x})),generators:(host.generators||[]).map(x=>({...x})),shrines:(host.shrines||[]).map(x=>({...x})),switches:(host.switches||[]).map(x=>({...x})),arenas:(host.arenas||[]).map(x=>({...x})),timedRooms:(host.timedRooms||[]).map(x=>({...x})),
   trader:host.trader?{...host.trader,sold:{...(host.trader.sold||{})}}:null,startShop:host.startShop?{...host.startShop,sold:{...(host.startShop.sold||{})}}:null,shops:(host.shops||[]).map(x=>({...x,sold:{...(x.sold||{})}})),boulderTrap:host.boulderTrap?{...host.boulderTrap,start:{...host.boulderTrap.start},end:{...host.boulderTrap.end},target:{...host.boulderTrap.target}}:null,deathCaches:(host.deathCaches||[]).map(c=>({...c,inventory:(c.inventory||[]).map(x=>({...x})),games:[...(c.games||[])]})),voidStalkers:[...(host.voidStalkers||[])],defeatedDeathStalkers:[...(host.defeatedDeathStalkers||[])],
   bloodClue:host.bloodClue?{...host.bloodClue,sequence:[...(host.bloodClue.sequence||[])]}:null,memoryPuzzle:host.memoryPuzzle?{...host.memoryPuzzle,tiles:(host.memoryPuzzle.tiles||[]).map(x=>({...x})),sequence:[...(host.memoryPuzzle.sequence||[])]}:null,sequenceTorchPuzzle:host.sequenceTorchPuzzle?{...host.sequenceTorchPuzzle,torches:(host.sequenceTorchPuzzle.torches||[]).map(x=>({...x})),sequence:[...(host.sequenceTorchPuzzle.sequence||[])]}:null,weightBridge:host.weightBridge?{...host.weightBridge,pitTiles:(host.weightBridge.pitTiles||[]).map(x=>({...x})),bridgeTiles:(host.weightBridge.bridgeTiles||[]).map(x=>({...x}))}:null,
-  rescue:host.rescue?{...host.rescue}:null,stalker:host.stalker?{...host.stalker}:null,objective:host.objective?{...host.objective}:null,mapRewards:host.mapRewards?{...host.mapRewards}:null,alertLevel:host.alertLevel||0
+  rescue:host.rescue?{...host.rescue}:null,stalker:host.stalker?{...host.stalker}:null,objective:host.objective?{...host.objective}:null,mapRewards:host.mapRewards?{...host.mapRewards}:null,enteredRoomIds:[...(host.enteredRoomIds||[])],alertLevel:host.alertLevel||0
 }}
 function broadcastWorld(){if(playMode==="online"&&net.connected&&net.isHost)net.send("world",serialWorld())}
 function onWorld(s){
@@ -23,7 +23,7 @@ function onWorld(s){
     host={...host,revision:Number(s.revision||0),keysCollected:Number(s.keysCollected||0),exitOpen:Boolean(s.exitOpen),exitSigilCollected:Boolean(s.exitSigilCollected),exitSigilDropped:Boolean(s.exitSigilDropped),
       sigilRoomId:s.sigilRoomId??host?.sigilRoomId??null,sigilLockdown:Boolean(s.sigilLockdown),sigilResolved:Boolean(s.sigilResolved),sigilDropPos:s.sigilDropPos||null,radarSigilSeen:s.radarSigilSeen||host?.radarSigilSeen||null,radarSigilGateSeen:s.radarSigilGateSeen||host?.radarSigilGateSeen||null,sigilDefenderIds:s.sigilDefenderIds||[],sigilGateIds:s.sigilGateIds||[],
       doors:s.doors||[],chests:s.chests||[],enemies:s.enemies||[],items:s.items||[],traps:s.traps||[],generators:s.generators||[],shrines:s.shrines||[],switches:s.switches||[],arenas:s.arenas||[],timedRooms:s.timedRooms||[],
-      trader:s.trader||null,startShop:s.startShop||null,shops:s.shops||[],boulderTrap:s.boulderTrap||null,deathCaches:s.deathCaches||[],voidStalkers:s.voidStalkers||[],defeatedDeathStalkers:s.defeatedDeathStalkers||host?.defeatedDeathStalkers||[],bloodClue:s.bloodClue||null,memoryPuzzle:s.memoryPuzzle||null,sequenceTorchPuzzle:s.sequenceTorchPuzzle||null,weightBridge:s.weightBridge||null,rescue:s.rescue||null,stalker:s.stalker||null,objective:s.objective||host?.objective,mapRewards:s.mapRewards||host?.mapRewards,alertLevel:s.alertLevel||0};
+      trader:s.trader||null,startShop:s.startShop||null,shops:s.shops||[],boulderTrap:s.boulderTrap||null,deathCaches:s.deathCaches||[],voidStalkers:s.voidStalkers||[],defeatedDeathStalkers:s.defeatedDeathStalkers||host?.defeatedDeathStalkers||[],bloodClue:s.bloodClue||null,memoryPuzzle:s.memoryPuzzle||null,sequenceTorchPuzzle:s.sequenceTorchPuzzle||null,weightBridge:s.weightBridge||null,rescue:s.rescue||null,stalker:s.stalker||null,objective:s.objective||host?.objective,mapRewards:s.mapRewards||host?.mapRewards,enteredRoomIds:s.enteredRoomIds||host?.enteredRoomIds||[],alertLevel:s.alertLevel||0};
     sync()
   }
 }
@@ -31,14 +31,32 @@ function hostEnemyStep(dt){
   if(!net.isHost)return;const dm=PGR.difficulty(run).enemyDamage;
   A.stepEnemies(host,world.map,allPlayers(),dt,{
     shoot:s=>{s.power=Math.max(1,Math.round((s.power||1)*dm*(s.damageScale||1)));spawnEnemyShot(s);if(playMode==="online")net.send("enemy_shot",s)},
-    melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,e.follower?.name||e.championName||e.kind);if(before>power)knockPlayerAway(lp,e)}else if(playMode==="online")net.send("player_hit",{target:target.id,power,source:e.follower?.name||e.kind})},
+    melee:(e,target,power)=>{power=Math.max(1,Math.round(power*dm*(e.namedDamageScale||1)));const source=isDeathStalkerEnemy(e)?"Death Stalker":e.follower?.name||e.championName||e.kind,lp=findLocal(target.id);if(lp){const before=lp.health;hurtPlayer(lp,power,false,source);if(before>power)knockPlayerAway(lp,e)}else if(playMode==="online")net.send("player_hit",{target:target.id,power,source})},
     notice:(html,sound,source)=>{const audible=source&&localPlayers().some(p=>visibleTo(p,source.x,source.y));if(audible){if(sound)S.sfx(sound);say(html,sound==="flame"?"red":"gold")}if(playMode==="online"&&source)net.send("notice",{html,source:{x:source.x,y:source.y}})},
     alert:(e,state,reason)=>{const seenHere=localPlayers().some(p=>visibleTo(p,e.x,e.y));if(state==="alert"&&seenHere){S.sfx("alert");floatText(e.x,e.y,"!",P.red);if(reason==="room"&&Math.random()<.18)say(`<strong>ROOM ALERT.</strong> ${e.follower?.name||e.championName||"Something"} has spotted you.`,"red")}if(state==="search"&&seenHere)S.sfx("search")}
   },world)
 }
-function onHit(p){if(!net.isHost||!p?.enemyId)return;const e=host.enemies.find(x=>x.id===p.enemyId&&x.alive);if(e){if(p.source)A.alertEnemy(e,p.source.x,p.source.y);damageEnemy(e,Math.max(1,Math.min(8,Number(p.power||1))),p.element||"energy",findLocal(p.owner)||p1)}}
+function onHit(p){if(!net.isHost||!p?.enemyId)return;const e=host.enemies.find(x=>x.id===p.enemyId&&x.alive);if(e){if(p.source)A.alertEnemy(e,p.source.x,p.source.y);const attacker=findLocal(p.owner)||remote.get(p.owner)||{id:String(p.owner||"remote"),name:String(p.ownerName||"Online Player")};damageEnemy(e,Math.max(1,Math.min(8,Number(p.power||1))),p.element||"energy",attacker)}}
 function elementalDamage(e,power,element){if(!e.weakness)return power;if(e.weakness===element)return Math.ceil(power*1.75);return power}
 function isDeathStalkerEnemy(e){return Boolean(e?.deathStalker&&e?.voidStalker)}
+const ENEMY_LABELS={scout:"Archive Scout",hunter:"Citadel Hunter",ambusher:"Shadow Ambusher",guard:"Vault Guard",charger:"Dungeon Charger",ranger:"Archive Ranger",root:"Root Caster",cook:"Dungeon Cook",firebreather:"Firebreather",ghost:"Archive Ghost",champion:"Citadel Champion",treasure:"Treasure Goblin"};
+function enemyDefeatIdentity(e){
+  if(e===host?.stalker)return{key:"count-loadula",name:C.stalker.name||"Count Loadula",kind:"stalker",initials:"CL",avatar:C.logoFallback,named:true};
+  if(e?.follower){const f=e.follower,name=f.name||"Named Enemy";return{key:`named:${name}`,name,kind:f.kind||e.kind||"named",initials:f.initials||name.slice(0,2).toUpperCase(),avatar:OVERRIDES.images?.namedEnemies?.[name]||f.avatar||C.logoFallback,named:true}}
+  if(isDeathStalkerEnemy(e))return{key:"death-stalker",name:"Death Stalker",kind:"stalker",initials:"DS",avatar:"",named:false};
+  if(e?.horrorCreature)return{key:"archive-wraith",name:"Archive Wraith",kind:"ghost",initials:"AW",avatar:"",named:false};
+  if(e?.exitWarden)return{key:"sigil-warden",name:e.championName||"Sigil Warden",kind:"warden",initials:"SW",avatar:"",named:false};
+  if(e?.championName)return{key:`champion:${e.championName}`,name:e.championName,kind:e.kind||"champion",initials:String(e.championName).split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false};
+  if(e?.guardian)return{key:"citadel-guardian",name:"Zzap! Citadel Guardian",kind:"guardian",initials:"ZG",avatar:"",named:false};
+  if(e?.treasureGoblin)return{key:"treasure-goblin",name:"Treasure Goblin",kind:"treasure",initials:"TG",avatar:"",named:false};
+  const kind=e?.kind||"enemy",name=ENEMY_LABELS[kind]||kind.replace(/(^|[-_])\w/g,m=>m.replace(/[-_]/,"").toUpperCase());return{key:`kind:${kind}`,name,kind,initials:name.split(/\s+/).map(x=>x[0]).join("").slice(0,3).toUpperCase(),avatar:"",named:false}
+}
+function recordEnemyDefeat(e,attacker,displayName=""){
+  if(!run||!e)return;run.enemyDefeats=Array.isArray(run.enemyDefeats)?run.enemyDefeats:[];const identity=enemyDefeatIdentity(e);let row=run.enemyDefeats.find(x=>x.key===identity.key);
+  if(!row){row={...identity,count:0,killers:[],floors:[]};run.enemyDefeats.push(row)}row.count++;
+  const killerId=String(attacker?.id||displayName||"dungeon"),killerName=String(attacker?.name||displayName||"The Dungeon");let killer=row.killers.find(x=>x.id===killerId);if(!killer){killer={id:killerId,name:killerName,count:0};row.killers.push(killer)}killer.count++;
+  const floor=Math.max(1,Number(run.floor||1));let floorRow=row.floors.find(x=>x.floor===floor);if(!floorRow){floorRow={floor,count:0};row.floors.push(floorRow)}floorRow.count++
+}
 function damageEnemy(e,power,element="energy",attacker=p1){
   if(!e?.alive)return;
   if(isDeathStalkerEnemy(e)){e.flash=220;e.hpBarMs=1400;e.hitStunMs=220;knockEnemyAway(e,attacker);S.sfx("stalker");floatText(e.x,e.y,"KNOCKED BACK",P.purple);showToast("DEATH STALKER — INDESTRUCTIBLE","Weapons can repel it but cannot damage it. FIND 3 ARTEFACTS TO EXCHANGE FOR THE POTION TO KILL THIS INDESTRUCTIBLE ENEMY.","red",8500);return}
@@ -47,11 +65,11 @@ function damageEnemy(e,power,element="energy",attacker=p1){
   if((e.armor||0)>0){const absorbed=Math.min(e.armor,hpDamage);e.armor-=absorbed;hpDamage-=absorbed;S.sfx("armour");burst(e.x,e.y,P.blue,7,1.0);ring(e.x,e.y,P.blue,18);floatText(e.x,e.y,`ARM -${absorbed}`,P.cyan)}
   if(hpDamage>0){e.hp-=hpDamage;S.sfx("hit");burst(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:e.weakness===element?P.cyan:P.orange,8,1.2);ring(e.x,e.y,isDeathStalkerEnemy(e)?P.purple:P.orange,20);floatText(e.x,e.y,`-${hpDamage}`,P.white);if(!isDeathStalkerEnemy(e))knockEnemyAway(e,attacker)}
   if(e.hp>0)return;
-  e.hp=0;e.alive=false;host.revision++;run.stats.kills++;
+  e.hp=0;e.alive=false;host.revision++;run.stats.kills++;recordEnemyDefeat(e,attacker||p1);
   let killScore=e.exitWarden?800:e.guardian?900:e.follower?500:e.champion?300:e.treasureGoblin?450:isDeathStalkerEnemy(e)?600:120;
-  let xp=e.exitWarden?420:e.guardian?500:e.follower?300:e.champion?220:e.treasureGoblin?300:isDeathStalkerEnemy(e)?360:75;
+  let xp=e.follower?250:100;
   let reason=e.exitWarden?"Sigil Warden defeated":e.guardian?"Guardian defeated":e.follower?`${e.follower.name} freed`:isDeathStalkerEnemy(e)?"Death Stalker banished":e.champion?"Champion defeated":"Enemy defeated";
-  if(e.generatorId){const g=(host.generators||[]).find(x=>x.id===e.generatorId);if(g){g.spawnKills=(g.spawnKills||0)+1;const farm=[35,25,15];xp=g.spawnKills<=3?farm[g.spawnKills-1]:5;killScore=g.spawnKills<=3?65:10;reason=g.spawnKills<=3?`Generator spawn ${g.spawnKills}/3`:`Generator farming diminished`}}
+  if(e.generatorId){const g=(host.generators||[]).find(x=>x.id===e.generatorId);if(g){g.spawnKills=(g.spawnKills||0)+1;killScore=g.spawnKills<=3?65:10;reason=g.spawnKills<=3?`Generator spawn ${g.spawnKills}/3`:`Generator spawn defeated`}}
   score+=killScore;awardXP(attacker||p1,xp,reason);
   if(e.champion)run.stats.champions++;
   if(e.follower){stats.elites++;run.stats.namedDefeats=(run.stats.namedDefeats||0)+1;PGR.recordNamedEncounter(e.follower.name,true)}
@@ -93,17 +111,18 @@ function applyLoot(loot,p){
   else if(loot.kind==="banishment")storeConsumable(p,{kind:"banishment",name:loot.name||"Banishment Flask",short:"BANISH"},loot.name||"BANISHMENT FLASK","Stacked in inventory. A flashing B prompt appears when a Death Stalker or Count Loadula is within Banishment range.","purple");
   else if(loot.kind==="rapid"){p.rapidMs=14000;S.sfx("weapon");showToast(loot.name||"RAPID FIRE","Fire delay reduced temporarily.","gold")}
   else if(loot.kind==="bountyArtefact")offerBanishmentArtefact(p,loot);
-  else if(loot.kind==="artefact"){if(PGR.inventoryAdd(p,{kind:"artefact",name:loot.name,short:"ARTEFACT",rarity:loot.rarity})){awardXP(p,loot.xp||150,"Artefact recovered");showToast(loot.name,`Rare artefact stored. +${loot.xp||150} XP. Three artefacts can be traded for a Banishment Flask.`,"gold")}else showToast("INVENTORY FULL","The artefact cannot be carried.","red")}
+  else if(loot.kind==="artefact"){if(PGR.inventoryAdd(p,{kind:"artefact",name:loot.name,short:"ARTEFACT",rarity:loot.rarity})){showToast(loot.name,"Rare artefact stored. Three artefacts can be traded for a Banishment Flask.","gold")}else showToast("INVENTORY FULL","The artefact cannot be carried.","red")}
 }
+function pickupXP(kind){return({carried:1,health:2,mana:3,ammo:3,game:5,credits:1,xpOrb:10,torch:2,teleport:4,banishment:5,armour:4,potion:2,weapon:5,rapid:4,inventorySlot:10,bronze:3,exitSigil:10,key:6,loot:10}[kind]||1)}
 function applyItem(i,p){
   const who=p===p2?"P2":"P1";
-  if(i.carriedItem){if(!PGR.inventoryAdd(p,{...i.carriedItem})){showToast("INVENTORY FULL","The dropped item stays on the floor until you free a slot.","red");return false}S.sfx("pickup");showToast("ITEM RECOVERED",`${i.carriedItem.name||i.carriedItem.kind} returned to your inventory.`,"green");updateQuests();return true}
+  if(i.carriedItem){if(!PGR.inventoryAdd(p,{...i.carriedItem})){showToast("INVENTORY FULL","The dropped item stays on the floor until you free a slot.","red");return false}S.sfx("pickup");showToast("ITEM RECOVERED",`${i.carriedItem.name||i.carriedItem.kind} returned to your inventory.`,"green");awardXP(p,pickupXP("carried"),"Item recovered");updateQuests();return true}
   if(i.kind==="loot")applyLoot(i.loot,p);
   else if(i.kind==="health"){p.health=Math.min(p.maxHealth,p.health+3);p.hpBarMs=2800;S.sfx("pickup");showToast("HEALTH PACK",`${who} restores 3 health.`,"green")}
   else if(i.kind==="mana"||i.kind==="ammo"){const n=Math.round(30*(1+(p.scavenger||0))*PGR.difficulty(run).ammo);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;S.sfx("pickup");showToast("AMMO PACK",`${who} gains ${n} shots.`,"cyan")}
-  else if(i.kind==="game"){score+=250;stats.games++;run.floorGames.push(i.title);S.sfx("pickup");awardXP(p,100,"C64 game rescued");showToast(`C64 RESCUED: ${i.title}`,"Unbanked until this floor is cleared or you extract. +250 score.","gold",6500)}
+  else if(i.kind==="game"){score+=250;stats.games++;run.floorGames.push(i.title);S.sfx("pickup");showToast(`C64 RESCUED: ${i.title}`,"Unbanked until this floor is cleared or you extract. +250 score.","gold",6500)}
   else if(i.kind==="credits"){score+=125;S.sfx("pickup");showToast("GOLD SCORE COIN","+125 score.","gold")}
-  else if(i.kind==="xpOrb"){S.sfx("pickup");awardXP(p,175,"XP Orb collected");showToast("XP ORB","+175 XP unless your current floor cap has been reached.","cyan")}
+  else if(i.kind==="xpOrb"){S.sfx("pickup");showToast("XP ORB","+10 XP unless your current floor cap has been reached.","cyan")}
   else if(i.kind==="torch")storeConsumable(p,{kind:"torch",name:"Flaming Torch",short:"TORCH"},"FLAMING TORCH","Stored in its own inventory slot. Press Q to light it.","gold");
   else if(i.kind==="teleport")storeConsumable(p,{kind:"teleport",name:"Teleport Spell",short:"WARP"},"TELEPORT SPELL","Stored. Press R to warp to a safe explored room.","purple");
   else if(i.kind==="banishment")storeConsumable(p,{kind:"banishment",name:"Banishment Flask",short:"BANISH"},"BANISHMENT FLASK","Stacked in inventory. Watch for the flashing Banishment prompt near a Death Stalker or Count Loadula.","purple");
@@ -113,9 +132,9 @@ function applyItem(i,p){
   else if(i.kind==="rapid"){p.rapidMs=12000;S.sfx("weapon");showToast("RAPID FIRE","Fire delay reduced for 12 seconds.","gold")}
   else if(i.kind==="inventorySlot"){const before=PGR.inventoryCapacity(p);p.inventorySlots=Math.min(C.player.inventorySlots,before+1);S.sfx("level");showToast("RARE INVENTORY EXPANSION",p.inventorySlots>before?`Inventory expanded to ${p.inventorySlots} slots for this run.`:"Inventory is already fully expanded.","gold",8000)}
   else if(i.kind==="bronze"){p.bronzeKeys++;S.sfx("bronze");showToast("BRONZE KEY","Opens one bronze door or locked chest. Main objectives never depend on these.","gold")}
-  else if(i.kind==="exitSigil"){host.exitSigilCollected=true;score+=650;S.sfx("exitSigil");shake=9;awardXP(p,260,"Exit Sigil recovered");SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100));showToast("EXIT SIGIL ACQUIRED","The floor exit can now be unlocked once the main objective is complete. Getting back alive is the final problem.","gold",10000)}
-  else if(i.kind==="key"){score+=400;S.sfx("mainKey");shake=7;awardXP(p,140,"Main vault key");showToast("MAIN VAULT KEY",`${host.keysCollected}/${C.keyTarget} recovered. The Exit Sigil is a separate requirement.`,"gold",9000)}
-  updateQuests();PGR.checkAchievements(run,p)
+  else if(i.kind==="exitSigil"){host.exitSigilCollected=true;score+=650;S.sfx("exitSigil");shake=9;SYS.updateObjective(host,run,Math.round(PGR.roomCompletion(explored.get(p.id)||new Set(),world)*100));showToast("EXIT SIGIL ACQUIRED","The floor exit can now be unlocked once the main objective is complete. Getting back alive is the final problem.","gold",10000)}
+  else if(i.kind==="key"){score+=400;S.sfx("mainKey");shake=7;showToast("MAIN VAULT KEY",`${host.keysCollected}/${C.keyTarget} recovered. The Exit Sigil is a separate requirement.`,"gold",9000)}
+  awardXP(p,pickupXP(i.kind),`${collectedName(i)} collected`);updateQuests();PGR.checkAchievements(run,p)
 }
 function usePotion(p){const ix=PGR.firstInventory(p,"potion");if(ix<0){S.sfx("empty");showToast("NO POTION","There is no restoration potion in your inventory stacks.","red");return}PGR.inventoryRemove(p,ix);const heal=4+(p.potionBonus||0);p.health=Math.min(p.maxHealth,p.health+heal);p.hpBarMs=3200;p.mana=Math.min(p.maxMana,p.mana+8);S.sfx("potion");showToast("POTION USED",`+${heal} health and +8 ammo.`,"green");sync()}
 function banishmentState(p){const range=C.stalker.banishPromptDistance||8,hasFlask=PGR.firstInventory(p,"banishment")>=0,voids=(host?.enemies||[]).filter(e=>e.alive&&isDeathStalkerEnemy(e)&&md(e,p)<=range),count=host?.stalker?.awake&&!host.stalker.permanentlyBanished&&md(host.stalker,p)<=range?host.stalker:null,targets=[...voids,...(count?[count]:[])].sort((a,b)=>md(a,p)-md(b,p));return{ready:hasFlask&&targets.length>0,hasFlask,range,targets,nearest:targets[0]||null}}
@@ -124,7 +143,7 @@ function offerBanishmentArtefact(p,loot){pendingBanishmentReward={p,loot};mode="
 function claimBanishmentArtefact(choice){const reward=pendingBanishmentReward;if(!reward)return;const p=reward.p||p1,loot=reward.loot||{},takeScore=choice==="score";if(takeScore){const amount=loot.scoreValue||10000;score+=amount;floatText(p.x,p.y,`+${amount.toLocaleString()} SCORE`,P.gold);showToast("ARTEFACT CONVERTED",`${amount.toLocaleString()} score added to this run.`,"gold",7000)}else{const amount=loot.xpValue||2000;awardXP(p,amount,"Banishment Artefact converted");floatText(p.x,p.y,`+${amount.toLocaleString()} XP`,P.cyan);showToast("ARTEFACT CONVERTED",`${amount.toLocaleString()} XP applied to your run.`,"cyan",7000)}pendingBanishmentReward=null;UI.artefactChoice?.classList.add("hidden");mode="playing";sync()}
 function permanentlyBanish(target,p){
   const name=target===host.stalker?C.stalker.name:"Death Stalker";
-  if(target===host.stalker){target.awake=false;target.near=false;target.permanentlyBanished=true;target.spawnTimer=Number.POSITIVE_INFINITY;S.setStalkerNear(false)}else{target.alive=false;target.hp=0;target.permanentlyBanished=true;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(target.id))host.defeatedDeathStalkers.push(target.id);const tr=(host.timedRooms||[]).find(t=>t.hunterId===target.id);if(tr)tr.stalkerDefeated=true;run.stats.kills++}
+  if(target===host.stalker){target.awake=false;target.near=false;target.permanentlyBanished=true;target.spawnTimer=Number.POSITIVE_INFINITY;S.setStalkerNear(false)}else{target.alive=false;target.hp=0;target.permanentlyBanished=true;host.defeatedDeathStalkers=host.defeatedDeathStalkers||[];if(!host.defeatedDeathStalkers.includes(target.id))host.defeatedDeathStalkers.push(target.id);const tr=(host.timedRooms||[]).find(t=>t.hunterId===target.id);if(tr)tr.stalkerDefeated=true}run.stats.kills++;recordEnemyDefeat(target,p,name);
   dropBanishmentArtefact(target,name);awardXP(p,250,`${name} permanently banished`);S.sfx("elite");burst(target.x,target.y,P.purple,30,1.8);ring(target.x,target.y,P.gold,46);floatText(target.x,target.y,"BANISHED!",P.gold);showToast(`${name.toUpperCase()} DESTROYED`,`Permanently removed from this floor. A Banishment Artefact has dropped — collect it and choose 10,000 SCORE or 2,000 XP.`,"green",10500);host.revision++;broadcastWorld()
 }
 function activateBanishment(p){

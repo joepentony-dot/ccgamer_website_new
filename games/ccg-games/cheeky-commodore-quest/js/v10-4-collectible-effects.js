@@ -36,7 +36,7 @@
   }
   function overhead(player,text,colour){
     if(!player||!text)return;
-    setTimeout(()=>{try{floatText(player.x,player.y,String(text).toUpperCase(),colour||P.gold)}catch(_){}},420);
+    setTimeout(()=>{const label=String(text).toUpperCase();try{if(typeof floatPickupText==="function")floatPickupText(player,label,colour||P.gold);else floatText(player.x,player.y,label,colour||P.gold)}catch(_){}},420);
   }
 
   async function loadRulesAndMetadata(){
@@ -132,7 +132,7 @@
       flash:0,hpBarMs:3600,moveSpeedScale:.48,_v104BaseMaxHp:1
     };
     host.enemies.push(creature);host.revision=(host.revision||0)+1;
-    try{S.sfx("stalker");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
+    try{S.sfx("stalker");showToast("HORROR GAME DISTURBED THE ARCHIVE",`${title} has dragged an Archive Wraith into the dungeon. 50 HP, no armour — and it only wants to stalk you down.`,"red",10000);if(typeof floatPickupText==="function")floatPickupText(player,"ARCHIVE WRAITH SUMMONED",P.red);else floatText(player.x,player.y,"SOMETHING FOLLOWED YOU OUT...",P.red);broadcastWorld()}catch(_){}
   }
 
   function applyRule(rule,player,title){

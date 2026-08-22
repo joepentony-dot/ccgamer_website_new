@@ -20,15 +20,15 @@ window.CCGProgression=(()=>{
     {id:"longshot",name:"Longshot",apply:w=>{w.ttl=(w.ttl||18)+5}}
   ];
   const skills=[
-    {id:"health",name:"Extra Life Bar",desc:"+2 maximum health and heal 2.",apply:p=>{p.maxHealth+=2;p.health=Math.min(p.maxHealth,p.health+2)}},
-    {id:"ammo",name:"Bigger Magazine",desc:"+25 maximum ammo and refill 25.",apply:p=>{p.maxMana+=25;p.mana=Math.min(p.maxMana,p.mana+25)}},
-    {id:"armour",name:"Armour Repair",desc:"Gain 3 armour immediately.",apply:p=>{p.armor=Math.min(12,p.armor+3)}},
-    {id:"torch",name:"Torch Mastery",desc:"Torches last 8 seconds longer.",apply:p=>{p.torchBonusMs=(p.torchBonusMs||0)+8000}},
-    {id:"dash",name:"Combat Dash",desc:"Dashing through an enemy damages it.",apply:p=>{p.dashDamage=(p.dashDamage||0)+1}},
-    {id:"scavenger",name:"Scavenger",desc:"Ammo packs provide 25% more ammunition.",apply:p=>{p.scavenger=(p.scavenger||0)+.25}},
-    {id:"medic",name:"Medic",desc:"Potions restore 2 additional health.",apply:p=>{p.potionBonus=(p.potionBonus||0)+2}},
-    {id:"runner",name:"Quick Feet",desc:"Movement delay reduced by 8%.",apply:p=>{p.moveMultiplier=(p.moveMultiplier||1)*.92}},
-    {id:"damage",name:"Hot Fire Button",desc:"+1 weapon damage.",apply:p=>{p.damageBonus=(p.damageBonus||0)+1}}
+    {id:"health",name:"Extra Life Bar",desc:"+1 maximum health and heal 1.",apply:p=>{p.maxHealth+=1;p.health=Math.min(p.maxHealth,p.health+1)},undo:p=>{p.maxHealth=Math.max(C.player.maxHealth,p.maxHealth-1);p.health=Math.min(p.health,p.maxHealth)}},
+    {id:"ammo",name:"Bigger Magazine",desc:"+20 maximum ammo and refill 20.",apply:p=>{p.maxMana+=20;p.mana=Math.min(p.maxMana,p.mana+20)},undo:p=>{p.maxMana=Math.max(C.player.maxMana,p.maxMana-20);p.mana=Math.min(p.mana,p.maxMana)}},
+    {id:"armour",name:"Armour Repair",desc:"Gain 2 armour immediately.",apply:p=>{p.armor=Math.min(12,p.armor+2)},undo:p=>{p.armor=Math.max(0,p.armor-2)}},
+    {id:"torch",name:"Torch Mastery",desc:"Torches last 6 seconds longer.",apply:p=>{p.torchBonusMs=(p.torchBonusMs||0)+6000},undo:p=>{p.torchBonusMs=Math.max(0,(p.torchBonusMs||0)-6000)}},
+    {id:"dash",name:"Combat Dash",desc:"Dashing through an enemy deals 1 damage.",apply:p=>{p.dashDamage=(p.dashDamage||0)+1},undo:p=>{p.dashDamage=Math.max(0,(p.dashDamage||0)-1)}},
+    {id:"scavenger",name:"Scavenger",desc:"Ammo packs provide 20% more ammunition.",apply:p=>{p.scavenger=(p.scavenger||0)+.2},undo:p=>{p.scavenger=Math.max(0,(p.scavenger||0)-.2)}},
+    {id:"medic",name:"Medic",desc:"Potions restore 1 additional health.",apply:p=>{p.potionBonus=(p.potionBonus||0)+1},undo:p=>{p.potionBonus=Math.max(0,(p.potionBonus||0)-1)}},
+    {id:"runner",name:"Quick Feet",desc:"Movement delay reduced by 5%.",apply:p=>{p.moveMultiplier=(p.moveMultiplier||1)*.95},undo:p=>{p.moveMultiplier=Math.min(1,(p.moveMultiplier||1)/.95)}},
+    {id:"damage",name:"Hot Fire Button",desc:"+1 weapon damage.",apply:p=>{p.damageBonus=(p.damageBonus||0)+1},undo:p=>{p.damageBonus=Math.max(0,(p.damageBonus||0)-1)}}
   ];
   const floorModifiers=[
     {id:"LOW_AMMO",name:"LOW AMMO",desc:"Ammo pickups are scarcer, but weapon loot is better."},
@@ -55,6 +55,7 @@ window.CCGProgression=(()=>{
       floor:1,maxFloors:C.maxFloors,difficulty,seed,daily:Boolean(opts.daily),score:0,alert:0,elapsed:0,
       treasureFloor,
       bankedXP:0,floorXP:0,deepest:1,bankedGames:[],floorGames:[],modifier:null,
+      enemyDefeats:[],
       stats:{kills:0,champions:0,secrets:0,damageTaken:0,friendlyFire:0,rooms:0,chests:0,shrines:0,generators:0,stalkerEscapes:0,floors:0,namedEncounters:0,namedDefeats:0,deathCachesRecovered:0,deaths:0},
       achievementQueue:[],floorComplete:false,runComplete:false,torchClueSeen:false,torchSequence:null,everEarnedXp:false,xpPeak:0,consecutiveDeaths:0
     };
@@ -125,6 +126,7 @@ window.CCGProgression=(()=>{
     const pool=[...skills],out=[];while(out.length<3&&pool.length){out.push(pool.splice(Math.floor(r()*pool.length),1)[0])}return out;
   }
   function applySkill(player,id){const s=skills.find(x=>x.id===id);if(!s)return null;s.apply(player);player.pendingLevels=Math.max(0,(player.pendingLevels||1)-1);player.skills=player.skills||[];player.skills.push(id);return s}
+  function removeLastSkill(player){player.skills=player.skills||[];const id=player.skills.pop();if(!id)return null;const s=skills.find(x=>x.id===id);s?.undo?.(player);return s||null}
 
   const stackableKinds=new Set(["potion","teleport","banishment","artefact"]);
   function itemQty(item){return Math.max(1,Math.floor(Number(item?.qty)||1))}
@@ -147,22 +149,25 @@ window.CCGProgression=(()=>{
   function cloneItem(x){return x&&typeof x==="object"?{...x}:x}
   function deathDebtFor(player){return Math.max(1,Math.ceil(Math.max(0,player?.totalXp||0)*.12))}
   function applyDeathPenalty(player,score,run=null){
-    const before=Math.max(0,Math.round(player?.totalXp||0)),ever=Boolean(player?.everEarnedXp||run?.everEarnedXp||before>0),peak=Math.max(before,Math.round(run?.xpPeak||0)),loss=before>0?Math.min(before,Math.max(1,Math.ceil(Math.max(1,peak)*.12))):0;
-    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;if(run){run.everEarnedXp=Boolean(run.everEarnedXp||ever);run.xpPeak=Math.max(run.xpPeak||0,before)}
-    return{score:Math.floor(Math.max(0,Number(score)||0)*.5),xpLost:loss,xpBefore:before,xpAfter:player.totalXp,gameOver:Boolean(ever&&before>0&&player.totalXp<=0)}
+    const levelNeed=level=>window.CCGProgression?.xpNeed?.(level)||xpNeed(level),scoreBefore=Math.max(0,Math.floor(Number(score)||0)),scoreAfter=Math.floor(scoreBefore*.5),before=Math.max(0,Math.round(player?.totalXp||0)),levelBefore=Math.max(1,Number(player?.level||1)),progressBefore=Math.max(0,Number(player?.xp||0)),wanted=Math.max(1,Math.ceil(levelNeed(levelBefore)*.15)),loss=Math.min(before,wanted);let levelLost=false,lostSkill=null;
+    if(loss<progressBefore)player.xp=progressBefore-loss;
+    else if(levelBefore>1){const deficit=Math.max(1,loss-progressBefore),newLevel=levelBefore-1;player.level=newLevel;player.xp=Math.max(0,levelNeed(newLevel)-deficit);levelLost=true;lostSkill=removeLastSkill(player)}
+    else player.xp=0;
+    player.totalXp=Math.max(0,before-loss);player.xpDebt=0;if(run){run.everEarnedXp=Boolean(run.everEarnedXp||before>0);run.xpPeak=Math.max(run.xpPeak||0,before)}
+    return{score:scoreAfter,scoreLost:scoreBefore-scoreAfter,xpLost:loss,xpBefore:before,xpAfter:player.totalXp,levelBefore,levelAfter:player.level,levelLost,lostSkill:lostSkill?.name||null,gameOver:false}
   }
   function createDeathCache(player,run,x,y){
     const carried=(player.inventory||[]).filter(it=>!it.quest).map(cloneItem),kept=(player.inventory||[]).filter(it=>it.quest).map(cloneItem),games=[...(run.floorGames||[])];
     player.inventory=kept;run.floorGames=[];
-    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,createdFloor:run.floor||1};
+    return{id:`death-cache-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,x,y,kind:"deathCache",active:carried.length>0||games.length>0,inventory:carried,games,score:0,createdFloor:run.floor||1};
   }
   function recoverDeathCache(player,run,cache){
-    if(!cache?.active)return{recovered:0,games:0,remaining:0};let recovered=0;const remaining=[];
+    if(!cache?.active)return{recovered:0,games:0,remaining:0,score:0};let recovered=0;const remaining=[];
     for(const it of cache.inventory||[]){if(inventoryAdd(player,cloneItem(it)))recovered+=itemQty(it);else remaining.push(cloneItem(it))}
     const games=[...(cache.games||[])];for(const g of games)if(!(run.floorGames||[]).includes(g))run.floorGames.push(g);
-    cache.inventory=remaining;cache.games=[];cache.active=remaining.length>0;
+    const recoveredScore=Math.max(0,Math.floor(Number(cache.score)||0));cache.inventory=remaining;cache.games=[];cache.score=0;cache.active=remaining.length>0;
     if(!cache.active)run.stats.deathCachesRecovered=(run.stats.deathCachesRecovered||0)+1;
-    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0)};
+    return{recovered,games:games.length,remaining:remaining.reduce((n,it)=>n+itemQty(it),0),score:recoveredScore};
   }
   function loseFloorProgress(player,run){const cache=createDeathCache(player,run,player?.x||0,player?.y||0);return{lostXP:0,lostItem:cache.inventory?.[0]||null,cache}}
   function persistentCollection(){try{return JSON.parse(localStorage.getItem("ccg-quest-collection")||"[]")}catch(_){return[]}}
@@ -208,5 +213,5 @@ window.CCGProgression=(()=>{
     if(!world?.rooms?.length)return 0;let seen=0;for(const room of world.rooms.filter(r=>!r.optional)){const cx=Math.floor(room.x+room.w/2),cy=Math.floor(room.y+room.h/2);if(explored.has(`${cx},${cy}`))seen++}return seen/Math.max(1,world.rooms.filter(r=>!r.optional).length);
   }
 
-  return{makeRun,floorInfo,floorSeed,chooseFloorModifier,objectiveFor,objectiveLabel,difficulty,effectiveSight,generateWeapon,lootForChest,colourForRarity,gainXP,xpNeed,floorLevelCap,skillChoices,applySkill,inventoryCapacity,inventoryCanAdd,inventoryAdd,inventoryRemove,firstInventory,inventoryCount,inventoryKindCount,inventoryLabel,bankFloor,loseFloorProgress,deathDebtFor,applyDeathPenalty,createDeathCache,recoverDeathCache,persistentCollection,localDailyKey,seededRandom,recordDailyResult,dailyBest,dailyAttemptKey,hasDailyAttempt,claimDailyAttempt,makeCheckpoint,saveCheckpointData,loadCheckpoint,clearCheckpoint,readDossier,recordNamedEncounter,checkAchievements,roomCompletion,RARITY};
+  return{makeRun,floorInfo,floorSeed,chooseFloorModifier,objectiveFor,objectiveLabel,difficulty,effectiveSight,generateWeapon,lootForChest,colourForRarity,gainXP,xpNeed,floorLevelCap,skillChoices,applySkill,removeLastSkill,inventoryCapacity,inventoryCanAdd,inventoryAdd,inventoryRemove,firstInventory,inventoryCount,inventoryKindCount,inventoryLabel,bankFloor,loseFloorProgress,deathDebtFor,applyDeathPenalty,createDeathCache,recoverDeathCache,persistentCollection,localDailyKey,seededRandom,recordDailyResult,dailyBest,dailyAttemptKey,hasDailyAttempt,claimDailyAttempt,makeCheckpoint,saveCheckpointData,loadCheckpoint,clearCheckpoint,readDossier,recordNamedEncounter,checkAchievements,roomCompletion,RARITY};
 })();
