@@ -1,5 +1,5 @@
 {
-  "instructions": "Edit js/asset-overrides.js: replace a null value with a site-relative image or audio path. Unchanged null values continue to use the defaults below.",
+  "instructions": "Edit js/asset-overrides.js for versioned local assets, or use the Arcade Asset Manager to add multiple live tracks to any Lost Sizzler category.",
   "images": {
     "logo": "assets/ccgamer-logo-fallback.svg",
     "namedEnemies": {
@@ -14,11 +14,28 @@
     "items": "Items use canvas artwork by default. Any images.items key in js/asset-overrides.js can replace its matching floor collectible."
   },
   "music": {
-    "exploration": "assets/audio/music/exploration.wav",
-    "danger": "assets/audio/music/danger.wav",
-    "sanctuary": "assets/audio/music/sanctuary.wav",
-    "named": "assets/audio/music/named-enemy.wav",
-    "stalker": "assets/audio/music/count-loadula.wav"
+    "categories": ["normal", "danger", "sanctuary", "named", "stalker"],
+    "fallbacks": {
+      "normal": "assets/audio/music/exploration.wav",
+      "danger": "assets/audio/music/danger.wav",
+      "sanctuary": "assets/audio/music/sanctuary.wav",
+      "named": "assets/audio/music/named-enemy.wav",
+      "stalker": "assets/audio/music/count-loadula.wav"
+    },
+    "playback": {
+      "selection": "random within the active category",
+      "repeatProtection": "the previous track is excluded when alternatives exist",
+      "crossfadeMs": 2500,
+      "priority": ["stalker", "named", "danger", "sanctuary", "normal"],
+      "normalBehaviour": "General Exploration resumes when no encounter category is active"
+    },
+    "adminUploadKeys": {
+      "normal": "lostSizzlerExploration--<unique-track-id>",
+      "danger": "lostSizzlerDanger--<unique-track-id>",
+      "sanctuary": "lostSizzlerSanctuary--<unique-track-id>",
+      "named": "lostSizzlerNamed--<unique-track-id>",
+      "stalker": "lostSizzlerStalker--<unique-track-id>"
+    }
   },
   "sfx": {
     "folder": "assets/audio/sfx/",

@@ -1,0 +1,54 @@
+name: Lost Sizzler Playlist Validation
+
+on:
+  pull_request:
+    paths:
+      - 'admin/arcade-assets.html'
+      - 'admin/js/arcade-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-7-audio-playlists.mjs'
+      - '.github/workflows/lost-sizzler-playlist-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'admin/arcade-assets.html'
+      - 'admin/js/arcade-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-7-audio-playlists.mjs'
+      - '.github/workflows/lost-sizzler-playlist-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate playlist JavaScript syntax
+        run: |
+          node --check admin/js/arcade-assets.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/audio-assets.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-7-audio-playlists.mjs
+
+      - name: Validate playlist contract
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-7-audio-playlists.mjs

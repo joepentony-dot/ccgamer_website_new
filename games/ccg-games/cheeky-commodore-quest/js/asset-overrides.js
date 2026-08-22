@@ -1,7 +1,7 @@
 /*
  * OWNER ASSET OVERRIDES
- * Replace any null value with a site-relative file path, then upload that file.
- * Example: logo: "assets/my-new-logo.png"
+ * Replace any null value with a site-relative file path, or add paths to a
+ * playlist array. Unchanged values continue to use the bundled defaults.
  * The full key/path catalogue is in assets/asset-manifest.json.
  */
 window.CCG_ASSET_OVERRIDES={
@@ -11,18 +11,17 @@ window.CCG_ASSET_OVERRIDES={
     items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
   },
   audio:{
-    music:{exploration:null,danger:null,sanctuary:null,named:null,stalker:null},
+    music:{
+      exploration:null,danger:null,sanctuary:null,named:null,stalker:null,
+      playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}
+    },
     sfx:{}
   }
 };
 
-/* Cache-bust the rapidly iterating V10.6 HUD layer. Static hosting can retain an
-   older copy for several minutes after a merge, which made a newly added carried
-   item panel appear missing even though main already contained the fix. */
 const CCG_V106_HUD_REV="20260822e";
+const CCG_PLAYLIST_AUDIO_REV="20260822a";
 
-/* Load the final V10.6 UI layers before first paint settles, and begin resolving
-   any owner-uploaded Lost Sizzler music from the existing Arcade Asset store. */
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
     const link=document.createElement("link");
@@ -47,10 +46,10 @@ const CCG_V106_HUD_REV="20260822e";
   }
 })();
 
-/* V10.4/V10.5/V10.6 layers are loaded after the established engine. */
 window.addEventListener("load",()=>{
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
   const queue=[
+    [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
     ["js/v10-4-patch.js","ccgLostSizzlerV104"],
     ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
     ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
