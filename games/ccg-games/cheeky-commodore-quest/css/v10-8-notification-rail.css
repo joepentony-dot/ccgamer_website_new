@@ -1,0 +1,111 @@
+/* The Lost Sizzler V10.8 — tactical notification overlay.
+   Desktop notifications temporarily cover the inventory beneath the radar while
+   leaving the radar itself visible. Mobile falls back to a compact top card. */
+
+.inventory-live-dock{isolation:isolate!important}
+.tactical-notification-layer{
+  position:absolute!important;
+  inset:0!important;
+  z-index:40!important;
+  display:grid!important;
+  align-content:start!important;
+  padding:7px!important;
+  pointer-events:none!important;
+  visibility:hidden!important;
+  opacity:0!important;
+  transition:opacity .12s ease,visibility 0s linear .12s!important;
+}
+.tactical-notification-layer.notification-active{
+  visibility:visible!important;
+  opacity:1!important;
+  transition-delay:0s!important;
+}
+.tactical-notification-layer::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(180deg,rgba(6,3,10,.96),rgba(8,4,12,.91));
+  border:1px solid rgba(142,92,255,.52);
+  box-shadow:inset 0 0 34px rgba(142,92,255,.08),0 7px 24px rgba(0,0,0,.58);
+}
+
+.ccg-game .tactical-notification-layer .pickup-toast,
+.ccg-game:fullscreen .tactical-notification-layer .pickup-toast,
+.ccg-game:-webkit-full-screen .tactical-notification-layer .pickup-toast{
+  position:relative!important;
+  inset:auto!important;
+  transform:none!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:112px!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:12px 11px!important;
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr)!important;
+  gap:10px!important;
+  align-items:center!important;
+  overflow:visible!important;
+  border:2px solid #ffd85a!important;
+  border-left-width:5px!important;
+  border-radius:0!important;
+  background:linear-gradient(135deg,rgba(23,14,7,.985),rgba(8,5,12,.99))!important;
+  box-shadow:0 0 24px rgba(255,216,90,.20),inset 0 0 22px rgba(255,216,90,.035)!important;
+  text-align:left!important;
+  opacity:0!important;
+  transition:opacity .12s ease,transform .12s ease!important;
+}
+.ccg-game .tactical-notification-layer .pickup-toast.show,
+.ccg-game:fullscreen .tactical-notification-layer .pickup-toast.show,
+.ccg-game:-webkit-full-screen .tactical-notification-layer .pickup-toast.show{opacity:1!important;transform:none!important}
+.ccg-game .tactical-notification-layer .pickup-toast-icon{
+  display:grid!important;
+  place-items:center!important;
+  width:54px!important;
+  height:54px!important;
+  border:2px solid currentColor!important;
+  background:rgba(255,255,255,.035)!important;
+  box-shadow:inset 0 0 18px rgba(255,255,255,.025),0 0 14px rgba(255,216,90,.12)!important;
+}
+.ccg-game .tactical-notification-layer .pickup-toast-icon .item-svg-wrap,
+.ccg-game .tactical-notification-layer .pickup-toast-icon .item-art-wrap{width:42px!important;height:42px!important;border:0!important;background:transparent!important;padding:0!important}
+.ccg-game .tactical-notification-layer .pickup-toast-copy{min-width:0!important}
+.ccg-game .tactical-notification-layer .pickup-toast b{display:block!important;margin:0!important;color:#ffd85a!important;font-size:10.5px!important;line-height:1.15!important;letter-spacing:.25px!important;text-shadow:2px 2px #000!important;white-space:normal!important}
+.ccg-game .tactical-notification-layer .pickup-toast span{display:block!important;margin-top:6px!important;color:#f6eff9!important;font-size:8px!important;line-height:1.35!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
+
+.ccg-game .tactical-notification-layer .pickup-toast.green{border-color:#72ff9b!important;background:linear-gradient(135deg,rgba(8,28,16,.985),rgba(6,7,9,.99))!important;box-shadow:0 0 25px rgba(114,255,155,.22)!important}.ccg-game .tactical-notification-layer .pickup-toast.green b{color:#72ff9b!important}.ccg-game .tactical-notification-layer .pickup-toast.green .pickup-toast-icon{color:#72ff9b!important}
+.ccg-game .tactical-notification-layer .pickup-toast.cyan{border-color:#6cecff!important;background:linear-gradient(135deg,rgba(5,25,32,.985),rgba(5,7,10,.99))!important;box-shadow:0 0 25px rgba(108,236,255,.22)!important}.ccg-game .tactical-notification-layer .pickup-toast.cyan b{color:#6cecff!important}.ccg-game .tactical-notification-layer .pickup-toast.cyan .pickup-toast-icon{color:#6cecff!important}
+.ccg-game .tactical-notification-layer .pickup-toast.red{border-color:#ff6868!important;background:linear-gradient(135deg,rgba(38,8,13,.985),rgba(8,5,8,.99))!important;box-shadow:0 0 25px rgba(255,104,104,.24)!important}.ccg-game .tactical-notification-layer .pickup-toast.red b{color:#ff6868!important}.ccg-game .tactical-notification-layer .pickup-toast.red .pickup-toast-icon{color:#ff6868!important}
+.ccg-game .tactical-notification-layer .pickup-toast.purple{border-color:#b978ff!important;background:linear-gradient(135deg,rgba(26,10,38,.985),rgba(7,4,10,.99))!important;box-shadow:0 0 25px rgba(185,120,255,.24)!important}.ccg-game .tactical-notification-layer .pickup-toast.purple b{color:#d7b0ff!important}.ccg-game .tactical-notification-layer .pickup-toast.purple .pickup-toast-icon{color:#b978ff!important}
+.ccg-game .tactical-notification-layer .pickup-toast.gold .pickup-toast-icon{color:#ffd85a!important}
+
+/* The inventory remains exactly where it is and simply sits behind the alert. */
+.tactical-notification-layer.notification-active~.item-shortcuts,
+.tactical-notification-layer.notification-active~.inventory-dock-controls{filter:saturate(.55) brightness(.55)!important}
+
+@media(max-width:900px){
+  .tactical-notification-layer{padding:5px!important}
+  .ccg-game .tactical-notification-layer .pickup-toast{min-height:82px!important;grid-template-columns:44px minmax(0,1fr)!important;padding:8px!important}
+  .ccg-game .tactical-notification-layer .pickup-toast-icon{width:40px!important;height:40px!important}
+  .ccg-game .tactical-notification-layer .pickup-toast-icon .item-svg-wrap,.ccg-game .tactical-notification-layer .pickup-toast-icon .item-art-wrap{width:32px!important;height:32px!important}
+  .ccg-game .tactical-notification-layer .pickup-toast b{font-size:8px!important}.ccg-game .tactical-notification-layer .pickup-toast span{font-size:6.5px!important;margin-top:4px!important}
+}
+
+/* When the tactical sidebar itself is hidden on a narrow/mobile layout, the
+   same existing toast becomes a compact overlay at the top of gameplay. */
+@media(max-width:560px){
+  .tactical-notification-layer{
+    position:fixed!important;
+    top:58px!important;
+    left:8px!important;
+    right:8px!important;
+    bottom:auto!important;
+    width:auto!important;
+    z-index:999!important;
+  }
+  .tactical-notification-layer::before{display:none!important}
+  .ccg-game .tactical-notification-layer .pickup-toast{min-height:72px!important;box-shadow:0 8px 28px rgba(0,0,0,.72)!important}
+}
