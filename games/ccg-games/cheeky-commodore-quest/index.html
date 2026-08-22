@@ -104,7 +104,7 @@
     <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
       <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
       <p id="artefact-choice-name">Choose how to convert this rare reward.</p>
-      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Weekly Vault rankings</span></button><button id="artefact-xp-btn"><b>2,000 XP</b><span>Best for faster run progression</span></button></div>
+      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Weekly Vault rankings</span></button><button id="artefact-xp-btn"><b>10 XP</b><span>The maximum XP allowed from one item</span></button></div>
     </div></div>
 
     <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
@@ -142,8 +142,8 @@
         <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
         <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. Trade 3 artefacts for a Banishment Flask, then press B nearby.</p></section>
         <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
-        <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>Pickups give 1–10 XP, ordinary enemies 100 XP and named enemies 250 XP. Entering rooms gives no XP. Ammo is scarce, but every run starts with a 240-round capacity.</p></section>
-        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death puts half your score in a recoverable cache and removes 15% of the current level requirement. You can lose at most one level and your most recent upgrade. Weekly Vault death ends that week’s attempt.</p></section>
+        <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>Pickups give 1–10 XP, one-time openings such as hidden walls, locked doors, chests, switches and puzzle vaults give 10 XP, ordinary enemies give 100 XP and named enemies give 250 XP. Entering rooms, repeatable doors and objectives give no XP. The first upgrade requires 1,425 XP.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH &amp; WEEKLY VAULT</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache. You can lose at most one level and your most recent upgrade. Weekly Vault death ends that week’s attempt.</p></section>
         <section><div class="rulebook-icon">?</div><h3>OPTIONAL CHALLENGES</h3><p>Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
       </div>
       <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
@@ -180,7 +180,7 @@
       <div class="priority-xp">
         <div class="priority-xp-head"><b id="quick-level">LEVEL 1</b><strong id="quick-xp-text">XP TOTAL 0</strong></div>
         <div class="xp-track"><i id="quick-xp-fill"></i></div>
-        <small id="quick-xp-next">515 TO NEXT · FLOOR CAP 5</small>
+        <small id="quick-xp-next">1425 TO NEXT · FLOOR CAP 5</small>
       </div>
       <div class="run-stat"><span>OBJECTIVE</span><b id="hud-keys">0/3</b></div>
       <div class="run-stat"><span>SCORE</span><b id="hud-score">000000</b></div>

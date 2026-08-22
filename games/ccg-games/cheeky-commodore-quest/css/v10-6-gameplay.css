@@ -1,7 +1,7 @@
 /* V10.6 gameplay-first layout. This final layer deliberately owns screen geometry. */
 html,body{width:100%;height:100%;overflow:hidden}
 body{margin:0;background:#050208}
-.ccg-game{width:100vw;height:100dvh;max-width:none;margin:0;padding:0;display:grid!important;grid-template-columns:minmax(0,1fr) clamp(240px,20vw,320px);grid-template-rows:42px 32px minmax(0,1fr) 94px;gap:0;background:#050208;overflow:hidden}
+.ccg-game,.ccg-game:fullscreen,.ccg-game:-webkit-full-screen{position:fixed!important;inset:0!important;width:auto!important;height:auto!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;padding:0!important;display:grid!important;grid-template-columns:minmax(0,1fr) clamp(240px,20vw,320px)!important;grid-template-rows:42px 32px minmax(0,1fr) 94px!important;gap:0;background:#050208;overflow:hidden}
 .ccg-game>.topbar{grid-column:1/3;grid-row:1;min-height:0!important;height:42px!important;padding:4px 10px!important;border-width:0 0 1px!important;z-index:30}
 .ccg-game>.topbar .brand img{width:34px!important;height:34px!important}
 .ccg-game>.topbar .brand h1{font-size:clamp(12px,1.1vw,17px)!important;line-height:1!important}
@@ -37,9 +37,16 @@ body{margin:0;background:#050208}
 .ccg-game>.player-hub .hub-progress{display:grid!important;grid-template-columns:minmax(180px,1.4fr) repeat(3,minmax(64px,.58fr))!important;gap:5px!important}
 .ccg-game>.player-hub .priority-xp,.ccg-game>.player-hub .run-stat{min-height:0!important;padding:6px!important}.ccg-game>.player-hub .run-stat b{font-size:12px!important}
 .ccg-game>.player-hub .hub-telemetry{display:none!important}
-.ccg-game .overlay{position:absolute!important;inset:0!important;z-index:100!important;padding:clamp(10px,2vw,28px)!important;background:rgba(3,1,7,.9)!important;overflow:auto!important}
+.ccg-game .overlay,.ccg-game:fullscreen .overlay,.ccg-game:-webkit-full-screen .overlay{position:fixed!important;inset:0!important;z-index:100!important;padding:clamp(10px,2vw,28px)!important;background:rgba(3,1,7,.96)!important;overflow:auto!important}
 .ccg-game .overlay.hidden{display:none!important}
-.ccg-game #menu>.panel{width:min(1040px,96%)!important;max-height:none!important;margin:auto!important}
+.ccg-game #menu{align-items:start!important;justify-items:center!important}
+.ccg-game #menu>.panel{width:min(1040px,96%)!important;max-height:none!important;margin:0 auto!important;padding:clamp(12px,2vh,20px)!important}
+.ccg-game #menu .hero-logo{width:min(180px,32vw)!important;height:96px!important;margin:0 auto!important}
+.ccg-game #menu h2{margin:0 0 5px!important;font-size:clamp(27px,4vh,44px)!important}
+.ccg-game #menu>.panel>p{max-width:980px;margin:5px auto!important;line-height:1.35!important}
+.ccg-game #menu .feature-strip{margin:7px 0!important}
+.ccg-game #menu .field{display:inline-grid!important;width:min(330px,46%)!important;margin:7px 5px!important;vertical-align:top}
+.ccg-game #menu .menu-buttons{margin:7px auto!important}
 .online-howto{margin:12px 0;padding:10px;border:1px solid rgba(72,224,255,.42);background:rgba(7,33,46,.45)}
 .online-howto h3{margin:0 0 7px;color:#60eaff;font-size:12px}.online-howto>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}.online-howto p{margin:0;font-size:10px;line-height:1.4}.online-howto b{color:#ffd85a}
 .weekly-auth-actions{display:flex;justify-content:center;gap:8px;margin:7px 0 10px}.weekly-auth-actions.hidden{display:none}.weekly-auth-actions a{display:inline-flex;align-items:center;justify-content:center;padding:8px 11px;border:1px solid #63e9ff;background:#09202a;color:#bff7ff;font-size:10px;font-weight:900;text-decoration:none;box-shadow:2px 2px 0 #000}.weekly-auth-actions a:first-child{border-color:#72ff9b;background:#0d2718;color:#caffd9}.weekly-auth-actions a:focus-visible{outline:2px solid #ffd85a;outline-offset:2px}
@@ -47,13 +54,14 @@ body{margin:0;background:#050208}
 .online-lobby-card{width:min(880px,96%)!important;margin:auto!important;padding:clamp(18px,3vw,36px)!important;border:2px solid #63e9ff!important;box-shadow:0 0 46px rgba(87,220,255,.2)!important}
 .online-lobby-card .lobby-kicker{margin:0;color:#63e9ff;letter-spacing:.2em;font-weight:900}.online-lobby-card h2{font-size:clamp(28px,5vw,58px)!important;margin:4px 0!important}.online-lobby-card #lobby-status{color:#ffd85a;font-weight:900}.lobby-invite input{font-size:clamp(11px,1.5vw,17px)!important;color:#fff!important;background:#080311!important}.lobby-actions{grid-template-columns:repeat(4,1fr)!important}.lobby-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.lobby-columns section{padding:14px;border:1px solid rgba(185,120,255,.35);background:rgba(12,6,18,.75)}.lobby-columns h3{margin:0 0 8px;color:#b978ff}.lobby-columns p,.lobby-columns li{font-size:11px;line-height:1.5}.lobby-columns ol{margin:0;padding-left:20px}.lobby-columns li{padding:4px 0}.lobby-columns li.host{color:#ffd85a;font-weight:900}
 .dossier-trait{margin:8px 0 0!important;padding:7px!important;border-left:3px solid #ff9a52;background:rgba(255,133,67,.08)}.dossier-trait.weakness{border-color:#64e8a5;background:rgba(73,231,155,.08)}
+.ccg-game .inventory-slot.locked{border-style:dashed!important;border-color:#76535d!important;background:repeating-linear-gradient(135deg,#09050d 0,#09050d 8px,#120914 8px,#120914 16px)!important;opacity:.78}.ccg-game .inventory-slot.locked .inventory-slot-icon{border-color:#76535d!important}.ccg-game .locked-slot-mark{display:grid;place-items:center;width:34px;height:34px;border:2px solid #a66b7a;color:#e49aaa;font-size:27px;font-weight:900;line-height:1}.ccg-game .inventory-slot.locked .inventory-slot-copy b{color:#e49aaa!important}.ccg-game .inventory-slot.locked .inventory-slot-copy span{color:#ffd85a!important;font-weight:900}.ccg-game .inventory-slot.locked .inventory-slot-copy small{color:#bdacb8!important}
 @media (max-width:1100px){
-  .ccg-game{grid-template-columns:minmax(0,1fr) 220px;grid-template-rows:38px 30px minmax(0,1fr) 88px}
+  .ccg-game,.ccg-game:fullscreen,.ccg-game:-webkit-full-screen{grid-template-columns:minmax(0,1fr) 220px!important;grid-template-rows:38px 30px minmax(0,1fr) 88px!important}
   .ccg-game>.topbar{height:38px!important}.ccg-game>.player-hub{height:88px!important;grid-template-columns:1fr .8fr 1fr!important}.ccg-game>.player-hub .quick-slot{height:46px!important}
   .ccg-game>.topbar .build-badge{display:none!important}
 }
 @media (max-width:900px),(pointer:coarse){
-  .ccg-game{grid-template-columns:minmax(0,1fr);grid-template-rows:30px minmax(0,1fr) 76px}
+  .ccg-game,.ccg-game:fullscreen,.ccg-game:-webkit-full-screen{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:30px minmax(0,1fr) 76px!important}
   .ccg-game>.topbar{display:none!important}
   .ccg-game>.mission{grid-column:1;grid-row:1;height:30px!important}
   .ccg-game>.game-area{grid-column:1;grid-row:2}
@@ -68,10 +76,11 @@ body{margin:0;background:#050208}
   .weekly-auth-actions{flex-wrap:wrap}.weekly-auth-actions a{flex:1;min-width:150px}
 }
 @media (max-width:620px){
-  .ccg-game{grid-template-rows:28px minmax(0,1fr) 68px}.ccg-game>.mission{height:28px!important;padding:4px 7px!important}.ccg-game>.mission strong{display:none!important}
+  .ccg-game,.ccg-game:fullscreen,.ccg-game:-webkit-full-screen{grid-template-rows:28px minmax(0,1fr) 68px!important}.ccg-game>.mission{height:28px!important;padding:4px 7px!important}.ccg-game>.mission strong{display:none!important}
   .ccg-game>.player-hub{height:68px!important;grid-template-columns:1fr!important}.ccg-game>.player-hub .hub-progress{display:none!important}.ccg-game>.player-hub .hub-stat{padding:4px!important}.ccg-game>.player-hub .hub-stat span{font-size:6px!important}.ccg-game>.player-hub .hub-stat b{font-size:12px!important}
   .ccg-game>.tactical-zone{top:34px!important;width:31vw!important;height:20vh!important}.ccg-game .pickup-toast{left:50%!important;top:4px!important;width:88%;padding:5px 8px!important}.ccg-game .pickup-toast span{display:none!important}
   .ccg-game .banish-context{bottom:74px!important;padding:6px!important}.ccg-game .banish-context span{font-size:8px!important}
   .online-lobby-card{padding:14px!important}.lobby-actions{grid-template-columns:1fr!important}
+  .ccg-game #menu .field{display:grid!important;width:100%!important;margin:6px 0!important}
 }
 @media (orientation:portrait) and (pointer:coarse){.ccg-game>.fullscreen-hint:not(.hidden)::after{content:" · LANDSCAPE GIVES THE LARGEST PLAYFIELD"}}

@@ -109,7 +109,7 @@
   function patchProgression() {
     const harderXpNeed = (level) => {
       level = Math.max(1, Math.floor(Number(level) || 1));
-      return 500 + level * 260 + level * level * 55;
+      return 1000 + level * 350 + level * level * 75;
     };
 
     PROG.xpNeed = harderXpNeed;
