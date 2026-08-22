@@ -42,6 +42,7 @@ body{margin:0;background:#050208}
 .ccg-game #menu>.panel{width:min(1040px,96%)!important;max-height:none!important;margin:auto!important}
 .online-howto{margin:12px 0;padding:10px;border:1px solid rgba(72,224,255,.42);background:rgba(7,33,46,.45)}
 .online-howto h3{margin:0 0 7px;color:#60eaff;font-size:12px}.online-howto>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}.online-howto p{margin:0;font-size:10px;line-height:1.4}.online-howto b{color:#ffd85a}
+.weekly-auth-actions{display:flex;justify-content:center;gap:8px;margin:7px 0 10px}.weekly-auth-actions.hidden{display:none}.weekly-auth-actions a{display:inline-flex;align-items:center;justify-content:center;padding:8px 11px;border:1px solid #63e9ff;background:#09202a;color:#bff7ff;font-size:10px;font-weight:900;text-decoration:none;box-shadow:2px 2px 0 #000}.weekly-auth-actions a:first-child{border-color:#72ff9b;background:#0d2718;color:#caffd9}.weekly-auth-actions a:focus-visible{outline:2px solid #ffd85a;outline-offset:2px}
 .menu-exit-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;border:2px solid #a94758;background:#301019;color:#ffd9de;font-weight:900;text-decoration:none;box-shadow:3px 3px 0 #000}.menu-exit-link:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
 .online-lobby-card{width:min(880px,96%)!important;margin:auto!important;padding:clamp(18px,3vw,36px)!important;border:2px solid #63e9ff!important;box-shadow:0 0 46px rgba(87,220,255,.2)!important}
 .online-lobby-card .lobby-kicker{margin:0;color:#63e9ff;letter-spacing:.2em;font-weight:900}.online-lobby-card h2{font-size:clamp(28px,5vw,58px)!important;margin:4px 0!important}.online-lobby-card #lobby-status{color:#ffd85a;font-weight:900}.lobby-invite input{font-size:clamp(11px,1.5vw,17px)!important;color:#fff!important;background:#080311!important}.lobby-actions{grid-template-columns:repeat(4,1fr)!important}.lobby-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.lobby-columns section{padding:14px;border:1px solid rgba(185,120,255,.35);background:rgba(12,6,18,.75)}.lobby-columns h3{margin:0 0 8px;color:#b978ff}.lobby-columns p,.lobby-columns li{font-size:11px;line-height:1.5}.lobby-columns ol{margin:0;padding-left:20px}.lobby-columns li{padding:4px 0}.lobby-columns li.host{color:#ffd85a;font-weight:900}
@@ -64,6 +65,7 @@ body{margin:0;background:#050208}
   .ccg-game .banish-context{bottom:86px!important;width:86vw!important}
   .v104-touch-controls{background:linear-gradient(transparent,rgba(3,2,5,.2))!important}.v104-touch-btn{opacity:.76!important;background:rgba(14,8,20,.5)!important;backdrop-filter:blur(1px)!important}.v104-touch-btn:active,.v104-touch-btn.held{opacity:1!important}
   .online-howto>div,.lobby-columns{grid-template-columns:1fr}.lobby-actions{grid-template-columns:1fr 1fr!important}
+  .weekly-auth-actions{flex-wrap:wrap}.weekly-auth-actions a{flex:1;min-width:150px}
 }
 @media (max-width:620px){
   .ccg-game{grid-template-rows:28px minmax(0,1fr) 68px}.ccg-game>.mission{height:28px!important;padding:4px 7px!important}.ccg-game>.mission strong{display:none!important}
