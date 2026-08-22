@@ -16,7 +16,7 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
-/* Load the final V10.6 UI layer before first paint settles, and begin resolving
+/* Load the final V10.6 UI layers before first paint settles, and begin resolving
    any owner-uploaded Lost Sizzler music from the existing Arcade Asset store. */
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -24,6 +24,13 @@ window.CCG_ASSET_OVERRIDES={
     link.rel="stylesheet";
     link.href="css/v10-6-ui-polish.css";
     link.dataset.ccgV106Ui="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v106-inventory-hud="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="css/v10-6-inventory-hud-fix.css";
+    link.dataset.ccgV106InventoryHud="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
@@ -49,6 +56,7 @@ window.addEventListener("load",()=>{
     ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
     ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
     ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+    ["js/v10-6-inventory-hud-fix.js","ccgLostSizzlerInventoryHudV106"],
     ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"]
