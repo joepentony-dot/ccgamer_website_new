@@ -69,6 +69,7 @@
         <img class="hero-logo" src="assets/lost-sizzler.webp" alt="The Lost Sizzler">
         <h2>The Lost Sizzler</h2>
         <p>A multi-floor arcade dungeon crawl with procedural rooms, fog, locked routes, shootable switches, traps, monster generators, rare artefacts, XP, death recovery, a reinforced Sigil gauntlet, optional puzzle chambers and things in the dark that require more than ordinary ammunition.</p>
+        <p class="desktop-play-recommendation"><strong>BETTER PLAYED ON DESKTOP PC</strong><span>Mobile play is supported, but a larger screen and keyboard give the best experience.</span></p>
         <div class="feature-strip">
           <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
@@ -126,11 +127,11 @@
       <small id="save-note">Saves are floor-entry checkpoints rather than mid-room quick saves.</small>
     </div></div>
 
-    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><h2>Inventory & Objective</h2><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
+    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><div class="mobile-panel-head"><h2>Inventory & Objective</h2><button id="inventory-close-top" class="primary" type="button">Back to Game</button></div><p id="inventory-mobile-notice" class="inventory-mobile-notice" aria-live="polite">Tap a locked or empty slot for an explanation.</p><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
 
     <div id="item-info-panel" class="overlay hidden sub-overlay"><div class="panel compact item-info-card"><div id="item-info-icon" class="item-info-hero"></div><h2 id="item-info-title">Item</h2><div id="item-info-text" class="item-info-copy"></div><button id="item-info-close" class="primary">Back to Inventory</button></div></div>
 
-    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><h2>Named Enemy Dossier</h2><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
+    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><div class="mobile-panel-head"><h2>Named Enemy Dossier</h2><button id="named-dossier-close-top" class="primary" type="button">Back to Game</button></div><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
 
 
     <div id="rulebook-panel" class="overlay hidden"><div class="panel v10-info-panel">

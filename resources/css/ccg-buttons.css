@@ -333,6 +333,33 @@ body[data-ccg-mode="amiga"] .ccg-header {
     margin-inline: auto;
 }
 
+/* Homepage launch spotlight for the owner's current beta game. */
+.home-hero__beta-cta,
+body[data-ccg-mode="c64"] .home-hero__beta-cta,
+body[data-ccg-mode="amiga"] .home-hero__beta-cta {
+    display: flex;
+    flex-direction: column;
+    width: min(500px, 100%);
+    min-height: 58px;
+    margin: 10px auto 0;
+    padding: 9px 18px;
+    color: #190f00 !important;
+    background: linear-gradient(180deg, #fff27a 0%, #ffd63d 55%, #f0ae00 100%) !important;
+    border: 2px solid #fff4a5 !important;
+    box-shadow: 0 0 0 2px #402700, 0 0 26px rgba(255, 214, 61, 0.72), 0 10px 22px rgba(0, 0, 0, 0.58) !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.48) !important;
+}
+
+.home-hero__beta-cta span { font-size: 0.78rem; letter-spacing: 0.18em; }
+.home-hero__beta-cta strong { font-size: 0.9rem; letter-spacing: 0.08em; }
+.home-hero__beta-cta:hover,
+.home-hero__beta-cta:focus-visible {
+    color: #090500 !important;
+    background: linear-gradient(180deg, #fff8a8 0%, #ffe04d 55%, #ffc21d 100%) !important;
+    border-color: #fffbd5 !important;
+    box-shadow: 0 0 0 2px #5b3900, 0 0 38px rgba(255, 224, 77, 0.9), 0 14px 28px rgba(0, 0, 0, 0.66) !important;
+}
+
 @media (max-width: 640px) {
     /* ccg-master centres .ccg-main on phones. Restore a natural reading
        edge while explicitly centred hero/card/control rules keep winning. */

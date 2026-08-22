@@ -55,6 +55,14 @@ body[data-run-active="true"]:has(.game-area>.overlay:not(.hidden)) .ccg-game>.ga
 .ccg-game #menu{align-items:start!important;justify-items:center!important}
 .ccg-game #menu>.panel{width:min(1040px,96%)!important;max-height:none!important;margin:0 auto!important;padding:clamp(12px,2vh,20px)!important}
 .ccg-game #menu .hero-logo{width:min(180px,32vw)!important;height:96px!important;margin:0 auto!important}
+.desktop-play-recommendation{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px auto!important;padding:8px 12px;border:1px solid rgba(255,216,90,.75);background:rgba(255,216,90,.08);color:#e9dfef!important}
+.desktop-play-recommendation strong{color:#ffd85a;font-size:12px}.desktop-play-recommendation span{font-size:10px}
+.mobile-panel-head>button{display:none}
+.inventory-mobile-notice{display:none;margin:0 0 9px!important;padding:8px;border:1px solid rgba(108,236,255,.48);background:rgba(12,55,66,.38);color:#c8f7ff!important;font-size:10px!important;font-weight:700}
+.inventory-mobile-notice.red{border-color:rgba(255,104,104,.7);background:rgba(90,20,30,.48);color:#ffd2d7!important}
+.v104-touch-btn[data-action] small{display:block;margin-top:3px;color:#72ff9b;font-size:8px;line-height:1}
+.v104-touch-btn.touch-item-unavailable{border-color:#a94758!important;color:#ffb5c0!important}
+.v104-touch-btn.touch-item-unavailable small{color:#ff8fa0}
 .ccg-game #menu h2{margin:0 0 5px!important;font-size:clamp(27px,4vh,44px)!important}
 .ccg-game #menu>.panel>p{max-width:980px;margin:5px auto!important;line-height:1.35!important}
 .ccg-game #menu .feature-strip{margin:7px 0!important}
@@ -87,11 +95,15 @@ body[data-run-active="true"]:has(.game-area>.overlay:not(.hidden)) .ccg-game>.ga
   .v104-touch-controls{background:linear-gradient(transparent,rgba(3,2,5,.2))!important}.v104-touch-btn{opacity:.76!important;background:rgba(14,8,20,.5)!important;backdrop-filter:blur(1px)!important}.v104-touch-btn:active,.v104-touch-btn.held{opacity:1!important}
   .online-howto>div,.lobby-columns{grid-template-columns:1fr}.lobby-actions{grid-template-columns:1fr 1fr!important}
   .weekly-auth-actions{flex-wrap:wrap}.weekly-auth-actions a{flex:1;min-width:150px}
+  .mobile-panel-head{position:sticky;top:-13px;z-index:4;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;margin:-13px -13px 12px;padding:10px 10px 8px;background:#0b0610;border-bottom:1px solid #765596;box-shadow:0 7px 18px rgba(0,0,0,.45)}
+  .mobile-panel-head h2{margin:0!important;text-align:left!important;font-size:clamp(17px,4.8vw,24px)!important}.mobile-panel-head>button{display:block;min-height:48px;padding:8px 11px;white-space:nowrap}
+  .inventory-mobile-notice{display:block}
+  .desktop-play-recommendation{display:block}.desktop-play-recommendation strong,.desktop-play-recommendation span{display:block}.desktop-play-recommendation span{margin-top:4px}
 }
 @media (max-width:620px){
   .ccg-game,.ccg-game:fullscreen,.ccg-game:-webkit-full-screen{grid-template-rows:28px minmax(0,1fr) 68px!important}.ccg-game>.mission{height:28px!important;padding:4px 7px!important}.ccg-game>.mission strong{display:none!important}
   .ccg-game>.player-hub{height:68px!important;grid-template-columns:1fr!important}.ccg-game>.player-hub .hub-progress{display:none!important}.ccg-game>.player-hub .hub-stat{padding:4px!important}.ccg-game>.player-hub .hub-stat span{font-size:6px!important}.ccg-game>.player-hub .hub-stat b{font-size:12px!important}
-  .ccg-game>.tactical-zone{top:34px!important;width:31vw!important;height:20vh!important}.ccg-game .pickup-toast{left:50%!important;top:4px!important;width:88%;padding:5px 8px!important}.ccg-game .pickup-toast span{display:none!important}
+  .ccg-game>.tactical-zone{top:34px!important;width:31vw!important;height:20vh!important}.ccg-game .pickup-toast{left:50%!important;top:4px!important;width:88%;padding:5px 8px!important}.ccg-game .pickup-toast span{display:block!important;font-size:8.5px!important;line-height:1.2!important}
   .ccg-game .banish-context{bottom:74px!important;padding:6px!important}.ccg-game .banish-context span{font-size:8px!important}
   .online-lobby-card{padding:14px!important}.lobby-actions{grid-template-columns:1fr!important}
   .ccg-game #menu .field{display:grid!important;width:100%!important;margin:6px 0!important}
