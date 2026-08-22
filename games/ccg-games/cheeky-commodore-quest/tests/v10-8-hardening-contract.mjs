@@ -73,10 +73,12 @@ assert.match(audio,/custom\.length\?custom:g\.bundled/);
 assert.match(audio,/failedUrls\.add/);
 assert.match(audio,/clearFailed/);
 
-// 14 + notification restoration — right-side overlay and multi-resolution crash guard.
+// 14 + notification restoration — right-side overlay, all room intros and multi-resolution crash guard.
 assert.match(notices,/tactical-notification-layer/);
 assert.match(notices,/displayToast=function/);
 assert.match(notices,/originalSay/,'important room reports can be promoted to the notification rail');
+assert.match(notices,/currentRoomHeading/,'room-theme announcements are identified from the active room');
+assert.match(notices,/plain\.toUpperCase\(\)\.startsWith\(roomHeading\)/,'every actual room introduction is promoted even when its name lacks generic room keywords');
 assert.match(noticeCss,/temporarily cover the inventory/i);
 assert.match(noticeCss,/\.pickup-toast\.green/);
 assert.match(noticeCss,/\.pickup-toast\.cyan/);
