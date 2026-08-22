@@ -33,7 +33,6 @@ $("solo-btn").addEventListener("click",startSolo);$("continue-save-btn")?.addEve
 $("rulebook-btn")?.addEventListener("click",showRulebook);$("rulebook-close-btn")?.addEventListener("click",()=>UI.rulebook?.classList.add("hidden"));$("support-btn")?.addEventListener("click",showSupport);$("support-close-btn")?.addEventListener("click",()=>UI.support?.classList.add("hidden"));$("share-btn")?.addEventListener("click",shareQuest);$("item-info-close")?.addEventListener("click",hideItemInfo);$("named-dossier-btn")?.addEventListener("click",showNamedDossier);
 $("inventory-dossier-btn")?.addEventListener("click",showNamedDossier);$("named-dossier-close")?.addEventListener("click",hideNamedDossier);$("shop-close")?.addEventListener("click",closeShop);$("save-now-btn")?.addEventListener("click",()=>{saveFloorCheckpoint(false);closeSavePrompt()});$("save-continue-btn")?.addEventListener("click",()=>{if(savePromptReason==="rest"&&run)run.consecutiveDeaths=0;closeSavePrompt()});$("save-return-btn")?.addEventListener("click",()=>{if(run)run.consecutiveDeaths=0;saveFloorCheckpoint(true)});
 $("inventory-close-top")?.addEventListener("click",returnToGameFromPanel);$("named-dossier-close-top")?.addEventListener("click",returnToGameFromPanel);
-$("artefact-score-btn")?.addEventListener("click",()=>claimBanishmentArtefact("score"));$("artefact-xp-btn")?.addEventListener("click",()=>claimBanishmentArtefact("xp"));
 UI.sound.addEventListener("click",toggleSound);$("fullscreen-btn")?.addEventListener("click",toggleFullscreen);UI.descend?.addEventListener("click",descendFloor);UI.extract?.addEventListener("click",extractRun);UI.inventoryClose?.addEventListener("click",toggleInventory);
 $("again-btn").addEventListener("click",quitToMenu);
 
@@ -57,5 +56,14 @@ addEventListener("keydown",e=>{
 },{passive:false});
 addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 refreshCollection();
-net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
-addEventListener("resize",()=>requestAnimationFrame(resizeGameCanvas));document.addEventListener("fullscreenchange",syncFullscreenState);if(window.ResizeObserver){new ResizeObserver(()=>resizeGameCanvas()).observe(document.querySelector(".game-area"))}requestAnimationFrame(()=>{resizeGameCanvas();syncFullscreenState()});
+net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="loading";requestAnimationFrame(loop);
+
+let runtimeReady=false;
+function finishRuntimeReady(){
+  if(runtimeReady)return;runtimeReady=true;document.body.dataset.gameReady="true";requestAnimationFrame(()=>{resizeGameCanvas();syncFullscreenState()});
+}
+window.addEventListener("ccg:late-patches-ready",finishRuntimeReady,{once:true});
+if(window.__CCG_LATE_PATCH_QUEUE_READY__)finishRuntimeReady();
+setTimeout(finishRuntimeReady,6000);
+
+addEventListener("resize",()=>{if(runtimeReady)requestAnimationFrame(resizeGameCanvas)});document.addEventListener("fullscreenchange",syncFullscreenState);if(window.ResizeObserver){new ResizeObserver(()=>{if(runtimeReady)resizeGameCanvas()}).observe(document.querySelector(".game-area"))}
