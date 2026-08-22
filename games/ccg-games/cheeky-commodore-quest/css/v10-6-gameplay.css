@@ -22,7 +22,13 @@ body[data-run-active="false"] .ccg-game>.game-area{grid-column:1/3!important;gri
 .ccg-game>.mission{grid-column:1/3;grid-row:2;min-height:0!important;height:32px!important;padding:5px 10px!important;border-width:0 0 1px!important;z-index:24;overflow:hidden}
 .ccg-game>.mission strong{font-size:9px!important}.ccg-game>.mission span{font-size:10px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ccg-game>.fullscreen-hint{position:fixed;top:45px;left:50%;z-index:80;transform:translateX(-50%);padding:3px 8px!important;font-size:8px!important;width:auto!important}
-.ccg-game>.tactical-zone{grid-column:2;grid-row:3;min-height:0!important;height:auto!important;padding:7px!important;display:grid!important;grid-template-rows:minmax(190px,52%) minmax(0,1fr);gap:7px;border:0!important;border-left:1px solid rgba(180,113,255,.35)!important;background:#09040f;overflow:hidden;z-index:6}
+/* V10.6 owns the tactical sidebar as a single column. Older game.css releases
+   used an !important two-column tactical grid with 520px/330px minimum tracks;
+   letting that rule leak into this 240-320px sidebar clips the radar off-screen. */
+.ccg-game>.tactical-zone{grid-column:2;grid-row:3;min-height:0!important;height:auto!important;padding:7px!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(190px,52%) minmax(0,1fr)!important;grid-auto-flow:row!important;gap:7px;border:0!important;border-left:1px solid rgba(180,113,255,.35)!important;background:#09040f;overflow:hidden;z-index:6}
+.ccg-game>.tactical-zone>.radar-card,.ccg-game>.tactical-zone>.shortcut-dock{grid-column:1!important;min-width:0!important;width:100%!important;max-width:100%!important}
+.ccg-game>.tactical-zone>.radar-card{grid-row:1!important}
+.ccg-game>.tactical-zone>.shortcut-dock{grid-row:2!important}
 .ccg-game>.tactical-zone .dossier-card{display:none!important}
 .ccg-game>.tactical-zone .radar-card{height:auto!important;min-height:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto;padding:8px!important;margin:0!important}
 .ccg-game>.tactical-zone .radar-card h3{font-size:9px!important;margin:0 0 5px!important}
