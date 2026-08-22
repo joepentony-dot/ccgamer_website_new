@@ -13,10 +13,12 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -34,10 +36,12 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
       - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -74,7 +78,9 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js
           node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate final balance rules
@@ -94,6 +100,9 @@ jobs:
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           grep -F "dossier-scroll-cue" games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
+
+      - name: Validate Lost Sizzler sealed-room death recovery
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
 
       - name: Validate Arcade Quest contract
         run: node scripts/validate-arcade-quest.js
