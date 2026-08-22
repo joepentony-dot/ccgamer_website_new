@@ -8,24 +8,7 @@ const LOST_SIZZLER_MUSIC=[
  ['music','lostSizzlerDanger','Lost Sizzler — Danger / Combat Rooms'],
  ['music','lostSizzlerSanctuary','Lost Sizzler — Sanctuary / Safe Rooms'],
  ['music','lostSizzlerNamed','Lost Sizzler — Named Enemy Encounter'],
- ['music','lostSizzlerStalker','Lost Sizzler — Death Stalker / Count Loadula'],
- ['music','lostSizzlerRoomArchive','Lost Sizzler Room — C64 Archive'],
- ['music','lostSizzlerRoomWorkshop','Lost Sizzler Room — Workshop'],
- ['music','lostSizzlerRoomBudget','Lost Sizzler Room — Budget Rack'],
- ['music','lostSizzlerRoomDemo','Lost Sizzler Room — Demo Scene'],
- ['music','lostSizzlerRoomArmoury','Lost Sizzler Room — Armoury'],
- ['music','lostSizzlerRoomKitchen','Lost Sizzler Room — Kitchen'],
- ['music','lostSizzlerRoomReactor','Lost Sizzler Room — Reactor'],
- ['music','lostSizzlerRoomWarp','Lost Sizzler Room — Warp Room'],
- ['music','lostSizzlerRoomLibrary','Lost Sizzler Room — Library'],
- ['music','lostSizzlerRoomTape','Lost Sizzler Room — Tape Vault'],
- ['music','lostSizzlerRoomCartridge','Lost Sizzler Room — Cartridge Room'],
- ['music','lostSizzlerRoomCracked','Lost Sizzler Room — Cracked Archive'],
- ['music','lostSizzlerRoomFoundry','Lost Sizzler Room — Foundry'],
- ['music','lostSizzlerRoomModem','Lost Sizzler Room — Modem Room'],
- ['music','lostSizzlerRoomCrypt','Lost Sizzler Room — Crypt'],
- ['music','lostSizzlerRoomCrt','Lost Sizzler Room — CRT Chamber'],
- ['music','lostSizzlerRoomVault','Lost Sizzler Room — Vault']
+ ['music','lostSizzlerStalker','Lost Sizzler — Death Stalker / Count Loadula']
 ];
 const SLOT_GROUPS=[
  ['Main Backgrounds',SCENES.map(s=>['backgrounds',s,`${LABELS[s]} Background`])],
