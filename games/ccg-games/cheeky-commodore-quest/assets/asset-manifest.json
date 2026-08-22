@@ -1,5 +1,5 @@
 {
-  "instructions": "Edit js/asset-overrides.js: replace a null value with a site-relative image or WAV path. Unchanged null values continue to use the defaults below.",
+  "instructions": "Edit js/asset-overrides.js: replace a null value with a site-relative image or audio path. Unchanged null values continue to use the defaults below.",
   "images": {
     "logo": "assets/ccgamer-logo-fallback.svg",
     "namedEnemies": {
@@ -18,10 +18,7 @@
     "danger": "assets/audio/music/danger.wav",
     "sanctuary": "assets/audio/music/sanctuary.wav",
     "named": "assets/audio/music/named-enemy.wav",
-    "stalker": "assets/audio/music/count-loadula.wav",
-    "ccg": "assets/audio/music/danger.wav",
-    "namedEnemyFolder": "assets/audio/music/",
-    "roomOverrides": "Use audio.music.rooms in js/asset-overrides.js with room mood keys such as archive, workshop, budget, reactor, library, crypt or crt."
+    "stalker": "assets/audio/music/count-loadula.wav"
   },
   "sfx": {
     "folder": "assets/audio/sfx/",
