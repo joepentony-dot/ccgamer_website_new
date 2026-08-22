@@ -956,6 +956,7 @@ body.page-home .home-hero__content {
 body.page-home .home-hero__actions,
 body.page-home .home-hero__actions a,
 body.page-home .home-hero__actions button,
+body.page-home .home-hero__beta-cta,
 body.page-home .home-hero__mobile-cta,
 body.page-home .home-random-cta {
     pointer-events: auto;
