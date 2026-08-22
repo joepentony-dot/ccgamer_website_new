@@ -48,6 +48,7 @@ window.addEventListener("load",()=>{
     ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
     ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
     ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+    ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"]
   ];
   const loadNext=index=>{
