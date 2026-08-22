@@ -48,17 +48,25 @@
     };
   }
 
+  function currentRoomHeading(){
+    try{
+      if(!world||!p1||!W?.themeAt)return"";
+      return String(W.themeAt(world,p1.x,p1.y)?.name||"").trim().toUpperCase();
+    }catch(_){return""}
+  }
+
   // Some older room reports were sent only to the small message line. Promote
-  // strong room/status reports to the colourful notification rail while keeping
-  // the original line updated. Ordinary flavour text remains unobtrusive.
+  // every actual room/theme introduction plus major status reports to the
+  // colourful notification rail while leaving minor flavour text unobtrusive.
   const originalSay=typeof say==="function"?say:null;
   if(originalSay){
     say=function(message,tone="purple"){
-      const result=originalSay(message,tone),plain=String(message||"").replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
-      const strong=/<strong>/i.test(String(message||""));
-      const important=strong&&/(ROOM|CHAMBER|VAULT|SANCTUARY|ALERT|LOCK|DOOR|RUN STARTED|HOST MIGRATION|KEY|SIGIL|STALKER|GENERATOR|GUARDIAN|RESCUE|TREASURE|SHOP)/i.test(plain);
-      if(important&&typeof showToast==="function"){
-        const split=plain.match(/^([^.!?]{3,46})[.!?]\s*(.*)$/),title=(split?.[1]||"DUNGEON UPDATE").toUpperCase(),text=split?.[2]||plain;
+      const result=originalSay(message,tone),raw=String(message||""),plain=raw.replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim();
+      const strong=/<strong>/i.test(raw),roomHeading=currentRoomHeading();
+      const roomIntro=Boolean(strong&&roomHeading&&plain.toUpperCase().startsWith(roomHeading));
+      const majorStatus=Boolean(strong&&/(ROOM|CHAMBER|VAULT|SANCTUARY|ALERT|LOCK|DOOR|RUN STARTED|HOST MIGRATION|KEY|SIGIL|STALKER|GENERATOR|GUARDIAN|RESCUE|TREASURE|SHOP)/i.test(plain));
+      if((roomIntro||majorStatus)&&typeof showToast==="function"){
+        const split=plain.match(/^([^.!?]{3,46})[.!?]\s*(.*)$/),title=(split?.[1]||roomHeading||"DUNGEON UPDATE").toUpperCase(),text=split?.[2]||plain;
         showToast(title,text,tone==="purple"?"cyan":tone,6500);
       }
       return result;
@@ -69,5 +77,5 @@
   const observer=new MutationObserver(()=>{if(toast.parentElement!==layer)layer.appendChild(toast)});
   observer.observe(dock,{childList:true,subtree:true});
 
-  window.CCGLostSizzlerNotificationRailV108={layer,toast,show:ensureVisible};
+  window.CCGLostSizzlerNotificationRailV108={layer,toast,show:ensureVisible,currentRoomHeading};
 })();
