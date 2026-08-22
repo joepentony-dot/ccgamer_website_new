@@ -20,6 +20,7 @@ window.CCG_ASSET_OVERRIDES={
 };
 
 const CCG_V106_HUD_REV="20260822e";
+const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260822a";
 
 (()=>{
@@ -35,6 +36,13 @@ const CCG_PLAYLIST_AUDIO_REV="20260822a";
     link.rel="stylesheet";
     link.href=`css/v10-6-inventory-hud-fix.css?v=${CCG_V106_HUD_REV}`;
     link.dataset.ccgV106InventoryHud="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v106-sidebar-fix="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;
+    link.dataset.ccgV106SidebarFix="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
