@@ -192,21 +192,23 @@ window.CCGWorld=(()=>{
     const regularNamed=C.followerElites.filter(f=>!f.ccgBoss);
     regularNamed.forEach((f,i)=>{const room=eliteRooms[(i*4+2)%eliteRooms.length]||openRooms[i%openRooms.length],p=pickInRoom(w,room,used);enemies.push({id:`f${i}`,...p,kind:f.kind,hp:f.hp,maxHp:f.hp,armor:f.armor||0,maxArmor:f.armor||0,alive:true,follower:f,...aiFields(w)})});
     const ccg=C.followerElites.find(f=>f.ccgBoss),floor=Math.max(1,Math.min(5,Number(w.floor)||1)),ccgChance=[0,.03,.15,.38,.72,1][floor];
-    if(ccg&&w.random()<ccgChance){const room=eliteRooms[(floor*5+1)%eliteRooms.length]||openRooms[0],p=pickInRoom(w,room,used);enemies.push({id:`ccg-f${floor}`,...p,kind:ccg.kind,hp:20,maxHp:20,armor:5,maxArmor:5,alive:true,follower:ccg,ccgBoss:true,moveSpeedScale:.5,namedDamageScale:2,...aiFields(w)})}
+    if(ccg&&w.random()<ccgChance){const room=eliteRooms[(floor*5+1)%eliteRooms.length]||openRooms[0],p=pickInRoom(w,room,used);enemies.push({id:`ccg-f${floor}`,...p,kind:ccg.kind,hp:18,maxHp:18,armor:4,maxArmor:4,alive:true,follower:ccg,ccgBoss:true,moveSpeedScale:1.35,namedDamageScale:2,...aiFields(w)})}
 
     const items=[];
     const keyRooms=[...openRooms].sort((a,b)=>b.depth-a.depth).filter((r,i)=>i%2===0).slice(0,C.keyTarget);
     while(keyRooms.length<C.keyTarget)keyRooms.push(openRooms[keyRooms.length]);
     keyRooms.forEach((room,i)=>{const p=pickInRoom(w,room,used);items.push({id:`key${i}`,...p,kind:"key",active:true})});
 
-    const cycle=["health","ammo","game","credits","torch","armour","potion","weapon","rapid","xpOrb","teleport","health","ammo","torch","game","credits"];
+    const cycle=["health","credits","torch","armour","potion","weapon","rapid","xpOrb","teleport","health","credits","torch","armour","potion","weapon","credits"];
     for(let i=0;i<42;i++){const p=pick(w,used,9,false);items.push({id:`p${i}`,...p,kind:cycle[i%cycle.length],title:C.c64Loot[i%C.c64Loot.length],active:true})}
+    const collectibleCount=1+(w.random()<.4?1:0);
+    for(let i=0;i<collectibleCount;i++){const p=pick(w,used,9,false);items.push({id:`game${i}`,...p,kind:"game",title:C.c64Loot[(floor*97+i*211)%C.c64Loot.length],active:true})}
 
     const doors=w.doorSpecs.map(d=>({id:d.id,x:d.x,y:d.y,roomId:d.roomId,locked:true,type:"bronze",open:false,opening:false,openingStart:0,openAt:0}));
     // Bronze keys are balanced after every lock, puzzle and reward chest has been installed.
     // Do not seed speculative spares here: surplus keys made later floors feel cluttered.
 
-    const chestRewards=["weapon","armour","potion","torch","ammo","rapid","health","weapon","armour","potion","torch","ammo","weapon","armour"];
+    const chestRewards=["weapon","armour","potion","torch","health","rapid","health","weapon","armour","potion","torch","ammo","weapon","armour"];
     const chests=[];
     let ci=0;
     for(const r of w.rooms.filter(r=>r.optional)){

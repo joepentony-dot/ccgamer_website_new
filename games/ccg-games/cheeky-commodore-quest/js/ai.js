@@ -28,6 +28,8 @@ window.CCGAI=(()=>{
   function visibleTarget(e,map,players,host,world){
     let best=null,bestD=Infinity,bestReason=null;
     for(const p of players.filter(p=>p&&p.health>0)){
+      const enemyRoom=W.roomAt(world,e.x,e.y),playerRoom=W.roomAt(world,p.x,p.y);
+      if(enemyRoom>=0&&playerRoom<0&&!roomEntered(host,enemyRoom))continue;
       const same=W.sameRoom(world,e,p),range=p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange;
       const seen=same||lineOfSight(map,e,p,range,host);
       if(!seen)continue;
@@ -37,10 +39,25 @@ window.CCGAI=(()=>{
   }
 
   function occupied(host,x,y,except){return host.enemies.some(o=>o!==except&&o.alive&&o.x===x&&o.y===y)}
+  function roomEntered(host,roomId){return roomId<0||(host?.enteredRoomIds||[]).includes(roomId)}
+  function roomDoors(host,roomId){return (host?.doors||[]).filter(door=>door.roomId===roomId)}
+  function clearOfUnenteredDoor(host,roomId,x,y){return roomEntered(host,roomId)||roomDoors(host,roomId).every(door=>man({x,y},door)>3)}
+  function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return e?.deathStalker&&door?.type==="room"&&!door.locked?door:null}
   function passable(e,host,map,x,y,world){
-    if(!W.walkable(map,x,y,host)||occupied(host,x,y,e))return false;
+    if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e))return false;
     if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y)&&!e.stalker)return false;
+    const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
+    if(sourceRoom>=0&&!roomEntered(host,sourceRoom)&&(targetRoom!==sourceRoom||!clearOfUnenteredDoor(host,sourceRoom,x,y)))return false;
     return true;
+  }
+  function stageUnenteredEnemies(host,world){
+    if(!host?.enemies||!world?.rooms)return;
+    for(const e of host.enemies){
+      if(!e?.alive)continue;const roomId=W.roomAt(world,e.x,e.y);if(roomId<0||roomEntered(host,roomId)||clearOfUnenteredDoor(host,roomId,e.x,e.y))continue;
+      const room=world.rooms[roomId],doors=roomDoors(host,roomId),cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(W.walkable(world.map,x,y,host)&&!occupied(host,x,y,e)&&clearOfUnenteredDoor(host,roomId,x,y))cells.push({x,y,score:doors.length?Math.min(...doors.map(d=>man({x,y},d))):99});
+      cells.sort((a,b)=>b.score-a.score);if(cells[0]){e.x=cells[0].x;e.y=cells[0].y;e.facing={x:0,y:1}}
+    }
   }
   function randomStep(e,host,map,world){
     const a=DIRS.map(([dx,dy])=>({x:e.x+dx,y:e.y+dy,dx,dy})).filter(p=>passable(e,host,map,p.x,p.y,world));
@@ -60,13 +77,18 @@ window.CCGAI=(()=>{
       if(ck===goal){let c=goal,pkey=came.get(c);while(pkey&&pkey!==startKey){c=pkey;pkey=came.get(c)}const [x,y]=c.split(',').map(Number);return{x,y}}
       for(const [dx,dy] of DIRS){
         const x=cur.x+dx,y=cur.y+dy,nk=`${x},${y}`;
-        if((!W.walkable(map,x,y,host)||(occupied(host,x,y,e)&&nk!==goal))||(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y)&&!e.stalker))continue;
+        if(!passable(e,host,map,x,y,world))continue;
         const ng=cur.g+1;if(ng>=(best.get(nk)??Infinity))continue;best.set(nk,ng);came.set(nk,ck);push({x,y,g:ng,f:ng+Math.abs(x-target.x)+Math.abs(y-target.y)})
       }
     }
     return null;
   }
-  function moveToward(e,host,map,target,world=window.__CCG_WORLD){const p=nextStep(e,host,map,target,world);if(!p)return false;e.facing={x:Math.sign(p.x-e.x),y:Math.sign(p.y-e.y)};e.x=p.x;e.y=p.y;return true}
+  function moveToward(e,host,map,target,world=window.__CCG_WORLD){
+    const p=nextStep(e,host,map,target,world);if(!p)return false;e.facing={x:Math.sign(p.x-e.x),y:Math.sign(p.y-e.y)};
+    const door=stalkerDoor(e,host,p.x,p.y);
+    if(door&&!door.open){const leaves=door.groupId?(host.doors||[]).filter(d=>d.groupId===door.groupId):[door];for(const leaf of leaves){leaf.open=true;leaf.opening=false;leaf.openingStart=0;leaf.openAt=0;leaf.openSoundDone=true}host.revision=(host.revision||0)+1;return true}
+    e.x=p.x;e.y=p.y;return true
+  }
   function moveBurst(e,host,map,target,world,steps=1){let moved=false;for(let i=0;i<steps;i++){if(!moveToward(e,host,map,target,world))break;moved=true;if(e.x===target.x&&e.y===target.y)break}return moved}
   function coverPoint(e,p,host,map,world){
     const options=[];for(const d of host?.blockingDecor||[]){if(man(e,d)>8||man(p,d)<2)continue;for(const [dx,dy] of DIRS){const q={x:d.x+dx,y:d.y+dy};if(!passable(e,host,map,q.x,q.y,world)||man(p,q)<3||man(e,q)>9)continue;if(lineOfSight(map,p,q,C.enemy.torchSightRange,host))continue;options.push({...q,score:man(e,q)+Math.abs(6-man(p,q))*.35})}}
@@ -106,15 +128,15 @@ window.CCGAI=(()=>{
 
   function attackDelay(e,base){const named=e.follower?(C.enemy.namedAttackMultiplier||.7)*(e.namedCadenceScale||1):1;return Math.max(240,Math.round(base*named))}
   function attack(e,map,p,range,host,hooks){
-    if(!p||e.attackCooldown>0)return false;const k=kind(e),hasLOS=lineOfSight(map,e,p,p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange,host);
+    if(!p||e.attackCooldown>0)return false;const world=host?.worldRef||window.__CCG_WORLD,enemyRoom=W.roomAt(world,e.x,e.y),playerRoom=W.roomAt(world,p.x,p.y);if(enemyRoom>=0&&playerRoom<0&&!roomEntered(host,enemyRoom))return false;const k=kind(e),hasLOS=lineOfSight(map,e,p,p.torchMs>0?C.enemy.torchSightRange:C.enemy.lineOfSightRange,host);
     if(["scout","hunter","ambusher","charger","ghost","guardian","champion"].includes(k)&&range<=1.5){e.attackCooldown=attackDelay(e,k==="guardian"?520:k==="hunter"?700:k==="charger"?850:950);hooks.melee?.(e,p,k==="guardian"?3:(k==="hunter"||k==="charger"||e.champion)?2:1);return true}
     if(!hasLOS)return false;
-    if(k==="ranger"&&range<=10){shootAt(e,p,"normal",1,13,hooks);e.attackCooldown=attackDelay(e,900);return true}
-    if(k==="root"&&range<=9){shootAt(e,p,"root",1,11,hooks);e.attackCooldown=attackDelay(e,1100);return true}
-    if(k==="cook"&&range<=9){shootAt(e,p,"food",2,10,hooks);e.attackCooldown=attackDelay(e,1300);return true}
-    if(k==="guard"&&range<=10){shootAt(e,p,"normal",1,12,hooks);e.attackCooldown=attackDelay(e,1000);return true}
-    if(k==="firebreather"&&range<=10){shootAt(e,p,"fire",2,10,hooks);e.attackCooldown=attackDelay(e,1500);hooks.notice?.("<strong>YOSHI YOSHI BREATHES FIRE.</strong> Ten-tile flame range. Find cover or get out of the line.","flame",e);return true}
-    if(k==="guardian"&&range<=8){shootAt(e,p,"shock",2,9,hooks);e.attackCooldown=attackDelay(e,820);return true}
+    if(k==="ranger"&&range<=10){shootAt(e,p,"normal",1,13,hooks);e.attackCooldown=attackDelay(e,1000);return true}
+    if(k==="root"&&range<=9){shootAt(e,p,"root",1,11,hooks);e.attackCooldown=attackDelay(e,1220);return true}
+    if(k==="cook"&&range<=9){shootAt(e,p,"food",2,10,hooks);e.attackCooldown=attackDelay(e,1440);return true}
+    if(k==="guard"&&range<=10){shootAt(e,p,"normal",1,12,hooks);e.attackCooldown=attackDelay(e,1110);return true}
+    if(k==="firebreather"&&range<=10){shootAt(e,p,"fire",2,10,hooks);e.attackCooldown=attackDelay(e,1660);hooks.notice?.("<strong>YOSHI YOSHI BREATHES FIRE.</strong> Ten-tile flame range. Find cover or get out of the line.","flame",e);return true}
+    if(k==="guardian"&&range<=8){shootAt(e,p,"shock",2,9,hooks);e.attackCooldown=attackDelay(e,910);return true}
     return false;
   }
 
@@ -165,7 +187,7 @@ window.CCGAI=(()=>{
 
     let moved=false,k=kind(e);
     if(seen){
-      const named=Boolean(e.follower),burstSteps=named?2+(Math.random()<.32?1:0):(Math.random()<.3?2:1);
+      const named=Boolean(e.follower),burstSteps=named?1:(Math.random()<.22?2:1);
       if(e.coverTarget){
         if(e.x!==e.coverTarget.x||e.y!==e.coverTarget.y)moved=moveBurst(e,host,map,e.coverTarget,world,Math.min(2,burstSteps));
         else if(e.tacticalHoldMs>0){e.facing=shotDirection(e,seen);e.moveCooldown=180+Math.random()*180;return changed}
@@ -186,13 +208,13 @@ window.CCGAI=(()=>{
     }else if(e.aiState==="search")moved=randomStep(e,host,map,world);
     else moved=randomStep(e,host,map,world);
 
-    e.moveCooldown=e.aiState==="chase"?Math.max(170,chaseInterval(e)*(e.follower?.72:1)*(e.moveSpeedScale||1)):e.aiState==="search"?(850+Math.random()*650)*(e.moveSpeedScale||1):idleInterval()*(e.moveSpeedScale||1);
+    e.moveCooldown=e.aiState==="chase"?Math.max(210,chaseInterval(e)*(e.follower?1.12:1)*(e.moveSpeedScale||1)):e.aiState==="search"?(1050+Math.random()*800)*(e.moveSpeedScale||1):idleInterval()*(e.moveSpeedScale||1);
     return moved||changed;
   }
 
   function stepEnemies(host,map,players,dt,hooks={},world=window.__CCG_WORLD){
-    if(!host?.enemies||!world)return;let changed=false;for(const e of host.enemies)changed=stepOne(e,host,map,players,dt,hooks,world)||changed;if(changed)host.revision++;
+    if(!host?.enemies||!world)return;host.enteredRoomIds=host.enteredRoomIds||[];for(const p of players||[]){const roomId=p?W.roomAt(world,p.x,p.y):-1;if(roomId>=0&&!host.enteredRoomIds.includes(roomId))host.enteredRoomIds.push(roomId)}let changed=false;for(const e of host.enemies)changed=stepOne(e,host,map,players,dt,hooks,world)||changed;if(changed)host.revision++;
   }
   function alertEnemy(e,x,y){if(!e?.alive)return;e.aiState="chase";e.lastSeen={x,y};e.memoryMs=memory(e);e.searchMs=0;e.moveCooldown=Math.min(e.moveCooldown,180)}
-  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,stepEnemies,alertEnemy,kindOf:kind};
+  return{lineOfSight,visibleTarget,nextStepAStar:nextStep,tacticalCoverForTest:coverPoint,stepEnemies,stageUnenteredEnemies,roomEnteredForTest:roomEntered,stalkerDoorForTest:stalkerDoor,alertEnemy,kindOf:kind};
 })();

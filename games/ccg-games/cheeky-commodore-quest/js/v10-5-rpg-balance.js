@@ -52,7 +52,7 @@
     const partyPressure=Math.min(.36,(party-1)*.12);
     const survivalPressure=Math.min(.18,durability*.018);
     const damageScale=Math.min(1.68,1+(level-1)*.0275+Math.min(.16,durability*.012)+(party-1)*.035);
-    const cadenceScale=Math.min(1.30,1+(level-1)*.0105+(party-1)*.025);
+    const cadenceScale=Math.min(1.18,1+(level-1)*.0065+(party-1)*.02);
     return{lead,level,combat,party,levelPressure,weaponPressure,partyPressure,survivalPressure,damageScale,cadenceScale,difficulty:difficultyScale(runState)};
   }
 
@@ -65,13 +65,13 @@
     if(enemy.follower){
       // Named enemies already receive strong per-level HP/armour scaling in systems.js.
       // Only party size and weapon power add a modest extra response here.
-      scale=Math.min(1.45,1.04+profile.weaponPressure*.30+profile.partyPressure*.45);
+      scale=Math.min(1.28,.98+profile.weaponPressure*.22+profile.partyPressure*.32);
     }else if(enemy.guardian){
-      scale=Math.min(2.25,1.12+profile.levelPressure*.78+profile.weaponPressure*.72+profile.partyPressure*.72+profile.survivalPressure*.6);
+      scale=Math.min(1.95,1.02+profile.levelPressure*.68+profile.weaponPressure*.62+profile.partyPressure*.62+profile.survivalPressure*.5);
     }else if(enemy.champion){
-      scale=Math.min(2.45,1.15+profile.levelPressure*.88+profile.weaponPressure*.82+profile.partyPressure*.82+profile.survivalPressure*.7);
+      scale=Math.min(2.1,1.03+profile.levelPressure*.72+profile.weaponPressure*.68+profile.partyPressure*.68+profile.survivalPressure*.55);
     }else{
-      scale=Math.min(2.55,1.12+profile.levelPressure+profile.weaponPressure+profile.partyPressure+profile.survivalPressure);
+      scale=Math.min(2.2,1+profile.levelPressure*.82+profile.weaponPressure*.82+profile.partyPressure*.82+profile.survivalPressure*.72);
     }
 
     const desired=Math.max(Number(enemy.maxHp||1),Math.ceil(base*scale));

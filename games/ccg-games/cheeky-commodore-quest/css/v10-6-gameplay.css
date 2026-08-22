@@ -1,0 +1,77 @@
+/* V10.6 gameplay-first layout. This final layer deliberately owns screen geometry. */
+html,body{width:100%;height:100%;overflow:hidden}
+body{margin:0;background:#050208}
+.ccg-game{width:100vw;height:100dvh;max-width:none;margin:0;padding:0;display:grid!important;grid-template-columns:minmax(0,1fr) clamp(240px,20vw,320px);grid-template-rows:42px 32px minmax(0,1fr) 94px;gap:0;background:#050208;overflow:hidden}
+.ccg-game>.topbar{grid-column:1/3;grid-row:1;min-height:0!important;height:42px!important;padding:4px 10px!important;border-width:0 0 1px!important;z-index:30}
+.ccg-game>.topbar .brand img{width:34px!important;height:34px!important}
+.ccg-game>.topbar .brand h1{font-size:clamp(12px,1.1vw,17px)!important;line-height:1!important}
+.ccg-game>.topbar .brand p{font-size:8px!important;margin-top:2px!important}
+.ccg-game>.topbar .system-buttons{gap:5px!important}
+.ccg-game>.topbar .system-buttons>*{min-height:28px!important;padding:4px 7px!important;font-size:8px!important}
+.ccg-game>.critical-strip{display:contents!important}
+.ccg-game>.critical-strip>.critical-card{display:none!important}
+.ccg-game>.mission{grid-column:1/3;grid-row:2;min-height:0!important;height:32px!important;padding:5px 10px!important;border-width:0 0 1px!important;z-index:24;overflow:hidden}
+.ccg-game>.mission strong{font-size:9px!important}.ccg-game>.mission span{font-size:10px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ccg-game>.fullscreen-hint{position:fixed;top:45px;left:50%;z-index:80;transform:translateX(-50%);padding:3px 8px!important;font-size:8px!important;width:auto!important}
+.ccg-game>.tactical-zone{grid-column:2;grid-row:3;min-height:0!important;height:auto!important;padding:7px!important;display:block!important;border:0!important;border-left:1px solid rgba(180,113,255,.35)!important;background:#09040f;overflow:hidden;z-index:6}
+.ccg-game>.tactical-zone .dossier-card{display:none!important}
+.ccg-game>.tactical-zone .radar-card{height:100%!important;min-height:0!important;display:grid!important;grid-template-rows:auto minmax(0,1fr) auto;padding:8px!important;margin:0!important}
+.ccg-game>.tactical-zone .radar-card h3{font-size:9px!important;margin:0 0 5px!important}
+.ccg-game #radar-canvas{width:100%!important;height:100%!important;min-height:0!important;object-fit:fill}
+.ccg-game .radar-legend{gap:4px!important;font-size:7px!important;flex-wrap:wrap}
+.ccg-game>.game-area{grid-column:1;grid-row:3;position:relative!important;inset:auto!important;width:auto!important;height:auto!important;min-width:0!important;min-height:0!important;display:block!important;margin:0!important;padding:0!important;border:0!important;overflow:hidden!important;background:#020104;z-index:5}
+.ccg-game .canvas-wrap{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;margin:0!important;border:0!important}
+.ccg-game #game{display:block!important;width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important}
+.ccg-game .game-message-rail{display:contents!important}
+.ccg-game .game-message-context,.ccg-game .game-message-line,.ccg-game .game-quest-list{display:none!important}
+.ccg-game .pickup-toast{position:absolute!important;top:12px!important;left:50%!important;right:auto!important;bottom:auto!important;transform:translateX(-50%);z-index:28;width:min(540px,72%);min-height:0!important;padding:8px 12px!important;background:rgba(11,5,17,.86)!important;border:1px solid rgba(255,216,90,.75)!important;box-shadow:0 6px 28px rgba(0,0,0,.45);pointer-events:none}
+.ccg-game .pickup-toast b{font-size:11px!important}.ccg-game .pickup-toast span{font-size:9px!important;line-height:1.25!important}
+.ccg-game .banish-context{position:fixed!important;left:50%!important;bottom:106px!important;z-index:90;transform:translateX(-50%);width:min(600px,80vw)!important;display:flex!important;padding:8px 12px!important;box-shadow:0 0 32px rgba(176,92,255,.65)!important}
+.ccg-game .banish-context.hidden{display:none!important}
+.ccg-game>.player-hub{grid-column:1/3;grid-row:4;position:relative!important;inset:auto!important;width:auto!important;height:94px!important;min-height:0!important;padding:7px 9px!important;margin:0!important;display:grid!important;grid-template-columns:minmax(350px,1.05fr) minmax(290px,.85fr) minmax(380px,1.2fr)!important;gap:8px!important;border-width:1px 0 0!important;overflow:hidden;z-index:20}
+.ccg-game>.player-hub .core-stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+.ccg-game>.player-hub .hub-stat{min-height:0!important;padding:7px!important}
+.ccg-game>.player-hub .hub-stat span,.ccg-game>.player-hub .run-stat span{font-size:7px!important}.ccg-game>.player-hub .hub-stat b{font-size:clamp(12px,1.3vw,18px)!important}
+.ccg-game>.player-hub .hub-inventory{display:block!important;min-width:0;padding:5px!important}
+.ccg-game>.player-hub .hub-inventory-head{font-size:7px!important;margin-bottom:4px!important}.ccg-game>.player-hub .quick-slots{gap:4px!important}.ccg-game>.player-hub .quick-slot{min-width:0!important;height:52px!important}
+.ccg-game>.player-hub .hub-progress{display:grid!important;grid-template-columns:minmax(180px,1.4fr) repeat(3,minmax(64px,.58fr))!important;gap:5px!important}
+.ccg-game>.player-hub .priority-xp,.ccg-game>.player-hub .run-stat{min-height:0!important;padding:6px!important}.ccg-game>.player-hub .run-stat b{font-size:12px!important}
+.ccg-game>.player-hub .hub-telemetry{display:none!important}
+.ccg-game .overlay{position:absolute!important;inset:0!important;z-index:100!important;padding:clamp(10px,2vw,28px)!important;background:rgba(3,1,7,.9)!important;overflow:auto!important}
+.ccg-game .overlay.hidden{display:none!important}
+.ccg-game #menu>.panel{width:min(1040px,96%)!important;max-height:none!important;margin:auto!important}
+.online-howto{margin:12px 0;padding:10px;border:1px solid rgba(72,224,255,.42);background:rgba(7,33,46,.45)}
+.online-howto h3{margin:0 0 7px;color:#60eaff;font-size:12px}.online-howto>div{display:grid;grid-template-columns:1fr 1fr;gap:10px}.online-howto p{margin:0;font-size:10px;line-height:1.4}.online-howto b{color:#ffd85a}
+.weekly-auth-actions{display:flex;justify-content:center;gap:8px;margin:7px 0 10px}.weekly-auth-actions.hidden{display:none}.weekly-auth-actions a{display:inline-flex;align-items:center;justify-content:center;padding:8px 11px;border:1px solid #63e9ff;background:#09202a;color:#bff7ff;font-size:10px;font-weight:900;text-decoration:none;box-shadow:2px 2px 0 #000}.weekly-auth-actions a:first-child{border-color:#72ff9b;background:#0d2718;color:#caffd9}.weekly-auth-actions a:focus-visible{outline:2px solid #ffd85a;outline-offset:2px}
+.menu-exit-link{display:inline-flex;align-items:center;justify-content:center;padding:10px 13px;border:2px solid #a94758;background:#301019;color:#ffd9de;font-weight:900;text-decoration:none;box-shadow:3px 3px 0 #000}.menu-exit-link:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+.online-lobby-card{width:min(880px,96%)!important;margin:auto!important;padding:clamp(18px,3vw,36px)!important;border:2px solid #63e9ff!important;box-shadow:0 0 46px rgba(87,220,255,.2)!important}
+.online-lobby-card .lobby-kicker{margin:0;color:#63e9ff;letter-spacing:.2em;font-weight:900}.online-lobby-card h2{font-size:clamp(28px,5vw,58px)!important;margin:4px 0!important}.online-lobby-card #lobby-status{color:#ffd85a;font-weight:900}.lobby-invite input{font-size:clamp(11px,1.5vw,17px)!important;color:#fff!important;background:#080311!important}.lobby-actions{grid-template-columns:repeat(4,1fr)!important}.lobby-columns{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}.lobby-columns section{padding:14px;border:1px solid rgba(185,120,255,.35);background:rgba(12,6,18,.75)}.lobby-columns h3{margin:0 0 8px;color:#b978ff}.lobby-columns p,.lobby-columns li{font-size:11px;line-height:1.5}.lobby-columns ol{margin:0;padding-left:20px}.lobby-columns li{padding:4px 0}.lobby-columns li.host{color:#ffd85a;font-weight:900}
+.dossier-trait{margin:8px 0 0!important;padding:7px!important;border-left:3px solid #ff9a52;background:rgba(255,133,67,.08)}.dossier-trait.weakness{border-color:#64e8a5;background:rgba(73,231,155,.08)}
+@media (max-width:1100px){
+  .ccg-game{grid-template-columns:minmax(0,1fr) 220px;grid-template-rows:38px 30px minmax(0,1fr) 88px}
+  .ccg-game>.topbar{height:38px!important}.ccg-game>.player-hub{height:88px!important;grid-template-columns:1fr .8fr 1fr!important}.ccg-game>.player-hub .quick-slot{height:46px!important}
+  .ccg-game>.topbar .build-badge{display:none!important}
+}
+@media (max-width:900px),(pointer:coarse){
+  .ccg-game{grid-template-columns:minmax(0,1fr);grid-template-rows:30px minmax(0,1fr) 76px}
+  .ccg-game>.topbar{display:none!important}
+  .ccg-game>.mission{grid-column:1;grid-row:1;height:30px!important}
+  .ccg-game>.game-area{grid-column:1;grid-row:2}
+  .ccg-game>.tactical-zone{grid-column:1;grid-row:2;position:absolute!important;top:38px!important;right:8px!important;width:min(34vw,210px)!important;height:min(25vh,150px)!important;padding:4px!important;border:1px solid rgba(185,120,255,.45)!important;background:rgba(7,2,12,.66)!important;pointer-events:none;z-index:17;opacity:.82}
+  .ccg-game>.tactical-zone .radar-card{padding:4px!important;background:transparent!important}.ccg-game>.tactical-zone h3,.ccg-game>.tactical-zone .radar-legend{display:none!important}
+  .ccg-game>.player-hub{grid-column:1;grid-row:3;height:76px!important;grid-template-columns:1fr 1fr!important;padding:5px!important}
+  .ccg-game>.player-hub .hub-inventory{display:none!important}.ccg-game>.player-hub .hub-progress{grid-template-columns:1.5fr repeat(3,.65fr)!important}
+  .ccg-game .pickup-toast{top:8px!important;width:min(520px,78%);left:40%!important}
+  .ccg-game .banish-context{bottom:86px!important;width:86vw!important}
+  .v104-touch-controls{background:linear-gradient(transparent,rgba(3,2,5,.2))!important}.v104-touch-btn{opacity:.76!important;background:rgba(14,8,20,.5)!important;backdrop-filter:blur(1px)!important}.v104-touch-btn:active,.v104-touch-btn.held{opacity:1!important}
+  .online-howto>div,.lobby-columns{grid-template-columns:1fr}.lobby-actions{grid-template-columns:1fr 1fr!important}
+  .weekly-auth-actions{flex-wrap:wrap}.weekly-auth-actions a{flex:1;min-width:150px}
+}
+@media (max-width:620px){
+  .ccg-game{grid-template-rows:28px minmax(0,1fr) 68px}.ccg-game>.mission{height:28px!important;padding:4px 7px!important}.ccg-game>.mission strong{display:none!important}
+  .ccg-game>.player-hub{height:68px!important;grid-template-columns:1fr!important}.ccg-game>.player-hub .hub-progress{display:none!important}.ccg-game>.player-hub .hub-stat{padding:4px!important}.ccg-game>.player-hub .hub-stat span{font-size:6px!important}.ccg-game>.player-hub .hub-stat b{font-size:12px!important}
+  .ccg-game>.tactical-zone{top:34px!important;width:31vw!important;height:20vh!important}.ccg-game .pickup-toast{left:50%!important;top:4px!important;width:88%;padding:5px 8px!important}.ccg-game .pickup-toast span{display:none!important}
+  .ccg-game .banish-context{bottom:74px!important;padding:6px!important}.ccg-game .banish-context span{font-size:8px!important}
+  .online-lobby-card{padding:14px!important}.lobby-actions{grid-template-columns:1fr!important}
+}
+@media (orientation:portrait) and (pointer:coarse){.ccg-game>.fullscreen-hint:not(.hidden)::after{content:" · LANDSCAPE GIVES THE LARGEST PLAYFIELD"}}

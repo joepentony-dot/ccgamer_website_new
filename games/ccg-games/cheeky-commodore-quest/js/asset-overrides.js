@@ -27,9 +27,8 @@ window.addEventListener("load",()=>{
     ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
     ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
     ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
-    ["js/v10-5-multiplayer.js","ccgLostSizzlerMultiplayerV105"],
-    ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
-    ["js/v10-5-multiplayer-help.js","ccgLostSizzlerMultiplayerHelpV105"]
+    ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
+    ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;

@@ -1,0 +1,65 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import vm from "node:vm";
+import {fileURLToPath} from "node:url";
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,"..");
+const read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const context={console,setTimeout,clearTimeout,performance:{now:()=>1000},window:{},localStorage:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}},crypto:globalThis.crypto};
+context.window.window=context.window;context.window.localStorage=context.localStorage;context.Math=Object.create(Math);context.Math.random=()=>.5;vm.createContext(context);
+for(const file of ["js/config.js","js/progression.js","js/world.js","js/ai.js","js/systems.js"])vm.runInContext(read(file),context,{filename:file});
+
+const C=context.window.CCG_CONFIG,PGR=context.window.CCGProgression,W=context.window.CCGWorld,AI=context.window.CCGAI,SYS=context.window.CCGSystems;
+assert.equal(C.player.maxMana,240,"starting ammo capacity is doubled");
+assert.equal(C.player.moveDelay,138,"player cadence includes both 10% slow-down passes");
+assert.equal(C.dungeon.ammoPacks,12,"floor ammo supply is scarcer");
+assert.equal(C.camping.damage,1);assert.equal(C.camping.directBlastEvery,2);
+assert.ok(C.followerElites.every(f=>f.strength&&f.weakness),"every named dossier entry has strengths and weaknesses");
+assert.ok(C.followerElites.find(f=>f.name==="CCG").moveSpeedScale>1,"CCG movement scale slows rather than accelerates");
+
+for(let i=0;i<30;i++){
+  const world=W.generate(`V106-COLLECTIBLE-${i}`);world.floor=1;const host=W.createHostState(world),games=host.items.filter(item=>item.kind==="game");
+  assert.ok(games.length>=1&&games.length<=2,`ordinary floor has 1–2 C64 games (seed ${i}: ${games.length})`);
+}
+let nestedSecrets=0,secretRoomCount=0;
+for(let i=0;i<40;i++){
+  const generated=W.generate(`nested-${i}`);generated.floor=1;const generatedHost=W.createHostState(generated),generatedRun=PGR.makeRun({seed:`nested-${i}`,difficulty:"ARCADE"});SYS.decorate(generated,generatedHost,generatedRun);const ordinarySecrets=generatedHost.doors.filter(door=>door.type==="secret"&&!door.secretPassage),nested=generatedHost.doors.filter(door=>door.nestedSecret);secretRoomCount+=ordinarySecrets.length;nestedSecrets+=nested.length;for(const door of nested)assert.ok(ordinarySecrets.some(parent=>parent.roomId===door.roomId),"a nested crack begins inside an existing secret room");
+}
+assert.equal(secretRoomCount,120);assert.equal(nestedSecrets,4,"the deterministic 5% roll realizes nested cracked pockets");
+
+const map=Array.from({length:C.worldHeight},()=>Array(C.worldWidth).fill(1));
+const room={id:0,x:5,y:2,w:8,h:6};for(let y=2;y<=8;y++)for(let x=3;x<=13;x++)map[y][x]=0;
+const world={map,rooms:[room],tunnelY:-1};
+const enemy={id:"ranger",x:6,y:5,kind:"ranger",hp:2,maxHp:2,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:0,attackCooldown:0,chargeCooldown:0,healCooldown:99999,flash:0,hpBarMs:0};
+const player={id:"p",x:3,y:5,health:8,torchMs:0,dir:{x:1,y:0}};
+const host={enemies:[enemy],doors:[{x:4,y:5,roomId:0,open:true,locked:false}],blockingDecor:[],enteredRoomIds:[],revision:0,worldRef:world};
+let shots=0;AI.stageUnenteredEnemies(host,world);assert.ok(Math.abs(enemy.x-4)+Math.abs(enemy.y-5)>3,"enemy is staged away from an unopened room door");
+AI.stepEnemies(host,map,[player],5000,{shoot:()=>shots++},world);assert.equal(shots,0,"enemy cannot shoot from an unentered room into its corridor");
+const movedBehindFog={x:enemy.x,y:enemy.y};AI.stepEnemies(host,map,[],5000,{},world);assert.notDeepEqual({x:enemy.x,y:enemy.y},movedBehindFog,"enemy movement is independent of fog/exploration state");
+host.enteredRoomIds=[0];enemy.x=6;enemy.y=5;enemy.attackCooldown=0;AI.stepEnemies(host,map,[player],5000,{shoot:()=>shots++},world);assert.ok(shots>0,"normal combat resumes after the room is entered");
+host.enteredRoomIds=[];enemy.stalker=true;enemy.deathStalker=true;enemy.voidStalker=true;enemy.x=6;enemy.y=5;AI.stageUnenteredEnemies(host,world);assert.ok(Math.abs(enemy.x-4)+Math.abs(enemy.y-5)>3,"the Death Stalker is also staged away from an unopened room door");delete enemy.stalker;delete enemy.deathStalker;delete enemy.voidStalker;
+
+const doorMap=Array.from({length:C.worldHeight},()=>Array(C.worldWidth).fill(1));for(let x=3;x<=10;x++)doorMap[5][x]=0;
+const doorWorld={map:doorMap,rooms:[{id:0,x:6,y:3,w:4,h:4}],tunnelY:-1},closedDoor={id:"ordinary-room-door",x:5,y:5,roomId:0,type:"room",locked:false,open:false,opening:false};
+const stalker={id:"one-stalker",x:4,y:5,x0:4,y0:5,kind:"ghost",hp:8,maxHp:8,alive:true,aiState:"idle",hunting:true,deathStalker:true,voidStalker:true,stalker:true,facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:0,attackCooldown:99999,chargeCooldown:0,healCooldown:99999,flash:0,hpBarMs:0};
+const doorHost={enemies:[stalker],doors:[closedDoor],blockingDecor:[],enteredRoomIds:[0],revision:0,worldRef:doorWorld},doorPlayer={id:"door-player",x:8,y:5,health:8,torchMs:0,dir:{x:-1,y:0}};
+assert.equal(AI.nextStepAStar({...stalker,deathStalker:false,stalker:false},doorHost,doorMap,doorPlayer,doorWorld),null,"ordinary enemies cannot path through a closed room door");
+AI.stepEnemies(doorHost,doorMap,[doorPlayer],5000,{},doorWorld);assert.equal(closedDoor.open,true,"the floor's Death Stalker opens an ordinary unlocked door");assert.equal(stalker.x,4,"opening the door consumes the Stalker's movement step");
+
+const decorated=W.generate("V106-STALKER-SINGLETON");decorated.floor=2;const decoratedHost=W.createHostState(decorated),decoratedRun=PGR.makeRun({seed:"V106-STALKER-SINGLETON",difficulty:"ARCADE"});decoratedRun.floor=2;SYS.decorate(decorated,decoratedHost,decoratedRun);assert.equal(decoratedHost.enemies.filter(e=>e.deathStalker&&e.voidStalker).length,1,"exactly one Death Stalker is created per floor");decoratedHost.enemies.push({...decoratedHost.enemies.find(e=>e.deathStalker),id:"accidental-duplicate"});SYS.enforceDeathStalkerSingleton(decoratedHost);assert.equal(decoratedHost.enemies.filter(e=>e.deathStalker&&e.voidStalker).length,1,"duplicate Death Stalkers are removed defensively");
+
+const run=PGR.makeRun({difficulty:"ARCADE",seed:"DEATH"}),playerState={level:3,xp:20,totalXp:2500,maxHealth:8,health:8,maxMana:240,mana:240,armor:0,torchBonusMs:0,dashDamage:0,scavenger:0,potionBonus:0,moveMultiplier:1,damageBonus:1,skills:["damage"],pendingLevels:0};
+context.window.CCGProgression.xpNeed=level=>500+level*260+level*level*55;
+const penalty=PGR.applyDeathPenalty(playerState,1001,run);assert.equal(penalty.score,500);assert.equal(penalty.scoreLost,501);assert.equal(playerState.level,2);assert.equal(playerState.damageBonus,0);assert.equal(penalty.levelLost,true);assert.equal(penalty.gameOver,false);
+const exactThreshold={level:2,xp:150,totalXp:2000,maxHealth:8,health:8,maxMana:240,mana:240,armor:2,torchBonusMs:0,dashDamage:0,scavenger:0,potionBonus:0,moveMultiplier:1,damageBonus:0,skills:["armour"],pendingLevels:0};context.window.CCGProgression.xpNeed=()=>1000;const exactPenalty=PGR.applyDeathPenalty(exactThreshold,200,run);assert.equal(exactPenalty.levelLost,true,"reaching exactly 0% drops one level");assert.equal(exactThreshold.level,1);assert.equal(exactThreshold.armor,0);assert.equal(exactThreshold.xp,999,"the previous level resumes just below its next threshold");
+const cache=PGR.createDeathCache({...playerState,inventory:[]},run,10,10);cache.score=penalty.scoreLost;cache.active=true;const recovered=PGR.recoverDeathCache(playerState,run,cache);assert.equal(recovered.score,501,"death box restores the held score");
+
+const network=read("js/game-network.js"),core=read("js/game-core.js"),systems=read("js/systems.js"),runtime=read("js/v10-6-runtime.js"),finalUi=read("js/v10-4-final-ui.js"),weekly=read("js/weekly-challenge.js"),gamePlay=read("js/game-play.js"),menuHtml=read("index.html"),effectsV104=read("js/v10-4-collectible-effects.js"),effectsV105=read("js/v10-5-collectible-effects.js");
+assert.match(network,/let xp=e\.follower\?250:100/);assert.match(network,/function pickupXP\(kind\).*xpOrb:10/);
+assert.doesNotMatch(core,/New room discovered/);assert.doesNotMatch(core,/markRoomVisit\([^\n]*awardXP/);
+assert.match(core,/run\.floor<=1\)\{floorEntryCheckpoint=null/);assert.doesNotMatch(core,/if\(!daily&&!online\)setTimeout\(\(\)=>offerFloorSave\(false\),120\)/);
+const projectileBlock=gamePlay.slice(gamePlay.indexOf("function stepProjectiles"),gamePlay.indexOf("function hurtPlayer"));assert.match(projectileBlock,/host\.enemies\.find\(e=>e\.alive/);assert.doesNotMatch(projectileBlock,/visibleTo\s*\(/,"projectile collision never depends on light or fog");
+assert.match(systems,/world\.random\(\)<\.05/);assert.match(runtime,/v106_lobby_start/);assert.match(finalUi,/View game page/);assert.match(finalUi,/ENEMIES DEFEATED THIS RUN/);assert.match(network,/function recordEnemyDefeat/);assert.match(menuHtml,/href="\/games\/">Exit to CCG Games/);assert.match(menuHtml,/href="\/auth\/register\.html\?returnTo=/);assert.match(menuHtml,/href="\/auth\/login\.html\?returnTo=/);assert.match(weekly,/actions\?\.classList\.toggle\("hidden"/);assert.match(weekly,/window\.addEventListener\("focus"/);assert.match(effectsV104,/floatPickupText\(player,label/);assert.match(effectsV105,/floatPickupText\(player,label/);
+console.log("V10.6 regression checks passed");
