@@ -4,7 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_DOSSIER_V106__)return;
   window.__CCG_LOST_SIZZLER_DOSSIER_V106__=true;
 
-  const PHONE_QUERY="(max-width:700px)";
+  const PHONE_QUERY="(max-width:700px), (hover:none) and (pointer:coarse)";
   const panel=()=>document.querySelector("#named-dossier-panel .dossier-panel");
   const overlay=()=>document.getElementById("named-dossier-panel");
   const list=()=>document.getElementById("named-dossier-list");
