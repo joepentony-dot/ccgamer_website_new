@@ -8,6 +8,12 @@ on:
       - 'admin/js/arcade-assets.js'
       - 'admin/js/admin-nav.js'
       - 'admin/css/arcade-assets.css'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -20,6 +26,12 @@ on:
       - 'admin/js/arcade-assets.js'
       - 'admin/js/admin-nav.js'
       - 'admin/css/arcade-assets.css'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
+      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
+      - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/validate-arcade-quest.js'
       - '.github/workflows/arcade-quest-validation.yml'
@@ -51,6 +63,10 @@ jobs:
           node --check arcade/quest/game/achievements.js
           node --check arcade/quest/game/main-v2.js
           node --check admin/js/arcade-assets.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           node --check scripts/validate-arcade-quest.js
 
       - name: Validate final balance rules
@@ -60,6 +76,14 @@ jobs:
           grep -F "extraAt = [4, 9, 14]" arcade/quest/game/balance.js
           grep -F "mode === 'invaders'" arcade/quest/game/balance.js
           grep -F 'src="game/balance.js"' arcade/quest/index.html
+
+      - name: Validate Lost Sizzler owner music hooks
+        shell: bash
+        run: |
+          grep -F "lostSizzlerExploration" admin/js/arcade-assets.js
+          grep -F "lostSizzlerRoomVault" admin/js/arcade-assets.js
+          grep -F "admin-audio-overrides.js" games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
 
       - name: Validate Arcade Quest contract
         run: node scripts/validate-arcade-quest.js

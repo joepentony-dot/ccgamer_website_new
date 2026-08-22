@@ -3,10 +3,35 @@ import { initAdminNav } from './admin-nav.js';
 const BUCKET='ccg-arcade-assets';
 const SCENES=['bedroom','beads','budget','fighter','invaders','christmas','maze','amiga','guru'];
 const LABELS={bedroom:'Bedroom',beads:'Electric Bead Run',budget:'Budget Rack',fighter:'36% Bout',invaders:'Alien Formation',christmas:'Christmas Morning',maze:'Dot-Maze',amiga:'Amiga Upgrade',guru:'Guru Meditation'};
+const LOST_SIZZLER_MUSIC=[
+ ['music','lostSizzlerExploration','Lost Sizzler — General Exploration'],
+ ['music','lostSizzlerDanger','Lost Sizzler — Danger / Combat Rooms'],
+ ['music','lostSizzlerSanctuary','Lost Sizzler — Sanctuary / Safe Rooms'],
+ ['music','lostSizzlerNamed','Lost Sizzler — Named Enemy Encounter'],
+ ['music','lostSizzlerStalker','Lost Sizzler — Death Stalker / Count Loadula'],
+ ['music','lostSizzlerRoomArchive','Lost Sizzler Room — C64 Archive'],
+ ['music','lostSizzlerRoomWorkshop','Lost Sizzler Room — Workshop'],
+ ['music','lostSizzlerRoomBudget','Lost Sizzler Room — Budget Rack'],
+ ['music','lostSizzlerRoomDemo','Lost Sizzler Room — Demo Scene'],
+ ['music','lostSizzlerRoomArmoury','Lost Sizzler Room — Armoury'],
+ ['music','lostSizzlerRoomKitchen','Lost Sizzler Room — Kitchen'],
+ ['music','lostSizzlerRoomReactor','Lost Sizzler Room — Reactor'],
+ ['music','lostSizzlerRoomWarp','Lost Sizzler Room — Warp Room'],
+ ['music','lostSizzlerRoomLibrary','Lost Sizzler Room — Library'],
+ ['music','lostSizzlerRoomTape','Lost Sizzler Room — Tape Vault'],
+ ['music','lostSizzlerRoomCartridge','Lost Sizzler Room — Cartridge Room'],
+ ['music','lostSizzlerRoomCracked','Lost Sizzler Room — Cracked Archive'],
+ ['music','lostSizzlerRoomFoundry','Lost Sizzler Room — Foundry'],
+ ['music','lostSizzlerRoomModem','Lost Sizzler Room — Modem Room'],
+ ['music','lostSizzlerRoomCrypt','Lost Sizzler Room — Crypt'],
+ ['music','lostSizzlerRoomCrt','Lost Sizzler Room — CRT Chamber'],
+ ['music','lostSizzlerRoomVault','Lost Sizzler Room — Vault']
+];
 const SLOT_GROUPS=[
  ['Main Backgrounds',SCENES.map(s=>['backgrounds',s,`${LABELS[s]} Background`])],
+ ['Lost Sizzler Music',LOST_SIZZLER_MUSIC],
  ['Sound Effects',[['sfx','jump','Jump'],['sfx','pickup','Collect / Pickup'],['sfx','hit','Player / Enemy Hit'],['sfx','shot','Player / Boss Shot'],['sfx','bosswarn','Boss Warning'],['sfx','shield','Action Replay Shield'],['sfx','shieldlow','Shield Low Warning'],['sfx','unlock','Achievement Unlock'],['sfx','punch','Punch'],['sfx','kick','Kick']]],
- ['Music',[['music','title','Title Music'],['music','bedroom','Bedroom Music'],['music','bedroomBoss','Bedroom Boss Music'],['music','beads','Electric Bead Music'],['music','budget','Budget Rack Music'],['music','budgetBoss','Budget Boss Music'],['music','fighter','36% Bout Music'],['music','invaders','Alien Formation Music'],['music','christmas','Christmas Music'],['music','christmasBoss','Christmas Boss Music'],['music','maze','Dot-Maze Music'],['music','amiga','Amiga Music'],['music','amigaBoss','Amiga Boss Music'],['music','guru','Guru Music'],['music','guruBoss','Guru Boss Music']]]
+ ['Commodore Quest Scene Music',[['music','title','Title Music'],['music','bedroom','Bedroom Music'],['music','bedroomBoss','Bedroom Boss Music'],['music','beads','Electric Bead Music'],['music','budget','Budget Rack Music'],['music','budgetBoss','Budget Boss Music'],['music','fighter','36% Bout Music'],['music','invaders','Alien Formation Music'],['music','christmas','Christmas Music'],['music','christmasBoss','Christmas Boss Music'],['music','maze','Dot-Maze Music'],['music','amiga','Amiga Music'],['music','amigaBoss','Amiga Boss Music'],['music','guru','Guru Music'],['music','guruBoss','Guru Boss Music']]]
 ];
 const slotMap=new Map();for(const[,items]of SLOT_GROUPS)for(const[group,key,label]of items)slotMap.set(`${group}:${key}`,{group,key,label});
 const $=s=>document.querySelector(s);let supabase=null;
