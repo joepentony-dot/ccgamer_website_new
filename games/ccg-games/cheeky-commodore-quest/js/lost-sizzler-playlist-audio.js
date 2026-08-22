@@ -27,11 +27,14 @@
     const override=window.CCG_ASSET_OVERRIDES?.audio?.music||{};
     const admin=window.CCG_ADMIN_AUDIO||{};
     const legacy=LEGACY_ADMIN_KEYS[state];
-    return unique([
+    const custom=unique([
       ...asList(override.playlists?.[state]),
       ...asList(override[legacy]),
       ...asList(admin.playlists?.[state]),
-      ...asList(admin[legacy]),
+      ...asList(admin[legacy])
+    ]);
+    if(custom.length)return custom;
+    return unique([
       ...asList(assets.music?.playlists?.[state]),
       ...asList(assets.music?.[state])
     ]);
