@@ -58,6 +58,7 @@ const CCG_TUTORIAL_GUIDANCE_REV="20260823c";
 const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
 const CCG_MOBILE_ERGONOMICS_REV="20260823a";
 const CCG_MELEE_AMMO_REV="20260823b";
+const CCG_AMMO_BUDGET_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
  * parsing. The modules poll for the core functions they need, so the first Play
@@ -206,7 +207,8 @@ const CCG_MELEE_AMMO_REV="20260823b";
       [`js/v10-18-input-ui-bugfixes.js?v=${CCG_INPUT_UI_FIX_REV}`,"ccgLostSizzlerInputUiBugfixesV118"],
       [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"],
       [`js/v10-24-mobile-ergonomics.js?v=${CCG_MOBILE_ERGONOMICS_REV}`,"ccgLostSizzlerMobileErgonomicsV124"],
-      [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"]
+      [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"],
+      [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"]
     ];
 
     const loadNext=index=>{
