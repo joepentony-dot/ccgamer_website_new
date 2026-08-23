@@ -21,7 +21,13 @@ window.CCG_ASSET_OVERRIDES={
       objectiveHint:null,objectiveNear:null,floorClear:null,gameOver:null,playerDeath:null,
       deathStalker:null,loadula:null,gildedElf:null,gildedFive:null,gildedCaught:null,
       gildedEscaped:null,namedEnemy:null,rareLoot:null,levelUp:null,shop:null,sanctuary:null,
-      trap:null,boulder:null,weeklyDeath:null,weeklyReset:null
+      trap:null,boulder:null,weeklyDeath:null,weeklyReset:null,
+      mimic:null,cursed:null,curseCleared:null,merchant:null,merchantGone:null,
+      goldenRoom:null,goldenClear:null,adventurer:null,adventurerSaved:null,tremor:null,
+      cabinet:null,cabinetWin:null,cabinetFail:null,treasureBat:null,treasureBatGone:null,
+      treasureBatDown:null,taxman:null,taxmanCaught:null,mysteryPotion:null,developerRoom:null,
+      bounty:null,bountyComplete:null,treasureMap:null,buriedCache:null,mutation:null,
+      weeklyGhost:null,respawn:null
     }
   }
 };
@@ -41,6 +47,7 @@ const CCG_GILDED_ELF_REV="20260823b";
 const CCG_RARE_EVENTS_REV="20260823a";
 const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_VOICE_DIRECTOR_REV="20260823a";
+const CCG_VOICE_EXPANSION_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -145,7 +152,8 @@ const CCG_VOICE_DIRECTOR_REV="20260823a";
       [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
       [`js/v10-15-rare-events.js?v=${CCG_RARE_EVENTS_REV}`,"ccgLostSizzlerRareEventsV115"],
       [`js/v10-15-rare-events-balance.js?v=${CCG_RARE_EVENTS_BALANCE_REV}`,"ccgLostSizzlerRareEventsBalanceV115"],
-      [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"]
+      [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"],
+      [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"]
     ];
 
     const loadNext=index=>{
