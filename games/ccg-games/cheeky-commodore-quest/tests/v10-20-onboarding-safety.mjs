@@ -60,10 +60,10 @@ assert.match(source,/data-next>Continue</,"informational tutorial sections must 
 assert.match(guidance,/INPUT_STEPS=new Map\(\[\[0,"move"\],\[1,"fire"\],\[2,"dash"\],\[3,"inventory"\]\]\)/,"only real player-input stages should require controls");
 assert.match(guidance,/INFO_DELAY=8000/,"informational stages must remain readable before automatic continuation");
 assert.match(guidance,/FINISH_DELAY=5000/,"completion notice must remain visible before returning to options");
-assert.match(guidance,/\[data-dir\]/,"movement controls must be highlighted during the movement stage");
-assert.match(guidance,/\[data-action=\\"fire\\"\]/,"FIRE must be highlighted during the firing stage");
-assert.match(guidance,/\[data-action=\\"dash\\"\]/,"DASH must be highlighted during the dash stage");
-assert.match(guidance,/\[data-action=\\"inventory\\"\],\[data-action=\\"items\\"\]/,"ITEMS or inventory must be highlighted during the inventory stage");
+assert.ok(guidance.includes("[data-dir]"),"movement controls must be highlighted during the movement stage");
+assert.ok(guidance.includes('[data-action="fire"]'),"FIRE must be highlighted during the firing stage");
+assert.ok(guidance.includes('[data-action="dash"]'),"DASH must be highlighted during the dash stage");
+assert.ok(guidance.includes('[data-action="inventory"],[data-action="items"]'),"ITEMS or inventory must be highlighted during the inventory stage");
 assert.match(guidance,/ccgTutorialControlFlash/,"highlighted tutorial controls must visibly pulse");
 assert.match(guidance,/Explanation only — no button or key press is required/,"non-input tutorial sections must state that no control action is required");
 assert.match(guidance,/button\.click\(\)/,"informational stages must continue automatically without player input");
