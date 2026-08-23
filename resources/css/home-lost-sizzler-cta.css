@@ -5,6 +5,8 @@ html[data-ccg-page="home"] .home-hero__game-actions {
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
+  touch-action: pan-y;
+  overscroll-behavior: auto;
 }
 
 html[data-ccg-page="home"] .home-hero__sizzler-mark {
@@ -20,6 +22,9 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark {
   background: rgba(4, 7, 15, 0.76);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 216, 90, 0.18);
   text-decoration: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 html[data-ccg-page="home"] .home-hero__sizzler-mark img {
@@ -28,13 +33,10 @@ html[data-ccg-page="home"] .home-hero__sizzler-mark img {
   height: auto;
   max-height: 62px;
   object-fit: contain;
-}
-
-html[data-ccg-page="home"] .home-hero__sizzler-mark:hover,
-html[data-ccg-page="home"] .home-hero__sizzler-mark:focus-visible {
-  border-color: rgba(255, 216, 90, 0.82);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.62), 0 0 24px rgba(255, 216, 90, 0.32);
-  outline: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
 }
 
 @media (max-width: 640px) {
