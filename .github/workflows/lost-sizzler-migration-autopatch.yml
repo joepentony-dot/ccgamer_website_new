@@ -1,0 +1,49 @@
+name: Lost Sizzler Migration Autopatch
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-consolidation
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-consolidation
+          fetch-depth: 0
+
+      - name: Correct migrated regression paths and canonical assertion
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('arcade/lost-sizzler/tests/v10-6-regression.mjs')
+          text = p.read_text(encoding='utf-8')
+          replacements = {
+              'homeHtml=read("../../../home.html")': 'homeHtml=read("../../home.html")',
+              'homeCss=read("../../../resources/css/home.css")': 'homeCss=read("../../resources/css/home.css")',
+              'buttonCss=read("../../../resources/css/ccg-buttons.css")': 'buttonCss=read("../../resources/css/ccg-buttons.css")',
+              'assert.match(homeHtml,/href="\\/games\\/ccg-games\\/cheeky-commodore-quest\\/"/)': 'assert.match(homeHtml,/href="\\/arcade\\/lost-sizzler\\/"/)',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Migration test token not found: {old}')
+              text = text.replace(old, new, 1)
+          p.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit source fix and remove one-shot workflow
+        shell: bash
+        run: |
+          rm .github/workflows/lost-sizzler-migration-autopatch.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arcade/lost-sizzler/tests/v10-6-regression.mjs .github/workflows/lost-sizzler-migration-autopatch.yml
+          git commit -m "Fix final migrated Lost Sizzler regression paths"
+          git push origin HEAD:codex/lost-sizzler-consolidation
