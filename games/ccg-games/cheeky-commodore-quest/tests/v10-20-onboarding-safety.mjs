@@ -8,14 +8,17 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const source=read("js/v10-20-onboarding-safety.js");
 const hardening=read("js/v10-20-onboarding-hardening.js");
+const guidance=read("js/v10-23-tutorial-guidance.js");
 const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const changelog=read("js/v10-18-expansion-changelog.js");
 
 assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823e"/,"latest tutorial start/progression fix must be cache-busted for players who loaded an earlier tutorial");
 assert.match(assets,/CCG_ONBOARDING_HARDENING_REV/,"asset loader must expose a cache-busted onboarding-hardening revision");
+assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260823a"/,"tutorial guidance must have an explicit cache revision");
 assert.match(assets,/v10-20-onboarding-safety\.js\?v=\$\{CCG_ONBOARDING_SAFETY_REV\}/,"onboarding safety script must be loaded by the game");
 assert.match(assets,/v10-20-onboarding-hardening\.js\?v=\$\{CCG_ONBOARDING_HARDENING_REV\}/,"onboarding hardening must be loaded by the game");
+assert.match(assets,/v10-23-tutorial-guidance\.js\?v=\$\{CCG_TUTORIAL_GUIDANCE_REV\}/,"tutorial guidance must be loaded by the game");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
 assert.match(source,/floor===1\|\|depth\(host\.skeletonHorde\?\.roomId\)<=safeDepth\)clearSkeletonHorde\(\)/,"floor one must suppress the skeleton horde");
@@ -54,6 +57,19 @@ assert.match(source,/setInterval\(watchTutorialProgress,80\)/,"tutorial progress
 assert.match(source,/setInterval\(install,500\)/,"tutorial action wrappers must keep self-healing if later enhancement scripts wrap controls again");
 assert.match(source,/data-next>Continue</,"informational tutorial sections must continue sequentially instead of ending the training flow");
 
+assert.match(guidance,/INPUT_STEPS=new Map\(\[\[0,"move"\],\[1,"fire"\],\[2,"dash"\],\[3,"inventory"\]\]\)/,"only real player-input stages should require controls");
+assert.match(guidance,/INFO_DELAY=8000/,"informational stages must remain readable before automatic continuation");
+assert.match(guidance,/FINISH_DELAY=5000/,"completion notice must remain visible before returning to options");
+assert.match(guidance,/\[data-dir\]/,"movement controls must be highlighted during the movement stage");
+assert.match(guidance,/\[data-action=\\"fire\\"\]/,"FIRE must be highlighted during the firing stage");
+assert.match(guidance,/\[data-action=\\"dash\\"\]/,"DASH must be highlighted during the dash stage");
+assert.match(guidance,/\[data-action=\\"inventory\\"\],\[data-action=\\"items\\"\]/,"ITEMS or inventory must be highlighted during the inventory stage");
+assert.match(guidance,/ccgTutorialControlFlash/,"highlighted tutorial controls must visibly pulse");
+assert.match(guidance,/Explanation only — no button or key press is required/,"non-input tutorial sections must state that no control action is required");
+assert.match(guidance,/button\.click\(\)/,"informational stages must continue automatically without player input");
+assert.match(guidance,/max-height:min\(235px,36vh\)!important/,"mobile tutorial instructions must override the normal 50px report-rail cap");
+assert.match(guidance,/:not\(#ccg-tutorial-rail\)\{display:none!important\}/,"mobile tutorial mode must dedicate the report rail to training instructions");
+
 assert.match(source,/if\(state\.active\)return false;return o\.apply\(this,arguments\)/,"tutorial players must be immune to accidental damage");
 assert.match(source,/if\(typeof quitToMenu==="function"\)await quitToMenu\(\)/,"finishing training must return to the main options rather than automatically starting a live floor");
 assert.match(source,/TUTORIAL COMPLETE<\/b>/,"completed training must leave a visible completion notice on the main options");
@@ -78,6 +94,6 @@ assert.match(hardening,/new Set\(\["ccg","ccg player","cheeky commodore gamer"\]
 assert.match(hardening,/if\(CCG_ALIASES\.has\(n\)\)for\(const alias of CCG_ALIASES\)out\.add\(alias\)/,"all CCG identity aliases must map to the CCG dossier name");
 assert.match(hardening,/if\(!enemies\.has\(alias\)\|\|blocked\.has\(alias\)\)continue/,"only aliases that correspond to actual enemy dossier names should be persisted as blocks");
 
-for(const id of ["LS-0823-25","LS-0823-26","LS-0823-27","LS-0823-28","LS-0823-33","LS-0823-34","LS-0823-35"])assert.ok(changelog.includes(id),`developer changelog is missing ${id}`);
+for(const id of ["LS-0823-25","LS-0823-26","LS-0823-27","LS-0823-28","LS-0823-33","LS-0823-34","LS-0823-35","LS-0823-36"])assert.ok(changelog.includes(id),`developer changelog is missing ${id}`);
 
-console.log("Lost Sizzler V10.20 onboarding, start-choice, full tutorial progression, return-to-options, gentle-opening and dossier identity regression checks passed.");
+console.log("Lost Sizzler V10.20/V10.23 onboarding, highlighted input guidance, automatic explanation flow, mobile visibility, return-to-options, gentle-opening and dossier identity regression checks passed.");
