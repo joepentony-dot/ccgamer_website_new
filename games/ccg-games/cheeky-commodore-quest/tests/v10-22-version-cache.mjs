@@ -43,7 +43,14 @@ assert.match(checker,/document\.body\?\.dataset\?\.runActive!=="true"/,"automati
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
 assert.match(homeScript,/cheeky-commodore-quest\/assets\/lost-sizzler\.webp/,"home-page mark must reuse the real Lost Sizzler artwork");
-assert.match(homeScript,/home-lost-sizzler-cta\.css\?v=20260823a/,"home-page logo styling must be cache-versioned");
+assert.match(homeScript,/home-lost-sizzler-cta\.css\?v=20260823b/,"home-page logo styling must be cache-versioned after the scroll-safety change");
+assert.match(homeScript,/document\.createElement\("span"\)/,"Lost Sizzler recognition mark must be decorative rather than a second interactive link");
+assert.match(homeScript,/mark\.setAttribute\("aria-hidden", "true"\)/,"decorative Lost Sizzler mark must be removed from the interaction/accessibility path");
+assert.match(homeScript,/image\.draggable = false/,"Lost Sizzler recognition image must not start browser drag gestures");
+assert.doesNotMatch(homeScript,/addEventListener\(["']wheel["']/,"home recognition script must never intercept mouse-wheel scrolling");
+assert.doesNotMatch(homeScript,/preventDefault\(\)/,"home recognition script must not cancel scrolling or pointer defaults");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must have isolated home-page styling");
+assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
+assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler build, cache refresh and home recognition regression checks passed.");
+console.log("Lost Sizzler build, cache refresh, home recognition and scroll-safety regression checks passed.");
