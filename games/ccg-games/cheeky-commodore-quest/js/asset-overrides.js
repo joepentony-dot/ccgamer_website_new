@@ -54,6 +54,7 @@ const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823b";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
+const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
  * parsing. The modules poll for the core functions they need, so the first Play
@@ -191,7 +192,8 @@ const CCG_ONBOARDING_HARDENING_REV="20260823a";
       [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"],
       [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"],
       [`js/v10-18-expansion-changelog.js?v=${CCG_EXPANSION_CHANGELOG_REV}`,"ccgLostSizzlerExpansionChangelogV118"],
-      [`js/v10-18-input-ui-bugfixes.js?v=${CCG_INPUT_UI_FIX_REV}`,"ccgLostSizzlerInputUiBugfixesV118"]
+      [`js/v10-18-input-ui-bugfixes.js?v=${CCG_INPUT_UI_FIX_REV}`,"ccgLostSizzlerInputUiBugfixesV118"],
+      [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"]
     ];
 
     const loadNext=index=>{
