@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Lost Sizzler Bug Reports</title>
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
+  <link href="./css/lost-sizzler-feedback.css?v=lost-sizzler-feedback-20260823" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="ls-feedback-admin omega-admin-shell" data-admin-shell>
+    <header class="ls-feedback-header">
+      <div>
+        <p class="admin-auth-kicker">The Lost Sizzler</p>
+        <h1>Bug Reports &amp; Game Suggestions</h1>
+        <p>Review player feedback, reply directly by email, retain reply history and mark each report Open, Replied or Closed.</p>
+      </div>
+      <div class="ls-feedback-header-actions">
+        <a class="ccg-btn ccg-btn--primary" href="/games/ccg-games/cheeky-commodore-quest/" target="_blank" rel="noopener">Open The Lost Sizzler</a>
+        <button class="ccg-btn ccg-btn--ghost" id="ls-feedback-refresh" type="button">Refresh Reports</button>
+      </div>
+    </header>
+
+    <section class="ls-feedback-summary" id="ls-feedback-summary" aria-live="polite">
+      <article><span>ALL REPORTS</span><strong>—</strong></article>
+      <article><span>OPEN</span><strong>—</strong></article>
+      <article><span>REPLIED</span><strong>—</strong></article>
+      <article><span>CLOSED</span><strong>—</strong></article>
+      <article><span>BUGS</span><strong>—</strong></article>
+      <article><span>SUGGESTIONS</span><strong>—</strong></article>
+    </section>
+
+    <section class="ls-feedback-toolbar" aria-label="Feedback filters">
+      <label>Status
+        <select id="ls-feedback-status-filter">
+          <option value="all">All statuses</option>
+          <option value="open">Open</option>
+          <option value="replied">Replied</option>
+          <option value="closed">Closed</option>
+        </select>
+      </label>
+      <label>Type
+        <select id="ls-feedback-type-filter">
+          <option value="all">Bugs &amp; suggestions</option>
+          <option value="bug">Bug reports</option>
+          <option value="suggestion">Game suggestions</option>
+        </select>
+      </label>
+      <label class="ls-feedback-search">Search
+        <input id="ls-feedback-search" type="search" placeholder="Message or email…" autocomplete="off" />
+      </label>
+    </section>
+
+    <section id="ls-feedback-list" class="ls-feedback-list" aria-live="polite">
+      <p class="ls-feedback-muted">Loading reports…</p>
+    </section>
+
+    <p id="ls-feedback-page-status" class="ls-feedback-page-status" data-state="info">Waiting for admin access…</p>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/lost-sizzler-feedback.js?v=lost-sizzler-feedback-20260823"></script>
+</body>
+</html>
