@@ -124,7 +124,7 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
     const link=document.createElement("link");
     link.rel="stylesheet";
     link.href=`css/v10-13-mobile-combat-map.css?v=${CCG_MOBILE_COMBAT_MAP_REV}`;
-    link.dataset.ccgLostSizzlerMobileCombatMapV113="true";
+    link.dataset.ccgV113MobileCombatMap="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('link[data-ccg-v118-input-ui-fixes="true"]')){
