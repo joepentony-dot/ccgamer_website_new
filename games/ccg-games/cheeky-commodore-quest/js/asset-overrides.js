@@ -29,6 +29,7 @@ const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
 const CCG_DOSSIER_REV="20260823b";
 const CCG_CHANGELOG_REV="20260823a";
+const CCG_MOBILE_COMBAT_MAP_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -73,6 +74,13 @@ const CCG_CHANGELOG_REV="20260823a";
     link.dataset.ccgV111MobileSafety="true";
     document.head.appendChild(link);
   }
+  if(!document.querySelector('link[data-ccg-v113-mobile-combat-map="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-13-mobile-combat-map.css?v=${CCG_MOBILE_COMBAT_MAP_REV}`;
+    link.dataset.ccgV113MobileCombatMap="true";
+    document.head.appendChild(link);
+  }
   if(!document.querySelector('link[data-ccg-developer-changelog="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
@@ -110,6 +118,7 @@ const CCG_CHANGELOG_REV="20260823a";
       ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
       ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
       ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
+      [`js/v10-13-mobile-combat-map.js?v=${CCG_MOBILE_COMBAT_MAP_REV}`,"ccgLostSizzlerMobileCombatMapV113"],
       ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
       ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
       ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
