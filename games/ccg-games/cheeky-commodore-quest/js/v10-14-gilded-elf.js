@@ -98,6 +98,7 @@
 
   function spawnElf(){
     if(!state.armed||state.spawned||!net?.isHost||!host?.enemies)return false;
+    if(host.enemies.some(e=>e?.gildedElf)){state.spawned=true;state.armed=false;return false}
     const q=pickSpawnCell();if(!q)return false;
     const elf={
       id:`gilded-elf-${Math.max(1,Number(run?.floor||1))}-${hash32(state.floorKey).toString(36)}`,
@@ -107,7 +108,7 @@
       flash:0,hpBarMs:0,lifeMs:LIFETIME_MS,dropTimerMs:PASSIVE_DROP_MS,moveTimerMs:MOVE_MS,
       lastHitGoldAt:-999999,hitCount:0,quipCooldownMs:0,maxRoamTiles:currentTwoScreenTiles(),spawnFloor:run?.floor||1
     };
-    host.enemies.push(elf);state.spawned=true;state.armed=false;host.revision=(host.revision||0)+1;
+    host.enemies.push(elf);state.spawned=true;state.armed=false;state.lastVisual.set(elf.id,{x:q.x,y:q.y});host.revision=(host.revision||0)+1;
     try{S.sfx("pickup");burst(q.x,q.y,P.gold,24,1.45);ring(q.x,q.y,P.gold,38);floatText(q.x,q.y,"GILDED ELF!",P.gold,{life:1250});showToast("GILDED ELF!","Catch the little sod before he disappears! You have 30 seconds. He drops 10 gold while fleeing and whenever you land a hit.","gold",9000);broadcastWorld()}catch(_){}
     return true;
   }
@@ -125,10 +126,16 @@
     const out=[];for(let i=0;i<count;i++)out.push(cells[i%cells.length]);return out;
   }
 
+  function singleDropCell(elf){
+    const fx=Math.sign(elf?.facing?.x||0),fy=Math.sign(elf?.facing?.y||0),behind={x:elf.x-fx,y:elf.y-fy};
+    if((fx||fy)&&world?.map?.[behind.y]&&W.walkable(world.map,behind.x,behind.y,host)&&!(host?.blockingDecor||[]).some(d=>d.x===behind.x&&d.y===behind.y))return behind;
+    return{x:elf.x,y:elf.y};
+  }
+
   function dropGold(elf,count=1,reason="trail"){
     if(!net?.isHost||!elf||!host?.items)return;
     elf.goldDropSerial=(elf.goldDropSerial||0)+1;
-    const cells=safeCoinCells(elf.x,elf.y,`${elf.id}|${reason}|${elf.goldDropSerial}`,count);
+    const cells=count===1?[singleDropCell(elf)]:safeCoinCells(elf.x,elf.y,`${elf.id}|${reason}|${elf.goldDropSerial}`,count);
     cells.forEach((q,i)=>host.items.push({id:`elf-gold-${elf.id}-${elf.goldDropSerial}-${i}`,...q,kind:"credits",gildedElfCoin:true,scoreValue:10,active:true,title:"10 GOLD",source:"Gilded Elf"}));
     host.revision=(host.revision||0)+1;
     try{S.sfx("pickup");for(const q of cells.slice(0,3)){ring(q.x,q.y,P.gold,22);burst(q.x,q.y,P.gold,8,.7)}}catch(_){}
@@ -159,7 +166,7 @@
       candidates.push({x,y,dx,dy,value});
     }
     candidates.sort((a,b)=>b.value-a.value);const q=candidates[0];if(!q)return false;
-    const ox=elf.x,oy=elf.y;elf.x=q.x;elf.y=q.y;elf.facing={x:q.dx,y:q.dy};elf.moveTimerMs=MOVE_MS;host.revision=(host.revision||0)+1;dustAt(ox,oy,q.dx,q.dy,false);return true;
+    const ox=elf.x,oy=elf.y;elf.x=q.x;elf.y=q.y;elf.facing={x:q.dx,y:q.dy};elf.moveTimerMs=MOVE_MS;host.revision=(host.revision||0)+1;dustAt(ox,oy,q.dx,q.dy,false);state.lastVisual.set(elf.id,{x:elf.x,y:elf.y});return true;
   }
 
   function nearestPlayer(elf){
@@ -194,6 +201,7 @@
 
   function updateGildedElf(dt){
     if(!host||!run||mode!=="playing")return;
+    if((host.enemies||[]).some(e=>e?.gildedElf)){state.spawned=true;state.armed=false}
     if(net?.isHost&&state.armed&&!state.spawned&&state.plan&&Number(host.floorElapsed||0)>=state.plan.delayMs){
       const entered=(typeof allPlayers==="function"?allPlayers():[]).some(p=>p&&W.roomAt(world,p.x,p.y)===state.plan.roomId);
       if(entered)spawnElf();
@@ -266,7 +274,7 @@
     const originalCollideWithEnemy=collideWithEnemy;
     collideWithEnemy=function collideWithEnemyV114GildedElf(player,enemy,fromX,fromY){
       if(!enemy?.gildedElf)return originalCollideWithEnemy.apply(this,arguments);
-      const moved=moveElfStep(enemy,player);if(!moved&&player){player.x=fromX;player.y=fromY;player.rx=fromX;player.ry=fromY}return;
+      moveElfStep(enemy,player);if(player){player.x=fromX;player.y=fromY;player.rx=fromX;player.ry=fromY}return;
     };
   }
 
