@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.23 — permanent tutorial entry, centred acknowledgement cards and highlighted control training. */
+/* The Lost Sizzler V10.23 — permanent tutorial entry, centred acknowledgement cards and reliable async launch. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_TUTORIAL_GUIDANCE_V123__)return;
@@ -7,7 +7,8 @@
   const INPUT_STEPS=new Map([[0,"move"],[1,"fire"],[2,"dash"],[3,"inventory"]]);
   let lastStep=-1;
   let acknowledgedStep=-1;
-  let startChoiceBound=false;
+  let soloBound=false;
+  let tutorialLaunchPending=false;
 
   function ensureStyle(){
     if(document.getElementById("ccg-tutorial-guidance-style"))return;
@@ -24,45 +25,41 @@
         outline:2px solid rgba(114,255,155,.88)!important;outline-offset:2px!important;
         animation:ccgTutorialControlFlash .82s ease-in-out infinite!important;
       }
-      #ccg-tutorial-stage-modal,#ccg-start-mode-choice{
+      #ccg-tutorial-stage-modal{
         position:fixed!important;inset:0!important;z-index:10120!important;display:grid;place-items:center;
         padding:max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
         background:rgba(2,1,5,.76);backdrop-filter:blur(3px);
       }
-      #ccg-tutorial-stage-modal.hidden,#ccg-start-mode-choice.hidden{display:none!important}
-      #ccg-tutorial-stage-modal .ccg-tutorial-modal-card,#ccg-start-mode-choice .ccg-tutorial-modal-card{
+      #ccg-tutorial-stage-modal.hidden{display:none!important}
+      #ccg-tutorial-stage-modal .ccg-tutorial-modal-card{
         width:min(720px,calc(100vw - 28px));max-height:calc(100dvh - 34px);overflow:auto;
         padding:clamp(18px,3vw,30px);border:2px solid rgba(108,236,255,.68);border-radius:16px;
         background:linear-gradient(160deg,rgba(13,10,22,.99),rgba(5,7,14,.99));
         box-shadow:0 22px 80px rgba(0,0,0,.78),0 0 34px rgba(108,236,255,.18);text-align:left;
       }
-      #ccg-tutorial-stage-modal .tutorial-kicker,#ccg-start-mode-choice .tutorial-kicker{
+      #ccg-tutorial-stage-modal .tutorial-kicker{
         display:block;color:#6cecff;font-size:.74rem;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
       }
-      #ccg-tutorial-stage-modal h2,#ccg-start-mode-choice h2{margin:7px 0 12px;color:#ffd85a;line-height:1.12}
-      #ccg-tutorial-stage-modal p,#ccg-start-mode-choice p{margin:8px 0;line-height:1.5;color:#f1edf7}
+      #ccg-tutorial-stage-modal h2{margin:7px 0 12px;color:#ffd85a;line-height:1.12}
+      #ccg-tutorial-stage-modal p{margin:8px 0;line-height:1.5;color:#f1edf7}
       #ccg-tutorial-stage-modal .tutorial-detail{color:#c9c1d2;font-size:.9rem}
       #ccg-tutorial-stage-modal .tutorial-ack-note{
         margin-top:14px;padding:9px 11px;border-left:3px solid #72ff9b;background:rgba(18,62,40,.4);
         color:#caffd7;font-weight:800;font-size:.82rem;
       }
-      #ccg-tutorial-stage-modal .ccg-tutorial-modal-actions,#ccg-start-mode-choice .ccg-tutorial-modal-actions{
-        display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;
-      }
-      #ccg-tutorial-stage-modal button,#ccg-start-mode-choice button{min-height:44px;padding:10px 16px}
-      #ccg-tutorial-stage-modal .ccg-tutorial-primary,#ccg-start-mode-choice .ccg-tutorial-primary{
+      #ccg-tutorial-stage-modal .ccg-tutorial-modal-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+      #ccg-tutorial-stage-modal button{min-height:44px;padding:10px 16px}
+      #ccg-tutorial-stage-modal .ccg-tutorial-primary{
         border-color:#ffd85a!important;box-shadow:0 0 20px rgba(255,216,90,.2)!important;
       }
       #menu #tutorial-zone-btn.tutorial-primary-option{
         border-color:rgba(108,236,255,.72)!important;box-shadow:0 0 16px rgba(108,236,255,.14)!important;
       }
       @media(max-width:700px){
-        #ccg-tutorial-stage-modal,#ccg-start-mode-choice{align-items:center;padding:12px}
-        #ccg-tutorial-stage-modal .ccg-tutorial-modal-card,#ccg-start-mode-choice .ccg-tutorial-modal-card{
-          width:min(94vw,620px);max-height:88dvh;padding:18px 16px;
-        }
-        #ccg-tutorial-stage-modal .ccg-tutorial-modal-actions,#ccg-start-mode-choice .ccg-tutorial-modal-actions{display:grid;grid-template-columns:1fr}
-        #ccg-tutorial-stage-modal button,#ccg-start-mode-choice button{width:100%}
+        #ccg-tutorial-stage-modal{align-items:center;padding:12px}
+        #ccg-tutorial-stage-modal .ccg-tutorial-modal-card{width:min(94vw,620px);max-height:88dvh;padding:18px 16px}
+        #ccg-tutorial-stage-modal .ccg-tutorial-modal-actions{display:grid;grid-template-columns:1fr}
+        #ccg-tutorial-stage-modal button{width:100%}
         body[data-tutorial-active="true"] #v104-touch-controls .ccg-tutorial-control-highlight{background:#251735!important;border-width:2px!important}
       }
     `;
@@ -104,6 +101,36 @@
     desktopCommand(kind);
   }
 
+  function launchSolo(tutorial){
+    const state=tutorialState();
+    if(!state||typeof startSolo!=="function")return false;
+    state.forceTutorial=Boolean(tutorial);
+    state.tutorialRequested=Boolean(tutorial);
+    state.choiceAccepted=true;
+    tutorialLaunchPending=Boolean(tutorial);
+    let result;
+    try{
+      result=startSolo();
+    }catch(error){
+      state.choiceAccepted=false;
+      tutorialLaunchPending=false;
+      throw error;
+    }
+    Promise.resolve(result).finally(()=>{
+      /* startSolo waits for fullscreen/audio before beginRun. Keep the bypass
+       * alive for that entire async period so the retired core chooser cannot
+       * reappear after the player has already made a menu choice. */
+      state.choiceAccepted=false;
+      if(!tutorial)state.forceTutorial=false;
+      if(tutorial&&!state.active){
+        /* Do not clear tutorialRequested here. The core onboarding activation
+         * timer owns it and must still see the request after fullscreen settles. */
+        setTimeout(()=>{tutorialLaunchPending=Boolean(state.tutorialRequested&&!state.active)},250);
+      }else tutorialLaunchPending=false;
+    });
+    return result;
+  }
+
   function ensurePrimaryTutorialButton(){
     const solo=document.getElementById("solo-btn");
     const row=solo?.closest?.(".menu-buttons");
@@ -113,7 +140,13 @@
       button=document.createElement("button");
       button.id="tutorial-zone-btn";
       button.type="button";
-      button.addEventListener("click",()=>onboarding()?.replay?.());
+    }
+    if(button.dataset.ccgTutorialLaunchBound!=="true"){
+      button.addEventListener("click",event=>{
+        event.preventDefault();event.stopPropagation();event.stopImmediatePropagation?.();
+        launchSolo(true);
+      },true);
+      button.dataset.ccgTutorialLaunchBound="true";
     }
     button.textContent="Tutorial";
     button.title="Open the safe Training Archive tutorial";
@@ -122,53 +155,21 @@
     return true;
   }
 
-  function ensureStartChoice(){
-    let wrap=document.getElementById("ccg-start-mode-choice");
-    if(wrap)return wrap;
-    wrap=document.createElement("div");
-    wrap.id="ccg-start-mode-choice";
-    wrap.className="hidden";
-    wrap.setAttribute("role","dialog");
-    wrap.setAttribute("aria-modal","true");
-    wrap.setAttribute("aria-labelledby","ccg-start-mode-title");
-    wrap.innerHTML=`<div class="ccg-tutorial-modal-card">
-      <span class="tutorial-kicker">START THE LOST SIZZLER</span>
-      <h2 id="ccg-start-mode-title">Choose how you want to start</h2>
-      <p><b>Tutorial</b> opens the safe Training Archive and walks through the controls and dungeon systems.</p>
-      <p><b>Play Game</b> starts a normal dungeon run immediately.</p>
-      <div class="ccg-tutorial-modal-actions">
-        <button type="button" class="ccg-tutorial-primary" data-start-tutorial>TUTORIAL</button>
-        <button type="button" data-start-game>PLAY GAME</button>
-        <button type="button" data-start-cancel>CANCEL</button>
-      </div>
-    </div>`;
-    document.body.appendChild(wrap);
-    wrap.querySelector("[data-start-tutorial]")?.addEventListener("click",()=>{
-      wrap.classList.add("hidden");
-      onboarding()?.replay?.();
-    });
-    wrap.querySelector("[data-start-game]")?.addEventListener("click",()=>{
-      wrap.classList.add("hidden");
-      const state=tutorialState();
-      if(!state||typeof startSolo!=="function")return;
-      state.forceTutorial=false;state.tutorialRequested=false;state.choiceAccepted=true;
-      try{startSolo()}finally{state.choiceAccepted=false}
-    });
-    wrap.querySelector("[data-start-cancel]")?.addEventListener("click",()=>wrap.classList.add("hidden"));
-    return wrap;
-  }
-
-  function bindStartChoice(){
-    if(startChoiceBound||typeof startSolo!=="function")return;
+  function bindSoloDirect(){
+    if(soloBound)return;
     const solo=document.getElementById("solo-btn");
-    if(!solo)return;
+    if(!solo||typeof startSolo!=="function"||!tutorialState())return;
     solo.addEventListener("click",event=>{
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation?.();
-      const choice=ensureStartChoice();
-      choice.classList.remove("hidden");
-      choice.querySelector("[data-start-tutorial]")?.focus?.({preventScroll:true});
+      launchSolo(false);
     },true);
-    startChoiceBound=true;
+    soloBound=true;
+  }
+
+  function hideRedundantChoices(){
+    document.getElementById("ccg-start-mode-choice")?.remove();
+    const legacy=document.getElementById("ccg-tutorial-choice");
+    if(legacy)legacy.classList.add("hidden");
   }
 
   function ensureStageModal(){
@@ -209,10 +210,7 @@
     button?.click?.();
   }
 
-  function exitTutorial(){
-    const button=rail()?.querySelector("[data-skip]");
-    button?.click?.();
-  }
+  function exitTutorial(){rail()?.querySelector("[data-skip]")?.click?.()}
 
   function showStage(step){
     const info=readStage();
@@ -245,7 +243,7 @@
   }
 
   function escapeHtml(value){
-    return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;"," >":"&gt;",'"':"&quot;","'":"&#39;"}[char]||char));
+    return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]||char));
   }
 
   function interactiveReady(kind,state){
@@ -264,12 +262,13 @@
   }
 
   function tick(){
-    ensureStyle();ensurePrimaryTutorialButton();bindStartChoice();
+    ensureStyle();ensurePrimaryTutorialButton();bindSoloDirect();hideRedundantChoices();
     const state=tutorialState();
     if(!state?.active){
       if(lastStep!==-1){clearHighlights();closeStageModal();lastStep=-1;acknowledgedStep=-1}
       return;
     }
+    tutorialLaunchPending=false;
     const step=Math.max(0,Number(state.step||0));
     if(step!==lastStep){if(!showStage(step))return}
     const kind=INPUT_STEPS.get(step)||null;
@@ -281,12 +280,12 @@
     }
   }
 
-  ensureStyle();ensureStageModal();ensureStartChoice();
+  ensureStyle();ensureStageModal();
   document.addEventListener("keydown",blockGameplayKeysWhileReading,true);
   const timer=setInterval(tick,100);
   tick();
   window.addEventListener("pagehide",()=>{
     clearInterval(timer);clearHighlights();document.removeEventListener("keydown",blockGameplayKeysWhileReading,true);
   },{once:true});
-  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,showStage,ensurePrimaryTutorialButton};
+  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,showStage,ensurePrimaryTutorialButton,launchSolo,get tutorialLaunchPending(){return tutorialLaunchPending}};
 })();
