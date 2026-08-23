@@ -5,7 +5,7 @@
   window.__CCG_LOST_SIZZLER_MOBILE_COMBAT_MAP_V113__=true;
 
   const MOBILE_QUERY="(max-width:900px), (pointer:coarse)";
-  const mobile=()=>window.matchMedia?.(MOBILE_QUERY)?.matches===true||Number(navigator.maxTouchPoints||0)>0;
+  const mobile=()=>window.matchMedia?.(MOBILE_QUERY)?.matches===true;
   let mapOpen=false;
   let mapTimer=0;
 
