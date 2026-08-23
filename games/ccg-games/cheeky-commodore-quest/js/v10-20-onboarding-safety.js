@@ -90,9 +90,11 @@
     if(kind==="dash")state.dashed=true;
     if(kind==="inventory"&&!(state.inventoryOpened&&state.inventoryClosed))return false;
     if(!stepReady(STEPS[state.step]))return false;
-    renderStep();clearTimeout(state.autoAdvanceTimer);state.autoAdvanceTimer=setTimeout(()=>{if(state.active&&STEPS[state.step]?.[0]===kind&&stepReady(STEPS[state.step]))advance()},260);return true;
+    renderStep();
+    if(state.autoAdvanceTimer)return true;
+    state.autoAdvanceTimer=setTimeout(()=>{state.autoAdvanceTimer=0;if(state.active&&STEPS[state.step]?.[0]===kind&&stepReady(STEPS[state.step]))advance()},260);return true;
   }
-  function note(kind){if(!state.active)return;if(kind==="fire")state.fired=true;if(kind==="dash")state.dashed=true;completeInteractive(kind)}
+  function note(kind){if(!state.active||STEPS[state.step]?.[0]!==kind)return;completeInteractive(kind)}
   function resetMovementTracking(){state.movementDistance=0;state.lastMovement=new Map();for(const p of typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean))state.lastMovement.set(p.id||p,{x:Number(p.x||0),y:Number(p.y||0)})}
   function recordMovement(p,before){if(!state.active||STEPS[state.step]?.[0]!=="move"||!p)return;const bx=Number(before?.x??p.x??0),by=Number(before?.y??p.y??0),ax=Number(p.x||0),ay=Number(p.y||0),d=Math.abs(ax-bx)+Math.abs(ay-by);if(d<=0)return;state.movementDistance+=d;state.lastMovement.set(p.id||p,{x:ax,y:ay});if(state.movementDistance>=2)completeInteractive("move")}
   function watchTutorialProgress(){
@@ -103,7 +105,7 @@
       }
     }
     if(STEPS[state.step]?.[0]==="inventory"){
-      try{const visible=Boolean(UI?.inventory&&!UI.inventory.classList.contains("hidden"));if(visible){state.inventoryOpened=true;renderStep()}else if(state.inventoryOpened&&!state.inventoryClosed){state.inventoryClosed=true;completeInteractive("inventory")}}catch(_){}
+      try{const visible=Boolean(UI?.inventory&&!UI.inventory.classList.contains("hidden"));if(visible){if(!state.inventoryOpened){state.inventoryOpened=true;renderStep()}}else if(state.inventoryOpened&&!state.inventoryClosed){state.inventoryClosed=true;completeInteractive("inventory")}}catch(_){}
     }
   }
   function lockDoors(){state.lockedDoors=[];for(const d of host?.doors||[]){if(Number(d.roomId)!==Number(world?.startRoomId))continue;state.lockedDoors.push([d,d.locked,d.open]);d.locked=true;d.open=false;d._tutorialLock=true}}
@@ -119,7 +121,7 @@
     if(typeof movePlayer==="function"){if(!movePlayer.__tutorial){const o=movePlayer;movePlayer=function(p){const before=p?{x:p.x,y:p.y}:null,r=o.apply(this,arguments);recordMovement(p,before);return r};movePlayer.__tutorial=true}if(movePlayer.__tutorial)n++}
     if(typeof firePlayer==="function"){if(!firePlayer.__tutorial){const o=firePlayer;firePlayer=function(){const r=o.apply(this,arguments);note("fire");return r};firePlayer.__tutorial=true}if(firePlayer.__tutorial)n++}
     if(typeof dashPlayer==="function"){if(!dashPlayer.__tutorial){const o=dashPlayer;dashPlayer=function(){const r=o.apply(this,arguments);note("dash");return r};dashPlayer.__tutorial=true}if(dashPlayer.__tutorial)n++}
-    if(typeof toggleInventory==="function"){if(!toggleInventory.__tutorial){const o=toggleInventory;toggleInventory=function(){const r=o.apply(this,arguments);try{const visible=Boolean(UI?.inventory&&!UI.inventory.classList.contains("hidden"));if(state.active&&STEPS[state.step]?.[0]==="inventory"){if(visible){state.inventoryOpened=true;renderStep()}else if(state.inventoryOpened){state.inventoryClosed=true;completeInteractive("inventory")}}}catch(_){}return r};toggleInventory.__tutorial=true}if(toggleInventory.__tutorial)n++}
+    if(typeof toggleInventory==="function"){if(!toggleInventory.__tutorial){const o=toggleInventory;toggleInventory=function(){const r=o.apply(this,arguments);try{const visible=Boolean(UI?.inventory&&!UI.inventory.classList.contains("hidden"));if(state.active&&STEPS[state.step]?.[0]==="inventory"){if(visible){if(!state.inventoryOpened){state.inventoryOpened=true;renderStep()}}else if(state.inventoryOpened&&!state.inventoryClosed){state.inventoryClosed=true;completeInteractive("inventory")}}}catch(_){}return r};toggleInventory.__tutorial=true}if(toggleInventory.__tutorial)n++}
     if(typeof hurtPlayer==="function"){if(!hurtPlayer.__tutorial){const o=hurtPlayer;hurtPlayer=function(){if(state.active)return false;return o.apply(this,arguments)};hurtPlayer.__tutorial=true}if(hurtPlayer.__tutorial)n++}
     state.installed.actions=n>=5;
   }
