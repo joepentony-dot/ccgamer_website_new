@@ -3,30 +3,9 @@ name: Lost Sizzler Runtime Validation
 on:
   pull_request:
     paths:
+      - 'arcade/lost-sizzler/**'
       - 'games/ccg-games/cheeky-commodore-quest/index.html'
-      - 'games/ccg-games/cheeky-commodore-quest/version.json'
-      - 'games/ccg-games/cheeky-commodore-quest/js/version-check.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-26-ammo-budget.js'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-24-mobile-ergonomics.css'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-26-ammo-budget.mjs'
+      - 'games/the-lost-sizzler/index.html'
       - 'js/ccg-home-community.js'
       - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
@@ -34,30 +13,9 @@ on:
     branches:
       - main
     paths:
+      - 'arcade/lost-sizzler/**'
       - 'games/ccg-games/cheeky-commodore-quest/index.html'
-      - 'games/ccg-games/cheeky-commodore-quest/version.json'
-      - 'games/ccg-games/cheeky-commodore-quest/js/version-check.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-26-ammo-budget.js'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-24-mobile-ergonomics.css'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-26-ammo-budget.mjs'
+      - 'games/the-lost-sizzler/index.html'
       - 'js/ccg-home-community.js'
       - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
@@ -77,50 +35,29 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Validate runtime JavaScript syntax
+      - name: Validate canonical Lost Sizzler JavaScript syntax
+        shell: bash
         run: |
-          node --check games/ccg-games/cheeky-commodore-quest/js/version-check.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/game-main.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-26-ammo-budget.js
-          node --check games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs
-          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-26-ammo-budget.mjs
-          node --check js/ccg-home-community.js
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+          done < <(find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z)
 
-      - name: Validate dossier discovery and cold direct-link boot
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
+      - name: Run canonical Lost Sizzler regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' test; do
+            echo "Running $test"
+            node "$test"
+          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' -print0 | sort -z)
 
-      - name: Validate full tutorial progression, highlighted controls, automatic explanations, gentle opening and dossier identity isolation
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
-
-      - name: Validate door geometry, rare vortex pits and environmental knockback
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs
-
-      - name: Validate build refresh and home Lost Sizzler recognition
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs
-
-      - name: Validate mobile readability, touch controls and inventory return
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs
-
-      - name: Validate sword-first combat, scarce ammo and rare melee equipment
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs
-
-      - name: Validate enemy-budgeted ammo supply and 50 percent miss allowance
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-26-ammo-budget.mjs
-
-      - name: Re-run browser stability regression checks
-        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs
+      - name: Validate migration redirects and canonical structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f arcade/lost-sizzler/index.html
+          test -f arcade/lost-sizzler/version.json
+          grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
+          grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html
+          grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
