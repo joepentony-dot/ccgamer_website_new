@@ -1,4 +1,4 @@
-/* The Lost Sizzler — non-intrusive desktop notices, play telemetry and two-minute rating prompt. */
+/* The Lost Sizzler — non-intrusive desktop notices, play telemetry and five-minute rating prompt. */
 (function(){
   "use strict";
   if(window.__CCG_LOST_SIZZLER_PLAYER_INSIGHTS__)return;
@@ -148,7 +148,7 @@
     overlay.id="ccg-rating-panel";
     overlay.className=desktop?"ccg-rating-rail hidden":"overlay hidden ccg-insight-overlay";
     overlay.innerHTML=`<div class="${desktop?"ccg-rating-rail-card":"panel compact ccg-insight-card ccg-rating-card"}">
-      <p class="ccg-insight-kicker">TWO MINUTES IN</p>
+      <p class="ccg-insight-kicker">FIVE MINUTES IN</p>
       <h2>RATE THE GAME</h2>
       <p>How are you finding <strong>The Lost Sizzler</strong> so far?</p>
       <div class="ccg-star-row" role="group" aria-label="Rate The Lost Sizzler out of five stars">
@@ -213,7 +213,7 @@
     lastPlayTick=now;
     if(document.hidden)return;
     if(currentRunActive())activePlayedMs+=delta;
-    if(activePlayedMs>=120000&&!ratingShown)showRating();
+    if(activePlayedMs>=300000&&!ratingShown)showRating();
   }
 
   function watchRunStarts(){
