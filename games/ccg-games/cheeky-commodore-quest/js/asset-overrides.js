@@ -46,8 +46,9 @@ const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
 const CCG_GILDED_ELF_REV="20260823b";
 const CCG_RARE_EVENTS_REV="20260823a";
 const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
-const CCG_VOICE_DIRECTOR_REV="20260823a";
+const CCG_VOICE_DIRECTOR_REV="20260823b";
 const CCG_VOICE_EXPANSION_REV="20260823a";
+const CCG_EXPANSION_CHANGELOG_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -153,7 +154,8 @@ const CCG_VOICE_EXPANSION_REV="20260823a";
       [`js/v10-15-rare-events.js?v=${CCG_RARE_EVENTS_REV}`,"ccgLostSizzlerRareEventsV115"],
       [`js/v10-15-rare-events-balance.js?v=${CCG_RARE_EVENTS_BALANCE_REV}`,"ccgLostSizzlerRareEventsBalanceV115"],
       [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"],
-      [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"]
+      [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"],
+      [`js/v10-18-expansion-changelog.js?v=${CCG_EXPANSION_CHANGELOG_REV}`,"ccgLostSizzlerExpansionChangelogV118"]
     ];
 
     const loadNext=index=>{
