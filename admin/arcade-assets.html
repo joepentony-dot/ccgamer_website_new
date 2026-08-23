@@ -13,7 +13,7 @@
   <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
   <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
   <link href="./css/arcade-assets.css?v=arcade-production-20260821" rel="stylesheet" />
-  <link href="./css/lost-sizzler-insights.css?v=lost-sizzler-insights-20260823" rel="stylesheet" />
+  <link href="./css/lost-sizzler-insights.css?v=lost-sizzler-insights-20260823b" rel="stylesheet" />
 </head>
 <body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
   <div aria-hidden="true" class="ccg-bg"><div class="ccg-bg-starfield"></div><div class="ccg-bg-grid"></div><div class="ccg-bg-crt-overlay"></div></div>
@@ -67,13 +67,15 @@
     </section>
     <section class="arcade-panel ls-insights-panel" id="lost-sizzler-insights">
       <div class="arcade-library-head">
-        <div><h2>Lost Sizzler Player Activity &amp; Feedback</h2><p class="arcade-muted">Track real run starts, play/start clicks, mobile desktop-optimisation accepts, two-minute ratings, and submitted bug reports or game suggestions.</p></div>
-        <button type="button" class="ccg-btn ccg-btn--ghost" id="ls-insights-refresh">Refresh Activity</button>
+        <div><h2>Lost Sizzler Player Activity &amp; Ratings</h2><p class="arcade-muted">Track real run starts, play/start clicks, mobile desktop-optimisation accepts and two-minute ratings. Bug reports and suggestions now have their own admin section.</p></div>
+        <div class="arcade-asset-card__actions">
+          <a class="ccg-btn ccg-btn--ghost" href="/admin/lost-sizzler-feedback.html">Open Bug Reports</a>
+          <button type="button" class="ccg-btn ccg-btn--ghost" id="ls-insights-refresh">Refresh Activity</button>
+        </div>
       </div>
       <div id="ls-insights-summary" class="ls-insights-summary" aria-live="polite"><p class="arcade-muted">Loading player totals…</p></div>
-      <div class="ls-insights-grid">
+      <div class="ls-insights-grid ls-insights-grid--single">
         <section class="ls-insights-subpanel"><h3>Recent Player Activity</h3><div id="ls-play-events"><p class="arcade-muted">Loading play events…</p></div></section>
-        <section class="ls-insights-subpanel"><h3>Bug Reports &amp; Game Suggestions</h3><div id="ls-feedback-events" class="ls-feedback-list"><p class="arcade-muted">Loading feedback…</p></div></section>
       </div>
       <p id="ls-insights-status" class="arcade-status" data-state="info">Waiting for admin access…</p>
     </section>
@@ -82,6 +84,6 @@
   <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
   <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
   <script type="module" src="/admin/js/arcade-assets.js?v=lost-sizzler-playlists-20260822"></script>
-  <script type="module" src="/admin/js/lost-sizzler-insights.js?v=lost-sizzler-insights-20260823"></script>
+  <script type="module" src="/admin/js/lost-sizzler-insights.js?v=lost-sizzler-insights-20260823b"></script>
 </body>
 </html>
