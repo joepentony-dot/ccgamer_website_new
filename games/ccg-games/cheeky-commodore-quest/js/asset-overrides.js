@@ -23,10 +23,11 @@ const CCG_V106_HUD_REV="20260822e";
 const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260823b";
 const CCG_PLAYER_INSIGHTS_REV="20260823d";
-const CCG_BROWSER_STABILITY_REV="20260823a";
+const CCG_BROWSER_STABILITY_REV="20260823b";
 const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
+const CCG_DOSSIER_DISCOVERY_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -80,8 +81,11 @@ const CCG_MOBILE_SAFETY_REV="20260823a";
   }
 })();
 
-window.addEventListener("load",()=>{
+function startLostSizzlerRuntimePatches(){
+  if(window.__CCG_LOST_SIZZLER_RUNTIME_PATCH_QUEUE_STARTED__)return;
+  window.__CCG_LOST_SIZZLER_RUNTIME_PATCH_QUEUE_STARTED__=true;
   if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+
   const queue=[
     [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
     ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
@@ -102,16 +106,28 @@ window.addEventListener("load",()=>{
     ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
     [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
     [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
-    [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"]
+    [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
+    [`js/v10-12-dossier-discovery.js?v=${CCG_DOSSIER_DISCOVERY_REV}`,"ccgLostSizzlerDossierDiscoveryV112"]
   ];
+
   const loadNext=index=>{
     if(index>=queue.length)return;
     const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
     if(document.querySelector(selector)){loadNext(index+1);return}
     const script=document.createElement("script");
-    script.src=src;script.dataset[key]="true";script.async=false;
+    script.src=src;
+    script.dataset[key]="true";
+    script.async=false;
     script.onload=()=>loadNext(index+1);
+    script.onerror=()=>{
+      console.warn(`[Lost Sizzler] runtime patch failed to load: ${src}`);
+      loadNext(index+1);
+    };
     document.body.appendChild(script);
   };
+
   loadNext(0);
-},{once:true});
+}
+
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startLostSizzlerRuntimePatches,{once:true});
+else startLostSizzlerRuntimePatches();
