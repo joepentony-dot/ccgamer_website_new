@@ -16,7 +16,9 @@
         ["LS-0823-05","CHANGED","Mobile gameplay layout","Phone layouts now prioritise the game view, reserve dedicated touch-control space and keep non-essential desktop panels away from active play."],
         ["LS-0823-06","CHANGED","Difficulty by dungeon depth","Early rooms are more forgiving while enemy pressure rises deeper into each generated floor. Ordinary enemies are also kept away from corridor and doorway spawn cells."],
         ["LS-0823-07","ADDED","Player activity and ratings","Actual run starts, supported device starts, play activity and the timed rating prompt are recorded for the developer insights dashboard."],
-        ["LS-0823-08","ADDED","Bug-report reply workflow","Bug reports and suggestions now have their own admin area with reply support and feedback history instead of being mixed into Arcade Assets."]
+        ["LS-0823-08","ADDED","Bug-report reply workflow","Bug reports and suggestions now have their own admin area with reply support and feedback history instead of being mixed into Arcade Assets."],
+        ["LS-0823-09","CHANGED","Mobile enemy projectile aiming","On mobile and touch devices, enemy projectiles are restricted to horizontal or vertical firing lanes instead of diagonal shots, improving fairness with touch movement controls."],
+        ["LS-0823-10","ADDED","Mobile minimap toggle","A MAP button has been added to the mobile touch controls. It opens a compact minimap using the existing explored-area radar data and discovered markers, and can be toggled off during play."]
       ]
     },
     {
