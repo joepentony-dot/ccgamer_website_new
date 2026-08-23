@@ -61,7 +61,7 @@
   async function sendTelemetry(eventType,extra={}){
     try{
       const client=await window.ccgSupabase?.getClient?.();
-      if(!client)return;
+      if(!client)return false;
       const body={
         action:"telemetry",
         event_type:eventType,
@@ -73,10 +73,15 @@
         build:BUILD,
         page_url:location.href
       };
-      const {error}=await client.functions.invoke(FUNCTION_NAME,{body});
-      if(error)console.warn("[Lost Sizzler] telemetry could not be recorded",error);
+      const {data,error}=await client.functions.invoke(FUNCTION_NAME,{body});
+      if(error||data?.success===false){
+        console.warn("[Lost Sizzler] telemetry could not be recorded",error||data?.error);
+        return false;
+      }
+      return true;
     }catch(error){
       console.warn("[Lost Sizzler] telemetry unavailable",error);
+      return false;
     }
   }
 
@@ -173,13 +178,20 @@
         try{if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="paused")pause(true);}catch(_){}
       }
     };
-    overlay.querySelectorAll("[data-rating]").forEach(button=>button.addEventListener("click",()=>{
+    overlay.querySelectorAll("[data-rating]").forEach(button=>button.addEventListener("click",async()=>{
       const rating=Number(button.dataset.rating);
-      overlay.querySelectorAll("[data-rating]").forEach(star=>star.classList.toggle("selected",Number(star.dataset.rating)<=rating));
+      const buttons=[...overlay.querySelectorAll("[data-rating]")];
+      buttons.forEach(star=>{star.classList.toggle("selected",Number(star.dataset.rating)<=rating);star.disabled=true;});
       const status=overlay.querySelector("#ccg-rating-status");
-      if(status)status.textContent=`Thank you — ${rating}/5 recorded.`;
-      sendTelemetry("rating_submitted",{rating,play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
-      setTimeout(finish,900);
+      if(status)status.textContent="Saving your rating…";
+      const saved=await sendTelemetry("rating_submitted",{rating,play_mode:(typeof playMode!=="undefined"?playMode:"unknown")});
+      if(saved){
+        if(status)status.textContent=`Thank you — ${rating}/5 recorded.`;
+        setTimeout(finish,700);
+      }else{
+        if(status)status.textContent="Rating could not be saved. Please tap a star to retry.";
+        buttons.forEach(star=>{star.disabled=false;});
+      }
     }));
     overlay.querySelector("#ccg-rating-feedback")?.addEventListener("click",()=>{finish();setTimeout(openExistingFeedback,60);});
     overlay.querySelector("#ccg-rating-later")?.addEventListener("click",()=>{
@@ -244,7 +256,7 @@
       #ccg-important-notices{display:none!important}
       .ccg-game .ccg-insight-overlay{z-index:190!important}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
       .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:8px 10px;border:1px solid rgba(255,216,90,.75);background:rgba(8,5,14,.98);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:2px 0 3px;font-size:13px;color:#fff}.ccg-rating-rail-card p{margin:2px 0;font-size:9px;line-height:1.25}.ccg-rating-rail-card .menu-buttons{display:flex;justify-content:center;gap:6px;margin:4px 0 0}.ccg-rating-rail-card .menu-buttons button{width:auto;font-size:8px;padding:5px 7px}
-      .ccg-star-row{display:flex;justify-content:center;gap:4px;margin:5px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:20px;line-height:1;padding:3px 5px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}
+      .ccg-star-row{display:flex;justify-content:center;gap:4px;margin:5px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:20px;line-height:1;padding:3px 5px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}.ccg-star-row button:disabled{cursor:wait;opacity:.75}
       .ccg-rating-status{min-height:12px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
       @media(max-width:900px),(pointer:coarse){.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
     `;
