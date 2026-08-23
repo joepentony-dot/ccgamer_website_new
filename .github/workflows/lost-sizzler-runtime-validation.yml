@@ -15,6 +15,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-24-mobile-ergonomics.css'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
@@ -23,6 +24,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs'
       - 'js/ccg-home-community.js'
       - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
@@ -42,6 +44,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js'
       - 'games/ccg-games/cheeky-commodore-quest/css/v10-24-mobile-ergonomics.css'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
@@ -50,6 +53,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs'
       - 'js/ccg-home-community.js'
       - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
@@ -81,12 +85,14 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-23-tutorial-guidance.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-21-environmental-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-24-mobile-ergonomics.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-25-melee-ammo-balance.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs
           node --check js/ccg-home-community.js
 
       - name: Validate dossier discovery and cold direct-link boot
@@ -103,6 +109,9 @@ jobs:
 
       - name: Validate mobile readability, touch controls and inventory return
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-24-mobile-ergonomics.mjs
+
+      - name: Validate sword-first combat, scarce ammo and rare melee equipment
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-25-melee-ammo.mjs
 
       - name: Re-run browser stability regression checks
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs
