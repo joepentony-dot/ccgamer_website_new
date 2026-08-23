@@ -12,6 +12,17 @@ function json(req: Request, body: unknown, status = 200) { return new Response(J
 function weekStart(now = new Date()) { const d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));const day=d.getUTCDay();d.setUTCDate(d.getUTCDate()-((day+6)%7));return d.toISOString().slice(0,10) }
 function seedFor(week: string) { return `CCQ-WEEKLY-${week.replaceAll("-","")}` }
 function int(value: unknown, min: number, max: number) { return Math.max(min,Math.min(max,Math.floor(Number(value)||0))) }
+function ghostPath(value: unknown) {
+  if(!Array.isArray(value))return [];
+  const out:{f:number,x:number,y:number,t:number}[]=[];
+  for(const row of value.slice(0,360)){
+    if(!row||typeof row!=="object")continue;
+    const item=row as Record<string,unknown>,f=int(item.f,1,5),x=int(item.x,0,255),y=int(item.y,0,255),t=int(item.t,0,86400000);
+    if(out.length&&t<out[out.length-1].t)continue;
+    out.push({f,x,y,t});
+  }
+  return out;
+}
 
 Deno.serve(async (req: Request) => {
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(req)});
@@ -35,6 +46,13 @@ Deno.serve(async (req: Request) => {
   if(profileError||!profile||profile.banned)return json(req,{ok:false,error:"This account cannot enter the weekly challenge"},403);
   const playerName=String(profile.username||profile.display_name||"").trim().slice(0,64);
   if(!playerName)return json(req,{ok:false,error:"Add an account name to your CCG profile before entering"},409);
+  if(action==="ghost"){
+    const {data:attempts,error}=await service.from("ccq_weekly_attempts").select("user_id,player_name,score,deepest_floor,stats").eq("week_start",week).eq("status","finished").neq("user_id",user.id).order("score",{ascending:false}).limit(20);
+    if(error)return json(req,{ok:false,error:"Weekly ghost unavailable"},503);
+    const source=(attempts||[]).find((row:any)=>Array.isArray(row?.stats?.ghostPath)&&row.stats.ghostPath.length>1);
+    if(!source)return json(req,{ok:true,ghost:null,weekStart:week});
+    return json(req,{ok:true,weekStart:week,ghost:{playerName:String(source.player_name||"Weekly Player").slice(0,64),score:int(source.score,0,99999999),deepestFloor:int(source.deepest_floor,1,5),path:ghostPath(source.stats.ghostPath)}});
+  }
   if(action==="start"){
     const {data:existing}=await service.from("ccq_weekly_attempts").select("*").eq("week_start",week).eq("user_id",user.id).maybeSingle();
     if(existing)return json(req,{ok:false,error:"This week's attempt has already been used",locked:true,weekStart:week},409);
@@ -47,7 +65,7 @@ Deno.serve(async (req: Request) => {
     const {data:attempt}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name").eq("id",attemptId).eq("week_start",week).eq("user_id",user.id).maybeSingle();
     if(!attempt)return json(req,{ok:false,error:"Weekly attempt not found"},404);
     if(attempt.status==="finished")return json(req,{ok:true,locked:true,weekStart:week,leaderboard:leaders||[]});
-    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999)};
+    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:ghostPath(result.ghostPath)};
     const {error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats}).eq("id",attempt.id).eq("status","started");
     if(updateError)return json(req,{ok:false,error:"Could not record the weekly result"},500);
     await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:week,player_name:attempt.player_name,score,deepest_floor:deepest,duration_ms:duration,level,completed},{onConflict:"attempt_id"});
