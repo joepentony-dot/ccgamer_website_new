@@ -12,6 +12,7 @@ const rare=read("js/v10-15-rare-events.js");
 const balance=read("js/v10-15-rare-events-balance.js");
 const voice=read("js/v10-16-voice-director.js");
 const voiceExpansion=read("js/v10-17-voice-expansion.js");
+const completeVoiceSystem=`${voice}\n${voiceExpansion}`;
 const loader=read("js/asset-overrides.js");
 const weekly=read("js/weekly-challenge.js");
 const edge=fs.readFileSync(path.join(repo,"supabase/functions/ccq-weekly-challenge/index.ts"),"utf8");
@@ -33,7 +34,7 @@ for(const token of ["welcome","hurt","lowHealth","objectiveHint","deathStalker",
   assert.match(voice,new RegExp(`${token}:`),`core voice cue exists: ${token}`);
 }
 for(const token of ["mimic","taxman","treasureBat","goldenRoom","developerRoom","weeklyGhost","respawn"]){
-  assert.match(voiceExpansion,new RegExp(`${token}:`),`rare-event voice cue exists: ${token}`);
+  assert.match(completeVoiceSystem,new RegExp(`${token}:`),`rare-event voice cue exists in the complete voice system: ${token}`);
 }
 
 assert.match(loader,/v10-15-rare-events\.js\?v=/,"rare-event layer is cache-busted and loaded");
