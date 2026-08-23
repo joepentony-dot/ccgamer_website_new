@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const gameRoot=path.resolve(here,"..");
-const repoRoot=path.resolve(here,"../../../..");
+const repoRoot=path.resolve(here,"../../..");
 const readGame=relative=>fs.readFileSync(path.join(gameRoot,relative),"utf8");
 const readRepo=relative=>fs.readFileSync(path.join(repoRoot,relative),"utf8");
 
@@ -47,7 +47,7 @@ assert.match(checker,/document\.body\?\.dataset\?\.runActive!=="true"/,"automati
 
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
-assert.match(homeScript,/cheeky-commodore-quest\/assets\/lost-sizzler\.webp/,"home-page mark must reuse the real Lost Sizzler artwork");
+assert.match(homeScript,/arcade\/lost-sizzler\/assets\/lost-sizzler\.webp/,"home-page mark must reuse the canonical Lost Sizzler artwork");
 assert.match(homeScript,/home-lost-sizzler-cta\.css\?v=20260823b/,"home-page logo styling must be cache-versioned after the scroll-safety change");
 assert.match(homeScript,/document\.createElement\("span"\)/,"Lost Sizzler recognition mark must be decorative rather than a second interactive link");
 assert.match(homeScript,/mark\.setAttribute\("aria-hidden", "true"\)/,"decorative Lost Sizzler mark must be removed from the interaction/accessibility path");
@@ -58,4 +58,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r8 build, combat cache refresh, home recognition and scroll-safety regression checks passed.");
+console.log("Lost Sizzler r8 build, combat cache refresh, canonical home recognition and scroll-safety regression checks passed.");
