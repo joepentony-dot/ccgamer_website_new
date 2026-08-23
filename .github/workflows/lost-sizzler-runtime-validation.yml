@@ -8,6 +8,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
@@ -22,6 +23,7 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
@@ -50,6 +52,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-hardening.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
