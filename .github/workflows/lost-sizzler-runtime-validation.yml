@@ -3,6 +3,9 @@ name: Lost Sizzler Runtime Validation
 on:
   pull_request:
     paths:
+      - 'games/ccg-games/cheeky-commodore-quest/index.html'
+      - 'games/ccg-games/cheeky-commodore-quest/version.json'
+      - 'games/ccg-games/cheeky-commodore-quest/js/version-check.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
@@ -15,11 +18,17 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
+      - 'js/ccg-home-community.js'
+      - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
   push:
     branches:
       - main
     paths:
+      - 'games/ccg-games/cheeky-commodore-quest/index.html'
+      - 'games/ccg-games/cheeky-commodore-quest/version.json'
+      - 'games/ccg-games/cheeky-commodore-quest/js/version-check.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
@@ -32,6 +41,9 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs'
+      - 'js/ccg-home-community.js'
+      - 'resources/css/home-lost-sizzler-cta.css'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
 
 permissions:
@@ -51,6 +63,7 @@ jobs:
 
       - name: Validate runtime JavaScript syntax
         run: |
+          node --check games/ccg-games/cheeky-commodore-quest/js/version-check.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/game-main.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
@@ -62,15 +75,20 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs
+          node --check js/ccg-home-community.js
 
       - name: Validate dossier discovery and cold direct-link boot
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
 
-      - name: Validate onboarding, gentle opening and dossier identity isolation
+      - name: Validate full tutorial progression, gentle opening and dossier identity isolation
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
 
       - name: Validate door geometry, rare vortex pits and environmental knockback
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-21-environmental-polish.mjs
+
+      - name: Validate build refresh and home Lost Sizzler recognition
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-22-version-cache.mjs
 
       - name: Re-run browser stability regression checks
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs
