@@ -1,4 +1,4 @@
-/* The Lost Sizzler V10.18 — append rare-event/hint/voice changes to the developer log. */
+/* The Lost Sizzler V10.18 — append rare-event/hint/voice/onboarding changes to the developer log. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_EXPANSION_CHANGELOG_V118__)return;
@@ -14,7 +14,11 @@
     ["LS-0823-21","FIXED","Inventory mouse-wheel bounce","The Inventory & Objective panel now owns its scrolling instead of competing with the fullscreen overlay. Mouse-wheel and touch scrolling stay at the user's chosen position instead of snapping back down."],
     ["LS-0823-22","FIXED","Reinforced door screen jumping","Repeated attempts to enter a locked reinforced Sigil door are now rate-limited to one stable warning instead of repeatedly reopening the notification lane and making the gameplay view jump up and down."],
     ["LS-0823-23","ADDED","Voice Override admin","Added a dedicated admin page for uploading, previewing, enabling, disabling and deleting recorded voice clips for individual Lost Sizzler cues. Multiple enabled takes rotate without immediate repeats, and the browser voice remains the fallback if a custom clip is missing or fails."],
-    ["LS-0823-24","CHANGED","Dungeon structural variety","Dungeon traversal now breaks up the repeated room-corridor rhythm with broad galleries, junction pockets, side alcoves, parallel loops, occasional shortcuts, broad room thresholds and large interstitial halls. Locked and optional rooms retain protected buffers so new routes cannot bypass progression gates, and selected dead-end alcoves contain small exploration rewards."]
+    ["LS-0823-24","CHANGED","Dungeon structural variety","Dungeon traversal now breaks up the repeated room-corridor rhythm with broad galleries, junction pockets, side alcoves, parallel loops, occasional shortcuts, broad room thresholds and large interstitial halls. Locked and optional rooms retain protected buffers so new routes cannot bypass progression gates, and selected dead-end alcoves contain small exploration rewards."],
+    ["LS-0823-25","CHANGED","Gentler dungeon opening","Floor one no longer creates Dustweb spider nests or skeleton hordes. Early-depth traps and heavy special enemies are suppressed, ordinary enemy counts are capped near the entrance and shallow monster generators receive a longer opening cooldown."],
+    ["LS-0823-26","FIXED","Reliable welcome message","Starting a normal or Weekly run now produces a visible welcome in the report rail and retries the contextual welcome voice after the game's audio system is unlocked, preventing fast starts from missing the introduction."],
+    ["LS-0823-27","ADDED","Skippable Tutorial Zone","First-time solo and split-screen players are offered a safe Training Archive before the real floor. It teaches movement, firing, dash, inventory, objectives, radar, survival items, keys, doors, secrets, named enemies, the Death Stalker, shops and rare events. Returning players can skip it or replay it from the main menu, and the real floor is rebuilt fresh afterwards so training never consumes run resources or scoring time."],
+    ["LS-0823-28","FIXED","Player/enemy dossier identity separation","Using the same name as a named enemy no longer causes that enemy to appear in the dossier. Matching player-name entries remain hidden until the actual named enemy is physically encountered in the dungeon, including the Cheeky Commodore Gamer/CCG enemy case."]
   ];
 
   const html=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
