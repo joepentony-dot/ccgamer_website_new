@@ -23,10 +23,11 @@ const CCG_V106_HUD_REV="20260822e";
 const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260823b";
 const CCG_PLAYER_INSIGHTS_REV="20260823d";
-const CCG_BROWSER_STABILITY_REV="20260823a";
+const CCG_BROWSER_STABILITY_REV="20260823b";
 const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
+const CCG_DOSSIER_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -80,38 +81,63 @@ const CCG_MOBILE_SAFETY_REV="20260823a";
   }
 })();
 
-window.addEventListener("load",()=>{
-  if(document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
-  const queue=[
-    [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
-    ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
-    ["js/v10-4-patch.js","ccgLostSizzlerV104"],
-    ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
-    ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
-    ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
-    ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
-    ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
-    ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
-    ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
-    ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
-    ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
-    [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
-    ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
-    ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
-    ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
-    ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
-    [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
-    [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
-    [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"]
-  ];
-  const loadNext=index=>{
-    if(index>=queue.length)return;
-    const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
-    if(document.querySelector(selector)){loadNext(index+1);return}
-    const script=document.createElement("script");
-    script.src=src;script.dataset[key]="true";script.async=false;
-    script.onload=()=>loadNext(index+1);
-    document.body.appendChild(script);
-  };
-  loadNext(0);
-},{once:true});
+(()=>{
+  let started=false;
+  function startEnhancements(){
+    if(started||document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+    started=true;
+    const queue=[
+      [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
+      [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
+      ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
+      ["js/v10-4-patch.js","ccgLostSizzlerV104"],
+      ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
+      ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
+      ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
+      ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
+      ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
+      ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
+      ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
+      ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
+      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
+      ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
+      [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
+      ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
+      ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
+      [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
+      [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"]
+    ];
+
+    const loadNext=index=>{
+      if(index>=queue.length)return;
+      const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+      if(document.querySelector(selector)){loadNext(index+1);return}
+      const script=document.createElement("script");
+      script.src=src;
+      script.dataset[key]="true";
+      script.async=false;
+      let settled=false;
+      const advance=()=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(timeout);
+        loadNext(index+1);
+      };
+      const timeout=setTimeout(()=>{
+        console.warn(`[Lost Sizzler] optional enhancement timed out: ${src}`);
+        advance();
+      },5000);
+      script.onload=advance;
+      script.onerror=()=>{
+        console.warn(`[Lost Sizzler] optional enhancement failed to load: ${src}`);
+        advance();
+      };
+      document.body.appendChild(script);
+    };
+    loadNext(0);
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startEnhancements,{once:true});
+  else startEnhancements();
+})();
