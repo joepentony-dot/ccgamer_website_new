@@ -53,17 +53,26 @@ const CCG_EXPANSION_CHANGELOG_REV="20260823e";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823b";
+const CCG_ONBOARDING_HARDENING_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
- * parsing. The module polls for the core functions it needs, so the first Play
- * click cannot outrun the tutorial/welcome/dossier safety install. */
+ * parsing. The modules poll for the core functions they need, so the first Play
+ * click cannot outrun the tutorial, welcome or dossier-safety install. */
 (()=>{
-  if(document.querySelector('script[data-ccg-lost-sizzler-onboarding-safety-v120="true"]'))return;
-  const script=document.createElement("script");
-  script.src=`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`;
-  script.dataset.ccgLostSizzlerOnboardingSafetyV120="true";
-  script.async=false;
-  document.head.appendChild(script);
+  if(!document.querySelector('script[data-ccg-lost-sizzler-onboarding-safety-v120="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`;
+    script.dataset.ccgLostSizzlerOnboardingSafetyV120="true";
+    script.async=false;
+    document.head.appendChild(script);
+  }
+  if(!document.querySelector('script[data-ccg-lost-sizzler-onboarding-hardening-v120="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`;
+    script.dataset.ccgLostSizzlerOnboardingHardeningV120="true";
+    script.async=false;
+    document.head.appendChild(script);
+  }
 })();
 
 (()=>{
@@ -154,6 +163,7 @@ const CCG_ONBOARDING_SAFETY_REV="20260823b";
     const queue=[
       [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
       [`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`,"ccgLostSizzlerOnboardingSafetyV120"],
+      [`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`,"ccgLostSizzlerOnboardingHardeningV120"],
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
