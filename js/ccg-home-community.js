@@ -2,6 +2,7 @@
   "use strict";
 
   const mountId = "homeCommunityLatestCard";
+  const lostSizzlerUrl = "/arcade/lost-sizzler/";
 
   function text(value) {
     return String(value == null ? "" : value);
@@ -18,7 +19,9 @@
 
   function installLostSizzlerHeroLogo() {
     const target = document.querySelector(".home-hero__beta-cta");
-    if (!target || document.querySelector(".home-hero__sizzler-mark")) return;
+    if (!target) return;
+    target.href = lostSizzlerUrl;
+    if (document.querySelector(".home-hero__sizzler-mark")) return;
     ensureLostSizzlerCtaStyle();
 
     // Recognition mark only. Keeping the yellow CTA as the sole interactive
@@ -29,7 +32,7 @@
     mark.setAttribute("aria-hidden", "true");
 
     const image = document.createElement("img");
-    image.src = "/games/ccg-games/cheeky-commodore-quest/assets/lost-sizzler.webp";
+    image.src = "/arcade/lost-sizzler/assets/lost-sizzler.webp";
     image.alt = "";
     image.width = 240;
     image.height = 132;
