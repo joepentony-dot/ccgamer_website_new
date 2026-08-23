@@ -9,6 +9,8 @@
   const overlay=()=>document.getElementById("named-dossier-panel");
   const list=()=>document.getElementById("named-dossier-list");
   const onPhone=()=>window.matchMedia?.(PHONE_QUERY)?.matches;
+  const discoveryQueue=[];
+  let discoveryOpenScheduled=false;
 
   function ensureCss(){
     if(document.querySelector('link[data-ccg-dossier-polish="true"]'))return;
@@ -102,6 +104,23 @@
     }catch(error){console.warn("[Lost Sizzler] dossier scroll cue unavailable",error);}
   }
 
+  function openNextDiscovery(){
+    const wrap=overlay();
+    if(!discoveryQueue.length||mode!=="playing"||!wrap||!wrap.classList.contains("hidden"))return;
+    const name=discoveryQueue.shift();
+    showToast(`NEW DOSSIER ENTRY — ${name.toUpperCase()}`,"First encounter recorded. Opening this enemy's dossier entry now.","gold",5200);
+    showNamedDossier(name,true);
+  }
+
+  function scheduleNextDiscovery(){
+    if(!discoveryQueue.length||discoveryOpenScheduled)return;
+    discoveryOpenScheduled=true;
+    setTimeout(()=>{
+      discoveryOpenScheduled=false;
+      openNextDiscovery();
+    },0);
+  }
+
   if(typeof updateNamedEncounters==="function"){
     try{
       updateNamedEncounters=function updateNamedEncountersDiscoveryOnly(){
@@ -109,30 +128,34 @@
           .filter(e=>e.alive&&e.follower&&localPlayers().some(p=>visibleTo(p,e.x,e.y)))
           .sort((a,b)=>md(a,p1)-md(b,p1));
         const chosen=visible[0]||null;
+        const stored=PGR.readDossier?.()||{};
+        const knownNames=new Set(Object.entries(stored)
+          .filter(([,row])=>(row?.encounters||0)>0||(row?.defeats||0)>0)
+          .map(([name])=>name));
 
         for(const e of visible){
           if(e.dossierSeen)continue;
           e.dossierSeen=true;
           const name=e.follower.name;
-          const before=PGR.readDossier?.()||{};
-          const previous=before[name];
-          const firstEver=!previous||((previous.encounters||0)<=0&&(previous.defeats||0)<=0);
+          const firstEver=!knownNames.has(name);
           run.stats.namedEncounters=(run.stats.namedEncounters||0)+1;
           PGR.recordNamedEncounter(name,false);
-
-          if(firstEver){
-            showToast(`NEW DOSSIER ENTRY — ${name.toUpperCase()}`,"First encounter recorded. Opening this enemy's dossier entry now.","gold",5200);
-            setTimeout(()=>{
-              if(mode==="playing")showNamedDossier(name,true);
-            },0);
-          }
+          knownNames.add(name);
+          if(firstEver&&!discoveryQueue.includes(name))discoveryQueue.push(name);
         }
 
         S.setNamedEnemy?.(chosen?.follower?.name||"");
         if(!host.stalker?.near)S.setRoomMood(chosen?"named":roomMoodFor(W.roomAt(world,p1.x,p1.y)));
+        scheduleNextDiscovery();
       };
     }catch(error){console.warn("[Lost Sizzler] first-encounter dossier behaviour unavailable",error);}
   }
+
+  document.getElementById("named-dossier-close")?.addEventListener("click",scheduleNextDiscovery);
+  document.getElementById("named-dossier-close-top")?.addEventListener("click",scheduleNextDiscovery);
+  window.addEventListener("keydown",event=>{
+    if(event.code==="Escape"&&overlay()?.classList.contains("hidden"))scheduleNextDiscovery();
+  });
 
   const dossierList=list();
   if(dossierList&&window.MutationObserver){
@@ -152,4 +175,5 @@
 
   ensureCss();
   polishDossier();
+  window.CCGLostSizzlerDossierDiscovery={pending:()=>[...discoveryQueue]};
 })();
