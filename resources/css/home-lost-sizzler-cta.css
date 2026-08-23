@@ -1,0 +1,49 @@
+/* Home-page Lost Sizzler recognition mark beside the beta-test CTA. */
+html[data-ccg-page="home"] .home-hero__game-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+html[data-ccg-page="home"] .home-hero__sizzler-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: clamp(82px, 10vw, 118px);
+  min-height: 58px;
+  padding: 4px 6px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 216, 90, 0.42);
+  background: rgba(4, 7, 15, 0.76);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55), 0 0 16px rgba(255, 216, 90, 0.18);
+  text-decoration: none;
+}
+
+html[data-ccg-page="home"] .home-hero__sizzler-mark img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 62px;
+  object-fit: contain;
+}
+
+html[data-ccg-page="home"] .home-hero__sizzler-mark:hover,
+html[data-ccg-page="home"] .home-hero__sizzler-mark:focus-visible {
+  border-color: rgba(255, 216, 90, 0.82);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.62), 0 0 24px rgba(255, 216, 90, 0.32);
+  outline: none;
+}
+
+@media (max-width: 640px) {
+  html[data-ccg-page="home"] .home-hero__sizzler-mark {
+    width: 86px;
+    min-height: 50px;
+  }
+
+  html[data-ccg-page="home"] .home-hero__sizzler-mark img {
+    max-height: 52px;
+  }
+}
