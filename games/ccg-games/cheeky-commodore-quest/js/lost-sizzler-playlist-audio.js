@@ -4,11 +4,6 @@
   window.__CCG_LOST_SIZZLER_PLAYLIST_AUDIO__=true;
 
   const base=window.CCGSound;
-  /*
-   * game-core.js caches window.CCGSound in its `S` constant before this late
-   * V10.7 layer loads. Keep references to the original functions, then mutate
-   * the existing object in place so the cached game reference stays valid.
-   */
   const original={
     start:typeof base.start==="function"?base.start.bind(base):null,
     startMusic:typeof base.startMusic==="function"?base.startMusic.bind(base):null,
@@ -31,9 +26,9 @@
   let stalkerSight=false;
   let musicLevel=.075;
   let current=null;
-  let explorationSlot=null;
   let fadingOut=null;
   let fadeTimer=null;
+  const stateSlots=new Map();
   const lastByState=new Map();
 
   const asList=value=>Array.isArray(value)?value.filter(Boolean):(value?[value]:[]);
@@ -76,19 +71,18 @@
     return selected;
   }
 
-  function parkExploration(slot){
-    if(!slot||slot.state!=="normal")return;
+  function pauseSlot(slot){
+    if(!slot)return;
     try{
       slot.audio.pause();
-      slot.audio.volume=targetVolume("normal");
+      slot.audio.volume=targetVolume(slot.state);
     }catch(_){}
     slot.advancing=false;
-    explorationSlot=slot;
   }
 
   function destroySlot(slot){
     if(!slot)return;
-    if(slot===explorationSlot)explorationSlot=null;
+    if(stateSlots.get(slot.state)===slot)stateSlots.delete(slot.state);
     try{
       slot.audio.pause();
       slot.audio.removeAttribute("src");
@@ -98,19 +92,20 @@
 
   function cancelFade(){
     if(fadeTimer){clearInterval(fadeTimer);fadeTimer=null}
-    if(!fadingOut)return;
-    if(fadingOut.state==="normal"&&current?.state!=="normal")parkExploration(fadingOut);
-    else if(fadingOut!==current)destroySlot(fadingOut);
+    if(fadingOut&&fadingOut!==current)pauseSlot(fadingOut);
     fadingOut=null;
+    if(current)current.audio.volume=targetVolume(current.state);
   }
 
-  function updateVolume(){
-    if(current)current.audio.volume=targetVolume(current.state);
+  function updateVolumes(){
+    for(const [state,slot] of stateSlots){
+      if(slot)slot.audio.volume=targetVolume(state);
+    }
   }
 
   function finishPrevious(previous,next){
     if(!previous||previous===next)return;
-    if(previous.state==="normal"&&next.state!=="normal")parkExploration(previous);
+    if(stateSlots.get(previous.state)===previous)pauseSlot(previous);
     else destroySlot(previous);
   }
 
@@ -162,72 +157,79 @@
     return slot;
   }
 
-  function resumeExploration(previous){
-    const next=explorationSlot;
-    if(!next)return false;
-    next.advancing=false;
-    current=next;
-    try{
-      const play=next.audio.play();
-      Promise.resolve(play).then(()=>fadeBetween(previous,next)).catch(()=>{
-        if(current===next){
-          explorationSlot=null;
-          current=previous;
-          transition(true,true);
-        }
-      });
-      return true;
-    }catch(_){
-      explorationSlot=null;
-      current=previous;
-      return false;
+  function ensureStateSlot(state,advance=false){
+    if(!advance){
+      const existing=stateSlots.get(state);
+      if(existing)return{slot:existing,replaced:null,created:false};
+    }
+    const replaced=stateSlots.get(state)||null;
+    const url=pickTrack(state);
+    if(!url)return{slot:null,replaced,created:false};
+    const slot=makeSlot(state,url);
+    stateSlots.set(state,slot);
+    return{slot,replaced,created:true};
+  }
+
+  function restoreFailedTransition(next,previous,replaced){
+    destroySlot(next);
+    if(replaced&&replaced!==next)stateSlots.set(replaced.state,replaced);
+    current=previous||null;
+    if(current){
+      current.advancing=false;
+      try{Promise.resolve(current.audio.play()).catch(()=>{})}catch(_){}
+      current.audio.volume=targetVolume(current.state);
     }
   }
 
   /*
-   * `advance` is true only when the song itself reaches its end or fails.
-   * Repeated Exploration requests from rooms/corridors never advance the
-   * playlist. Returning from a special theme resumes the exact Exploration
-   * Audio object and playback position that was interrupted.
+   * Every music category owns one persistent Audio object. Theme changes only
+   * pause/fade the old category and resume the new category from its saved
+   * currentTime. A category selects a new MP3 only when its own active song
+   * naturally finishes or fails.
    */
   function transition(force=false,advance=false){
     if(!enabled||!started)return;
     const state=desiredState();
 
-    if(state==="normal"&&!advance){
-      if(current?.state==="normal"){
-        explorationSlot=current;
-        if(current.audio.paused){
-          current.audio.play().catch(()=>{});
-        }
-        updateVolume();
-        return;
+    if(current?.state===state&&!advance){
+      current.advancing=false;
+      if(current.audio.paused){
+        try{Promise.resolve(current.audio.play()).catch(()=>transition(true,true))}catch(_){transition(true,true)}
       }
-      if(explorationSlot&&resumeExploration(current))return;
-    }
-
-    if(current&&current.state===state&&!current.audio.paused&&!force){
-      updateVolume();
+      current.audio.volume=targetVolume(state);
       return;
     }
 
-    const url=pickTrack(state);
-    if(!url)return;
-    if(!advance&&!force&&current&&current.state===state&&current.url===url&&!current.audio.paused)return;
+    cancelFade();
 
-    const next=makeSlot(state,url);
+    const {slot:next,replaced,created}=ensureStateSlot(state,advance);
+    if(!next)return;
     const previous=current;
-    current=next;
-    if(state==="normal")explorationSlot=next;
 
-    next.audio.play().then(()=>fadeBetween(previous,next)).catch(()=>{
-      if(current===next){
-        if(next===explorationSlot)explorationSlot=null;
-        current=previous;
-        destroySlot(next);
-        setTimeout(()=>transition(true,true),250);
+    if(next===previous){
+      next.advancing=false;
+      if(next.audio.paused){
+        try{Promise.resolve(next.audio.play()).catch(()=>transition(true,true))}catch(_){transition(true,true)}
       }
-    });
+      next.audio.volume=targetVolume(state);
+      return;
+    }
+
+    current=next;
+    next.advancing=false;
+
+    try{
+      Promise.resolve(next.audio.play()).then(()=>fadeBetween(previous,next)).catch(()=>{
+        if(current!==next)return;
+        restoreFailedTransition(next,previous,replaced);
+        if(created)setTimeout(()=>transition(true,true),250);
+      });
+    }catch(_){
+      if(current===next){
+        restoreFailedTransition(next,previous,replaced);
+        if(created)setTimeout(()=>transition(true,true),250);
+      }
+    }
   }
 
   async function start(){
@@ -245,18 +247,18 @@
   function stopMusic(){
     started=false;
     if(fadeTimer){clearInterval(fadeTimer);fadeTimer=null}
-    const slots=new Set([current,fadingOut,explorationSlot].filter(Boolean));
+    const slots=new Set([...stateSlots.values(),current,fadingOut].filter(Boolean));
     for(const slot of slots)destroySlot(slot);
+    stateSlots.clear();
     current=null;
     fadingOut=null;
-    explorationSlot=null;
     try{original.stopMusic?.()}catch(_){}
   }
 
   function setRoomMood(value){
     const next=normaliseState(value);
     if(next===roomMood){
-      if(next==="normal")transition(false,false);
+      transition(false,false);
       return;
     }
     roomMood=next;
@@ -272,19 +274,24 @@
 
   function setStalkerSight(value){
     stalkerSight=Boolean(value);
-    updateVolume();
+    updateVolumes();
   }
 
   function setMusicLevel(value){
     musicLevel=Math.max(0,Math.min(.25,Number(value)||0));
-    updateVolume();
-    if(explorationSlot&&explorationSlot!==current)explorationSlot.audio.volume=targetVolume("normal");
+    updateVolumes();
   }
 
   function toggle(){
     try{enabled=original.toggle?Boolean(original.toggle()):!enabled}catch(_){enabled=!enabled}
     try{original.stopMusic?.()}catch(_){}
-    if(enabled){started=true;transition(false,false)}else stopMusic();
+    if(enabled){
+      started=true;
+      transition(false,false);
+    }else{
+      cancelFade();
+      for(const slot of stateSlots.values())pauseSlot(slot);
+    }
     return enabled;
   }
 
@@ -296,11 +303,6 @@
 
   try{original.stopMusic?.()}catch(_){}
 
-  /*
-   * IMPORTANT: mutate the cached sound object. The five-theme playlist owns
-   * music completely; the old per-frame danger intensity hook is intentionally
-   * ignored so it cannot reintroduce legacy music behaviour.
-   */
   Object.assign(base,{
     start,
     startMusic,
@@ -325,21 +327,22 @@
       url:current?.url||"",
       enabled,
       started,
-      explorationUrl:explorationSlot?.url||"",
-      explorationTime:Number(explorationSlot?.audio?.currentTime||0),
-      explorationParked:Boolean(explorationSlot&&explorationSlot!==current)
+      slots:Object.fromEntries(STATE_KEYS.map(state=>{
+        const slot=stateSlots.get(state);
+        return[state,{
+          url:slot?.url||"",
+          time:Number(slot?.audio?.currentTime||0),
+          paused:Boolean(slot?.audio?.paused??true),
+          active:slot===current
+        }];
+      }))
     }),
     getPlaylist:state=>categorySources(normaliseState(state)),
     crossfadeMs:FADE_MS
   };
 
-  /*
-   * Admin audio loading must never stop/start a song mid-run. The new sources
-   * are picked on the next natural advance/theme change. Stop the old V10.6
-   * refresh listener from restarting Exploration after this handler runs.
-   */
   window.addEventListener("ccg:admin-audio-ready",event=>{
-    if(started&&enabled&&desiredState()==="normal")transition(false,false);
+    if(started&&enabled)transition(false,false);
     event?.stopImmediatePropagation?.();
   });
 })();
