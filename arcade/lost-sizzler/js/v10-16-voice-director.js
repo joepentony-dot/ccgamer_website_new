@@ -7,10 +7,65 @@
   const STORAGE_KEY="ccg-lost-sizzler-voice-enabled";
   const DEFAULT_ENABLED=true;
   const VOICE_ASSETS=window.CCG_ASSET_OVERRIDES?.audio?.voice||{};
+  const BUNDLED_SPRITE={
+    src:"assets/audio/voice/lost-sizzler-voices.m4a",
+    cues:{
+      welcome:{start:0.16,duration:3.221},
+      welcomeRare:{start:3.541,duration:5.12},
+      hurt:{start:8.821,duration:0.662},
+      lowHealth:{start:9.643,duration:1.685},
+      noAmmo:{start:11.488,duration:1.493},
+      objectiveNear:{start:13.141,duration:2.262},
+      floorClear:{start:15.563,duration:2.069},
+      gameOver:{start:17.792,duration:1.195},
+      playerDeath:{start:19.147,duration:2.453},
+      respawn:{start:21.76,duration:1.557},
+      rareLoot:{start:23.477,duration:2.39},
+      levelUp:{start:26.027,duration:1.194},
+      shop:{start:27.381,duration:1.814},
+      sanctuary:{start:29.355,duration:2.282},
+      secret:{start:31.797,duration:2.454},
+      trap:{start:34.411,duration:2.346},
+      boulder:{start:36.917,duration:1.472},
+      merchantGone:{start:38.549,duration:3.051},
+      adventurerSaved:{start:41.76,duration:2.859},
+      cabinet:{start:44.779,duration:3.2},
+      cabinetFail:{start:48.139,duration:2.389},
+      cabinetWin:{start:50.688,duration:2.091},
+      bounty:{start:52.939,duration:2.346},
+      buriedCache:{start:55.445,duration:2.006},
+      loadula:{start:57.611,duration:1.664},
+      cursed:{start:59.435,duration:4.757},
+      deathStalker:{start:64.352,duration:1.493},
+      developerRoom:{start:66.005,duration:6.976},
+      bountyStart:{start:73.141,duration:1.75},
+      tremor:{start:75.051,duration:1.514},
+      mutation:{start:76.725,duration:2.454},
+      gildedElf:{start:79.339,duration:2.176},
+      gildedCaught:{start:81.675,duration:1.194},
+      gildedEscaped:{start:83.029,duration:2.091},
+      gildedFive:{start:85.28,duration:2.987},
+      goldenRoom:{start:88.427,duration:3.029},
+      adventurer:{start:91.616,duration:2.24},
+      mysteryPotion:{start:94.016,duration:2.453},
+      namedEnemy:{start:96.629,duration:2.603},
+      objectiveHint:{start:99.392,duration:3.136},
+      taxman:{start:102.688,duration:2.603},
+      treasureBat:{start:105.451,duration:2.965},
+      treasureMap:{start:108.576,duration:3.093},
+      merchant:{start:111.829,duration:2.646},
+      weeklyGhost:{start:114.635,duration:1.578},
+      weeklyReset:{start:116.373,duration:3.755},
+      weeklyDeath:{start:120.288,duration:3.797},
+      weeklyWelcome:{start:124.245,duration:5.611},
+      mimic:{start:130.016,duration:2.453}
+    }
+  };
   const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),lastPainAt:0,lastLowHealthAt:0,gildedFiveWarned:new Set(),voices:[],button:null};
 
   const lines={
     welcome:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:40,cooldown:10000},
+    welcomeRare:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
     hurt:{variants:["Ow!","That hurt!","Watch it!","Oof!"],priority:8,cooldown:6500},
     lowHealth:{variants:["Low health.","Health critical.","You could really use a potion."],priority:35,cooldown:18000},
@@ -64,12 +119,14 @@
   }
   function coolReady(key,cooldown){const now=performance.now(),last=state.lastByKey.get(key)||-Infinity;if(now-last<cooldown)return false;state.lastByKey.set(key,now);return true}
   function chooseVoice(){const voices=state.voices.length?state.voices:(window.speechSynthesis?.getVoices?.()||[]);return voices.find(v=>/^en-GB$/i.test(v.lang)&&/female|serena|sonia|libby|ryan|daniel|george/i.test(v.name))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null}
+  function clearActiveTimer(){if(state.active?.timer){clearInterval(state.active.timer);state.active.timer=null}}
   function stopActive(){
+    clearActiveTimer();
     if(state.active?.audio){try{state.active.audio.pause();state.active.audio.currentTime=0}catch(_){}}
     if(state.active?.speech){try{window.speechSynthesis?.cancel?.()}catch(_){}}
     state.active=null;state.activePriority=-1;
   }
-  function finishActive(){state.active=null;state.activePriority=-1;setTimeout(pump,80)}
+  function finishActive(){clearActiveTimer();state.active=null;state.activePriority=-1;setTimeout(pump,80)}
   function playClip(src,priority,fallbackText=""){
     try{
       const audio=new Audio(src);let failed=false;
@@ -84,15 +141,48 @@
       const p=audio.play();if(p?.catch)p.catch(fallback);return true;
     }catch(_){return false}
   }
+  function playSprite(key,priority,fallbackText=""){
+    const cue=BUNDLED_SPRITE.cues[key];if(!cue)return false;
+    try{
+      const audio=new Audio(BUNDLED_SPRITE.src);let failed=false,started=false;
+      const fallback=()=>{
+        if(failed)return;failed=true;
+        clearActiveTimer();
+        try{audio.pause()}catch(_){}
+        state.active=null;state.activePriority=-1;
+        if(fallbackText&&speakText(fallbackText,priority))return;
+        setTimeout(pump,80);
+      };
+      const begin=()=>{
+        if(started||failed)return;started=true;
+        try{audio.currentTime=Math.max(0,Number(cue.start)||0)}catch(_){fallback();return}
+        const stopAt=(Number(cue.start)||0)+(Number(cue.duration)||0);
+        const timer=setInterval(()=>{
+          if(state.active?.audio!==audio){clearInterval(timer);return}
+          if(Number(audio.currentTime||0)+.025<stopAt)return;
+          clearInterval(timer);
+          try{audio.pause()}catch(_){}
+          finishActive();
+        },25);
+        state.active={audio,timer};
+        state.activePriority=priority;
+        const p=audio.play();if(p?.catch)p.catch(fallback);
+      };
+      audio.preload="auto";audio.volume=.9;audio.onerror=fallback;state.active={audio};state.activePriority=priority;
+      if(audio.readyState>=1)begin();else audio.addEventListener("loadedmetadata",begin,{once:true});
+      audio.load();return true;
+    }catch(_){return false}
+  }
   function speakText(text,priority){
     if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined")return false;
     try{const u=new SpeechSynthesisUtterance(text);u.lang="en-GB";u.rate=.97;u.pitch=.92;u.volume=.92;const voice=chooseVoice();if(voice)u.voice=voice;u.onend=finishActive;u.onerror=finishActive;state.active={speech:u};state.activePriority=priority;window.speechSynthesis.speak(u);return true}catch(_){return false}
   }
-  function pump(forceTts=false){
+  function pump(){
     if(state.active||!state.enabled||!state.unlocked||!soundAllowed()||!state.queue.length)return;
     state.queue.sort((a,b)=>b.priority-a.priority||a.at-b.at);const next=state.queue.shift();if(!next)return;
-    const src=!forceTts?assetFor(next.key):"";
+    const src=!next.forceTts?assetFor(next.key):"";
     if(src&&playClip(src,next.priority,next.text))return;
+    if(!next.forceTts&&playSprite(next.key,next.priority,next.text))return;
     if(speakText(next.text,next.priority))return;
     finishActive();
   }
@@ -101,14 +191,14 @@
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000);if(!coolReady(key,cooldown))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
     if(state.active&&priority>=state.activePriority+25)stopActive();
-    state.queue=state.queue.filter(q=>q.key!==key);state.queue.push({key,text,priority,at:performance.now()});if(state.queue.length>8)state.queue=state.queue.sort((a,b)=>b.priority-a.priority).slice(0,8);pump();return true;
+    state.queue=state.queue.filter(q=>q.key!==key);state.queue.push({key,text,priority,forceTts:Boolean(opts.forceTts),at:performance.now()});if(state.queue.length>8)state.queue=state.queue.sort((a,b)=>b.priority-a.priority).slice(0,8);pump();return true;
   }
   function setEnabled(value){state.enabled=Boolean(value);saveEnabled();if(!state.enabled){state.queue.length=0;stopActive()}updateButton();return state.enabled}
   function updateButton(){if(state.button){state.button.textContent=state.enabled?"VOICE ON":"VOICE OFF";state.button.setAttribute("aria-pressed",String(state.enabled));state.button.title=state.enabled?"Disable spoken game prompts":"Enable spoken game prompts"}}
   function mountButton(){
     if(document.getElementById("voice-btn"))return;
     const row=document.querySelector(".system-buttons");if(!row)return;
-    const btn=document.createElement("button");btn.id="voice-btn";btn.type="button";btn.className="sound-toggle";btn.addEventListener("click",()=>{state.unlocked=true;setEnabled(!state.enabled);if(state.enabled)sayKey("welcome",{cooldown:0,text:"Voice prompts enabled."})});
+    const btn=document.createElement("button");btn.id="voice-btn";btn.type="button";btn.className="sound-toggle";btn.addEventListener("click",()=>{state.unlocked=true;setEnabled(!state.enabled);if(state.enabled)sayKey("welcome",{cooldown:0,text:"Voice prompts enabled.",forceTts:true})});
     const sound=document.getElementById("sound-btn");if(sound?.nextSibling)row.insertBefore(btn,sound.nextSibling);else row.appendChild(btn);state.button=btn;updateButton();
   }
   function unlock(){if(state.unlocked)return;state.unlocked=true;pump()}
@@ -149,13 +239,27 @@
   if(typeof hurtPlayer==="function"){
     const originalHurtPlayer=hurtPlayer;
     hurtPlayer=function hurtPlayerV116Voice(player,n,friendly=false,source="enemy"){
-      const before=Number(player?.health||0)+Number(player?.armor||0),result=originalHurtPlayer.apply(this,arguments),after=Number(player?.health||0)+Number(player?.armor||0);
-      try{if(after<before&&Number(player?.health||0)>0)sayKey("hurt");if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28)sayKey("lowHealth")}catch(_){}return result;
+      const before=Number(player?.health||0)+Number(player?.armor||0),deathsBefore=Number(run?.stats?.deaths||0),result=originalHurtPlayer.apply(this,arguments),after=Number(player?.health||0)+Number(player?.armor||0),deathsAfter=Number(run?.stats?.deaths||0);
+      try{
+        if(deathsAfter>deathsBefore)sayKey("playerDeath",{cooldown:0});
+        else if(after<before&&Number(player?.health||0)>0)sayKey("hurt");
+        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28)sayKey("lowHealth");
+      }catch(_){}return result;
     };
   }
   if(typeof beginRun==="function"){
     const originalBeginRun=beginRun;
-    beginRun=function beginRunV116Voice(opts={}){const result=originalBeginRun.apply(this,arguments);setTimeout(()=>{try{sayKey(opts?.daily?"weeklyWelcome":"welcome",{cooldown:0});if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost",{cooldown:0})}catch(_){}},450);return result};
+    beginRun=function beginRunV116Voice(opts={}){
+      const result=originalBeginRun.apply(this,arguments);
+      setTimeout(()=>{
+        try{
+          const welcomeKey=opts?.daily?"weeklyWelcome":(Math.random()<.1?"welcomeRare":"welcome");
+          sayKey(welcomeKey,{cooldown:0});
+          if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost",{cooldown:0});
+        }catch(_){}
+      },450);
+      return result;
+    };
   }
   if(typeof floorComplete==="function"){
     const originalFloorComplete=floorComplete;
@@ -181,5 +285,5 @@
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mountButton,{once:true});else mountButton();
-  window.CCGLostSizzlerVoice={say:sayKey,setEnabled,get enabled(){return state.enabled},get state(){return state},lines};
+  window.CCGLostSizzlerVoice={say:sayKey,setEnabled,get enabled(){return state.enabled},get state(){return state},lines,bundledSprite:BUNDLED_SPRITE};
 })();
