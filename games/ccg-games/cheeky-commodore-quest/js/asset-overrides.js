@@ -54,7 +54,7 @@ const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823e";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
-const CCG_TUTORIAL_GUIDANCE_REV="20260823a";
+const CCG_TUTORIAL_GUIDANCE_REV="20260823b";
 const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
@@ -124,7 +124,7 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
     const link=document.createElement("link");
     link.rel="stylesheet";
     link.href=`css/v10-13-mobile-combat-map.css?v=${CCG_MOBILE_COMBAT_MAP_REV}`;
-    link.dataset.ccgV113MobileCombatMap="true";
+    link.dataset.ccgLostSizzlerMobileCombatMapV113="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('link[data-ccg-v118-input-ui-fixes="true"]')){
