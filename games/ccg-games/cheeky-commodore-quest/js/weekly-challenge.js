@@ -9,7 +9,8 @@ window.CCGWeeklyChallenge=(()=>{
     playerName:"",
     seed:"",
     attempt:null,
-    leaderboard:[]
+    leaderboard:[],
+    ghost:null
   };
 
   const endpoint="ccq-weekly-challenge";
@@ -18,6 +19,7 @@ window.CCGWeeklyChallenge=(()=>{
   const authActions=()=>document.getElementById("weekly-auth-actions");
   const button=()=>document.getElementById("daily-btn");
   const WEEK_MS=7*24*60*60*1000;
+  const GHOST_CACHE="ccg-weekly-ghost-preview";
   let countdownTimer=0;
   let resetRefreshPending=false;
 
@@ -118,10 +120,32 @@ window.CCGWeeklyChallenge=(()=>{
     return data;
   }
 
+  function cacheGhost(ghost){
+    state={...state,ghost:ghost||null};
+    try{
+      if(ghost?.path?.length)sessionStorage.setItem(GHOST_CACHE,JSON.stringify(ghost));
+      else sessionStorage.removeItem(GHOST_CACHE);
+    }catch(_){}
+  }
+
+  async function refreshGhost(){
+    if(!state.signedIn){cacheGhost(null);return null;}
+    try{
+      const data=await invoke({action:"ghost"});
+      cacheGhost(data.ghost||null);
+      return state.ghost;
+    }catch(error){
+      console.warn("[CCG weekly] ghost replay unavailable",error);
+      cacheGhost(null);
+      return null;
+    }
+  }
+
   async function refresh(){
     try{
       const data=await invoke({action:"status"});
       state={...state,...data,ready:true};
+      if(state.signedIn)await refreshGhost();else cacheGhost(null);
       render();
       return state;
     }catch(error){
@@ -135,6 +159,7 @@ window.CCGWeeklyChallenge=(()=>{
   async function claim(){
     const data=await invoke({action:"start"});
     state={...state,...data,ready:true,signedIn:true,locked:true,attempt:data.attempt};
+    await refreshGhost();
     render();
     return data;
   }
@@ -163,5 +188,5 @@ window.CCGWeeklyChallenge=(()=>{
   });
   window.addEventListener("pagehide",stopCountdown,{once:true});
 
-  return{refresh,claim,finish,get state(){return state}};
+  return{refresh,refreshGhost,claim,finish,get state(){return state}};
 })();
