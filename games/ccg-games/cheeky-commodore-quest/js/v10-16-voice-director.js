@@ -34,6 +34,15 @@
     sanctuary:{variants:["Sanctuary.","Safe room. For now."],priority:30,cooldown:12000},
     trap:{variants:["Trap!","Move!"],priority:58,cooldown:5000},
     boulder:{variants:["Boulder! Run!","Move! Move! Move!"],priority:76,cooldown:8000},
+    mimic:{variants:["Mimic!","That chest has teeth!"],priority:68,cooldown:9000},
+    taxman:{variants:["The Taxman!","Oi! He's nicked your score!"],priority:62,cooldown:10000},
+    treasureBat:{variants:["Treasure bat!","Shoot the bat before it gets away!"],priority:56,cooldown:10000},
+    goldenRoom:{variants:["Golden room! Survive the rush!","Doors sealed. Twenty five seconds."],priority:66,cooldown:12000},
+    bounty:{variants:["Bounty complete.","Challenge complete. Bonus awarded."],priority:46,cooldown:7000},
+    mutation:{variants:["Floor mutation active.","This floor has different rules."],priority:42,cooldown:10000},
+    cursed:{variants:["Cursed cartridge.","Nice score bonus. Shame about the curse."],priority:45,cooldown:10000},
+    mysteryPotion:{variants:["Mystery potion.","Well, something happened."],priority:32,cooldown:7000},
+    weeklyGhost:{variants:["Weekly ghost loaded.","Another player's route is in the dungeon."],priority:22,cooldown:30000},
     weeklyDeath:{text:"Weekly Vault run over. Your score is being recorded.",priority:95,cooldown:6000},
     weeklyReset:{text:"Weekly Dungeon reset. A new ranked attempt is available.",priority:50,cooldown:60000}
   };
@@ -91,6 +100,14 @@
     if(/GILDED ELF CAUGHT|100 GOLD JACKPOT/.test(s))return"gildedCaught";
     if(/GILDED ELF ESCAPED|TOO SLOW/.test(s))return"gildedEscaped";
     if(/GILDED ELF/.test(s))return"gildedElf";
+    if(/MIMIC/.test(s))return"mimic";
+    if(/TAXMAN/.test(s))return"taxman";
+    if(/TREASURE BAT/.test(s))return"treasureBat";
+    if(/GOLDEN ROOM/.test(s))return"goldenRoom";
+    if(/DUNGEON BOUNTY COMPLETE|BOUNTY COMPLETE/.test(s))return"bounty";
+    if(/FLOOR MUTATION/.test(s))return"mutation";
+    if(/CURSED CARTRIDGE/.test(s))return"cursed";
+    if(/MYSTERY POTION/.test(s))return"mysteryPotion";
     if(/COUNT LOADULA|LOADULA/.test(s))return"loadula";
     if(/DEATH STALKER/.test(s))return"deathStalker";
     if(/OBJECTIVE HINT|NEXT OBJECTIVE|RADAR HINT/.test(s))return"objectiveHint";
@@ -118,7 +135,7 @@
   }
   if(typeof beginRun==="function"){
     const originalBeginRun=beginRun;
-    beginRun=function beginRunV116Voice(opts={}){const result=originalBeginRun.apply(this,arguments);setTimeout(()=>{try{sayKey(opts?.daily?"weeklyWelcome":"welcome",{cooldown:0})}catch(_){}},450);return result};
+    beginRun=function beginRunV116Voice(opts={}){const result=originalBeginRun.apply(this,arguments);setTimeout(()=>{try{sayKey(opts?.daily?"weeklyWelcome":"welcome",{cooldown:0});if(opts?.daily&&window.CCGWeeklyChallenge?.state?.ghost?.path?.length)sayKey("weeklyGhost",{cooldown:0})}catch(_){}},450);return result};
   }
   if(typeof floorComplete==="function"){
     const originalFloorComplete=floorComplete;
