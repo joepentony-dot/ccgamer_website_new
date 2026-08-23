@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Lost Sizzler Voice Overrides</title>
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
+  <link href="./css/arcade-assets.css?v=arcade-production-20260821" rel="stylesheet" />
+  <link href="./css/lost-sizzler-voices.css?v=lost-sizzler-voices-20260823a" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg"><div class="ccg-bg-starfield"></div><div class="ccg-bg-grid"></div><div class="ccg-bg-crt-overlay"></div></div>
+  <main class="voice-admin-wrap omega-admin-shell" data-admin-shell>
+    <header class="voice-admin-header">
+      <div>
+        <p class="admin-auth-kicker">The Lost Sizzler</p>
+        <h1>Voice Overrides</h1>
+        <p>Upload your own MP3, OGG or WAV recordings for individual game prompts. Enabled custom clips replace the browser-generated voice. If several clips are enabled for the same cue, the game rotates them and avoids immediately repeating the previous recording.</p>
+      </div>
+      <div class="arcade-asset-card__actions">
+        <a class="ccg-btn ccg-btn--primary" href="/games/ccg-games/cheeky-commodore-quest/" target="_blank" rel="noopener">Open The Lost Sizzler</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/arcade-assets.html">Music &amp; Audio Assets</a>
+      </div>
+    </header>
+
+    <section class="voice-admin-grid">
+      <article class="arcade-panel">
+        <h2>Add Voice Recording</h2>
+        <p class="arcade-muted">Choose the moment in the game, then upload one or several recordings. Maximum 25 MB per file.</p>
+        <form id="voice-upload-form" class="arcade-form">
+          <label>Voice cue<select id="voice-cue" required></select></label>
+          <label>Voice recording(s)<input id="voice-files" type="file" accept=".mp3,.ogg,.wav,audio/mpeg,audio/ogg,audio/wav" multiple required /><span class="arcade-muted">Multiple recordings become random variants for the same cue.</span></label>
+          <label>Notes <span class="arcade-muted">(optional)</span><input id="voice-notes" type="text" maxlength="180" placeholder="e.g. Joe take 2 — shorter hurt reaction" /></label>
+          <label class="arcade-check"><input id="voice-enabled" type="checkbox" checked /> Enable immediately</label>
+          <div id="voice-preview" class="voice-preview" aria-live="polite"><span>Select recordings to preview them before upload.</span></div>
+          <button class="ccg-btn ccg-btn--primary" id="voice-upload" type="submit">Upload Voice Clips</button>
+          <p id="voice-status" class="arcade-status" data-state="info" data-admin-status>Waiting for admin session…</p>
+        </form>
+      </article>
+
+      <article class="arcade-panel">
+        <h2>How Overrides Work</h2>
+        <ul class="arcade-help">
+          <li><strong>Custom first:</strong> an enabled recording is used instead of speech synthesis for that cue.</li>
+          <li><strong>Several takes:</strong> upload several versions of “Ow!”, “Low health”, etc. and the game varies them automatically.</li>
+          <li><strong>Use Default:</strong> disables every custom recording for one cue without deleting the files. The normal British-English browser voice then takes over again.</li>
+          <li><strong>Test:</strong> previews an enabled custom clip; if none is enabled, it speaks the built-in fallback line.</li>
+          <li><strong>Safe fallback:</strong> a missing or failed recording never stops the game. The spoken fallback remains available.</li>
+        </ul>
+        <div class="arcade-callout"><strong>Recording tip:</strong> short, tightly trimmed clips work best. Avoid long silence at the beginning or end.</div>
+      </article>
+    </section>
+
+    <section class="arcade-panel voice-library-panel">
+      <div class="arcade-library-head">
+        <div>
+          <h2>Lost Sizzler Voice Pack</h2>
+          <p id="voice-summary" class="arcade-muted">Loading voice cues…</p>
+        </div>
+        <button type="button" class="ccg-btn ccg-btn--ghost" id="voice-refresh">Refresh</button>
+      </div>
+      <div id="voice-library" class="voice-library" aria-live="polite"><p class="arcade-muted">Loading voice overrides…</p></div>
+    </section>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/lost-sizzler-voices.js?v=lost-sizzler-voices-20260823a"></script>
+</body>
+</html>
