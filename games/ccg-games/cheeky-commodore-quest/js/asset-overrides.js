@@ -54,6 +54,7 @@ const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823e";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
+const CCG_TUTORIAL_GUIDANCE_REV="20260823a";
 const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
@@ -165,6 +166,7 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
       [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
       [`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`,"ccgLostSizzlerOnboardingSafetyV120"],
       [`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`,"ccgLostSizzlerOnboardingHardeningV120"],
+      [`js/v10-23-tutorial-guidance.js?v=${CCG_TUTORIAL_GUIDANCE_REV}`,"ccgLostSizzlerTutorialGuidanceV123"],
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
@@ -178,7 +180,7 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
       ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
       ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
       ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
-      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiPolishV106"],
       [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
       ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
