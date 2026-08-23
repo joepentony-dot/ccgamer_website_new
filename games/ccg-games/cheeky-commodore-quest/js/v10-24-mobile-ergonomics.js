@@ -82,3 +82,16 @@
   window.addEventListener("pagehide",()=>{clearInterval(syncTimer);observer?.disconnect?.()},{once:true});
   window.CCGLostSizzlerMobileErgonomicsV124={sync,closeInventory,ensureReturnButton};
 })();
+
+/* V10.25 is intentionally loaded after all existing runtime enhancement layers.
+ * This keeps the sword/ammo rebalance additive and lets it wrap the final combat,
+ * hazard, tutorial and mobile-control functions rather than replacing core files. */
+(()=>{
+  if(document.querySelector('script[data-ccg-lost-sizzler-melee-ammo-v125="true"]'))return;
+  const script=document.createElement("script");
+  script.src="js/v10-25-melee-ammo-balance.js?v=20260823a";
+  script.dataset.ccgLostSizzlerMeleeAmmoV125="true";
+  script.async=false;
+  script.onerror=()=>console.warn("[Lost Sizzler] V10.25 melee/ammo balance failed to load.");
+  document.body.appendChild(script);
+})();
