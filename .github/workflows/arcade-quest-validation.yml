@@ -11,6 +11,8 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-19-dungeon-variety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
       - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
@@ -45,6 +47,8 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-19-dungeon-variety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
       - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
@@ -98,6 +102,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/audio-assets.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-19-dungeon-variety.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
@@ -105,6 +110,7 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js
           node --check games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs
@@ -136,6 +142,9 @@ jobs:
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js
           grep -F "Weekly Dungeon" games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js
           grep -F "dossier-scroll-cue" games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
+
+      - name: Validate Lost Sizzler dungeon structural variety
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs
 
       - name: Validate Lost Sizzler sealed-room death recovery
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs
