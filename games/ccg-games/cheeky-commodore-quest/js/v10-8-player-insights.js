@@ -15,7 +15,6 @@
     ["join-btn","join_online"],
     ["lobby-start-btn","host_online"]
   ]);
-  const IMPORTANT_RE=/DEATH STALKER|COUNT LOADULA|SIGIL|LOST SIZZLER|WEEKLY|WARNING|DUNGEON STARTED|ONLINE ROOM|HOST STARTED|FLOOR|BANISH|SAVE|OBJECTIVE/i;
   const sessionToken=(()=>{
     try{
       const key="ccg-lost-sizzler-session-token";
@@ -35,9 +34,10 @@
   let lastPlayTick=performance.now();
   let ratingShown=false;
   let pausedByRating=false;
+  let ratingTimer=null;
+  let runObserver=null;
 
   function safe(value){return String(value??"").trim();}
-  function esc(value){return safe(value).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));}
   function playerNameValue(){
     try{
       if(typeof playerName==="function")return safe(playerName()).slice(0,18)||"CCG Player";
@@ -81,43 +81,16 @@
   }
 
   function messageRail(){return document.querySelector(".game-message-rail");}
-  function ensureNoticeStack(){
-    let stack=document.getElementById("ccg-important-notices");
-    if(stack)return stack;
-    const rail=messageRail();
-    if(!rail)return null;
-    stack=document.createElement("div");
-    stack.id="ccg-important-notices";
-    stack.setAttribute("aria-live","polite");
-    const anchor=rail.querySelector("#pickup-toast");
-    if(anchor)rail.insertBefore(stack,anchor);else rail.appendChild(stack);
-    return stack;
-  }
-  function desktopNotice(title,text,tone="cyan",duration=7500){
-    if(!isDesktopNotice())return;
-    const stack=ensureNoticeStack();
-    if(!stack)return;
-    stack.replaceChildren();
-    const notice=document.createElement("div");
-    notice.className=`ccg-important-notice tone-${safe(tone).replace(/[^a-z]/gi,"").toLowerCase()||"cyan"}`;
-    notice.innerHTML=`<b>${esc(title)}</b><span>${esc(text)}</span>`;
-    stack.appendChild(notice);
-    requestAnimationFrame(()=>notice.classList.add("show"));
-    const remove=()=>{notice.classList.remove("show");setTimeout(()=>{if(notice.isConnected)notice.remove();},220);};
-    setTimeout(remove,Math.max(4200,Math.min(12000,Number(duration)||7500)));
-  }
 
-  function patchImportantToasts(){
-    if(typeof showToast!=="function"||showToast.__ccgInsightsPatched)return;
-    const original=showToast;
-    const wrapped=function(title,text,tone,duration){
-      const result=original.apply(this,arguments);
-      const longEnough=(Number(duration)||0)>=6500;
-      if(isDesktopNotice()&&(longEnough||IMPORTANT_RE.test(safe(title))))desktopNotice(title,text,tone,duration);
-      return result;
-    };
-    wrapped.__ccgInsightsPatched=true;
-    try{showToast=wrapped;}catch(error){console.warn("[Lost Sizzler] important notice hook unavailable",error);}
+  /* There is deliberately one notification channel. Earlier revisions mirrored
+   * long/important toasts into a second DOM stack, which could produce several
+   * large cards at once. showToast already replaces the previous message, so it
+   * is the single source of truth and the layout layer keeps it above the canvas. */
+  function retireLegacyNoticeStack(){document.getElementById("ccg-important-notices")?.remove();}
+  function desktopNotice(title,text,tone="cyan",duration=7500){
+    if(!isDesktopNotice()||typeof showToast!=="function")return;
+    retireLegacyNoticeStack();
+    showToast(title,text,tone,duration);
   }
 
   function ensureMobileNotice(){
@@ -170,10 +143,11 @@
   function ensureRatingOverlay(){
     let overlay=document.getElementById("ccg-rating-panel");
     if(overlay)return overlay;
+    const desktop=isDesktopNotice();
     overlay=document.createElement("div");
     overlay.id="ccg-rating-panel";
-    overlay.className=isDesktopNotice()?"ccg-rating-rail hidden":"overlay hidden ccg-insight-overlay";
-    overlay.innerHTML=`<div class="${isDesktopNotice()?"ccg-rating-rail-card":"panel compact ccg-insight-card ccg-rating-card"}">
+    overlay.className=desktop?"ccg-rating-rail hidden":"overlay hidden ccg-insight-overlay";
+    overlay.innerHTML=`<div class="${desktop?"ccg-rating-rail-card":"panel compact ccg-insight-card ccg-rating-card"}">
       <p class="ccg-insight-kicker">TWO MINUTES IN</p>
       <h2>RATE THE GAME</h2>
       <p>How are you finding <strong>The Lost Sizzler</strong> so far?</p>
@@ -183,16 +157,17 @@
       <p id="ccg-rating-status" class="ccg-rating-status">Choose 1 to 5 stars.</p>
       <div class="menu-buttons"><button id="ccg-rating-feedback" type="button">REPORT BUG / GAME SUGGESTION</button><button id="ccg-rating-later" type="button">NOT NOW</button></div>
     </div>`;
-    if(isDesktopNotice()){
+    if(desktop){
       const rail=messageRail();
       if(!rail)return null;
-      const notices=ensureNoticeStack();
-      if(notices?.nextSibling)rail.insertBefore(overlay,notices.nextSibling);else rail.appendChild(overlay);
+      const toast=rail.querySelector("#pickup-toast");
+      if(toast)rail.insertBefore(overlay,toast);else rail.appendChild(overlay);
     }else{
       document.querySelector(".game-area")?.appendChild(overlay);
     }
     const finish=()=>{
       overlay.classList.add("hidden");
+      window.CCGLostSizzlerBrowserStability?.resize?.();
       if(pausedByRating){
         pausedByRating=false;
         try{if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="paused")pause(true);}catch(_){}
@@ -225,8 +200,11 @@
           pausedByRating=true;
         }
       }catch(_){}
+    }else{
+      document.getElementById("pickup-toast")?.classList.remove("show");
     }
     ensureRatingOverlay()?.classList.remove("hidden");
+    window.CCGLostSizzlerBrowserStability?.resize?.();
   }
 
   function ratingClock(){
@@ -240,7 +218,7 @@
 
   function watchRunStarts(){
     let wasActive=document.body.dataset.runActive==="true";
-    const observer=new MutationObserver(()=>{
+    runObserver=new MutationObserver(()=>{
       const active=document.body.dataset.runActive==="true";
       if(active&&!wasActive){
         let activeMode="unknown";
@@ -255,7 +233,7 @@
       }
       wasActive=active;
     });
-    observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
+    runObserver.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
   }
 
   function injectStyles(){
@@ -263,28 +241,34 @@
     const style=document.createElement("style");
     style.id="ccg-lost-sizzler-insight-styles";
     style.textContent=`
-      #ccg-important-notices{display:grid;gap:8px;width:100%;min-width:0;pointer-events:none}
-      .ccg-important-notice{opacity:0;transform:translateY(-6px);padding:11px 12px;border:1px solid #6cecff;border-radius:8px;background:rgba(6,4,10,.88);box-shadow:0 6px 18px rgba(0,0,0,.28);transition:opacity .18s ease,transform .18s ease;font-family:"Courier New",monospace;overflow-wrap:anywhere}
-      .ccg-important-notice.show{opacity:1;transform:translateY(0)}.ccg-important-notice b{display:block;margin-bottom:5px;color:#ffd85a;font-size:11px;letter-spacing:.6px}.ccg-important-notice span{display:block;color:#fff;font-size:10px;line-height:1.4}
-      .ccg-important-notice.tone-red{border-color:#ff6868}.ccg-important-notice.tone-gold{border-color:#ffd85a}.ccg-important-notice.tone-green{border-color:#72ff9b}.ccg-important-notice.tone-purple{border-color:#b978ff}
+      #ccg-important-notices{display:none!important}
       .ccg-game .ccg-insight-overlay{z-index:190!important}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
-      .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:12px;border:1px solid rgba(255,216,90,.75);border-radius:9px;background:rgba(8,5,14,.92);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:4px 0 6px;font-size:15px;color:#fff}.ccg-rating-rail-card p{margin:5px 0;font-size:10px;line-height:1.4}.ccg-rating-rail-card .menu-buttons{display:grid;grid-template-columns:1fr;gap:6px}.ccg-rating-rail-card .menu-buttons button{width:100%;font-size:9px;padding:7px 6px}
-      .ccg-star-row{display:flex;justify-content:center;gap:5px;margin:10px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:27px;line-height:1;padding:5px 6px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}
-      .ccg-rating-status{min-height:17px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
-      @media(max-width:900px),(pointer:coarse){#ccg-important-notices{display:none}.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
+      .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:8px 10px;border:1px solid rgba(255,216,90,.75);background:rgba(8,5,14,.98);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:2px 0 3px;font-size:13px;color:#fff}.ccg-rating-rail-card p{margin:2px 0;font-size:9px;line-height:1.25}.ccg-rating-rail-card .menu-buttons{display:flex;justify-content:center;gap:6px;margin:4px 0 0}.ccg-rating-rail-card .menu-buttons button{width:auto;font-size:8px;padding:5px 7px}
+      .ccg-star-row{display:flex;justify-content:center;gap:4px;margin:5px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:20px;line-height:1;padding:3px 5px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}
+      .ccg-rating-status{min-height:12px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
+      @media(max-width:900px),(pointer:coarse){.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
     `;
     document.head.appendChild(style);
   }
 
+  function cleanup(){
+    document.removeEventListener("click",onStartClick,true);
+    runObserver?.disconnect();
+    runObserver=null;
+    if(ratingTimer)clearInterval(ratingTimer);
+    ratingTimer=null;
+  }
+
   function init(){
     injectStyles();
-    patchImportantToasts();
+    retireLegacyNoticeStack();
     ensureMobileNotice();
     ensureRatingOverlay();
     document.addEventListener("click",onStartClick,true);
     watchRunStarts();
     try{ratingShown=sessionStorage.getItem("ccg-lost-sizzler-rating-shown")==="1";}catch(_){}
-    setInterval(ratingClock,1000);
+    ratingTimer=setInterval(ratingClock,1000);
+    window.addEventListener("pagehide",cleanup,{once:true});
   }
 
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
