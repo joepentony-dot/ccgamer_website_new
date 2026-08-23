@@ -1,0 +1,52 @@
+name: Lost Sizzler Runtime Validation
+
+on:
+  pull_request:
+    paths:
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-12-dossier-discovery.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
+      - '.github/workflows/lost-sizzler-runtime-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-12-dossier-discovery.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
+      - '.github/workflows/lost-sizzler-runtime-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate runtime JavaScript syntax
+        run: |
+          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/game-main.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-12-dossier-discovery.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
+
+      - name: Validate dossier discovery and cold direct-link boot
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
+
+      - name: Re-run browser stability regression checks
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs
