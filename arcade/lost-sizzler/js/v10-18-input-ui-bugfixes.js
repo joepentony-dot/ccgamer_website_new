@@ -1,14 +1,30 @@
-/* The Lost Sizzler V10.18 — input, inventory-scroll and reinforced-door bug fixes. */
+/* The Lost Sizzler V10.18 — input, inventory-scroll, reinforced-door and canonical-path fixes. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_INPUT_UI_BUGFIXES_V118__)return;
   window.__CCG_LOST_SIZZLER_INPUT_UI_BUGFIXES_V118__=true;
 
   const REINFORCED_WARNING_COOLDOWN_MS=1800;
+  const CANONICAL_PATH="/arcade/lost-sizzler/";
   let lastReinforcedWarningAt=-Infinity;
 
   function isReinforcedDoor(door){
     return Boolean(door&&(door.sigilGate||door.reinforced||door.reinforcedDoor||door.type==="sigil"));
+  }
+
+  function installCanonicalPath(){
+    const canonical=document.querySelector('link[rel="canonical"]');
+    if(canonical)canonical.href=new URL(CANONICAL_PATH,location.origin).href;
+    const encodedReturn=encodeURIComponent(`${CANONICAL_PATH}#weekly-vault`);
+    document.querySelectorAll('#weekly-auth-actions a[href]').forEach(link=>{
+      try{
+        const url=new URL(link.getAttribute("href"),location.origin);
+        if(url.pathname==="/auth/register.html"||url.pathname==="/auth/login.html"){
+          url.searchParams.set("returnTo",`${CANONICAL_PATH}#weekly-vault`);
+          link.setAttribute("href",`${url.pathname}?returnTo=${encodedReturn}`);
+        }
+      }catch(_){}
+    });
   }
 
   function installCtrlCompatibility(){
@@ -64,6 +80,7 @@
   }
 
   function mount(){
+    installCanonicalPath();
     installCtrlCompatibility();
     installInventoryWheelFix();
     installReinforcedDoorFix();
@@ -74,6 +91,7 @@
 
   window.CCGLostSizzlerInputUiBugfixes={
     isReinforcedDoor,
-    reinforcedWarningCooldownMs:REINFORCED_WARNING_COOLDOWN_MS
+    reinforcedWarningCooldownMs:REINFORCED_WARNING_COOLDOWN_MS,
+    canonicalPath:CANONICAL_PATH
   };
 })();
