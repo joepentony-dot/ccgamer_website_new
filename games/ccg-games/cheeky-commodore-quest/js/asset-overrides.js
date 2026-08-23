@@ -52,6 +52,7 @@ const CCG_VOICE_EXPANSION_REV="20260823a";
 const CCG_EXPANSION_CHANGELOG_REV="20260823d";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
+const CCG_ONBOARDING_SAFETY_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -140,6 +141,7 @@ const CCG_DUNGEON_VARIETY_REV="20260823a";
     started=true;
     const queue=[
       [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
+      [`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`,"ccgLostSizzlerOnboardingSafetyV120"],
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
