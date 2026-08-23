@@ -7,7 +7,7 @@
   const STORAGE_KEY="ccg-lost-sizzler-voice-enabled";
   const DEFAULT_ENABLED=true;
   const VOICE_ASSETS=window.CCG_ASSET_OVERRIDES?.audio?.voice||{};
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastPainAt:0,lastLowHealthAt:0,gildedFiveWarned:new Set(),voices:[],button:null};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),lastPainAt:0,lastLowHealthAt:0,gildedFiveWarned:new Set(),voices:[],button:null};
 
   const lines={
     welcome:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:40,cooldown:10000},
@@ -52,7 +52,16 @@
   function soundAllowed(){try{return typeof S?.isEnabled==="function"?S.isEnabled():true}catch(_){return true}}
   function pick(entry,key){const list=entry?.variants;if(!Array.isArray(list)||!list.length)return entry?.text||"";const n=Math.abs(hash(`${key}|${Math.floor(performance.now()/1000)}`))%list.length;return list[n]}
   function hash(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
-  function assetFor(key){const value=VOICE_ASSETS?.[key];return typeof value==="string"&&value.trim()?value.trim():""}
+  function assetFor(key){
+    const value=VOICE_ASSETS?.[key];
+    const list=(Array.isArray(value)?value:[value]).map(item=>String(item||"").trim()).filter(Boolean);
+    if(!list.length)return"";
+    const last=state.lastAssetByKey.get(key)||"";
+    const choices=list.length>1?list.filter(src=>src!==last):list;
+    const source=choices[Math.floor(Math.random()*choices.length)]||list[0]||"";
+    if(source)state.lastAssetByKey.set(key,source);
+    return source;
+  }
   function coolReady(key,cooldown){const now=performance.now(),last=state.lastByKey.get(key)||-Infinity;if(now-last<cooldown)return false;state.lastByKey.set(key,now);return true}
   function chooseVoice(){const voices=state.voices.length?state.voices:(window.speechSynthesis?.getVoices?.()||[]);return voices.find(v=>/^en-GB$/i.test(v.lang)&&/female|serena|sonia|libby|ryan|daniel|george/i.test(v.name))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null}
   function stopActive(){
@@ -61,8 +70,19 @@
     state.active=null;state.activePriority=-1;
   }
   function finishActive(){state.active=null;state.activePriority=-1;setTimeout(pump,80)}
-  function playClip(src,priority){
-    try{const audio=new Audio(src);audio.preload="auto";audio.volume=.9;state.active={audio};state.activePriority=priority;audio.onended=finishActive;audio.onerror=()=>{state.active=null;state.activePriority=-1;pump(true)};const p=audio.play();if(p?.catch)p.catch(()=>{state.active=null;state.activePriority=-1;pump(true)});return true}catch(_){return false}
+  function playClip(src,priority,fallbackText=""){
+    try{
+      const audio=new Audio(src);let failed=false;
+      const fallback=()=>{
+        if(failed)return;failed=true;
+        try{audio.pause();audio.currentTime=0}catch(_){}
+        state.active=null;state.activePriority=-1;
+        if(fallbackText&&speakText(fallbackText,priority))return;
+        setTimeout(pump,80);
+      };
+      audio.preload="auto";audio.volume=.9;state.active={audio};state.activePriority=priority;audio.onended=finishActive;audio.onerror=fallback;
+      const p=audio.play();if(p?.catch)p.catch(fallback);return true;
+    }catch(_){return false}
   }
   function speakText(text,priority){
     if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined")return false;
@@ -72,7 +92,7 @@
     if(state.active||!state.enabled||!state.unlocked||!soundAllowed()||!state.queue.length)return;
     state.queue.sort((a,b)=>b.priority-a.priority||a.at-b.at);const next=state.queue.shift();if(!next)return;
     const src=!forceTts?assetFor(next.key):"";
-    if(src&&playClip(src,next.priority))return;
+    if(src&&playClip(src,next.priority,next.text))return;
     if(speakText(next.text,next.priority))return;
     finishActive();
   }
