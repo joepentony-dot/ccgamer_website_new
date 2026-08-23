@@ -1,6 +1,40 @@
 "use strict";
 net=new window.CCGNetwork.RoomNetwork({onMembers,onPacket});
 
+function installEarlyStableResize(){
+  if(window.__CCG_LOST_SIZZLER_EARLY_RESIZE_GUARD__)return;
+  window.__CCG_LOST_SIZZLER_EARLY_RESIZE_GUARD__=true;
+  const coarsePointer=()=>window.matchMedia?.("(pointer: coarse)")?.matches===true;
+  const deviceMemory=()=>Math.max(1,Number(navigator.deviceMemory)||4);
+  const pixelBudget=()=>{
+    if(coarsePointer())return deviceMemory()<=2?1400000:1900000;
+    if(deviceMemory()<=2)return 2200000;
+    if(deviceMemory()<=4)return 3200000;
+    return 5000000;
+  };
+  resizeGameCanvas=function(){
+    const area=document.querySelector(".canvas-wrap");
+    if(!area||!canvas||!ctx)return false;
+    const r=area.getBoundingClientRect();
+    if(!Number.isFinite(r.width)||!Number.isFinite(r.height)||r.width<2||r.height<2)return false;
+    let w=Math.max(640,Math.min(4096,Math.floor(r.width)));
+    let h=Math.max(360,Math.min(2160,Math.floor(r.height)));
+    const budget=pixelBudget(),pixels=w*h;
+    if(pixels>budget){
+      const scale=Math.sqrt(budget/pixels);
+      w=Math.max(640,Math.floor(w*scale));
+      h=Math.max(360,Math.floor(h*scale));
+      if(w*h>budget){
+        if(w>=h)w=Math.max(640,Math.floor(budget/h));
+        else h=Math.max(360,Math.floor(budget/w));
+      }
+    }
+    if(Math.abs(canvas.width-w)<2&&Math.abs(canvas.height-h)<2)return false;
+    canvas.width=w;canvas.height=h;ctx.imageSmoothingEnabled=false;cameras.clear();return true;
+  };
+}
+installEarlyStableResize();
+
 function hideStaticPanels(){UI.rulebook?.classList.add("hidden");UI.support?.classList.add("hidden");UI.shop?.classList.add("hidden");UI.savePanel?.classList.add("hidden");UI.artefactChoice?.classList.add("hidden");pendingBanishmentReward=null;activeShop=null;hideItemInfo();hideNamedDossier()}
 function closeInventoryForMenu(){if(UI.inventory&&!UI.inventory.classList.contains("hidden"))UI.inventory.classList.add("hidden");if(mode==="inventory")mode="playing"}
 function clearAbandonedRun(){
