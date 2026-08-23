@@ -12,7 +12,7 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const changelog=read("js/v10-18-expansion-changelog.js");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV/,"asset loader must expose a cache-busted onboarding revision");
+assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823c"/,"tutorial progression fix must be cache-busted for players who loaded the earlier tutorial");
 assert.match(assets,/CCG_ONBOARDING_HARDENING_REV/,"asset loader must expose a cache-busted onboarding-hardening revision");
 assert.match(assets,/v10-20-onboarding-safety\.js\?v=\$\{CCG_ONBOARDING_SAFETY_REV\}/,"onboarding safety script must be loaded by the game");
 assert.match(assets,/v10-20-onboarding-hardening\.js\?v=\$\{CCG_ONBOARDING_HARDENING_REV\}/,"onboarding hardening must be loaded by the game");
@@ -27,9 +27,24 @@ assert.match(source,/rare\?\.golden&&depth\(rare\.golden\.roomId\)<=safeDepth/,"
 assert.match(source,/Visit the Tutorial Zone\?/,"first-time players must be offered the tutorial");
 assert.match(source,/I've Played Before — Skip/,"experienced players must be able to skip the tutorial");
 assert.match(source,/Tutorial Zone/,"the tutorial must be replayable from the menu");
-for(const phrase of ["MOVE AROUND","FIRE YOUR WEAPON","DASH","OPEN THE INVENTORY","OBJECTIVES, RADAR & HINTS","HEALTH, ARMOUR & QUICK ITEMS","KEYS, DOORS, CHESTS & SECRETS","ENEMIES, NAMED ENEMIES & THE STALKER","RARE EVENTS, SHOPS & SCORE","READY TO ENTER THE DUNGEON"]){
+for(const phrase of ["MOVE AROUND","FIRE YOUR WEAPON","DASH","OPEN AND CLOSE THE INVENTORY","OBJECTIVES, RADAR & HINTS","HEALTH, ARMOUR & QUICK ITEMS","KEYS, DOORS, CHESTS & SECRETS","ENEMIES, NAMED ENEMIES & THE STALKER","RARE EVENTS, SHOPS & SCORE","READY TO ENTER THE DUNGEON"]){
   assert.ok(source.includes(phrase),`tutorial is missing section: ${phrase}`);
 }
+
+assert.match(source,/movementDistance:0/,"tutorial movement must track cumulative successful movement rather than only distance from the starting square");
+assert.match(source,/state\.movementDistance\+=d/,"movement polling must accumulate every successful tile movement");
+assert.match(source,/function recordMovement\(p,before\)/,"movement must also be observed directly from the movement action");
+assert.match(source,/movePlayer=function\(p\)\{const before=p\?\{x:p\.x,y:p\.y\}:null,r=o\.apply\(this,arguments\);recordMovement\(p,before\);return r\}/,"the tutorial must wrap actual player movement so desktop, gamepad and mobile movement can progress stage one");
+assert.match(source,/if\(state\.movementDistance>=2\)completeInteractive\("move"\)/,"two cumulative tiles must complete the movement stage even if the player circles back toward the start");
+assert.match(source,/function completeInteractive\(kind\)/,"all interactive tutorial stages must share a single completion path");
+assert.match(source,/setTimeout\(\(\)=>\{if\(state\.active&&STEPS\[state\.step\]\?\.\[0\]===kind&&stepReady\(STEPS\[state\.step\]\)\)advance\(\)\},260\)/,"completed interactive stages must advance automatically");
+assert.match(source,/firePlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("fire"\);return r\}/,"firing must progress the fire tutorial stage");
+assert.match(source,/dashPlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("dash"\);return r\}/,"dashing must progress the dash tutorial stage");
+assert.match(source,/state\.inventoryOpened&&state\.inventoryClosed/,"inventory training must require both opening and closing the inventory");
+assert.match(source,/state\.inventoryClosed=true;completeInteractive\("inventory"\)/,"closing the inventory after opening it must complete the inventory stage");
+assert.match(source,/setInterval\(watchTutorialProgress,80\)/,"tutorial progress must have a fast polling fallback for UI and control wrappers");
+assert.match(source,/setInterval\(install,500\)/,"tutorial action wrappers must keep self-healing if later enhancement scripts wrap controls again");
+
 assert.match(source,/if\(state\.active\)return false;return o\.apply\(this,arguments\)/,"tutorial players must be immune to accidental damage");
 assert.match(source,/startWorld\(PGR\.floorSeed\(run\),split,false,false\)/,"completing or skipping live training must rebuild a real floor");
 assert.match(source,/run\?\.daily\|\|playMode==="online"/,"ranked and online runs must not be converted into tutorial runs");
@@ -54,4 +69,4 @@ assert.match(hardening,/if\(!enemies\.has\(alias\)\|\|blocked\.has\(alias\)\)con
 
 for(const id of ["LS-0823-25","LS-0823-26","LS-0823-27","LS-0823-28"])assert.ok(changelog.includes(id),`developer changelog is missing ${id}`);
 
-console.log("Lost Sizzler V10.20 onboarding, gentle-opening, pristine-reset and dossier identity regression checks passed.");
+console.log("Lost Sizzler V10.20 onboarding, full tutorial progression, gentle-opening, pristine-reset and dossier identity regression checks passed.");
