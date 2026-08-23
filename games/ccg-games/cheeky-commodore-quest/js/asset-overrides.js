@@ -30,7 +30,7 @@ const CCG_MOBILE_SAFETY_REV="20260823a";
 const CCG_DOSSIER_REV="20260823b";
 const CCG_CHANGELOG_REV="20260823e";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
-const CCG_GILDED_ELF_REV="20260823a";
+const CCG_GILDED_ELF_REV="20260823b";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
