@@ -21,7 +21,8 @@
         ["LS-0823-10","ADDED","Mobile minimap toggle","A MAP button has been added to the mobile touch controls. It opens a compact minimap using the existing explored-area radar data and discovered markers, and can be toggled off during play."],
         ["LS-0823-11","CHANGED","Rating prompt timing","The automatic game-rating prompt now appears after five minutes of active gameplay instead of two minutes, giving players longer to form an opinion before being asked."],
         ["LS-0823-12","ADDED","Dedicated ratings admin page","Submitted 1–5 star ratings now have their own admin page with average score, total submissions, today's ratings, five-star share, prompt response rate, star distribution, filters and individual submission details."],
-        ["LS-0823-13","ADDED","Weekly Dungeon reset countdown","After a registered player's ranked Weekly Dungeon attempt has been used, the locked start button now displays a live countdown to the Monday 00:00 UTC reset. The challenge state refreshes automatically when the countdown reaches zero so the next weekly attempt becomes available without a page reload."]
+        ["LS-0823-13","ADDED","Weekly Dungeon reset countdown","After a registered player's ranked Weekly Dungeon attempt has been used, the locked start button now displays a live countdown to the Monday 00:00 UTC reset. The challenge state refreshes automatically when the countdown reaches zero so the next weekly attempt becomes available without a page reload."],
+        ["LS-0823-14","ADDED","Gilded Elf bonus encounter","A rare seeded Gilded Elf can now appear on any floor. It has 10 HP and 5 armour, never attacks, flees for up to 30 seconds within a two-screen tether and leaves a dust trail. It drops 10 gold every three seconds and on damaging hits, with anti-spam protection, while defeating it releases a 100-gold jackpot."]
       ]
     },
     {
