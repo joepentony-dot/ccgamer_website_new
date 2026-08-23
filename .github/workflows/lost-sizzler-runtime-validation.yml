@@ -7,8 +7,11 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
   push:
     branches:
@@ -18,8 +21,11 @@ on:
       - 'games/ccg-games/cheeky-commodore-quest/js/game-main.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
       - 'games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs'
       - 'games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs'
       - '.github/workflows/lost-sizzler-runtime-validation.yml'
 
 permissions:
@@ -43,10 +49,16 @@ jobs:
           node --check games/ccg-games/cheeky-commodore-quest/js/game-main.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js
           node --check games/ccg-games/cheeky-commodore-quest/js/v10-9-browser-stability.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-20-onboarding-safety.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-18-expansion-changelog.js
           node --check games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
 
       - name: Validate dossier discovery and cold direct-link boot
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-12-dossier-direct-link.mjs
+
+      - name: Validate onboarding, gentle opening and dossier identity isolation
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-20-onboarding-safety.mjs
 
       - name: Re-run browser stability regression checks
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-9-stability.mjs
