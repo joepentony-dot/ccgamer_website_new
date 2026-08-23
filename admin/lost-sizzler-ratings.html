@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="ccg-context" content="admin" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>CCG Admin | Lost Sizzler Ratings</title>
+  <link rel="icon" href="../favicon.ico" />
+  <link href="../resources/css/ccg-master.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-mode.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-effects.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="./css/admin-auth.css?v=admin-stable-20260207" rel="stylesheet" />
+  <link href="../resources/css/ccg-admin.css?v=admin-modern-20260810" rel="stylesheet" />
+  <link href="./css/lost-sizzler-ratings.css?v=lost-sizzler-ratings-20260823a" rel="stylesheet" />
+</head>
+<body class="ccg-body" data-ccg-mode="c64" data-mode="c64">
+  <div aria-hidden="true" class="ccg-bg">
+    <div class="ccg-bg-starfield"></div>
+    <div class="ccg-bg-grid"></div>
+    <div class="ccg-bg-crt-overlay"></div>
+  </div>
+
+  <main class="ls-ratings-admin omega-admin-shell" data-admin-shell>
+    <header class="ls-ratings-header">
+      <div>
+        <p class="admin-auth-kicker">The Lost Sizzler</p>
+        <h1>Player Ratings</h1>
+        <p>Every 1–5 star answer submitted from the automatic two-minute rating prompt is stored in the Lost Sizzler play-event log and displayed here.</p>
+      </div>
+      <div class="ls-ratings-header-actions">
+        <a class="ccg-btn ccg-btn--primary" href="/games/ccg-games/cheeky-commodore-quest/" target="_blank" rel="noopener">Open The Lost Sizzler</a>
+        <a class="ccg-btn ccg-btn--ghost" href="/admin/lost-sizzler-feedback.html">Bug Reports</a>
+        <button class="ccg-btn ccg-btn--ghost" id="ls-ratings-refresh" type="button">Refresh Ratings</button>
+      </div>
+    </header>
+
+    <section id="ls-ratings-summary" class="ls-ratings-summary" aria-live="polite">
+      <article><span>AVERAGE RATING</span><strong>—</strong><small>Across all submitted ratings</small></article>
+      <article><span>TOTAL RATINGS</span><strong>—</strong><small>1–5 star submissions</small></article>
+      <article><span>RATINGS TODAY</span><strong>—</strong><small>Since local midnight</small></article>
+      <article><span>5 STAR SHARE</span><strong>—</strong><small>Percentage rated 5/5</small></article>
+      <article><span>PROMPT RESPONSE</span><strong>—</strong><small>Rated vs rated + dismissed</small></article>
+    </section>
+
+    <section class="ls-ratings-grid">
+      <article class="ls-ratings-panel">
+        <div class="ls-ratings-panel-head">
+          <div><h2>Rating Breakdown</h2><p>Distribution of all recorded star ratings.</p></div>
+        </div>
+        <div id="ls-ratings-breakdown" class="ls-rating-breakdown" aria-live="polite"><p class="ls-ratings-muted">Loading breakdown…</p></div>
+      </article>
+
+      <article class="ls-ratings-panel">
+        <div class="ls-ratings-panel-head">
+          <div><h2>Filters</h2><p>Filter the individual submissions shown below.</p></div>
+        </div>
+        <div class="ls-ratings-filters">
+          <label>Stars
+            <select id="ls-ratings-star-filter">
+              <option value="all">All ratings</option>
+              <option value="5">5 stars</option>
+              <option value="4">4 stars</option>
+              <option value="3">3 stars</option>
+              <option value="2">2 stars</option>
+              <option value="1">1 star</option>
+            </select>
+          </label>
+          <label>Device
+            <select id="ls-ratings-device-filter">
+              <option value="all">All devices</option>
+              <option value="desktop">Desktop</option>
+              <option value="mobile">Mobile</option>
+              <option value="tablet">Tablet</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </label>
+          <label>Search
+            <input id="ls-ratings-search" type="search" placeholder="Player, mode, build or session…" autocomplete="off" />
+          </label>
+        </div>
+      </article>
+    </section>
+
+    <section class="ls-ratings-panel ls-ratings-table-panel">
+      <div class="ls-ratings-panel-head">
+        <div><h2>Individual Rating Submissions</h2><p>Newest first. Player name is the name entered for that game session; anonymous website users can still submit a rating.</p></div>
+        <span id="ls-ratings-visible-count" class="ls-ratings-count">—</span>
+      </div>
+      <div id="ls-ratings-table"><p class="ls-ratings-muted">Loading ratings…</p></div>
+    </section>
+
+    <p id="ls-ratings-status" class="ls-ratings-status" data-state="info">Waiting for admin access…</p>
+  </main>
+
+  <script src="/js/ccg-supabase-config.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-supabase-client.js?v=admin-stable-20260207" defer></script>
+  <script src="/js/ccg-auth-ui.js?v=admin-stable-20260207" defer></script>
+  <script type="module" src="/admin/js/lost-sizzler-ratings.js?v=lost-sizzler-ratings-20260823a"></script>
+</body>
+</html>
