@@ -11,7 +11,7 @@
     if (document.querySelector('link[data-ccg-home-lost-sizzler-cta="true"]')) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/resources/css/home-lost-sizzler-cta.css?v=20260823a";
+    link.href = "/resources/css/home-lost-sizzler-cta.css?v=20260823b";
     link.dataset.ccgHomeLostSizzlerCta = "true";
     document.head.appendChild(link);
   }
@@ -21,18 +21,21 @@
     if (!target || document.querySelector(".home-hero__sizzler-mark")) return;
     ensureLostSizzlerCtaStyle();
 
-    const mark = document.createElement("a");
+    // Recognition mark only. Keeping the yellow CTA as the sole interactive
+    // launch target prevents the decorative logo from ever owning pointer,
+    // wheel or touch-scroll input over the home hero.
+    const mark = document.createElement("span");
     mark.className = "home-hero__sizzler-mark";
-    mark.href = target.getAttribute("href") || "/games/ccg-games/cheeky-commodore-quest/";
-    mark.setAttribute("aria-label", "Open The Lost Sizzler beta test");
+    mark.setAttribute("aria-hidden", "true");
 
     const image = document.createElement("img");
     image.src = "/games/ccg-games/cheeky-commodore-quest/assets/lost-sizzler.webp";
-    image.alt = "The Lost Sizzler";
+    image.alt = "";
     image.width = 240;
     image.height = 132;
     image.loading = "eager";
     image.decoding = "async";
+    image.draggable = false;
 
     mark.appendChild(image);
     target.parentElement.insertBefore(mark, target);
