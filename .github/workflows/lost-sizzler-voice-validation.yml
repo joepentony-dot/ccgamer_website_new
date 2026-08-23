@@ -1,0 +1,58 @@
+name: Lost Sizzler Voice Validation
+
+on:
+  pull_request:
+    paths:
+      - 'admin/lost-sizzler-voices.html'
+      - 'admin/css/lost-sizzler-voices.css'
+      - 'admin/js/lost-sizzler-voices.js'
+      - 'admin/js/admin-nav.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-16-voice-director.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-17-voice-expansion.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-voice-admin.mjs'
+      - 'supabase/migrations/20260823171000_lost_sizzler_voice_admin.sql'
+      - '.github/workflows/lost-sizzler-voice-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'admin/lost-sizzler-voices.html'
+      - 'admin/css/lost-sizzler-voices.css'
+      - 'admin/js/lost-sizzler-voices.js'
+      - 'admin/js/admin-nav.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-16-voice-director.js'
+      - 'games/ccg-games/cheeky-commodore-quest/js/v10-17-voice-expansion.js'
+      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-voice-admin.mjs'
+      - 'supabase/migrations/20260823171000_lost_sizzler_voice_admin.sql'
+      - '.github/workflows/lost-sizzler-voice-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check admin/js/lost-sizzler-voices.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-16-voice-director.js
+          node --check games/ccg-games/cheeky-commodore-quest/js/v10-17-voice-expansion.js
+          node --check games/ccg-games/cheeky-commodore-quest/tests/v10-19-voice-admin.mjs
+
+      - name: Validate voice override wiring
+        run: node games/ccg-games/cheeky-commodore-quest/tests/v10-19-voice-admin.mjs
