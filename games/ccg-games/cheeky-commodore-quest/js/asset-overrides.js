@@ -56,6 +56,7 @@ const CCG_ONBOARDING_SAFETY_REV="20260823e";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
 const CCG_TUTORIAL_GUIDANCE_REV="20260823c";
 const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
+const CCG_MOBILE_ERGONOMICS_REV="20260823a";
 
 /* Start onboarding immediately while the core scripts below this file are still
  * parsing. The modules poll for the core functions they need, so the first Play
@@ -134,6 +135,13 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
     link.dataset.ccgV118InputUiFixes="true";
     document.head.appendChild(link);
   }
+  if(!document.querySelector('link[data-ccg-v124-mobile-ergonomics="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-24-mobile-ergonomics.css?v=${CCG_MOBILE_ERGONOMICS_REV}`;
+    link.dataset.ccgV124MobileErgonomics="true";
+    document.head.appendChild(link);
+  }
   if(!document.querySelector('link[data-ccg-developer-changelog="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
@@ -195,7 +203,8 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
       [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"],
       [`js/v10-18-expansion-changelog.js?v=${CCG_EXPANSION_CHANGELOG_REV}`,"ccgLostSizzlerExpansionChangelogV118"],
       [`js/v10-18-input-ui-bugfixes.js?v=${CCG_INPUT_UI_FIX_REV}`,"ccgLostSizzlerInputUiBugfixesV118"],
-      [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"]
+      [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"],
+      [`js/v10-24-mobile-ergonomics.js?v=${CCG_MOBILE_ERGONOMICS_REV}`,"ccgLostSizzlerMobileErgonomicsV124"]
     ];
 
     const loadNext=index=>{
