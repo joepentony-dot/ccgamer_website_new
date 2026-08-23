@@ -15,7 +15,14 @@ window.CCG_ASSET_OVERRIDES={
       exploration:null,danger:null,sanctuary:null,named:null,stalker:null,
       playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}
     },
-    sfx:{}
+    sfx:{},
+    voice:{
+      welcome:null,weeklyWelcome:null,hurt:null,lowHealth:null,noAmmo:null,secret:null,
+      objectiveHint:null,objectiveNear:null,floorClear:null,gameOver:null,playerDeath:null,
+      deathStalker:null,loadula:null,gildedElf:null,gildedFive:null,gildedCaught:null,
+      gildedEscaped:null,namedEnemy:null,rareLoot:null,levelUp:null,shop:null,sanctuary:null,
+      trap:null,boulder:null,weeklyDeath:null,weeklyReset:null
+    }
   }
 };
 
@@ -31,6 +38,7 @@ const CCG_DOSSIER_REV="20260823b";
 const CCG_CHANGELOG_REV="20260823e";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
 const CCG_GILDED_ELF_REV="20260823b";
+const CCG_VOICE_DIRECTOR_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -132,7 +140,8 @@ const CCG_GILDED_ELF_REV="20260823b";
       ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
       [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
-      [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"]
+      [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
+      [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"]
     ];
 
     const loadNext=index=>{
