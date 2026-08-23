@@ -28,6 +28,7 @@ const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
 const CCG_DOSSIER_REV="20260823b";
+const CCG_CHANGELOG_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -71,6 +72,20 @@ const CCG_DOSSIER_REV="20260823b";
     link.href=`css/v10-11-mobile-runtime-safety.css?v=${CCG_MOBILE_SAFETY_REV}`;
     link.dataset.ccgV111MobileSafety="true";
     document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-developer-changelog="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-12-developer-changelog.css?v=${CCG_CHANGELOG_REV}`;
+    link.dataset.ccgDeveloperChangelog="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-ccg-developer-changelog="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-12-developer-changelog.js?v=${CCG_CHANGELOG_REV}`;
+    script.dataset.ccgDeveloperChangelog="true";
+    script.async=false;
+    document.body.appendChild(script);
   }
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
     const script=document.createElement("script");
