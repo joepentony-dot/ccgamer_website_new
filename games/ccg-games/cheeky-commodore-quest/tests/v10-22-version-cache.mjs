@@ -18,8 +18,8 @@ const homeCtaCss=readRepo("resources/css/home-lost-sizzler-cta.css");
 const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)">/)?.[1];
 assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number");
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
-assert.equal(manifest.build,"2026.08.23.4","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260823r4","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.23.5","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260823r5","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/version-check.js","js/weekly-challenge.js","js/asset-overrides.js",
