@@ -7,6 +7,37 @@
     return String(value == null ? "" : value);
   }
 
+  function ensureLostSizzlerCtaStyle() {
+    if (document.querySelector('link[data-ccg-home-lost-sizzler-cta="true"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/resources/css/home-lost-sizzler-cta.css?v=20260823a";
+    link.dataset.ccgHomeLostSizzlerCta = "true";
+    document.head.appendChild(link);
+  }
+
+  function installLostSizzlerHeroLogo() {
+    const target = document.querySelector(".home-hero__beta-cta");
+    if (!target || document.querySelector(".home-hero__sizzler-mark")) return;
+    ensureLostSizzlerCtaStyle();
+
+    const mark = document.createElement("a");
+    mark.className = "home-hero__sizzler-mark";
+    mark.href = target.getAttribute("href") || "/games/ccg-games/cheeky-commodore-quest/";
+    mark.setAttribute("aria-label", "Open The Lost Sizzler beta test");
+
+    const image = document.createElement("img");
+    image.src = "/games/ccg-games/cheeky-commodore-quest/assets/lost-sizzler.webp";
+    image.alt = "The Lost Sizzler";
+    image.width = 240;
+    image.height = 132;
+    image.loading = "eager";
+    image.decoding = "async";
+
+    mark.appendChild(image);
+    target.parentElement.insertBefore(mark, target);
+  }
+
   function gameUrl(gameKey) {
     const slug = text(gameKey).trim().toLowerCase().replace(/_/g, "-");
     return slug ? "/games/" + encodeURIComponent(slug) + "/" : "/games/";
@@ -83,6 +114,8 @@
   }
 
   async function init() {
+    installLostSizzlerHeroLogo();
+
     const mount = document.getElementById(mountId);
     if (!mount || !window.ccgSupabase) return;
 
