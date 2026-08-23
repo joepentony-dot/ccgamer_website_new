@@ -56,8 +56,9 @@ assert.match(guidance,/ccgTutorialControlFlash/,"highlighted controls must visib
 assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close controls must be highlighted after opening inventory");
 
 /* Start flow: the menu itself is the only chooser after the mobile notice. */
-assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must enforce a permanent Tutorial button");
-assert.match(guidance,/solo\.insertAdjacentElement\("afterend",button\)/,"Tutorial must sit immediately beside Play Solo");
+assert.match(index,/<button id="solo-btn" class="primary">Play Solo<\/button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial<\/button>/,"Tutorial must be present in the shipped HTML immediately beside Play Solo");
+assert.match(guidance,/function ensurePrimaryTutorialButton\(\)/,"guidance must enforce the permanent Tutorial button if another runtime rearranges the menu");
+assert.match(guidance,/solo\.insertAdjacentElement\("afterend",button\)/,"Tutorial must remain immediately beside Play Solo");
 assert.match(guidance,/button\.textContent="Tutorial"/,"permanent tutorial option must be labelled Tutorial");
 assert.match(guidance,/function bindSoloDirect\(\)/,"Play Solo must start directly without another chooser");
 assert.doesNotMatch(guidance,/Choose how you want to start|data-start-tutorial|data-start-game/,"the redundant second tutorial/play chooser must be removed");
@@ -87,4 +88,4 @@ assert.match(config,/\{name:"CCG"[^\n]*ccgBoss:true/,"special dossier enemy must
 assert.match(source,/ccg-lost-sizzler-player-dossier-block-v1/,"false player-name dossier identities must remain blocked until verified");
 assert.match(hardening,/new Set\(\["ccg","ccg player","cheeky commodore gamer"\]\)/,"CCG identity aliases must remain recognised");
 
-console.log("Lost Sizzler r7 tutorial regression checks passed: one start menu, permanent Tutorial option, async mobile launch persistence, centred acknowledgement cards and real control input.");
+console.log("Lost Sizzler r7 tutorial regression checks passed: static Tutorial option, one start menu, async mobile launch persistence, centred acknowledgement cards and real control input.");
