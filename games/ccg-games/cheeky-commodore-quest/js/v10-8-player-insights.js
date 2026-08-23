@@ -1,4 +1,4 @@
-/* The Lost Sizzler — desktop notices, play telemetry and two-minute rating prompt. */
+/* The Lost Sizzler — non-intrusive desktop notices, play telemetry and two-minute rating prompt. */
 (function(){
   "use strict";
   if(window.__CCG_LOST_SIZZLER_PLAYER_INSIGHTS__)return;
@@ -80,25 +80,30 @@
     }
   }
 
+  function messageRail(){return document.querySelector(".game-message-rail");}
   function ensureNoticeStack(){
     let stack=document.getElementById("ccg-important-notices");
     if(stack)return stack;
+    const rail=messageRail();
+    if(!rail)return null;
     stack=document.createElement("div");
     stack.id="ccg-important-notices";
     stack.setAttribute("aria-live","polite");
-    document.querySelector(".game-area")?.appendChild(stack);
+    const anchor=rail.querySelector("#pickup-toast");
+    if(anchor)rail.insertBefore(stack,anchor);else rail.appendChild(stack);
     return stack;
   }
   function desktopNotice(title,text,tone="cyan",duration=7500){
     if(!isDesktopNotice())return;
     const stack=ensureNoticeStack();
     if(!stack)return;
+    stack.replaceChildren();
     const notice=document.createElement("div");
     notice.className=`ccg-important-notice tone-${safe(tone).replace(/[^a-z]/gi,"").toLowerCase()||"cyan"}`;
     notice.innerHTML=`<b>${esc(title)}</b><span>${esc(text)}</span>`;
     stack.appendChild(notice);
     requestAnimationFrame(()=>notice.classList.add("show"));
-    const remove=()=>{notice.classList.remove("show");setTimeout(()=>notice.remove(),260);};
+    const remove=()=>{notice.classList.remove("show");setTimeout(()=>{if(notice.isConnected)notice.remove();},220);};
     setTimeout(remove,Math.max(4200,Math.min(12000,Number(duration)||7500)));
   }
 
@@ -167,8 +172,8 @@
     if(overlay)return overlay;
     overlay=document.createElement("div");
     overlay.id="ccg-rating-panel";
-    overlay.className="overlay hidden ccg-insight-overlay";
-    overlay.innerHTML=`<div class="panel compact ccg-insight-card ccg-rating-card">
+    overlay.className=isDesktopNotice()?"ccg-rating-rail hidden":"overlay hidden ccg-insight-overlay";
+    overlay.innerHTML=`<div class="${isDesktopNotice()?"ccg-rating-rail-card":"panel compact ccg-insight-card ccg-rating-card"}">
       <p class="ccg-insight-kicker">TWO MINUTES IN</p>
       <h2>RATE THE GAME</h2>
       <p>How are you finding <strong>The Lost Sizzler</strong> so far?</p>
@@ -178,7 +183,14 @@
       <p id="ccg-rating-status" class="ccg-rating-status">Choose 1 to 5 stars.</p>
       <div class="menu-buttons"><button id="ccg-rating-feedback" type="button">REPORT BUG / GAME SUGGESTION</button><button id="ccg-rating-later" type="button">NOT NOW</button></div>
     </div>`;
-    document.querySelector(".game-area")?.appendChild(overlay);
+    if(isDesktopNotice()){
+      const rail=messageRail();
+      if(!rail)return null;
+      const notices=ensureNoticeStack();
+      if(notices?.nextSibling)rail.insertBefore(overlay,notices.nextSibling);else rail.appendChild(overlay);
+    }else{
+      document.querySelector(".game-area")?.appendChild(overlay);
+    }
     const finish=()=>{
       overlay.classList.add("hidden");
       if(pausedByRating){
@@ -206,12 +218,14 @@
     if(ratingShown)return;
     ratingShown=true;
     try{sessionStorage.setItem("ccg-lost-sizzler-rating-shown","1");}catch(_){}
-    try{
-      if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="playing"){
-        pause();
-        pausedByRating=true;
-      }
-    }catch(_){}
+    if(!isDesktopNotice()){
+      try{
+        if(typeof pause==="function"&&typeof mode!=="undefined"&&mode==="playing"){
+          pause();
+          pausedByRating=true;
+        }
+      }catch(_){}
+    }
     ensureRatingOverlay()?.classList.remove("hidden");
   }
 
@@ -236,7 +250,7 @@
         lastPlayTick=performance.now();
         if(isDesktopNotice()){
           const mission=safe(document.getElementById("mission-text")?.textContent)||"Follow the current objective shown above the dungeon.";
-          desktopNotice("IMPORTANT INFORMATION",`${mission}  WASD/ARROWS move · SPACE fires · TAB opens inventory.`, "cyan",9000);
+          desktopNotice("IMPORTANT INFORMATION",`${mission}  WASD/ARROWS move · SPACE fires · TAB opens inventory.`,"cyan",9000);
         }
       }
       wasActive=active;
@@ -249,13 +263,14 @@
     const style=document.createElement("style");
     style.id="ccg-lost-sizzler-insight-styles";
     style.textContent=`
-      #ccg-important-notices{position:absolute;top:82px;right:18px;z-index:32;width:min(420px,38vw);display:grid;gap:10px;pointer-events:none}
-      .ccg-important-notice{opacity:0;transform:translateY(-10px);padding:13px 15px;border:2px solid #6cecff;background:rgba(6,4,10,.94);box-shadow:0 14px 38px rgba(0,0,0,.5),0 0 22px rgba(108,236,255,.18);transition:opacity .2s ease,transform .2s ease;font-family:"Courier New",monospace}
-      .ccg-important-notice.show{opacity:1;transform:translateY(0)}.ccg-important-notice b{display:block;margin-bottom:5px;color:#ffd85a;font-size:12px;letter-spacing:.7px}.ccg-important-notice span{display:block;color:#fff;font-size:11px;line-height:1.42}
+      #ccg-important-notices{display:grid;gap:8px;width:100%;min-width:0;pointer-events:none}
+      .ccg-important-notice{opacity:0;transform:translateY(-6px);padding:11px 12px;border:1px solid #6cecff;border-radius:8px;background:rgba(6,4,10,.88);box-shadow:0 6px 18px rgba(0,0,0,.28);transition:opacity .18s ease,transform .18s ease;font-family:"Courier New",monospace;overflow-wrap:anywhere}
+      .ccg-important-notice.show{opacity:1;transform:translateY(0)}.ccg-important-notice b{display:block;margin-bottom:5px;color:#ffd85a;font-size:11px;letter-spacing:.6px}.ccg-important-notice span{display:block;color:#fff;font-size:10px;line-height:1.4}
       .ccg-important-notice.tone-red{border-color:#ff6868}.ccg-important-notice.tone-gold{border-color:#ffd85a}.ccg-important-notice.tone-green{border-color:#72ff9b}.ccg-important-notice.tone-purple{border-color:#b978ff}
       .ccg-game .ccg-insight-overlay{z-index:190!important}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
-      .ccg-star-row{display:flex;justify-content:center;gap:8px;margin:18px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:38px;line-height:1;padding:8px 10px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-2px)}
-      .ccg-rating-status{min-height:20px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
+      .ccg-rating-rail{width:100%;min-width:0}.ccg-rating-rail-card{padding:12px;border:1px solid rgba(255,216,90,.75);border-radius:9px;background:rgba(8,5,14,.92);text-align:center;overflow-wrap:anywhere}.ccg-rating-rail-card h2{margin:4px 0 6px;font-size:15px;color:#fff}.ccg-rating-rail-card p{margin:5px 0;font-size:10px;line-height:1.4}.ccg-rating-rail-card .menu-buttons{display:grid;grid-template-columns:1fr;gap:6px}.ccg-rating-rail-card .menu-buttons button{width:100%;font-size:9px;padding:7px 6px}
+      .ccg-star-row{display:flex;justify-content:center;gap:5px;margin:10px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:27px;line-height:1;padding:5px 6px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-1px)}
+      .ccg-rating-status{min-height:17px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
       @media(max-width:900px),(pointer:coarse){#ccg-important-notices{display:none}.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
     `;
     document.head.appendChild(style);
