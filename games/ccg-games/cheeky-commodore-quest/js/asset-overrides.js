@@ -39,6 +39,7 @@ const CCG_CHANGELOG_REV="20260823e";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
 const CCG_GILDED_ELF_REV="20260823b";
 const CCG_RARE_EVENTS_REV="20260823a";
+const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_VOICE_DIRECTOR_REV="20260823a";
 
 (()=>{
@@ -143,6 +144,7 @@ const CCG_VOICE_DIRECTOR_REV="20260823a";
       [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
       [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
       [`js/v10-15-rare-events.js?v=${CCG_RARE_EVENTS_REV}`,"ccgLostSizzlerRareEventsV115"],
+      [`js/v10-15-rare-events-balance.js?v=${CCG_RARE_EVENTS_BALANCE_REV}`,"ccgLostSizzlerRareEventsBalanceV115"],
       [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"]
     ];
 
