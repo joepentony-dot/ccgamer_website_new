@@ -30,7 +30,7 @@
     if(typeof dossierFocusName!=="undefined"&&dossierFocusName){
       root.querySelectorAll(".dossier-entry:not(.focused)").forEach(node=>node.remove());
     }
-    if(!root.querySelector(".dossier-entry")){
+    if(!root.querySelector(".dossier-entry")&&!root.querySelector(".dossier-empty")){
       root.innerHTML='<div class="v104-credit-empty dossier-empty">No named enemies encountered yet. Entries are added only when you meet them in the dungeon.</div>';
     }
   }
