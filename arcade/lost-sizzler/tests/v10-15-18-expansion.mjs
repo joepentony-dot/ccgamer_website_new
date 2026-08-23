@@ -5,7 +5,7 @@ import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const gameDir=path.resolve(here,"..");
-const repo=path.resolve(gameDir,"../../../..");
+const repo=path.resolve(gameDir,"../..");
 const read=relative=>fs.readFileSync(path.join(gameDir,relative),"utf8");
 
 const rare=read("js/v10-15-rare-events.js");
