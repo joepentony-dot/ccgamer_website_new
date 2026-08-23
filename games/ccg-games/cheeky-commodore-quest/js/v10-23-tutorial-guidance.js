@@ -245,7 +245,15 @@
   }
 
   function escapeHtml(value){
-    return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+    return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;"," >":"&gt;",'"':"&quot;","'":"&#39;"}[char]||char));
+  }
+
+  function interactiveReady(kind,state){
+    if(kind==="move")return Boolean(state?.moved);
+    if(kind==="fire")return Boolean(state?.fired);
+    if(kind==="dash")return Boolean(state?.dashed);
+    if(kind==="inventory")return Boolean(state?.inventoryOpened&&state?.inventoryClosed);
+    return false;
   }
 
   function blockGameplayKeysWhileReading(event){
@@ -267,8 +275,7 @@
     const kind=INPUT_STEPS.get(step)||null;
     if(kind&&acknowledgedStep===step){
       highlightControls(kind);
-      const ready=onboarding()?.stepReadyForTest?.();
-      if(ready&&!state.autoAdvanceTimer)onboarding()?.completeInteractiveForTest?.(kind);
+      if(interactiveReady(kind,state)&&!state.autoAdvanceTimer)onboarding()?.completeInteractiveForTest?.(kind);
     }else if(acknowledgedStep!==step){
       clearHighlights();
     }
