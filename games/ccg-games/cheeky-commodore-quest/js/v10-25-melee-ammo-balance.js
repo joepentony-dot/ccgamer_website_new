@@ -9,7 +9,7 @@
   const FLOOR_AMMO_LOW=2;
   const FLOOR_AMMO_CASUAL=4;
   const FLOOR_MELEE_FIND_CHANCE=.02;
-  const FIRST_GUN_MAGAZINE=8;
+  const FIRST_GUN_MAGAZINE=16;
   const RESPAWN_AMMO=6;
   const START_SWORD={id:"archive-sword",name:"Archive Sword",short:"SWORD",rarity:"STARTER",power:1,cooldown:390,colour:"#ffd85a",desc:"Reliable close-range sword. Unlimited use and strong enough to knock ordinary enemies into hazards."};
   const RARE_MELEE=[
