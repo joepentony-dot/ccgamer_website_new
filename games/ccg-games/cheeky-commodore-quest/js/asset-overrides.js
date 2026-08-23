@@ -27,7 +27,7 @@ const CCG_BROWSER_STABILITY_REV="20260823b";
 const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
-const CCG_DOSSIER_REV="20260823a";
+const CCG_DOSSIER_REV="20260823b";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
