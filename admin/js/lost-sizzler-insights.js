@@ -32,11 +32,6 @@ async function exactCount(eventType,since=null){
   if(error)throw error;
   return count||0;
 }
-async function feedbackCount(){
-  const{count,error}=await supabase.from('game_feedback').select('id',{count:'exact',head:true}).eq('game_slug',GAME_SLUG);
-  if(error)throw error;
-  return count||0;
-}
 async function ratingStats(){
   const{data,error}=await supabase.from('game_play_events').select('rating').eq('game_slug',GAME_SLUG).eq('event_type','rating_submitted').not('rating','is',null);
   if(error)throw error;
@@ -44,15 +39,14 @@ async function ratingStats(){
   const average=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
   return{count:values.length,average};
 }
-function renderSummary({runsToday,totalRuns,startClicks,mobileAccepts,ratings,feedback}){
+function renderSummary({runsToday,totalRuns,startClicks,mobileAccepts,ratings}){
   const holder=$('#ls-insights-summary');if(!holder)return;
   const cards=[
     ['RUNS TODAY',runsToday,'Actual game sessions begun today'],
     ['TOTAL RUNS',totalRuns,'Actual recorded run starts'],
     ['PLAY / START CLICKS',startClicks,'All recorded play-entry clicks'],
     ['MOBILE ACCEPTS',mobileAccepts,'Accepted “Optimised for PC Desktop Play” notices'],
-    ['AVERAGE RATING',ratings.count?`${ratings.average.toFixed(2)} / 5`:'—',`${ratings.count} rating${ratings.count===1?'':'s'} submitted`],
-    ['BUGS / SUGGESTIONS',feedback,'Submitted feedback records']
+    ['AVERAGE RATING',ratings.count?`${ratings.average.toFixed(2)} / 5`:'—',`${ratings.count} rating${ratings.count===1?'':'s'} submitted`]
   ];
   holder.innerHTML=cards.map(([label,value,note])=>`<article class="ls-stat"><span>${esc(label)}</span><strong>${esc(value)}</strong><small>${esc(note)}</small></article>`).join('');
 }
@@ -68,34 +62,21 @@ function renderPlayEvents(rows){
     <td>${row.rating?`${esc(row.rating)} / 5`:'—'}</td>
   </tr>`).join('')}</tbody></table></div>`;
 }
-function renderFeedback(rows){
-  const holder=$('#ls-feedback-events');if(!holder)return;
-  if(!rows.length){holder.innerHTML='<p class="arcade-muted">No bug reports or game suggestions have been submitted yet.</p>';return;}
-  holder.innerHTML=rows.map(row=>`<article class="ls-feedback-card">
-    <div class="ls-feedback-head"><b>${esc(String(row.feedback_type||'feedback').toUpperCase())}</b><span>${esc(when(row.created_at))}</span></div>
-    <p>${esc(row.message)}</p>
-    <small>${row.contact_email?`Reply: ${esc(row.contact_email)} · `:''}Email delivery: ${esc(row.email_status||'unknown')}</small>
-  </article>`).join('');
-}
 async function loadInsights(){
   status('Refreshing Lost Sizzler activity…');
   const since=startOfTodayIso();
   try{
-    const [runsToday,totalRuns,startClicks,mobileAccepts,ratings,feedback,playResult,feedbackResult]=await Promise.all([
+    const [runsToday,totalRuns,startClicks,mobileAccepts,ratings,playResult]=await Promise.all([
       exactCount('run_started',since),
       exactCount('run_started'),
       exactCount('start_click'),
       exactCount('mobile_pc_notice_accept'),
       ratingStats(),
-      feedbackCount(),
-      supabase.from('game_play_events').select('id,event_type,player_name,play_mode,device_type,rating,session_token,created_at').eq('game_slug',GAME_SLUG).order('created_at',{ascending:false}).limit(200),
-      supabase.from('game_feedback').select('id,feedback_type,message,contact_email,email_status,created_at').eq('game_slug',GAME_SLUG).order('created_at',{ascending:false}).limit(100)
+      supabase.from('game_play_events').select('id,event_type,player_name,play_mode,device_type,rating,session_token,created_at').eq('game_slug',GAME_SLUG).order('created_at',{ascending:false}).limit(200)
     ]);
     if(playResult.error)throw playResult.error;
-    if(feedbackResult.error)throw feedbackResult.error;
-    renderSummary({runsToday,totalRuns,startClicks,mobileAccepts,ratings,feedback});
+    renderSummary({runsToday,totalRuns,startClicks,mobileAccepts,ratings});
     renderPlayEvents(playResult.data||[]);
-    renderFeedback(feedbackResult.data||[]);
     status(`Updated ${when(new Date().toISOString())}.`,'success');
   }catch(error){
     console.error('[lost-sizzler-insights]',error);
