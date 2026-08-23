@@ -19,6 +19,8 @@ assert.match(js,/button\.textContent="← BACK TO GAME"/,"mobile return control 
 assert.match(js,/document\.getElementById\("inventory-close-top"\)/,"return helper must reuse the existing safe inventory-close path");
 assert.match(js,/observer\.observe\(panel,\{attributes:true,attributeFilter:\["class"\]\}\)/,"return button visibility must follow the actual inventory overlay state");
 assert.match(js,/ccg-mobile-inventory-open/,"body must expose mobile inventory-open state for layout safeguards");
+assert.match(js,/Number\(tutorial\.step\)===3&&tutorial\.inventoryOpened&&!tutorial\.inventoryClosed/,"tutorial integration must recognise the inventory-close part of stage four");
+assert.match(js,/ccg-tutorial-control-highlight/,"the new thumb-reach Back to Game button must pulse during the tutorial inventory-close lesson");
 
 assert.match(css,/#ccg-mobile-inventory-return\{[\s\S]*?position:fixed!important/,"Back to Game must stay in thumb reach while inventory scrolls");
 assert.match(css,/bottom:max\(10px,env\(safe-area-inset-bottom\)\)!important/,"Back to Game must respect the phone safe area");
