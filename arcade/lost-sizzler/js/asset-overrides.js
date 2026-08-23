@@ -1,0 +1,245 @@
+/*
+ * OWNER ASSET OVERRIDES
+ * Replace any null value with a site-relative file path, or add paths to a
+ * playlist array. Unchanged values continue to use the bundled defaults.
+ * The full key/path catalogue is in assets/asset-manifest.json.
+ */
+window.CCG_ASSET_OVERRIDES={
+  images:{
+    logo:null,
+    namedEnemies:{"Peter Cortens":null,"Swanh8ter":null,"Syragar":null,"Parsnip Celery":null,"CPU":null,"Yoshi Yoshi":null,"CCG":null},
+    items:{health:null,ammo:null,potion:null,torch:null,teleport:null,banishment:null,inventorySlot:null,credits:null,xpOrb:null,armour:null,key:null,bronze:null,exitSigil:null,weapon:null,rapid:null,game:null,loot:null}
+  },
+  audio:{
+    music:{
+      exploration:null,danger:null,sanctuary:null,named:null,stalker:null,
+      playlists:{normal:[],danger:[],sanctuary:[],named:[],stalker:[]}
+    },
+    sfx:{},
+    voice:{
+      welcome:null,weeklyWelcome:null,hurt:null,lowHealth:null,noAmmo:null,secret:null,
+      objectiveHint:null,objectiveNear:null,floorClear:null,gameOver:null,playerDeath:null,
+      deathStalker:null,loadula:null,gildedElf:null,gildedFive:null,gildedCaught:null,
+      gildedEscaped:null,namedEnemy:null,rareLoot:null,levelUp:null,shop:null,sanctuary:null,
+      trap:null,boulder:null,weeklyDeath:null,weeklyReset:null,
+      mimic:null,cursed:null,curseCleared:null,merchant:null,merchantGone:null,
+      goldenRoom:null,goldenClear:null,adventurer:null,adventurerSaved:null,tremor:null,
+      cabinet:null,cabinetWin:null,cabinetFail:null,treasureBat:null,treasureBatGone:null,
+      treasureBatDown:null,taxman:null,taxmanCaught:null,mysteryPotion:null,developerRoom:null,
+      bountyStart:null,bounty:null,bountyComplete:null,treasureMap:null,buriedCache:null,mutation:null,
+      weeklyGhost:null,respawn:null
+    }
+  }
+};
+
+const CCG_V106_HUD_REV="20260822e";
+const CCG_V106_SIDEBAR_REV="20260822a";
+const CCG_PLAYLIST_AUDIO_REV="20260823b";
+const CCG_PLAYER_INSIGHTS_REV="20260823f";
+const CCG_BROWSER_STABILITY_REV="20260823b";
+const CCG_DEPTH_FLOW_REV="20260823a";
+const CCG_MOBILE_FOCUS_REV="20260823a";
+const CCG_MOBILE_SAFETY_REV="20260823a";
+const CCG_DOSSIER_REV="20260823b";
+const CCG_CHANGELOG_REV="20260823e";
+const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
+const CCG_GILDED_ELF_REV="20260823b";
+const CCG_RARE_EVENTS_REV="20260823a";
+const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
+const CCG_ADMIN_AUDIO_REV="20260823a";
+const CCG_VOICE_DIRECTOR_REV="20260823c";
+const CCG_VOICE_EXPANSION_REV="20260823a";
+const CCG_EXPANSION_CHANGELOG_REV="20260823i";
+const CCG_INPUT_UI_FIX_REV="20260823a";
+const CCG_DUNGEON_VARIETY_REV="20260823a";
+const CCG_ONBOARDING_SAFETY_REV="20260823e";
+const CCG_ONBOARDING_HARDENING_REV="20260823a";
+const CCG_TUTORIAL_GUIDANCE_REV="20260823c";
+const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
+const CCG_MOBILE_ERGONOMICS_REV="20260823a";
+const CCG_MELEE_AMMO_REV="20260823b";
+const CCG_AMMO_BUDGET_REV="20260823a";
+
+/* Start onboarding immediately while the core scripts below this file are still
+ * parsing. The modules poll for the core functions they need, so the first Play
+ * click cannot outrun the tutorial, welcome or dossier-safety install. */
+(()=>{
+  if(!document.querySelector('script[data-ccg-lost-sizzler-onboarding-safety-v120="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`;
+    script.dataset.ccgLostSizzlerOnboardingSafetyV120="true";
+    script.async=false;
+    document.head.appendChild(script);
+  }
+  if(!document.querySelector('script[data-ccg-lost-sizzler-onboarding-hardening-v120="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`;
+    script.dataset.ccgLostSizzlerOnboardingHardeningV120="true";
+    script.async=false;
+    document.head.appendChild(script);
+  }
+})();
+
+(()=>{
+  if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href="css/v10-6-ui-polish.css";
+    link.dataset.ccgV106Ui="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v106-inventory-hud="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-6-inventory-hud-fix.css?v=${CCG_V106_HUD_REV}`;
+    link.dataset.ccgV106InventoryHud="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v106-sidebar-fix="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;
+    link.dataset.ccgV106SidebarFix="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v109-stability-layout="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-9-stability-layout.css?v=${CCG_BROWSER_STABILITY_REV}`;
+    link.dataset.ccgV109StabilityLayout="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v111-mobile-focus="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-11-mobile-focus.css?v=${CCG_MOBILE_FOCUS_REV}`;
+    link.dataset.ccgV111MobileFocus="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v111-mobile-safety="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-11-mobile-runtime-safety.css?v=${CCG_MOBILE_SAFETY_REV}`;
+    link.dataset.ccgV111MobileSafety="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v113-mobile-combat-map="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-13-mobile-combat-map.css?v=${CCG_MOBILE_COMBAT_MAP_REV}`;
+    link.dataset.ccgV113MobileCombatMap="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v118-input-ui-fixes="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-18-input-ui-bugfixes.css?v=${CCG_INPUT_UI_FIX_REV}`;
+    link.dataset.ccgV118InputUiFixes="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v124-mobile-ergonomics="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-24-mobile-ergonomics.css?v=${CCG_MOBILE_ERGONOMICS_REV}`;
+    link.dataset.ccgV124MobileErgonomics="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-developer-changelog="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-12-developer-changelog.css?v=${CCG_CHANGELOG_REV}`;
+    link.dataset.ccgDeveloperChangelog="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-ccg-developer-changelog="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-12-developer-changelog.js?v=${CCG_CHANGELOG_REV}`;
+    script.dataset.ccgDeveloperChangelog="true";
+    script.async=false;
+    document.body.appendChild(script);
+  }
+  if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/admin-audio-overrides.js?v=${CCG_ADMIN_AUDIO_REV}`;
+    script.dataset.ccgAdminAudio="true";
+    script.async=true;
+    document.head.appendChild(script);
+  }
+})();
+
+(()=>{
+  let started=false;
+  function startEnhancements(){
+    if(started||document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
+    started=true;
+    const queue=[
+      [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
+      [`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`,"ccgLostSizzlerOnboardingSafetyV120"],
+      [`js/v10-20-onboarding-hardening.js?v=${CCG_ONBOARDING_HARDENING_REV}`,"ccgLostSizzlerOnboardingHardeningV120"],
+      [`js/v10-23-tutorial-guidance.js?v=${CCG_TUTORIAL_GUIDANCE_REV}`,"ccgLostSizzlerTutorialGuidanceV123"],
+      [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
+      [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
+      ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
+      ["js/v10-4-patch.js","ccgLostSizzlerV104"],
+      ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
+      ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
+      ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
+      ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
+      [`js/v10-13-mobile-combat-map.js?v=${CCG_MOBILE_COMBAT_MAP_REV}`,"ccgLostSizzlerMobileCombatMapV113"],
+      ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
+      ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
+      ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
+      ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
+      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+      [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
+      ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
+      [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
+      ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
+      ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
+      [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
+      [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
+      [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
+      [`js/v10-15-rare-events.js?v=${CCG_RARE_EVENTS_REV}`,"ccgLostSizzlerRareEventsV115"],
+      [`js/v10-15-rare-events-balance.js?v=${CCG_RARE_EVENTS_BALANCE_REV}`,"ccgLostSizzlerRareEventsBalanceV115"],
+      [`js/v10-16-voice-director.js?v=${CCG_VOICE_DIRECTOR_REV}`,"ccgLostSizzlerVoiceDirectorV116"],
+      [`js/v10-17-voice-expansion.js?v=${CCG_VOICE_EXPANSION_REV}`,"ccgLostSizzlerVoiceExpansionV117"],
+      [`js/v10-18-expansion-changelog.js?v=${CCG_EXPANSION_CHANGELOG_REV}`,"ccgLostSizzlerExpansionChangelogV118"],
+      [`js/v10-18-input-ui-bugfixes.js?v=${CCG_INPUT_UI_FIX_REV}`,"ccgLostSizzlerInputUiBugfixesV118"],
+      [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"],
+      [`js/v10-24-mobile-ergonomics.js?v=${CCG_MOBILE_ERGONOMICS_REV}`,"ccgLostSizzlerMobileErgonomicsV124"],
+      [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"],
+      [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"]
+    ];
+
+    const loadNext=index=>{
+      if(index>=queue.length)return;
+      const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+      if(document.querySelector(selector)){loadNext(index+1);return}
+      const script=document.createElement("script");
+      script.src=src;
+      script.dataset[key]="true";
+      script.async=false;
+      let settled=false;
+      const advance=()=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(timeout);
+        loadNext(index+1);
+      };
+      const timeout=setTimeout(()=>{
+        console.warn(`[Lost Sizzler] optional enhancement timed out: ${src}`);
+        advance();
+      },5000);
+      script.onload=advance;
+      script.onerror=()=>{
+        console.warn(`[Lost Sizzler] optional enhancement failed to load: ${src}`);
+        advance();
+      };
+      document.body.appendChild(script);
+    };
+    loadNext(0);
+  }
+
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startEnhancements,{once:true});
+  else startEnhancements();
+})();

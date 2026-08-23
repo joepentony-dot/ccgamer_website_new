@@ -1,0 +1,108 @@
+/* The Lost Sizzler V10.13 — mobile minimap toggle styling. */
+
+.ccg-mobile-minimap{display:none}
+
+@media (max-width:900px),(pointer:coarse){
+  body[data-run-active="true"] .ccg-mobile-minimap{
+    position:absolute;
+    top:8px;
+    right:8px;
+    z-index:68;
+    display:block;
+    width:min(72vw,320px);
+    max-width:calc(100% - 16px);
+    padding:0;
+    border:1px solid rgba(108,236,255,.72);
+    border-radius:8px;
+    background:rgba(5,2,9,.94);
+    box-shadow:0 8px 24px rgba(0,0,0,.55);
+    overflow:hidden;
+    pointer-events:auto;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap.hidden{
+    display:none!important;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap-head{
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr) 32px;
+    align-items:center;
+    gap:7px;
+    min-height:31px;
+    padding:4px 5px 4px 8px;
+    border-bottom:1px solid rgba(108,236,255,.28);
+    background:#0b0610;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap-head b{
+    color:#ffd85a;
+    font-size:8px;
+    letter-spacing:.7px;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap-head span{
+    min-width:0;
+    color:#9f93ad;
+    font-size:6px;
+    text-align:right;
+    letter-spacing:.4px;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap-head button{
+    width:30px;
+    height:26px;
+    min-width:30px;
+    min-height:26px;
+    padding:0;
+    border:1px solid rgba(255,104,104,.55);
+    border-radius:5px;
+    background:#190a13;
+    color:#ff8b98;
+    font:700 18px/1 system-ui,sans-serif;
+  }
+  body[data-run-active="true"] #ccg-mobile-minimap-canvas{
+    display:block;
+    width:100%;
+    height:auto;
+    min-height:120px;
+    max-height:190px;
+    background:#030205;
+    image-rendering:pixelated;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap>small{
+    display:block;
+    padding:5px 7px 6px;
+    color:#aaa0b6;
+    font-size:6px;
+    line-height:1.2;
+    text-align:center;
+  }
+  body[data-run-active="true"] .ccg-mobile-map-btn.active,
+  body[data-run-active="true"] .ccg-mobile-map-btn[aria-pressed="true"]{
+    border-color:#ffd85a!important;
+    background:rgba(255,216,90,.22)!important;
+    color:#ffd85a!important;
+    opacity:1!important;
+  }
+}
+
+@media (orientation:portrait) and (max-width:900px),(orientation:portrait) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-mobile-minimap{
+    top:6px;
+    right:6px;
+    width:min(78vw,320px);
+  }
+}
+
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-mobile-minimap{
+    top:5px;
+    right:5px;
+    width:min(36vw,280px);
+    max-height:calc(100% - 10px);
+  }
+  body[data-run-active="true"] #ccg-mobile-minimap-canvas{
+    min-height:100px;
+    max-height:145px;
+  }
+  body[data-run-active="true"] .ccg-mobile-minimap>small{
+    padding:3px 6px 4px;
+    font-size:5.5px;
+  }
+}

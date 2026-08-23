@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="ccg-lost-sizzler-build" content="2026.08.23.8">
+  <meta name="theme-color" content="#09040f">
+  <meta name="robots" content="index,follow">
+  <meta name="description" content="Play Cheeky Commodore Quest: The Lost Sizzler, a neon procedural arcade dungeon adventure from Cheeky Commodore Gamer.">
+  <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/games/ccg-games/cheeky-commodore-quest/">
+  <title>Cheeky Commodore Quest — The Lost Sizzler</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/game.css?v=20260823r8">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260823r8">
+</head>
+<body data-game-ready="false" data-run-active="false">
+<main class="ccg-game">
+  <header class="topbar v102-topbar">
+    <div class="brand v102-brand">
+      <img src="assets/ccgamer-logo-fallback.svg" alt="Cheeky Commodore Gamer">
+      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.6</p></div>
+    </div>
+    <div class="system-buttons">
+      <span id="net-status" class="status">SOLO</span>
+      <span class="build-badge">BUILD V10.6</span>
+      <button id="sound-btn" class="sound-toggle" type="button">SOUND ON</button>
+      <button id="fullscreen-btn" class="sound-toggle" type="button">FULLSCREEN</button>
+      <button id="quit-btn" class="sound-toggle danger-toggle" type="button">QUIT</button>
+    </div>
+  </header>
+
+  <section class="critical-strip" aria-label="Critical controls and carried essentials">
+    <div class="critical-card potion-card"><kbd>E</kbd><div><b>POTION</b><strong id="quick-potion">0 HELD</strong><span>FAST HEAL</span></div></div>
+    <div class="critical-card torch-card"><kbd>Q</kbd><div><b>TORCH</b><strong id="quick-utility">0 HELD</strong><span>LIGHT THE DUNGEON</span></div></div>
+    <div class="critical-card keys-card"><svg class="keyring-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="7" cy="10" r="4"/><path d="M11 10h10M17 10v4M20 10v3"/></svg><div><b>KEYS HELD</b><strong id="hud-bronze">0</strong><span id="quick-keyring">MAIN 0/3 • BRONZE 0 • SIGIL 0</span></div></div>
+    <div class="critical-card inventory-card"><kbd>TAB</kbd><div><b>INVENTORY</b><strong>3–6 SLOTS</strong><span>EXPAND IN SHOPS · ITEM INFO</span></div></div>
+    <div id="banish-alert" class="banish-context hidden" aria-live="assertive"><kbd>B</kbd><div><b>BANISHMENT READY</b><span id="banish-alert-text">DEATH STALKER IN RANGE — PRESS B</span></div></div>
+  </section>
+
+  <section class="mission v102-mission">
+    <strong>MISSION</strong><span id="mission-text">Explore the dungeon.</span>
+  </section>
+  <div id="fullscreen-hint" class="fullscreen-hint"><b>NOT FULLSCREEN</b> — STARTING A RUN WILL REQUEST FULLSCREEN · PRESS <kbd>F</kbd> IF NEEDED</div>
+
+  <section class="tactical-zone" aria-label="Dungeon intelligence">
+    <section class="reference-card radar-card v102-radar-card">
+      <h3>TACTICAL RADAR — TRACKING VIEW</h3>
+      <canvas id="radar-canvas" width="480" height="240" aria-label="Explored dungeon radar"></canvas>
+      <div class="radar-legend"><span><i class="radar-player"></i>YOU</span><span><i class="radar-sigil"></i><b id="radar-sigil-label">SIGIL</b></span><span><i class="radar-shop"></i>SHOP</span><span><i class="radar-cache"></i>DEATH CACHE</span><span><i class="radar-exit"></i>EXIT</span></div>
+    </section>
+    <section class="reference-card dossier-card">
+      <div class="dossier-heading"><h3>NAMED ENEMY DOSSIER</h3><button id="named-dossier-btn" class="dossier-expand" type="button">OPEN FULL DOSSIER</button></div>
+      <div id="named-enemy-guide" class="named-enemy-guide"></div>
+      <div class="reference-tip"><b>Death Stalker:</b> trade 3 artefacts or pay 10,000 score at a shop for a Flask, then press <b>B</b> in range to destroy it permanently.</div>
+    </section>
+    <section class="shortcut-dock" aria-labelledby="shortcut-dock-title">
+      <div class="shortcut-dock-head"><h3 id="shortcut-dock-title">COMMAND DECK</h3><span>LIVE KEYS</span></div>
+      <div class="command-grid" aria-label="Keyboard shortcuts"><span><kbd>WASD</kbd><b>MOVE</b></span><span><kbd>SPACE</kbd><b>ATTACK</b></span><span><kbd>SHIFT</kbd><b>DASH</b></span><span><kbd>TAB</kbd><b>ITEMS</b></span></div>
+      <div id="item-shortcuts" class="item-shortcuts" aria-live="polite"></div>
+    </section>
+  </section>
+
+  <section class="game-area v102-game-area">
+    <div class="canvas-wrap">
+      <canvas id="game" width="1280" height="720" aria-label="Cheeky Commodore Quest"></canvas>
+    </div>
+    <aside class="game-message-rail" aria-label="Live dungeon reports">
+      <div class="game-message-context"><b>CURRENT ROOM</b><span id="surroundings">C64 Archive — visibility is limited until you find a torch.</span></div>
+      <div id="pickup-toast" class="pickup-toast" aria-live="polite"><div id="pickup-icon" class="pickup-toast-icon" aria-hidden="true">!</div><div class="pickup-toast-copy"><b id="pickup-title">DUNGEON READY</b><span id="pickup-text">Important discoveries and warnings appear here.</span></div></div>
+      <p id="message" class="game-message-line">The dungeon is listening. This is rarely a positive sign.</p>
+      <div id="quest-list" class="quest-list game-quest-list"></div>
+    </aside>
+    <div id="menu" class="overlay">
+      <div class="panel">
+        <img class="hero-logo" src="assets/lost-sizzler.webp" alt="The Lost Sizzler">
+        <h2>The Lost Sizzler</h2>
+        <p>A multi-floor arcade dungeon crawl with procedural rooms, fog, locked routes, shootable switches, traps, monster generators, rare artefacts, XP, death recovery, a reinforced Sigil gauntlet, optional puzzle chambers and things in the dark that require more than ordinary ammunition.</p>
+        <p class="desktop-play-recommendation"><strong>BETTER PLAYED ON DESKTOP PC</strong><span>Mobile play is supported, but a larger screen and keyboard give the best experience.</span></p>
+        <div class="feature-strip">
+          <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
+          <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
+          <span><b>DEATH STALKERS</b>Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask. The contextual B prompt appears in range.</span>
+        </div>
+        <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
+        <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
+        <div class="menu-buttons"><button id="solo-btn" class="primary">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button><button id="create-btn">Create Online Room</button></div>
+        <section class="online-howto" aria-label="Online multiplayer instructions"><h3>ONLINE MULTIPLAYER — UP TO 4 PLAYERS</h3><div><p><b>HOST</b> Create a room, send the invite, wait in the lobby, then press Start Dungeon.</p><p><b>JOIN</b> Open the invite or enter its room code. The host starts the shared run when everyone is ready.</p></div></section>
+        <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
+        <h3 id="weekly-vault-title">WEEKLY HIGH-SCORE VAULT LEADERBOARD</h3>
+        <p class="weekly-leaderboard-note">Check this leaderboard throughout the week to see who is winning. If nobody completes an attempt or nobody plays, no winner is declared and nothing is awarded or announced for that week.</p>
+        <p id="weekly-status" class="collection-summary">Sign in with your CCG website account for one shared-seed leaderboard attempt each week.</p>
+        <div id="weekly-auth-actions" class="weekly-auth-actions"><a href="/auth/register.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault">Create Free Website Account</a><a href="/auth/login.html?returnTo=%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault">Sign In</a></div>
+        <ol id="weekly-leaderboard" class="weekly-leaderboard" aria-label="Weekly High-Score Vault leaderboard"></ol>
+        </section>
+        <div class="menu-buttons secondary-menu"><button id="rulebook-btn">Objectives &amp; Rulebook</button><button id="support-btn">Support / Donate / Share</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div>
+        <div class="join-row"><input id="room-code" maxlength="6" placeholder="ROOM CODE" autocomplete="off"><button id="join-btn">Join Online Room</button></div>
+        <p id="collection-summary" class="collection-summary">Unique C64 titles permanently saved on this device: 0. Duplicates count once; clearing browser data resets this list.</p>
+        <p id="menu-note" class="note">Starting a run requests fullscreen automatically. Collectible games are shuffled into a seeded random order for every run. Weekly High-Score Vault allows one registered-account attempt per week, resets Monday at 00:00 UTC, uses Arcade rules, and death or completion ends the attempt. Sound begins when play starts.</p>
+        <div class="keys-help"><kbd>P1: WASD / ARROWS MOVE • SPACE ATTACK • L-SHIFT DASH • E POTION • Q TORCH</kbd><kbd>R TELEPORT • C CLOSE DOOR • B BANISH • TAB INVENTORY</kbd><kbd>P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • ESC PAUSE • M SOUND • F FULLSCREEN</kbd></div>
+      </div>
+    </div>
+
+    <div id="online-lobby" class="overlay hidden" aria-live="polite"><div class="panel online-lobby-card">
+      <p class="lobby-kicker">ONLINE MULTIPLAYER</p><h2>ROOM <span id="lobby-room-code">-----</span></h2>
+      <p id="lobby-status">1/4 players connected</p>
+      <label class="field lobby-invite"><span>INVITE LINK</span><input id="lobby-invite-url" readonly></label>
+      <div class="menu-buttons lobby-actions"><button id="lobby-copy-btn">Copy Invite</button><button id="lobby-share-btn">Share Invite</button><button id="lobby-start-btn" class="primary">Start Dungeon</button><button id="lobby-cancel-btn" class="danger-button">Cancel</button></div>
+      <div class="lobby-columns"><section><h3>PLAYERS</h3><ol id="lobby-player-list"></ol></section><section><h3>HOW IT WORKS</h3><p>The host controls the start. Guests remain in this lobby until the host begins. A room holds four players; disconnected guests are removed and the earliest remaining player becomes host.</p></section></div>
+    </div></div>
+
+    <div id="pause" class="overlay hidden"><div class="panel compact"><h2>Paused</h2><p>Continue the run, abandon its unsaved live state and return to the title screen, or leave The Lost Sizzler completely.</p><div class="menu-buttons"><button id="resume-btn" class="primary">Continue</button><button id="pause-quit-btn" class="danger-button">Quit to Main Menu</button><a class="menu-exit-link" href="/games/ccg-games/">Exit to CCG Games</a></div><small>Saved floor checkpoints and permanently banked C64 titles are not removed.</small></div></div>
+
+    <div id="level-up" class="overlay hidden"><div class="panel compact"><h2>Level Up</h2><p id="level-up-copy">Choose an upgrade.</p><div id="level-up-choices" class="choice-grid"></div></div></div>
+
+    <div id="artefact-choice-panel" class="overlay hidden"><div class="panel compact artefact-choice-card">
+      <div class="artefact-choice-glyph" aria-hidden="true">✦</div><h2>Banishment Artefact</h2>
+      <p id="artefact-choice-name">Choose how to convert this rare reward.</p>
+      <div class="artefact-reward-grid"><button id="artefact-score-btn" class="primary"><b>10,000 SCORE</b><span>Best for Weekly Vault rankings</span></button><button id="artefact-xp-btn"><b>10 XP</b><span>The maximum XP allowed from one item</span></button></div>
+    </div></div>
+
+    <div id="floor-complete" class="overlay hidden"><div class="panel compact"><h2 id="floor-title">Floor Cleared</h2><p id="floor-summary"></p><div class="menu-buttons"><button id="descend-btn" class="primary">Descend Deeper</button><button id="extract-btn">Bank Loot & Exit</button></div></div></div>
+
+    <div id="shop-panel" class="overlay hidden"><div class="panel v10-info-panel shop-panel-card">
+      <h2 id="shop-title">Dungeon Supply Shop</h2>
+      <p id="shop-copy">Choose what you actually need. Score-priced stock becomes more expensive after each purchase at this shop.</p>
+      <div class="shop-wallet"><span>SCORE <b id="shop-score">000000</b></span><span>ARTEFACTS <b id="shop-artefacts">0</b></span><span>NEXT SCORE PRICE <b id="shop-next-price">1000</b></span></div>
+      <div id="shop-items" class="shop-grid"></div>
+      <p class="shop-note">Each shop carries one of every normal score item. Their prices rise by 1000 after each purchase and reset at a different shop. Stock: Potion, Torch, Teleport Spell, Ammo, Armour and Weapon Cache. A Banishment Flask can be traded repeatedly for 3 artefacts or bought once per shop for a fixed 10,000 score.</p>
+      <button id="shop-close" class="primary">Leave Shop</button>
+    </div></div>
+
+    <div id="save-panel" class="overlay hidden"><div class="panel compact save-panel-card">
+      <h2 id="save-title">Floor Checkpoint</h2>
+      <p id="save-copy">Save this floor-entry checkpoint so you can continue another day.</p>
+      <div class="menu-buttons"><button id="save-now-btn" class="primary">Save Checkpoint</button><button id="save-continue-btn">Continue Without Saving</button><button id="save-return-btn" class="hidden">Save &amp; Return to Menu</button></div>
+      <small id="save-note">Saves are floor-entry checkpoints rather than mid-room quick saves.</small>
+    </div></div>
+
+    <div id="inventory-panel" class="overlay hidden"><div class="panel inventory-panel"><div class="mobile-panel-head"><h2>Inventory & Objective</h2><button id="inventory-close-top" class="primary" type="button">Back to Game</button></div><p id="inventory-mobile-notice" class="inventory-mobile-notice" aria-live="polite">Tap a locked or empty slot for an explanation.</p><div id="inventory-objective" class="inventory-objective"></div><div id="inventory-loadout" class="inventory-objective"></div><p>You begin with three slots and can expand to six. Torches use one slot each; Potions stack to three; other matching carried items show an ×N counter.</p><div id="inventory-list" class="inventory-list"></div><h3>ITEM & OBJECT GUIDE — MATCH THESE ICONS IN THE DUNGEON</h3><div id="inventory-guide" class="inventory-guide"></div><div class="inventory-footer-actions"><button id="inventory-dossier-btn" type="button">Named Enemy Dossier — All 7</button><button id="inventory-close" class="primary">Close</button></div></div></div>
+
+    <div id="item-info-panel" class="overlay hidden sub-overlay"><div class="panel compact item-info-card"><div id="item-info-icon" class="item-info-hero"></div><h2 id="item-info-title">Item</h2><div id="item-info-text" class="item-info-copy"></div><button id="item-info-close" class="primary">Back to Inventory</button></div></div>
+
+    <div id="named-dossier-panel" class="overlay hidden"><div class="panel v10-info-panel dossier-panel"><div class="mobile-panel-head"><h2>Named Enemy Dossier</h2><button id="named-dossier-close-top" class="primary" type="button">Back to Game</button></div><p>All seven named enemies, including the rare CCG hunter. Encounters and people freed from the dungeon are stored locally in this browser.</p><div id="named-dossier-list" class="dossier-list"></div><button id="named-dossier-close" class="primary">Close Dossier</button></div></div>
+
+    <div id="rulebook-panel" class="overlay hidden"><div class="panel v10-info-panel">
+      <h2>Objectives &amp; Rulebook</h2>
+      <p class="rulebook-lead">One route, three clear steps. Optional rooms make you stronger; they never block the exit.</p>
+      <div class="rulebook-grid rulebook-cards">
+        <section><div class="rulebook-icon">◎</div><h3>1 · COMPLETE THE HUD GOAL</h3><p>Keys, generators, rescue, exploration or guardian. The five-minute reminder always shows what comes next.</p></section>
+        <section><div class="rulebook-icon">◇</div><h3>2 · CLEAR THE SIGIL GREAT HALL</h3><p>Enter the opened reinforced gate. It locks behind you while the Sigil Warden, its Praetorian and their minions defend the great hall. Defeat every defender, then collect the Exit Sigil.</p></section>
+        <section><div class="rulebook-icon">⇥</div><h3>3 · REACH THE EXIT</h3><p>Follow the radar marker back to the floor exit. The Sigil opens the route to the next floor.</p></section>
+        <section><div class="rulebook-icon">✦</div><h3>DEATH STALKER</h3><p>Exactly one can appear on each floor. It can open ordinary room doors, and normal weapons only knock it back. A lit carried torch frightens it away and stops its pursuit until the flame expires or is extinguished. Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask, then press B nearby. Permanent banishment awards 15,000 score and 250 XP, and drops a Banishment Artefact with its existing reward choice.</p></section>
+        <section><div class="rulebook-icon">▣</div><h3>DOORS &amp; SECRETS</h3><p>Enemies stay clear of unopened room entrances and cannot shoot into the waiting corridor. Once you enter, they move normally. Cracked walls hide secrets; 5% of secret rooms conceal another cracked pocket.</p></section>
+        <section><div class="rulebook-icon">★</div><h3>LOOT, AMMO &amp; XP</h3><p>You begin with the Archive Sword and no firearm. Firearms are found or bought, and each floor receives ammunition based on the enemies actually generated, including named enemies, armour and generator pressure, with allowance for roughly 50% missed shots. At zero ammo ATTACK automatically returns to melee.</p></section>
+        <section><div class="rulebook-icon">⚠</div><h3>DEATH, ZERO XP &amp; WEEKLY VAULT</h3><p>Normal death moves half your score, the XP penalty and carried loot into one recoverable cache. Recover it before dying again; a second death permanently erases the old cache. You can lose at most one level and your most recent upgrade. The first death that leaves your total XP at zero gives a final warning. If any later death leaves total XP at zero a second time, the run ends—even if you recovered the earlier cache. Weekly Vault death ends that week’s attempt immediately.</p></section>
+        <section><div class="rulebook-icon">?</div><h3>ENEMY TACTICS &amp; OPTIONAL CHALLENGES</h3><p>Enemies can reposition, flank and hide behind solid furniture. Tougher enemies assess cover more often and re-plan faster, but smarter tactics do not grant extra speed or damage. Player shots can smash ordinary furniture to open a route; enemy fire cannot destroy it. Clues, memory tiles, torch sequences, arenas, boulders, bridges and secret rooms offer extra score and stronger loot.</p></section>
+        <section><div class="rulebook-icon">♨</div><h3>WIND, SPIDERS &amp; FIRELIGHT</h3><p>About one corridor in twenty becomes a haunted windy passage. Its whistle warns of an adjoining webbed chamber crowded with fragile one-HP spiders. The wind snuffs an active torch with a pssst and visible gust, while fireplaces illuminate two rooms on every floor.</p></section>
+        <section><div class="rulebook-icon">☠</div><h3>HORDES &amp; ARMOURED KNIGHTS</h3><p>One low-health skeleton horde can rise on each floor and bursts into flying bones when defeated. Archive Knights carry heavy armour and high health: they cannot shoot, but their sword strike is dangerous at close range.</p></section>
+        <section><div class="rulebook-icon">⚔</div><h3>TREACHEROUS HAZARD ROOMS</h3><p>Floors 1–2 contain one dedicated hazard room; floors 3–5 contain two. Timed blade galleries, ember floors and arrow halls signal their cycle before striking for 1 HP. Watch the pattern, move between safe tiles and do not rush the warning phase.</p></section>
+        <section><div class="rulebook-icon">♥</div><h3>LAST-RESORT RECOVERY</h3><p>If every health pickup on the current floor has been consumed, an injured player regenerates 1 HP every two minutes. During a failed Sigil Lockdown, its gate reopens, surviving defenders reset and the death cache is placed outside the chamber so the challenge can be attempted again.</p></section>
+      </div>
+      <button id="rulebook-close-btn" class="primary">Close Rulebook</button>
+    </div></div>
+
+    <div id="support-panel" class="overlay hidden"><div class="panel v10-info-panel support-panel-card">
+      <h2>Support / Donate / Share</h2>
+      <p>Cheeky Commodore Gamer remains free to use. These are the same existing CCG support destinations used by the website.</p>
+      <div class="support-grid">
+        <a href="https://www.patreon.com/CheekyCommodoreGamer?utm_campaign=creatorshare_creator" target="_blank" rel="noopener noreferrer"><b>Patreon</b><span>Early access and behind-the-scenes CCG support.</span></a>
+        <a href="https://www.youtube.com/@CheekyCommodoreGamer/join" target="_blank" rel="noopener noreferrer"><b>YouTube Membership</b><span>Support CCG without leaving YouTube.</span></a>
+        <a href="https://www.paypal.com/donate/?hosted_button_id=LGG86ZV9P4YKL" target="_blank" rel="noopener noreferrer"><b>Buy Joe a Beer</b><span>Optional one-off PayPal contribution.</span></a>
+        <a href="https://www.cheekycommodoregamer.co.uk/support.html" target="_blank" rel="noopener noreferrer"><b>CCG Support Page</b><span>View the current support information on the main site.</span></a>
+      </div>
+      <div class="menu-buttons"><button id="share-btn">Share Cheeky Commodore Quest</button><button id="support-close-btn" class="primary">Close</button></div>
+      <p class="support-note">Watching, commenting and sharing also helps and costs nothing.</p>
+    </div></div>
+
+    <div id="end" class="overlay hidden"><div class="panel compact"><h2 id="end-title">Run Complete</h2><div id="end-text"></div><button id="again-btn" class="primary">Return to Menu</button></div></div>
+  </section>
+
+  <section class="player-hub" aria-label="Player combat hub">
+    <div class="core-stats">
+      <div class="hub-stat health-stat"><span>HEALTH</span><b id="hud-health">8/8</b></div>
+      <div class="hub-stat armour-stat"><span>ARMOUR</span><b id="hud-p2">ARM 0</b></div>
+      <div class="hub-stat ammo-stat"><span>AMMO</span><b id="hud-mana">0/120</b></div>
+      <div class="hub-stat weapon-stat"><span>WEAPON</span><b id="hud-weapon">SWORD</b></div>
+    </div>
+    <div class="hub-inventory">
+      <div class="hub-inventory-head"><b>QUICK INVENTORY — STACKS</b><span id="quick-specials">NO SPECIAL ITEMS</span></div>
+      <div id="quick-slots" class="quick-slots" aria-label="Inventory stack slots"></div>
+    </div>
+    <div class="hub-progress">
+      <div class="priority-xp">
+        <div class="priority-xp-head"><b id="quick-level">LEVEL 1</b><strong id="quick-xp-text">XP TOTAL 0</strong></div>
+        <div class="xp-track"><i id="quick-xp-fill"></i></div>
+        <small id="quick-xp-next">1425 TO NEXT · FLOOR CAP 5</small>
+      </div>
+      <div class="run-stat"><span>OBJECTIVE</span><b id="hud-keys">0/3</b></div>
+      <div class="run-stat"><span>SCORE</span><b id="hud-score">000000</b></div>
+      <div class="run-stat"><span>FLOOR</span><b id="hud-room">F1</b></div>
+    </div>
+    <aside class="hub-telemetry" aria-label="Combat telemetry">
+      <div><span>WEAPON POWER</span><b id="hud-power">1</b></div>
+      <div><span>ENEMIES SLAIN</span><b id="hud-kills">0</b></div>
+      <div><span>RUN TIME</span><b id="hud-time">00:00</b></div>
+      <div><span>ALERT</span><b id="hud-alert">0%</b></div>
+    </aside>
+    <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
+  </section>
+</main>
+<script src="/js/ccg-supabase-config.js"></script>
+<script src="/js/ccg-supabase-client.js"></script>
+<script src="js/version-check.js?v=20260823r8"></script>
+<script src="js/weekly-challenge.js?v=20260823r8"></script>
+<script src="js/v10-23-tutorial-guidance.js?v=20260823c"></script>
+<script src="js/asset-overrides.js?v=20260823r8"></script>
+<script src="js/avatar-data.js?v=20260823r8"></script>
+<script src="js/config.js?v=20260823r8"></script>
+<script src="js/progression.js?v=20260823r8"></script>
+<script src="js/audio-assets.js?v=20260823r8"></script>
+<script src="js/audio.js?v=20260823r8"></script>
+<script src="js/world.js?v=20260823r8"></script>
+<script src="js/network.js?v=20260823r8"></script>
+<script src="js/ai.js?v=20260823r8"></script>
+<script src="js/systems.js?v=20260823r8"></script>
+<script src="js/game-core.js?v=20260823r8"></script>
+<script src="js/game-network.js?v=20260823r8"></script>
+<script src="js/game-play.js?v=20260823r8"></script>
+<script src="js/game-render.js?v=20260823r8"></script>
+<script src="js/game-main.js?v=20260823r8"></script>
+</body>
+</html>

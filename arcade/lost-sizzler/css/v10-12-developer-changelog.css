@@ -1,0 +1,174 @@
+/* The Lost Sizzler — developer changelog / bug tracker. */
+.developer-changelog{
+  margin:16px 0 12px;
+  border:1px solid rgba(108,236,255,.34);
+  background:linear-gradient(180deg,rgba(10,7,18,.94),rgba(5,3,9,.9));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 10px 28px rgba(0,0,0,.2);
+}
+.developer-changelog>summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 15px;
+  cursor:pointer;
+  list-style:none;
+  color:#faf4ff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.65px;
+  text-transform:uppercase;
+  user-select:none;
+}
+.developer-changelog>summary::-webkit-details-marker{display:none}
+.developer-changelog>summary::after{
+  content:"OPEN +";
+  flex:0 0 auto;
+  color:#6cecff;
+  font-size:9px;
+  letter-spacing:.9px;
+}
+.developer-changelog[open]>summary::after{content:"CLOSE −"}
+.developer-changelog>summary:hover{background:rgba(108,236,255,.055)}
+.developer-changelog-summary{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+.developer-changelog-pulse{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#72ff9b;
+  box-shadow:0 0 12px rgba(114,255,155,.8);
+  flex:0 0 auto;
+}
+.developer-changelog-latest{
+  color:#9f93ad;
+  font-size:9px;
+  font-weight:700;
+  letter-spacing:.45px;
+  white-space:nowrap;
+}
+.developer-changelog-body{
+  border-top:1px solid rgba(108,236,255,.16);
+  padding:14px;
+}
+.developer-changelog-intro{
+  display:flex;
+  justify-content:space-between;
+  gap:14px;
+  align-items:flex-start;
+  margin:0 0 14px;
+  color:#b9aec8;
+  font-size:10px;
+  line-height:1.55;
+}
+.developer-changelog-intro strong{color:#ffd85a}
+.developer-changelog-intro time{
+  flex:0 0 auto;
+  color:#6cecff;
+  font-weight:800;
+  letter-spacing:.45px;
+  white-space:nowrap;
+}
+.developer-log-day+ .developer-log-day{margin-top:16px}
+.developer-log-day h4{
+  margin:0 0 7px;
+  padding-bottom:6px;
+  border-bottom:1px solid rgba(255,255,255,.09);
+  color:#ffd85a;
+  font-size:10px;
+  letter-spacing:.7px;
+}
+.developer-log-list{
+  display:grid;
+  gap:6px;
+}
+.developer-log-entry{
+  display:grid;
+  grid-template-columns:88px 74px minmax(0,1fr);
+  gap:9px;
+  align-items:start;
+  padding:8px 9px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(255,255,255,.025);
+}
+.developer-log-id{
+  color:#81758f;
+  font:700 9px/1.35 ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace;
+  letter-spacing:.2px;
+}
+.developer-log-status{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  min-height:20px;
+  padding:2px 6px;
+  border:1px solid currentColor;
+  font-size:8px;
+  font-weight:900;
+  line-height:1;
+  letter-spacing:.55px;
+  text-transform:uppercase;
+}
+.developer-log-status.fixed{color:#72ff9b;background:rgba(114,255,155,.07)}
+.developer-log-status.changed{color:#6cecff;background:rgba(108,236,255,.07)}
+.developer-log-status.added{color:#ffd85a;background:rgba(255,216,90,.07)}
+.developer-log-status.monitoring{color:#ff9950;background:rgba(255,153,80,.07)}
+.developer-log-copy b{
+  display:block;
+  margin-bottom:2px;
+  color:#faf4ff;
+  font-size:10px;
+  line-height:1.35;
+}
+.developer-log-copy span{
+  display:block;
+  color:#a99db6;
+  font-size:9px;
+  line-height:1.45;
+}
+.developer-log-monitoring{
+  margin-top:16px;
+  padding:10px;
+  border:1px solid rgba(255,153,80,.28);
+  background:rgba(255,153,80,.045);
+}
+.developer-log-monitoring h4{
+  margin:0 0 7px;
+  color:#ff9950;
+  font-size:9px;
+  letter-spacing:.7px;
+}
+.developer-log-monitoring p{
+  margin:0;
+  color:#b9aec8;
+  font-size:9px;
+  line-height:1.5;
+}
+.developer-log-monitoring b{color:#faf4ff}
+.developer-changelog-foot{
+  margin:12px 0 0;
+  color:#81758f;
+  font-size:8px;
+  line-height:1.45;
+}
+@media(max-width:700px){
+  .developer-changelog{margin:12px 0 10px}
+  .developer-changelog>summary{padding:12px;font-size:10px}
+  .developer-changelog-latest{display:none}
+  .developer-changelog-body{padding:11px}
+  .developer-changelog-intro{display:block;font-size:9px}
+  .developer-changelog-intro time{display:block;margin-top:6px}
+  .developer-log-entry{grid-template-columns:74px 68px minmax(0,1fr);gap:6px;padding:7px}
+  .developer-log-id{font-size:8px}
+  .developer-log-copy b{font-size:9px}
+  .developer-log-copy span{font-size:8px}
+}
+@media(max-width:480px){
+  .developer-log-entry{grid-template-columns:1fr 1fr}
+  .developer-log-copy{grid-column:1/-1}
+  .developer-log-status{justify-self:start}
+}

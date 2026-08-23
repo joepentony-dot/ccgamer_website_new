@@ -1,0 +1,1 @@
+Optimised bundled voice prompts for The Lost Sizzler. MP3 assets are normalised mono voice clips used by the runtime voice override system.

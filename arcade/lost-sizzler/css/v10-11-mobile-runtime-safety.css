@@ -1,0 +1,23 @@
+/* The Lost Sizzler V10.11 — mobile interaction safety.
+ * Loaded after the mobile focus layout so inactive touch controls and contextual
+ * warnings can never collide with modal UI or the reserved portrait control dock.
+ */
+
+@media (max-width:900px),(pointer:coarse){
+  body[data-run-active="true"] .ccg-game>.game-area>#v104-touch-controls:not(.active),
+  body[data-run-active="true"]:has(.game-area>.overlay:not(.hidden)) .ccg-game>.game-area>#v104-touch-controls{
+    display:none!important;
+  }
+}
+
+@media (orientation:portrait) and (max-width:900px),(orientation:portrait) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-game .banish-context{
+    bottom:198px!important;
+  }
+}
+
+@media (orientation:landscape) and (max-height:600px) and (pointer:coarse){
+  body[data-run-active="true"] .ccg-game .banish-context{
+    bottom:166px!important;
+  }
+}
