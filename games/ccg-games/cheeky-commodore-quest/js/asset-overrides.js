@@ -21,8 +21,9 @@ window.CCG_ASSET_OVERRIDES={
 
 const CCG_V106_HUD_REV="20260822e";
 const CCG_V106_SIDEBAR_REV="20260822a";
-const CCG_PLAYLIST_AUDIO_REV="20260823a";
-const CCG_PLAYER_INSIGHTS_REV="20260823c";
+const CCG_PLAYLIST_AUDIO_REV="20260823b";
+const CCG_PLAYER_INSIGHTS_REV="20260823d";
+const CCG_BROWSER_STABILITY_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -44,6 +45,13 @@ const CCG_PLAYER_INSIGHTS_REV="20260823c";
     link.rel="stylesheet";
     link.href=`css/v10-6-sidebar-layout-fix.css?v=${CCG_V106_SIDEBAR_REV}`;
     link.dataset.ccgV106SidebarFix="true";
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('link[data-ccg-v109-stability-layout="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-9-stability-layout.css?v=${CCG_BROWSER_STABILITY_REV}`;
+    link.dataset.ccgV109StabilityLayout="true";
     document.head.appendChild(link);
   }
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
@@ -75,7 +83,8 @@ window.addEventListener("load",()=>{
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
     ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
-    [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"]
+    [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
+    [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;
