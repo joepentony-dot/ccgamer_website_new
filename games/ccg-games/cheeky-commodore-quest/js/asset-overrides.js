@@ -28,8 +28,9 @@ const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
 const CCG_DOSSIER_REV="20260823b";
-const CCG_CHANGELOG_REV="20260823d";
+const CCG_CHANGELOG_REV="20260823e";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
+const CCG_GILDED_ELF_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -130,7 +131,8 @@ const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
       ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
       ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
-      [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"]
+      [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
+      [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"]
     ];
 
     const loadNext=index=>{
