@@ -1,0 +1,210 @@
+/* The Lost Sizzler V10.9 — non-overlapping notification lane and canvas safety layout.
+ *
+ * Gameplay messages are part of the game-area grid, not an overlay over the
+ * canvas. The lane collapses completely when there is nothing to show, then
+ * opens above the canvas for one current notification or the rating prompt.
+ */
+
+body[data-run-active="true"] .ccg-game>.game-area{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:auto minmax(0,1fr)!important;
+  align-items:stretch!important;
+  overflow:hidden!important;
+}
+
+.ccg-game>.game-area>.canvas-wrap{
+  position:relative!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:2!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+
+.ccg-game>.game-area>.canvas-wrap>#game{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+}
+
+.ccg-game>.game-area>.game-message-rail{
+  position:relative!important;
+  inset:auto!important;
+  grid-column:1!important;
+  grid-row:1!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:0!important;
+  width:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-height:min(150px,18vh)!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:auto!important;
+  z-index:18!important;
+  border:0!important;
+  border-bottom:1px solid rgba(108,236,255,.38)!important;
+  background:#09040f!important;
+  box-shadow:0 5px 16px rgba(0,0,0,.38)!important;
+}
+
+/* Do not reserve any playfield height while the lane has no visible content. */
+.ccg-game>.game-area>.game-message-rail:not(:has(#pickup-toast.show)):not(:has(.ccg-rating-rail:not(.hidden))):not(:has(.ccg-important-notice.show)){
+  display:none!important;
+}
+
+/* Older insight builds created their own stack. Keep legacy nodes harmless even
+ * if a cached page briefly leaves one behind. All current notices use the one
+ * pickup-toast channel below. */
+.ccg-game #ccg-important-notices{
+  display:none!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast{
+  position:relative!important;
+  inset:auto!important;
+  top:auto!important;
+  left:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  transform:none!important;
+  z-index:1!important;
+  display:none!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:9px!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  min-height:58px!important;
+  max-height:86px!important;
+  margin:0!important;
+  padding:7px 11px!important;
+  overflow:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  border:0!important;
+  border-left:4px solid #ffd85a!important;
+  border-radius:0!important;
+  background:linear-gradient(90deg,rgba(20,12,28,.99),rgba(7,4,11,.99))!important;
+  box-shadow:none!important;
+  text-align:left!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.show,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast.show,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast.show{
+  display:grid!important;
+  opacity:1!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.green{border-left-color:#72ff9b!important}
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.cyan{border-left-color:#6cecff!important}
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.red{border-left-color:#ff6868!important}
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.purple{border-left-color:#b978ff!important}
+.ccg-game>.game-area>.game-message-rail>.pickup-toast.gold{border-left-color:#ffd85a!important}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon .item-svg-wrap,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon .item-svg-wrap,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon .item-svg-wrap{
+  width:29px!important;
+  height:29px!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast b,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast b,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast b{
+  font-size:10px!important;
+  line-height:1.15!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.pickup-toast span,
+.ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast span,
+.ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast span{
+  display:block!important;
+  margin-top:2px!important;
+  color:#f5eef9!important;
+  font-size:8.5px!important;
+  line-height:1.28!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+
+/* The two-minute rating request is interactive, so it gets the full lane width
+ * and may scroll vertically on a short viewport. It still never enters canvas
+ * space. */
+.ccg-game>.game-area>.game-message-rail>.ccg-rating-rail{
+  position:relative!important;
+  inset:auto!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  z-index:2!important;
+  pointer-events:auto!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.ccg-rating-rail.hidden{
+  display:none!important;
+}
+
+.ccg-game>.game-area>.game-message-rail>.ccg-rating-rail:not(.hidden)+.pickup-toast{
+  display:none!important;
+}
+
+@media(max-width:900px),(pointer:coarse){
+  .ccg-game>.game-area>.game-message-rail{
+    max-height:min(132px,27vh)!important;
+  }
+  .ccg-game>.game-area>.game-message-rail>.pickup-toast,
+  .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast,
+  .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast{
+    grid-template-columns:34px minmax(0,1fr)!important;
+    min-height:48px!important;
+    max-height:72px!important;
+    padding:5px 8px!important;
+    gap:7px!important;
+  }
+  .ccg-game>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon,
+  .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon,
+  .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast .pickup-toast-icon{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+  }
+  .ccg-game>.game-area>.game-message-rail>.pickup-toast span,
+  .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast span,
+  .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast span{
+    font-size:7.5px!important;
+  }
+}
+
+@media(max-height:620px){
+  .ccg-game>.game-area>.game-message-rail{
+    max-height:108px!important;
+  }
+  .ccg-game>.game-area>.game-message-rail>.pickup-toast,
+  .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast,
+  .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast{
+    min-height:44px!important;
+    max-height:60px!important;
+  }
+}
