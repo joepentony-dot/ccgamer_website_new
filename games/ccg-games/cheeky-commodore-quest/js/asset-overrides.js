@@ -22,6 +22,7 @@ window.CCG_ASSET_OVERRIDES={
 const CCG_V106_HUD_REV="20260822e";
 const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260823a";
+const CCG_PLAYER_INSIGHTS_REV="20260823a";
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
@@ -73,7 +74,8 @@ window.addEventListener("load",()=>{
     ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
     ["js/v10-6-dossier-polish.js","ccgLostSizzlerDossierV106"],
     ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
-    ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"]
+    ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
+    [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"]
   ];
   const loadNext=index=>{
     if(index>=queue.length)return;
