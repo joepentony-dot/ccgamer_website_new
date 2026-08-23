@@ -1,0 +1,59 @@
+name: Lost Sizzler Arcade Validation
+
+on:
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - '.github/workflows/lost-sizzler-arcade-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - '.github/workflows/lost-sizzler-arcade-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate all Lost Sizzler JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            echo "Checking $file"
+            node --check "$file"
+          done < <(find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z)
+
+      - name: Run complete Lost Sizzler regression suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' test; do
+            echo "Running $test"
+            node "$test"
+          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' -print0 | sort -z)
+
+      - name: Validate canonical runtime structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f arcade/lost-sizzler/index.html
+          test -f arcade/lost-sizzler/version.json
+          test -f arcade/lost-sizzler/js/asset-overrides.js
+          test -f arcade/lost-sizzler/js/game-main.js
+          test -f arcade/lost-sizzler/js/v10-16-voice-director.js
+          test -d arcade/lost-sizzler/assets/audio/music
+          test -d arcade/lost-sizzler/assets/audio/voice
+          grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
