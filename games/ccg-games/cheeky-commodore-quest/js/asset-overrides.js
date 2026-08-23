@@ -26,7 +26,7 @@ window.CCG_ASSET_OVERRIDES={
       goldenRoom:null,goldenClear:null,adventurer:null,adventurerSaved:null,tremor:null,
       cabinet:null,cabinetWin:null,cabinetFail:null,treasureBat:null,treasureBatGone:null,
       treasureBatDown:null,taxman:null,taxmanCaught:null,mysteryPotion:null,developerRoom:null,
-      bounty:null,bountyComplete:null,treasureMap:null,buriedCache:null,mutation:null,
+      bountyStart:null,bounty:null,bountyComplete:null,treasureMap:null,buriedCache:null,mutation:null,
       weeklyGhost:null,respawn:null
     }
   }
@@ -46,7 +46,8 @@ const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
 const CCG_GILDED_ELF_REV="20260823b";
 const CCG_RARE_EVENTS_REV="20260823a";
 const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
-const CCG_VOICE_DIRECTOR_REV="20260823b";
+const CCG_ADMIN_AUDIO_REV="20260823a";
+const CCG_VOICE_DIRECTOR_REV="20260823c";
 const CCG_VOICE_EXPANSION_REV="20260823a";
 const CCG_EXPANSION_CHANGELOG_REV="20260823b";
 const CCG_INPUT_UI_FIX_REV="20260823a";
@@ -124,7 +125,7 @@ const CCG_INPUT_UI_FIX_REV="20260823a";
   }
   if(!document.querySelector('script[data-ccg-admin-audio="true"]')){
     const script=document.createElement("script");
-    script.src="js/admin-audio-overrides.js";
+    script.src=`js/admin-audio-overrides.js?v=${CCG_ADMIN_AUDIO_REV}`;
     script.dataset.ccgAdminAudio="true";
     script.async=true;
     document.head.appendChild(script);
