@@ -71,7 +71,17 @@ $("artefact-score-btn")?.addEventListener("click",()=>claimBanishmentArtefact("s
 UI.sound.addEventListener("click",toggleSound);$("fullscreen-btn")?.addEventListener("click",toggleFullscreen);UI.descend?.addEventListener("click",descendFloor);UI.extract?.addEventListener("click",extractRun);UI.inventoryClose?.addEventListener("click",toggleInventory);
 $("again-btn").addEventListener("click",quitToMenu);
 
+function isEditableKeyboardTarget(target){
+  if(!(target instanceof Element))return false;
+  if(target.matches("input,textarea,select,[contenteditable='true'],[contenteditable='']"))return true;
+  return Boolean(target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']"));
+}
+
 addEventListener("keydown",e=>{
+  // Forms and text editors own their keyboard input. This must happen before
+  // the gameplay preventDefault calls so Space remains usable in bug reports,
+  // emails, room codes, player names and any future editable admin/game field.
+  if(isEditableKeyboardTarget(e.target))return;
   if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","Tab"].includes(e.code))e.preventDefault();
   if(e.code==="Escape"){
     if(mode==="paused"){pause();return}
