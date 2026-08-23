@@ -249,11 +249,11 @@
     const style=document.createElement("style");
     style.id="ccg-lost-sizzler-insight-styles";
     style.textContent=`
-      #ccg-important-notices{position:absolute;top:18px;right:18px;z-index:18;width:min(420px,38vw);display:grid;gap:10px;pointer-events:none}
+      #ccg-important-notices{position:absolute;top:82px;right:18px;z-index:32;width:min(420px,38vw);display:grid;gap:10px;pointer-events:none}
       .ccg-important-notice{opacity:0;transform:translateY(-10px);padding:13px 15px;border:2px solid #6cecff;background:rgba(6,4,10,.94);box-shadow:0 14px 38px rgba(0,0,0,.5),0 0 22px rgba(108,236,255,.18);transition:opacity .2s ease,transform .2s ease;font-family:"Courier New",monospace}
       .ccg-important-notice.show{opacity:1;transform:translateY(0)}.ccg-important-notice b{display:block;margin-bottom:5px;color:#ffd85a;font-size:12px;letter-spacing:.7px}.ccg-important-notice span{display:block;color:#fff;font-size:11px;line-height:1.42}
       .ccg-important-notice.tone-red{border-color:#ff6868}.ccg-important-notice.tone-gold{border-color:#ffd85a}.ccg-important-notice.tone-green{border-color:#72ff9b}.ccg-important-notice.tone-purple{border-color:#b978ff}
-      .ccg-insight-overlay{z-index:90}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
+      .ccg-game .ccg-insight-overlay{z-index:190!important}.ccg-insight-card{width:min(600px,94vw)!important;text-align:center}.ccg-insight-kicker{margin:0 0 5px!important;color:#6cecff!important;font:700 10px/1.2 "Courier New",monospace;letter-spacing:1.4px}
       .ccg-star-row{display:flex;justify-content:center;gap:8px;margin:18px 0}.ccg-star-row button{border:1px solid rgba(255,216,90,.5);background:#0b0710;color:#8d7c52;font-size:38px;line-height:1;padding:8px 10px;cursor:pointer}.ccg-star-row button:hover,.ccg-star-row button:focus,.ccg-star-row button.selected{color:#ffd85a;border-color:#ffd85a;transform:translateY(-2px)}
       .ccg-rating-status{min-height:20px;color:#ffd85a}.ccg-rating-card .menu-buttons{justify-content:center}
       @media(max-width:900px),(pointer:coarse){#ccg-important-notices{display:none}.ccg-star-row button{font-size:32px;padding:7px}.ccg-insight-card{max-height:88dvh;overflow:auto}}
