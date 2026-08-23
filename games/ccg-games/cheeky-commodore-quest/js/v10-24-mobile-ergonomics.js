@@ -9,6 +9,10 @@
 
   function inventoryPanel(){return document.getElementById("inventory-panel")}
   function inventoryOpen(){const panel=inventoryPanel();return Boolean(panel&&!panel.classList.contains("hidden"))}
+  function tutorialWantsInventoryClose(){
+    const tutorial=window.CCGLostSizzlerOnboardingV120?.state;
+    return Boolean(tutorial?.active&&Number(tutorial.step)===3&&tutorial.inventoryOpened&&!tutorial.inventoryClosed);
+  }
 
   function closeInventory(){
     if(!inventoryOpen())return false;
@@ -46,6 +50,7 @@
     const open=inventoryOpen();
     const button=ensureReturnButton();
     button?.classList.toggle("hidden",!open);
+    button?.classList.toggle("ccg-tutorial-control-highlight",Boolean(open&&tutorialWantsInventoryClose()));
     document.body.classList.toggle("ccg-mobile-inventory-open",Boolean(open&&mobile()));
   }
 
@@ -71,8 +76,9 @@
     },125);
   }
 
+  const syncTimer=setInterval(()=>{if(inventoryOpen())sync()},180);
   window.addEventListener("resize",sync,{passive:true});
   window.addEventListener("orientationchange",()=>setTimeout(sync,80),{passive:true});
-  window.addEventListener("pagehide",()=>observer?.disconnect?.(),{once:true});
+  window.addEventListener("pagehide",()=>{clearInterval(syncTimer);observer?.disconnect?.()},{once:true});
   window.CCGLostSizzlerMobileErgonomicsV124={sync,closeInventory,ensureReturnButton};
 })();
