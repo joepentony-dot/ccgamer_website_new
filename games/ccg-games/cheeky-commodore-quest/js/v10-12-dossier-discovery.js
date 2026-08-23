@@ -9,6 +9,7 @@
   if(window.__CCG_LOST_SIZZLER_DOSSIER_DISCOVERY_V112__)return;
   window.__CCG_LOST_SIZZLER_DOSSIER_DISCOVERY_V112__=true;
 
+  const discoveryQueue=[];
   const knownRow=row=>Boolean((row?.encounters||0)>0||(row?.defeats||0)>0);
 
   function updateDossierCopy(){
@@ -17,7 +18,7 @@
     const panel=document.querySelector("#named-dossier-panel .dossier-panel");
     if(mainButton)mainButton.textContent="OPEN DISCOVERED DOSSIER";
     if(inventoryButton)inventoryButton.textContent="Named Enemy Dossier";
-    const intro=panel?.querySelector?.(":scope > p");
+    const intro=panel?[...panel.children].find(node=>node.tagName==="P"):null;
     if(intro)intro.textContent="Only named enemies you have encountered are recorded here. A new enemy entry opens once, on the first encounter with that enemy type.";
   }
 
@@ -64,6 +65,18 @@
     }
   }catch(error){console.warn("[Lost Sizzler] dossier display override unavailable",error);}
 
+  function openNextDiscovery(){
+    if(!discoveryQueue.length||mode!=="playing"||!UI.namedDossier?.classList.contains("hidden"))return;
+    const name=discoveryQueue.shift();
+    S.sfx?.("elite");
+    showNamedDossier(name,true);
+  }
+
+  function continueDiscoveryQueue(){
+    if(!discoveryQueue.length)return;
+    setTimeout(openNextDiscovery,0);
+  }
+
   try{
     if(typeof updateNamedEncounters==="function"){
       updateNamedEncounters=function(){
@@ -72,7 +85,6 @@
           .sort((a,b)=>md(a,p1)-md(b,p1));
         const chosen=visible[0]||null;
         const stored=PGR.readDossier();
-        let firstDiscovery="";
 
         for(const e of visible){
           if(e.dossierSeen)continue;
@@ -80,26 +92,27 @@
           const alreadyKnown=knownRow(stored[name]);
           e.dossierSeen=true;
           run.stats.namedEncounters=(run.stats.namedEncounters||0)+1;
-          PGR.recordNamedEncounter(name,false);
-          if(!alreadyKnown){
-            firstDiscovery=name;
-            break;
-          }
+          const row=PGR.recordNamedEncounter(name,false)||{encounters:1,defeats:0};
+          stored[name]=row;
+          if(!alreadyKnown&&!discoveryQueue.includes(name)&&dossierFocusName!==name)discoveryQueue.push(name);
         }
 
         S.setNamedEnemy?.(chosen?.follower?.name||"");
         if(!host.stalker?.near)S.setRoomMood(chosen?"named":roomMoodFor(W.roomAt(world,p1.x,p1.y)));
-
-        if(firstDiscovery){
-          S.sfx?.("elite");
-          showNamedDossier(firstDiscovery,true);
-        }
+        openNextDiscovery();
       };
     }
   }catch(error){console.warn("[Lost Sizzler] first-encounter dossier trigger unavailable",error);}
 
+  document.getElementById("named-dossier-close")?.addEventListener("click",continueDiscoveryQueue);
+  document.getElementById("named-dossier-close-top")?.addEventListener("click",continueDiscoveryQueue);
+  window.addEventListener("keydown",event=>{
+    if(event.code==="Escape"&&UI.namedDossier?.classList.contains("hidden"))continueDiscoveryQueue();
+  });
+
   updateDossierCopy();
   window.CCGLostSizzlerDossierDiscoveryV112={
-    refresh:()=>{updateDossierCopy();renderNamedDossier?.();}
+    refresh:()=>{updateDossierCopy();if(typeof renderNamedDossier==="function")renderNamedDossier();},
+    pending:()=>[...discoveryQueue]
   };
 })();
