@@ -49,10 +49,22 @@ const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_ADMIN_AUDIO_REV="20260823a";
 const CCG_VOICE_DIRECTOR_REV="20260823c";
 const CCG_VOICE_EXPANSION_REV="20260823a";
-const CCG_EXPANSION_CHANGELOG_REV="20260823d";
+const CCG_EXPANSION_CHANGELOG_REV="20260823e";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
-const CCG_ONBOARDING_SAFETY_REV="20260823a";
+const CCG_ONBOARDING_SAFETY_REV="20260823b";
+
+/* Start onboarding immediately while the core scripts below this file are still
+ * parsing. The module polls for the core functions it needs, so the first Play
+ * click cannot outrun the tutorial/welcome/dossier safety install. */
+(()=>{
+  if(document.querySelector('script[data-ccg-lost-sizzler-onboarding-safety-v120="true"]'))return;
+  const script=document.createElement("script");
+  script.src=`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`;
+  script.dataset.ccgLostSizzlerOnboardingSafetyV120="true";
+  script.async=false;
+  document.head.appendChild(script);
+})();
 
 (()=>{
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
