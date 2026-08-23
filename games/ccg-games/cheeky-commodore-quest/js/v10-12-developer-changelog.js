@@ -18,7 +18,9 @@
         ["LS-0823-07","ADDED","Player activity and ratings","Actual run starts, supported device starts, play activity and the timed rating prompt are recorded for the developer insights dashboard."],
         ["LS-0823-08","ADDED","Bug-report reply workflow","Bug reports and suggestions now have their own admin area with reply support and feedback history instead of being mixed into Arcade Assets."],
         ["LS-0823-09","CHANGED","Mobile enemy projectile aiming","On mobile and touch devices, enemy projectiles are restricted to horizontal or vertical firing lanes instead of diagonal shots, improving fairness with touch movement controls."],
-        ["LS-0823-10","ADDED","Mobile minimap toggle","A MAP button has been added to the mobile touch controls. It opens a compact minimap using the existing explored-area radar data and discovered markers, and can be toggled off during play."]
+        ["LS-0823-10","ADDED","Mobile minimap toggle","A MAP button has been added to the mobile touch controls. It opens a compact minimap using the existing explored-area radar data and discovered markers, and can be toggled off during play."],
+        ["LS-0823-11","CHANGED","Rating prompt timing","The automatic game-rating prompt now appears after five minutes of active gameplay instead of two minutes, giving players longer to form an opinion before being asked."],
+        ["LS-0823-12","ADDED","Dedicated ratings admin page","Submitted 1–5 star ratings now have their own admin page with average score, total submissions, today's ratings, five-star share, prompt response rate, star distribution, filters and individual submission details."]
       ]
     },
     {
