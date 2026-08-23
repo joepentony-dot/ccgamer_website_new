@@ -34,27 +34,22 @@ const CUE_GROUPS=[
   ]],
   ['Rare Dungeon Events',[
     ['mimic','Mimic Chest','Mimic! That chest has teeth!'],
-    ['cursed','Cursed Cartridge','Cursed cartridge acquired.'],
-    ['curseCleared','Curse Cleared','Curse cleansed.'],
+    ['cursed','Cursed Cartridge','Cursed cartridge. Nice score bonus. Shame about the curse.'],
     ['merchant','Wandering Merchant','Wandering merchant nearby.'],
     ['merchantGone','Merchant Gone','The wandering merchant has moved on.'],
     ['goldenRoom','Golden Room','Golden Room! Survive the rush!'],
-    ['goldenClear','Golden Room Cleared','Golden Room cleared. Collect your reward.'],
     ['adventurer','Lost Adventurer','Lost adventurer found.'],
     ['adventurerSaved','Adventurer Rescued','Adventurer rescued.'],
     ['tremor','Dungeon Tremor','Dungeon tremor!'],
     ['cabinet','Arcade Challenge','Arcade challenge! Eight kills. No damage.'],
     ['cabinetWin','Arcade Challenge Won','Arcade challenge complete!'],
     ['cabinetFail','Arcade Challenge Failed','Arcade challenge failed.'],
-    ['treasureBat','Treasure Bat','Treasure bat! Shoot it down!'],
-    ['treasureBatGone','Treasure Bat Escaped','Treasure bat escaped.'],
-    ['treasureBatDown','Treasure Bat Down','Treasure bat down. Prize dropped.'],
+    ['treasureBat','Treasure Bat','Treasure bat! Shoot the bat before it gets away!'],
     ['taxman','The Taxman','The Taxman!'],
-    ['taxmanCaught','Taxman Caught','Taxman caught. Refund time.'],
-    ['mysteryPotion','Mystery Potion','Mystery potion. Brave choice.'],
+    ['mysteryPotion','Mystery Potion','Mystery potion.'],
     ['developerRoom','Developer Room','Secret developer room found.'],
-    ['bounty','Dungeon Bounty','New dungeon bounty.'],
-    ['bountyComplete','Bounty Complete','Bounty complete!'],
+    ['bountyStart','Dungeon Bounty','New dungeon bounty.'],
+    ['bounty','Bounty Complete','Bounty complete.'],
     ['treasureMap','Treasure Map','Treasure map found. Check the radar.'],
     ['buriedCache','Buried Cache','Buried cache found.'],
     ['mutation','Floor Mutation','Floor mutation active.']
@@ -184,7 +179,7 @@ async function actions(event){
   const button=event.target.closest('button[data-action]');if(!button)return;
   const action=button.dataset.action,cue=button.dataset.cue,key=button.dataset.key;
   if(action==='test')return testCue(cue);
-  if(action==='upload-cue'){const select=$('#voice-cue');select.value=cue;$('#voice-files').click();select.scrollIntoView({behavior:'smooth',block:'center'});return}
+  if(action==='upload-cue'){const select=$('#voice-cue');select.value=cue;select.scrollIntoView({behavior:'smooth',block:'center'});$('#voice-files').click();return}
   if(action==='default'){
     const targets=enabledRowsForCue(cue);if(!targets.length)return;
     button.disabled=true;const result=await supabase.from('arcade_assets').update({enabled:false,updated_at:new Date().toISOString()}).in('asset_key',targets.map(row=>row.asset_key)).eq('asset_group','voice');button.disabled=false;
