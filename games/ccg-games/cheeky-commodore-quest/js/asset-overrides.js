@@ -49,7 +49,7 @@ const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_ADMIN_AUDIO_REV="20260823a";
 const CCG_VOICE_DIRECTOR_REV="20260823c";
 const CCG_VOICE_EXPANSION_REV="20260823a";
-const CCG_EXPANSION_CHANGELOG_REV="20260823h";
+const CCG_EXPANSION_CHANGELOG_REV="20260823i";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823e";
@@ -180,7 +180,7 @@ const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
       ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
       ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
       ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
-      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiPolishV106"],
+      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
       [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
       ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
