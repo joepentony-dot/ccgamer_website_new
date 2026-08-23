@@ -12,7 +12,7 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const changelog=read("js/v10-18-expansion-changelog.js");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823c"/,"tutorial progression fix must be cache-busted for players who loaded the earlier tutorial");
+assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823d"/,"tutorial progression fix must be cache-busted for players who loaded an earlier tutorial");
 assert.match(assets,/CCG_ONBOARDING_HARDENING_REV/,"asset loader must expose a cache-busted onboarding-hardening revision");
 assert.match(assets,/v10-20-onboarding-safety\.js\?v=\$\{CCG_ONBOARDING_SAFETY_REV\}/,"onboarding safety script must be loaded by the game");
 assert.match(assets,/v10-20-onboarding-hardening\.js\?v=\$\{CCG_ONBOARDING_HARDENING_REV\}/,"onboarding hardening must be loaded by the game");
@@ -37,7 +37,9 @@ assert.match(source,/function recordMovement\(p,before\)/,"movement must also be
 assert.match(source,/movePlayer=function\(p\)\{const before=p\?\{x:p\.x,y:p\.y\}:null,r=o\.apply\(this,arguments\);recordMovement\(p,before\);return r\}/,"the tutorial must wrap actual player movement so desktop, gamepad and mobile movement can progress stage one");
 assert.match(source,/if\(state\.movementDistance>=2\)completeInteractive\("move"\)/,"two cumulative tiles must complete the movement stage even if the player circles back toward the start");
 assert.match(source,/function completeInteractive\(kind\)/,"all interactive tutorial stages must share a single completion path");
-assert.match(source,/setTimeout\(\(\)=>\{if\(state\.active&&STEPS\[state\.step\]\?\.\[0\]===kind&&stepReady\(STEPS\[state\.step\]\)\)advance\(\)\},260\)/,"completed interactive stages must advance automatically");
+assert.match(source,/if\(state\.autoAdvanceTimer\)return true;/,"holding a completed action must not keep postponing the tutorial's advance timer");
+assert.match(source,/state\.autoAdvanceTimer=setTimeout\(\(\)=>\{state\.autoAdvanceTimer=0;if\(state\.active&&STEPS\[state\.step\]\?\.\[0\]===kind&&stepReady\(STEPS\[state\.step\]\)\)advance\(\)\},260\)/,"completed interactive stages must advance automatically exactly once");
+assert.match(source,/function note\(kind\)\{if\(!state\.active\|\|STEPS\[state\.step\]\?\.\[0\]!==kind\)return;completeInteractive\(kind\)\}/,"fire and dash actions performed before their displayed tutorial stage must not pre-complete later stages");
 assert.match(source,/firePlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("fire"\);return r\}/,"firing must progress the fire tutorial stage");
 assert.match(source,/dashPlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("dash"\);return r\}/,"dashing must progress the dash tutorial stage");
 assert.match(source,/state\.inventoryOpened&&state\.inventoryClosed/,"inventory training must require both opening and closing the inventory");
@@ -67,6 +69,6 @@ assert.match(hardening,/new Set\(\["ccg","ccg player","cheeky commodore gamer"\]
 assert.match(hardening,/if\(CCG_ALIASES\.has\(n\)\)for\(const alias of CCG_ALIASES\)out\.add\(alias\)/,"all CCG identity aliases must map to the CCG dossier name");
 assert.match(hardening,/if\(!enemies\.has\(alias\)\|\|blocked\.has\(alias\)\)continue/,"only aliases that correspond to actual enemy dossier names should be persisted as blocks");
 
-for(const id of ["LS-0823-25","LS-0823-26","LS-0823-27","LS-0823-28"])assert.ok(changelog.includes(id),`developer changelog is missing ${id}`);
+for(const id of ["LS-0823-25","LS-0823-26","LS-0823-27","LS-0823-28","LS-0823-33","LS-0823-34"])assert.ok(changelog.includes(id),`developer changelog is missing ${id}`);
 
-console.log("Lost Sizzler V10.20 onboarding, full tutorial progression, gentle-opening, pristine-reset and dossier identity regression checks passed.");
+console.log("Lost Sizzler V10.20 onboarding, full tutorial progression, action sequencing, gentle-opening, pristine-reset and dossier identity regression checks passed.");
