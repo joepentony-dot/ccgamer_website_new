@@ -19,18 +19,18 @@
         ["LS-0824-08","FIXED","Locked chest feedback","Repeated movement into a locked chest is throttled so the lock sound and report cannot retrigger every input frame and make the screen appear to shudder."],
         ["LS-0824-09","CHANGED","Tutorial progress and visual tours","Sword and dash counters now repaint at 1/3, 2/3 and 3/3. The five information lessons pause for live highlighted interface tours and illustrated examples covering objectives, survival items, locks, enemies, the Death Stalker, events, shops, hazards and score."],
         ["LS-0824-10","CHANGED","Tutorial completion","The final lesson now states ‘You Are Ready To Take On The Adventure!’ and presents one Complete Tutorial action instead of two buttons that performed the same exit."],
-        ["LS-0824-11","CHANGED","Pixel-art presentation","The title screen now uses a full dungeon scene with a responsive pixel title and rebuilt mode controls. The playable explorer has directional idle, walking, sword and hurt frames, while common, rare and locked chests have animated closed, glint, opening and open states."]
-        ,["LS-0824-12","CHANGED","Dungeon-backed multiplayer modes","Horde and Spy Vs Spy now run on the main generated dungeon, retaining its tiles, doors, furniture, lighting, collision, player rendering and host-authoritative world synchronisation instead of using an abstract arena renderer."]
-        ,["LS-0824-13","FIXED","Complete special-mode music","The original full-length Spy Vs Spy theme and all three Horde tracks were restored byte-for-byte and decode successfully; exclusive music ownership prevents overlap and the Spy theme loops only after the complete track."]
-        ,["LS-0824-14","ADDED","Production sprite atlases","Common dungeon enemies, Horde enemies, four door families and wall torches now use fixed-cell transparent pixel atlases with idle, movement, attack, opening and flicker animation frames, retaining procedural fallbacks for exceptional characters."]
-        ,["LS-0824-15","FIXED","Door accessibility validation","Every generated functional door is checked after decoration for a walkable approach on both sides. Blocking furniture or unsafe wall framing is removed or repaired before play and the invariant is covered across seeded floors."]
-        ,["LS-0824-16","CHANGED","Sanctuary safe zones and healing","No monster type can enter a sanctuary. Each sanctuary contains a visible regeneration square that restores 1 HP every 3 seconds while occupied, and sanctuary speech is authorised only by genuine room entry."]
-        ,["LS-0824-17","CHANGED","Contextual ammo-saving melee","Fire automatically uses the unlimited melee weapon when an enemy or smashable item occupies the faced adjacent tile; the firearm and ammunition are used only beyond melee range."]
-        ,["LS-0824-18","FIXED","Synchronous bounty announcement","The New Dungeon Bounty speech and bounty banner now start together from one accepted announcement event, with a bounded fallback when voice playback is unavailable."]
-        ,["LS-0824-19","ADDED","Beta and ownership marks","The menu now carries the requested beta-stage notice and the game view is permanently stamped © 2026 Cheeky Commodore Gamer."]
-        ,["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."]
-        ,["LS-0824-21","CHANGED","V10.40 release alignment","The published build is now 2026.08.24.9 with cache token r9, and the visible game header and build badge now match the V10.40 runtime milestone after the release audit. No gameplay rules were changed by this version-label update."]
-        ,["LS-0824-22","CHANGED","V10.40 run-integrity consolidation","The current runtime now includes general objective-route recovery, reachable death-cache relocation, safer respawn and teleport placement, Solo/local focus-loss pausing, freshest-state host migration, host-side online pickup claim protection and checkpoint schema validation. The newer adaptive canvas limits, Weekly Vault retry system and bounded uploaded-music fallback remain in control rather than being replaced by older implementations."]
+        ["LS-0824-11","CHANGED","Pixel-art presentation","The title screen now uses a full dungeon scene with a responsive pixel title and rebuilt mode controls. The playable explorer has directional idle, walking, sword and hurt frames, while common, rare and locked chests have animated closed, glint, opening and open states."],
+        ["LS-0824-12","CHANGED","Dungeon-backed multiplayer modes","Horde and Spy Vs Spy now run on the main generated dungeon, retaining its tiles, doors, furniture, lighting, collision, player rendering and host-authoritative world synchronisation instead of using an abstract arena renderer."],
+        ["LS-0824-13","FIXED","Complete special-mode music","The original full-length Spy Vs Spy theme and all three Horde tracks were restored byte-for-byte and decode successfully; exclusive music ownership prevents overlap and the Spy theme loops only after the complete track."],
+        ["LS-0824-14","ADDED","Production sprite atlases","Common dungeon enemies, Horde enemies, four door families and wall torches now use fixed-cell transparent pixel atlases with idle, movement, attack, opening and flicker animation frames, retaining procedural fallbacks for exceptional characters."],
+        ["LS-0824-15","FIXED","Door accessibility validation","Every generated functional door is checked after decoration for a walkable approach on both sides. Blocking furniture or unsafe wall framing is removed or repaired before play and the invariant is covered across seeded floors."],
+        ["LS-0824-16","CHANGED","Sanctuary safe zones and healing","No monster type can enter a sanctuary. Each sanctuary contains a visible regeneration square that restores 1 HP every 3 seconds while occupied, and sanctuary speech is authorised only by genuine room entry."],
+        ["LS-0824-17","CHANGED","Contextual ammo-saving melee","Fire automatically uses the unlimited melee weapon when an enemy or smashable item occupies the faced adjacent tile; the firearm and ammunition are used only beyond melee range."],
+        ["LS-0824-18","FIXED","Synchronous bounty announcement","The New Dungeon Bounty speech and bounty banner now start together from one accepted announcement event, with a bounded fallback when voice playback is unavailable."],
+        ["LS-0824-19","ADDED","Beta and ownership marks","The menu now carries the requested beta-stage notice and the game view is permanently stamped © 2026 Cheeky Commodore Gamer."],
+        ["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."],
+        ["LS-0824-21","CHANGED","V10.40 release alignment","The published build is now 2026.08.24.9 with cache token r9, and the visible game header and build badge now match the V10.40 runtime milestone after the release audit. No gameplay rules were changed by this version-label update."],
+        ["LS-0824-22","CHANGED","V10.40 run-integrity consolidation","The current runtime now includes general objective-route recovery, reachable death-cache relocation, safer respawn and teleport placement, Solo/local focus-loss pausing, freshest-state host migration, host-side online pickup claim protection and checkpoint schema validation. The newer adaptive canvas limits, Weekly Vault retry system and bounded uploaded-music fallback remain in control rather than being replaced by older implementations."]
       ]
     },
     {
@@ -71,33 +71,13 @@
 
   const statusClass=status=>status.toLowerCase().replace(/[^a-z]+/g,"-");
   const entryHtml=([id,status,title,copy])=>`<article class="developer-log-entry"><code class="developer-log-id">${id}</code><span class="developer-log-status ${statusClass(status)}">${status}</span><div class="developer-log-copy"><b>${title}</b><span>${copy}</span></div></article>`;
-
   function mount(){
     if(document.getElementById("developer-changelog"))return;
-    const menu=document.querySelector("#menu .panel");
-    if(!menu)return;
-    const anchor=menu.querySelector(".secondary-menu")||menu.querySelector(".join-row")||menu.querySelector(".keys-help");
-    if(!anchor)return;
-
-    const details=document.createElement("details");
-    details.id="developer-changelog";
-    details.className="developer-changelog";
-    details.innerHTML=`
-      <summary>
-        <span class="developer-changelog-summary"><i class="developer-changelog-pulse" aria-hidden="true"></i><span>Developer Changelog / Bug Tracker</span></span>
-        <span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026</span>
-      </summary>
-      <div class="developer-changelog-body">
-        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026</time></p>
-        ${days.map(day=>`<section class="developer-log-day"><h4><time datetime="${day.iso}">${day.date}</time></h4><div class="developer-log-list">${day.entries.map(entryHtml).join("")}</div></section>`).join("")}
-        <section class="developer-log-monitoring" aria-label="Known issues and monitoring"><h4>KNOWN / MONITORING</h4><p><b>Direct launches from YouTube and other in-app browsers:</b> startup hardening was deployed on 23 August 2026. This is currently marked as monitoring; please submit a bug report if a direct launch still freezes or fails to initialise.</p></section>
-        <p class="developer-changelog-foot">Statuses describe the live website build: FIXED = confirmed code correction, CHANGED = deliberate behaviour or balance revision, ADDED = new capability, MONITORING = a reported issue with a mitigation deployed but still being watched.</p>
-      </div>`;
-
-    if(anchor.classList.contains("secondary-menu"))anchor.insertAdjacentElement("afterend",details);
-    else anchor.insertAdjacentElement("beforebegin",details);
+    const menu=document.querySelector("#menu .panel");if(!menu)return;
+    const anchor=menu.querySelector(".secondary-menu")||menu.querySelector(".join-row")||menu.querySelector(".keys-help");if(!anchor)return;
+    const details=document.createElement("details");details.id="developer-changelog";details.className="developer-changelog";
+    details.innerHTML=`<summary><span class="developer-changelog-summary"><i class="developer-changelog-pulse" aria-hidden="true"></i><span>Developer Changelog / Bug Tracker</span></span><span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026</span></summary><div class="developer-changelog-body"><p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026</time></p>${days.map(day=>`<section class="developer-log-day"><h4><time datetime="${day.iso}">${day.date}</time></h4><div class="developer-log-list">${day.entries.map(entryHtml).join("")}</div></section>`).join("")}<section class="developer-log-monitoring" aria-label="Known issues and monitoring"><h4>KNOWN / MONITORING</h4><p><b>Direct launches from YouTube and other in-app browsers:</b> startup hardening was deployed on 23 August 2026. This is currently marked as monitoring; please submit a bug report if a direct launch still freezes or fails to initialise.</p></section><p class="developer-changelog-foot">Statuses describe the live website build: FIXED = confirmed code correction, CHANGED = deliberate behaviour or balance revision, ADDED = new capability, MONITORING = a reported issue with a mitigation deployed but still being watched.</p></div>`;
+    if(anchor.classList.contains("secondary-menu"))anchor.insertAdjacentElement("afterend",details);else anchor.insertAdjacentElement("beforebegin",details);
   }
-
-  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});
-  else mount();
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
 })();
