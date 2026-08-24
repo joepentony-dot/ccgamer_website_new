@@ -96,7 +96,7 @@ addEventListener("keydown",e=>{
     if(mode==="playing"||mode==="paused"){pause();return}
   }
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){pause();return}
-  if(e.code==="KeyM"){toggleSound();return}if(e.code==="KeyF"){toggleFullscreen();return}if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
+  if(e.code==="KeyF"){toggleFullscreen();return}if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
   if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
   if(e.code==="Space"&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});
