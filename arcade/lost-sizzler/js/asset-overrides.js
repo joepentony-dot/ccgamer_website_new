@@ -68,6 +68,7 @@ const CCG_HORDE_REV="20260824a";
 const CCG_SABOTEURS_REV="20260824a";
 const CCG_SPECIAL_MODES_REV="20260824a";
 const CCG_MODE_POLISH_REV="20260824a";
+const CCG_QUALITY_V135_REV="20260824a";
 
 /* A run must not begin while the sequential enhancement queue is still
  * replacing the base combat, onboarding and balance functions. Keep the first
@@ -262,9 +263,10 @@ const CCG_MODE_POLISH_REV="20260824a";
       ,[`js/sizzler-saboteurs-audio.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursAudio"]
       ,[`js/v10-33-special-modes.js?v=${CCG_SPECIAL_MODES_REV}`,"ccgLostSizzlerSpecialModesV133"]
       ,[`js/v10-33-mode-polish.js?v=${CCG_MODE_POLISH_REV}`,"ccgLostSizzlerModePolishV133"]
+      ,[`js/v10-35-quality.js?v=${CCG_QUALITY_V135_REV}`,"ccgLostSizzlerQualityV135"]
     ];
     const criticalFailures=[];
-    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js"]);
+    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js","/arcade/lost-sizzler/js/v10-35-quality.js"]);
 
     const loadNext=index=>{
       if(index>=queue.length){window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);return}

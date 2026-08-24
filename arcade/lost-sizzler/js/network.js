@@ -17,7 +17,7 @@ class RoomNetwork{
  configureRoomMode(value){if(this.connected)throw new Error("Room mode cannot change after the lobby has connected.");this.roomMode=roomMode(value);this.roomCapacity=ROOM_MODES[this.roomMode].maxPlayers;return ROOM_MODES[this.roomMode]}
  getRoomMode(){return ROOM_MODES[this.roomMode]||ROOM_MODES.dungeon}
  getCapacity(){return this.getRoomMode().maxPlayers}
- presenceMember(){return{id:this.sessionId,name:this.name,joinedAt:this.joinedAt,roomRole:this.roomIntent,roomMode:this.roomMode,roomCapacity:this.getCapacity(),build:"V10.34"}}
+ presenceMember(){return{id:this.sessionId,name:this.name,joinedAt:this.joinedAt,roomRole:this.roomIntent,roomMode:this.roomMode,roomCapacity:this.getCapacity(),build:"V10.35"}}
  setSolo(name){this.leave();this.mode="solo";this.transport="solo";this.name=name||"CCG Player";this.isHost=true;this.connected=false;this.roomCode="";this.members.set(this.sessionId,{id:this.sessionId,name:this.name,joinedAt:this.joinedAt,lastSeen:Date.now(),roomRole:"solo"});this.syncMembers()}
  async getSupabase(){if(window.ccgSupabase?.getClient)return window.ccgSupabase.getClient();if(/cheekycommodoregamer\.co\.uk$/i.test(location.hostname)){await this.load("/js/ccg-supabase-config.js");await this.load("/js/ccg-supabase-client.js");if(window.ccgSupabase?.getClient)return window.ccgSupabase.getClient()}return null}
  load(src){return new Promise((res,rej)=>{const ex=document.querySelector(`script[src="${src}"]`);if(ex){if(window.ccgSupabase?.getClient){res();return}ex.addEventListener("load",res,{once:true});setTimeout(()=>window.ccgSupabase?.getClient&&res(),0);return}const s=document.createElement("script");s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)})}

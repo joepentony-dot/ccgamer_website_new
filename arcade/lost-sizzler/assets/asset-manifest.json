@@ -11,7 +11,13 @@
       "Yoshi Yoshi": "assets/yoshi-yoshi.png",
       "CCG": "canvas-generated creature unless overridden"
     },
-    "items": "Items use canvas artwork by default. Any images.items key in js/asset-overrides.js can replace its matching floor collectible."
+    "items": "Items use canvas artwork by default. Any images.items key in js/asset-overrides.js can replace its matching floor collectible.",
+    "pixelAtlases": {
+      "standardEnemiesA": "assets/pixel/enemy-atlas-standard-a-v10-35.png",
+      "standardEnemiesB": "assets/pixel/enemy-atlas-standard-b-v10-35.png",
+      "hordeEnemies": "assets/pixel/enemy-atlas-horde-v10-35.png",
+      "doorsAndTorches": "assets/pixel/environment-atlas-v10-35.png"
+    }
   },
   "music": {
     "categories": ["normal", "danger", "sanctuary", "named", "stalker"],

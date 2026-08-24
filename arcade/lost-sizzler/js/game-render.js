@@ -1,4 +1,4 @@
-const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r7"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r7")}})();
+const lostSizzlerPixelAssets=(()=>{const make=src=>{if(typeof Image!=="function")return null;const image=new Image();image.decoding="async";image.src=src;return image};return{explorer:make("assets/pixel/explorer-sheet-v10-34.png?v=20260824r8"),chests:make("assets/pixel/chest-sheet-v10-34.png?v=20260824r8")}})();
 function camFor(p,v){let c=cameras.get(p.id)||{x:0,y:0};const tx=Math.max(0,Math.min(C.worldWidth*C.tile-v.w,p.rx*C.tile+C.tile/2-v.w/2)),ty=Math.max(0,Math.min(C.worldHeight*C.tile-v.h,p.ry*C.tile+C.tile/2-v.h/2));c.x=tx;c.y=ty;cameras.set(p.id,c);return c}
 function ws(x,y){return{x:view.x+x*C.tile-cam.x+renderShake.x,y:view.y+y*C.tile-cam.y+renderShake.y}}
 function tileHash(x,y,salt=0){let h=Math.imul(x+17,73856093)^Math.imul(y+31,19349663)^Math.imul(salt+7,83492791);h^=h>>>13;h=Math.imul(h,1274126177);return(h^(h>>>16))>>>0}

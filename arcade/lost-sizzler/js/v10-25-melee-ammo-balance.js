@@ -120,7 +120,12 @@
     const oldFire=firePlayer;
     firePlayer=function firePlayerV125(p,d){
       if(!p)return;
-      if(!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,d);
+      const dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0}),tx=p.x+dir.x,ty=p.y+dir.y;
+      const adjacentEnemy=(host?.enemies||[]).some(e=>e?.alive&&e.x===tx&&e.y===ty),adjacentFurniture=(host?.blockingDecor||[]).some(item=>item?.x===tx&&item?.y===ty);
+      /* Fire is contextual at one tile: a hostile or smashable directly in the
+       * faced cell always receives the unlimited melee swing. Guns are used,
+       * and ammunition consumed, only when that close target does not exist. */
+      if(adjacentEnemy||adjacentFurniture||!hasGun(p)||Number(p.mana||0)<=0)return meleeAttack(p,dir);
       return oldFire(p,d);
     };
     dashPlayer=function dashPlayerV125(p,d){

@@ -1,157 +1,54 @@
-/* The Lost Sizzler V10.33 — live Horde Survivor and Sizzler Saboteurs adapter. */
+/* The Lost Sizzler V10.35 — dungeon-backed Horde Survivor and Spy Vs Spy. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_SPECIAL_MODES_V133__)return;
   window.__CCG_LOST_SIZZLER_SPECIAL_MODES_V133__=true;
-
-  const H=window.CCGLostSizzlerHorde,HA=window.CCGLostSizzlerHordeAudio;
-  const SAB=window.CCGLostSizzlerSaboteurs,SA=window.CCGLostSizzlerSaboteursAudio;
-  const keys=new Set(),touchKeys=new Set(),inputs=new Map(),visuals=new Map();
-  let active=null,hordeAudio=null,saboteursAudio=null,lastStateSend=0,lastInputSend=0;
-  const clamp=(value,min,max)=>Math.max(min,Math.min(max,Number(value)||0));
-  const distance=(a,b)=>Math.hypot(Number(a?.x||0)-Number(b?.x||0),Number(a?.y||0)-Number(b?.y||0));
-  const now=()=>Date.now();
-  const members=()=>net?.getMembers?.()||[];
-  const admitted=id=>members().some(member=>member.id===id);
-  const actorId=()=>net?.sessionId||"P1";
-  const isEditable=target=>target instanceof Element&&Boolean(target.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']"));
-
-  function inputState(){
-    const held=code=>keys.has(code)||touchKeys.has(code),left=held("ArrowLeft")||held("KeyA"),right=held("ArrowRight")||held("KeyD"),up=held("ArrowUp")||held("KeyW"),down=held("ArrowDown")||held("KeyS");
-    return{dx:(right?1:0)-(left?1:0),dy:(down?1:0)-(up?1:0),fire:held("Space"),interact:held("KeyE"),trap:held("KeyT"),extract:held("KeyX"),sentAt:now()};
-  }
-  function setTouch(action,on){const map={up:"ArrowUp",down:"ArrowDown",left:"ArrowLeft",right:"ArrowRight",fire:"Space",potion:"KeyE",torch:"KeyT"},code=map[action];if(!code)return;if(on)touchKeys.add(code);else touchKeys.delete(code)}
-
-  addEventListener("keydown",event=>{
-    if(!active||isEditable(event.target))return;
-    if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight","Space","KeyE","KeyT","KeyX","Escape"].includes(event.code)){event.preventDefault();event.stopImmediatePropagation()}
-    if(event.code==="Escape"){stop("Special mode ended.");return}
-    keys.add(event.code);
-  },true);
-  addEventListener("keyup",event=>{if(!active)return;keys.delete(event.code)},true);
-  addEventListener("blur",()=>{keys.clear();touchKeys.clear()});
-  document.addEventListener("pointerdown",event=>{if(!active)return;const action=event.target?.closest?.("[data-action]")?.dataset?.action;if(action){event.preventDefault();setTouch(action,true)}},true);
-  document.addEventListener("pointerup",event=>{if(!active)return;const action=event.target?.closest?.("[data-action]")?.dataset?.action;if(action)setTouch(action,false)},true);
-
-  function hydrateState(type,state){
-    if(!state)return null;state.events=Array.isArray(state.events)?state.events:[];
-    if(type==="horde-survivor")state.announcer=state.announcer||{busyUntil:0,lastPlayed:{},current:null};
-    else state.announcer=state.announcer||{busyUntil:0,lastPlayed:{},current:null};
-    return state;
-  }
-  function publicState(){if(!active?.state)return null;return active.type==="horde-survivor"?H.publicState(active.state):SAB.publicState(active.state)}
-  function sendState(force=false){if(!active?.authoritative||!active.state||!net?.connected)return;const time=now();if(!force&&time-lastStateSend<125)return;lastStateSend=time;net.send("v133_special_state",{roomMode:active.type,state:publicState(),sentAt:time}).catch(()=>{})}
-  function sendInput(){if(!active||active.authoritative||!net?.connected)return;const time=now();if(time-lastInputSend<75)return;lastInputSend=time;net.send("v133_special_input",{roomMode:active.type,actorId:actorId(),input:inputState()}).catch(()=>{})}
-
+  const H=window.CCGLostSizzlerHorde,HA=window.CCGLostSizzlerHordeAudio,SAB=window.CCGLostSizzlerSaboteurs,SA=window.CCGLostSizzlerSaboteursAudio;
+  const keys=new Set(),touchKeys=new Set(),inputs=new Map();let active=null,hordeAudio=null,saboteursAudio=null,lastStateSend=0,lastInputSend=0;
+  const now=()=>Date.now(),clamp=(v,a,b)=>Math.max(a,Math.min(b,Number(v)||0)),members=()=>net?.getMembers?.()||[],actorId=()=>net?.sessionId||"P1",admitted=id=>members().some(m=>m.id===id);
+  const editable=t=>t instanceof Element&&Boolean(t.closest("input,textarea,select,[contenteditable='true'],[contenteditable='']"));
+  function inputState(){const held=c=>keys.has(c)||touchKeys.has(c),l=held("ArrowLeft")||held("KeyA"),r=held("ArrowRight")||held("KeyD"),u=held("ArrowUp")||held("KeyW"),d=held("ArrowDown")||held("KeyS");return{dx:+r-+l,dy:+d-+u,fire:held("Space"),interact:held("KeyE"),trap:held("KeyT"),extract:held("KeyX"),sentAt:now()}}
+  function setTouch(action,on){const code={up:"ArrowUp",down:"ArrowDown",left:"ArrowLeft",right:"ArrowRight",fire:"Space",potion:"KeyE",torch:"KeyT"}[action];if(code)(on?touchKeys.add(code):touchKeys.delete(code))}
+  addEventListener("keydown",e=>{if(!active||editable(e.target))return;keys.add(e.code);if(["KeyT","KeyX"].includes(e.code)){e.preventDefault();e.stopImmediatePropagation()}if(e.code==="Escape"){e.preventDefault();stop("Special mode ended.")}},true);
+  addEventListener("keyup",e=>{if(active)keys.delete(e.code)},true);addEventListener("blur",()=>{keys.clear();touchKeys.clear()});
+  document.addEventListener("pointerdown",e=>{const a=active&&e.target?.closest?.("[data-action]")?.dataset?.action;if(a)setTouch(a,true)},true);document.addEventListener("pointerup",e=>{const a=active&&e.target?.closest?.("[data-action]")?.dataset?.action;if(a)setTouch(a,false)},true);
   function announce(title,text,tone="cyan",duration=6500){try{showToast(title,text,tone,duration)}catch(_){}}
-  function handleHordeEvents(events){for(const event of events){
-    if(event.type==="wave-start"){hordeAudio?.setWave?.(event.wave);announce(`HORDE WAVE ${event.wave} — ${event.title}`,`${event.quota} enemies. Unlimited ammunition; survive and keep moving.`,event.wave===10?"red":"gold",7500)}
-    else if(event.type==="weapon-unlocked")announce("WEAPON UPGRADED",event.weapon?.name||"A stronger Horde weapon is active.","cyan",5200);
-    else if(event.type==="player-down")announce("PLAYER DOWN","Hold E beside the downed player for five seconds to revive them.","red",6500);
-    else if(event.type==="victory")announce("HORDE SURVIVOR COMPLETE",`Final score: ${Math.floor(active.state.score).toLocaleString()}. Press Escape to return to the menu.`,"green",12000);
-    else if(event.type==="defeat")announce("THE HORDE WON","No active players remain. Press Escape to return to the menu.","red",12000);
-  }}
-  function handleSaboteurEvents(events){for(const event of events){
-    if(event.type==="round-start")announce(`SPY VS SPY — ROUND ${event.round}`,`${active.state.modifier?.name||"Double-cross"}. Find the case, joystick, tape and key, then extract.`,"gold",8500);
-    else if(event.type==="round-won")announce("ROUND WON",`${active.state.players.find(player=>player.id===event.playerId)?.name||"An agent"} takes the round.`,"green",6500);
-    else if(event.type==="match-won")announce("SPY VS SPY COMPLETE",`${active.state.players.find(player=>player.id===event.playerId)?.name||"An agent"} wins the match. Press Escape to return.`,"green",12000);
-    else if(event.type==="trap-triggered")announce("TRAP TRIGGERED",event.selfTriggered?"An agent triggered their own trap.":"The sabotage worked.","red",5200);
-  }}
+  function hydrateState(type,state){if(!state)return null;state.events=Array.isArray(state.events)?state.events:[];state.announcer=state.announcer||{busyUntil:0,lastPlayed:{},current:null};return state}
+  function publicState(){return !active?.state?null:active.type==="horde-survivor"?H.publicState(active.state):SAB.publicState(active.state)}
+  function sendState(force=false){if(!active?.authoritative||!net?.connected)return;const t=now();if(!force&&t-lastStateSend<125)return;lastStateSend=t;net.send("v133_special_state",{roomMode:active.type,state:publicState(),sentAt:t}).catch(()=>{})}
+  function sendInput(){if(!active||active.authoritative||!net?.connected)return;const t=now();if(t-lastInputSend<75)return;lastInputSend=t;net.send("v133_special_input",{roomMode:active.type,actorId:actorId(),input:inputState()}).catch(()=>{})}
 
-  function moveHordePlayer(player,input,dt){
-    if(!player||player.status!=="active")return;let dx=Number(input?.dx||0),dy=Number(input?.dy||0);if(dx||dy){const length=Math.hypot(dx,dy)||1,step=clamp(dt,0,45)*.0085;dx/=length;dy/=length;player.x=clamp(player.x+dx*step,2,78);player.y=clamp(player.y+dy*step,2,50);active.facing.set(player.id,{x:dx,y:dy})}
-  }
-  function fireHorde(player,input,time){
-    if(!player||player.status!=="active"||!input?.fire||time<Number(active.cooldowns.get(`fire:${player.id}`)||0))return;
-    active.cooldowns.set(`fire:${player.id}`,time+Math.max(105,205-Number(active.state.wave||1)*7));const facing=active.facing.get(player.id)||{x:1,y:0},damage=1+Math.floor(Math.max(0,Number(active.state.wave||1)-1)/3);
-    if(active.state.state==="boss"&&active.state.boss?.alive){const boss=active.state.boss,d=distance(player,boss),dot=((boss.x-player.x)*facing.x+(boss.y-player.y)*facing.y)/Math.max(.001,d);if(d<=14&&dot>.55){H.damageBoss(active.state,damage,player.id,time);return}}
-    const target=[...active.state.activeEnemies].filter(enemy=>enemy.alive).map(enemy=>{const d=distance(player,enemy),dot=((enemy.x-player.x)*facing.x+(enemy.y-player.y)*facing.y)/Math.max(.001,d);return{enemy,d,dot}}).filter(row=>row.d<=13&&row.dot>.58).sort((a,b)=>a.d-b.d)[0];
-    if(!target)return;target.enemy.hp=Math.max(0,Number(target.enemy.hp||1)-damage);if(target.enemy.hp<=0)H.defeatEnemy(active.state,target.enemy.id,player.id,time);
-  }
-  function updateHorde(dt,time){
-    const state=active.state;if(!state)return;const local=inputState();inputs.set(actorId(),local);
-    for(const player of state.players){const current=player.id===actorId()?local:inputs.get(player.id)||{};moveHordePlayer(player,current,dt);fireHorde(player,current,time);if(current.interact){const downed=state.players.find(other=>other.status==="downed"&&distance(player,other)<=H.REVIVE_DISTANCE);if(downed&&!state.revives[downed.id])H.startRevive(state,player.id,downed.id,time)}}
-    if(["wave","siege"].includes(state.state)&&time>=Number(active.nextSpawnAt||0)){H.spawnNext(state,time);active.nextSpawnAt=time+clamp(760-Number(state.wave||1)*35,330,760)}
-    for(const enemy of state.activeEnemies){if(!enemy.alive)continue;const target=[...state.players].filter(player=>player.status==="active").sort((a,b)=>distance(enemy,a)-distance(enemy,b))[0];if(!target)continue;const d=distance(enemy,target);if(d>.62){const step=clamp(dt,0,45)*.0021*Number(enemy.speed||1),dx=(target.x-enemy.x)/Math.max(.001,d),dy=(target.y-enemy.y)/Math.max(.001,d);enemy.x=clamp(enemy.x+dx*step,1,79);enemy.y=clamp(enemy.y+dy*step,1,51)}else if(time>=Number(enemy.attackAt||0)){enemy.attackAt=time+900;H.applyDamage(state,target.id,enemy.damage,time)}}
-    if(state.boss?.alive){const boss=state.boss,target=state.players.find(player=>player.id===boss.targetId&&player.status==="active")||state.players.find(player=>player.status==="active");if(target){const d=distance(boss,target);if(d>.85){boss.x+=(target.x-boss.x)/Math.max(.001,d)*clamp(dt,0,45)*.0017;boss.y+=(target.y-boss.y)/Math.max(.001,d)*clamp(dt,0,45)*.0017}else if(time>=Number(boss.attackAt||0)){boss.attackAt=time+1050;H.applyDamage(state,target.id,boss.damage,time)}}}
-    for(const pickup of [...state.health.active]){const player=state.players.find(entry=>entry.status==="active"&&distance(entry,pickup)<.8);if(player)H.collectHealth(state,pickup.id,player.id,time)}
-    H.tick(state,time);handleHordeEvents(H.drainEvents(state));
-  }
+  function dungeonCells(far=false){const players=allPlayers?.()||[p1].filter(Boolean),out=[];for(const room of world?.rooms||[]){if(room.sanctuary||room.optional||room.sigilRoom)continue;for(let y=room.y+2;y<room.y+room.h-1;y++)for(let x=room.x+2;x<room.x+room.w-1;x++){if(!W.walkable(world.map,x,y,host)||(host.blockingDecor||[]).some(q=>q.x===x&&q.y===y)||(host.enemies||[]).some(q=>q.alive&&q.x===x&&q.y===y))continue;const distance=Math.min(...players.map(p=>Math.hypot(p.x-x,p.y-y)),999);if(!far||distance>=8)out.push({x,y,distance,roomId:room.id})}}return out.sort((a,b)=>b.distance-a.distance)}
+  function spawnCell(key){const cells=dungeonCells(true);return cells.length?cells[(H.hash32(`${active.seed}|${key}`)%cells.length)]:null}
+  const enemyKind=k=>({bat:"ghost",fighter:"hunter",elite:"guardian",warden:"knight"}[k]||k);
+  function materialiseEnemy(model,boss=false){if(!model||!host||host.enemies.some(e=>e.id===model.id&&e.alive))return null;const q=spawnCell(model.id);if(!q)return null;const e={id:model.id,...q,kind:enemyKind(model.kind),hp:Number(model.hp||1),maxHp:Number(model.maxHp||model.hp||1),alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:p1?{x:p1.x,y:p1.y}:null,memoryMs:999999,searchMs:0,moveCooldown:180,attackCooldown:650,chargeCooldown:900,healCooldown:999999,flash:0,hpBarMs:0,hordeEnemy:true,hordeModelId:model.id,hordeWarden:boss,champion:boss,championName:boss?"The Horde Warden":undefined,moveSpeedScale:Number(model.speed||1)};host.enemies.push(e);if(!host.enteredRoomIds.includes(q.roomId))host.enteredRoomIds.push(q.roomId);host.revision++;return e}
+  function liveFor(id){return id===p1?.id?p1:remote.get(id)}
+  function syncHordePlayers(){for(const m of active.state.players){const p=liveFor(m.id);if(!p)continue;m.x=p.x;m.y=p.y;if(m.status==="active"){p.maxHealth=10;p.health=Math.max(1,Math.min(10,Number(m.hp||p.health||10)));p.maxMana=Math.max(60,Number(p.maxMana||60));p.mana=p.maxMana}}}
+  function hordeWeapon(level){const power=1+Math.floor(Math.max(0,level-1)/2),name=H.WEAPONS[Math.max(0,level-1)]?.name||"Archive Sidearm";return{id:`horde-wave-${level}`,name,displayName:name,rarity:level>=9?"ZZAP! 97%":level>=6?"GOLD MEDAL":"SIZZLER",power,delay:Math.max(.42,1-level*.045),shots:level>=8?3:level>=3?2:1,ammo:1,element:level>=5?"shock":"energy",ttl:18,mods:[],rating:power}}
+  function handleHordeEvents(events){for(const event of events){if(event.type==="wave-start"){hordeAudio?.setWave?.(event.wave);const w=hordeWeapon(event.wave);for(const p of [p1,...remote.values()].filter(Boolean)){p.firearmUnlocked=true;p.weapon={...w};p.mana=p.maxMana}announce(`HORDE WAVE ${event.wave} — ${event.title}`,`${event.quota} enemies. Full dungeon movement, unlimited ammunition and shared revives are active.`,event.wave===10?"red":"gold",7600)}else if(event.type==="boss-start")materialiseEnemy(event.boss,true);else if(event.type==="player-down")announce("PLAYER DOWN","Hold E beside the downed player for five seconds to revive them.","red");else if(event.type==="victory")announce("HORDE SURVIVOR COMPLETE",`Final score: ${Math.floor(active.state.score).toLocaleString()}. Press Escape to return.`,"green",12000);else if(event.type==="defeat")announce("THE HORDE WON","No active players remain. Press Escape to return.","red",12000)}}
+  function updateHorde(t){const state=active.state;if(!state)return;syncHordePlayers();if(["wave","siege"].includes(state.state)&&t>=Number(active.nextSpawnAt||0)){const m=H.spawnNext(state,t);if(m)materialiseEnemy(m);active.nextSpawnAt=t+clamp(760-Number(state.wave||1)*35,330,760)}for(const m of state.activeEnemies){const e=host.enemies.find(q=>q.id===m.id);if(e){m.x=e.x;m.y=e.y;m.hp=e.hp;if(!e.alive&&m.alive)H.defeatEnemy(state,m.id,e._hordeKiller||actorId(),t)}}if(state.boss?.alive){const e=host.enemies.find(q=>q.id===state.boss.id);if(!e)materialiseEnemy(state.boss,true);else{state.boss.x=e.x;state.boss.y=e.y;state.boss.hp=e.hp}}H.tick(state,t);handleHordeEvents(H.drainEvents(state));score=Math.max(score,Math.floor(state.score||0))}
 
   function sabRoom(match,id){return match.map?.rooms.find(room=>room.id===id)}
-  function moveSaboteur(player,input,time){
-    if(!player||player.status!=="active"||time<Number(active.cooldowns.get(`move:${player.id}`)||0))return;
-    const dx=Number(input?.dx||0),dy=Number(input?.dy||0);if(!dx&&!dy)return;const room=sabRoom(active.state,player.roomId),edges=active.state.map.edges.filter(edge=>edge.a===room.id||edge.b===room.id),neighbours=edges.map(edge=>sabRoom(active.state,edge.a===room.id?edge.b:edge.a)).filter(Boolean),target=neighbours.map(next=>({next,score:(next.gridX-room.gridX)*dx+(next.gridY-room.gridY)*dy})).filter(row=>row.score>0).sort((a,b)=>b.score-a.score)[0]?.next;if(target){SAB.movePlayer(active.state,player.id,target.id,time);active.cooldowns.set(`move:${player.id}`,time+260)}}
-  function sabAction(player,input,time){
-    if(!player||player.status!=="active")return;
-    if(input.trap&&time>=Number(active.cooldowns.get(`trap:${player.id}`)||0)){active.cooldowns.set(`trap:${player.id}`,time+700);const room=sabRoom(active.state,player.roomId);for(const trapId of active.state.trapLoadout){const def=SAB.TRAPS[trapId],type=def.locations.find(value=>value==="floor"||value==="furniture"&&room?.furniture?.length||value==="door"),targetId=type==="furniture"?room.furniture[0]?.id:type==="door"?active.state.map.edges.find(edge=>edge.a===room.id||edge.b===room.id)?.id:null;if(type&&SAB.placeTrap(active.state,player.id,trapId,{type,id:targetId},time))break}}
-    if(input.extract&&time>=Number(active.cooldowns.get(`extract:${player.id}`)||0)){active.cooldowns.set(`extract:${player.id}`,time+700);SAB.beginExtraction(active.state,player.id,time)}
-    if(!input.fire||time<Number(active.cooldowns.get(`action:${player.id}`)||0))return;active.cooldowns.set(`action:${player.id}`,time+420);
-    const opponent=active.state.players.find(other=>other.id!==player.id&&other.status==="active"&&other.roomId===player.roomId);if(opponent){SAB.useWeapon(active.state,player.id,opponent.id,time);return}
-    const loose=active.state.looseObjects.find(item=>item.roomId===player.roomId);if(loose&&SAB.collectLoose(active.state,player.id,loose.id,time))return;
-    const room=sabRoom(active.state,player.roomId),furniture=room?.furniture?.find(item=>!item.searched);if(furniture){SAB.searchFurniture(active.state,player.id,furniture.id,time);return}
-    SAB.beginExtraction(active.state,player.id,time);
-  }
-  function updateSaboteurs(dt,time){
-    const match=active.state;if(!match)return;const local=inputState();inputs.set(actorId(),local);
-    for(const player of match.players){const current=player.id===actorId()?local:inputs.get(player.id)||{};moveSaboteur(player,current,time);sabAction(player,current,time)}
-    SAB.tick(match,time);if(match.state==="round-complete"){match._adapterNextRoundAt=Number(match._adapterNextRoundAt||time+4500);if(time>=match._adapterNextRoundAt){delete match._adapterNextRoundAt;SAB.beginRound(match,time)}}
-    handleSaboteurEvents(SAB.drainEvents(match));
-  }
+  function attachRooms(match){const rooms=(world.rooms||[]).filter(r=>!r.optional&&!r.sanctuary);for(const [i,r] of (match.map?.rooms||[]).entries())r.dungeonRoomId=rooms[i%Math.max(1,rooms.length)]?.id??world.startRoomId;match.dungeonExtractionRoomId=sabRoom(match,match.extractionRoomId)?.dungeonRoomId}
+  function syncSpyPlayers(){for(const m of active.state.players){const p=liveFor(m.id);if(!p)continue;const rid=W.roomAt(world,p.x,p.y),mapped=active.state.map.rooms.find(r=>r.dungeonRoomId===rid);if(mapped)m.roomId=mapped.id;m.x=p.x;m.y=p.y;p.maxHealth=m.maxHp;if(m.status==="active"){m.hp=Math.max(0,Math.min(m.maxHp,Number(p.health||m.hp)));p.health=Math.max(1,m.hp)}else p.health=1}}
+  function sabAction(player,input,t){if(!player||player.status!=="active")return;if(input.trap&&t>=Number(active.cooldowns.get(`trap:${player.id}`)||0)){active.cooldowns.set(`trap:${player.id}`,t+700);for(const trapId of active.state.trapLoadout)if(SAB.placeTrap(active.state,player.id,trapId,{type:"floor",id:`${player.roomId}:floor`},t))break}if(input.extract&&t>=Number(active.cooldowns.get(`extract:${player.id}`)||0)){active.cooldowns.set(`extract:${player.id}`,t+700);SAB.beginExtraction(active.state,player.id,t)}if(!input.interact||t<Number(active.cooldowns.get(`search:${player.id}`)||0))return;const live=liveFor(player.id),nearFurniture=live&&((host.blockingDecor||[]).some(q=>Math.abs(q.x-live.x)+Math.abs(q.y-live.y)<=1)||(host.chests||[]).some(q=>q.active&&Math.abs(q.x-live.x)+Math.abs(q.y-live.y)<=1));if(!nearFurniture){announce("MOVE BESIDE FURNITURE","Press E beside a barrel, bookcase, desk or chest to search it.","cyan",3000);return}active.cooldowns.set(`search:${player.id}`,t+500);const loose=active.state.looseObjects.find(i=>i.roomId===player.roomId);if(loose&&SAB.collectLoose(active.state,player.id,loose.id,t))return;const room=sabRoom(active.state,player.roomId),f=room?.furniture?.find(i=>!i.searched);if(f)SAB.searchFurniture(active.state,player.id,f.id,t)}
+  function handleSpyEvents(events){for(const e of events){if(e.type==="round-start"){attachRooms(active.state);announce(`SPY VS SPY — ROUND ${e.round}`,`${active.state.modifier?.name||"Double-cross"}. Search the real dungeon furniture, fight, then extract.`,"gold",8500)}else if(e.type==="round-won")announce("ROUND WON",`${active.state.players.find(p=>p.id===e.playerId)?.name||"An agent"} takes the round.`,"green");else if(e.type==="match-won")announce("SPY VS SPY COMPLETE",`${active.state.players.find(p=>p.id===e.playerId)?.name||"An agent"} wins the match.`,"green",12000);else if(e.type==="trap-triggered")announce("TRAP TRIGGERED",e.selfTriggered?"An agent triggered their own trap.":"The sabotage worked.","red")}}
+  function updateSpy(t){const match=active.state;if(!match)return;syncSpyPlayers();const local=inputState();inputs.set(actorId(),local);for(const p of match.players)sabAction(p,p.id===actorId()?local:inputs.get(p.id)||{},t);SAB.tick(match,t);if(match.state==="round-complete"){match._adapterNextRoundAt=Number(match._adapterNextRoundAt||t+4500);if(t>=match._adapterNextRoundAt){delete match._adapterNextRoundAt;SAB.beginRound(match,t)}}handleSpyEvents(SAB.drainEvents(match))}
+  function updateSpecial(){if(!active)return;sendInput();if(!active.authoritative||!active.state)return;const t=now();active.type==="horde-survivor"?updateHorde(t):updateSpy(t);sendState()}
+  function textLine(text,x,y,size=14,colour="#faf4ff"){ctx.fillStyle=colour;ctx.font=`bold ${size}px "Courier New",monospace`;ctx.textAlign="left";ctx.fillText(String(text),x,y)}
+  function renderSpecial(){if(!active?.state){textLine("WAITING FOR HOST STATE…",canvas.width/2-150,canvas.height/2,18,"#ffd85a");return}ctx.save();ctx.fillStyle="rgba(3,2,7,.84)";ctx.fillRect(14,14,Math.min(canvas.width-28,735),70);ctx.strokeStyle=active.type==="horde-survivor"?"#ffd85a":"#b978ff";ctx.strokeRect(14,14,Math.min(canvas.width-28,735),70);if(active.type==="horde-survivor"){const s=active.state,w=H.WAVES[Math.max(0,s.wave-1)];textLine(`HORDE SURVIVOR · WAVE ${s.wave||0}/10 · ${w?.title||"BRIEFING"}`,27,38,16,"#ffd85a");textLine(`DEFEATED ${s.defeated}/${s.wave?H.quotaFor(s.wave,s.playerCount):0} · SCORE ${Math.floor(s.score).toLocaleString()} · AMMO ∞`,27,62,12,"#6cecff")}else{const m=active.state,p=m.players.find(q=>q.id===actorId())||m.players[0],o=m.players.find(q=>q.id!==p?.id);textLine(`SPY VS SPY · ROUND ${m.round}/5 · ${m.modifier?.name||"BRIEFING"}`,27,38,16,"#ffd85a");textLine(`CASE ${p?.hasCase?"✓":"—"} · JOYSTICK ${p?.objectives?.includes("joystick")?"✓":"—"} · TAPE ${p?.objectives?.includes("tape")?"✓":"—"} · KEY ${p?.objectives?.includes("key")?"✓":"—"} · SCORE ${m.wins?.[p?.id]||0}-${m.wins?.[o?.id]||0}`,27,62,11,"#72ff9b")}ctx.restore()}
 
-  function updateSpecial(dt){
-    if(!active)return;sendInput();if(!active.authoritative||!active.state)return;
-    const time=now();if(active.type==="horde-survivor")updateHorde(dt,time);else updateSaboteurs(dt,time);sendState();
-  }
+  function prepareDungeon(type,seed){run=PGR.makeRun({difficulty:"ARCADE",seed});run.specialMode=type;run.modifier=null;playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";host.enemies=[];host.generators=[];host.guardian=host.sigilWarden=null;host.sigilDefenderIds=[];host.traps=[];host.hazardRooms=[];host.arenas=[];host.timedRooms=[];host.items=(host.items||[]).filter(i=>["health","ammo"].includes(i.kind));if(type==="horde-survivor")for(const d of host.doors||[]){d.locked=false;d.open=true;d.opening=false}p1.id=actorId();p1.name=playerName();host.revision++;document.body.dataset.specialMode=type;UI.menu?.classList.add("hidden");document.getElementById("online-lobby")?.classList.add("hidden");setRunPresentation(true);try{S.stopMusic?.()}catch(_){}}
+  function startOnline(meta={}){const type=String(meta.roomMode||"");if(type==="horde-survivor"&&(!H||!HA)||type==="sizzler-saboteurs"&&(!SAB||!SA)||!["horde-survivor","sizzler-saboteurs"].includes(type))return false;stop(undefined,true);const t=now(),entries=(meta.players||members()).map(e=>({id:String(e.id),name:String(e.name||"CCG Player")})),seed=String(meta.seed||meta.roomCode||`${type}-${t}`);active={type,state:null,authoritative:Boolean(net?.isHost),cooldowns:new Map(),nextSpawnAt:t+3200,startedAt:t,seed};inputs.clear();keys.clear();touchKeys.clear();prepareDungeon(type,seed);if(type==="horde-survivor"){hordeAudio=HA.createController();hordeAudio.start(1);if(active.authoritative)active.state=H.createRun({players:entries,hostId:meta.hostId||entries[0]?.id,seed,now:t});announce("HORDE SURVIVOR LIVE","The complete dungeon now hosts ten escalating waves with real enemies, collision, doors, furniture and lighting.","gold",9000)}else{saboteursAudio=SA.createController({baseVolume:.14});saboteursAudio.start();if(active.authoritative){active.state=SAB.createMatch({players:entries.slice(0,2),hostId:meta.hostId||entries[0]?.id,seed,now:t});SAB.beginRound(active.state,t);attachRooms(active.state)}announce("SPY VS SPY LIVE","Two players only. The full dungeon is active; search furniture, place traps, fight and extract. Radar is disabled.","gold",9000)}if(active.authoritative){active.type==="horde-survivor"?handleHordeEvents(H.drainEvents(active.state)):handleSpyEvents(SAB.drainEvents(active.state));setTimeout(()=>sendState(true),50)}return true}
+  function stop(message="Returned to game options.",silent=false){if(!active&&!hordeAudio&&!saboteursAudio)return false;active=null;inputs.clear();keys.clear();touchKeys.clear();hordeAudio?.dispose?.();saboteursAudio?.dispose?.();hordeAudio=saboteursAudio=null;delete document.body.dataset.specialMode;if(!silent){mode="menu";playMode="solo";setRunPresentation(false);document.getElementById("online-lobby")?.classList.add("hidden");UI.menu?.classList.remove("hidden");net?.leave?.().finally?.(()=>net?.setSolo?.(playerName()));if(message&&UI?.note)UI.note.textContent=message}return true}
 
-  function smooth(id,x,y){const current=visuals.get(id)||{x,y};current.x+=(x-current.x)*.28;current.y+=(y-current.y)*.28;visuals.set(id,current);return current}
-  function fitArena(){const margin=44,scale=Math.min((canvas.width-margin*2)/80,(canvas.height-margin*2)/52),ox=(canvas.width-80*scale)/2,oy=(canvas.height-52*scale)/2;return{scale,ox,oy,point:(x,y)=>({x:ox+x*scale,y:oy+y*scale})}}
-  function textLine(text,x,y,size=14,colour="#faf4ff",align="left"){ctx.fillStyle=colour;ctx.font=`bold ${size}px "Courier New",monospace`;ctx.textAlign=align;ctx.fillText(String(text),x,y)}
-  function renderHorde(){
-    const state=active.state;ctx.fillStyle="#05040a";ctx.fillRect(0,0,canvas.width,canvas.height);if(!state){textLine("WAITING FOR HOST STATE…",canvas.width/2,canvas.height/2,18,"#ffd85a","center");return}const f=fitArena(),p=f.point;
-    ctx.fillStyle="#151021";ctx.strokeStyle="#6cecff";ctx.lineWidth=2;ctx.fillRect(f.ox,f.oy,80*f.scale,52*f.scale);ctx.strokeRect(f.ox,f.oy,80*f.scale,52*f.scale);for(const room of state.arena.spawnRooms){const q=p(room.x,room.y);ctx.fillStyle="#25172e";ctx.fillRect(q.x,q.y,room.w*f.scale,room.h*f.scale)}for(const cover of state.arena.cover){const q=p(cover.x,cover.y);ctx.fillStyle="#6b4b3a";ctx.fillRect(q.x-f.scale*.6,q.y-f.scale*.6,f.scale*1.2,f.scale*1.2)}
-    for(const item of state.health.active){const q=p(item.x,item.y);ctx.fillStyle="#72ff9b";ctx.fillRect(q.x-5,q.y-5,10,10)}
-    for(const enemy of state.activeEnemies){const v=smooth(enemy.id,enemy.x,enemy.y),q=p(v.x,v.y);ctx.fillStyle=enemy.kind==="knight"?"#c8c0d0":enemy.kind==="bat"?"#b978ff":"#ff6868";ctx.beginPath();ctx.arc(q.x,q.y,Math.max(4,f.scale*.34),0,Math.PI*2);ctx.fill()}
-    if(state.boss?.alive){const v=smooth(state.boss.id,state.boss.x,state.boss.y),q=p(v.x,v.y);ctx.fillStyle="#ff3b52";ctx.fillRect(q.x-12,q.y-12,24,24);textLine(`${Math.ceil(state.boss.hp)}/${state.boss.maxHp}`,q.x,q.y-17,10,"#ffd85a","center")}
-    for(const player of state.players){const v=smooth(player.id,player.x,player.y),q=p(v.x,v.y),local=player.id===actorId();ctx.fillStyle=player.status==="downed"?"#9b8daa":local?"#6cecff":"#ffd85a";ctx.beginPath();ctx.arc(q.x,q.y,Math.max(6,f.scale*.45),0,Math.PI*2);ctx.fill();textLine(player.name,q.x,q.y-11,9,ctx.fillStyle,"center")}
-    const wave=H.WAVES[Math.max(0,state.wave-1)];textLine("HORDE SURVIVOR",24,28,20,"#ffd85a");textLine(`WAVE ${state.wave||0}/10 · ${wave?.title||"BRIEFING"} · SCORE ${Math.floor(state.score).toLocaleString()}`,24,50,13,"#faf4ff");textLine(`ENEMIES ${state.defeated}/${state.wave?H.quotaFor(state.wave,state.playerCount):0} · WEAPON ${H.WEAPONS[Math.max(0,state.wave-1)]?.name||"WAITING"} · AMMO ∞`,24,69,12,"#6cecff");textLine("MOVE WASD/ARROWS · HOLD SPACE FIRE · HOLD E BESIDE DOWNED ALLY",canvas.width/2,canvas.height-15,11,"#c8c0d0","center");
-  }
-  function renderSaboteurs(){
-    const match=active.state;ctx.fillStyle="#05030a";ctx.fillRect(0,0,canvas.width,canvas.height);if(!match){textLine("WAITING FOR HOST STATE…",canvas.width/2,canvas.height/2,18,"#ffd85a","center");return}const player=match.players.find(entry=>entry.id===actorId())||match.players[0],room=sabRoom(match,player?.roomId),opponent=match.players.find(entry=>entry.id!==player?.id),colour=player?.colour||"#6cecff";
-    const w=Math.min(canvas.width*.72,760),h=Math.min(canvas.height*.64,470),x=(canvas.width-w)/2,y=(canvas.height-h)/2;ctx.fillStyle="#15101f";ctx.strokeStyle=colour;ctx.lineWidth=3;ctx.fillRect(x,y,w,h);ctx.strokeRect(x,y,w,h);
-    const edges=match.map?.edges?.filter(edge=>edge.a===room?.id||edge.b===room?.id)||[];for(const edge of edges){const other=sabRoom(match,edge.a===room.id?edge.b:edge.a),dx=Math.sign(other.gridX-room.gridX),dy=Math.sign(other.gridY-room.gridY),doorX=x+w/2+dx*(w/2-9),doorY=y+h/2+dy*(h/2-9);ctx.fillStyle="#ffd85a";ctx.fillRect(doorX-(dy?28:7),doorY-(dx?28:7),dy?56:14,dx?56:14)}
-    for(const [index,item] of (room?.furniture||[]).entries()){const cols=5,qx=x+70+(index%cols)*Math.max(70,(w-140)/cols),qy=y+90+Math.floor(index/cols)*80;ctx.fillStyle=item.searched?"#3c3343":"#8b5e3c";ctx.fillRect(qx-18,qy-14,36,28);textLine(item.searched?"EMPTY":"SEARCH",qx,qy+28,8,"#c8c0d0","center")}
-    if(opponent?.roomId===player?.roomId&&opponent.status==="active"){ctx.fillStyle=opponent.colour;ctx.beginPath();ctx.arc(x+w*.7,y+h*.52,18,0,Math.PI*2);ctx.fill();textLine(opponent.name,x+w*.7,y+h*.52-28,11,opponent.colour,"center")}
-    ctx.fillStyle=colour;ctx.beginPath();ctx.arc(x+w*.3,y+h*.52,18,0,Math.PI*2);ctx.fill();textLine(player?.name||"AGENT",x+w*.3,y+h*.52-28,11,colour,"center");
-    textLine("SPY VS SPY MULTIPLAYER",24,28,20,"#ffd85a");textLine(`ROUND ${match.round}/5 · ${match.modifier?.name||"BRIEFING"} · ${match.wins[player.id]||0}-${match.wins[opponent.id]||0}`,24,50,13,"#faf4ff");textLine(`${room?.name||room?.id||"ROOM"} · HP ${player.hp}/${player.maxHp} · TRAPS ${player.trapCharges} · NO MINIMAP`,24,70,12,colour);textLine(`CASE ${player.hasCase?"✓":"—"} · JOYSTICK ${player.objectives.includes("joystick")?"✓":"—"} · TAPE ${player.objectives.includes("tape")?"✓":"—"} · KEY ${player.objectives.includes("key")?"✓":"—"}`,24,89,11,"#72ff9b");textLine("MOVE TO A DOOR · SPACE SEARCH/ATTACK · T PLACE TRAP · X EXTRACT",canvas.width/2,canvas.height-15,11,"#c8c0d0","center");
-  }
-  function renderSpecial(){if(!active)return;if(active.type==="horde-survivor")renderHorde();else renderSaboteurs()}
-
-  function startOnline(meta={}){
-    const type=String(meta.roomMode||"");if(type==="horde-survivor"&&(!H||!HA)||type==="sizzler-saboteurs"&&(!SAB||!SA)||!["horde-survivor","sizzler-saboteurs"].includes(type))return false;
-    stop(undefined,true);const time=now(),entries=(meta.players||members()).map(entry=>({id:String(entry.id),name:String(entry.name||"CCG Player")}));active={type,state:null,authoritative:Boolean(net?.isHost),facing:new Map(),cooldowns:new Map(),nextSpawnAt:time+3200,startedAt:time};inputs.clear();visuals.clear();keys.clear();touchKeys.clear();
-    try{S.stopMusic?.()}catch(_){}mode="special";playMode="online";setRunPresentation(true);UI.menu?.classList.add("hidden");document.getElementById("online-lobby")?.classList.add("hidden");
-    if(type==="horde-survivor"){hordeAudio=HA.createController();hordeAudio.start(1);if(active.authoritative)active.state=H.createRun({players:entries,hostId:meta.hostId||entries[0]?.id,seed:meta.seed||meta.roomCode,now:time});announce("HORDE SURVIVOR LIVE","Ten host-authoritative waves. Unlimited ammunition, shared revives and a final Warden battle.","gold",9000)}
-    else{saboteursAudio=SA.createController({baseVolume:.14});saboteursAudio.start();if(active.authoritative){active.state=SAB.createMatch({players:entries.slice(0,2),hostId:meta.hostId||entries[0]?.id,seed:meta.seed||meta.roomCode,now:time});SAB.beginRound(active.state,time)}announce("SPY VS SPY LIVE","Two players only. Best of five; search, sabotage, fight and extract. The minimap is disabled.","gold",9000)}
-    if(active.authoritative){if(type==="horde-survivor")handleHordeEvents(H.drainEvents(active.state));else handleSaboteurEvents(SAB.drainEvents(active.state));setTimeout(()=>sendState(true),50)}
-    return true;
-  }
-  function stop(message="Returned to game options.",silent=false){
-    if(!active&&!hordeAudio&&!saboteursAudio)return false;active=null;inputs.clear();visuals.clear();keys.clear();touchKeys.clear();hordeAudio?.dispose?.();saboteursAudio?.dispose?.();hordeAudio=null;saboteursAudio=null;
-    if(!silent){mode="menu";playMode="solo";setRunPresentation(false);document.getElementById("online-lobby")?.classList.add("hidden");UI.menu?.classList.remove("hidden");net?.leave?.().finally?.(()=>net?.setSolo?.(playerName()));if(message)setTimeout(()=>{if(UI?.note)UI.note.textContent=message},0)}return true;
-  }
-
-  const originalPacket=net?.cb?.onPacket;
-  if(net?.cb)net.cb.onPacket=function onPacketV133Special(event,payload){
-    if(event==="v133_special_input"&&active?.authoritative&&payload?.roomMode===active.type&&admitted(payload.actorId)){inputs.set(payload.actorId,{...payload.input});return}
-    if(event==="v133_special_state"&&active&&!active.authoritative&&payload?.roomMode===active.type&&payload.state){active.state=hydrateState(active.type,payload.state);return}
-    return originalPacket?.(event,payload);
-  };
-  const originalMembers=net?.cb?.onMembers;
-  if(net?.cb)net.cb.onMembers=function onMembersV133Special(rows,isHost,changed){const result=originalMembers?.(rows,isHost,changed);if(active&&isHost&&!active.authoritative){active.authoritative=true;active.state=hydrateState(active.type,active.state);announce("HOST MIGRATION COMPLETE","This browser has adopted the latest special-mode state and is now authoritative.","cyan",7500)}return result};
-  if(typeof update==="function"){const original=update;update=function updateV133Special(dt){if(active)return updateSpecial(Number(dt)||0);return original.apply(this,arguments)}}
-  if(typeof render==="function"){const original=render;render=function renderV133Special(){if(active)return renderSpecial();return original.apply(this,arguments)}}
-  document.getElementById("quit-btn")?.addEventListener("click",event=>{if(!active)return;event.preventDefault();event.stopImmediatePropagation();stop()},true);
-
+  const oldDamage=damageEnemy;damageEnemy=function damageEnemyV135Special(e,power,element="energy",attacker=p1){if(!active||active.type!=="horde-survivor"||!e?.hordeEnemy)return oldDamage.apply(this,arguments);if(!e.alive)return;e.hp-=Math.max(1,Number(power)||1);e.flash=160;e.hpBarMs=2800;try{S.sfx("hit");burst(e.x,e.y,P.orange,8,1.2)}catch(_){}if(e.hp>0)return;e.hp=0;e.alive=false;e._hordeKiller=attacker?.id||actorId();host.revision++;if(e.hordeWarden)H.damageBoss(active.state,Math.max(1,active.state.boss?.hp||1),e._hordeKiller,now());else H.defeatEnemy(active.state,e.hordeModelId,e._hordeKiller,now())};
+  const oldHurt=hurtPlayer;hurtPlayer=function hurtPlayerV135Special(p,n,friendly=false,source="enemy",sourceId=""){if(!active)return oldHurt.apply(this,arguments);if(active.type==="horde-survivor"){const m=active.state?.players?.find(q=>q.id===p?.id);if(!m)return false;H.applyDamage(active.state,m.id,n,now());p.health=Math.max(1,Number(m.hp||1));p.hpBarMs=3200;try{S.sfx("hurt");floatText(p.x,p.y,`-${Math.max(1,Number(n)||1)}`,P.red)}catch(_){}return true}if(active.type==="sizzler-saboteurs"&&friendly){const target=active.state?.players?.find(q=>q.id===p?.id),attacker=active.state?.players?.find(q=>q.id===String(sourceId)||q.name===String(source));if(!target||!attacker)return false;if(active.authoritative)SAB.useWeapon(active.state,attacker.id,target.id,now());else net.send("v133_special_hit",{roomMode:active.type,attackerId:attacker.id,targetId:target.id}).catch(()=>{});p.health=Math.max(1,Number(target.hp||1));p.hpBarMs=3200;try{S.sfx("hurt");floatText(p.x,p.y,"SPY HIT",P.red)}catch(_){}return true}return oldHurt.apply(this,arguments)};
+  const oldPacket=net?.cb?.onPacket;if(net?.cb)net.cb.onPacket=function onPacketV133Special(event,payload){if(event==="v133_special_input"&&active?.authoritative&&payload?.roomMode===active.type&&admitted(payload.actorId)){inputs.set(payload.actorId,{...payload.input});return}if(event==="v133_special_hit"&&active?.authoritative&&active.type==="sizzler-saboteurs"&&payload?.roomMode===active.type&&admitted(payload.attackerId)&&admitted(payload.targetId)){SAB.useWeapon(active.state,String(payload.attackerId),String(payload.targetId),now());return}if(event==="v133_special_state"&&active&&!active.authoritative&&payload?.roomMode===active.type&&payload.state){active.state=hydrateState(active.type,payload.state);return}return oldPacket?.(event,payload)};
+  const oldMembers=net?.cb?.onMembers;if(net?.cb)net.cb.onMembers=function onMembersV133Special(rows,isHost,changed){const result=oldMembers?.(rows,isHost,changed);if(active&&isHost&&!active.authoritative){active.authoritative=true;active.state=hydrateState(active.type,active.state);announce("HOST MIGRATION COMPLETE","This browser has adopted the latest dungeon-backed mode state and is now authoritative.","cyan",7500)}return result};
+  if(typeof update==="function"){const baseUpdate=update;update=function updateV133Special(dt){const result=baseUpdate.apply(this,arguments);if(active)updateSpecial(Number(dt)||0);return result}}
+  if(typeof render==="function"){const baseRender=render;render=function renderV133Special(){const result=baseRender.apply(this,arguments);if(active)renderSpecial();return result}}
+  // Contract history: `if(active)return updateSpecial` / `if(active)return renderSpecial` were removed so the real dungeon always runs first.
+  document.getElementById("quit-btn")?.addEventListener("click",e=>{if(!active)return;e.preventDefault();e.stopImmediatePropagation();stop()},true);
   window.CCGLostSizzlerSpecialModes={startOnline,stop,get active(){return active},updateForTest:updateSpecial,renderForTest:renderSpecial};
 })();

@@ -188,7 +188,7 @@ function stepProjectiles(){
     const g=(host.generators||[]).find(g=>g.alive&&g.x===Math.round(nx)&&g.y===Math.round(ny));if(g){damageGenerator(g,b.power,findLocal(b.owner)||p1);if(b.pierce>0)b.pierce--;else b.ttl=0;continue}
     // Projectile collision is authoritative and never checks visibleTo: blind fire can hit an enemy in darkness.
     const e=host.enemies.find(e=>e.alive&&e.x===Math.round(nx)&&e.y===Math.round(ny));if(e){const impactCol=e.deathStalker&&e.voidStalker?P.purple:b.element==="shock"?P.cyan:b.element==="fire"?P.orange:P.gold;burst(e.x,e.y,impactCol,20,1.35);ring(e.x,e.y,impactCol,28);const owner=findLocal(b.owner);if(owner){damageEnemy(e,b.power,b.element,owner)}else if(playMode==="online")net.send("hit",{enemyId:e.id,power:b.power,element:b.element,owner:b.owner,ownerName:b.ownerName,source:{x:b.x,y:b.y}});if(b.pierce>0)b.pierce--;else b.ttl=0;continue}
-    for(const lp of localPlayers())if(lp.id!==b.owner&&Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,1,true,b.ownerName||"your co-op partner");break}
+    for(const lp of localPlayers())if(lp.id!==b.owner&&Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,1,true,b.ownerName||"your co-op partner",b.owner);break}
   }
   for(const b of enemyBullets){if(b.ttl<=0)continue;const nx=b.x+b.dx,ny=b.y+b.dy;if(!projectilePathClear(b,nx,ny)){b.ttl=0;continue}b.x=nx;b.y=ny;b.ttl--;if(b.style==="fire")burst(nx,ny,Math.random()<.5?P.orange:P.gold,3,.6);for(const lp of localPlayers())if(Math.round(nx)===lp.x&&Math.round(ny)===lp.y){b.ttl=0;hurtPlayer(lp,Number(b.power||1),false,b.source||"enemy");const px=lp.x+b.dx,py=lp.y+b.dy;if(W.walkable(world.map,px,py,host)){lp.x=px;lp.y=py}break}}
   for(let i=bullets.length-1;i>=0;i--)if(bullets[i].ttl<=0)bullets.splice(i,1);for(let i=enemyBullets.length-1;i>=0;i--)if(enemyBullets[i].ttl<=0)enemyBullets.splice(i,1)
@@ -231,7 +231,7 @@ function updateRoomMessage(p,force){
   if(p===p1)S.setRoomMood(roomMoodFor(r));
   if(force)return;
   S.sfx("room");if(room?.fireplace)S.sfx("fireplace");
-  if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"Permanent wall torches illuminate this room. Ordinary monsters will not enter, but Death Stalkers do not respect comfortable assumptions.","green",9000);
+  if(room?.sanctuary)showToast(`SANCTUARY — ${th.name}`,"No monster can enter this safe room. Stand on the green regeneration square to recover 1 HP every 3 seconds.","green",9000);
   else if(room?.sigilRoom)showToast("SIGIL CHAMBER",host.sigilLockdown?"LOCKDOWN ACTIVE. Defeat every Sigil defender before the Exit Sigil can appear.":"The reinforced route is open. Crossing the threshold will seal the chamber and alert every defender.","red",9500);
   else if(room?.spiderNest){host.spiderNest.revealed=true;showToast("DUSTWEB NEST",`${host.enemies.filter(e=>e.alive&&e.spiderNestId===host.spiderNest.id).length} fragile spiders are moving through the webs. Each has 1 HP, but the room is packed with them.`,"red",9000)}
   else if(room?.skeletonHorde){host.skeletonHorde.revealed=true;showToast("THE BONE HORDE RISES",`${host.enemies.filter(e=>e.alive&&e.skeletonHordeId===host.skeletonHorde.id).length} low-HP skeletons have animated in this floor's single horde room.`,"red",9000)}

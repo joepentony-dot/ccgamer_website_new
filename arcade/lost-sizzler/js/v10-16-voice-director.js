@@ -258,7 +258,10 @@
     if(/WEEKLY VAULT.*RUN OVER/.test(s))return"weeklyDeath";
     if(/BOULDER.*RUN/.test(s))return"boulder";
     if(/TRAP|HAZARD.*MOVE/.test(s))return"trap";
-    if(/SANCTUARY/.test(s))return"sanctuary";
+    if(/SANCTUARY/.test(s)){
+      try{const room=world?.rooms?.[W.roomAt(world,p1?.x,p1?.y)];if(room?.sanctuary)return"sanctuary"}catch(_){}
+      return"";
+    }
     if(/LEVEL UP|UPGRADE AVAILABLE/.test(s))return"levelUp";
     if(/GOLD MEDAL|ZZAP! 97%|RARE.*LOOT|ARTEFACT/.test(s))return"rareLoot";
     return"";

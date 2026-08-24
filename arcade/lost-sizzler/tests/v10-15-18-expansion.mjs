@@ -36,7 +36,7 @@ assert.match(rare,/type:`KILL \$\{target\} ENEMIES`/,"the bounty banner must sta
 assert.match(rare,/BOUNTY_ANNOUNCE_DELAY_MS=20000/,"the bounty must wait for 20 seconds of active play");
 assert.match(rare,/state\.activePlayMs\+=Math\.max\(0,Number\(dt\|\|0\)\)/,"only active gameplay time may advance the bounty announcement");
 assert.match(rare,/state\.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS/,"the bounty must not appear before its active-play delay");
-assert.match(rare,/showToast\(`DUNGEON BOUNTY[\s\S]*?CCGLostSizzlerVoice\?\.say\?\.\("bountyStart"\)/,"the bounty popup and voice must be dispatched by the same delayed event");
+assert.match(rare,/spoken=Boolean\(voice\.say\("bountyStart",\{cooldown:0\}\)\)[\s\S]*?if\(!voiceRequired\|\|expired\|\|spoken\)\{b\.announced=true;showToast\(`DUNGEON BOUNTY/ ,"the voice must be accepted before the matching bounty popup is dispatched");
 assert.match(rare,/DUNGEON BOUNTY — \$\{remaining\} \$\{noun\} LEFT/,"each bounty kill must publish a visible enemies-remaining countdown");
 assert.match(rare,/MUTATION_ACTIVATION_DELAY_MS=120000/,"floor mutations must wait for two minutes of active play");
 assert.match(rare,/state\.activePlayMs<MUTATION_ACTIVATION_DELAY_MS/,"mutation effects must remain dormant before their delay");
