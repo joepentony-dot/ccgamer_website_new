@@ -68,6 +68,7 @@ try{
     return{
       shell:box(".ccg-game"),
       topbar:box(".ccg-game>.topbar"),
+      mission:box(".ccg-game>.mission"),
       tactical:box(".ccg-game>.tactical-zone"),
       gameArea:box(".ccg-game>.game-area"),
       canvasWrap:box(".ccg-game>.game-area>.canvas-wrap"),
@@ -77,18 +78,25 @@ try{
   });
 
   assert.deepEqual(errors,[],`layout launch must have no uncaught browser errors: ${errors.join("\n")}`);
-  for(const key of ["shell","topbar","tactical","gameArea","canvasWrap","playerHub"])assert.ok(layout[key],`${key} must exist`);
+  for(const key of ["shell","topbar","mission","tactical","gameArea","canvasWrap","playerHub"])assert.ok(layout[key],`${key} must exist`);
 
   const shellWidth=layout.shell.width;
   const near=(a,b,tolerance=3)=>Math.abs(a-b)<=tolerance;
-  assert.ok(layout.gameArea.width>=shellWidth*.95,`gameplay area must retain the main width, not a sidebar: ${JSON.stringify(layout)}`);
-  assert.ok(layout.canvasWrap.width>=shellWidth*.90,`gameplay canvas must retain the main width, not a sidebar: ${JSON.stringify(layout)}`);
-  assert.ok(layout.tactical.width>=shellWidth*.95,`tactical intelligence must remain a full-width row: ${JSON.stringify(layout)}`);
-  assert.ok(layout.playerHub.width>=shellWidth*.95,`player hub must remain a full-width row: ${JSON.stringify(layout)}`);
+  const columns=layout.gridTemplateColumns.trim().split(/\s+/).map(Number.parseFloat);
+
+  assert.equal(columns.length,2,`desktop shell must resolve to a dungeon column plus tactical sidebar: ${layout.gridTemplateColumns}`);
+  assert.ok(columns[1]>=215&&columns[1]<=300,`tactical sidebar must stay near its 220-280px design width: ${layout.gridTemplateColumns}`);
+  assert.ok(layout.gameArea.width>=shellWidth*.75,`gameplay area must remain the dominant left column: ${JSON.stringify(layout)}`);
+  assert.ok(layout.tactical.width>=215&&layout.tactical.width<=300,`radar/dossier must stay in the narrow right sidebar: ${JSON.stringify(layout)}`);
+  assert.ok(layout.canvasWrap.width>=layout.gameArea.width*.90,`gameplay canvas must fill the main gameplay column: ${JSON.stringify(layout)}`);
   assert.ok(near(layout.gameArea.left,layout.shell.left),`gameplay area must begin at the shell's left edge: ${JSON.stringify(layout)}`);
-  assert.ok(near(layout.tactical.left,layout.shell.left),`tactical zone must begin at the shell's left edge: ${JSON.stringify(layout)}`);
-  assert.ok(layout.tactical.bottom<=layout.gameArea.top+3,`tactical zone must sit above the gameplay area instead of beside it: ${JSON.stringify(layout)}`);
-  assert.equal(layout.gridTemplateColumns.trim().split(/\s+/).length,1,`outer game shell must resolve to one desktop column: ${layout.gridTemplateColumns}`);
+  assert.ok(near(layout.gameArea.right,layout.tactical.left),`gameplay area and tactical sidebar must meet without swapping columns: ${JSON.stringify(layout)}`);
+  assert.ok(near(layout.tactical.right,layout.shell.right),`tactical sidebar must finish at the shell's right edge: ${JSON.stringify(layout)}`);
+  assert.ok(near(layout.gameArea.top,layout.tactical.top),`gameplay area and tactical sidebar must share the live-play row: ${JSON.stringify(layout)}`);
+  assert.ok(near(layout.gameArea.bottom,layout.tactical.bottom),`gameplay area and tactical sidebar must share the live-play row height: ${JSON.stringify(layout)}`);
+  assert.ok(layout.topbar.width>=shellWidth*.95,`top bar must span both desktop columns: ${JSON.stringify(layout)}`);
+  assert.ok(layout.mission.width>=shellWidth*.95,`mission strip must span both desktop columns: ${JSON.stringify(layout)}`);
+  assert.ok(layout.playerHub.width>=shellWidth*.95,`player hub must span both desktop columns: ${JSON.stringify(layout)}`);
 
   console.log("Lost Sizzler V10.35 desktop layout geometry passed in Chromium.");
   await context.close();
