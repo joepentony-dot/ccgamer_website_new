@@ -45,7 +45,7 @@ assert.match(aiSource,/occupiedByPlayer\(x,y\)/,"AI pathing must reject every li
 assert.match(polish,/SPY_COLUMNS=8,SPY_ROWS=5/,"Spy Vs Spy must use the new large 8x5 room matrix");
 assert.match(polish,/largeRoomGridV135:true,directDoorRooms:true/,"Spy Vs Spy logical state must identify the direct-door room layout");
 assert.match(polish,/spawnRoomIds:\[spawnA\.id,spawnB\.id\]/,"the two spies must spawn at opposite logical endpoints");
-assert.match(polish,/const spawnA=rooms\[0\],spawnB=rooms\[rooms\.length-1\]/,"the two Spy Vs Spy spawn rooms must be opposite corners of the 8x5 map");
+assert.match(polish,/spawnA=rooms\[0\],spawnB=rooms\[rooms\.length-1\]/,"the two Spy Vs Spy spawn rooms must be opposite corners of the 8x5 map");
 assert.match(polish,/path:\[\{x:q\.x,y:q\.y\}\]/,"Spy Vs Spy room connections must be single direct door cells rather than corridors");
 assert.match(polish,/host\.doors\.push\(\{id:edge\.id/,"every Spy Vs Spy connection must materialise as a real dungeon door");
 assert.match(polish,/grid\[q\.y\]\[q\.x\]=0/,"direct Spy Vs Spy door cells must be carved through the shared wall");
