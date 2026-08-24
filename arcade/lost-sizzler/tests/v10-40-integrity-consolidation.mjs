@@ -35,6 +35,7 @@ assert.match(integrity,/validateCheckpointV140/,"checkpoint validation must be i
 assert.match(integrity,/!document\.body\?\.dataset\?\.specialMode&&!run\?\.specialMode/,"generic run-integrity recovery must remain isolated from Horde and Spy Vs Spy");
 assert.match(integrity,/presenceMemberV140/,"online presence must advertise the current runtime build");
 assert.match(integrity,/event==="hello"\|\|event==="v106_lobby_start"/,"legacy multiplayer metadata must be normalised to V10.40 at send time");
+assert.doesNotMatch(integrity,/validateCriticalRoute\("a player death",true\)/,"death recovery must not bypass an active legitimate challenge lock");
 
 assert.match(weekly,/PENDING_RESULT="ccg-weekly-pending-result-v1"/,"the newer durable Weekly Vault result retry must remain in control");
 assert.match(weekly,/submitPending\(\)\.catch/,"pending Weekly Vault results must continue retrying after focus\/refresh");
