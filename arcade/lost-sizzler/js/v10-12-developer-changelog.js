@@ -28,6 +28,7 @@
         ,["LS-0824-17","CHANGED","Contextual ammo-saving melee","Fire automatically uses the unlimited melee weapon when an enemy or smashable item occupies the faced adjacent tile; the firearm and ammunition are used only beyond melee range."]
         ,["LS-0824-18","FIXED","Synchronous bounty announcement","The New Dungeon Bounty speech and bounty banner now start together from one accepted announcement event, with a bounded fallback when voice playback is unavailable."]
         ,["LS-0824-19","ADDED","Beta and ownership marks","The menu now carries the requested beta-stage notice and the game view is permanently stamped © 2026 Cheeky Commodore Gamer."]
+        ,["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."]
       ]
     },
     {

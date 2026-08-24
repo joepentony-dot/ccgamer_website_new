@@ -79,6 +79,56 @@ body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continu
   }
 }
 
+/* Mobile notification rail correction.
+ *
+ * On phones the room context appears before #pickup-toast in the DOM. Earlier
+ * compact layouts made both elements relative while clipping the rail to about
+ * one notification row, so a correctly activated toast could sit underneath
+ * the context and outside the visible area. Keep the context as the rail's
+ * normal content, then pin an active notification over that same row. This is
+ * shared by Dungeon Bounty, trap warnings, quest updates, loot and every other
+ * showToast() message rather than special-casing individual events. */
+@media (max-width:900px),(pointer:coarse){
+  body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen>.game-area>.game-message-rail{
+    display:block!important;
+    position:relative!important;
+    min-height:52px!important;
+    max-height:64px!important;
+    overflow:hidden!important;
+    visibility:visible!important;
+    opacity:1!important;
+    isolation:isolate!important;
+  }
+
+  body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail>.pickup-toast,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    min-width:0!important;
+    height:100%!important;
+    min-height:52px!important;
+    max-height:64px!important;
+    margin:0!important;
+    transform:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    z-index:8!important;
+    pointer-events:none!important;
+  }
+
+  body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail>.pickup-toast.show,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast.show,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast.show{
+    display:grid!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+}
+
 @media (prefers-reduced-motion:reduce){
   body[data-release-ready="false"] #menu button{animation:none!important}
 }
