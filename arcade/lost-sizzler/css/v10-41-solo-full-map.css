@@ -1,0 +1,98 @@
+/* The Lost Sizzler V10.41 — solo full-level map. */
+#ccg-solo-full-map{
+  position:fixed;
+  inset:0;
+  z-index:12000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:max(18px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(18px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));
+  background:rgba(2,1,5,.94);
+  backdrop-filter:blur(5px);
+}
+#ccg-solo-full-map.hidden{display:none}
+#ccg-solo-full-map .ccg-full-map-card{
+  width:min(96vw,1500px);
+  height:min(92vh,980px);
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:12px;
+  padding:16px;
+  box-sizing:border-box;
+  border:2px solid rgba(108,236,255,.48);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(17,9,26,.98),rgba(6,3,10,.99));
+  box-shadow:0 0 0 1px rgba(255,255,255,.05),0 0 34px rgba(108,236,255,.15),0 26px 80px rgba(0,0,0,.62);
+}
+#ccg-solo-full-map .ccg-full-map-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+#ccg-solo-full-map .ccg-full-map-title{display:grid;gap:3px}
+#ccg-solo-full-map .ccg-full-map-title b{
+  font:700 clamp(17px,2vw,25px) Consolas,"Courier New",monospace;
+  letter-spacing:.08em;
+  color:#6cecff;
+}
+#ccg-solo-full-map .ccg-full-map-title span{
+  font:700 11px Consolas,"Courier New",monospace;
+  letter-spacing:.08em;
+  color:#c8c0d0;
+}
+#ccg-solo-full-map-close{
+  min-width:112px;
+  padding:10px 14px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:7px;
+  background:#24162f;
+  color:#fff;
+  font:700 12px Consolas,"Courier New",monospace;
+  cursor:pointer;
+}
+#ccg-solo-full-map-close:hover,#ccg-solo-full-map-close:focus-visible{outline:none;border-color:#6cecff;box-shadow:0 0 0 2px rgba(108,236,255,.18)}
+#ccg-solo-full-map .ccg-full-map-stage{
+  min-height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(185,120,255,.22);
+  border-radius:8px;
+  background:#020104;
+}
+#ccg-solo-full-map-canvas{
+  display:block;
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  image-rendering:pixelated;
+}
+#ccg-solo-full-map .ccg-full-map-footer{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px 18px;
+  color:#aea4b9;
+  font:700 10px Consolas,"Courier New",monospace;
+  letter-spacing:.04em;
+}
+#ccg-solo-full-map .ccg-full-map-legend{display:flex;flex-wrap:wrap;gap:9px 14px;align-items:center}
+#ccg-solo-full-map .ccg-full-map-legend span{display:inline-flex;align-items:center;gap:5px}
+#ccg-solo-full-map .ccg-map-dot{width:9px;height:9px;display:inline-block;border:1px solid rgba(255,255,255,.7);box-sizing:border-box}
+#ccg-solo-full-map .ccg-map-player{background:#6cecff}
+#ccg-solo-full-map .ccg-map-key{background:#ffd85a}
+#ccg-solo-full-map .ccg-map-sigil{background:#b978ff}
+#ccg-solo-full-map .ccg-map-cache{background:#ff6076}
+#ccg-solo-full-map .ccg-map-exit{background:#8d68ad}
+body[data-ccg-solo-map-open="true"]{overflow:hidden}
+@media(max-width:760px){
+  #ccg-solo-full-map{padding:8px}
+  #ccg-solo-full-map .ccg-full-map-card{width:100%;height:100%;border-radius:7px;padding:10px}
+  #ccg-solo-full-map .ccg-full-map-head{align-items:flex-start}
+  #ccg-solo-full-map-close{min-width:82px;padding:8px 10px}
+  #ccg-solo-full-map .ccg-full-map-footer{font-size:9px}
+}
