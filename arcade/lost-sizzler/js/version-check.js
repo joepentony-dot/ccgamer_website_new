@@ -56,12 +56,21 @@
     script.dataset.ccgV141MultiplayerPresence="true";
     document.head.appendChild(script);
   }
+  function loadV141WorldSafety(){
+    if(document.querySelector('script[data-ccg-v141-world-safety="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-world-safety.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141WorldSafety="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
   loadV139HordeLiveLoadout();
   loadV140HordeFinal();
   loadV141MultiplayerPresence();
+  loadV141WorldSafety();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
