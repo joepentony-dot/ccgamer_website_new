@@ -5,6 +5,7 @@
 
   const meta=document.querySelector('meta[name="ccg-lost-sizzler-build"]');
   const current=String(meta?.content||"unknown").trim();
+  const releaseLabel="V10.40";
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
 
   function loadV136Bootstrap(){
@@ -127,7 +128,7 @@
     const button=ensureButton();
     if(button){button.textContent="Check / Refresh Game";button.title=`Latest build loaded: ${current}`}
     const badge=document.querySelector(".build-badge");
-    if(badge){badge.textContent=`BUILD ${current}`;badge.title="Latest published build loaded"}
+    if(badge){badge.textContent=`BUILD ${releaseLabel}`;badge.title=`Latest published build ${current} loaded`}
   }
 
   async function checkLatest(manual=false){
@@ -158,10 +159,10 @@
     }catch(_){window.location.reload()}
   }
 
-  function install(){ensureButton();ensurePanel();const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`Loaded Lost Sizzler build ${current}`}}
+  function install(){ensureButton();ensurePanel();const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${releaseLabel}`;const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${releaseLabel}`;badge.title=`Loaded Lost Sizzler build ${current}`}}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
   window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
-  window.CCGLostSizzlerVersion={state,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
+  window.CCGLostSizzlerVersion={state,releaseLabel,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
 })();
