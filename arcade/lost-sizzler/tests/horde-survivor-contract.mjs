@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const H = require("./horde-survivor.js");
+const H = require("../js/horde-survivor.js");
+const HA = require("../js/horde-survivor-audio.js");
 
 assert.equal(H.MODE_ID, "horde-survivor");
 assert.equal(H.MAX_PLAYERS, 4);
@@ -16,6 +17,31 @@ assert.equal(H.ENEMIES.fighter.hp, 3);
 assert.equal(H.WAVES[9].timedMs, 60000);
 assert.equal(H.WAVES[9].groups[0].kind, "knight");
 assert.equal(H.WEAPONS.length, 10);
+assert.deepEqual(H.AUDIO.tracks[0].waves, [1, 2, 3, 4]);
+assert.deepEqual(H.AUDIO.tracks[1].waves, [5, 6, 7, 8, 9]);
+assert.deepEqual(H.AUDIO.tracks[2].waves, [10]);
+assert.ok(H.AUDIO.baseVolume <= H.AUDIO.maximumVolume);
+assert.equal(HA.trackForWave(4).id, "waves-1-4");
+assert.equal(HA.trackForWave(5).id, "waves-5-9");
+assert.equal(HA.trackForWave(9).id, "waves-5-9");
+assert.equal(HA.trackForWave(10).id, "wave-10");
+
+class FakeAudio {
+  constructor() { this.src = ""; this.volume = 0; this.currentTime = 0; this.playCount = 0; }
+  addEventListener() {}
+  async play() { this.playCount += 1; }
+  pause() {}
+}
+const music = HA.createController({ AudioClass: FakeAudio, fadeInMs: 0, fadeOutMs: 0 });
+assert.equal(await music.start(1), true);
+assert.equal(music.state().waveTrack, "waves-1-4");
+assert.equal(music.state().volume, 0.13);
+assert.equal(await music.setWave(6), true);
+assert.equal(music.state().waveTrack, "waves-5-9");
+assert.equal(await music.setWave(10), true);
+assert.equal(music.state().waveTrack, "wave-10");
+assert.equal(music.setVolume(1), 0.18);
+music.dispose();
 
 const arena = H.createArena();
 assert.equal(arena.spawnRooms.length, 12);
