@@ -66,7 +66,7 @@ window.CCGSound=(()=>{
     const n=stalkerNotes[stalkerStep++%stalkerNotes.length];if(n){tone(n,.42,"sawtooth",.20,-5,0,"stalker");tone(n*1.5,.24,"triangle",.08,-8,.08,"stalker")}
     if(stalkerStep%4===0)noise(.20,.024,"stalker");
   }
-  async function start(){if(!ensure())return false;try{await ctx.resume()}catch(_){}started=true;if(useMusicAssets){syncAssetMusic()}else{if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}return true}
+  async function start(){if(!ensure())return false;try{if(ctx.state!=="running"){const resume=ctx.resume();if(resume?.catch)resume.catch(()=>{})}}catch(_){}started=true;if(useMusicAssets){syncAssetMusic()}else{if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}return true}
   function stopMusic(){if(musicAsset){try{musicAsset.pause()}catch(_){}}if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(dangerTimer){clearInterval(dangerTimer);dangerTimer=null}if(stalkerTimer){clearInterval(stalkerTimer);stalkerTimer=null}}
   function startMusic(){if(!started)return;if(useMusicAssets){syncAssetMusic();return}if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}
   function setDanger(v){danger=Math.max(0,Math.min(1,Number(v)||0));if(dangerGain)dangerGain.gain.value=.045+.07*danger}
