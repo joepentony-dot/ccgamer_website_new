@@ -3,6 +3,7 @@
   if(window.__CCG_LOST_SIZZLER_VERSION_CHECK__)return;
   window.__CCG_LOST_SIZZLER_VERSION_CHECK__=true;
 
+  const RELEASE_VERSION="V10.41";
   const meta=document.querySelector('meta[name="ccg-lost-sizzler-build"]');
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
@@ -50,7 +51,7 @@
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-multiplayer-presence.js?v=20260824a";
+    script.src="js/v10-41-multiplayer-presence.js?v=20260824b";
     script.async=false;
     script.dataset.ccgV141MultiplayerPresence="true";
     document.head.appendChild(script);
@@ -67,6 +68,13 @@
     return Boolean(menu&&!menu.classList.contains("hidden")&&document.body?.dataset?.runActive!=="true");
   }
 
+  function setReleaseLabels(){
+    const subtitle=document.querySelector(".brand p");
+    if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE_VERSION}`;
+    const badge=document.querySelector(".build-badge");
+    if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`${RELEASE_VERSION} · Lost Sizzler build ${current}`}
+  }
+
   function ensureButton(){
     if(state.button?.isConnected)return state.button;
     const row=document.querySelector("#menu .secondary-menu")||document.querySelector("#menu .menu-buttons");
@@ -75,7 +83,7 @@
     button.id="version-refresh-btn";
     button.type="button";
     button.textContent="Check / Refresh Game";
-    button.title=`Loaded build: ${current}`;
+    button.title=`${RELEASE_VERSION} · loaded build ${current}`;
     button.addEventListener("click",()=>checkLatest(true));
     const exit=row.querySelector(".menu-exit-link");
     row.insertBefore(button,exit||null);
@@ -103,19 +111,19 @@
     if(mode==="outdated"){
       title.textContent="Update Available";
       copy.textContent="Your browser is running an older cached version of The Lost Sizzler. Refresh now to load the latest game files.";
-      detail.textContent=`Loaded: ${current} · Latest: ${state.latest||"unknown"}`;
+      detail.textContent=`${RELEASE_VERSION} · Loaded: ${current} · Latest: ${state.latest||"unknown"}`;
       update.textContent="Refresh to Latest Version";
       update.classList.remove("hidden");
     }else if(mode==="current"){
       title.textContent="Game Is Up To Date";
-      copy.textContent=message||"You are already running the latest published Lost Sizzler build.";
-      detail.textContent=`Loaded: ${current} · Latest: ${state.latest||current}`;
+      copy.textContent=message||`You are running ${RELEASE_VERSION}, the latest published Lost Sizzler build.`;
+      detail.textContent=`${RELEASE_VERSION} · Loaded: ${current} · Latest: ${state.latest||current}`;
       update.textContent="Reload Anyway";
       update.classList.remove("hidden");
     }else{
       title.textContent="Version Check Unavailable";
       copy.textContent=message||"The latest build number could not be checked. You can still reload the game if something looks stale.";
-      detail.textContent=`Loaded build: ${current}`;
+      detail.textContent=`${RELEASE_VERSION} · Loaded build: ${current}`;
       update.textContent="Reload Game";
       update.classList.remove("hidden");
     }
@@ -128,15 +136,15 @@
     if(button){button.textContent="Update Available — Refresh";button.title=`Loaded ${current}; latest ${state.latest}`}
     const badge=document.querySelector(".build-badge");
     if(badge){badge.textContent="UPDATE AVAILABLE";badge.title=`Loaded ${current}; latest ${state.latest}`}
+    const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE_VERSION}`;
     if(menuVisible())renderPanel("outdated");
   }
 
   function markCurrent(){
     state.outdated=false;
     const button=ensureButton();
-    if(button){button.textContent="Check / Refresh Game";button.title=`Latest build loaded: ${current}`}
-    const badge=document.querySelector(".build-badge");
-    if(badge){badge.textContent=`BUILD ${current}`;badge.title="Latest published build loaded"}
+    if(button){button.textContent="Check / Refresh Game";button.title=`${RELEASE_VERSION} · latest build loaded: ${current}`}
+    setReleaseLabels();
   }
 
   async function checkLatest(manual=false){
@@ -154,6 +162,7 @@
     }catch(error){
       console.warn("[Lost Sizzler] version check failed",error);
       if(button)button.textContent="Check / Refresh Game";
+      setReleaseLabels();
       if(manual)renderPanel("error","The live build number could not be reached just now. Reloading will still request a fresh copy of the game page.");
     }finally{state.checking=false}
   }
@@ -167,10 +176,15 @@
     }catch(_){window.location.reload()}
   }
 
-  function install(){ensureButton();ensurePanel();const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`Loaded Lost Sizzler build ${current}`}}
+  function install(){ensureButton();ensurePanel();setReleaseLabels()}
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+  const labelTimer=setInterval(()=>{
+    setReleaseLabels();
+    const gate=window.CCGLostSizzlerReleaseGate;
+    if(gate?.state?.ready||gate?.state?.failed){clearInterval(labelTimer);setReleaseLabels()}
+  },180);
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
-  window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
-  window.CCGLostSizzlerVersion={state,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
+  window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer)},{once:true});
+  window.CCGLostSizzlerVersion={state,releaseVersion:RELEASE_VERSION,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
 })();
