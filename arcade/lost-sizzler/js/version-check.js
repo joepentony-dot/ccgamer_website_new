@@ -199,6 +199,14 @@
     script.dataset.ccgV141SanctuaryAzalea="true";
     document.head.appendChild(script);
   }
+  function loadV141ProgressionRecovery(){
+    if(document.querySelector('script[data-ccg-v141-progression-recovery="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-progression-recovery.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141ProgressionRecovery="true";
+    document.head.appendChild(script);
+  }
   function loadV141XpPermadeath(){
     if(document.querySelector('script[data-ccg-v141-xp-permadeath="true"]'))return;
     const script=document.createElement("script");
@@ -226,6 +234,7 @@
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
   loadV141SanctuaryAzalea();
+  loadV141ProgressionRecovery();
   loadV141XpPermadeath();
   loadV141SoloFullMap();
   monitorTutorialDeepLink();

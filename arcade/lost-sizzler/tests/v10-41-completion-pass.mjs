@@ -10,6 +10,7 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const main=read("js/game-main.js");
 const config=read("js/config.js");
 const deathCache=read("js/v10-4-death-cache.js");
+const progressionRecovery=read("js/v10-41-progression-recovery.js");
 const sanctuary=read("js/v10-41-sanctuary-azalea.js");
 const hordePolish=read("js/v10-41-horde-combat-polish.js");
 const hordeCompletion=read("js/v10-41-horde-completion.js");
@@ -51,6 +52,9 @@ assert.match(deathCache,/function restoreProgressionItems/,"old cache replacemen
 assert.match(deathCache,/item\?\.originX,item\?\.originY/,"restoration must prefer an item's original floor position");
 assert.match(deathCache,/progressionRecoveryMarkers/,"restored essentials must create map markers");
 assert.match(deathCache,/non-essential contents/,"only non-essential old-cache contents may be discarded on a later death");
+assert.match(progressionRecovery,/KINDS=new Set\(\["key","mainKey","bronze","bronzeKey","exitSigil","sigil"\]\)/,"fresh V10.41 layer must independently protect progression kinds");
+assert.match(progressionRecovery,/function restoreFromSnapshots/,"fresh V10.41 layer must recover essentials even if an older cached death-cache module is present");
+assert.match(progressionRecovery,/progressionRecoveryMarkers/,"fresh recovery layer must publish tactical/full-map markers");
 
 assert.match(hordePolish,/WAVE_RECOVERY_HP=5/,"Horde survivors must recover up to 5 HP after a completed wave");
 assert.match(hordePolish,/MAX_ENEMY_SPEED=\.72/,"ordinary Horde enemies must use the slower movement cap");
@@ -69,6 +73,7 @@ assert.match(hordeCompletion,/enemy\.x=before\.x;enemy\.y=before\.y/,"ordinary A
 assert.match(loader,/v10-41-horde-combat-polish\.js/,"release loader must include Horde combat polish");
 assert.match(loader,/v10-41-horde-completion\.js/,"release loader must include Solo Horde, rankings and movement ownership");
 assert.match(loader,/v10-41-sanctuary-azalea\.js/,"release loader must include sanctuary scenes and AZALEA");
+assert.match(loader,/v10-41-progression-recovery\.js/,"release loader must include fresh progression recovery hardening");
 assert.match(loader,/v10-41-solo-full-map\.js\?v=20260824b/,"release loader must include the fullscreen-safe Solo map revision");
 
 console.log("Lost Sizzler V10.41 completion pass regression checks passed.");
