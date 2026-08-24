@@ -32,7 +32,7 @@
         ,["LS-0824-21","FIXED","Online melee visibility","Dungeon and Horde co-op players now receive the other player's directional melee swing state and slash effects, so close-range attacks are visible on both browsers instead of existing only on the attacking client."]
         ,["LS-0824-22","FIXED","Co-op teammate radar","Online Dungeon and Horde teammates now appear on the tactical radar with player markers and edge direction indicators when outside the current radar window. Spy Vs Spy retains its intentional no-minimap rule."]
         ,["LS-0824-23","FIXED","Dungeon, Horde and Spy room joining","The multiplayer join handshake now preserves the selected room mode, survives host start packets arriving during connection, and supplies late joiners with the host's active start metadata instead of falling back to the wrong mode or reopening the lobby."]
-        ,["LS-0824-24","ADDED","Shared multiplayer invite auto-join","Invite links created by the multiplayer lobby carry the room and mode. Opening one now joins that room automatically: guests wait in the lobby if the host has not started, or enter the live Dungeon, Horde or Spy Vs Spy match when the host is already playing."]
+        ,["LS-0824-24","ADDED","Shared multiplayer invite joining","Invite links created by the multiplayer lobby carry the room and mode. Opening one now presents a dedicated player-name confirmation first; after the guest confirms their name, the game joins automatically and either waits in the correct lobby or enters the already-started Dungeon, Horde or Spy Vs Spy match."]
       ]
     },
     {
