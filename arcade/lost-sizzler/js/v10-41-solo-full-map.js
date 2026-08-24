@@ -26,9 +26,25 @@
     try{return typeof playMode!=="undefined"&&playMode==="solo"&&document.body?.dataset?.runActive==="true"}catch(_){return false}
   }
 
+  function panelHost(){
+    const full=document.fullscreenElement;
+    if(full instanceof Element)return full;
+    return document.querySelector(".ccg-game")||document.body;
+  }
+
+  function syncPanelHost(){
+    const panel=document.getElementById("ccg-solo-full-map"),target=panelHost();
+    if(panel&&target&&panel.parentElement!==target)target.appendChild(panel);
+    return panel;
+  }
+
   function ensurePanel(){
     let panel=document.getElementById("ccg-solo-full-map");
-    if(panel)return panel;
+    const target=panelHost();
+    if(panel){
+      if(target&&panel.parentElement!==target)target.appendChild(panel);
+      return panel;
+    }
     panel=document.createElement("section");
     panel.id="ccg-solo-full-map";
     panel.className="hidden";
@@ -47,9 +63,16 @@
           <span>PRESS M OR ESC TO RETURN</span>
         </div>
       </div>`;
-    document.body.appendChild(panel);
+    (target||document.body).appendChild(panel);
     panel.querySelector("#ccg-solo-full-map-close")?.addEventListener("click",()=>closeMap());
     return panel;
+  }
+
+  function clearMovementState(){
+    try{input?.clear?.()}catch(_){}
+    try{move1=0;move2=0}catch(_){}
+    try{if(p1){p1.rx=p1.x;p1.ry=p1.y}}catch(_){}
+    try{if(p2){p2.rx=p2.x;p2.ry=p2.y}}catch(_){}
   }
 
   function exploredSet(){
@@ -101,13 +124,11 @@
       if(!tile){context.fillStyle="rgba(255,255,255,.035)";context.fillRect(x*CELL+1,y*CELL+1,CELL-2,CELL-2)}
     }
 
-    // Known route trail helps orient the player without revealing unseen geometry.
     try{
       const trail=playerTrails?.get?.(p1.id)||[];context.fillStyle="rgba(108,236,255,.28)";
       for(let i=0;i<trail.length;i+=3){const q=trail[i];if(!visibleKnowledge(ex,q))continue;context.fillRect((q.x+.3)*CELL,(q.y+.3)*CELL,Math.max(2,CELL*.4),Math.max(2,CELL*.4))}
     }catch(_){}
 
-    // Main vault keys become map knowledge only after their tile has been explored.
     for(const item of host?.items||[]){
       if(!item?.active)continue;
       if(item.kind==="key"&&visibleKnowledge(ex,item))drawMarker(context,item,"#ffd85a","diamond");
@@ -117,8 +138,6 @@
     for(const cache of host?.deathCaches||[])if(cache?.active)drawMarker(context,cache,"#ff6076","cross");
     for(const shop of host?.shops||[])if(shop?.active&&shop?.discovered)drawMarker(context,shop,"#ffd85a","square");
 
-    // Progression items restored from an older death cache are deliberately
-    // always marked: the player owned them and therefore knows where they went.
     for(const marker of host?.progressionRecoveryMarkers||[]){
       if(!marker?.active)continue;
       drawMarker(context,marker,marker.kind==="exitSigil"?"#b978ff":"#ffd85a",marker.kind==="exitSigil"?"diamond":"square",marker.label||"");
@@ -142,12 +161,14 @@
   function openMap(){
     if(state.open||!soloRun())return false;
     if(typeof mode==="undefined"||mode!=="playing")return false;
-    ensureStyle();const panel=ensurePanel();
+    ensureStyle();
+    const panel=ensurePanel();
+    if(!panel?.isConnected)return false;
     state.previousMode=mode;state.pausedByMap=true;state.open=true;
-    try{input?.clear?.()}catch(_){}
-    try{mode="paused"}catch(_){}
     document.body.dataset.ccgSoloMapOpen="true";
     panel.classList.remove("hidden");
+    clearMovementState();
+    try{mode="paused"}catch(_){}
     panel.querySelector("#ccg-solo-full-map-close")?.focus?.({preventScroll:true});
     startTimer();
     return true;
@@ -162,7 +183,7 @@
       try{if(mode==="paused"&&document.body.dataset.runActive==="true")mode=state.previousMode||"playing"}catch(_){}
     }
     state.pausedByMap=false;
-    try{input?.clear?.()}catch(_){}
+    clearMovementState();
     try{document.getElementById("game")?.focus?.({preventScroll:true})}catch(_){}
     return true;
   }
@@ -170,8 +191,6 @@
   function onKey(event){
     if(isTypingTarget(event.target))return;
     if(event.code==="KeyM"){
-      // M is owned by the map system everywhere. It must never reach the legacy
-      // sound shortcut. Outside Solo gameplay it intentionally does nothing.
       event.preventDefault();event.stopImmediatePropagation();
       if(state.open)closeMap();else openMap();
       return;
@@ -189,12 +208,24 @@
     if(sound){sound.title="Toggle game sound/music. Keyboard M is reserved for the Solo full map.";sound.removeAttribute("aria-keyshortcuts")}
   }
 
+  const onResize=()=>{if(state.open)requestAnimationFrame(drawMap)};
+  const onFullscreenChange=()=>{
+    syncPanelHost();
+    if(state.open)requestAnimationFrame(drawMap);
+  };
+
   ensureStyle();ensurePanel();correctControlCopy();
   window.addEventListener("keydown",onKey,true);
   const copyTimer=setInterval(correctControlCopy,500);
   const observer=new MutationObserver(()=>{if(document.body.dataset.runActive!=="true"&&state.open)closeMap(false)});
   observer.observe(document.body,{attributes:true,attributeFilter:["data-run-active"]});
-  window.addEventListener("resize",()=>{if(state.open)requestAnimationFrame(drawMap)},{passive:true});
-  window.addEventListener("pagehide",()=>{stopTimer();clearInterval(copyTimer);observer.disconnect();window.removeEventListener("keydown",onKey,true)},{once:true});
-  window.CCGLostSizzlerSoloFullMapV141={state,open:openMap,close:closeMap,draw:drawMap};
+  window.addEventListener("resize",onResize,{passive:true});
+  document.addEventListener("fullscreenchange",onFullscreenChange);
+  window.addEventListener("pagehide",()=>{
+    stopTimer();clearInterval(copyTimer);observer.disconnect();
+    window.removeEventListener("keydown",onKey,true);
+    window.removeEventListener("resize",onResize);
+    document.removeEventListener("fullscreenchange",onFullscreenChange);
+  },{once:true});
+  window.CCGLostSizzlerSoloFullMapV141={state,open:openMap,close:closeMap,draw:drawMap,syncHost:syncPanelHost};
 })();
