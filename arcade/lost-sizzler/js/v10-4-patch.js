@@ -509,25 +509,29 @@
       });
       for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => releaseKey(button));
     });
-    let fireTimer = null;
-    const fireOnce = () => {
-      if (typeof mode === "undefined" || mode !== "playing" || !p1) return;
-      firePlayer(p1, d1() || p1.dir);
+    const holdFire = (button, event) => {
+      button.setPointerCapture?.(event.pointerId);
+      if (typeof queueAttack === "function") queueAttack(p1);
+      if (typeof input !== "undefined") input.add("Space");
+      button.classList.add("held");
     };
-    const stopFire = () => { if (fireTimer) clearInterval(fireTimer); fireTimer = null; };
+    const stopFire = (button) => {
+      if (typeof input !== "undefined") input.delete("Space");
+      button.classList.remove("held");
+    };
     controls.querySelectorAll("[data-action]").forEach((button) => {
       const action = button.dataset.action;
       button.addEventListener("pointerdown", (event) => {
         event.preventDefault();
         if (typeof mode === "undefined" || mode !== "playing" || !p1) return;
-        if (action === "fire") { fireOnce(); stopFire(); fireTimer = setInterval(fireOnce, 150); }
+        if (action === "fire") holdFire(button, event);
         else if (action === "dash") dashPlayer(p1, d1() || p1.dir);
         else if (action === "potion") usePotion(p1);
         else if (action === "torch") useUtility(p1);
         else if (action === "banish") useBanishment(p1);
         else if (action === "inventory") toggleInventory();
       });
-      for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => { if (action === "fire") stopFire(); });
+      for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, () => { if (action === "fire") stopFire(button); });
     });
   }
 

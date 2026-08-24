@@ -26,7 +26,7 @@ assert.match(adminAudio,/target\.voice\[cue\]=urls/,"uploaded voice variants are
 assert.match(director,/lastAssetByKey:new Map\(\)/,"voice director tracks the last custom clip per cue");
 assert.match(director,/Array\.isArray\(value\)/,"voice director accepts multiple recordings per cue");
 assert.match(director,/list\.length>1\?list\.filter\(src=>src!==last\)/,"voice director avoids immediate repeats when variants exist");
-assert.match(director,/speakText\(fallbackText,priority\)/,"failed custom audio falls back to browser speech");
+assert.match(director,/speakText\(fallbackText,priority,key\)/,"failed custom audio falls back to browser speech at the cue-specific volume");
 assert.match(voicePage,/id="voice-upload-form"/,"dedicated voice upload page is present");
 assert.match(voicePage,/Lost Sizzler Voice Pack/,"voice library UI is present");
 assert.match(voiceAdmin,/\['gildedElf','Gilded Elf Appears'/,"Gilded Elf voice cue is administered");

@@ -14,8 +14,9 @@ const config=read("js/config.js");
 const index=read("index.html");
 
 assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823e"/,"onboarding safety must remain cache-versioned");
-assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260823c"/,"simplified tutorial launcher must use a fresh cache revision");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260823c/,"r7 must directly load the simplified tutorial launcher");
+assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824c"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
+assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824c/,"the release must directly load the fullscreen-safe tutorial launcher");
+assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
 assert.match(source,/floor===1\|\|depth\(host\.skeletonHorde\?\.roomId\)<=safeDepth\)clearSkeletonHorde\(\)/,"floor one must suppress the skeleton horde");
@@ -68,7 +69,11 @@ assert.match(guidance,/legacy\.classList\.add\("hidden"\)/,"legacy fallback choo
 
 /* Async mobile/fullscreen launch regression: choiceAccepted cannot be cleared until startSolo settles. */
 assert.match(guidance,/function launchSolo\(tutorial\)/,"tutorial and normal solo launches must share one reliable async path");
-assert.match(guidance,/state\.tutorialRequested=Boolean\(tutorial\)/,"Tutorial selection must persist as launch intent");
+assert.match(guidance,/queuedLaunch=requested/,"an early Tutorial click must be retained until onboarding is ready");
+assert.match(guidance,/if\(queuedLaunch!==null&&state&&typeof startSolo==="function"\)/,"the retained start request must launch as soon as its dependencies are ready");
+assert.match(guidance,/function focusGameplaySurface\(\)/,"acknowledging a tutorial card must return focus to keyboard gameplay");
+assert.match(guidance,/event\.code==="Enter"\|\|event\.code==="Space"/,"only button activation keys may pass through a visible tutorial card");
+assert.match(guidance,/state\.tutorialRequested=requested/,"Tutorial selection must persist as launch intent");
 assert.match(guidance,/state\.choiceAccepted=true/,"selected menu action must bypass the fallback chooser");
 assert.match(guidance,/result=startSolo\(\)/,"the primary buttons must use the real async solo start");
 assert.match(guidance,/Promise\.resolve\(result\)\.finally\(\(\)=>\{/,"fallback-chooser bypass must stay active until fullscreen/audio start settles");

@@ -436,7 +436,7 @@ function buildReferenceGuide(){
   }
   if(items){
     const defs=[
-      ["+",P.green,"HEALTH","+3 HP"],["AM",P.cyan,"AMMO","+40 shots"],["P",P.green,"POTION","E: heal + ammo"],["B",P.purple,"BANISH FLASK","B: use when prompted"],["T",P.gold,"TORCH",`${Math.round(C.player.torchRadius*2)}-tile light`],
+      ["+",P.green,"HEALTH","+3 HP"],["AM",P.cyan,"AMMO","+40 shots"],["P",P.green,"POTION","E: restore health"],["B",P.purple,"BANISH FLASK","B: use when prompted"],["T",P.gold,"TORCH",`${Math.round(C.player.torchRadius*2)}-tile light`],
       ["A",P.blue,"ARMOUR","absorbs hits"],["BK",P.gold,"BRONZE KEY","optional locks"],["KEY",P.gold,"MAIN KEY","floor objective"],["SIG",P.gold,"EXIT SIGIL","required to leave"],
       ["W",P.orange,"WEAPON","random upgrade"],["RF",P.orange,"RAPID FIRE","temporary boost"],["▣",P.gold,"CHEST","random loot"],["✦",P.purple,"SHRINE","blessing / risk"]
     ];

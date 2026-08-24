@@ -9,6 +9,7 @@
   let acknowledgedStep=-1;
   let soloBound=false;
   let tutorialLaunchPending=false;
+  let queuedLaunch=null;
 
   function ensureStyle(){
     if(document.getElementById("ccg-tutorial-guidance-style"))return;
@@ -102,12 +103,18 @@
   }
 
   function launchSolo(tutorial){
+    const requested=Boolean(tutorial);
     const state=tutorialState();
-    if(!state||typeof startSolo!=="function")return false;
-    state.forceTutorial=Boolean(tutorial);
-    state.tutorialRequested=Boolean(tutorial);
+    if(!state||typeof startSolo!=="function"){
+      queuedLaunch=requested;
+      tutorialLaunchPending=requested;
+      return false;
+    }
+    queuedLaunch=null;
+    state.forceTutorial=requested;
+    state.tutorialRequested=requested;
     state.choiceAccepted=true;
-    tutorialLaunchPending=Boolean(tutorial);
+    tutorialLaunchPending=requested;
     let result;
     try{
       result=startSolo();
@@ -158,7 +165,7 @@
   function bindSoloDirect(){
     if(soloBound)return;
     const solo=document.getElementById("solo-btn");
-    if(!solo||typeof startSolo!=="function"||!tutorialState())return;
+    if(!solo)return;
     solo.addEventListener("click",event=>{
       event.preventDefault();event.stopPropagation();event.stopImmediatePropagation?.();
       launchSolo(false);
@@ -174,12 +181,13 @@
 
   function ensureStageModal(){
     let modal=document.getElementById("ccg-tutorial-stage-modal");
-    if(modal)return modal;
+    const mount=document.querySelector(".ccg-game")||document.body;
+    if(modal){if(modal.parentElement!==mount)mount.appendChild(modal);return modal}
     modal=document.createElement("div");
     modal.id="ccg-tutorial-stage-modal";
     modal.className="hidden";
     modal.setAttribute("role","dialog");modal.setAttribute("aria-modal","true");
-    document.body.appendChild(modal);
+    mount.appendChild(modal);
     return modal;
   }
 
@@ -196,6 +204,14 @@
 
   function closeStageModal(){ensureStageModal().classList.add("hidden")}
 
+  function focusGameplaySurface(){
+    requestAnimationFrame(()=>{
+      const canvas=document.getElementById("game");
+      try{document.activeElement?.blur?.()}catch(_){}
+      try{if(canvas){canvas.tabIndex=-1;canvas.focus({preventScroll:true})}}catch(_){}
+    });
+  }
+
   function stageAction(step){
     const state=tutorialState();
     if(!state?.active)return;
@@ -203,6 +219,7 @@
       acknowledgedStep=step;
       closeStageModal();
       highlightControls(INPUT_STEPS.get(step));
+      focusGameplaySurface();
       return;
     }
     const root=rail();
@@ -257,13 +274,16 @@
   function blockGameplayKeysWhileReading(event){
     const modal=document.getElementById("ccg-tutorial-stage-modal");
     if(!tutorialState()?.active||!modal||modal.classList.contains("hidden"))return;
-    if(event.target instanceof HTMLButtonElement)return;
+    if(event.target instanceof HTMLButtonElement&&(event.code==="Enter"||event.code==="Space"))return;
     event.preventDefault();event.stopPropagation();event.stopImmediatePropagation?.();
   }
 
   function tick(){
     ensureStyle();ensurePrimaryTutorialButton();bindSoloDirect();hideRedundantChoices();
     const state=tutorialState();
+    if(queuedLaunch!==null&&state&&typeof startSolo==="function"){
+      const requested=queuedLaunch;queuedLaunch=null;launchSolo(requested);return;
+    }
     if(!state?.active){
       if(lastStep!==-1){clearHighlights();closeStageModal();lastStep=-1;acknowledgedStep=-1}
       return;
@@ -287,5 +307,5 @@
   window.addEventListener("pagehide",()=>{
     clearInterval(timer);clearHighlights();document.removeEventListener("keydown",blockGameplayKeysWhileReading,true);
   },{once:true});
-  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,showStage,ensurePrimaryTutorialButton,launchSolo,get tutorialLaunchPending(){return tutorialLaunchPending}};
+  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,showStage,ensurePrimaryTutorialButton,launchSolo,get tutorialLaunchPending(){return tutorialLaunchPending},get queuedLaunch(){return queuedLaunch}};
 })();

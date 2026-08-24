@@ -28,6 +28,7 @@ const COMMODORE_MILESTONE_KEYS = Object.freeze([
 
 const MILESTONE_TOTAL = COMMODORE_MILESTONE_KEYS.length;
 const MILESTONE_KEY_SET = new Set(COMMODORE_MILESTONE_KEYS);
+const LOST_SIZZLER_PREFIX = 'LS_';
 
 const COMPLETION_BADGE = Object.freeze({
   badge_key: 'COMMODORE_COMPLETIONIST',
@@ -70,7 +71,7 @@ function retireRedundantBadgeDisplays() {
   if (!section) return null;
 
   const intro = section.querySelector('.member-panel__intro');
-  const introText = 'Your account-backed Commodore Milestones and membership loyalty progress.';
+  const introText = 'Your account-backed Commodore Milestones and game achievements.';
   if (intro && intro.textContent !== introText) {
     intro.textContent = introText;
   }
@@ -113,8 +114,8 @@ function ensurePanel() {
     <div class="member-achievement-panel__header">
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
-        <h3 class="member-achievement-panel__title">Commodore Milestones</h3>
-        <p class="member-achievement-panel__intro">Badges are awarded from ratings, comments and private game-library activity saved to your account. Complete all twelve milestones to unlock the final distinction.</p>
+        <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
+        <p class="member-achievement-panel__intro">Account activity and Lost Sizzler accomplishments are saved here. Complete all twelve milestones for the Commodore Completionist reward, or conquer all five Lost Sizzler floors for the Platinum badge.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
@@ -152,6 +153,14 @@ function categoryLabel(value) {
   if (value === 'library') return 'My Games';
   if (value === 'systems') return 'Systems';
   if (value === 'completion') return 'Completion Reward';
+  if (value === 'journey') return 'Lost Sizzler · Journey';
+  if (value === 'combat') return 'Lost Sizzler · Combat';
+  if (value === 'objectives') return 'Lost Sizzler · Objectives';
+  if (value === 'exploration') return 'Lost Sizzler · Exploration';
+  if (value === 'collection') return 'Lost Sizzler · Collection';
+  if (value === 'rare_events') return 'Lost Sizzler · Rare Events';
+  if (value === 'mastery') return 'Lost Sizzler · Mastery';
+  if (value === 'platinum') return 'Lost Sizzler · Platinum';
   return 'Achievement';
 }
 
@@ -242,6 +251,54 @@ function orderedMilestoneEntries(catalog) {
   return COMMODORE_MILESTONE_KEYS.map((key) => byKey.get(key)).filter(Boolean);
 }
 
+function orderedLostSizzlerEntries(catalog) {
+  return (Array.isArray(catalog) ? catalog : [])
+    .filter((entry) => badgeKey(entry?.badge_key).startsWith(LOST_SIZZLER_PREFIX))
+    .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0));
+}
+
+function createSectionHeading(title, progress) {
+  const heading = document.createElement('div');
+  heading.className = 'member-achievement-grid__heading';
+  const label = document.createElement('h4');
+  label.textContent = title;
+  const status = document.createElement('span');
+  status.textContent = progress;
+  heading.append(label, status);
+  return heading;
+}
+
+function createBadgeCard(entry, award) {
+  const key = badgeKey(entry.badge_key);
+  const platinum = key === 'LS_CITADEL_PLATINUM' || entry.badge_category === 'platinum';
+  const card = document.createElement('article');
+  card.className = `member-achievement-card ${award ? 'is-earned' : 'is-locked'}${platinum ? ' is-platinum' : ''}`;
+  card.dataset.badgeKey = key;
+
+  const mark = document.createElement('span');
+  mark.className = 'member-achievement-card__mark';
+  mark.textContent = award ? (platinum ? '★' : '✓') : 'LOCKED';
+  mark.setAttribute('aria-label', award ? (platinum ? 'Platinum badge earned' : 'Badge earned') : 'Badge locked');
+
+  const body = document.createElement('div');
+  body.className = 'member-achievement-card__body';
+  const meta = document.createElement('p');
+  meta.className = 'member-achievement-card__meta';
+  meta.textContent = categoryLabel(entry.badge_category);
+  const title = document.createElement('h4');
+  title.className = 'member-achievement-card__title';
+  title.textContent = text(entry.badge_name || key.replace(/_/g, ' '));
+  const description = document.createElement('p');
+  description.className = 'member-achievement-card__description';
+  description.textContent = text(entry.badge_description);
+  const stateLine = document.createElement('p');
+  stateLine.className = 'member-achievement-card__state';
+  stateLine.textContent = award ? formatAwardDate(award.assigned_at) : 'Not earned yet';
+  body.append(meta, title, description, stateLine);
+  card.append(mark, body);
+  return card;
+}
+
 function renderAchievements(catalog, earnedRows) {
   const host = document.getElementById('memberAchievementGrid');
   if (!host) return;
@@ -250,57 +307,28 @@ function renderAchievements(catalog, earnedRows) {
   const earned = new Map();
   (Array.isArray(earnedRows) ? earnedRows : []).forEach((row) => {
     const key = badgeKey(row?.badge_key);
-    if (MILESTONE_KEY_SET.has(key) && !earned.has(key)) earned.set(key, row);
+    if (key && !earned.has(key)) earned.set(key, row);
   });
 
   const entries = orderedMilestoneEntries(catalog);
-  entries.forEach((entry) => {
-    const key = badgeKey(entry.badge_key);
-    const award = earned.get(key);
-    const card = document.createElement('article');
-    card.className = `member-achievement-card ${award ? 'is-earned' : 'is-locked'}`;
-    card.dataset.badgeKey = key;
-
-    const mark = document.createElement('span');
-    mark.className = 'member-achievement-card__mark';
-    mark.textContent = award ? '✓' : 'LOCKED';
-    mark.setAttribute('aria-label', award ? 'Badge earned' : 'Badge locked');
-
-    const body = document.createElement('div');
-    body.className = 'member-achievement-card__body';
-
-    const meta = document.createElement('p');
-    meta.className = 'member-achievement-card__meta';
-    meta.textContent = categoryLabel(entry.badge_category);
-
-    const title = document.createElement('h4');
-    title.className = 'member-achievement-card__title';
-    title.textContent = text(entry.badge_name || key.replace(/_/g, ' '));
-
-    const description = document.createElement('p');
-    description.className = 'member-achievement-card__description';
-    description.textContent = text(entry.badge_description);
-
-    const stateLine = document.createElement('p');
-    stateLine.className = 'member-achievement-card__state';
-    stateLine.textContent = award ? formatAwardDate(award.assigned_at) : 'Not earned yet';
-
-    body.append(meta, title, description, stateLine);
-    card.append(mark, body);
-    host.appendChild(card);
-  });
-
   const completion = completionState(earned);
-  if (completion.complete) {
-    host.prepend(createCompletionCard(completion));
+  const earnedTotal = COMMODORE_MILESTONE_KEYS.filter((key) => earned.has(key)).length;
+  host.appendChild(createSectionHeading('Commodore Milestones', `${earnedTotal} / ${MILESTONE_TOTAL}`));
+  if (completion.complete) host.prepend(createCompletionCard(completion));
+  entries.forEach((entry) => host.appendChild(createBadgeCard(entry, earned.get(badgeKey(entry.badge_key)))));
+
+  const gameEntries = orderedLostSizzlerEntries(catalog);
+  const gameEarned = gameEntries.filter((entry) => earned.has(badgeKey(entry.badge_key))).length;
+  if (gameEntries.length) {
+    host.appendChild(createSectionHeading('The Lost Sizzler', `${gameEarned} / ${gameEntries.length}`));
+    gameEntries.forEach((entry) => host.appendChild(createBadgeCard(entry, earned.get(badgeKey(entry.badge_key)))));
   }
 
-  const earnedTotal = COMMODORE_MILESTONE_KEYS.filter((key) => earned.has(key)).length;
   setStatus(
     completion.complete
-      ? `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned. Commodore Completionist unlocked.`
-      : `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned. Complete all twelve to unlock the final distinction.`,
-    earnedTotal ? 'success' : 'ready'
+      ? `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned; ${gameEarned} of ${gameEntries.length} Lost Sizzler achievements earned. Commodore Completionist unlocked.`
+      : `${earnedTotal} of ${MILESTONE_TOTAL} Commodore Milestones earned; ${gameEarned} of ${gameEntries.length} Lost Sizzler achievements earned.`,
+    earnedTotal || gameEarned ? 'success' : 'ready'
   );
 }
 

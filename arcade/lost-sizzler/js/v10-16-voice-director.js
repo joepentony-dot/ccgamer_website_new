@@ -61,15 +61,15 @@
       mimic:{start:130.016,duration:2.453}
     }
   };
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),lastPainAt:0,lastLowHealthAt:0,gildedFiveWarned:new Set(),voices:[],button:null};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),lastPainAt:0,lastLowHealthAt:0,lowAmmoWarned:false,rareLootFloor:0,gildedFiveWarned:new Set(),voices:[],button:null};
 
   const lines={
     welcome:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:40,cooldown:10000},
     welcomeRare:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
-    hurt:{variants:["Ow!","That hurt!","Watch it!","Oof!"],priority:8,cooldown:6500},
+    hurt:{text:"Ow!",priority:8,cooldown:0},
     lowHealth:{variants:["Low health.","Health critical.","You could really use a potion."],priority:35,cooldown:18000},
-    noAmmo:{variants:["Ammo low.","You're running dry."],priority:25,cooldown:16000},
+    noAmmo:{variants:["Ammo low.","You're running dry."],priority:25,cooldown:120000},
     secret:{variants:["Secret found.","Well spotted.","Hidden route discovered."],priority:38,cooldown:6000},
     objectiveHint:{variants:["Objective hint available.","You have been wandering for a while. Check your radar.","Need a nudge? Your next objective is now marked."],priority:45,cooldown:15000},
     objectiveNear:{variants:["Objective nearby.","You're getting warm."],priority:34,cooldown:10000},
@@ -127,17 +127,18 @@
     state.active=null;state.activePriority=-1;
   }
   function finishActive(){clearActiveTimer();state.active=null;state.activePriority=-1;setTimeout(pump,80)}
-  function playClip(src,priority,fallbackText=""){
+  function voiceVolume(key){return key==="hurt" ? .56 : .72}
+  function playClip(src,priority,fallbackText="",key=""){
     try{
       const audio=new Audio(src);let failed=false;
       const fallback=()=>{
         if(failed)return;failed=true;
         try{audio.pause();audio.currentTime=0}catch(_){}
         state.active=null;state.activePriority=-1;
-        if(fallbackText&&speakText(fallbackText,priority))return;
+        if(fallbackText&&speakText(fallbackText,priority,key))return;
         setTimeout(pump,80);
       };
-      audio.preload="auto";audio.volume=.9;state.active={audio};state.activePriority=priority;audio.onended=finishActive;audio.onerror=fallback;
+      audio.preload="auto";audio.volume=voiceVolume(key);state.active={audio};state.activePriority=priority;audio.onended=finishActive;audio.onerror=fallback;
       const p=audio.play();if(p?.catch)p.catch(fallback);return true;
     }catch(_){return false}
   }
@@ -150,7 +151,7 @@
         clearActiveTimer();
         try{audio.pause()}catch(_){}
         state.active=null;state.activePriority=-1;
-        if(fallbackText&&speakText(fallbackText,priority))return;
+        if(fallbackText&&speakText(fallbackText,priority,key))return;
         setTimeout(pump,80);
       };
       const begin=()=>{
@@ -168,30 +169,33 @@
         state.activePriority=priority;
         const p=audio.play();if(p?.catch)p.catch(fallback);
       };
-      audio.preload="auto";audio.volume=.9;audio.onerror=fallback;state.active={audio};state.activePriority=priority;
+      audio.preload="auto";audio.volume=voiceVolume(key);audio.onerror=fallback;state.active={audio};state.activePriority=priority;
       if(audio.readyState>=1)begin();else audio.addEventListener("loadedmetadata",begin,{once:true});
       audio.load();return true;
     }catch(_){return false}
   }
-  function speakText(text,priority){
+  function speakText(text,priority,key=""){
     if(!("speechSynthesis" in window)||typeof SpeechSynthesisUtterance==="undefined")return false;
-    try{const u=new SpeechSynthesisUtterance(text);u.lang="en-GB";u.rate=.97;u.pitch=.92;u.volume=.92;const voice=chooseVoice();if(voice)u.voice=voice;u.onend=finishActive;u.onerror=finishActive;state.active={speech:u};state.activePriority=priority;window.speechSynthesis.speak(u);return true}catch(_){return false}
+    try{const u=new SpeechSynthesisUtterance(text);u.lang="en-GB";u.rate=.97;u.pitch=.92;u.volume=voiceVolume(key);const voice=chooseVoice();if(voice)u.voice=voice;u.onend=finishActive;u.onerror=finishActive;state.active={speech:u};state.activePriority=priority;window.speechSynthesis.speak(u);return true}catch(_){return false}
   }
   function pump(){
     if(state.active||!state.enabled||!state.unlocked||!soundAllowed()||!state.queue.length)return;
     state.queue.sort((a,b)=>b.priority-a.priority||a.at-b.at);const next=state.queue.shift();if(!next)return;
     const src=!next.forceTts?assetFor(next.key):"";
-    if(src&&playClip(src,next.priority,next.text))return;
+    if(src&&playClip(src,next.priority,next.text,next.key))return;
     if(!next.forceTts&&playSprite(next.key,next.priority,next.text))return;
-    if(speakText(next.text,next.priority))return;
+    if(speakText(next.text,next.priority,next.key))return;
     finishActive();
   }
+  function tutorialSilent(){const tutorial=window.CCGLostSizzlerOnboardingV120?.state;return Boolean(tutorial?.active||tutorial?.tutorialRequested||window.CCGLostSizzlerTutorialGuidanceV123?.tutorialLaunchPending)}
   function sayKey(key,opts={}){
-    const entry=lines[key];if(!entry||!state.enabled)return false;
+    const entry=lines[key];if(!entry||!state.enabled||tutorialSilent())return false;
+    const currentFloor=Math.max(0,Number(run?.floor||0));if(key==="rareLoot"&&currentFloor>0&&state.rareLootFloor===currentFloor)return false;
     const priority=Number(opts.priority??entry.priority??20),cooldown=Number(opts.cooldown??entry.cooldown??5000);if(!coolReady(key,cooldown))return false;
     const text=String(opts.text||pick(entry,key)||"").trim();if(!text)return false;
+    if(key==="rareLoot"&&currentFloor>0)state.rareLootFloor=currentFloor;
     if(state.active&&priority>=state.activePriority+25)stopActive();
-    state.queue=state.queue.filter(q=>q.key!==key);state.queue.push({key,text,priority,forceTts:Boolean(opts.forceTts),at:performance.now()});if(state.queue.length>8)state.queue=state.queue.sort((a,b)=>b.priority-a.priority).slice(0,8);pump();return true;
+    if(key!=="hurt")state.queue=state.queue.filter(q=>q.key!==key);state.queue.push({key,text,priority,forceTts:Boolean(opts.forceTts),at:performance.now()});if(state.queue.length>12)state.queue=state.queue.sort((a,b)=>b.priority-a.priority).slice(0,12);pump();return true;
   }
   function setEnabled(value){state.enabled=Boolean(value);saveEnabled();if(!state.enabled){state.queue.length=0;stopActive()}updateButton();return state.enabled}
   function updateButton(){if(state.button){state.button.textContent=state.enabled?"VOICE ON":"VOICE OFF";state.button.setAttribute("aria-pressed",String(state.enabled));state.button.title=state.enabled?"Disable spoken game prompts":"Enable spoken game prompts"}}
@@ -220,7 +224,7 @@
     if(/MYSTERY POTION/.test(s))return"mysteryPotion";
     if(/COUNT LOADULA|LOADULA/.test(s))return"loadula";
     if(/DEATH STALKER/.test(s))return"deathStalker";
-    if(/OBJECTIVE HINT|NEXT OBJECTIVE|RADAR HINT/.test(s))return"objectiveHint";
+    if(/RADAR HINT/.test(s))return"objectiveHint";
     if(/OBJECTIVE NEAR|GETTING WARM/.test(s))return"objectiveNear";
     if(/SECRET DOOR|SECRET.*FOUND|HIDDEN WALL|SECRET REVEALED/.test(s))return"secret";
     if(/WEEKLY VAULT.*RUN OVER/.test(s))return"weeklyDeath";
@@ -241,8 +245,8 @@
     hurtPlayer=function hurtPlayerV116Voice(player,n,friendly=false,source="enemy"){
       const before=Number(player?.health||0)+Number(player?.armor||0),deathsBefore=Number(run?.stats?.deaths||0),result=originalHurtPlayer.apply(this,arguments),after=Number(player?.health||0)+Number(player?.armor||0),deathsAfter=Number(run?.stats?.deaths||0);
       try{
-        if(deathsAfter>deathsBefore)sayKey("playerDeath",{cooldown:0});
-        else if(after<before&&Number(player?.health||0)>0)sayKey("hurt");
+        if(after<before)sayKey("hurt",{cooldown:0});
+        if(deathsAfter>deathsBefore)setTimeout(()=>sayKey("playerDeath",{cooldown:0}),750);
         if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28)sayKey("lowHealth");
       }catch(_){}return result;
     };
@@ -251,6 +255,7 @@
     const originalBeginRun=beginRun;
     beginRun=function beginRunV116Voice(opts={}){
       const result=originalBeginRun.apply(this,arguments);
+      state.lowAmmoWarned=false;state.rareLootFloor=0;state.lastByKey.delete("noAmmo");
       setTimeout(()=>{
         try{
           const welcomeKey=opts?.daily?"weeklyWelcome":(Math.random()<.1?"welcomeRare":"welcome");
@@ -272,10 +277,12 @@
 
   let watchMs=0;
   function voiceWatch(dt){
-    watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1)return;watchMs=350;
+    watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1||tutorialSilent())return;watchMs=350;
     try{
       if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28)sayKey("lowHealth");
-      if(Number(p1.mana||0)<=8)sayKey("noAmmo");
+      const ammo=Number(p1.mana||0);
+      if(ammo>=20)state.lowAmmoWarned=false;
+      if(ammo<=8&&!state.lowAmmoWarned&&sayKey("noAmmo")){state.lowAmmoWarned=true}
       for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
     }catch(_){}
   }

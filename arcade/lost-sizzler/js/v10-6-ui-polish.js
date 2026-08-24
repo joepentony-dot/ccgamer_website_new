@@ -128,7 +128,7 @@
     if(!target||typeof p1==="undefined"||!p1||typeof host==="undefined"||!host)return;
     const rows=[];
     const potions=inventoryCount("potion"),torches=inventoryCount("torch"),teleports=inventoryCount("teleport"),flasks=inventoryCount("banishment"),artefacts=inventoryCount("artefact");
-    if(potions)rows.push(carriedRow({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,key:"E",desc:"Restore health and 8 ammo.",tone:"green"}));
+    if(potions)rows.push(carriedRow({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,key:"E",desc:"Restore health. Ammo must be found separately.",tone:"green"}));
     if(torches||p1.torchMs>0)rows.push(carriedRow({kind:"torch",name:"FLAMING TORCH",qty:p1.torchMs>0?`${Math.ceil(p1.torchMs/1000)}s · ×${torches}`:`×${torches}`,key:"Q",desc:"Light the dungeon temporarily.",tone:"gold"}));
     if(teleports)rows.push(carriedRow({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,key:"R",desc:"Warp to a safe explored room.",tone:"purple"}));
     if(flasks)rows.push(carriedRow({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,key:"B",desc:"Destroy a nearby Death Stalker.",tone:"purple"}));

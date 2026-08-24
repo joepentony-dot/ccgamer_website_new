@@ -7,7 +7,7 @@
   const PIT_RUN_CHANCE=.04;
   const PIT_MIN_FLOOR=3;
   const PIT_MAX_FLOOR=5;
-  const PIT_PLAYER_DAMAGE=2;
+  const PIT_PLAYER_DAMAGE=1;
   const PIT_WARN_DISTANCE=4;
   const TRAP_ENEMY_DAMAGE=2;
   const state={
@@ -33,7 +33,8 @@
   const pit=()=>typeof host!=="undefined"&&host?.rareVortexPit||null;
   const pitCells=()=>pit()?.cells||[];
   const pitAt=(x,y)=>pitCells().some(q=>q.x===x&&q.y===y);
-  const isTrainingPit=()=>Boolean(pit()?.training);
+  const tutorialActive=()=>Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active);
+  const isTrainingPit=()=>Boolean(pit()?.training&&tutorialActive());
   const localPeople=()=>typeof localPlayers==="function"?localPlayers():[typeof p1!=="undefined"?p1:null,typeof p2!=="undefined"?p2:null].filter(Boolean);
 
   function specialRoomIds(){
@@ -145,7 +146,7 @@
   }
 
   function ensureTrainingVortex(){
-    const active=Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active);
+    const active=tutorialActive();
     if(!active||typeof host==="undefined"||!host)return;
     if(host.rareVortexPit?.training)return;
     if(host.rareVortexPit&&!host.rareVortexPit.training)return;
@@ -293,8 +294,9 @@
       hazardFx(enemy.x,enemy.y,"pit",true);
       try{floatText(enemy.x,enemy.y,"INTO THE VORTEX!",P.purple,{life:1100})}catch(_){}
       enemy._ccgHazardResolving=true;
+      enemy._ccgVortexKill=true;
       try{damageEnemy(enemy,Math.max(9999,Number(enemy.hp||0)+Number(enemy.armor||0)+100),"physical",attacker||p1)}
-      finally{delete enemy._ccgHazardResolving}
+      finally{delete enemy._ccgHazardResolving;delete enemy._ccgVortexKill}
       if(!enemy.alive)try{showToast("VORTEX KILL","An enemy was knocked into the rare vortex pit. Environmental kills still count.","gold",5200)}catch(_){}
       return true;
     }
