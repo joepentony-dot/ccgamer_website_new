@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.34","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());

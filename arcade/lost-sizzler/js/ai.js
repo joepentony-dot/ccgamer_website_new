@@ -47,7 +47,9 @@ window.CCGAI=(()=>{
   function stalkerDoor(e,host,x,y){const door=W.doorAt(host,x,y);return e?.deathStalker&&door?.type==="room"&&!door.locked?door:null}
   function passable(e,host,map,x,y,world){
     if((!W.walkable(map,x,y,host)&&!stalkerDoor(e,host,x,y))||occupied(host,x,y,e)||occupiedByPlayer(x,y))return false;
-    if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y)&&!e.stalker)return false;
+    /* Sanctuary is an unconditional safe-zone boundary. This deliberately
+     * includes roaming Stalkers: no monster may enter or spawn inside it. */
+    if(window.CCGSystems?.inSanctuary(world,x,y)&&!window.CCGSystems.inSanctuary(world,e.x,e.y))return false;
     const sourceRoom=W.roomAt(world,e.x,e.y),targetRoom=W.roomAt(world,x,y);
     if(sourceRoom>=0&&!roomEntered(host,sourceRoom)&&(targetRoom!==sourceRoom||!clearOfUnenteredDoor(host,sourceRoom,x,y)))return false;
     return true;
