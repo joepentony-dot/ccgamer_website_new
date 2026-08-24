@@ -55,6 +55,7 @@ assert.match(checker,/v10-41-solo-full-map\.js/,"V10.41 loader must include the 
 assert.match(checker,/v10-41-horde-combat-polish\.js/,"V10.41 loader must include Horde combat balancing");
 assert.match(checker,/v10-41-horde-completion\.js/,"V10.41 loader must include Solo Horde and persistent rankings");
 assert.match(checker,/v10-41-sanctuary-azalea\.js/,"V10.41 loader must include sanctuary scenery and AZALEA");
+assert.match(checker,/v10-41-progression-recovery\.js/,"V10.41 loader must include cache-independent progression recovery hardening");
 
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
