@@ -3,6 +3,7 @@
   if(window.__CCG_LOST_SIZZLER_VERSION_CHECK__)return;
   window.__CCG_LOST_SIZZLER_VERSION_CHECK__=true;
 
+  const RUNTIME_BUILD="V10.40";
   const meta=document.querySelector('meta[name="ccg-lost-sizzler-build"]');
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
@@ -47,11 +48,20 @@
     script.dataset.ccgV140HordeFinal="true";
     document.head.appendChild(script);
   }
+  function loadV140IntegrityConsolidation(){
+    if(document.querySelector('script[data-ccg-v140-integrity="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-40-integrity-consolidation.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV140Integrity="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
   loadV139HordeLiveLoadout();
   loadV140HordeFinal();
+  loadV140IntegrityConsolidation();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
@@ -100,13 +110,13 @@
     }else if(mode==="current"){
       title.textContent="Game Is Up To Date";
       copy.textContent=message||"You are already running the latest published Lost Sizzler build.";
-      detail.textContent=`Loaded: ${current} · Latest: ${state.latest||current}`;
+      detail.textContent=`Runtime: ${RUNTIME_BUILD} · Loaded: ${current} · Latest: ${state.latest||current}`;
       update.textContent="Reload Anyway";
       update.classList.remove("hidden");
     }else{
       title.textContent="Version Check Unavailable";
       copy.textContent=message||"The latest build number could not be checked. You can still reload the game if something looks stale.";
-      detail.textContent=`Loaded build: ${current}`;
+      detail.textContent=`Runtime: ${RUNTIME_BUILD} · Loaded build: ${current}`;
       update.textContent="Reload Game";
       update.classList.remove("hidden");
     }
@@ -125,9 +135,10 @@
   function markCurrent(){
     state.outdated=false;
     const button=ensureButton();
-    if(button){button.textContent="Check / Refresh Game";button.title=`Latest build loaded: ${current}`}
+    if(button){button.textContent="Check / Refresh Game";button.title=`Latest published build loaded: ${current}`}
     const badge=document.querySelector(".build-badge");
-    if(badge){badge.textContent=`BUILD ${current}`;badge.title="Latest published build loaded"}
+    if(badge){badge.textContent=`BUILD ${RUNTIME_BUILD}`;badge.title=`Runtime ${RUNTIME_BUILD} · published build ${current}`}
+    const brand=document.querySelector(".brand p");if(brand)brand.textContent=`THE LOST SIZZLER — ${RUNTIME_BUILD}`;
   }
 
   async function checkLatest(manual=false){
@@ -158,10 +169,14 @@
     }catch(_){window.location.reload()}
   }
 
-  function install(){ensureButton();ensurePanel();const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`Loaded Lost Sizzler build ${current}`}}
+  function install(){
+    ensureButton();ensurePanel();
+    const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${RUNTIME_BUILD}`;badge.title=`Runtime ${RUNTIME_BUILD} · loaded build ${current}`}
+    const brand=document.querySelector(".brand p");if(brand)brand.textContent=`THE LOST SIZZLER — ${RUNTIME_BUILD}`;
+  }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
   setTimeout(()=>checkLatest(false),900);
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
   window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
-  window.CCGLostSizzlerVersion={state,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
+  window.CCGLostSizzlerVersion={RUNTIME_BUILD,state,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
 })();
