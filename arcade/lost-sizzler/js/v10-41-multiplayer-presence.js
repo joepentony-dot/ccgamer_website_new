@@ -1,11 +1,12 @@
-/* The Lost Sizzler V10.41 — multiplayer combat presence and teammate radar sync. */
+/* The Lost Sizzler V10.41 — multiplayer combat presence, teammate radar sync and refined invite joining. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_MULTIPLAYER_PRESENCE__)return;
   window.__CCG_LOST_SIZZLER_V141_MULTIPLAYER_PRESENCE__=true;
 
-  const state={installed:false,fireWrapped:false,packetWrapped:false,radarWrapped:false,timer:0,lastSwingSent:0};
+  const state={installed:false,fireWrapped:false,packetWrapped:false,radarWrapped:false,joinWrapped:false,timer:0,lastSwingSent:0,autoJoinStarted:false};
   const TEAM_COLOURS=["#72ff9b","#ff6cc9","#ffb85c","#b978ff"];
+  const ROOM_MODES=new Set(["dungeon","horde-survivor","sizzler-saboteurs"]);
   const actorId=()=>String(typeof net!=="undefined"&&net?.sessionId||"");
   const admitted=id=>{
     try{return Boolean(id)&&net?.getMembers?.().some(member=>String(member.id)===String(id))}catch(_){return false}
@@ -133,16 +134,63 @@
     return true;
   }
 
+  function inviteMeta(){
+    try{
+      const url=new URL(location.href),room=window.CCGNetwork?.cleanCode?.(url.searchParams.get("room")||"")||"",roomMode=String(url.searchParams.get("mode")||"").trim();
+      if(room.length<4)return null;
+      return{room,roomMode:ROOM_MODES.has(roomMode)?roomMode:""};
+    }catch(_){return null}
+  }
+
+  function applyInviteMode(roomMode){
+    if(!roomMode||!ROOM_MODES.has(roomMode)||typeof net==="undefined"||!net)return;
+    try{net.configureRoomMode?.(roomMode)}catch(_){}
+  }
+
+  function installInviteJoining(){
+    if(state.joinWrapped)return true;
+    const input=document.getElementById("room-code"),joinButton=document.getElementById("join-btn");if(!input||!joinButton)return false;
+    state.joinWrapped=true;
+    input.addEventListener("paste",event=>{
+      const text=String(event.clipboardData?.getData("text")||"").trim();if(!text)return;
+      try{
+        const url=new URL(text,location.href),room=window.CCGNetwork?.cleanCode?.(url.searchParams.get("room")||"")||"",roomMode=String(url.searchParams.get("mode")||"").trim();
+        if(room.length<4)return;
+        event.preventDefault();input.value=room;applyInviteMode(roomMode);
+        if(UI?.note)UI.note.textContent=`Invite detected for room ${room}. Press Join Online Room.`;
+      }catch(_){}
+    });
+    const meta=inviteMeta();
+    if(meta){
+      input.value=meta.room;applyInviteMode(meta.roomMode);
+      if(UI?.note)UI.note.textContent=`Multiplayer invite detected for room ${meta.room}. Connecting automatically…`;
+    }
+    return true;
+  }
+
+  function tryAutoJoinInvite(){
+    if(state.autoJoinStarted)return;
+    const meta=inviteMeta();if(!meta)return;
+    const gate=window.CCGLostSizzlerReleaseGate;
+    if(gate&&!gate.state?.ready)return;
+    const button=document.getElementById("join-btn"),input=document.getElementById("room-code");if(!button||!input)return;
+    if(typeof mode!=="undefined"&&mode!=="menu")return;
+    state.autoJoinStarted=true;input.value=meta.room;applyInviteMode(meta.roomMode);
+    setTimeout(()=>button.click(),0);
+  }
+
   function install(){
+    installInviteJoining();
+    tryAutoJoinInvite();
     const gate=window.CCGLostSizzlerReleaseGate;
     if(gate&&!gate.state?.ready)return false;
-    const ready=installFireSync()&&installPacketSync()&&installRadar();
+    const ready=installFireSync()&&installPacketSync()&&installRadar()&&state.joinWrapped;
     if(ready){state.installed=true;document.body.dataset.v141MultiplayerPresence="true"}
     return ready;
   }
 
-  state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},90);
+  state.timer=setInterval(()=>{install();if(state.installed&&(!inviteMeta()||state.autoJoinStarted)){clearInterval(state.timer);state.timer=0}},90);
   install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141={get state(){return state},overlayTeamRadar,remoteSlashFx,install};
+  window.CCGLostSizzlerV141={get state(){return state},overlayTeamRadar,remoteSlashFx,inviteMeta,tryAutoJoinInvite,install};
 })();
