@@ -23,8 +23,17 @@
     script.dataset.ccgV137HordeFocus="true";
     document.head.appendChild(script);
   }
+  function loadV138HordeLive(){
+    if(document.querySelector('script[data-ccg-v138-horde-live="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-38-horde-live.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV138HordeLive="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
+  loadV138HordeLive();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
