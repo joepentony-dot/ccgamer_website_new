@@ -33,7 +33,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Validate canonical Lost Sizzler JavaScript syntax
         shell: bash
@@ -43,14 +43,14 @@ jobs:
             node --check "$file"
           done < <(find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z)
 
-      - name: Run canonical Lost Sizzler regression suite
+      - name: Run canonical Lost Sizzler static regression suite
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r -d '' test; do
             echo "Running $test"
             node "$test"
-          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' -print0 | sort -z)
+          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' ! -name 'v10-6-browser.mjs' ! -name 'v10-28-browser-stability.mjs' -print0 | sort -z)
 
       - name: Validate migration redirects and canonical structure
         shell: bash
@@ -58,6 +58,8 @@ jobs:
           set -euo pipefail
           test -f arcade/lost-sizzler/index.html
           test -f arcade/lost-sizzler/version.json
+          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
           grep -q '/arcade/lost-sizzler/' games/ccg-games/cheeky-commodore-quest/index.html
           grep -q '/arcade/lost-sizzler/' games/the-lost-sizzler/index.html
           grep -q 'isEditableKeyboardTarget' arcade/lost-sizzler/js/game-main.js
+          echo 'Real Chromium startup/crash coverage is owned by Lost Sizzler Arcade Validation.'
