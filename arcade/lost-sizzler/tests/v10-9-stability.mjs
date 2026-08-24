@@ -7,7 +7,7 @@ import {createRequire} from "node:module";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const gameDir=path.resolve(here,"..");
-const repo=path.resolve(here,"../../../..");
+const repo=path.resolve(here,"../../..");
 const read=name=>fs.readFileSync(path.join(gameDir,name),"utf8");
 
 const loader=read("js/asset-overrides.js");
@@ -66,8 +66,7 @@ const server=http.createServer((req,res)=>{
 await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
 const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
 
-const browser=await chromium.launch({headless:true,executablePath:browserPath});
-const context=await browser.newContext({viewport:{width:1600,height:900}});
+const browser=await chromium.launch({headless:true,executablePath:browserPath});const context=await browser.newContext({viewport:{width:1600,height:900}});
 await context.addInitScript(()=>{
   let fsElement=null;
   Object.defineProperty(document,"fullscreenElement",{configurable:true,get:()=>fsElement});
