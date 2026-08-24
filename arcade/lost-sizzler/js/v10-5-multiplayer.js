@@ -117,6 +117,11 @@
   joinRoom=joinVerifiedRoom;
 
   function bindVerifiedButtons(){
+    /* V10.6 owns the current lobby and all Dungeon/Horde/Spy room-mode
+     * negotiation. The legacy V10.5 capture listeners use
+     * stopImmediatePropagation(), so binding them when the V10.6 lobby markup
+     * exists prevents the newer mode-aware Join handler from ever running. */
+    if(document.getElementById("online-lobby"))return;
     const createButton=document.getElementById("create-btn");
     const joinButton=document.getElementById("join-btn");
     if(createButton&&!createButton.dataset.v105OnlineBound){
