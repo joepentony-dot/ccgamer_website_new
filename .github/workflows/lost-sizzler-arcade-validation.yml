@@ -16,7 +16,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  static:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -26,13 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Install real-browser regression runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          npx playwright install --with-deps chromium
 
       - name: Validate all Lost Sizzler JavaScript syntax
         shell: bash
@@ -52,9 +45,33 @@ jobs:
             node "$test"
           done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' ! -name 'v10-6-browser.mjs' ! -name 'v10-28-browser-stability.mjs' -print0 | sort -z)
 
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium regression runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
       - name: Open Lost Sizzler in Chromium and exercise startup/runtime stability
         shell: bash
         run: node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Validate canonical runtime structure
         shell: bash
