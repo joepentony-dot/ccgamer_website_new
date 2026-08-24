@@ -1,0 +1,78 @@
+name: Lost Sizzler Sword Render Patch
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-consolidation
+    paths:
+      - '.github/workflows/lost-sizzler-sword-render-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-consolidation
+          fetch-depth: 0
+      - name: Upgrade sword rendering and swing state
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          melee=Path('arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js')
+          text=melee.read_text(encoding='utf-8')
+          old='p.dir=dir;\n    if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);'
+          new='p.dir=dir;\n    p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(220,Math.min(320,Number(melee.cooldown||390)*.68));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";\n    if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);'
+          if old not in text: raise SystemExit('Expected melee swing insertion point not found')
+          melee.write_text(text.replace(old,new,1),encoding='utf-8')
+
+          render=Path('arcade/lost-sizzler/js/game-render.js')
+          text=render.read_text(encoding='utf-8')
+          marker='function drawPlayer(p,kind="p1"){'
+          if marker not in text: raise SystemExit('drawPlayer marker not found')
+          helper=r'''function drawPlayerWeapon(p,cx,cy,d){
+  const hasLiveGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0);
+  if(hasLiveGun){
+    const gx=d.x?d.x*10:0,gy=d.y?d.y*10:0;ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);return;
+  }
+  const now=performance.now(),swingMs=Math.max(1,Number(p?._meleeSwingMs||260)),age=now-Number(p?._meleeSwingAt||-Infinity),active=age>=0&&age<swingMs,dir=active&&p?._meleeSwingDir?p._meleeSwingDir:d,base=Math.atan2(dir.y||0,dir.x||1),progress=active?Math.max(0,Math.min(1,age/swingMs)):1,eased=1-Math.pow(1-progress,3),swing=active?(-1.02+eased*1.92):-.08,angle=base+swing,bladeCol=p?._meleeSwingColour||p?.meleeWeapon?.colour||P.gold;
+  const handX=cx+(dir.x||0)*6-(dir.y||0)*3,handY=cy+(dir.y||0)*6+(dir.x||0)*3;
+  ctx.save();ctx.translate(handX,handY);
+  if(active){
+    ctx.save();ctx.globalAlpha=.18+.22*(1-progress);ctx.strokeStyle=bladeCol;ctx.shadowColor=bladeCol;ctx.shadowBlur=12;ctx.lineWidth=5;ctx.lineCap="round";ctx.beginPath();ctx.arc(0,0,23,base-1.02,angle,false);ctx.stroke();ctx.restore();
+  }
+  ctx.rotate(angle);ctx.shadowColor=bladeCol;ctx.shadowBlur=active?12:5;
+  ctx.fillStyle="#4d2e1f";ctx.fillRect(-6,-2,8,4);
+  ctx.fillStyle="#c99a42";ctx.fillRect(0,-6,3,12);ctx.fillStyle="#f0c85c";ctx.fillRect(1,-5,1,10);
+  const grad=ctx.createLinearGradient(3,-4,24,4);grad.addColorStop(0,"#7e8795");grad.addColorStop(.35,"#f7fbff");grad.addColorStop(.72,bladeCol);grad.addColorStop(1,"#c8d2dd");ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(3,-4);ctx.lineTo(21,-3);ctx.lineTo(27,0);ctx.lineTo(21,3);ctx.lineTo(3,4);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#eff8ff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(5,-2);ctx.lineTo(22,-1);ctx.stroke();ctx.fillStyle=bladeCol;ctx.globalAlpha=.75;ctx.fillRect(4,2,16,1);ctx.restore();
+}
+'''
+          text=text.replace(marker,helper+marker,1)
+          old='const gx=d.x?d.x*10:0,gy=d.y?d.y*10:0;ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);'
+          if old not in text: raise SystemExit('Expected old player weapon block not found')
+          render.write_text(text.replace(old,'drawPlayerWeapon(p,cx,cy,d);',1),encoding='utf-8')
+          PY
+      - name: Validate sword render JavaScript
+        shell: bash
+        run: |
+          node --check arcade/lost-sizzler/js/game-render.js
+          node --check arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js
+          grep -q 'function drawPlayerWeapon' arcade/lost-sizzler/js/game-render.js
+          grep -q '_meleeSwingAt=performance.now' arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js
+      - name: Commit sword upgrade and remove one-shot workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/lost-sizzler-sword-render-patch.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add arcade/lost-sizzler/js/game-render.js arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js .github/workflows/lost-sizzler-sword-render-patch.yml
+          git commit -m 'Render a real animated sword for Lost Sizzler melee combat'
+          git push origin HEAD:codex/lost-sizzler-consolidation
