@@ -64,6 +64,14 @@
     script.dataset.ccgV141WorldSafety="true";
     document.head.appendChild(script);
   }
+  function loadV141SanctuaryHardening(){
+    if(document.querySelector('script[data-ccg-v141-sanctuary-hardening="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-sanctuary-hardening.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141SanctuaryHardening="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
@@ -71,6 +79,7 @@
   loadV140HordeFinal();
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
+  loadV141SanctuaryHardening();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
