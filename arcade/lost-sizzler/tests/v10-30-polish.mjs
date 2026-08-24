@@ -8,7 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const loader=read("js/asset-overrides.js"),core=read("js/game-core.js"),rpg=read("js/v10-5-rpg-balance.js"),network=read("js/game-network.js"),render=read("js/game-render.js"),polish=read("js/v10-30-polish.js"),css=read("css/v10-30-polish.css"),index=read("index.html");
 
-assert.match(loader,/const CCG_POLISH_REV="20260824a"/,"V10.30 must have an isolated cache revision");
+assert.match(loader,/const CCG_POLISH_REV="20260824b"/,"V10.30 must have an isolated cache revision");
 assert.match(loader,/CCGLostSizzlerReleaseGate=\{state,finish\}/,"launches must be protected by a release-ready gate");
 assert.match(loader,/state\.pendingId=button\.id/,"an early mode selection must be queued rather than discarded");
 assert.match(loader,/document\.getElementById\(id\)\?\.click\(\)/,"the queued mode selection must replay after enhancement completion");
