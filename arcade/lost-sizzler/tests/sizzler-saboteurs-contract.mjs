@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const S = require("../js/sizzler-saboteurs.js");
+const SA = require("../js/sizzler-saboteurs-audio.js");
 
 assert.equal(S.MODE_ID, "sizzler-saboteurs");
 assert.equal(S.MODE_NAME, "Sizzler Saboteurs");
@@ -12,11 +13,28 @@ assert.equal(S.ROUNDS_TO_WIN, 3);
 assert.equal(S.TRAPS_PER_ROUND, 3);
 assert.equal(S.NO_MINIMAP, true);
 assert.equal(S.LIGHT_RADIUS, 5);
+assert.equal(S.AUDIO.theme, "assets/audio/music/sizzler-saboteurs-theme.ogg");
+assert.ok(S.AUDIO.baseVolume <= 0.14);
+assert.ok(S.AUDIO.maximumVolume <= 0.18);
+assert.ok(S.AUDIO.duckedVolume < S.AUDIO.baseVolume);
 assert.equal(S.IDENTITIES[0].colour, "#26e8ff");
 assert.equal(S.IDENTITIES[1].colour, "#ff3ca6");
 assert.notEqual(S.IDENTITIES[0].emblem, S.IDENTITIES[1].emblem);
 assert.equal(Object.keys(S.WEAPONS).length, 8);
 assert.equal(Object.keys(S.TRAPS).length, 6);
+
+class FakeAudio {
+  constructor(src) { this.src = src; this.volume = 0; this.loop = false; this.preload = ""; this.currentTime = 0; this.paused = true; }
+  addEventListener() {}
+  async play() { this.paused = false; }
+  pause() { this.paused = true; }
+}
+const audioController = SA.createController({ AudioClass: FakeAudio, fadeInMs: 0, fadeOutMs: 0, baseVolume: 0.14 });
+assert.equal(await audioController.start(), true);
+assert.equal(audioController.state().playing, true);
+assert.equal(audioController.state().volume, 0.14);
+assert.equal(audioController.setVolume(1), 0.18);
+audioController.dispose();
 
 for (let round = 1; round <= 5; round += 1) {
   const map = S.distributeContents(S.createMap("MAP-TEST", round), `MAP-TEST-${round}`);
