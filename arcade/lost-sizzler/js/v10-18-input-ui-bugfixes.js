@@ -6,6 +6,7 @@
 
   const REINFORCED_WARNING_COOLDOWN_MS=1800;
   const CANONICAL_PATH="/arcade/lost-sizzler/";
+  const CANONICAL_ORIGIN="https://www.cheekycommodoregamer.co.uk";
   let lastReinforcedWarningAt=-Infinity;
 
   function isReinforcedDoor(door){
@@ -14,7 +15,7 @@
 
   function installCanonicalPath(){
     const canonical=document.querySelector('link[rel="canonical"]');
-    if(canonical)canonical.href=new URL(CANONICAL_PATH,location.origin).href;
+    if(canonical)canonical.href=new URL(CANONICAL_PATH,CANONICAL_ORIGIN).href;
     const encodedReturn=encodeURIComponent(`${CANONICAL_PATH}#weekly-vault`);
     document.querySelectorAll('#weekly-auth-actions a[href]').forEach(link=>{
       try{
