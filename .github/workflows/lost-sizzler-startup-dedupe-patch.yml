@@ -1,0 +1,49 @@
+name: Lost Sizzler Startup Dedupe Patch
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-consolidation
+    paths:
+      - '.github/workflows/lost-sizzler-startup-dedupe-patch.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-consolidation
+          fetch-depth: 0
+      - name: Prevent duplicate enhancement script injection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('arcade/lost-sizzler/js/asset-overrides.js')
+          text=path.read_text(encoding='utf-8')
+          old='''      const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+      if(document.querySelector(selector)){loadNext(index+1);return}
+      const script=document.createElement("script");'''
+          new='''      const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
+      const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
+      const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
+      if(document.querySelector(selector)||alreadyLoaded){loadNext(index+1);return}
+      const script=document.createElement("script");'''
+          if old not in text:
+              raise SystemExit('Expected enhancement loader block not found')
+          path.write_text(text.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Commit startup dedupe
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add arcade/lost-sizzler/js/asset-overrides.js
+          git commit -m 'Prevent duplicate Lost Sizzler enhancement script loading'
+          git push origin HEAD:codex/lost-sizzler-consolidation
