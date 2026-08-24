@@ -31,9 +31,18 @@
     script.dataset.ccgV138HordeLive="true";
     document.head.appendChild(script);
   }
+  function loadV139HordeLiveLoadout(){
+    if(document.querySelector('script[data-ccg-v139-horde-live-loadout="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-39-horde-live-loadout.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV139HordeLiveLoadout="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
+  loadV139HordeLiveLoadout();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
