@@ -26,6 +26,16 @@
   const CAMP_WARNING_MS = 20000;
   const NO_MINIMAP = true;
 
+  const AUDIO = Object.freeze({
+    theme: "assets/audio/music/sizzler-saboteurs-theme.ogg",
+    baseVolume: 0.14,
+    duckedVolume: 0.055,
+    maximumVolume: 0.18,
+    fadeInMs: 900,
+    fadeOutMs: 600,
+    loop: true
+  });
+
   const IDENTITIES = Object.freeze([
     Object.freeze({ slot: 1, colour: "#26e8ff", shadow: "#075d8b", emblem: "square", label: "CYAN AGENT" }),
     Object.freeze({ slot: 2, colour: "#ff3ca6", shadow: "#7c174f", emblem: "triangle", label: "MAGENTA AGENT" })
@@ -457,7 +467,7 @@
   return Object.freeze({
     MODE_ID, MODE_NAME, TAGLINE, PLAYER_COUNT, BEST_OF, ROUNDS_TO_WIN, ROUND_MS, RESPAWN_MS, SUDDEN_DEATH_MS,
     EXTRACTION_MS, STARTING_HP, TRAPS_PER_ROUND, LIGHT_RADIUS, CAMP_WARNING_MS, NO_MINIMAP,
-    IDENTITIES, OBJECTIVES, WEAPONS, TRAPS, COUNTERS, MODIFIERS, VOICE,
+    AUDIO, IDENTITIES, OBJECTIVES, WEAPONS, TRAPS, COUNTERS, MODIFIERS, VOICE,
     hash32, makeRng, graphDistance, connected, createMap, distributeContents, modifierFor, trapLoadout,
     createMatch, beginRound, movePlayer, searchFurniture, collectObjective, placeTrap, disarmTrap, triggerTrap,
     useWeapon, damagePlayer, dropCarried, knockout, respawnPlayers, collectLoose, beginExtraction, tickExtraction,
