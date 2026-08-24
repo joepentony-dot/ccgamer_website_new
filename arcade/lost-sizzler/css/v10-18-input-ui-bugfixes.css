@@ -1,0 +1,33 @@
+/* The Lost Sizzler V10.18 — stable inventory scrolling. */
+.ccg-game #inventory-panel{
+  overflow:hidden!important;
+  overscroll-behavior:contain!important;
+  scroll-behavior:auto!important;
+}
+
+.ccg-game #inventory-panel>.inventory-panel{
+  width:min(1040px,96%)!important;
+  max-height:calc(100dvh - 32px)!important;
+  margin:auto!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  overflow-anchor:none!important;
+  scroll-behavior:auto!important;
+  scrollbar-gutter:stable;
+  -webkit-overflow-scrolling:touch;
+}
+
+@supports not (height:100dvh){
+  .ccg-game #inventory-panel>.inventory-panel{
+    max-height:calc(100vh - 32px)!important;
+  }
+}
+
+@media(max-width:900px),(pointer:coarse){
+  .ccg-game #inventory-panel>.inventory-panel{
+    width:100%!important;
+    max-height:calc(100dvh - 16px)!important;
+    margin:0 auto!important;
+  }
+}
