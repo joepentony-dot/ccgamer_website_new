@@ -13,9 +13,83 @@ on:
       - '.github/workflows/lost-sizzler-arcade-validation.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  release-sync:
+    if: github.event_name == 'pull_request' && github.head_ref == 'chore/lost-sizzler-v10-40-release-sync'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release audit branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Synchronise V10.40 build labels, cache token and changelog
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          def replace(path, old, new):
+              p=Path(path)
+              text=p.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"Expected text not found in {path}: {old[:100]!r}")
+              p.write_text(text.replace(old,new),encoding="utf-8")
+
+          index="arcade/lost-sizzler/index.html"
+          replace(index,"2026.08.24.8","2026.08.24.9")
+          replace(index,"20260824r8","20260824r9")
+          replace(index,"THE LOST SIZZLER — V10.35","THE LOST SIZZLER — V10.40")
+          replace(index,"BUILD V10.35","BUILD V10.40")
+
+          version_path=Path("arcade/lost-sizzler/version.json")
+          version=json.loads(version_path.read_text(encoding="utf-8"))
+          if version.get("build")!="2026.08.24.8" or version.get("cacheToken")!="20260824r8":
+              raise SystemExit("Unexpected Lost Sizzler version.json baseline")
+          version["build"]="2026.08.24.9"
+          version["cacheToken"]="20260824r9"
+          version_path.write_text(json.dumps(version,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+
+          checker="arcade/lost-sizzler/js/version-check.js"
+          state_line='  const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};'
+          replace(checker,state_line,'  const releaseLabel="V10.40";\n'+state_line)
+          replace(checker,'    if(badge){badge.textContent=`BUILD ${current}`;badge.title="Latest published build loaded"}','    if(badge){badge.textContent=`BUILD ${releaseLabel}`;badge.title=`Latest published build ${current} loaded`}')
+          replace(checker,'  function install(){ensureButton();ensurePanel();const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`Loaded Lost Sizzler build ${current}`}}','  function install(){ensureButton();ensurePanel();const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${releaseLabel}`;const badge=document.querySelector(".build-badge");if(badge&&!state.outdated){badge.textContent=`BUILD ${releaseLabel}`;badge.title=`Loaded Lost Sizzler build ${current}`}}')
+          replace(checker,'  window.CCGLostSizzlerVersion={state,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};','  window.CCGLostSizzlerVersion={state,releaseLabel,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};')
+
+          test="arcade/lost-sizzler/tests/v10-22-version-cache.mjs"
+          replace(test,"2026.08.24.8","2026.08.24.9")
+          replace(test,"20260824r8","20260824r9")
+          replace(test,'assert.match(index,/id="hud-mana">0\\/120/,"r3 static HUD must reflect the sword-first 120-round ammunition model");','assert.match(index,/THE LOST SIZZLER — V10\\.40/,"published title must identify the V10.40 release");\nassert.match(index,/BUILD V10\\.40/,"published build badge must identify V10.40 before runtime sync");\nassert.match(checker,/releaseLabel="V10\\.40"/,"version checker must retain the semantic V10.40 release label");\nassert.match(index,/id="hud-mana">0\\/120/,"r3 static HUD must reflect the sword-first 120-round ammunition model");')
+          replace(test,"Lost Sizzler r8 build, V10.35 cache refresh, canonical home recognition and scroll-safety regression checks passed.","Lost Sizzler r9 build, V10.40 release labels, canonical home recognition and scroll-safety regression checks passed.")
+
+          overrides="arcade/lost-sizzler/js/asset-overrides.js"
+          replace(overrides,'const CCG_CHANGELOG_REV="20260824f";','const CCG_CHANGELOG_REV="20260824g";')
+
+          changelog="arcade/lost-sizzler/js/v10-12-developer-changelog.js"
+          needle='        ,["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."]'
+          additions='''
+        ,["LS-0824-21","FIXED","Loading, doors and render ownership","A visible loading progress screen now protects startup while enhancement layers initialise. Door framing repairs move non-structural furniture out of required support cells, crates remain destructible, and replacement-owned doors, torches, enemies, player and chest animation paths no longer double-draw legacy artwork."]
+        ,["LS-0824-22","CHANGED","Spy Vs Spy field kit","Spy Vs Spy now replaces the normal dungeon TAB inventory with a dedicated live field kit showing round state, score, timer, health, weapon uses, traps, counters, objectives, effects and mode-specific controls without changing the standard dungeon inventory."]
+        ,["LS-0824-23","CHANGED","Expanded live Horde multiplayer","Horde rooms remain joinable during a live run for up to four players. The roster shows connected players and room code, late joiners receive the current-wave loadout, all players enter at the arena centre, and enemy pressure advances inward from the outer perimeter."]
+        ,["LS-0824-24","CHANGED","Horde survival focus and larger waves","Ordinary dungeon items, inventory panels and unrelated notices are removed from Horde. Scarce dedicated health pickups remain, while the enlarged arena now uses substantially larger wave quotas and higher simultaneous attacker limits that scale with the connected player count."]
+        ,["LS-0824-25","ADDED","Lost Sizzler Discord link","The main game menu now includes a direct Lost Sizzler Discord link so players can discuss runs, compare scores, report bugs and suggest improvements."]
+        ,["LS-0824-26","CHANGED","V10.40 release identification","The published title, build badge, release manifest and cache token are synchronised with the current V10.40 runtime so testers can identify the version they are actually playing."]'''
+          replace(changelog,needle,needle+additions)
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout origin/main -- .github/workflows/lost-sizzler-arcade-validation.yml
+          git add .github/workflows/lost-sizzler-arcade-validation.yml arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json arcade/lost-sizzler/js/version-check.js arcade/lost-sizzler/js/asset-overrides.js arcade/lost-sizzler/js/v10-12-developer-changelog.js arcade/lost-sizzler/tests/v10-22-version-cache.mjs
+          git commit -m "Synchronise Lost Sizzler V10.40 release build"
+          git push origin HEAD:${{ github.head_ref }}
+
   static:
     runs-on: ubuntu-latest
     steps:
