@@ -115,7 +115,7 @@ function ensurePanel() {
       <div>
         <p class="member-achievement-panel__kicker">Account achievements</p>
         <h3 class="member-achievement-panel__title">Achievements &amp; Badges</h3>
-        <p class="member-achievement-panel__intro">Account activity and Lost Sizzler accomplishments are saved here. Complete all twelve Commodore Milestones for their completion reward, or conquer all five Lost Sizzler floors for the Platinum badge.</p>
+        <p class="member-achievement-panel__intro">Account activity and Lost Sizzler accomplishments are saved here. Complete all twelve milestones for the Commodore Completionist reward, or conquer all five Lost Sizzler floors for the Platinum badge.</p>
       </div>
       <button type="button" class="auth-btn" id="memberRefreshAchievements">Check badges</button>
     </div>
@@ -314,7 +314,7 @@ function renderAchievements(catalog, earnedRows) {
   const completion = completionState(earned);
   const earnedTotal = COMMODORE_MILESTONE_KEYS.filter((key) => earned.has(key)).length;
   host.appendChild(createSectionHeading('Commodore Milestones', `${earnedTotal} / ${MILESTONE_TOTAL}`));
-  if (completion.complete) host.appendChild(createCompletionCard(completion));
+  if (completion.complete) host.prepend(createCompletionCard(completion));
   entries.forEach((entry) => host.appendChild(createBadgeCard(entry, earned.get(badgeKey(entry.badge_key)))));
 
   const gameEntries = orderedLostSizzlerEntries(catalog);
