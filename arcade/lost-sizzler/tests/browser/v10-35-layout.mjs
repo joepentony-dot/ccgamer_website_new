@@ -88,7 +88,7 @@ try{
   assert.ok(near(layout.gameArea.left,layout.shell.left),`gameplay area must begin at the shell's left edge: ${JSON.stringify(layout)}`);
   assert.ok(near(layout.tactical.left,layout.shell.left),`tactical zone must begin at the shell's left edge: ${JSON.stringify(layout)}`);
   assert.ok(layout.tactical.bottom<=layout.gameArea.top+3,`tactical zone must sit above the gameplay area instead of beside it: ${JSON.stringify(layout)}`);
-  assert.ok(!/\s\d+(?:\.\d+)?px$/.test(layout.gridTemplateColumns.trim().replace(/^\d+(?:\.\d+)?px\s+/,"")),`outer game shell must not resolve to the former two-column desktop layout: ${layout.gridTemplateColumns}`);
+  assert.equal(layout.gridTemplateColumns.trim().split(/\s+/).length,1,`outer game shell must resolve to one desktop column: ${layout.gridTemplateColumns}`);
 
   console.log("Lost Sizzler V10.35 desktop layout geometry passed in Chromium.");
   await context.close();
