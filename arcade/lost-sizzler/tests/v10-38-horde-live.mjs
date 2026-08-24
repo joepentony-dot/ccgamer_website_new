@@ -6,9 +6,11 @@ import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-38-horde-live.js"),"utf8");
+const loadout=fs.readFileSync(path.join(root,"js/v10-39-horde-live-loadout.js"),"utf8");
 const loader=fs.readFileSync(path.join(root,"js/version-check.js"),"utf8");
 
 assert.match(loader,/v10-38-horde-live\.js/,"version-check must load the V10.38 live Horde layer");
+assert.match(loader,/v10-39-horde-live-loadout\.js/,"version-check must load current-wave loadout sync after the live Horde layer");
 assert.match(source,/SINGLE_PLAYER_QUOTAS=Object\.freeze\(\[36,44,52,60,70,80,90,100,112,44\]\)/,"Horde quotas must be materially larger for the expanded arena");
 assert.match(source,/ACTIVE_CAP=Object\.freeze\(\{1:18,2:24,3:30,4:36\}\)/,"expanded Horde must support more simultaneous attackers");
 assert.match(source,/PLAYER_QUOTA_SCALE=Object\.freeze\(\{1:1,2:1\.25,3:1\.5,4:1\.75\}\)/,"larger waves must scale with current players");
@@ -25,6 +27,11 @@ assert.match(source,/runState\.players\.push\(modelTemplate/,"late joiners must 
 assert.match(source,/HORDE PLAYER JOINED/,"late joining must generate Horde-specific feedback");
 assert.match(source,/PLAYER_GRACE_MS=3200/,"temporary presence drops must not immediately delete a player");
 assert.match(source,/runState\.playerCount=nextCount/,"Horde scaling must follow the current connected player count");
+assert.match(loadout,/function syncLocalLoadout/,"every Horde browser must synchronize its local loadout from the current wave");
+assert.match(loadout,/p1\.firearmUnlocked=true/,"late joiners must immediately receive ranged Horde combat");
+assert.match(loadout,/p1\.weapon\?\.id!==weapon\.id/,"late joiners must receive the current wave weapon rather than a stale dungeon weapon");
+assert.match(loadout,/p1\.mana=p1\.maxMana/,"late joiners must inherit Horde unlimited-ammunition behaviour");
+assert.match(loadout,/slice\(0,wave\)\.map\(row=>row\.id\)/,"late join models must inherit all weapons unlocked through the current wave");
 
 assert.match(source,/function perimeterCell/,"Horde enemies must have a dedicated perimeter spawn selector");
 assert.match(source,/spawnRoomId:"perimeter"/,"extra Horde enemies must originate at the outside perimeter");
@@ -40,4 +47,4 @@ assert.match(source,/runState\.spawned>=baseQuota&&runState\.spawned<target/,"ex
 assert.match(source,/DEFEATED \$\{Number\(runState\.defeated\|\|0\)\}\/\$\{quota\}/,"Horde HUD must show the expanded wave target");
 assert.match(source,/They enter from the outer perimeter and converge on the centre/,"wave announcement must explain the new encroachment behaviour");
 
-console.log("Lost Sizzler V10.38 live join, centre spawn and perimeter Horde pressure regression checks passed.");
+console.log("Lost Sizzler V10.38/V10.39 live join, centre spawn, loadout and perimeter Horde pressure regression checks passed.");
