@@ -6,6 +6,23 @@
 
   const days=[
     {
+      date:"24 AUGUST 2026",
+      iso:"2026-08-24",
+      entries:[
+        ["LS-0824-01","ADDED","Horde Survivor mode","A live solo and online co-op Horde mode now runs ten escalating waves with unlimited ammunition, weapon upgrades, revives and a timed armoured-knight finale."],
+        ["LS-0824-02","ADDED","Spy Vs Spy multiplayer","Sizzler Saboteurs is now a live two-player-only browser mode with room searches, traps, novelty weapons, extraction objectives and a best-of-five match structure."],
+        ["LS-0824-03","CHANGED","Online room rules and synchronisation","Multiplayer lobbies now enforce each mode's player cap, use host-authoritative simulation and synchronise room mode, doors, player state and special-mode snapshots for browser players in different locations."],
+        ["LS-0824-04","CHANGED","Voice and music discipline","Speech uses one non-stacking channel with restrained dungeon ambience, lower overall volume and tighter cue rules. Music changes no longer overlap, preventing layered playback and associated stutter."],
+        ["LS-0824-05","CHANGED","Bounties and floor mutations","Dungeon bounties wait 20 seconds before appearing and show a live enemy countdown. Floor mutations wait two minutes before activation, while Darkness now reduces the torchless light area more noticeably."],
+        ["LS-0824-06","CHANGED","Combat and dungeon balance","The Gilded Elf moves 20% faster, enemies cannot occupy player tiles, the first floor's first defeated enemy guarantees an early firearm, and melee movement no longer loses its purpose through hostile tile overlap."],
+        ["LS-0824-07","FIXED","Two-player split-screen startup","The retired solo tutorial chooser no longer intercepts local split-screen startup. Both local players are verified before play begins and a failed launch now returns safely to the menu."],
+        ["LS-0824-08","FIXED","Locked chest feedback","Repeated movement into a locked chest is throttled so the lock sound and report cannot retrigger every input frame and make the screen appear to shudder."],
+        ["LS-0824-09","CHANGED","Tutorial progress and visual tours","Sword and dash counters now repaint at 1/3, 2/3 and 3/3. The five information lessons pause for live highlighted interface tours and illustrated examples covering objectives, survival items, locks, enemies, the Death Stalker, events, shops, hazards and score."],
+        ["LS-0824-10","CHANGED","Tutorial completion","The final lesson now states ‘You Are Ready To Take On The Adventure!’ and presents one Complete Tutorial action instead of two buttons that performed the same exit."],
+        ["LS-0824-11","CHANGED","Pixel-art presentation","The title screen now uses a full dungeon scene with a responsive pixel title and rebuilt mode controls. The playable explorer has directional idle, walking, sword and hurt frames, while common, rare and locked chests have animated closed, glint, opening and open states."]
+      ]
+    },
+    {
       date:"23 AUGUST 2026",
       iso:"2026-08-23",
       entries:[
@@ -57,10 +74,10 @@
     details.innerHTML=`
       <summary>
         <span class="developer-changelog-summary"><i class="developer-changelog-pulse" aria-hidden="true"></i><span>Developer Changelog / Bug Tracker</span></span>
-        <span class="developer-changelog-latest">LATEST UPDATE · 23 AUG 2026</span>
+        <span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026</span>
       </summary>
       <div class="developer-changelog-body">
-        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-23">Last updated 23 August 2026</time></p>
+        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026</time></p>
         ${days.map(day=>`<section class="developer-log-day"><h4><time datetime="${day.iso}">${day.date}</time></h4><div class="developer-log-list">${day.entries.map(entryHtml).join("")}</div></section>`).join("")}
         <section class="developer-log-monitoring" aria-label="Known issues and monitoring"><h4>KNOWN / MONITORING</h4><p><b>Direct launches from YouTube and other in-app browsers:</b> startup hardening was deployed on 23 August 2026. This is currently marked as monitoring; please submit a bug report if a direct launch still freezes or fails to initialise.</p></section>
         <p class="developer-changelog-foot">Statuses describe the live website build: FIXED = confirmed code correction, CHANGED = deliberate behaviour or balance revision, ADDED = new capability, MONITORING = a reported issue with a mitigation deployed but still being watched.</p>

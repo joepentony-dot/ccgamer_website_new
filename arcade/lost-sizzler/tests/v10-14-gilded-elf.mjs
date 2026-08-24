@@ -16,6 +16,7 @@ assert.match(elf,/const SPAWN_CHANCE=\.08;/,"Gilded Elf retains the agreed rare 
 assert.match(elf,/const LIFETIME_MS=30000;/,"Gilded Elf escapes after 30 seconds");
 assert.match(elf,/const PASSIVE_DROP_MS=3000;/,"Gilded Elf drops gold every three seconds while alive");
 assert.match(elf,/const HIT_DROP_COOLDOWN_MS=250;/,"Gilded Elf hit rewards retain anti-multi-projectile spam protection");
+assert.match(elf,/const MOVE_MS=450;/,"Gilded Elf grid movement must be exactly twenty percent faster than the former 540ms cadence");
 assert.match(elf,/hp:10,maxHp:10,armor:5,maxArmor:5/,"Gilded Elf retains 10 HP and 5 armour");
 assert.match(elf,/dropGold\(elf,1,"passive"\)/,"passive flee-time gold drops remain enabled");
 assert.match(elf,/dropGold\(elf,1,"hit"\)/,"successful hits continue to release 10 gold");

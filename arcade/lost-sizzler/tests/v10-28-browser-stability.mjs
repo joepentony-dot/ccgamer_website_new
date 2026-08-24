@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.32","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.34","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -292,6 +292,19 @@ try{
   }
 
   {
+    logStage("split-screen startup: create and navigate");
+    const state=await newGamePage();
+    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"split-screen navigation");
+    await waitForReady(state,"split-screen");
+    await state.page.locator("#split-btn").click({noWaitAfter:true});
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&typeof p2!=="undefined"&&Boolean(p2)&&playMode==="split"&&mode==="playing",null,{timeout:15000}),STAGE_TIMEOUT_MS,"split-screen activation");
+    const split=await state.page.evaluate(()=>({p1:Boolean(p1),p2:Boolean(p2),sameTile:Boolean(p1&&p2&&p1.x===p2.x&&p1.y===p2.y),playMode,mode,menuHidden:document.getElementById("menu")?.classList.contains("hidden"),fallbackChoiceHidden:document.getElementById("ccg-tutorial-choice")?.classList.contains("hidden")}));
+    assert.deepEqual(split,{p1:true,p2:true,sameTile:false,playMode:"split",mode:"playing",menuHidden:true,fallbackChoiceHidden:true},`split-screen must start both players without the retired tutorial chooser: ${JSON.stringify(split)}`);
+    await assertHealthy(state,"active split-screen run");
+    logStage("split-screen startup: complete");
+  }
+
+  {
     logStage("immediate Solo launch: create and navigate");
     const state=await newGamePage();
     await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");
@@ -323,13 +336,13 @@ try{
     });
     assert.equal(launch.gateReady,true,`the complete release queue must be ready before the run starts: ${JSON.stringify(launch)}`);
     assert.equal(launch.gateErrors,0,`no critical release module may fail: ${JSON.stringify(launch)}`);
-    assert.equal(launch.polishReady,"true",`V10.32 must install before queued Solo starts: ${JSON.stringify(launch)}`);
+    assert.equal(launch.polishReady,"true",`V10.33 must install before queued Solo starts: ${JSON.stringify(launch)}`);
     assert.deepEqual({firearmUnlocked:launch.firearmUnlocked,weapon:launch.weapon,ammo:launch.ammo,maxAmmo:launch.maxAmmo,melee:launch.melee},{firearmUnlocked:false,weapon:null,ammo:0,maxAmmo:120,melee:"archive-sword"},`an immediate Solo click must retain sword-first progression: ${JSON.stringify(launch)}`);
     assert.equal(launch.meleeDamage,1,`level-one Archive Sword damage must remain one: ${JSON.stringify(launch)}`);
     assert.equal(launch.dossierHidden,true,`no named-enemy dossier may open at the starting position: ${JSON.stringify(launch)}`);
     assert.equal(launch.remoteNamedVisible,false,`a remote named enemy must not be visible through global follower light: ${JSON.stringify(launch)}`);
     assert.ok(launch.ammoBudget.meets&&launch.ammoBudget.planned>=launch.ammoBudget.needed,`placed ammunition must meet its calculated 50-percent-accuracy budget: ${JSON.stringify(launch)}`);
-    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.32 target: ${JSON.stringify(launch)}`);
+    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.33 target: ${JSON.stringify(launch)}`);
 
     const pickupGuard=await state.page.evaluate(()=>{
       const health={id:"browser-full-health",x:p1.x,y:p1.y,kind:"health",active:true,title:"TEST HEALTH"};host.items.push(health);p1.health=p1.maxHealth;const healthRequest=requestCollect(health,p1);
@@ -375,7 +388,7 @@ try{
 
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:4000}),6000,"Tutorial sword stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
-    for(let i=0;i<3;i++){await state.page.keyboard.press("Space",{delay:30});await state.page.waitForTimeout(520)}
+    for(let i=0;i<3;i++){const target=i+1;await state.page.keyboard.press("Space",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial sword action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`sword overlay must repaint at ${target}/3 after a successful swing: ${live}`)}
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:5000}),7000,"Tutorial three-sword step");
     const swordProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.swingCount}));
     assert.equal(swordProgress.count,3,`Tutorial sword training must require three successful swings: ${JSON.stringify(swordProgress)}`);
@@ -384,11 +397,26 @@ try{
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
     for(let i=0;i<3;i++){
       await state.page.evaluate(safe=>{p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};p1._v125LastDashAt=0},tutorialMove.safe);
-      await state.page.keyboard.press("ShiftLeft",{delay:30});await state.page.waitForTimeout(620);
+      const target=i+1;await state.page.keyboard.press("ShiftLeft",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial dash action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`dash overlay must repaint at ${target}/3 after a successful dash: ${live}`);
     }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:5000}),7000,"Tutorial three-dash step");
     const dashProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.dashCount,voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)}));
     assert.deepEqual(dashProgress,{step:3,count:3,voiceActive:false,voiceQueued:0},`Tutorial dash training must require three successful silent dashes: ${JSON.stringify(dashProgress)}`);
+
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===3,null,{timeout:4000}),6000,"Tutorial inventory stage prompt");
+    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    await state.page.keyboard.press("Tab");await state.page.waitForTimeout(180);await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");
+    for(let step=4;step<=8;step++){
+      await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+      await state.page.waitForTimeout(180);
+      const tour=await state.page.evaluate(expected=>({step:window.CCGLostSizzlerOnboardingV120.state.step,tourVisible:!document.getElementById("ccg-tutorial-info-tour")?.classList.contains("hidden"),modalHidden:document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),cards:document.querySelectorAll("#ccg-tutorial-info-tour .tour-item").length,highlights:document.querySelectorAll(".ccg-tutorial-info-highlight").length}),step);
+      assert.equal(tour.step,step,`information lesson ${step+1}/10 must pause on its live tour: ${JSON.stringify(tour)}`);assert.equal(tour.tourVisible,true);assert.equal(tour.modalHidden,true);assert.ok(tour.cards>=3,`lesson ${step+1}/10 needs its complete graphical examples: ${JSON.stringify(tour)}`);assert.ok(tour.highlights>=3,`lesson ${step+1}/10 needs live interface indicators: ${JSON.stringify(tour)}`);
+      await state.page.locator("#ccg-tutorial-info-tour [data-tour-continue]").click();
+      await withTimeout(state.page.waitForFunction(next=>window.CCGLostSizzlerOnboardingV120.state.step===next&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),step+1,{timeout:4000}),6000,`Tutorial stage ${step+2}/10 prompt`);
+    }
+    const finalTutorial=await state.page.evaluate(()=>({copy:document.getElementById("ccg-tutorial-stage-modal")?.innerText||"",exitButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-exit]").length,completeButtons:document.querySelectorAll("#ccg-tutorial-stage-modal [data-stage-continue]").length}));
+    assert.match(finalTutorial.copy,/You Are Ready To Take On The Adventure!/i,`final tutorial copy is incomplete: ${JSON.stringify(finalTutorial)}`);assert.deepEqual({exitButtons:finalTutorial.exitButtons,completeButtons:finalTutorial.completeButtons},{exitButtons:0,completeButtons:1},`final tutorial must have one completion action: ${JSON.stringify(finalTutorial)}`);
     await assertHealthy(state,"active silent Tutorial");
     logStage("early Tutorial launch: complete");
   }

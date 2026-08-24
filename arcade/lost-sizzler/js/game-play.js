@@ -62,7 +62,7 @@ function tryDoor(p,x,y){
   showToast("BRONZE DOOR UNLOCKED","The lock releases. The door is opening now.","gold",8500);updateQuests();broadcastWorld();beginDoorOpening(d,1050);return false
 }
 function openChest(p,chest){
-  if(!chest?.active)return true;if(chest.locked&&p.bronzeKeys<=0){S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back later rather than wasting the entire run staring at the lock.","red");return false}
+  if(!chest?.active)return true;if(chest.locked&&p.bronzeKeys<=0){const now=performance.now();if(!chest._lockedFeedbackAt||now-chest._lockedFeedbackAt>=1200){chest._lockedFeedbackAt=now;S.sfx("locked");showToast("LOCKED CHEST","A bronze key opens it. Come back after finding one.","red",4200)}return false}
   if(chest.locked)p.bronzeKeys--;chest.opened=true;chest.openedAt=performance.now();chest.active=false;host.revision++;run.stats.chests++;S.sfx("chest");shake=4;const loot=chest.loot||PGR.lootForChest(chest,run,Math.random),name=loot.weapon?.displayName||loot.name||loot.kind.toUpperCase(),col=loot.rarity==="GOLD MEDAL"?P.gold:loot.rarity==="ZZAP! 97%"?P.pink:P.cyan;showToast("CHEST OPENED",`Inside: ${name}.`,loot.rarity==="GOLD MEDAL"?"gold":loot.rarity==="ZZAP! 97%"?"red":"cyan",6500);setTimeout(()=>{if(["playing","inventory"].includes(mode)){floatPickupText(p,name,col);applyLoot(loot,p)}},500);awardXP(p,10,"Chest opened");broadcastWorld();return true
 }
 function tryChest(p,x,y){const c=W.chestAt(host,x,y);return c?openChest(p,c):true}

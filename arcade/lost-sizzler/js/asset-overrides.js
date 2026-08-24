@@ -36,27 +36,27 @@ const CCG_V106_HUD_REV="20260824a";
 const CCG_V106_UI_REV="20260824a";
 const CCG_V104_PATCH_REV="20260824b";
 const CCG_V106_SIDEBAR_REV="20260822a";
-const CCG_PLAYLIST_AUDIO_REV="20260823b";
+const CCG_PLAYLIST_AUDIO_REV="20260824c";
 const CCG_PLAYER_INSIGHTS_REV="20260823f";
 const CCG_BROWSER_STABILITY_REV="20260823b";
 const CCG_DEPTH_FLOW_REV="20260823a";
 const CCG_MOBILE_FOCUS_REV="20260823a";
 const CCG_MOBILE_SAFETY_REV="20260823a";
 const CCG_DOSSIER_REV="20260823b";
-const CCG_CHANGELOG_REV="20260823e";
+const CCG_CHANGELOG_REV="20260824f";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
-const CCG_GILDED_ELF_REV="20260823b";
-const CCG_RARE_EVENTS_REV="20260824e";
+const CCG_GILDED_ELF_REV="20260824c";
+const CCG_RARE_EVENTS_REV="20260824f";
 const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_ADMIN_AUDIO_REV="20260823a";
-const CCG_VOICE_DIRECTOR_REV="20260824d";
+const CCG_VOICE_DIRECTOR_REV="20260824e";
 const CCG_VOICE_EXPANSION_REV="20260824c";
 const CCG_EXPANSION_CHANGELOG_REV="20260823i";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
-const CCG_ONBOARDING_SAFETY_REV="20260824f";
+const CCG_ONBOARDING_SAFETY_REV="20260824g";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
-const CCG_TUTORIAL_GUIDANCE_REV="20260824d";
+const CCG_TUTORIAL_GUIDANCE_REV="20260824e";
 const CCG_MULTIPLAYER_SYNC_REV="20260824b";
 const CCG_ENVIRONMENTAL_POLISH_REV="20260824b";
 const CCG_MOBILE_ERGONOMICS_REV="20260823a";
@@ -64,12 +64,16 @@ const CCG_MELEE_AMMO_REV="20260824b";
 const CCG_AMMO_BUDGET_REV="20260823a";
 const CCG_ACHIEVEMENTS_REV="20260824a";
 const CCG_POLISH_REV="20260824a";
+const CCG_HORDE_REV="20260824a";
+const CCG_SABOTEURS_REV="20260824a";
+const CCG_SPECIAL_MODES_REV="20260824a";
+const CCG_MODE_POLISH_REV="20260824a";
 
 /* A run must not begin while the sequential enhancement queue is still
  * replacing the base combat, onboarding and balance functions. Keep the first
  * requested launch and replay it once the complete release runtime is ready. */
 (()=>{
-  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","join-btn"]);
+  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","horde-mode-btn","saboteurs-mode-btn","join-btn"]);
   let resolveReady;
   const state={ready:false,failed:false,pendingId:"",errors:[],promise:new Promise(resolve=>{resolveReady=resolve})};
   const setBodyState=value=>{if(document.body)document.body.dataset.releaseReady=value};
@@ -252,9 +256,15 @@ const CCG_POLISH_REV="20260824a";
       [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"],
       [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"]
       ,[`js/v10-31-multiplayer-sync.js?v=${CCG_MULTIPLAYER_SYNC_REV}`,"ccgLostSizzlerMultiplayerSyncV131"]
+      ,[`js/horde-survivor.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeRules"]
+      ,[`js/horde-survivor-audio.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeAudio"]
+      ,[`js/sizzler-saboteurs.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursRules"]
+      ,[`js/sizzler-saboteurs-audio.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursAudio"]
+      ,[`js/v10-33-special-modes.js?v=${CCG_SPECIAL_MODES_REV}`,"ccgLostSizzlerSpecialModesV133"]
+      ,[`js/v10-33-mode-polish.js?v=${CCG_MODE_POLISH_REV}`,"ccgLostSizzlerModePolishV133"]
     ];
     const criticalFailures=[];
-    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js"]);
+    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js"]);
 
     const loadNext=index=>{
       if(index>=queue.length){window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);return}

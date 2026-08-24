@@ -15,7 +15,8 @@
   };
 
   const assets=window.CCG_AUDIO_ASSETS||{music:{}};
-  const FADE_MS=2500;
+  const FADE_MS=0;
+  const TRANSITION_LEAD_SECONDS=.04;
   const RETRY_BASE_MS=4000;
   const RETRY_MAX_MS=60000;
   const STATE_KEYS=["normal","danger","sanctuary","named","stalker"];
@@ -35,6 +36,15 @@
   const stateSlots=new Map();
   const lastByState=new Map();
   const failures=new Map();
+
+  const musicBus=window.CCGLostSizzlerMusicBus||(()=>{
+    let owner="",stopper=null;
+    return window.CCGLostSizzlerMusicBus={
+      claim(nextOwner,nextStopper){if(owner&&owner!==nextOwner)try{stopper?.()}catch(_){}owner=String(nextOwner||"");stopper=typeof nextStopper==="function"?nextStopper:null;return owner},
+      release(releasingOwner){if(owner!==String(releasingOwner||""))return false;owner="";stopper=null;return true},
+      get owner(){return owner}
+    };
+  })();
 
   const asList=value=>Array.isArray(value)?value.filter(Boolean):(value?[value]:[]);
   const unique=list=>[...new Set(list.map(String).filter(Boolean))];
@@ -164,22 +174,9 @@
 
   function fadeBetween(previous,next){
     cancelFade();
-    fadingOut=previous;
-    const startedAt=performance.now();
-    const previousVolume=previous?.audio?.volume||0;
-    const nextVolume=targetVolume(next.state);
-    next.audio.volume=0;
-    fadeTimer=setInterval(()=>{
-      if(next.destroyed){clearInterval(fadeTimer);fadeTimer=null;return}
-      const ratio=Math.min(1,(performance.now()-startedAt)/FADE_MS);
-      next.audio.volume=nextVolume*ratio;
-      if(previous?.audio&&!previous.destroyed)previous.audio.volume=previousVolume*(1-ratio);
-      if(ratio<1)return;
-      clearInterval(fadeTimer);
-      fadeTimer=null;
-      finishPrevious(previous,next);
-      fadingOut=null;
-    },50);
+    finishPrevious(previous,next);
+    next.audio.volume=targetVolume(next.state);
+    fadingOut=null;
   }
 
   function armAdvance(slot){
@@ -187,7 +184,7 @@
     slot.armed=true;
     const advance=()=>{
       if(slot.destroyed||current!==slot||slot.advancing||!Number.isFinite(slot.audio.duration))return;
-      if(slot.audio.duration-slot.audio.currentTime>FADE_MS/1000+.2)return;
+      if(slot.audio.duration-slot.audio.currentTime>TRANSITION_LEAD_SECONDS)return;
       slot.advancing=true;
       transition(true,true);
     };
@@ -285,10 +282,11 @@
     next.advancing=false;
     clearRetry();
 
+    finishPrevious(previous,next);
+    stopFallback();
     try{
       Promise.resolve(next.audio.play()).then(()=>{
         clearFailure(next.url);
-        stopFallback();
         fadeBetween(previous,next);
       }).catch(()=>{
         if(current!==next)return;
@@ -307,6 +305,7 @@
 
   async function start(){
     started=true;
+    musicBus.claim("dungeon",()=>stopMusic(false));
     try{original.stopMusic?.()}catch(_){}
     fallbackActive=false;
     transition(false,false);
@@ -315,10 +314,11 @@
 
   function startMusic(){
     started=true;
+    musicBus.claim("dungeon",()=>stopMusic(false));
     transition(false,false);
   }
 
-  function stopMusic(){
+  function stopMusic(releaseOwnership=true){
     started=false;
     clearRetry();
     if(fadeTimer){clearInterval(fadeTimer);fadeTimer=null}
@@ -330,6 +330,7 @@
     failures.clear();
     if(fallbackActive){fallbackActive=false;try{original.stopMusic?.()}catch(_){}}
     else{try{original.stopMusic?.()}catch(_){}}
+    if(releaseOwnership)musicBus.release("dungeon");
   }
 
   function setRoomMood(value){
@@ -365,6 +366,7 @@
     fallbackActive=false;
     if(enabled){
       started=true;
+      musicBus.claim("dungeon",()=>stopMusic(false));
       transition(false,false);
     }else{
       clearRetry();
@@ -419,7 +421,8 @@
       }))
     }),
     getPlaylist:state=>categorySources(normaliseState(state)),
-    crossfadeMs:FADE_MS
+    crossfadeMs:0,
+    exclusive:true
   };
 
   window.addEventListener("ccg:admin-audio-ready",event=>{

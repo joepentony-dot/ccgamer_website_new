@@ -62,14 +62,15 @@
     }
   };
   const MAX_RECORDED_CLIP_MS=10000;
-  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,gildedFiveWarned:new Set(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null};
+  const state={enabled:readEnabled(),unlocked:false,active:null,activePriority:-1,queue:[],lastByKey:new Map(),lastAssetByKey:new Map(),rareLootFloor:0,gildedFiveWarned:new Set(),lowHealthLatch:new WeakSet(),voices:[],button:null,serial:0,played:0,skipped:0,interrupted:0,lastSkipped:null,dungeonFxApplied:0};
+  let voiceContext=null,voiceImpulse=null;
 
   const lines={
     welcome:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:40,cooldown:10000},
     welcomeRare:{text:"Welcome to The Lost Sizzler. Good luck down there.",priority:42,cooldown:10000},
     weeklyWelcome:{text:"Weekly High Score Vault. One attempt. Make it count.",priority:55,cooldown:10000},
     hurt:{text:"Ow!",priority:8,cooldown:30000},
-    lowHealth:{variants:["Low health.","Health critical.","You could really use a potion."],priority:35,cooldown:18000},
+    lowHealth:{text:"I need to heal.",priority:35,cooldown:0},
     noAmmo:{variants:["Ammo low.","You're running dry."],priority:25,cooldown:120000},
     secret:{variants:["Secret found.","Well spotted.","Hidden route discovered."],priority:38,cooldown:6000},
     objectiveHint:{variants:["Objective hint available.","You have been wandering for a while. Check your radar.","Need a nudge? Your next objective is now marked."],priority:45,cooldown:15000},
@@ -121,27 +122,45 @@
   function coolReady(key,cooldown,now=performance.now()){const last=state.lastByKey.get(key)||-Infinity;return now-last>=cooldown}
   function chooseVoice(){const voices=state.voices.length?state.voices:(window.speechSynthesis?.getVoices?.()||[]);return voices.find(v=>/^en-GB$/i.test(v.lang)&&/female|serena|sonia|libby|ryan|daniel|george/i.test(v.name))||voices.find(v=>/^en-GB/i.test(v.lang))||voices.find(v=>/^en/i.test(v.lang))||voices[0]||null}
   function clearActiveTimers(active=state.active){if(active?.timer){clearInterval(active.timer);active.timer=null}if(active?.watchdog){clearTimeout(active.watchdog);active.watchdog=null}}
-  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);state.active=null;state.activePriority=-1;return true}
+  function releaseDungeonFx(active){if(!active?.dungeonFx)return;try{active.dungeonFx.disconnect()}catch(_){}active.dungeonFx=null}
+  function finishActive(active=state.active){if(!active||state.active!==active)return false;clearActiveTimers(active);releaseDungeonFx(active);state.active=null;state.activePriority=-1;return true}
   function stopActive(reason="stopped"){
     const active=state.active;if(!active)return false;state.active=null;state.activePriority=-1;state.serial++;
     clearActiveTimers(active);
     if(active.audio){try{active.audio.onended=null;active.audio.onerror=null;active.audio.pause();active.audio.currentTime=0}catch(_){}}
+    releaseDungeonFx(active);
     if(active.speech){try{active.speech.onend=null;active.speech.onerror=null;window.speechSynthesis?.cancel?.()}catch(_){}}
     if(reason==="interrupted")state.interrupted++;
     return true;
   }
   function armWatchdog(active,ms=MAX_RECORDED_CLIP_MS){active.watchdog=setTimeout(()=>finishActive(active),Math.max(500,Number(ms)||MAX_RECORDED_CLIP_MS))}
   function voiceVolume(key){return key==="hurt" ? .56 : .72}
+  function dungeonVoiceFx(audio,key){
+    const Context=window.AudioContext||window.webkitAudioContext;if(!Context||!audio)return null;
+    try{
+      voiceContext=voiceContext||new Context();
+      if(!voiceImpulse){
+        const length=Math.max(1,Math.floor(voiceContext.sampleRate*.32));voiceImpulse=voiceContext.createBuffer(2,length,voiceContext.sampleRate);
+        for(let channel=0;channel<voiceImpulse.numberOfChannels;channel++){const data=voiceImpulse.getChannelData(channel);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/length,3.1)}
+      }
+      const source=voiceContext.createMediaElementSource(audio),tone=voiceContext.createBiquadFilter(),dry=voiceContext.createGain(),wet=voiceContext.createGain(),reverb=voiceContext.createConvolver(),master=voiceContext.createGain();
+      tone.type="lowpass";tone.frequency.value=3600;tone.Q.value=.55;dry.gain.value=.92;wet.gain.value=.12;reverb.buffer=voiceImpulse;master.gain.value=voiceVolume(key);
+      source.connect(tone);tone.connect(dry);dry.connect(master);tone.connect(reverb);reverb.connect(wet);wet.connect(master);master.connect(voiceContext.destination);audio.volume=1;
+      if(voiceContext.state==="suspended")voiceContext.resume?.().catch?.(()=>{});
+      state.dungeonFxApplied++;
+      return{disconnect(){for(const node of [source,tone,dry,wet,reverb,master])try{node.disconnect()}catch(_){}}};
+    }catch(_){audio.volume=voiceVolume(key);return null}
+  }
   function playClip(src,priority,fallbackText="",key=""){
     try{
       const audio=new Audio(src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false;
       const fallback=()=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
-        try{audio.onended=null;audio.onerror=null;audio.pause();audio.currentTime=0}catch(_){}
+        try{audio.onended=null;audio.onerror=null;audio.pause();audio.currentTime=0}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
         if(fallbackText&&speakText(fallbackText,priority,key))return;
       };
-      audio.preload="auto";audio.volume=voiceVolume(key);state.active=active;state.activePriority=priority;audio.onended=()=>finishActive(active);audio.onerror=fallback;armWatchdog(active);
+      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);state.active=active;state.activePriority=priority;audio.onended=()=>finishActive(active);audio.onerror=fallback;armWatchdog(active);
       const p=audio.play();if(p?.catch)p.catch(fallback);return true;
     }catch(_){return false}
   }
@@ -151,7 +170,7 @@
       const audio=new Audio(BUNDLED_SPRITE.src),active={id:++state.serial,key,priority,audio,timer:null,watchdog:null};let failed=false,started=false;
       const fallback=()=>{
         if(failed||state.active!==active)return;failed=true;clearActiveTimers(active);
-        try{audio.onerror=null;audio.pause()}catch(_){}
+        try{audio.onerror=null;audio.pause()}catch(_){}releaseDungeonFx(active);
         state.active=null;state.activePriority=-1;
         if(fallbackText&&speakText(fallbackText,priority,key))return;
       };
@@ -169,7 +188,7 @@
         active.timer=timer;
         const p=audio.play();if(p?.catch)p.catch(fallback);
       };
-      audio.preload="auto";audio.volume=voiceVolume(key);audio.onerror=fallback;state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
+      audio.preload="auto";audio.volume=voiceVolume(key);active.dungeonFx=dungeonVoiceFx(audio,key);audio.onerror=fallback;state.active=active;state.activePriority=priority;armWatchdog(active,(Number(cue.duration)||0)*1000+2500);
       if(audio.readyState>=1)begin();else audio.addEventListener("loadedmetadata",begin,{once:true});
       audio.load();return true;
     }catch(_){return false}
@@ -256,8 +275,16 @@
       try{
         const painPlayed=after<before?sayKey("hurt"):false;
         if(deathsAfter>deathsBefore)setTimeout(()=>sayKey("playerDeath"),painPlayed?800:0);
-        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28)sayKey("lowHealth");
+        if(player&&player.maxHealth&&player.health>0&&player.health/player.maxHealth<=.28&&!state.lowHealthLatch.has(player)){state.lowHealthLatch.add(player);sayKey("lowHealth")}
       }catch(_){}return result;
+    };
+  }
+  if(typeof update==="function"){
+    const originalUpdate=update;
+    update=function updateV116LowHealthLatch(dt){
+      const result=originalUpdate.apply(this,arguments);
+      try{for(const player of (typeof localPlayers==="function"?localPlayers():[p1,p2].filter(Boolean)))if(player?.maxHealth&&Number(player.health||0)/Number(player.maxHealth)>=.5)state.lowHealthLatch.delete(player)}catch(_){}
+      return result;
     };
   }
   if(typeof firePlayer==="function"){
@@ -297,7 +324,7 @@
   function voiceWatch(dt){
     watchMs-=Number(dt||0);if(watchMs>0||mode!=="playing"||!p1||tutorialSilent())return;watchMs=350;
     try{
-      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28)sayKey("lowHealth");
+      if(p1.maxHealth&&p1.health>0&&p1.health/p1.maxHealth<=.28&&!state.lowHealthLatch.has(p1)){state.lowHealthLatch.add(p1);sayKey("lowHealth")}
       for(const elf of host?.enemies||[])if(elf?.gildedElf&&elf.alive&&Number(elf.lifeMs||0)<=5200&&!state.gildedFiveWarned.has(elf.id)){state.gildedFiveWarned.add(elf.id);sayKey("gildedFive",{cooldown:0})}
     }catch(_){}
   }
