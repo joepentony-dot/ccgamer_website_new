@@ -4,7 +4,8 @@
   if(window.__CCG_LOST_SIZZLER_V141_SANCTUARY_AZALEA__)return;
   window.__CCG_LOST_SIZZLER_V141_SANCTUARY_AZALEA__=true;
 
-  const state={installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,enemyWrapped:false,radarWrapped:false,timer:0,sceneKey:"",greetings:new Map()};
+  const ESSENTIAL_KINDS=new Set(["key","mainKey","bronze","bronzeKey","exitSigil","sigil"]);
+  const state={installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,enemyWrapped:false,radarWrapped:false,timer:0,sceneKey:"",greetings:new Map(),lastLakeSafetyCheck:0,lakeSafetyRepairs:0};
   const cellKey=(x,y)=>`${Math.round(x)},${Math.round(y)}`;
   const md=(a,b)=>Math.abs(Number(a?.x||0)-Number(b?.x||0))+Math.abs(Number(a?.y||0)-Number(b?.y||0));
 
@@ -36,8 +37,43 @@
     while(y!==ty){y+=Math.sign(ty-y);add(x,y)}
   }
 
+  function reservePoint(set,point,radius=0){
+    if(!point||!Number.isFinite(Number(point.x))||!Number.isFinite(Number(point.y)))return;
+    const x=Math.round(Number(point.x)),y=Math.round(Number(point.y));
+    for(let oy=-radius;oy<=radius;oy++)for(let ox=-radius;ox<=radius;ox++)set.add(cellKey(x+ox,y+oy));
+  }
+
   function floorCell(room,x,y){
     return x>=room.x+1&&x<=room.x+room.w-1&&y>=room.y+1&&y<=room.y+room.h-1&&world?.map?.[y]?.[x]===0;
+  }
+
+  function inRoom(room,point){
+    return Boolean(point&&Number(point.x)>=room.x&&Number(point.x)<=room.x+room.w&&Number(point.y)>=room.y&&Number(point.y)<=room.y+room.h);
+  }
+
+  function essentialPickup(item){
+    if(!item||item.active===false)return false;
+    const kind=String(item.kind||item.type||"");
+    const title=String(item.title||item.name||item.label||"").toLowerCase();
+    return ESSENTIAL_KINDS.has(kind)||item.progressionEssential===true||item.mandatoryProgression===true||/exit\s*sigil|bronze\s*key|main\s*(?:vault\s*)?key|vault\s*key/.test(title);
+  }
+
+  function reserveLiveObjects(room,reserved){
+    // Lakes are scenery. They must yield to every live pickup/interactable, and
+    // essential progression items receive a one-tile safety apron so they can
+    // always be approached from dry, walkable floor.
+    for(const item of host?.items||[]){
+      if(item?.active===false||!inRoom(room,item))continue;
+      reservePoint(reserved,item,essentialPickup(item)?1:0);
+    }
+    for(const marker of host?.progressionRecoveryMarkers||[]){
+      if(marker?.active===false||!inRoom(room,marker))continue;
+      reservePoint(reserved,marker,1);
+    }
+    for(const collection of [host?.chests,host?.shops,host?.shrines,host?.switches,host?.generators]){
+      for(const row of collection||[]){if(row?.active===false||!inRoom(room,row))continue;reservePoint(reserved,row,0)}
+    }
+    for(const point of [host?.rescue,host?.trader,host?.startShop,host?.sigilDropPos,world?.start,world?.exit])if(inRoom(room,point))reservePoint(reserved,point,1);
   }
 
   function sceneFor(room){
@@ -50,7 +86,8 @@
       reserveLane(reserved,doorway,centre,1);
     }
     for(const tile of host?.sanctuaryRegeneration||[])if(Number(tile.roomId)===Number(room.id))reserveLane(reserved,tile,tile,1);
-    const blocked=new Set((host?.blockingDecor||[]).map(q=>cellKey(q.x,q.y)));
+    reserveLiveObjects(room,reserved);
+    const blocked=new Set((host?.blockingDecor||[]).filter(q=>q?.type!=="sanctuaryLake").map(q=>cellKey(q.x,q.y)));
     const dims=[[4,3],[3,3],[3,2],[2,2]];
     let lake=[];
     outer:for(const [w,h] of dims){
@@ -95,6 +132,30 @@
     host.revision=(host.revision||0)+1;
     state.sceneKey=`${run?.seed||"run"}|${run?.floor||1}|${scenes.length}`;
     return scenes.length;
+  }
+
+  function lakeCells(){
+    return new Set((host?.sanctuaryScenes||[]).flatMap(scene=>(scene?.lake||[]).map(q=>cellKey(q.x,q.y))));
+  }
+
+  function essentialLakeConflict(){
+    const wet=lakeCells();if(!wet.size)return false;
+    for(const item of host?.items||[])if(essentialPickup(item)&&wet.has(cellKey(item.x,item.y)))return true;
+    for(const marker of host?.progressionRecoveryMarkers||[])if(marker?.active!==false&&wet.has(cellKey(marker.x,marker.y)))return true;
+    if(host?.sigilDropPos&&wet.has(cellKey(host.sigilDropPos.x,host.sigilDropPos.y)))return true;
+    return false;
+  }
+
+  function enforceLakeSafety(force=false){
+    if(!world||!host||!(host.sanctuaryScenes||[]).length)return false;
+    const now=performance.now();if(!force&&now-state.lastLakeSafetyCheck<250)return false;state.lastLakeSafetyCheck=now;
+    if(!essentialLakeConflict())return false;
+    // Never move the progression item to accommodate decoration. Rebuild the
+    // optional scenery around the item's authoritative position instead. If a
+    // safe lake cannot fit, that sanctuary simply has no lake.
+    buildScenes();state.lakeSafetyRepairs++;
+    try{console.warn("[Lost Sizzler V10.41] rebuilt sanctuary lake to protect an essential progression item") }catch(_){}
+    return true;
   }
 
   function visible(q){try{return !focus||typeof visibleTo!=="function"||visibleTo(focus,q.x,q.y)}catch(_){return true}}
@@ -164,10 +225,10 @@
 
   function wrapRuntime(){
     if(!state.startWrapped&&typeof startWorld==="function"){
-      const original=startWorld;startWorld=function startWorldV141SanctuaryScenes(){const result=original.apply(this,arguments);try{buildScenes()}catch(error){console.warn("[Lost Sizzler V10.41] sanctuary scene build failed",error)}return result};state.startWrapped=true;
+      const original=startWorld;startWorld=function startWorldV141SanctuaryScenes(){const result=original.apply(this,arguments);try{buildScenes();enforceLakeSafety(true)}catch(error){console.warn("[Lost Sizzler V10.41] sanctuary scene build failed",error)}return result};state.startWrapped=true;
     }
     if(!state.updateWrapped&&typeof update==="function"){
-      const original=update;update=function updateV141SanctuaryScenes(dt){const result=original.apply(this,arguments);try{updateGreetings()}catch(_){}return result};state.updateWrapped=true;
+      const original=update;update=function updateV141SanctuaryScenes(dt){const result=original.apply(this,arguments);try{updateGreetings();enforceLakeSafety(false)}catch(_){}return result};state.updateWrapped=true;
     }
     if(!state.renderWrapped&&typeof drawSpecialObjects==="function"){
       const original=drawSpecialObjects;drawSpecialObjects=function drawSpecialObjectsV141SanctuaryScenes(){const result=original.apply(this,arguments);try{drawScenes()}catch(_){}return result};state.renderWrapped=true;
@@ -183,11 +244,11 @@
   function install(){
     applyAzaleaDefinition();const gate=window.CCGLostSizzlerReleaseGate;if(gate&&!gate.state?.ready)return false;wrapRuntime();
     if(!state.startWrapped||!state.updateWrapped||!state.enemyWrapped||!state.radarWrapped)return false;
-    if(world&&host&&!host.sanctuaryScenes)try{buildScenes()}catch(_){}
+    if(world&&host&&!host.sanctuaryScenes)try{buildScenes();enforceLakeSafety(true)}catch(_){}
     state.installed=true;document.body.dataset.v141SanctuaryAzalea="true";return true;
   }
 
   state.timer=setInterval(()=>{if(install()){clearInterval(state.timer);state.timer=0}},100);install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141SanctuaryAzalea={buildScenes,drawScenes,drawAzalea,drawRadarOverlay,get state(){return state}};
+  window.CCGLostSizzlerV141SanctuaryAzalea={ESSENTIAL_KINDS,essentialPickup,buildScenes,enforceLakeSafety,drawScenes,drawAzalea,drawRadarOverlay,get state(){return state}};
 })();
