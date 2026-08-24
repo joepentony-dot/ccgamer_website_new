@@ -20,10 +20,13 @@
 
   function combatPower(player){
     if(!player)return 1;
-    const weapon=player.weapon||{};
-    const raw=Math.max(1,Number(weapon.power||1)+Number(player.damageBonus||0));
+    const firearmUsable=Boolean(player.firearmUnlocked&&player.weapon&&Number(player.mana||0)>0);
+    const weapon=firearmUsable?player.weapon:(player.meleeWeapon||{power:1,cooldown:390});
+    const mastery=firearmUsable?0:Math.floor(Math.max(0,Number(player.level||1)-1)/5);
+    const bonus=firearmUsable?Number(player.damageBonus||0):Math.floor(Number(player.damageBonus||0)*.5);
+    const raw=Math.max(1,Number(weapon.power||1)+mastery+bonus);
     const shots=Math.max(1,Number(weapon.shots||1));
-    const fireRate=1/Math.max(.58,Number(weapon.delay||1));
+    const fireRate=firearmUsable?1/Math.max(.58,Number(weapon.delay||1)):390/Math.max(300,Number(weapon.cooldown||390));
     const pierce=Math.max(0,Number(weapon.pierce||0));
     return raw*(1+Math.min(.48,(shots-1)*.12))*(1+Math.min(.18,pierce*.045))*Math.min(1.32,fireRate);
   }
@@ -57,7 +60,7 @@
   }
 
   function raiseEnemyDurability(enemy,profile){
-    if(!enemy?.alive||enemy.deathStalker||enemy.treasureGoblin)return;
+    if(!enemy?.alive||enemy.deathStalker||enemy.treasureGoblin||enemy._v105ThreatLocked)return;
     const base=Math.max(1,Number(enemy._v104BaseMaxHp||enemy._v105BaseMaxHp||enemy.maxHp||enemy.hp||1));
     if(!enemy._v105BaseMaxHp)enemy._v105BaseMaxHp=base;
 
@@ -94,6 +97,11 @@
     }
     enemy._v105ThreatLevel=profile.level;
     enemy._v105ThreatParty=profile.party;
+    enemy._v105ThreatPower=profile.combat;
+    /* Lock the encounter profile after its first evaluation. Equipment, level
+     * or party changes can affect newly spawned enemies, but cannot enlarge or
+     * partially heal an enemy that the player is already fighting. */
+    enemy._v105ThreatLocked=true;
   }
 
   let lastProfile={level:1,combat:1,party:1,damageScale:1,cadenceScale:1};
