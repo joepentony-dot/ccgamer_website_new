@@ -48,7 +48,7 @@
     return true;
   }
 
-  function scheduleResize(){
+  function localScheduleResize(){
     if(resizeFrame)return;
     resizeFrame=requestAnimationFrame(()=>{
       resizeFrame=0;
@@ -56,21 +56,27 @@
     });
   }
 
-  /* Replace the original direct resize function. Existing resize/fullscreen
-   * listeners now call this guarded implementation without needing to be
-   * rebound, while the extra observer watches the canvas wrapper itself because
-   * the notification lane can legitimately change its height. */
+  /* Replace the original direct resize function. The startup layer already owns
+   * the single ResizeObserver and rAF scheduler; this stability layer upgrades
+   * the function that scheduler calls instead of adding a competing observer. */
   try{if(typeof resizeGameCanvas==="function")resizeGameCanvas=stableCanvasSize;}catch(error){console.warn("[Lost Sizzler] guarded canvas resize unavailable",error);}
 
-  if(window.ResizeObserver){
-    const area=document.querySelector(".canvas-wrap");
-    if(area){
-      resizeObserver=new ResizeObserver(scheduleResize);
-      resizeObserver.observe(area);
+  const sharedSchedule=typeof window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__==="function"
+    ?window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__
+    :null;
+  const scheduleResize=sharedSchedule||localScheduleResize;
+
+  if(!sharedSchedule){
+    if(window.ResizeObserver){
+      const area=document.querySelector(".canvas-wrap");
+      if(area){
+        resizeObserver=new ResizeObserver(scheduleResize);
+        resizeObserver.observe(area);
+      }
     }
+    window.addEventListener("resize",scheduleResize,{passive:true});
+    document.addEventListener("fullscreenchange",scheduleResize);
   }
-  window.addEventListener("resize",scheduleResize,{passive:true});
-  document.addEventListener("fullscreenchange",scheduleResize);
 
   function trimTransientArray(value,limit){
     if(!Array.isArray(value)||value.length<=limit)return;
