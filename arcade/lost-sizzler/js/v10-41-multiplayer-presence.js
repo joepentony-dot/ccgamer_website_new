@@ -4,7 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_V141_MULTIPLAYER_PRESENCE__)return;
   window.__CCG_LOST_SIZZLER_V141_MULTIPLAYER_PRESENCE__=true;
 
-  const state={installed:false,fireWrapped:false,packetWrapped:false,radarWrapped:false,joinWrapped:false,timer:0,lastSwingSent:0,autoJoinStarted:false};
+  const state={installed:false,fireWrapped:false,packetWrapped:false,radarWrapped:false,joinWrapped:false,timer:0,lastSwingSent:0,autoJoinStarted:false,inviteGateShown:false,inviteCancelled:false};
   const TEAM_COLOURS=["#72ff9b","#ff6cc9","#ffb85c","#b978ff"];
   const ROOM_MODES=new Set(["dungeon","horde-survivor","sizzler-saboteurs"]);
   const actorId=()=>String(typeof net!=="undefined"&&net?.sessionId||"");
@@ -142,9 +142,67 @@
     }catch(_){return null}
   }
 
+  function inviteModeLabel(roomMode){
+    if(roomMode==="horde-survivor")return"Horde Multiplayer";
+    if(roomMode==="sizzler-saboteurs")return"Spy Vs Spy Multiplayer";
+    return"Dungeon Multiplayer";
+  }
+
   function applyInviteMode(roomMode){
     if(!roomMode||!ROOM_MODES.has(roomMode)||typeof net==="undefined"||!net)return;
     try{net.configureRoomMode?.(roomMode)}catch(_){}
+  }
+
+  function removeInviteParameters(){
+    try{
+      const url=new URL(location.href);url.searchParams.delete("room");url.searchParams.delete("mode");history.replaceState(null,"",url.toString());
+    }catch(_){}
+  }
+
+  function ensureInviteNameGate(meta){
+    let gate=document.getElementById("v141-invite-name-gate");
+    if(gate)return gate;
+    const host=document.querySelector(".game-area")||document.body;
+    gate=document.createElement("div");
+    gate.id="v141-invite-name-gate";
+    gate.className="overlay hidden";
+    gate.setAttribute("role","dialog");gate.setAttribute("aria-modal","true");gate.setAttribute("aria-labelledby","v141-invite-name-title");
+    gate.innerHTML=`<div class="panel compact"><p class="lobby-kicker">MULTIPLAYER INVITE</p><h2 id="v141-invite-name-title">JOIN ROOM <span id="v141-invite-room"></span></h2><p id="v141-invite-mode"></p><label class="field"><span>YOUR PLAYER NAME</span><input id="v141-invite-player-name" maxlength="18" autocomplete="nickname" placeholder="ENTER YOUR NAME"></label><p id="v141-invite-name-note" class="note">Choose the name the other players will see, then join the shared game.</p><div class="menu-buttons"><button id="v141-invite-name-join" class="primary" type="button">Join Game</button><button id="v141-invite-name-cancel" type="button">Cancel</button></div></div>`;
+    host.appendChild(gate);
+    const nameInput=gate.querySelector("#v141-invite-player-name"),join=gate.querySelector("#v141-invite-name-join"),cancel=gate.querySelector("#v141-invite-name-cancel");
+    const submit=()=>{
+      const name=String(nameInput?.value||"").trim();
+      if(!name){const note=gate.querySelector("#v141-invite-name-note");if(note)note.textContent="Enter a player name before joining.";nameInput?.focus();return}
+      const mainName=document.getElementById("player-name"),roomInput=document.getElementById("room-code");
+      if(mainName){mainName.value=name;mainName.dispatchEvent(new Event("input",{bubbles:true}));mainName.dispatchEvent(new Event("change",{bubbles:true}))}
+      if(roomInput)roomInput.value=meta.room;
+      applyInviteMode(meta.roomMode);
+      state.autoJoinStarted=true;gate.classList.add("hidden");
+      if(UI?.note)UI.note.textContent=`Joining ${inviteModeLabel(meta.roomMode)} room ${meta.room} as ${name}…`;
+      const api=window.CCGLostSizzlerV106;
+      if(api?.joinLobbyRoom){Promise.resolve(api.joinLobbyRoom()).catch(error=>console.warn("[Lost Sizzler V10.41] invite join failed",error));return}
+      document.getElementById("join-btn")?.click();
+    };
+    join?.addEventListener("click",submit);
+    nameInput?.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();submit()}});
+    cancel?.addEventListener("click",()=>{
+      state.inviteCancelled=true;state.autoJoinStarted=false;gate.classList.add("hidden");removeInviteParameters();
+      if(UI?.note)UI.note.textContent="Multiplayer invite cancelled. Choose any game mode when ready.";
+    });
+    return gate;
+  }
+
+  function showInviteNameGate(meta){
+    if(!meta||state.inviteCancelled||state.autoJoinStarted)return false;
+    const gate=ensureInviteNameGate(meta),room=gate.querySelector("#v141-invite-room"),modeCopy=gate.querySelector("#v141-invite-mode"),nameInput=gate.querySelector("#v141-invite-player-name"),join=gate.querySelector("#v141-invite-name-join");
+    if(room)room.textContent=meta.room;
+    if(modeCopy)modeCopy.textContent=`${inviteModeLabel(meta.roomMode)} invite detected. Enter your name before connecting.`;
+    const existing=String(document.getElementById("player-name")?.value||"").trim();
+    if(nameInput&&!nameInput.value&&existing&&existing!=="CCG Player")nameInput.value=existing;
+    if(join)join.textContent=meta.roomMode==="horde-survivor"?"Join Horde":meta.roomMode==="sizzler-saboteurs"?"Join Spy Vs Spy":"Join Dungeon";
+    gate.classList.remove("hidden");state.inviteGateShown=true;
+    setTimeout(()=>nameInput?.focus(),0);
+    return true;
   }
 
   function installInviteJoining(){
@@ -157,26 +215,25 @@
         const url=new URL(text,location.href),room=window.CCGNetwork?.cleanCode?.(url.searchParams.get("room")||"")||"",roomMode=String(url.searchParams.get("mode")||"").trim();
         if(room.length<4)return;
         event.preventDefault();input.value=room;applyInviteMode(roomMode);
-        if(UI?.note)UI.note.textContent=`Invite detected for room ${room}. Press Join Online Room.`;
+        if(UI?.note)UI.note.textContent=`Invite detected for room ${room}. Enter your player name above, then press Join Online Room.`;
       }catch(_){}
     });
     const meta=inviteMeta();
     if(meta){
       input.value=meta.room;applyInviteMode(meta.roomMode);
-      if(UI?.note)UI.note.textContent=`Multiplayer invite detected for room ${meta.room}. Connecting automatically…`;
+      if(UI?.note)UI.note.textContent=`Multiplayer invite detected for room ${meta.room}. Enter your player name to continue.`;
     }
     return true;
   }
 
   function tryAutoJoinInvite(){
-    if(state.autoJoinStarted)return;
+    if(state.autoJoinStarted||state.inviteCancelled)return;
     const meta=inviteMeta();if(!meta)return;
     const gate=window.CCGLostSizzlerReleaseGate;
     if(gate&&!gate.state?.ready)return;
-    const button=document.getElementById("join-btn"),input=document.getElementById("room-code");if(!button||!input)return;
+    const input=document.getElementById("room-code");if(!input)return;
     if(typeof mode!=="undefined"&&mode!=="menu")return;
-    state.autoJoinStarted=true;input.value=meta.room;applyInviteMode(meta.roomMode);
-    setTimeout(()=>button.click(),0);
+    input.value=meta.room;applyInviteMode(meta.roomMode);showInviteNameGate(meta);
   }
 
   function install(){
@@ -189,8 +246,8 @@
     return ready;
   }
 
-  state.timer=setInterval(()=>{install();if(state.installed&&(!inviteMeta()||state.autoJoinStarted)){clearInterval(state.timer);state.timer=0}},90);
+  state.timer=setInterval(()=>{install();if(state.installed&&(!inviteMeta()||state.inviteGateShown||state.autoJoinStarted||state.inviteCancelled)){clearInterval(state.timer);state.timer=0}},90);
   install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141={get state(){return state},overlayTeamRadar,remoteSlashFx,inviteMeta,tryAutoJoinInvite,install};
+  window.CCGLostSizzlerV141={get state(){return state},overlayTeamRadar,remoteSlashFx,inviteMeta,showInviteNameGate,tryAutoJoinInvite,install};
 })();
