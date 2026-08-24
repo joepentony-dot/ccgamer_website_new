@@ -24,13 +24,13 @@
   }
 
   function setBuildLabel(){
-    document.querySelectorAll(".build-badge").forEach(node=>node.textContent="BUILD V10.31");
-    const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent="THE LOST SIZZLER — V10.31";
+    document.querySelectorAll(".build-badge").forEach(node=>node.textContent="BUILD V10.32");
+    const subtitle=document.querySelector(".brand p");if(subtitle)subtitle.textContent="THE LOST SIZZLER — V10.32";
   }
 
   function keepSubtitleCurrent(){
     const subtitle=document.querySelector(".brand p");if(!subtitle)return;
-    const update=()=>{if(subtitle.textContent!=="THE LOST SIZZLER — V10.31")subtitle.textContent="THE LOST SIZZLER — V10.31"};
+    const update=()=>{if(subtitle.textContent!=="THE LOST SIZZLER — V10.32")subtitle.textContent="THE LOST SIZZLER — V10.32"};
     update();const observer=new MutationObserver(update);observer.observe(subtitle,{childList:true,characterData:true,subtree:true});window.addEventListener("pagehide",()=>observer.disconnect(),{once:true});
   }
 

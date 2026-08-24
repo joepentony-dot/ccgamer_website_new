@@ -89,7 +89,7 @@
 
   function announceStartSystems(){
     if(state.mutation&&!state.mutation.announced){state.mutation.announced=true;showToast(`FLOOR MUTATION — ${state.mutation.type}`,mutationCopy(state.mutation.type),state.mutation.type==="DOUBLE GOLD"?"gold":"cyan",9000)}
-    if(state.bounty&&!state.bounty.announced&&state.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS){state.bounty.announced=true;showToast(`DUNGEON BOUNTY — ${state.bounty.type}`,"Optional challenge: complete it on this floor for +1,000 score.","gold",8500)}
+    if(state.bounty&&!state.bounty.announced&&state.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS){state.bounty.announced=true;showToast(`DUNGEON BOUNTY — ${state.bounty.type}`,"Optional challenge: complete it on this floor for +1,000 score.","gold",8500);try{window.CCGLostSizzlerVoice?.say?.("bountyStart")}catch(_){}}
   }
   function mutationCopy(type){return {"DOUBLE GOLD":"Gold score pickups on this floor are worth double.","DARKNESS":"Torchless visibility is less forgiving and dungeon alert starts higher.","ELITE BOUNTY":"Special enemy kills are worth more score this floor.","CHEST RUSH":"Chest loot quality is boosted across the floor.","NO SHOPPING":"Most dungeon shops are closed on this floor."}[type]||"The rules of this floor have shifted."}
 
