@@ -14,10 +14,14 @@ body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continu
 }
 
 @media (min-width:901px) and (pointer:fine){
+  /* The outer game shell is row-based. Giving it a second desktop column lets
+   * CSS Grid auto-placement pair unrelated direct children into the same row,
+   * which sends .game-area into the old 220–280px side lane. Keep this shell
+   * single-column; tactical and message sub-layouts manage their own grids. */
   body[data-run-active="true"] .ccg-game,
   body[data-run-active="true"] .ccg-game:fullscreen,
   body[data-run-active="true"] .ccg-game:-webkit-full-screen{
-    grid-template-columns:minmax(0,1fr) clamp(220px,18vw,280px)!important;
+    grid-template-columns:minmax(0,1fr)!important;
   }
 
   body[data-run-active="true"] .ccg-game>.tactical-zone{
