@@ -8,7 +8,7 @@ const gameMain=await read('js/game-main.js');
 const inputFixes=await read('js/v10-18-input-ui-bugfixes.js');
 const voice=await read('js/v10-16-voice-director.js');
 const index=await read('index.html');
-const oldPrimary=await read('../../arcade/lost-sizzler/index.html');
+const oldPrimary=await read('../../games/ccg-games/cheeky-commodore-quest/index.html');
 const oldTest=await read('../../games/the-lost-sizzler/index.html');
 
 assert.match(gameMain,/function isEditableKeyboardTarget\(/,'editable keyboard target guard must exist');
