@@ -14,16 +14,49 @@ body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continu
 }
 
 @media (min-width:901px) and (pointer:fine){
+  /* Desktop active-play layout. The shell has one wide dungeon column and one
+   * deliberately narrow tactical sidebar. Every direct child is pinned to its
+   * intended grid cell so auto-placement can never swap the canvas and sidebar
+   * or pair unrelated header/HUD rows into the two columns. */
   body[data-run-active="true"] .ccg-game,
   body[data-run-active="true"] .ccg-game:fullscreen,
   body[data-run-active="true"] .ccg-game:-webkit-full-screen{
     grid-template-columns:minmax(0,1fr) clamp(220px,18vw,280px)!important;
+    grid-template-rows:auto auto auto auto minmax(0,1fr) auto!important;
   }
 
+  body[data-run-active="true"] .ccg-game>.topbar{
+    grid-column:1/-1!important;
+    grid-row:1!important;
+  }
+  body[data-run-active="true"] .ccg-game>.critical-strip{
+    grid-column:1/-1!important;
+    grid-row:2!important;
+  }
+  body[data-run-active="true"] .ccg-game>.mission{
+    grid-column:1/-1!important;
+    grid-row:3!important;
+  }
+  body[data-run-active="true"] .ccg-game>.fullscreen-hint{
+    grid-column:1/-1!important;
+    grid-row:4!important;
+  }
+  body[data-run-active="true"] .ccg-game>.game-area{
+    grid-column:1!important;
+    grid-row:5!important;
+    min-width:0!important;
+  }
   body[data-run-active="true"] .ccg-game>.tactical-zone{
+    grid-column:2!important;
+    grid-row:5!important;
+    min-width:0!important;
     grid-template-rows:minmax(166px,48%) minmax(0,1fr)!important;
     padding:6px!important;
     gap:6px!important;
+  }
+  body[data-run-active="true"] .ccg-game>.player-hub{
+    grid-column:1/-1!important;
+    grid-row:6!important;
   }
 
   body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail{

@@ -40,6 +40,9 @@ assert.match(render,/function drawAmbientMotes\(\)/,"rooms must have restrained 
 assert.match(render,/prefers-reduced-motion: reduce/,"ambient motion must respect reduced-motion preference");
 assert.match(render,/function drawThreatEdgeIndicators\(p\)/,"incoming off-screen projectiles must have a directional warning");
 assert.match(render,/candidates\.slice\(0,3\)/,"projectile warnings must remain bounded");
-assert.match(css,/clamp\(220px,18vw,280px\)/,"desktop tactical sidebar must return more space to the dungeon");
+assert.match(css,/grid-template-columns:minmax\(0,1fr\) clamp\(220px,18vw,280px\)!important/,"desktop must reserve a wide dungeon column and narrow tactical sidebar");
+assert.match(css,/\.ccg-game>\.game-area\s*\{[\s\S]*?grid-column:1!important[\s\S]*?grid-row:5!important/,"desktop gameplay must be pinned to the wide left column");
+assert.match(css,/\.ccg-game>\.tactical-zone\s*\{[\s\S]*?grid-column:2!important[\s\S]*?grid-row:5!important/,"desktop tactical intelligence must be pinned to the narrow right column");
+assert.match(css,/\.ccg-game>\.player-hub\s*\{[\s\S]*?grid-column:1\/-1!important[\s\S]*?grid-row:6!important/,"desktop player hub must span both columns below gameplay");
 
-console.log("Lost Sizzler V10.30 release gate, visibility, balance, pickup and graphical polish checks passed.");
+console.log("Lost Sizzler V10.30 release gate, visibility, balance, pickup, graphical polish and desktop layout checks passed.");
