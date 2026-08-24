@@ -51,7 +51,7 @@
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-multiplayer-presence.js?v=20260824b";
+    script.src="js/v10-41-multiplayer-presence.js?v=20260824c";
     script.async=false;
     script.dataset.ccgV141MultiplayerPresence="true";
     document.head.appendChild(script);
@@ -72,7 +72,7 @@
     const subtitle=document.querySelector(".brand p");
     if(subtitle)subtitle.textContent=`THE LOST SIZZLER — ${RELEASE_VERSION}`;
     const badge=document.querySelector(".build-badge");
-    if(badge&&!state.outdated){badge.textContent=`BUILD ${current}`;badge.title=`${RELEASE_VERSION} · Lost Sizzler build ${current}`}
+    if(badge&&!state.outdated){badge.textContent=`BUILD ${RELEASE_VERSION}`;badge.title=`${RELEASE_VERSION} · Lost Sizzler build ${current}`}
   }
 
   function ensureButton(){
