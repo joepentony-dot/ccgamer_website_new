@@ -8,6 +8,109 @@
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
 
+  const tutorialDeepLinkRequested=(()=>{
+    try{return String(new URL(window.location.href).searchParams.get("mode")||"").trim().toLowerCase()==="tutorial"}
+    catch(_){return false}
+  })();
+  const tutorialDeepLinkState={requested:tutorialDeepLinkRequested,attempts:0,activated:false,startedAt:Date.now(),timer:0,fallback:null};
+
+  function ensureTutorialDeepLinkStyle(){
+    if(!tutorialDeepLinkRequested||document.getElementById("ccg-tutorial-deeplink-style"))return;
+    const style=document.createElement("style");
+    style.id="ccg-tutorial-deeplink-style";
+    style.textContent=`
+      body[data-tutorial-deeplink="pending"] #menu{display:none!important}
+      #ccg-tutorial-deeplink-gate{position:fixed;inset:0;z-index:12050;display:grid;place-items:center;padding:18px;background:#05030a;color:#f7f2ff;font-family:inherit}
+      #ccg-tutorial-deeplink-gate.hidden{display:none!important}
+      #ccg-tutorial-deeplink-gate .ccg-tutorial-deeplink-card{width:min(560px,calc(100vw - 32px));padding:24px;border:2px solid rgba(108,236,255,.72);border-radius:15px;background:linear-gradient(150deg,rgba(18,11,29,.99),rgba(5,11,18,.99));box-shadow:0 22px 80px rgba(0,0,0,.8),0 0 34px rgba(108,236,255,.16);text-align:center}
+      #ccg-tutorial-deeplink-gate small{display:block;margin-bottom:7px;color:#6cecff;font-weight:900;letter-spacing:.16em}
+      #ccg-tutorial-deeplink-gate h2{margin:0 0 10px;color:#ffd85a}
+      #ccg-tutorial-deeplink-gate p{margin:0 0 18px;line-height:1.5;color:#ddd5e5}
+      #ccg-tutorial-deeplink-gate button{min-height:48px;padding:11px 18px;border-color:#ffd85a!important}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function hideMenuForTutorialDeepLink(){
+    if(!tutorialDeepLinkRequested||tutorialDeepLinkState.activated)return;
+    document.body.dataset.tutorialDeeplink="pending";
+    document.getElementById("menu")?.classList.add("hidden");
+  }
+
+  function boundTutorialButton(){
+    const button=document.getElementById("tutorial-zone-btn");
+    return button?.dataset?.ccgTutorialLaunchBound==="true"?button:null;
+  }
+
+  function launchTutorialDeepLink(force=false){
+    if(!tutorialDeepLinkRequested||tutorialDeepLinkState.activated)return false;
+    if(document.body?.dataset?.gameReady!=="true")return false;
+    if(document.body?.dataset?.tutorialActive==="true")return true;
+    if(document.body?.dataset?.runActive==="true")return false;
+    if(!force&&tutorialDeepLinkState.attempts>0)return false;
+    const button=boundTutorialButton();
+    if(!button)return false;
+    tutorialDeepLinkState.attempts++;
+    button.click();
+    return true;
+  }
+
+  function removeTutorialModeFromAddress(){
+    try{
+      const url=new URL(window.location.href);
+      if(String(url.searchParams.get("mode")||"").toLowerCase()!=="tutorial")return;
+      url.searchParams.delete("mode");
+      history.replaceState(history.state,"",`${url.pathname}${url.search}${url.hash}`);
+    }catch(_){}
+  }
+
+  function dismissTutorialDeepLinkGate(){
+    tutorialDeepLinkState.fallback?.remove?.();
+    tutorialDeepLinkState.fallback=null;
+  }
+
+  function showTutorialDeepLinkGate(){
+    if(!tutorialDeepLinkRequested||tutorialDeepLinkState.activated||tutorialDeepLinkState.fallback?.isConnected)return;
+    if(document.body?.dataset?.runActive==="true")return;
+    const gate=document.createElement("div");
+    gate.id="ccg-tutorial-deeplink-gate";
+    gate.innerHTML=`<div class="ccg-tutorial-deeplink-card"><small>THE LOST SIZZLER · TRAINING ARCHIVE</small><h2>Tutorial Ready</h2><p>Your browser needs one click before it can begin the game session. This still bypasses the main menu and goes directly into training.</p><button type="button" class="primary" data-start-tutorial>START TUTORIAL</button></div>`;
+    gate.querySelector("[data-start-tutorial]")?.addEventListener("click",()=>{
+      dismissTutorialDeepLinkGate();
+      tutorialDeepLinkState.attempts=0;
+      launchTutorialDeepLink(true);
+    });
+    (document.querySelector(".ccg-game")||document.body).appendChild(gate);
+    tutorialDeepLinkState.fallback=gate;
+  }
+
+  function monitorTutorialDeepLink(){
+    if(!tutorialDeepLinkRequested)return;
+    ensureTutorialDeepLinkStyle();
+    hideMenuForTutorialDeepLink();
+    tutorialDeepLinkState.timer=window.setInterval(()=>{
+      const active=document.body?.dataset?.tutorialActive==="true";
+      if(active){
+        tutorialDeepLinkState.activated=true;
+        document.body.dataset.tutorialDeeplink="active";
+        dismissTutorialDeepLinkGate();
+        return;
+      }
+      if(tutorialDeepLinkState.activated){
+        clearInterval(tutorialDeepLinkState.timer);
+        tutorialDeepLinkState.timer=0;
+        dismissTutorialDeepLinkGate();
+        delete document.body.dataset.tutorialDeeplink;
+        removeTutorialModeFromAddress();
+        return;
+      }
+      hideMenuForTutorialDeepLink();
+      launchTutorialDeepLink(false);
+      if(Date.now()-tutorialDeepLinkState.startedAt>4500&&document.body?.dataset?.runActive!=="true")showTutorialDeepLinkGate();
+    },80);
+    window.addEventListener("pagehide",()=>{if(tutorialDeepLinkState.timer)clearInterval(tutorialDeepLinkState.timer)},{once:true});
+  }
+
   function loadV136Bootstrap(){
     if(document.querySelector('script[data-ccg-v136-bootstrap="true"]'))return;
     const script=document.createElement("script");
@@ -80,6 +183,7 @@
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
+  monitorTutorialDeepLink();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
@@ -205,4 +309,5 @@
   const timer=setInterval(()=>{checkLatest(false);if(state.outdated&&menuVisible())renderPanel("outdated")},300000);
   window.addEventListener("pagehide",()=>{clearInterval(timer);clearInterval(labelTimer)},{once:true});
   window.CCGLostSizzlerVersion={state,releaseVersion:RELEASE_VERSION,check:()=>checkLatest(true),refresh:()=>reloadFresh(state.latest||current)};
+  window.CCGLostSizzlerTutorialDeepLink={state:tutorialDeepLinkState,launch:()=>launchTutorialDeepLink(true)};
 })();
