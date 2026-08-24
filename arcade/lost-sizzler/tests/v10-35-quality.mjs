@@ -8,17 +8,79 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const quality=read("js/v10-35-quality.js"),special=read("js/v10-33-special-modes.js"),melee=read("js/v10-25-melee-ammo-balance.js"),rare=read("js/v10-15-rare-events.js"),voice=read("js/v10-16-voice-director.js"),index=read("index.html"),css=read("css/game.css"),loader=read("js/asset-overrides.js"),log=read("js/v10-12-developer-changelog.js");
 
-for(const asset of ["enemy-atlas-standard-a-v10-35.png","enemy-atlas-standard-b-v10-35.png","enemy-atlas-horde-v10-35.png","environment-atlas-v10-35.png"]){const data=fs.readFileSync(path.join(root,"assets/pixel",asset));assert.equal(data.subarray(1,4).toString(),"PNG",`${asset} must be a real PNG`);assert.ok(data.length>20_000,`${asset} must contain production sprite data`);assert.ok(quality.includes(asset),`${asset} must be wired into rendering`)}
-assert.match(quality,/function validateDoorAccess\(\)/);assert.match(quality,/world\.map\[y\]\[x\]=0/);assert.match(quality,/function expelSanctuaryEnemies\(\)/);assert.match(quality,/periodMs:3000/);assert.match(quality,/SANCTUARY \+1 HP/);
-assert.match(melee,/adjacentEnemy\|\|adjacentFurniture/);assert.match(melee,/return meleeAttack\(p,dir\)/);
-assert.match(rare,/spoken=Boolean\(voice\.say\("bountyStart"/);assert.match(rare,/if\(!voiceRequired\|\|expired\|\|spoken\)/);
-assert.match(voice,/room\?\.sanctuary/);assert.match(special,/startWorld\(PGR\.floorSeed\(run\)/);assert.match(special,/const result=baseUpdate\.apply/);assert.match(special,/const result=baseRender\.apply/);assert.doesNotMatch(special,/fitArena\(/,"special modes must not restore the abstract arena renderer");
-assert.match(special,/v133_special_hit/);assert.match(special,/SAB\.useWeapon\(active\.state/);assert.match(special,/nearFurniture/);
-assert.match(index,/This Game Is Currently In BETA Stages - This Will Not Reflect On Final Game Once Completed/);assert.match(index,/© 2026 CHEEKY COMMODORE GAMER/);assert.match(quality,/© 2026 CHEEKY COMMODORE GAMER/);assert.match(css,/TACTICAL RADAR DISABLED/);assert.match(loader,/v10-35-quality\.js/);for(const id of ["LS-0824-12","LS-0824-19"])assert.ok(log.includes(id),`${id} must be in the LIVE DEVELOPMENT LOG`);
+for(const asset of ["enemy-atlas-standard-a-v10-35.png","enemy-atlas-standard-b-v10-35.png","enemy-atlas-horde-v10-35.png","environment-atlas-v10-35.png"]){
+  const data=fs.readFileSync(path.join(root,"assets/pixel",asset));
+  assert.equal(data.subarray(1,4).toString(),"PNG",`${asset} must be a real PNG`);
+  assert.ok(data.length>20_000,`${asset} must contain production sprite data`);
+  assert.ok(quality.includes(asset),`${asset} must be wired into rendering`);
+}
 
-for(const file of ["horde-survival-wave-10.ogg","horde-survival-waves-1-4.ogg","horde-survival-waves-5-9.ogg","sizzler-saboteurs-theme.ogg"])assert.ok(fs.statSync(path.join(root,"assets/audio/music",file)).size>2_000_000,`${file} must not be a truncated connector placeholder`);
+assert.match(quality,/function validateDoorAccess\(\)/);
+assert.match(quality,/world\.map\[y\]\[x\]=0/);
+assert.match(quality,/function expelSanctuaryEnemies\(\)/);
+assert.match(quality,/periodMs:3000/);
+assert.match(quality,/SANCTUARY \+1 HP/);
+assert.match(quality,/drawSpecialObjectsV135/,"regeneration tiles must be attached to the live render path");
+assert.match(quality,/collect\(2\)\|\|collect\(1\)/,"small sanctuary rooms must still receive a regeneration tile");
+assert.match(quality,/updateCampingV135Sanctuary/,"sanctuary must override anti-camping blasts");
+assert.match(quality,/purgeCampingHazards\(player\)/,"existing camping warnings must be removed on sanctuary entry");
+assert.match(quality,/startMusicV135/,"menu music restart must be intercepted");
+assert.match(quality,/mode==="menu"\)\{S\.stopMusic/,"menu state must silence music");
+assert.match(quality,/drawDoorsV135AtlasOnly/,"new doors must replace the legacy door layer");
+assert.match(quality,/const secrets=all\.filter\(d=>d\.type==="secret"\)/,"legacy door rendering may remain only for hidden secret masonry");
+assert.match(quality,/drawWallLightsV135AtlasOnly/,"new torch atlas must replace the legacy torch layer");
+assert.doesNotMatch(quality,/drawWallLightsV135AtlasOnly\(\)\{[^}]*old\.apply/s,"atlas torches must not draw legacy torches underneath");
+assert.match(quality,/FRAME_GUTTER=1/,"atlas frame sampling must use a guard pixel");
+assert.match(quality,/installExplorerFrameGutters\(\)/,"player animation cells must be isolated from neighbouring frames");
+assert.match(quality,/wsV135Stable/,"world-to-screen coordinates must be pixel aligned");
+assert.match(quality,/shake>0&&shake<1\.25\)shake=0/,"residual sub-pixel screen shake must be removed");
+
+assert.match(melee,/adjacentEnemy\|\|adjacentFurniture/);
+assert.match(melee,/return meleeAttack\(p,dir\)/);
+assert.match(rare,/spoken=Boolean\(voice\.say\("bountyStart"/);
+assert.match(rare,/if\(!voiceRequired\|\|expired\|\|spoken\)/);
+assert.match(voice,/room\?\.sanctuary/);
+assert.match(special,/startWorld\(PGR\.floorSeed\(run\)/);
+assert.match(special,/const result=baseUpdate\.apply/);
+assert.match(special,/const result=baseRender\.apply/);
+assert.doesNotMatch(special,/fitArena\(/,"special modes must not restore the abstract arena renderer");
+assert.match(special,/v133_special_hit/);
+assert.match(special,/SAB\.useWeapon\(active\.state/);
+assert.match(special,/nearFurniture/);
+assert.match(index,/This Game Is Currently In BETA Stages - This Will Not Reflect On Final Game Once Completed/);
+assert.match(index,/© 2026 CHEEKY COMMODORE GAMER/);
+assert.match(quality,/© 2026 CHEEKY COMMODORE GAMER/);
+assert.match(css,/TACTICAL RADAR DISABLED/);
+assert.match(loader,/v10-35-quality\.js/);
+for(const id of ["LS-0824-12","LS-0824-19"])assert.ok(log.includes(id),`${id} must be in the LIVE DEVELOPMENT LOG`);
+
+for(const file of ["horde-survival-wave-10.ogg","horde-survival-waves-1-4.ogg","horde-survival-waves-5-9.ogg","sizzler-saboteurs-theme.ogg"]){
+  assert.ok(fs.statSync(path.join(root,"assets/audio/music",file)).size>2_000_000,`${file} must not be a truncated connector placeholder`);
+}
 
 const map=Array.from({length:8},()=>Array(8).fill(0));map[2][3]=1;map[4][3]=1;
-const context={console,Date,performance:{now:()=>1000},Image:class{constructor(){this.complete=false;this.naturalWidth=0}},window:{},document:{body:{dataset:{}}},world:{map,rooms:[{id:0,x:1,y:1,w:5,h:5,sanctuary:false}],decor:[],doorFrameCells:[{x:3,y:2},{x:3,y:4}]},host:{doors:[{id:"door",x:3,y:3,type:"room",orientation:"horizontal"}],blockingDecor:[{x:3,y:2},{x:3,y:4}],enemies:[],enteredRoomIds:[],revision:0},W:{walkable:(m,x,y,h)=>m[y]?.[x]===0&&!h.blockingDecor.some(q=>q.x===x&&q.y===y),roomAt:()=>0},allPlayers:()=>[],localPlayers:()=>[],P:{green:"#0f0"}};context.window.window=context.window;Object.assign(context.window,{CCGWorld:context.W});vm.createContext(context);vm.runInContext(quality,context,{filename:"v10-35-quality.js"});const result=context.window.CCGLostSizzlerQualityV135.validateDoorAccess();assert.equal(result.invalid,0);assert.equal(map[2][3],0);assert.equal(map[4][3],0);assert.equal(context.host.blockingDecor.length,0);
+const context={
+  console,Date,performance:{now:()=>1000},Image:class{constructor(){this.complete=false;this.naturalWidth=0}},window:{},
+  document:{body:{dataset:{}}},
+  world:{map,rooms:[{id:0,x:1,y:1,w:5,h:5,sanctuary:false}],decor:[],doorFrameCells:[{x:3,y:2},{x:3,y:4}]},
+  host:{doors:[{id:"door",x:3,y:3,type:"room",orientation:"horizontal"}],blockingDecor:[{x:3,y:2},{x:3,y:4}],enemies:[],enteredRoomIds:[],revision:0},
+  W:{walkable:(m,x,y,h)=>m[y]?.[x]===0&&!h.blockingDecor.some(q=>q.x===x&&q.y===y),roomAt:()=>0},
+  allPlayers:()=>[],localPlayers:()=>[],P:{green:"#0f0"}
+};
+context.window.window=context.window;Object.assign(context.window,{CCGWorld:context.W});vm.createContext(context);vm.runInContext(quality,context,{filename:"v10-35-quality.js"});
+const result=context.window.CCGLostSizzlerQualityV135.validateDoorAccess();
+assert.equal(result.invalid,0);assert.equal(map[2][3],0);assert.equal(map[4][3],0);assert.equal(context.host.blockingDecor.length,0);
 
-console.log("Lost Sizzler V10.35 dungeon-backed modes, atlas, sanctuary, door, audio, bounty, melee and ownership checks passed.");
+const sanctuaryMap=Array.from({length:7},()=>Array(7).fill(1));
+for(let y=2;y<=4;y++)for(let x=2;x<=4;x++)sanctuaryMap[y][x]=0;
+const sanctuaryContext={
+  console,Date,performance:{now:()=>1000},Image:class{constructor(){this.complete=false;this.naturalWidth=0}},window:{},document:{body:{dataset:{}}},
+  world:{map:sanctuaryMap,rooms:[{id:0,x:1,y:1,w:5,h:5,sanctuary:true}],decor:[],doorFrameCells:[]},
+  host:{doors:[],blockingDecor:[],enemies:[],enteredRoomIds:[],revision:0},
+  W:{walkable:(m,x,y)=>m[y]?.[x]===0,roomAt:()=>0},allPlayers:()=>[],localPlayers:()=>[],P:{green:"#0f0"}
+};
+sanctuaryContext.window.window=sanctuaryContext.window;Object.assign(sanctuaryContext.window,{CCGWorld:sanctuaryContext.W});vm.createContext(sanctuaryContext);vm.runInContext(quality,sanctuaryContext,{filename:"v10-35-quality-sanctuary.js"});
+assert.equal(sanctuaryContext.window.CCGLostSizzlerQualityV135.installSanctuaryTiles(),1,"every sanctuary must receive one regeneration tile");
+const regen=sanctuaryContext.host.sanctuaryRegeneration[0];assert.ok(regen&&sanctuaryMap[regen.y][regen.x]===0,"regeneration tile must be placed on a walkable sanctuary cell");
+
+console.log("Lost Sizzler V10.35 atlas isolation, sanctuary regeneration/safety, menu audio, door/torch ownership and stability checks passed.");
