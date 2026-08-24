@@ -13,9 +13,9 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const index=read("index.html");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260823e"/,"onboarding safety must remain cache-versioned");
-assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824c"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824c/,"the release must directly load the fullscreen-safe tutorial launcher");
+assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260824f"/,"onboarding safety must remain cache-versioned");
+assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824d"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
+assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824d/,"the release must directly load the fullscreen-safe tutorial launcher");
 assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
@@ -28,15 +28,18 @@ assert.match(source,/Play or use the Tutorial\?/,"core must retain a fallback tu
 assert.match(source,/data-tutorial-enter>TUTORIAL</,"fallback chooser must retain Tutorial");
 assert.match(source,/data-tutorial-skip>PLAY GAME</,"fallback chooser must retain Play Game");
 
-for(const phrase of ["MOVE AROUND","FIRE YOUR WEAPON","DASH","OPEN AND CLOSE THE INVENTORY","OBJECTIVES, RADAR & HINTS","HEALTH, ARMOUR & QUICK ITEMS","KEYS, DOORS, CHESTS & SECRETS","ENEMIES, NAMED ENEMIES & THE STALKER","RARE EVENTS, SHOPS, HAZARDS & SCORE","TUTORIAL COMPLETE"]){
+for(const phrase of ["MOVE AROUND","SWING YOUR SWORD","DASH","OPEN AND CLOSE THE INVENTORY","OBJECTIVES, RADAR & HINTS","HEALTH, ARMOUR & QUICK ITEMS","KEYS, DOORS & CHESTS","ENEMIES, NAMED ENEMIES & THE STALKER","RARE EVENTS, SHOPS, HAZARDS & SCORE","TUTORIAL COMPLETE"]){
   assert.ok(source.includes(phrase),`tutorial is missing section: ${phrase}`);
 }
 
 assert.match(source,/movementDistance:0/,"tutorial movement must track cumulative successful movement");
-assert.match(source,/state\.movementDistance\+=d/,"movement polling must accumulate successful movement");
-assert.match(source,/if\(state\.movementDistance>=2\)completeInteractive\("move"\)/,"two cumulative tiles must complete movement");
-assert.match(source,/firePlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("fire"\);return r\}/,"firing must progress the fire stage");
-assert.match(source,/dashPlayer=function\(\)\{const r=o\.apply\(this,arguments\);note\("dash"\);return r\}/,"dashing must progress the dash stage");
+assert.match(source,/movementDirections:new Set\(\)/,"tutorial movement must track four distinct directions");
+assert.match(source,/state\.movementDirections\.size>=4/,"all four directions must be registered before movement completes");
+assert.match(source,/state\.swingCount>=3/,"the sword stage must require three completed swings");
+assert.match(source,/state\.dashCount>=3/,"the dash stage must require three completed dashes");
+assert.match(source,/if\(r!==false\)note\("fire"\)/,"only a performed attack may progress the sword stage");
+assert.match(source,/if\(r!==false\)note\("dash"\)/,"only a performed dash may progress the dash stage");
+assert.match(source,/Press <span class="control-key">TAB<\/span> on keyboard or tap <span class="control-key">ITEMS<\/span>/,"the inventory step must retain an on-screen control prompt");
 assert.match(source,/state\.inventoryOpened&&state\.inventoryClosed/,"inventory training must require opening and closing");
 assert.match(source,/setInterval\(watchTutorialProgress,80\)/,"tutorial progress must retain a fast fallback");
 
@@ -54,6 +57,9 @@ assert.ok(guidance.includes('[data-action="fire"]'),"FIRE must be highlighted");
 assert.ok(guidance.includes('[data-action="dash"]'),"DASH must be highlighted");
 assert.ok(guidance.includes('[data-action="inventory"],[data-action="items"]'),"ITEMS must be highlighted");
 assert.match(guidance,/ccgTutorialControlFlash/,"highlighted controls must visibly pulse");
+assert.match(guidance,/INFO_HIGHLIGHTS=new Map/,"tutorial information sections must define contextual interface highlights");
+for(const label of ["1 · CURRENT OBJECTIVE","2 · TACTICAL RADAR","3 · CONTEXTUAL HINTS","1 · HEALTH","2 · ARMOUR","3 · POTION · E","4 · TORCH · Q","5 · QUICK ITEMS","1 · KEYRING","2 · DOORS & CHESTS","3 · INTERACTION REPORTS"])assert.ok(guidance.includes(label),`tutorial is missing highlight: ${label}`);
+assert.doesNotMatch(guidance,/SECRET ROUTE|SECRET WALL|SECRET DOOR/,"tutorial interface highlights must not reveal secret routes");
 assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close controls must be highlighted after opening inventory");
 
 /* Start flow: the menu itself is the only chooser after the mobile notice. */
@@ -82,6 +88,7 @@ assert.match(guidance,/Do not clear tutorialRequested here/,"tutorial intent mus
 
 assert.match(source,/if\(state\.active\)return false;return o\.apply\(this,arguments\)/,"tutorial players must be immune to accidental damage");
 assert.match(source,/if\(typeof quitToMenu==="function"\)await quitToMenu\(\)/,"finishing training must return to main options");
+assert.match(source,/S\?\.stopAll\?\.\(\)/,"returning from the tutorial must stop music and sound effects");
 assert.match(source,/TUTORIAL COMPLETE<\/b>/,"completed training must leave a completion notice");
 assert.match(source,/run\?\.daily\|\|playMode==="online"/,"ranked and online runs must not become tutorial runs");
 

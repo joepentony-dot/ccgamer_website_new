@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.30","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.31","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -323,13 +323,13 @@ try{
     });
     assert.equal(launch.gateReady,true,`the complete release queue must be ready before the run starts: ${JSON.stringify(launch)}`);
     assert.equal(launch.gateErrors,0,`no critical release module may fail: ${JSON.stringify(launch)}`);
-    assert.equal(launch.polishReady,"true",`V10.30 must install before queued Solo starts: ${JSON.stringify(launch)}`);
+    assert.equal(launch.polishReady,"true",`V10.31 must install before queued Solo starts: ${JSON.stringify(launch)}`);
     assert.deepEqual({firearmUnlocked:launch.firearmUnlocked,weapon:launch.weapon,ammo:launch.ammo,maxAmmo:launch.maxAmmo,melee:launch.melee},{firearmUnlocked:false,weapon:null,ammo:0,maxAmmo:120,melee:"archive-sword"},`an immediate Solo click must retain sword-first progression: ${JSON.stringify(launch)}`);
     assert.equal(launch.meleeDamage,1,`level-one Archive Sword damage must remain one: ${JSON.stringify(launch)}`);
     assert.equal(launch.dossierHidden,true,`no named-enemy dossier may open at the starting position: ${JSON.stringify(launch)}`);
     assert.equal(launch.remoteNamedVisible,false,`a remote named enemy must not be visible through global follower light: ${JSON.stringify(launch)}`);
     assert.ok(launch.ammoBudget.meets&&launch.ammoBudget.planned>=launch.ammoBudget.needed,`placed ammunition must meet its calculated 50-percent-accuracy budget: ${JSON.stringify(launch)}`);
-    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.30 target: ${JSON.stringify(launch)}`);
+    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.31 target: ${JSON.stringify(launch)}`);
 
     const pickupGuard=await state.page.evaluate(()=>{
       const health={id:"browser-full-health",x:p1.x,y:p1.y,kind:"health",active:true,title:"TEST HEALTH"};host.items.push(health);p1.health=p1.maxHealth;const healthRequest=requestCollect(health,p1);
@@ -361,18 +361,34 @@ try{
     assert.deepEqual(tutorialState,{active:true,requested:true,step:0,modalVisible:true,voiceActive:false,voiceQueued:0},`early Tutorial selection must activate a silent working tutorial: ${JSON.stringify(tutorialState)}`);
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
     const tutorialMove=await state.page.evaluate(()=>{
-      const choices=[{key:"d",dx:1,dy:0},{key:"a",dx:-1,dy:0},{key:"s",dx:0,dy:1},{key:"w",dx:0,dy:-1}];
-      const choice=choices.find(q=>W.walkable(world.map,p1.x+q.dx,p1.y+q.dy,host)&&W.walkable(world.map,p1.x+q.dx*2,p1.y+q.dy*2,host));
-      return{choice,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
+      const blocked=(x,y)=>(host.blockingDecor||[]).some(q=>q.x===x&&q.y===y)||(host.generators||[]).some(q=>q.alive&&q.x===x&&q.y===y)||(host.enemies||[]).some(q=>q.alive&&q.x===x&&q.y===y);
+      let safe=null;for(let y=2;y<world.map.length-2&&!safe;y++)for(let x=2;x<world.map[0].length-2&&!safe;x++)if(W.roomAt(world,x,y)===world.startRoomId&&[[0,0],[0,-1],[0,1],[-1,0],[1,0],[2,0],[3,0]].every(([dx,dy])=>W.walkable(world.map,x+dx,y+dy,host)&&!blocked(x+dx,y+dy)))safe={x,y};
+      if(safe){p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};window.CCGLostSizzlerOnboardingV120.state.lastMovement.set(p1.id||p1,{...safe})}
+      return{safe,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
     });
-    assert.ok(tutorialMove.choice,`Tutorial start area must have a two-tile keyboard route: ${JSON.stringify(tutorialMove)}`);
-    await state.page.keyboard.down(tutorialMove.choice.key);
-    await state.page.waitForTimeout(850);
-    await state.page.keyboard.up(tutorialMove.choice.key);
-    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial movement step");
-    const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,position:{x:p1.x,y:p1.y}}));
+    assert.ok(tutorialMove.safe,`Tutorial start area must have a four-direction keyboard training cell: ${JSON.stringify(tutorialMove)}`);
+    for(const key of ["w","s","a","d"]){await state.page.keyboard.down(key);await state.page.waitForTimeout(190);await state.page.keyboard.up(key);await state.page.waitForTimeout(180)}
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial four-direction movement step");
+    const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,directions:[...window.CCGLostSizzlerOnboardingV120.state.movementDirections].sort(),position:{x:p1.x,y:p1.y}}));
     assert.equal(tutorialProgress.moved,true,`Tutorial keyboard movement must register: ${JSON.stringify(tutorialProgress)}`);
-    assert.notDeepEqual(tutorialProgress.position,tutorialMove.start,`Tutorial keyboard movement must move the player: ${JSON.stringify(tutorialProgress)}`);
+    assert.deepEqual(tutorialProgress.directions,["down","left","right","up"],`Tutorial movement must require all four keyboard directions: ${JSON.stringify(tutorialProgress)}`);
+
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:4000}),6000,"Tutorial sword stage prompt");
+    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    for(let i=0;i<3;i++){await state.page.keyboard.press("Space",{delay:30});await state.page.waitForTimeout(520)}
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:5000}),7000,"Tutorial three-sword step");
+    const swordProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.swingCount}));
+    assert.equal(swordProgress.count,3,`Tutorial sword training must require three successful swings: ${JSON.stringify(swordProgress)}`);
+
+    await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===2,null,{timeout:4000}),6000,"Tutorial dash stage prompt");
+    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    for(let i=0;i<3;i++){
+      await state.page.evaluate(safe=>{p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};p1._v125LastDashAt=0},tutorialMove.safe);
+      await state.page.keyboard.press("ShiftLeft",{delay:30});await state.page.waitForTimeout(620);
+    }
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:5000}),7000,"Tutorial three-dash step");
+    const dashProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.dashCount,voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)}));
+    assert.deepEqual(dashProgress,{step:3,count:3,voiceActive:false,voiceQueued:0},`Tutorial dash training must require three successful silent dashes: ${JSON.stringify(dashProgress)}`);
     await assertHealthy(state,"active silent Tutorial");
     logStage("early Tutorial launch: complete");
   }

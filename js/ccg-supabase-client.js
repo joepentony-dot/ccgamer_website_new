@@ -1,5 +1,5 @@
 (function () {
-  const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  const SUPABASE_CDN = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.0/dist/umd/supabase.min.js';
   const GLOBAL_KEY = '__ccgSupabaseState';
   const COMMUNITY_READINESS_KEY = '__ccgCommunityReadinessState';
   const DEV_WARN_KEY = '__ccgCommunityDevWarned';

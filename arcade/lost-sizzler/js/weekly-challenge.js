@@ -20,6 +20,7 @@ window.CCGWeeklyChallenge=(()=>{
   const button=()=>document.getElementById("daily-btn");
   const WEEK_MS=7*24*60*60*1000;
   const GHOST_CACHE="ccg-weekly-ghost-preview";
+  const PENDING_RESULT="ccg-weekly-pending-result-v1";
   let countdownTimer=0;
   let resetRefreshPending=false;
 
@@ -91,13 +92,13 @@ window.CCGWeeklyChallenge=(()=>{
           ?`Weekly Dungeon — Resets in ${countdown?.text||"--:--:--"}`
           :state.signedIn
             ?"Weekly Dungeon — Ranked Run"
-            :"Weekly Dungeon";
+            :"Weekly Dungeon — Sign In Required";
     }
     if(s){
       s.textContent=!state.ready
         ?"Checking this week's dungeon…"
         :!state.signedIn
-          ?"Play the Weekly Dungeon without an account. Sign in only if you want your score submitted to the weekly leaderboard."
+          ?"Sign in before entering the Weekly Dungeon. Your single attempt for the week is reserved at launch and its final score is submitted to the weekly leaderboard."
           :state.locked
             ?`Your ranked attempt for week beginning ${state.weekStart} has already been used. You can play again in ${countdown?.text||"--:--:--"}. The ranked challenge resets Monday at 00:00 UTC.`
             :`Signed in as ${state.playerName}. Your next Weekly Dungeon run is your one ranked attempt for this week.`;
@@ -157,6 +158,7 @@ window.CCGWeeklyChallenge=(()=>{
   }
 
   async function claim(){
+    if(!state.ready||!state.signedIn||state.locked)throw new Error(state.locked?"This week's attempt has already been used":"Sign in before starting the Weekly Dungeon");
     const data=await invoke({action:"start"});
     state={...state,...data,ready:true,signedIn:true,locked:true,attempt:data.attempt};
     await refreshGhost();
@@ -164,15 +166,22 @@ window.CCGWeeklyChallenge=(()=>{
     return data;
   }
 
+  function savePending(value){try{if(value)localStorage.setItem(PENDING_RESULT,JSON.stringify(value));else localStorage.removeItem(PENDING_RESULT)}catch(_){}}
+  function readPending(){try{const value=JSON.parse(localStorage.getItem(PENDING_RESULT)||"null");return value&&typeof value==="object"?value:null}catch(_){return null}}
+  async function submitPending(pending=readPending()){
+    if(!pending?.attemptId||!pending?.result)return null;
+    const data=await invoke({action:"finish",attemptId:pending.attemptId,result:pending.result});
+    savePending(null);state={...state,...data,locked:true,attempt:state.attempt?{...state.attempt,status:"finished"}:state.attempt};render();return data;
+  }
+
   async function finish(result){
     if(!state.attempt)return null;
+    const pending={attemptId:state.attempt.id,weekStart:state.weekStart,result};savePending(pending);
     try{
-      const data=await invoke({action:"finish",attemptId:state.attempt.id,result});
-      state={...state,...data,locked:true};
-      render();
-      return data;
+      return await submitPending(pending);
     }catch(error){
       console.error("[CCG weekly] score submission failed",error);
+      setTimeout(()=>submitPending().catch(retryError=>console.warn("[CCG weekly] deferred score retry pending",retryError)),2500);
       return null;
     }
   }
@@ -184,7 +193,7 @@ window.CCGWeeklyChallenge=(()=>{
     const now=Date.now();
     if(now-lastFocusRefresh<1000)return;
     lastFocusRefresh=now;
-    refresh();
+    refresh().then(()=>{if(state.signedIn)submitPending().catch(()=>{})});
   });
   window.addEventListener("pagehide",stopCountdown,{once:true});
 

@@ -62,13 +62,19 @@ Deno.serve(async (req: Request) => {
   }
   if(action==="finish"){
     const attemptId=String(payload.attemptId||""),result=(payload.result||{}) as Record<string,unknown>;
-    const {data:attempt}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name").eq("id",attemptId).eq("week_start",week).eq("user_id",user.id).maybeSingle();
+    const {data:attempt}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name,score,deepest_floor,duration_ms,level,completed").eq("id",attemptId).eq("week_start",week).eq("user_id",user.id).maybeSingle();
     if(!attempt)return json(req,{ok:false,error:"Weekly attempt not found"},404);
-    if(attempt.status==="finished")return json(req,{ok:true,locked:true,weekStart:week,leaderboard:leaders||[]});
+    if(attempt.status==="finished"){
+      const {error:repairError}=await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:week,player_name:attempt.player_name,score:int(attempt.score,0,99999999),deepest_floor:int(attempt.deepest_floor,1,5),duration_ms:int(attempt.duration_ms,0,86400000),level:int(attempt.level,1,99),completed:Boolean(attempt.completed)},{onConflict:"attempt_id"});
+      if(repairError)return json(req,{ok:false,error:"Finished score is awaiting leaderboard repair"},503);
+      const {data:fresh}=await service.from("ccq_weekly_leaderboard").select("player_name,score,deepest_floor,duration_ms,level,completed").eq("week_start",week).order("score",{ascending:false}).order("deepest_floor",{ascending:false}).order("duration_ms",{ascending:true}).limit(20);
+      return json(req,{ok:true,locked:true,weekStart:week,leaderboard:fresh||[]});
+    }
     const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:ghostPath(result.ghostPath)};
     const {error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats}).eq("id",attempt.id).eq("status","started");
     if(updateError)return json(req,{ok:false,error:"Could not record the weekly result"},500);
-    await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:week,player_name:attempt.player_name,score,deepest_floor:deepest,duration_ms:duration,level,completed},{onConflict:"attempt_id"});
+    const {error:leaderboardError}=await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:week,player_name:attempt.player_name,score,deepest_floor:deepest,duration_ms:duration,level,completed},{onConflict:"attempt_id"});
+    if(leaderboardError)return json(req,{ok:false,error:"Score saved; leaderboard projection will retry"},503);
     const {data:fresh}=await service.from("ccq_weekly_leaderboard").select("player_name,score,deepest_floor,duration_ms,level,completed").eq("week_start",week).order("score",{ascending:false}).order("deepest_floor",{ascending:false}).order("duration_ms",{ascending:true}).limit(20);
     return json(req,{ok:true,locked:true,weekStart:week,leaderboard:fresh||[]});
   }

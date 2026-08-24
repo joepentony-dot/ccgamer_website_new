@@ -10,12 +10,13 @@ const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 const tick=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 
 class RealtimeHub{
-  constructor(){this.topics=new Map()}
+  constructor(){this.topics=new Map();this.options=[]}
   channels(topic){if(!this.topics.has(topic))this.topics.set(topic,new Set());return this.topics.get(topic)}
   notify(topic,event="sync"){for(const channel of this.channels(topic))for(const row of channel.events)if(row.type==="presence"&&(row.filter?.event===event||row.filter?.event==="sync"))row.callback()}
   makeClient(){
     return{
       channel:(topic,options={})=>{
+        this.options.push(options);
         const channel={topic,key:options.config?.presence?.key,events:[],mine:null,closed:false};
         channel.on=(type,filter,callback)=>{channel.events.push({type,filter,callback});return channel};
         channel.subscribe=callback=>{this.channels(topic).add(channel);queueMicrotask(()=>callback("SUBSCRIBED"));return channel};
@@ -39,6 +40,8 @@ const {RoomNetwork}=context.window.CCGNetwork;
 const memberUpdates=[],packets=[];
 const makeNetwork=name=>new RoomNetwork({onMembers:(members,isHost)=>memberUpdates.push({name,count:members.length,isHost}),onPacket:(event,payload)=>packets.push({name,event,payload})});
 const host=makeNetwork("Host");await host.createOnlineRoom("V106A","Host");assert.equal(host.isHost,true);assert.equal(host.getMembers().length,1);
+assert.equal(hub.options[0].config.private,false,"browser rooms must explicitly use public Realtime channels");
+assert.equal(hub.options[0].config.broadcast.ack,true,"important browser broadcasts must request relay acknowledgement");
 
 const guests=[];
 for(let i=1;i<=3;i++){
@@ -51,6 +54,7 @@ await tick(3);const fifth=makeNetwork("Fifth");await assert.rejects(()=>fifth.jo
 
 await host.send("v106_lobby_start",{floor:1,build:"V10.6"});await tick(1);
 assert.equal(packets.filter(packet=>packet.event==="v106_lobby_start").length,3,"the host start reaches every admitted guest");
+host.connected=false;await assert.rejects(()=>host.sendRequired("v106_lobby_start",{}),/not connected/i,"required lobby messages must fail visibly while disconnected");host.connected=true;
 
 await host.leave();await tick(1);assert.equal(guests[0].isHost,true,"the earliest remaining guest becomes host");assert.equal(guests[0].getMembers().length,3,"disconnecting players are removed from presence");
 assert.ok(memberUpdates.some(update=>update.name==="Host"&&update.count===4),"presence published the four-player lobby state");
