@@ -183,6 +183,14 @@
     script.dataset.ccgV141XpPermadeath="true";
     document.head.appendChild(script);
   }
+  function loadV141SoloFullMap(){
+    if(document.querySelector('script[data-ccg-v141-solo-full-map="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-solo-full-map.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141SoloFullMap="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
@@ -192,6 +200,7 @@
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
   loadV141XpPermadeath();
+  loadV141SoloFullMap();
   monitorTutorialDeepLink();
 
   function menuVisible(){
