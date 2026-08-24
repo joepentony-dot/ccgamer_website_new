@@ -3,10 +3,17 @@ function onPacket(event,p){
   if(event==="player")onPlayer(p);else if(event==="shot")spawnBullet(p,true);else if(event==="enemy_shot")spawnEnemyShot(p);else if(event==="hit")onHit(p);else if(event==="player_hit"&&p?.target===p1?.id)hurtPlayer(p1,p.power||1,true,p.source||"another player");else if(event==="collect")onCollectRequest(p);else if(event==="collected")onCollected(p);else if(event==="world")onWorld(p);else if(event==="hello"&&net.isHost)broadcastWorld();else if(event==="notice"){const src=p?.source;if(!src||localPlayers().some(lp=>visibleTo(lp,src.x,src.y)))say(p?.html||"");}else if(event==="fx")onFX(p);else if(event==="complete")floorComplete(p?.by||"the team")
 }
 function onPlayer(p){
-  if(!p||p.id===net.sessionId)return;const old=remote.get(p.id),changed=old&&Number(old.health)!==Number(p.health);
-  remote.set(p.id,{...p,rx:old?.rx??p.x,ry:old?.ry??p.y,hpBarMs:changed?2600:Math.max(0,old?.hpBarMs||0),lastSeen:performance.now()})
+  if(!p||p.id===net.sessionId)return;const old=remote.get(p.id),changed=old&&Number(old.health)!==Number(p.health),moved=old&&(Number(old.x)!==Number(p.x)||Number(old.y)!==Number(p.y));
+  const next={...old,...p,inventory:Array.isArray(p.inventory)?p.inventory.map(x=>({...x})):old?.inventory||[],rx:old?.rx??p.x,ry:old?.ry??p.y,hpBarMs:changed?2600:Math.max(0,old?.hpBarMs||0),lastSeen:performance.now()};remote.set(p.id,next);if(net.isHost&&moved)processRemoteMovement(next)
 }
-function sendPlayer(){if(playMode!=="online")return;net.send("player",{id:p1.id,name:p1.name,x:p1.x,y:p1.y,health:p1.health,dir:p1.dir,torchMs:p1.torchMs,armor:p1.armor,level:p1.level})}
+function playerStateForNetwork(p){return{id:p.id,name:p.name,x:p.x,y:p.y,health:p.health,maxHealth:p.maxHealth,mana:p.mana,maxMana:p.maxMana,dir:p.dir?{...p.dir}:{x:1,y:0},torchMs:p.torchMs,rapidMs:p.rapidMs,armor:p.armor,bronzeKeys:p.bronzeKeys,level:p.level,xp:p.xp,totalXp:p.totalXp,inventory:(p.inventory||[]).map(x=>({...x})),inventorySlots:p.inventorySlots,weapon:p.weapon?{...p.weapon}:null,firearmUnlocked:Boolean(p.firearmUnlocked),meleeWeapon:p.meleeWeapon?{...p.meleeWeapon}:null,damageBonus:p.damageBonus,dashDamage:p.dashDamage,potionBonus:p.potionBonus,torchBonusMs:p.torchBonusMs,moveMultiplier:p.moveMultiplier}}
+function sendPlayer(){if(playMode!=="online")return;net.send("player",playerStateForNetwork(p1))}
+function sendRemotePlayerState(p){if(playMode==="online"&&net.isHost&&p?.id)net.send("v131_player_state",{target:p.id,state:playerStateForNetwork(p)})}
+function processRemoteMovement(p){
+  if(!p||!net.isHost||playMode!=="online"||mode!=="playing")return;const before=Number(host.revision||0),playerBefore=JSON.stringify(playerStateForNetwork(p));
+  try{triggerSwitch(p);triggerBloodClue(p);triggerMemoryPuzzle(p);triggerSequenceTorch(p);triggerWeightBridge(p);triggerShrine(p);triggerRescue(p);triggerArena(p);triggerTimed(p);triggerBoulder(p);triggerHauntedCorridor(p);triggerSigilRoom(p);markRoomVisit(p);rememberTrail(p)}catch(error){console.warn("[Lost Sizzler] remote movement trigger failed",error)}
+  const playerChanged=JSON.stringify(playerStateForNetwork(p))!==playerBefore;if(playerChanged)sendRemotePlayerState(p);if(playerChanged||Number(host.revision||0)!==before)broadcastWorld()
+}
 function serialWorld(){return{
   revision:host.revision,keysCollected:host.keysCollected,exitOpen:host.exitOpen,exitSigilCollected:Boolean(host.exitSigilCollected),exitSigilDropped:Boolean(host.exitSigilDropped),
   sigilRoomId:host.sigilRoomId??null,sigilLockdown:Boolean(host.sigilLockdown),sigilResolved:Boolean(host.sigilResolved),sigilDropPos:host.sigilDropPos?{...host.sigilDropPos}:null,radarSigilSeen:host.radarSigilSeen?{...host.radarSigilSeen}:null,radarSigilGateSeen:host.radarSigilGateSeen?{...host.radarSigilGateSeen}:null,sigilDefenderIds:[...(host.sigilDefenderIds||[])],sigilGateIds:[...(host.sigilGateIds||[])],
@@ -17,9 +24,11 @@ function serialWorld(){return{
   rescue:host.rescue?{...host.rescue}:null,stalker:host.stalker?{...host.stalker}:null,objective:host.objective?{...host.objective}:null,mapRewards:host.mapRewards?{...host.mapRewards}:null,enteredRoomIds:[...(host.enteredRoomIds||[])],alertLevel:host.alertLevel||0
 }}
 function broadcastWorld(){if(playMode==="online"&&net.connected&&net.isHost)net.send("world",serialWorld())}
+let lastAuthoritativeWorldRevision=-1,lastAuthoritativeWorldFloor=-1;
 function onWorld(s){
   if(!s||net.isHost)return;
-  if(!host||Number(s.revision)>=Number(host.revision)){
+  const incomingFloor=Math.max(1,Number(s?._v106Run?.floor||s?._v105Run?.floor||run?.floor||1)),incomingRevision=Number(s.revision||0);if(incomingFloor!==lastAuthoritativeWorldFloor){lastAuthoritativeWorldFloor=incomingFloor;lastAuthoritativeWorldRevision=-1}
+  if(!host||incomingRevision>=lastAuthoritativeWorldRevision){lastAuthoritativeWorldRevision=incomingRevision;
     host={...host,revision:Number(s.revision||0),keysCollected:Number(s.keysCollected||0),exitOpen:Boolean(s.exitOpen),exitSigilCollected:Boolean(s.exitSigilCollected),exitSigilDropped:Boolean(s.exitSigilDropped),
       sigilRoomId:s.sigilRoomId??host?.sigilRoomId??null,sigilLockdown:Boolean(s.sigilLockdown),sigilResolved:Boolean(s.sigilResolved),sigilDropPos:s.sigilDropPos||null,radarSigilSeen:s.radarSigilSeen||host?.radarSigilSeen||null,radarSigilGateSeen:s.radarSigilGateSeen||host?.radarSigilGateSeen||null,sigilDefenderIds:s.sigilDefenderIds||[],sigilGateIds:s.sigilGateIds||[],
       doors:s.doors||[],chests:s.chests||[],enemies:s.enemies||[],items:s.items||[],traps:s.traps||[],generators:s.generators||[],shrines:s.shrines||[],switches:s.switches||[],arenas:s.arenas||[],timedRooms:s.timedRooms||[],blockingDecor:s.blockingDecor||[],hazardRooms:s.hazardRooms||[],spiderNest:s.spiderNest||null,skeletonHorde:s.skeletonHorde||null,
@@ -37,7 +46,7 @@ function hostEnemyStep(dt){
     alert:(e,state,reason)=>{const seenHere=localPlayers().some(p=>visibleTo(p,e.x,e.y));if(state==="alert"&&seenHere){S.sfx("alert");floatText(e.x,e.y,"!",P.red);if(reason==="room"&&Math.random()<.18)say(`<strong>ROOM ALERT.</strong> ${e.follower?.name||e.championName||"Something"} has spotted you.`,"red")}if(state==="search"&&seenHere)S.sfx("search")}
   },world)
 }
-function onHit(p){if(!net.isHost||!p?.enemyId)return;const e=host.enemies.find(x=>x.id===p.enemyId&&x.alive);if(e){if(p.source)A.alertEnemy(e,p.source.x,p.source.y);const attacker=findLocal(p.owner)||remote.get(p.owner)||{id:String(p.owner||"remote"),name:String(p.ownerName||"Online Player")};damageEnemy(e,Math.max(1,Math.min(8,Number(p.power||1))),p.element||"energy",attacker)}}
+function onHit(p){if(!net.isHost||!p?.enemyId)return;const e=host.enemies.find(x=>x.id===p.enemyId&&x.alive);if(e){const attacker=findLocal(p.owner)||remote.get(p.owner)||{id:String(p.owner||"remote"),name:String(p.ownerName||"Online Player")};if(p.element==="physical"&&Math.hypot(Number(attacker.x)-Number(e.x),Number(attacker.y)-Number(e.y))>2.25)return;if(p.source)A.alertEnemy(e,p.source.x,p.source.y);damageEnemy(e,Math.max(1,Math.min(8,Number(p.power||1))),p.element||"energy",attacker)}}
 function elementalDamage(e,power,element){if(!e.weakness)return power;if(e.weakness===element)return Math.ceil(power*1.75);return power}
 function isDeathStalkerEnemy(e){return Boolean(e?.deathStalker&&e?.voidStalker)}
 const ENEMY_LABELS={spider:"Dustweb Spider",skeleton:"Crypt Skeleton",knight:"Archive Knight",scout:"Archive Scout",hunter:"Citadel Hunter",ambusher:"Shadow Ambusher",guard:"Vault Guard",charger:"Dungeon Charger",ranger:"Archive Ranger",root:"Root Caster",cook:"Dungeon Cook",firebreather:"Firebreather",ghost:"Archive Ghost",champion:"Citadel Champion",treasure:"Treasure Goblin"};

@@ -3,6 +3,14 @@ function knockEnemyAway(e,from){if(!e||!from)return;const dx=Math.sign(e.x-from.
 function knockPlayerAway(p,from){if(!p||!from)return;const dx=Math.sign(p.x-from.x),dy=Math.sign(p.y-from.y),nx=p.x+dx,ny=p.y+dy;if((dx||dy)&&W.walkable(world.map,nx,ny,host)){p.x=nx;p.y=ny}}
 function collideWithEnemy(p,e,fromX,fromY){
   if(!p||!e)return;const dx=Math.sign(e.x-fromX),dy=Math.sign(e.y-fromY);
+  const meleeOnly=!(p.firearmUnlocked&&p.weapon&&Number(p.mana||0)>0);
+  if(meleeOnly){
+    // Sword combat happens from the adjacent tile. Walking into a target must
+    // not deal a second contact hit or throw the player away from melee range;
+    // the enemy AI's own attack remains responsible for damage and knockback.
+    p.x=fromX;p.y=fromY;p.rx=fromX;p.ry=fromY;
+    return;
+  }
   // Contact pushes both combatants apart. The player takes the impact damage; the enemy does not.
   p.x=fromX;p.y=fromY;p.rx=p.x;p.ry=p.y;tryKnockPosition(e,dx,dy);
   const backX=fromX-dx,backY=fromY-dy;if(W.walkable(world.map,backX,backY,host)&&!host.enemies.some(o=>o.alive&&o!==e&&o.x===backX&&o.y===backY)){p.x=backX;p.y=backY;p.rx=backX;p.ry=backY}
@@ -147,12 +155,29 @@ function projectilePathClear(b,nx,ny){
   }
   return true;
 }
-function damageFurnitureAt(x,y,power=1){
+const FURNITURE_ITEM_CHANCE=.12;
+const FURNITURE_ENEMY_CHANCE=.035;
+const FURNITURE_ITEM_LIMIT=3;
+function furnitureAmbush(blocker,attacker){
+  if(!["barrel","bookcase"].includes(blocker?.type)||host.v131FurnitureEnemyReleased||Math.random()>=FURNITURE_ENEMY_CHANCE)return false;
+  const kind=blocker.type==="bookcase"?"ambusher":"scout",floor=Math.max(1,Number(run?.floor||1)),hp=2+floor;
+  const enemy={id:`furniture-ambush-${Date.now()}-${Math.random()}`,x:blocker.x,y:blocker.y,kind,hp,maxHp:hp,alive:true,aiState:"chase",facing:{x:1,y:0},lastSeen:attacker?{x:attacker.x,y:attacker.y}:null,memoryMs:6000,searchMs:0,moveCooldown:520,attackCooldown:850,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,furnitureEnemy:true};
+  host.enemies.push(enemy);host.v131FurnitureEnemyReleased=true;
+  const bounty=window.CCGLostSizzlerRareEvents?.state?.bounty;if(bounty&&!bounty.complete&&Number(bounty.target||0)<50){bounty.target++;bounty.type=`KILL ${bounty.target} ENEMIES`}
+  floatText(blocker.x,blocker.y,"AMBUSH!",P.red);showToast("FURNITURE AMBUSH",`Something was hiding inside the ${blocker.type}.`,"red",5200);return true;
+}
+function furnitureItem(blocker){
+  host.v131FurnitureItems=Number(host.v131FurnitureItems||0);if(host.v131FurnitureItems>=FURNITURE_ITEM_LIMIT||Math.random()>=FURNITURE_ITEM_CHANCE)return false;
+  const roll=Math.random(),kind=roll<.45?"credits":roll<.7?"health":roll<.95?"ammo":"potion",title={credits:"HIDDEN GOLD SCORE COIN",health:"HIDDEN HEALTH PACK",ammo:"HIDDEN AMMO PACK",potion:"HIDDEN RESTORATION POTION"}[kind];
+  host.items.push({id:`furniture-item-${Date.now()}-${Math.random()}`,x:blocker.x,y:blocker.y,kind,active:true,title,furnitureDrop:true});host.v131FurnitureItems++;
+  floatText(blocker.x,blocker.y,"FOUND!",kind==="health"?P.green:kind==="ammo"?P.cyan:P.gold);return true;
+}
+function damageFurnitureAt(x,y,power=1,attacker=null){
   const blocker=(host.blockingDecor||[]).find(d=>d.x===Math.round(x)&&d.y===Math.round(y));if(!blocker)return false;
   if(!net.isHost)return true;if(blocker.structural){S.sfx("wall");floatText(blocker.x,blocker.y,"SOLID",P.grey);return true}
   blocker.hp=Math.max(0,Number(blocker.hp??2)-Math.max(1,Number(power)||1));const decor=(world.decor||[]).find(d=>d.id===blocker.id);if(decor)decor.hp=blocker.hp;
   if(blocker.hp>0){S.sfx("woodhit");burst(blocker.x,blocker.y,"#c49355",10,1);floatText(blocker.x,blocker.y,"CRACK!",P.gold);host.revision++;return true}
-  host.blockingDecor=host.blockingDecor.filter(d=>d!==blocker);if(decor)decor.destroyed=true;S.sfx("woodbreak");shake=Math.max(shake,5);const fx={type:"furniture",x:blocker.x,y:blocker.y,color:"#c89052"};onFX(fx);if(playMode==="online")net.send("fx",fx);host.revision++;broadcastWorld();return true
+  host.blockingDecor=host.blockingDecor.filter(d=>d!==blocker);if(decor)decor.destroyed=true;S.sfx("woodbreak");shake=Math.max(shake,5);const fx={type:"furniture",x:blocker.x,y:blocker.y,color:"#c89052"};onFX(fx);if(playMode==="online")net.send("fx",fx);if(!furnitureAmbush(blocker,attacker))furnitureItem(blocker);host.revision++;broadcastWorld();return true
 }
 function stepProjectiles(){
   for(const b of bullets){
@@ -191,7 +216,7 @@ function hurtPlayer(p,n,friendly=false,source="enemy"){
     showToast(penalty.zeroWarning?`${p.name.toUpperCase()} RESPAWNS — FINAL XP WARNING`:`${p.name.toUpperCase()} RESPAWNS — SCORE HALVED`,`OBJECTIVE: ${objective}.${xpText}${cacheText}${zeroText}`,"red",penalty.zeroWarning?13000:10000);host.revision++;broadcastWorld();if(run.consecutiveDeaths>=5)setTimeout(()=>{if(mode==="playing")offerFloorSave(true)},650)
   }sync()
 }
-function updateCamping(p,dt){let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
+function updateCamping(p,dt){if(window.CCGLostSizzlerOnboardingV120?.state?.active){resetCamp(p,true);return}let c=campStates.get(p.id);if(!c){resetCamp(p);c=campStates.get(p.id)}const moved=p.x!==c.lastX||p.y!==c.lastY;if(c.active){if(Math.hypot(p.x-c.originX,p.y-c.originY)>=C.camping.resetDistance){resetCamp(p,true);return}c.lastX=p.x;c.lastY=p.y}else if(moved){resetCamp(p,true);return}c.elapsed+=dt;if(c.elapsed<C.camping.graceMs)return;if(!c.active){c.active=true;c.originX=p.x;c.originY=p.y;c.nextBlast=150;c.blastCount=0;S.sfx("campwarn");run.alert=Math.min(100,run.alert+14);showToast("60 SECONDS IDLE — LEAVE THE ZONE","Every second blast targets you for 1 HP. Move six tiles away to stop the barrage.","red",7500)}c.nextBlast-=dt;if(c.nextBlast<=0){c.blastCount++;let q;if(c.blastCount%C.camping.directBlastEvery===0)q={x:p.x,y:p.y,direct:true};else{const a=[];for(let dy=-C.camping.zoneRadius;dy<=C.camping.zoneRadius;dy++)for(let dx=-C.camping.zoneRadius;dx<=C.camping.zoneRadius;dx++){const x=c.originX+dx,y=c.originY+dy;if(W.walkable(world.map,x,y,host)&&Math.hypot(dx,dy)<=C.camping.zoneRadius+.2)a.push({x,y})}q=a[Math.floor(Math.random()*a.length)]||{x:c.originX,y:c.originY}}hazards.push({x:q.x,y:q.y,life:C.camping.warningMs,maxLife:C.camping.warningMs,direct:!!q.direct,campOwner:p.id,originX:c.originX,originY:c.originY});c.nextBlast=C.camping.blastIntervalMs}}
 function updateHazards(dt){for(let i=hazards.length-1;i>=0;i--){const h=hazards[i];h.life-=dt;if(h.life>0)continue;hazards.splice(i,1);S.sfx("explosion");shake=Math.max(shake,h.direct?13:9);burst(h.x,h.y,P.orange,h.direct?32:24,h.direct?2.1:1.8);ring(h.x,h.y,P.red,h.direct?54:42);if(h.direct){const target=localPlayers().find(p=>p.id===h.campOwner);if(target&&Math.hypot(target.x-h.originX,target.y-h.originY)<C.camping.resetDistance)hurtPlayer(target,1,false,"anti-loitering blast")}}}
 function roomMoodFor(roomId){
   const room=world.rooms[roomId];if(!room)return "normal";

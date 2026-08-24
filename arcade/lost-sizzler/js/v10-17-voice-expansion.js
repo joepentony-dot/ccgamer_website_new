@@ -49,14 +49,5 @@
     };
   }
 
-  if(typeof hurtPlayer==="function"){
-    const originalHurtPlayer=hurtPlayer;
-    hurtPlayer=function hurtPlayerV117VoiceExpansion(player,n,friendly=false,source="enemy"){
-      const deathsBefore=Number(run?.stats?.deaths||0),result=originalHurtPlayer.apply(this,arguments),deathsAfter=Number(run?.stats?.deaths||0);
-      try{if(!run?.daily&&deathsAfter>deathsBefore&&Number(player?.health||0)>0)voice.say("respawn",{cooldown:0})}catch(_){}
-      return result;
-    };
-  }
-
   window.CCGLostSizzlerVoiceExpansion={classifyRare};
 })();

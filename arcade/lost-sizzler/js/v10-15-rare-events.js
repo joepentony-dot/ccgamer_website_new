@@ -7,7 +7,8 @@
   const CHANCE={mimic:.08,cursed:.07,merchant:.07,golden:.045,adventurer:.06,tremor:.06,cabinet:.07,bat:.07,taxman:.055,mystery:.10,developer:.025,map:.08,mutation:.16};
   const HINT_STAGE_MS=[300000];
   const ACTIVE_MOVEMENT_WINDOW_MS=5000;
-  const state={floorKey:"",startedAt:0,hintMs:0,hintStage:0,hintTarget:null,hintMarkerUntil:0,lastObjectiveSignature:"",lastPlayerCell:"",lastMoveAt:0,plans:{},golden:null,bounty:null,mutation:null,ghost:null,ghostRecord:[],ghostSampleMs:0,announcedRooms:new Set(),specialDeaths:new Set()};
+  const BOUNTY_ANNOUNCE_DELAY_MS=20000;
+  const state={floorKey:"",startedAt:0,activePlayMs:0,hintMs:0,hintStage:0,hintTarget:null,hintMarkerUntil:0,lastObjectiveSignature:"",lastPlayerCell:"",lastMoveAt:0,plans:{},golden:null,bounty:null,mutation:null,ghost:null,ghostRecord:[],ghostSampleMs:0,announcedRooms:new Set(),specialDeaths:new Set()};
 
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return h>>>0}
   const unit=value=>hash32(value)/4294967296;
@@ -54,7 +55,7 @@
   function spawnSimpleEnemy(id,q,kind,hp,extra={}){const e={id,...q,kind,hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:750,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,...extra};host.enemies.push(e);host.revision=(host.revision||0)+1;return e}
 
   function planFloor(seed,checkpointRestore=false){
-    state.floorKey=floorKey(seed);state.startedAt=performance.now();state.hintMs=0;state.hintStage=0;state.hintTarget=null;state.hintMarkerUntil=0;state.lastObjectiveSignature="";state.lastPlayerCell=p1?`${p1.x},${p1.y}`:"";state.lastMoveAt=0;state.plans={};state.golden=null;state.bounty=null;state.mutation=null;state.ghost=null;state.ghostRecord=[];state.ghostSampleMs=0;state.announcedRooms.clear();state.specialDeaths.clear();
+    state.floorKey=floorKey(seed);state.startedAt=performance.now();state.activePlayMs=0;state.hintMs=0;state.hintStage=0;state.hintTarget=null;state.hintMarkerUntil=0;state.lastObjectiveSignature="";state.lastPlayerCell=p1?`${p1.x},${p1.y}`:"";state.lastMoveAt=0;state.plans={};state.golden=null;state.bounty=null;state.mutation=null;state.ghost=null;state.ghostRecord=[];state.ghostSampleMs=0;state.announcedRooms.clear();state.specialDeaths.clear();
     if(checkpointRestore)return;
     installMutation();installMimic();installCursedCartridge();installMerchant();installGoldenRoom();installAdventurer();installTremor();installCabinet();installTreasureBat();installTaxman();installMysteryPotion();installDeveloperRoom();installBounty();installTreasureMap();loadWeeklyGhost();
   }
@@ -88,7 +89,7 @@
 
   function announceStartSystems(){
     if(state.mutation&&!state.mutation.announced){state.mutation.announced=true;showToast(`FLOOR MUTATION — ${state.mutation.type}`,mutationCopy(state.mutation.type),state.mutation.type==="DOUBLE GOLD"?"gold":"cyan",9000)}
-    if(state.bounty&&!state.bounty.announced){state.bounty.announced=true;showToast(`DUNGEON BOUNTY — ${state.bounty.type}`,"Optional challenge: complete it on this floor for +1,000 score.","gold",8500)}
+    if(state.bounty&&!state.bounty.announced&&state.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS){state.bounty.announced=true;showToast(`DUNGEON BOUNTY — ${state.bounty.type}`,"Optional challenge: complete it on this floor for +1,000 score.","gold",8500)}
   }
   function mutationCopy(type){return {"DOUBLE GOLD":"Gold score pickups on this floor are worth double.","DARKNESS":"Torchless visibility is less forgiving and dungeon alert starts higher.","ELITE BOUNTY":"Special enemy kills are worth more score this floor.","CHEST RUSH":"Chest loot quality is boosted across the floor.","NO SHOPPING":"Most dungeon shops are closed on this floor."}[type]||"The rules of this floor have shifted."}
 
@@ -171,7 +172,7 @@
   async function loadWeeklyGhost(){if(!run?.daily)return;try{const raw=sessionStorage.getItem("ccg-weekly-ghost-preview");if(raw)state.ghost=JSON.parse(raw)}catch(_){}}
   function drawGhost(){const g=state.ghost;if(!g?.path?.length||!run?.daily||!focus)return;const same=g.path.filter(q=>q.f===Number(run.floor||1));if(!same.length)return;const t=Number(run.elapsed||0);let q=same[0];for(const p of same){if(p.t<=t)q=p;else break}if(!q||!visibleTo(focus,q.x,q.y))return;const s=typeof ws==="function"?ws(q.x,q.y):{x:q.x*C.tile,y:q.y*C.tile};ctx.save();ctx.globalAlpha=.28;ctx.fillStyle=P.cyan;ctx.shadowColor=P.cyan;ctx.shadowBlur=12;ctx.beginPath();ctx.arc(s.x+C.tile/2,s.y+C.tile/2,C.tile*.28,0,Math.PI*2);ctx.fill();ctx.font="bold 10px monospace";ctx.textAlign="center";ctx.fillText(g.playerName||"WEEKLY GHOST",s.x+C.tile/2,s.y-4);ctx.restore();}
 
-  function updateRare(dt){if(!host||!run||mode!=="playing")return;announceStartSystems();updateMerchant(dt);updateAdventurer(dt);updateBat(dt);updateTaxman(dt);updateTremor();if(state.golden?.active){state.golden.timeMs-=dt;state.golden.waveMs-=dt;if(state.golden.waveMs<=0){state.golden.waveMs=6500;spawnGoldenWave()}if(state.golden.timeMs<=0)finishGoldenRoom()}for(const p of localPlayersSafe())beginGoldenRoom(p);updateCabinet(dt);updateMysteryEffects(dt);updateTreasureMap();updateBounty();updateHints(dt);recordGhost(dt);}
+  function updateRare(dt){if(!host||!run||mode!=="playing")return;state.activePlayMs+=Math.max(0,Number(dt||0));announceStartSystems();updateMerchant(dt);updateAdventurer(dt);updateBat(dt);updateTaxman(dt);updateTremor();if(state.golden?.active){state.golden.timeMs-=dt;state.golden.waveMs-=dt;if(state.golden.waveMs<=0){state.golden.waveMs=6500;spawnGoldenWave()}if(state.golden.timeMs<=0)finishGoldenRoom()}for(const p of localPlayersSafe())beginGoldenRoom(p);updateCabinet(dt);updateMysteryEffects(dt);updateTreasureMap();updateBounty();updateHints(dt);recordGhost(dt);}
 
   function specialDeath(enemy){
     if(!enemy||state.specialDeaths.has(enemy.id))return;state.specialDeaths.add(enemy.id);

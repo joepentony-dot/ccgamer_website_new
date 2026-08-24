@@ -5,6 +5,11 @@
   window.__CCG_LOST_SIZZLER_TUTORIAL_GUIDANCE_V123__=true;
 
   const INPUT_STEPS=new Map([[0,"move"],[1,"fire"],[2,"dash"],[3,"inventory"]]);
+  const INFO_HIGHLIGHTS=new Map([
+    [4,[[".mission","1 · CURRENT OBJECTIVE"],[".radar-card","2 · TACTICAL RADAR"],["#pickup-toast","3 · CONTEXTUAL HINTS"]]],
+    [5,[[".health-stat","1 · HEALTH"],[".armour-stat","2 · ARMOUR"],[".potion-card","3 · POTION · E"],[".torch-card","4 · TORCH · Q"],[".hub-inventory","5 · QUICK ITEMS"]]],
+    [6,[[".keys-card","1 · KEYRING"],[".canvas-wrap","2 · DOORS & CHESTS"],["#pickup-toast","3 · INTERACTION REPORTS"]]]
+  ]);
   let lastStep=-1;
   let acknowledgedStep=-1;
   let soloBound=false;
@@ -26,6 +31,9 @@
         outline:2px solid rgba(114,255,155,.88)!important;outline-offset:2px!important;
         animation:ccgTutorialControlFlash .82s ease-in-out infinite!important;
       }
+      @keyframes ccgTutorialInfoGlow{0%,100%{outline-color:#6cecff;filter:brightness(1.08)}50%{outline-color:#ffd85a;filter:brightness(1.28)}}
+      body[data-tutorial-active="true"] .ccg-tutorial-info-highlight{position:relative!important;z-index:10130!important;outline:3px solid #6cecff!important;outline-offset:3px!important;box-shadow:0 0 0 6px rgba(3,2,8,.88),0 0 34px rgba(108,236,255,.68)!important;animation:ccgTutorialInfoGlow 1.25s ease-in-out infinite!important}
+      body[data-tutorial-active="true"] .ccg-tutorial-info-highlight:after{content:attr(data-tutorial-callout);position:absolute;z-index:2;right:6px;top:6px;padding:5px 8px;border:1px solid #ffd85a;border-radius:6px;background:#160d21;color:#fff3b0;font:900 .68rem/1.1 monospace;letter-spacing:.06em;box-shadow:0 4px 16px rgba(0,0,0,.55);pointer-events:none}
       #ccg-tutorial-stage-modal{
         position:fixed!important;inset:0!important;z-index:10120!important;display:grid;place-items:center;
         padding:max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
@@ -73,7 +81,10 @@
 
   function clearHighlights(){
     document.querySelectorAll(".ccg-tutorial-control-highlight").forEach(el=>el.classList.remove("ccg-tutorial-control-highlight"));
+    document.querySelectorAll(".ccg-tutorial-info-highlight").forEach(el=>{el.classList.remove("ccg-tutorial-info-highlight");delete el.dataset.tutorialCallout});
   }
+
+  function highlightInformation(step){for(const [selector,label] of INFO_HIGHLIGHTS.get(step)||[]){const node=document.querySelector(selector);if(!node)continue;node.dataset.tutorialCallout=label;node.classList.add("ccg-tutorial-info-highlight")}}
 
   function desktopCommand(kind){
     const labels={move:["WASD","MOVE"],fire:["SPACE","FIRE"],dash:["SHIFT","DASH"],inventory:["TAB","ITEMS"]}[kind];
@@ -234,12 +245,14 @@
     if(!info)return false;
     const kind=INPUT_STEPS.get(step)||null;
     const modal=ensureStageModal();
-    clearHighlights();acknowledgedStep=-1;
+    clearHighlights();highlightInformation(step);acknowledgedStep=-1;
     const note=kind
       ? `Press Continue to acknowledge this step. The tutorial will then highlight the ${kind==="inventory"?"Items / Inventory":kind} control for you to use.`
       : step===9
         ? "Press Complete Tutorial when you have read this final message."
-        : "Press Continue when you have read this information. The tutorial will not move on until you acknowledge it.";
+        : INFO_HIGHLIGHTS.has(step)
+          ? "The numbered highlights identify each live interface area covered by this lesson. Check every marker, then press Continue."
+          : "Press Continue when you have read this information. The tutorial will not move on until you acknowledge it.";
     modal.innerHTML=`<div class="ccg-tutorial-modal-card">
       <span class="tutorial-kicker">${escapeHtml(info.kicker)}</span>
       <h2>${escapeHtml(info.title)}</h2>
@@ -307,5 +320,5 @@
   window.addEventListener("pagehide",()=>{
     clearInterval(timer);clearHighlights();document.removeEventListener("keydown",blockGameplayKeysWhileReading,true);
   },{once:true});
-  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,showStage,ensurePrimaryTutorialButton,launchSolo,get tutorialLaunchPending(){return tutorialLaunchPending},get queuedLaunch(){return queuedLaunch}};
+  window.CCGLostSizzlerTutorialGuidanceV123={tick,highlightControls,highlightInformation,showStage,ensurePrimaryTutorialButton,launchSolo,get tutorialLaunchPending(){return tutorialLaunchPending},get queuedLaunch(){return queuedLaunch}};
 })();

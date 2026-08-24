@@ -98,10 +98,10 @@ window.CCGSystems=(()=>{
   const furnitureByTheme={
     C64_ARCHIVE:["bookcase","tapeStack","desk","cabinet","roundChair"],
     "1541_WORKSHOP":["driveBench","terminal","crate","cable","roundChair"],
-    BUDGET_BIN:["bin","crate","display","bookcase","roundChair"],
+    BUDGET_BIN:["bin","barrel","display","bookcase","roundChair"],
     DEMO_LOUNGE:["console","speaker","lightBar","roundChair","table"],
     ARMOURY:["rack","crate","bench","shield","pillar"],
-    CPU_KITCHEN:["table","counter","oven","crate","roundChair"],
+    CPU_KITCHEN:["table","counter","oven","barrel","roundChair"],
     SID_REACTOR:["reactor","console","pipe","coil","pool"],
     WARP_GALLERY:["arch","obelisk","console","bench","pool"],
     ZZAP_LIBRARY:["bookcase","readingDesk","display","cabinet","roundChair"],
@@ -114,9 +114,9 @@ window.CCGSystems=(()=>{
     CRT_MAZE:["display","terminal","console","cable","roundChair"],
     IRON_KEEP:["shield","rack","bench","pillar","candleSconce"],
     MOSS_CRYPT:["statue","pedestal","pillar","bench","candleSconce"],
-    EMBER_DUNGEON:["anvil","rack","crate","pillar","candleSconce"],
+    EMBER_DUNGEON:["anvil","rack","barrel","pillar","candleSconce"],
     SPIDER_NEST:["bookcase","tapeStack","crate","candleSconce"],
-    TREASURE_VAULT:["pedestal","crate","statue","chestPile","pillar"]
+    TREASURE_VAULT:["pedestal","barrel","statue","chestPile","pillar"]
   };
   const nonBlockingDecor=new Set(["cable","pipe","lightBar","candleSconce"]);
   function decorBlocking(type){return !nonBlockingDecor.has(type)}

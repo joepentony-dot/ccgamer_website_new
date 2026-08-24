@@ -26,6 +26,7 @@ assert.match(oldTest,/\/arcade\/lost-sizzler\//,'obsolete test URL must target c
 assert.match(voice,/welcomeRare/,'rare recorded welcome support must remain wired');
 assert.match(voice,/Math\.random\(\)<\.1/,'rare welcome should remain uncommon');
 assert.match(voice,/playSprite/,'bundled recorded voice fallback must be present');
-assert.match(voice,/assetFor\(next\.key\)/,'admin voice override must be checked before bundled fallback');
+assert.match(voice,/src=!forceTts\?assetFor\(key\):""/,'admin voice override must be checked before bundled fallback');
+assert.doesNotMatch(voice,/state\.queue\.push\(/,'voice cues must never accumulate into a playback backlog');
 
 console.log('Lost Sizzler consolidation regression checks passed.');

@@ -105,7 +105,7 @@
       try{floatText(tx,ty,melee.rarity==="STARTER"?"SLASH!":`${melee.short}!`,melee.colour||P.gold,{life:620})}catch(_){}
     }else if(generator){
       damageGenerator(generator,meleeDamageFor(p),p);hit=true;
-    }else if(typeof damageFurnitureAt==="function"&&damageFurnitureAt(tx,ty,meleeDamageFor(p)))hit=true;
+    }else if(typeof damageFurnitureAt==="function"&&damageFurnitureAt(tx,ty,meleeDamageFor(p),p))hit=true;
     else if(host?.stalker?.awake&&host.stalker.x===tx&&host.stalker.y===ty){
       hit=true;try{S.sfx("stalker");showToast(`${String(C.stalker.name||"Count Loadula").toUpperCase()} RESISTS THE BLADE`,`Melee can push ordinary enemies into danger, but ${C.stalker.name||"Count Loadula"} still requires a Banishment Flask.`,"red",6200)}catch(_){}
     }

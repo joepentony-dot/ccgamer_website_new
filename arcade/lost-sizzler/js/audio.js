@@ -68,6 +68,11 @@ window.CCGSound=(()=>{
   }
   async function start(){if(!ensure())return false;try{if(ctx.state!=="running"){const resume=ctx.resume();if(resume?.catch)resume.catch(()=>{})}}catch(_){}started=true;if(useMusicAssets){syncAssetMusic()}else{if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}return true}
   function stopMusic(){if(musicAsset){try{musicAsset.pause()}catch(_){}}if(musicTimer){clearInterval(musicTimer);musicTimer=null}if(dangerTimer){clearInterval(dangerTimer);dangerTimer=null}if(stalkerTimer){clearInterval(stalkerTimer);stalkerTimer=null}}
+  function stopAll(){
+    stopMusic();for(const audio of activeSfx){try{audio.pause();audio.currentTime=0}catch(_){}}activeSfx.clear();
+    if(ctx){try{ctx.close?.()}catch(_){}ctx=null;master=musicGain=sfxGain=dangerGain=stalkerGain=null}
+    musicAsset=null;musicAssetState="";started=false;danger=0;stalkerNear=false;stalkerSight=false;namedEnemy="";namedLockUntil=0;
+  }
   function startMusic(){if(!started)return;if(useMusicAssets){syncAssetMusic();return}if(!musicTimer){step=0;musicTimer=setInterval(musicTick,170)}if(!dangerTimer)dangerTimer=setInterval(dangerTick,780);if(!stalkerTimer)stalkerTimer=setInterval(stalkerTick,360)}
   function setDanger(v){danger=Math.max(0,Math.min(1,Number(v)||0));if(dangerGain)dangerGain.gain.value=.045+.07*danger}
   function setRoomMood(v){const next=["normal","danger","sanctuary","named",...Object.keys(ASSETS.music?.rooms||{})].includes(v)?v:"normal";if(next===roomMood)return;roomMood=next;step=0;if(useMusicAssets)syncAssetMusic();else if(musicGain&&ctx)musicGain.gain.setTargetAtTime(next==="named"?.11:next==="danger"?.095:next==="sanctuary"?.065:.08,ctx.currentTime,.35)}
@@ -80,5 +85,5 @@ window.CCGSound=(()=>{
   }[name];playAssetSfx(name,f)}
   function windWhistle(){if(!enabled)return;start();[510,620,565,710,480].forEach((n,i)=>tone(n,.7,"sine",.025,i%2?85:-70,i*.18));noise(1.25,.022)}
   function toggle(){enabled=!enabled;if(enabled){start();startMusic()}else stopMusic();return enabled}
-  return{start,startMusic,stopMusic,sfx,windWhistle,toggle,isEnabled:()=>enabled,setMusicLevel,setDanger,setStalkerNear,setStalkerSight,setRoomMood,setNamedEnemy};
+  return{start,startMusic,stopMusic,stopAll,sfx,windWhistle,toggle,isEnabled:()=>enabled,setMusicLevel,setDanger,setStalkerNear,setStalkerSight,setRoomMood,setNamedEnemy};
 })();
