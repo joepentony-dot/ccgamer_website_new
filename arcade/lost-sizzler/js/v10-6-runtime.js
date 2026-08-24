@@ -25,7 +25,7 @@
   async function leaveLobby(message="Online lobby closed."){
     try{await net.leave()}catch(_){}hideLobby();playMode="solo";mode="menu";setRunPresentation(false);net.setSolo(playerName());UI.menu?.classList.remove("hidden");setNote(message);sync?.()
   }
-  function runMeta(){return{roomCode:net.roomCode,seed:net.roomCode,floor:1,difficulty:UI.difficulty?.value||"ARCADE",modifier:null,startedAt:Date.now(),build:"V10.31"}}
+  function runMeta(){return{roomCode:net.roomCode,seed:net.roomCode,floor:1,difficulty:UI.difficulty?.value||"ARCADE",modifier:null,startedAt:Date.now(),build:"V10.32"}}
   function prepareRun(meta={}){
     run=PGR.makeRun({difficulty:meta.difficulty||UI.difficulty?.value||"ARCADE",seed:meta.seed||net.roomCode});run.floor=Math.max(1,Number(meta.floor||1));run.deepest=run.floor;run.modifier=meta.modifier?{...meta.modifier}:PGR.chooseFloorModifier(run,Math.random);playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";setRunPresentation(true);hideLobby();UI.menu?.classList.add("hidden");S.start();S.startMusic();sync()
   }
@@ -41,7 +41,7 @@
     if(!lobbyOpen||!net.isHost||startHandled)return;startHandled=true;requestPlayFullscreen();const meta=runMeta();lastStartMeta=meta;prepareRun(meta);
     const announce=()=>net.sendRequired("v106_lobby_start",meta).catch(error=>{setNote(`Room ${net.roomCode}: ${error.message}`);console.warn("[Lost Sizzler] lobby start relay retry failed",error)});announce();setTimeout(announce,280);setTimeout(announce,850);setTimeout(()=>broadcastWorld(),1000);showToast("ONLINE DUNGEON STARTED",`${net.getMembers().length}/${C.maxPlayers} players entered room ${net.roomCode}.`,"green",7500)
   }
-  function receiveStart(meta){if(net.isHost||startHandled)return;startHandled=true;lastStartMeta=meta;requestPlayFullscreen();prepareRun(meta);net.send("v106_lobby_ack",{id:net.sessionId,name:playerName()}).catch(()=>{});net.send("hello",{id:net.sessionId,name:playerName(),roomCode:net.roomCode,wantsWorld:true,build:"V10.31"}).catch(()=>{});showToast("HOST STARTED THE DUNGEON",`Room ${net.roomCode} is live.`,"green",7000)}
+  function receiveStart(meta){if(net.isHost||startHandled)return;startHandled=true;lastStartMeta=meta;requestPlayFullscreen();prepareRun(meta);net.send("v106_lobby_ack",{id:net.sessionId,name:playerName()}).catch(()=>{});net.send("hello",{id:net.sessionId,name:playerName(),roomCode:net.roomCode,wantsWorld:true,build:"V10.32"}).catch(()=>{});showToast("HOST STARTED THE DUNGEON",`Room ${net.roomCode} is live.`,"green",7000)}
 
   const originalMembers=net.cb.onMembers;
   net.cb.onMembers=function onMembersV106(members,isHost,changed){const result=originalMembers?.(members,isHost,changed);updateLobby();if(changed&&isHost&&lobbyOpen)showToast("YOU ARE NOW HOST","The previous host disconnected. You can start the dungeon when everyone is ready.","cyan",8500);return result};

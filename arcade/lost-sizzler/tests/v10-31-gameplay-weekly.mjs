@@ -38,7 +38,7 @@ assert.match(core,/function submitWeeklyResultOnce\(\)/,"all weekly result exits
 assert.match(main,/if\(run\?\.daily\)await submitWeeklyResultOnce\(\)/,"quitting a weekly run must submit its current final score before clearing the run");
 
 assert.match(supabaseClient,/@supabase\/supabase-js@2\.95\.0/,"the shared browser client must pin the verified Supabase SDK version");
-assert.match(index,/ccg-supabase-client\.js\?v=20260824r4/,"the multiplayer client must have a release cache token");
+assert.match(index,/ccg-supabase-client\.js\?v=20260824r5/,"the multiplayer client must have a release cache token");
 assert.match(network,/private:false/,"internet rooms must explicitly use public browser-accessible Realtime channels");
 assert.match(network,/broadcast:\{self:false,ack:true\}/,"room broadcasts must wait for relay acknowledgement");
 assert.match(network,/async sendRequired\(event,payload\)/,"start and join control messages must have a reliable failure path");
@@ -53,5 +53,10 @@ assert.match(multiplayerSync,/net\.send\("hit"/,"joined-player melee and project
 assert.match(gameNetwork,/lastAuthoritativeWorldRevision/,"guest-local animation revisions must not block later host snapshots");
 assert.match(gameNetwork,/processRemoteMovement\(next\)/,"the host must process shared dungeon triggers reached by joined players");
 assert.match(gameNetwork,/inventory:\(p\.inventory\|\|\[\]\)\.map/,"joined-player inventory and key state must be included in player synchronisation");
+assert.match(gameNetwork,/openingRemainingMs:remaining/,"door snapshots must transfer remaining duration instead of a host-local browser deadline");
+assert.match(gameNetwork,/openAt:receivedAt\+remaining/,"joined browsers must reconstruct door deadlines from their own monotonic clock");
+assert.match(gameNetwork,/syncSequence:\+\+worldSyncSequence/,"world snapshots must carry an ordered host sequence");
+assert.match(multiplayerSync,/actorState:playerStateForNetwork\(p1\)/,"interaction requests must carry a latency-tolerant player position snapshot");
+assert.match(multiplayerSync,/v132_interaction_result/,"the host must explicitly accept or reject joined-player interactions");
 
-console.log("Lost Sizzler V10.31 furniture, melee, tutorial safety and weekly-attempt checks passed.");
+console.log("Lost Sizzler V10.32 furniture, melee, tutorial safety and multiplayer clock-sync checks passed.");

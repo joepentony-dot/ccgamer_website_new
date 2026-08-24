@@ -34,7 +34,6 @@
     if(/ARCADE CHALLENGE FAILED/.test(s))return"cabinetFail";
     if(/POSSESSED ARCADE CABINET/.test(s))return"cabinet";
     if(/SECRET CCG DEVELOPER ROOM|DEVELOPER ROOM/.test(s))return"developerRoom";
-    if(/DUNGEON BOUNTY(?! COMPLETE)/.test(s))return"bountyStart";
     if(/BURIED CACHE FOUND/.test(s))return"buriedCache";
     if(/TREASURE MAP FRAGMENT/.test(s))return"treasureMap";
     return"";

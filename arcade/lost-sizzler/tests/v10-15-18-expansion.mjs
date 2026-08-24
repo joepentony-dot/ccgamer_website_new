@@ -36,6 +36,8 @@ assert.match(rare,/type:`KILL \$\{target\} ENEMIES`/,"the bounty banner must sta
 assert.match(rare,/BOUNTY_ANNOUNCE_DELAY_MS=20000/,"the bounty must wait for 20 seconds of active play");
 assert.match(rare,/state\.activePlayMs\+=Math\.max\(0,Number\(dt\|\|0\)\)/,"only active gameplay time may advance the bounty announcement");
 assert.match(rare,/state\.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS/,"the bounty must not appear before its active-play delay");
+assert.match(rare,/showToast\(`DUNGEON BOUNTY[\s\S]*?CCGLostSizzlerVoice\?\.say\?\.\("bountyStart"\)/,"the bounty popup and voice must be dispatched by the same delayed event");
+assert.doesNotMatch(voiceExpansion,/DUNGEON BOUNTY\(\?! COMPLETE\)/,"generic toast classification must not trigger an out-of-sync bounty announcement");
 assert.match(rare,/Number\(run\.stats\?\.kills\|\|0\)-b\.startKills/,"bounty progress must count kills made on the current floor only");
 assert.match(balance,/DOUBLE GOLD/,"double-gold mutation is enforced at pickup time");
 assert.match(balance,/NO SHOPPING/,"no-shopping mutation blocks floor traders");
