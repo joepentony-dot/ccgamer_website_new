@@ -42,7 +42,7 @@ const server=http.createServer((req,res)=>{
 await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
 const origin=`http://127.0.0.1:${server.address().port}`;
 const canonical=`${origin}/arcade/lost-sizzler/`;
-const legacy=`${origin}/games/ccg-games/cheeky-commodore-quest/`;
+const legacy=`${origin}/arcade/lost-sizzler/`;
 
 const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage"]});
 const contexts=[];

@@ -64,7 +64,7 @@ const server=http.createServer((req,res)=>{
   });
 });
 await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));
-const base=`http://127.0.0.1:${server.address().port}/games/ccg-games/cheeky-commodore-quest/`;
+const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
 
 const browser=await chromium.launch({headless:true,executablePath:browserPath});
 const context=await browser.newContext({viewport:{width:1600,height:900}});

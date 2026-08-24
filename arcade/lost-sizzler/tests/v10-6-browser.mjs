@@ -24,7 +24,7 @@ if(!browserPath){console.log("V10.6 browser checks skipped: no Chromium executab
 const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../../..");
 const mime={".html":"text/html",".js":"text/javascript",".css":"text/css",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".mp3":"audio/mpeg",".wav":"audio/wav"};
 const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);if(!file.startsWith(repo)){res.writeHead(403).end();return}fs.readFile(file,(error,data)=>{if(error){res.writeHead(404).end("not found");return}res.setHeader("content-type",mime[path.extname(file)]||"application/octet-stream");res.end(data)})});
-await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const base=`http://127.0.0.1:${server.address().port}/games/ccg-games/cheeky-commodore-quest/`;
+await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
 
 const browser=await chromium.launch({headless:true,executablePath:browserPath});const context=await browser.newContext({viewport:{width:1600,height:900}});
 await context.addInitScript(()=>{
