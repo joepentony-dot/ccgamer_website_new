@@ -10,12 +10,20 @@
   const challenge=()=>window.CCGWeeklyChallenge;
 
   function setText(node,value){if(node&&node.textContent!==value)node.textContent=value;}
+  function setDisabled(node,value){
+    if(!node)return;
+    const next=Boolean(value);
+    if(node.disabled!==next)node.disabled=next;
+  }
 
   function syncWeeklyPresentation(){
     const api=challenge(),state=api?.state,b=button(),s=status();
     if(!state||!b)return;
 
-    b.disabled=!state.ready;
+    /* MutationObserver below watches the disabled attribute. Never write the
+       same value back into it: doing so can continuously retrigger the observer
+       and starve the browser's main thread. */
+    setDisabled(b,!state.ready);
     if(!state.ready)setText(b,"Weekly Dungeon — Checking…");
     else if(state.signedIn&&!state.locked)setText(b,"Weekly Dungeon — Ranked Attempt");
     else setText(b,"Weekly Dungeon");
@@ -54,6 +62,7 @@
       queueMicrotask(()=>{queued=false;syncWeeklyPresentation();});
     });
     for(const node of watched)observer.observe(node,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:["disabled"]});
+    window.addEventListener("pagehide",()=>observer.disconnect(),{once:true});
   }
 
   window.addEventListener("ccg:auth-changed",()=>requestAnimationFrame(syncWeeklyPresentation));
