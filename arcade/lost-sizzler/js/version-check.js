@@ -151,6 +151,14 @@
     script.dataset.ccgV140HordeFinal="true";
     document.head.appendChild(script);
   }
+  function loadV141HordeCombatPolish(){
+    if(document.querySelector('script[data-ccg-v141-horde-combat-polish="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-horde-combat-polish.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141HordeCombatPolish="true";
+    document.head.appendChild(script);
+  }
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
@@ -196,6 +204,7 @@
   loadV138HordeLive();
   loadV139HordeLiveLoadout();
   loadV140HordeFinal();
+  loadV141HordeCombatPolish();
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
