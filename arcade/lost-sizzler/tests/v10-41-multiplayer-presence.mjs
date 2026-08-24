@@ -31,6 +31,11 @@ assert.match(runtime,/v106_lobby_meta/,"hosts must answer join-state probes with
 assert.match(runtime,/started:live,startMeta:live\?lastStartMeta:null/,"a late join must receive the active start metadata when the host is already playing");
 assert.match(runtime,/if\(!specialApi\?\.startOnline\)throw new Error/,"a failed special-mode initialisation must report an error instead of silently falling back to Dungeon mode");
 assert.match(runtime,/url\.searchParams\.set\("mode"/,"shared invites must carry the intended room mode as useful pre-join context");
+assert.match(presence,/id="v141-invite-player-name"/,"shared invite links must present a dedicated player-name field before connecting");
+assert.match(presence,/Enter a player name before joining/,"blank invite names must be rejected before room admission");
+assert.match(presence,/mainName\.value=name/,"the confirmed invite name must become the multiplayer player name");
+assert.match(presence,/api\?\.joinLobbyRoom/,"the invite confirmation must use the mode-aware lobby join flow directly");
+assert.match(presence,/showInviteNameGate\(meta\)/,"invite URLs must pause at the name confirmation rather than joining immediately on page load");
 assert.match(versionCheck,/v10-41-multiplayer-presence\.js/,"the V10.41 multiplayer repair must be loaded by the live bootstrap path");
 
-console.log("Lost Sizzler V10.41 multiplayer melee visibility, teammate radar and resilient join-flow checks passed.");
+console.log("Lost Sizzler V10.41 multiplayer melee visibility, teammate radar, invite-name confirmation and resilient join-flow checks passed.");
