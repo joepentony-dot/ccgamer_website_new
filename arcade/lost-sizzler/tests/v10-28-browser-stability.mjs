@@ -99,6 +99,10 @@ async function newGamePage(viewport={width:1600,height:900}){
   page.on("console",message=>{
     if(message.type()==="error")console.error(`[browser console] ${message.text()}`);
   });
+  page.on("request",request=>{
+    const url=request.url();
+    if(url.includes("/arcade/lost-sizzler/js/"))console.log(`[browser script] ${new URL(url).pathname}${new URL(url).search}`);
+  });
   return{context,page,pageErrors,crashed:()=>crashed};
 }
 
