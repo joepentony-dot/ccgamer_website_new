@@ -86,6 +86,7 @@
     const cd=p===p2?fire2:fire1;if(cd>0)return false;
     const melee=meleeFor(p),dir=d&&(d.x||d.y)?{x:Math.sign(d.x),y:Math.sign(d.y)}:(p.dir||{x:1,y:0});
     p.dir=dir;
+    p._meleeSwingAt=performance.now();p._meleeSwingMs=Math.max(220,Math.min(320,Number(melee.cooldown||390)*.68));p._meleeSwingDir={...dir};p._meleeSwingColour=melee.colour||"#ffd85a";
     if(p===p2)fire2=Number(melee.cooldown||390);else fire1=Number(melee.cooldown||390);
     p.emergencyRechargeMs=0;
     try{S.sfx("dash")}catch(_){}

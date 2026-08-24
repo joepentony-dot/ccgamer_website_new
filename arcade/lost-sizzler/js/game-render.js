@@ -309,6 +309,23 @@ function drawStalker(){
   if(v){ctx.save();ctx.globalAlpha=.45+.3*pulse;ctx.strokeStyle=P.purple;ctx.lineWidth=2;ctx.rotate(-t*.3);ctx.strokeRect(-17,-17,34,34);ctx.rotate(Math.PI/4);ctx.strokeRect(-12,-12,24,24);ctx.restore()}ctx.restore();label(v?`${C.stalker.name.toUpperCase()} — VULNERABLE`:C.stalker.name.toUpperCase(),q,v?P.purple:P.red);if(v)drawTransientHealth(s,q,P.purple)
 }
 function drawPlayerResources(p,s,col,kind){if(kind==="remote"||!p||!(p.ammoFlashMs>0))return;ctx.save();ctx.font='bold 13px Consolas, "Courier New"';ctx.textAlign="center";ctx.fillStyle=P.gold;ctx.shadowColor="#000";ctx.shadowBlur=4;ctx.fillText(`AMMO ${Math.max(0,p.mana)}`,s.x+C.tile/2,s.y-30);ctx.restore()}
+function drawPlayerWeapon(p,cx,cy,d){
+  const hasLiveGun=Boolean(p?.firearmUnlocked&&p?.weapon&&Number(p?.mana||0)>0);
+  if(hasLiveGun){
+    const gx=d.x?d.x*10:0,gy=d.y?d.y*10:0;ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);return;
+  }
+  const now=performance.now(),swingMs=Math.max(1,Number(p?._meleeSwingMs||260)),age=now-Number(p?._meleeSwingAt||-Infinity),active=age>=0&&age<swingMs,dir=active&&p?._meleeSwingDir?p._meleeSwingDir:d,base=Math.atan2(dir.y||0,dir.x||1),progress=active?Math.max(0,Math.min(1,age/swingMs)):1,eased=1-Math.pow(1-progress,3),swing=active?(-1.02+eased*1.92):-.08,angle=base+swing,bladeCol=p?._meleeSwingColour||p?.meleeWeapon?.colour||P.gold;
+  const handX=cx+(dir.x||0)*6-(dir.y||0)*3,handY=cy+(dir.y||0)*6+(dir.x||0)*3;
+  ctx.save();ctx.translate(handX,handY);
+  if(active){
+    ctx.save();ctx.globalAlpha=.18+.22*(1-progress);ctx.strokeStyle=bladeCol;ctx.shadowColor=bladeCol;ctx.shadowBlur=12;ctx.lineWidth=5;ctx.lineCap="round";ctx.beginPath();ctx.arc(0,0,23,base-1.02,angle,false);ctx.stroke();ctx.restore();
+  }
+  ctx.rotate(angle);ctx.shadowColor=bladeCol;ctx.shadowBlur=active?12:5;
+  ctx.fillStyle="#4d2e1f";ctx.fillRect(-6,-2,8,4);
+  ctx.fillStyle="#c99a42";ctx.fillRect(0,-6,3,12);ctx.fillStyle="#f0c85c";ctx.fillRect(1,-5,1,10);
+  const grad=ctx.createLinearGradient(3,-4,24,4);grad.addColorStop(0,"#7e8795");grad.addColorStop(.35,"#f7fbff");grad.addColorStop(.72,bladeCol);grad.addColorStop(1,"#c8d2dd");ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(3,-4);ctx.lineTo(21,-3);ctx.lineTo(27,0);ctx.lineTo(21,3);ctx.lineTo(3,4);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#eff8ff";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(5,-2);ctx.lineTo(22,-1);ctx.stroke();ctx.fillStyle=bladeCol;ctx.globalAlpha=.75;ctx.fillRect(4,2,16,1);ctx.restore();
+}
 function drawPlayer(p,kind="p1"){
   const s=ws(p.rx,p.ry),col=kind==="p2"?P.green:kind==="remote"?P.cyan:P.gold,cx=s.x+C.tile/2,moving=Math.abs((p.x??p.rx)-p.rx)+Math.abs((p.y??p.ry)-p.ry)>.025,phase=performance.now()/105+(String(p.id||kind).length%7),step=moving?Math.sin(phase)*3:0,bob=moving?-Math.abs(Math.sin(phase))*2:Math.sin(phase*.18)*.4,cy=s.y+C.tile/2+bob,d=p.dir||{x:1,y:0};ctx.save();ctx.imageSmoothingEnabled=false;
   ctx.fillStyle="rgba(0,0,0,.45)";ctx.beginPath();ctx.ellipse(cx,s.y+C.tile-2,13,4,0,0,Math.PI*2);ctx.fill();ctx.shadowColor=col;ctx.shadowBlur=p.torchMs>0?13:6;
@@ -317,7 +334,7 @@ function drawPlayer(p,kind="p1"){
   px(cx,cy,-11,-6-step*.25,4,15,"#32233d");px(cx,cy,7,-6+step*.25,4,15,"#32233d");px(cx,cy,-9,-6,18,17,"#56366e");px(cx,cy,-8,-5,4,13,"#79509b");px(cx,cy,4,-5,4,13,"#79509b");
   px(cx,cy,-12,-4-step*.25,4,7,"#a5863d");px(cx,cy,8,-4+step*.25,4,7,"#a5863d");px(cx,cy,-8+step,10,6,7,"#25202b");px(cx,cy,2-step,10,6,7,"#25202b");px(cx,cy,-9+step,15,7,3,"#111015");px(cx,cy,2-step,15,7,3,"#111015");
   px(cx,cy,-5,-2,10,8,"#17101e");ctx.strokeStyle=col;ctx.lineWidth=1;ctx.strokeRect(cx-5,cy-2,10,8);ctx.fillStyle=col;ctx.font='bold 6px "Courier New"';ctx.textAlign="center";ctx.fillText("CCG",cx,cy+4);
-  const gx=d.x?d.x*10:0,gy=d.y?d.y*10:0;ctx.fillStyle=P.cyan;ctx.fillRect(cx+gx-3-(d.x<0?5:0),cy+gy-2-(d.y<0?5:0),d.x?8:5,d.y?8:5);ctx.fillStyle="#dcefff";ctx.fillRect(cx+gx+(d.x>0?4:d.x<0?-5:-1),cy+gy+(d.y>0?4:d.y<0?-5:-1),2,2);
+  drawPlayerWeapon(p,cx,cy,d);
   if(p.torchMs>0){const tx=cx-d.y*12-d.x*5,ty=cy+d.x*12-d.y*5;ctx.fillStyle="#76512a";ctx.fillRect(tx-1,ty-1,3,10);ctx.fillStyle=P.orange;ctx.fillRect(tx-4,ty-9,8,8);ctx.fillStyle=P.gold;ctx.fillRect(tx-2,ty-11,4,8)}
   if((p.hitStunMs||0)>0){ctx.fillStyle=P.cyan;ctx.fillRect(cx-12,cy-19,4,3);ctx.fillRect(cx+8,cy-18,4,3)}ctx.restore();if(kind==="remote")label(p.name,{x:s.x,y:s.y-2},col);drawTransientHealth(p,s,col);drawPlayerResources(p,s,col,kind)
 }

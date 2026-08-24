@@ -8,7 +8,7 @@
   const DEFAULT_ENABLED=true;
   const VOICE_ASSETS=window.CCG_ASSET_OVERRIDES?.audio?.voice||{};
   const BUNDLED_SPRITE={
-    src:"assets/audio/voice/lost-sizzler-voices.m4a",
+    src:"assets/audio/voice/lost-sizzler-voices.ogg",
     cues:{
       welcome:{start:0.16,duration:3.221},
       welcomeRare:{start:3.541,duration:5.12},

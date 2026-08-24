@@ -139,6 +139,12 @@ try{
     const scriptSources=await withTimeout(state.page.evaluate(()=>[...document.scripts].map(script=>script.src).filter(Boolean)),5000,"script source audit");
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
+    const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
+      const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
+      const bytes=new Uint8Array(await response.arrayBuffer());
+      return{ok:response.ok,status:response.status,size:bytes.length,header:String.fromCharCode(...bytes.slice(0,4))};
+    }),5000,"recorded voice sprite fetch");
+    assert.deepEqual(voiceAsset,{ok:true,status:200,size:191933,header:"OggS"},"browser must receive the complete recorded voice sprite from the canonical path");
 
     logStage("canonical desktop: canvas stabilisation");
     const menuSamples=[];
@@ -160,6 +166,20 @@ try{
     await state.page.waitForTimeout(600);
     await state.page.keyboard.up("d");
     await state.page.waitForTimeout(800);
+    const activeSwing=await state.page.evaluate(()=>{
+      const previous=Number(p1?._meleeSwingAt||0);
+      const modeBefore=mode;
+      if(mode==="dossier")hideNamedDossier();
+      fire1=0;
+      if(p1)p1.hitStunMs=0;
+      const triggered=window.CCGLostSizzlerMeleeAmmoV125?.meleeAttack?.(p1,p1?.dir);
+      return{triggered,modeBefore,mode,fire1,hitStunMs:Number(p1?.hitStunMs||0),previous,at:Number(p1?._meleeSwingAt||0),ms:Number(p1?._meleeSwingMs||0),dir:p1?._meleeSwingDir||null,hasRenderer:typeof drawPlayerWeapon==="function"};
+    });
+    assert.equal(activeSwing.triggered,true,`the live melee controller must accept a sword attack: ${JSON.stringify(activeSwing)}`);
+    assert.ok(activeSwing.at>activeSwing.previous,"a live sword attack must start the player sword animation");
+    assert.ok(activeSwing.ms>=220&&activeSwing.ms<=320,`sword swing duration must remain visible and bounded: ${activeSwing.ms}`);
+    assert.ok(activeSwing.dir&&(activeSwing.dir.x||activeSwing.dir.y),`sword swing must preserve an attack direction: ${JSON.stringify(activeSwing.dir)}`);
+    assert.equal(activeSwing.hasRenderer,true,"active run must install the dedicated player weapon renderer");
     await assertHealthy(state,"active solo run");
 
     logStage("canonical desktop: resize stress");

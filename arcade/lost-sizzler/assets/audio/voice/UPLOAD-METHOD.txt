@@ -1,1 +1,0 @@
-Recorded voice audio is stored as validated AAC/M4A voice banks committed as Git binary blobs. This avoids the invalid path-placeholder files from the abandoned interim upload attempt.

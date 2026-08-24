@@ -7,9 +7,10 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const combat=read("js/v10-25-melee-ammo-balance.js");
+const render=read("js/game-render.js");
 const loader=read("js/asset-overrides.js");
 
-assert.match(loader,/const CCG_MELEE_AMMO_REV="20260823b"/,"V10.25 combat balance must have its own cache revision");
+assert.match(loader,/const CCG_MELEE_AMMO_REV="20260824a"/,"V10.25 combat balance must have its own cache revision");
 assert.match(loader,/v10-25-melee-ammo-balance\.js\?v=\$\{CCG_MELEE_AMMO_REV\}/,"V10.25 combat balance must be loaded directly by the enhancement queue");
 assert.match(combat,/const MAX_START_AMMO=60/,"base firearm capacity must be reduced from the old 240-shot pool");
 assert.match(combat,/const FIRST_GUN_MAGAZINE=16/,"the first discovered firearm must arrive with a fair 16-round magazine");
@@ -32,5 +33,11 @@ assert.match(combat,/RESPAWN_AMMO=6/,"death respawn ammo must be a tiny reserve 
 assert.match(combat,/ATTACK — START WITH YOUR SWORD/,"tutorial must explain the sword-first combat model");
 assert.match(combat,/Ammo is deliberately scarce/,"tutorial must explain firearm scarcity and zero-ammo melee fallback");
 assert.match(combat,/gunfire or melee knockback can force them into hazards/,"tutorial must teach melee environmental knockback");
+assert.match(combat,/_meleeSwingAt=performance\.now\(\)/,"melee attacks must start a timed visible swing");
+assert.match(combat,/_meleeSwingDir=\{\.\.\.dir\}/,"the sword arc must preserve the attack direction for its full animation");
+assert.match(render,/function drawPlayerWeapon\(p,cx,cy,d\)/,"player rendering must use a dedicated weapon renderer");
+assert.match(render,/ctx\.arc\(0,0,23,base-1\.02,angle,false\)/,"active melee attacks must draw a visible swing trail");
+assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword must render as a shaped highlighted blade");
+assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must draw the current firearm or sword");
 
 console.log("Lost Sizzler V10.25 sword-first combat regression checks passed.");
