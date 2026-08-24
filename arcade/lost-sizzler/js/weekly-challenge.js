@@ -106,7 +106,7 @@ window.CCGWeeklyChallenge=(()=>{
     if(list){
       list.innerHTML=(state.leaderboard||[]).slice(0,10).map((r,i)=>
         `<li><b>${i+1}. ${safe(r.player_name||"Player")}</b><span>${Number(r.score||0).toLocaleString()} · F${r.deepest_floor||1}</span></li>`
-      ).join("")||"<li><span>No ranked results yet this week.</span></li>";
+      ).join("")||"<li><span>No completed attempts yet this week — no winner will be declared.</span></li>";
     }
     syncCountdownTimer();
   }
