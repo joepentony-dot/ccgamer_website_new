@@ -7,6 +7,16 @@
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
 
+  function loadV136Bootstrap(){
+    if(document.querySelector('script[data-ccg-v136-bootstrap="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-36-bootstrap.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV136Bootstrap="true";
+    document.head.appendChild(script);
+  }
+  loadV136Bootstrap();
+
   function menuVisible(){
     const menu=document.getElementById("menu");
     return Boolean(menu&&!menu.classList.contains("hidden")&&document.body?.dataset?.runActive!=="true");
