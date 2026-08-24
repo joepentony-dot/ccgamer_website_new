@@ -102,4 +102,31 @@ addEventListener("keydown",e=>{
 addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
 refreshCollection();
 net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
-addEventListener("resize",()=>requestAnimationFrame(resizeGameCanvas));document.addEventListener("fullscreenchange",syncFullscreenState);if(window.ResizeObserver){new ResizeObserver(()=>resizeGameCanvas()).observe(document.querySelector(".game-area"))}requestAnimationFrame(()=>{resizeGameCanvas();syncFullscreenState()});
+
+let gameResizeFrame=0;
+function scheduleGameResize(){
+  if(gameResizeFrame)return;
+  gameResizeFrame=requestAnimationFrame(()=>{
+    gameResizeFrame=0;
+    try{resizeGameCanvas()}catch(error){console.warn("[Lost Sizzler] canvas resize failed safely",error)}
+  });
+}
+window.__CCG_LOST_SIZZLER_SCHEDULE_RESIZE__=scheduleGameResize;
+addEventListener("resize",scheduleGameResize,{passive:true});
+document.addEventListener("fullscreenchange",()=>{syncFullscreenState();scheduleGameResize()});
+if(window.ResizeObserver){
+  const resizeTarget=document.querySelector(".canvas-wrap")||document.querySelector(".game-area");
+  if(resizeTarget){
+    try{window.__CCG_LOST_SIZZLER_RESIZE_OBSERVER__?.disconnect?.()}catch(_){}
+    const observer=new ResizeObserver(scheduleGameResize);
+    observer.observe(resizeTarget);
+    window.__CCG_LOST_SIZZLER_RESIZE_OBSERVER__=observer;
+  }
+}
+addEventListener("pagehide",()=>{
+  if(gameResizeFrame)cancelAnimationFrame(gameResizeFrame);
+  gameResizeFrame=0;
+  try{window.__CCG_LOST_SIZZLER_RESIZE_OBSERVER__?.disconnect?.()}catch(_){}
+  window.__CCG_LOST_SIZZLER_RESIZE_OBSERVER__=null;
+},{once:true});
+requestAnimationFrame(()=>{scheduleGameResize();syncFullscreenState()});
