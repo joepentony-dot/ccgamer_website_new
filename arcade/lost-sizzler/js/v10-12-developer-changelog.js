@@ -30,6 +30,7 @@
         ,["LS-0824-19","ADDED","Beta and ownership marks","The menu now carries the requested beta-stage notice and the game view is permanently stamped © 2026 Cheeky Commodore Gamer."]
         ,["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."]
         ,["LS-0824-21","CHANGED","V10.40 release alignment","The published build is now 2026.08.24.9 with cache token r9, and the visible game header and build badge now match the V10.40 runtime milestone after the release audit. No gameplay rules were changed by this version-label update."]
+        ,["LS-0824-22","CHANGED","V10.40 run-integrity consolidation","The current runtime now includes general objective-route recovery, reachable death-cache relocation, safer respawn and teleport placement, Solo/local focus-loss pausing, freshest-state host migration, host-side online pickup claim protection and checkpoint schema validation. The newer adaptive canvas limits, Weekly Vault retry system and bounded uploaded-music fallback remain in control rather than being replaced by older implementations."]
       ]
     },
     {
