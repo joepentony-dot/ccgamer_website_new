@@ -19,8 +19,8 @@ const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+
 assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number");
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.24.12","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260824r12","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.24.14","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260824r14","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/version-check.js","js/weekly-challenge.js","js/asset-overrides.js",
@@ -30,11 +30,15 @@ for(const asset of [
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
 }
-assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r12 must preserve the current tutorial launcher revision");
-assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260824r12"),"tutorial launch guidance must load before the enhancement queue");
-assert.match(index,/js\/v10-41-lake-item-safety\.js\?v=20260824a/,"r12 must directly load the independent sanctuary lake/item safety guard");
-assert.match(index,/js\/v10-41-gambler-devroom\.js\?v=20260824a/,"r12 must directly load the Gambler and owner Developer Vault layer");
-assert.ok(index.indexOf("js/game-main.js?v=20260824r12")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a"),"Gambler/Developer Vault layer must load after the core game globals exist");
+assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r14 must preserve the current tutorial launcher revision");
+assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260824r14"),"tutorial launch guidance must load before the enhancement queue");
+assert.match(index,/js\/v10-41-lake-item-safety\.js\?v=20260824a/,"r14 must directly load the independent sanctuary lake/item safety guard");
+assert.match(index,/js\/v10-41-gambler-devroom\.js\?v=20260824a/,"r14 must directly load the Gambler and owner Developer Vault layer");
+assert.match(index,/js\/v10-41-developer-vault-hardening\.js\?v=20260824a/,"r14 must load Developer Vault disposal and authorization hardening");
+assert.match(index,/js\/v10-41-developer-asset-catalog\.js\?v=20260824a/,"r14 must load the expanded special-asset catalogue");
+assert.ok(index.indexOf("js/game-main.js?v=20260824r14")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a"),"Gambler/Developer Vault layer must load after the core game globals exist");
+assert.ok(index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a")<index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260824a"),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
+assert.ok(index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260824a")<index.indexOf("js/v10-41-developer-asset-catalog.js?v=20260824a"),"expanded asset catalogue must load after Developer Vault hardening");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
@@ -75,4 +79,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r12 build, V10.41 cache refresh, Gambler and Developer Vault regression checks passed.");
+console.log("Lost Sizzler r14 build, V10.41 cache refresh, Gambler and owner Developer Vault catalogue regression checks passed.");
