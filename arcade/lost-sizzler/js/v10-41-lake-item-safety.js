@@ -54,3 +54,16 @@
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
   window.CCGLostSizzlerV141LakeItemSafety={ESSENTIAL,essential,repair,get state(){return state}};
 })();
+
+/* Late V10.41 runtime guards. These are deliberately loaded from an existing
+ * always-on V10.41 entry point so current live builds receive the fixes without
+ * changing the core game or special-mode loader order. */
+(()=>{
+  "use strict";
+  const load=(src,marker)=>{
+    if(document.querySelector(`script[${marker}="true"]`))return;
+    const script=document.createElement("script");script.src=src;script.async=false;script.setAttribute(marker,"true");document.head.appendChild(script);
+  };
+  load("js/v10-41-environment-transparency-hotfix.js?v=20260825c","data-ccg-v141-environment-transparency-hotfix");
+  load("js/v10-41-horde-mode-safety.js?v=20260825c","data-ccg-v141-horde-mode-safety");
+})();
