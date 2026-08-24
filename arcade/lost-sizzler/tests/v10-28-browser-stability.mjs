@@ -139,6 +139,8 @@ try{
     const scriptSources=await withTimeout(state.page.evaluate(()=>[...document.scripts].map(script=>script.src).filter(Boolean)),5000,"script source audit");
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
+    const buildSubtitle=await state.page.locator(".brand p").textContent();
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.30","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -287,6 +289,57 @@ try{
     })),5000,"transient render-state audit");
     assert.ok(transient.particles<=2600&&transient.rings<=700&&transient.floaters<=700&&transient.bullets<=900&&transient.enemyBullets<=1600,`transient render state remains bounded: ${JSON.stringify(transient)}`);
     logStage("canonical desktop: complete");
+  }
+
+  {
+    logStage("immediate Solo launch: create and navigate");
+    const state=await newGamePage();
+    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"immediate Solo navigation");
+    const releaseAtClick=await state.page.evaluate(()=>document.body.dataset.releaseReady);
+    assert.equal(releaseAtClick,"false","the immediate-click test must act before the enhancement queue is release-ready");
+    await withTimeout(state.page.locator("#solo-btn").click({timeout:8000,noWaitAfter:true}),10000,"immediate Solo button click");
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.releaseReady==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,"release-ready gate completion");
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,"queued Solo launch");
+    await state.page.waitForTimeout(700);
+    const launch=await state.page.evaluate(()=>{
+      const named=(host?.enemies||[]).find(enemy=>enemy?.alive&&enemy.follower&&W.roomAt(world,enemy.x,enemy.y)!==W.roomAt(world,p1.x,p1.y));
+      return{
+        gateReady:Boolean(window.CCGLostSizzlerReleaseGate?.state?.ready),
+        gateErrors:window.CCGLostSizzlerReleaseGate?.state?.errors?.length||0,
+        polishReady:document.body.dataset.polishReady,
+        mode,
+        firearmUnlocked:Boolean(p1?.firearmUnlocked),
+        weapon:p1?.weapon?.id||null,
+        ammo:Number(p1?.mana||0),
+        maxAmmo:Number(p1?.maxMana||0),
+        melee:p1?.meleeWeapon?.id||null,
+        meleeDamage:window.CCGLostSizzlerMeleeAmmoV125?.meleeDamageFor?.(p1),
+        dossierHidden:document.getElementById("named-dossier-panel")?.classList.contains("hidden"),
+        remoteNamedVisible:named?visibleTo(p1,named.x,named.y):false,
+        ammoBudget:{meets:Boolean(host?.ammoBudget?.meetsAccuracyBudget),planned:Number(host?.ammoBudget?.totalPlannedRounds||0),needed:Number(host?.ammoBudget?.roundsNeeded||0)},
+        potions:(host?.items||[]).filter(item=>item?.active&&item.kind==="potion").length,
+        potionTarget:Number(host?.v130PotionTarget||0)
+      };
+    });
+    assert.equal(launch.gateReady,true,`the complete release queue must be ready before the run starts: ${JSON.stringify(launch)}`);
+    assert.equal(launch.gateErrors,0,`no critical release module may fail: ${JSON.stringify(launch)}`);
+    assert.equal(launch.polishReady,"true",`V10.30 must install before queued Solo starts: ${JSON.stringify(launch)}`);
+    assert.deepEqual({firearmUnlocked:launch.firearmUnlocked,weapon:launch.weapon,ammo:launch.ammo,maxAmmo:launch.maxAmmo,melee:launch.melee},{firearmUnlocked:false,weapon:null,ammo:0,maxAmmo:120,melee:"archive-sword"},`an immediate Solo click must retain sword-first progression: ${JSON.stringify(launch)}`);
+    assert.equal(launch.meleeDamage,1,`level-one Archive Sword damage must remain one: ${JSON.stringify(launch)}`);
+    assert.equal(launch.dossierHidden,true,`no named-enemy dossier may open at the starting position: ${JSON.stringify(launch)}`);
+    assert.equal(launch.remoteNamedVisible,false,`a remote named enemy must not be visible through global follower light: ${JSON.stringify(launch)}`);
+    assert.ok(launch.ammoBudget.meets&&launch.ammoBudget.planned>=launch.ammoBudget.needed,`placed ammunition must meet its calculated 50-percent-accuracy budget: ${JSON.stringify(launch)}`);
+    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.30 target: ${JSON.stringify(launch)}`);
+
+    const pickupGuard=await state.page.evaluate(()=>{
+      const health={id:"browser-full-health",x:p1.x,y:p1.y,kind:"health",active:true,title:"TEST HEALTH"};host.items.push(health);p1.health=p1.maxHealth;const healthRequest=requestCollect(health,p1);
+      const ammo={id:"browser-nearly-full-ammo",x:p1.x,y:p1.y,kind:"ammo",active:true,title:"TEST AMMO",ammoRounds:40};host.items.push(ammo);p1.mana=p1.maxMana-5;const ammoRequest=requestCollect(ammo,p1);
+      const reserve={id:"browser-partial-reserve",x:p1.x,y:p1.y,kind:"ammo",active:true,title:"TEST RESERVE",ammoRounds:200,v130ReserveAmmo:true};host.items.push(reserve);p1.mana=0;const reserveRequest=requestCollect(reserve,p1);
+      return{healthRequest,healthActive:health.active,ammoRequest,ammoActive:ammo.active,reserveRequest,reserveActive:reserve.active,reserveRounds:reserve.ammoRounds,playerAmmo:p1.mana};
+    });
+    assert.deepEqual(pickupGuard,{healthRequest:false,healthActive:true,ammoRequest:false,ammoActive:true,reserveRequest:true,reserveActive:true,reserveRounds:80,playerAmmo:120},`resources must avoid waste and the final reserve must retain rounds that do not fit: ${JSON.stringify(pickupGuard)}`);
+    await assertHealthy(state,"immediate queued Solo run");
+    logStage("immediate Solo launch: complete");
   }
 
   {

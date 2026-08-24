@@ -1,0 +1,51 @@
+/* The Lost Sizzler V10.30 — gameplay-first proportions and release-ready feedback. */
+
+#menu-note[data-release-status]:not([data-release-status=""])::before{
+  content:attr(data-release-status);
+  display:block;
+  margin-bottom:7px;
+  color:#6cecff;
+  font-weight:700;
+  letter-spacing:.35px;
+}
+
+body[data-release-ready="false"] #menu :is(#solo-btn,#tutorial-zone-btn,#continue-save-btn,#daily-btn,#split-btn,#create-btn,#join-btn){
+  cursor:progress;
+}
+
+@media (min-width:901px) and (pointer:fine){
+  body[data-run-active="true"] .ccg-game,
+  body[data-run-active="true"] .ccg-game:fullscreen,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen{
+    grid-template-columns:minmax(0,1fr) clamp(220px,18vw,280px)!important;
+  }
+
+  body[data-run-active="true"] .ccg-game>.tactical-zone{
+    grid-template-rows:minmax(166px,48%) minmax(0,1fr)!important;
+    padding:6px!important;
+    gap:6px!important;
+  }
+
+  body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail{
+    max-height:72px!important;
+  }
+
+  body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail>.pickup-toast,
+  body[data-run-active="true"] .ccg-game:fullscreen>.game-area>.game-message-rail>.pickup-toast,
+  body[data-run-active="true"] .ccg-game:-webkit-full-screen>.game-area>.game-message-rail>.pickup-toast{
+    grid-template-columns:34px minmax(0,1fr)!important;
+    min-height:46px!important;
+    max-height:62px!important;
+    padding:5px 9px!important;
+  }
+
+  body[data-run-active="true"] .ccg-game .pickup-toast-icon{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  body[data-release-ready="false"] #menu button{animation:none!important}
+}

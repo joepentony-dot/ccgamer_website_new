@@ -24,7 +24,9 @@ assert.match(combat,/updateEmergencyAmmo=function updateEmergencyAmmoV125\(p\)\{
 assert.match(combat,/const FLOOR_AMMO_ARCADE=3/,"Arcade floors must be pruned to three ordinary ammo packs");
 assert.match(combat,/const FLOOR_AMMO_LOW=2/,"LOW AMMO floors must be pruned to two ordinary ammo packs");
 assert.match(combat,/const FLOOR_AMMO_CASUAL=4/,"Casual must retain a slightly softer ammo allowance");
-assert.match(combat,/const FLOOR_MELEE_FIND_CHANCE=\.02/,"rare melee finds must remain genuinely uncommon");
+assert.match(combat,/const FLOOR_MELEE_FIND_CHANCE=\.05/,"rare melee finds must use the polished five-percent floor chance");
+assert.match(combat,/const FLOOR_MELEE_PITY_STEP=\.015/,"missed eligible floors must add a mild rare-melee pity increase");
+assert.match(combat,/Math\.floor\(Math\.max\(0,Number\(p\?\.level\|\|1\)-1\)\/5\)/,"melee mastery must add one damage every five levels");
 assert.match(combat,/SID Sabre[\s\S]*?power:4/,"rare SID Sabre must substantially outperform the starter sword");
 assert.match(combat,/Gold Medal Greatsword[\s\S]*?power:6/,"Gold Medal Greatsword must provide high melee damage");
 assert.match(combat,/Zzap! 97% Power Blade[\s\S]*?power:8/,"top-tier rare melee must provide exceptional damage");

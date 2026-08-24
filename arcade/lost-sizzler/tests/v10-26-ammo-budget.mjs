@@ -21,6 +21,7 @@ assert.match(ammo,/const SAFETY_RESERVE=1\.10/,"ammo budget must retain a small 
 assert.match(ammo,/PACK_ROUNDS_BY_FLOOR=\[36,38,40,42,44\]/,"deeper floor packs must carry slightly more ammunition");
 assert.match(ammo,/MIN_PACKS_BY_FLOOR=\[8,9,10,11,12\]/,"every floor must retain a useful minimum number of ammunition packs");
 assert.match(ammo,/MAX_PACKS_BY_FLOOR=\[12,14,15,17,18\]/,"ammo pack clutter must remain bounded even on very durable seeds");
+assert.match(ammo,/const MAX_BALANCED_PACK_ROUNDS=72/,"ordinary late-floor packs must remain sensibly capped");
 assert.match(ammo,/enemy\.hp\|\|enemy\.maxHp/,"budget must include enemy HP");
 assert.match(ammo,/Number\(enemy\.armor\|\|0\)/,"budget must include enemy armour");
 assert.match(ammo,/enemy\.follower[\s\S]*?namedPotionHeal/,"budget must account for named-enemy healing");
@@ -28,6 +29,10 @@ assert.match(ammo,/futureGeneratorDurability/,"budget must reserve ammunition fo
 assert.match(ammo,/roundsNeeded=Math\.ceil\(\(totalDurability\/ASSUMED_DAMAGE_PER_HIT\)\/ASSUMED_ACCURACY\*SAFETY_RESERVE\)/,"round budget must be derived from actual durability, damage, accuracy and safety reserve");
 assert.match(ammo,/host\.ammoBudget=\{\.\.\.budget\}/,"generated floors must retain their calculated ammo budget for inspection/debugging");
 assert.match(ammo,/Spread supplies across rooms/,"ammo packs must be distributed rather than stacked into one area");
+assert.match(ammo,/budget\.meetsAccuracyBudget=planned>=budget\.roundsNeeded/,"the final placed supply must record whether it meets the advertised accuracy budget");
+assert.match(ammo,/v130ReserveAmmo:true/,"a final-objective reserve must cover any amount left after bounded ordinary packs");
+assert.match(ammo,/Number\(i\.ammoRounds\|\|packRounds/,"pickup value must use each placed pack's calculated ammunition amount");
+assert.match(ammo,/i\.v130ReserveAmmo\?1:1\+Math\.max/,"reserve rounds must not be inflated by scavenger bonuses after they have already been budgeted");
 assert.doesNotMatch(ammo,/emergencyAmmo\s*=\s*[1-9]/,"V10.26 must not reintroduce regenerating emergency bullets");
 
 console.log("Lost Sizzler V10.26 enemy-budgeted ammo regression checks passed.");

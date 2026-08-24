@@ -62,6 +62,35 @@ const CCG_MOBILE_ERGONOMICS_REV="20260823a";
 const CCG_MELEE_AMMO_REV="20260824a";
 const CCG_AMMO_BUDGET_REV="20260823a";
 const CCG_ACHIEVEMENTS_REV="20260824a";
+const CCG_POLISH_REV="20260824a";
+
+/* A run must not begin while the sequential enhancement queue is still
+ * replacing the base combat, onboarding and balance functions. Keep the first
+ * requested launch and replay it once the complete release runtime is ready. */
+(()=>{
+  const launchIds=new Set(["solo-btn","tutorial-zone-btn","continue-save-btn","daily-btn","split-btn","create-btn","join-btn"]);
+  let resolveReady;
+  const state={ready:false,failed:false,pendingId:"",errors:[],promise:new Promise(resolve=>{resolveReady=resolve})};
+  const setBodyState=value=>{if(document.body)document.body.dataset.releaseReady=value};
+  const setMenuStatus=text=>{const note=document.getElementById("menu-note");if(note)note.dataset.releaseStatus=text||""};
+  function intercept(event){
+    const button=event.target?.closest?.("button");
+    if(state.ready||!button||!launchIds.has(button.id))return;
+    event.preventDefault();event.stopImmediatePropagation();
+    if(!state.failed){state.pendingId=button.id;setMenuStatus("PREPARING DUNGEON — YOUR SELECTION WILL START AUTOMATICALLY");}
+  }
+  function finish(errors=[]){
+    state.errors=[...errors];state.failed=state.errors.length>0;
+    if(state.failed){setBodyState("failed");setMenuStatus("DUNGEON STARTUP FAILED — REFRESH THE PAGE TO RETRY");resolveReady(false);return false}
+    state.ready=true;setBodyState("true");setMenuStatus("");resolveReady(true);
+    const id=state.pendingId;state.pendingId="";
+    if(id)setTimeout(()=>document.getElementById(id)?.click(),0);
+    return true;
+  }
+  setBodyState("false");document.addEventListener("click",intercept,true);
+  window.addEventListener("pagehide",()=>document.removeEventListener("click",intercept,true),{once:true});
+  window.CCGLostSizzlerReleaseGate={state,finish};
+})();
 
 /* Start onboarding immediately while the core scripts below this file are still
  * parsing. The modules poll for the core functions they need, so the first Play
@@ -154,6 +183,13 @@ const CCG_ACHIEVEMENTS_REV="20260824a";
     link.dataset.ccgDeveloperChangelog="true";
     document.head.appendChild(link);
   }
+  if(!document.querySelector('link[data-ccg-v130-polish="true"]')){
+    const link=document.createElement("link");
+    link.rel="stylesheet";
+    link.href=`css/v10-30-polish.css?v=${CCG_POLISH_REV}`;
+    link.dataset.ccgV130Polish="true";
+    document.head.appendChild(link);
+  }
   if(!document.querySelector('script[data-ccg-developer-changelog="true"]')){
     const script=document.createElement("script");
     script.src=`js/v10-12-developer-changelog.js?v=${CCG_CHANGELOG_REV}`;
@@ -212,11 +248,14 @@ const CCG_ACHIEVEMENTS_REV="20260824a";
       [`js/v10-24-mobile-ergonomics.js?v=${CCG_MOBILE_ERGONOMICS_REV}`,"ccgLostSizzlerMobileErgonomicsV124"],
       [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"],
       [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"],
-      [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"]
+      [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"],
+      [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"]
     ];
+    const criticalFailures=[];
+    const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js"]);
 
     const loadNext=index=>{
-      if(index>=queue.length)return;
+      if(index>=queue.length){window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);return}
       const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
       const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
       const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
@@ -234,11 +273,13 @@ const CCG_ACHIEVEMENTS_REV="20260824a";
       };
       const timeout=setTimeout(()=>{
         console.warn(`[Lost Sizzler] optional enhancement timed out: ${src}`);
+        if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} timed out`);
         advance();
       },5000);
       script.onload=advance;
       script.onerror=()=>{
         console.warn(`[Lost Sizzler] optional enhancement failed to load: ${src}`);
+        if(criticalPaths.has(requestedPath))criticalFailures.push(`${requestedPath} failed`);
         advance();
       };
       document.body.appendChild(script);

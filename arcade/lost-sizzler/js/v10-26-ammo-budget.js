@@ -13,6 +13,7 @@
   const PACK_ROUNDS_BY_FLOOR=[36,38,40,42,44];
   const MIN_PACKS_BY_FLOOR=[8,9,10,11,12];
   const MAX_PACKS_BY_FLOOR=[12,14,15,17,18];
+  const MAX_BALANCED_PACK_ROUNDS=72;
   const state={lastBudget:null,installed:{players:false,world:false,items:false,survival:false}};
 
   const hash32=value=>{let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
@@ -89,9 +90,22 @@
     return cells;
   }
 
+  function reserveAmmoCell(key){
+    if(!world?.rooms)return null;
+    const preferred=[host?.sigilRoomId,world.exitRoomId].map(id=>world.rooms?.[id]).filter(Boolean);
+    for(const room of preferred){
+      const cells=[];
+      for(let y=room.y+1;y<room.y+room.h;y++)for(let x=room.x+1;x<room.x+room.w;x++)if(!occupied(x,y))cells.push({x,y,roomId:room.id});
+      cells.sort((a,b)=>hash32(`${key}|RESERVE|${a.x},${a.y}`)-hash32(`${key}|RESERVE|${b.x},${b.y}`));
+      if(cells[0])return cells[0];
+    }
+    return null;
+  }
+
   function ensureAmmoPacks(){
     if(!host?.items||!run||!world)return null;
     const budget=buildBudget();
+    host.items=host.items.filter(i=>!i?.v130ReserveAmmo);
     const existing=host.items.filter(i=>i?.active&&(i.kind==="ammo"||i.kind==="mana"));
     if(existing.length>budget.targetPacks){
       const ranked=[...existing].sort((a,b)=>hash32(`${run.seed}|F${budget.floor}|KEEP|${a.id}`)-hash32(`${run.seed}|F${budget.floor}|KEEP|${b.id}`));
@@ -106,8 +120,23 @@
       host.items.push({id:`v126-ammo-${budget.floor}-${i}-${hash32(`${run.seed}|${q.x},${q.y}`).toString(36)}`,x:q.x,y:q.y,roomId:q.roomId,kind:"ammo",active:true,title:`AMMO PACK · ${budget.packRounds} ROUNDS`,v126Ammo:true});
       count++;
     }
-    budget.actualPacks=count;
-    budget.totalPlannedRounds=FIRST_GUN_ROUNDS+count*budget.packRounds;
+    const ordinary=host.items.filter(i=>i?.active&&(i.kind==="ammo"||i.kind==="mana")&&!i.v130ReserveAmmo);
+    const requiredGround=Math.max(0,budget.roundsNeeded-FIRST_GUN_ROUNDS);
+    const balancedRounds=ordinary.length?Math.max(budget.packRounds,Math.min(MAX_BALANCED_PACK_ROUNDS,Math.ceil(requiredGround/ordinary.length))):budget.packRounds;
+    for(const item of ordinary){item.ammoRounds=balancedRounds;item.title=`AMMO PACK · ${balancedRounds} ROUNDS`;item.v130BalancedAmmo=true}
+    let planned=FIRST_GUN_ROUNDS+ordinary.length*balancedRounds,reserveRounds=Math.max(0,budget.roundsNeeded-planned),reserve=null;
+    if(reserveRounds>0){
+      const q=reserveAmmoCell(`${run.seed}|F${budget.floor}|V130-RESERVE`);
+      if(q){reserve={id:`v130-ammo-reserve-${budget.floor}-${hash32(`${run.seed}|${q.x},${q.y}`).toString(36)}`,...q,kind:"ammo",active:true,title:`FINAL OBJECTIVE AMMO RESERVE · ${reserveRounds} ROUNDS`,ammoRounds:reserveRounds,v130ReserveAmmo:true};host.items.push(reserve);planned+=reserveRounds}
+    }
+    budget.basePackRounds=budget.packRounds;
+    budget.packRounds=balancedRounds;
+    budget.actualPacks=ordinary.length+(reserve?1:0);
+    budget.ordinaryPacks=ordinary.length;
+    budget.reservePacks=reserve?1:0;
+    budget.reserveRounds=reserve?.ammoRounds||0;
+    budget.totalPlannedRounds=planned;
+    budget.meetsAccuracyBudget=planned>=budget.roundsNeeded;
     state.lastBudget=budget;
     host.ammoBudget={...budget};
     host.revision=(host.revision||0)+1;
@@ -149,7 +178,7 @@
     };
     applyItem=function applyItemV126(i,p){
       if(i?.kind!=="ammo"&&i?.kind!=="mana")return oldItem(i,p);
-      const n=packRounds(floorNumber(),p);normalisePlayer(p);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;p.emergencyRechargeMs=0;
+      const base=Number(i.ammoRounds||packRounds(floorNumber())),bonus=i.v130ReserveAmmo?1:1+Math.max(0,Number(p?.scavenger||0)),n=Math.max(1,Math.round(base*bonus));normalisePlayer(p);p.mana=Math.min(p.maxMana,p.mana+n);p.ammoFlashMs=C.player.ammoFlashMs;p.emergencyRechargeMs=0;
       try{S.sfx("pickup");showToast("AMMO PACK",`${p===p2?"P2":"P1"} gains ${n} rounds.`,"cyan");awardXP(p,typeof pickupXP==="function"?pickupXP(i.kind):3,"AMMO PACK collected");updateQuests();PGR.checkAchievements(run,p)}catch(_){}
       return true;
     };
@@ -182,5 +211,5 @@
 
   install();let tries=0;const timer=setInterval(()=>{tries++;install();if(Object.values(state.installed).every(Boolean)||tries>=80)clearInterval(timer)},100);
   window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
-  window.CCGLostSizzlerAmmoBudgetV126={state,buildBudget,ensureAmmoPacks,packRounds,constants:{BASE_MAX_AMMO,FIRST_GUN_ROUNDS,RESPAWN_ROUNDS,ASSUMED_DAMAGE_PER_HIT,ASSUMED_ACCURACY,SAFETY_RESERVE,PACK_ROUNDS_BY_FLOOR,MIN_PACKS_BY_FLOOR,MAX_PACKS_BY_FLOOR}};
+  window.CCGLostSizzlerAmmoBudgetV126={state,buildBudget,ensureAmmoPacks,packRounds,constants:{BASE_MAX_AMMO,FIRST_GUN_ROUNDS,RESPAWN_ROUNDS,ASSUMED_DAMAGE_PER_HIT,ASSUMED_ACCURACY,SAFETY_RESERVE,PACK_ROUNDS_BY_FLOOR,MIN_PACKS_BY_FLOOR,MAX_PACKS_BY_FLOOR,MAX_BALANCED_PACK_ROUNDS}};
 })();

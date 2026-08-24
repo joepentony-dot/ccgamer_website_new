@@ -81,11 +81,16 @@ function permanentLightVisibleTo(p,x,y){
   return false;
 }
 function followerLightVisibleTo(p,x,y){
-  const radius=C.enemy.followerLightRadius||5,roomId=W.roomAt(world,x,y);if(roomId<0)return false;
+  if(!p||!world||!host)return false;
+  const radius=C.enemy.followerLightRadius||5,roomId=W.roomAt(world,x,y),playerRoom=W.roomAt(world,p.x,p.y),pr=effectiveSight(p);if(roomId<0)return false;
   for(const e of host?.enemies||[]){
     if(!e.alive||!e.follower||W.roomAt(world,e.x,e.y)!==roomId)continue;
     if(Math.hypot(x-e.x,y-e.y)>radius+.2||!A.lineOfSight(world.map,e,{x,y},radius,host))continue;
-    return true;
+    /* Named enemies illuminate their immediate room, but that light is not
+     * global knowledge. The player must share the room or be close enough to
+     * see the lit area through an unobstructed route. */
+    if(playerRoom===roomId)return true;
+    if(Math.hypot(p.x-e.x,p.y-e.y)<=pr+radius+1&&A.lineOfSight(world.map,p,e,pr+radius+1,host))return true;
   }
   return false;
 }

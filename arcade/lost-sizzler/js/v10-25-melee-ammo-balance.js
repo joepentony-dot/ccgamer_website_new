@@ -8,7 +8,9 @@
   const FLOOR_AMMO_ARCADE=3;
   const FLOOR_AMMO_LOW=2;
   const FLOOR_AMMO_CASUAL=4;
-  const FLOOR_MELEE_FIND_CHANCE=.02;
+  const FLOOR_MELEE_FIND_CHANCE=.05;
+  const FLOOR_MELEE_PITY_STEP=.015;
+  const FLOOR_MELEE_MAX_CHANCE=.095;
   const FIRST_GUN_MAGAZINE=16;
   const RESPAWN_AMMO=6;
   const START_SWORD={id:"archive-sword",name:"Archive Sword",short:"SWORD",rarity:"STARTER",power:1,cooldown:390,colour:"#ffd85a",desc:"Reliable close-range sword. Unlimited use and strong enough to knock ordinary enemies into hazards."};
@@ -25,6 +27,8 @@
   const tutorialState=()=>window.CCGLostSizzlerOnboardingV120?.state||null;
   const hasGun=p=>Boolean(p?.firearmUnlocked&&p?.weapon);
   const meleeFor=p=>p?.meleeWeapon||START_SWORD;
+  const meleeMastery=p=>Math.floor(Math.max(0,Number(p?.level||1)-1)/5);
+  const meleeDamageFor=p=>Math.max(1,Number(meleeFor(p).power||1)+meleeMastery(p)+Math.floor(Number(p?.damageBonus||0)*.5));
   const toneFor=rarity=>rarity==="ZZAP! 97%"?"red":rarity==="GOLD MEDAL"?"gold":"cyan";
 
   function configureAmmoModel(){
@@ -96,16 +100,16 @@
     const generator=(host?.generators||[]).find(g=>g?.alive&&g.x===tx&&g.y===ty);
     let hit=false;
     if(enemy){
-      const damage=Math.max(1,Number(melee.power||1)+Math.floor(Number(p.damageBonus||0)*.5));
+      const damage=meleeDamageFor(p);
       damageEnemy(enemy,damage,"physical",p);hit=true;
       try{floatText(tx,ty,melee.rarity==="STARTER"?"SLASH!":`${melee.short}!`,melee.colour||P.gold,{life:620})}catch(_){}
     }else if(generator){
-      damageGenerator(generator,Math.max(1,Number(melee.power||1)),p);hit=true;
-    }else if(typeof damageFurnitureAt==="function"&&damageFurnitureAt(tx,ty,Math.max(1,Number(melee.power||1))))hit=true;
+      damageGenerator(generator,meleeDamageFor(p),p);hit=true;
+    }else if(typeof damageFurnitureAt==="function"&&damageFurnitureAt(tx,ty,meleeDamageFor(p)))hit=true;
     else if(host?.stalker?.awake&&host.stalker.x===tx&&host.stalker.y===ty){
       hit=true;try{S.sfx("stalker");showToast(`${String(C.stalker.name||"Count Loadula").toUpperCase()} RESISTS THE BLADE`,`Melee can push ordinary enemies into danger, but ${C.stalker.name||"Count Loadula"} still requires a Banishment Flask.`,"red",6200)}catch(_){}
     }
-    try{if(run)run.alert=Math.min(100,Number(run.alert||0)+(hit?.45:.2))}catch(_){}
+    try{if(run)run.alert=Math.min(100,Number(run.alert||0)+(hit?.45:.2));if(hit)shake=Math.max(shake,1.6)}catch(_){}
     const ts=tutorialState();if(ts?.active&&Number(ts.step)===1)ts.fired=true;
     try{sync()}catch(_){}
     return true;
@@ -162,8 +166,15 @@
     if(!host||!run||!world||Number(run.floor||1)<2)return false;
     if(window.CCGLostSizzlerOnboardingV120?.state?.active)return false;
     if((host.items||[]).some(i=>i.kind==="meleeWeapon"))return true;
+    if((typeof localPlayers==="function"?localPlayers():[]).some(p=>p?.meleeWeapon&&p.meleeWeapon.id!==START_SWORD.id))return true;
     const key=`${run.seed}|F${run.floor}|V125-MELEE`;
-    if(unit(`${key}|ROLL`)>=FLOOR_MELEE_FIND_CHANCE)return false;
+    run._v125MeleeRolls=run._v125MeleeRolls&&typeof run._v125MeleeRolls==="object"?run._v125MeleeRolls:{};
+    let roll=run._v125MeleeRolls[run.floor];
+    if(!roll){
+      const pity=Math.max(0,Number(run._v125MeleePity||0)),chance=Math.min(FLOOR_MELEE_MAX_CHANCE,FLOOR_MELEE_FIND_CHANCE+pity*FLOOR_MELEE_PITY_STEP),found=unit(`${key}|ROLL`)<chance;
+      roll={found,chance,pity};run._v125MeleeRolls[run.floor]=roll;run._v125MeleePity=found?0:pity+1;
+    }
+    if(!roll.found)return false;
     const q=safeMeleeCell(key);if(!q)return false;
     const melee=rareMeleeFor(key);
     host.items.push({id:`rare-melee-${run.floor}-${hash32(key).toString(36)}`,...q,kind:"meleeWeapon",meleeWeapon:melee,active:true,title:`${melee.rarity} ${melee.name}`});
@@ -194,7 +205,7 @@
   function equipMelee(p,melee){
     if(!p||!melee)return false;
     const old=meleeFor(p);p.meleeWeapon={...melee};
-    try{S.sfx("elite");showToast(`${melee.rarity} ${melee.name}`,`${melee.desc} Damage ${melee.power}. This occupies the dedicated melee slot, not an inventory slot.${old?.name?` Replaced ${old.name}.`:""}`,toneFor(melee.rarity),8500)}catch(_){}
+    try{S.sfx("elite");showToast(`${melee.rarity} ${melee.name}`,`${melee.desc} Current damage ${meleeDamageFor(p)} including level mastery. This occupies the dedicated melee slot, not an inventory slot.${old?.name?` Replaced ${old.name}.`:""}`,toneFor(melee.rarity),8500)}catch(_){}
     return true;
   }
 
@@ -260,7 +271,7 @@
         if(p1){
           const melee=meleeFor(p1),usingMelee=!hasGun(p1)||Number(p1.mana||0)<=0;
           if(usingMelee&&UI?.weapon)UI.weapon.textContent=String(melee.short||melee.name||"SWORD").slice(0,16).toUpperCase();
-          if(usingMelee&&UI?.power)UI.power.textContent=String(Math.max(1,Number(melee.power||1)+Math.floor(Number(p1.damageBonus||0)*.5)));
+          if(usingMelee&&UI?.power)UI.power.textContent=String(meleeDamageFor(p1));
           if(UI?.weapon)UI.weapon.title=hasGun(p1)?`Firearm: ${p1.weapon?.displayName||p1.weapon?.name}. Melee: ${melee.name}. ${p1.mana>0?"Attack fires the gun.":"Ammo empty — Attack uses melee."}`:`Melee only: ${melee.name}. Find a firearm in the dungeon.`;
           const touch=document.querySelector('#v104-touch-controls [data-action="fire"]');if(touch)touch.textContent=usingMelee?"SLASH":"FIRE";
         }
@@ -296,5 +307,5 @@
   install();
   let attempts=0;const retry=setInterval(()=>{attempts++;install();if(Object.values(installed).every(Boolean)||attempts>=80)clearInterval(retry)},100);
   window.addEventListener("pagehide",()=>clearInterval(retry),{once:true});
-  window.CCGLostSizzlerMeleeAmmoV125={START_SWORD,RARE_MELEE,meleeAttack,hasGun,meleeFor,pruneAmmoSupplies,spawnVeryRareMelee};
+  window.CCGLostSizzlerMeleeAmmoV125={START_SWORD,RARE_MELEE,meleeAttack,hasGun,meleeFor,meleeMastery,meleeDamageFor,pruneAmmoSupplies,spawnVeryRareMelee,constants:{FLOOR_MELEE_FIND_CHANCE,FLOOR_MELEE_PITY_STEP,FLOOR_MELEE_MAX_CHANCE}};
 })();
