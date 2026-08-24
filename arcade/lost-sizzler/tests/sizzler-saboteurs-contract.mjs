@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const S = require("./sizzler-saboteurs.js");
+const S = require("../js/sizzler-saboteurs.js");
 
 assert.equal(S.MODE_ID, "sizzler-saboteurs");
 assert.equal(S.MODE_NAME, "Sizzler Saboteurs");
