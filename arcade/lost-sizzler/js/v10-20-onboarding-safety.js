@@ -50,9 +50,9 @@
     ["objective","OBJECTIVES, RADAR & HINTS","Every floor has a main objective. Read the MISSION strip and Inventory objective text, then use the tactical radar to understand explored routes.","If objective progress stalls, hints escalate from a reminder to a direction and finally a temporary radar marker."],
     ["survival","HEALTH, ARMOUR & QUICK ITEMS","Armour absorbs damage before health. E uses a Potion, Q a Torch, R a Teleport spell, and C can close a nearby door.","Health packs restore HP immediately. Normal deaths can leave a recoverable death cache; Weekly Vault death ends that ranked attempt."],
     ["keys","KEYS, DOORS & CHESTS","Main keys advance objectives. Bronze keys open optional bronze doors or locked chests. The Exit Sigil is exposed only after its reinforced defenders are beaten.","The keyring shows Main, Bronze and Sigil counts. Approach doors and chests in the dungeon view; interaction results appear in the report panel."],
-    ["threats","ENEMIES, NAMED ENEMIES & THE STALKER","Danger rises deeper into the map. Early rooms are deliberately lighter and special hordes are kept away from the opening stretch.","The enemy dossier records an entry only when that actual named enemy is encountered. The Death Stalker needs a Banishment Flask; use B when the prompt appears in range."],
+    ["threats","ENEMIES, NAMED ENEMIES & THE STALKER","Danger rises deeper into the map. Early rooms are deliberately lighter and special hordes are kept away from the opening stretch.","The enemy dossier records an entry only when that actual named enemy is encountered. Permanently banishing the Death Stalker with a Banishment Flask awards a large score bonus and can produce a rare Banishment Artefact; use B when the prompt appears in range."],
     ["rare","RARE EVENTS, SHOPS, HAZARDS & SCORE","Some floors contain uncommon events such as Mimics, the Gilded Elf, merchants, treasure encounters, mutations and very rare vortex pits.","Enemies normally avoid traps and vortex pits, but gunfire can knock them into hazards. Score buys supplies and matters in the Weekly Vault."],
-    ["finish","TUTORIAL COMPLETE","You have covered the essential controls and dungeon systems. Finishing training returns you to the main options instead of starting a run automatically.","Choose Play Solo and then PLAY GAME when you are ready, or choose TUTORIAL again whenever you want another practice run."]
+    ["finish","TUTORIAL COMPLETE","You Are Ready To Take On The Adventure! Finishing training returns you to the main options instead of starting a run automatically.","Choose Play Solo when you are ready, or choose Tutorial again whenever you want another practice run."]
   ];
 
   function ensureChoice(){
@@ -69,7 +69,7 @@
 
   function showCompletionBanner(skipped=false){
     ensureStyle();state.completionBanner?.remove?.();const panel=document.querySelector("#menu .panel");if(!panel)return;
-    const banner=document.createElement("div");banner.id="ccg-tutorial-complete-banner";banner.innerHTML=skipped?'<b>TUTORIAL ENDED</b><span>You are back at the game options. Choose Tutorial Zone to practise again or Play Solo when you are ready.</span>':'<b>TUTORIAL COMPLETE</b><span>Training finished successfully. Choose Play Solo to start the dungeon, or Tutorial Zone to run through the training again.</span>';
+    const banner=document.createElement("div");banner.id="ccg-tutorial-complete-banner";banner.innerHTML=skipped?'<b>TUTORIAL ENDED</b><span>You are back at the game options. Choose Tutorial to practise again or Play Solo when you are ready.</span>':'<b>TUTORIAL COMPLETE</b><span>You Are Ready To Take On The Adventure! Choose Play Solo to start the dungeon, or Tutorial to run through the training again.</span>';
     const anchor=panel.querySelector(".hero-logo");if(anchor?.nextSibling)panel.insertBefore(banner,anchor.nextSibling);else panel.prepend(banner);state.completionBanner=banner;
   }
 
@@ -106,7 +106,7 @@
   function renderStep(){
     if(!state.active)return;const s=STEPS[state.step]||STEPS[STEPS.length-1],isReady=stepReady(s),interactive=["move","fire","dash","inventory"].includes(s[0]),p=ensureTutorialPanel();if(!p)return;const pct=Math.round(((state.step+1)/STEPS.length)*100);
     const progressCopy=interactive?(isReady?'<span class="ccg-tutorial-done">DONE — LOADING NEXT STEP…</span>':'<span class="ccg-tutorial-doit">DO THIS NOW TO CONTINUE</span>'):"";
-    const actionCopy=interactive?'<button type="button" data-skip>Exit Tutorial</button>':s[0]==="finish"?'<button class="primary" type="button" data-finish>Complete Tutorial</button><button type="button" data-skip>Exit Tutorial</button>':'<button class="primary" type="button" data-next>Continue</button><button type="button" data-skip>Exit Tutorial</button>';
+    const actionCopy=interactive?'<button type="button" data-skip>Exit Tutorial</button>':s[0]==="finish"?'<button class="primary" type="button" data-finish>Complete Tutorial</button>':'<button class="primary" type="button" data-next>Continue</button><button type="button" data-skip>Exit Tutorial</button>';
     p.innerHTML=`<span class="tutorial-kicker">TUTORIAL ZONE • ${state.step+1}/${STEPS.length}</span><h3>${s[1]}</h3><p>${s[2]}</p><p class="tutorial-detail">${s[3]}</p><div class="ccg-tutorial-progress"><span style="width:${pct}%"></span></div>${progressCopy}<div class="ccg-tutorial-actions">${actionCopy}</div>`;
     if(interactive)renderLiveProgress(s[0]);else{state.progressPanel?.remove?.();state.progressPanel=null}
     p.querySelector("[data-next]")?.addEventListener("click",advance);p.querySelector("[data-finish]")?.addEventListener("click",()=>finishTutorial(false));p.querySelector("[data-skip]")?.addEventListener("click",()=>finishTutorial(true));
@@ -116,8 +116,8 @@
   function completeInteractive(kind){
     if(!state.active||STEPS[state.step]?.[0]!==kind)return false;
     if(kind==="move")state.moved=state.movementDirections.size>=4;
-    if(kind==="fire"){state.swingCount++;state.fired=state.swingCount>=3}
-    if(kind==="dash"){state.dashCount++;state.dashed=state.dashCount>=3}
+    if(kind==="fire"){state.swingCount=Math.min(3,state.swingCount+1);state.fired=state.swingCount>=3;renderStep()}
+    if(kind==="dash"){state.dashCount=Math.min(3,state.dashCount+1);state.dashed=state.dashCount>=3;renderStep()}
     if(kind==="inventory"&&!(state.inventoryOpened&&state.inventoryClosed))return false;
     if(!stepReady(STEPS[state.step]))return false;
     renderStep();
@@ -162,7 +162,7 @@
   }
   function afterRunStarted(daily=false){state.welcomeForRun=false;applyGentleOpening();setTimeout(softenRareOpening,0);if(state.tutorialRequested&&!daily)setTimeout(activateTutorial,80);else announceWelcome(daily,false)}
 
-  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online);if(!state.choiceAccepted&&!daily&&!online){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
+  function installBegin(){if(state.installed.begin||typeof beginRun!=="function")return;const original=beginRun;beginRun=function(opts={}){const daily=Boolean(opts?.daily),online=Boolean(opts?.online),split=Boolean(opts?.split);if(!state.choiceAccepted&&!daily&&!online&&!split){showChoice(Array.from(arguments));return false}const result=original.apply(this,arguments);afterRunStarted(daily);return result};state.installed.begin=true}
   function installWorld(){if(state.installed.startWorld||typeof startWorld!=="function")return;const original=startWorld;startWorld=function(){const result=original.apply(this,arguments);try{applyGentleOpening();setTimeout(softenRareOpening,0)}catch(e){console.warn("[Lost Sizzler] gentle opening pass failed",e)}return result};state.installed.startWorld=true}
   function installActions(){
     let n=0;

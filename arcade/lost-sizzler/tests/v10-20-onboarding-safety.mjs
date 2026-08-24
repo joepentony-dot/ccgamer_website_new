@@ -13,9 +13,9 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const index=read("index.html");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260824f"/,"onboarding safety must remain cache-versioned");
-assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824d"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824d/,"the release must directly load the fullscreen-safe tutorial launcher");
+assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260824g"/,"onboarding safety must remain cache-versioned");
+assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824e"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
+assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824e/,"the release must directly load the fullscreen-safe tutorial launcher");
 assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
@@ -39,6 +39,8 @@ assert.match(source,/state\.swingCount>=3/,"the sword stage must require three c
 assert.match(source,/state\.dashCount>=3/,"the dash stage must require three completed dashes");
 assert.match(source,/if\(r!==false\)note\("fire"\)/,"only a performed attack may progress the sword stage");
 assert.match(source,/if\(r!==false\)note\("dash"\)/,"only a performed dash may progress the dash stage");
+assert.match(source,/state\.swingCount=Math\.min\(3,state\.swingCount\+1\);state\.fired=state\.swingCount>=3;renderStep\(\)/,"the sword overlay must repaint after every successful swing");
+assert.match(source,/state\.dashCount=Math\.min\(3,state\.dashCount\+1\);state\.dashed=state\.dashCount>=3;renderStep\(\)/,"the dash overlay must repaint after every successful dash");
 assert.match(source,/Press <span class="control-key">TAB<\/span> on keyboard or tap <span class="control-key">ITEMS<\/span>/,"the inventory step must retain an on-screen control prompt");
 assert.match(source,/state\.inventoryOpened&&state\.inventoryClosed/,"inventory training must require opening and closing");
 assert.match(source,/setInterval\(watchTutorialProgress,80\)/,"tutorial progress must retain a fast fallback");
@@ -49,7 +51,7 @@ assert.match(guidance,/#ccg-tutorial-stage-modal\{[\s\S]*?position:fixed!importa
 assert.match(guidance,/place-items:center/,"tutorial acknowledgement card must be centred");
 assert.match(guidance,/body\[data-tutorial-active="true"\] #ccg-tutorial-rail\{display:none!important\}/,"old report-rail tutorial UI must be hidden while centred guidance is active");
 assert.match(guidance,/data-stage-continue/,"every tutorial explanation must expose Continue");
-assert.match(guidance,/The tutorial will not move on until you acknowledge it/,"information stages must require acknowledgement");
+assert.match(guidance,/Press Continue to begin a guided visual tour/,"information stages must require acknowledgement before their live tour");
 assert.match(guidance,/Press Continue to acknowledge this step/,"interactive stages must require acknowledgement before control input");
 assert.match(guidance,/step===9\?"COMPLETE TUTORIAL":"CONTINUE"/,"final tutorial card must require explicit completion");
 assert.ok(guidance.includes("[data-dir]"),"movement controls must be highlighted");
@@ -58,7 +60,10 @@ assert.ok(guidance.includes('[data-action="dash"]'),"DASH must be highlighted");
 assert.ok(guidance.includes('[data-action="inventory"],[data-action="items"]'),"ITEMS must be highlighted");
 assert.match(guidance,/ccgTutorialControlFlash/,"highlighted controls must visibly pulse");
 assert.match(guidance,/INFO_HIGHLIGHTS=new Map/,"tutorial information sections must define contextual interface highlights");
-for(const label of ["1 · CURRENT OBJECTIVE","2 · TACTICAL RADAR","3 · CONTEXTUAL HINTS","1 · HEALTH","2 · ARMOUR","3 · POTION · E","4 · TORCH · Q","5 · QUICK ITEMS","1 · KEYRING","2 · DOORS & CHESTS","3 · INTERACTION REPORTS"])assert.ok(guidance.includes(label),`tutorial is missing highlight: ${label}`);
+for(const label of ["1 · CURRENT OBJECTIVE","2 · TACTICAL RADAR","3 · CONTEXTUAL HINTS","1 · HEALTH","2 · ARMOUR","3 · POTION · E","4 · TORCH · Q","5 · QUICK ITEMS","1 · KEYRING","2 · DOORS & CHESTS","3 · INTERACTION REPORTS","1 · LIVE ENEMIES","2 · NAMED ENEMY DOSSIER","3 · STALKER BANISH PROMPT","1 · EVENTS & HAZARDS","2 · DISCOVERED SHOPS","3 · SCORE","4 · EVENT REPORTS"])assert.ok(guidance.includes(label),`tutorial is missing highlight: ${label}`);
+for(const title of ["FOLLOW THE FLOOR OBJECTIVE","READ YOUR SURVIVAL HUD","UNDERSTAND LOCKS AND REWARDS","KNOW THE DUNGEON THREATS","SPOT SPECIAL OPPORTUNITIES"])assert.ok(guidance.includes(title),`tutorial is missing visual tour: ${title}`);
+assert.match(guidance,/if\(INFO_SHOWCASES\.has\(step\)\)\{[\s\S]*?showInformationTour\(step\)/,"information Continue must open a visual tour rather than advancing immediately");
+assert.match(guidance,/data-tour-continue/,"each visual tour must have its own explicit Continue action");
 assert.doesNotMatch(guidance,/SECRET ROUTE|SECRET WALL|SECRET DOOR/,"tutorial interface highlights must not reveal secret routes");
 assert.match(guidance,/#inventory-close,#inventory-close-top/,"inventory close controls must be highlighted after opening inventory");
 
@@ -90,7 +95,11 @@ assert.match(source,/if\(state\.active\)return false;return o\.apply\(this,argum
 assert.match(source,/if\(typeof quitToMenu==="function"\)await quitToMenu\(\)/,"finishing training must return to main options");
 assert.match(source,/S\?\.stopAll\?\.\(\)/,"returning from the tutorial must stop music and sound effects");
 assert.match(source,/TUTORIAL COMPLETE<\/b>/,"completed training must leave a completion notice");
+assert.match(source,/You Are Ready To Take On The Adventure!/,"tutorial completion must include the requested adventure message");
+assert.match(source,/s\[0\]==="finish"\?'<button class="primary" type="button" data-finish>Complete Tutorial<\/button>'/,"the final rail step must expose only Complete Tutorial");
+assert.match(guidance,/\$\{step===9\?"":'<button type="button" data-stage-exit>EXIT TUTORIAL<\/button>'\}/,"the final centred tutorial card must omit Exit Tutorial");
 assert.match(source,/run\?\.daily\|\|playMode==="online"/,"ranked and online runs must not become tutorial runs");
+assert.match(source,/!state\.choiceAccepted&&!daily&&!online&&!split/,"the solo tutorial chooser must never intercept split-screen startup");
 
 assert.match(hardening,/PGR\.makeRun\(\{difficulty,seed,daily:false\}\)/,"leaving training must reconstruct a pristine run");
 assert.match(hardening,/score=0/,"tutorial score must be discarded");

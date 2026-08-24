@@ -3,26 +3,26 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="ccg-lost-sizzler-build" content="2026.08.24.6">
+  <meta name="ccg-lost-sizzler-build" content="2026.08.24.7">
   <meta name="theme-color" content="#09040f">
   <meta name="robots" content="index,follow">
   <meta name="description" content="Play Cheeky Commodore Quest: The Lost Sizzler, a neon procedural arcade dungeon adventure from Cheeky Commodore Gamer.">
   <link rel="canonical" href="https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/">
   <title>Cheeky Commodore Quest — The Lost Sizzler</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/game.css?v=20260824r6">
-  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260824r6">
+  <link rel="stylesheet" href="css/game.css?v=20260824r7">
+  <link rel="stylesheet" href="css/v10-6-gameplay.css?v=20260824r7">
 </head>
 <body data-game-ready="false" data-release-ready="false" data-run-active="false">
 <main class="ccg-game">
   <header class="topbar v102-topbar">
     <div class="brand v102-brand">
       <img src="assets/ccgamer-logo-fallback.svg" alt="Cheeky Commodore Gamer">
-      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.33</p></div>
+      <div><h1>Cheeky Commodore Quest</h1><p>THE LOST SIZZLER — V10.34</p></div>
     </div>
     <div class="system-buttons">
       <span id="net-status" class="status">SOLO</span>
-      <span class="build-badge">BUILD V10.33</span>
+      <span class="build-badge">BUILD V10.34</span>
       <button id="sound-btn" class="sound-toggle" type="button">SOUND ON</button>
       <button id="fullscreen-btn" class="sound-toggle" type="button">FULLSCREEN</button>
       <button id="quit-btn" class="sound-toggle danger-toggle" type="button">QUIT</button>
@@ -72,17 +72,21 @@
     </aside>
     <div id="menu" class="overlay">
       <div class="panel">
-        <img class="hero-logo" src="assets/lost-sizzler.webp" alt="The Lost Sizzler">
-        <h2>The Lost Sizzler</h2>
-        <p>A multi-floor arcade dungeon crawl with procedural rooms, fog, locked routes, shootable switches, traps, monster generators, rare artefacts, XP, death recovery, a reinforced Sigil gauntlet, optional puzzle chambers and things in the dark that require more than ordinary ammunition.</p>
+        <div class="pixel-title-lockup" aria-label="Cheeky Commodore Quest: The Lost Sizzler">
+          <span class="pixel-title-ccg">CCG</span>
+          <span class="pixel-title-quest">CHEEKY COMMODORE QUEST</span>
+          <h2><span>THE LOST</span><strong>SIZZLER</strong></h2>
+          <em>A RETRO DUNGEON ADVENTURE</em>
+        </div>
+        <p class="menu-blurb">A five-floor pixel dungeon crawl filled with shifting objectives, rare loot, hidden routes, dangerous events, co-op expeditions and things in the dark that ordinary weapons cannot finish.</p>
         <p class="desktop-play-recommendation"><strong>BETTER PLAYED ON DESKTOP PC</strong><span>Mobile play is supported, but a larger screen and keyboard give the best experience.</span></p>
         <div class="feature-strip">
           <span><b>5-FLOOR RUN</b>Different objectives and increasing danger</span>
           <span><b>RPG PROGRESSION</b>XP, level choices, rare weapons and inventory</span>
           <span><b>DEATH STALKERS</b>Trade 3 artefacts or pay 10,000 score at a shop for a Banishment Flask. The contextual B prompt appears in range.</span>
         </div>
-        <label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label>
-        <label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label>
+        <div class="menu-config"><label class="field"><span>PLAYER 1 NAME</span><input id="player-name" maxlength="18" value="CCG Player" autocomplete="nickname"></label><label class="field"><span>DIFFICULTY</span><select id="difficulty"><option>CASUAL</option><option selected>ARCADE</option><option>SIZZLER</option><option>GOLD MEDAL</option></select></label></div>
+        <div class="mode-select-label"><span>✦</span> CHOOSE YOUR ADVENTURE <span>✦</span></div>
         <div class="menu-buttons game-mode-buttons" aria-label="Game modes"><button id="solo-btn" class="primary game-mode-button mode-solo">Play Solo</button><button id="tutorial-zone-btn" type="button" class="tutorial-primary-option">Tutorial</button><button id="create-btn" class="game-mode-button mode-dungeon" data-room-mode="dungeon">Dungeon Multiplayer</button><button id="horde-mode-btn" class="game-mode-button mode-horde" data-room-mode="horde-survivor">Horde Multiplayer</button><button id="saboteurs-mode-btn" class="game-mode-button mode-saboteurs" data-room-mode="sizzler-saboteurs" data-player-cap="2">Spy Vs Spy Multiplayer</button><button id="continue-save-btn" class="save-resume hidden">Resume Saved Run</button><button id="daily-btn">Weekly High-Score Vault</button><button id="split-btn">2P Split Screen</button></div>
         <section class="online-howto" aria-label="Online multiplayer instructions"><h3>ONLINE MULTIPLAYER — WORLDWIDE BROWSER ROOMS</h3><div><p><b>HOST</b> Choose Dungeon or Horde for up to four players, or Spy Vs Spy for exactly two. Share the room invite, then start from the lobby.</p><p><b>JOIN</b> Open the invite or enter its room code. Supabase Realtime relays host-authoritative play between supported browsers in different countries.</p></div></section>
         <section id="weekly-vault" class="weekly-vault-section" aria-labelledby="weekly-vault-title">
@@ -208,25 +212,25 @@
     <div class="hub-hidden-data" aria-hidden="true"><div id="loadout"></div><div id="player-list"></div></div>
   </section>
 </main>
-<script src="/js/ccg-supabase-config.js?v=20260824r6"></script>
-<script src="/js/ccg-supabase-client.js?v=20260824r6"></script>
-<script src="js/version-check.js?v=20260824r6"></script>
-<script src="js/weekly-challenge.js?v=20260824r6"></script>
-<script src="js/v10-23-tutorial-guidance.js?v=20260824d"></script>
-<script src="js/asset-overrides.js?v=20260824r6"></script>
-<script src="js/avatar-data.js?v=20260824r6"></script>
-<script src="js/config.js?v=20260824r6"></script>
-<script src="js/progression.js?v=20260824r6"></script>
-<script src="js/audio-assets.js?v=20260824r6"></script>
-<script src="js/audio.js?v=20260824r6"></script>
-<script src="js/world.js?v=20260824r6"></script>
-<script src="js/network.js?v=20260824r6"></script>
-<script src="js/ai.js?v=20260824r6"></script>
-<script src="js/systems.js?v=20260824r6"></script>
-<script src="js/game-core.js?v=20260824r6"></script>
-<script src="js/game-network.js?v=20260824r6"></script>
-<script src="js/game-play.js?v=20260824r6"></script>
-<script src="js/game-render.js?v=20260824r6"></script>
-<script src="js/game-main.js?v=20260824r6"></script>
+<script src="/js/ccg-supabase-config.js?v=20260824r7"></script>
+<script src="/js/ccg-supabase-client.js?v=20260824r7"></script>
+<script src="js/version-check.js?v=20260824r7"></script>
+<script src="js/weekly-challenge.js?v=20260824r7"></script>
+<script src="js/v10-23-tutorial-guidance.js?v=20260824e"></script>
+<script src="js/asset-overrides.js?v=20260824r7"></script>
+<script src="js/avatar-data.js?v=20260824r7"></script>
+<script src="js/config.js?v=20260824r7"></script>
+<script src="js/progression.js?v=20260824r7"></script>
+<script src="js/audio-assets.js?v=20260824r7"></script>
+<script src="js/audio.js?v=20260824r7"></script>
+<script src="js/world.js?v=20260824r7"></script>
+<script src="js/network.js?v=20260824r7"></script>
+<script src="js/ai.js?v=20260824r7"></script>
+<script src="js/systems.js?v=20260824r7"></script>
+<script src="js/game-core.js?v=20260824r7"></script>
+<script src="js/game-network.js?v=20260824r7"></script>
+<script src="js/game-play.js?v=20260824r7"></script>
+<script src="js/game-render.js?v=20260824r7"></script>
+<script src="js/game-main.js?v=20260824r7"></script>
 </body>
 </html>
