@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - chore/lost-sizzler-v10-40-release-sync
     paths:
       - 'arcade/lost-sizzler/**'
       - '.github/workflows/lost-sizzler-arcade-validation.yml'
@@ -17,13 +18,13 @@ permissions:
 
 jobs:
   release-sync:
-    if: github.event_name == 'pull_request' && github.head_ref == 'chore/lost-sizzler-v10-40-release-sync'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/chore/lost-sizzler-v10-40-release-sync'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout release audit branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref }}
+          ref: chore/lost-sizzler-v10-40-release-sync
           fetch-depth: 0
 
       - name: Synchronise V10.40 build labels, cache token and changelog
@@ -88,7 +89,7 @@ jobs:
           git checkout origin/main -- .github/workflows/lost-sizzler-arcade-validation.yml
           git add .github/workflows/lost-sizzler-arcade-validation.yml arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json arcade/lost-sizzler/js/version-check.js arcade/lost-sizzler/js/asset-overrides.js arcade/lost-sizzler/js/v10-12-developer-changelog.js arcade/lost-sizzler/tests/v10-22-version-cache.mjs
           git commit -m "Synchronise Lost Sizzler V10.40 release build"
-          git push origin HEAD:${{ github.head_ref }}
+          git push origin HEAD:chore/lost-sizzler-v10-40-release-sync
 
   static:
     runs-on: ubuntu-latest
