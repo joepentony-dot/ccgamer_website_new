@@ -214,7 +214,9 @@ const CCG_AMMO_BUDGET_REV="20260823a";
     const loadNext=index=>{
       if(index>=queue.length)return;
       const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
-      if(document.querySelector(selector)){loadNext(index+1);return}
+      const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
+      const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
+      if(document.querySelector(selector)||alreadyLoaded){loadNext(index+1);return}
       const script=document.createElement("script");
       script.src=src;
       script.dataset[key]="true";
