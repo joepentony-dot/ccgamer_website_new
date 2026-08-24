@@ -4,14 +4,14 @@ import vm from 'node:vm';
 import {fileURLToPath} from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-const repo=path.resolve(here,'../../../..');
+const repo=path.resolve(here,'../../..');
 const read=relative=>fs.readFileSync(path.join(repo,relative),'utf8');
-const patch=read('games/ccg-games/cheeky-commodore-quest/js/lost-sizzler-playlist-audio.js');
-const continuity=read('games/ccg-games/cheeky-commodore-quest/js/v10-7-continuous-exploration.js');
-const core=read('games/ccg-games/cheeky-commodore-quest/js/game-core.js');
-const assets=read('games/ccg-games/cheeky-commodore-quest/js/audio-assets.js');
-const overrides=read('games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js');
-const owner=read('games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js');
+const patch=read('arcade/lost-sizzler/js/lost-sizzler-playlist-audio.js');
+const continuity=read('arcade/lost-sizzler/js/v10-7-continuous-exploration.js');
+const core=read('arcade/lost-sizzler/js/game-core.js');
+const assets=read('arcade/lost-sizzler/js/audio-assets.js');
+const overrides=read('arcade/lost-sizzler/js/admin-audio-overrides.js');
+const owner=read('arcade/lost-sizzler/js/asset-overrides.js');
 const admin=read('admin/js/arcade-assets.js');
 
 const assert=(condition,message)=>{if(!condition)throw new Error(message);};
