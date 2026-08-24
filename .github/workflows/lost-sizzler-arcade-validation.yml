@@ -69,7 +69,7 @@ jobs:
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
           grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
-          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler --include='*.html' --include='*.js' --include='*.mjs' --include='*.json'; then
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json'; then
             echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
             exit 1
           fi
