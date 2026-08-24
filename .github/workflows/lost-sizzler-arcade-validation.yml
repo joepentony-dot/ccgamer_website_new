@@ -65,7 +65,10 @@ jobs:
 
       - name: Open Lost Sizzler in Chromium and exercise startup/runtime stability
         shell: bash
-        run: node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+        run: |
+          set -euo pipefail
+          node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
 
   structure:
     runs-on: ubuntu-latest
