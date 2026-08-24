@@ -22,6 +22,20 @@
   const PLAYER_SCALE = Object.freeze({ 1: 1, 2: 1.65, 3: 2.25, 4: 2.8 });
   const ACTIVE_SCALE = Object.freeze({ 1: 8, 2: 13, 3: 18, 4: 22 });
 
+  const AUDIO = Object.freeze({
+    tracks: Object.freeze([
+      Object.freeze({ waves: Object.freeze([1, 2, 3, 4]), src: "assets/audio/music/horde-survival-waves-1-4.ogg" }),
+      Object.freeze({ waves: Object.freeze([5, 6, 7, 8, 9]), src: "assets/audio/music/horde-survival-waves-5-9.ogg" }),
+      Object.freeze({ waves: Object.freeze([10]), src: "assets/audio/music/horde-survival-wave-10.ogg" })
+    ]),
+    baseVolume: 0.13,
+    duckedVolume: 0.05,
+    maximumVolume: 0.18,
+    fadeInMs: 900,
+    fadeOutMs: 500,
+    loop: true
+  });
+
   const ENEMIES = Object.freeze({
     spider: Object.freeze({ id: "spider", name: "Dustweb Spider", hp: 1, damage: 1, speed: 1.05, score: 25 }),
     skeleton: Object.freeze({ id: "skeleton", name: "Crypt Skeleton", hp: 2, damage: 1, speed: 0.9, score: 40 }),
@@ -412,7 +426,7 @@
 
   return Object.freeze({
     MODE_ID, MAX_PLAYERS, STARTING_HP, REVIVE_MS, DOWNED_MS, REVIVE_DISTANCE, REVIVE_HP, REVIVE_GRACE_MS,
-    SOLO_SECOND_WIND_WAVE, PLAYER_SCALE, ACTIVE_SCALE, ENEMIES, WEAPONS, WAVES, VOICE,
+    SOLO_SECOND_WIND_WAVE, PLAYER_SCALE, ACTIVE_SCALE, AUDIO, ENEMIES, WEAPONS, WAVES, VOICE,
     hash32, makeRng, quotaFor, activeCapFor, bossStats, createArena, createRun, beginWave, spawnNext, defeatEnemy,
     completeWave, beginBoss, chooseBossTarget, damageBoss, applyDamage, startRevive, cancelRevive, tickRevives,
     tickDowned, healthSpawnDelay, tickHealth, collectHealth, tick, tryAnnounce, drainEvents,
