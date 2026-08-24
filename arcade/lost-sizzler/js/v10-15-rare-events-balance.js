@@ -188,7 +188,7 @@
     const s=ws(trap.x,trap.y),size=Math.max(16,Number(C.tile||48)),now=performance.now(),armed=trapIsActive(trap,now),pulse=.5+.5*Math.sin(now/130);
     const colour=trap.kind==="fire"?P.orange:trap.kind==="shock"?P.cyan:P.red;
     ctx.save();
-    ctx.globalAlpha=armed?.9:.58;
+    ctx.globalAlpha=armed?0.9:0.58;
     ctx.fillStyle="rgba(9,5,12,.78)";ctx.fillRect(s.x+5,s.y+5,size-10,size-10);
     ctx.strokeStyle=colour;ctx.lineWidth=armed?3:2;ctx.shadowColor=colour;ctx.shadowBlur=armed?8+Math.round(pulse*8):2;ctx.strokeRect(s.x+7,s.y+7,size-14,size-14);
     ctx.shadowBlur=0;ctx.fillStyle=colour;
