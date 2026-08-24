@@ -19,7 +19,8 @@ for(const state of ['normal','danger','sanctuary','named','stalker']){
   assert(assets.includes(`${state}:Object.freeze([`),`Bundled ${state} playlist is missing.`);
   assert(patch.includes(`"${state}"`),`Playlist patch does not recognise ${state}.`);
 }
-assert(patch.includes('const FADE_MS=2500'),'Crossfade must remain 2.5 seconds.');
+assert(patch.includes('const FADE_MS=0'),'Music transitions must be overlap-free.');
+assert(patch.includes('CCGLostSizzlerMusicBus'),'Every Lost Sizzler music controller must share one exclusive owner bus.');
 assert(patch.includes('url!==last'),'Immediate-repeat protection is missing.');
 assert(patch.includes('stalkerNear?"stalker":roomMood'),'Count Loadula must retain music priority.');
 assert(owner.includes('lost-sizzler-playlist-audio.js'),'Playlist patch is not loaded by the game.');
@@ -124,10 +125,12 @@ const sandbox={
   console
 };
 vm.runInNewContext(patch,sandbox,{filename:'lost-sizzler-playlist-audio.js'});
+const playingCount=()=>FakeAudio.instances.filter(audio=>!audio.paused).length;
 
 await fakeWindow.CCGSound.start();
 await Promise.resolve();
 assert(FakeAudio.instances.length===1,'Starting Exploration should create exactly one music instance.');
+assert(playingCount()===1,'Exactly one music element may play after startup.');
 const exploration=FakeAudio.instances[0];
 exploration.currentTime=47.25;
 
@@ -141,6 +144,7 @@ assert(exploration.currentTime===47.25,'Corridor entry must not reset Exploratio
 
 fakeWindow.CCGSound.setRoomMood('danger');
 await Promise.resolve();
+assert(playingCount()===1,'Danger music must replace Exploration without overlap.');
 const danger=FakeAudio.instances[1];
 danger.currentTime=31.5;
 fakeWindow.CCGSound.setRoomMood('normal');
@@ -155,6 +159,7 @@ assert(danger.currentTime===31.5,'Danger must resume from its saved position.');
 
 fakeWindow.CCGSound.setRoomMood('sanctuary');
 await Promise.resolve();
+assert(playingCount()===1,'Sanctuary music must replace the prior mood without overlap.');
 const sanctuary=FakeAudio.instances[2];
 sanctuary.currentTime=12.75;
 fakeWindow.CCGSound.setRoomMood('normal');
@@ -166,6 +171,7 @@ assert(FakeAudio.instances[2]===sanctuary&&sanctuary.currentTime===12.75,'Sanctu
 
 fakeWindow.CCGSound.setRoomMood('named');
 await Promise.resolve();
+assert(playingCount()===1,'Named-enemy music must remain the only playing element.');
 const named=FakeAudio.instances[3];
 named.currentTime=8.5;
 fakeWindow.CCGSound.setRoomMood('normal');
@@ -179,6 +185,7 @@ fakeWindow.CCGSound.setRoomMood('normal');
 await Promise.resolve();
 fakeWindow.CCGSound.setStalkerNear(true);
 await Promise.resolve();
+assert(playingCount()===1,'Count Loadula music must stop every competing theme before it plays.');
 const stalker=FakeAudio.instances[4];
 stalker.currentTime=19.25;
 fakeWindow.CCGSound.setStalkerNear(false);

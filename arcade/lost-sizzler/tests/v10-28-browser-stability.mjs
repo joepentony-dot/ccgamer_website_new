@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.32","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.33","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -323,13 +323,13 @@ try{
     });
     assert.equal(launch.gateReady,true,`the complete release queue must be ready before the run starts: ${JSON.stringify(launch)}`);
     assert.equal(launch.gateErrors,0,`no critical release module may fail: ${JSON.stringify(launch)}`);
-    assert.equal(launch.polishReady,"true",`V10.32 must install before queued Solo starts: ${JSON.stringify(launch)}`);
+    assert.equal(launch.polishReady,"true",`V10.33 must install before queued Solo starts: ${JSON.stringify(launch)}`);
     assert.deepEqual({firearmUnlocked:launch.firearmUnlocked,weapon:launch.weapon,ammo:launch.ammo,maxAmmo:launch.maxAmmo,melee:launch.melee},{firearmUnlocked:false,weapon:null,ammo:0,maxAmmo:120,melee:"archive-sword"},`an immediate Solo click must retain sword-first progression: ${JSON.stringify(launch)}`);
     assert.equal(launch.meleeDamage,1,`level-one Archive Sword damage must remain one: ${JSON.stringify(launch)}`);
     assert.equal(launch.dossierHidden,true,`no named-enemy dossier may open at the starting position: ${JSON.stringify(launch)}`);
     assert.equal(launch.remoteNamedVisible,false,`a remote named enemy must not be visible through global follower light: ${JSON.stringify(launch)}`);
     assert.ok(launch.ammoBudget.meets&&launch.ammoBudget.planned>=launch.ammoBudget.needed,`placed ammunition must meet its calculated 50-percent-accuracy budget: ${JSON.stringify(launch)}`);
-    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.32 target: ${JSON.stringify(launch)}`);
+    assert.ok(launch.potions<=launch.potionTarget&&launch.potionTarget===3,`floor-one ground potions must use the V10.33 target: ${JSON.stringify(launch)}`);
 
     const pickupGuard=await state.page.evaluate(()=>{
       const health={id:"browser-full-health",x:p1.x,y:p1.y,kind:"health",active:true,title:"TEST HEALTH"};host.items.push(health);p1.health=p1.maxHealth;const healthRequest=requestCollect(health,p1);

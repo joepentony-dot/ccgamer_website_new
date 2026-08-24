@@ -8,7 +8,8 @@
   const LIFETIME_MS=30000;
   const PASSIVE_DROP_MS=3000;
   const HIT_DROP_COOLDOWN_MS=250;
-  const MOVE_MS=540;
+  /* 540ms / 1.2 preserves the grid movement model at exactly +20% speed. */
+  const MOVE_MS=450;
   const state={floorKey:"",armed:false,spawned:false,plan:null,lastVisual:new Map()};
 
   function hash32(value){

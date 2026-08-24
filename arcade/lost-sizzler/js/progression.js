@@ -71,7 +71,14 @@ window.CCGProgression=(()=>{
   function objectiveFor(run){return floorInfo(run).objective}
   function objectiveLabel(run){return objectiveNames[objectiveFor(run)]||"Explore the dungeon"}
   function difficulty(run){return C.difficulty[run?.difficulty]||C.difficulty.ARCADE}
-  function effectiveSight(player,run){let r=player.torchMs>0?C.player.torchRadius:C.player.sightRadius;if(run?.modifier?.id==="EXTRA_DARK"&&player.torchMs<=0)r=Math.max(3,r-1);return r}
+  function effectiveSight(player,run){
+    let r=player.torchMs>0?C.player.torchRadius:C.player.sightRadius;
+    if(player.torchMs<=0){
+      if(run?.modifier?.id==="EXTRA_DARK")r=Math.max(3,r-1);
+      if(String(run?.rareMutation||"").toUpperCase()==="DARKNESS")r=Math.max(3,r-2);
+    }
+    return r;
+  }
 
   function rarityIndex(rarity){return Math.max(0,RARITY.indexOf(rarity))}
   function rollRarity(depth=0,floor=1,r=Math.random,bonus=0){

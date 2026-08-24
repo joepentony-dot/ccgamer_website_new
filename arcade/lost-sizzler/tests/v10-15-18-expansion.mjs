@@ -37,6 +37,9 @@ assert.match(rare,/BOUNTY_ANNOUNCE_DELAY_MS=20000/,"the bounty must wait for 20 
 assert.match(rare,/state\.activePlayMs\+=Math\.max\(0,Number\(dt\|\|0\)\)/,"only active gameplay time may advance the bounty announcement");
 assert.match(rare,/state\.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS/,"the bounty must not appear before its active-play delay");
 assert.match(rare,/showToast\(`DUNGEON BOUNTY[\s\S]*?CCGLostSizzlerVoice\?\.say\?\.\("bountyStart"\)/,"the bounty popup and voice must be dispatched by the same delayed event");
+assert.match(rare,/DUNGEON BOUNTY — \$\{remaining\} \$\{noun\} LEFT/,"each bounty kill must publish a visible enemies-remaining countdown");
+assert.match(rare,/MUTATION_ACTIVATION_DELAY_MS=120000/,"floor mutations must wait for two minutes of active play");
+assert.match(rare,/state\.activePlayMs<MUTATION_ACTIVATION_DELAY_MS/,"mutation effects must remain dormant before their delay");
 assert.doesNotMatch(voiceExpansion,/DUNGEON BOUNTY\(\?! COMPLETE\)/,"generic toast classification must not trigger an out-of-sync bounty announcement");
 assert.match(rare,/Number\(run\.stats\?\.kills\|\|0\)-b\.startKills/,"bounty progress must count kills made on the current floor only");
 assert.match(balance,/DOUBLE GOLD/,"double-gold mutation is enforced at pickup time");
@@ -52,6 +55,11 @@ assert.match(voice,/key==="rareLoot"&&currentFloor>0&&state\.rareLootFloor===cur
 assert.match(voice,/state\.rareLootFloor=currentFloor/,"the voice director must remember the floor where rare loot was first announced");
 assert.match(voice,/if\(\/RADAR HINT\/\.test\(s\)\)return"objectiveHint"/,"the lost-player speech cue must only be triggered by the paired radar hint event");
 assert.match(voice,/function voiceVolume\(key\)\{return key==="hurt" \? \.56 : \.72\}/,"all speech must be 20 percent lower and the Ow cue must be quieter again");
+assert.match(voice,/lowHealth:\{text:"I need to heal\.",priority:35,cooldown:0\}/,"low health must use one concise requested reminder");
+assert.match(voice,/!state\.lowHealthLatch\.has\(player\)/,"a continuous low-health episode must not repeat its reminder");
+assert.match(voice,/createMediaElementSource\(audio\)/,"recorded main-game voice must pass through the dungeon effect graph");
+assert.match(voice,/createConvolver\(\)/,"the dungeon voice graph must include restrained room ambience");
+assert.match(voice,/wet\.gain\.value=\.12/,"dungeon ambience must remain subtle rather than obscuring speech");
 assert.match(voice,/hurt:\{text:"Ow!",priority:8,cooldown:30000\}/,"Ow must have the requested 30-second gap");
 assert.match(voice,/painPlayed=after<before\?sayKey\("hurt"\):false/,"damage handling must request Ow only after real health or armour loss");
 assert.match(voice,/deathsAfter>deathsBefore\)setTimeout\(\(\)=>sayKey\("playerDeath"\),painPlayed\?800:0\)/,"the death line must wait for a played Ow cue and remain non-layered");

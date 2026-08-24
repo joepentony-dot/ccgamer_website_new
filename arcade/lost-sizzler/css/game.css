@@ -384,6 +384,14 @@ body{padding:0;font-family:Consolas,"Lucida Console","Courier New",monospace;bac
   .v102-topbar{min-height:34px!important}.critical-card{min-height:47px}.critical-card kbd{height:32px}.tactical-zone{max-height:154px}.v102-radar-card,.dossier-card{height:140px!important}.v102-radar-card canvas{height:101px!important}.tactical-zone .pickup-toast{height:53px!important;min-height:53px!important;max-height:53px!important}.player-hub{min-height:92px;max-height:102px}.quick-slot{height:47px!important}
 }
 
+/* V10.33 mode hierarchy: one yellow family, progressively darker by multiplayer mode. */
+.game-mode-buttons .game-mode-button{color:#160b1e!important;text-shadow:0 1px rgba(255,255,255,.24);transition:filter .15s ease,transform .08s ease,box-shadow .08s ease}
+.game-mode-buttons .mode-solo{border-color:#ffe477!important;background:#ffd85a!important}
+.game-mode-buttons .mode-dungeon{border-color:#f6d467!important;background:#edc44d!important}
+.game-mode-buttons .mode-horde{border-color:#e6bf5c!important;background:#d9ae3f!important}
+.game-mode-buttons .mode-saboteurs{border-color:#d1a94e!important;background:#c39731!important}
+.game-mode-buttons .game-mode-button:not(:disabled):hover{filter:brightness(1.08)}
+
 /* V10.3 release HUD: graphical meters, compact intelligence, prominent room context. */
 .hub-stat{position:relative;overflow:hidden;padding-bottom:12px}.hub-stat::after{content:"";position:absolute;left:7px;right:7px;bottom:5px;height:3px;background:#211829;border-radius:3px;box-shadow:inset 0 0 0 1px #35263f}.hub-stat::before{content:"";position:absolute;left:7px;bottom:5px;height:3px;z-index:1;border-radius:3px;box-shadow:0 0 8px currentColor}.health-stat::before{width:var(--health-pct,100%);max-width:calc(100% - 14px);background:var(--green)}.armour-stat::before{width:var(--armour-pct,0%);max-width:calc(100% - 14px);background:#79baff}.ammo-stat::before{width:var(--ammo-pct,100%);max-width:calc(100% - 14px);background:var(--cyan)}
 .radar-shop{background:var(--gold)!important;border-radius:1px!important;box-shadow:0 0 5px var(--gold)}

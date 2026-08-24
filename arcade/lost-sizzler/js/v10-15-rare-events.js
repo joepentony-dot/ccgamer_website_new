@@ -8,6 +8,7 @@
   const HINT_STAGE_MS=[300000];
   const ACTIVE_MOVEMENT_WINDOW_MS=5000;
   const BOUNTY_ANNOUNCE_DELAY_MS=20000;
+  const MUTATION_ACTIVATION_DELAY_MS=120000;
   const state={floorKey:"",startedAt:0,activePlayMs:0,hintMs:0,hintStage:0,hintTarget:null,hintMarkerUntil:0,lastObjectiveSignature:"",lastPlayerCell:"",lastMoveAt:0,plans:{},golden:null,bounty:null,mutation:null,ghost:null,ghostRecord:[],ghostSampleMs:0,announcedRooms:new Set(),specialDeaths:new Set()};
 
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return h>>>0}
@@ -62,10 +63,15 @@
 
   function installMutation(){
     if(!roll("mutation",CHANCE.mutation))return;
-    const types=["DOUBLE GOLD","DARKNESS","ELITE BOUNTY","CHEST RUSH","NO SHOPPING"],type=types[hash32(`${state.floorKey}|mutation-type`)%types.length];state.mutation={type,announced:false};run.rareMutation=type;
-    if(type==="DARKNESS")run.alert=Math.min(100,Number(run.alert||0)+18);
-    if(type==="CHEST RUSH")for(const c of host.chests||[])c.depth=Number(c.depth||0)+3;
-    if(type==="NO SHOPPING")for(const shop of host.shops||[])if(!shop.startShop)shop._rareDisabled=true;
+    const types=["DOUBLE GOLD","DARKNESS","ELITE BOUNTY","CHEST RUSH","NO SHOPPING"],type=types[hash32(`${state.floorKey}|mutation-type`)%types.length];state.mutation={type,announced:false,active:false};
+  }
+  function activateMutation(){
+    const mutation=state.mutation;if(!mutation||mutation.active||state.activePlayMs<MUTATION_ACTIVATION_DELAY_MS)return false;
+    mutation.active=true;run.rareMutation=mutation.type;
+    if(mutation.type==="DARKNESS")run.alert=Math.min(100,Number(run.alert||0)+18);
+    if(mutation.type==="CHEST RUSH")for(const c of host.chests||[])c.depth=Number(c.depth||0)+3;
+    if(mutation.type==="NO SHOPPING")for(const shop of host.shops||[])if(!shop.startShop)shop._rareDisabled=true;
+    return true;
   }
   function installMimic(){if(!roll("mimic",CHANCE.mimic))return;const list=(host.chests||[]).filter(c=>c.active&&!c.memoryPuzzleReward&&!c.torchPuzzleReward&&!c.weightBridgeReward);if(!list.length)return;const c=list[hash32(`${state.floorKey}|mimic-pick`)%list.length];c.mimicChest=true;c.mimicDormant=true;}
   function installCursedCartridge(){if(!roll("cursed",CHANCE.cursed))return;const room=chooseRoom("cursed-room"),q=freeCell(room,"cursed-cell");if(!q)return;host.items.push({id:`cursed-cartridge-${state.floorKey}`,...q,kind:"game",title:"CURSED CARTRIDGE",active:true,cursedCartridge:true,roomId:room.id});}
@@ -88,7 +94,7 @@
   function installTreasureMap(){if(!roll("map",CHANCE.map))return;const room=chooseRoom("map-room"),q=freeCell(room,"map-cell"),targetRoom=chooseRoom("map-target");if(!q||!targetRoom)return;const t=freeCell(targetRoom,"map-target-cell")||roomCentre(targetRoom);host.items.push({id:`treasure-map-${state.floorKey}`,...q,kind:"loot",active:true,treasureMap:true,title:"TREASURE MAP FRAGMENT",target:{...t}});}
 
   function announceStartSystems(){
-    if(state.mutation&&!state.mutation.announced){state.mutation.announced=true;showToast(`FLOOR MUTATION — ${state.mutation.type}`,mutationCopy(state.mutation.type),state.mutation.type==="DOUBLE GOLD"?"gold":"cyan",9000)}
+    if(activateMutation()&&state.mutation&&!state.mutation.announced){state.mutation.announced=true;showToast(`FLOOR MUTATION — ${state.mutation.type}`,mutationCopy(state.mutation.type),state.mutation.type==="DOUBLE GOLD"?"gold":"cyan",9000)}
     if(state.bounty&&!state.bounty.announced&&state.activePlayMs>=BOUNTY_ANNOUNCE_DELAY_MS){state.bounty.announced=true;showToast(`DUNGEON BOUNTY — ${state.bounty.type}`,"Optional challenge: complete it on this floor for +1,000 score.","gold",8500);try{window.CCGLostSizzlerVoice?.say?.("bountyStart")}catch(_){}}
   }
   function mutationCopy(type){return {"DOUBLE GOLD":"Gold score pickups on this floor are worth double.","DARKNESS":"Torchless visibility is less forgiving and dungeon alert starts higher.","ELITE BOUNTY":"Special enemy kills are worth more score this floor.","CHEST RUSH":"Chest loot quality is boosted across the floor.","NO SHOPPING":"Most dungeon shops are closed on this floor."}[type]||"The rules of this floor have shifted."}
@@ -122,7 +128,12 @@
   function activateTreasureMap(item){state.plans.mapTarget={...item.target,active:true};showToast("TREASURE MAP FRAGMENT","A buried cache location has been marked. Follow the gold marker on the radar.","gold",8500);state.hintTarget={...item.target,label:"BURIED CACHE"};state.hintMarkerUntil=Infinity;}
   function updateTreasureMap(){const m=state.plans.mapTarget;if(!m?.active||!p1)return;if(dist(p1,m)<=1.2){m.active=false;state.hintMarkerUntil=0;state.hintTarget=null;score+=600;host.chests.push({id:`buried-cache-${Date.now()}`,x:m.x,y:m.y,locked:false,active:true,depth:14,roomId:roomAt(m.x,m.y),buriedCache:true});showToast("BURIED CACHE FOUND","+600 score and a reward chest rises from the floor.","gold",8500)}}
 
-  function updateBounty(){const b=state.bounty;if(!b||b.complete||b.failed)return;const kills=Math.max(0,Number(run.stats?.kills||0)-b.startKills);b.kills=kills;if(kills>=b.target)completeBounty();}
+  function updateBounty(){
+    const b=state.bounty;if(!b||b.complete||b.failed)return;
+    const previous=Math.max(0,Number(b.kills||0)),kills=Math.max(0,Number(run.stats?.kills||0)-b.startKills);b.kills=kills;
+    if(kills>=b.target){completeBounty();return}
+    if(b.announced&&kills>previous){const remaining=Math.max(0,b.target-kills),noun=remaining===1?"ENEMY":"ENEMIES";showToast(`DUNGEON BOUNTY — ${remaining} ${noun} LEFT`,`${kills}/${b.target} bounty enemies defeated.`,"gold",2600)}
+  }
   function completeBounty(){const b=state.bounty;if(!b||b.complete)return;b.complete=true;score+=b.reward;showToast("DUNGEON BOUNTY COMPLETE",`+${b.reward.toLocaleString()} score.`,"gold",8000);}
 
   function objectiveSignature(){const o=host?.objective||{};return JSON.stringify([o.type,o.complete,host?.keysCollected,host?.exitSigilCollected,host?.sigilResolved,run?.stats?.generators,host?.rescue?.rescued,(host?.generators||[]).filter(g=>g.alive).length,(host?.enemies||[]).filter(e=>e.alive&&(e.guardian||e.sigilDefender)).length]);}
@@ -233,5 +244,5 @@
   // older backends simply ignore this additional result field.
   if(window.CCGWeeklyChallenge?.finish){const original=window.CCGWeeklyChallenge.finish.bind(window.CCGWeeklyChallenge);window.CCGWeeklyChallenge.finish=async result=>original({...result,ghostPath:state.ghostRecord.slice(0,360)})}
 
-  window.CCGLostSizzlerRareEvents={get state(){return state},CHANCE,objectiveTarget,drawRadarHint,noteActivity};
+  window.CCGLostSizzlerRareEvents={get state(){return state},CHANCE,objectiveTarget,drawRadarHint,noteActivity,constants:{BOUNTY_ANNOUNCE_DELAY_MS,MUTATION_ACTIVATION_DELAY_MS}};
 })();
