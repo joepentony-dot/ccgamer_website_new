@@ -1,6 +1,7 @@
 {
   "game": "The Lost Sizzler",
-  "build": "2026.08.24.9",
-  "cacheToken": "20260824r9",
+  "releaseVersion": "V10.41",
+  "build": "2026.08.24.8",
+  "cacheToken": "20260824r8",
   "released": "2026-08-24"
 }
