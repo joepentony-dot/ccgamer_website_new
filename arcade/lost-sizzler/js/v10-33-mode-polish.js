@@ -198,10 +198,10 @@
 
   function directDoorCell(a,b){
     if(a.gridY===b.gridY){
-      const left=a.gridX<b.gridX?a:b,right=left===a?b:a,pa=world.rooms[left.dungeonRoomId],pb=world.rooms[right.dungeonRoomId];
+      const left=a.gridX<b.gridX?a:b,right=left===a?b:a,pa=world.rooms[left.dungeonRoomId];
       return{x:pa.x+pa.w+1,y:pa.y+2+(hash32(`${left.id}|${right.id}`)%Math.max(1,pa.h-3)),orientation:"vertical"};
     }
-    const top=a.gridY<b.gridY?a:b,bottom=top===a?b:a,pa=world.rooms[top.dungeonRoomId],pb=world.rooms[bottom.dungeonRoomId];
+    const top=a.gridY<b.gridY?a:b,bottom=top===a?b:a,pa=world.rooms[top.dungeonRoomId];
     return{x:pa.x+2+(hash32(`${top.id}|${bottom.id}`)%Math.max(1,pa.w-3)),y:pa.y+pa.h+1,orientation:"horizontal"};
   }
 
@@ -236,7 +236,7 @@
     const logicalById=new Map(modeMap.rooms.map(room=>[room.id,room]));
     for(const edge of modeMap.edges){
       const a=logicalById.get(edge.a),b=logicalById.get(edge.b);if(!a||!b)continue;
-      const q=directDoorCell(a,b);if(!q||!grid[q.y]?.[q.x])grid[q.y][q.x]=0;
+      const q=directDoorCell(a,b);if(q&&grid[q.y]?.[q.x]!=null)grid[q.y][q.x]=0;
       host.doors.push({id:edge.id,groupId:edge.id,x:q.x,y:q.y,type:"room",orientation:q.orientation,locked:false,open:false,opening:false,openingStart:0,openAt:0,openSoundDone:false,spyDoor:true});
       world.edges.push({a:a.dungeonRoomId,b:b.dungeonRoomId,path:[{x:q.x,y:q.y}],doorId:edge.id});
     }
@@ -246,7 +246,7 @@
       const roomDecor=decorateSpyRoom(logical,physical,reserved);world.decor.push(...roomDecor);for(const d of roomDecor)host.blockingDecor.push({...d,hp:3,maxHp:3});
       if(logical.gridX%4===0&&logical.gridY%2===0)world.wallLights.push({id:`spy-light-${logical.id}`,x:physical.x+Math.floor(physical.w/2),y:physical.y+1,roomId:physical.id,radius:3});
     }
-    const spawnLogical=logicalById.get(modeMap.spawnRoomIds[0]),extractLogical=logicalById.get(modeMap.extractionRoomId);
+    const spawnLogical=logicalById.get(modeMap.spawnRoomIds[0]);
     world.startRoomId=spawnLogical?.dungeonRoomId??0;world.start=roomCentre(physicalRooms[world.startRoomId]);world.exit={x:1,y:1};world.exitRoomId=-1;
     const logicalToPhysical=new Map(modeMap.rooms.map(room=>[room.id,room.dungeonRoomId]));
     const localModel=(match.players||[]).find(player=>String(player.id)===actorId())||match.players?.[0],localRoom=localModel?physicalRooms[logicalToPhysical.get(localModel.roomId)]:null;
@@ -255,6 +255,9 @@
     clearGameplayCollections();try{cameras?.clear?.();explored?.clear?.();reveal?.(p1);markRoomVisit?.(p1);sync?.()}catch(_){}
     specialState.spyMapKey=mapKey;specialState.spyRound=Number(match.round||0);specialState.hordeBuilt=false;
     return true;
+  }
+
+  function cancelSpyVoice(){try{window.speechSynthesis?.cancel?.()}catch(_){}
   }
 
   function suppressLegacySpyVoice(){
@@ -268,9 +271,6 @@
     if(!specialState.legacyVoiceSuppressed)return;
     const voice=window.CCGLostSizzlerVoice;try{if(voice?.state)voice.state.enabled=specialState.legacyVoiceEnabled}catch(_){}
     specialState.legacyVoiceSuppressed=false;specialState.spyVoiceEnabled=true;cancelSpyVoice();
-  }
-
-  function cancelSpyVoice(){try{window.speechSynthesis?.cancel?.()}catch(_){}
   }
 
   function chooseSpyVoice(){
