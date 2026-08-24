@@ -29,6 +29,10 @@
         ,["LS-0824-18","FIXED","Synchronous bounty announcement","The New Dungeon Bounty speech and bounty banner now start together from one accepted announcement event, with a bounded fallback when voice playback is unavailable."]
         ,["LS-0824-19","ADDED","Beta and ownership marks","The menu now carries the requested beta-stage notice and the game view is permanently stamped © 2026 Cheeky Commodore Gamer."]
         ,["LS-0824-20","FIXED","Trap warnings and mobile notifications","Ordinary fire, spike and shock traps are now visible and active during their live cycles. Each player receives one warning when first entering a three-tile danger radius, and shared gameplay notifications such as Dungeon Bounty and trap alerts are kept visible on phone layouts."]
+        ,["LS-0824-21","FIXED","Online melee visibility","Dungeon and Horde co-op players now receive the other player's directional melee swing state and slash effects, so close-range attacks are visible on both browsers instead of existing only on the attacking client."]
+        ,["LS-0824-22","FIXED","Co-op teammate radar","Online Dungeon and Horde teammates now appear on the tactical radar with player markers and edge direction indicators when outside the current radar window. Spy Vs Spy retains its intentional no-minimap rule."]
+        ,["LS-0824-23","FIXED","Dungeon, Horde and Spy room joining","The multiplayer join handshake now preserves the selected room mode, survives host start packets arriving during connection, and supplies late joiners with the host's active start metadata instead of falling back to the wrong mode or reopening the lobby."]
+        ,["LS-0824-24","ADDED","Shared multiplayer invite auto-join","Invite links created by the multiplayer lobby carry the room and mode. Opening one now joins that room automatically: guests wait in the lobby if the host has not started, or enter the live Dungeon, Horde or Spy Vs Spy match when the host is already playing."]
       ]
     },
     {
@@ -83,10 +87,10 @@
     details.innerHTML=`
       <summary>
         <span class="developer-changelog-summary"><i class="developer-changelog-pulse" aria-hidden="true"></i><span>Developer Changelog / Bug Tracker</span></span>
-        <span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026</span>
+        <span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026 · V10.41</span>
       </summary>
       <div class="developer-changelog-body">
-        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026</time></p>
+        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026 · V10.41</time></p>
         ${days.map(day=>`<section class="developer-log-day"><h4><time datetime="${day.iso}">${day.date}</time></h4><div class="developer-log-list">${day.entries.map(entryHtml).join("")}</div></section>`).join("")}
         <section class="developer-log-monitoring" aria-label="Known issues and monitoring"><h4>KNOWN / MONITORING</h4><p><b>Direct launches from YouTube and other in-app browsers:</b> startup hardening was deployed on 23 August 2026. This is currently marked as monitoring; please submit a bug report if a direct launch still freezes or fails to initialise.</p></section>
         <p class="developer-changelog-foot">Statuses describe the live website build: FIXED = confirmed code correction, CHANGED = deliberate behaviour or balance revision, ADDED = new capability, MONITORING = a reported issue with a mitigation deployed but still being watched.</p>
