@@ -25,7 +25,14 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Install real-browser regression runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
 
       - name: Validate all Lost Sizzler JavaScript syntax
         shell: bash
@@ -36,14 +43,18 @@ jobs:
             node --check "$file"
           done < <(find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z)
 
-      - name: Run complete Lost Sizzler regression suite
+      - name: Run Lost Sizzler static regression suite
         shell: bash
         run: |
           set -euo pipefail
           while IFS= read -r -d '' test; do
             echo "Running $test"
             node "$test"
-          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' -print0 | sort -z)
+          done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' ! -name 'v10-6-browser.mjs' ! -name 'v10-28-browser-stability.mjs' -print0 | sort -z)
+
+      - name: Open Lost Sizzler in Chromium and exercise startup/runtime stability
+        shell: bash
+        run: node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
 
       - name: Validate canonical runtime structure
         shell: bash
@@ -57,3 +68,8 @@ jobs:
           test -d arcade/lost-sizzler/assets/audio/music
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
+          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler --include='*.html' --include='*.js' --include='*.mjs' --include='*.json'; then
+            echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
+            exit 1
+          fi
