@@ -23,7 +23,7 @@ assert.match(integrity,/function secureDeathCaches\(/,"V10.40 must relocate unre
 assert.match(integrity,/function securePlayerPosition\(/,"V10.40 must validate respawn and teleport positions");
 assert.match(integrity,/useTeleportV140Integrity/,"teleports must pass through the safe-position integrity layer");
 assert.match(integrity,/firePlayerV140Integrity/,"firing must end the temporary respawn\/teleport protection window");
-assert.match(integrity,/playMode==="online"\)return/,"focus-loss auto-pause must never pause an online multiplayer session");
+assert.match(integrity,/mode!=="playing"\|\|playMode==="online"/,"focus-loss auto-pause must never pause an online multiplayer session");
 assert.match(integrity,/v140_migration_probe/,"normal Dungeon host migration must probe remaining clients for a fresh snapshot");
 assert.match(integrity,/v140_migration_snapshot/,"normal Dungeon host migration must reconcile peer snapshots");
 assert.match(integrity,/Number\(best\.revision\|\|0\)>currentRevision/,"migration must only replace the new host state with a newer revision");
