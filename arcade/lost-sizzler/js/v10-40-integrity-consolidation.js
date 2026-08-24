@@ -21,7 +21,6 @@
   const state={installed:false,functionsWrapped:false,networkWrapped:false,checkpointWrapped:false,focusInstalled:false,auditTimer:0,installTimer:0,lastRevision:-1,migration:null};
 
   const P=()=>window.CCGProgression||null;
-  const World=()=>window.CCGWorld||null;
   const Config=()=>window.CCG_CONFIG||null;
   const normalDungeon=()=>!document.body?.dataset?.specialMode&&!run?.specialMode;
   const authoritative=()=>playMode!=="online"||Boolean(net?.isHost);
@@ -34,8 +33,6 @@
     const door=doorAt(x,y);
     if(!door)return true;
     if(door.locked&&!ignoreLockedDoors)return false;
-    // An unlocked closed/animating door is traversable in route planning because
-    // normal player movement can open it; only a lock can make the route stale.
     return true;
   }
 
@@ -228,7 +225,7 @@
       const player=arguments[0],before=Number(run?.stats?.deaths||0),result=originalHurt.apply(this,arguments),after=Number(run?.stats?.deaths||0);
       if(player&&after>before&&mode==="playing"){
         securePlayerPosition(player,PLAYER_GRACE_MS);
-        validateCriticalRoute("a player death",true);
+        validateCriticalRoute("a player death");
         secureDeathCaches();
         try{sync?.()}catch(_){}
       }
@@ -324,7 +321,7 @@
     if(!activeNormalRun()||playMode!=="online"||!net?.isHost)return;
     const snapshot=currentMigrationSnapshot(),epoch=`${net.sessionId}-${Date.now()}`;
     state.migration={epoch,target:String(net.sessionId),candidates:snapshot?[{revision:Number(snapshot.revision||0),state:snapshot,local:true}]:[]};
-    try{showToast?.("HOST MIGRATION CHECK", "Checking the remaining browsers for the freshest authoritative dungeon snapshot before continuing.","cyan",6200)}catch(_){}
+    try{showToast?.("HOST MIGRATION CHECK","Checking the remaining browsers for the freshest authoritative dungeon snapshot before continuing.","cyan",6200)}catch(_){}
     net.send("v140_migration_probe",{epoch,target:net.sessionId}).catch(()=>{});
     setTimeout(()=>finishMigration(epoch),MIGRATION_WAIT_MS);
   }
