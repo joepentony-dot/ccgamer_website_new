@@ -72,6 +72,14 @@
     script.dataset.ccgV141SanctuaryHardening="true";
     document.head.appendChild(script);
   }
+  function loadV141XpPermadeath(){
+    if(document.querySelector('script[data-ccg-v141-xp-permadeath="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-xp-permadeath-hardening.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141XpPermadeath="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
   loadV137HordeFocus();
   loadV138HordeLive();
@@ -80,6 +88,7 @@
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
+  loadV141XpPermadeath();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
