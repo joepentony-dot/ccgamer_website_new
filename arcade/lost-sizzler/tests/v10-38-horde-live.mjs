@@ -7,10 +7,12 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-38-horde-live.js"),"utf8");
 const loadout=fs.readFileSync(path.join(root,"js/v10-39-horde-live-loadout.js"),"utf8");
+const finalGuard=fs.readFileSync(path.join(root,"js/v10-40-horde-final.js"),"utf8");
 const loader=fs.readFileSync(path.join(root,"js/version-check.js"),"utf8");
 
 assert.match(loader,/v10-38-horde-live\.js/,"version-check must load the V10.38 live Horde layer");
 assert.match(loader,/v10-39-horde-live-loadout\.js/,"version-check must load current-wave loadout sync after the live Horde layer");
+assert.match(loader,/v10-40-horde-final\.js/,"version-check must load the final Horde isolation/wave guard last");
 assert.match(source,/SINGLE_PLAYER_QUOTAS=Object\.freeze\(\[36,44,52,60,70,80,90,100,112,44\]\)/,"Horde quotas must be materially larger for the expanded arena");
 assert.match(source,/ACTIVE_CAP=Object\.freeze\(\{1:18,2:24,3:30,4:36\}\)/,"expanded Horde must support more simultaneous attackers");
 assert.match(source,/PLAYER_QUOTA_SCALE=Object\.freeze\(\{1:1,2:1\.25,3:1\.5,4:1\.75\}\)/,"larger waves must scale with current players");
@@ -44,7 +46,11 @@ assert.match(source,/moveCooldown=Math\.max\(Number\(enemy\.moveCooldown\|\|0\),
 
 assert.match(source,/v138-wave-\$\{wave\}-reserve/,"wave completion must be held while expanded reinforcements are still queued");
 assert.match(source,/runState\.spawned>=baseQuota&&runState\.spawned<target/,"expanded reinforcements must begin after the original quota without breaking the rules engine");
+assert.match(finalGuard,/function ensureExpandedWaveReserve/,"final Horde layer must seed the expanded-wave reserve before the underlying rules tick can finish the smaller legacy quota");
+assert.match(finalGuard,/runState\.activeEnemies\.push\(\{id,kind:"reserve"/,"pre-tick reserve must keep the rules engine in the active wave until expanded reinforcements are deployed");
+assert.match(finalGuard,/\.tactical-zone \.shortcut-dock[\s\S]*display:none!important/,"final Horde CSS ownership must keep legacy shortcut UI hidden");
+assert.match(finalGuard,/\.player-hub \.health-stat[\s\S]*display:flex!important/,"final Horde CSS ownership must preserve health and weapon status");
 assert.match(source,/DEFEATED \$\{Number\(runState\.defeated\|\|0\)\}\/\$\{quota\}/,"Horde HUD must show the expanded wave target");
 assert.match(source,/They enter from the outer perimeter and converge on the centre/,"wave announcement must explain the new encroachment behaviour");
 
-console.log("Lost Sizzler V10.38/V10.39 live join, centre spawn, loadout and perimeter Horde pressure regression checks passed.");
+console.log("Lost Sizzler V10.38–V10.40 live join, centre spawn, loadout, UI ownership and perimeter Horde pressure regression checks passed.");
