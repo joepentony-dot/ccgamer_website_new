@@ -15,7 +15,16 @@
     script.dataset.ccgV136Bootstrap="true";
     document.head.appendChild(script);
   }
+  function loadV137HordeFocus(){
+    if(document.querySelector('script[data-ccg-v137-horde-focus="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-37-horde-focus.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV137HordeFocus="true";
+    document.head.appendChild(script);
+  }
   loadV136Bootstrap();
+  loadV137HordeFocus();
 
   function menuVisible(){
     const menu=document.getElementById("menu");
