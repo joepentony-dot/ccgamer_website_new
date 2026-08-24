@@ -7,6 +7,52 @@
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
 
+  function loadV136Bootstrap(){
+    if(document.querySelector('script[data-ccg-v136-bootstrap="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-36-bootstrap.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV136Bootstrap="true";
+    document.head.appendChild(script);
+  }
+  function loadV137HordeFocus(){
+    if(document.querySelector('script[data-ccg-v137-horde-focus="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-37-horde-focus.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV137HordeFocus="true";
+    document.head.appendChild(script);
+  }
+  function loadV138HordeLive(){
+    if(document.querySelector('script[data-ccg-v138-horde-live="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-38-horde-live.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV138HordeLive="true";
+    document.head.appendChild(script);
+  }
+  function loadV139HordeLiveLoadout(){
+    if(document.querySelector('script[data-ccg-v139-horde-live-loadout="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-39-horde-live-loadout.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV139HordeLiveLoadout="true";
+    document.head.appendChild(script);
+  }
+  function loadV140HordeFinal(){
+    if(document.querySelector('script[data-ccg-v140-horde-final="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-40-horde-final.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV140HordeFinal="true";
+    document.head.appendChild(script);
+  }
+  loadV136Bootstrap();
+  loadV137HordeFocus();
+  loadV138HordeLive();
+  loadV139HordeLiveLoadout();
+  loadV140HordeFinal();
+
   function menuVisible(){
     const menu=document.getElementById("menu");
     return Boolean(menu&&!menu.classList.contains("hidden")&&document.body?.dataset?.runActive!=="true");
