@@ -16,6 +16,10 @@ assert.match(env, /target!==floor/, "Only the designated deep floor may receive 
 assert.match(env, /routeExistsAvoiding\(\[q\]\)/, "Pit placement must preserve a start-to-exit route");
 assert.match(env, /room\.id!==world\.startRoomId/, "Start room must be excluded from real pit placement");
 assert.match(env, /training:true,harmless:true/, "Tutorial must use a harmless demonstration vortex");
+assert.match(env, /const PIT_PLAYER_DAMAGE=1;/, "A real vortex must deal exactly 1 HP of direct damage");
+assert.match(env, /pit\(\)\?\.training&&tutorialActive\(\)/, "A training vortex must only be harmless while the tutorial is active");
+assert.match(env, /hurtPlayer\(player,PIT_PLAYER_DAMAGE,false,"vortex pit"\)/, "A normal-mode vortex must damage the player");
+assert.match(env, /player\.x=q\.x;player\.y=q\.y;player\.rx=q\.x;player\.ry=q\.y/, "A normal-mode vortex must knock the player onto a safe cell");
 assert.match(env, /HAZARDS &amp; RARE VORTEX PITS/, "Tutorial must explain rare vortex pits");
 assert.match(env, /Enemies normally avoid floor traps and vortex pits/, "Tutorial must explain hazard avoidance and knockback");
 assert.match(env, /window\.CCGAI\.stepEnemies=function stepEnemiesV121HazardAvoidance/, "Enemy AI must treat static hazards as undesirable path cells");

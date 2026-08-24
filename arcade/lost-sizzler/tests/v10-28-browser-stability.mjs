@@ -160,12 +160,91 @@ try{
     await withTimeout(state.page.locator("#solo-btn").click({timeout:8000,noWaitAfter:true}),10000,"Solo button click");
     logStage("canonical desktop: wait for runActive");
     await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true",null,{timeout:15000}),STAGE_TIMEOUT_MS,"Solo run start");
+    const achievementRuntime=await state.page.evaluate(()=>({
+      count:window.CCGLostSizzlerAchievementsV129?.catalog?.length||0,
+      firstRun:Boolean(window.CCGLostSizzlerAchievementsV129?.earned?.("LS_FIRST_RUN")),
+      platinum:Boolean(window.CCGLostSizzlerAchievementsV129?.catalog?.some?.(item=>item.key==="LS_CITADEL_PLATINUM"&&item.rarity==="platinum")),
+      button:Boolean(document.getElementById("lost-sizzler-achievements-btn"))
+    }));
+    assert.deepEqual(achievementRuntime,{count:89,firstRun:true,platinum:true,button:true},`the live run must install, persist and expose the complete achievement system: ${JSON.stringify(achievementRuntime)}`);
 
-    logStage("canonical desktop: movement");
-    await state.page.keyboard.down("d");
-    await state.page.waitForTimeout(600);
-    await state.page.keyboard.up("d");
+    logStage("canonical desktop: keyboard movement");
+    const keyboardMove=await state.page.evaluate(()=>{
+      if(mode==="dossier")hideNamedDossier();
+      const choices=[
+        {key:"d",dx:1,dy:0},{key:"a",dx:-1,dy:0},{key:"s",dx:0,dy:1},{key:"w",dx:0,dy:-1}
+      ];
+      const choice=choices.find(q=>W.walkable(world.map,p1.x+q.dx,p1.y+q.dy,host));
+      return{choice,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
+    });
+    assert.ok(keyboardMove.choice,`the active run must have a walkable keyboard direction: ${JSON.stringify(keyboardMove)}`);
+    await state.page.keyboard.down(keyboardMove.choice.key);
+    await state.page.waitForTimeout(700);
+    await state.page.keyboard.up(keyboardMove.choice.key);
     await state.page.waitForTimeout(800);
+    const keyboardEnd=await state.page.evaluate(()=>({x:p1.x,y:p1.y}));
+    assert.notDeepEqual(keyboardEnd,keyboardMove.start,`held keyboard movement must move Player 1 from ${JSON.stringify(keyboardMove.start)}`);
+
+    logStage("canonical desktop: stationary facing attacks");
+    await state.page.evaluate(()=>{if(mode==="dossier")hideNamedDossier();input.clear();run.namedDossierAutoShown=true;p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.dir={x:-1,y:0};p1._meleeSwingAt=0;fire1=0;fireBuffer1=0;});
+    await state.page.keyboard.press("Space",{delay:20});
+    await state.page.waitForTimeout(80);
+    const stationarySword=await state.page.evaluate(()=>({at:Number(p1?._meleeSwingAt||0),dir:p1?._meleeSwingDir||null,playerDir:p1?.dir||null,moving:Boolean(d1())}));
+    assert.ok(stationarySword.at>0,`a quick stationary fire tap must start a sword swing: ${JSON.stringify(stationarySword)}`);
+    assert.deepEqual(stationarySword.dir,{x:-1,y:0},`a stationary sword tap must swing left when the player faces left: ${JSON.stringify(stationarySword)}`);
+    assert.equal(stationarySword.moving,false,"the stationary sword direction check must not rely on a movement key");
+
+    const stationaryGunSetup=await state.page.evaluate(()=>{
+      if(mode==="dossier")hideNamedDossier();
+      const directions=[{x:0,y:-1},{x:1,y:0},{x:0,y:1},{x:-1,y:0}];
+      const dir=directions.find(d=>[1,2,3].every(step=>W.walkable(world.map,p1.x+d.x*step,p1.y+d.y*step,host)&&!(host.enemies||[]).some(e=>e.alive&&e.x===p1.x+d.x*step&&e.y===p1.y+d.y*step)))||directions[0];
+      input.clear();bullets.length=0;p1.firearmUnlocked=true;p1.weapon={id:"browser-facing-gun",shots:1,power:1,ttl:40,delay:1,element:"energy"};p1.mana=5;p1.maxMana=Math.max(5,Number(p1.maxMana||5));p1.dir={...dir};p1.hitStunMs=0;fire1=0;fireBuffer1=0;
+      return{position:{x:p1.x,y:p1.y},dir:{...p1.dir},mode};
+    });
+    await state.page.keyboard.press("Space",{delay:20});
+    await state.page.waitForTimeout(45);
+    const stationaryGun=await state.page.evaluate(()=>{const shot=bullets.find(b=>b.owner===p1.id&&b.style==="browser-facing-gun");return{shot:shot?{dx:shot.dx,dy:shot.dy}:null,playerDir:{...p1.dir},mana:p1.mana,moving:Boolean(d1()),mode,fire1,fireBuffer1}});
+    assert.deepEqual(stationaryGun.shot,{dx:stationaryGunSetup.dir.x,dy:stationaryGunSetup.dir.y},`a stationary gun tap must shoot in the player's facing direction: setup=${JSON.stringify(stationaryGunSetup)} result=${JSON.stringify(stationaryGun)}`);
+    assert.equal(stationaryGun.moving,false,"the stationary gun direction check must not rely on a movement key");
+    await state.page.waitForTimeout(420);
+
+    logStage("canonical desktop: held sword attack");
+    await state.page.evaluate(()=>{
+      if(mode==="dossier")hideNamedDossier();input.clear();bullets.length=0;run.namedDossierAutoShown=true;
+      window.__browserOriginalShowNamedDossier=showNamedDossier;showNamedDossier=()=>false;
+      for(const enemy of host.enemies||[]){enemy._browserHeldAlive=enemy.alive;enemy.alive=false}
+      const directions=[{x:1,y:0},{x:-1,y:0},{x:0,y:1},{x:0,y:-1}];
+      p1.dir=directions.find(d=>W.walkable(world.map,p1.x+d.x,p1.y+d.y,host)&&!(host.generators||[]).some(g=>g.alive&&g.x===p1.x+d.x&&g.y===p1.y+d.y)&&!(host.blockingDecor||[]).some(q=>q.x===p1.x+d.x&&q.y===p1.y+d.y))||directions[0];
+      p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.invuln=999999;p1._meleeSwingAt=0;fire1=0;fireBuffer1=0;
+    });
+    await state.page.keyboard.down("Space");
+    const heldSwingSamples=await state.page.evaluate(async()=>{
+      const values=new Set(),modes=new Set(),inputStates=new Set();
+      const until=performance.now()+1250;
+      while(performance.now()<until){const at=Number(p1?._meleeSwingAt||0);if(at>0)values.add(at);modes.add(mode);inputStates.add(input.has("Space"));await new Promise(resolve=>setTimeout(resolve,45));}
+      return{values:[...values],modes:[...modes],inputStates:[...inputStates],fire1,fireBuffer1,hitStunMs:p1.hitStunMs};
+    });
+    await state.page.keyboard.up("Space");
+    assert.ok(heldSwingSamples.values.length>=2,`holding the fire key must auto-repeat sword swings: ${JSON.stringify(heldSwingSamples)}`);
+    await state.page.evaluate(()=>{p1.invuln=0;if(window.__browserOriginalShowNamedDossier){showNamedDossier=window.__browserOriginalShowNamedDossier;delete window.__browserOriginalShowNamedDossier}for(const enemy of host.enemies||[])if("_browserHeldAlive" in enemy){enemy.alive=enemy._browserHeldAlive;delete enemy._browserHeldAlive}});
+
+    logStage("canonical desktop: normal vortex damage and knockback");
+    const vortexResult=await state.page.evaluate(()=>{
+      const tutorial=window.CCGLostSizzlerOnboardingV120?.state;
+      if(tutorial){tutorial.active=false;tutorial.tutorialRequested=false;}
+      const previousPit=host.rareVortexPit,previous={x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry,health:p1.health,maxHealth:p1.maxHealth,armor:p1.armor};
+      const origin={x:p1.x,y:p1.y};
+      host.rareVortexPit={id:"browser-normal-vortex",cells:[origin],training:true,harmless:true};
+      p1.health=10;p1.maxHealth=Math.max(10,Number(p1.maxHealth||10));p1.armor=0;delete p1._ccgPitCooldown;
+      const triggered=window.CCGLostSizzlerEnvironmentalV121.triggerPlayerPit(p1);
+      const result={triggered,before:10,after:p1.health,origin,position:{x:p1.x,y:p1.y},tutorialActive:Boolean(tutorial?.active)};
+      host.rareVortexPit=previousPit;p1.x=previous.x;p1.y=previous.y;p1.rx=previous.rx;p1.ry=previous.ry;p1.health=previous.health;p1.maxHealth=previous.maxHealth;p1.armor=previous.armor;delete p1._ccgPitCooldown;
+      return result;
+    });
+    assert.equal(vortexResult.triggered,true,"a normal-mode vortex must trigger");
+    assert.equal(vortexResult.after,vortexResult.before-1,`a normal-mode vortex must deal exactly 1 HP: ${JSON.stringify(vortexResult)}`);
+    assert.notDeepEqual(vortexResult.position,vortexResult.origin,`a normal-mode vortex must knock the player clear: ${JSON.stringify(vortexResult)}`);
+
     const activeSwing=await state.page.evaluate(()=>{
       const previous=Number(p1?._meleeSwingAt||0);
       const modeBefore=mode;
@@ -208,6 +287,41 @@ try{
     })),5000,"transient render-state audit");
     assert.ok(transient.particles<=2600&&transient.rings<=700&&transient.floaters<=700&&transient.bullets<=900&&transient.enemyBullets<=1600,`transient render state remains bounded: ${JSON.stringify(transient)}`);
     logStage("canonical desktop: complete");
+  }
+
+  {
+    logStage("early Tutorial launch: create and navigate");
+    const state=await newGamePage();
+    await withTimeout(state.page.goto(canonical,{waitUntil:"domcontentloaded",timeout:15000}),STAGE_TIMEOUT_MS,"early Tutorial navigation");
+    await withTimeout(state.page.locator("#tutorial-zone-btn").click({timeout:8000,noWaitAfter:true}),10000,"early Tutorial button click");
+    await waitForReady(state,"early Tutorial");
+    await withTimeout(state.page.waitForFunction(()=>document.body.dataset.runActive==="true"&&window.CCGLostSizzlerOnboardingV120?.state?.active===true,null,{timeout:15000}),STAGE_TIMEOUT_MS,"Tutorial activation");
+    await state.page.waitForTimeout(900);
+    const tutorialState=await state.page.evaluate(()=>({
+      active:Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active),
+      requested:Boolean(window.CCGLostSizzlerOnboardingV120?.state?.tutorialRequested),
+      step:Number(window.CCGLostSizzlerOnboardingV120?.state?.step||0),
+      modalVisible:!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),
+      voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),
+      voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)
+    }));
+    assert.deepEqual(tutorialState,{active:true,requested:true,step:0,modalVisible:true,voiceActive:false,voiceQueued:0},`early Tutorial selection must activate a silent working tutorial: ${JSON.stringify(tutorialState)}`);
+    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    const tutorialMove=await state.page.evaluate(()=>{
+      const choices=[{key:"d",dx:1,dy:0},{key:"a",dx:-1,dy:0},{key:"s",dx:0,dy:1},{key:"w",dx:0,dy:-1}];
+      const choice=choices.find(q=>W.walkable(world.map,p1.x+q.dx,p1.y+q.dy,host)&&W.walkable(world.map,p1.x+q.dx*2,p1.y+q.dy*2,host));
+      return{choice,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
+    });
+    assert.ok(tutorialMove.choice,`Tutorial start area must have a two-tile keyboard route: ${JSON.stringify(tutorialMove)}`);
+    await state.page.keyboard.down(tutorialMove.choice.key);
+    await state.page.waitForTimeout(850);
+    await state.page.keyboard.up(tutorialMove.choice.key);
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial movement step");
+    const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,position:{x:p1.x,y:p1.y}}));
+    assert.equal(tutorialProgress.moved,true,`Tutorial keyboard movement must register: ${JSON.stringify(tutorialProgress)}`);
+    assert.notDeepEqual(tutorialProgress.position,tutorialMove.start,`Tutorial keyboard movement must move the player: ${JSON.stringify(tutorialProgress)}`);
+    await assertHealthy(state,"active silent Tutorial");
+    logStage("early Tutorial launch: complete");
   }
 
   {

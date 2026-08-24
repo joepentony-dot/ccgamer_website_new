@@ -8,6 +8,8 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const combat=read("js/v10-25-melee-ammo-balance.js");
 const render=read("js/game-render.js");
+const play=read("js/game-play.js");
+const touch=read("js/v10-4-patch.js");
 const loader=read("js/asset-overrides.js");
 
 assert.match(loader,/const CCG_MELEE_AMMO_REV="20260824a"/,"V10.25 combat balance must have its own cache revision");
@@ -39,5 +41,17 @@ assert.match(render,/function drawPlayerWeapon\(p,cx,cy,d\)/,"player rendering m
 assert.match(render,/ctx\.arc\(0,0,23,base-1\.02,angle,false\)/,"active melee attacks must draw a visible swing trail");
 assert.match(render,/ctx\.createLinearGradient\(3,-4,24,4\)/,"the equipped sword must render as a shaped highlighted blade");
 assert.match(render,/drawPlayerWeapon\(p,cx,cy,d\);/,"every player render must draw the current firearm or sword");
+assert.match(play,/const ATTACK_BUFFER_MS=700/,"quick fire taps must remain buffered through the longest melee cooldown");
+assert.match(play,/function queueAttack\(p\)/,"keyboard and touch attacks must share a one-shot input buffer");
+assert.match(play,/input\.has\("Space"\)\|\|fireBuffer1>0[\s\S]*?firePlayer\(p1,attackDirection\(p1,d1\(\)\)\)/,"holding or tapping desktop fire must attack at the weapon cooldown in the movement direction or last facing direction");
+assert.match(play,/gp\.buttons\?\.\[0\]\?\.pressed&&fire1<=0/,"holding the joystick fire button must repeat attacks at the weapon cooldown");
+assert.match(play,/firePlayer\(p1,attackDirection\(p1,dir\)\)/,"stationary joystick fire must use the player's last facing direction");
+assert.match(play,/const source=requested&&\(requested\.x\|\|requested\.y\)\?requested:p\?\.dir/,"stationary attacks must fall back to the player's facing direction");
+assert.match(touch,/queueAttack\(p1\)/,"a quick touch FIRE tap must not be lost between animation frames");
+assert.match(touch,/input\.add\("Space"\)/,"holding the touch FIRE button must use the same repeat-fire state as the keyboard");
+assert.match(touch,/input\.delete\("Space"\)/,"releasing touch FIRE must stop repeated attacks");
+assert.doesNotMatch(touch,/setInterval\(fireOnce/ ,"touch FIRE must not run a competing interval that can make combat jitter");
+assert.doesNotMatch(read("js/game-core.js"),/potion:\"[^\"]*8 ammo/i,"item help must not claim that restoration potions replenish ammunition");
+assert.doesNotMatch(render,/POTION\",\"E: heal \+ ammo\"/,"the rendered pickup guide must describe the current health-only potion behaviour");
 
 console.log("Lost Sizzler V10.25 sword-first combat regression checks passed.");

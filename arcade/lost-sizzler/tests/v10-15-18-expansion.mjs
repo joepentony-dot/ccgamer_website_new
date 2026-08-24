@@ -20,13 +20,36 @@ const edge=fs.readFileSync(path.join(repo,"supabase/functions/ccq-weekly-challen
 for(const token of ["mimicChest","cursedCartridge","wanderingMerchant","goldenRoom","lostAdventurer","DUNGEON TREMOR","possessedCabinet","treasureBat","taxman","mysteryPotion","developerRoom","DUNGEON BOUNTY","treasureMap","rareMutation"]){
   assert.match(rare,new RegExp(token),`rare event is present: ${token}`);
 }
-assert.match(rare,/HINT_STAGE_MS=\[75000,120000,180000\]/,"objective hints escalate at 75s, 120s and 180s without progress");
-assert.match(rare,/RADAR HINT/,"final objective hint marks the radar");
+assert.match(rare,/HINT_STAGE_MS=\[300000\]/,"the objective radar hint must be a single event after five minutes of inactive exploration");
+assert.match(rare,/ACTIVE_MOVEMENT_WINDOW_MS=5000/,"objective-hint time must accumulate only while the player is actively walking");
+assert.match(rare,/enemyEncounter[\s\S]*?resetHintInactivity\(\)/,"an enemy encounter must reset the lost-player hint timer");
+assert.match(rare,/function noteActivity\(\)/,"pickups must expose an activity reset for the lost-player hint timer");
+assert.match(rare,/now-state\.lastMoveAt>ACTIVE_MOVEMENT_WINDOW_MS/,"standing still must not accumulate the five-minute walking timer");
+assert.match(rare,/objective\.type==="keys"[\s\S]*?i\.kind==="key"/,"a required main-vault-key objective must point only to a main key");
+assert.match(rare,/if\(!host\.exitSigilCollected\)[\s\S]*?i\.kind==="exitSigil"/,"completed main objectives must point to the Exit Sigil next");
+assert.match(rare,/return\{x:world\.exit\.x,y:world\.exit\.y,label:"FLOOR EXIT"\}/,"the floor exit must be the final hint target after the sigil is collected");
+assert.doesNotMatch(rare,/label:"SWITCH"/,"lost-player hints must never point at optional switches");
+assert.match(rare,/state\.hintTarget=\{\.\.\.t\}[\s\S]*?showToast\("RADAR HINT"/,"the objective marker and lost-player voice event must be activated together");
+assert.match(rare,/Are you getting lost\? Better check your radar\./,"the single five-minute hint must use the requested radar wording");
+assert.match(rare,/const target=Math\.max\(1,Math\.min\(50,eligible\.length\)\)/,"each floor bounty must require 50 kills or every eligible enemy when fewer exist");
+assert.match(rare,/type:`KILL \$\{target\} ENEMIES`/,"the bounty banner must state its computed enemy target");
+assert.match(rare,/Number\(run\.stats\?\.kills\|\|0\)-b\.startKills/,"bounty progress must count kills made on the current floor only");
 assert.match(balance,/DOUBLE GOLD/,"double-gold mutation is enforced at pickup time");
 assert.match(balance,/NO SHOPPING/,"no-shopping mutation blocks floor traders");
 assert.match(balance,/ELITE BOUNTY/,"elite-bounty mutation pays on elite kills");
 
 assert.match(voice,/SpeechSynthesisUtterance/,"voice director has browser speech fallback");
+assert.match(voice,/function tutorialSilent\(\)/,"tutorial mode must silence all recorded and browser speech prompts");
+assert.match(voice,/cooldown:120000/,"the low-ammo voice cue must retain a long secondary cooldown");
+assert.match(voice,/ammo<=8&&!state\.lowAmmoWarned/,"low-ammo speech must fire once while ammo remains low");
+assert.match(voice,/if\(ammo>=20\)state\.lowAmmoWarned=false/,"low-ammo speech may reset only after a meaningful ammunition refill");
+assert.match(voice,/key==="rareLoot"&&currentFloor>0&&state\.rareLootFloor===currentFloor/,"rare-loot speech must be limited to its first occurrence on each floor");
+assert.match(voice,/state\.rareLootFloor=currentFloor/,"the voice director must remember the floor where rare loot was first announced");
+assert.match(voice,/if\(\/RADAR HINT\/\.test\(s\)\)return"objectiveHint"/,"the lost-player speech cue must only be triggered by the paired radar hint event");
+assert.match(voice,/function voiceVolume\(key\)\{return key==="hurt" \? \.56 : \.72\}/,"all speech must be 20 percent lower and the Ow cue must be quieter again");
+assert.match(voice,/hurt:\{text:"Ow!",priority:8,cooldown:0\}/,"every registered hit must use the short Ow cue without a voice cooldown");
+assert.match(voice,/if\(after<before\)sayKey\("hurt",\{cooldown:0\}\)/,"damage handling must request Ow after every registered hit, including a lethal hit");
+assert.match(voice,/deathsAfter>deathsBefore\)setTimeout\(\(\)=>sayKey\("playerDeath",\{cooldown:0\}\),750\)/,"the death line must wait until the short Ow cue has had time to play");
 assert.match(voice,/VOICE ON/,"voice prompts can be disabled by the player");
 assert.match(voice,/activePriority/,"voice prompts use priorities");
 assert.match(voice,/cooldown/,"voice prompts use cooldowns");

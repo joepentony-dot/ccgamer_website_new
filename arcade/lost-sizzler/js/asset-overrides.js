@@ -32,7 +32,9 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
-const CCG_V106_HUD_REV="20260822e";
+const CCG_V106_HUD_REV="20260824a";
+const CCG_V106_UI_REV="20260824a";
+const CCG_V104_PATCH_REV="20260824b";
 const CCG_V106_SIDEBAR_REV="20260822a";
 const CCG_PLAYLIST_AUDIO_REV="20260823b";
 const CCG_PLAYER_INSIGHTS_REV="20260823f";
@@ -44,21 +46,22 @@ const CCG_DOSSIER_REV="20260823b";
 const CCG_CHANGELOG_REV="20260823e";
 const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
 const CCG_GILDED_ELF_REV="20260823b";
-const CCG_RARE_EVENTS_REV="20260823a";
+const CCG_RARE_EVENTS_REV="20260824c";
 const CCG_RARE_EVENTS_BALANCE_REV="20260823a";
 const CCG_ADMIN_AUDIO_REV="20260823a";
-const CCG_VOICE_DIRECTOR_REV="20260824a";
+const CCG_VOICE_DIRECTOR_REV="20260824c";
 const CCG_VOICE_EXPANSION_REV="20260823a";
 const CCG_EXPANSION_CHANGELOG_REV="20260823i";
 const CCG_INPUT_UI_FIX_REV="20260823a";
 const CCG_DUNGEON_VARIETY_REV="20260823a";
 const CCG_ONBOARDING_SAFETY_REV="20260823e";
 const CCG_ONBOARDING_HARDENING_REV="20260823a";
-const CCG_TUTORIAL_GUIDANCE_REV="20260823c";
-const CCG_ENVIRONMENTAL_POLISH_REV="20260823a";
+const CCG_TUTORIAL_GUIDANCE_REV="20260824c";
+const CCG_ENVIRONMENTAL_POLISH_REV="20260824b";
 const CCG_MOBILE_ERGONOMICS_REV="20260823a";
 const CCG_MELEE_AMMO_REV="20260824a";
 const CCG_AMMO_BUDGET_REV="20260823a";
+const CCG_ACHIEVEMENTS_REV="20260824a";
 
 /* Start onboarding immediately while the core scripts below this file are still
  * parsing. The modules poll for the core functions they need, so the first Play
@@ -180,7 +183,7 @@ const CCG_AMMO_BUDGET_REV="20260823a";
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
       ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
-      ["js/v10-4-patch.js","ccgLostSizzlerV104"],
+      [`js/v10-4-patch.js?v=${CCG_V104_PATCH_REV}`,"ccgLostSizzlerV104"],
       ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
       ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
       ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
@@ -190,7 +193,7 @@ const CCG_AMMO_BUDGET_REV="20260823a";
       ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
       ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
       ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
-      ["js/v10-6-ui-polish.js","ccgLostSizzlerUiV106"],
+      [`js/v10-6-ui-polish.js?v=${CCG_V106_UI_REV}`,"ccgLostSizzlerUiV106"],
       [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
       ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
@@ -208,7 +211,8 @@ const CCG_AMMO_BUDGET_REV="20260823a";
       [`js/v10-21-environmental-polish.js?v=${CCG_ENVIRONMENTAL_POLISH_REV}`,"ccgLostSizzlerEnvironmentalPolishV121"],
       [`js/v10-24-mobile-ergonomics.js?v=${CCG_MOBILE_ERGONOMICS_REV}`,"ccgLostSizzlerMobileErgonomicsV124"],
       [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"],
-      [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"]
+      [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"],
+      [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"]
     ];
 
     const loadNext=index=>{

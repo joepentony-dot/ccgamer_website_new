@@ -41,7 +41,7 @@ function clearAbandonedRun(){
   world=null;host=null;p1=null;p2=null;run=null;window.__CCG_WORLD=null;score=0;won=false;floorEntryCheckpoint=null;savePromptReason="";pendingBanishmentReward=null;activeShop=null;
   for(const list of [bullets,enemyBullets,particles,rings,floaters,hazards,levelQueue,toastQueue])list.length=0;
   for(const collection of [pendingItems,questDone,remote,enemyVisuals,cameras,explored,campStates,roomVisits,playerTrails])collection.clear();
-  for(const key of Object.keys(stats))stats[key]=0;enemyCD=projectileCD=sendCD=worldCD=surroundCD=specialCD=0;move1=move2=fire1=fire2=0;toastTimer=0;lowHealthCD=0;inventoryReminderMs=300000;lastAmbientMessage="";shake=0;damageFlash=0;input.clear();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);
+  for(const key of Object.keys(stats))stats[key]=0;enemyCD=projectileCD=sendCD=worldCD=surroundCD=specialCD=0;move1=move2=fire1=fire2=fireBuffer1=fireBuffer2=0;toastTimer=0;lowHealthCD=0;inventoryReminderMs=300000;lastAmbientMessage="";shake=0;damageFlash=0;input.clear();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.fillStyle=P.black;ctx.fillRect(0,0,canvas.width,canvas.height);
   const radar=$("radar-canvas"),radarContext=radar?.getContext?.("2d");radarContext?.clearRect(0,0,radar.width,radar.height);
 }
 async function quitToMenu(){
@@ -97,9 +97,10 @@ addEventListener("keydown",e=>{
   if(e.code==="KeyP"&&(mode==="playing"||mode==="paused")){pause();return}
   if(e.code==="KeyM"){toggleSound();return}if(e.code==="KeyF"){toggleFullscreen();return}if(e.code==="Tab"&&["playing","inventory"].includes(mode)){toggleInventory();return}
   if(mode!=="playing")return;if(p1)setDir(p1,e.code);if(p2)setDir(p2,e.code);input.add(e.code);
-  if(e.code==="Space"&&!e.repeat)firePlayer(p1,d1());if(p2&&e.code==="Enter"&&!e.repeat)firePlayer(p2,d2());if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
+  if(e.code==="Space"&&!e.repeat)queueAttack(p1);if(p2&&e.code==="Enter"&&!e.repeat)queueAttack(p2);if(e.code==="ShiftLeft"&&!e.repeat)dashPlayer(p1,d1()||p1.dir);if(p2&&e.code==="ControlRight"&&!e.repeat)dashPlayer(p2,d2()||p2.dir);if(e.code==="KeyE"&&!e.repeat)usePotion(p1);if(e.code==="KeyQ"&&!e.repeat)useUtility(p1);if(e.code==="KeyR"&&!e.repeat)useTeleport(p1);if(e.code==="KeyC"&&!e.repeat)closeNearbyDoor(p1);if(e.code==="KeyB"&&!e.repeat)useBanishment(p1);if(p2&&e.code==="KeyO"&&!e.repeat)usePotion(p2)
 },{passive:false});
 addEventListener("keyup",e=>input.delete(e.code));addEventListener("blur",()=>input.clear());document.addEventListener("visibilitychange",()=>{if(document.hidden)input.clear()});
+canvas.addEventListener("pointerdown",()=>{if(document.body.dataset.runActive==="true")try{canvas.tabIndex=-1;canvas.focus({preventScroll:true})}catch(_){}});
 refreshCollection();
 net.setSolo("TITLE");mode="menu";setRunPresentation(false);document.body.dataset.gameReady="true";requestAnimationFrame(loop);
 

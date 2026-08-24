@@ -5,8 +5,9 @@
   window.__CCG_LOST_SIZZLER_RARE_EVENTS_V115__=true;
 
   const CHANCE={mimic:.08,cursed:.07,merchant:.07,golden:.045,adventurer:.06,tremor:.06,cabinet:.07,bat:.07,taxman:.055,mystery:.10,developer:.025,map:.08,mutation:.16};
-  const HINT_STAGE_MS=[75000,120000,180000];
-  const state={floorKey:"",startedAt:0,hintMs:0,hintStage:0,hintTarget:null,hintMarkerUntil:0,lastObjectiveSignature:"",plans:{},golden:null,bounty:null,mutation:null,ghost:null,ghostRecord:[],ghostSampleMs:0,announcedRooms:new Set(),specialDeaths:new Set()};
+  const HINT_STAGE_MS=[300000];
+  const ACTIVE_MOVEMENT_WINDOW_MS=5000;
+  const state={floorKey:"",startedAt:0,hintMs:0,hintStage:0,hintTarget:null,hintMarkerUntil:0,lastObjectiveSignature:"",lastPlayerCell:"",lastMoveAt:0,plans:{},golden:null,bounty:null,mutation:null,ghost:null,ghostRecord:[],ghostSampleMs:0,announcedRooms:new Set(),specialDeaths:new Set()};
 
   function hash32(value){let h=2166136261>>>0;for(const ch of String(value||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return h>>>0}
   const unit=value=>hash32(value)/4294967296;
@@ -53,7 +54,7 @@
   function spawnSimpleEnemy(id,q,kind,hp,extra={}){const e={id,...q,kind,hp,maxHp:hp,alive:true,aiState:"idle",facing:{x:1,y:0},lastSeen:null,memoryMs:0,searchMs:0,moveCooldown:650,attackCooldown:750,chargeCooldown:999999,healCooldown:999999,flash:0,hpBarMs:0,...extra};host.enemies.push(e);host.revision=(host.revision||0)+1;return e}
 
   function planFloor(seed,checkpointRestore=false){
-    state.floorKey=floorKey(seed);state.startedAt=performance.now();state.hintMs=0;state.hintStage=0;state.hintTarget=null;state.hintMarkerUntil=0;state.lastObjectiveSignature="";state.plans={};state.golden=null;state.bounty=null;state.mutation=null;state.ghost=null;state.ghostRecord=[];state.ghostSampleMs=0;state.announcedRooms.clear();state.specialDeaths.clear();
+    state.floorKey=floorKey(seed);state.startedAt=performance.now();state.hintMs=0;state.hintStage=0;state.hintTarget=null;state.hintMarkerUntil=0;state.lastObjectiveSignature="";state.lastPlayerCell=p1?`${p1.x},${p1.y}`:"";state.lastMoveAt=0;state.plans={};state.golden=null;state.bounty=null;state.mutation=null;state.ghost=null;state.ghostRecord=[];state.ghostSampleMs=0;state.announcedRooms.clear();state.specialDeaths.clear();
     if(checkpointRestore)return;
     installMutation();installMimic();installCursedCartridge();installMerchant();installGoldenRoom();installAdventurer();installTremor();installCabinet();installTreasureBat();installTaxman();installMysteryPotion();installDeveloperRoom();installBounty();installTreasureMap();loadWeeklyGhost();
   }
@@ -78,7 +79,11 @@
   function installDeveloperRoom(){
     if(!roll("developer",CHANCE.developer))return;const hiddenDoors=(host.doors||[]).filter(d=>d.type==="secret"&&d.roomId!=null);if(!hiddenDoors.length)return;const d=hiddenDoors[hash32(`${state.floorKey}|dev-door`)%hiddenDoors.length],room=world.rooms[d.roomId];if(!room)return;room.developerRoom=true;room.developerRoomTitle="CCG DEVELOPER ROOM";const q=freeCell(room,"dev-cache");if(q)host.chests.push({id:`developer-cache-${state.floorKey}`,...q,locked:false,active:true,depth:Number(room.depth||0)+12,roomId:room.id,developerCache:true});state.plans.developer={roomId:room.id};
   }
-  function installBounty(){const types=["KILL 8 ENEMIES","NO DAMAGE — 6 KILLS","RESCUE 3 GAMES"],type=types[hash32(`${state.floorKey}|bounty`)%types.length];state.bounty={type,startKills:Number(run.stats?.kills||0),startGames:Number(stats?.games||0),kills:0,games:0,failed:false,complete:false,reward:1000};}
+  function installBounty(){
+    const eligible=(host?.enemies||[]).filter(enemy=>enemy?.alive&&!enemy.passiveNpc&&!enemy.lostAdventurer&&!enemy.treasureBat&&!enemy.taxman);
+    const target=Math.max(1,Math.min(50,eligible.length));
+    state.bounty={type:`KILL ${target} ENEMIES`,target,startKills:Number(run.stats?.kills||0),kills:0,failed:false,complete:false,reward:1000};
+  }
   function installTreasureMap(){if(!roll("map",CHANCE.map))return;const room=chooseRoom("map-room"),q=freeCell(room,"map-cell"),targetRoom=chooseRoom("map-target");if(!q||!targetRoom)return;const t=freeCell(targetRoom,"map-target-cell")||roomCentre(targetRoom);host.items.push({id:`treasure-map-${state.floorKey}`,...q,kind:"loot",active:true,treasureMap:true,title:"TREASURE MAP FRAGMENT",target:{...t}});}
 
   function announceStartSystems(){
@@ -116,29 +121,49 @@
   function activateTreasureMap(item){state.plans.mapTarget={...item.target,active:true};showToast("TREASURE MAP FRAGMENT","A buried cache location has been marked. Follow the gold marker on the radar.","gold",8500);state.hintTarget={...item.target,label:"BURIED CACHE"};state.hintMarkerUntil=Infinity;}
   function updateTreasureMap(){const m=state.plans.mapTarget;if(!m?.active||!p1)return;if(dist(p1,m)<=1.2){m.active=false;state.hintMarkerUntil=0;state.hintTarget=null;score+=600;host.chests.push({id:`buried-cache-${Date.now()}`,x:m.x,y:m.y,locked:false,active:true,depth:14,roomId:roomAt(m.x,m.y),buriedCache:true});showToast("BURIED CACHE FOUND","+600 score and a reward chest rises from the floor.","gold",8500)}}
 
-  function updateBounty(){const b=state.bounty;if(!b||b.complete||b.failed)return;const kills=Math.max(0,Number(run.stats?.kills||0)-b.startKills),games=Math.max(0,Number(stats?.games||0)-b.startGames);b.kills=kills;b.games=games;if(b.type==="KILL 8 ENEMIES"&&kills>=8)completeBounty();else if(b.type==="NO DAMAGE — 6 KILLS"){if(b.tookDamage)b.failed=true;else if(kills>=6)completeBounty()}else if(b.type==="RESCUE 3 GAMES"&&games>=3)completeBounty();}
+  function updateBounty(){const b=state.bounty;if(!b||b.complete||b.failed)return;const kills=Math.max(0,Number(run.stats?.kills||0)-b.startKills);b.kills=kills;if(kills>=b.target)completeBounty();}
   function completeBounty(){const b=state.bounty;if(!b||b.complete)return;b.complete=true;score+=b.reward;showToast("DUNGEON BOUNTY COMPLETE",`+${b.reward.toLocaleString()} score.`,"gold",8000);}
 
-  function objectiveSignature(){const o=host?.objective||{};return JSON.stringify([o.type,o.complete,host?.keysCollected,host?.exitSigilCollected,run?.stats?.generators,run?.stats?.secrets,host?.rescue?.rescued,(host?.generators||[]).filter(g=>g.alive).length,(host?.enemies||[]).filter(e=>e.alive&&e.guardian).length]);}
+  function objectiveSignature(){const o=host?.objective||{};return JSON.stringify([o.type,o.complete,host?.keysCollected,host?.exitSigilCollected,host?.sigilResolved,run?.stats?.generators,host?.rescue?.rescued,(host?.generators||[]).filter(g=>g.alive).length,(host?.enemies||[]).filter(e=>e.alive&&(e.guardian||e.sigilDefender)).length]);}
   function objectiveTarget(){
     if(!host||!world)return null;
-    if(host.objective?.complete){if(!host.exitSigilCollected){const e=(host.enemies||[]).find(e=>e.alive&&e.sigilDefender);if(e)return{x:e.x,y:e.y,label:"SIGIL DEFENDER"};if(host.sigilRoomId!=null)return{...roomCentre(world.rooms[host.sigilRoomId]),label:"SIGIL CHAMBER"}}return{x:world.exit.x,y:world.exit.y,label:"FLOOR EXIT"}}
-    const gen=(host.generators||[]).find(g=>g.alive);if(gen)return{x:gen.x,y:gen.y,label:"GENERATOR"};
-    const key=(host.items||[]).find(i=>i.active&&(i.kind==="key"||i.kind==="exitSigil"));if(key)return{x:key.x,y:key.y,label:key.kind==="key"?"MAIN KEY":"EXIT SIGIL"};
-    if(host.rescue&&!host.rescue.rescued)return{x:host.rescue.x,y:host.rescue.y,label:"CCG SCOUT"};
-    const guardian=(host.enemies||[]).find(e=>e.alive&&e.guardian);if(guardian)return{x:guardian.x,y:guardian.y,label:"GUARDIAN"};
-    const sw=(host.switches||[]).find(s=>s.active);if(sw)return{x:sw.x,y:sw.y,label:"SWITCH"};
+    const objective=host.objective||{};
+    if(!objective.complete){
+      if(objective.type==="keys"&&Number(host.keysCollected||0)<Number(C.keyTarget||0)){
+        const key=(host.items||[]).filter(i=>i.active&&i.kind==="key").sort((a,b)=>dist(p1,a)-dist(p1,b))[0];
+        return key?{x:key.x,y:key.y,label:"MAIN VAULT KEY"}:null;
+      }
+      if(objective.type==="generators"){
+        const generator=(host.generators||[]).filter(g=>g.alive).sort((a,b)=>dist(p1,a)-dist(p1,b))[0];
+        return generator?{x:generator.x,y:generator.y,label:"REQUIRED GENERATOR"}:null;
+      }
+      if(objective.type==="rescue"&&host.rescue&&!host.rescue.rescued)return{x:host.rescue.x,y:host.rescue.y,label:"TRAPPED CCG SCOUT"};
+      if(objective.type==="guardian"||objective.type==="explore_guardian"){
+        const guardian=(host.enemies||[]).find(e=>e.alive&&e.guardian&&!e.sigilDefender);
+        return guardian?{x:guardian.x,y:guardian.y,label:"FLOOR GUARDIAN"}:null;
+      }
+      return null;
+    }
+    if(!host.exitSigilCollected){
+      const sigil=(host.items||[]).find(i=>i.active&&i.kind==="exitSigil");if(sigil)return{x:sigil.x,y:sigil.y,label:"EXIT SIGIL"};
+      const defender=(host.enemies||[]).find(e=>e.alive&&e.sigilDefender);if(defender)return{x:defender.x,y:defender.y,label:"SIGIL DEFENDER"};
+      if(host.sigilRoomId!=null)return{...roomCentre(world.rooms[host.sigilRoomId]),label:"SIGIL CHAMBER"};
+      return null;
+    }
     return{x:world.exit.x,y:world.exit.y,label:"FLOOR EXIT"};
   }
   function directionTo(target){if(!p1||!target)return"";const dx=target.x-p1.x,dy=target.y-p1.y,parts=[];if(Math.abs(dy)>2)parts.push(dy<0?"NORTH":"SOUTH");if(Math.abs(dx)>2)parts.push(dx<0?"WEST":"EAST");return parts.join("-")||"VERY CLOSE"}
+  function resetHintInactivity(){state.hintMs=0;state.hintStage=0;if(!state.plans.mapTarget?.active){state.hintTarget=null;state.hintMarkerUntil=0}}
+  function noteActivity(){resetHintInactivity();state.lastMoveAt=performance.now();if(p1)state.lastPlayerCell=`${p1.x},${p1.y}`}
   function updateHints(dt){
-    if(!p1||mode!=="playing")return;const sig=objectiveSignature();if(sig!==state.lastObjectiveSignature){state.lastObjectiveSignature=sig;state.hintMs=0;state.hintStage=0;if(!state.plans.mapTarget?.active){state.hintTarget=null;state.hintMarkerUntil=0}return}
-    const target=objectiveTarget();if(target&&dist(p1,target)<5){state.hintMs=Math.max(0,state.hintMs-dt*.65);if(state.hintStage>0&&state.hintMs<45000)state.hintStage=0;return}state.hintMs+=dt;
-    const next=state.hintStage<HINT_STAGE_MS.length?HINT_STAGE_MS[state.hintStage]:Infinity;if(state.hintMs<next)return;state.hintStage++;
-    const t=objectiveTarget();if(!t)return;const dir=directionTo(t);
-    if(state.hintStage===1)showToast("OBJECTIVE HINT","You have been exploring for a while without objective progress. Check unexplored routes and your mission text.","cyan",8000);
-    else if(state.hintStage===2)showToast("NEXT OBJECTIVE",`${t.label} is roughly ${dir}.`,"cyan",9000);
-    else{state.hintTarget={...t};state.hintMarkerUntil=performance.now()+60000;showToast("RADAR HINT",`${t.label} is now marked on the radar for 60 seconds.`,"gold",9000)}
+    if(!p1||mode!=="playing")return;const now=performance.now(),cell=`${p1.x},${p1.y}`;if(cell!==state.lastPlayerCell){state.lastPlayerCell=cell;state.lastMoveAt=now}
+    const enemyEncounter=(host?.enemies||[]).some(enemy=>enemy?.alive&&visibleTo(p1,enemy.x,enemy.y));if(enemyEncounter){resetHintInactivity();return}
+    const sig=objectiveSignature();if(sig!==state.lastObjectiveSignature){state.lastObjectiveSignature=sig;resetHintInactivity();return}
+    if(!state.lastMoveAt||now-state.lastMoveAt>ACTIVE_MOVEMENT_WINDOW_MS)return;state.hintMs+=dt;
+    const next=state.hintStage<HINT_STAGE_MS.length?HINT_STAGE_MS[state.hintStage]:Infinity;if(state.hintMs<next)return;
+    const t=objectiveTarget();if(!t)return;state.hintStage++;
+    const dir=directionTo(t);state.hintTarget={...t};state.hintMarkerUntil=performance.now()+60000;
+    showToast("RADAR HINT",`Are you getting lost? Better check your radar. ${t.label} is marked ${dir} for 60 seconds.`,"gold",9000);
   }
   function drawRadarHint(){if(!state.hintTarget||performance.now()>state.hintMarkerUntil)return;const c=document.getElementById("radar-canvas");if(!c||!world?.map)return;const r=c.getContext("2d"),w=world.map[0]?.length||1,h=world.map.length||1,x=(state.hintTarget.x/w)*c.width,y=(state.hintTarget.y/h)*c.height;r.save();r.strokeStyle=P.gold;r.fillStyle=P.gold;r.lineWidth=3;r.shadowColor=P.gold;r.shadowBlur=10;r.beginPath();r.arc(x,y,7+Math.sin(performance.now()/180)*2,0,Math.PI*2);r.stroke();r.fillRect(x-2,y-2,4,4);r.restore();}
 
@@ -186,9 +211,6 @@
   if(typeof damageEnemy==="function"){
     const original=damageEnemy;damageEnemy=function damageEnemyV115Rare(enemy,power,element="energy",attacker=p1){const was=Boolean(enemy?.alive),result=original.apply(this,arguments);if(was&&enemy&&!enemy.alive)specialDeath(enemy);return result};
   }
-  if(typeof hurtPlayer==="function"){
-    const original=hurtPlayer;hurtPlayer=function hurtPlayerV115Rare(player,n,friendly=false,source="enemy"){const before=Number(run?.stats?.damageTaken||0),result=original.apply(this,arguments),after=Number(run?.stats?.damageTaken||0);if(after>before&&state.bounty?.type==="NO DAMAGE — 6 KILLS")state.bounty.tookDamage=true;return result};
-  }
   if(typeof updateRoomMessage==="function"){
     const original=updateRoomMessage;updateRoomMessage=function updateRoomMessageV115Rare(player,force){const result=original.apply(this,arguments),room=world?.rooms?.[roomAt(player.x,player.y)];if(room?.developerRoom&&!state.announcedRooms.has(`dev-${room.id}`)){state.announcedRooms.add(`dev-${room.id}`);showToast("SECRET CCG DEVELOPER ROOM","A hidden developer cache. Expect CCG references, bonus loot and a few things that were probably left in debug mode on purpose.","purple",10000)}return result};
   }
@@ -210,5 +232,5 @@
   // older backends simply ignore this additional result field.
   if(window.CCGWeeklyChallenge?.finish){const original=window.CCGWeeklyChallenge.finish.bind(window.CCGWeeklyChallenge);window.CCGWeeklyChallenge.finish=async result=>original({...result,ghostPath:state.ghostRecord.slice(0,360)})}
 
-  window.CCGLostSizzlerRareEvents={get state(){return state},CHANCE,objectiveTarget,drawRadarHint};
+  window.CCGLostSizzlerRareEvents={get state(){return state},CHANCE,objectiveTarget,drawRadarHint,noteActivity};
 })();

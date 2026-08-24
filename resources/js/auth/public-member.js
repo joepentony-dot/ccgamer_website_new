@@ -155,7 +155,8 @@ function renderBadges(entries) {
 
   section.hidden = false;
   badges.forEach((entry) => {
-    const isCompletion = entry.is_completion === true || badgeKey(entry.badge_key) === 'COMMODORE_COMPLETIONIST';
+    const key = badgeKey(entry.badge_key);
+    const isCompletion = entry.is_completion === true || key === 'COMMODORE_COMPLETIONIST' || key === 'LS_CITADEL_PLATINUM' || entry.badge_category === 'platinum';
     const badge = document.createElement('article');
     badge.className = `public-member-badge public-member-badge--detailed${isCompletion ? ' public-member-badge--completionist' : ''}`;
 

@@ -49,7 +49,7 @@
     const potions=count("potion"),torches=count("torch"),teleports=count("teleport"),flasks=count("banishment"),artefacts=count("artefact");
     const rows=[section("STORED ITEMS · NUMBER KEYS USE THE MATCHING QUICK SLOT")];
 
-    rows.push(row({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,primary:"E",slots:slotsFor("potion"),desc:"Restore health and 8 ammo.",tone:"green",empty:potions===0}));
+    rows.push(row({kind:"potion",name:"RESTORATION POTION",qty:`×${potions}`,primary:"E",slots:slotsFor("potion"),desc:"Restore health. Ammo must be found separately.",tone:"green",empty:potions===0}));
     rows.push(row({kind:"torch",name:"FLAMING TORCH",qty:Number(p1.torchMs||0)>0?`ACTIVE ${Math.ceil(Number(p1.torchMs)/1000)}s · ×${torches}`:`×${torches}`,primary:"Q",slots:slotsFor("torch"),desc:"Light the dungeon temporarily.",tone:"gold",empty:torches===0&&Number(p1.torchMs||0)<=0}));
     rows.push(row({kind:"teleport",name:"TELEPORT SPELL",qty:`×${teleports}`,primary:"R",slots:slotsFor("teleport"),desc:"Warp to a safe explored room.",tone:"purple",empty:teleports===0}));
     rows.push(row({kind:"banishment",name:"BANISHMENT FLASK",qty:`×${flasks}`,primary:"B",slots:slotsFor("banishment"),desc:"Destroy a nearby Death Stalker when in range.",tone:"purple",empty:flasks===0}));
