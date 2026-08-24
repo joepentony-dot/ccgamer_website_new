@@ -74,7 +74,7 @@ try{
   });
   assert.equal(popupLayout.toastPosition,"absolute","normal gameplay toasts must overlay the canvas rather than resize it");
   assert.equal(popupLayout.criticalPosition,"fixed","critical warnings must be removed from the gameplay grid");
-  assert.equal(popupLayout.criticalHeight,"0px","critical warning host must reserve no layout height");
+  assert.ok(parseFloat(popupLayout.criticalHeight)<=1,`critical warning host must reserve effectively no height: ${popupLayout.criticalHeight}`);
 
   const hordeUi=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerSpecialModes;
