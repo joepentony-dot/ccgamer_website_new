@@ -2,22 +2,11 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
-
-const here=path.dirname(fileURLToPath(import.meta.url));
-const root=path.resolve(here,"..");
-const read=file=>fs.readFileSync(path.join(root,file),"utf8");
-
-const integrity=read("js/v10-40-integrity-consolidation.js");
-const version=read("js/version-check.js");
-const weekly=read("js/weekly-challenge.js");
-const audio=read("js/lost-sizzler-playlist-audio.js");
-const main=read("js/game-main.js");
-const changelog=read("js/v10-12-developer-changelog.js");
-
+const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,".."),read=file=>fs.readFileSync(path.join(root,file),"utf8");
+const integrity=read("js/v10-40-integrity-consolidation.js"),version=read("js/version-check.js"),weekly=read("js/weekly-challenge.js"),audio=read("js/lost-sizzler-playlist-audio.js"),main=read("js/game-main.js"),changelog=read("js/v10-12-developer-changelog.js");
 assert.match(version,/const RUNTIME_BUILD="V10\.40"/,"version checker must preserve the V10.40 runtime milestone");
 assert.match(version,/v10-40-horde-final\.js[\s\S]*v10-40-integrity-consolidation\.js/,"integrity consolidation must load after the V10.40 Horde finaliser");
 assert.match(version,/badge\.textContent=`BUILD \$\{RUNTIME_BUILD\}`/,"version checks must restore the runtime badge rather than replacing it with the date build");
-
 assert.match(integrity,/function validateCriticalRoute\(/,"V10.40 must include a general critical-route watchdog");
 assert.match(integrity,/function secureDeathCaches\(/,"V10.40 must relocate unreachable or hazardous death caches");
 assert.match(integrity,/function securePlayerPosition\(/,"V10.40 must validate respawn and teleport positions");
@@ -36,7 +25,6 @@ assert.match(integrity,/!document\.body\?\.dataset\?\.specialMode&&!run\?\.speci
 assert.match(integrity,/presenceMemberV140/,"online presence must advertise the current runtime build");
 assert.match(integrity,/event==="hello"\|\|event==="v106_lobby_start"/,"legacy multiplayer metadata must be normalised to V10.40 at send time");
 assert.doesNotMatch(integrity,/validateCriticalRoute\("a player death",true\)/,"death recovery must not bypass an active legitimate challenge lock");
-
 assert.match(weekly,/PENDING_RESULT="ccg-weekly-pending-result-v1"/,"the newer durable Weekly Vault result retry must remain in control");
 assert.match(weekly,/submitPending\(\)\.catch/,"pending Weekly Vault results must continue retrying after focus\/refresh");
 assert.match(audio,/const failures=new Map\(\)/,"the newer uploaded-music failure quarantine must remain in control");
@@ -45,5 +33,4 @@ assert.match(audio,/RETRY_MAX_MS=60000/,"uploaded-music retry must remain bounde
 assert.match(main,/const pixelBudget=\(\)=>/,"the newer adaptive canvas budget must remain in control");
 assert.match(main,/return 5000000/,"desktop canvas allocation must retain the adaptive high-memory ceiling rather than regressing to the old fixed cap");
 assert.match(changelog,/LS-0824-22/,"the developer changelog must record the V10.40 integrity consolidation");
-
 console.log("Lost Sizzler V10.40 consolidated run-integrity and retained-current-system checks passed.");
