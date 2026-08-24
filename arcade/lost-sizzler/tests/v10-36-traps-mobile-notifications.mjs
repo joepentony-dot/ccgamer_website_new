@@ -9,6 +9,7 @@ const read=relative=>fs.readFileSync(path.join(gameDir,relative),"utf8");
 
 const balance=read("js/v10-15-rare-events-balance.js");
 const polish=read("css/v10-30-polish.css");
+const loader=read("js/asset-overrides.js");
 
 assert.match(balance,/const TRAP_WARNING_DISTANCE=3;/,"ordinary trap warnings use a three-tile radius");
 assert.match(balance,/trapMd\(player,trap\)<=TRAP_WARNING_DISTANCE/,"trap warning is raised when the player enters the three-tile danger radius");
@@ -21,8 +22,10 @@ assert.match(balance,/drawReliableTrap/,"ordinary floor traps have a dedicated v
 assert.match(balance,/drawSpecialObjectsV115ReliableTraps/,"trap plates are attached to the live special-object render path");
 
 assert.match(polish,/@media \(max-width:900px\),\(pointer:coarse\)/,"mobile notification correction applies to phones and coarse pointers");
-assert.match(polish,/\.game-message-rail\{[\s\S]*min-height:52px!important;[\s\S]*position:relative!important|\.game-message-rail,[\s\S]*position:relative!important;[\s\S]*min-height:52px!important;/,"mobile message rail retains a visible notification row");
-assert.match(polish,/\.pickup-toast\{[\s\S]*position:absolute!important;[\s\S]*inset:0!important/s,"mobile toast overlays room context instead of being clipped below it");
-assert.match(polish,/\.pickup-toast\.show\{[\s\S]*display:grid!important;[\s\S]*visibility:visible!important;[\s\S]*opacity:1!important/s,"active mobile notifications are forced visible");
+assert.match(polish,/game-message-rail,[\s\S]*position:relative!important;[\s\S]*min-height:52px!important;/,"mobile message rail retains a visible notification row");
+assert.match(polish,/game-message-rail>\.pickup-toast,[\s\S]*position:absolute!important;[\s\S]*inset:0!important;/,"mobile toast overlays room context instead of being clipped below it");
+assert.match(polish,/game-message-rail>\.pickup-toast\.show,[\s\S]*display:grid!important;[\s\S]*visibility:visible!important;[\s\S]*opacity:1!important;/,"active mobile notifications are forced visible");
+assert.match(loader,/CCG_RARE_EVENTS_BALANCE_REV="20260824b"/,"trap runtime asset revision is cache-busted");
+assert.match(loader,/CCG_POLISH_REV="20260824b"/,"mobile notification stylesheet revision is cache-busted");
 
 console.log("Lost Sizzler trap and mobile notification regression checks passed");
