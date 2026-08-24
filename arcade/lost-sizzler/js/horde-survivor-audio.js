@@ -57,8 +57,12 @@
     async function setWave(wave) {
       const next = trackForWave(wave), element = ensureAudio();
       if (!next || !element) return false;
-      if (currentTrack?.id === next.id) return true;
-      clearFade(); element.volume = 0; element.src = next.src; element.currentTime = 0; currentTrack = next;
+      if (currentTrack?.id === next.id && playing) return true;
+      if (currentTrack && playing && config.fadeOutMs > 0) {
+        fadeTo(0, config.fadeOutMs);
+        await new Promise(resolve => setTimeout(resolve, config.fadeOutMs));
+      }
+      clearFade(); element.pause?.(); element.volume = 0; element.src = next.src; element.currentTime = 0; currentTrack = next; playing = false;
       if (enabled) {
         try { await element.play(); playing = true; fadeTo(baseVolume, config.fadeInMs); }
         catch { playing = false; }
