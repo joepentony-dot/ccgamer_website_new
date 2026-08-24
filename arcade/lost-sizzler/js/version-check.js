@@ -159,6 +159,14 @@
     script.dataset.ccgV141HordeCombatPolish="true";
     document.head.appendChild(script);
   }
+  function loadV141HordeCompletion(){
+    if(document.querySelector('script[data-ccg-v141-horde-completion="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-horde-completion.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141HordeCompletion="true";
+    document.head.appendChild(script);
+  }
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
@@ -183,6 +191,14 @@
     script.dataset.ccgV141SanctuaryHardening="true";
     document.head.appendChild(script);
   }
+  function loadV141SanctuaryAzalea(){
+    if(document.querySelector('script[data-ccg-v141-sanctuary-azalea="true"]'))return;
+    const script=document.createElement("script");
+    script.src="js/v10-41-sanctuary-azalea.js?v=20260824a";
+    script.async=false;
+    script.dataset.ccgV141SanctuaryAzalea="true";
+    document.head.appendChild(script);
+  }
   function loadV141XpPermadeath(){
     if(document.querySelector('script[data-ccg-v141-xp-permadeath="true"]'))return;
     const script=document.createElement("script");
@@ -205,9 +221,11 @@
   loadV139HordeLiveLoadout();
   loadV140HordeFinal();
   loadV141HordeCombatPolish();
+  loadV141HordeCompletion();
   loadV141MultiplayerPresence();
   loadV141WorldSafety();
   loadV141SanctuaryHardening();
+  loadV141SanctuaryAzalea();
   loadV141XpPermadeath();
   loadV141SoloFullMap();
   monitorTutorialDeepLink();
