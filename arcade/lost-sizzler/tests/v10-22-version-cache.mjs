@@ -19,8 +19,8 @@ const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+
 assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number");
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.24.9","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260824r9","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.24.10","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260824r10","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/version-check.js","js/weekly-challenge.js","js/asset-overrides.js",
@@ -30,8 +30,8 @@ for(const asset of [
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
 }
-assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r9 must preserve the current tutorial launcher revision");
-assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260824r9"),"tutorial launch guidance must load before the enhancement queue");
+assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r10 must preserve the current tutorial launcher revision");
+assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260824r10"),"tutorial launch guidance must load before the enhancement queue");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
@@ -39,6 +39,7 @@ assert.match(index,/id="hud-weapon">SWORD</,"static HUD must show the starting m
 assert.match(index,/SPACE ATTACK/,"keyboard help must describe the shared firearm/melee attack action");
 assert.match(index,/M MAP/,"keyboard help must reserve M for the Solo full dungeon map");
 assert.doesNotMatch(index,/M SOUND/,"keyboard help must not advertise the retired M sound shortcut");
+assert.match(index,/essential keys or an Exit Sigil are returned safely to the floor and marked on the maps/,"published death rules must explain progression-item protection");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
@@ -51,6 +52,9 @@ assert.match(checker,/url\.searchParams\.set\("ccg-refresh"/,"forced refresh mus
 assert.match(checker,/document\.body\?\.dataset\?\.runActive!=="true"/,"automatic update modal must not interrupt an active dungeon run");
 assert.match(checker,/v10-41-xp-permadeath-hardening\.js/,"V10.41 loader must include zero-XP permadeath hardening");
 assert.match(checker,/v10-41-solo-full-map\.js/,"V10.41 loader must include the Solo full-map control layer");
+assert.match(checker,/v10-41-horde-combat-polish\.js/,"V10.41 loader must include Horde combat balancing");
+assert.match(checker,/v10-41-horde-completion\.js/,"V10.41 loader must include Solo Horde and persistent rankings");
+assert.match(checker,/v10-41-sanctuary-azalea\.js/,"V10.41 loader must include sanctuary scenery and AZALEA");
 
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
@@ -65,4 +69,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r9 build, V10.41 cache refresh, permadeath/map loader and canonical home recognition regression checks passed.");
+console.log("Lost Sizzler r10 build, V10.41 cache refresh and completion-pass regression checks passed.");
