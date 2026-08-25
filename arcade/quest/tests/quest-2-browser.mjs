@@ -42,14 +42,15 @@ try{
   await page.keyboard.down('ArrowDown');
   await page.waitForTimeout(120);
   state=await page.evaluate(()=>window.CCGQuestDebug.getState());
-  assert.equal(state.player.duck,true,'ArrowDown enters the real crouch state');
-  assert.ok(state.player.box.h<=70,`deep crouch collision is materially shorter: ${JSON.stringify(state.player.box)}`);
-  assert.ok(state.player.box.h<stand.h*.7,'deep crouch cuts collision height by at least 30%');
+  assert.equal(state.player.duck,true,'ArrowDown enters the crouch state');
+  assert.ok(state.player.box.h>=82&&state.player.box.h<=96,`crouch collision stays useful without becoming an extreme squat: ${JSON.stringify(state.player.box)}`);
+  assert.ok(state.player.box.h<stand.h*.9,'crouch still reduces collision height materially');
   await page.keyboard.up('ArrowDown');
+
   await page.keyboard.press('Space');
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(380);
   state=await page.evaluate(()=>window.CCGQuestDebug.getState());
-  assert.ok(state.player.y<603,'jump moves Cheeky above the grounded Y position');
+  assert.ok(state.player.y<415,`jump rises high enough to intersect the high collectible lane: ${JSON.stringify(state.player)}`);
 
   for(const id of ['bedroom','budget','christmas','amiga','guru'])await practice(id,'stage');
   await practice('beads','beads');
@@ -57,8 +58,8 @@ try{
   await page.keyboard.down('ArrowDown');
   await page.waitForTimeout(100);
   state=await page.evaluate(()=>window.CCGQuestDebug.getState());
-  assert.equal(state.player.duck,true,'fighter mode has a true crouch');
-  assert.ok(state.player.box.h<=150,`fighter crouch hitbox is reduced: ${JSON.stringify(state.player.box)}`);
+  assert.equal(state.player.duck,true,'fighter mode has a crouch state');
+  assert.ok(state.player.box.h>=160&&state.player.box.h<=185,`fighter crouch is reduced without collapsing the sprite: ${JSON.stringify(state.player.box)}`);
   await page.keyboard.up('ArrowDown');
   await practice('invaders','invaders');
   await practice('maze','maze');
@@ -69,7 +70,7 @@ try{
   });
   assert.equal(canvasSignal,true,'canvas contains rendered Quest 2.0 output');
   assert.deepEqual(pageErrors,[],`Quest 2.0 produced browser runtime errors: ${pageErrors.join('\n')}`);
-  console.log('Commodore Quest 2.0 Chromium smoke test passed');
+  console.log('Commodore Quest 2.0 balanced-pass Chromium smoke test passed');
 }finally{
   await page.close().catch(()=>{});
   await browser.close().catch(()=>{});
