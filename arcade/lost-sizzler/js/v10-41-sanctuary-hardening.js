@@ -9,7 +9,8 @@
   const ADVENTURER_RECRUIT_DISTANCE=5;
   const ADVENTURER_STEP_MS=340;
   const ADVENTURER_CATCHUP_MS=1800;
-  const state={installed:false,startWrapped:false,updateWrapped:false,arenaWrapped:false,timedWrapped:false,doorWrapped:false,drawWrapped:false,lastSweep:0,released:0,removedChallenges:0};
+  const SOLO_ENEMY_AMMO_ROUNDS=5;
+  const state={installed:false,startWrapped:false,updateWrapped:false,arenaWrapped:false,timedWrapped:false,doorWrapped:false,drawWrapped:false,ammoDropWrapped:false,ammoPickupWrapped:false,lastSweep:0,released:0,removedChallenges:0};
 
   const sanctuaryIds=()=>new Set((world?.rooms||[]).filter(room=>room?.sanctuary).map(room=>Number(room.id)));
   const roomById=id=>(world?.rooms||[]).find(room=>Number(room?.id)===Number(id))||null;
@@ -23,6 +24,8 @@
   const escortPlayerId=player=>String(player?.id??player?.playerId??player?.sessionId??"");
   const escortDistance=(a,b)=>Math.hypot(Number(a?.x||0)-Number(b?.x||0),Number(a?.y||0)-Number(b?.y||0));
   const roomIdAt=(x,y)=>{try{return W.roomAt?.(world,Number(x),Number(y))}catch(_){return null}};
+  const tutorialActive=()=>Boolean(window.CCGLostSizzlerOnboardingV120?.state?.active||document.body?.dataset?.tutorialActive==="true");
+  const specialModeActive=()=>Boolean(window.CCGLostSizzlerSpecialModes?.active);
 
   function adjacentSanctuary(x,y){
     if(!world)return false;
@@ -311,6 +314,92 @@
     return true;
   }
 
+  function normalSoloDungeonMode(){
+    if(!run||mode!=="playing"||net?.mode!=="solo")return false;
+    if((typeof p2!=="undefined"&&p2)||Boolean(run.daily)||tutorialActive()||specialModeActive())return false;
+    return true;
+  }
+
+  function enemyEligibleForSoloAmmo(enemy){
+    if(!enemy||enemy.passiveNpc||enemy.lostAdventurer||enemy.gildedElf)return false;
+    return true;
+  }
+
+  function soloAmmoDropCell(enemy){
+    const candidates=[
+      {x:Number(enemy.x),y:Number(enemy.y)},
+      {x:Number(enemy.x)+1,y:Number(enemy.y)},
+      {x:Number(enemy.x)-1,y:Number(enemy.y)},
+      {x:Number(enemy.x),y:Number(enemy.y)+1},
+      {x:Number(enemy.x),y:Number(enemy.y)-1}
+    ];
+    const usable=cell=>{
+      if(!world?.map?.[cell.y]||world.map[cell.y][cell.x]!==0)return false;
+      try{if(!W.walkable(world.map,cell.x,cell.y,host))return false}catch(_){return false}
+      if((host?.blockingDecor||[]).some(item=>item?.x===cell.x&&item?.y===cell.y))return false;
+      if((host?.enemies||[]).some(other=>other!==enemy&&other?.alive&&other.x===cell.x&&other.y===cell.y))return false;
+      if(escortPlayers().some(player=>player?.x===cell.x&&player?.y===cell.y))return false;
+      return true;
+    };
+    const empty=candidates.find(cell=>usable(cell)&&!(host?.items||[]).some(item=>item?.active&&item.x===cell.x&&item.y===cell.y));
+    return empty||candidates.find(usable)||{x:Number(enemy.x),y:Number(enemy.y)};
+  }
+
+  function releaseSoloEnemyAmmo(enemy){
+    if(!normalSoloDungeonMode()||!enemyEligibleForSoloAmmo(enemy)||enemy._v141SoloAmmoDropped||!host)return false;
+    enemy._v141SoloAmmoDropped=true;
+    const cell=soloAmmoDropCell(enemy);
+    host.items=host.items||[];
+    host.items.push({
+      id:`v141-solo-enemy-ammo-${String(enemy.id||"enemy")}-${Date.now()}`,
+      x:cell.x,
+      y:cell.y,
+      roomId:roomIdAt(cell.x,cell.y),
+      kind:"ammo",
+      active:true,
+      ammoRounds:SOLO_ENEMY_AMMO_ROUNDS,
+      title:"ENEMY AMMO DROP · 5 ROUNDS",
+      v141SoloEnemyAmmo:true
+    });
+    host.revision=(host.revision||0)+1;
+    try{broadcastWorld?.();sync?.()}catch(_){}
+    return true;
+  }
+
+  function installSoloAmmoDropGuard(){
+    if(state.ammoDropWrapped||typeof damageEnemy!=="function")return state.ammoDropWrapped;
+    const original=damageEnemy;
+    damageEnemy=function damageEnemyV141SoloAmmoDrop(enemy){
+      const wasAlive=Boolean(enemy?.alive);
+      const result=original.apply(this,arguments);
+      if(wasAlive&&enemy&&!enemy.alive){
+        try{releaseSoloEnemyAmmo(enemy)}catch(error){console.warn("[Lost Sizzler V10.41] solo enemy ammo drop failed safely",error)}
+      }
+      return result;
+    };
+    state.ammoDropWrapped=true;
+    return true;
+  }
+
+  function installSoloAmmoPickupGuard(){
+    if(state.ammoPickupWrapped||typeof applyItem!=="function")return state.ammoPickupWrapped;
+    const original=applyItem;
+    applyItem=function applyItemV141SoloEnemyAmmo(item){
+      if(!item?.v141SoloEnemyAmmo)return original.apply(this,arguments);
+      const hadReserveFlag=Object.prototype.hasOwnProperty.call(item,"v130ReserveAmmo"),oldReserve=item.v130ReserveAmmo,oldRounds=item.ammoRounds;
+      item.v130ReserveAmmo=true;
+      item.ammoRounds=SOLO_ENEMY_AMMO_ROUNDS;
+      try{return original.apply(this,arguments)}
+      finally{
+        item.ammoRounds=oldRounds;
+        if(hadReserveFlag)item.v130ReserveAmmo=oldReserve;
+        else delete item.v130ReserveAmmo;
+      }
+    };
+    state.ammoPickupWrapped=true;
+    return true;
+  }
+
   function installStartGuard(){
     if(state.startWrapped||typeof startWorld!=="function")return state.startWrapped;
     const original=startWorld;
@@ -399,12 +488,13 @@
   }
 
   function install(){
-    const ready=installStartGuard()&&installArenaGuard()&&installTimedGuard()&&installDoorFailSafe()&&installAdventurerDrawGuard()&&installUpdateSweep();
+    const ready=installStartGuard()&&installArenaGuard()&&installTimedGuard()&&installDoorFailSafe()&&installAdventurerDrawGuard()&&installSoloAmmoDropGuard()&&installSoloAmmoPickupGuard()&&installUpdateSweep();
     if(ready){
       state.installed=true;
       try{stripSanctuaryChallenges()}catch(_){}
       document.body.dataset.v141SanctuaryHardening="true";
       document.body.dataset.v141LostAdventurerEscort="true";
+      document.body.dataset.v141SoloEnemyAmmo="true";
     }
     return ready;
   }
@@ -416,5 +506,5 @@
   },100);
   install();
   window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
-  window.CCGLostSizzlerSanctuaryHardeningV141={state,stripSanctuaryChallenges,releaseDoorGroup,updateLostAdventurerEscort,drawFriendlyAdventurer,install};
+  window.CCGLostSizzlerSanctuaryHardeningV141={state,stripSanctuaryChallenges,releaseDoorGroup,updateLostAdventurerEscort,drawFriendlyAdventurer,releaseSoloEnemyAmmo,normalSoloDungeonMode,install};
 })();
