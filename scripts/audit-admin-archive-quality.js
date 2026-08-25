@@ -90,8 +90,8 @@ rejectText(code, /method\s*:\s*['"](?:POST|PUT|PATCH|DELETE)['"]/i, "Archive aud
 rejectText(code, /\.from\([^)]*\)\.(?:insert|update|upsert|delete)\s*\(/i, "Archive audit");
 rejectText(code, /games\/games\.json[^\n]*(?:write|save|commit)/i, "Archive audit");
 
-requireText(nav, 'href="/admin/archive-quality.html"', "Shared Archive Quality link");
-requireText(nav, 'data-nav="quality"', "Archive Quality active state");
+requireText(nav, '{ href: "/admin/archive-quality.html", nav: "quality", label: "Archive Quality" }', "Shared Archive Quality link configuration");
+requireText(nav, 'data-nav="${link.nav}"', "Grouped admin active-state rendering");
 requireText(css, 'html[data-archive-quality-gate="pending"] body', "Fail-closed CSS");
 requireText(css, ".archive-quality__finding.is-critical", "Critical finding styling");
 requireText(css, "@media (max-width: 720px)", "Mobile layout");
