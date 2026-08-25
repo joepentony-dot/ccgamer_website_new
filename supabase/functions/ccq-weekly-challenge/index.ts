@@ -3,6 +3,8 @@ import { createClient } from "npm:@supabase/supabase-js@2.95.0";
 const ORIGIN = "https://www.cheekycommodoregamer.co.uk";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") || "";
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+const MAX_GHOST_POINTS = 900;
+const LEADERBOARD_LIMIT = 5;
 
 function cors(req: Request) {
   const origin = req.headers.get("origin") || "";
@@ -12,14 +14,15 @@ function json(req: Request, body: unknown, status = 200) { return new Response(J
 function weekStart(now = new Date()) { const d=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()));const day=d.getUTCDay();d.setUTCDate(d.getUTCDate()-((day+6)%7));return d.toISOString().slice(0,10) }
 function seedFor(week: string) { return `CCQ-WEEKLY-${week.replaceAll("-","")}` }
 function int(value: unknown, min: number, max: number) { return Math.max(min,Math.min(max,Math.floor(Number(value)||0))) }
-function ghostPath(value: unknown) {
+function sanitiseGhostPath(value: unknown) {
   if(!Array.isArray(value))return [];
   const out:{f:number,x:number,y:number,t:number}[]=[];
-  for(const row of value.slice(0,360)){
-    if(!row||typeof row!=="object")continue;
-    const item=row as Record<string,unknown>,f=int(item.f,1,5),x=int(item.x,0,255),y=int(item.y,0,255),t=int(item.t,0,86400000);
-    if(out.length&&t<out[out.length-1].t)continue;
-    out.push({f,x,y,t});
+  for(const raw of value.slice(0,MAX_GHOST_POINTS)){
+    if(!raw||typeof raw!=="object")continue;
+    const row=raw as Record<string,unknown>;
+    const point={f:int(row.f,1,5),x:int(row.x,0,512),y:int(row.y,0,512),t:int(row.t,0,86400000)};
+    if(out.length&&point.t<out[out.length-1].t)continue;
+    out.push(point);
   }
   return out;
 }
@@ -36,17 +39,31 @@ Deno.serve(async (req: Request) => {
   const action=String(payload.action||"status");
 
   async function leadersFor(week:string){
-    const {data,error}=await service.from("ccq_weekly_leaderboard").select("player_name,score,deepest_floor,duration_ms,level,completed").eq("week_start",week).order("score",{ascending:false}).order("deepest_floor",{ascending:false}).order("duration_ms",{ascending:true}).limit(20);
+    const {data,error}=await service.from("ccq_weekly_leaderboard").select("player_name,score,deepest_floor,duration_ms,level,completed").eq("week_start",week).order("score",{ascending:false}).order("deepest_floor",{ascending:false}).order("duration_ms",{ascending:true}).limit(LEADERBOARD_LIMIT);
     return{data:data||[],error};
+  }
+
+  async function findGhost(week:string,excludeUserId=""){
+    let query=service.from("ccq_weekly_attempts").select("user_id,player_name,score,deepest_floor,stats,ghost_path").eq("week_start",week).eq("status","finished").order("score",{ascending:false}).order("deepest_floor",{ascending:false}).limit(20);
+    if(excludeUserId)query=query.neq("user_id",excludeUserId);
+    const {data,error}=await query;
+    if(error||!Array.isArray(data))return null;
+    for(const row of data){
+      const path=sanitiseGhostPath(row?.ghost_path?.length?row.ghost_path:row?.stats?.ghostPath);
+      if(path.length<2)continue;
+      return{playerName:String(row?.player_name||"Weekly Player").slice(0,64),score:int(row?.score,0,99999999),deepestFloor:int(row?.deepest_floor,1,5),path};
+    }
+    return null;
   }
 
   if(action==="status"){
     const leaders=await leadersFor(currentWeek);if(leaders.error)return json(req,{ok:false,error:"Leaderboard unavailable"},503);
-    if(!user)return json(req,{ok:true,ready:true,signedIn:false,locked:false,weekStart:currentWeek,seed,leaderboard:leaders.data});
+    const ghostReplay=await findGhost(currentWeek,user?.id||"");
+    if(!user)return json(req,{ok:true,ready:true,signedIn:false,locked:false,weekStart:currentWeek,seed,leaderboard:leaders.data,ghostReplay});
     const {data:profile}=await service.from("profiles").select("username,display_name,banned").eq("id",user.id).maybeSingle();
     const {data:attempt}=await service.from("ccq_weekly_attempts").select("id,status,started_at,finished_at,score,deepest_floor").eq("week_start",currentWeek).eq("user_id",user.id).maybeSingle();
     const playerName=String(profile?.username||profile?.display_name||"").trim();
-    return json(req,{ok:true,ready:true,signedIn:Boolean(playerName&&!profile?.banned),locked:Boolean(attempt),weekStart:currentWeek,seed,playerName,attempt,leaderboard:leaders.data});
+    return json(req,{ok:true,ready:true,signedIn:Boolean(playerName&&!profile?.banned),locked:Boolean(attempt),weekStart:currentWeek,seed,playerName,attempt,leaderboard:leaders.data,ghostReplay});
   }
 
   if(!user)return json(req,{ok:false,error:"Sign in with a registered CCG website account first"},401);
@@ -56,25 +73,23 @@ Deno.serve(async (req: Request) => {
   if(!playerName)return json(req,{ok:false,error:"Add an account name to your CCG profile before entering"},409);
 
   if(action==="ghost"){
-    const {data:attempts,error}=await service.from("ccq_weekly_attempts").select("user_id,player_name,score,deepest_floor,stats").eq("week_start",currentWeek).eq("status","finished").neq("user_id",user.id).order("score",{ascending:false}).limit(20);
-    if(error)return json(req,{ok:false,error:"Weekly ghost unavailable"},503);
-    const source=(attempts||[]).find((row:any)=>Array.isArray(row?.stats?.ghostPath)&&row.stats.ghostPath.length>1);
-    if(!source)return json(req,{ok:true,ghost:null,weekStart:currentWeek});
-    return json(req,{ok:true,weekStart:currentWeek,ghost:{playerName:String(source.player_name||"Weekly Player").slice(0,64),score:int(source.score,0,99999999),deepestFloor:int(source.deepest_floor,1,5),path:ghostPath(source.stats.ghostPath)}});
+    const ghostReplay=await findGhost(currentWeek,user.id);
+    return json(req,{ok:true,weekStart:currentWeek,ghost:ghostReplay,ghostReplay});
   }
 
   if(action==="start"){
-    const {data:existing}=await service.from("ccq_weekly_attempts").select("*").eq("week_start",currentWeek).eq("user_id",user.id).maybeSingle();
+    const {data:existing,error:existingError}=await service.from("ccq_weekly_attempts").select("id,status,started_at").eq("week_start",currentWeek).eq("user_id",user.id).maybeSingle();
+    if(existingError)return json(req,{ok:false,error:"Could not verify this week's attempt"},503);
     if(existing)return json(req,{ok:false,error:"This week's attempt has already been used",locked:true,weekStart:currentWeek},409);
     const {data:attempt,error}=await service.from("ccq_weekly_attempts").insert({week_start:currentWeek,user_id:user.id,player_name:playerName,seed}).select("id,status,started_at").single();
     if(error)return json(req,{ok:false,error:error.code==="23505"?"This week's attempt has already been used":"Could not reserve the weekly attempt"},error.code==="23505"?409:500);
-    const leaders=await leadersFor(currentWeek);
-    return json(req,{ok:true,signedIn:true,locked:true,weekStart:currentWeek,playerName,seed,attempt,leaderboard:leaders.data});
+    const leaders=await leadersFor(currentWeek),ghostReplay=await findGhost(currentWeek,user.id);
+    return json(req,{ok:true,signedIn:true,locked:true,weekStart:currentWeek,playerName,seed,attempt,leaderboard:leaders.data,ghostReplay});
   }
 
   if(action==="finish"){
     const attemptId=String(payload.attemptId||""),result=(payload.result||{}) as Record<string,unknown>;
-    const {data:attempt,error:attemptError}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name,week_start,score,deepest_floor,duration_ms,level,completed,stats").eq("id",attemptId).eq("user_id",user.id).maybeSingle();
+    const {data:attempt,error:attemptError}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name,week_start,score,deepest_floor,duration_ms,level,completed,stats,ghost_path").eq("id",attemptId).eq("user_id",user.id).maybeSingle();
     if(attemptError)return json(req,{ok:false,error:"Weekly attempt lookup failed"},503);
     if(!attempt)return json(req,{ok:false,error:"Weekly attempt not found"},404);
     const resultWeek=String(attempt.week_start||currentWeek);
@@ -82,12 +97,12 @@ Deno.serve(async (req: Request) => {
     if(attempt.status==="finished"){
       const {error:repairError}=await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:resultWeek,player_name:attempt.player_name,score:int(attempt.score,0,99999999),deepest_floor:int(attempt.deepest_floor,1,5),duration_ms:int(attempt.duration_ms,0,86400000),level:int(attempt.level,1,99),completed:Boolean(attempt.completed)},{onConflict:"attempt_id"});
       if(repairError)return json(req,{ok:false,error:"Finished score is awaiting leaderboard repair"},503);
-      const leaders=await leadersFor(resultWeek);
-      return json(req,{ok:true,locked:true,idempotent:true,weekStart:resultWeek,leaderboard:leaders.data});
+      const leaders=await leadersFor(resultWeek),ghostReplay=await findGhost(resultWeek,user.id);
+      return json(req,{ok:true,locked:true,idempotent:true,weekStart:resultWeek,leaderboard:leaders.data,ghostReplay});
     }
 
-    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:ghostPath(result.ghostPath)};
-    const {data:updated,error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats}).eq("id",attempt.id).eq("status","started").select("id").maybeSingle();
+    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),path=sanitiseGhostPath(result.ghostPath),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:path};
+    const {data:updated,error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats,ghost_path:path}).eq("id",attempt.id).eq("status","started").select("id").maybeSingle();
     if(updateError)return json(req,{ok:false,error:"Could not record the weekly result"},500);
 
     let persisted={score,deepest_floor:deepest,duration_ms:duration,level,completed};
@@ -100,8 +115,8 @@ Deno.serve(async (req: Request) => {
 
     const {error:leaderboardError}=await service.from("ccq_weekly_leaderboard").upsert({attempt_id:attempt.id,week_start:resultWeek,player_name:attempt.player_name,...persisted},{onConflict:"attempt_id"});
     if(leaderboardError)return json(req,{ok:false,error:updated?"Score saved; leaderboard projection will retry":"Finished score is awaiting leaderboard repair"},503);
-    const leaders=await leadersFor(resultWeek);
-    return json(req,{ok:true,locked:true,idempotent:!updated,weekStart:resultWeek,leaderboard:leaders.data});
+    const leaders=await leadersFor(resultWeek),ghostReplay=await findGhost(resultWeek,user.id);
+    return json(req,{ok:true,locked:true,idempotent:!updated,weekStart:resultWeek,leaderboard:leaders.data,ghostReplay});
   }
 
   return json(req,{ok:false,error:"Unknown action"},400);
