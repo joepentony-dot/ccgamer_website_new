@@ -1,9 +1,7 @@
 name: Lost Sizzler Final Tighten
 
 on:
-  push:
-    branches:
-      - fix/lost-sizzler-browser-stability-gameplay
+  pull_request:
     paths:
       - '.github/workflows/lost-sizzler-final-tighten.yml'
 
@@ -28,40 +26,32 @@ jobs:
           from pathlib import Path
 
           def replace_once(path, old, new):
-              p=Path(path)
-              text=p.read_text(encoding='utf-8')
-              if old not in text:
-                  raise SystemExit(f'marker not found in {path}: {old[:120]!r}')
+              p=Path(path); text=p.read_text(encoding='utf-8')
+              if old not in text: raise SystemExit(f'marker not found in {path}: {old[:100]!r}')
               p.write_text(text.replace(old,new,1),encoding='utf-8')
 
-          # Canonical Weekly Vault return path and split-screen help.
-          index='arcade/lost-sizzler/index.html'
-          p=Path(index); text=p.read_text(encoding='utf-8')
-          old='%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault'
-          count=text.count(old)
-          if count != 2:
-              raise SystemExit(f'expected two legacy Weekly Vault return paths, found {count}')
-          text=text.replace(old,'%2Farcade%2Flost-sizzler%2F%23weekly-vault')
-          old_help='P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • ESC PAUSE • M MAP • F FULLSCREEN'
-          new_help='P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • M MAP • F FULLSCREEN'
-          if old_help not in text:
-              raise SystemExit('split-screen help marker not found')
-          p.write_text(text.replace(old_help,new_help,1),encoding='utf-8')
+          # Canonical account return links and split-screen help.
+          p=Path('arcade/lost-sizzler/index.html'); text=p.read_text(encoding='utf-8')
+          legacy='%2Fgames%2Fccg-games%2Fcheeky-commodore-quest%2F%23weekly-vault'
+          if text.count(legacy)!=2: raise SystemExit('expected two legacy Weekly Vault return paths')
+          text=text.replace(legacy,'%2Farcade%2Flost-sizzler%2F%23weekly-vault')
+          old='P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • ESC PAUSE • M MAP • F FULLSCREEN'
+          if old not in text: raise SystemExit('split-screen help marker not found')
+          p.write_text(text.replace(old,'P2: IJKL MOVE • ENTER ATTACK • R-CTRL DASH • O POTION • M MAP • F FULLSCREEN',1),encoding='utf-8')
 
-          # Spy field-kit controls and shared r21 token for its stylesheet.
+          # Spy help and release-token stylesheet ownership.
           bootstrap='arcade/lost-sizzler/js/v10-36-bootstrap.js'
           replace_once(bootstrap,'const REV="20260824a";','const REV=String(document.querySelector(\'meta[name="ccg-lost-sizzler-cache"]\')?.content||document.querySelector(\'meta[name="ccg-lost-sizzler-build"]\')?.content||"latest").trim();')
           replace_once(bootstrap,'["M / F","SOUND / FULLSCREEN","M toggles sound. F toggles fullscreen."]','["F","FULLSCREEN","F toggles fullscreen. Sound is controlled from the SOUND button in the top bar."]')
 
-          # Make V10.6 a self-contained current-location/current-Chromium test.
+          # Make the old V10.6 browser harness canonical and self-contained.
           v106='arcade/lost-sizzler/tests/v10-6-browser.mjs'
           replace_once(v106,'const browserCandidates=[process.env.CHROMIUM_PATH,"/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium","/usr/bin/chromium-browser"].filter(Boolean);\nconst executablePath=browserCandidates.find(candidate=>fs.existsSync(candidate));\nif(!executablePath){\n  try{const bundled=chromium.executablePath();if(bundled&&fs.existsSync(bundled))browserCandidates.push(bundled)}catch{}\n}\nconst browserPath=browserCandidates.find(candidate=>fs.existsSync(candidate));','const browserCandidates=[process.env.CHROMIUM_PATH].filter(Boolean);\ntry{const bundled=chromium.executablePath();if(bundled&&fs.existsSync(bundled))browserCandidates.push(bundled)}catch{}\nbrowserCandidates.push("/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium","/usr/bin/chromium-browser");\nconst browserPath=browserCandidates.find(candidate=>fs.existsSync(candidate));')
           replace_once(v106,'const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../../..");','const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");')
           replace_once(v106,'  window.ccgSupabase={getClient:async()=>client()};','  window.__ccgV106TestClientFactory=client;')
           replace_once(v106,'const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.locator("#player-name").fill(name);return page};','const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page};')
 
-          # Move the current release label and non-blocking held-fire sampler into
-          # the actual V10.28 test instead of rewriting it inside Actions.
+          # Update V10.28 in source rather than rewriting it in CI.
           v1028='arcade/lost-sizzler/tests/v10-28-browser-stability.mjs'
           replace_once(v1028,'"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers"','"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers"')
           old='''    await state.page.keyboard.down("Space");
@@ -87,26 +77,24 @@ jobs:
     assert.ok(heldSwingSamples.values.length>=2,`holding the fire key must auto-repeat sword swings: ${JSON.stringify(heldSwingSamples)}`);'''
           replace_once(v1028,old,new)
 
-          # Strengthen merchant regression for retry and unusable shop time.
-          merchant_test='arcade/lost-sizzler/tests/v10-41-wandering-merchant-hardening.mjs'
-          replace_once(merchant_test,'assert.match(merchantSource,/document\\?\\.hidden===true/,"hidden tabs must not consume merchant encounter time");','assert.match(merchantSource,/document\\?\\.hidden===true/,"hidden tabs must not consume merchant encounter time");\nassert.match(merchantSource,/Number\\(player\\.health\\?\\?1\\)>0/,"zero-health players must not count as merchant viewers");\nassert.match(merchantSource,/if\\(!cell\\)return false;\\s*m\\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");')
-          replace_once(merchant_test,'let activeShop=null;','let activeShop=null;\nlet walkableAllowed=true;')
-          replace_once(merchant_test,'window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>true}},','window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>walkableAllowed}},')
-          replace_once(merchant_test,'p1.x=2;p1.y=2;clock=200;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter");','p1.x=2;p1.y=2;walkableAllowed=false;clock=200;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,false,"a failed safe-position search does not fake a merchant sighting");\nassert.equal(merchant._v141MerchantEncounterPositioned,false,"a failed safe-position search remains retryable");\nwalkableAllowed=true;clock=300;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter once a safe visible tile exists");')
-          replace_once(merchant_test,'activeShop=merchant;\nfor(let i=0;i<120;i++){clock+=250;api.tick(clock)}','activeShop=merchant;\ndocumentState.hidden=true;\nconst beforeHiddenShop=merchant._v141MerchantVisibleMs;\nfor(let i=0;i<40;i++){clock+=250;api.tick(clock)}\nassert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop in a hidden tab does not spend encounter time");\ndocumentState.hidden=false;context.mode="paused";\nfor(let i=0;i<40;i++){clock+=250;api.tick(clock)}\nassert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop while paused does not spend encounter time");\ncontext.mode="playing";\nfor(let i=0;i<120;i++){clock+=250;api.tick(clock)}')
+          # Merchant regression: retry failed positioning and freeze all unusable time.
+          mt='arcade/lost-sizzler/tests/v10-41-wandering-merchant-hardening.mjs'
+          replace_once(mt,'assert.match(merchantSource,/document\\?\\.hidden===true/,"hidden tabs must not consume merchant encounter time");','assert.match(merchantSource,/document\\?\\.hidden===true/,"hidden tabs must not consume merchant encounter time");\nassert.match(merchantSource,/Number\\(player\\.health\\?\\?1\\)>0/,"zero-health players must not count as merchant viewers");\nassert.match(merchantSource,/if\\(!cell\\)return false;\\s*m\\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");')
+          replace_once(mt,'let activeShop=null;','let activeShop=null;\nlet walkableAllowed=true;')
+          replace_once(mt,'window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>true}},','window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>walkableAllowed}},')
+          replace_once(mt,'p1.x=2;p1.y=2;clock=200;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter");','p1.x=2;p1.y=2;walkableAllowed=false;clock=200;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,false,"a failed safe-position search does not fake a merchant sighting");\nassert.equal(merchant._v141MerchantEncounterPositioned,false,"a failed safe-position search remains retryable");\nwalkableAllowed=true;clock=300;api.tick(clock);\nassert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter once a safe visible tile exists");')
+          replace_once(mt,'activeShop=merchant;\nfor(let i=0;i<120;i++){clock+=250;api.tick(clock)}','activeShop=merchant;\ndocumentState.hidden=true;\nconst beforeHiddenShop=merchant._v141MerchantVisibleMs;\nfor(let i=0;i<40;i++){clock+=250;api.tick(clock)}\nassert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop in a hidden tab does not spend encounter time");\ndocumentState.hidden=false;context.mode="paused";\nfor(let i=0;i<40;i++){clock+=250;api.tick(clock)}\nassert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop while paused does not spend encounter time");\ncontext.mode="playing";\nfor(let i=0;i<120;i++){clock+=250;api.tick(clock)}')
 
-          # Add the 25 August release work to the player-facing developer log.
-          changelog='arcade/lost-sizzler/js/v10-12-developer-changelog.js'
-          p=Path(changelog); text=p.read_text(encoding='utf-8')
+          # Add 25 August player-facing changelog entries.
+          cl='arcade/lost-sizzler/js/v10-12-developer-changelog.js'; p=Path(cl); text=p.read_text(encoding='utf-8')
           marker='  const days=[\n    {\n      date:"24 AUGUST 2026",'
-          if marker not in text:
-              raise SystemExit('25 August changelog insertion marker not found')
+          if marker not in text: raise SystemExit('changelog insertion marker not found')
           day='''  const days=[
     {
       date:"25 AUGUST 2026",
       iso:"2026-08-25",
       entries:[
-        ["LS-0825-01","FIXED","Browser frame crash containment","The main animation loop now survives isolated update or render exceptions, throttles repeated fault storms and repairs safe runtime state instead of allowing one frame error to strand the tab."],
+        ["LS-0825-01","FIXED","Browser frame crash containment","The animation loop now survives isolated update or render exceptions, throttles repeated fault storms and repairs safe runtime state instead of allowing one frame error to strand the tab."],
         ["LS-0825-02","FIXED","Pause, focus and resume recovery","Pause/resume, tab visibility, browser focus and fullscreen restoration now clear stale input and repair frame timing, camera and canvas state before play continues."],
         ["LS-0825-03","CHANGED","Horde encounter pacing","Horde uses a compact combat arena so new waves reach players quickly instead of spending long periods crossing the near-full procedural world."],
         ["LS-0825-04","FIXED","Spy Vs Spy movement recovery","Spy rounds repair stale hit-stun and blocked spawn state, with a final walkability-checked movement fallback so an agent cannot be left rotating in place."],
@@ -122,177 +110,26 @@ jobs:
           text=text.replace('LATEST UPDATE · 24 AUG 2026 · V10.41','LATEST UPDATE · 25 AUG 2026 · V10.41',1)
           text=text.replace('<time datetime="2026-08-24">Last updated 24 August 2026 · V10.41</time>','<time datetime="2026-08-25">Last updated 25 August 2026 · V10.41</time>',1)
           p.write_text(text,encoding='utf-8')
+          PY
 
-          # Replace brittle source-rewriting CI with direct current tests.
-          Path('.github/workflows/lost-sizzler-arcade-validation.yml').write_text("""name: Lost Sizzler Arcade Validation
-
-on:
-  pull_request:
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - '.github/workflows/lost-sizzler-arcade-validation.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - '.github/workflows/lost-sizzler-arcade-validation.yml'
-
-permissions:
-  contents: read
-
-jobs:
-  static:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Validate all Lost Sizzler JavaScript syntax
-        shell: bash
-        run: |
-          set -euo pipefail
-          while IFS= read -r -d '' file; do node --check "$file"; done < <(find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z)
-      - name: Run Lost Sizzler static regression suite
-        shell: bash
-        run: |
-          set -euo pipefail
-          while IFS= read -r -d '' test; do echo "Running $test"; node "$test"; done < <(find arcade/lost-sizzler/tests -maxdepth 1 -type f -name '*.mjs' ! -name 'v10-6-browser.mjs' ! -name 'v10-28-browser-stability.mjs' -print0 | sort -z)
-
-  browser:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-      - name: Install Chromium regression runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Open Lost Sizzler in Chromium and exercise startup/runtime stability
-        shell: bash
-        run: |
-          set -euo pipefail
-          node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
-          node arcade/lost-sizzler/tests/browser/v10-36-loading.mjs
-          node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
-          node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
-          node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
-
-  structure:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Validate canonical runtime structure
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f arcade/lost-sizzler/index.html
-          test -f arcade/lost-sizzler/version.json
-          test -f arcade/lost-sizzler/js/asset-overrides.js
-          test -f arcade/lost-sizzler/js/game-main.js
-          test -f arcade/lost-sizzler/js/v10-16-voice-director.js
-          test -d arcade/lost-sizzler/assets/audio/music
-          test -d arcade/lost-sizzler/assets/audio/voice
-          grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
-          grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
-          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
-            echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
-            exit 1
-          fi
-""",encoding='utf-8')
-
-          Path('.github/workflows/lost-sizzler-load-safety.yml').write_text("""name: Lost Sizzler Load Safety
-
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - 'service-worker.js'
-      - 'js/ccg-pwa.js'
-      - '.github/workflows/lost-sizzler-load-safety.yml'
-  pull_request:
-    paths:
-      - 'arcade/lost-sizzler/**'
-      - 'service-worker.js'
-      - 'js/ccg-pwa.js'
-      - '.github/workflows/lost-sizzler-load-safety.yml'
-
-permissions:
-  contents: read
-
-concurrency:
-  group: lost-sizzler-load-safety-${{ github.ref }}
-  cancel-in-progress: true
-
-jobs:
-  validate:
-    name: Canonical game load safety
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - name: Syntax check every canonical Lost Sizzler JavaScript file
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --check service-worker.js
-          node --check js/ccg-pwa.js
-          find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
-          find arcade/lost-sizzler/tests -type f -name '*.mjs' -print0 | sort -z | xargs -0 -n1 node --check
-      - name: Run canonical Node regression contracts
-        shell: bash
-        run: |
-          set -euo pipefail
-          for test in arcade/lost-sizzler/tests/*.mjs; do
-            case "$(basename "$test")" in
-              v10-6-browser.mjs|v10-28-browser-stability.mjs) continue ;;
-            esac
-            echo "::group::$test"
-            node "$test"
-            echo "::endgroup::"
-          done
-      - name: Install Chromium test runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm install --no-save --no-package-lock playwright@1.55.0
-          npx playwright install --with-deps chromium
-      - name: Run canonical Chromium load and layout suite
-        shell: bash
-        run: |
-          set -euo pipefail
-          for test in arcade/lost-sizzler/tests/v10-6-browser.mjs arcade/lost-sizzler/tests/v10-28-browser-stability.mjs arcade/lost-sizzler/tests/browser/*.mjs; do
-            echo "::group::$test"
-            node "$test"
-            echo "::endgroup::"
-          done
-""",encoding='utf-8')
+          # Restore the last known simple valid workflow definitions, then add
+          # only the two current r21 requirements they genuinely need.
+          git show cc493c4fb51334e75500f5eb84503af8ec578384:.github/workflows/lost-sizzler-arcade-validation.yml > .github/workflows/lost-sizzler-arcade-validation.yml
+          git show cc493c4fb51334e75500f5eb84503af8ec578384:.github/workflows/lost-sizzler-load-safety.yml > .github/workflows/lost-sizzler-load-safety.yml
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/lost-sizzler-arcade-validation.yml'); text=p.read_text(encoding='utf-8')
+          text=text.replace('          node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs\n','          node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs\n          node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs\n',1)
+          text=text.replace("--include='*.html' --include='*.js' --include='*.json'; then","--include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then",1)
+          p.write_text(text,encoding='utf-8')
           PY
 
           node --check arcade/lost-sizzler/js/v10-36-bootstrap.js
           node --check arcade/lost-sizzler/js/v10-12-developer-changelog.js
           node --check arcade/lost-sizzler/tests/v10-6-browser.mjs
           node --check arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
-          node arcade/lost-sizzler/tests/v10-41-wandering-merchant-hardening.mjs || true
 
-      - name: Commit tightening changes and remove migration
+      - name: Commit tightening and remove one-shot workflow
         shell: bash
         run: |
           set -euo pipefail
