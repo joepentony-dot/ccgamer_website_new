@@ -27,9 +27,10 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R29SpyEngine));
+  await page.waitForFunction(()=>Boolean(window.CCGLostSizzlerV141R29SpyNetwork));
 
   const result=await page.evaluate(async()=>{
-    const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,SAB=window.CCGLostSizzlerSaboteurs;
+    const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,network=window.CCGLostSizzlerV141R29SpyNetwork,SAB=window.CCGLostSizzlerSaboteurs;
     const descriptor=Object.getOwnPropertyDescriptor(special,"active"),originalUpdate=window.update;
     let inheritedCalls=0;
     const countedUpdate=function(){inheritedCalls++};
@@ -63,12 +64,13 @@ try{
     }
 
     const isolatedFlag=document.body.dataset.spyRuntimeIsolated==="true",registered=window.CCGLostSizzlerModeRuntime?.runtimes?.["sizzler-saboteurs"]?.isolatedRules===true;
+    const networkReady=Boolean(network)&&network.PACKET==="v141_spy_position"&&typeof network.sendPosition==="function"&&typeof network.applyPosition==="function";
     engine.leaveIsolation();
     const restoredUpdate=window.update===countedUpdate;
     window.update=originalUpdate;
     if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
     delete document.body.dataset.specialMode;
-    return{inheritedBypassed,compact,noDungeonLeaks,noTimeBomb,furnitureBlocked,prompt,isolatedFlag,registered,restoredUpdate,worldBuilds:engine.state.worldBuilds,dungeonDamageBlocked:engine.state.dungeonDamageBlocked};
+    return{inheritedBypassed,compact,noDungeonLeaks,noTimeBomb,furnitureBlocked,prompt,isolatedFlag,registered,networkReady,restoredUpdate,worldBuilds:engine.state.worldBuilds,dungeonDamageBlocked:engine.state.dungeonDamageBlocked};
   });
 
   assert.equal(result.inheritedBypassed,true,"Spy update must not execute the inherited Dungeon update");
@@ -80,10 +82,11 @@ try{
   assert.match(result.prompt,/^E — SEARCH /,"standing beside unsearched Spy furniture must show a direct E-search prompt");
   assert.equal(result.isolatedFlag,true,"Spy runtime isolation marker must be active during the match");
   assert.equal(result.registered,true,"Spy must be registered as an isolated rules runtime");
+  assert.equal(result.networkReady,true,"dedicated Spy position transport must be loaded and registered in Chromium");
   assert.equal(result.restoredUpdate,true,"leaving Spy must restore the inherited Dungeon update owner");
   assert.ok(result.worldBuilds>=1,"isolated Spy physical world must build successfully");
   assert.deepEqual(errors,[],`isolated Spy browser regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r29 isolated two-player Spy runtime passed in Chromium.");
+  console.log("Lost Sizzler V10.41 r29 isolated two-player Spy runtime and dedicated position transport passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
