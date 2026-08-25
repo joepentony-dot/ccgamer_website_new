@@ -14,7 +14,8 @@ assert.match(merchantSource,/shopOpenFor\(m\)/,"merchant departure must understa
 assert.match(merchantSource,/positionForEncounter\(m\)/,"merchant must be repositioned into an encounter-safe visible cell when necessary");
 assert.match(merchantSource,/document\?\.hidden===true/,"hidden tabs must not consume merchant encounter time");
 assert.match(merchantSource,/Number\(player\.health\?\?1\)>0/,"zero-health players must not count as merchant viewers");
-assert.match(merchantSource,/if\(!cell\)return false;\s*m\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");
+assert.match(merchantSource,/if\(!cell\)return false;\s*m\.x=cell\.x;m\.y=cell\.y;m\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");
+assert.match(merchantSource,/m\._v141MerchantSeen&&viewing&&\(browsing\|\|visible\)/,"merchant encounter time must require an active visible game even while shopping");
 assert.match(tutorialSource,/v10-41-wandering-merchant-hardening\.js\?v=/,"the r21 direct finalizer must load wandering merchant hardening with the release token");
 
 let clock=0;
@@ -103,4 +104,7 @@ assert.equal(merchant._v141MerchantDepartCountdown,true,"closing the shop starts
 assert.equal(merchant.rareLifeMs,api.constants.DEPART_GRACE_MS,"departure uses an explicit final grace period instead of vanishing immediately");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT CLOSING").length,1,"final departure is announced");
 
-console.log("Lost Sizzler V10.41 wandering merchant visibility, encounter positioning, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
+p1.health=0;
+assert.equal(api.positionForEncounter(merchant),false,"a defeated player cannot create a merchant encounter");
+
+console.log("Lost Sizzler V10.41 wandering merchant retry, visibility, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
