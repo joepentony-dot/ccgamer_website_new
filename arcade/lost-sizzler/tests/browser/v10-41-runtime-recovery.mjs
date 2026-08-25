@@ -73,11 +73,19 @@ try{
   assert.ok(resumed.canvas.w>=640&&resumed.canvas.h>=360,"pause recovery must leave a usable canvas backing store");
   assert.ok(Number.isFinite(resumed.player?.x)&&Number.isFinite(resumed.player?.rx),`pause recovery must retain finite player coordinates: ${JSON.stringify(resumed.player)}`);
 
-  await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  const coordinateRecovery=await page.evaluate(()=>{
+    const before={x:p1.x,y:p1.y};
+    p1.rx=before.x;p1.ry=before.y;p1.x=Number.NaN;p1.y=Number.POSITIVE_INFINITY;
+    window.dispatchEvent(new Event("focus"));
+    return{before,after:{x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry},recoveries:window.CCGLostSizzlerV141BrowserStabilityGameplay.state.focusRecoveries};
+  });
+  assert.deepEqual(coordinateRecovery.after,{x:coordinateRecovery.before.x,y:coordinateRecovery.before.y,rx:coordinateRecovery.before.x,ry:coordinateRecovery.before.y},`focus recovery must restore invalid live coordinates from the last finite render position: ${JSON.stringify(coordinateRecovery)}`);
+  assert.ok(coordinateRecovery.recoveries>=1,"focus recovery must record the coordinate-repair pass");
+
   await page.waitForTimeout(250);
-  assert.deepEqual(crashes,[],`Chromium must not crash during fault containment or pause/resume: ${crashes.join("\n")}`);
-  assert.deepEqual(pageErrors,[],`fault containment and pause/resume must produce no uncaught page errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 Chromium single-frame fault containment and pause/resume recovery checks passed.");
+  assert.deepEqual(crashes,[],`Chromium must not crash during fault containment, pause/resume or coordinate recovery: ${crashes.join("\n")}`);
+  assert.deepEqual(pageErrors,[],`fault containment, pause/resume and coordinate recovery must produce no uncaught page errors: ${pageErrors.join("\n")}`);
+  console.log("Lost Sizzler V10.41 Chromium single-frame fault containment, pause/resume and invalid-coordinate recovery checks passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
