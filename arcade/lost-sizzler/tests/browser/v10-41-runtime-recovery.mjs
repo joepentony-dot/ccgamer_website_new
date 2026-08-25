@@ -31,14 +31,16 @@ try{
   await page.goto(`${origin}/arcade/lost-sizzler/?runtime-recovery=1`,{waitUntil:"domcontentloaded"});
   await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
   await page.waitForFunction(()=>window.CCGLostSizzlerV141BrowserStabilityGameplay?.state?.frameGuard===true);
+  await page.waitForFunction(()=>window.CCGLostSizzlerV141R29?.state&&window.CCGLostSizzlerV141R29LoopFinalizer&&window.loop?.__ccgV141R29Stable===true&&window.loop?.__ccgV141CrashContained===true);
 
   const baseline=await page.evaluate(()=>({
-    guarded:Boolean(window.loop?.__ccgV141CrashContained),faults:window.CCGLostSizzlerV141BrowserStabilityGameplay.state.frameFaults
+    guarded:Boolean(window.loop?.__ccgV141R29Stable&&window.loop?.__ccgV141CrashContained),faults:window.CCGLostSizzlerV141R29.state.frameFaults,
+    finalizer:window.CCGLostSizzlerV141R29LoopFinalizer.state.reassertions
   }));
-  assert.equal(baseline.guarded,true,"the live browser must be running the crash-contained RAF callback");
+  assert.equal(baseline.guarded,true,"the live browser must be running the final r29 crash-contained RAF callback");
 
   const injected=await page.evaluate(async()=>{
-    const guard=window.CCGLostSizzlerV141BrowserStabilityGameplay,originalUpdate=window.update,originalRender=window.render;
+    const guard=window.CCGLostSizzlerV141R29,originalUpdate=window.update,originalRender=window.render;
     let frames=0,thrown=false;
     window.render=function(){frames++;return originalRender.apply(this,arguments)};
     window.update=function(){
@@ -47,12 +49,13 @@ try{
     };
     await new Promise(resolve=>setTimeout(resolve,550));
     window.render=originalRender;window.update=originalUpdate;
-    return{frames,thrown,faults:guard.state.frameFaults,updateFaults:guard.state.updateFaults,lastFaultMessage:guard.state.lastFaultMessage};
+    return{frames,thrown,faults:guard.state.frameFaults,updateFaults:guard.state.updateFaults,lastFaultMessage:guard.state.lastFaultMessage,finalLoop:Boolean(window.loop?.__ccgV141R29Stable)};
   });
   assert.equal(injected.thrown,true,"the synthetic update fault must actually execute");
-  assert.ok(injected.updateFaults>=1,`the frame guard must record the contained update fault: ${JSON.stringify(injected)}`);
-  assert.match(injected.lastFaultMessage,/CCG_SYNTHETIC_SINGLE_FRAME_FAULT/,"the guard must retain the most recent contained fault for diagnosis");
+  assert.ok(injected.updateFaults>=1,`the r29 frame guard must record the contained update fault: ${JSON.stringify(injected)}`);
+  assert.match(injected.lastFaultMessage,/CCG_SYNTHETIC_SINGLE_FRAME_FAULT/,"the r29 guard must retain the most recent contained fault for diagnosis");
   assert.ok(injected.frames>=4,`rendering must continue after an update exception instead of freezing the browser/game: ${JSON.stringify(injected)}`);
+  assert.equal(injected.finalLoop,true,"the r29 RAF owner must remain installed after a contained frame fault");
 
   await page.locator("#solo-btn").click({noWaitAfter:true});
   await page.waitForFunction(()=>document.body.dataset.runActive==="true");
@@ -64,12 +67,13 @@ try{
   await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing");
   await page.waitForTimeout(500);
   const resumed=await page.evaluate(()=>({
-    mode,runActive:document.body.dataset.runActive,pausedHidden:UI.pause.classList.contains("hidden"),faults:window.CCGLostSizzlerV141BrowserStabilityGameplay.state.frameFaults,
-    canvas:{w:game.width,h:game.height},player:p1?{x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry}:null
+    mode,runActive:document.body.dataset.runActive,pausedHidden:UI.pause.classList.contains("hidden"),faults:window.CCGLostSizzlerV141R29.state.frameFaults,
+    finalLoop:Boolean(window.loop?.__ccgV141R29Stable),canvas:{w:game.width,h:game.height},player:p1?{x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry}:null
   }));
   assert.equal(resumed.mode,"playing","Continue must restore active gameplay after pause");
   assert.equal(resumed.runActive,"true","pause/resume must not destroy the run");
   assert.equal(resumed.pausedHidden,true,"pause UI must be removed after resume");
+  assert.equal(resumed.finalLoop,true,"pause/resume must retain final r29 RAF ownership");
   assert.ok(resumed.canvas.w>=640&&resumed.canvas.h>=360,"pause recovery must leave a usable canvas backing store");
   assert.ok(Number.isFinite(resumed.player?.x)&&Number.isFinite(resumed.player?.rx),`pause recovery must retain finite player coordinates: ${JSON.stringify(resumed.player)}`);
 
@@ -85,7 +89,7 @@ try{
   await page.waitForTimeout(250);
   assert.deepEqual(crashes,[],`Chromium must not crash during fault containment, pause/resume or coordinate recovery: ${crashes.join("\n")}`);
   assert.deepEqual(pageErrors,[],`fault containment, pause/resume and coordinate recovery must produce no uncaught page errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 Chromium single-frame fault containment, pause/resume and invalid-coordinate recovery checks passed.");
+  console.log("Lost Sizzler V10.41 r29 final-loop fault containment, pause/resume and invalid-coordinate recovery checks passed.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
