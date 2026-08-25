@@ -8,11 +8,23 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const runtime=read("js/v10-41-r29-spy-engine-isolation.js");
+const network=read("js/v10-41-r29-spy-network-isolation.js");
 const finalizer=read("js/v10-41-r29-loop-finalizer.js");
 
 assert.match(finalizer,/v10-41-r29-spy-engine-isolation\.js/,"r29 finalizer must load the isolated Spy runtime");
 assert.match(finalizer,/data-ccg-r29-spy-engine|ccgR29SpyEngine/,"Spy runtime loader must be deduplicated");
 assert.match(finalizer,/spyRuntimeReady/,"release diagnostics must expose whether the Spy runtime registered");
+assert.match(finalizer,/v10-41-r29-spy-network-isolation\.js/,"r29 finalizer must load the dedicated Spy position transport after the isolated engine");
+assert.match(finalizer,/data-ccg-r29-spy-network|ccgR29SpyNetwork/,"Spy network loader must be deduplicated");
+assert.match(finalizer,/spyNetworkReady/,"release diagnostics must expose whether the Spy network transport registered");
+assert.match(finalizer,/rail\.style\.setProperty\("display",live\?"contents":"none","important"\)/,"late r29 runtime must own live/idle notification rail geometry above legacy CSS");
+assert.match(finalizer,/new MutationObserver\(syncNotificationRail\)/,"notification rail ownership must react immediately to toast visibility changes");
+
+assert.match(network,/PACKET="v141_spy_position"/,"Spy movement must use a dedicated packet instead of Dungeon player movement packets");
+assert.match(network,/net\.send\(PACKET,payload\)/,"local Spy movement must publish through the dedicated position transport");
+assert.match(network,/remote\?\.set\?\.\(id,next\)/,"received Spy positions must update the remote agent directly");
+assert.doesNotMatch(network,/processRemoteMovement\s*\(/,"dedicated Spy positions must never invoke Dungeon remote-movement room triggers");
+assert.match(network,/if\(moved\)sendPosition\(true\)/,"successful Spy movement must publish immediately as well as via the heartbeat");
 
 assert.match(runtime,/MODE_ID="sizzler-saboteurs"/,"isolated runtime must be scoped to Spy Vs Spy only");
 assert.match(runtime,/ROOM_STEP_X=11,ROOM_STEP_Y=11,ROOM_W=9,ROOM_H=9/,"Spy physical rooms must be materially smaller than the old 13x13 grid");
@@ -46,4 +58,4 @@ assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy owner
 assert.match(runtime,/window\.update=spyUpdateOwner;window\.movePlayer=spyMoveOwner;window\.hurtPlayer=spyHurtOwner/,"entering Spy must atomically take ownership of update, movement and damage");
 assert.match(runtime,/window\.update===spyUpdateOwner&&typeof state\.baseUpdate==="function"/,"leaving Spy must restore the inherited Dungeon runtime instead of leaking Spy rules outward");
 
-console.log("Lost Sizzler V10.41 r29 isolated Spy engine, compact rooms, furniture collision, interaction prompts and idle-trap regression checks passed.");
+console.log("Lost Sizzler V10.41 r29 isolated Spy engine, dedicated position transport, compact rooms, furniture collision, interaction prompts and idle-trap regression checks passed.");
