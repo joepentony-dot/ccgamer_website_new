@@ -21,6 +21,14 @@
   function authoritative(){
     try{return typeof playMode==="undefined"||playMode!=="online"||typeof net==="undefined"||net?.isHost!==false}catch(_){return true}
   }
+  function activeView(){
+    try{
+      if(document?.hidden===true)return false;
+      if(document?.body?.dataset?.runActive==="false")return false;
+      if(typeof mode!=="undefined"&&mode!=="playing")return false;
+    }catch(_){}
+    return true
+  }
   function rareState(){return window.CCGLostSizzlerRareEvents?.state||null}
   function merchant(){const m=rareState()?.plans?.merchant;return m?.wanderingMerchant?m:null}
   function players(){
@@ -68,13 +76,13 @@
   }
   function protect(m){m.rareLifeMs=Math.max(Number(m.rareLifeMs||0),PROTECTED_LIFE_MS);m.rareMoveMs=Math.max(Number(m.rareMoveMs||0),PROTECTED_LIFE_MS)}
   function positionForEncounter(m){
-    if(m._v141MerchantEncounterPositioned)return false;const player=sameRoomPlayer(m);if(!player)return false;
+    if(m._v141MerchantEncounterPositioned||!activeView())return false;const player=sameRoomPlayer(m);if(!player)return false;
     m._v141MerchantEncounterPositioned=true;if(visiblePlayer(m))return false;const cell=encounterCell(m,player);if(!cell)return false;
     m.x=cell.x;m.y=cell.y;try{host.revision=(host.revision||0)+1}catch(_){}state.repositions++;return true
   }
   function beginEncounter(m){
-    if(m._v141MerchantSeen)return false;const player=visiblePlayer(m);if(!player)return false;
-    m._v141MerchantSeen=true;m._v141MerchantVisibleMs=0;m._v141MerchantDepartArmed=false;m._v141MerchantDepartCountdown=false;state.encounters++;
+    if(m._v141MerchantSeen||!activeView())return false;const player=visiblePlayer(m);if(!player)return false;
+    m._v141MerchantSeen=true;m._v141MerchantVisibleMs=0;m._v141MerchantDepartArmed=false;m._v141MerchantDepartCountdown=false;m._v141MerchantDiscovered=true;state.encounters++;
     announce("WANDERING MERCHANT","A travelling shopkeeper has come into view. He will stay while you browse and will give fair warning before packing up.","gold",9000);return true
   }
   function tick(now=performance.now()){
@@ -86,8 +94,8 @@
     if(!m._v141MerchantDepartArmed)protect(m);
     positionForEncounter(m);beginEncounter(m);
 
-    const visible=Boolean(visiblePlayer(m));const browsing=shopOpenFor(m);
-    if(m._v141MerchantSeen&&(visible||browsing)&&!m._v141MerchantDepartArmed)m._v141MerchantVisibleMs=Math.min(MIN_VISIBLE_MS,Number(m._v141MerchantVisibleMs||0)+elapsed);
+    const visible=Boolean(visiblePlayer(m));const browsing=shopOpenFor(m),viewing=activeView();
+    if(m._v141MerchantSeen&&(browsing||(visible&&viewing))&&!m._v141MerchantDepartArmed)m._v141MerchantVisibleMs=Math.min(MIN_VISIBLE_MS,Number(m._v141MerchantVisibleMs||0)+elapsed);
 
     const remaining=Math.max(0,MIN_VISIBLE_MS-Number(m._v141MerchantVisibleMs||0));
     if(m._v141MerchantSeen&&!m._v141MerchantWarned&&remaining<=WARNING_REMAINING_MS){
@@ -112,5 +120,5 @@
 
   state.timer=setInterval(()=>tick(),100);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141WanderingMerchant={tick,positionForEncounter,beginEncounter,constants:{MIN_VISIBLE_MS,WARNING_REMAINING_MS,DEPART_GRACE_MS,VISIBILITY_RADIUS,PROTECTED_LIFE_MS},get state(){return state}};
+  window.CCGLostSizzlerV141WanderingMerchant={tick,positionForEncounter,beginEncounter,activeView,constants:{MIN_VISIBLE_MS,WARNING_REMAINING_MS,DEPART_GRACE_MS,VISIBILITY_RADIUS,PROTECTED_LIFE_MS},get state(){return state}};
 })();
