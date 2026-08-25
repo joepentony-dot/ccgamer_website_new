@@ -5,6 +5,11 @@
  *   direction cannot receive an extra fallback step between normal steps;
  * - ordinary Dungeon Bounty state, presentation and legacy voice must never
  *   leak into Spy Vs Spy (or another special mode).
+ *
+ * This layer loads last. When it wraps a function it inherits all enumerable
+ * ownership markers from the previous wrapper so r24/notification watchdogs
+ * recognise the final function as their existing chain instead of re-wrapping
+ * it indefinitely.
  */
 (()=>{
   "use strict";
@@ -17,6 +22,11 @@
     updateSource:null,startSource:null,toastSource:null,voiceSource:null,timer:0,
     pacedMoves:0,rarePurges:0,hiddenDungeonAlerts:0,suppressedToasts:0,suppressedVoice:0
   };
+
+  function inheritMarkers(wrapped,current){
+    try{Object.assign(wrapped,current)}catch(_){}
+    return wrapped;
+  }
 
   function specialModeType(){
     try{
@@ -96,7 +106,7 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV141R25SpySpeedBounty){state.updateSource=current;return true}
     if(current===state.updateSource)return true;
-    const wrapped=function updateV141R25SpySpeedBounty(){
+    const wrapped=inheritMarkers(function updateV141R25SpySpeedBounty(){
       const local=spyActive()&&typeof p1!=="undefined"?p1:null;
       const before=local?{x:local.x,y:local.y}:null;
       if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}
@@ -104,7 +114,7 @@
       try{if(local&&spyActive())syncSpyCadence(before,local)}catch(_){}
       if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}
       return result;
-    };
+    },current);
     wrapped.__ccgV141R25SpySpeedBounty=true;
     wrapped.__ccgV141R25Original=current;
     window.update=wrapped;state.updateSource=wrapped;return true;
@@ -115,11 +125,11 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV141R25SpecialIsolation){state.startSource=current;return true}
     if(current===state.startSource)return true;
-    const wrapped=function startWorldV141R25SpecialIsolation(){
+    const wrapped=inheritMarkers(function startWorldV141R25SpecialIsolation(){
       const result=current.apply(this,arguments);
       try{if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}}catch(_){}
       return result;
-    };
+    },current);
     wrapped.__ccgV141R25SpecialIsolation=true;
     wrapped.__ccgV141R25Original=current;
     window.startWorld=wrapped;state.startSource=wrapped;return true;
@@ -130,12 +140,12 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV141R25SpecialIsolationToast){state.toastSource=current;return true}
     if(current===state.toastSource)return true;
-    const wrapped=function showToastV141R25SpecialIsolation(title){
+    const wrapped=inheritMarkers(function showToastV141R25SpecialIsolation(title){
       if(specialActive()&&dungeonOnlyText(title)){
         purgeSpecialDungeonState();hideDungeonNotifications();state.suppressedToasts++;return false;
       }
       return current.apply(this,arguments);
-    };
+    },current);
     wrapped.__ccgV141R25SpecialIsolationToast=true;
     wrapped.__ccgV141R25Original=current;
     window.showToast=wrapped;state.toastSource=wrapped;return true;
@@ -146,12 +156,12 @@
     if(typeof current!=="function")return false;
     if(current.__ccgV141R25SpecialIsolationVoice){state.voiceSource=current;return true}
     if(current===state.voiceSource)return true;
-    const wrapped=function sayV141R25SpecialIsolation(key){
+    const wrapped=inheritMarkers(function sayV141R25SpecialIsolation(key){
       if(specialActive()&&DUNGEON_VOICE_KEYS.test(String(key||""))){
         purgeSpecialDungeonState();hideDungeonNotifications();state.suppressedVoice++;return false;
       }
       return current.apply(this,arguments);
-    };
+    },current);
     wrapped.__ccgV141R25SpecialIsolationVoice=true;
     wrapped.__ccgV141R25Original=current;
     voice.say=wrapped;state.voiceSource=wrapped;return true;
@@ -173,7 +183,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R25SpySpeedBountyHotfix={
-    install,specialModeType,specialActive,spyActive,movementCadence,syncSpyCadence,
+    install,inheritMarkers,specialModeType,specialActive,spyActive,movementCadence,syncSpyCadence,
     purgeSpecialDungeonState,hideDungeonNotifications,dungeonOnlyText,
     constants:{SPECIAL_MODES},get state(){return state}
   };
