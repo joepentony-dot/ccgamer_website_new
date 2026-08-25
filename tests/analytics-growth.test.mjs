@@ -13,7 +13,8 @@ test('analytics growth dashboard is private and linked from admin navigation', (
   assert.match(page, /noindex,nofollow/);
   assert.match(page, /Website ↔ YouTube/);
   assert.match(page, /Recently discovered by Google/);
-  assert.match(nav, /href="\/admin\/analytics-growth\.html"[^>]*>Analytics &amp; Growth</);
+  assert.match(nav, /href: "\/admin\/analytics-growth\.html", nav: "analytics", label: "Analytics &amp; Growth"/);
+  assert.match(nav, /`<a href="\$\{link\.href\}" data-nav="\$\{link\.nav\}">\$\{link\.label\}<\/a>`/);
   assert.match(dashboard, /href="\/admin\/analytics-growth\.html"[^>]*>Analytics &amp; Growth</);
 });
 
