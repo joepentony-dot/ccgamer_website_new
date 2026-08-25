@@ -1,6 +1,6 @@
 /* The Lost Sizzler V10.41 — multiplayer never pauses.
  * Online Dungeon, Horde Multiplayer, Spy Vs Spy and local 2P split-screen all
- * continue in real time. Players may leave, but no player can freeze the run.
+ * continue in real time. Solo Horde remains a single-player mode and may pause.
  */
 (()=>{
   "use strict";
@@ -13,13 +13,19 @@
   function readPlayMode(){try{return typeof playMode!=="undefined"?String(playMode||""):""}catch(_){return""}}
   function hasSecondLocalPlayer(){try{return typeof p2!=="undefined"&&Boolean(p2)}catch(_){return false}}
   function runActive(){return document.body?.dataset?.runActive==="true"}
+  function soloHorde(){return document.body?.dataset?.hordeSolo==="true"}
 
   function multiplayerActive(){
     if(!runActive())return false;
     const active=special(),type=String(active?.type||"");
     if(type==="sizzler-saboteurs")return true;
     if(type==="horde-survivor"){
+      if(soloHorde())return false;
       const count=Array.isArray(active?.state?.players)?active.state.players.filter(player=>player?.status!=="left").length:0;
+      // The shared special-mode launcher internally sets playMode="online" for
+      // Solo Horde as well. The explicit hordeSolo dataset above is therefore
+      // authoritative. Every other Horde run is a multiplayer room and must
+      // keep running even when only the host is connected at that moment.
       return readPlayMode()==="online"||count>1;
     }
     if(readPlayMode()==="online")return true;
@@ -95,5 +101,5 @@
   state.timer=setInterval(()=>{install();if(multiplayerActive())forcePlaying();if(state.pauseWrapped&&state.menuWrapped&&state.updateWrapped){clearInterval(state.timer);state.timer=0}},80);
   install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);removeEventListener("keydown",blockPauseKey,true);document.removeEventListener("click",multiplayerQuit,true)},{once:true});
-  window.CCGLostSizzlerV141MultiplayerNoPause={multiplayerActive,forcePlaying,get state(){return state}};
+  window.CCGLostSizzlerV141MultiplayerNoPause={multiplayerActive,soloHorde,forcePlaying,get state(){return state}};
 })();
