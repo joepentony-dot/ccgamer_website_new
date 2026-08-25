@@ -72,6 +72,7 @@ jobs:
           node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
           node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
           node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-menu-leaderboard-stability.mjs
 
   structure:
     runs-on: ubuntu-latest
