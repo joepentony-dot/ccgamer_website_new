@@ -32,43 +32,47 @@ window.CCG_ASSET_OVERRIDES={
   }
 };
 
-const CCG_V106_HUD_REV="20260824a";
-const CCG_V106_UI_REV="20260824a";
-const CCG_V104_PATCH_REV="20260824b";
-const CCG_V106_SIDEBAR_REV="20260822a";
-const CCG_PLAYLIST_AUDIO_REV="20260824c";
-const CCG_PLAYER_INSIGHTS_REV="20260823f";
-const CCG_BROWSER_STABILITY_REV="20260823b";
-const CCG_DEPTH_FLOW_REV="20260823a";
-const CCG_MOBILE_FOCUS_REV="20260823a";
-const CCG_MOBILE_SAFETY_REV="20260823a";
-const CCG_DOSSIER_REV="20260823b";
-const CCG_CHANGELOG_REV="20260824f";
-const CCG_MOBILE_COMBAT_MAP_REV="20260823b";
-const CCG_GILDED_ELF_REV="20260824c";
-const CCG_RARE_EVENTS_REV="20260824f";
-const CCG_RARE_EVENTS_BALANCE_REV="20260824b";
-const CCG_ADMIN_AUDIO_REV="20260823a";
-const CCG_VOICE_DIRECTOR_REV="20260824e";
-const CCG_VOICE_EXPANSION_REV="20260824c";
-const CCG_EXPANSION_CHANGELOG_REV="20260823i";
-const CCG_INPUT_UI_FIX_REV="20260823a";
-const CCG_DUNGEON_VARIETY_REV="20260823a";
-const CCG_ONBOARDING_SAFETY_REV="20260824g";
-const CCG_ONBOARDING_HARDENING_REV="20260823a";
-const CCG_TUTORIAL_GUIDANCE_REV="20260824e";
-const CCG_MULTIPLAYER_SYNC_REV="20260824b";
-const CCG_ENVIRONMENTAL_POLISH_REV="20260824b";
-const CCG_MOBILE_ERGONOMICS_REV="20260823a";
-const CCG_MELEE_AMMO_REV="20260824b";
-const CCG_AMMO_BUDGET_REV="20260823a";
-const CCG_ACHIEVEMENTS_REV="20260824a";
-const CCG_POLISH_REV="20260825crashfix";
-const CCG_HORDE_REV="20260824a";
-const CCG_SABOTEURS_REV="20260824a";
-const CCG_SPECIAL_MODES_REV="20260824a";
-const CCG_MODE_POLISH_REV="20260824a";
-const CCG_QUALITY_V135_REV="20260824a";
+/* Every enhancement URL inherits the currently published release token. Older
+ * releases used a mixture of historical tokens and bare URLs, allowing a
+ * browser HTTP cache to combine new core files with old enhancement files. */
+const CCG_RELEASE_REV=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+const CCG_V106_HUD_REV=CCG_RELEASE_REV;
+const CCG_V106_UI_REV=CCG_RELEASE_REV;
+const CCG_V104_PATCH_REV=CCG_RELEASE_REV;
+const CCG_V106_SIDEBAR_REV=CCG_RELEASE_REV;
+const CCG_PLAYLIST_AUDIO_REV=CCG_RELEASE_REV;
+const CCG_PLAYER_INSIGHTS_REV=CCG_RELEASE_REV;
+const CCG_BROWSER_STABILITY_REV=CCG_RELEASE_REV;
+const CCG_DEPTH_FLOW_REV=CCG_RELEASE_REV;
+const CCG_MOBILE_FOCUS_REV=CCG_RELEASE_REV;
+const CCG_MOBILE_SAFETY_REV=CCG_RELEASE_REV;
+const CCG_DOSSIER_REV=CCG_RELEASE_REV;
+const CCG_CHANGELOG_REV=CCG_RELEASE_REV;
+const CCG_MOBILE_COMBAT_MAP_REV=CCG_RELEASE_REV;
+const CCG_GILDED_ELF_REV=CCG_RELEASE_REV;
+const CCG_RARE_EVENTS_REV=CCG_RELEASE_REV;
+const CCG_RARE_EVENTS_BALANCE_REV=CCG_RELEASE_REV;
+const CCG_ADMIN_AUDIO_REV=CCG_RELEASE_REV;
+const CCG_VOICE_DIRECTOR_REV=CCG_RELEASE_REV;
+const CCG_VOICE_EXPANSION_REV=CCG_RELEASE_REV;
+const CCG_EXPANSION_CHANGELOG_REV=CCG_RELEASE_REV;
+const CCG_INPUT_UI_FIX_REV=CCG_RELEASE_REV;
+const CCG_DUNGEON_VARIETY_REV=CCG_RELEASE_REV;
+const CCG_ONBOARDING_SAFETY_REV=CCG_RELEASE_REV;
+const CCG_ONBOARDING_HARDENING_REV=CCG_RELEASE_REV;
+const CCG_TUTORIAL_GUIDANCE_REV=CCG_RELEASE_REV;
+const CCG_MULTIPLAYER_SYNC_REV=CCG_RELEASE_REV;
+const CCG_ENVIRONMENTAL_POLISH_REV=CCG_RELEASE_REV;
+const CCG_MOBILE_ERGONOMICS_REV=CCG_RELEASE_REV;
+const CCG_MELEE_AMMO_REV=CCG_RELEASE_REV;
+const CCG_AMMO_BUDGET_REV=CCG_RELEASE_REV;
+const CCG_ACHIEVEMENTS_REV=CCG_RELEASE_REV;
+const CCG_POLISH_REV=CCG_RELEASE_REV;
+const CCG_HORDE_REV=CCG_RELEASE_REV;
+const CCG_SABOTEURS_REV=CCG_RELEASE_REV;
+const CCG_SPECIAL_MODES_REV=CCG_RELEASE_REV;
+const CCG_MODE_POLISH_REV=CCG_RELEASE_REV;
+const CCG_QUALITY_V135_REV=CCG_RELEASE_REV;
 
 /* A run must not begin while the sequential enhancement queue is still
  * replacing the base combat, onboarding and balance functions. Keep the first
@@ -122,7 +126,7 @@ const CCG_QUALITY_V135_REV="20260824a";
   if(!document.querySelector('link[data-ccg-v106-ui="true"]')){
     const link=document.createElement("link");
     link.rel="stylesheet";
-    link.href="css/v10-6-ui-polish.css";
+    link.href=`css/v10-6-ui-polish.css?v=${CCG_RELEASE_REV}`;
     link.dataset.ccgV106Ui="true";
     document.head.appendChild(link);
   }
@@ -214,9 +218,17 @@ const CCG_QUALITY_V135_REV="20260824a";
 
 (()=>{
   let started=false;
-  function startEnhancements(){
+  async function startEnhancements(){
     if(started||document.querySelector('script[data-ccg-lost-sizzler-v104="true"]'))return;
     started=true;
+
+    /* Cache sanitation is best-effort and bounded. The enhancement queue waits
+     * for it so old unversioned modules can never race a new release. */
+    try{
+      const guard=window.CCGLostSizzlerCacheGuard;
+      if(guard?.ready)await Promise.race([guard.ready,new Promise(resolve=>setTimeout(resolve,3800))]);
+    }catch(error){console.warn("[Lost Sizzler] cache guard unavailable; continuing with release-token URLs",error)}
+
     const queue=[
       [`js/v10-9-browser-stability.js?v=${CCG_BROWSER_STABILITY_REV}`,"ccgLostSizzlerBrowserStabilityV109"],
       [`js/v10-20-onboarding-safety.js?v=${CCG_ONBOARDING_SAFETY_REV}`,"ccgLostSizzlerOnboardingSafetyV120"],
@@ -224,23 +236,23 @@ const CCG_QUALITY_V135_REV="20260824a";
       [`js/v10-23-tutorial-guidance.js?v=${CCG_TUTORIAL_GUIDANCE_REV}`,"ccgLostSizzlerTutorialGuidanceV123"],
       [`js/v10-19-dungeon-variety.js?v=${CCG_DUNGEON_VARIETY_REV}`,"ccgLostSizzlerDungeonVarietyV119"],
       [`js/lost-sizzler-playlist-audio.js?v=${CCG_PLAYLIST_AUDIO_REV}`,"ccgLostSizzlerPlaylistAudio"],
-      ["js/v10-7-continuous-exploration.js","ccgLostSizzlerContinuousExplorationV107"],
+      [`js/v10-7-continuous-exploration.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerContinuousExplorationV107"],
       [`js/v10-4-patch.js?v=${CCG_V104_PATCH_REV}`,"ccgLostSizzlerV104"],
-      ["js/v10-4-death-cache.js","ccgLostSizzlerCacheV104"],
-      ["js/v10-4-final-ui.js","ccgLostSizzlerFinalV104"],
-      ["js/v10-4-collectible-effects.js","ccgLostSizzlerEffectsV104"],
-      ["js/v10-4-regression-fixes.js","ccgLostSizzlerRegressionV104"],
+      [`js/v10-4-death-cache.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerCacheV104"],
+      [`js/v10-4-final-ui.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerFinalV104"],
+      [`js/v10-4-collectible-effects.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerEffectsV104"],
+      [`js/v10-4-regression-fixes.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerRegressionV104"],
       [`js/v10-13-mobile-combat-map.js?v=${CCG_MOBILE_COMBAT_MAP_REV}`,"ccgLostSizzlerMobileCombatMapV113"],
-      ["js/v10-5-collectible-effects.js","ccgLostSizzlerEffectsV105"],
-      ["js/v10-5-rpg-balance.js","ccgLostSizzlerRpgBalanceV105"],
-      ["js/v10-6-runtime.js","ccgLostSizzlerRuntimeV106"],
-      ["js/v10-6-death-room-recovery.js","ccgLostSizzlerDeathRoomRecoveryV106"],
+      [`js/v10-5-collectible-effects.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerEffectsV105"],
+      [`js/v10-5-rpg-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerRpgBalanceV105"],
+      [`js/v10-6-runtime.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerRuntimeV106"],
+      [`js/v10-6-death-room-recovery.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerDeathRoomRecoveryV106"],
       [`js/v10-6-ui-polish.js?v=${CCG_V106_UI_REV}`,"ccgLostSizzlerUiV106"],
       [`js/v10-6-inventory-hud-fix.js?v=${CCG_V106_HUD_REV}`,"ccgLostSizzlerInventoryHudV106"],
-      ["js/v10-6-menu-runtime-fix.js","ccgLostSizzlerMenuRuntimeV106"],
+      [`js/v10-6-menu-runtime-fix.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerMenuRuntimeV106"],
       [`js/v10-6-dossier-polish.js?v=${CCG_DOSSIER_REV}`,"ccgLostSizzlerDossierV106"],
-      ["js/v10-5-online-effects.js","ccgLostSizzlerOnlineEffectsV105"],
-      ["js/v10-6-stalker-shop-balance.js","ccgLostSizzlerStalkerShopBalanceV106"],
+      [`js/v10-5-online-effects.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerOnlineEffectsV105"],
+      [`js/v10-6-stalker-shop-balance.js?v=${CCG_RELEASE_REV}`,"ccgLostSizzlerStalkerShopBalanceV106"],
       [`js/v10-8-player-insights.js?v=${CCG_PLAYER_INSIGHTS_REV}`,"ccgLostSizzlerPlayerInsightsV108"],
       [`js/v10-10-depth-flow.js?v=${CCG_DEPTH_FLOW_REV}`,"ccgLostSizzlerDepthFlowV110"],
       [`js/v10-14-gilded-elf.js?v=${CCG_GILDED_ELF_REV}`,"ccgLostSizzlerGildedElfV114"],
@@ -255,21 +267,26 @@ const CCG_QUALITY_V135_REV="20260824a";
       [`js/v10-25-melee-ammo-balance.js?v=${CCG_MELEE_AMMO_REV}`,"ccgLostSizzlerMeleeAmmoV125"],
       [`js/v10-26-ammo-budget.js?v=${CCG_AMMO_BUDGET_REV}`,"ccgLostSizzlerAmmoBudgetV126"],
       [`js/v10-29-achievements.js?v=${CCG_ACHIEVEMENTS_REV}`,"ccgLostSizzlerAchievementsV129"],
-      [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"]
-      ,[`js/v10-31-multiplayer-sync.js?v=${CCG_MULTIPLAYER_SYNC_REV}`,"ccgLostSizzlerMultiplayerSyncV131"]
-      ,[`js/horde-survivor.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeRules"]
-      ,[`js/horde-survivor-audio.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeAudio"]
-      ,[`js/sizzler-saboteurs.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursRules"]
-      ,[`js/sizzler-saboteurs-audio.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursAudio"]
-      ,[`js/v10-33-special-modes.js?v=${CCG_SPECIAL_MODES_REV}`,"ccgLostSizzlerSpecialModesV133"]
-      ,[`js/v10-33-mode-polish.js?v=${CCG_MODE_POLISH_REV}`,"ccgLostSizzlerModePolishV133"]
-      ,[`js/v10-35-quality.js?v=${CCG_QUALITY_V135_REV}`,"ccgLostSizzlerQualityV135"]
+      [`js/v10-30-polish.js?v=${CCG_POLISH_REV}`,"ccgLostSizzlerPolishV130"],
+      [`js/v10-31-multiplayer-sync.js?v=${CCG_MULTIPLAYER_SYNC_REV}`,"ccgLostSizzlerMultiplayerSyncV131"],
+      [`js/horde-survivor.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeRules"],
+      [`js/horde-survivor-audio.js?v=${CCG_HORDE_REV}`,"ccgLostSizzlerHordeAudio"],
+      [`js/sizzler-saboteurs.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursRules"],
+      [`js/sizzler-saboteurs-audio.js?v=${CCG_SABOTEURS_REV}`,"ccgLostSizzlerSaboteursAudio"],
+      [`js/v10-33-special-modes.js?v=${CCG_SPECIAL_MODES_REV}`,"ccgLostSizzlerSpecialModesV133"],
+      [`js/v10-33-mode-polish.js?v=${CCG_MODE_POLISH_REV}`,"ccgLostSizzlerModePolishV133"],
+      [`js/v10-35-quality.js?v=${CCG_QUALITY_V135_REV}`,"ccgLostSizzlerQualityV135"]
     ];
     const criticalFailures=[];
     const criticalPaths=new Set(["/arcade/lost-sizzler/js/v10-25-melee-ammo-balance.js","/arcade/lost-sizzler/js/v10-26-ammo-budget.js","/arcade/lost-sizzler/js/v10-29-achievements.js","/arcade/lost-sizzler/js/v10-30-polish.js","/arcade/lost-sizzler/js/v10-31-multiplayer-sync.js","/arcade/lost-sizzler/js/horde-survivor.js","/arcade/lost-sizzler/js/horde-survivor-audio.js","/arcade/lost-sizzler/js/sizzler-saboteurs.js","/arcade/lost-sizzler/js/sizzler-saboteurs-audio.js","/arcade/lost-sizzler/js/v10-33-special-modes.js","/arcade/lost-sizzler/js/v10-33-mode-polish.js","/arcade/lost-sizzler/js/v10-35-quality.js"]);
 
     const loadNext=index=>{
-      if(index>=queue.length){window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);return}
+      if(index>=queue.length){
+        const runtimeErrors=window.CCGLostSizzlerCacheGuard?.runtimeErrors||[];
+        for(const row of runtimeErrors)criticalFailures.push(`runtime error${row.source?` in ${row.source}`:""}: ${row.message}`);
+        window.CCGLostSizzlerReleaseGate?.finish?.(criticalFailures);
+        return
+      }
       const [src,key]=queue[index],selector=`script[data-${key.replace(/[A-Z]/g,m=>`-${m.toLowerCase()}`)}="true"]`;
       const requestedPath=(()=>{try{return new URL(src,location.href).pathname}catch(_){return src.split("?")[0]}})();
       const alreadyLoaded=[...document.scripts].some(node=>{const raw=node.getAttribute("src");if(!raw)return false;try{return new URL(raw,location.href).pathname===requestedPath}catch(_){return raw.split("?")[0]===requestedPath}});
