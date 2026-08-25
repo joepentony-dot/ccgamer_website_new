@@ -12,7 +12,7 @@ const render=read("js/game-render.js");
 const quality=read("js/v10-35-quality.js");
 const sab=read("js/sizzler-saboteurs.js");
 
-assert.match(version,/v10-36-bootstrap\.js\?v=20260824a/,"V10.36 bootstrap must load before the enhancement queue completes");
+assert.match(version,/v10-36-bootstrap\.js\?v=\$\{encodeURIComponent\(RELEASE_CACHE\)\}/,"V10.36 bootstrap must load before the enhancement queue completes using the current release cache generation");
 assert.match(bootstrap,/LOADING — PLEASE WAIT/,"loading overlay must tell players to wait");
 assert.match(bootstrap,/ccg-release-loading-progress/,"loading overlay must expose a progress bar");
 assert.match(bootstrap,/MutationObserver/,"loading progress must advance as enhancement scripts arrive");
