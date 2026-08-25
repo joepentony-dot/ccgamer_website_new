@@ -13,9 +13,11 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const index=read("index.html");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260824g"/,"onboarding safety must remain cache-versioned");
-assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824e"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824e/,"the release must directly load the fullscreen-safe tutorial launcher");
+assert.match(assets,/const CCG_ONBOARDING_SAFETY_REV=CCG_RELEASE_REV;/,"onboarding safety must inherit the canonical release token");
+assert.match(assets,/const CCG_TUTORIAL_GUIDANCE_REV=CCG_RELEASE_REV;/,"tutorial guidance must inherit the canonical release token");
+const releaseToken=index.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)">/)?.[1];
+assert.ok(releaseToken,"the canonical HTML must expose a release cache token");
+assert.ok(index.includes(`js/v10-23-tutorial-guidance.js?v=${releaseToken}`),"the directly loaded tutorial launcher must use the published release cache token");
 assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
