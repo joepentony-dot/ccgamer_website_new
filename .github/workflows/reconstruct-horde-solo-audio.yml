@@ -1,0 +1,43 @@
+name: Reconstruct Horde Solo Audio
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-horde-solo-master
+    paths:
+      - .audio-upload/horde-solo/READY
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Reconstruct and verify audio asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="arcade/lost-sizzler/assets/audio/music/horde-survivor-solo-master.ogg"
+          mkdir -p "$(dirname "$target")"
+          cat .audio-upload/horde-solo/part-*.b64 | tr -d '\r\n' | base64 --decode > "$target"
+          echo "642fd74623467ebb1d371f24aa8933dbde329346de17df37a24ac6f50a327acf  $target" | sha256sum -c -
+          test "$(stat -c%s "$target")" -eq 988336
+
+      - name: Commit finished game asset and remove transfer staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arcade/lost-sizzler/assets/audio/music/horde-survivor-solo-master.ogg
+          git rm -r .audio-upload/horde-solo
+          git rm .github/workflows/reconstruct-horde-solo-audio.yml
+          git commit -m "Add compressed Lost Sizzler Horde solo master"
+          git push origin HEAD:${GITHUB_REF_NAME}
