@@ -72,4 +72,5 @@
   load("js/v10-41-environment-transparency-hotfix.js?v=20260825e","data-ccg-v141-environment-transparency-hotfix");
   load("js/v10-41-horde-mode-safety.js?v=20260825e","data-ccg-v141-horde-mode-safety");
   load("js/v10-41-multiplayer-no-pause.js?v=20260825e","data-ccg-v141-multiplayer-no-pause");
+  load("js/v10-41-browser-stability-gameplay-hotfix.js?v=20260825f","data-ccg-v141-browser-stability-gameplay-hotfix");
 })();
