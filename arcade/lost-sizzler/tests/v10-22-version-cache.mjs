@@ -29,8 +29,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.23","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r23","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.24","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r24","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -46,12 +46,13 @@ for(const asset of [
 }
 assert.doesNotMatch(index,/v10-41-live-join-presence\.js/,"live-presence must not be requested twice from the canonical HTML");
 assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network-owned live-presence must inherit the page release token");
-assert.ok(index.indexOf("js/v10-41-cache-guard.js?v=20260825r23")<index.indexOf("js/asset-overrides.js?v=20260825r23"),"cache guard must begin before the enhancement queue owner loads");
-assert.ok(index.indexOf("js/v10-41-load-watchdog.js?v=20260825r23")<index.indexOf("js/asset-overrides.js?v=20260825r23"),"load watchdog must start before the enhancement queue");
-assert.ok(index.indexOf("js/game-main.js?v=20260825r23")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r23"),"Gambler/Developer Vault layer must load after the core game globals exist");
-assert.ok(index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r23")<index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r23"),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
-assert.ok(index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r23")<index.indexOf("js/v10-41-developer-asset-catalog.js?v=20260825r23"),"expanded asset catalogue must load after Developer Vault hardening");
-assert.ok(index.indexOf("js/v10-41-landing-notification-polish.js?v=20260825r23")<index.indexOf("js/v10-41-major-notification-hardening.js?v=20260825r23"),"major-alert hardening must load after the visual notification layer it protects");
+const token=manifest.cacheToken;
+assert.ok(index.indexOf(`js/v10-41-cache-guard.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"cache guard must begin before the enhancement queue owner loads");
+assert.ok(index.indexOf(`js/v10-41-load-watchdog.js?v=${token}`)<index.indexOf(`js/asset-overrides.js?v=${token}`),"load watchdog must start before the enhancement queue");
+assert.ok(index.indexOf(`js/game-main.js?v=${token}`)<index.indexOf(`js/v10-41-gambler-devroom.js?v=${token}`),"Gambler/Developer Vault layer must load after the core game globals exist");
+assert.ok(index.indexOf(`js/v10-41-gambler-devroom.js?v=${token}`)<index.indexOf(`js/v10-41-developer-vault-hardening.js?v=${token}`),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
+assert.ok(index.indexOf(`js/v10-41-developer-vault-hardening.js?v=${token}`)<index.indexOf(`js/v10-41-developer-asset-catalog.js?v=${token}`),"expanded asset catalogue must load after Developer Vault hardening");
+assert.ok(index.indexOf(`js/v10-41-landing-notification-polish.js?v=${token}`)<index.indexOf(`js/v10-41-major-notification-hardening.js?v=${token}`),"major-alert hardening must load after the visual notification layer it protects");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
@@ -88,8 +89,8 @@ assert.match(cacheGuard,/v10-41-startup-freeze-guard\.js\?v=\$\{CACHE_TOKEN\}/,"
 assert.match(loadWatchdog,/observer\?\.disconnect/,"loading watchdog must disconnect the loader MutationObserver after startup");
 assert.match(loadWatchdog,/clearInterval\(v136\.loadingTimer\)/,"loading watchdog must stop the loading poll after startup");
 assert.match(loadWatchdog,/delay>1800/,"loading watchdog must record severe main-thread stalls during preparation");
-assert.match(startupFreezeGuard,/source\.__ccgV136Guttered=true/,"r23 must bypass V10.36's synchronous chest-atlas encoding at 92% startup");
-assert.doesNotMatch(startupFreezeGuard,/\.toDataURL\s*\(/,"r23 startup guard must never synchronously convert an atlas to a data URL");
+assert.match(startupFreezeGuard,/source\.__ccgV136Guttered=true/,"r24 must retain the V10.36 synchronous chest-atlas startup bypass");
+assert.doesNotMatch(startupFreezeGuard,/\.toDataURL\s*\(/,"r24 startup guard must never synchronously convert an atlas to a data URL");
 assert.match(startupFreezeGuard,/assets\.chests=canvas/,"deferred atlas preparation must keep a direct canvas source");
 
 assert.match(landingPolish,/MAIN ADVENTURES/,"landing page must group the primary game choices");
@@ -139,4 +140,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r23 build, cache sanitation, Horde isolation and startup-freeze regression checks passed.");
+console.log("Lost Sizzler r24 build, cache sanitation, Horde isolation and startup-freeze regression checks passed.");
