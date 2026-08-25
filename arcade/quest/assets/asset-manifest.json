@@ -5,180 +5,31 @@
   "policy": {
     "mainBranchSafety": "Do not alter the current working Quest on main while the overhaul is in progress.",
     "productionRule": "Only runtime-ready artwork belongs in assets/production.",
-    "sourceRule": "Component art, working files and reconstruction pieces belong in assets/source when migrated.",
-    "archiveRule": "Recovered, superseded and preservation-only artwork belongs in assets/archive when migrated.",
-    "replacementRule": "New sprite artwork must be wired through explicit metadata and state-specific anchors/hitboxes rather than assuming one fixed draw box for every animation."
+    "sourceRule": "Component art, construction pieces and working references belong in assets/source.",
+    "archiveRule": "Recovered, duplicate and superseded artwork belongs in assets/archive.",
+    "replacementRule": "New sprite artwork must use explicit per-state anchors, display boxes and collision boxes rather than one fixed rectangle for every animation."
   },
-  "priority": [
-    "player",
-    "core-gameplay",
-    "stage-identity",
-    "enemies-and-hazards",
-    "bosses",
-    "ui-and-feedback",
-    "audio-polish"
-  ],
+  "priority": ["player","core-gameplay","stage-identity","enemies-and-hazards","bosses","ui-and-feedback","audio-polish"],
   "categories": {
     "player": {
       "status": "replace-first",
-      "runtime": [
-        "assets/production/player/cheeky-main-sheet.png",
-        "assets/production/player/cheeky-fight-sheet.png"
-      ],
-      "componentArt": [
-        "assets/production/player/cheeky-mascot.png",
-        "assets/production/player/cheeky-head.png",
-        "assets/production/player/cheeky-body.png",
-        "assets/production/player/cheeky-arm.png",
-        "assets/production/player/cheeky-leg.png"
-      ],
-      "notes": [
-        "Current main sprite sheet does not sell the duck/crouch strongly enough.",
-        "Current runtime draws all main-sheet states through one fixed display box.",
-        "Quest 2.0 should support per-state draw size, ground anchor, visual offset and collision box.",
-        "Minimum replacement states: idle, run, jump takeoff, rise, apex, fall, land, deep crouch, crouch-fire, stand-fire, hit and victory.",
-        "Fighting mode should have a true crouch/duck state rather than visually substituting guard."
-      ]
+      "runtime": ["assets/production/player/cheeky-main-sheet.png","assets/production/player/cheeky-fight-sheet.png"],
+      "source": ["assets/source/player-parts/cheeky-mascot.png","assets/source/player-parts/cheeky-head.png","assets/source/player-parts/cheeky-body.png","assets/source/player-parts/cheeky-arm.png","assets/source/player-parts/cheeky-leg.png"],
+      "notes": ["Quest 2.0 requires a visibly deep crouch.","Normal and fighting modes require distinct crouch states.","Per-state draw and hitbox metadata is mandatory."]
     },
-    "bosses": {
-      "status": "review",
-      "runtime": [
-        "assets/production/bosses/bedroom-sheet.png",
-        "assets/production/bosses/budget-sheet.png",
-        "assets/production/bosses/christmas-sheet.png",
-        "assets/production/bosses/amiga-sheet.png",
-        "assets/production/bosses/guru-sheet.png"
-      ],
-      "singleFrameFallbacks": [
-        "assets/production/bosses/bedroom.png",
-        "assets/production/bosses/budget.png",
-        "assets/production/bosses/christmas.png",
-        "assets/production/bosses/amiga.png",
-        "assets/production/bosses/guru.png"
-      ],
-      "notes": [
-        "Retain for comparison until each redesigned boss is approved.",
-        "Boss redesign should include stage-specific mechanics rather than palette/theme changes around the same fight structure."
-      ]
-    },
-    "enemies": {
-      "status": "review-and-expand",
-      "runtime": [
-        "assets/production/enemies/8bit-enemy-sheet.png"
-      ],
-      "notes": [
-        "One generic 8-bit enemy sheet is insufficient for five themed runner stages.",
-        "Quest 2.0 should give each major stage at least one distinct enemy family or behaviour set."
-      ]
-    },
-    "fighter": {
-      "status": "review",
-      "runtime": [
-        "assets/production/fighter/retsu-sheet.png",
-        "assets/production/fighter/tiertex-idle.png",
-        "assets/production/fighter/tiertex-punch.png",
-        "assets/production/fighter/tiertex-kick.png",
-        "assets/production/fighter/tiertex-hit.png"
-      ],
-      "notes": [
-        "Keep the sheet as the preferred runtime path while the fighting section is redesigned.",
-        "Remove duplicate/superseded source copies from production during the later physical sort."
-      ]
-    },
-    "hazards": {
-      "status": "review-and-expand",
-      "runtime": [
-        "assets/production/hazards/bedroom.png",
-        "assets/production/hazards/budget.png",
-        "assets/production/hazards/christmas.png",
-        "assets/production/hazards/amiga.png",
-        "assets/production/hazards/guru.png"
-      ],
-      "notes": [
-        "Current stages reuse lane-based hazard logic heavily.",
-        "New hazards should have stage-specific silhouettes, timing and interaction rules."
-      ]
-    },
-    "collectibles": {
-      "status": "keep-for-now",
-      "runtime": [
-        "assets/production/collectibles/tape.png",
-        "assets/production/collectibles/disk.png",
-        "assets/production/collectibles/zzap.png",
-        "assets/production/collectibles/joystick.png"
-      ]
-    },
-    "powers": {
-      "status": "keep-for-now",
-      "runtime": [
-        "assets/production/powers/shield.png",
-        "assets/production/powers/speed.png",
-        "assets/production/powers/double.png"
-      ]
-    },
-    "invaders": {
-      "status": "keep-then-polish",
-      "runtime": [
-        "assets/production/invaders/alien-row-1.png",
-        "assets/production/invaders/alien-row-2.png",
-        "assets/production/invaders/alien-row-3.png",
-        "assets/production/invaders/alien-row-4.png",
-        "assets/production/invaders/alien-row-5.png",
-        "assets/production/invaders/player-ship.png",
-        "assets/production/invaders/bunker.png",
-        "assets/production/invaders/enemy-shot.png",
-        "assets/production/invaders/player-shot.png"
-      ]
-    },
-    "backgrounds": {
-      "status": "preserve-and-review",
-      "localFallbacks": [
-        "assets/backgrounds/bedroom.svg",
-        "assets/backgrounds/beads.svg",
-        "assets/backgrounds/budget.svg",
-        "assets/backgrounds/fighter.svg",
-        "assets/backgrounds/invaders.svg",
-        "assets/backgrounds/christmas.svg",
-        "assets/backgrounds/maze.svg",
-        "assets/backgrounds/amiga.svg",
-        "assets/backgrounds/guru.svg"
-      ],
-      "notes": [
-        "Do not remove the existing remote background override mechanism during the overhaul.",
-        "Add Back/Mid/Front parallax layers only where they improve stage depth."
-      ]
-    },
-    "recoveredManifest": {
-      "status": "archive-reference",
-      "path": "assets/production/recovered-assets-manifest.json",
-      "notes": [
-        "Retain until every referenced recovered asset has been classified and migrated."
-      ]
-    }
+    "bosses": {"status":"review-and-redesign","runtimeFolder":"assets/production/bosses/"},
+    "enemies": {"status":"expand-by-stage","runtimeFolder":"assets/production/enemies/"},
+    "fighter": {"status":"review","runtimeFolder":"assets/production/fighter/","archive":["assets/archive/superseded/fighter/tiertex-kick-copy.png"]},
+    "hazards": {"status":"expand-by-stage","runtimeFolder":"assets/production/hazards/"},
+    "collectibles": {"status":"keep-for-now","runtimeFolder":"assets/production/collectibles/"},
+    "powers": {"status":"keep-for-now","runtimeFolder":"assets/production/powers/"},
+    "invaders": {"status":"keep-then-polish","runtimeFolder":"assets/production/invaders/"},
+    "backgrounds": {"status":"preserve-and-layer","runtimeFolder":"assets/backgrounds/"},
+    "recoveredManifest": {"status":"archived-reference","path":"assets/archive/recovered/recovered-assets-manifest.json"}
   },
   "plannedStructure": {
-    "production": [
-      "player/main",
-      "player/fighter",
-      "enemies/<stage>",
-      "bosses/<stage>",
-      "hazards/<stage>",
-      "collectibles",
-      "powers",
-      "invaders",
-      "backgrounds",
-      "ui",
-      "fx"
-    ],
-    "source": [
-      "player-parts",
-      "sprite-work",
-      "boss-work",
-      "environment-work"
-    ],
-    "archive": [
-      "recovered",
-      "superseded"
-    ]
+    "production": ["player","enemies","bosses","hazards","fighter","collectibles","powers","invaders","ui","fx"],
+    "source": ["player-parts","sprite-work","boss-work","environment-work"],
+    "archive": ["recovered","superseded"]
   }
 }
