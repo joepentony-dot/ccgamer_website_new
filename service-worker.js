@@ -1,7 +1,7 @@
 /* CCG public offline service worker */
 "use strict";
 
-const CACHE_VERSION = "2026-08-20-public-release-v9";
+const CACHE_VERSION = "2026-08-25-public-release-v10";
 const SHELL_CACHE = `ccg-shell-${CACHE_VERSION}`;
 const PAGE_CACHE = `ccg-pages-${CACHE_VERSION}`;
 const ASSET_CACHE = `ccg-assets-${CACHE_VERSION}`;
@@ -50,6 +50,11 @@ const PRIVATE_PATH_PREFIXES = Object.freeze([
   "/supabase/"
 ]);
 
+const LOST_SIZZLER_PATH_PREFIXES = Object.freeze([
+  "/arcade/lost-sizzler/",
+  "/games/ccg-games/cheeky-commodore-quest/"
+]);
+
 const PUBLIC_DATA_PATHS = new Set([
   "/games/games.json",
   "/games/games-search.json",
@@ -77,6 +82,14 @@ function hasSensitiveQuery(url) {
 
 function isPrivatePath(pathname) {
   return PRIVATE_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+}
+
+function isLostSizzlerPath(value) {
+  let pathname = String(value || "");
+  try {
+    if (/^https?:/i.test(pathname)) pathname = new URL(pathname).pathname;
+  } catch (error) {}
+  return LOST_SIZZLER_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
 function isPrivateRequest(request, url) {
@@ -133,13 +146,26 @@ async function deleteOldCaches() {
   }));
 }
 
+async function deleteLostSizzlerCacheEntries() {
+  const keys = await caches.keys();
+  await Promise.all(keys.map(async (key) => {
+    if (!key.startsWith(CACHE_PREFIX)) return;
+    const cache = await caches.open(key);
+    const requests = await cache.keys();
+    await Promise.all(requests.map((request) => isLostSizzlerPath(request.url) ? cache.delete(request) : Promise.resolve(false)));
+  }));
+}
+
 async function networkFirstPage(event, request, url) {
   const cacheKey = normalisedPageRequest(url);
   const cache = await caches.open(PAGE_CACHE);
+  const lostSizzler = isLostSizzlerPath(url.pathname);
 
   try {
-    const preloaded = await event.preloadResponse;
-    const response = preloaded || await fetch(request);
+    // Lost Sizzler is a rapidly iterating browser game. Never allow navigation
+    // preload or the browser HTTP cache to hand its page shell an older build.
+    const preloaded = lostSizzler ? null : await event.preloadResponse;
+    const response = preloaded || await fetch(request, lostSizzler ? { cache: "reload" } : undefined);
     if (canStoreResponse(response)) await cache.put(cacheKey, response.clone());
     return response;
   } catch (error) {
@@ -256,6 +282,11 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("message", (event) => {
   if (event.data?.type === "SKIP_WAITING") {
     void self.skipWaiting();
+    return;
+  }
+
+  if (event.data?.type === "CLEAR_LOST_SIZZLER_CACHES") {
+    event.waitUntil(deleteLostSizzlerCacheEntries());
     return;
   }
 
