@@ -11,9 +11,9 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
 const index=read("index.html");
 
-// Delivery: r25 remains part of the canonical runtime under the current r27
+// Delivery: r25 remains part of the canonical runtime under the current r28
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
-assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260825r27/,"canonical page must load the r25 Spy hotfix under the current r27 cache token");
+assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260825r28/,"canonical page must load the r25 Spy hotfix under the current r28 cache token");
 
 // Movement: the emergency r24 fallback and ordinary movement must be re-armed
 // from one normal dungeon cadence after any real Spy movement.
@@ -27,7 +27,7 @@ assert.match(hotfix,/new Set\(\["sizzler-saboteurs","horde-survivor"\]\)/,"speci
 assert.match(hotfix,/if\(rare\.bounty\)\{rare\.bounty=null;changed=true\}/,"active rare-event bounty state must be purged in special modes");
 assert.match(hotfix,/if\(run\.dungeonBounty\)\{run\.dungeonBounty=null;changed=true\}/,"legacy dungeon bounty state must also be purged");
 assert.match(hotfix,/specialActive\(\)&&dungeonOnlyText\(title\)/,"dungeon-only toast presentation must be blocked while a special mode owns the run");
-assert.match(hotfix,/specialActive\(\)&&DUNGEON_VOICE_KEYS\.test/,"legacy dungeon bounty voice must be blocked while a special mode owns the run");
+assert.match(hotfix,/specialActive\(\)&&DUNGEON_VOICE_KEYS\.test/,"legacy dungeon bounty voice must be blocked while a special mode owns announcements");
 
 // Wrapper ownership: r24 and the major notification watchdog both periodically
 // reassert their wrappers. r25 must inherit their markers rather than causing
@@ -102,4 +102,4 @@ context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
 assert.equal(api.purgeSpecialDungeonState(),false,"ordinary dungeon bounty behaviour must remain untouched");
 assert.deepEqual(context.CCGLostSizzlerRareEvents.state.bounty,{type:"KILL 3 HUNTERS"});
 
-console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed.");
+console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed under r28.");

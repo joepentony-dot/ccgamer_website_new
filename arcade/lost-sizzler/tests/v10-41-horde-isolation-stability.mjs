@@ -13,6 +13,7 @@ const audio=read("js/horde-survivor-audio.js");
 const freeze=read("js/v10-41-startup-freeze-guard.js");
 const lake=read("js/v10-41-lake-item-safety.js");
 const noPause=read("js/v10-41-multiplayer-no-pause.js");
+const r28=read("js/v10-41-r28-special-mode-repair.js");
 const cacheGuard=read("js/v10-41-cache-guard.js");
 const index=read("index.html");
 const manifest=JSON.parse(read("version.json"));
@@ -36,7 +37,7 @@ assert.match(audio,/voice\.state\.queue\.length = 0/,"Horde audio isolation must
 
 // The repeated 92% freeze was traced to V10.36's synchronous canvas-to-data-URL
 // sprite re-encoding in the release-gate finish callback. The current release
-// must retain the r24 guard and never perform its own data URL conversion.
+// must retain the guard and never perform its own data URL conversion.
 assert.match(freeze,/source\.__ccgV136Guttered=true/,"startup guard must mark the legacy synchronous gutter conversion as already handled");
 assert.doesNotMatch(freeze,/\.toDataURL\s*\(/,"startup guard must never synchronously encode a canvas as a data URL");
 assert.match(freeze,/assets\.chests=canvas/,"deferred sprite preparation must use the canvas directly rather than allocating an encoded image string");
@@ -61,10 +62,22 @@ assert.match(noPause,/if\(readPlayMode\(\)==="online"\)return true/,"online Dung
 assert.match(noPause,/if\(hasSecondLocalPlayer\(\)\)return true/,"2P split screen must never pause");
 assert.match(noPause,/event\.code!=="Escape"&&event\.code!=="KeyP"/,"Escape and P must be intercepted in multiplayer");
 assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct pause calls must also be blocked in multiplayer");
+const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
+assert.ok(forcePlaying,"multiplayer no-pause layer must expose forcePlaying");
+assert.doesNotMatch(forcePlaying,/input\?*\.?clear|input\.clear/,"forcePlaying must never erase held movement/fire input on frame updates");
 
-assert.equal(manifest.build,"2026.08.25.27","Horde stability fixes must remain included in build .27");
-assert.equal(manifest.cacheToken,"20260825r27","Horde stability fixes must use the current r27 cache shell");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.27"/,"HTML build marker must match r27");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r27"/,"HTML cache marker must match r27");
+assert.match(r28,/HORDE_ARENA_CELLS=Object\.freeze\(\{width:94,height:58\}\)/,"r28 must use the moderated Horde arena");
+assert.match(r28,/HORDE_SPEED_SCALE=\.75/,"r28 must slow only the dedicated Horde movement model");
+assert.match(r28,/HORDE_LIGHT_RADIUS=28/,"r28 must give Horde substantially enlarged permanent lighting");
+assert.match(r28,/Math\.max\(1,oldMax-1\)/,"Horde HP reduction must preserve one-HP creatures");
+assert.match(r28,/player\.weapon\.shots=3/,"all local Horde weapons must become triple-shot");
+assert.match(r28,/HORDE_SUPPRESSED_TOAST=\/\^HORDE SCORE SAVED\$\/i/,"the unwanted Horde result toast must be suppressed");
+assert.match(r28,/value\.startsWith\("HORDE SURVIVOR"\)\|\|value\.startsWith\("DEFEATED "\)/,"the old canvas Horde banner text must be suppressed");
 
-console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, startup freeze and no-pause regression checks passed.");
+assert.equal(manifest.build,"2026.08.25.28","Horde stability fixes must remain included in build .28");
+assert.equal(manifest.cacheToken,"20260825r28","Horde stability fixes must use the current r28 cache shell");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.28"/,"HTML build marker must match r28");
+assert.match(index,/ccg-lost-sizzler-cache" content="20260825r28"/,"HTML cache marker must match r28");
+assert.match(index,/v10-41-r28-special-mode-repair\.js\?v=20260825r28/,"canonical HTML must load r28 under the same cache generation");
+
+console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, r28 input ownership, balance and startup regression checks passed.");

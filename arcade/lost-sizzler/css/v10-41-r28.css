@@ -1,0 +1,33 @@
+/* The Lost Sizzler V10.41 r28 — large-desktop viewport correction.
+ *
+ * The game renderer already sizes its internal canvas to the available play
+ * region. Earlier CSS later reintroduced a 1480px outer-shell cap, leaving a
+ * 2560x1440 display with large unused black margins. r28 removes only that
+ * presentation cap; gameplay coordinates and canvas simulation remain intact.
+ */
+html,body{
+  width:100%;
+  max-width:none!important;
+}
+.ccg-game,
+.ccg-game:fullscreen,
+.ccg-game:-webkit-full-screen{
+  width:100vw!important;
+  max-width:none!important;
+  margin:0!important;
+}
+@media (min-width:1600px){
+  .game-area{
+    width:100%!important;
+    max-width:none!important;
+  }
+  .canvas-wrap{
+    min-width:0!important;
+    width:auto!important;
+  }
+  .canvas-wrap canvas#game{
+    width:100%!important;
+    height:100%!important;
+    object-fit:fill!important;
+  }
+}
