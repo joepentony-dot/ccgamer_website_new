@@ -35,7 +35,9 @@ assert.match(network,/i\.ammoRounds=Math\.max\(0,available-rounds\)/,"unused res
 
 assert.match(polish,/const POTION_TARGETS=\[3,4,4,5,5\]/,"ground potion density must rise gradually by floor");
 assert.match(polish,/startWorld=function startWorldV130Polish/,"every generated floor must receive the final potion pass");
-assert.match(polish,/new MutationObserver\(update\)/,"the current build subtitle must survive older deferred UI initialisers");
+assert.match(polish,/Release branding is intentionally one-shot here/,"V10.30 must document one-shot release branding ownership");
+assert.match(polish,/version-check\.js remains the canonical owner/,"version-check must remain the canonical release-label owner");
+assert.doesNotMatch(polish,/new MutationObserver\(/,"legacy V10.30 branding must not restore the observer loop that fought the V10.41 release UI");
 assert.match(render,/function drawAmbientMotes\(\)/,"rooms must have restrained motif-aware ambient detail");
 assert.match(render,/prefers-reduced-motion: reduce/,"ambient motion must respect reduced-motion preference");
 assert.match(render,/function drawThreatEdgeIndicators\(p\)/,"incoming off-screen projectiles must have a directional warning");
