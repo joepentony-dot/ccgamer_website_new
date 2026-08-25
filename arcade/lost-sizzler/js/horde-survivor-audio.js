@@ -25,6 +25,141 @@
   const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
   const trackForWave = wave => TRACKS.find(track => Number(wave) >= track.from && Number(wave) <= track.to) || null;
 
+  /*
+   * Horde owns its own audio context. The ordinary dungeon voice director must
+   * never leak into this mode: bounty, sanctuary, shop, rare-event, objective,
+   * no-ammo and other dungeon-only cues are not Horde announcements. More
+   * importantly, delayed dungeon timers must not dump a run of stale speech
+   * after a Horde crash. Keep the user's VOICE preference intact, temporarily
+   * mute only the legacy director while Horde is active, and restore it on exit.
+   */
+  const legacyVoiceGuard = {
+    active: false,
+    previousEnabled: true,
+    timer: 0,
+    errorListenerInstalled: false,
+    clickListenerInstalled: false
+  };
+
+  function hordeIsActive() {
+    try {
+      if (root?.CCGLostSizzlerSpecialModes?.active?.type === "horde-survivor") return true;
+      if (root?.document?.body?.dataset?.specialMode === "horde-survivor") return true;
+    } catch (_) {}
+    return false;
+  }
+
+  function legacyVoice() {
+    try { return root?.CCGLostSizzlerVoice || null; }
+    catch (_) { return null; }
+  }
+
+  function cancelSpeechSynthesis() {
+    try { root?.speechSynthesis?.cancel?.(); }
+    catch (_) {}
+  }
+
+  function stopLegacyVoiceNow() {
+    const voice = legacyVoice();
+    if (!voice) { cancelSpeechSynthesis(); return false; }
+    try { voice.stop?.(); } catch (_) {}
+    try {
+      if (voice.state) {
+        if (Array.isArray(voice.state.queue)) voice.state.queue.length = 0;
+        voice.state.enabled = false;
+      }
+    } catch (_) {}
+    cancelSpeechSynthesis();
+    return true;
+  }
+
+  function enterLegacyVoiceGuard() {
+    if (legacyVoiceGuard.active) return true;
+    const voice = legacyVoice();
+    if (!voice) return false;
+    try { legacyVoiceGuard.previousEnabled = Boolean(voice.state?.enabled ?? voice.enabled); }
+    catch (_) { legacyVoiceGuard.previousEnabled = true; }
+    legacyVoiceGuard.active = true;
+    stopLegacyVoiceNow();
+    return true;
+  }
+
+  function maintainLegacyVoiceGuard() {
+    if (!legacyVoiceGuard.active) return false;
+    const voice = legacyVoice();
+    if (!voice) return false;
+    try {
+      if (voice.state) {
+        if (Array.isArray(voice.state.queue) && voice.state.queue.length) voice.state.queue.length = 0;
+        if (voice.state.enabled) voice.state.enabled = false;
+      }
+    } catch (_) {}
+    return true;
+  }
+
+  function leaveLegacyVoiceGuard() {
+    if (!legacyVoiceGuard.active) return false;
+    const voice = legacyVoice();
+    try {
+      if (voice?.state) {
+        if (Array.isArray(voice.state.queue)) voice.state.queue.length = 0;
+        voice.state.enabled = Boolean(legacyVoiceGuard.previousEnabled);
+      }
+    } catch (_) {}
+    cancelSpeechSynthesis();
+    legacyVoiceGuard.active = false;
+    return true;
+  }
+
+  function syncLegacyVoiceGuard() {
+    if (hordeIsActive()) {
+      if (!legacyVoiceGuard.active) enterLegacyVoiceGuard();
+      else maintainLegacyVoiceGuard();
+    } else if (legacyVoiceGuard.active) {
+      leaveLegacyVoiceGuard();
+    }
+  }
+
+  function installLegacyVoiceGuard() {
+    if (!root?.document || typeof root.setInterval !== "function") return false;
+    if (!legacyVoiceGuard.timer) legacyVoiceGuard.timer = root.setInterval(syncLegacyVoiceGuard, 100);
+
+    if (!legacyVoiceGuard.errorListenerInstalled && typeof root.addEventListener === "function") {
+      const crashSilence = () => {
+        if (!hordeIsActive()) return;
+        enterLegacyVoiceGuard();
+        stopLegacyVoiceNow();
+      };
+      root.addEventListener("error", crashSilence);
+      root.addEventListener("unhandledrejection", crashSilence);
+      root.addEventListener("pagehide", () => {
+        if (legacyVoiceGuard.timer) {
+          root.clearInterval?.(legacyVoiceGuard.timer);
+          legacyVoiceGuard.timer = 0;
+        }
+        if (legacyVoiceGuard.active) leaveLegacyVoiceGuard();
+      }, { once: true });
+      legacyVoiceGuard.errorListenerInstalled = true;
+    }
+
+    if (!legacyVoiceGuard.clickListenerInstalled) {
+      root.document.addEventListener("click", event => {
+        if (!hordeIsActive()) return;
+        const button = event.target?.closest?.("#voice-btn");
+        if (!button) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        maintainLegacyVoiceGuard();
+      }, true);
+      legacyVoiceGuard.clickListenerInstalled = true;
+    }
+
+    syncLegacyVoiceGuard();
+    return true;
+  }
+
+  installLegacyVoiceGuard();
+
   function createController(options = {}) {
     const config = { ...DEFAULTS, ...options };
     config.maximumVolume = clamp(config.maximumVolume, 0, DEFAULTS.maximumVolume);
@@ -101,5 +236,14 @@
     return Object.freeze({ start, stop, stopImmediate, setWave, duck, setVolume, setEnabled, dispose, state });
   }
 
-  return Object.freeze({ TRACKS, DEFAULTS, trackForWave, createController });
+  return Object.freeze({
+    TRACKS, DEFAULTS, trackForWave, createController,
+    hordeIsActive, syncLegacyVoiceGuard,
+    get legacyVoiceGuardState() {
+      return Object.freeze({
+        active: legacyVoiceGuard.active,
+        previousEnabled: legacyVoiceGuard.previousEnabled
+      });
+    }
+  });
 });
