@@ -57,6 +57,7 @@ jobs:
           node --check arcade/quest/game/audio.js
           node --check arcade/quest/game/achievements.js
           node --check arcade/quest/game/main-v3.js
+          node --check arcade/quest/tests/quest-2-browser.mjs
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
@@ -127,3 +128,27 @@ jobs:
 
       - name: Validate Arcade Quest 2.0 contract
         run: node scripts/validate-arcade-quest.js
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Chromium regression runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Exercise Commodore Quest 2.0 in Chromium
+        shell: bash
+        run: |
+          set -euo pipefail
+          node arcade/quest/tests/quest-2-browser.mjs
