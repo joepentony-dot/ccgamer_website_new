@@ -10,6 +10,12 @@
   window.__CCG_LOST_SIZZLER_V141_TUTORIAL_ACTION_FINALIZER__=true;
   const state={installed:false,wraps:0,corrected:0,timer:0};
 
+  function loadMerchantHardening(){
+    if(document.querySelector('script[data-ccg-v141-wandering-merchant-hardening="true"]'))return;
+    const rev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+    const script=document.createElement("script");script.src=`js/v10-41-wandering-merchant-hardening.js?v=${encodeURIComponent(rev)}`;script.async=false;script.dataset.ccgV141WanderingMerchantHardening="true";document.head.appendChild(script);
+  }
+
   function tutorial(){return window.CCGLostSizzlerOnboardingV120?.state||null}
   function tutorialApi(){return window.CCGLostSizzlerOnboardingV120||null}
   function clampCount(value){return Math.max(0,Math.min(3,Number(value||0)))}
@@ -106,10 +112,11 @@
     state.installed=Boolean(moveReady&&fireReady&&dashReady);return state.installed;
   }
   function ready(){return document.body?.dataset?.releaseReady==="true"||window.CCGLostSizzlerReleaseGate?.state?.ready===true}
+  loadMerchantHardening();
   const gate=window.CCGLostSizzlerReleaseGate?.state?.promise;
   if(gate&&typeof gate.then==="function")gate.then(ok=>{if(ok!==false)install()}).catch(()=>{});
   state.timer=setInterval(()=>{if(ready())install()},60);
   if(ready())install();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141TutorialActionFinalizer={install,repaintCount,get state(){return state}};
+  window.CCGLostSizzlerV141TutorialActionFinalizer={install,repaintCount,loadMerchantHardening,get state(){return state}};
 })();
