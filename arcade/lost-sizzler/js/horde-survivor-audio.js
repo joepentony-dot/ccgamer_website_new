@@ -1,4 +1,4 @@
-/* The Lost Sizzler — quiet, wave-aware Horde Survivor music controller. */
+/* The Lost Sizzler — wave-aware Horde music controller with a dedicated solo master. */
 (function installHordeAudio(root, factory) {
   "use strict";
   const api = factory(root);
@@ -6,6 +6,13 @@
   if (root) root.CCGLostSizzlerHordeAudio = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function createHordeAudioApi(root) {
   "use strict";
+
+  const SOLO_TRACK = Object.freeze({
+    id: "solo-master",
+    from: 1,
+    to: 10,
+    src: "assets/audio/music/horde-survivor-solo-master.mp3"
+  });
 
   const TRACKS = Object.freeze([
     Object.freeze({ id: "waves-1-4", from: 1, to: 4, src: "assets/audio/music/horde-survival-waves-1-4.ogg" }),
@@ -17,13 +24,33 @@
     baseVolume: 0.13,
     duckedVolume: 0.05,
     maximumVolume: 0.18,
+    soloBaseVolume: 0.22,
+    soloDuckedVolume: 0.08,
+    soloMaximumVolume: 0.26,
     fadeInMs: 900,
     fadeOutMs: 500,
-    voiceDuckMs: 2800
+    voiceDuckMs: 2800,
+    runtimeSyncMs: 250
   });
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
-  const trackForWave = wave => TRACKS.find(track => Number(wave) >= track.from && Number(wave) <= track.to) || null;
+  const normalisePlayerCount = value => Math.max(1, Math.min(4, Math.floor(Number(value) || 2)));
+  const trackForWave = (wave, playerCount = 2) => {
+    if (normalisePlayerCount(playerCount) === 1) return SOLO_TRACK;
+    return TRACKS.find(track => Number(wave) >= track.from && Number(wave) <= track.to) || null;
+  };
+
+  function runtimePlayerCount() {
+    try {
+      const active = root?.CCGLostSizzlerSpecialModes?.active;
+      if (active?.type !== "horde-survivor") return null;
+      const explicit = Number(active.state?.playerCount);
+      if (Number.isFinite(explicit) && explicit > 0) return normalisePlayerCount(explicit);
+      const players = active.state?.players;
+      if (Array.isArray(players) && players.length) return normalisePlayerCount(players.length);
+    } catch (_) {}
+    return null;
+  }
 
   /*
    * Horde owns its own audio context. The ordinary dungeon voice director must
@@ -162,83 +189,246 @@
 
   function createController(options = {}) {
     const config = { ...DEFAULTS, ...options };
-    config.maximumVolume = clamp(config.maximumVolume, 0, DEFAULTS.maximumVolume);
+    config.maximumVolume = clamp(config.maximumVolume, 0, 1);
     config.baseVolume = clamp(config.baseVolume, 0, config.maximumVolume);
     config.duckedVolume = clamp(config.duckedVolume, 0, config.baseVolume);
+    config.soloMaximumVolume = clamp(config.soloMaximumVolume, 0, 1);
+    config.soloBaseVolume = clamp(config.soloBaseVolume, 0, config.soloMaximumVolume);
+    config.soloDuckedVolume = clamp(config.soloDuckedVolume, 0, config.soloBaseVolume);
+    config.runtimeSyncMs = Math.max(100, Math.floor(Number(config.runtimeSyncMs) || DEFAULTS.runtimeSyncMs));
+
     const AudioClass = options.AudioClass || root?.Audio;
     let audio = null, enabled = true, playing = false, currentTrack = null;
-    let baseVolume = config.baseVolume, fadeTimer = null, duckTimer = null;
+    let currentWave = 1, currentPlayerCount = normalisePlayerCount(options.playerCount ?? 2);
+    let normalBaseVolume = config.baseVolume, soloBaseVolume = config.soloBaseVolume;
+    let fadeTimer = null, duckTimer = null, runtimeTimer = null;
 
-    function clearFade() { if (fadeTimer !== null) { clearInterval(fadeTimer); fadeTimer = null; } }
-    function clearDuck() { if (duckTimer !== null) { clearTimeout(duckTimer); duckTimer = null; } }
+    const soloMode = () => currentPlayerCount === 1;
+    const volumeLimit = () => soloMode() ? config.soloMaximumVolume : config.maximumVolume;
+    const targetBaseVolume = () => soloMode() ? soloBaseVolume : normalBaseVolume;
+    const targetDuckedVolume = () => soloMode() ? config.soloDuckedVolume : config.duckedVolume;
+
+    function clearFade() {
+      if (fadeTimer !== null) {
+        clearInterval(fadeTimer);
+        fadeTimer = null;
+      }
+    }
+
+    function clearDuck() {
+      if (duckTimer !== null) {
+        clearTimeout(duckTimer);
+        duckTimer = null;
+      }
+    }
+
+    function clearRuntimeSync() {
+      if (runtimeTimer !== null) {
+        (root?.clearInterval || clearInterval)(runtimeTimer);
+        runtimeTimer = null;
+      }
+    }
+
     function ensureAudio() {
       if (audio || !AudioClass) return audio;
-      audio = new AudioClass(); audio.loop = true; audio.preload = "auto"; audio.volume = 0;
+      audio = new AudioClass();
+      audio.loop = true;
+      audio.preload = "auto";
+      audio.volume = 0;
       audio.addEventListener?.("error", () => { playing = false; });
       return audio;
     }
+
     function fadeTo(target, durationMs) {
-      const element = ensureAudio(); if (!element) return false;
-      clearFade(); const safeTarget = clamp(target, 0, config.maximumVolume), duration = Math.max(0, Number(durationMs) || 0);
-      if (!duration) { element.volume = safeTarget; return true; }
+      const element = ensureAudio();
+      if (!element) return false;
+      clearFade();
+      const safeTarget = clamp(target, 0, volumeLimit());
+      const duration = Math.max(0, Number(durationMs) || 0);
+      if (!duration) {
+        element.volume = safeTarget;
+        return true;
+      }
       const startedAt = Date.now(), start = element.volume;
       fadeTimer = setInterval(() => {
         const progress = Math.min(1, (Date.now() - startedAt) / duration);
-        element.volume = clamp(start + (safeTarget - start) * progress, 0, config.maximumVolume);
+        element.volume = clamp(start + (safeTarget - start) * progress, 0, volumeLimit());
         if (progress >= 1) clearFade();
       }, 40);
-      fadeTimer.unref?.(); return true;
+      fadeTimer.unref?.();
+      return true;
     }
-    async function setWave(wave) {
+
+    async function setWave(wave, playerCountOverride = null) {
+      currentWave = Math.max(1, Math.min(10, Math.floor(Number(wave) || 1)));
+      if (playerCountOverride !== null && playerCountOverride !== undefined) {
+        currentPlayerCount = normalisePlayerCount(playerCountOverride);
+      }
+
       root?.CCGLostSizzlerMusicBus?.claim?.("horde-survivor", () => stopImmediate(false));
-      const next = trackForWave(wave), element = ensureAudio();
+      const next = trackForWave(currentWave, currentPlayerCount), element = ensureAudio();
       if (!next || !element) return false;
-      if (currentTrack?.id === next.id && playing) return true;
+
+      if (currentTrack?.id === next.id && playing) {
+        if (duckTimer === null) fadeTo(targetBaseVolume(), 180);
+        return true;
+      }
+
       if (currentTrack && playing && config.fadeOutMs > 0) {
         fadeTo(0, config.fadeOutMs);
         await new Promise(resolve => setTimeout(resolve, config.fadeOutMs));
       }
-      clearFade(); element.pause?.(); element.volume = 0; element.src = next.src; element.currentTime = 0; currentTrack = next; playing = false;
+
+      clearFade();
+      element.pause?.();
+      element.volume = 0;
+      element.src = next.src;
+      element.currentTime = 0;
+      currentTrack = next;
+      playing = false;
+
       if (enabled) {
-        try { await element.play(); playing = true; fadeTo(baseVolume, config.fadeInMs); }
-        catch { playing = false; }
+        try {
+          await element.play();
+          playing = true;
+          fadeTo(targetBaseVolume(), config.fadeInMs);
+        } catch {
+          playing = false;
+        }
       }
       return true;
     }
-    async function start(wave = 1) { return setWave(wave); }
+
+    async function setPlayerCount(value) {
+      const nextCount = normalisePlayerCount(value);
+      if (nextCount === currentPlayerCount) return true;
+      currentPlayerCount = nextCount;
+      return setWave(currentWave);
+    }
+
+    function startRuntimeSync() {
+      if (runtimeTimer !== null || typeof (root?.setInterval || setInterval) !== "function") return false;
+      runtimeTimer = (root?.setInterval || setInterval)(() => {
+        const nextCount = runtimePlayerCount();
+        if (nextCount && nextCount !== currentPlayerCount) {
+          setPlayerCount(nextCount).catch(() => {});
+        }
+      }, config.runtimeSyncMs);
+      runtimeTimer.unref?.();
+      return true;
+    }
+
+    async function start(wave = 1) {
+      /*
+       * The special-mode adapter creates this controller immediately before it
+       * creates the Horde run state. One microtask gives that state time to
+       * appear, allowing the first track selection to know whether the room is
+       * solo without changing the adapter's established launch order.
+       */
+      await Promise.resolve();
+      const count = runtimePlayerCount();
+      if (count) currentPlayerCount = count;
+      startRuntimeSync();
+      return setWave(wave);
+    }
+
     function stopImmediate(releaseOwnership = true) {
-      clearFade(); clearDuck();
-      if (audio) { try { audio.volume = 0; audio.pause?.(); } catch (_) {} }
+      clearFade();
+      clearDuck();
+      if (audio) {
+        try {
+          audio.volume = 0;
+          audio.pause?.();
+        } catch (_) {}
+      }
       playing = false;
       if (releaseOwnership) root?.CCGLostSizzlerMusicBus?.release?.("horde-survivor");
       return true;
     }
-    function stop() {
-      const element = ensureAudio(); if (!element) return false;
-      clearDuck(); fadeTo(0, config.fadeOutMs);
-      const timer = setTimeout(() => { element.pause?.(); playing = false; root?.CCGLostSizzlerMusicBus?.release?.("horde-survivor"); }, config.fadeOutMs + 50); timer.unref?.(); return true;
-    }
-    function duck(durationMs = config.voiceDuckMs) {
-      const element = ensureAudio(); if (!element || !playing) return false;
-      clearDuck(); fadeTo(config.duckedVolume, 120);
-      duckTimer = setTimeout(() => { duckTimer = null; if (enabled && playing) fadeTo(baseVolume, 280); }, Math.max(250, durationMs));
-      duckTimer.unref?.(); return true;
-    }
-    function setVolume(value) {
-      baseVolume = clamp(value, 0, config.maximumVolume);
-      if (audio && playing && duckTimer === null) fadeTo(baseVolume, 120);
-      return baseVolume;
-    }
-    function setEnabled(value) { enabled = Boolean(value); if (!enabled) stop(); return enabled; }
-    function dispose() { stopImmediate(); audio = null; currentTrack = null; }
-    function state() { return Object.freeze({ enabled, playing, waveTrack: currentTrack?.id || null, volume: audio?.volume || 0, baseVolume }); }
 
-    return Object.freeze({ start, stop, stopImmediate, setWave, duck, setVolume, setEnabled, dispose, state });
+    function stop() {
+      const element = ensureAudio();
+      if (!element) return false;
+      clearDuck();
+      fadeTo(0, config.fadeOutMs);
+      const timer = setTimeout(() => {
+        element.pause?.();
+        playing = false;
+        root?.CCGLostSizzlerMusicBus?.release?.("horde-survivor");
+      }, config.fadeOutMs + 50);
+      timer.unref?.();
+      return true;
+    }
+
+    function duck(durationMs = config.voiceDuckMs) {
+      const element = ensureAudio();
+      if (!element || !playing) return false;
+      clearDuck();
+      fadeTo(targetDuckedVolume(), 120);
+      duckTimer = setTimeout(() => {
+        duckTimer = null;
+        if (enabled && playing) fadeTo(targetBaseVolume(), 280);
+      }, Math.max(250, durationMs));
+      duckTimer.unref?.();
+      return true;
+    }
+
+    function setVolume(value) {
+      if (soloMode()) soloBaseVolume = clamp(value, 0, config.soloMaximumVolume);
+      else normalBaseVolume = clamp(value, 0, config.maximumVolume);
+      if (audio && playing && duckTimer === null) fadeTo(targetBaseVolume(), 120);
+      return targetBaseVolume();
+    }
+
+    function setEnabled(value) {
+      enabled = Boolean(value);
+      if (!enabled) stop();
+      return enabled;
+    }
+
+    function dispose() {
+      clearRuntimeSync();
+      stopImmediate();
+      audio = null;
+      currentTrack = null;
+    }
+
+    function state() {
+      return Object.freeze({
+        enabled,
+        playing,
+        waveTrack: currentTrack?.id || null,
+        volume: audio?.volume || 0,
+        baseVolume: targetBaseVolume(),
+        playerCount: currentPlayerCount,
+        solo: soloMode(),
+        wave: currentWave
+      });
+    }
+
+    return Object.freeze({
+      start,
+      stop,
+      stopImmediate,
+      setWave,
+      setPlayerCount,
+      duck,
+      setVolume,
+      setEnabled,
+      dispose,
+      state
+    });
   }
 
   return Object.freeze({
-    TRACKS, DEFAULTS, trackForWave, createController,
-    hordeIsActive, syncLegacyVoiceGuard,
+    SOLO_TRACK,
+    TRACKS,
+    DEFAULTS,
+    trackForWave,
+    runtimePlayerCount,
+    createController,
+    hordeIsActive,
+    syncLegacyVoiceGuard,
     get legacyVoiceGuardState() {
       return Object.freeze({
         active: legacyVoiceGuard.active,
