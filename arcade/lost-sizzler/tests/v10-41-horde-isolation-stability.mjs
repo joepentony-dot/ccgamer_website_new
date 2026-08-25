@@ -50,9 +50,12 @@ assert.match(lake,/v10-41-horde-mode-safety\.js\?v=20260825e/,"r20 safety entry 
 assert.match(lake,/v10-41-multiplayer-no-pause\.js\?v=20260825e/,"r20 safety entry must request multiplayer no-pause hardening");
 
 // Pause rules: all real multiplayer modes continue; Solo Horde remains a
-// single-player run and therefore retains pause.
+// single-player run and therefore retains pause even though the shared special
+// launcher internally labels it playMode="online".
 assert.match(noPause,/if\(type==="sizzler-saboteurs"\)return true/,"Spy Vs Spy must never pause");
-assert.match(noPause,/if\(type==="horde-survivor"\)[\s\S]*return readPlayMode\(\)==="online"\|\|count>1/,"Horde Multiplayer must disable pause while Solo Horde remains pauseable");
+assert.match(noPause,/function soloHorde\(\)\{return document\.body\?\.dataset\?\.hordeSolo==="true"\}/,"Solo Horde must have an explicit single-player discriminator");
+assert.match(noPause,/if\(soloHorde\(\)\)return false/,"Solo Horde must remain pauseable before the shared online playMode flag is considered");
+assert.match(noPause,/if\(type==="horde-survivor"\)[\s\S]*return readPlayMode\(\)==="online"\|\|count>1/,"all non-Solo Horde runs must disable pause, including a multiplayer host currently alone in the room");
 assert.match(noPause,/if\(readPlayMode\(\)==="online"\)return true/,"online Dungeon Multiplayer must never pause");
 assert.match(noPause,/if\(hasSecondLocalPlayer\(\)\)return true/,"2P split screen must never pause");
 assert.match(noPause,/event\.code!=="Escape"&&event\.code!=="KeyP"/,"Escape and P must be intercepted in multiplayer");
