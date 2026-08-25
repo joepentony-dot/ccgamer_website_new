@@ -48,35 +48,41 @@
   }
 
   function wrapPause(){
-    if(state.pauseWrapped||typeof window.pause!=="function")return state.pauseWrapped;
-    const original=window.pause;
-    window.pause=function pauseV141MultiplayerLock(){
+    const current=window.pause;if(typeof current!=="function")return false;
+    if(current.__ccgV141MultiplayerNoPause){state.pauseWrapped=true;return true}
+    const original=current;
+    const wrapped=function pauseV141MultiplayerLock(){
       if(multiplayerActive()){forcePlaying();notice();return false}
       return original.apply(this,arguments)
     };
-    state.pauseWrapped=true;return true;
+    wrapped.__ccgV141MultiplayerNoPause=true;wrapped.__ccgV141MultiplayerOriginal=original;
+    window.pause=wrapped;state.pauseWrapped=true;return true;
   }
 
   function wrapPauseMenu(){
-    if(state.menuWrapped||typeof window.openPauseMenu!=="function")return state.menuWrapped;
-    const original=window.openPauseMenu;
-    window.openPauseMenu=function openPauseMenuV141MultiplayerLock(){
+    const current=window.openPauseMenu;if(typeof current!=="function")return false;
+    if(current.__ccgV141MultiplayerNoPause){state.menuWrapped=true;return true}
+    const original=current;
+    const wrapped=function openPauseMenuV141MultiplayerLock(){
       if(multiplayerActive()){forcePlaying();notice();return false}
       return original.apply(this,arguments)
     };
-    state.menuWrapped=true;return true;
+    wrapped.__ccgV141MultiplayerNoPause=true;wrapped.__ccgV141MultiplayerOriginal=original;
+    window.openPauseMenu=wrapped;state.menuWrapped=true;return true;
   }
 
   function wrapUpdate(){
-    if(state.updateWrapped||typeof window.update!=="function")return state.updateWrapped;
-    const original=window.update;
-    window.update=function updateV141MultiplayerNoPause(){
+    const current=window.update;if(typeof current!=="function")return false;
+    if(current.__ccgV141MultiplayerNoPause){state.updateWrapped=true;return true}
+    const original=current;
+    const wrapped=function updateV141MultiplayerNoPause(){
       if(multiplayerActive())forcePlaying();
       const result=original.apply(this,arguments);
       if(multiplayerActive())forcePlaying();
       return result
     };
-    state.updateWrapped=true;return true;
+    wrapped.__ccgV141MultiplayerNoPause=true;wrapped.__ccgV141MultiplayerOriginal=original;
+    window.update=wrapped;state.updateWrapped=true;return true;
   }
 
   function blockPauseKey(event){
@@ -95,11 +101,11 @@
     try{window.CCGLostSizzlerSpecialModes?.stop?.()}catch(_){}
   }
 
-  function install(){wrapPause();wrapPauseMenu();wrapUpdate();return state.pauseWrapped&&state.updateWrapped}
+  function install(){return Boolean(wrapPause()&&wrapPauseMenu()&&wrapUpdate())}
   addEventListener("keydown",blockPauseKey,true);
   document.addEventListener("click",multiplayerQuit,true);
-  state.timer=setInterval(()=>{install();if(multiplayerActive())forcePlaying();if(state.pauseWrapped&&state.menuWrapped&&state.updateWrapped){clearInterval(state.timer);state.timer=0}},80);
+  state.timer=setInterval(()=>{install();if(multiplayerActive())forcePlaying()},120);
   install();
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);removeEventListener("keydown",blockPauseKey,true);document.removeEventListener("click",multiplayerQuit,true)},{once:true});
-  window.CCGLostSizzlerV141MultiplayerNoPause={multiplayerActive,soloHorde,forcePlaying,get state(){return state}};
+  window.CCGLostSizzlerV141MultiplayerNoPause={install,multiplayerActive,soloHorde,forcePlaying,get state(){return state}};
 })();
