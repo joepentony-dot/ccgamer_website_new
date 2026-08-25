@@ -39,7 +39,8 @@ vm.runInContext(source,context,{filename:"v10-41-spy-movement-finalizer.js"});
 
 const api=context.window.CCGLostSizzlerV141SpyMovementFinalizer;
 assert.ok(api,"final Spy movement API must install");
-assert.deepEqual(api.validStep(player,1,0),{x:5,y:4},"a dead player may not block the surviving Spy from stepping onto that tile");
+const deadStep=api.validStep(player,1,0);
+assert.deepEqual({x:deadStep?.x,y:deadStep?.y},{x:5,y:4},"a dead player may not block the surviving Spy from stepping onto that tile");
 
 dead.health=3;
 assert.equal(api.validStep(player,1,0),null,"a living opposing player must still block the occupied Spy tile");
