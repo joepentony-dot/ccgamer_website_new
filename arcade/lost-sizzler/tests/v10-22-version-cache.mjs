@@ -69,6 +69,8 @@ assert.match(index,/essential keys or an Exit Sigil are returned safely to the f
 assert.match(index,/THE GAMBLER/,"published rulebook must document the rare Gambler encounter");
 assert.match(index,/press G to stake 1,000 score/i,"published rulebook must explain how the Gambler is used");
 
+/* Browser-crash regression: V10.30 and V10.41 once used opposing MutationObservers
+ * to force different version labels, producing an endless mutation loop. */
 assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must write the current V10.41 branding rather than V10.35");
 assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");
 assert.doesNotMatch(legacyPolish,/new MutationObserver/,"legacy V10.30 polish must never observe/rewrite release branding again");
@@ -136,8 +138,15 @@ assert.match(checker,/v10-41-progression-recovery\.js/,"V10.41 loader must inclu
 
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
-assert.match(homeScript,/js\/ccg-lost-sizzler-leaderboard\.js/,"home page must request the reusable Lost Sizzler leaderboard component");
-assert.match(homeCtaCss,/home-hero__sizzler-mark/,"home CTA styling must include the Lost Sizzler recognition mark");
-assert.match(homeCtaCss,/ccg-lost-sizzler-leaderboards/,"home CTA stylesheet must style the public Lost Sizzler leaderboard module");
+assert.match(homeScript,/arcade\/lost-sizzler\/assets\/lost-sizzler\.webp/,"home-page mark must reuse the canonical Lost Sizzler artwork");
+assert.match(homeScript,/home-lost-sizzler-cta\.css\?v=20260823b/,"home-page logo styling must remain versioned");
+assert.match(homeScript,/document\.createElement\("span"\)/,"Lost Sizzler recognition mark must be decorative rather than a second interactive link");
+assert.match(homeScript,/mark\.setAttribute\("aria-hidden", "true"\)/,"decorative Lost Sizzler mark must be removed from the interaction/accessibility path");
+assert.match(homeScript,/image\.draggable = false/,"Lost Sizzler recognition image must not start browser drag gestures");
+assert.doesNotMatch(homeScript,/addEventListener\(["']wheel["']/,"home recognition script must never intercept mouse-wheel scrolling");
+assert.doesNotMatch(homeScript,/preventDefault\(\)/,"home recognition script must not cancel scrolling or pointer defaults");
+assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must have isolated home-page styling");
+assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
+assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler V10.41 r27 version/cache, UI, tutorial, live-state and startup-crash regression checks passed.");
+console.log("Lost Sizzler r27 build, cache sanitation, Horde isolation, startup-freeze, no-standard-room-respawn and Spy/enemy stability regression checks passed.");
