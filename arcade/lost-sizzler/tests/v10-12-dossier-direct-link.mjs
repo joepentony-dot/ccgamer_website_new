@@ -25,7 +25,7 @@ assert.match(loader,/DOMContentLoaded.*startEnhancements/s,"direct-link enhancem
 assert.doesNotMatch(loader,/window\.addEventListener\("load"/,"direct-link startup no longer waits for the full load event");
 assert.match(loader,/optional enhancement timed out/,"a stalled optional enhancement cannot freeze the rest of the patch queue");
 assert.ok(loader.indexOf("v10-9-browser-stability.js")<loader.indexOf("lost-sizzler-playlist-audio.js"),"browser stability guard loads before optional audio enhancements");
-assert.match(loader,/CCG_DOSSIER_REV="20260823b"/,"updated dossier logic is cache-busted");
+assert.match(loader,/const CCG_DOSSIER_REV=CCG_RELEASE_REV;/,"dossier logic inherits the current published release token rather than a stale hard-coded revision");
 
 assert.match(main,/installEarlyStableResize/,"base game installs a stability guard before its first resize");
 assert.match(main,/pixelBudget/,"cold boot canvas allocation has a device-aware pixel ceiling");
