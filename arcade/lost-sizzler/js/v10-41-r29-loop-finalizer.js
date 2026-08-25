@@ -8,7 +8,7 @@
     timer:0,reassertions:0,lastLoop:null,
     spyRuntimeRequested:false,spyRuntimeReady:false,spyRuntimeError:"",
     spyNetworkRequested:false,spyNetworkReady:false,spyNetworkError:"",
-    notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false
+    notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,notificationToastWrapped:false
   };
 
   const releaseRevision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"20260825r29");
@@ -80,8 +80,34 @@
     return syncNotificationRail();
   }
 
+  function toastChainHasRailOwner(fn){
+    let current=fn;
+    for(let depth=0;depth<12&&typeof current==="function";depth++){
+      if(current.__ccgV141R29NotificationRailOwner)return true;
+      current=current.__ccgOriginal||current.__ccgV141Original||null;
+    }
+    return false;
+  }
+
+  function ensureNotificationToastOwner(){
+    const current=window.showToast;
+    if(typeof current!=="function")return false;
+    if(toastChainHasRailOwner(current)){state.notificationToastWrapped=true;return true}
+    const wrapped=function showToastV141R29NotificationRail(){
+      const result=current.apply(this,arguments);
+      // displayToast adds .show on its own requestAnimationFrame. Queue our
+      // rail synchronization immediately behind it so both become visible in
+      // the same rendered frame, regardless of older showToast wrappers.
+      requestAnimationFrame(syncNotificationRail);
+      return result;
+    };
+    wrapped.__ccgV141R29NotificationRailOwner=true;
+    wrapped.__ccgOriginal=current;
+    window.showToast=wrapped;state.notificationToastWrapped=true;return true;
+  }
+
   function maintain(){
-    ensureFinalLoop();ensureSpyRuntime();ensureSpyNetwork();ensureNotificationRailGuard();
+    ensureFinalLoop();ensureSpyRuntime();ensureSpyNetwork();ensureNotificationRailGuard();ensureNotificationToastOwner();
   }
 
   maintain();
@@ -92,5 +118,5 @@
     state.notificationObserver=null;
   },{once:true});
 
-  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureSpyNetwork,ensureNotificationRailGuard,syncNotificationRail,get state(){return state}};
+  window.CCGLostSizzlerV141R29LoopFinalizer={ensureFinalLoop,ensureSpyRuntime,ensureSpyNetwork,ensureNotificationRailGuard,ensureNotificationToastOwner,syncNotificationRail,get state(){return state}};
 })();
