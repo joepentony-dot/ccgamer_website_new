@@ -1,0 +1,88 @@
+name: Apply Horde Master Code
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-horde-solo-master
+    paths:
+      - .audio-upload/CODE_READY
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Apply Horde-only master soundtrack wiring
+        shell: python
+        run: |
+          from pathlib import Path
+
+          audio_path = Path('arcade/lost-sizzler/js/horde-survivor-audio.js')
+          text = audio_path.read_text()
+          old = '''  const SOLO_TRACK = Object.freeze({
+            id: "solo-master",
+            from: 1,
+            to: 10,
+            src: "assets/audio/music/horde-survivor-solo-master.mp3"
+          });'''
+          new = '''  const HORDE_TRACK = Object.freeze({
+            id: "horde-master",
+            from: 1,
+            to: 10,
+            src: "assets/audio/music/horde-survivor-master.ogg"
+          });
+          const SOLO_TRACK = HORDE_TRACK;'''
+          if old not in text:
+              raise SystemExit('Expected Horde track block not found')
+          text = text.replace(old, new, 1)
+          text = text.replace('''    baseVolume: 0.13,
+            duckedVolume: 0.05,
+            maximumVolume: 0.18,''', '''    baseVolume: 0.22,
+            duckedVolume: 0.08,
+            maximumVolume: 0.26,''', 1)
+          old_next = 'const next = trackForWave(currentWave, currentPlayerCount), element = ensureAudio();'
+          if old_next not in text:
+              raise SystemExit('Expected track selection line not found')
+          text = text.replace(old_next, 'const next = HORDE_TRACK, element = ensureAudio();', 1)
+          text = text.replace('''  return Object.freeze({
+            SOLO_TRACK,''', '''  return Object.freeze({
+            HORDE_TRACK,
+            SOLO_TRACK,''', 1)
+          audio_path.write_text(text)
+
+          contract = Path('arcade/lost-sizzler/tests/horde-survivor-contract.mjs')
+          t = contract.read_text()
+          t = t.replace('assert.equal(music.state().waveTrack, "waves-1-4");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
+          t = t.replace('assert.equal(music.state().volume, 0.13);', 'assert.equal(music.state().volume, 0.22);', 1)
+          t = t.replace('assert.equal(music.state().waveTrack, "waves-5-9");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
+          t = t.replace('assert.equal(music.state().waveTrack, "wave-10");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
+          t = t.replace('assert.equal(music.setVolume(1), 0.18);', 'assert.equal(music.setVolume(1), 0.26);', 1)
+          contract.write_text(t)
+
+          solo_contract = Path('arcade/lost-sizzler/tests/horde-solo-music-contract.mjs')
+          t = solo_contract.read_text()
+          t = t.replace('assert.equal(HA.SOLO_TRACK.id, "solo-master");', 'assert.equal(HA.HORDE_TRACK.id, "horde-master");')
+          t = t.replace('assert.equal(HA.SOLO_TRACK.src, "assets/audio/music/horde-survivor-solo-master.mp3");', 'assert.equal(HA.HORDE_TRACK.src, "assets/audio/music/horde-survivor-master.ogg");')
+          t = t.replace('assert.equal(music.state().waveTrack, "solo-master");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          t = t.replace('assert.equal(music.state().waveTrack, "waves-5-9");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          solo_contract.write_text(t)
+
+      - name: Run Horde contracts
+        run: |
+          node arcade/lost-sizzler/tests/horde-survivor-contract.mjs
+          node arcade/lost-sizzler/tests/horde-solo-music-contract.mjs
+
+      - name: Commit integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arcade/lost-sizzler/js/horde-survivor-audio.js arcade/lost-sizzler/tests/horde-survivor-contract.mjs arcade/lost-sizzler/tests/horde-solo-music-contract.mjs
+          git commit -m "Use approved master throughout Horde Survivor"
+          git push origin HEAD:${GITHUB_REF_NAME}
