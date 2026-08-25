@@ -62,9 +62,9 @@ assert.match(noPause,/if\(hasSecondLocalPlayer\(\)\)return true/,"2P split scree
 assert.match(noPause,/event\.code!=="Escape"&&event\.code!=="KeyP"/,"Escape and P must be intercepted in multiplayer");
 assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct pause calls must also be blocked in multiplayer");
 
-assert.equal(manifest.build,"2026.08.25.25","Horde stability fixes must remain published in build .25");
-assert.equal(manifest.cacheToken,"20260825r25","Horde stability fixes must use the r25 cache shell");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.25"/,"HTML build marker must match r25");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r25"/,"HTML cache marker must match r25");
+assert.equal(manifest.build,"2026.08.25.26","Horde stability fixes must remain published in build .26");
+assert.equal(manifest.cacheToken,"20260825r26","Horde stability fixes must use the r26 cache shell");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.26"/,"HTML build marker must match r26");
+assert.match(index,/ccg-lost-sizzler-cache" content="20260825r26"/,"HTML cache marker must match r26");
 
 console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, startup freeze and no-pause regression checks passed.");
