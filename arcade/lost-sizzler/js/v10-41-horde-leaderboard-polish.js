@@ -6,7 +6,7 @@
 
   const STORAGE_KEY="ccg-lost-sizzler:horde-leaderboard:v1";
   const CATEGORIES=["SOLO","DUO","TRIO","SQUAD"];
-  let observer=null,timer=0;
+  let observer=null,timer=0,observerQueued=false,observedSection=null,observedList=null;
 
   function readCounts(){
     const counts=Object.fromEntries(CATEGORIES.map(category=>[category,0]));
@@ -15,6 +15,14 @@
       if(parsed&&typeof parsed==="object")for(const category of CATEGORIES)counts[category]=Array.isArray(parsed[category])?Math.min(10,parsed[category].length):0;
     }catch(_){}
     return counts;
+  }
+
+  function setText(node,value){
+    if(node&&node.textContent!==String(value))node.textContent=String(value);
+  }
+
+  function setTitle(node,value){
+    if(node&&node.title!==String(value))node.title=String(value);
   }
 
   function ensureStyle(){
@@ -65,7 +73,7 @@
       title.before(block);block.append(kicker,title);
     }
     const copy=head.querySelector(":scope > span");
-    if(copy)copy.textContent="Your ten strongest runs are kept on this device. Warden kills rank first, followed by highest wave, score and fastest completion.";
+    setText(copy,"Your ten strongest runs are kept on this device. Warden kills rank first, followed by highest wave, score and fastest completion.");
   }
 
   function decorateTabs(section){
@@ -73,10 +81,14 @@
     for(const button of section.querySelectorAll("[data-horde-category]")){
       const category=String(button.dataset.hordeCategory||"");
       let label=button.querySelector("strong"),count=button.querySelector(".horde-tab-count");
-      if(!label){button.textContent="";label=document.createElement("strong");label.textContent=category;button.appendChild(label)}
+      if(!label){
+        button.textContent="";
+        label=document.createElement("strong");label.textContent=category;button.appendChild(label);
+      }else setText(label,category);
       if(!count){count=document.createElement("span");count.className="horde-tab-count";button.appendChild(count)}
-      count.textContent=String(counts[category]||0);
-      count.title=`${counts[category]||0} saved ${category.toLowerCase()} run${counts[category]===1?"":"s"}`;
+      const value=Number(counts[category]||0);
+      setText(count,value);
+      setTitle(count,`${value} saved ${category.toLowerCase()} run${value===1?"":"s"}`);
     }
   }
 
@@ -92,15 +104,18 @@
   function decorateList(section,list){
     const empty=list.querySelector(".horde-empty");section.classList.toggle("is-empty",Boolean(empty));
     if(empty){
-      if(empty.dataset.polished!=="true"){
-        const category=String(section.querySelector('[data-horde-category][aria-pressed="true"]')?.dataset?.hordeCategory||"SOLO");
+      const category=String(section.querySelector('[data-horde-category][aria-pressed="true"]')?.dataset?.hordeCategory||"SOLO");
+      const wanted=`NO ${category} RECORDS YET`;
+      const current=empty.querySelector(".horde-empty-copy b")?.textContent||"";
+      if(empty.dataset.polished!=="true"||current!==wanted){
         empty.dataset.polished="true";
-        empty.innerHTML=`<span class="horde-empty-mark" aria-hidden="true">★</span><span class="horde-empty-copy"><b>NO ${category} RECORDS YET</b><span>Finish a Horde Survivor run and your best result will appear here automatically.</span></span>`;
+        empty.innerHTML=`<span class="horde-empty-mark" aria-hidden="true">★</span><span class="horde-empty-copy"><b>${wanted}</b><span>Finish a Horde Survivor run and your best result will appear here automatically.</span></span>`;
       }
       return;
     }
     [...list.children].forEach((row,index)=>{
-      if(!(row instanceof HTMLElement))return;row.dataset.rank=String(index+1);
+      if(!(row instanceof HTMLElement))return;
+      const rank=String(index+1);if(row.dataset.rank!==rank)row.dataset.rank=rank;
       const names=row.querySelector(".names");
       if(names&&!names.querySelector(".horde-warden-badge")&&names.textContent.includes(" · WARDEN DOWN")){
         names.textContent=names.textContent.replace(" · WARDEN DOWN","");
@@ -109,17 +124,43 @@
     });
   }
 
+  function observe(section,list){
+    if(!observer)return;
+    observedSection=section;observedList=list;
+    observer.observe(section,{subtree:true,childList:true,attributes:true,attributeFilter:["aria-pressed"]});
+  }
+
+  function runObserverDecoration(){
+    if(!observer||!observedSection||!observedList)return;
+    observer.disconnect();
+    try{
+      decorateTabs(observedSection);
+      decorateList(observedSection,observedList);
+    }finally{
+      observe(observedSection,observedList);
+    }
+  }
+
+  function queueObserverDecoration(){
+    if(observerQueued)return;
+    observerQueued=true;
+    requestAnimationFrame(()=>{
+      observerQueued=false;
+      runObserverDecoration();
+    });
+  }
+
   function decorate(){
     const section=document.getElementById("horde-leaderboard"),list=document.getElementById("horde-leaderboard-list");if(!section||!list)return false;
     ensureStyle();decorateHeader(section);decorateTabs(section);ensureColumns(section,list);decorateList(section,list);
     if(!observer){
-      observer=new MutationObserver(()=>{decorateTabs(section);decorateList(section,list)});
-      observer.observe(section,{subtree:true,childList:true,attributes:true,attributeFilter:["aria-pressed"]});
+      observer=new MutationObserver(queueObserverDecoration);
+      observe(section,list);
     }
     return true;
   }
 
   timer=setInterval(()=>{if(decorate()){clearInterval(timer);timer=0}},100);
   window.addEventListener("storage",event=>{if(event.key===STORAGE_KEY)decorate()});
-  window.addEventListener("pagehide",()=>{if(timer)clearInterval(timer);observer?.disconnect?.()},{once:true});
+  window.addEventListener("pagehide",()=>{if(timer)clearInterval(timer);observer?.disconnect?.();observer=null;observedSection=null;observedList=null},{once:true});
 })();
