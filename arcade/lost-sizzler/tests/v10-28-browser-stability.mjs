@@ -399,7 +399,15 @@ try{
 
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:4000}),6000,"Tutorial sword stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
-    for(let i=0;i<3;i++){const target=i+1;await state.page.keyboard.press("Space",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial sword action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`sword overlay must repaint at ${target}/3 after a successful swing: ${live}`)}
+    for(let i=0;i<3;i++){
+      const target=i+1;
+      await state.page.keyboard.press("Space",{delay:30});
+      await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial sword action ${target}/3`);
+      const live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      assert.ok(live.count>=target,`Tutorial sword count must reach at least ${target}/3: ${JSON.stringify(live)}`);
+      const shown=Math.min(3,live.count);
+      assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`sword overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
+    }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:5000}),7000,"Tutorial three-sword step");
     const swordProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.swingCount}));
     assert.equal(swordProgress.count,3,`Tutorial sword training must require three successful swings: ${JSON.stringify(swordProgress)}`);
@@ -408,7 +416,13 @@ try{
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
     for(let i=0;i<3;i++){
       await state.page.evaluate(safe=>{p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};p1._v125LastDashAt=0},tutorialMove.safe);
-      const target=i+1;await state.page.keyboard.press("ShiftLeft",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial dash action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`dash overlay must repaint at ${target}/3 after a successful dash: ${live}`);
+      const target=i+1;
+      await state.page.keyboard.press("ShiftLeft",{delay:30});
+      await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial dash action ${target}/3`);
+      const live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      assert.ok(live.count>=target,`Tutorial dash count must reach at least ${target}/3: ${JSON.stringify(live)}`);
+      const shown=Math.min(3,live.count);
+      assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`dash overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
     }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:5000}),7000,"Tutorial three-dash step");
     const dashProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.dashCount,voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)}));
