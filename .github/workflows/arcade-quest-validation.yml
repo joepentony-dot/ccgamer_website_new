@@ -81,16 +81,19 @@ jobs:
       - name: Validate Quest 2.0 contracts
         shell: bash
         run: |
-          grep -F "deepCrouchHeight:62" arcade/quest/game/balance.js
+          grep -F "jumpVelocity:955" arcade/quest/game/balance.js
+          grep -F "crouchHeight:90" arcade/quest/game/balance.js
           grep -F "stateMeta:mainState" arcade/quest/game/assets-config.js
-          grep -F "duck:[4]" arcade/quest/game/assets-config.js
+          grep -F "player/cheeky-main-sheet.png" arcade/quest/game/assets-config.js
+          grep -F "player/cheeky-fight-sheet.png" arcade/quest/game/assets-config.js
+          grep -F "duck:[3]" arcade/quest/game/assets-config.js
           grep -F "Q.spriteHitbox=function" arcade/quest/game/sprite-runtime.js
           grep -F "main-v3.js?v=20260825q2" arcade/quest/index.html
           grep -F "main-v3.js?v=20260825q2" games/commodore-quest/index.html
           ! grep -F "main-v2.js" arcade/quest/index.html
           ! grep -F "main-v2.js" games/commodore-quest/index.html
-          test -f arcade/quest/assets/production/player/cheeky-main-v2.svg
-          test -f arcade/quest/assets/production/player/cheeky-fight-v2.svg
+          test -f arcade/quest/assets/production/player/cheeky-main-sheet.png
+          test -f arcade/quest/assets/production/player/cheeky-fight-sheet.png
           test -f arcade/quest/assets/archive/recovered/recovered-assets-manifest.json
           test ! -f arcade/quest/assets/production/recovered-assets-manifest.json
 
