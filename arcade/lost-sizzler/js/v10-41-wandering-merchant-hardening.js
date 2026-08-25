@@ -32,8 +32,8 @@
   function rareState(){return window.CCGLostSizzlerRareEvents?.state||null}
   function merchant(){const m=rareState()?.plans?.merchant;return m?.wanderingMerchant?m:null}
   function players(){
-    try{if(typeof allPlayers==="function")return(allPlayers()||[]).filter(player=>player&&Number(player.health||1)>0)}catch(_){}
-    const out=[];try{if(typeof p1!=="undefined"&&p1)out.push(p1);if(typeof p2!=="undefined"&&p2)out.push(p2);for(const player of remote?.values?.()||[])if(player)out.push(player)}catch(_){}return out
+    try{if(typeof allPlayers==="function")return(allPlayers()||[]).filter(player=>player&&Number(player.health??1)>0)}catch(_){}
+    const out=[];try{if(typeof p1!=="undefined"&&p1&&Number(p1.health??1)>0)out.push(p1);if(typeof p2!=="undefined"&&p2&&Number(p2.health??1)>0)out.push(p2);for(const player of remote?.values?.()||[])if(player&&Number(player.health??1)>0)out.push(player)}catch(_){}return out
   }
   function distance(a,b){return Math.hypot(Number(a?.x||0)-Number(b?.x||0),Number(a?.y||0)-Number(b?.y||0))}
   function roomAt(x,y){
@@ -77,8 +77,9 @@
   function protect(m){m.rareLifeMs=Math.max(Number(m.rareLifeMs||0),PROTECTED_LIFE_MS);m.rareMoveMs=Math.max(Number(m.rareMoveMs||0),PROTECTED_LIFE_MS)}
   function positionForEncounter(m){
     if(m._v141MerchantEncounterPositioned||!activeView())return false;const player=sameRoomPlayer(m);if(!player)return false;
-    m._v141MerchantEncounterPositioned=true;if(visiblePlayer(m))return false;const cell=encounterCell(m,player);if(!cell)return false;
-    m.x=cell.x;m.y=cell.y;try{host.revision=(host.revision||0)+1}catch(_){}state.repositions++;return true
+    if(visiblePlayer(m)){m._v141MerchantEncounterPositioned=true;return false}
+    const cell=encounterCell(m,player);if(!cell)return false;
+    m.x=cell.x;m.y=cell.y;m._v141MerchantEncounterPositioned=true;try{host.revision=(host.revision||0)+1}catch(_){}state.repositions++;return true
   }
   function beginEncounter(m){
     if(m._v141MerchantSeen||!activeView())return false;const player=visiblePlayer(m);if(!player)return false;
@@ -95,7 +96,7 @@
     positionForEncounter(m);beginEncounter(m);
 
     const visible=Boolean(visiblePlayer(m));const browsing=shopOpenFor(m),viewing=activeView();
-    if(m._v141MerchantSeen&&(browsing||(visible&&viewing))&&!m._v141MerchantDepartArmed)m._v141MerchantVisibleMs=Math.min(MIN_VISIBLE_MS,Number(m._v141MerchantVisibleMs||0)+elapsed);
+    if(m._v141MerchantSeen&&viewing&&(browsing||visible)&&!m._v141MerchantDepartArmed)m._v141MerchantVisibleMs=Math.min(MIN_VISIBLE_MS,Number(m._v141MerchantVisibleMs||0)+elapsed);
 
     const remaining=Math.max(0,MIN_VISIBLE_MS-Number(m._v141MerchantVisibleMs||0));
     if(m._v141MerchantSeen&&!m._v141MerchantWarned&&remaining<=WARNING_REMAINING_MS){
