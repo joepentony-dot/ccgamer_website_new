@@ -31,11 +31,12 @@ try{
 
   const result=await page.evaluate(async()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,network=window.CCGLostSizzlerV141R29SpyNetwork,SAB=window.CCGLostSizzlerSaboteurs;
+    run=PGR.makeRun({difficulty:"ARCADE",seed:"R29-SPY-ISOLATION"});playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";p1.id="SPY-HOST";p1.name="HOST";
     const descriptor=Object.getOwnPropertyDescriptor(special,"active"),originalUpdate=window.update;
     let inheritedCalls=0;
     const countedUpdate=function(){inheritedCalls++};
     window.update=countedUpdate;
-    const t=Date.now(),match=SAB.createMatch({players:[{id:String(p1.id||"P1"),name:"HOST"},{id:"SPY-2",name:"GUEST"}],hostId:String(p1.id||"P1"),seed:"R29-SPY-ISOLATION",now:t});
+    const t=Date.now(),match=SAB.createMatch({players:[{id:String(p1.id),name:"HOST"},{id:"SPY-2",name:"GUEST"}],hostId:String(p1.id),seed:"R29-SPY-ISOLATION",now:t});
     SAB.beginRound(match,t);match.trapLoadout=["timeBomb","snare","fakeHealth"];
     match.traps.push({id:"old-time-bomb",trapId:"timeBomb",ownerId:match.players[0].id,roomId:match.players[0].roomId,targetType:"floor",targetId:"x",armed:true,placedAt:t,detonatesAt:t+10000});
     Object.defineProperty(special,"active",{configurable:true,value:{type:"sizzler-saboteurs",state:match,authoritative:true,cooldowns:new Map(),seed:match.seed}});
