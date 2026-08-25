@@ -27,8 +27,8 @@ assert.match(liveJoin,/special\?\.type!=="horde-survivor"/,"late roster reconcil
 assert.match(liveJoin,/runState\.players\.push\(makeHordePlayer\(member,index,runState\)\)/,"a genuine Horde late joiner must become a real survivor in the authoritative run state");
 assert.match(liveJoin,/runState\.playerCount=Math\.max\(1,Math\.min\(4,runState\.players\.length\)\)/,"Horde scaling must update after late joins or disconnects");
 
-assert.equal(version.build,"2026.08.25.20","live-join protection must remain included in the current r20 build");
-assert.equal(version.cacheToken,"20260825r20","live-join protection must remain included in the current r20 cache generation");
-assert.match(index,/js\/network\.js\?v=20260825r20/,"published page must keep browsers on the current r20 network runtime");
+assert.equal(version.build,"2026.08.25.21","live-join protection must remain included in the current r20 build");
+assert.equal(version.cacheToken,"20260825r21","live-join protection must remain included in the current r20 cache generation");
+assert.match(index,/js\/network\.js\?v=20260825r21/,"published page must keep browsers on the current r20 network runtime");
 
 console.log("Lost Sizzler V10.41 persistent live multiplayer late-join regression checks passed.");

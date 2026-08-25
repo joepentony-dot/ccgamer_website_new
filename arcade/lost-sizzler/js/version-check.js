@@ -4,6 +4,7 @@
   window.__CCG_LOST_SIZZLER_VERSION_CHECK__=true;
 
   const RELEASE_VERSION="V10.41";
+  const RELEASE_CACHE=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const meta=document.querySelector('meta[name="ccg-lost-sizzler-build"]');
   const current=String(meta?.content||"unknown").trim();
   const state={current,latest:null,checking:false,outdated:false,panel:null,button:null,lastCheck:0};
@@ -114,7 +115,7 @@
   function loadV136Bootstrap(){
     if(document.querySelector('script[data-ccg-v136-bootstrap="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-36-bootstrap.js?v=20260824a";
+    script.src=`js/v10-36-bootstrap.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV136Bootstrap="true";
     document.head.appendChild(script);
@@ -122,7 +123,7 @@
   function loadV137HordeFocus(){
     if(document.querySelector('script[data-ccg-v137-horde-focus="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-37-horde-focus.js?v=20260824a";
+    script.src=`js/v10-37-horde-focus.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV137HordeFocus="true";
     document.head.appendChild(script);
@@ -130,7 +131,7 @@
   function loadV138HordeLive(){
     if(document.querySelector('script[data-ccg-v138-horde-live="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-38-horde-live.js?v=20260824a";
+    script.src=`js/v10-38-horde-live.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV138HordeLive="true";
     document.head.appendChild(script);
@@ -138,7 +139,7 @@
   function loadV139HordeLiveLoadout(){
     if(document.querySelector('script[data-ccg-v139-horde-live-loadout="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-39-horde-live-loadout.js?v=20260824a";
+    script.src=`js/v10-39-horde-live-loadout.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV139HordeLiveLoadout="true";
     document.head.appendChild(script);
@@ -146,7 +147,7 @@
   function loadV140HordeFinal(){
     if(document.querySelector('script[data-ccg-v140-horde-final="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-40-horde-final.js?v=20260824a";
+    script.src=`js/v10-40-horde-final.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV140HordeFinal="true";
     document.head.appendChild(script);
@@ -154,7 +155,7 @@
   function loadV141HordeCombatPolish(){
     if(document.querySelector('script[data-ccg-v141-horde-combat-polish="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-horde-combat-polish.js?v=20260824a";
+    script.src=`js/v10-41-horde-combat-polish.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141HordeCombatPolish="true";
     document.head.appendChild(script);
@@ -162,7 +163,7 @@
   function loadV141HordeCompletion(){
     if(document.querySelector('script[data-ccg-v141-horde-completion="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-horde-completion.js?v=20260824a";
+    script.src=`js/v10-41-horde-completion.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141HordeCompletion="true";
     document.head.appendChild(script);
@@ -170,7 +171,7 @@
   function loadV141MultiplayerPresence(){
     if(document.querySelector('script[data-ccg-v141-multiplayer-presence="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-multiplayer-presence.js?v=20260824c";
+    script.src=`js/v10-41-multiplayer-presence.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141MultiplayerPresence="true";
     document.head.appendChild(script);
@@ -178,7 +179,7 @@
   function loadV141WorldSafety(){
     if(document.querySelector('script[data-ccg-v141-world-safety="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-world-safety.js?v=20260824a";
+    script.src=`js/v10-41-world-safety.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141WorldSafety="true";
     document.head.appendChild(script);
@@ -186,7 +187,7 @@
   function loadV141SanctuaryHardening(){
     if(document.querySelector('script[data-ccg-v141-sanctuary-hardening="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-sanctuary-hardening.js?v=20260824a";
+    script.src=`js/v10-41-sanctuary-hardening.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141SanctuaryHardening="true";
     document.head.appendChild(script);
@@ -194,7 +195,7 @@
   function loadV141SanctuaryAzalea(){
     if(document.querySelector('script[data-ccg-v141-sanctuary-azalea="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-sanctuary-azalea.js?v=20260824a";
+    script.src=`js/v10-41-sanctuary-azalea.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141SanctuaryAzalea="true";
     document.head.appendChild(script);
@@ -202,7 +203,7 @@
   function loadV141ProgressionRecovery(){
     if(document.querySelector('script[data-ccg-v141-progression-recovery="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-progression-recovery.js?v=20260824a";
+    script.src=`js/v10-41-progression-recovery.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141ProgressionRecovery="true";
     document.head.appendChild(script);
@@ -210,7 +211,7 @@
   function loadV141XpPermadeath(){
     if(document.querySelector('script[data-ccg-v141-xp-permadeath="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-xp-permadeath-hardening.js?v=20260824a";
+    script.src=`js/v10-41-xp-permadeath-hardening.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141XpPermadeath="true";
     document.head.appendChild(script);
@@ -218,7 +219,7 @@
   function loadV141SoloFullMap(){
     if(document.querySelector('script[data-ccg-v141-solo-full-map="true"]'))return;
     const script=document.createElement("script");
-    script.src="js/v10-41-solo-full-map.js?v=20260824b";
+    script.src=`js/v10-41-solo-full-map.js?v=${encodeURIComponent(RELEASE_CACHE)}`;
     script.async=false;
     script.dataset.ccgV141SoloFullMap="true";
     document.head.appendChild(script);
