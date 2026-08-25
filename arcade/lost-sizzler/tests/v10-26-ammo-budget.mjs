@@ -9,7 +9,7 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const ammo=read("js/v10-26-ammo-budget.js");
 const loader=read("js/asset-overrides.js");
 
-assert.match(loader,/const CCG_AMMO_BUDGET_REV="20260823a"/,"ammo budget must have a dedicated cache revision");
+assert.match(loader,/const CCG_AMMO_BUDGET_REV=CCG_RELEASE_REV;/,"ammo budget must inherit the current published release token");
 assert.match(loader,/v10-26-ammo-budget\.js\?v=\$\{CCG_AMMO_BUDGET_REV\}/,"ammo budget must load after the sword-first balance layer");
 assert.ok(loader.indexOf("v10-25-melee-ammo-balance.js")<loader.indexOf("v10-26-ammo-budget.js"),"V10.26 must wrap the final V10.25 combat behaviour");
 assert.match(ammo,/const BASE_MAX_AMMO=120/,"normal firearm capacity must be large enough to support gunplay without restoring the old 240-round pool");
