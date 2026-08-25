@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <rect width="1600" height="900" fill="#080914"/>
+  <style>
+    .h{font:700 34px Consolas,monospace;fill:#72eaff}.t{font:700 20px Consolas,monospace;fill:#fff}.s{font:600 15px Consolas,monospace;fill:#b9bfd3}.box{fill:#111522;stroke:#30384e;stroke-width:2}.cyan{stroke:#72eaff}.pink{stroke:#ff6bd5}.yellow{stroke:#ffe56e}.green{stroke:#7df0a5}
+  </style>
+  <text x="55" y="60" class="h">CHEEKY'S COMMODORE QUEST — GENERIC ASSET REFERENCE</text>
+  <text x="55" y="92" class="s">Visual footprints match the current renderer. Use README.md for source-art recommendations.</text>
+
+  <!-- Player -->
+  <g transform="translate(55 135)">
+    <rect class="box cyan" width="250" height="260" rx="16"/>
+    <text x="18" y="32" class="t">CHEEKY</text><text x="18" y="55" class="s">150 × 190 draw</text>
+    <ellipse cx="125" cy="230" rx="45" ry="9" fill="#000" opacity=".35"/>
+    <circle cx="125" cy="92" r="40" fill="#efb58e" stroke="#07111b" stroke-width="6"/>
+    <rect x="83" y="126" width="84" height="75" rx="20" fill="#194b67" stroke="#07111b" stroke-width="6"/>
+    <rect x="97" y="155" width="56" height="15" rx="7" fill="#2e7898"/>
+    <text x="125" y="169" text-anchor="middle" class="s" fill="#fff">CCG</text>
+    <line x1="98" y1="194" x2="88" y2="225" stroke="#24617e" stroke-width="18" stroke-linecap="round"/>
+    <line x1="152" y1="194" x2="163" y2="225" stroke="#24617e" stroke-width="18" stroke-linecap="round"/>
+  </g>
+
+  <!-- Tier Tex -->
+  <g transform="translate(330 135)">
+    <rect class="box pink" width="250" height="260" rx="16"/>
+    <text x="18" y="32" class="t">TIER-TEX</text><text x="18" y="55" class="s">124 × 158 draw</text>
+    <circle cx="125" cy="99" r="29" fill="#d6a075"/>
+    <rect x="80" y="125" width="90" height="75" rx="18" fill="#7b3c48" stroke="#160f18" stroke-width="6"/>
+    <line x1="90" y1="157" x2="43" y2="157" stroke="#d6a075" stroke-width="22" stroke-linecap="round"/>
+    <line x1="160" y1="157" x2="207" y2="157" stroke="#d6a075" stroke-width="22" stroke-linecap="round"/>
+    <line x1="105" y1="195" x2="92" y2="232" stroke="#6a3740" stroke-width="20" stroke-linecap="round"/>
+    <line x1="145" y1="195" x2="158" y2="232" stroke="#7d4248" stroke-width="20" stroke-linecap="round"/>
+  </g>
+
+  <!-- Enemies -->
+  <g transform="translate(605 135)">
+    <rect class="box" width="250" height="260" rx="16" stroke="#ff6bd5"/>
+    <text x="18" y="32" class="t">8-BIT ENEMIES</text>
+    <rect x="35" y="86" width="70" height="70" rx="10" fill="#19141e" stroke="#ff6bd5" stroke-width="4"/>
+    <text x="70" y="127" text-anchor="middle" class="s" fill="#7eeaff">8BIT</text>
+    <text x="35" y="180" class="s">Normal 70 × 70</text>
+    <rect x="137" y="100" width="78" height="48" rx="10" fill="#10202a" stroke="#72eaff" stroke-width="4"/>
+    <text x="176" y="130" text-anchor="middle" class="s" fill="#ffe56e">LOW</text>
+    <text x="137" y="180" class="s">Low 78 × 48</text>
+    <text x="18" y="226" class="s">Sheet states: run / low</text>
+  </g>
+
+  <!-- Boss -->
+  <g transform="translate(880 135)">
+    <rect class="box yellow" width="305" height="260" rx="16"/>
+    <text x="18" y="32" class="t">BOSSES</text><text x="18" y="55" class="s">205 × 180 draw</text>
+    <rect x="50" y="72" width="205" height="180" rx="20" fill="#12101a" stroke="#ffe56e" stroke-width="6"/>
+    <text x="152" y="165" text-anchor="middle" class="t">BOSS</text>
+    <text x="152" y="192" text-anchor="middle" class="s">idle / charge</text>
+  </g>
+
+  <!-- Collectibles and powers -->
+  <g transform="translate(1210 135)">
+    <rect class="box green" width="335" height="260" rx="16"/>
+    <text x="18" y="32" class="t">PICKUPS</text>
+    <g transform="translate(25 75)"><rect width="54" height="54" rx="8" fill="#0b1119" stroke="#72eaff" stroke-width="3"/><text x="27" y="34" text-anchor="middle" class="s">TAPE</text></g>
+    <g transform="translate(95 75)"><rect width="54" height="54" rx="8" fill="#0b1119" stroke="#72eaff" stroke-width="3"/><text x="27" y="34" text-anchor="middle" class="s">DISK</text></g>
+    <g transform="translate(165 75)"><rect width="54" height="54" rx="8" fill="#0b1119" stroke="#72eaff" stroke-width="3"/><text x="27" y="34" text-anchor="middle" class="s">ZZAP</text></g>
+    <g transform="translate(235 75)"><rect width="54" height="54" rx="8" fill="#0b1119" stroke="#72eaff" stroke-width="3"/><text x="27" y="34" text-anchor="middle" class="s">JOY</text></g>
+    <text x="25" y="154" class="s">Collectibles: 54 × 54</text>
+    <g transform="translate(25 174)"><rect width="64" height="64" rx="10" fill="#12101c" stroke="#ffe56e" stroke-width="3"/><text x="32" y="39" text-anchor="middle" class="t">AR</text></g>
+    <g transform="translate(108 174)"><rect width="64" height="64" rx="10" fill="#12101c" stroke="#ffe56e" stroke-width="3"/><text x="32" y="39" text-anchor="middle" class="t">CP</text></g>
+    <g transform="translate(191 174)"><rect width="64" height="64" rx="10" fill="#12101c" stroke="#ffe56e" stroke-width="3"/><text x="32" y="39" text-anchor="middle" class="t">X2</text></g>
+    <text x="265" y="212" class="s">64 × 64</text>
+  </g>
+
+  <!-- Invaders -->
+  <g transform="translate(55 430)">
+    <rect class="box cyan" width="530" height="400" rx="16"/>
+    <text x="18" y="34" class="t">ALIEN FORMATION</text>
+    <text x="18" y="58" class="s">Five row sprites — each 56 × 36</text>
+    <g transform="translate(25 92)">
+      <g fill="#7df0a5" stroke="#070b12" stroke-width="4"><rect x="0" y="0" width="56" height="36" rx="8"/></g>
+      <g fill="#ffe56e" stroke="#070b12" stroke-width="4"><rect x="72" y="0" width="56" height="36" rx="8"/></g>
+      <g fill="#ff8fc9" stroke="#070b12" stroke-width="4"><rect x="144" y="0" width="56" height="36" rx="8"/></g>
+      <g fill="#72eaff" stroke="#070b12" stroke-width="4"><rect x="216" y="0" width="56" height="36" rx="8"/></g>
+      <g fill="#a98cff" stroke="#070b12" stroke-width="4"><rect x="288" y="0" width="56" height="36" rx="8"/></g>
+    </g>
+    <text x="25" y="174" class="s">Ship: 104 × 65</text>
+    <path d="M77 220 L25 280 L56 272 L77 244 L98 272 L129 280 Z" fill="#72eaff"/>
+    <text x="77" y="270" text-anchor="middle" class="s" fill="#07111b">CCG</text>
+    <text x="175" y="174" class="s">Bunker: 120 × 34</text>
+    <rect x="175" y="220" width="120" height="34" rx="8" fill="#143b36" stroke="#7df0a5" stroke-width="3"/>
+    <text x="340" y="174" class="s">Shots: 16 × 24</text>
+    <rect x="366" y="216" width="6" height="20" fill="#ffe56e"/>
+    <rect x="396" y="216" width="6" height="20" fill="#ff6174"/>
+    <text x="25" y="335" class="s">All of these already have dedicated Admin upload slots.</text>
+  </g>
+
+  <!-- Beads / maze -->
+  <g transform="translate(615 430)">
+    <rect class="box" width="430" height="400" rx="16" stroke="#a98cff"/>
+    <text x="18" y="34" class="t">PROCEDURAL MINI-GAME ART</text>
+    <text x="18" y="58" class="s">Useful references; dedicated slots still needed.</text>
+    <circle cx="90" cy="150" r="19" fill="#74f5ff" stroke="#b7fbff" stroke-width="3"/>
+    <rect x="68" y="128" width="44" height="44" fill="none" stroke="#72eaff" stroke-dasharray="5 5"/>
+    <text x="135" y="146" class="t">Electric Bead</text><text x="135" y="170" class="s">44 × 44 footprint</text>
+    <rect x="58" y="230" width="54" height="54" rx="8" fill="#151653" stroke="#6b72ff" stroke-width="2"/>
+    <circle cx="140" cy="257" r="8" fill="#ffe56e"/>
+    <rect x="175" y="238" width="38" height="38" rx="8" fill="#ff5f86" stroke="#fff" stroke-width="2"/>
+    <text x="235" y="250" class="t">Dot-Maze</text><text x="235" y="276" class="s">54 × 54 cells / 38 × 38 bugs</text>
+    <text x="18" y="342" class="s">These are the next sensible Admin asset slots to add.</text>
+  </g>
+
+  <!-- Hazards -->
+  <g transform="translate(1075 430)">
+    <rect class="box" width="470" height="400" rx="16" stroke="#ff6174"/>
+    <text x="18" y="34" class="t">HAZARDS</text>
+    <text x="18" y="58" class="s">Current stage-level fallback is stretched to each hazard box.</text>
+    <rect x="25" y="95" width="108" height="92" rx="10" fill="#3b1420" stroke="#ff4964" stroke-width="4"/><text x="79" y="145" text-anchor="middle" class="s">108×92</text>
+    <rect x="160" y="125" width="152" height="55" rx="10" fill="#3b1420" stroke="#ff4964" stroke-width="4"/><text x="236" y="159" text-anchor="middle" class="s">152×55 DUCK</text>
+    <rect x="337" y="82" width="96" height="112" rx="10" fill="#3b1420" stroke="#ff4964" stroke-width="4"/><text x="385" y="140" text-anchor="middle" class="s">GURU</text>
+    <rect x="35" y="235" width="86" height="130" fill="#ff4f66" opacity=".55" stroke="#ffdf65" stroke-width="3"/><text x="78" y="300" text-anchor="middle" class="s">BEAM</text>
+    <text x="145" y="245" class="s">Actual Guru beam is 86 × 315.</text>
+    <text x="145" y="275" class="s">Hazard dimensions vary by encounter.</text>
+    <text x="145" y="305" class="s">Best future approach:</text>
+    <text x="145" y="332" class="s">one upload slot per named hazard.</text>
+  </g>
+</svg>
