@@ -18,7 +18,9 @@ assert.match(finish,/if\(!updated\)[\s\S]*select\("status,score,deepest_floor,du
 assert.match(finish,/persisted=\{score:int\(finished\.score/,"losing retries must project the stored result rather than their own request body");
 assert.match(finish,/\.upsert\(\{attempt_id:attempt\.id,week_start:resultWeek,player_name:attempt\.player_name,\.\.\.persisted\}/,"leaderboard repair must project only the persisted final result");
 assert.match(finish,/leadersFor\(resultWeek\)/,"finish responses must return the leaderboard for the attempt's stored week");
-assert.match(edge,/ghostPath:ghostPath\(result\.ghostPath\)/,"weekly submission hardening must preserve ghost replay capture");
+assert.match(edge,/path=ghostPath\(result\.ghostPath\)/,"weekly submission hardening must sanitise the replay once for persistent storage");
+assert.match(edge,/stats=\{kills:[\s\S]*ghostPath:path\}/,"weekly attempt stats must retain the same sanitised ghost replay");
+assert.match(edge,/ghost_path:path/,"weekly submission must preserve the deployed ghost_path representation");
 assert.match(edge,/Finished score is awaiting leaderboard repair/,"existing idempotent projection repair behaviour must remain available");
 assert.match(edge,/Score saved; leaderboard projection will retry/,"existing deferred leaderboard repair behaviour must remain available");
 
