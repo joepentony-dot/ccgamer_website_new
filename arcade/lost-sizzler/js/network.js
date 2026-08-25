@@ -45,3 +45,12 @@ class RoomNetwork{
 }
 RoomNetwork.prototype.__v104CapacityPatched=true;
 return{RoomNetwork,ROOM_MODES,cleanCode:code};})();
+
+(()=>{
+  if(document.querySelector('script[data-ccg-v141-live-join-presence="true"]'))return;
+  const script=document.createElement("script");
+  script.src="js/v10-41-live-join-presence.js?v=20260825a";
+  script.async=false;
+  script.dataset.ccgV141LiveJoinPresence="true";
+  document.head.appendChild(script);
+})();
