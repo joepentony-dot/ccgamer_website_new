@@ -12,7 +12,7 @@ const play=read("js/game-play.js");
 const touch=read("js/v10-4-patch.js");
 const loader=read("js/asset-overrides.js");
 
-assert.match(loader,/const CCG_MELEE_AMMO_REV="20260824b"/,"V10.25 combat balance must have its own cache revision");
+assert.match(loader,/const CCG_MELEE_AMMO_REV=CCG_RELEASE_REV;/,"V10.25 combat balance must inherit the current published release token");
 assert.match(loader,/v10-25-melee-ammo-balance\.js\?v=\$\{CCG_MELEE_AMMO_REV\}/,"V10.25 combat balance must be loaded directly by the enhancement queue");
 assert.match(combat,/const MAX_START_AMMO=60/,"base firearm capacity must be reduced from the old 240-shot pool");
 assert.match(combat,/const FIRST_GUN_MAGAZINE=16/,"the first discovered firearm must arrive with a fair 16-round magazine");

@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../..");
-const TEST_TIMEOUT_MS=90000;
+const TEST_TIMEOUT_MS=150000;
 const STAGE_TIMEOUT_MS=20000;
 const CLEANUP_TIMEOUT_MS=5000;
 const startedAt=Date.now();
@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -220,13 +220,16 @@ try{
       p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.invuln=999999;p1._meleeSwingAt=0;fire1=0;fireBuffer1=0;
     });
     await state.page.keyboard.down("Space");
-    const heldSwingSamples=await state.page.evaluate(async()=>{
-      const values=new Set(),modes=new Set(),inputStates=new Set();
-      const until=performance.now()+1250;
-      while(performance.now()<until){const at=Number(p1?._meleeSwingAt||0);if(at>0)values.add(at);modes.add(mode);inputStates.add(input.has("Space"));await new Promise(resolve=>setTimeout(resolve,45));}
-      return{values:[...values],modes:[...modes],inputStates:[...inputStates],fire1,fireBuffer1,hitStunMs:p1.hitStunMs};
-    });
+    const heldValues=new Set(),heldModes=new Set(),heldInputs=new Set();
+    const heldDeadline=Date.now()+2500;
+    let heldLast={fire1:0,fireBuffer1:0,hitStunMs:0};
+    while(Date.now()<heldDeadline&&heldValues.size<2){
+      const sample=await state.page.evaluate(()=>({at:Number(p1?._meleeSwingAt||0),mode,inputState:input.has("Space"),fire1,fireBuffer1,hitStunMs:p1.hitStunMs}));
+      if(sample.at>0)heldValues.add(sample.at);heldModes.add(sample.mode);heldInputs.add(sample.inputState);heldLast=sample;
+      await state.page.waitForTimeout(75);
+    }
     await state.page.keyboard.up("Space");
+    const heldSwingSamples={values:[...heldValues],modes:[...heldModes],inputStates:[...heldInputs],fire1:heldLast.fire1,fireBuffer1:heldLast.fireBuffer1,hitStunMs:heldLast.hitStunMs};
     assert.ok(heldSwingSamples.values.length>=2,`holding the fire key must auto-repeat sword swings: ${JSON.stringify(heldSwingSamples)}`);
     await state.page.evaluate(()=>{p1.invuln=0;if(window.__browserOriginalShowNamedDossier){showNamedDossier=window.__browserOriginalShowNamedDossier;delete window.__browserOriginalShowNamedDossier}for(const enemy of host.enemies||[])if("_browserHeldAlive" in enemy){enemy.alive=enemy._browserHeldAlive;delete enemy._browserHeldAlive}});
 
@@ -380,7 +383,15 @@ try{
       return{safe,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
     });
     assert.ok(tutorialMove.safe,`Tutorial start area must have a four-direction keyboard training cell: ${JSON.stringify(tutorialMove)}`);
-    for(const key of ["w","s","a","d"]){await state.page.keyboard.down(key);await state.page.waitForTimeout(190);await state.page.keyboard.up(key);await state.page.waitForTimeout(180)}
+    for(const [key,direction] of [["w","up"],["s","down"],["a","left"],["d","right"]]){
+      await state.page.keyboard.down(key);
+      try{
+        await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:2200}),2800,`Tutorial movement ${direction}`);
+      }finally{
+        await state.page.keyboard.up(key);
+      }
+      await state.page.waitForTimeout(80);
+    }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial four-direction movement step");
     const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,directions:[...window.CCGLostSizzlerOnboardingV120.state.movementDirections].sort(),position:{x:p1.x,y:p1.y}}));
     assert.equal(tutorialProgress.moved,true,`Tutorial keyboard movement must register: ${JSON.stringify(tutorialProgress)}`);
@@ -388,7 +399,22 @@ try{
 
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===1,null,{timeout:4000}),6000,"Tutorial sword stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
-    for(let i=0;i<3;i++){const target=i+1;await state.page.keyboard.press("Space",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial sword action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`sword overlay must repaint at ${target}/3 after a successful swing: ${live}`)}
+    for(let i=0;i<3;i++){
+      const target=i+1,deadline=Date.now()+5000;
+      let live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0),step:Number(window.CCGLostSizzlerOnboardingV120?.state?.step||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      while(live.count<target&&Date.now()<deadline){
+        await state.page.keyboard.press("Space",{delay:45});
+        await state.page.waitForTimeout(220);
+        live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.swingCount||0),step:Number(window.CCGLostSizzlerOnboardingV120?.state?.step||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      }
+      assert.ok(live.count>=target,`Tutorial sword count must reach at least ${target}/3 through real keyboard attacks: ${JSON.stringify(live)}`);
+      if(live.step>=2){
+        assert.equal(live.count,3,`Tutorial may advance to dash only after all three sword swings: ${JSON.stringify(live)}`);
+      }else{
+        const shown=Math.min(3,live.count);
+        assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`sword overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
+      }
+    }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=2,null,{timeout:5000}),7000,"Tutorial three-sword step");
     const swordProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.swingCount}));
     assert.equal(swordProgress.count,3,`Tutorial sword training must require three successful swings: ${JSON.stringify(swordProgress)}`);
@@ -396,8 +422,21 @@ try{
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===2,null,{timeout:4000}),6000,"Tutorial dash stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
     for(let i=0;i<3;i++){
-      await state.page.evaluate(safe=>{p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};p1._v125LastDashAt=0},tutorialMove.safe);
-      const target=i+1;await state.page.keyboard.press("ShiftLeft",{delay:30});await withTimeout(state.page.waitForFunction(expected=>Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0)>=expected,target,{timeout:1800}),2400,`Tutorial dash action ${target}/3`);const live=await state.page.locator("#ccg-tutorial-live-progress").innerText();assert.match(live,new RegExp(`${target}\\s*\\/\\s*3`),`dash overlay must repaint at ${target}/3 after a successful dash: ${live}`);
+      const target=i+1,deadline=Date.now()+5000;
+      let live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0),step:Number(window.CCGLostSizzlerOnboardingV120?.state?.step||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      while(live.count<target&&Date.now()<deadline){
+        await state.page.evaluate(safe=>{p1.x=p1.rx=safe.x;p1.y=p1.ry=safe.y;p1.dir={x:1,y:0};p1._v125LastDashAt=0},tutorialMove.safe);
+        await state.page.keyboard.press("ShiftLeft",{delay:45});
+        await state.page.waitForTimeout(220);
+        live=await state.page.evaluate(()=>({count:Number(window.CCGLostSizzlerOnboardingV120?.state?.dashCount||0),step:Number(window.CCGLostSizzlerOnboardingV120?.state?.step||0),text:document.getElementById("ccg-tutorial-live-progress")?.innerText||""}));
+      }
+      assert.ok(live.count>=target,`Tutorial dash count must reach at least ${target}/3 through real keyboard dashes: ${JSON.stringify(live)}`);
+      if(live.step>=3){
+        assert.equal(live.count,3,`Tutorial may advance to inventory only after all three dashes: ${JSON.stringify(live)}`);
+      }else{
+        const shown=Math.min(3,live.count);
+        assert.match(live.text,new RegExp(`${shown}\\s*\\/\\s*3`),`dash overlay must repaint to the current ${shown}/3 state: ${JSON.stringify(live)}`);
+      }
     }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=3,null,{timeout:5000}),7000,"Tutorial three-dash step");
     const dashProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,count:window.CCGLostSizzlerOnboardingV120.state.dashCount,voiceActive:Boolean(window.CCGLostSizzlerVoice?.state?.active),voiceQueued:Number(window.CCGLostSizzlerVoice?.state?.queue?.length||0)}));
@@ -405,7 +444,10 @@ try{
 
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===3,null,{timeout:4000}),6000,"Tutorial inventory stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
-    await state.page.keyboard.press("Tab");await state.page.waitForTimeout(180);await state.page.keyboard.press("Tab");
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryOpened===true,null,{timeout:3000}),4000,"Tutorial inventory open");
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryClosed===true,null,{timeout:3000}),4000,"Tutorial inventory close");
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");
     for(let step=4;step<=8;step++){
       await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();

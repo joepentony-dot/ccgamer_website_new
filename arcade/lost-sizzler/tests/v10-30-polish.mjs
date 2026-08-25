@@ -8,7 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const loader=read("js/asset-overrides.js"),core=read("js/game-core.js"),rpg=read("js/v10-5-rpg-balance.js"),network=read("js/game-network.js"),render=read("js/game-render.js"),polish=read("js/v10-30-polish.js"),css=read("css/v10-30-polish.css"),index=read("index.html");
 
-assert.match(loader,/const CCG_POLISH_REV="20260824b"/,"V10.30 must have an isolated cache revision");
+assert.match(loader,/const CCG_POLISH_REV=CCG_RELEASE_REV;/,"V10.30 must inherit the current published release token");
 assert.match(loader,/CCGLostSizzlerReleaseGate=\{state,finish\}/,"launches must be protected by a release-ready gate");
 assert.match(loader,/state\.pendingId=button\.id/,"an early mode selection must be queued rather than discarded");
 assert.match(loader,/document\.getElementById\(id\)\?\.click\(\)/,"the queued mode selection must replay after enhancement completion");
@@ -35,7 +35,9 @@ assert.match(network,/i\.ammoRounds=Math\.max\(0,available-rounds\)/,"unused res
 
 assert.match(polish,/const POTION_TARGETS=\[3,4,4,5,5\]/,"ground potion density must rise gradually by floor");
 assert.match(polish,/startWorld=function startWorldV130Polish/,"every generated floor must receive the final potion pass");
-assert.match(polish,/new MutationObserver\(update\)/,"the current build subtitle must survive older deferred UI initialisers");
+assert.match(polish,/Release branding is intentionally one-shot here/,"V10.30 must document one-shot release branding ownership");
+assert.match(polish,/version-check\.js remains the canonical owner/,"version-check must remain the canonical release-label owner");
+assert.doesNotMatch(polish,/new MutationObserver\(/,"legacy V10.30 branding must not restore the observer loop that fought the V10.41 release UI");
 assert.match(render,/function drawAmbientMotes\(\)/,"rooms must have restrained motif-aware ambient detail");
 assert.match(render,/prefers-reduced-motion: reduce/,"ambient motion must respect reduced-motion preference");
 assert.match(render,/function drawThreatEdgeIndicators\(p\)/,"incoming off-screen projectiles must have a directional warning");

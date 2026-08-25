@@ -48,8 +48,9 @@ return{RoomNetwork,ROOM_MODES,cleanCode:code};})();
 
 (()=>{
   if(document.querySelector('script[data-ccg-v141-live-join-presence="true"]'))return;
+  const releaseRev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const script=document.createElement("script");
-  script.src="js/v10-41-live-join-presence.js?v=20260825a";
+  script.src=`js/v10-41-live-join-presence.js?v=${encodeURIComponent(releaseRev)}`;
   script.async=false;
   script.dataset.ccgV141LiveJoinPresence="true";
   document.head.appendChild(script);

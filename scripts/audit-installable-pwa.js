@@ -163,7 +163,7 @@ requireText(serviceWorker, "request.mode === \"navigate\"", "Navigation fallback
 requireText(serviceWorker, "staleWhileRevalidate", "Public data update strategy");
 requireText(serviceWorker, "cacheFirstAsset", "Static asset strategy");
 requireText(serviceWorker, 'const OFFLINE_URL = "/offline.html"', "Offline fallback");
-requireText(serviceWorker, 'const CACHE_VERSION = "2026-08-20-public-release-v9"', "Launch-shell cache release");
+requireText(serviceWorker, 'const CACHE_VERSION = "2026-08-25-public-release-v10"', "Launch-shell cache release");
 requireText(serviceWorker, '"/app-launch.html"', "App launch shell precache");
 requireText(serviceWorker, '"/resources/images/ccg-app-icon-v2.svg"', "Versioned launcher icon precache");
 requireText(serviceWorker, '"/resources/images/ccg-app-icon-maskable-v2.svg"', "Maskable launcher icon precache");

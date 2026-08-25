@@ -35,7 +35,7 @@ assert.match(audio,/if \(root\?\.CCGLostSizzlerSpecialModes\?\.active\?\.type ==
 assert.match(audio,/voice\.state\.queue\.length = 0/,"Horde audio isolation must clear pending legacy voice work");
 
 // The repeated 92% freeze was traced to V10.36's synchronous canvas-to-data-URL
-// sprite re-encoding in the release-gate finish callback. The r20 guard must
+// sprite re-encoding in the release-gate finish callback. The r23 guard must
 // bypass that path and must never perform its own data URL conversion.
 assert.match(freeze,/source\.__ccgV136Guttered=true/,"startup guard must mark the legacy synchronous gutter conversion as already handled");
 assert.doesNotMatch(freeze,/\.toDataURL\s*\(/,"startup guard must never synchronously encode a canvas as a data URL");
@@ -46,8 +46,9 @@ assert.match(cacheGuard,/data-ccg-v141-startup-freeze-guard/,"early freeze guard
 
 // Lake/sanctuary safety is irrelevant in Horde and must not poll the arena.
 assert.match(lake,/if\(hordeActive\(\)\)return 0/,"sanctuary lake repair must exit immediately in Horde");
-assert.match(lake,/v10-41-horde-mode-safety\.js\?v=20260825e/,"r20 safety entry must request the fresh Horde isolation guard");
-assert.match(lake,/v10-41-multiplayer-no-pause\.js\?v=20260825e/,"r20 safety entry must request multiplayer no-pause hardening");
+assert.match(lake,/load\("js\/v10-41-horde-mode-safety\.js","data-ccg-v141-horde-mode-safety"\)/,"r23 safety entry must request the fresh Horde isolation guard through the shared release token");
+assert.match(lake,/load\("js\/v10-41-multiplayer-no-pause\.js","data-ccg-v141-multiplayer-no-pause"\)/,"r23 safety entry must request multiplayer no-pause hardening through the shared release token");
+assert.match(lake,/script\.src=`\$\{path\}\?v=\$\{encodeURIComponent\(releaseRev\)\}`/,"late Horde safety modules must inherit the current published cache generation");
 
 // Pause rules: all real multiplayer modes continue; Solo Horde remains a
 // single-player run and therefore retains pause even though the shared special
@@ -61,9 +62,9 @@ assert.match(noPause,/if\(hasSecondLocalPlayer\(\)\)return true/,"2P split scree
 assert.match(noPause,/event\.code!=="Escape"&&event\.code!=="KeyP"/,"Escape and P must be intercepted in multiplayer");
 assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct pause calls must also be blocked in multiplayer");
 
-assert.equal(manifest.build,"2026.08.25.20","Horde stability fixes must be published as build .20");
-assert.equal(manifest.cacheToken,"20260825r20","Horde stability fixes must force the r20 cache shell");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.20"/,"HTML build marker must match r20");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r20"/,"HTML cache marker must match r20");
+assert.equal(manifest.build,"2026.08.25.23","Horde stability fixes must be published as build .23");
+assert.equal(manifest.cacheToken,"20260825r23","Horde stability fixes must force the r23 cache shell");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.23"/,"HTML build marker must match r23");
+assert.match(index,/ccg-lost-sizzler-cache" content="20260825r23"/,"HTML cache marker must match r23");
 
 console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, startup freeze and no-pause regression checks passed.");

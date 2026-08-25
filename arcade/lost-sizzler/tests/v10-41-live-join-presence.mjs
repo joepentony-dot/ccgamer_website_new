@@ -17,7 +17,7 @@ assert.match(network,/presenceMember\(\).*runtimeStarted:Boolean\(this\.runtimeS
 assert.match(network,/runtimeStartMeta:this\.runtimeStarted&&this\.runtimeStartMeta\?this\.runtimeStartMeta:null/,"host start metadata must be visible to later room members");
 assert.match(network,/setRuntimePresence\(started,startMeta=null\)/,"network must expose an explicit live-state publisher");
 assert.match(network,/getHostRuntimePresence\(\)/,"late joiners must be able to inspect the host's persisted live state");
-assert.match(network,/v10-41-live-join-presence\.js\?v=20260825a/,"network core must load the V10.41 late-join hardening layer");
+assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network core must load the V10.41 late-join hardening layer through the current release token");
 
 assert.match(liveJoin,/v106\(\)\?\.getLastStartMeta\?\.\(\)/,"host runtime presence must reuse the canonical V10.6 start metadata");
 assert.match(liveJoin,/net\.setRuntimePresence\(true,meta\)/,"a running host must publish live start metadata to presence");
@@ -27,8 +27,9 @@ assert.match(liveJoin,/special\?\.type!=="horde-survivor"/,"late roster reconcil
 assert.match(liveJoin,/runState\.players\.push\(makeHordePlayer\(member,index,runState\)\)/,"a genuine Horde late joiner must become a real survivor in the authoritative run state");
 assert.match(liveJoin,/runState\.playerCount=Math\.max\(1,Math\.min\(4,runState\.players\.length\)\)/,"Horde scaling must update after late joins or disconnects");
 
-assert.equal(version.build,"2026.08.25.18","live-join fix must publish a fresh build");
-assert.equal(version.cacheToken,"20260825r18","live-join fix must publish a fresh asset cache token");
-assert.match(index,/js\/network\.js\?v=20260825r18/,"published page must force browsers onto the new network runtime");
+assert.equal(version.build,"2026.08.25.23","live-join protection must remain included in the current r23 build");
+assert.equal(version.cacheToken,"20260825r23","live-join protection must remain included in the current r23 cache generation");
+assert.match(index,/js\/network\.js\?v=20260825r23/,"published page must keep browsers on the current r23 network runtime");
+assert.doesNotMatch(index,/v10-41-live-join-presence\.js/,"published HTML must not duplicate the live-join module already owned by network.js");
 
 console.log("Lost Sizzler V10.41 persistent live multiplayer late-join regression checks passed.");

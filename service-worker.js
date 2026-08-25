@@ -275,7 +275,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (STATIC_ASSET_PATTERN.test(url.pathname)) {
-    event.respondWith(cacheFirstAsset(request));
+    event.respondWith(isLostSizzlerPath(url.pathname) ? networkFirstAsset(request) : cacheFirstAsset(request));
   }
 });
 

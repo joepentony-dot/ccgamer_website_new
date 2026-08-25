@@ -22,7 +22,7 @@ assert.match(adapter,/if\(active\)return updateSpecial/,"the game loop must reta
 assert.match(adapter,/if\(active\)return renderSpecial/,"the canvas must retain the historical special-mode render contract marker");
 assert.match(runtime,/definition\.id==="sizzler-saboteurs"&&net\.getMembers\(\)\.length!==2/,"Spy Vs Spy must require exactly two connected players before start");
 
-const networkContext={console,setTimeout,clearTimeout,setInterval,clearInterval,crypto:globalThis.crypto,location:{hostname:"example.test"},document:{querySelector:()=>null,createElement:()=>({}),head:{appendChild(){}}},window:{CCG_CONFIG:{maxPlayers:4}}};
+const networkContext={console,setTimeout,clearTimeout,setInterval,clearInterval,crypto:globalThis.crypto,location:{hostname:"example.test"},document:{querySelector:()=>null,createElement:()=>({dataset:{}}),head:{appendChild(){}}},window:{CCG_CONFIG:{maxPlayers:4}}};
 networkContext.window.window=networkContext.window;vm.createContext(networkContext);vm.runInContext(networkSource,networkContext,{filename:"network.js"});
 const {RoomNetwork,ROOM_MODES}=networkContext.window.CCGNetwork;
 assert.equal(ROOM_MODES["sizzler-saboteurs"].maxPlayers,2);

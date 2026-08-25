@@ -13,9 +13,9 @@ const assets=read("js/asset-overrides.js");
 const config=read("js/config.js");
 const index=read("index.html");
 
-assert.match(assets,/CCG_ONBOARDING_SAFETY_REV="20260824g"/,"onboarding safety must remain cache-versioned");
-assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV="20260824e"/,"fullscreen-safe tutorial launcher must use a fresh cache revision");
-assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260824e/,"the release must directly load the fullscreen-safe tutorial launcher");
+assert.match(assets,/CCG_ONBOARDING_SAFETY_REV=CCG_RELEASE_REV;/,"onboarding safety must inherit the current published release token");
+assert.match(assets,/CCG_TUTORIAL_GUIDANCE_REV=CCG_RELEASE_REV;/,"fullscreen-safe tutorial launcher must inherit the current published release token");
+assert.match(index,/v10-23-tutorial-guidance\.js\?v=20260825r23/,"the release must directly load the fullscreen-safe tutorial launcher with the current r23 token");
 assert.match(guidance,/const mount=document\.querySelector\("\.ccg-game"\)\|\|document\.body/,"tutorial cards must mount inside the element that enters fullscreen so the canvas cannot intercept them");
 
 assert.match(source,/floor===1\|\|depth\(host\.spiderNest\?\.roomId\)<=safeDepth\)clearSpiderNest\(\)/,"floor one must suppress the Dustweb spider nest");
@@ -109,4 +109,4 @@ assert.match(config,/\{name:"CCG"[^\n]*ccgBoss:true/,"special dossier enemy must
 assert.match(source,/ccg-lost-sizzler-player-dossier-block-v1/,"false player-name dossier identities must remain blocked until verified");
 assert.match(hardening,/new Set\(\["ccg","ccg player","cheeky commodore gamer"\]\)/,"CCG identity aliases must remain recognised");
 
-console.log("Lost Sizzler r7 tutorial regression checks passed: static Tutorial option, one start menu, async mobile launch persistence, centred acknowledgement cards and real control input.");
+console.log("Lost Sizzler r23 tutorial regression checks passed: static Tutorial option, one start menu, async mobile launch persistence, centred acknowledgement cards and real control input.");

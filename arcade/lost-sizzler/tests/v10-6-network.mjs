@@ -32,7 +32,7 @@ class RealtimeHub{
 }
 
 const hub=new RealtimeHub(),client=hub.makeClient();
-const context={console,setTimeout,clearTimeout,setInterval,clearInterval,crypto:globalThis.crypto,location:{hostname:"example.test"},document:{querySelector:()=>null,createElement:()=>({}),head:{appendChild:()=>{}}},window:{}};
+const context={console,setTimeout,clearTimeout,setInterval,clearInterval,crypto:globalThis.crypto,location:{hostname:"example.test"},document:{querySelector:()=>null,createElement:()=>({dataset:{}}),head:{appendChild:()=>{}}},window:{}};
 context.window.window=context.window;context.window.ccgSupabase={getClient:async()=>client};vm.createContext(context);
 for(const file of ["js/config.js","js/network.js"])vm.runInContext(read(file),context,{filename:file});
 const {RoomNetwork}=context.window.CCGNetwork;

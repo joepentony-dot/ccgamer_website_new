@@ -8,7 +8,7 @@ const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-41-horde-combat-polish.js"),"utf8");
 const loader=fs.readFileSync(path.join(root,"js/version-check.js"),"utf8");
 
-assert.match(loader,/v10-41-horde-combat-polish\.js\?v=20260824a/,"version-check must load the Horde combat polish layer");
+assert.match(loader,/v10-41-horde-combat-polish\.js\?v=\$\{encodeURIComponent\(RELEASE_CACHE\)\}/,"version-check must load the Horde combat polish layer using the current release cache generation");
 assert.match(source,/WAVE_RECOVERY_HP=5/,"each completed Horde wave must award up to 5 HP recovery");
 assert.match(source,/model\.hp=Math\.min\(maxHp,before\+WAVE_RECOVERY_HP\)/,"wave recovery must heal without exceeding max HP");
 assert.match(source,/WAVE_POWER=Object\.freeze\(\[2,2,3,3,4,4,5,5,6,7\]\)/,"Horde weapons must use the stronger shot-power curve");

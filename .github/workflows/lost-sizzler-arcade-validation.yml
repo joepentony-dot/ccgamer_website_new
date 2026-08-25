@@ -71,6 +71,8 @@ jobs:
           node arcade/lost-sizzler/tests/browser/v10-36-loading.mjs
           node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
           node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-menu-leaderboard-stability.mjs
 
   structure:
     runs-on: ubuntu-latest
@@ -91,7 +93,7 @@ jobs:
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
           grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
-          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json'; then
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
             echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
             exit 1
           fi

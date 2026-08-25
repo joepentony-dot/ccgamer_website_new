@@ -52,6 +52,11 @@ jobs:
         run: |
           set -euo pipefail
           for test in arcade/lost-sizzler/tests/*.mjs; do
+            case "$(basename "$test")" in
+              v10-6-browser.mjs|v10-28-browser-stability.mjs)
+                continue
+                ;;
+            esac
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"
@@ -60,14 +65,18 @@ jobs:
       - name: Install Chromium test runtime
         shell: bash
         run: |
-          npm install --no-save playwright@1.55.0
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright@1.55.0
           npx playwright install --with-deps chromium
 
       - name: Run canonical Chromium load and layout suite
         shell: bash
         run: |
           set -euo pipefail
-          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
+          for test in \
+            arcade/lost-sizzler/tests/v10-6-browser.mjs \
+            arcade/lost-sizzler/tests/v10-28-browser-stability.mjs \
+            arcade/lost-sizzler/tests/browser/*.mjs; do
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"
