@@ -6,6 +6,20 @@
 
   const days=[
     {
+      date:"25 AUGUST 2026",
+      iso:"2026-08-25",
+      entries:[
+        ["LS-0825-01","FIXED","Browser frame crash containment","The animation loop now survives isolated update or render exceptions, throttles repeated fault storms and repairs safe runtime state instead of allowing one frame error to strand the tab."],
+        ["LS-0825-02","FIXED","Pause, focus and resume recovery","Pause/resume, tab visibility, browser focus and fullscreen restoration now clear stale input and repair frame timing, camera and canvas state before play continues."],
+        ["LS-0825-03","CHANGED","Horde encounter pacing","Horde uses a compact combat arena so new waves reach players quickly instead of spending long periods crossing the near-full procedural world."],
+        ["LS-0825-04","FIXED","Spy Vs Spy movement recovery","Spy rounds repair stale hit-stun and blocked spawn state, with a final walkability-checked movement fallback so an agent cannot be left rotating in place."],
+        ["LS-0825-05","FIXED","Tutorial action ownership","Movement, sword and dash training now count real completed actions without wrapper chains double-counting or later enhancement modules stealing tutorial progress ownership."],
+        ["LS-0825-06","CHANGED","Wandering merchant encounter","The wandering merchant is protected until genuinely seen, is brought to a safe visible position when needed, remains available for ninety seconds of usable encounter time, warns before leaving and never disappears during an open purchase."],
+        ["LS-0825-07","CHANGED","r21 cache-safe delivery","Build 2026.08.25.21 uses cache generation 20260825r21 across canonical runtime assets so browsers do not combine older r20 files with the stability release."],
+        ["LS-0825-08","FIXED","Current browser regression coverage","Historical Chromium tests now use the canonical arcade path, matching Playwright Chromium and non-blocking held-fire sampling so release failures describe the game rather than stale test infrastructure."]
+      ]
+    },
+    {
       date:"24 AUGUST 2026",
       iso:"2026-08-24",
       entries:[
@@ -87,10 +101,10 @@
     details.innerHTML=`
       <summary>
         <span class="developer-changelog-summary"><i class="developer-changelog-pulse" aria-hidden="true"></i><span>Developer Changelog / Bug Tracker</span></span>
-        <span class="developer-changelog-latest">LATEST UPDATE · 24 AUG 2026 · V10.41</span>
+        <span class="developer-changelog-latest">LATEST UPDATE · 25 AUG 2026 · V10.41</span>
       </summary>
       <div class="developer-changelog-body">
-        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-24">Last updated 24 August 2026 · V10.41</time></p>
+        <p class="developer-changelog-intro"><span><strong>LIVE DEVELOPMENT LOG.</strong> Confirmed player-facing fixes and substantial gameplay changes are recorded here so testers can see what changed and when.</span><time datetime="2026-08-25">Last updated 25 August 2026 · V10.41</time></p>
         ${days.map(day=>`<section class="developer-log-day"><h4><time datetime="${day.iso}">${day.date}</time></h4><div class="developer-log-list">${day.entries.map(entryHtml).join("")}</div></section>`).join("")}
         <section class="developer-log-monitoring" aria-label="Known issues and monitoring"><h4>KNOWN / MONITORING</h4><p><b>Direct launches from YouTube and other in-app browsers:</b> startup hardening was deployed on 23 August 2026. This is currently marked as monitoring; please submit a bug report if a direct launch still freezes or fails to initialise.</p></section>
         <p class="developer-changelog-foot">Statuses describe the live website build: FIXED = confirmed code correction, CHANGED = deliberate behaviour or balance revision, ADDED = new capability, MONITORING = a reported issue with a mitigation deployed but still being watched.</p>

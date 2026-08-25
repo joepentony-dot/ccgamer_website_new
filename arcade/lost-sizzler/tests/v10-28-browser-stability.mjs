@@ -140,7 +140,7 @@ try{
     const duplicateSources=scriptSources.filter((src,index)=>scriptSources.indexOf(src)!==index);
     assert.deepEqual(duplicateSources,[],`startup does not load the same script twice: ${duplicateSources.join(", ")}`);
     const buildSubtitle=await state.page.locator(".brand p").textContent();
-    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers");
+    assert.equal(buildSubtitle?.trim(),"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers");
     const voiceAsset=await withTimeout(state.page.evaluate(async()=>{
       const response=await fetch("assets/audio/voice/lost-sizzler-voices.ogg",{cache:"no-store"});
       const bytes=new Uint8Array(await response.arrayBuffer());
@@ -220,13 +220,16 @@ try{
       p1.firearmUnlocked=false;p1.weapon=null;p1.mana=0;p1.hitStunMs=0;p1.invuln=999999;p1._meleeSwingAt=0;fire1=0;fireBuffer1=0;
     });
     await state.page.keyboard.down("Space");
-    const heldSwingSamples=await state.page.evaluate(async()=>{
-      const values=new Set(),modes=new Set(),inputStates=new Set();
-      const until=performance.now()+1250;
-      while(performance.now()<until){const at=Number(p1?._meleeSwingAt||0);if(at>0)values.add(at);modes.add(mode);inputStates.add(input.has("Space"));await new Promise(resolve=>setTimeout(resolve,45));}
-      return{values:[...values],modes:[...modes],inputStates:[...inputStates],fire1,fireBuffer1,hitStunMs:p1.hitStunMs};
-    });
+    const heldValues=new Set(),heldModes=new Set(),heldInputs=new Set();
+    const heldDeadline=Date.now()+2500;
+    let heldLast={fire1:0,fireBuffer1:0,hitStunMs:0};
+    while(Date.now()<heldDeadline&&heldValues.size<2){
+      const sample=await state.page.evaluate(()=>({at:Number(p1?._meleeSwingAt||0),mode,inputState:input.has("Space"),fire1,fireBuffer1,hitStunMs:p1.hitStunMs}));
+      if(sample.at>0)heldValues.add(sample.at);heldModes.add(sample.mode);heldInputs.add(sample.inputState);heldLast=sample;
+      await state.page.waitForTimeout(75);
+    }
     await state.page.keyboard.up("Space");
+    const heldSwingSamples={values:[...heldValues],modes:[...heldModes],inputStates:[...heldInputs],fire1:heldLast.fire1,fireBuffer1:heldLast.fireBuffer1,hitStunMs:heldLast.hitStunMs};
     assert.ok(heldSwingSamples.values.length>=2,`holding the fire key must auto-repeat sword swings: ${JSON.stringify(heldSwingSamples)}`);
     await state.page.evaluate(()=>{p1.invuln=0;if(window.__browserOriginalShowNamedDossier){showNamedDossier=window.__browserOriginalShowNamedDossier;delete window.__browserOriginalShowNamedDossier}for(const enemy of host.enemies||[])if("_browserHeldAlive" in enemy){enemy.alive=enemy._browserHeldAlive;delete enemy._browserHeldAlive}});
 

@@ -4,7 +4,7 @@
   if(window.__CCG_LOST_SIZZLER_V136_BOOTSTRAP__)return;
   window.__CCG_LOST_SIZZLER_V136_BOOTSTRAP__=true;
 
-  const REV="20260824a";
+  const REV=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
   const BOX_TYPES=new Set(["crate","box","boxes","woodenCrate","cargoCrate","crateStack"]);
   const state={
     loadingStartedAt:performance.now(),observedScripts:new WeakSet(),modulesReady:0,progress:4,gateHooked:false,
@@ -130,7 +130,7 @@
     ["SHIFT","DASH","Short movement burst using the normal movement system."],
     ["C","CLOSE DOOR","Close an open nearby room door to slow or misdirect the other agent."],
     ["TAB","FIELD KIT","Open or close this Spy Vs Spy manual and live equipment readout."],
-    ["M / F","SOUND / FULLSCREEN","M toggles sound. F toggles fullscreen."],
+    ["F","FULLSCREEN","F toggles fullscreen. Sound is controlled from the SOUND button in the top bar."],
     ["ESC","LEAVE MATCH","Ends the special mode and returns to the game options. This is not the Spy pause key."]
   ]}
 

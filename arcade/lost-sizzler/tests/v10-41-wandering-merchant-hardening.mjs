@@ -13,6 +13,8 @@ assert.match(merchantSource,/MIN_VISIBLE_MS=90000/,"merchant must require ninety
 assert.match(merchantSource,/shopOpenFor\(m\)/,"merchant departure must understand the live shop panel");
 assert.match(merchantSource,/positionForEncounter\(m\)/,"merchant must be repositioned into an encounter-safe visible cell when necessary");
 assert.match(merchantSource,/document\?\.hidden===true/,"hidden tabs must not consume merchant encounter time");
+assert.match(merchantSource,/Number\(player\.health\?\?1\)>0/,"zero-health players must not count as merchant viewers");
+assert.match(merchantSource,/if\(!cell\)return false;\s*m\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");
 assert.match(tutorialSource,/v10-41-wandering-merchant-hardening\.js\?v=/,"the r21 direct finalizer must load wandering merchant hardening with the release token");
 
 let clock=0;
@@ -23,6 +25,7 @@ const rooms=[{id:0,x:0,y:0,w:20,h:20},{id:1,x:24,y:0,w:20,h:20}];
 const host={enemies:[],blockingDecor:[],generators:[],chests:[],items:[],shops:[merchant],doors:[],revision:0};
 const world={rooms,map:Array.from({length:30},()=>Array(50).fill(0))};
 let activeShop=null;
+let walkableAllowed=true;
 const roomAt=(x,y)=>rooms.find(room=>x>=room.x&&x<=room.x+room.w&&y>=room.y&&y<=room.y+room.h)?.id??null;
 const documentState={hidden:false,body:{dataset:{runActive:"true"}}};
 const context={
@@ -32,7 +35,7 @@ const context={
   clearInterval:()=>{},
   addEventListener:()=>{},
   document:documentState,
-  window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>true}},
+  window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>walkableAllowed}},
   world,host,p1,playMode:"solo",mode:"playing",net:{isHost:true},
   allPlayers:()=>[p1],
   showToast:(title,text,tone,duration)=>toasts.push({title,text,tone,duration})
@@ -48,8 +51,11 @@ clock=100;api.tick(clock);
 assert.equal(merchant._v141MerchantSeen,false,"an off-room merchant is not treated as seen");
 assert.ok(merchant.rareLifeMs>=api.constants.PROTECTED_LIFE_MS,"the legacy floor timer is neutralised before first sighting");
 
-p1.x=2;p1.y=2;clock=200;api.tick(clock);
-assert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter");
+p1.x=2;p1.y=2;walkableAllowed=false;clock=200;api.tick(clock);
+assert.equal(merchant._v141MerchantSeen,false,"a failed safe-position search does not fake a merchant sighting");
+assert.equal(merchant._v141MerchantEncounterPositioned,false,"a failed safe-position search remains retryable");
+walkableAllowed=true;clock=300;api.tick(clock);
+assert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter once a safe visible tile exists");
 assert.equal(merchant._v141MerchantDiscovered,true,"the live encounter records that this merchant has genuinely been discovered");
 assert.ok(Math.hypot(merchant.x-p1.x,merchant.y-p1.y)<=api.constants.VISIBILITY_RADIUS,"an off-camera merchant is moved into a safe visible encounter position");
 assert.equal(api.state.repositions,1,"the off-camera merchant is repositioned once");
@@ -78,6 +84,14 @@ assert.equal(merchant._v141MerchantWarned,true,"the player receives a thirty-sec
 assert.equal(toasts.filter(row=>row.title==="MERCHANT PACKING UP SOON").length,1,"packing warning is shown once");
 
 activeShop=merchant;
+documentState.hidden=true;
+const beforeHiddenShop=merchant._v141MerchantVisibleMs;
+for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
+assert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop in a hidden tab does not spend encounter time");
+documentState.hidden=false;context.mode="paused";
+for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
+assert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop while paused does not spend encounter time");
+context.mode="playing";
 for(let i=0;i<120;i++){clock+=250;api.tick(clock)}
 assert.equal(merchant._v141MerchantVisibleMs,api.constants.MIN_VISIBLE_MS,"visible encounter time reaches the ninety-second requirement");
 assert.equal(merchant._v141MerchantDepartArmed,true,"departure becomes eligible only after the full visible-time requirement");

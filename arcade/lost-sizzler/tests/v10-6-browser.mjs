@@ -13,15 +13,13 @@ for(const moduleName of ["playwright","playwright-core"]){
 }
 if(!chromium){console.log("V10.6 browser checks skipped: Playwright is not installed");process.exit(0)}
 
-const browserCandidates=[process.env.CHROMIUM_PATH,"/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium","/usr/bin/chromium-browser"].filter(Boolean);
-const executablePath=browserCandidates.find(candidate=>fs.existsSync(candidate));
-if(!executablePath){
-  try{const bundled=chromium.executablePath();if(bundled&&fs.existsSync(bundled))browserCandidates.push(bundled)}catch{}
-}
+const browserCandidates=[process.env.CHROMIUM_PATH].filter(Boolean);
+try{const bundled=chromium.executablePath();if(bundled&&fs.existsSync(bundled))browserCandidates.push(bundled)}catch{}
+browserCandidates.push("/usr/bin/google-chrome","/usr/bin/google-chrome-stable","/usr/bin/chromium","/usr/bin/chromium-browser");
 const browserPath=browserCandidates.find(candidate=>fs.existsSync(candidate));
 if(!browserPath){console.log("V10.6 browser checks skipped: no Chromium executable is available");process.exit(0)}
 
-const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../../..");
+const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");
 const mime={".html":"text/html",".js":"text/javascript",".css":"text/css",".json":"application/json",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".mp3":"audio/mpeg",".wav":"audio/wav"};
 const server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);if(!file.startsWith(repo)){res.writeHead(403).end();return}fs.readFile(file,(error,data)=>{if(error){res.writeHead(404).end("not found");return}res.setHeader("content-type",mime[path.extname(file)]||"application/octet-stream");res.end(data)})});
 await new Promise(resolve=>server.listen(0,"127.0.0.1",resolve));const base=`http://127.0.0.1:${server.address().port}/arcade/lost-sizzler/`;
@@ -34,9 +32,9 @@ await context.addInitScript(()=>{
   function client(){return{channel(topic,options={}){const key=options.config?.presence?.key||Math.random().toString(36),events=[],bc=new BroadcastChannel(`mock-${topic}`),prefix=`mock-presence:${topic}:`;let mine=null,sub=null;
     const firePresence=()=>{for(const row of events)if(row.type==="presence")row.callback()};handlers.add(event=>{if(event.key?.startsWith(prefix))firePresence()});bc.onmessage=event=>{const data=event.data;for(const row of events)if(row.type==="broadcast"&&row.filter?.event===data.event)row.callback({payload:data.payload})};
     const channel={on(type,filter,callback){events.push({type,filter,callback});return channel},subscribe(callback){sub=callback;queueMicrotask(()=>sub?.("SUBSCRIBED"));return channel},async track(payload){mine={...payload};localStorage.setItem(`${prefix}${key}`,JSON.stringify(mine));firePresence();return"ok"},presenceState(){const state={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(!k?.startsWith(prefix))continue;try{const value=JSON.parse(localStorage.getItem(k));state[k.slice(prefix.length)]=[value]}catch{}}return state},async send(message){bc.postMessage({event:message.event,payload:message.payload});return"ok"},async untrack(){localStorage.removeItem(`${prefix}${key}`);mine=null;firePresence();return"ok"},close(){bc.close()}};return channel},async removeChannel(channel){channel.close?.();return"ok"}}}
-  window.ccgSupabase={getClient:async()=>client()};
+  window.__ccgV106TestClientFactory=client;
 });
-const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.locator("#player-name").fill(name);return page};
+const pages=[];const makePage=async(name,url=base)=>{const page=await context.newPage();pages.push(page);await page.goto(url,{waitUntil:"domcontentloaded"});await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page};
 const assertTacticalContained=async(page,label)=>{
   const tactical=await page.locator(".tactical-zone").boundingBox(),radar=await page.locator(".radar-card").boundingBox(),radarCanvas=await page.locator("#radar-canvas").boundingBox(),shortcuts=await page.locator(".shortcut-dock").boundingBox();
   assert.ok(tactical&&radar&&radarCanvas&&shortcuts,`${label}: tactical radar and shortcut panels are visible`);const tolerance=2,right=box=>box.x+box.width,bottom=box=>box.y+box.height;
