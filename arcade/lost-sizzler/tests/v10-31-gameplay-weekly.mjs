@@ -38,7 +38,7 @@ assert.match(core,/function submitWeeklyResultOnce\(\)/,"all weekly result exits
 assert.match(main,/if\(run\?\.daily\)await submitWeeklyResultOnce\(\)/,"quitting a weekly run must submit its current final score before clearing the run");
 
 assert.match(supabaseClient,/@supabase\/supabase-js@2\.95\.0/,"the shared browser client must pin the verified Supabase SDK version");
-assert.match(index,/ccg-supabase-client\.js\?v=20260825r27/,"the multiplayer client must ship with the current r27 release cache token");
+assert.match(index,/ccg-supabase-client\.js\?v=20260825r28/,"the multiplayer client must ship with the current r28 release cache token");
 assert.match(network,/private:false/,"internet rooms must explicitly use public browser-accessible Realtime channels");
 assert.match(network,/broadcast:\{self:false,ack:true\}/,"room broadcasts must wait for relay acknowledgement");
 assert.match(network,/async sendRequired\(event,payload\)/,"start and join control messages must have a reliable failure path");
@@ -59,4 +59,4 @@ assert.match(gameNetwork,/syncSequence:\+\+worldSyncSequence/,"world snapshots m
 assert.match(multiplayerSync,/actorState:playerStateForNetwork\(p1\)/,"interaction requests must carry a latency-tolerant player position snapshot");
 assert.match(multiplayerSync,/v132_interaction_result/,"the host must explicitly accept or reject joined-player interactions");
 
-console.log("Lost Sizzler V10.33 furniture, melee, tutorial safety and multiplayer clock-sync checks passed.");
+console.log("Lost Sizzler V10.33 furniture, melee, tutorial safety and multiplayer clock-sync checks passed under r28.");
