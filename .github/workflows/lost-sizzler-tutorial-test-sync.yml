@@ -1,0 +1,52 @@
+name: Lost Sizzler Tutorial Test Sync
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/lost-sizzler-tutorial-test-sync.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/lost-sizzler-browser-stability-gameplay
+          fetch-depth: 0
+
+      - name: Synchronise Tutorial inventory browser actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
+          text=p.read_text(encoding='utf-8')
+          old='''    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    await state.page.keyboard.press("Tab");await state.page.waitForTimeout(180);await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");'''
+          new='''    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryOpened===true,null,{timeout:3000}),4000,"Tutorial inventory open");
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryClosed===true,null,{timeout:3000}),4000,"Tutorial inventory close");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");'''
+          if old not in text:
+              raise SystemExit('Tutorial inventory timing marker not found')
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+          PY
+          node --check arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+
+      - name: Commit test synchronisation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          git commit -m 'Synchronise Tutorial inventory browser test'
+          git push origin HEAD:fix/lost-sizzler-browser-stability-gameplay
