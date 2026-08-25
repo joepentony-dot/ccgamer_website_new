@@ -12,6 +12,7 @@ const tutorialSource=fs.readFileSync(path.join(root,"js/v10-41-tutorial-action-f
 assert.match(merchantSource,/MIN_VISIBLE_MS=90000/,"merchant must require ninety seconds of visible encounter time");
 assert.match(merchantSource,/shopOpenFor\(m\)/,"merchant departure must understand the live shop panel");
 assert.match(merchantSource,/positionForEncounter\(m\)/,"merchant must be repositioned into an encounter-safe visible cell when necessary");
+assert.match(merchantSource,/document\?\.hidden===true/,"hidden tabs must not consume merchant encounter time");
 assert.match(tutorialSource,/v10-41-wandering-merchant-hardening\.js\?v=/,"the r21 direct finalizer must load wandering merchant hardening with the release token");
 
 let clock=0;
@@ -23,15 +24,16 @@ const host={enemies:[],blockingDecor:[],generators:[],chests:[],items:[],shops:[
 const world={rooms,map:Array.from({length:30},()=>Array(50).fill(0))};
 let activeShop=null;
 const roomAt=(x,y)=>rooms.find(room=>x>=room.x&&x<=room.x+room.w&&y>=room.y&&y<=room.y+room.h)?.id??null;
+const documentState={hidden:false,body:{dataset:{runActive:"true"}}};
 const context={
   console,
   performance:{now:()=>clock},
   setInterval:()=>1,
   clearInterval:()=>{},
   addEventListener:()=>{},
-  document:{},
+  document:documentState,
   window:{CCGLostSizzlerRareEvents:{state:{plans:{merchant}}},CCGWorld:{roomAt:(_world,x,y)=>roomAt(x,y),walkable:()=>true}},
-  world,host,p1,playMode:"solo",net:{isHost:true},
+  world,host,p1,playMode:"solo",mode:"playing",net:{isHost:true},
   allPlayers:()=>[p1],
   showToast:(title,text,tone,duration)=>toasts.push({title,text,tone,duration})
 };
@@ -48,6 +50,7 @@ assert.ok(merchant.rareLifeMs>=api.constants.PROTECTED_LIFE_MS,"the legacy floor
 
 p1.x=2;p1.y=2;clock=200;api.tick(clock);
 assert.equal(merchant._v141MerchantSeen,true,"entering the merchant room starts the encounter");
+assert.equal(merchant._v141MerchantDiscovered,true,"the live encounter records that this merchant has genuinely been discovered");
 assert.ok(Math.hypot(merchant.x-p1.x,merchant.y-p1.y)<=api.constants.VISIBILITY_RADIUS,"an off-camera merchant is moved into a safe visible encounter position");
 assert.equal(api.state.repositions,1,"the off-camera merchant is repositioned once");
 assert.equal(toasts.filter(row=>row.title==="WANDERING MERCHANT").length,1,"arrival is announced only when the merchant is actually visible");
@@ -59,8 +62,18 @@ assert.equal(merchant._v141MerchantVisibleMs,seenAt,"time spent away from the me
 assert.ok(merchant.rareLifeMs>=api.constants.PROTECTED_LIFE_MS,"the merchant remains protected while off-screen");
 
 p1.x=merchant.x-3;p1.y=merchant.y;
-for(let i=0;i<240;i++){clock+=250;api.tick(clock)}
-assert.ok(merchant._v141MerchantVisibleMs>=60000,"visible encounter time accumulates while the merchant is actually in view");
+for(let i=0;i<80;i++){clock+=250;api.tick(clock)}
+const activeVisibleTime=merchant._v141MerchantVisibleMs;
+assert.ok(activeVisibleTime>=20000,"visible encounter time accumulates while the game is actively being viewed");
+context.mode="paused";
+for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
+assert.equal(merchant._v141MerchantVisibleMs,activeVisibleTime,"pausing the game does not spend the merchant visit");
+context.mode="playing";documentState.hidden=true;
+for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
+assert.equal(merchant._v141MerchantVisibleMs,activeVisibleTime,"a hidden browser tab does not spend the merchant visit");
+documentState.hidden=false;
+for(let i=0;i<160;i++){clock+=250;api.tick(clock)}
+assert.ok(merchant._v141MerchantVisibleMs>=60000,"active visible encounter time resumes after returning to play");
 assert.equal(merchant._v141MerchantWarned,true,"the player receives a thirty-second packing warning");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT PACKING UP SOON").length,1,"packing warning is shown once");
 
@@ -76,4 +89,4 @@ assert.equal(merchant._v141MerchantDepartCountdown,true,"closing the shop starts
 assert.equal(merchant.rareLifeMs,api.constants.DEPART_GRACE_MS,"departure uses an explicit final grace period instead of vanishing immediately");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT CLOSING").length,1,"final departure is announced");
 
-console.log("Lost Sizzler V10.41 wandering merchant visibility, encounter positioning, ninety-second visit and shop-safe departure checks passed.");
+console.log("Lost Sizzler V10.41 wandering merchant visibility, encounter positioning, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
