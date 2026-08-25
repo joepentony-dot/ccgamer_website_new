@@ -25,7 +25,7 @@ assert.match(polish,/@media \(max-width:900px\),\(pointer:coarse\)/,"mobile noti
 assert.match(polish,/game-message-rail,[\s\S]*position:relative!important;[\s\S]*min-height:52px!important;/,"mobile message rail retains a visible notification row");
 assert.match(polish,/game-message-rail>\.pickup-toast,[\s\S]*position:absolute!important;[\s\S]*inset:0!important;/,"mobile toast overlays room context instead of being clipped below it");
 assert.match(polish,/game-message-rail>\.pickup-toast\.show,[\s\S]*display:grid!important;[\s\S]*visibility:visible!important;[\s\S]*opacity:1!important;/,"active mobile notifications are forced visible");
-assert.match(loader,/CCG_RARE_EVENTS_BALANCE_REV="20260824b"/,"trap runtime asset revision is cache-busted");
-assert.match(loader,/CCG_POLISH_REV="20260824b"/,"mobile notification stylesheet revision is cache-busted");
+assert.match(loader,/const CCG_RARE_EVENTS_BALANCE_REV=CCG_RELEASE_REV;/,"trap runtime asset must inherit the canonical release cache token");
+assert.match(loader,/const CCG_POLISH_REV=CCG_RELEASE_REV;/,"mobile notification stylesheet must inherit the canonical release cache token");
 
 console.log("Lost Sizzler trap and mobile notification regression checks passed");
