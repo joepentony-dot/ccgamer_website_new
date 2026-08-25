@@ -1,9 +1,9 @@
 /* The Lost Sizzler V10.41 — startup freeze guard.
- * V10.36 historically rebuilt the chest atlas with canvas.toDataURL() inside
- * the release-gate finish callback. Large image allocations there can stall the
- * main thread while the loading UI is still showing 92%. This guard marks that
- * legacy synchronous pass as already handled, then performs the same gutter
- * preparation later using a canvas directly as the image source.
+ * V10.36 historically rebuilt the chest atlas using synchronous data-URL
+ * encoding inside the release-gate finish callback. Large image allocations
+ * there can stall the main thread while the loading UI is still showing 92%.
+ * This guard marks that legacy synchronous pass as already handled, then
+ * performs the same gutter preparation later using a canvas directly.
  */
 (()=>{
   "use strict";
@@ -21,8 +21,8 @@
     if(!source)return false;
     if(source.__ccgV141SafeGutter===true)return true;
     state.source=source;
-    // V10.36 checks this marker before calling canvas.toDataURL(). Marking the
-    // source here skips only that synchronous conversion; the safe pass below
+    // V10.36 checks this marker before its synchronous encoded-image rebuild.
+    // Marking the source here skips only that conversion; the safe pass below
     // still prepares the guttered atlas.
     try{source.__ccgV136Guttered=true}catch(_){}
     try{source.__ccgV141DeferredGutter=true}catch(_){}
