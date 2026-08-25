@@ -1,4 +1,4 @@
-/* The Lost Sizzler — V10.6 concise menu, carried-item HUD and guest Weekly Dungeon pass. */
+/* The Lost Sizzler — V10.6 concise menu, carried-item HUD and ranked Weekly Dungeon gate. */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_UI_V106__)return;
@@ -65,7 +65,7 @@
     section.style.contain="layout paint";
 
     const note=section.querySelector(".weekly-leaderboard-note");
-    if(note)note.textContent="Same dungeon seed for everyone. Ranked scores reset every Monday.";
+    if(note)note.textContent="Same dungeon seed for everyone. One ranked attempt per registered account. Scores reset every Monday.";
     const links=section.querySelectorAll(".weekly-auth-actions a");
     if(links[0])links[0].textContent="Create account for leaderboard";
     if(links[1])links[1].textContent="Sign in";
@@ -105,7 +105,7 @@
     }
 
     const note=document.getElementById("menu-note");
-    if(note)note.textContent="Weekly Dungeon is free to play. Sign in only if you want one ranked leaderboard attempt each week.";
+    if(note)note.textContent="Weekly Dungeon requires a registered CCG account. Each account receives one ranked attempt per week, resetting Monday at 00:00 UTC.";
 
     const controls=panel.querySelector(".keys-help");
     if(controls&&!controls.closest("details")){
@@ -184,15 +184,17 @@
   if(originalBeginRun){
     try{
       beginRun=function(options={}){
+        if(options.daily&&!options.weekly?.attempt?.id){
+          showToast("WEEKLY DUNGEON — SIGN IN REQUIRED","A registered CCG account and unused weekly attempt are required before the Weekly Dungeon can start.","red",8000);
+          window.CCGWeeklyChallenge?.refresh?.();
+          return null;
+        }
         const result=originalBeginRun(options);
         if(options.daily&&typeof run!=="undefined"&&run){
-          const ranked=Boolean(options.weekly?.attempt?.id);
-          run.weeklyRanked=ranked;
+          run.weeklyRanked=true;
           showToast(
-            ranked?"WEEKLY DUNGEON — RANKED":"WEEKLY DUNGEON — UNRANKED",
-            ranked
-              ?`This is your one leaderboard attempt for the week. Same seed, Arcade rules, and death ends the run. Playing as ${playerName()}.`
-              :"Same weekly seed and Arcade rules as the leaderboard run. No account is required, and this score will not be submitted.",
+            "WEEKLY DUNGEON — RANKED",
+            `This is your one leaderboard attempt for the week. Same seed, Arcade rules, and death ends the run. Playing as ${playerName()}.`,
             "gold",
             10000
           );
@@ -206,37 +208,13 @@
   if(originalEndRun){
     try{
       endRun=function(reason){
-        const weekly=Boolean(run?.daily),ranked=Boolean(run?.weeklyAttemptId),failed=Boolean(run?.dailyFailed);
+        const weekly=Boolean(run?.daily),failed=Boolean(run?.dailyFailed);
         const result=originalEndRun(reason);
         if(weekly&&UI?.endTitle)UI.endTitle.textContent=failed?"WEEKLY DUNGEON ENDED":"WEEKLY DUNGEON COMPLETE";
-        if(weekly&&!ranked&&UI?.endText){
-          const marker="<br><br><strong>WEEKLY RESULT</strong>";
-          const current=UI.endText.innerHTML,index=current.indexOf(marker);
-          if(index>=0)UI.endText.innerHTML=current.slice(0,index)+"<br><br><strong>UNRANKED WEEKLY DUNGEON</strong><br>This run was not submitted. Play again whenever you like, or sign in before a future run to compete on the leaderboard.";
-        }
         return result;
       };
     }catch(error){console.warn("[Lost Sizzler] Weekly Dungeon result hook unavailable",error)}
   }
-
-  async function startGuestWeekly(event){
-    const state=window.CCGWeeklyChallenge?.state;
-    if(state?.signedIn)return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    if(!state?.ready||!state?.seed){
-      showToast("WEEKLY DUNGEON UNAVAILABLE","The weekly seed could not be loaded. Try again in a moment; normal Solo play is still available.","red",7000);
-      window.CCGWeeklyChallenge?.refresh?.();
-      return;
-    }
-    const audio=S.start(),fullscreen=requestPlayFullscreen();
-    await Promise.all([audio,fullscreen]);
-    net.setSolo(playerName());
-    beginRun({split:false,daily:true,seed:state.seed,weekly:{weekStart:state.weekStart,attempt:null}});
-  }
-
-  const weeklyButton=document.getElementById("daily-btn");
-  weeklyButton?.addEventListener("click",startGuestWeekly,true);
 
   function refreshMusicAfterAdminLoad(){
     if(document.body.dataset.runActive!=="true")return;
