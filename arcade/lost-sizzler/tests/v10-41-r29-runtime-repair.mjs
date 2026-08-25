@@ -48,14 +48,33 @@ assert.match(repair,/window\.CCGLostSizzlerV141SpyMovementFinalizer\?\.state\?\.
 assert.match(repair,/SPY_HINT_COOLDOWN_MS=1800/,"video-confirmed furniture guidance must be throttled");
 assert.match(repair,/MOVE BESIDE FURNITURE/,"the repeated Spy search hint must have a dedicated suppression path");
 
+assert.match(repair,/collideWithEnemyV141R29Block/,"r29 must own final player/enemy contact handling");
+assert.match(repair,/player\.x=ox;player\.y=oy;player\.rx=ox;player\.ry=oy/,"enemy contact must return the player to the adjacent pre-collision tile");
+const contactSection=repair.slice(repair.indexOf("function contactBlock"),repair.indexOf("function installContactCombatGuard"));
+assert.doesNotMatch(contactSection,/hurtPlayer|health\s*[-+]=/,"raw contact must not damage the player; enemy attack logic remains the damage source");
+assert.match(repair,/function sealRoomDoorBypasses/,"r29 must repair meaningless room-door bypass gaps");
+assert.match(repair,/worldState\.map\[outside\.y\]\[outside\.x\]=1;sealed\+\+/,"an unregistered opening immediately beside a real door must be resealed as wall");
+assert.match(repair,/worldState\.largeRoomGridV135/,"normal Dungeon door repair must not rewrite the special Spy room grid");
+
+assert.match(repair,/PROGRESS_LABEL=.*CONTINUE.*RESUME.*BACK TO GAME.*COMPLETE TUTORIAL/,"keyboard progress must recognise acknowledgement and resume actions");
+assert.match(repair,/window\.addEventListener\("keydown",handleEnterProgress,true\)/,"Enter progress handling must run in capture phase before Player 2 gameplay Enter");
+assert.match(repair,/event\.stopImmediatePropagation\(\)/,"consumed popup Enter must not leak into gameplay attack handling");
+assert.match(repair,/\["menu","online-lobby"\]/,"Enter progress must not auto-start or auto-join from the main menu/lobby");
+
+assert.match(repair,/health:"HEALTH PACK"/,"generic health pickups must use a relevant Health Pack label");
+assert.match(repair,/HIDDEN\|SECRET\|MYSTERIOUS\|UNKNOWN\|UNMARKED/,"misleading generic pickup prefixes must be normalised");
+assert.match(repair,/function drawEnhancedPickup/,"r29 must provide larger differentiated pickup glyphs");
+assert.match(repair,/customPickupPresent\(item\)/,"custom pickup artwork must remain authoritative over generated glyphs");
+assert.match(repair,/ctx\.scale\(1\.16,1\.16\)/,"unrecognised fallback pickup glyphs must also receive a modest readability increase");
+
 assert.match(css,/grid-template-rows:minmax\(0,1fr\)!important/,"active gameplay canvas geometry must remain a fixed one-row grid");
 assert.match(css,/game-message-rail\{[\s\S]*display:contents!important/,"notification rail must not reserve or release canvas height");
 assert.match(css,/#pickup-toast\{[\s\S]*position:absolute!important/,"gameplay toasts must overlay without resizing the playfield");
 
-for(const id of ["LS-0825-23","LS-0825-24","LS-0825-25","LS-0825-26","LS-0825-27","LS-0825-28","LS-0825-29"]){
+for(const id of ["LS-0825-23","LS-0825-24","LS-0825-25","LS-0825-26","LS-0825-27","LS-0825-28","LS-0825-29","LS-0825-30","LS-0825-31","LS-0825-32","LS-0825-33"]){
   assert.match(buglog,new RegExp(id),`r29 developer bug tracker must contain ${id}`)
 }
 assert.match(buglog,/build 2026\.08\.25\.29/,"r29 bug tracker must identify the r29 build");
 assert.match(buglog,/20260825r29/,"r29 bug tracker must identify the r29 cache generation");
 
-console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, Spy, audio and release regression checks passed.");
+console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, Spy, audio, combat, dungeon structure, keyboard UX, pickup and release regression checks passed.");
