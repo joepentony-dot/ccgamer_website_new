@@ -10,7 +10,7 @@ const css=read("css/v10-24-mobile-ergonomics.css");
 const js=read("js/v10-24-mobile-ergonomics.js");
 const assets=read("js/asset-overrides.js");
 
-assert.match(assets,/CCG_MOBILE_ERGONOMICS_REV="20260823a"/,"mobile ergonomics must have an explicit cache revision");
+assert.match(assets,/CCG_MOBILE_ERGONOMICS_REV=CCG_RELEASE_REV;/,"mobile ergonomics must inherit the current published release token");
 assert.match(assets,/css\/v10-24-mobile-ergonomics\.css\?v=\$\{CCG_MOBILE_ERGONOMICS_REV\}/,"mobile ergonomics CSS must be loaded after the compact mobile layers");
 assert.match(assets,/js\/v10-24-mobile-ergonomics\.js\?v=\$\{CCG_MOBILE_ERGONOMICS_REV\}/,"mobile ergonomics helper must be loaded by the game");
 
