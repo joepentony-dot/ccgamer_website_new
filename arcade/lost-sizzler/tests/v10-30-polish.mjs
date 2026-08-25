@@ -8,7 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const loader=read("js/asset-overrides.js"),core=read("js/game-core.js"),rpg=read("js/v10-5-rpg-balance.js"),network=read("js/game-network.js"),render=read("js/game-render.js"),polish=read("js/v10-30-polish.js"),css=read("css/v10-30-polish.css"),index=read("index.html");
 
-assert.match(loader,/const CCG_POLISH_REV="20260824b"/,"V10.30 must have an isolated cache revision");
+assert.match(loader,/const CCG_POLISH_REV=CCG_RELEASE_REV;/,"V10.30 must inherit the canonical release cache token");
 assert.match(loader,/CCGLostSizzlerReleaseGate=\{state,finish\}/,"launches must be protected by a release-ready gate");
 assert.match(loader,/state\.pendingId=button\.id/,"an early mode selection must be queued rather than discarded");
 assert.match(loader,/document\.getElementById\(id\)\?\.click\(\)/,"the queued mode selection must replay after enhancement completion");
@@ -35,7 +35,8 @@ assert.match(network,/i\.ammoRounds=Math\.max\(0,available-rounds\)/,"unused res
 
 assert.match(polish,/const POTION_TARGETS=\[3,4,4,5,5\]/,"ground potion density must rise gradually by floor");
 assert.match(polish,/startWorld=function startWorldV130Polish/,"every generated floor must receive the final potion pass");
-assert.match(polish,/new MutationObserver\(update\)/,"the current build subtitle must survive older deferred UI initialisers");
+assert.match(polish,/function setBuildLabel\(\)/,"current build subtitle must be written by the one-shot release label updater");
+assert.doesNotMatch(polish,/new MutationObserver\(/,"V10.30 must not keep a version-label MutationObserver alive");
 assert.match(render,/function drawAmbientMotes\(\)/,"rooms must have restrained motif-aware ambient detail");
 assert.match(render,/prefers-reduced-motion: reduce/,"ambient motion must respect reduced-motion preference");
 assert.match(render,/function drawThreatEdgeIndicators\(p\)/,"incoming off-screen projectiles must have a directional warning");
