@@ -1,0 +1,68 @@
+name: Lost Sizzler Load Safety
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - '.github/workflows/lost-sizzler-load-safety.yml'
+  pull_request:
+    paths:
+      - 'arcade/lost-sizzler/**'
+      - '.github/workflows/lost-sizzler-load-safety.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lost-sizzler-load-safety-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Canonical game load safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Syntax check every canonical Lost Sizzler JavaScript file
+        shell: bash
+        run: |
+          set -euo pipefail
+          find arcade/lost-sizzler/js -type f -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check
+          find arcade/lost-sizzler/tests -type f -name '*.mjs' -print0 | sort -z | xargs -0 -n1 node --check
+
+      - name: Run canonical Node regression contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in arcade/lost-sizzler/tests/*.mjs; do
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          done
+
+      - name: Install Chromium test runtime
+        shell: bash
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Run canonical Chromium load and layout suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
+            echo "::group::$test"
+            node "$test"
+            echo "::endgroup::"
+          done
