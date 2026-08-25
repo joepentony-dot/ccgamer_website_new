@@ -1,4 +1,4 @@
-name: Lost Sizzler Tutorial Test Sync
+name: Lost Sizzler Final Browser Harness Sync
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  sync-test:
+  sync-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout branch
@@ -18,15 +18,15 @@ jobs:
           ref: fix/lost-sizzler-browser-stability-gameplay
           fetch-depth: 0
 
-      - name: Synchronise Tutorial inventory browser actions
+      - name: Synchronise browser harnesses
         shell: bash
         run: |
           set -euo pipefail
-          # Synchronise to the tutorial's observed state, not an arbitrary delay.
           python - <<'PY'
           from pathlib import Path
-          p=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
-          text=p.read_text(encoding='utf-8')
+
+          tutorial=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
+          text=tutorial.read_text(encoding='utf-8')
           old='''    await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
     await state.page.keyboard.press("Tab");await state.page.waitForTimeout(180);await state.page.keyboard.press("Tab");
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");'''
@@ -38,16 +38,35 @@ jobs:
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");'''
           if old not in text:
               raise SystemExit('Tutorial inventory timing marker not found')
-          p.write_text(text.replace(old,new,1),encoding='utf-8')
-          PY
-          node --check arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          tutorial.write_text(text.replace(old,new,1),encoding='utf-8')
 
-      - name: Commit test synchronisation
+          v106=Path('arcade/lost-sizzler/tests/v10-6-browser.mjs')
+          text=v106.read_text(encoding='utf-8')
+          old_on='''bc.onmessage=event=>{const data=event.data;for(const row of events)if(row.type==="broadcast"&&row.filter?.event===data.event)row.callback({payload:data.payload})};'''
+          new_on='''bc.onmessage=event=>{const data=event.data;if(data?.type==="presence"){firePresence();return}for(const row of events)if(row.type==="broadcast"&&row.filter?.event===data.event)row.callback({payload:data.payload})};'''
+          old_track='''async track(payload){mine={...payload};localStorage.setItem(`${prefix}${key}`,JSON.stringify(mine));firePresence();return"ok"}'''
+          new_track='''async track(payload){mine={...payload};localStorage.setItem(`${prefix}${key}`,JSON.stringify(mine));firePresence();bc.postMessage({type:"presence"});return"ok"}'''
+          old_untrack='''async untrack(){localStorage.removeItem(`${prefix}${key}`);mine=null;firePresence();return"ok"}'''
+          new_untrack='''async untrack(){localStorage.removeItem(`${prefix}${key}`);mine=null;firePresence();bc.postMessage({type:"presence"});return"ok"}'''
+          for old_marker,new_marker,label in [
+              (old_on,new_on,'presence broadcast receiver'),
+              (old_track,new_track,'presence track broadcast'),
+              (old_untrack,new_untrack,'presence untrack broadcast')]:
+              if old_marker not in text:
+                  raise SystemExit(f'V10.6 {label} marker not found')
+              text=text.replace(old_marker,new_marker,1)
+          v106.write_text(text,encoding='utf-8')
+          PY
+
+          node --check arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
+          node --check arcade/lost-sizzler/tests/v10-6-browser.mjs
+
+      - name: Commit deterministic browser harnesses
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
-          git commit -m 'Synchronise Tutorial inventory browser test'
+          git add arcade/lost-sizzler/tests/v10-28-browser-stability.mjs arcade/lost-sizzler/tests/v10-6-browser.mjs
+          git commit -m 'Make final Lost Sizzler browser harnesses deterministic'
           git push origin HEAD:fix/lost-sizzler-browser-stability-gameplay
