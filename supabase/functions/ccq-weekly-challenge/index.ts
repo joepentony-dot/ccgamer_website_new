@@ -26,6 +26,7 @@ function sanitiseGhostPath(value: unknown) {
   }
   return out;
 }
+function ghostPath(value: unknown) { return sanitiseGhostPath(value) }
 
 Deno.serve(async (req: Request) => {
   if(req.method==="OPTIONS")return new Response(null,{status:204,headers:cors(req)});
@@ -49,7 +50,7 @@ Deno.serve(async (req: Request) => {
     const {data,error}=await query;
     if(error||!Array.isArray(data))return null;
     for(const row of data){
-      const path=sanitiseGhostPath(row?.ghost_path?.length?row.ghost_path:row?.stats?.ghostPath);
+      const path=ghostPath(row?.ghost_path?.length?row.ghost_path:row?.stats?.ghostPath);
       if(path.length<2)continue;
       return{playerName:String(row?.player_name||"Weekly Player").slice(0,64),score:int(row?.score,0,99999999),deepestFloor:int(row?.deepest_floor,1,5),path};
     }
@@ -89,7 +90,7 @@ Deno.serve(async (req: Request) => {
 
   if(action==="finish"){
     const attemptId=String(payload.attemptId||""),result=(payload.result||{}) as Record<string,unknown>;
-    const {data:attempt,error:attemptError}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name,week_start,score,deepest_floor,duration_ms,level,completed,stats,ghost_path").eq("id",attemptId).eq("user_id",user.id).maybeSingle();
+    const {data:attempt,error:attemptError}=await service.from("ccq_weekly_attempts").select("id,status,started_at,player_name,week_start,score,deepest_floor,duration_ms,level,completed,stats").eq("id",attemptId).eq("user_id",user.id).maybeSingle();
     if(attemptError)return json(req,{ok:false,error:"Weekly attempt lookup failed"},503);
     if(!attempt)return json(req,{ok:false,error:"Weekly attempt not found"},404);
     const resultWeek=String(attempt.week_start||currentWeek);
@@ -101,7 +102,7 @@ Deno.serve(async (req: Request) => {
       return json(req,{ok:true,locked:true,idempotent:true,weekStart:resultWeek,leaderboard:leaders.data,ghostReplay});
     }
 
-    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),path=sanitiseGhostPath(result.ghostPath),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:path};
+    const score=int(result.score,0,99999999),deepest=int(result.deepestFloor,1,5),duration=int(result.durationMs,0,86400000),level=int(result.level,1,99),completed=Boolean(result.completed),path=ghostPath(result.ghostPath),stats={kills:int(result.kills,0,99999),secrets:int(result.secrets,0,9999),ghostPath:path};
     const {data:updated,error:updateError}=await service.from("ccq_weekly_attempts").update({status:"finished",finished_at:new Date().toISOString(),score,deepest_floor:deepest,duration_ms:duration,level,completed,stats,ghost_path:path}).eq("id",attempt.id).eq("status","started").select("id").maybeSingle();
     if(updateError)return json(req,{ok:false,error:"Could not record the weekly result"},500);
 
