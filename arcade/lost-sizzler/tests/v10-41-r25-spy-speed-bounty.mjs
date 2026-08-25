@@ -29,9 +29,23 @@ assert.match(hotfix,/if\(run\.dungeonBounty\)\{run\.dungeonBounty=null;changed=t
 assert.match(hotfix,/specialActive\(\)&&dungeonOnlyText\(title\)/,"dungeon-only toast presentation must be blocked while a special mode owns the run");
 assert.match(hotfix,/specialActive\(\)&&DUNGEON_VOICE_KEYS\.test/,"legacy dungeon bounty voice must be blocked while a special mode owns the run");
 
+// Wrapper ownership: r24 and the major notification watchdog both periodically
+// reassert their wrappers. r25 must inherit their markers rather than causing
+// those watchdogs to wrap r25 again forever.
+assert.match(hotfix,/function inheritMarkers\(wrapped,current\)/,"r25 must preserve inherited runtime wrapper ownership");
+assert.match(hotfix,/Object\.assign\(wrapped,current\)/,"r25 wrapper functions must carry the previous wrapper's markers forward");
+
 // Lightweight behavioural proof using the exported helpers. This executes the
 // actual hotfix rather than validating strings alone.
 const body={dataset:{specialMode:"sizzler-saboteurs"},removeAttribute(){}};
+function baseStart(){return true}
+baseStart.__ccgV141R24SoloBalance=true;
+function baseUpdate(){return true}
+baseUpdate.__ccgV141R24SpyMovement=true;
+function baseToast(){return true}
+baseToast.__ccgV141MajorHardening=true;
+function baseVoice(){return true}
+baseVoice.__ccgV141MajorVisual=true;
 const context={
   console,
   performance:{now:()=>1000},
@@ -42,9 +56,10 @@ const context={
   run:{specialMode:"sizzler-saboteurs",rareMutation:"ELITE BOUNTY",dungeonBounty:{active:true},activeBounty:{active:true}},
   p1:{id:"P1",x:2,y:1,moveMultiplier:1},
   move1:0,
-  startWorld(){return true},
-  update(){return true},
-  showToast(){return true},
+  startWorld:baseStart,
+  update:baseUpdate,
+  showToast:baseToast,
+  CCGLostSizzlerVoice:{say:baseVoice},
   CCGLostSizzlerRareEvents:{state:{bounty:{type:"KILL 3 HUNTERS"},mutation:{type:"ELITE BOUNTY"},golden:null,hintTarget:null,hintMarkerUntil:0}},
   CCGLostSizzlerV141R24LiveRegressions:{state:{spyMoveCooldownMs:0}},
   CCGLostSizzlerSpecialModes:{active:{type:"sizzler-saboteurs"}}
@@ -63,6 +78,17 @@ assert.equal(context.CCGLostSizzlerRareEvents.state.bounty,null,"Spy must not re
 assert.equal(context.run.dungeonBounty,null,"Spy must not retain a legacy Dungeon Bounty");
 assert.equal(context.run.activeBounty,null,"Spy must not retain an active legacy bounty");
 
+assert.equal(context.update.__ccgV141R24SpyMovement,true,"r25 update wrapper must preserve r24 movement ownership so r24 does not wrap it again");
+assert.equal(context.startWorld.__ccgV141R24SoloBalance,true,"r25 start wrapper must preserve r24 balance ownership so r24 does not wrap it again");
+assert.equal(context.showToast.__ccgV141MajorHardening,true,"r25 toast wrapper must preserve major-notification ownership");
+assert.equal(context.CCGLostSizzlerVoice.say.__ccgV141MajorVisual,true,"r25 voice wrapper must preserve major-notification voice ownership");
+const stableUpdate=context.update,stableStart=context.startWorld,stableToast=context.showToast,stableVoice=context.CCGLostSizzlerVoice.say;
+api.install();api.install();
+assert.equal(context.update,stableUpdate,"repeated r25 installs must not grow the update wrapper chain");
+assert.equal(context.startWorld,stableStart,"repeated r25 installs must not grow the startWorld wrapper chain");
+assert.equal(context.showToast,stableToast,"repeated r25 installs must not grow the toast wrapper chain");
+assert.equal(context.CCGLostSizzlerVoice.say,stableVoice,"repeated r25 installs must not grow the voice wrapper chain");
+
 // Ordinary dungeon mode must not be purged by the hotfix.
 context.CCGLostSizzlerSpecialModes.active={type:"dungeon"};
 body.dataset.specialMode="dungeon";
@@ -71,4 +97,4 @@ context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
 assert.equal(api.purgeSpecialDungeonState(),false,"ordinary dungeon bounty behaviour must remain untouched");
 assert.deepEqual(context.CCGLostSizzlerRareEvents.state.bounty,{type:"KILL 3 HUNTERS"});
 
-console.log("Lost Sizzler r25 Spy movement cadence and Dungeon Bounty isolation checks passed.");
+console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed.");
