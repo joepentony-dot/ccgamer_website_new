@@ -8,7 +8,6 @@ const not=(r,s,n=s)=>{const t=read(r);if(t.includes(s))errors.push(`${r} still c
 const exists=r=>{if(!fs.existsSync(full(r)))errors.push(`Missing ${r}`);};
 const absent=r=>{if(fs.existsSync(full(r)))errors.push(`Expected sorted asset to be absent: ${r}`);};
 function png(r,w,h){const p=full(r);if(!fs.existsSync(p)){errors.push(`Missing ${r}`);return;}const b=fs.readFileSync(p);if(b.readUInt32BE(16)!==w||b.readUInt32BE(20)!==h)errors.push(`${r} wrong size`);}
-function svg(r,w,h){const t=read(r);if(!t.includes(`width="${w}"`)||!t.includes(`height="${h}"`))errors.push(`${r} wrong SVG canvas`);}
 
 const main='arcade/quest/game/main-v3.js';
 const config='arcade/quest/game/assets-config.js';
@@ -16,14 +15,14 @@ const runtime='arcade/quest/game/sprite-runtime.js';
 const balance='arcade/quest/game/balance.js';
 const stages='arcade/quest/game/stages.js';
 
-has(config,"const ASSET_REVISION='v20260825-q2b'",'Quest 2.0 asset revision');
-has(config,"player:production('player/cheeky-main-v2.svg')",'Quest 2.0 main sprite');
-has(config,"playerFight:production('player/cheeky-fight-v2.svg')",'Quest 2.0 fight sprite');
+has(config,"const ASSET_REVISION='v20260825-q2c'",'balanced Quest 2.0 asset revision');
+has(config,"player:production('player/cheeky-main-sheet.png')",'restored raster main sprite');
+has(config,"playerFight:production('player/cheeky-fight-sheet.png')",'restored raster fight sprite');
 has(config,'stateMeta:mainState','main state metadata');
 has(config,'stateMeta:fightState','fighter state metadata');
-has(config,"duck:{drawWidth:174,drawHeight:126",'deep crouch display profile');
-has(config,"duck:{drawWidth:252,drawHeight:198",'deep fighter crouch profile');
-has(config,"animations:{idle:[0,1],walk:[2],run:[2],guard:[3],duck:[4],punch:[5],kick:[6],hit:[7],victory:[8],jump:[9]}",'Quest 2.0 fight mapping');
+has(config,"duck:{drawWidth:166,drawHeight:166",'natural crouch display profile');
+has(config,"duck:{drawWidth:238,drawHeight:244",'natural fighter crouch profile');
+has(config,"animations:{idle:[0,1],walk:[2],run:[2],guard:[3],duck:[3],punch:[4],kick:[5],hit:[6],victory:[7],jump:[2]}",'restored fight-sheet mapping');
 has(config,'retsu-sheet.png');has(config,'alien-row-5.png');
 has(config,"backgrounds:{bedroom:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/bedroom/1787232895204-bedroom.webp'",'remote background baseline');
 
@@ -32,17 +31,22 @@ has(runtime,'Q.spriteWorldRect=function','ground-anchor runtime');
 has(runtime,'Q.spriteHitbox=function','state-specific hitbox runtime');
 has(runtime,'Q.drawAnchoredSprite=function','anchored sprite renderer');
 
-has(balance,'deepCrouchHeight:62','deep crouch tuning');
+has(balance,'jumpVelocity:955','reachable high-lane jump tuning');
+has(balance,'crouchHeight:90','natural crouch tuning');
+has(balance,'a>=2.5&&b<=6.5?value*1.35:value','main-stage pacing guard');
+has(balance,'duration:27','reduced Electric Bead Run duration');
 has(balance,'playerCooldown:.31','Alien Formation fire tuning');
 not(balance,'Array.prototype.push','old global Array monkeypatch');
 not(balance,'fireOnly','old fire-input monkeypatch');
 
 for(const id of ['bedroom','budget','christmas','amiga','guru'])has(stages,`id:'${id}'`,`${id} stage definition`);
 for(const mechanic of ["mechanic:'loading'","mechanic:'rack'","mechanic:'reverse'","mechanic:'workbench'","mechanic:'glitch'"])has(stages,mechanic);
+has(stages,"duration:38,accent:'#6eeaff'",'shorter Bedroom duration');
+has(stages,"bossHp:28",'reduced Bedroom boss endurance');
 
 has(main,"assets.image('sheet_'+key",'required sprite-sheet loading');
 has(main,'function playerBox(){const meta=playerMeta()','metadata-driven player collision');
-has(main,"if(P.duck&&P.ground)return'duck'",'true fighter crouch state');
+has(main,"if(P.duck&&P.ground)return'duck'",'fighter crouch state');
 has(main,"return P.fire>0?'duckFire':'duck'",'main crouch and crouch-fire states');
 has(main,'function bedroomPattern()','Bedroom benchmark pattern system');
 has(main,'function budgetPattern()','Budget Rack pattern system');
@@ -60,7 +64,7 @@ has(main,'function startInvaders()','Alien Formation');
 has(main,'function startMaze()','Dot-Maze Run');
 has(main,"text('QUEST 2.0'",'Quest 2.0 title treatment');
 has(main,'Q.drawAnchoredSprite(ctx,im,meta,stateName','anchored main sprite rendering');
-has(main,'T.beads.duration','new bead tuning');
+has(main,'T.beads.duration','bead tuning');
 has(main,'T.maze.target','maze tuning');
 not(main,"return P.duck&&P.ground?{x:P.x+4,y:P.y-4,w:70,h:131}",'legacy shallow crouch geometry');
 
@@ -72,8 +76,8 @@ has('arcade/quest/index.html','class="rotate-prompt"');
 has('games/commodore-quest/index.html','class="rotate-prompt"');
 has('arcade/quest/styles.css','(orientation:portrait)');has('arcade/quest/styles.css','(orientation:landscape)');has('arcade/quest/styles.css','100dvh');
 
-svg('arcade/quest/assets/production/player/cheeky-main-v2.svg',1024,1280);
-svg('arcade/quest/assets/production/player/cheeky-fight-v2.svg',992,948);
+png('arcade/quest/assets/production/player/cheeky-main-sheet.png',1024,1280);
+png('arcade/quest/assets/production/player/cheeky-fight-sheet.png',992,632);
 png('arcade/quest/assets/production/fighter/retsu-sheet.png',992,632);
 png('arcade/quest/assets/production/enemies/8bit-enemy-sheet.png',512,256);
 for(const b of ['bedroom','budget','christmas','amiga','guru'])png(`arcade/quest/assets/production/bosses/${b}-sheet.png`,1024,448);
@@ -97,4 +101,4 @@ not('admin/js/arcade-assets.js','Tier-Tex Animation Sheet');
 not('admin/js/arcade-assets.js','Alien Formation Sprites');
 has('admin/arcade-assets.html','Gameplay art is protected');
 
-if(errors.length){console.error('Arcade Quest 2.0 validation failed:');errors.forEach(e=>console.error('- '+e));process.exit(1);}console.log('Arcade Quest 2.0 validation passed.');
+if(errors.length){console.error('Arcade Quest 2.0 validation failed:');errors.forEach(e=>console.error('- '+e));process.exit(1);}console.log('Arcade Quest 2.0 balanced-pass validation passed.');
