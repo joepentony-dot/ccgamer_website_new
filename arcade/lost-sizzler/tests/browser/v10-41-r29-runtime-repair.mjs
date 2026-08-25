@@ -38,24 +38,34 @@ try{
 
   const geometry=await page.evaluate(async()=>{
     document.body.dataset.runActive="true";
-    const canvas=document.getElementById("game"),wrap=document.querySelector(".canvas-wrap"),toast=document.getElementById("pickup-toast");
-    const sample=()=>({bw:canvas.width,bh:canvas.height,w:wrap.getBoundingClientRect().width,h:wrap.getBoundingClientRect().height});
+    const canvas=document.getElementById("game"),wrap=document.querySelector(".canvas-wrap"),toast=document.getElementById("pickup-toast"),rail=document.querySelector(".game-message-rail");
+    const sample=()=>({bw:canvas.width,bh:canvas.height,w:wrap.getBoundingClientRect().width,h:wrap.getBoundingClientRect().height,railDisplay:getComputedStyle(rail).display});
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-    const before=sample(),samples=[];
+    toast?.classList.remove("show");await new Promise(resolve=>requestAnimationFrame(resolve));
+    const before=sample(),visibleSamples=[],hiddenSamples=[];
     for(let index=0;index<8;index++){
       window.showToast(`R29 GEOMETRY ${index}`,"Notification appearance must not resize the canvas.","cyan",200);
-      await new Promise(resolve=>setTimeout(resolve,35));samples.push(sample());
-      toast?.classList.remove("show");await new Promise(resolve=>setTimeout(resolve,35));samples.push(sample());
+      await new Promise(resolve=>setTimeout(resolve,35));visibleSamples.push(sample());
+      toast?.classList.remove("show");await new Promise(resolve=>setTimeout(resolve,35));hiddenSamples.push(sample());
     }
-    const after=sample();return{before,after,samples,toastPosition:getComputedStyle(toast).position,railDisplay:getComputedStyle(document.querySelector(".game-message-rail")).display}
+    const after=sample();return{before,after,visibleSamples,hiddenSamples,toastPosition:getComputedStyle(toast).position}
   });
   assert.equal(geometry.toastPosition,"absolute","r29 gameplay toasts must overlay the canvas");
-  assert.equal(geometry.railDisplay,"contents","r29 notification rail must not reserve a gameplay row");
-  for(const sample of geometry.samples){
+  assert.equal(geometry.before.railDisplay,"none","an idle notification rail must collapse completely instead of reserving a gameplay row");
+  assert.equal(geometry.after.railDisplay,"none","the notification rail must collapse again after the toast closes");
+  for(const sample of geometry.visibleSamples){
+    assert.equal(sample.railDisplay,"contents","a visible r29 toast must use a contents-only rail so it overlays without creating a gameplay row");
     assert.equal(sample.bw,geometry.before.bw,"toast churn must not change canvas backing width");
     assert.equal(sample.bh,geometry.before.bh,"toast churn must not change canvas backing height");
     assert.ok(Math.abs(sample.w-geometry.before.w)<1,"toast churn must not change canvas host width");
     assert.ok(Math.abs(sample.h-geometry.before.h)<1,"toast churn must not change canvas host height");
+  }
+  for(const sample of geometry.hiddenSamples){
+    assert.equal(sample.railDisplay,"none","a hidden toast must leave no notification grid row behind");
+    assert.equal(sample.bw,geometry.before.bw,"closing a toast must not change canvas backing width");
+    assert.equal(sample.bh,geometry.before.bh,"closing a toast must not change canvas backing height");
+    assert.ok(Math.abs(sample.w-geometry.before.w)<1,"closing a toast must not change canvas host width");
+    assert.ok(Math.abs(sample.h-geometry.before.h)<1,"closing a toast must not change canvas host height");
   }
 
   const audio=await page.evaluate(()=>{
@@ -85,7 +95,7 @@ try{
   assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
 
   assert.deepEqual(errors,[],`r29 Chromium runtime regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r29 Chromium geometry, audio, Spy hint and Horde friendly-fire checks passed.");
+  console.log("Lost Sizzler V10.41 r29 Chromium geometry, overlay-rail, audio, Spy hint and Horde friendly-fire checks passed.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
