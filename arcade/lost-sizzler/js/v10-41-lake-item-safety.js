@@ -61,18 +61,21 @@
   window.CCGLostSizzlerV141LakeItemSafety={ESSENTIAL,essential,repair,get state(){return state}};
 })();
 
-/* Late V10.41 runtime guards. */
+/* Late V10.41 runtime guards. Every late module inherits the same published
+ * cache generation as the canonical core files, preventing mixed old/new
+ * runtime chains after a release. */
 (()=>{
   "use strict";
-  const load=(src,marker)=>{
+  const releaseRev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+  const load=(path,marker)=>{
     if(document.querySelector(`script[${marker}="true"]`))return;
-    const script=document.createElement("script");script.src=src;script.async=false;script.setAttribute(marker,"true");document.head.appendChild(script);
+    const script=document.createElement("script");script.src=`${path}?v=${encodeURIComponent(releaseRev)}`;script.async=false;script.setAttribute(marker,"true");document.head.appendChild(script);
   };
-  load("js/v10-41-startup-freeze-guard.js?v=20260825e","data-ccg-v141-startup-freeze-guard");
-  load("js/v10-41-environment-transparency-hotfix.js?v=20260825e","data-ccg-v141-environment-transparency-hotfix");
-  load("js/v10-41-horde-mode-safety.js?v=20260825e","data-ccg-v141-horde-mode-safety");
-  load("js/v10-41-multiplayer-no-pause.js?v=20260825e","data-ccg-v141-multiplayer-no-pause");
-  load("js/v10-41-browser-stability-gameplay-hotfix.js?v=20260825f","data-ccg-v141-browser-stability-gameplay-hotfix");
-  load("js/v10-41-spy-movement-finalizer.js?v=20260825f","data-ccg-v141-spy-movement-finalizer");
-  load("js/v10-41-tutorial-action-finalizer.js?v=20260825f","data-ccg-v141-tutorial-action-finalizer");
+  load("js/v10-41-startup-freeze-guard.js","data-ccg-v141-startup-freeze-guard");
+  load("js/v10-41-environment-transparency-hotfix.js","data-ccg-v141-environment-transparency-hotfix");
+  load("js/v10-41-horde-mode-safety.js","data-ccg-v141-horde-mode-safety");
+  load("js/v10-41-multiplayer-no-pause.js","data-ccg-v141-multiplayer-no-pause");
+  load("js/v10-41-browser-stability-gameplay-hotfix.js","data-ccg-v141-browser-stability-gameplay-hotfix");
+  load("js/v10-41-spy-movement-finalizer.js","data-ccg-v141-spy-movement-finalizer");
+  load("js/v10-41-tutorial-action-finalizer.js","data-ccg-v141-tutorial-action-finalizer");
 })();
