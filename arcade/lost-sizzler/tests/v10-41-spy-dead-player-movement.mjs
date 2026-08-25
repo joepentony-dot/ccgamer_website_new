@@ -7,7 +7,12 @@ import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url));
 const root=path.resolve(here,"..");
 const source=fs.readFileSync(path.join(root,"js/v10-41-spy-movement-finalizer.js"),"utf8");
+const adapter=fs.readFileSync(path.join(root,"js/v10-33-special-modes.js"),"utf8");
+const rules=fs.readFileSync(path.join(root,"js/sizzler-saboteurs.js"),"utf8");
 
+assert.match(adapter,/else p\.health=1/,"the live dungeon adapter keeps a knocked-out Spy avatar present at one HP");
+assert.match(rules,/player\.status = "knocked-out"; player\.hp = 0;/,"Saboteurs rules must expose the knockout state separately from the live avatar health");
+assert.match(rules,/player\.status = "active"; player\.hp = player\.maxHp; player\.roomId = match\.map\.spawnRoomIds\[player\.slot - 1\]/,"Saboteurs rules must move a respawned model back to its logical spawn room");
 assert.match(source,/spyModelFor=player/,"Spy movement collision must consult the live Saboteurs model when available");
 assert.match(source,/model\.status==="active"&&Number\(model\.hp\?\?player\?\.health\?\?1\)>0/,"only an active Saboteurs model may occupy a movement tile");
 assert.match(source,/previous==="knocked-out"&&current==="active"/,"Spy finalizer must detect the rules-engine respawn transition");
