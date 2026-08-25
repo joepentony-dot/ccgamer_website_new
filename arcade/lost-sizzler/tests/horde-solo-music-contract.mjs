@@ -4,14 +4,14 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const HA = require("../js/horde-survivor-audio.js");
 
-assert.equal(HA.SOLO_TRACK.id, "solo-master");
-assert.equal(HA.SOLO_TRACK.src, "assets/audio/music/horde-survivor-solo-master.mp3");
-assert.equal(HA.trackForWave(1, 1).id, "solo-master");
-assert.equal(HA.trackForWave(5, 1).id, "solo-master");
-assert.equal(HA.trackForWave(10, 1).id, "solo-master");
-assert.equal(HA.trackForWave(4, 2).id, "waves-1-4");
-assert.equal(HA.trackForWave(5, 2).id, "waves-5-9");
-assert.equal(HA.trackForWave(10, 4).id, "wave-10");
+assert.equal(HA.HORDE_TRACK.id, "horde-master");
+assert.equal(HA.HORDE_TRACK.src, "assets/audio/music/horde-survivor-master.ogg");
+assert.equal(HA.trackForWave(1, 1).id, "horde-master");
+assert.equal(HA.trackForWave(5, 1).id, "horde-master");
+assert.equal(HA.trackForWave(10, 1).id, "horde-master");
+assert.equal(HA.trackForWave(4, 2).id, "horde-master");
+assert.equal(HA.trackForWave(5, 2).id, "horde-master");
+assert.equal(HA.trackForWave(10, 4).id, "horde-master");
 
 class FakeAudio {
   constructor() {
@@ -35,22 +35,22 @@ const music = HA.createController({
 });
 
 assert.equal(await music.start(1), true);
-assert.equal(music.state().waveTrack, "solo-master");
+assert.equal(music.state().waveTrack, "horde-master");
 assert.equal(music.state().solo, true);
 assert.equal(music.state().playerCount, 1);
 assert.equal(music.state().volume, 0.22);
 
 assert.equal(await music.setWave(7), true);
-assert.equal(music.state().waveTrack, "solo-master");
+assert.equal(music.state().waveTrack, "horde-master");
 assert.equal(music.state().wave, 7);
 
 assert.equal(await music.setPlayerCount(2), true);
 assert.equal(music.state().solo, false);
-assert.equal(music.state().waveTrack, "waves-5-9");
-assert.equal(music.state().volume, 0.13);
+assert.equal(music.state().waveTrack, "horde-master");
+assert.equal(music.state().volume, 0.22);
 
 assert.equal(await music.setPlayerCount(1), true);
-assert.equal(music.state().waveTrack, "solo-master");
+assert.equal(music.state().waveTrack, "horde-master");
 assert.equal(music.setVolume(1), 0.26);
 music.dispose();
 

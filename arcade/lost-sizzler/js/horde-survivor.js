@@ -23,20 +23,18 @@
   const ACTIVE_SCALE = Object.freeze({ 1: 8, 2: 13, 3: 18, 4: 22 });
 
   const AUDIO = Object.freeze({
-    tracks: Object.freeze([
-      Object.freeze({ waves: Object.freeze([1, 2, 3, 4]), src: "assets/audio/music/horde-survival-waves-1-4.ogg" }),
-      Object.freeze({ waves: Object.freeze([5, 6, 7, 8, 9]), src: "assets/audio/music/horde-survival-waves-5-9.ogg" }),
-      Object.freeze({ waves: Object.freeze([10]), src: "assets/audio/music/horde-survival-wave-10.ogg" })
-    ]),
-    baseVolume: 0.13,
-    duckedVolume: 0.05,
-    maximumVolume: 0.18,
-    fadeInMs: 900,
-    fadeOutMs: 500,
-    loop: true
-  });
+  tracks: Object.freeze([
+    Object.freeze({ waves: Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), src: "assets/audio/music/horde-survivor-master.ogg" })
+  ]),
+  baseVolume: 0.22,
+  duckedVolume: 0.08,
+  maximumVolume: 0.26,
+  fadeInMs: 900,
+  fadeOutMs: 500,
+  loop: true
+});
 
-  const ENEMIES = Object.freeze({
+const ENEMIES = Object.freeze({
     spider: Object.freeze({ id: "spider", name: "Dustweb Spider", hp: 1, damage: 1, speed: 1.05, score: 25 }),
     skeleton: Object.freeze({ id: "skeleton", name: "Crypt Skeleton", hp: 2, damage: 1, speed: 0.9, score: 40 }),
     bat: Object.freeze({ id: "bat", name: "Vault Bat", hp: 1, damage: 1, speed: 1.35, score: 35 }),

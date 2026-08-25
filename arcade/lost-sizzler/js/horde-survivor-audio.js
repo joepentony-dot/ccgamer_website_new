@@ -7,12 +7,13 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function createHordeAudioApi(root) {
   "use strict";
 
-  const SOLO_TRACK = Object.freeze({
-    id: "solo-master",
-    from: 1,
-    to: 10,
-    src: "assets/audio/music/horde-survivor-solo-master.mp3"
-  });
+  const HORDE_TRACK = Object.freeze({
+  id: "horde-master",
+  from: 1,
+  to: 10,
+  src: "assets/audio/music/horde-survivor-master.ogg"
+});
+const SOLO_TRACK = HORDE_TRACK;
 
   const TRACKS = Object.freeze([
     Object.freeze({ id: "waves-1-4", from: 1, to: 4, src: "assets/audio/music/horde-survival-waves-1-4.ogg" }),
@@ -21,9 +22,9 @@
   ]);
 
   const DEFAULTS = Object.freeze({
-    baseVolume: 0.13,
-    duckedVolume: 0.05,
-    maximumVolume: 0.18,
+    baseVolume: 0.22,
+    duckedVolume: 0.08,
+    maximumVolume: 0.26,
     soloBaseVolume: 0.22,
     soloDuckedVolume: 0.08,
     soloMaximumVolume: 0.26,
@@ -35,10 +36,7 @@
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
   const normalisePlayerCount = value => Math.max(1, Math.min(4, Math.floor(Number(value) || 2)));
-  const trackForWave = (wave, playerCount = 2) => {
-    if (normalisePlayerCount(playerCount) === 1) return SOLO_TRACK;
-    return TRACKS.find(track => Number(wave) >= track.from && Number(wave) <= track.to) || null;
-  };
+  const trackForWave = (wave, playerCount = 2) => HORDE_TRACK;
 
   function runtimePlayerCount() {
     try {
@@ -421,6 +419,7 @@
   }
 
   return Object.freeze({
+    HORDE_TRACK,
     SOLO_TRACK,
     TRACKS,
     DEFAULTS,
