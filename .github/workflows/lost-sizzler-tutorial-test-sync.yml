@@ -22,6 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # Synchronise to the tutorial's observed state, not an arbitrary delay.
           python - <<'PY'
           from pathlib import Path
           p=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
