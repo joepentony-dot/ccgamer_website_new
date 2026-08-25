@@ -16,13 +16,15 @@ const homeScript=readRepo("js/ccg-home-community.js");
 const homeCtaCss=readRepo("resources/css/home-lost-sizzler-cta.css");
 const landingPolish=readGame("js/v10-41-landing-notification-polish.js");
 const majorHardening=readGame("js/v10-41-major-notification-hardening.js");
+const legacyPolish=readGame("js/v10-30-polish.js");
+const assetOverrides=readGame("js/asset-overrides.js");
 
 const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)">/)?.[1];
 assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number");
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.16","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r16","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.17","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r17","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/version-check.js","js/weekly-challenge.js","js/asset-overrides.js",
@@ -32,17 +34,17 @@ for(const asset of [
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
 }
-assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r16 must preserve the current tutorial launcher revision");
-assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260825r16"),"tutorial launch guidance must load before the enhancement queue");
-assert.match(index,/js\/v10-41-lake-item-safety\.js\?v=20260824a/,"r16 must directly load the independent sanctuary lake/item safety guard");
-assert.match(index,/js\/v10-41-gambler-devroom\.js\?v=20260824a/,"r16 must directly load the Gambler and owner Developer Vault layer");
-assert.match(index,/js\/v10-41-developer-vault-hardening\.js\?v=20260824a/,"r16 must load Developer Vault disposal and authorization hardening");
-assert.match(index,/js\/v10-41-developer-asset-catalog\.js\?v=20260824a/,"r16 must load the expanded special-asset catalogue");
-assert.match(index,/js\/v10-41-horde-leaderboard-polish\.js\?v=20260825a/,"r16 must retain Horde leaderboard presentation polish");
-assert.match(index,/js\/v10-41-split-friendly-fire\.js\?v=20260825a/,"r16 must retain split-screen friendly fire rules");
-assert.match(index,/js\/v10-41-landing-notification-polish\.js\?v=20260825a/,"r16 must load landing hierarchy and notification-priority polish");
-assert.match(index,/js\/v10-41-major-notification-hardening\.js\?v=20260825a/,"r16 must load durable major-alert and bounty voice hardening");
-assert.ok(index.indexOf("js/game-main.js?v=20260825r16")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a"),"Gambler/Developer Vault layer must load after the core game globals exist");
+assert.match(index,/js\/v10-23-tutorial-guidance\.js\?v=20260824e/,"r17 must preserve the current tutorial launcher revision");
+assert.ok(index.indexOf("js/v10-23-tutorial-guidance.js?v=20260824e")<index.indexOf("js/asset-overrides.js?v=20260825r17"),"tutorial launch guidance must load before the enhancement queue");
+assert.match(index,/js\/v10-41-lake-item-safety\.js\?v=20260824a/,"r17 must directly load the independent sanctuary lake/item safety guard");
+assert.match(index,/js\/v10-41-gambler-devroom\.js\?v=20260824a/,"r17 must directly load the Gambler and owner Developer Vault layer");
+assert.match(index,/js\/v10-41-developer-vault-hardening\.js\?v=20260824a/,"r17 must load Developer Vault disposal and authorization hardening");
+assert.match(index,/js\/v10-41-developer-asset-catalog\.js\?v=20260824a/,"r17 must load the expanded special-asset catalogue");
+assert.match(index,/js\/v10-41-horde-leaderboard-polish\.js\?v=20260825a/,"r17 must retain Horde leaderboard presentation polish");
+assert.match(index,/js\/v10-41-split-friendly-fire\.js\?v=20260825a/,"r17 must retain split-screen friendly fire rules");
+assert.match(index,/js\/v10-41-landing-notification-polish\.js\?v=20260825a/,"r17 must load landing hierarchy and notification-priority polish");
+assert.match(index,/js\/v10-41-major-notification-hardening\.js\?v=20260825a/,"r17 must load durable major-alert and bounty voice hardening");
+assert.ok(index.indexOf("js/game-main.js?v=20260825r17")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a"),"Gambler/Developer Vault layer must load after the core game globals exist");
 assert.ok(index.indexOf("js/v10-41-gambler-devroom.js?v=20260824a")<index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260824a"),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
 assert.ok(index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260824a")<index.indexOf("js/v10-41-developer-asset-catalog.js?v=20260824a"),"expanded asset catalogue must load after Developer Vault hardening");
 assert.ok(index.indexOf("js/v10-41-landing-notification-polish.js?v=20260825a")<index.indexOf("js/v10-41-major-notification-hardening.js?v=20260825a"),"major-alert hardening must load after the visual notification layer it protects");
@@ -57,13 +59,21 @@ assert.match(index,/essential keys or an Exit Sigil are returned safely to the f
 assert.match(index,/THE GAMBLER/,"published rulebook must document the rare Gambler encounter");
 assert.match(index,/press G to stake 1,000 score/i,"published rulebook must explain how the Gambler is used");
 
+/* r16 browser crash regression: V10.30 and V10.41 used opposing MutationObservers
+ * to force different version labels, producing an endless mutation loop. */
+assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must write the current V10.41 branding rather than V10.35");
+assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");
+assert.doesNotMatch(legacyPolish,/new MutationObserver/,"legacy V10.30 polish must never observe/rewrite release branding again");
+assert.doesNotMatch(legacyPolish,/THE LOST SIZZLER — V10\.35|BUILD V10\.35/,"legacy polish must contain no stale V10.35 runtime label writer");
+assert.match(assetOverrides,/CCG_POLISH_REV="20260825crashfix"/,"enhancement queue must force browsers to fetch the crash-fixed V10.30 polish script");
+
 assert.match(landingPolish,/MAIN ADVENTURES/,"landing page must group the primary game choices");
 assert.match(landingPolish,/SPECIAL MODES/,"landing page must visually separate special modes");
 assert.match(landingPolish,/TRAINING & WEEKLY CHALLENGE/,"landing page must quieten tutorial/weekly choices into a tertiary group");
 assert.match(landingPolish,/feature-strip>span:nth-child\(1\):before/,"feature cards must gain compact visual icon treatment");
 assert.match(landingPolish,/horde-leaderboard\.is-empty \.horde-empty\{min-height:58px/,"empty Horde leaderboard must be compressed");
 assert.match(landingPolish,/secondary-menu button/,"utility buttons must have a quieter presentation tier");
-assert.match(landingPolish,/THE LOST SIZZLER — \$\{RELEASE\}/,"runtime branding must continually correct stale V10.35 labels to V10.41");
+assert.match(landingPolish,/THE LOST SIZZLER — \$\{RELEASE\}/,"runtime branding must correct stale labels to V10.41");
 assert.match(landingPolish,/NEW DUNGEON BOUNTY\|DUNGEON BOUNTY\|BOUNTY START/,"Dungeon Bounty must be classified as the highest visual priority");
 assert.match(landingPolish,/data-ccg-major-notification/,"major alerts must suppress the ordinary pickup notification layer while active");
 assert.match(landingPolish,/if\(priority>=100\)/,"major events must bypass the routine toast queue immediately");
@@ -102,4 +112,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r16 build, landing hierarchy and durable major Dungeon Bounty notification regression checks passed.");
+console.log("Lost Sizzler r17 build, mutation-storm crash fix, landing hierarchy and major Dungeon Bounty notification regression checks passed.");
