@@ -15,6 +15,7 @@
   const icon=(kind,label)=>typeof itemIconSVG==="function"?itemIconSVG(kind,label):"";
   const QUICK_USE=new Set(["potion","torch","teleport","banishment"]);
   const PRIMARY_KEYS={potion:"E",torch:"Q",teleport:"R",banishment:"B"};
+  const spyOwnsHud=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"||run?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
 
   function count(kind){
     try{return Math.max(0,Number(PGR.inventoryKindCount(p1,kind)||0))}catch(_){return 0}
@@ -168,6 +169,7 @@
   }
 
   function onQuickSlotKey(event){
+    if(spyOwnsHud())return;
     const index=slotIndexFromEvent(event);
     if(index<0||event.repeat||event.ctrlKey||event.altKey||event.metaKey||event.shiftKey||isTypingTarget(event.target))return;
     if(typeof mode==="undefined"||mode!=="playing"||typeof p1==="undefined"||!p1)return;
@@ -177,6 +179,7 @@
   }
 
   function renderLiveHud(){
+    if(spyOwnsHud())return;
     prepareSidebar();
     renderSidebarInventory();
     renderBottomKeyring();
@@ -199,5 +202,5 @@
   },250);
 
   renderLiveHud();
-  window.CCGLostSizzlerInventoryHudV106={render:renderLiveHud,activateInventorySlot};
+  window.CCGLostSizzlerInventoryHudV106={render:renderLiveHud,activateInventorySlot,spyOwnsHud};
 })();
