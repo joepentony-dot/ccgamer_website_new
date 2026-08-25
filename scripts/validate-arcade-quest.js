@@ -1,16 +1,100 @@
 #!/usr/bin/env node
-'use strict';const fs=require('fs'),path=require('path'),ROOT=path.resolve(__dirname,'..'),errors=[];
-const read=r=>{const p=path.join(ROOT,r);if(!fs.existsSync(p)){errors.push(`Missing ${r}`);return'';}return fs.readFileSync(p,'utf8');};
+'use strict';
+const fs=require('fs'),path=require('path'),ROOT=path.resolve(__dirname,'..'),errors=[];
+const full=r=>path.join(ROOT,r);
+const read=r=>{const p=full(r);if(!fs.existsSync(p)){errors.push(`Missing ${r}`);return'';}return fs.readFileSync(p,'utf8');};
 const has=(r,s,n=s)=>{const t=read(r);if(!t.includes(s))errors.push(`${r} missing ${n}`);};
 const not=(r,s,n=s)=>{const t=read(r);if(t.includes(s))errors.push(`${r} still contains ${n}`);};
-function png(r,w,h){const b=fs.readFileSync(path.join(ROOT,r));if(b.readUInt32BE(16)!==w||b.readUInt32BE(20)!==h)errors.push(`${r} wrong size`);}
-const main='arcade/quest/game/main-v2.js',config='arcade/quest/game/assets-config.js';
-has(config,"const ASSET_REVISION='v20260822'");has(config,'?v=${ASSET_REVISION}');has(config,'playerFight:');has(config,'retsu-sheet.png');has(config,'alien-row-5.png');has(config,'frameWidth:256,frameHeight:320,columns:4,fps:10');has(config,'drawWidth:238,drawHeight:302');has(config,'drawWidth:230,drawHeight:300');
-has('arcade/quest/game/remote-assets.js',"REMOTE_GROUPS=new Set(['backgrounds','music','sfx'])");has('arcade/quest/game/remote-assets.js','REMOTE_GROUPS.has(group)');
-has('admin/js/arcade-assets.js',"['Main Backgrounds'");has('admin/js/arcade-assets.js',".in('asset_group',['backgrounds','music','sfx'])");not('admin/js/arcade-assets.js','Tier-Tex Animation Sheet');not('admin/js/arcade-assets.js','Alien Formation Sprites');has('admin/arcade-assets.html','Gameplay art is protected');not('admin/arcade-assets.html','Sprite sheet settings');
-has(main,"assets.image('sheet_'+key",'required production sprite sheets');not(main,"assets.optionalImage('sheet_'+key",'optional sprite-sheet fallback');has(main,'jumpAge:0,landTimer:0');has(main,"return'jumpTakeoff'");has(main,"return'jumpRise'");has(main,"return'jumpApex'");has(main,"return'land'");has(main,"sheetKey=S.mode==='fighter'?'playerFight':'player'");has(main,'gy=P.y+P.h,y=gy-h');has(main,'dims={tape:[78,48],disk:[58,58],zzap:[50,66],joystick:[60,64]}');has(main,'spin:rand(-2.35,2.35)');has(main,'TAPE GET!');has(main,"shadowColor='#ff354f'");has(main,"float('BOSS DOWN!'");has(main,"float('RETSU DOWN!'");has(main,'y:gy-270,w:108,h:260');has(main,"text('RETSU'");not(main,'TIER-TEX');has(main,'pulse=1+Math.sin(a.phase)*.045');has(main,'dir:1,speed:72,aliens');has(main,'spd=g.speed+ratio*145');has(main,'vy=270+ratio*125,vx=0');has(main,"g.fire=.34");has(main,'updatePlayer(dt,true,2350)');has(main,'speed=rand(360,455)');has(main,'28 SECONDS');has(main,'target:110');
-has('arcade/quest/index.html','class="rotate-prompt"');has('games/commodore-quest/index.html','class="rotate-prompt"');has('arcade/quest/index.html','main-v2.js?v=20260822');has('games/commodore-quest/index.html','main-v2.js?v=20260822');has('arcade/quest/styles.css','(orientation:portrait)');has('arcade/quest/styles.css','(orientation:landscape)');has('arcade/quest/styles.css','100dvh');
-png('arcade/quest/assets/production/player/cheeky-main-sheet.png',1024,1280);png('arcade/quest/assets/production/player/cheeky-fight-sheet.png',992,632);png('arcade/quest/assets/production/fighter/retsu-sheet.png',992,632);png('arcade/quest/assets/production/enemies/8bit-enemy-sheet.png',512,256);for(const b of ['bedroom','budget','christmas','amiga','guru'])png(`arcade/quest/assets/production/bosses/${b}-sheet.png`,1024,448);
-for(const r of ['player/cheeky-head.png','player/cheeky-body.png','player/cheeky-arm.png','player/cheeky-leg.png','player/cheeky-mascot.png','collectibles/tape.png','collectibles/disk.png','collectibles/zzap.png','collectibles/joystick.png','powers/shield.png','powers/speed.png','powers/double.png','hazards/bedroom.png','hazards/budget.png','hazards/christmas.png','hazards/amiga.png','hazards/guru.png','invaders/alien-row-1.png','invaders/alien-row-2.png','invaders/alien-row-3.png','invaders/alien-row-4.png','invaders/alien-row-5.png','invaders/player-ship.png','invaders/bunker.png','invaders/enemy-shot.png','invaders/player-shot.png'])if(!fs.existsSync(path.join(ROOT,'arcade/quest/assets/production',r)))errors.push(`Missing production asset ${r}`);
-has(config,"animations:{idle:[0,1],walk:[2],run:[2],jump:[2],guard:[3],duck:[3],punch:[4],kick:[5],hit:[6],victory:[7]}",'Cheeky recovered fight mapping');has(config,"animations:{idle:[0,1],walk:[2],jump:[7],guard:[3],punch:[4],kick:[5],hit:[6]}",'Retsu recovered frame mapping');has(config,"backgrounds:{bedroom:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/bedroom/1787232895204-bedroom.webp'",'recovered standalone background baseline');has(main,"function playerBox(){return P.duck&&P.ground?{x:P.x+4,y:P.y-4,w:70,h:131}:{x:P.x+6,y:P.y-38,w:66,h:165};}",'recovered standing/duck collision geometry');has(main,"if(lane==='duck')return Q.GROUND-P.h-80;",'raised duck-hazard lane');has(main,"if(kind==='high')ty=Q.GROUND-P.h-33;",'raised boss high-shot lane');has(main,"const bossFace=P.x>=b.x?1:-1",'boss faces Cheeky');if(!fs.existsSync(path.join(ROOT,'arcade/quest/assets/production/recovered-assets-manifest.json')))errors.push('Missing recovered asset provenance manifest');
-if(errors.length){console.error('Arcade Quest production validation failed:');errors.forEach(e=>console.error('- '+e));process.exit(1);}console.log('Arcade Quest production rebuild validation passed.');
+const exists=r=>{if(!fs.existsSync(full(r)))errors.push(`Missing ${r}`);};
+const absent=r=>{if(fs.existsSync(full(r)))errors.push(`Expected sorted asset to be absent: ${r}`);};
+function png(r,w,h){const p=full(r);if(!fs.existsSync(p)){errors.push(`Missing ${r}`);return;}const b=fs.readFileSync(p);if(b.readUInt32BE(16)!==w||b.readUInt32BE(20)!==h)errors.push(`${r} wrong size`);}
+function svg(r,w,h){const t=read(r);if(!t.includes(`width="${w}"`)||!t.includes(`height="${h}"`))errors.push(`${r} wrong SVG canvas`);}
+
+const main='arcade/quest/game/main-v3.js';
+const config='arcade/quest/game/assets-config.js';
+const runtime='arcade/quest/game/sprite-runtime.js';
+const balance='arcade/quest/game/balance.js';
+const stages='arcade/quest/game/stages.js';
+
+has(config,"const ASSET_REVISION='v20260825-q2b'",'Quest 2.0 asset revision');
+has(config,"player:production('player/cheeky-main-v2.svg')",'Quest 2.0 main sprite');
+has(config,"playerFight:production('player/cheeky-fight-v2.svg')",'Quest 2.0 fight sprite');
+has(config,'stateMeta:mainState','main state metadata');
+has(config,'stateMeta:fightState','fighter state metadata');
+has(config,"duck:{drawWidth:174,drawHeight:126",'deep crouch display profile');
+has(config,"duck:{drawWidth:252,drawHeight:198",'deep fighter crouch profile');
+has(config,"animations:{idle:[0,1],walk:[2],run:[2],guard:[3],duck:[4],punch:[5],kick:[6],hit:[7],victory:[8],jump:[9]}",'Quest 2.0 fight mapping');
+has(config,'retsu-sheet.png');has(config,'alien-row-5.png');
+has(config,"backgrounds:{bedroom:'https://lcslgxpgmttaexsorxik.supabase.co/storage/v1/object/public/ccg-arcade-assets/backgrounds/bedroom/1787232895204-bedroom.webp'",'remote background baseline');
+
+has(runtime,'Q.spriteStateProfile=function','state profile runtime');
+has(runtime,'Q.spriteWorldRect=function','ground-anchor runtime');
+has(runtime,'Q.spriteHitbox=function','state-specific hitbox runtime');
+has(runtime,'Q.drawAnchoredSprite=function','anchored sprite renderer');
+
+has(balance,'deepCrouchHeight:62','deep crouch tuning');
+has(balance,'playerCooldown:.31','Alien Formation fire tuning');
+not(balance,'Array.prototype.push','old global Array monkeypatch');
+not(balance,'fireOnly','old fire-input monkeypatch');
+
+for(const id of ['bedroom','budget','christmas','amiga','guru'])has(stages,`id:'${id}'`,`${id} stage definition`);
+for(const mechanic of ["mechanic:'loading'","mechanic:'rack'","mechanic:'reverse'","mechanic:'workbench'","mechanic:'glitch'"])has(stages,mechanic);
+
+has(main,"assets.image('sheet_'+key",'required sprite-sheet loading');
+has(main,'function playerBox(){const meta=playerMeta()','metadata-driven player collision');
+has(main,"if(P.duck&&P.ground)return'duck'",'true fighter crouch state');
+has(main,"return P.fire>0?'duckFire':'duck'",'main crouch and crouch-fire states');
+has(main,'function bedroomPattern()','Bedroom benchmark pattern system');
+has(main,'function budgetPattern()','Budget Rack pattern system');
+has(main,'function christmasPattern()','Christmas pattern system');
+has(main,'function amigaPattern()','Amiga pattern system');
+has(main,'function guruPattern()','Guru pattern system');
+has(main,'function bossAttack()','stage-specific boss attacks');
+has(main,"if(id==='bedroom')",'Bedroom boss branch');
+has(main,"else if(id==='budget')",'Budget boss branch');
+has(main,"else if(id==='christmas')",'Christmas boss branch');
+has(main,"else if(id==='amiga')",'Amiga boss branch');
+has(main,'function startBeads()','Electric Bead Run');
+has(main,'function startFighter()','36% Conversion Bout');
+has(main,'function startInvaders()','Alien Formation');
+has(main,'function startMaze()','Dot-Maze Run');
+has(main,"text('QUEST 2.0'",'Quest 2.0 title treatment');
+has(main,'Q.drawAnchoredSprite(ctx,im,meta,stateName','anchored main sprite rendering');
+has(main,'T.beads.duration','new bead tuning');
+has(main,'T.maze.target','maze tuning');
+not(main,"return P.duck&&P.ground?{x:P.x+4,y:P.y-4,w:70,h:131}",'legacy shallow crouch geometry');
+
+has('arcade/quest/index.html','main-v3.js?v=20260825q2');
+not('arcade/quest/index.html','main-v2.js','legacy main engine include');
+has('games/commodore-quest/index.html','main-v3.js?v=20260825q2');
+not('games/commodore-quest/index.html','main-v2.js','legacy public wrapper engine include');
+has('arcade/quest/index.html','class="rotate-prompt"');
+has('games/commodore-quest/index.html','class="rotate-prompt"');
+has('arcade/quest/styles.css','(orientation:portrait)');has('arcade/quest/styles.css','(orientation:landscape)');has('arcade/quest/styles.css','100dvh');
+
+svg('arcade/quest/assets/production/player/cheeky-main-v2.svg',1024,1280);
+svg('arcade/quest/assets/production/player/cheeky-fight-v2.svg',992,948);
+png('arcade/quest/assets/production/fighter/retsu-sheet.png',992,632);
+png('arcade/quest/assets/production/enemies/8bit-enemy-sheet.png',512,256);
+for(const b of ['bedroom','budget','christmas','amiga','guru'])png(`arcade/quest/assets/production/bosses/${b}-sheet.png`,1024,448);
+
+for(const r of ['collectibles/tape.png','collectibles/disk.png','collectibles/zzap.png','collectibles/joystick.png','powers/shield.png','powers/speed.png','powers/double.png','hazards/bedroom.png','hazards/budget.png','hazards/christmas.png','hazards/amiga.png','hazards/guru.png','invaders/alien-row-1.png','invaders/alien-row-2.png','invaders/alien-row-3.png','invaders/alien-row-4.png','invaders/alien-row-5.png','invaders/player-ship.png','invaders/bunker.png','invaders/enemy-shot.png','invaders/player-shot.png'])exists(`arcade/quest/assets/production/${r}`);
+for(const r of ['cheeky-head.png','cheeky-body.png','cheeky-arm.png','cheeky-leg.png','cheeky-mascot.png'])exists(`arcade/quest/assets/source/player-parts/${r}`);
+for(const r of ['cheeky-head.png','cheeky-body.png','cheeky-arm.png','cheeky-leg.png','cheeky-mascot.png'])absent(`arcade/quest/assets/production/player/${r}`);
+exists('arcade/quest/assets/archive/recovered/recovered-assets-manifest.json');
+absent('arcade/quest/assets/production/recovered-assets-manifest.json');
+exists('arcade/quest/assets/archive/superseded/fighter/tiertex-kick-copy.png');
+absent('arcade/quest/assets/production/fighter/tiertex-kick copy.png');
+exists('arcade/quest/assets/asset-manifest.json');
+exists('arcade/quest/assets/README.md');
+exists('arcade/quest/QUEST-2-OVERHAUL-SPEC.md');
+exists('arcade/quest/SPRITE-SPEC-V2.md');
+
+has('arcade/quest/game/remote-assets.js',"REMOTE_GROUPS=new Set(['backgrounds','music','sfx'])");
+has('arcade/quest/game/remote-assets.js','REMOTE_GROUPS.has(group)');
+has('admin/js/arcade-assets.js',".in('asset_group',['backgrounds','music','sfx'])");
+not('admin/js/arcade-assets.js','Tier-Tex Animation Sheet');
+not('admin/js/arcade-assets.js','Alien Formation Sprites');
+has('admin/arcade-assets.html','Gameplay art is protected');
+
+if(errors.length){console.error('Arcade Quest 2.0 validation failed:');errors.forEach(e=>console.error('- '+e));process.exit(1);}console.log('Arcade Quest 2.0 validation passed.');

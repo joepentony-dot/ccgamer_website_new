@@ -4,33 +4,12 @@ on:
   pull_request:
     paths:
       - 'arcade/**'
+      - 'games/commodore-quest/index.html'
       - 'admin/arcade-assets.html'
       - 'admin/js/arcade-assets.js'
       - 'admin/js/admin-nav.js'
       - 'admin/css/arcade-assets.css'
-      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-19-dungeon-variety.js'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-sidebar-layout-fix.css'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
@@ -40,33 +19,12 @@ on:
       - main
     paths:
       - 'arcade/**'
+      - 'games/commodore-quest/index.html'
       - 'admin/arcade-assets.html'
       - 'admin/js/arcade-assets.js'
       - 'admin/js/admin-nav.js'
       - 'admin/css/arcade-assets.css'
-      - 'games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/audio-assets.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-19-dungeon-variety.js'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-19-dungeon-variety.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/asset-manifest.json'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/audio/music/**'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-ui-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-menu-runtime-fix.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-dossier-polish.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-death-room-recovery.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-inventory-hud-fix.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/v10-6-stalker-shop-balance.js'
-      - 'games/ccg-games/cheeky-commodore-quest/js/weekly-challenge.js'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-ui-polish.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-dossier-polish.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-inventory-hud-fix.css'
-      - 'games/ccg-games/cheeky-commodore-quest/css/v10-6-sidebar-layout-fix.css'
-      - 'games/ccg-games/cheeky-commodore-quest/assets/item-icons/**'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-death-room-recovery.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-inventory-hud.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-stalker-shop-balance.mjs'
-      - 'games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs'
+      - 'games/ccg-games/cheeky-commodore-quest/**'
       - 'supabase/migrations/20260820_arcade_asset_manager.sql'
       - 'scripts/generate-lost-sizzler-audio.mjs'
       - 'scripts/validate-arcade-quest.js'
@@ -94,10 +52,11 @@ jobs:
           node --check arcade/quest/game/balance.js
           node --check arcade/quest/game/assets-config.js
           node --check arcade/quest/game/remote-assets.js
+          node --check arcade/quest/game/sprite-runtime.js
           node --check arcade/quest/game/stages.js
           node --check arcade/quest/game/audio.js
           node --check arcade/quest/game/achievements.js
-          node --check arcade/quest/game/main-v2.js
+          node --check arcade/quest/game/main-v3.js
           node --check admin/js/arcade-assets.js
           node --check games/ccg-games/cheeky-commodore-quest/js/asset-overrides.js
           node --check games/ccg-games/cheeky-commodore-quest/js/admin-audio-overrides.js
@@ -118,13 +77,21 @@ jobs:
           node --check scripts/generate-lost-sizzler-audio.mjs
           node --check scripts/validate-arcade-quest.js
 
-      - name: Validate final balance rules
+      - name: Validate Quest 2.0 contracts
         shell: bash
         run: |
-          grep -F "fireOnly" arcade/quest/game/balance.js
-          grep -F "extraAt = [4, 9, 14]" arcade/quest/game/balance.js
-          grep -F "mode === 'invaders'" arcade/quest/game/balance.js
-          grep -F 'src="game/balance.js"' arcade/quest/index.html
+          grep -F "deepCrouchHeight:62" arcade/quest/game/balance.js
+          grep -F "stateMeta:mainState" arcade/quest/game/assets-config.js
+          grep -F "duck:[4]" arcade/quest/game/assets-config.js
+          grep -F "Q.spriteHitbox=function" arcade/quest/game/sprite-runtime.js
+          grep -F "main-v3.js?v=20260825q2" arcade/quest/index.html
+          grep -F "main-v3.js?v=20260825q2" games/commodore-quest/index.html
+          ! grep -F "main-v2.js" arcade/quest/index.html
+          ! grep -F "main-v2.js" games/commodore-quest/index.html
+          test -f arcade/quest/assets/production/player/cheeky-main-v2.svg
+          test -f arcade/quest/assets/production/player/cheeky-fight-v2.svg
+          test -f arcade/quest/assets/archive/recovered/recovered-assets-manifest.json
+          test ! -f arcade/quest/assets/production/recovered-assets-manifest.json
 
       - name: Validate Lost Sizzler owner music hooks
         shell: bash
@@ -158,5 +125,5 @@ jobs:
       - name: Validate Lost Sizzler tactical sidebar layout
         run: node games/ccg-games/cheeky-commodore-quest/tests/v10-6-sidebar-layout.mjs
 
-      - name: Validate Arcade Quest contract
+      - name: Validate Arcade Quest 2.0 contract
         run: node scripts/validate-arcade-quest.js
