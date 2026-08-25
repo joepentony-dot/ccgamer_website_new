@@ -23,55 +23,110 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
+          import re
 
           audio_path = Path('arcade/lost-sizzler/js/horde-survivor-audio.js')
           text = audio_path.read_text()
-          old = '''  const SOLO_TRACK = Object.freeze({
-            id: "solo-master",
-            from: 1,
-            to: 10,
-            src: "assets/audio/music/horde-survivor-solo-master.mp3"
-          });'''
-          new = '''  const HORDE_TRACK = Object.freeze({
+
+          track_pattern = re.compile(
+              r'  const SOLO_TRACK = Object\.freeze\(\{\s*'
+              r'id: "solo-master",\s*from: 1,\s*to: 10,\s*'
+              r'src: "assets/audio/music/horde-survivor-solo-master\.mp3"\s*\}\);',
+              re.S,
+          )
+          replacement = '''  const HORDE_TRACK = Object.freeze({
             id: "horde-master",
             from: 1,
             to: 10,
             src: "assets/audio/music/horde-survivor-master.ogg"
           });
           const SOLO_TRACK = HORDE_TRACK;'''
-          if old not in text:
-              raise SystemExit('Expected Horde track block not found')
-          text = text.replace(old, new, 1)
-          text = text.replace('''    baseVolume: 0.13,
-            duckedVolume: 0.05,
-            maximumVolume: 0.18,''', '''    baseVolume: 0.22,
-            duckedVolume: 0.08,
-            maximumVolume: 0.26,''', 1)
-          old_next = 'const next = trackForWave(currentWave, currentPlayerCount), element = ensureAudio();'
-          if old_next not in text:
-              raise SystemExit('Expected track selection line not found')
-          text = text.replace(old_next, 'const next = HORDE_TRACK, element = ensureAudio();', 1)
-          text = text.replace('''  return Object.freeze({
-            SOLO_TRACK,''', '''  return Object.freeze({
-            HORDE_TRACK,
-            SOLO_TRACK,''', 1)
+          text, count = track_pattern.subn(replacement, text, count=1)
+          if count != 1:
+              raise SystemExit('Horde track definition patch did not match exactly once')
+
+          text = text.replace('    baseVolume: 0.13,\n    duckedVolume: 0.05,\n    maximumVolume: 0.18,',
+                              '    baseVolume: 0.22,\n    duckedVolume: 0.08,\n    maximumVolume: 0.26,', 1)
+
+          track_fn = re.compile(
+              r'  const trackForWave = \(wave, playerCount = 2\) => \{.*?\n  \};',
+              re.S,
+          )
+          text, count = track_fn.subn(
+              '  const trackForWave = (wave, playerCount = 2) => HORDE_TRACK;',
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit('trackForWave patch did not match exactly once')
+
+          export_marker = '  return Object.freeze({\n    SOLO_TRACK,'
+          if export_marker not in text:
+              raise SystemExit('Horde audio export marker not found')
+          text = text.replace(export_marker,
+                              '  return Object.freeze({\n    HORDE_TRACK,\n    SOLO_TRACK,', 1)
           audio_path.write_text(text)
+
+          rules_path = Path('arcade/lost-sizzler/js/horde-survivor.js')
+          rules = rules_path.read_text()
+          audio_block = re.compile(
+              r'  const AUDIO = Object\.freeze\(\{.*?\n  \}\);\n\n  const ENEMIES',
+              re.S,
+          )
+          new_audio = '''  const AUDIO = Object.freeze({
+            tracks: Object.freeze([
+              Object.freeze({ waves: Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), src: "assets/audio/music/horde-survivor-master.ogg" })
+            ]),
+            baseVolume: 0.22,
+            duckedVolume: 0.08,
+            maximumVolume: 0.26,
+            fadeInMs: 900,
+            fadeOutMs: 500,
+            loop: true
+          });
+
+          const ENEMIES'''
+          rules, count = audio_block.subn(new_audio, rules, count=1)
+          if count != 1:
+              raise SystemExit('Horde rules AUDIO patch did not match exactly once')
+          rules_path.write_text(rules)
 
           contract = Path('arcade/lost-sizzler/tests/horde-survivor-contract.mjs')
           t = contract.read_text()
-          t = t.replace('assert.equal(music.state().waveTrack, "waves-1-4");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
-          t = t.replace('assert.equal(music.state().volume, 0.13);', 'assert.equal(music.state().volume, 0.22);', 1)
-          t = t.replace('assert.equal(music.state().waveTrack, "waves-5-9");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
-          t = t.replace('assert.equal(music.state().waveTrack, "wave-10");', 'assert.equal(music.state().waveTrack, "horde-master");', 1)
-          t = t.replace('assert.equal(music.setVolume(1), 0.18);', 'assert.equal(music.setVolume(1), 0.26);', 1)
+          old_audio_asserts = '''assert.deepEqual(H.AUDIO.tracks[0].waves, [1, 2, 3, 4]);
+          assert.deepEqual(H.AUDIO.tracks[1].waves, [5, 6, 7, 8, 9]);
+          assert.deepEqual(H.AUDIO.tracks[2].waves, [10]);'''
+          new_audio_asserts = '''assert.equal(H.AUDIO.tracks.length, 1);
+          assert.deepEqual(H.AUDIO.tracks[0].waves, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+          assert.equal(H.AUDIO.tracks[0].src, "assets/audio/music/horde-survivor-master.ogg");'''
+          if old_audio_asserts not in t:
+              raise SystemExit('Horde AUDIO contract marker not found')
+          t = t.replace(old_audio_asserts, new_audio_asserts, 1)
+          for old in ('waves-1-4', 'waves-5-9', 'wave-10'):
+              t = t.replace(f'assert.equal(HA.trackForWave(4).id, "{old}");', 'assert.equal(HA.trackForWave(4).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(5).id, "waves-5-9");', 'assert.equal(HA.trackForWave(5).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(9).id, "waves-5-9");', 'assert.equal(HA.trackForWave(9).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(10).id, "wave-10");', 'assert.equal(HA.trackForWave(10).id, "horde-master");')
+          t = t.replace('assert.equal(music.state().waveTrack, "waves-1-4");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          t = t.replace('assert.equal(music.state().volume, 0.13);', 'assert.equal(music.state().volume, 0.22);')
+          t = t.replace('assert.equal(music.state().waveTrack, "waves-5-9");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          t = t.replace('assert.equal(music.state().waveTrack, "wave-10");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          t = t.replace('assert.equal(music.setVolume(1), 0.18);', 'assert.equal(music.setVolume(1), 0.26);')
           contract.write_text(t)
 
           solo_contract = Path('arcade/lost-sizzler/tests/horde-solo-music-contract.mjs')
           t = solo_contract.read_text()
           t = t.replace('assert.equal(HA.SOLO_TRACK.id, "solo-master");', 'assert.equal(HA.HORDE_TRACK.id, "horde-master");')
           t = t.replace('assert.equal(HA.SOLO_TRACK.src, "assets/audio/music/horde-survivor-solo-master.mp3");', 'assert.equal(HA.HORDE_TRACK.src, "assets/audio/music/horde-survivor-master.ogg");')
+          t = t.replace('assert.equal(HA.trackForWave(1, 1).id, "solo-master");', 'assert.equal(HA.trackForWave(1, 1).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(5, 1).id, "solo-master");', 'assert.equal(HA.trackForWave(5, 1).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(10, 1).id, "solo-master");', 'assert.equal(HA.trackForWave(10, 1).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(4, 2).id, "waves-1-4");', 'assert.equal(HA.trackForWave(4, 2).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(5, 2).id, "waves-5-9");', 'assert.equal(HA.trackForWave(5, 2).id, "horde-master");')
+          t = t.replace('assert.equal(HA.trackForWave(10, 4).id, "wave-10");', 'assert.equal(HA.trackForWave(10, 4).id, "horde-master");')
           t = t.replace('assert.equal(music.state().waveTrack, "solo-master");', 'assert.equal(music.state().waveTrack, "horde-master");')
           t = t.replace('assert.equal(music.state().waveTrack, "waves-5-9");', 'assert.equal(music.state().waveTrack, "horde-master");')
+          t = t.replace('assert.equal(music.state().volume, 0.13);', 'assert.equal(music.state().volume, 0.22);')
           solo_contract.write_text(t)
 
       - name: Run Horde contracts
@@ -83,6 +138,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add arcade/lost-sizzler/js/horde-survivor-audio.js arcade/lost-sizzler/tests/horde-survivor-contract.mjs arcade/lost-sizzler/tests/horde-solo-music-contract.mjs
+          git add arcade/lost-sizzler/js/horde-survivor-audio.js arcade/lost-sizzler/js/horde-survivor.js arcade/lost-sizzler/tests/horde-survivor-contract.mjs arcade/lost-sizzler/tests/horde-solo-music-contract.mjs
           git commit -m "Use approved master throughout Horde Survivor"
           git push origin HEAD:${GITHUB_REF_NAME}
