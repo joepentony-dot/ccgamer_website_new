@@ -1,0 +1,84 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import http from "node:http";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
+import {chromium} from "playwright";
+
+const here=path.dirname(fileURLToPath(import.meta.url));
+const repo=path.resolve(here,"../../../..");
+const mime={
+  ".html":"text/html; charset=utf-8", ".js":"text/javascript; charset=utf-8", ".mjs":"text/javascript; charset=utf-8",
+  ".css":"text/css; charset=utf-8", ".json":"application/json; charset=utf-8", ".svg":"image/svg+xml", ".webp":"image/webp",
+  ".png":"image/png", ".jpg":"image/jpeg", ".jpeg":"image/jpeg", ".ogg":"audio/ogg", ".mp3":"audio/mpeg", ".wav":"audio/wav"
+};
+const sockets=new Set();
+const server=http.createServer((req,res)=>{
+  try{
+    const pathname=decodeURIComponent(new URL(req.url,"http://local").pathname),relative=pathname.endsWith("/")?`${pathname}index.html`:pathname,file=path.resolve(repo,`.${relative}`);
+    if(!file.startsWith(`${repo}${path.sep}`)&&file!==repo){res.writeHead(403).end("forbidden");return}
+    fs.readFile(file,(error,data)=>{if(error){res.writeHead(404,{connection:"close"}).end("not found");return}res.writeHead(200,{"content-type":mime[path.extname(file).toLowerCase()]||"application/octet-stream","cache-control":"no-store",connection:"close"});res.end(data)});
+  }catch(error){res.writeHead(500,{connection:"close"}).end(String(error))}
+});
+server.on("connection",socket=>{sockets.add(socket);socket.on("close",()=>sockets.delete(socket))});
+await new Promise((resolve,reject)=>{server.once("error",reject);server.listen(0,"127.0.0.1",resolve)});
+const origin=`http://127.0.0.1:${server.address().port}`;
+const browser=await chromium.launch({headless:true,args:["--disable-dev-shm-usage","--disable-background-networking","--autoplay-policy=no-user-gesture-required"]});
+
+try{
+  const context=await browser.newContext({viewport:{width:1440,height:900}}),page=await context.newPage();page.setDefaultTimeout(30000);
+  const pageErrors=[],crashes=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));page.on("crash",()=>crashes.push("Chromium page crashed"));
+  await page.goto(`${origin}/arcade/lost-sizzler/?runtime-recovery=1`,{waitUntil:"domcontentloaded"});
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true");
+  await page.waitForFunction(()=>window.CCGLostSizzlerV141BrowserStabilityGameplay?.state?.frameGuard===true);
+
+  const baseline=await page.evaluate(()=>({
+    guarded:Boolean(window.loop?.__ccgV141CrashContained),faults:window.CCGLostSizzlerV141BrowserStabilityGameplay.state.frameFaults
+  }));
+  assert.equal(baseline.guarded,true,"the live browser must be running the crash-contained RAF callback");
+
+  const injected=await page.evaluate(async()=>{
+    const guard=window.CCGLostSizzlerV141BrowserStabilityGameplay,originalUpdate=window.update,originalRender=window.render;
+    let frames=0,thrown=false;
+    window.render=function(){frames++;return originalRender.apply(this,arguments)};
+    window.update=function(){
+      if(!thrown){thrown=true;window.update=originalUpdate;throw new Error("CCG_SYNTHETIC_SINGLE_FRAME_FAULT")}
+      return originalUpdate.apply(this,arguments)
+    };
+    await new Promise(resolve=>setTimeout(resolve,550));
+    window.render=originalRender;window.update=originalUpdate;
+    return{frames,thrown,faults:guard.state.frameFaults,updateFaults:guard.state.updateFaults,lastFaultMessage:guard.state.lastFaultMessage};
+  });
+  assert.equal(injected.thrown,true,"the synthetic update fault must actually execute");
+  assert.ok(injected.updateFaults>=1,`the frame guard must record the contained update fault: ${JSON.stringify(injected)}`);
+  assert.match(injected.lastFaultMessage,/CCG_SYNTHETIC_SINGLE_FRAME_FAULT/,"the guard must retain the most recent contained fault for diagnosis");
+  assert.ok(injected.frames>=4,`rendering must continue after an update exception instead of freezing the browser/game: ${JSON.stringify(injected)}`);
+
+  await page.locator("#solo-btn").click({noWaitAfter:true});
+  await page.waitForFunction(()=>document.body.dataset.runActive==="true");
+  await page.waitForTimeout(350);
+  await page.keyboard.press("KeyP");
+  await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="paused");
+  assert.equal(await page.locator("#pause").evaluate(node=>!node.classList.contains("hidden")),true,"Solo pause overlay must open");
+  await page.locator("#resume-btn").click();
+  await page.waitForFunction(()=>typeof mode!=="undefined"&&mode==="playing");
+  await page.waitForTimeout(500);
+  const resumed=await page.evaluate(()=>({
+    mode,runActive:document.body.dataset.runActive,pausedHidden:UI.pause.classList.contains("hidden"),faults:window.CCGLostSizzlerV141BrowserStabilityGameplay.state.frameFaults,
+    canvas:{w:game.width,h:game.height},player:p1?{x:p1.x,y:p1.y,rx:p1.rx,ry:p1.ry}:null
+  }));
+  assert.equal(resumed.mode,"playing","Continue must restore active gameplay after pause");
+  assert.equal(resumed.runActive,"true","pause/resume must not destroy the run");
+  assert.equal(resumed.pausedHidden,true,"pause UI must be removed after resume");
+  assert.ok(resumed.canvas.w>=640&&resumed.canvas.h>=360,"pause recovery must leave a usable canvas backing store");
+  assert.ok(Number.isFinite(resumed.player?.x)&&Number.isFinite(resumed.player?.rx),`pause recovery must retain finite player coordinates: ${JSON.stringify(resumed.player)}`);
+
+  await page.evaluate(()=>window.dispatchEvent(new Event("focus")));
+  await page.waitForTimeout(250);
+  assert.deepEqual(crashes,[],`Chromium must not crash during fault containment or pause/resume: ${crashes.join("\n")}`);
+  assert.deepEqual(pageErrors,[],`fault containment and pause/resume must produce no uncaught page errors: ${pageErrors.join("\n")}`);
+  console.log("Lost Sizzler V10.41 Chromium single-frame fault containment and pause/resume recovery checks passed.");
+  await context.close();
+}finally{
+  await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
+}
