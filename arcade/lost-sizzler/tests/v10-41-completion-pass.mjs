@@ -74,6 +74,6 @@ assert.match(loader,/v10-41-horde-combat-polish\.js/,"release loader must includ
 assert.match(loader,/v10-41-horde-completion\.js/,"release loader must include Solo Horde, rankings and movement ownership");
 assert.match(loader,/v10-41-sanctuary-azalea\.js/,"release loader must include sanctuary scenes and AZALEA");
 assert.match(loader,/v10-41-progression-recovery\.js/,"release loader must include fresh progression recovery hardening");
-assert.match(loader,/v10-41-solo-full-map\.js\?v=20260824b/,"release loader must include the fullscreen-safe Solo map revision");
+assert.match(loader,/v10-41-solo-full-map\.js\?v=\$\{encodeURIComponent\(RELEASE_CACHE\)\}/,"release loader must include the fullscreen-safe Solo map revision using the current release cache generation");
 
 console.log("Lost Sizzler V10.41 completion pass regression checks passed.");
