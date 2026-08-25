@@ -25,7 +25,7 @@
     try{
       if(document?.hidden===true)return false;
       if(document?.body?.dataset?.runActive==="false")return false;
-      if(typeof mode!=="undefined"&&mode!=="playing")return false;
+      if(typeof mode!=="undefined"&&mode!=="playing"&&mode!=="shop")return false;
     }catch(_){}
     return true
   }
