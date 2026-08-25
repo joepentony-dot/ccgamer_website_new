@@ -383,7 +383,15 @@ try{
       return{safe,start:{x:p1.x,y:p1.y},activeTag:document.activeElement?.tagName||""};
     });
     assert.ok(tutorialMove.safe,`Tutorial start area must have a four-direction keyboard training cell: ${JSON.stringify(tutorialMove)}`);
-    for(const key of ["w","s","a","d"]){await state.page.keyboard.down(key);await state.page.waitForTimeout(190);await state.page.keyboard.up(key);await state.page.waitForTimeout(180)}
+    for(const [key,direction] of [["w","up"],["s","down"],["a","left"],["d","right"]]){
+      await state.page.keyboard.down(key);
+      try{
+        await withTimeout(state.page.waitForFunction(expected=>window.CCGLostSizzlerOnboardingV120?.state?.movementDirections?.has?.(expected),direction,{timeout:2200}),2800,`Tutorial movement ${direction}`);
+      }finally{
+        await state.page.keyboard.up(key);
+      }
+      await state.page.waitForTimeout(80);
+    }
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.step>=1,null,{timeout:5000}),7000,"Tutorial four-direction movement step");
     const tutorialProgress=await state.page.evaluate(()=>({step:window.CCGLostSizzlerOnboardingV120.state.step,moved:window.CCGLostSizzlerOnboardingV120.state.moved,directions:[...window.CCGLostSizzlerOnboardingV120.state.movementDirections].sort(),position:{x:p1.x,y:p1.y}}));
     assert.equal(tutorialProgress.moved,true,`Tutorial keyboard movement must register: ${JSON.stringify(tutorialProgress)}`);
@@ -408,7 +416,10 @@ try{
 
     await withTimeout(state.page.waitForFunction(()=>!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden")&&window.CCGLostSizzlerOnboardingV120.state.step===3,null,{timeout:4000}),6000,"Tutorial inventory stage prompt");
     await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
-    await state.page.keyboard.press("Tab");await state.page.waitForTimeout(180);await state.page.keyboard.press("Tab");
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryOpened===true,null,{timeout:3000}),4000,"Tutorial inventory open");
+    await state.page.keyboard.press("Tab");
+    await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120?.state?.inventoryClosed===true,null,{timeout:3000}),4000,"Tutorial inventory close");
     await withTimeout(state.page.waitForFunction(()=>window.CCGLostSizzlerOnboardingV120.state.step===4&&!document.getElementById("ccg-tutorial-stage-modal")?.classList.contains("hidden"),null,{timeout:6000}),8000,"Tutorial information stages");
     for(let step=4;step<=8;step++){
       await state.page.locator("#ccg-tutorial-stage-modal [data-stage-continue]").click();
