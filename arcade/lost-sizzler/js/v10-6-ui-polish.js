@@ -34,6 +34,43 @@
     try{itemIconSVG=itemArt}catch(error){console.warn("[Lost Sizzler] item art override unavailable",error)}
   }
 
+  function stabiliseWeeklyLeaderboard(){
+    let section=document.getElementById("weekly-vault");
+    if(!section)return;
+
+    /* Older menu polish converted the leaderboard into a native <details>
+       disclosure. Opening that disclosure could expand the already resize-aware
+       game shell by a large amount and drive repeated ResizeObserver/canvas
+       resize work. Keep the board as an ordinary bounded section instead. */
+    if(section.tagName==="DETAILS"){
+      const replacement=document.createElement("section");
+      replacement.id=section.id;
+      replacement.className=section.className;
+      replacement.setAttribute("aria-labelledby","weekly-vault-title");
+      for(const child of [...section.children])if(child.tagName!=="SUMMARY")replacement.appendChild(child);
+      if(!replacement.querySelector("#weekly-vault-title")){
+        const heading=document.createElement("h3");
+        heading.id="weekly-vault-title";
+        heading.textContent="WEEKLY HIGH-SCORE VAULT LEADERBOARD";
+        replacement.prepend(heading);
+      }
+      section.replaceWith(replacement);
+      section=replacement;
+    }
+
+    section.dataset.weeklyDetails="false";
+    section.style.maxHeight="min(420px,46vh)";
+    section.style.overflowY="auto";
+    section.style.overscrollBehavior="contain";
+    section.style.contain="layout paint";
+
+    const note=section.querySelector(".weekly-leaderboard-note");
+    if(note)note.textContent="Same dungeon seed for everyone. Ranked scores reset every Monday.";
+    const links=section.querySelectorAll(".weekly-auth-actions a");
+    if(links[0])links[0].textContent="Create account for leaderboard";
+    if(links[1])links[1].textContent="Sign in";
+  }
+
   function compactMenu(){
     const menu=document.getElementById("menu"),panel=menu?.querySelector(":scope > .panel");
     if(!panel||panel.dataset.conciseMenu==="true")return;
@@ -57,26 +94,7 @@
     const join=panel.querySelector(".join-row");
     if(join&&online)online.insertAdjacentElement("afterend",join);
 
-    const section=document.getElementById("weekly-vault");
-    if(section&&section.tagName!=="DETAILS"){
-      const details=document.createElement("details");
-      details.id=section.id;
-      details.className=section.className;
-      details.dataset.weeklyDetails="true";
-      const summary=document.createElement("summary");
-      summary.innerHTML="<b>WEEKLY LEADERBOARD</b><span>Optional — sign in only to compete</span>";
-      details.appendChild(summary);
-      for(const child of [...section.children]){
-        if(child.id==="weekly-vault-title")continue;
-        details.appendChild(child);
-      }
-      section.replaceWith(details);
-      const note=details.querySelector(".weekly-leaderboard-note");
-      if(note)note.textContent="Same dungeon seed for everyone. Ranked scores reset every Monday.";
-      const links=details.querySelectorAll(".weekly-auth-actions a");
-      if(links[0])links[0].textContent="Create account for leaderboard";
-      if(links[1])links[1].textContent="Sign in";
-    }
+    stabiliseWeeklyLeaderboard();
 
     const secondary=panel.querySelector(".secondary-menu");
     if(secondary){
@@ -227,7 +245,28 @@
   window.addEventListener("ccg:admin-audio-ready",refreshMusicAfterAdminLoad);
   if(window.CCG_ADMIN_AUDIO_READY)refreshMusicAfterAdminLoad();
 
+  function loadDungeonCombatSafety(){
+    if(document.querySelector('script[data-ccg-v141-dungeon-combat-safety="true"]'))return;
+    let attempts=0;
+    const timer=setInterval(()=>{
+      attempts++;
+      const ready=Boolean(window.CCGWorld&&window.CCGSystems&&typeof window.triggerTimed==="function"&&typeof window.updateTimed==="function");
+      if(!ready&&attempts<240)return;
+      clearInterval(timer);
+      if(!ready)return;
+      const script=document.createElement("script");
+      const rev=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest");
+      script.src=`js/v10-41-dungeon-combat-safety.js?v=${encodeURIComponent(rev)}`;
+      script.async=false;
+      script.dataset.ccgV141DungeonCombatSafety="true";
+      document.head.appendChild(script);
+    },50);
+    window.addEventListener("pagehide",()=>clearInterval(timer),{once:true});
+  }
+
   compactMenu();
   prepareCarriedPanel();
+  stabiliseWeeklyLeaderboard();
+  loadDungeonCombatSafety();
   window.CCGWeeklyChallenge?.refresh?.();
 })();
