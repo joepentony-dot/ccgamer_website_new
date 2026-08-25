@@ -7,6 +7,9 @@
   const ESSENTIAL=new Set(["key","mainKey","bronze","bronzeKey","exitSigil","sigil"]);
   const state={timer:0,repairs:0,lastRunKey:""};
   const key=(x,y)=>`${Math.round(Number(x))},${Math.round(Number(y))}`;
+  const hordeActive=()=>{
+    try{return window.CCGLostSizzlerSpecialModes?.active?.type==="horde-survivor"||document.body?.dataset?.specialMode==="horde-survivor"}catch(_){return false}
+  };
 
   function essential(item){
     if(!item||item.active===false)return false;
@@ -19,15 +22,16 @@
       if(!row||!Number.isFinite(Number(row.x))||!Number.isFinite(Number(row.y)))return;
       const x=Math.round(Number(row.x)),y=Math.round(Number(row.y));for(let oy=-radius;oy<=radius;oy++)for(let ox=-radius;ox<=radius;ox++)out.add(key(x+ox,y+oy));
     };
-    for(const item of host?.items||[])if(essential(item))reserve(item,1);
-    for(const marker of host?.progressionRecoveryMarkers||[])if(marker?.active!==false)reserve(marker,1);
-    if(host?.sigilDropPos)reserve(host.sigilDropPos,1);
-    for(const tile of host?.sanctuaryRegeneration||[])reserve(tile,1);
+    try{for(const item of host?.items||[])if(essential(item))reserve(item,1)}catch(_){}
+    try{for(const marker of host?.progressionRecoveryMarkers||[])if(marker?.active!==false)reserve(marker,1)}catch(_){}
+    try{if(host?.sigilDropPos)reserve(host.sigilDropPos,1)}catch(_){}
+    try{for(const tile of host?.sanctuaryRegeneration||[])reserve(tile,1)}catch(_){}
     return out;
   }
 
   function repair(){
-    if(!host||!world||!Array.isArray(host.sanctuaryScenes))return 0;
+    if(hordeActive())return 0;
+    try{if(!host||!world||!Array.isArray(host.sanctuaryScenes))return 0}catch(_){return 0}
     const protectedSet=protectedCells();if(!protectedSet.size)return 0;
     const removed=new Set();
     for(const scene of host.sanctuaryScenes){
@@ -45,7 +49,9 @@
   }
 
   function tick(){
-    if(document.body?.dataset?.runActive!=="true"||!host||!world)return;
+    if(hordeActive())return;
+    if(document.body?.dataset?.runActive!=="true")return;
+    try{if(!host||!world)return}catch(_){return}
     const runKey=`${run?.seed||"run"}|${run?.floor||1}`;if(state.lastRunKey!==runKey){state.lastRunKey=runKey;setTimeout(repair,120)}
     repair();
   }
@@ -55,15 +61,15 @@
   window.CCGLostSizzlerV141LakeItemSafety={ESSENTIAL,essential,repair,get state(){return state}};
 })();
 
-/* Late V10.41 runtime guards. These are deliberately loaded from an existing
- * always-on V10.41 entry point so current live builds receive the fixes without
- * changing the core game or special-mode loader order. */
+/* Late V10.41 runtime guards. */
 (()=>{
   "use strict";
   const load=(src,marker)=>{
     if(document.querySelector(`script[${marker}="true"]`))return;
     const script=document.createElement("script");script.src=src;script.async=false;script.setAttribute(marker,"true");document.head.appendChild(script);
   };
-  load("js/v10-41-environment-transparency-hotfix.js?v=20260825c","data-ccg-v141-environment-transparency-hotfix");
-  load("js/v10-41-horde-mode-safety.js?v=20260825c","data-ccg-v141-horde-mode-safety");
+  load("js/v10-41-startup-freeze-guard.js?v=20260825e","data-ccg-v141-startup-freeze-guard");
+  load("js/v10-41-environment-transparency-hotfix.js?v=20260825e","data-ccg-v141-environment-transparency-hotfix");
+  load("js/v10-41-horde-mode-safety.js?v=20260825e","data-ccg-v141-horde-mode-safety");
+  load("js/v10-41-multiplayer-no-pause.js?v=20260825e","data-ccg-v141-multiplayer-no-pause");
 })();
