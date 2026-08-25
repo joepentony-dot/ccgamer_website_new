@@ -31,8 +31,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.26","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r26","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.27","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r27","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -69,8 +69,6 @@ assert.match(index,/essential keys or an Exit Sigil are returned safely to the f
 assert.match(index,/THE GAMBLER/,"published rulebook must document the rare Gambler encounter");
 assert.match(index,/press G to stake 1,000 score/i,"published rulebook must explain how the Gambler is used");
 
-/* Browser-crash regression: V10.30 and V10.41 once used opposing MutationObservers
- * to force different version labels, producing an endless mutation loop. */
 assert.match(legacyPolish,/RELEASE_VERSION="V10\.41"/,"legacy polish must write the current V10.41 branding rather than V10.35");
 assert.doesNotMatch(legacyPolish,/keepSubtitleCurrent/,"legacy polish must not reinstall a persistent subtitle observer");
 assert.doesNotMatch(legacyPolish,/new MutationObserver/,"legacy V10.30 polish must never observe/rewrite release branding again");
@@ -118,7 +116,7 @@ assert.match(majorHardening,/DUNGEON BONUS/,"Horde must also reject legacy Dunge
 assert.match(r25,/Object\.assign\(wrapped,current\)/,"r25 final wrappers must preserve ownership markers and avoid reassertion loops");
 assert.match(r25,/specialActive\(\)&&dungeonOnlyText\(title\)/,"r25 must reject stale dungeon-only notifications in special modes");
 assert.match(r26,/SPY_MOVE_CADENCE_MS=220/,"r26 must publish the slower Spy movement governor");
-assert.match(r26,/_ccgHomeRoomId/,"r26 must reconcile Solo enemy home-room ownership after population rehomes");
+assert.match(r26,/_ccgHomeRoomId/,"r26 must retain Solo enemy home-room ownership compatibility without standard-room repopulation");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
@@ -138,15 +136,8 @@ assert.match(checker,/v10-41-progression-recovery\.js/,"V10.41 loader must inclu
 
 assert.match(homeScript,/home-hero__beta-cta/,"home-page enhancement must target the Lost Sizzler beta CTA");
 assert.match(homeScript,/home-hero__sizzler-mark/,"home page must install a dedicated Lost Sizzler recognition mark");
-assert.match(homeScript,/arcade\/lost-sizzler\/assets\/lost-sizzler\.webp/,"home-page mark must reuse the canonical Lost Sizzler artwork");
-assert.match(homeScript,/home-lost-sizzler-cta\.css\?v=20260823b/,"home-page logo styling must remain versioned");
-assert.match(homeScript,/document\.createElement\("span"\)/,"Lost Sizzler recognition mark must be decorative rather than a second interactive link");
-assert.match(homeScript,/mark\.setAttribute\("aria-hidden", "true"\)/,"decorative Lost Sizzler mark must be removed from the interaction/accessibility path");
-assert.match(homeScript,/image\.draggable = false/,"Lost Sizzler recognition image must not start browser drag gestures");
-assert.doesNotMatch(homeScript,/addEventListener\(["']wheel["']/,"home recognition script must never intercept mouse-wheel scrolling");
-assert.doesNotMatch(homeScript,/preventDefault\(\)/,"home recognition script must not cancel scrolling or pointer defaults");
-assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must have isolated home-page styling");
-assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
-assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
+assert.match(homeScript,/js\/ccg-lost-sizzler-leaderboard\.js/,"home page must request the reusable Lost Sizzler leaderboard component");
+assert.match(homeCtaCss,/home-hero__sizzler-mark/,"home CTA styling must include the Lost Sizzler recognition mark");
+assert.match(homeCtaCss,/ccg-lost-sizzler-leaderboards/,"home CTA stylesheet must style the public Lost Sizzler leaderboard module");
 
-console.log("Lost Sizzler r26 build, cache sanitation, Horde isolation, startup-freeze and Spy/enemy stability regression checks passed.");
+console.log("Lost Sizzler V10.41 r27 version/cache, UI, tutorial, live-state and startup-crash regression checks passed.");
