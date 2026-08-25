@@ -39,7 +39,10 @@ jobs:
           node games/ccg-games/cheeky-commodore-quest/tests/v10-19-voice-admin.mjs >> r24-diagnostics.log 2>&1
           echo "exit=$?" >> r24-diagnostics.log
           echo '=== ARCHIVE QUALITY ===' >> r24-diagnostics.log
-          node --test tests/admin-archive-quality.test.mjs >> r24-diagnostics.log 2>&1
+          node scripts/audit-admin-archive-quality.js >> r24-diagnostics.log 2>&1
+          echo "exit=$?" >> r24-diagnostics.log
+          echo '=== MEMBER SUBMISSIONS ===' >> r24-diagnostics.log
+          node scripts/audit-member-submissions-admin.js >> r24-diagnostics.log 2>&1
           echo "exit=$?" >> r24-diagnostics.log
           exit 0
 
