@@ -1,6 +1,9 @@
 /* The Lost Sizzler V10.41 — multiplayer never pauses.
  * Online Dungeon, Horde Multiplayer, Spy Vs Spy and local 2P split-screen all
  * continue in real time. Solo Horde remains a single-player mode and may pause.
+ *
+ * r28: keeping multiplayer in playing mode must never clear held movement or
+ * attack input. Input is cleared only by real focus/pause lifecycle handlers.
  */
 (()=>{
   "use strict";
@@ -37,7 +40,9 @@
     if(!multiplayerActive())return false;
     try{if(typeof mode!=="undefined"&&mode==="paused")mode="playing"}catch(_){}
     try{UI?.pause?.classList?.add("hidden")}catch(_){}
-    try{input?.clear?.()}catch(_){}
+    // Do not call input.clear() here. forcePlaying runs before/after every
+    // multiplayer update and on the safety timer; clearing input here erases
+    // held WASD/arrow/fire state and breaks authoritative movement/doors.
     return true;
   }
 
