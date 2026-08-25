@@ -35,12 +35,13 @@ assert.match(hotfix,/specialActive\(\)&&DUNGEON_VOICE_KEYS\.test/,"legacy dungeo
 assert.match(hotfix,/function inheritMarkers\(wrapped,current\)/,"r25 must preserve inherited runtime wrapper ownership");
 assert.match(hotfix,/Object\.assign\(wrapped,current\)/,"r25 wrapper functions must carry the previous wrapper's markers forward");
 
-// Lightweight behavioural proof using the exported helpers. This executes the
-// actual hotfix rather than validating strings alone.
+// Lightweight behavioural proof using the real r25 wrapper path. The inherited
+// update moves the local Spy one cell; r25 must notice that movement and re-arm
+// both the ordinary movement timer and r24 fallback timer to the same cadence.
 const body={dataset:{specialMode:"sizzler-saboteurs"},removeAttribute(){}};
 function baseStart(){return true}
 baseStart.__ccgV141R24SoloBalance=true;
-function baseUpdate(){return true}
+function baseUpdate(){this.p1.x+=1;return true}
 baseUpdate.__ccgV141R24SpyMovement=true;
 function baseToast(){return true}
 baseToast.__ccgV141MajorHardening=true;
@@ -70,9 +71,13 @@ vm.runInContext(hotfix,context,{filename:"v10-41-r25-spy-speed-bounty-hotfix.js"
 const api=context.CCGLostSizzlerV141R25SpySpeedBountyHotfix;
 assert.ok(api,"r25 hotfix API must install");
 assert.equal(api.movementCadence(context.p1),138,"Spy should use the ordinary dungeon cadence rather than an accelerated fallback cadence");
-assert.equal(api.syncSpyCadence({x:1,y:1},context.p1),true,"a real Spy step must re-arm movement pacing");
-assert.equal(context.move1,138,"normal movement cooldown must be re-armed after the Spy step");
-assert.equal(context.CCGLostSizzlerV141R24LiveRegressions.state.spyMoveCooldownMs,138,"fallback cooldown must match normal movement cooldown");
+context.move1=0;
+context.CCGLostSizzlerV141R24LiveRegressions.state.spyMoveCooldownMs=0;
+const beforeX=context.p1.x;
+context.update(16);
+assert.equal(context.p1.x,beforeX+1,"the inherited update must move the Spy for the cadence regression proof");
+assert.equal(context.move1,138,"wrapped update must re-arm the normal movement cooldown after the Spy step");
+assert.equal(context.CCGLostSizzlerV141R24LiveRegressions.state.spyMoveCooldownMs,138,"wrapped update must re-arm the r24 fallback cooldown to the same cadence");
 api.purgeSpecialDungeonState();
 assert.equal(context.CCGLostSizzlerRareEvents.state.bounty,null,"Spy must not retain a rare-event Dungeon Bounty");
 assert.equal(context.run.dungeonBounty,null,"Spy must not retain a legacy Dungeon Bounty");
