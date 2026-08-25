@@ -24,7 +24,6 @@ const PUBLIC_SHELL = Object.freeze([
   "/resources/css/ccg-app-launch.css",
   "/resources/css/ccg-global.css",
   "/resources/css/ccg-nav.css",
-  "/resources/css/ccg-nav-core.css",
   "/resources/css/ccg-nav-fit.css",
   "/resources/css/ccg-responsive-safety.css",
   "/resources/css/ccg-responsive-page-polish.css",
