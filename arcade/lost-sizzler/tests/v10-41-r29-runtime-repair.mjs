@@ -71,10 +71,11 @@ assert.match(css,/grid-template-rows:minmax\(0,1fr\)!important/,"active gameplay
 assert.match(css,/game-message-rail\{[\s\S]*display:contents!important/,"notification rail must not reserve or release canvas height");
 assert.match(css,/#pickup-toast\{[\s\S]*position:absolute!important/,"gameplay toasts must overlay without resizing the playfield");
 
-for(const id of ["LS-0825-23","LS-0825-24","LS-0825-25","LS-0825-26","LS-0825-27","LS-0825-28","LS-0825-29","LS-0825-30","LS-0825-31","LS-0825-32","LS-0825-33"]){
+for(const id of ["LS-0825-23","LS-0825-24","LS-0825-25","LS-0825-26","LS-0825-27","LS-0825-28","LS-0825-29","LS-0825-30","LS-0825-31","LS-0825-32","LS-0825-33","LS-0826-01","LS-0826-02","LS-0826-03","LS-0826-04","LS-0826-05","LS-0826-06"]){
   assert.match(buglog,new RegExp(id),`r29 developer bug tracker must contain ${id}`)
 }
+assert.match(buglog,/LATEST UPDATE · 26 AUG 2026/,"r29 bug tracker must identify the latest Spy architecture pass date");
 assert.match(buglog,/build 2026\.08\.25\.29/,"r29 bug tracker must identify the r29 build");
 assert.match(buglog,/20260825r29/,"r29 bug tracker must identify the r29 cache generation");
 
-console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, Spy, audio, combat, dungeon structure, keyboard UX, pickup and release regression checks passed.");
+console.log("Lost Sizzler V10.41 r29 runtime, flicker, Horde, isolated Spy, audio, combat, dungeon structure, keyboard UX, pickup and release regression checks passed.");
