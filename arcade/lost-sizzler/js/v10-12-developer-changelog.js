@@ -15,7 +15,7 @@
         ["LS-0825-04","FIXED","Spy Vs Spy movement recovery","Spy rounds repair stale hit-stun and blocked spawn state, with a final walkability-checked movement fallback so an agent cannot be left rotating in place."],
         ["LS-0825-05","FIXED","Tutorial action ownership","Movement, sword and dash training now count real completed actions without wrapper chains double-counting or later enhancement modules stealing tutorial progress ownership."],
         ["LS-0825-06","CHANGED","Wandering merchant encounter","The wandering merchant is protected until genuinely seen, is brought to a safe visible position when needed, remains available for ninety seconds of usable encounter time, warns before leaving and never disappears during an open purchase."],
-        ["LS-0825-07","CHANGED","r21 cache-safe delivery","Build 2026.08.25.21 uses cache generation 20260825r21 across canonical runtime assets so browsers do not combine older r20 files with the stability release."],
+        ["LS-0825-07","CHANGED","r22 final cache-safe delivery","Build 2026.08.25.22 uses cache generation 20260825r22 across canonical runtime assets. The generation was advanced after a real stale-cache reproduction so browsers cannot reuse earlier r21 game files after the final stability fixes."],
         ["LS-0825-08","FIXED","Current browser regression coverage","Historical Chromium tests now use the canonical arcade path, matching Playwright Chromium and non-blocking held-fire sampling so release failures describe the game rather than stale test infrastructure."]
       ]
     },
