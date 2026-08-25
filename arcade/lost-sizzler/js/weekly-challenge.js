@@ -105,7 +105,7 @@ window.CCGWeeklyChallenge=(()=>{
     }
     actions?.classList.toggle("hidden",Boolean(state.signedIn));
     if(list){
-      list.innerHTML=(state.leaderboard||[]).slice(0,10).map((r,i)=>
+      list.innerHTML=(state.leaderboard||[]).slice(0,5).map((r,i)=>
         `<li><b>${i+1}. ${safe(r.player_name||"Player")}</b><span>${Number(r.score||0).toLocaleString()} · F${r.deepest_floor||1}</span></li>`
       ).join("")||"<li><span>No completed attempts yet this week — no winner will be declared.</span></li>";
     }
@@ -133,7 +133,7 @@ window.CCGWeeklyChallenge=(()=>{
     if(!state.signedIn){cacheGhost(null);return null;}
     try{
       const data=await invoke({action:"ghost"});
-      cacheGhost(data.ghost||null);
+      cacheGhost(data.ghost||data.ghostReplay||null);
       return state.ghost;
     }catch(error){
       console.warn("[CCG weekly] ghost replay unavailable",error);
@@ -142,11 +142,18 @@ window.CCGWeeklyChallenge=(()=>{
     }
   }
 
+  function acceptGhostFromResponse(data){
+    if(!data||!Object.prototype.hasOwnProperty.call(data,"ghostReplay"))return false;
+    cacheGhost(data.ghostReplay||null);
+    return true;
+  }
+
   async function refresh(){
     try{
       const data=await invoke({action:"status"});
       state={...state,...data,ready:true};
-      if(state.signedIn)await refreshGhost();else cacheGhost(null);
+      if(!state.signedIn)cacheGhost(null);
+      else if(!acceptGhostFromResponse(data))await refreshGhost();
       render();
       return state;
     }catch(error){
@@ -161,7 +168,7 @@ window.CCGWeeklyChallenge=(()=>{
     if(!state.ready||!state.signedIn||state.locked)throw new Error(state.locked?"This week's attempt has already been used":"Sign in before starting the Weekly Dungeon");
     const data=await invoke({action:"start"});
     state={...state,...data,ready:true,signedIn:true,locked:true,attempt:data.attempt};
-    await refreshGhost();
+    if(!acceptGhostFromResponse(data))await refreshGhost();
     render();
     return data;
   }
@@ -171,7 +178,11 @@ window.CCGWeeklyChallenge=(()=>{
   async function submitPending(pending=readPending()){
     if(!pending?.attemptId||!pending?.result)return null;
     const data=await invoke({action:"finish",attemptId:pending.attemptId,result:pending.result});
-    savePending(null);state={...state,...data,locked:true,attempt:state.attempt?{...state.attempt,status:"finished"}:state.attempt};render();return data;
+    savePending(null);
+    state={...state,...data,locked:true,attempt:state.attempt?{...state.attempt,status:"finished"}:state.attempt};
+    acceptGhostFromResponse(data);
+    render();
+    return data;
   }
 
   async function finish(result){

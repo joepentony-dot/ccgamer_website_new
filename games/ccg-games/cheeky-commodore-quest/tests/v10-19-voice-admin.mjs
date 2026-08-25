@@ -5,7 +5,7 @@ import {fileURLToPath} from "node:url";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const gameDir=path.resolve(here,"..");
-const repoDir=path.resolve(gameDir,"../../../../");
+const repoDir=path.resolve(gameDir,"../../../");
 const readGame=name=>fs.readFileSync(path.join(gameDir,name),"utf8");
 const readRepo=name=>fs.readFileSync(path.join(repoDir,name),"utf8");
 

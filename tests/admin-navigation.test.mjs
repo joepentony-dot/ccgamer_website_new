@@ -9,18 +9,26 @@ const help = fs.readFileSync('admin/help.html', 'utf8');
 const legacyLanding = fs.readFileSync('admin/admin.html', 'utf8');
 const css = fs.readFileSync('resources/css/ccg-admin.css', 'utf8');
 
-test('shared admin navigation makes Content Publisher primary', () => {
-  assert.match(nav, /href="\/admin\/content-publisher\.html"[^>]*>Content Publisher</);
-  assert.match(nav, /omega-admin-links__group--primary/);
-  assert.match(nav, /omega-admin-links__group--tools/);
-  assert.match(nav, /href="\/admin\/analytics-growth\.html"[^>]*>Analytics &amp; Growth</);
-  assert.match(nav, /href="\/admin\/seo-opportunity-centre\.html"[^>]*>SEO Opportunity Centre</);
-  assert.match(nav, />Legacy Game Builder</);
+test('shared admin navigation keeps Content Publisher prominent and groups all tools by purpose', () => {
+  assert.match(nav, /href:\s*"\/admin\/content-publisher\.html"[\s\S]*label:\s*"Content Publisher"/);
+  assert.match(nav, /adminGroup\("Core",\s*"core"/);
+  assert.match(nav, /adminGroup\("Members",\s*"members"/);
+  assert.match(nav, /adminGroup\("Lost Sizzler",\s*"lost-sizzler"/);
+  assert.match(nav, /adminGroup\("Site & Growth",\s*"site-growth"/);
+  assert.match(nav, /adminGroup\("Maintenance",\s*"maintenance"/);
+  assert.match(nav, /href:\s*"\/admin\/arcade-assets\.html"[\s\S]*label:\s*"Arcade Asset Manager"/);
+  assert.match(nav, /href:\s*"\/admin\/lost-sizzler-voices\.html"[\s\S]*label:\s*"Voice Overrides"/);
+  assert.match(nav, /href:\s*"\/admin\/lost-sizzler-feedback\.html"[\s\S]*label:\s*"Bug Reports"/);
+  assert.match(nav, /href:\s*"\/admin\/lost-sizzler-ratings\.html"[\s\S]*label:\s*"Game Ratings"/);
+  assert.match(nav, /href:\s*"\/admin\/analytics-growth\.html"[\s\S]*label:\s*"Analytics &amp; Growth"/);
+  assert.match(nav, /href:\s*"\/admin\/seo-opportunity-centre\.html"[\s\S]*label:\s*"SEO Opportunity Centre"/);
+  assert.match(nav, /label:\s*"Legacy Game Builder"/);
   assert.doesNotMatch(nav, /games-json-editor\.html/);
   assert.doesNotMatch(nav, /Game Builder Wizard \(Primary\)/);
 });
 
-test('shared admin navigation provides a non-logout exit to the public site', () => {
+test('shared admin navigation provides separate non-logout exit and logout controls', () => {
+  assert.match(nav, /omega-admin-links__session-actions/);
   assert.match(nav, /href="\/home\.html"[^>]*data-nav="exit"[^>]*>Exit Admin<\/a>/);
   assert.match(nav, /omega-admin-links__exit/);
   assert.match(nav, /data-admin-logout>Logout<\/button>/);
@@ -56,8 +64,11 @@ test('old admin.html landing no longer exposes the outdated editor', () => {
   assert.doesNotMatch(legacyLanding, /games\.json/);
 });
 
-test('admin navigation styling visually separates diagnostic tools', () => {
-  assert.match(css, /\.omega-admin-links__group--tools/);
-  assert.match(css, /\.omega-admin-links__label/);
-  assert.match(css, /\.omega-admin-links__logout/);
+test('admin navigation styling separates tool groups and remains responsive', () => {
+  assert.match(css, /\.omega-admin-links__group-grid/);
+  assert.match(css, /grid-template-columns:\s*repeat\(5,/);
+  assert.match(css, /\.omega-admin-links__group-card/);
+  assert.match(css, /data-admin-group="lost-sizzler"/);
+  assert.match(css, /\.omega-admin-links__session-actions/);
+  assert.match(css, /@media \(max-width: 620px\)/);
 });

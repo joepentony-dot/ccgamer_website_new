@@ -35,11 +35,52 @@ function bindLogout(shell) {
   });
 }
 
+function adminGroup(label, key, links) {
+  const renderedLinks = links.map((link) => (
+    `<a href="${link.href}" data-nav="${link.nav}">${link.label}</a>`
+  )).join("");
+
+  return `
+    <section class="omega-admin-links__group-card" data-admin-group="${key}" aria-label="${escapeHtml(label)}">
+      <span class="omega-admin-links__label">${escapeHtml(label)}</span>
+      <div class="omega-admin-links__group-items">${renderedLinks}</div>
+    </section>
+  `;
+}
+
 export async function initAdminNav({ pageLabel = "Dashboard", active = "dashboard" } = {}) {
   const host = document.querySelector("[data-admin-shell]") || document.body;
 
   const shell = document.createElement("div");
   shell.className = "omega-admin-shell";
+
+  const groups = [
+    adminGroup("Core", "core", [
+      { href: "/admin/dashboard.html", nav: "dashboard", label: "Dashboard" },
+      { href: "/admin/content-publisher.html", nav: "publisher", label: "Content Publisher" },
+      { href: "/admin/announce.html", nav: "announce", label: "Announcements" },
+    ]),
+    adminGroup("Members", "members", [
+      { href: "/admin/members.html", nav: "members", label: "Members" },
+      { href: "/admin/member-submissions.html", nav: "submissions", label: "Member Submissions" },
+    ]),
+    adminGroup("Lost Sizzler", "lost-sizzler", [
+      { href: "/admin/arcade-assets.html", nav: "arcade", label: "Arcade Asset Manager" },
+      { href: "/admin/lost-sizzler-voices.html", nav: "voices", label: "Voice Overrides" },
+      { href: "/admin/lost-sizzler-feedback.html", nav: "feedback", label: "Bug Reports" },
+      { href: "/admin/lost-sizzler-ratings.html", nav: "ratings", label: "Game Ratings" },
+    ]),
+    adminGroup("Site & Growth", "site-growth", [
+      { href: "/admin/analytics-growth.html", nav: "analytics", label: "Analytics &amp; Growth" },
+      { href: "/admin/seo-opportunity-centre.html", nav: "seo", label: "SEO Opportunity Centre" },
+      { href: "/admin/member-hub-health.html", nav: "health", label: "Member Hub Health" },
+      { href: "/admin/archive-quality.html", nav: "quality", label: "Archive Quality" },
+    ]),
+    adminGroup("Maintenance", "maintenance", [
+      { href: "/admin/games-editor.html", nav: "editor", label: "Legacy Game Builder" },
+      { href: "/admin/help.html", nav: "help", label: "Help &amp; Workflow" },
+    ]),
+  ].join("");
 
   shell.innerHTML = `
     <div class="omega-admin-bar">
@@ -49,30 +90,14 @@ export async function initAdminNav({ pageLabel = "Dashboard", active = "dashboar
       </div>
 
       <nav class="omega-admin-links" aria-label="CCG admin navigation">
-        <div class="omega-admin-links__group omega-admin-links__group--primary" aria-label="Main admin tools">
-          <a href="/admin/dashboard.html" data-nav="dashboard">Dashboard</a>
-          <a href="/admin/content-publisher.html" data-nav="publisher">Content Publisher</a>
-          <a href="/admin/announce.html" data-nav="announce">Announcements</a>
-          <a href="/admin/members.html" data-nav="members">Members</a>
-          <a href="/admin/member-submissions.html" data-nav="submissions">Member Submissions</a>
+        <div class="omega-admin-links__group-grid" aria-label="Admin tool groups">
+          ${groups}
         </div>
 
-        <div class="omega-admin-links__group omega-admin-links__group--tools" aria-label="Admin tools and diagnostics">
-          <span class="omega-admin-links__label">Tools</span>
-          <a href="/admin/arcade-assets.html" data-nav="arcade">Arcade Asset Manager</a>
-          <a href="/admin/lost-sizzler-voices.html" data-nav="voices">Voice Overrides</a>
-          <a href="/admin/lost-sizzler-feedback.html" data-nav="feedback">Bug Reports</a>
-          <a href="/admin/lost-sizzler-ratings.html" data-nav="ratings">Game Ratings</a>
-          <a href="/admin/analytics-growth.html" data-nav="analytics">Analytics &amp; Growth</a>
-          <a href="/admin/seo-opportunity-centre.html" data-nav="seo">SEO Opportunity Centre</a>
-          <a href="/admin/member-hub-health.html" data-nav="health">Member Hub Health</a>
-          <a href="/admin/archive-quality.html" data-nav="quality">Archive Quality</a>
-          <a href="/admin/games-editor.html" data-nav="editor">Legacy Game Builder</a>
-          <a href="/admin/help.html" data-nav="help">Help &amp; Workflow</a>
+        <div class="omega-admin-links__session-actions" aria-label="Admin session actions">
+          <a href="/home.html" class="ccg-btn ccg-btn--ghost omega-admin-links__exit" data-nav="exit" title="Return to the public website without signing out">Exit Admin</a>
+          <button type="button" class="ccg-btn ccg-btn--ghost omega-admin-links__logout" data-nav="logout" data-admin-logout>Logout</button>
         </div>
-
-        <a href="/home.html" class="ccg-btn ccg-btn--ghost omega-admin-links__exit" data-nav="exit" title="Return to the public website without signing out">Exit Admin</a>
-        <button type="button" class="ccg-btn ccg-btn--ghost omega-admin-links__logout" data-nav="logout" data-admin-logout>Logout</button>
       </nav>
 
       <div class="omega-admin-session" data-admin-session>Session: checking…</div>

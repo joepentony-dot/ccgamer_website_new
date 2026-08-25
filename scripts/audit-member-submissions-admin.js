@@ -86,8 +86,8 @@ if (controller.includes(".from('member_submissions')") || controller.includes('.
 });
 
 requireAll(navigation, "Admin navigation", [
-  '/admin/member-submissions.html',
-  'data-nav="submissions"',
+  '{ href: "/admin/member-submissions.html", nav: "submissions", label: "Member Submissions" }',
+  'data-nav="${link.nav}"',
   'Member Submissions'
 ]);
 
