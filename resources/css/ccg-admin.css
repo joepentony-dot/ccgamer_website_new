@@ -19,7 +19,7 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 }
 
 .omega-admin-shell {
-  width: min(1400px, 95vw);
+  width: min(1640px, 97vw);
   margin: 1rem auto 0;
   position: relative;
   z-index: 3;
@@ -27,20 +27,21 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 
 .omega-admin-bar {
   display: grid;
-  grid-template-columns: 1fr minmax(0, 2fr) 1fr;
-  align-items: center;
+  grid-template-columns: minmax(180px, 0.72fr) minmax(0, 3fr) minmax(210px, 0.85fr);
+  align-items: start;
   gap: 1rem;
   border: 1px solid var(--omega-admin-border);
   border-radius: 14px;
   background: var(--omega-admin-bg);
   color: var(--omega-admin-text);
-  padding: 0.9rem 1rem;
+  padding: 1rem;
   backdrop-filter: blur(8px);
 }
 
 .omega-admin-brand,
 .omega-admin-session {
   font-size: 0.92rem;
+  padding-top: 0.35rem;
 }
 
 .omega-admin-brand strong {
@@ -50,11 +51,41 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 
 .omega-admin-links {
   display: grid;
-  gap: 0.55rem;
-  justify-items: center;
+  gap: 0.7rem;
   min-width: 0;
 }
 
+.omega-admin-links__group-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.55rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+.omega-admin-links__group-card {
+  min-width: 0;
+  border: 1px solid rgba(98, 217, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(8, 20, 38, 0.72);
+  padding: 0.55rem;
+}
+
+.omega-admin-links__group-card[data-admin-group="lost-sizzler"] {
+  border-color: rgba(98, 217, 255, 0.38);
+  background: rgba(11, 31, 49, 0.82);
+}
+
+.omega-admin-links__group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+/* Compatibility for older admin pages that may still render the previous
+   generic group classes while their cached module is being replaced. */
 .omega-admin-links__group {
   display: flex;
   flex-wrap: wrap;
@@ -68,11 +99,14 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
 }
 
 .omega-admin-links__label {
-  color: var(--omega-admin-muted);
-  font-size: 0.68rem;
+  display: block;
+  color: var(--omega-admin-accent);
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  line-height: 1.2;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+  margin: 0 0 0.45rem;
 }
 
 .omega-admin-links a {
@@ -80,15 +114,15 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
   border: 1px solid var(--omega-admin-border);
   border-radius: 999px;
   text-decoration: none;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 0.36rem 0.64rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
 }
 
-.omega-admin-links__group--tools a {
+.omega-admin-links__group-card a {
   color: var(--omega-admin-muted);
-  border-color: rgba(98, 217, 255, 0.26);
-  padding: 0.3rem 0.62rem;
-  font-size: 0.76rem;
+  border-color: rgba(98, 217, 255, 0.25);
+  background: rgba(4, 11, 23, 0.34);
 }
 
 .omega-admin-links a.is-active {
@@ -103,15 +137,32 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
   color: var(--omega-admin-text);
 }
 
+.omega-admin-links__session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.55rem;
+  padding-top: 0.05rem;
+  border-top: 1px solid rgba(98, 217, 255, 0.14);
+  padding-top: 0.65rem;
+}
+
+.omega-admin-links__exit,
 .omega-admin-links__logout {
-  margin-top: 0.05rem;
-  padding: 0.3rem 0.7rem;
+  min-height: 36px;
+}
+
+.omega-admin-links__logout {
+  margin-top: 0;
+  padding: 0.36rem 0.7rem;
   font-size: 0.76rem;
 }
 
 .omega-admin-session {
   text-align: right;
   color: var(--omega-admin-muted);
+  overflow-wrap: anywhere;
 }
 
 .omega-admin-session button {
@@ -164,19 +215,43 @@ html:not([data-ccg-master-data-gate="granted"]) body.ccg-admin > .editor-modal {
   text-transform: uppercase;
 }
 
+@media (max-width: 1320px) {
+  .omega-admin-links__group-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 980px) {
   .omega-admin-bar {
     grid-template-columns: 1fr;
   }
 
+  .omega-admin-links__group-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .omega-admin-links,
   .omega-admin-links__group {
-    justify-items: start;
+    justify-items: stretch;
+    justify-content: flex-start;
+  }
+
+  .omega-admin-links__session-actions {
     justify-content: flex-start;
   }
 
   .omega-admin-session {
     text-align: left;
+  }
+}
+
+@media (max-width: 620px) {
+  .omega-admin-links__group-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .omega-admin-links__group-card {
+    padding: 0.65rem;
   }
 }
 
