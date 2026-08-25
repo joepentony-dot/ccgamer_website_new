@@ -11,6 +11,7 @@ const index=read("index.html");
 const version=JSON.parse(read("version.json"));
 const checker=read("js/version-check.js");
 const late=read("js/v10-41-lake-item-safety.js");
+const network=read("js/network.js");
 
 assert.equal(version.build,"2026.08.25.21","stability release must publish build 2026.08.25.21");
 assert.equal(version.cacheToken,"20260825r21","stability release must publish cache generation r21");
@@ -20,5 +21,7 @@ assert.doesNotMatch(index,/20260825r20|2026\.08\.25\.20/,"canonical HTML must co
 assert.match(checker,/const RELEASE_CACHE=String\(document\.querySelector\('meta\[name="ccg-lost-sizzler-cache"\]'\)/,"deferred release modules must derive the current cache generation from page metadata");
 assert.doesNotMatch(checker,/script\.src="js\/v10-(?:36|37|38|39|40|41)-[^"?]+\.js\?v=20260824[a-z]"/,"deferred V10.36–V10.41 loaders must not retain dated cache URLs");
 assert.match(late,/script\.src=`\$\{path\}\?v=\$\{encodeURIComponent\(releaseRev\)\}`/,"late stability modules must share the published release token");
+assert.doesNotMatch(network,/v10-41-live-join-presence\.js\?v=20260825a/,"network core must not retain the dated live-join cache URL");
+assert.match(network,/v10-41-live-join-presence\.js\?v=\$\{encodeURIComponent\(releaseRev\)\}/,"network live-join loader must inherit r21 from page metadata");
 
 console.log("Lost Sizzler V10.41 r21 release-delivery contract passed.");
