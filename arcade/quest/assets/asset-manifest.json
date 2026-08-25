@@ -1,28 +1,28 @@
 {
   "project": "Cheeky's Commodore Quest",
-  "overhaul": "Quest 2.0",
+  "overhaul": "Quest 2.0 balanced pass",
   "branch": "codex/commodore-quest-overhaul",
   "policy": {
     "mainBranchSafety": "Do not alter the current working Quest on main while the overhaul is in progress.",
     "productionRule": "Only runtime-ready artwork belongs in assets/production.",
     "sourceRule": "Component art, construction pieces and working references belong in assets/source.",
     "archiveRule": "Recovered, duplicate and superseded artwork belongs in assets/archive.",
-    "replacementRule": "New sprite artwork must use explicit per-state anchors, display boxes and collision boxes rather than one fixed rectangle for every animation."
+    "replacementRule": "Sprite artwork must preserve Cheeky's established character while using explicit per-state anchors, display boxes and collision boxes rather than one fixed rectangle for every animation."
   },
-  "priority": ["player","core-gameplay","stage-identity","enemies-and-hazards","bosses","ui-and-feedback","audio-polish"],
+  "priority": ["player-readability","core-gameplay","stage-identity","pacing","enemies-and-hazards","bosses","ui-and-feedback","audio-polish"],
   "categories": {
     "player": {
-      "status": "replace-first",
+      "status": "restored-raster-runtime",
       "runtime": ["assets/production/player/cheeky-main-sheet.png","assets/production/player/cheeky-fight-sheet.png"],
       "source": ["assets/source/player-parts/cheeky-mascot.png","assets/source/player-parts/cheeky-head.png","assets/source/player-parts/cheeky-body.png","assets/source/player-parts/cheeky-arm.png","assets/source/player-parts/cheeky-leg.png"],
-      "notes": ["Quest 2.0 requires a visibly deep crouch.","Normal and fighting modes require distinct crouch states.","Per-state draw and hitbox metadata is mandatory."]
+      "notes": ["The temporary Quest 2.0 SVG character direction was rejected after playtesting as too generic.","The established raster Cheeky sheets are active again.","Crouch remains state-specific but is now a natural moderate reduction rather than an exaggerated deep squat.","Per-state draw and hitbox metadata remains mandatory."]
     },
     "bosses": {"status":"review-and-redesign","runtimeFolder":"assets/production/bosses/"},
-    "enemies": {"status":"expand-by-stage","runtimeFolder":"assets/production/enemies/"},
+    "enemies": {"status":"expand-by-stage-with-density-limits","runtimeFolder":"assets/production/enemies/"},
     "fighter": {"status":"review","runtimeFolder":"assets/production/fighter/","archive":["assets/archive/superseded/fighter/tiertex-kick-copy.png"]},
-    "hazards": {"status":"expand-by-stage","runtimeFolder":"assets/production/hazards/"},
-    "collectibles": {"status":"keep-for-now","runtimeFolder":"assets/production/collectibles/"},
-    "powers": {"status":"keep-for-now","runtimeFolder":"assets/production/powers/"},
+    "hazards": {"status":"stage-specific-with-density-limits","runtimeFolder":"assets/production/hazards/"},
+    "collectibles": {"status":"keep-and-reachability-test","runtimeFolder":"assets/production/collectibles/"},
+    "powers": {"status":"keep-and-reachability-test","runtimeFolder":"assets/production/powers/"},
     "invaders": {"status":"keep-then-polish","runtimeFolder":"assets/production/invaders/"},
     "backgrounds": {"status":"preserve-and-layer","runtimeFolder":"assets/backgrounds/"},
     "recoveredManifest": {"status":"archived-reference","path":"assets/archive/recovered/recovered-assets-manifest.json"}

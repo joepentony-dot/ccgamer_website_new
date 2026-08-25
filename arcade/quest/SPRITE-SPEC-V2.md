@@ -1,15 +1,21 @@
-# Cheeky Sprite Specification — Quest 2.0
+# Cheeky Sprite Specification — Quest 2.0 Balanced Pass
 
 ## Goals
-The player must read immediately at game speed: stand, run, jump, land, deep crouch, fire, take damage and celebrate must all have unmistakable silhouettes. The old shallow duck is retired.
+The player must remain recognisably Cheeky at game speed. Stand, run, jump, land, crouch, fire, take damage and celebrate need distinct silhouettes, but animation should not replace character with generic vector artwork.
+
+## Active art direction
+- Restore the existing raster Cheeky sprite sheets as the active gameplay artwork.
+- Retain the Quest 2.0 state-based anchor and collision runtime.
+- The temporary Quest 2.0 SVG sheets are no longer the preferred active art direction.
+- Future replacement artwork must preserve the character and personality of the established Cheeky design rather than simplifying him into a generic mascot.
 
 ## Main sheet contract
 - Logical cell: 256×320.
 - Grid: 4×4.
 - Frames: 16.
-- Ground anchor: the visual feet remain locked to the player ground point unless a state's metadata supplies an offset.
-- Runtime display: state-specific, never one fixed box for every pose.
-- Collision: state-specific, independent of transparent frame padding.
+- Ground anchor: visual feet remain locked to the player ground point unless a state explicitly requires otherwise.
+- Runtime display: state-specific rather than one fixed box for every pose.
+- Collision: state-specific and independent of transparent frame padding.
 
 ### Main frames
 0 idle A
@@ -23,41 +29,35 @@ The player must read immediately at game speed: stand, run, jump, land, deep cro
 8 jump apex
 9 fall
 10 landing compression
-11 deep crouch
+11 crouch
 12 standing fire
 13 crouch fire
 14 hit
 15 victory
 
 ## Crouch requirement
-The crouch must reduce the active body collision height to roughly half the standing height. The head and shoulders must sit visibly below high hazards. The pose should look like a deliberate squat with bent knees and lowered torso, not a standing pose with slightly bent legs.
+The crouch must be unmistakable without looking compressed or anatomically odd. It should read as Cheeky lowering his body and bending his knees, not as the entire sprite being crushed toward the floor.
 
 - Standing gameplay body: about 52×107 inside the 78×132 logical player body.
-- Deep crouch body: about 64×62.
-- Crouch display height: approximately 126–128 px versus ~198 px standing.
-- Feet remain planted at the same ground anchor.
-- Crouch fire uses a low muzzle position and may widen the visual frame without increasing the collision height.
+- Crouch gameplay body: about 60×90.
+- Crouch display height: approximately 166–168 px versus ~198 px standing.
+- Feet stay on the normal ground anchor.
+- Crouch fire keeps a low muzzle position without forcing an exaggerated squat.
 
 ## Movement feel
-- Idle: subtle breathing/weight shift only.
-- Run: four distinct phases with readable foot separation and upper-body lean.
-- Jump: takeoff compression, rise stretch, compact apex, controlled fall.
-- Land: visible one-beat compression before returning to locomotion.
+- Idle: subtle weight shift only.
+- Run: readable stride with the established Cheeky silhouette retained.
+- Jump: enough height to reach every collectible lane without becoming floaty.
+- Land: brief compression before normal movement resumes.
 - Hit: recoil away from damage source.
-- Victory: upright, confident silhouette and raised arm/joystick pose.
+- Victory: recognisable Cheeky character pose rather than generic hero posing.
 
 ## Fighting sheet
 - Logical cell: 248×316.
-- Fighting mode needs true idle, walk, jump, guard, deep crouch, punch, kick, hit and victory states.
-- Duck input must resolve to `duck`, never substitute the guard pose.
-- Crouch collision should be approximately 116×140 around the grounded centre point; standing collision remains near 90×250.
-
-## Art direction
-- Keep Cheeky recognisable and consistent across all frames.
-- Strong readable silhouette at 1600×900 gameplay scale.
-- Avoid tiny limb details that disappear during motion.
-- Use a coherent C64/Amiga-inspired palette with modern high-definition edges rather than literal low-resolution blockiness.
-- No baked shadows extending far outside the body; shadows belong to the runtime so collision and grounding remain predictable.
+- Use the established raster fighting sheet.
+- Idle, walk, jump, guard, crouch, punch, kick, hit and victory continue to use state-specific collision profiles.
+- The crouch is lower than guard but is not a half-height squat.
+- Crouch collision target is roughly 100×170 around the grounded centre point; standing collision remains near 90×250.
 
 ## Runtime metadata
 Each animation state may define:
@@ -69,4 +69,4 @@ Each animation state may define:
 - optional `muzzle`
 - optional `cameraKick`
 
-The runtime must expose a state-profile lookup so rendering and collision derive from the same named state.
+Rendering and collision must derive from the same named state so future sprite upgrades can change the artwork without reintroducing hard-coded crouch geometry.
