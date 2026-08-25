@@ -20,10 +20,12 @@ assert.match(play,/host\.v131FurnitureEnemyReleased/,"a floor must cap furniture
 assert.match(play,/bounty\.target\+\+/,"a released enemy must be added to a sub-50 all-enemies bounty");
 assert.match(systems,/BUDGET_BIN:\["bin","barrel"/,"barrels must be part of generated furniture");
 assert.match(render,/d\.type==="barrel"/,"barrels must have dedicated rendering");
+
 assert.match(play,/const meleeOnly=!\(p\.firearmUnlocked&&p\.weapon&&Number\(p\.mana\|\|0\)>0\)/,"collision must identify sword-only combat");
 assert.match(play,/if\(meleeOnly\)[\s\S]*?p\.x=fromX;p\.y=fromY[\s\S]*?return;/,"sword users must stay adjacent without contact damage or extra knockback");
 assert.match(play,/CCGLostSizzlerOnboardingV120\?\.state\?\.active\)\{resetCamp\(p,true\);return\}/,"anti-idle explosions must be disabled during tutorial mode");
 assert.match(audio,/function stopAll\(\)/,"tutorial exit must be able to stop all music and effects");
+
 assert.match(migration,/unique \(week_start, user_id\)/,"the database must enforce one weekly attempt per account");
 assert.match(edge,/service\.auth\.getUser\(auth\)/,"the edge function must verify the caller before starting or finishing an attempt");
 assert.match(edge,/if\(!user\)return json\(req,\{ok:false,error:"Sign in with a registered CCG website account first"\}/,"unsigned weekly attempts must be rejected server-side");
@@ -34,6 +36,7 @@ assert.match(edge,/Finished score is awaiting leaderboard repair/,"a finished at
 assert.match(edge,/if\(leaderboardError\)return json/,"leaderboard write failures must not be reported as successful submissions");
 assert.match(core,/function submitWeeklyResultOnce\(\)/,"all weekly result exits must share one submission guard");
 assert.match(main,/if\(run\?\.daily\)await submitWeeklyResultOnce\(\)/,"quitting a weekly run must submit its current final score before clearing the run");
+
 assert.match(supabaseClient,/@supabase\/supabase-js@2\.95\.0/,"the shared browser client must pin the verified Supabase SDK version");
 assert.match(index,/ccg-supabase-client\.js\?v=20260825r27/,"the multiplayer client must ship with the current r27 release cache token");
 assert.match(network,/private:false/,"internet rooms must explicitly use public browser-accessible Realtime channels");
