@@ -8,10 +8,12 @@ const root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
 
 const hotfix=read("js/v10-41-browser-stability-gameplay-hotfix.js");
+const tutorialFinal=read("js/v10-41-tutorial-action-finalizer.js");
 const lake=read("js/v10-41-lake-item-safety.js");
 const render=read("js/game-render.js");
 
 assert.match(lake,/v10-41-browser-stability-gameplay-hotfix\.js\?v=20260825f/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix");
+assert.match(lake,/v10-41-tutorial-action-finalizer\.js\?v=20260825f/,"the late V10.41 runtime chain must load final tutorial action ownership");
 
 assert.match(render,/function loop\(t\)\{const dt=Math\.min\(45,t-last\|\|16\);last=t;.*update\(dt\);render\(\);requestAnimationFrame\(loop\)\}/s,"the inherited frame loop remains the unguarded baseline that the hotfix must contain");
 assert.match(hotfix,/function loopV141CrashContained\(timestamp\)/,"the hotfix must replace the frame callback with a crash-contained loop");
@@ -35,4 +37,8 @@ assert.match(hotfix,/window\.CCGWorld\.walkable\(world\.map,nx,ny,host\)/,"the S
 assert.match(hotfix,/repairSpySpawn\(\)/,"Spy rounds must repair an accidentally trapped spawn");
 assert.match(hotfix,/player\.hitStunMs=0/,"Spy spawn repair must clear stale inherited hit-stun that can leave a player rotating without moving");
 
-console.log("Lost Sizzler V10.41 browser crash containment, pause recovery, compact Horde arena and Spy movement hotfix checks passed.");
+assert.match(tutorialFinal,/afterSwing>beforeSwing/,"tutorial sword progress must be tied to a new completed melee swing timestamp");
+assert.match(tutorialFinal,/const expected=completed\?Math\.min\(3,beforeCount\+1\):beforeCount/,"one real sword swing may advance tutorial progress by at most one");
+assert.match(tutorialFinal,/if\(expected<3&&ts\.autoAdvanceTimer\)\{clearTimeout\(ts\.autoAdvanceTimer\);ts\.autoAdvanceTimer=0\}/,"an accidental duplicate count must not leave a premature tutorial auto-advance armed");
+
+console.log("Lost Sizzler V10.41 browser crash containment, pause recovery, compact Horde arena, Spy movement and tutorial action finalizer checks passed.");
