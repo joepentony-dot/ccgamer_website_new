@@ -89,7 +89,7 @@ if (/\.from\s*\(/.test(controller)) {
 
 requireAll(navigation, "Admin navigation", [
   '/admin/member-hub-health.html',
-  'data-nav="health"',
+  'nav: "health"',
   'Member Hub Health'
 ]);
 
