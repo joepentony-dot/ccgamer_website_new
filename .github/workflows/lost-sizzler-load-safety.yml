@@ -77,15 +77,34 @@ jobs:
           # so browser failures describe the game rather than protocol skew.
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
 
-          # V10.28 is a historical browser harness whose single release-label
-          # assertion still names V10.35. Normalise only that expected label in
-          # this disposable CI checkout; the live runtime must remain V10.41.
+          # Two historical harness assumptions pre-date the current release.
+          # Normalise them only in this disposable checkout: V10.28's old label,
+          # and V10.6's Realtime mock. The latter used to replace ccgSupabase at
+          # page start with a channel-only object; current startup consumers also
+          # use functions/auth/data APIs, so that incomplete mock could prevent
+          # the enhancement queue reaching V10.6. Keep the factory private until
+          # gameReady, then install it immediately before multiplayer actions.
           python - <<'PY'
           from pathlib import Path
-          path=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
-          source=path.read_text(encoding='utf-8')
+
+          stability=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
+          source=stability.read_text(encoding='utf-8')
           source=source.replace('"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers"','"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers"',1)
-          path.write_text(source,encoding='utf-8')
+          stability.write_text(source,encoding='utf-8')
+
+          legacy=Path('arcade/lost-sizzler/tests/v10-6-browser.mjs')
+          source=legacy.read_text(encoding='utf-8')
+          old='window.ccgSupabase={getClient:async()=>client()};'
+          new='window.__ccgV106TestClientFactory=client;'
+          if old not in source:
+              raise SystemExit('V10.6 browser harness Supabase bootstrap marker not found')
+          source=source.replace(old,new,1)
+          old='await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.locator("#player-name").fill(name);return page}'
+          new='await page.waitForFunction(()=>document.body.dataset.gameReady==="true"&&window.CCGLostSizzlerV106);await page.evaluate(()=>{window.ccgSupabase={getClient:async()=>window.__ccgV106TestClientFactory()}});await page.locator("#player-name").fill(name);return page}'
+          if old not in source:
+              raise SystemExit('V10.6 browser harness makePage marker not found')
+          source=source.replace(old,new,1)
+          legacy.write_text(source,encoding='utf-8')
           PY
 
           for test in \
