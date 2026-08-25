@@ -20,6 +20,7 @@ const legacyPolish=readGame("js/v10-30-polish.js");
 const assetOverrides=readGame("js/asset-overrides.js");
 const cacheGuard=readGame("js/v10-41-cache-guard.js");
 const loadWatchdog=readGame("js/v10-41-load-watchdog.js");
+const startupFreezeGuard=readGame("js/v10-41-startup-freeze-guard.js");
 
 const metaBuild=index.match(/<meta name="ccg-lost-sizzler-build" content="([^"]+)">/)?.[1];
 const metaCache=index.match(/<meta name="ccg-lost-sizzler-cache" content="([^"]+)">/)?.[1];
@@ -27,8 +28,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.19","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r19","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.20","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r20","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -42,12 +43,12 @@ for(const asset of [
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
 }
-assert.ok(index.indexOf("js/v10-41-cache-guard.js?v=20260825r19")<index.indexOf("js/asset-overrides.js?v=20260825r19"),"cache guard must begin before the enhancement queue owner loads");
-assert.ok(index.indexOf("js/v10-41-load-watchdog.js?v=20260825r19")<index.indexOf("js/asset-overrides.js?v=20260825r19"),"load watchdog must start before the enhancement queue");
-assert.ok(index.indexOf("js/game-main.js?v=20260825r19")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r19"),"Gambler/Developer Vault layer must load after the core game globals exist");
-assert.ok(index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r19")<index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r19"),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
-assert.ok(index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r19")<index.indexOf("js/v10-41-developer-asset-catalog.js?v=20260825r19"),"expanded asset catalogue must load after Developer Vault hardening");
-assert.ok(index.indexOf("js/v10-41-landing-notification-polish.js?v=20260825r19")<index.indexOf("js/v10-41-major-notification-hardening.js?v=20260825r19"),"major-alert hardening must load after the visual notification layer it protects");
+assert.ok(index.indexOf("js/v10-41-cache-guard.js?v=20260825r20")<index.indexOf("js/asset-overrides.js?v=20260825r20"),"cache guard must begin before the enhancement queue owner loads");
+assert.ok(index.indexOf("js/v10-41-load-watchdog.js?v=20260825r20")<index.indexOf("js/asset-overrides.js?v=20260825r20"),"load watchdog must start before the enhancement queue");
+assert.ok(index.indexOf("js/game-main.js?v=20260825r20")<index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r20"),"Gambler/Developer Vault layer must load after the core game globals exist");
+assert.ok(index.indexOf("js/v10-41-gambler-devroom.js?v=20260825r20")<index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r20"),"Developer Vault hardening must load after it captures the private Gambler/Developer closure");
+assert.ok(index.indexOf("js/v10-41-developer-vault-hardening.js?v=20260825r20")<index.indexOf("js/v10-41-developer-asset-catalog.js?v=20260825r20"),"expanded asset catalogue must load after Developer Vault hardening");
+assert.ok(index.indexOf("js/v10-41-landing-notification-polish.js?v=20260825r20")<index.indexOf("js/v10-41-major-notification-hardening.js?v=20260825r20"),"major-alert hardening must load after the visual notification layer it protects");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
@@ -80,9 +81,13 @@ assert.match(cacheGuard,/cache\.delete\(request\)/,"startup sanitation must remo
 assert.doesNotMatch(cacheGuard,/localStorage\.clear\(|sessionStorage\.clear\(/,"cache sanitation must never wipe saves/settings by clearing browser storage");
 assert.doesNotMatch(cacheGuard,/caches\.delete\(name\)|caches\.delete\(key\)/,"page-level sanitation must not blindly delete entire site caches");
 assert.match(cacheGuard,/setTimeout\(\(\)=>\{[\s\S]*3500\)/,"cache sanitation must be bounded so it cannot hold the loading screen forever");
+assert.match(cacheGuard,/v10-41-startup-freeze-guard\.js\?v=\$\{CACHE_TOKEN\}/,"startup freeze guard must begin before V10.36 can enter its release-finish critical path");
 assert.match(loadWatchdog,/observer\?\.disconnect/,"loading watchdog must disconnect the loader MutationObserver after startup");
 assert.match(loadWatchdog,/clearInterval\(v136\.loadingTimer\)/,"loading watchdog must stop the loading poll after startup");
 assert.match(loadWatchdog,/delay>1800/,"loading watchdog must record severe main-thread stalls during preparation");
+assert.match(startupFreezeGuard,/source\.__ccgV136Guttered=true/,"r20 must bypass V10.36's synchronous chest-atlas encoding at 92% startup");
+assert.doesNotMatch(startupFreezeGuard,/\.toDataURL\s*\(/,"r20 startup guard must never synchronously convert an atlas to a data URL");
+assert.match(startupFreezeGuard,/assets\.chests=canvas/,"deferred atlas preparation must keep a direct canvas source");
 
 assert.match(landingPolish,/MAIN ADVENTURES/,"landing page must group the primary game choices");
 assert.match(landingPolish,/SPECIAL MODES/,"landing page must visually separate special modes");
@@ -91,14 +96,16 @@ assert.match(landingPolish,/feature-strip>span:nth-child\(1\):before/,"feature c
 assert.match(landingPolish,/horde-leaderboard\.is-empty \.horde-empty\{min-height:58px/,"empty Horde leaderboard must be compressed");
 assert.match(landingPolish,/secondary-menu button/,"utility buttons must have a quieter presentation tier");
 assert.match(landingPolish,/THE LOST SIZZLER — \$\{RELEASE\}/,"runtime branding must correct stale labels to V10.41");
-assert.match(landingPolish,/NEW DUNGEON BOUNTY\|DUNGEON BOUNTY\|BOUNTY START/,"Dungeon Bounty must be classified as the highest visual priority");
+assert.match(landingPolish,/NEW DUNGEON BOUNTY\|DUNGEON BOUNTY\|BOUNTY START/,"Dungeon Bounty must be classified as the highest visual priority outside Horde");
 assert.match(landingPolish,/data-ccg-major-notification/,"major alerts must suppress the ordinary pickup notification layer while active");
 assert.match(landingPolish,/if\(priority>=100\)/,"major events must bypass the routine toast queue immediately");
 assert.match(landingPolish,/if\(state\.majorUntil>now\)/,"routine messages must not overwrite an active major alert");
-assert.match(majorHardening,/eventKey==="bountyStart"/,"the bounty-start voice event itself must force a visual major alert");
-assert.match(majorHardening,/NEW DUNGEON BOUNTY/,"voice-only bounty starts must render the requested top-screen title");
+assert.match(majorHardening,/eventKey==="bountyStart"/,"the bounty-start voice event itself must force a visual major alert in ordinary dungeon mode");
+assert.match(majorHardening,/NEW DUNGEON BOUNTY/,"ordinary dungeon voice-only bounty starts must retain the requested top-screen title");
 assert.match(majorHardening,/setInterval\(ensure,300\)/,"major notification wrappers must be re-asserted after late dynamic enhancement loads");
-assert.match(majorHardening,/BOUNTY COMPLETE/,"bounty completion must also be treated as a major visual event");
+assert.match(majorHardening,/BOUNTY COMPLETE/,"bounty completion must also be treated as a major visual event outside Horde");
+assert.match(majorHardening,/if\(isHorde\(\)\)\{hideExistingDungeonAlert\(\);return false\}/,"Horde must reject Dungeon Bounty major alerts completely");
+assert.match(majorHardening,/DUNGEON BONUS/,"Horde must also reject legacy Dungeon Bonus wording");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
@@ -129,4 +136,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r19 build, cache sanitation and browser-load crash regression checks passed.");
+console.log("Lost Sizzler r20 build, cache sanitation, Horde isolation and startup-freeze regression checks passed.");
