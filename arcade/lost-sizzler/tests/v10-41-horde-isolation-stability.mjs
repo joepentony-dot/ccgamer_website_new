@@ -64,7 +64,7 @@ assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct p
 
 assert.equal(manifest.build,"2026.08.25.23","Horde stability fixes must be published as build .23");
 assert.equal(manifest.cacheToken,"20260825r23","Horde stability fixes must force the r23 cache shell");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.22"/,"HTML build marker must match r23");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.23"/,"HTML build marker must match r23");
 assert.match(index,/ccg-lost-sizzler-cache" content="20260825r23"/,"HTML cache marker must match r23");
 
 console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, startup freeze and no-pause regression checks passed.");
