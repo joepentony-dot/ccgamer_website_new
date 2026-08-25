@@ -40,9 +40,9 @@
     if(!multiplayerActive())return false;
     try{if(typeof mode!=="undefined"&&mode==="paused")mode="playing"}catch(_){}
     try{UI?.pause?.classList?.add("hidden")}catch(_){}
-    // Do not call input.clear() here. forcePlaying runs before/after every
-    // multiplayer update and on the safety timer; clearing input here erases
-    // held WASD/arrow/fire state and breaks authoritative movement/doors.
+    // This guard changes pause state only. It deliberately leaves held
+    // movement and attack state untouched so the normal input owner keeps
+    // authoritative movement, doors and combat responsive between frames.
     return true;
   }
 
