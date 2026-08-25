@@ -17,6 +17,7 @@ const homeCtaCss=readRepo("resources/css/home-lost-sizzler-cta.css");
 const landingPolish=readGame("js/v10-41-landing-notification-polish.js");
 const majorHardening=readGame("js/v10-41-major-notification-hardening.js");
 const r25=readGame("js/v10-41-r25-spy-speed-bounty-hotfix.js");
+const r26=readGame("js/v10-41-r26-spy-enemy-stability.js");
 const legacyPolish=readGame("js/v10-30-polish.js");
 const assetOverrides=readGame("js/asset-overrides.js");
 const cacheGuard=readGame("js/v10-41-cache-guard.js");
@@ -30,8 +31,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.25","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r25","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.26","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r26","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -40,7 +41,8 @@ for(const asset of [
   "js/ai.js","js/systems.js","js/game-core.js","js/game-network.js","js/game-play.js","js/game-render.js","js/game-main.js","js/split-player-hud.js",
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
   "js/v10-41-developer-asset-catalog.js","js/v10-41-horde-leaderboard-polish.js","js/v10-41-split-friendly-fire.js",
-  "js/v10-41-landing-notification-polish.js","js/v10-41-major-notification-hardening.js","js/v10-41-r25-spy-speed-bounty-hotfix.js"
+  "js/v10-41-landing-notification-polish.js","js/v10-41-major-notification-hardening.js","js/v10-41-r25-spy-speed-bounty-hotfix.js",
+  "js/v10-41-r26-spy-enemy-stability.js"
 ]){
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
@@ -55,6 +57,7 @@ assert.ok(index.indexOf(`js/v10-41-gambler-devroom.js?v=${token}`)<index.indexOf
 assert.ok(index.indexOf(`js/v10-41-developer-vault-hardening.js?v=${token}`)<index.indexOf(`js/v10-41-developer-asset-catalog.js?v=${token}`),"expanded asset catalogue must load after Developer Vault hardening");
 assert.ok(index.indexOf(`js/v10-41-landing-notification-polish.js?v=${token}`)<index.indexOf(`js/v10-41-major-notification-hardening.js?v=${token}`),"major-alert hardening must load after the visual notification layer it protects");
 assert.ok(index.indexOf(`js/v10-41-major-notification-hardening.js?v=${token}`)<index.indexOf(`js/v10-41-r25-spy-speed-bounty-hotfix.js?v=${token}`),"r25 Spy speed/bounty hotfix must load after the existing notification/runtime wrappers");
+assert.ok(index.indexOf(`js/v10-41-r25-spy-speed-bounty-hotfix.js?v=${token}`)<index.indexOf(`js/v10-41-r26-spy-enemy-stability.js?v=${token}`),"r26 Spy/enemy stability must load after r25 as the final gameplay hotfix");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
@@ -114,6 +117,8 @@ assert.match(majorHardening,/if\(isHorde\(\)\)\{hideExistingDungeonAlert\(\);ret
 assert.match(majorHardening,/DUNGEON BONUS/,"Horde must also reject legacy Dungeon Bonus wording");
 assert.match(r25,/Object\.assign\(wrapped,current\)/,"r25 final wrappers must preserve ownership markers and avoid reassertion loops");
 assert.match(r25,/specialActive\(\)&&dungeonOnlyText\(title\)/,"r25 must reject stale dungeon-only notifications in special modes");
+assert.match(r26,/SPY_MOVE_CADENCE_MS=220/,"r26 must publish the slower Spy movement governor");
+assert.match(r26,/_ccgHomeRoomId/,"r26 must reconcile Solo enemy home-room ownership after population rehomes");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
@@ -144,4 +149,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r25 build, cache sanitation, Horde isolation, startup-freeze and Spy hotfix regression checks passed.");
+console.log("Lost Sizzler r26 build, cache sanitation, Horde isolation, startup-freeze and Spy/enemy stability regression checks passed.");
