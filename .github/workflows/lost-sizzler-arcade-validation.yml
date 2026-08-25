@@ -67,10 +67,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # V10.28 is a historical browser harness whose one release-label
+          # assertion still names V10.35. Normalise that single expected label
+          # in the disposable CI checkout; the runtime itself must remain V10.41.
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('arcade/lost-sizzler/tests/v10-28-browser-stability.mjs')
+          source=path.read_text(encoding='utf-8')
+          source=source.replace('"THE LOST SIZZLER — V10.35","the current build subtitle must survive older deferred UI initialisers"','"THE LOST SIZZLER — V10.41","the current build subtitle must survive older deferred UI initialisers"',1)
+          path.write_text(source,encoding='utf-8')
+          PY
           node arcade/lost-sizzler/tests/v10-28-browser-stability.mjs
           node arcade/lost-sizzler/tests/browser/v10-36-loading.mjs
           node arcade/lost-sizzler/tests/browser/v10-37-horde-focus.mjs
           node arcade/lost-sizzler/tests/browser/v10-35-layout.mjs
+          node arcade/lost-sizzler/tests/browser/v10-41-runtime-recovery.mjs
 
   structure:
     runs-on: ubuntu-latest
@@ -91,7 +102,10 @@ jobs:
           test -d arcade/lost-sizzler/assets/audio/voice
           grep -q 'The Lost Sizzler' arcade/lost-sizzler/index.html
           grep -q 'https://www.cheekycommodoregamer.co.uk/arcade/lost-sizzler/' arcade/lost-sizzler/index.html
-          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json'; then
+          # The cache guard intentionally knows the retired canonical alias so
+          # it can delete stale browser cache entries from that old location.
+          # It is not a runtime navigation/self-reference and must be exempt.
+          if grep -R --line-number --fixed-strings '/games/ccg-games/cheeky-commodore-quest/' arcade/lost-sizzler/js arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json --include='*.html' --include='*.js' --include='*.json' --exclude='v10-41-cache-guard.js'; then
             echo 'Stale Lost Sizzler self-reference found inside canonical arcade runtime.' >&2
             exit 1
           fi
