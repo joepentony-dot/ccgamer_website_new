@@ -10,10 +10,10 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r26-spy-enemy-stability.js");
 const index=read("index.html");
 
-assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260825r26/,"canonical page must load the r26 stability hotfix with the r26 cache token");
+assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260825r27/,"canonical page must retain the r26 stability hotfix under the current r27 cache shell");
 assert.match(hotfix,/const SPY_MOVE_CADENCE_MS=220;/,"Spy Vs Spy walking must use the slower 220ms tactical cadence");
 assert.match(hotfix,/value\+Math\.max\(0,Number\(dt\)\|\|0\)/,"r26 must arm the older direct fallback beyond the current frame decrement");
-assert.match(hotfix,/enemy\._ccgHomeRoomId=r24Room;enemy\.roomId=r24Room;/,"r24 rehomes must become the authoritative V10.10 home room");
+assert.match(hotfix,/enemy\._ccgHomeRoomId=r24Room;enemy\.roomId=r24Room;/,"r26 must retain compatibility for any stale population-rehome marker already present in runtime state");
 assert.match(hotfix,/jump>ENEMY_VISUAL_SNAP_DISTANCE/,"large enemy relocations must snap render interpolation");
 assert.match(hotfix,/drawPixelEnemySpriteV141R26StableFacing/,"enemy render facing must be stabilised at the final sprite handoff");
 
@@ -71,12 +71,12 @@ r24.normalSoloDungeonMode=()=>true;
 const enemy={id:"E1",alive:true,x:12,y:2,roomId:0,_ccgHomeRoomId:0,_ccgR24LastRoomId:1,aiState:"chase",lastSeen:{x:1,y:1},targetId:"P1",memoryMs:5000,searchMs:500,facing:{x:-1,y:0},moveCooldown:0};
 host.enemies=[enemy];
 visualMap.set("E1",{rx:2,ry:2});
-assert.equal(api.syncEnemyHomeOwnership(),1,"r26 must reconcile a population rehome before the next AI step");
+assert.equal(api.syncEnemyHomeOwnership(),1,"r26 compatibility must reconcile a stale population-rehome marker before the next AI step");
 assert.equal(enemy._ccgHomeRoomId,1);
 assert.equal(enemy.roomId,1);
 assert.equal(enemy.aiState,"idle");
-assert.equal(visualMap.get("E1").rx,12,"rehome must snap stale enemy interpolation X");
-assert.equal(visualMap.get("E1").ry,2,"rehome must snap stale enemy interpolation Y");
+assert.equal(visualMap.get("E1").rx,12,"rehome compatibility must snap stale enemy interpolation X");
+assert.equal(visualMap.get("E1").ry,2,"rehome compatibility must snap stale enemy interpolation Y");
 
 api.stabiliseEnemyVisualState();
 enemy.x=11;enemy.facing={x:0,y:-1};
@@ -90,4 +90,4 @@ api.install();api.install();
 assert.equal(context.update,stableUpdate,"repeated installs must not grow the update wrapper chain");
 assert.equal(context.movePlayer,stableMove,"repeated installs must not grow the move wrapper chain");
 assert.equal(context.drawPixelEnemySprite,stableRender,"repeated installs must not grow the render wrapper chain");
-console.log("Lost Sizzler r26 Spy movement and Solo enemy stability checks passed.");
+console.log("Lost Sizzler r26 Spy movement and Solo enemy stability compatibility checks passed under the r27 cache shell.");

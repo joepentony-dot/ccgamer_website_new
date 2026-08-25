@@ -4,7 +4,7 @@
  * - Spy Vs Spy local movement cannot remain stuck at round start;
  * - ranged enemies receive a reaction beat / occasional hesitation and final 8-way aim;
  * - desktop rating prompt is centred in the viewport;
- * - normal Solo rooms are capped by encounter pressure, not only initial spawn count;
+ * - normal Solo rooms are capped at floor creation without relocating enemies into cleared rooms;
  * - enemy ammo drops award 10 rounds;
  * - ember hazard rooms use varied broken patterns rather than a checkerboard cross-grid;
  * - generated dungeon corridors are audited and deterministic rerolls prefer non-merged layouts;
@@ -189,34 +189,6 @@
   }
 
   function roomHostiles(roomId){return(host?.enemies||[]).filter(enemy=>hostile(enemy)&&roomAt(enemy.x,enemy.y)===Number(roomId))}
-  function occupiedCell(x,y,ignore=null){
-    if((host?.enemies||[]).some(enemy=>enemy!==ignore&&enemy?.alive&&enemy.x===x&&enemy.y===y))return true;
-    if((host?.blockingDecor||[]).some(row=>row?.x===x&&row?.y===y))return true;
-    if((host?.doors||[]).some(row=>row?.x===x&&row?.y===y))return true;
-    try{if((typeof allPlayers==="function"?allPlayers():[p1,p2]).some(player=>player&&player.x===x&&player.y===y))return true}catch(_){}
-    return false;
-  }
-  function safeCellInRoom(room,enemy){
-    if(!room||!world?.map)return null;
-    const cells=[];
-    for(let y=room.y+2;y<=room.y+room.h-2;y++)for(let x=room.x+2;x<=room.x+room.w-2;x++){
-      if(world.map[y]?.[x]!==0||occupiedCell(x,y,enemy))continue;
-      const nearDoor=(host?.doors||[]).some(d=>Math.abs(d.x-x)+Math.abs(d.y-y)<=2);if(nearDoor)continue;
-      cells.push({x,y});
-    }
-    return cells[0]||null;
-  }
-  function candidateRehomeRooms(enemy,preferredId=-1){
-    const rooms=(world?.rooms||[]).filter(room=>!room?.optional&&!room?.sanctuary&&!room?.dedicatedHazard&&!room?.spiderNest&&!room?.skeletonHorde&&!room?.sigilRoom&&room.id!==world.startRoomId&&room.id!==world.exitRoomId);
-    return rooms.map(room=>({room,count:roomHostiles(room.id).length+stalkerOccupancy(room.id),preferred:Number(room.id)===Number(preferredId)?-10:0})).filter(row=>row.count<roomLimit(row.room.id)).sort((a,b)=>(a.count+a.preferred)-(b.count+b.preferred));
-  }
-  function rehomeEnemy(enemy,preferredId=-1){
-    for(const row of candidateRehomeRooms(enemy,preferredId)){
-      const q=safeCellInRoom(row.room,enemy);if(!q)continue;
-      enemy.x=q.x;enemy.y=q.y;enemy.rx=q.x;enemy.ry=q.y;enemy.aiState="idle";enemy.lastSeen=null;enemy.memoryMs=0;enemy.searchMs=0;enemy.moveCooldown=Math.max(550,Number(enemy.moveCooldown||0));enemy._ccgR24LastRoomId=row.room.id;state.roomRehomes++;return true;
-    }
-    return false;
-  }
 
   function trimSpecialSwarms(){
     if(!normalSoloDungeonMode()||!host?.enemies)return 0;
@@ -234,21 +206,20 @@
 
   function rebalanceRoomPopulation(){
     if(!normalSoloDungeonMode()||!host?.enemies||!world?.rooms)return 0;
-    let moved=0;
+    let trimmed=0;
     for(const enemy of host.enemies)if(hostile(enemy)){const rid=roomAt(enemy.x,enemy.y);if(rid>=0&&enemy._ccgR24LastRoomId==null)enemy._ccgR24LastRoomId=rid}
     for(const room of world.rooms){
       const all=roomHostiles(room.id),effectiveCap=Math.max(0,roomLimit(room.id)-stalkerOccupancy(room.id));
-      if(all.length<=effectiveCap){for(const enemy of all)enemy._ccgR24LastRoomId=room.id;continue}
+      if(all.length<=effectiveCap)continue;
       const ordered=[...all].sort((a,b)=>Number(criticalEnemy(b))-Number(criticalEnemy(a))||String(a.id||"").localeCompare(String(b.id||"")));
       const overflow=ordered.slice(effectiveCap);
       for(const enemy of overflow){
-        const preferred=Number(enemy._ccgR24LastRoomId)!==Number(room.id)?enemy._ccgR24LastRoomId:-1;
-        if(rehomeEnemy(enemy,preferred)){moved++;continue}
-        if(!criticalEnemy(enemy)){enemy.alive=false;moved++;state.roomTrims++}
+        if(criticalEnemy(enemy))continue;
+        enemy.alive=false;trimmed++;state.roomTrims++;
       }
     }
-    if(moved)host.revision=(host.revision||0)+1;
-    return moved;
+    if(trimmed)host.revision=(host.revision||0)+1;
+    return trimmed;
   }
 
   function normaliseEnemyAmmoDrops(){
@@ -364,7 +335,7 @@
   function rebalanceFloor(reason="sweep"){
     if(!normalSoloDungeonMode())return false;
     trimSpecialSwarms();redesignHazardRooms();normaliseEnemyAmmoDrops();rebalanceRoomPopulation();trimTransientLoad();
-    try{if(host)host.r24SoloBalance={ordinaryRoomCap:SOLO_ORDINARY_ROOM_CAP,trapRoomCap:SOLO_TRAP_ROOM_CAP,hazardRoomCap:SOLO_HAZARD_ROOM_CAP,spiderCap:SOLO_SPIDER_CAP,skeletonCap:SOLO_SKELETON_CAP,reason}}
+    try{if(host)host.r24SoloBalance={ordinaryRoomCap:SOLO_ORDINARY_ROOM_CAP,trapRoomCap:SOLO_TRAP_ROOM_CAP,hazardRoomCap:SOLO_HAZARD_ROOM_CAP,spiderCap:SOLO_SPIDER_CAP,skeletonCap:SOLO_SKELETON_CAP,respawnPolicy:"no-standard-room-rehome",reason}}
     catch(_){}
     return true;
   }
@@ -402,7 +373,7 @@
     const now=performance.now();if(now-state.lastBalanceAt<350)return;state.lastBalanceAt=now;
     const floorKey=`${String(run?.seed||"")}|${Number(run?.floor||1)}`;
     if(state.lastFloorKey!==floorKey){state.lastFloorKey=floorKey;rebalanceFloor("new-floor");return}
-    normaliseEnemyAmmoDrops();rebalanceRoomPopulation();trimTransientLoad();
+    normaliseEnemyAmmoDrops();trimTransientLoad();
   }
 
   function install(){

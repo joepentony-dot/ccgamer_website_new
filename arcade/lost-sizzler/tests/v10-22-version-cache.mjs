@@ -31,8 +31,8 @@ assert.ok(metaBuild,"game HTML must publish its loaded Lost Sizzler build number
 assert.equal(metaBuild,manifest.build,"HTML build number and live version manifest must match");
 assert.equal(metaCache,manifest.cacheToken,"HTML cache token and live version manifest must match");
 assert.equal(manifest.releaseVersion,"V10.41","current semantic release must remain V10.41");
-assert.equal(manifest.build,"2026.08.25.26","current published build must be explicit in the regression check");
-assert.equal(manifest.cacheToken,"20260825r26","current release cache token must be explicit in the live manifest");
+assert.equal(manifest.build,"2026.08.25.27","current published build must be explicit in the regression check");
+assert.equal(manifest.cacheToken,"20260825r27","current release cache token must be explicit in the live manifest");
 
 for(const asset of [
   "css/game.css","css/v10-6-gameplay.css","js/v10-41-cache-guard.js","js/v10-41-load-watchdog.js",
@@ -118,7 +118,7 @@ assert.match(majorHardening,/DUNGEON BONUS/,"Horde must also reject legacy Dunge
 assert.match(r25,/Object\.assign\(wrapped,current\)/,"r25 final wrappers must preserve ownership markers and avoid reassertion loops");
 assert.match(r25,/specialActive\(\)&&dungeonOnlyText\(title\)/,"r25 must reject stale dungeon-only notifications in special modes");
 assert.match(r26,/SPY_MOVE_CADENCE_MS=220/,"r26 must publish the slower Spy movement governor");
-assert.match(r26,/_ccgHomeRoomId/,"r26 must reconcile Solo enemy home-room ownership after population rehomes");
+assert.match(r26,/_ccgHomeRoomId/,"r26 must retain Solo enemy home-room ownership compatibility without standard-room repopulation");
 
 assert.match(checker,/Check \/ Refresh Game/,"main menu must expose the update-check button");
 assert.match(checker,/fetch\(`version\.json\?check=\$\{Date\.now\(\)\}`/,"version manifest request must use a unique no-cache URL");
@@ -149,4 +149,4 @@ assert.match(homeCtaCss,/\.home-hero__sizzler-mark/,"Lost Sizzler home logo must
 assert.match(homeCtaCss,/touch-action:\s*pan-y/,"home hero actions must explicitly allow vertical touch scrolling");
 assert.match(homeCtaCss,/\.home-hero__sizzler-mark[\s\S]*?pointer-events:\s*none/,"decorative Lost Sizzler mark must never capture pointer or wheel targeting");
 
-console.log("Lost Sizzler r26 build, cache sanitation, Horde isolation, startup-freeze and Spy/enemy stability regression checks passed.");
+console.log("Lost Sizzler r27 build, cache sanitation, Horde isolation, startup-freeze, no-standard-room-respawn and Spy/enemy stability regression checks passed.");

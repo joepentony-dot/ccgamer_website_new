@@ -11,9 +11,9 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
 const index=read("index.html");
 
-// Delivery: r25 remains part of the canonical runtime under the current r26
+// Delivery: r25 remains part of the canonical runtime under the current r27
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
-assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260825r26/,"canonical page must load the r25 Spy hotfix under the current r26 cache token");
+assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260825r27/,"canonical page must load the r25 Spy hotfix under the current r27 cache token");
 
 // Movement: the emergency r24 fallback and ordinary movement must be re-armed
 // from one normal dungeon cadence after any real Spy movement.

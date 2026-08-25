@@ -35,7 +35,9 @@ assert.match(r24,/const dx=Math\.sign\(Number\(target\.x\)-Number\(enemy\.x\)\),
 
 // Solo combat density. Ordinary rooms top out at three hostiles, with even
 // lower pressure in trap/generator rooms and a single defender in dedicated
-// hazard rooms. Special swarm rooms also have bounded populations.
+// hazard rooms. Special swarm rooms also have bounded populations. Population
+// trimming happens at floor creation only: overflow is never teleported into a
+// different ordinary room and cleared standard rooms are never replenished.
 assert.match(r24,/SOLO_ORDINARY_ROOM_CAP=3/,"ordinary Solo rooms must cap at three live hostiles");
 assert.match(r24,/SOLO_TRAP_ROOM_CAP=2/,"trap and generator rooms must cap at two live hostiles");
 assert.match(r24,/SOLO_HAZARD_ROOM_CAP=1/,"dedicated hazard rooms must cap at one live hostile");
@@ -43,7 +45,10 @@ assert.match(r24,/SOLO_SPIDER_CAP=6/,"Spider Nest must have a bounded six-spider
 assert.match(r24,/SOLO_SKELETON_CAP=5/,"Skeleton Horde must have a bounded five-skeleton maximum");
 assert.match(r24,/Math\.max\(0,roomLimit\(room\.id\)-stalkerOccupancy\(room\.id\)\)/,"Count Loadula must count against effective room pressure");
 assert.match(r24,/criticalEnemy\(b\)/,"progression and named enemies must be prioritised before ordinary overflow enemies");
-assert.match(r24,/rehomeEnemy\(enemy,preferred\)/,"ordinary overflow enemies should be redistributed before being discarded");
+assert.doesNotMatch(r24,/function rehomeEnemy\(|rehomeEnemy\(enemy,preferred\)/,"ordinary overflow enemies must never be teleported into another standard room");
+assert.match(r24,/if\(criticalEnemy\(enemy\)\)continue;\s*enemy\.alive=false;trimmed\+\+;state\.roomTrims\+\+/,"floor-start overflow must be trimmed in place without repopulating another room");
+assert.match(r24,/respawnPolicy:"no-standard-room-rehome"/,"Solo balance metadata must record the no-standard-room-rehome policy");
+assert.match(r24,/normaliseEnemyAmmoDrops\(\);trimTransientLoad\(\);\s*\}/,"ongoing balance ticks must not rerun room population redistribution");
 
 // Browser-load containment for ordinary Solo Dungeon sessions.
 assert.match(r24,/MAX_SOLO_ENEMY_BULLETS=96/,"Solo enemy projectile population must be bounded");
@@ -89,4 +94,4 @@ assert.match(weeklyFn,/ghost_path:path/,"weekly finish must retain the deployed 
 assert.match(weeklyFn,/if\(action==="ghost"\)/,"ghost requests made by the client must have a real server action");
 assert.match(weeklyResults,/const LEADERBOARD_LIMIT=5/,"weekly result summaries must also be limited to the top five");
 
-console.log("Lost Sizzler V10.41 r24 live regression, Solo balance, Weekly Vault and layout checks passed.");
+console.log("Lost Sizzler V10.41 r24 live regression, Solo balance, no-standard-room-respawn, Weekly Vault and layout checks passed.");
