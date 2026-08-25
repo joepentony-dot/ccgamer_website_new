@@ -6,13 +6,35 @@
 
   const state={timer:0,toastSource:null,voiceSource:null,lastBountyAt:0,lastBountyKind:""};
   const majorApi=()=>window.CCGLostSizzlerV141LandingNotificationPolish||null;
+  const isHorde=()=>{
+    try{return window.CCGLostSizzlerSpecialModes?.active?.type==="horde-survivor"||document.body?.dataset?.specialMode==="horde-survivor"}catch(_){return false}
+  };
 
   function isMajorTitle(title){
     const text=String(title||"").toUpperCase();
     return /BOUNTY|GAME OVER|RUN OVER|WEEKLY.*OVER|FINAL XP WARNING|PERMA|DEATH STALKER|COUNT LOADULA|HORDE WARDEN|WARDEN|BOSS|SIGIL LOCKDOWN|ARENA LOCKDOWN|TIMED CHAMBER|FLOOR MUTATION|BANISHMENT READY/.test(text);
   }
 
+  function dungeonOnlyTitle(title){
+    const text=String(title||"").toUpperCase();
+    return /DUNGEON BOUNTY|BOUNTY START|BOUNTY COMPLETE|DUNGEON BONUS|FLOOR MUTATION|DEATH STALKER|COUNT LOADULA|SIGIL LOCKDOWN|ARENA LOCKDOWN|TIMED CHAMBER|BANISHMENT READY/.test(text);
+  }
+
+  function hideExistingDungeonAlert(){
+    if(!isHorde())return false;
+    const major=document.getElementById("ccg-major-notification");
+    const title=major?.querySelector?.(".major-copy b")?.textContent||"";
+    if(major&&dungeonOnlyTitle(title)){
+      major.dataset.visible="false";
+      document.body?.removeAttribute?.("data-ccg-major-notification");
+    }
+    const pickup=document.getElementById("pickup-toast"),pickupTitle=document.getElementById("pickup-title")?.textContent||"";
+    if(pickup&&dungeonOnlyTitle(pickupTitle))pickup.classList.remove("show");
+    return true;
+  }
+
   function showBounty(kind="start"){
+    if(isHorde()){hideExistingDungeonAlert();return false}
     const now=performance.now();
     if(state.lastBountyKind===kind&&now-state.lastBountyAt<1200)return false;
     state.lastBountyAt=now;state.lastBountyKind=kind;
@@ -28,6 +50,7 @@
     if(current.__ccgV141Priority===true){state.toastSource=current;return true}
     const wrapped=function showToastV141MajorHardening(title,text,tone,duration){
       const upper=String(title||"").toUpperCase();
+      if(isHorde()&&dungeonOnlyTitle(upper)){hideExistingDungeonAlert();return false}
       if(/NEW DUNGEON BOUNTY|BOUNTY START/.test(upper)){showBounty("start");return true}
       if(/BOUNTY COMPLETE|DUNGEON BOUNTY COMPLETE/.test(upper)){showBounty("complete");return true}
       if(isMajorTitle(title)&&majorApi()?.showMajor)return majorApi().showMajor(title,text,tone,duration||8000);
@@ -43,8 +66,9 @@
     if(current.__ccgV141MajorVisual===true){state.voiceSource=current;return true}
     const wrapped=function sayV141MajorVisual(key){
       const eventKey=String(key||"");
+      if(isHorde()&&/^(?:bountyStart|bounty|bountyComplete|mutation|deathStalker|loadula|sanctuary|shop|objectiveHint|objectiveNear|rareLoot)$/i.test(eventKey)){hideExistingDungeonAlert();return false}
       if(eventKey==="bountyStart")showBounty("start");
-      else if(eventKey==="bounty")showBounty("complete");
+      else if(eventKey==="bounty"||eventKey==="bountyComplete")showBounty("complete");
       return current.apply(this,arguments);
     };
     wrapped.__ccgV141MajorVisual=true;wrapped.__ccgV141Original=current;
@@ -53,14 +77,13 @@
 
   function ensure(){
     const api=majorApi();if(!api?.showMajor)return false;
-    // Enhancement scripts load dynamically. Keep checking so a late wrapper can
-    // never remove the major-alert priority system after the page has started.
     if(window.showToast!==state.toastSource||!window.showToast?.__ccgV141Priority&&!window.showToast?.__ccgV141MajorHardening)wrapToast();
     const voice=window.CCGLostSizzlerVoice;if(voice?.say!==state.voiceSource||!voice?.say?.__ccgV141MajorVisual)wrapVoice();
+    if(isHorde())hideExistingDungeonAlert();
     return true;
   }
 
   state.timer=setInterval(ensure,300);ensure();
   window.addEventListener("pagehide",()=>clearInterval(state.timer),{once:true});
-  window.CCGLostSizzlerV141MajorNotificationHardening={showBounty,get state(){return state}};
+  window.CCGLostSizzlerV141MajorNotificationHardening={showBounty,isHorde,hideExistingDungeonAlert,get state(){return state}};
 })();
