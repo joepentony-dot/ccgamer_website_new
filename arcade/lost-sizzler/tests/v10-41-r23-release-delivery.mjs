@@ -16,7 +16,7 @@ const tutorialFinal=read("js/v10-41-tutorial-action-finalizer.js");
 
 assert.equal(version.build,"2026.08.25.23","stability release must publish build 2026.08.25.23");
 assert.equal(version.cacheToken,"20260825r23","stability release must publish cache generation r23");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.22"/,"HTML build metadata must match r23");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.23"/,"HTML build metadata must match r23");
 assert.match(index,/ccg-lost-sizzler-cache" content="20260825r23"/,"HTML cache metadata must match r23");
 assert.doesNotMatch(index,/20260825r(?:20|21)|2026\.08\.25\.(?:20|21)/,"canonical HTML must contain no superseded r20 or r21 release token");
 assert.doesNotMatch(index,/v10-41-live-join-presence\.js/,"canonical HTML must not duplicate the live-presence module already owned by network.js");
