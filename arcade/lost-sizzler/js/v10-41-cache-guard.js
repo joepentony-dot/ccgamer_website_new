@@ -10,6 +10,17 @@
   const GAME_PREFIXES=["/arcade/lost-sizzler/","/games/ccg-games/cheeky-commodore-quest/"];
   const state={build:BUILD,cacheToken:CACHE_TOKEN,previous:"",needed:false,running:false,done:false,timedOut:false,deletedEntries:0,checkedCaches:0,serviceWorkersChecked:0,runtimeErrors:[],errors:[],startedAt:performance.now(),finishedAt:0};
 
+  /* Start the 92%-freeze protection before version-check can inject V10.36.
+   * The guard itself waits for the release gate/V10.36 hook, so loading it this
+   * early is safe and removes any race with the sequential enhancement queue. */
+  if(!document.querySelector('script[data-ccg-v141-startup-freeze-guard="true"]')){
+    const script=document.createElement("script");
+    script.src=`js/v10-41-startup-freeze-guard.js?v=${CACHE_TOKEN}`;
+    script.async=false;
+    script.dataset.ccgV141StartupFreezeGuard="true";
+    document.head.appendChild(script);
+  }
+
   let resolveReady;
   const ready=new Promise(resolve=>{resolveReady=resolve});
   let activePromise=null;
