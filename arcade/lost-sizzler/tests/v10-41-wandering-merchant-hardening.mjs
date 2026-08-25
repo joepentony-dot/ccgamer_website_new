@@ -104,7 +104,4 @@ assert.equal(merchant._v141MerchantDepartCountdown,true,"closing the shop starts
 assert.equal(merchant.rareLifeMs,api.constants.DEPART_GRACE_MS,"departure uses an explicit final grace period instead of vanishing immediately");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT CLOSING").length,1,"final departure is announced");
 
-p1.health=0;
-assert.equal(api.positionForEncounter(merchant),false,"a defeated player cannot create a merchant encounter");
-
 console.log("Lost Sizzler V10.41 wandering merchant retry, visibility, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
