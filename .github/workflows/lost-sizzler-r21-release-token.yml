@@ -57,14 +57,6 @@ jobs:
           )
           version_check.write_text(source,encoding='utf-8')
 
-          hotfix_test=root/'tests/v10-41-browser-stability-gameplay-hotfix.mjs'
-          test=hotfix_test.read_text(encoding='utf-8')
-          test=test.replace(
-              'assert.match(lake,/v10-41-browser-stability-gameplay-hotfix\\.js\\?v=20260825f/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix");',
-              'assert.match(lake,/const releaseRev=String\\(document\\.querySelector\\(\'meta\\[name="ccg-lost-sizzler-cache"\\]\'\\)/,"the late V10.41 runtime chain must inherit the published cache generation");\nassert.match(lake,/load\\("js\\/v10-41-browser-stability-gameplay-hotfix\\.js","data-ccg-v141-browser-stability-gameplay-hotfix"\\)/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix through the shared release token");'
-          )
-          hotfix_test.write_text(test,encoding='utf-8')
-
           remaining=[]
           for path in root.rglob('*'):
               if not path.is_file():
