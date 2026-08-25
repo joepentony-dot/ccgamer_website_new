@@ -96,12 +96,23 @@
 
   async function cleanNow({reload=false}={}){
     storageSet("");
-    state.previous="";state.needed=true;state.done=false;state.errors=[];state.deletedEntries=0;
+    state.previous="";state.needed=true;state.done=false;state.timedOut=false;state.errors=[];state.deletedEntries=0;
     await performClean(true);
     if(reload){
       const url=new URL(location.href);url.searchParams.set("ccg-cache",CACHE_TOKEN);url.searchParams.set("ccg-refresh",Date.now());location.replace(url.toString());
     }
     return state;
+  }
+
+  function ensureManualButton(){
+    if(document.getElementById("clean-game-cache-btn"))return true;
+    const row=document.querySelector("#menu .secondary-menu");if(!row)return false;
+    const button=document.createElement("button");button.id="clean-game-cache-btn";button.type="button";button.textContent="Clean Game Cache";button.title="Remove cached Lost Sizzler game files and reload the current published build. Saves, settings, achievements and leaderboard data are kept.";
+    button.addEventListener("click",async()=>{
+      if(button.disabled)return;button.disabled=true;button.textContent="Cleaning Game Cache…";
+      try{await cleanNow({reload:true})}catch(error){button.disabled=false;button.textContent="Clean Game Cache";console.warn("[Lost Sizzler] manual game-cache clean failed",error)}
+    });
+    const exit=row.querySelector(".menu-exit-link");row.insertBefore(button,exit||null);return true;
   }
 
   const timeout=setTimeout(()=>{
@@ -113,6 +124,7 @@
   },3500);
   ready.finally(()=>clearTimeout(timeout));
 
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ensureManualButton,{once:true});else ensureManualButton();
   performClean(false);
-  window.CCGLostSizzlerCacheGuard={state,ready,cleanNow,performClean,gamePath,get runtimeErrors(){return state.runtimeErrors.map(row=>({...row}))}};
+  window.CCGLostSizzlerCacheGuard={state,ready,cleanNow,performClean,gamePath,ensureManualButton,get runtimeErrors(){return state.runtimeErrors.map(row=>({...row}))}};
 })();
