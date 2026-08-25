@@ -5,11 +5,12 @@
   window.__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__=true;
 
   const INSTALL_MS=80;
+  const SPY_HINT_COOLDOWN_MS=1800;
   const state={
-    timer:0,loopInstalled:false,quitInstalled:false,damageInstalled:false,packetInstalled:false,
-    spyMoveInstalled:false,lastLoopSource:null,lastQuitSource:null,lastDamageSource:null,lastPacketSource:null,lastSpyMoveSource:null,
+    timer:0,loopInstalled:false,quitInstalled:false,damageInstalled:false,packetInstalled:false,toastInstalled:false,
+    spyMoveInstalled:false,lastLoopSource:null,lastQuitSource:null,lastDamageSource:null,lastPacketSource:null,lastToastSource:null,lastSpyMoveSource:null,
     frameFaults:0,updateFaults:0,renderFaults:0,lastFaultAt:0,lastFaultMessage:"",lastFaultLogAt:0,
-    hordeFriendlyFireBlocked:0,hordeEnemyHitsRerouted:0,spyMoves:0,spyBlockedMoves:0,
+    hordeFriendlyFireBlocked:0,hordeEnemyHitsRerouted:0,spyMoves:0,spyBlockedMoves:0,spyHintsSuppressed:0,lastSpyHintAt:0,
     lastRunActive:false,audioStops:0,lastRemaining:-1
   };
 
@@ -93,12 +94,26 @@
     const wrapped=function onPacketV141R29HordeDamage(event,payload){
       if(hordeActive()&&event==="player_hit"&&payload?.target===p1?.id){
         state.hordeEnemyHitsRerouted++;
-        try{return hurtPlayer(p1,Math.max(1,Number(payload.power)||1),false,payload.source||"enemy") }catch(error){noteFault("horde-network-hit",error);return false}
+        try{return hurtPlayer(p1,Math.max(1,Number(payload.power)||1),false,payload.source||"enemy")}catch(error){noteFault("horde-network-hit",error);return false}
       }
       return current.apply(this,arguments)
     };
     wrapped.__ccgV141R29HordePacket=true;wrapped.__ccgOriginal=current;callbacks.onPacket=wrapped;
     state.packetInstalled=true;state.lastPacketSource=wrapped;return true;
+  }
+
+  function installSpyToastThrottle(){
+    const current=window.showToast;if(typeof current!=="function")return false;
+    if(current.__ccgV141R29SpyToast){state.toastInstalled=true;state.lastToastSource=current;return true}
+    if(current===state.lastToastSource)return state.toastInstalled;
+    const wrapped=function showToastV141R29SpyThrottle(title){
+      if(spyActive()&&String(title||"").toUpperCase()==="MOVE BESIDE FURNITURE"){
+        const now=performance.now();if(now-state.lastSpyHintAt<SPY_HINT_COOLDOWN_MS){state.spyHintsSuppressed++;return false}state.lastSpyHintAt=now;
+      }
+      return current.apply(this,arguments)
+    };
+    wrapped.__ccgV141R29SpyToast=true;wrapped.__ccgOriginal=current;window.showToast=wrapped;
+    state.toastInstalled=true;state.lastToastSource=wrapped;return true;
   }
 
   function activeSpyOccupant(player){
@@ -108,12 +123,16 @@
     try{return (typeof allPlayers==="function"?allPlayers():[p1,...(remote?.values?.()||[])]).some(other=>other&&other!==player&&activeSpyOccupant(other)&&Number(other.x)===x&&Number(other.y)===y)}catch(_){return false}
   }
   function spyWalkable(x,y){try{return Boolean(window.CCGWorld?.walkable?.(world.map,x,y,host))}catch(_){return false}}
+  function primeSpyDoor(player,dx,dy){
+    try{return Boolean(window.CCGLostSizzlerV141R27SpyIsolation?.primeSpyDoorsForStep?.(player,dx,dy))}catch(_){return false}
+  }
   function spyStep(player,dx,dy){
     if(!player||!spyCanMove(player)||typeof mode==="undefined"||mode!=="playing"||!world?.map||!host)return false;
     if((player.hitStunMs||0)>0)return false;
     const sx=Math.sign(Number(dx)||0),sy=Math.sign(Number(dy)||0);if(!sx&&!sy)return false;
     const nx=Number(player.x)+sx,ny=Number(player.y)+sy;
     if(sx&&sy&&(!spyWalkable(Number(player.x)+sx,Number(player.y))||!spyWalkable(Number(player.x),Number(player.y)+sy))){state.spyBlockedMoves++;return false}
+    primeSpyDoor(player,sx,sy);
     try{if(typeof tryDoor==="function"&&!tryDoor(player,nx,ny)){state.spyBlockedMoves++;return false}}catch(error){noteFault("spy-door",error);return false}
     if(!spyWalkable(nx,ny)||spyOccupied(player,nx,ny)){state.spyBlockedMoves++;return false}
     player.x=nx;player.y=ny;player.dir={x:sx,y:sy};
@@ -169,14 +188,18 @@
     state.lastRunActive=running;
   }
 
+  function preserveStaticUi(){
+    const levelCopy=document.getElementById("level-up-copy");if(levelCopy&&!String(levelCopy.textContent||"").trim())levelCopy.textContent="Choose an upgrade.";
+  }
+
   function install(){
-    installStableLoop();installQuitAudioGuard();installHordeFriendlyFireGuard();installHordeNetworkDamageGuard();installSpyMovementOwner();updateRemainingHud();runTransitionGuard();
+    installStableLoop();installQuitAudioGuard();installHordeFriendlyFireGuard();installHordeNetworkDamageGuard();installSpyToastThrottle();installSpyMovementOwner();updateRemainingHud();runTransitionGuard();preserveStaticUi();
     return state.loopInstalled&&state.quitInstalled&&state.damageInstalled
   }
 
   install();state.timer=setInterval(install,INSTALL_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);silenceGameplayAudio()},{once:true});
   window.CCGLostSizzlerV141R29={
-    stableLoop,silenceGameplayAudio,spyMove,spyStep,hordeRemaining,updateRemainingHud,install,get state(){return state}
+    SPY_HINT_COOLDOWN_MS,stableLoop,silenceGameplayAudio,spyMove,spyStep,primeSpyDoor,hordeRemaining,updateRemainingHud,install,get state(){return state}
   };
 })();
