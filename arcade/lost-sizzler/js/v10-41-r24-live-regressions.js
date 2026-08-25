@@ -303,7 +303,7 @@
   }
   function redesignHazardRooms(){
     if(!normalSoloDungeonMode()||!host?.hazardRooms)return 0;let count=0;
-    host.hazardRooms.forEach((hazard,index)=>{if(!hazard.r24Pattern&&redesignEmberHazard(hazard,index))count++});
+    host.hazardRooms.forEach((hazard,index)=>{if(hazard.r24Pattern==null&&redesignEmberHazard(hazard,index))count++});
     if(count)host.revision=(host.revision||0)+1;
     return count;
   }
