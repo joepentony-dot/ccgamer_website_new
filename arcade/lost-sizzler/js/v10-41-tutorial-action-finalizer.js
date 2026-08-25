@@ -49,7 +49,10 @@
       if(ts.moved&&!ts.autoAdvanceTimer)armInteractive("move");
       return result;
     };
-    wrapped.__ccgV141TutorialMoveFinal=true;wrapped.__ccgV141TutorialOriginal=original;window.movePlayer=wrapped;state.wraps++;return true;
+    wrapped.__ccgV141TutorialMoveFinal=true;
+    wrapped.__tutorial=true;
+    wrapped.__ccgV141TutorialOriginal=original;
+    window.movePlayer=wrapped;state.wraps++;return true;
   }
 
   function installFire(){
@@ -69,7 +72,10 @@
       if(expected>=3&&!ts.autoAdvanceTimer)armInteractive("fire");
       return result;
     };
-    wrapped.__ccgV141TutorialFireFinal=true;wrapped.__ccgV141TutorialOriginal=original;window.firePlayer=wrapped;state.wraps++;return true;
+    wrapped.__ccgV141TutorialFireFinal=true;
+    wrapped.__tutorial=true;
+    wrapped.__ccgV141TutorialOriginal=original;
+    window.firePlayer=wrapped;state.wraps++;return true;
   }
 
   function installDash(){
@@ -89,7 +95,10 @@
       if(expected>=3&&!ts.autoAdvanceTimer)armInteractive("dash");
       return result;
     };
-    wrapped.__ccgV141TutorialDashFinal=true;wrapped.__ccgV141TutorialOriginal=original;window.dashPlayer=wrapped;state.wraps++;return true;
+    wrapped.__ccgV141TutorialDashFinal=true;
+    wrapped.__tutorial=true;
+    wrapped.__ccgV141TutorialOriginal=original;
+    window.dashPlayer=wrapped;state.wraps++;return true;
   }
 
   function install(){
