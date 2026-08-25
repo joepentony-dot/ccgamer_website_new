@@ -89,6 +89,7 @@ assert.match(weekly,/refreshGhost/,"weekly client retrieves a real ghost replay"
 assert.match(weekly,/ccg-weekly-ghost-preview/,"weekly ghost data is cached only for the active browser session");
 assert.match(edge,/action===\"ghost\"/,"weekly edge function exposes the ghost action");
 assert.match(edge,/ghostPath\(result\.ghostPath\)/,"weekly finish stores a sanitised ghost route");
-assert.match(edge,/slice\(0,360\)/,"weekly ghost route size is bounded");
+assert.match(edge,/const MAX_GHOST_POINTS = 900/,"weekly ghost route keeps the reconciled bounded replay ceiling");
+assert.match(edge,/value\.slice\(0,MAX_GHOST_POINTS\)/,"weekly ghost route is truncated through the declared bound");
 
 console.log("V10.15–V10.18 rare events, hints, weekly ghost and voice regression checks passed");
