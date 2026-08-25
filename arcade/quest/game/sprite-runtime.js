@@ -11,6 +11,10 @@
     if(Number.isFinite(Number(raw)))return[Number(raw)];
     return[0];
   }
+  function stateProfile(meta,state){
+    const table=meta?.stateMeta&&typeof meta.stateMeta==='object'?meta.stateMeta:{};
+    return table[state]||table.idle||{};
+  }
 
   Q.spriteFrame=function(meta,state,timeSeconds=0){
     const frames=animationFrames(meta,state);
@@ -19,6 +23,34 @@
     if(!frames.length)return 0;
     const step=Math.max(0,Math.floor(timeSeconds*fps));
     return frames[loop?step%frames.length:Math.min(step,frames.length-1)];
+  };
+
+  Q.spriteStateProfile=function(meta,state){
+    const p=stateProfile(meta,state);
+    return {
+      drawWidth:positiveNumber(p.drawWidth,positiveNumber(meta?.drawWidth,0)),
+      drawHeight:positiveNumber(p.drawHeight,positiveNumber(meta?.drawHeight,0)),
+      offsetX:Number(p.offsetX)||0,
+      offsetY:Number(p.offsetY)||0,
+      hitbox:p.hitbox||null,
+      muzzle:p.muzzle||null,
+      cameraKick:Number(p.cameraKick)||0
+    };
+  };
+
+  Q.spriteWorldRect=function(meta,state,cx,groundY){
+    const p=Q.spriteStateProfile(meta,state);
+    return {x:cx-p.drawWidth/2+p.offsetX,y:groundY-p.drawHeight+p.offsetY,w:p.drawWidth,h:p.drawHeight};
+  };
+
+  Q.spriteHitbox=function(meta,state,cx,groundY,fallback){
+    const p=Q.spriteStateProfile(meta,state),h=p.hitbox;
+    if(!h)return fallback?{...fallback}:null;
+    if(h.x<0||h.y<0){
+      return {x:cx+(Number(h.x)||0),y:groundY+(Number(h.y)||0),w:Number(h.w)||0,h:Number(h.h)||0};
+    }
+    const base=fallback||{x:cx-39,y:groundY-132,w:78,h:132};
+    return {x:base.x+(Number(h.x)||0),y:base.y+(Number(h.y)||0),w:Number(h.w)||base.w,h:Number(h.h)||base.h};
   };
 
   Q.drawSpriteSheet=function(ctx,image,meta,state,timeSeconds,x,y,w,h,face=1){
@@ -35,5 +67,10 @@
     ctx.drawImage(image,sx,sy,fw,fh,x,y,w,h);
     ctx.restore();
     return true;
+  };
+
+  Q.drawAnchoredSprite=function(ctx,image,meta,state,timeSeconds,cx,groundY,face=1){
+    const r=Q.spriteWorldRect(meta,state,cx,groundY);
+    return Q.drawSpriteSheet(ctx,image,meta,state,timeSeconds,r.x,r.y,r.w,r.h,face);
   };
 })();
