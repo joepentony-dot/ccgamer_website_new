@@ -13,10 +13,11 @@ assert.match(merchantSource,/MIN_VISIBLE_MS=90000/,"merchant must require ninety
 assert.match(merchantSource,/shopOpenFor\(m\)/,"merchant departure must understand the live shop panel");
 assert.match(merchantSource,/positionForEncounter\(m\)/,"merchant must be repositioned into an encounter-safe visible cell when necessary");
 assert.match(merchantSource,/document\?\.hidden===true/,"hidden tabs must not consume merchant encounter time");
+assert.match(merchantSource,/mode!=="playing"&&mode!=="shop"/,"active merchant browsing must count while the real game is in shop mode");
 assert.match(merchantSource,/Number\(player\.health\?\?1\)>0/,"zero-health players must not count as merchant viewers");
 assert.match(merchantSource,/if\(!cell\)return false;\s*m\.x=cell\.x;m\.y=cell\.y;m\._v141MerchantEncounterPositioned=true/,"failed merchant reposition attempts must remain retryable");
 assert.match(merchantSource,/m\._v141MerchantSeen&&viewing&&\(browsing\|\|visible\)/,"merchant encounter time must require an active visible game even while shopping");
-assert.match(tutorialSource,/v10-41-wandering-merchant-hardening\.js\?v=/,"the r21 direct finalizer must load wandering merchant hardening with the release token");
+assert.match(tutorialSource,/v10-41-wandering-merchant-hardening\.js\?v=/,"the release-token finalizer must load wandering merchant hardening with the current cache generation");
 
 let clock=0;
 const toasts=[];
@@ -84,24 +85,23 @@ assert.ok(merchant._v141MerchantVisibleMs>=60000,"active visible encounter time 
 assert.equal(merchant._v141MerchantWarned,true,"the player receives a thirty-second packing warning");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT PACKING UP SOON").length,1,"packing warning is shown once");
 
-activeShop=merchant;
-documentState.hidden=true;
+activeShop=merchant;context.mode="shop";documentState.hidden=true;
 const beforeHiddenShop=merchant._v141MerchantVisibleMs;
 for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
 assert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop in a hidden tab does not spend encounter time");
 documentState.hidden=false;context.mode="paused";
 for(let i=0;i<40;i++){clock+=250;api.tick(clock)}
 assert.equal(merchant._v141MerchantVisibleMs,beforeHiddenShop,"an open shop while paused does not spend encounter time");
-context.mode="playing";
+context.mode="shop";
 for(let i=0;i<120;i++){clock+=250;api.tick(clock)}
-assert.equal(merchant._v141MerchantVisibleMs,api.constants.MIN_VISIBLE_MS,"visible encounter time reaches the ninety-second requirement");
+assert.equal(merchant._v141MerchantVisibleMs,api.constants.MIN_VISIBLE_MS,"active visible browsing in the real shop mode counts toward the ninety-second encounter requirement");
 assert.equal(merchant._v141MerchantDepartArmed,true,"departure becomes eligible only after the full visible-time requirement");
 assert.equal(merchant._v141MerchantDepartCountdown,false,"the merchant cannot begin leaving while the shop is open");
 assert.ok(merchant.rareLifeMs>=api.constants.PROTECTED_LIFE_MS,"the open shop protects the merchant from disappearing mid-purchase");
 
-activeShop=null;clock+=250;api.tick(clock);
+activeShop=null;context.mode="playing";clock+=250;api.tick(clock);
 assert.equal(merchant._v141MerchantDepartCountdown,true,"closing the shop starts the final departure grace period");
 assert.equal(merchant.rareLifeMs,api.constants.DEPART_GRACE_MS,"departure uses an explicit final grace period instead of vanishing immediately");
 assert.equal(toasts.filter(row=>row.title==="MERCHANT CLOSING").length,1,"final departure is announced");
 
-console.log("Lost Sizzler V10.41 wandering merchant retry, visibility, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
+console.log("Lost Sizzler V10.41 wandering merchant retry, visibility, real-shop timing, pause/tab-safe ninety-second visit and shop-safe departure checks passed.");
