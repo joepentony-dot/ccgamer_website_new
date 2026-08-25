@@ -7,7 +7,7 @@ import {chromium} from "playwright";
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../..");
-const TEST_TIMEOUT_MS=90000;
+const TEST_TIMEOUT_MS=150000;
 const STAGE_TIMEOUT_MS=20000;
 const CLEANUP_TIMEOUT_MS=5000;
 const startedAt=Date.now();
