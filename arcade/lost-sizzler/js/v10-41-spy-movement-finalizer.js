@@ -9,6 +9,7 @@
   const state={installed:false,moveInstalled:false,updateInstalled:false,fallbackMoves:0,respawns:0,statusById:new Map(),timer:0};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
   const spyModelFor=player=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state?.players?.find(entry=>String(entry?.id||"")===String(player?.id||""))||null}catch(_){return null}};
+  const canSpyMove=player=>{const model=spyModelFor(player);return !model||model.status==="active"};
   const activeOccupant=player=>{const model=spyModelFor(player);if(model)return model.status==="active"&&Number(model.hp??player?.health??1)>0;return Number(player?.health??1)>0};
   const otherPlayerAt=(player,x,y)=>{try{return (typeof allPlayers==="function"?allPlayers():[p1,...remote.values()]).some(other=>other&&other!==player&&activeOccupant(other)&&other.x===x&&other.y===y)}catch(_){return false}};
   function liveFor(id){try{return String(p1?.id||"")===String(id)?p1:remote?.get?.(id)||null}catch(_){return null}}
@@ -41,7 +42,7 @@
   }
   function validStep(player,dx,dy){
     try{
-      if(!spyActive()||!player||mode!=="playing"||!world?.map||!host||!window.CCGWorld||(player.hitStunMs||0)>0)return null;
+      if(!spyActive()||!player||!canSpyMove(player)||mode!=="playing"||!world?.map||!host||!window.CCGWorld||(player.hitStunMs||0)>0)return null;
       const nx=player.x+dx,ny=player.y+dy;
       if(dx&&dy&&(!window.CCGWorld.walkable(world.map,player.x+dx,player.y,host)||!window.CCGWorld.walkable(world.map,player.x,player.y+dy,host)))return null;
       if(!window.CCGWorld.walkable(world.map,nx,ny,host)||otherPlayerAt(player,nx,ny))return null;
@@ -52,6 +53,7 @@
     if(state.moveInstalled||typeof window.movePlayer!=="function")return state.moveInstalled;
     const original=window.movePlayer;
     window.movePlayer=function movePlayerV141SpyFinal(player,dx,dy,dash=false){
+      if(spyActive()&&!canSpyMove(player))return false;
       const ox=player?.x,oy=player?.y;let result;
       try{result=original.apply(this,arguments)}catch(error){if(!spyActive())throw error;try{console.warn("[Lost Sizzler V10.41] Spy movement inherited path failed; using safe floor fallback",error)}catch(_){}}
       if(!spyActive()||!player||dash||player.x!==ox||player.y!==oy)return result;
@@ -79,5 +81,5 @@
   state.timer=setInterval(()=>{if(ready()&&install()){clearInterval(state.timer);state.timer=0}},80);
   if(ready())install();
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
-  window.CCGLostSizzlerV141SpyMovementFinalizer={install,validStep,syncRespawns,materialiseRespawn,get state(){return state}};
+  window.CCGLostSizzlerV141SpyMovementFinalizer={install,validStep,canSpyMove,syncRespawns,materialiseRespawn,get state(){return state}};
 })();
