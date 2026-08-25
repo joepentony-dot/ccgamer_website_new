@@ -38,7 +38,9 @@
   }
   function repairPlayer(player){
     if(!player)return;
-    if(!finite(player.x)||!finite(player.y))return;
+    const startX=finite(world?.start?.x)?Number(world.start.x):0,startY=finite(world?.start?.y)?Number(world.start.y):0;
+    const fallbackX=finite(player.rx)?Number(player.rx):startX,fallbackY=finite(player.ry)?Number(player.ry):startY;
+    if(!finite(player.x))player.x=fallbackX;if(!finite(player.y))player.y=fallbackY;
     if(!finite(player.rx))player.rx=player.x;if(!finite(player.ry))player.ry=player.y;
     if(!finite(player.hitStunMs)||player.hitStunMs<0)player.hitStunMs=0;
     if(!finite(player.invuln)||player.invuln<0)player.invuln=0;
@@ -139,7 +141,7 @@
   }
 
   function otherPlayerAt(player,x,y){
-    try{return (typeof allPlayers==="function"?allPlayers():[p1,...(remote?.values?.()||[])]).some(other=>other&&other!==player&&Number(other.health||1)>0&&other.x===x&&other.y===y)}catch(_){return false}
+    try{return (typeof allPlayers==="function"?allPlayers():[p1,...(remote?.values?.()||[])]).some(other=>other&&other!==player&&Number(other.health??1)>0&&other.x===x&&other.y===y)}catch(_){return false}
   }
   function validSpyStep(player,dx,dy){
     if(!spyActive()||!player||typeof mode==="undefined"||mode!=="playing"||!world?.map||!host||!window.CCGWorld)return null;
