@@ -61,6 +61,7 @@ assert.match(r24,/FURNACE STEP CHAMBER/);
 assert.match(r24,/CINDER ISLAND VAULT/);
 assert.match(r24,/EMBER BREAK-LANE ROOM/);
 assert.match(r24,/hazard\.groups=3;hazard\.period=2700;hazard\.warningMs=850;hazard\.activeMs=600/,"new ember patterns must retain readable warning windows");
+assert.match(r24,/hazard\.r24Pattern==null&&redesignEmberHazard\(hazard,index\)/,"pattern zero must count as already redesigned instead of being processed again");
 assert.doesNotMatch(r24,/type==="embers"\?\(x\+y\)%2/,"r24 ember redesign must not recreate the old checkerboard pattern");
 
 // Dungeon topology: prefer a physically tree-like corridor layout rather than
