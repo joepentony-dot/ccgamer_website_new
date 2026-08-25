@@ -13,6 +13,7 @@ const quality=read("js/v10-35-quality.js");
 const sab=read("js/sizzler-saboteurs.js");
 
 assert.match(version,/v10-36-bootstrap\.js\?v=\$\{encodeURIComponent\(RELEASE_CACHE\)\}/,"V10.36 bootstrap must load before the enhancement queue completes using the current release cache generation");
+assert.match(bootstrap,/meta\[name="ccg-lost-sizzler-cache"\]/,"V10.36 special UI must inherit the current release cache token instead of a historical dated revision");
 assert.match(bootstrap,/LOADING — PLEASE WAIT/,"loading overlay must tell players to wait");
 assert.match(bootstrap,/ccg-release-loading-progress/,"loading overlay must expose a progress bar");
 assert.match(bootstrap,/MutationObserver/,"loading progress must advance as enhancement scripts arrive");
@@ -24,7 +25,9 @@ assert.match(bootstrap,/SPY VS SPY FIELD KIT/,"TAB inventory must become a Spy-s
 assert.match(bootstrap,/Normal dungeon inventory information is hidden for this mode/,"Spy inventory must not present legacy dungeon guidance");
 assert.match(bootstrap,/if\(spyActive\(\)\)return renderSpyInventoryPanel\(\)/,"legacy inventory rendering must be bypassed only for Spy Vs Spy");
 assert.match(bootstrap,/restoreInventoryChrome\(\);return legacyRender/,"normal dungeon inventory must be restored outside Spy Vs Spy");
-for(const key of ["WASD / ARROWS","SPACE","E","T","X","SHIFT","C","TAB","M / F","ESC"])assert.ok(bootstrap.includes(`[\"${key}\"`)||bootstrap.includes(`["${key}"`),`Spy field kit is missing the ${key} control`);
+for(const key of ["WASD / ARROWS","SPACE","E","T","X","SHIFT","C","TAB","F","ESC"])assert.ok(bootstrap.includes(`[\"${key}\"`)||bootstrap.includes(`["${key}"`),`Spy field kit is missing the ${key} control`);
+assert.match(bootstrap,/Sound is controlled from the SOUND button in the top bar/,"Spy help must not claim M controls sound");
+assert.doesNotMatch(bootstrap,/\["M \/ F","SOUND \/ FULLSCREEN"/,"retired Spy M/F sound guidance must not return");
 for(const text of ["Required objective pieces","Novelty weapons","Trap loadout","Trap counters"])assert.ok(bootstrap.includes(text),`Spy field kit is missing ${text}`);
 for(const id of ["case","joystick","tape","key"])assert.ok(sab.includes(`id: \"${id}\"`)||sab.includes(`id:"${id}"`),`Saboteurs rules are missing objective ${id}`);
 assert.match(bootstrap,/Object\.values\(SAB\.WEAPONS/,"weapon guide must be generated from the live Saboteurs rules");
@@ -45,4 +48,4 @@ assert.match(quality,/drawDoorsV135AtlasOnly/,"V10.35 normal doors must remain a
 assert.match(quality,/drawWallLightsV135AtlasOnly/,"V10.35 wall torches must remain atlas-only");
 assert.match(render,/if\(pixelSheet\?\.complete&&pixelSheet\.naturalWidth>=160\).*?continue/s,"new chest sprites must bypass the procedural chest renderer rather than layer over it");
 
-console.log("Lost Sizzler V10.36 loading, Spy field kit, door-frame, destructible-crate and render-ownership checks passed.");
+console.log("Lost Sizzler V10.36 loading, corrected Spy field kit, door-frame, destructible-crate and render-ownership checks passed.");
