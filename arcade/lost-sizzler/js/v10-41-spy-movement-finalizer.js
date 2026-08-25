@@ -8,7 +8,9 @@
   window.__CCG_LOST_SIZZLER_V141_SPY_MOVEMENT_FINALIZER__=true;
   const state={installed:false,fallbackMoves:0,timer:0};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
-  const otherPlayerAt=(player,x,y)=>{try{return (typeof allPlayers==="function"?allPlayers():[p1,...remote.values()]).some(other=>other&&other!==player&&Number(other.health??1)>0&&other.x===x&&other.y===y)}catch(_){return false}};
+  const spyModelFor=player=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state?.players?.find(entry=>String(entry?.id||"")===String(player?.id||""))||null}catch(_){return null}};
+  const activeOccupant=player=>{const model=spyModelFor(player);if(model)return model.status==="active"&&Number(model.hp??player?.health??1)>0;return Number(player?.health??1)>0};
+  const otherPlayerAt=(player,x,y)=>{try{return (typeof allPlayers==="function"?allPlayers():[p1,...remote.values()]).some(other=>other&&other!==player&&activeOccupant(other)&&other.x===x&&other.y===y)}catch(_){return false}};
   function validStep(player,dx,dy){
     try{
       if(!spyActive()||!player||mode!=="playing"||!world?.map||!host||!window.CCGWorld||(player.hitStunMs||0)>0)return null;
