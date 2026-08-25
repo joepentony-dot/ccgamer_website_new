@@ -52,6 +52,11 @@ jobs:
         run: |
           set -euo pipefail
           for test in arcade/lost-sizzler/tests/*.mjs; do
+            case "$(basename "$test")" in
+              v10-6-browser.mjs|v10-28-browser-stability.mjs)
+                continue
+                ;;
+            esac
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"
@@ -67,7 +72,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for test in arcade/lost-sizzler/tests/browser/*.mjs; do
+          for test in \
+            arcade/lost-sizzler/tests/v10-6-browser.mjs \
+            arcade/lost-sizzler/tests/v10-28-browser-stability.mjs \
+            arcade/lost-sizzler/tests/browser/*.mjs; do
             echo "::group::$test"
             node "$test"
             echo "::endgroup::"
