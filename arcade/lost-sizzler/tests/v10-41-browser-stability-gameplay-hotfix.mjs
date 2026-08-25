@@ -12,8 +12,9 @@ const tutorialFinal=read("js/v10-41-tutorial-action-finalizer.js");
 const lake=read("js/v10-41-lake-item-safety.js");
 const render=read("js/game-render.js");
 
-assert.match(lake,/v10-41-browser-stability-gameplay-hotfix\.js\?v=20260825f/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix");
-assert.match(lake,/v10-41-tutorial-action-finalizer\.js\?v=20260825f/,"the late V10.41 runtime chain must load final tutorial action ownership");
+assert.match(lake,/const releaseRev=String\(document\.querySelector\('meta\[name="ccg-lost-sizzler-cache"\]'\)/,"the late V10.41 runtime chain must inherit the published cache generation");
+assert.match(lake,/load\("js\/v10-41-browser-stability-gameplay-hotfix\.js","data-ccg-v141-browser-stability-gameplay-hotfix"\)/,"the late V10.41 runtime chain must load the browser stability gameplay hotfix through the shared release token");
+assert.match(lake,/load\("js\/v10-41-tutorial-action-finalizer\.js","data-ccg-v141-tutorial-action-finalizer"\)/,"the late V10.41 runtime chain must load final tutorial action ownership through the shared release token");
 
 assert.match(render,/function loop\(t\)\{const dt=Math\.min\(45,t-last\|\|16\);last=t;.*update\(dt\);render\(\);requestAnimationFrame\(loop\)\}/s,"the inherited frame loop remains the unguarded baseline that the hotfix must contain");
 assert.match(hotfix,/function loopV141CrashContained\(timestamp\)/,"the hotfix must replace the frame callback with a crash-contained loop");
@@ -40,5 +41,6 @@ assert.match(hotfix,/player\.hitStunMs=0/,"Spy spawn repair must clear stale inh
 assert.match(tutorialFinal,/afterSwing>beforeSwing/,"tutorial sword progress must be tied to a new completed melee swing timestamp");
 assert.match(tutorialFinal,/const expected=completed\?Math\.min\(3,beforeCount\+1\):beforeCount/,"one real sword swing may advance tutorial progress by at most one");
 assert.match(tutorialFinal,/if\(expected<3&&ts\.autoAdvanceTimer\)\{clearTimeout\(ts\.autoAdvanceTimer\);ts\.autoAdvanceTimer=0\}/,"an accidental duplicate count must not leave a premature tutorial auto-advance armed");
+assert.match(tutorialFinal,/setInterval\(\(\)=>\{if\(ready\(\)\)install\(\)\},60\)/,"the tutorial action finalizer must reassert outermost fire ownership if a late enhancement replaces firePlayer");
 
 console.log("Lost Sizzler V10.41 browser crash containment, pause recovery, compact Horde arena, Spy movement and tutorial action finalizer checks passed.");
