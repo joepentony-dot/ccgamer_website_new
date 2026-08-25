@@ -16,7 +16,12 @@
         ["LS-0825-05","FIXED","Tutorial action ownership","Movement, sword and dash training now count real completed actions without wrapper chains double-counting or later enhancement modules stealing tutorial progress ownership."],
         ["LS-0825-06","CHANGED","Wandering merchant encounter","The wandering merchant is protected until genuinely seen, is brought to a safe visible position when needed, remains available for ninety seconds of usable encounter time, warns before leaving and never disappears during an open purchase."],
         ["LS-0825-07","CHANGED","r22 final cache-safe delivery","Build 2026.08.25.22 uses cache generation 20260825r22 across canonical runtime assets. The generation was advanced after a real stale-cache reproduction so browsers cannot reuse earlier r21 game files after the final stability fixes."],
-        ["LS-0825-08","FIXED","Current browser regression coverage","Historical Chromium tests now use the canonical arcade path, matching Playwright Chromium and non-blocking held-fire sampling so release failures describe the game rather than stale test infrastructure."]
+        ["LS-0825-08","FIXED","Current browser regression coverage","Historical Chromium tests now use the canonical arcade path, matching Playwright Chromium and non-blocking held-fire sampling so release failures describe the game rather than stale test infrastructure."],
+        ["LS-0825-09","FIXED","Lost Adventurer escort and rescue","The Lost Adventurer now recruits reliably, follows with bounded pathfinding and catch-up recovery, renders as a friendly human and awards 1,000 score plus 200 XP after reaching a Sanctuary."],
+        ["LS-0825-10","CHANGED","Solo ammo and timed-room combat","Normal Solo enemies now drop exactly five rounds without multiplier or duplicate abuse. Timed chambers use controlled three-enemy waves with health recovery between cleared waves, and rooms are limited to one named enemy."],
+        ["LS-0825-11","FIXED","Weekly and Horde leaderboard stability","The Weekly Vault remains bounded and scrollable, while Horde leaderboard decoration is idempotent and requestAnimationFrame-coalesced so repeated category switching cannot create a MutationObserver feedback loop."],
+        ["LS-0825-12","FIXED","Weekly rollover and retry safety","A reserved Weekly Dungeon attempt can finish across the Monday UTC reset, and simultaneous result retries project only the persisted winning result into the leaderboard."],
+        ["LS-0825-13","CHANGED","r23 consolidated release delivery","Build 2026.08.25.23 uses cache generation 20260825r23 for the combined V10.41 stability, gameplay and Weekly safety release, forcing browsers onto the final integrated runtime assets."]
       ]
     },
     {
