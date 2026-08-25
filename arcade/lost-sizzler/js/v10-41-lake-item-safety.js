@@ -74,4 +74,5 @@
   load("js/v10-41-multiplayer-no-pause.js?v=20260825e","data-ccg-v141-multiplayer-no-pause");
   load("js/v10-41-browser-stability-gameplay-hotfix.js?v=20260825f","data-ccg-v141-browser-stability-gameplay-hotfix");
   load("js/v10-41-spy-movement-finalizer.js?v=20260825f","data-ccg-v141-spy-movement-finalizer");
+  load("js/v10-41-tutorial-action-finalizer.js?v=20260825f","data-ccg-v141-tutorial-action-finalizer");
 })();
