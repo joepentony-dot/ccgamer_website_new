@@ -22,6 +22,16 @@ body[data-run-active="true"] .ccg-game>.game-area>.canvas-wrap{
 body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail{
   display:contents!important;
 }
+/* V10.9 deliberately collapses an empty rail with a high-specificity :has()
+ * selector.  Retain that idle behaviour, but explicitly outrank it whenever
+ * current notification content is visible.  Without these selectors an older
+ * deferred stylesheet can hide a live toast even though r29 uses overlay-only
+ * notification geometry. */
+body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail:has(#pickup-toast.show),
+body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail:has(.ccg-rating-rail:not(.hidden)),
+body[data-run-active="true"] .ccg-game>.game-area>.game-message-rail:has(.ccg-important-notice.show){
+  display:contents!important;
+}
 body[data-run-active="true"] .ccg-game>.game-area #pickup-toast{
   position:absolute!important;
   top:12px!important;
