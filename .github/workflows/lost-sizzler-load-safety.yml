@@ -78,9 +78,11 @@ jobs:
           export CHROMIUM_PATH="$(node -e "process.stdout.write(require('playwright').chromium.executablePath())")"
 
           # Historical browser assumptions are normalised only in this disposable
-          # checkout: V10.28's old label, a browser-side held-fire sampler that can
-          # starve requestAnimationFrame under CI load, and V10.6's early channel-
-          # only Supabase replacement. The runtime files themselves stay untouched.
+          # checkout. V10.6 was copied from the deeper legacy /games/... tree and
+          # still walked four directories up; from /arcade/lost-sizzler/tests that
+          # serves the parent of the repository and therefore a 404 instead of the
+          # game. Its channel-only Supabase mock is also deferred until gameReady.
+          # V10.28 gets its current label and non-blocking held-fire sampler.
           python - <<'PY'
           from pathlib import Path
 
@@ -115,6 +117,11 @@ jobs:
 
           legacy=Path('arcade/lost-sizzler/tests/v10-6-browser.mjs')
           source=legacy.read_text(encoding='utf-8')
+          old='const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../../..");'
+          new='const repo=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"../../..");'
+          if old not in source:
+              raise SystemExit('V10.6 browser harness repository-root marker not found')
+          source=source.replace(old,new,1)
           old='window.ccgSupabase={getClient:async()=>client()};'
           new='window.__ccgV106TestClientFactory=client;'
           if old not in source:
