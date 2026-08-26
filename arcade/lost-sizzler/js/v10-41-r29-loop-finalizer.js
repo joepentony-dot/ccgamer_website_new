@@ -8,7 +8,8 @@
     timer:0,reassertions:0,lastLoop:null,
     spyRuntimeRequested:false,spyRuntimeReady:false,spyRuntimeError:"",
     spyNetworkRequested:false,spyNetworkReady:false,spyNetworkError:"",
-    notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,notificationToastWrapped:false
+    notificationRail:null,notificationObserver:null,notificationRailReady:false,notificationLive:false,
+    notificationPending:false,notificationToastWrapped:false,notificationTopStabilised:0
   };
 
   const releaseRevision=()=>String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||"20260825r29");
@@ -51,21 +52,24 @@
     document.body.appendChild(script);return false;
   }
 
-  function notificationIsLive(rail){
+  function notificationActuallyLive(rail){
     if(!rail)return false;
     return Boolean(rail.querySelector("#pickup-toast.show,.ccg-rating-rail:not(.hidden),.ccg-important-notice.show"));
+  }
+
+  function setNotificationRailDisplay(rail,live){
+    if(!rail)return false;
+    rail.style.setProperty("display",live?"contents":"none","important");
+    state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=Boolean(live);
+    return true;
   }
 
   function syncNotificationRail(){
     const rail=state.notificationRail||document.querySelector(".ccg-game>.game-area>.game-message-rail");
     if(!rail)return false;
-    const live=notificationIsLive(rail);
-    // Inline !important deliberately outranks every legacy notification lane
-    // stylesheet. A live notification overlays the canvas via display:contents;
-    // an idle rail consumes no gameplay height at all.
-    rail.style.setProperty("display",live?"contents":"none","important");
-    state.notificationRail=rail;state.notificationRailReady=true;state.notificationLive=live;
-    return true;
+    const actual=notificationActuallyLive(rail);
+    if(actual)state.notificationPending=false;
+    return setNotificationRailDisplay(rail,actual||state.notificationPending);
   }
 
   function ensureNotificationRailGuard(){
@@ -82,27 +86,52 @@
 
   function toastChainHasRailOwner(fn){
     let current=fn;
-    for(let depth=0;depth<12&&typeof current==="function";depth++){
+    for(let depth=0;depth<24&&typeof current==="function";depth++){
       if(current.__ccgV141R29NotificationRailOwner)return true;
       current=current.__ccgOriginal||current.__ccgV141Original||null;
     }
     return false;
   }
 
+  function stabiliseToastOwner(fn){
+    if(typeof fn!=="function")return false;
+    // The V10.41 major-notification hardener treats this marker as final
+    // priority ownership. Setting it on the outer r29 owner prevents the
+    // legacy 300 ms hardener and the r29 80 ms Spy guard from endlessly
+    // wrapping one another and growing the showToast call chain.
+    if(fn.__ccgV141Priority!==true){fn.__ccgV141Priority=true;state.notificationTopStabilised++}
+    return true;
+  }
+
   function ensureNotificationToastOwner(){
     const current=window.showToast;
     if(typeof current!=="function")return false;
-    if(toastChainHasRailOwner(current)){state.notificationToastWrapped=true;return true}
-    const wrapped=function showToastV141R29NotificationRail(){
+    if(toastChainHasRailOwner(current)){
+      stabiliseToastOwner(current);
+      state.notificationToastWrapped=true;
+      return true;
+    }
+    const wrapped=function showToastV141R29NotificationRail(title){
       const result=current.apply(this,arguments);
-      // displayToast adds .show on its own requestAnimationFrame. Queue our
-      // rail synchronization immediately behind it so both become visible in
-      // the same rendered frame, regardless of older showToast wrappers.
-      requestAnimationFrame(syncNotificationRail);
+      const rail=state.notificationRail||document.querySelector(".ccg-game>.game-area>.game-message-rail");
+      const renderedTitle=String(document.getElementById("pickup-title")?.textContent||"");
+      // displayToast removes .show and restores it on the next animation frame
+      // to restart its transition. Keep the rail live during that one-frame
+      // hand-off, otherwise the legacy empty-rail rule can collapse the parent
+      // between remove/add and produce a visible flash or a false hidden state.
+      if(result!==false&&renderedTitle===String(title||"")){
+        state.notificationPending=true;
+        setNotificationRailDisplay(rail,true);
+      }
+      requestAnimationFrame(()=>{
+        syncNotificationRail();
+        requestAnimationFrame(()=>{state.notificationPending=false;syncNotificationRail()});
+      });
       return result;
     };
     wrapped.__ccgV141R29NotificationRailOwner=true;
     wrapped.__ccgOriginal=current;
+    wrapped.__ccgV141Priority=true;
     window.showToast=wrapped;state.notificationToastWrapped=true;return true;
   }
 
