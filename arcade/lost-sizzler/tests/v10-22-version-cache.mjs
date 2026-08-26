@@ -45,7 +45,7 @@ for(const asset of [
   "js/v10-41-lake-item-safety.js","js/v10-41-gambler-devroom.js","js/v10-41-developer-vault-hardening.js",
   "js/v10-41-developer-asset-catalog.js","js/v10-41-horde-leaderboard-polish.js","js/v10-41-split-friendly-fire.js",
   "js/v10-41-landing-notification-polish.js","js/v10-41-major-notification-hardening.js","js/v10-41-r25-spy-speed-bounty-hotfix.js",
-  "js/v10-41-r26-spy-enemy-stability.js","js/v10-41-r27-spy-isolation.js","js/v10-41-r28-special-mode-repair.js","js/v10-41-r29-buglog.js","js/v10-41-r29-runtime-repair.js"
+  "js/v10-41-r26-spy-enemy-stability.js","js/v10-41-r27-spy-isolation.js","js/v10-41-r28-special-mode-repair.js","js/v10-41-r29-buglog.js","js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js","js/v10-41-r30-buglog.js"
 ]){
   const escaped=asset.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
   assert.match(index,new RegExp(`${escaped}\\?v=${manifest.cacheToken}`),`release cache token missing from ${asset}`);
@@ -63,7 +63,9 @@ assert.ok(index.indexOf(`js/v10-41-major-notification-hardening.js?v=${token}`)<
 assert.ok(index.indexOf(`js/v10-41-r25-spy-speed-bounty-hotfix.js?v=${token}`)<index.indexOf(`js/v10-41-r26-spy-enemy-stability.js?v=${token}`),"r26 Spy/enemy stability must load after r25");
 assert.ok(index.indexOf(`js/v10-41-r26-spy-enemy-stability.js?v=${token}`)<index.indexOf(`js/v10-41-r27-spy-isolation.js?v=${token}`),"r27 Spy isolation must load after r26");
 assert.ok(index.indexOf(`js/v10-41-r27-spy-isolation.js?v=${token}`)<index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`),"r28 special-mode balance must load after r27");
-assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 must be the final runtime repair layer");
+assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after r28");
+assert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");
+assert.ok(index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`)<index.indexOf(`js/v10-41-r30-buglog.js?v=${token}`),"r30 buglog must load after its movement ownership repair");
 assert.match(index,/THE LOST SIZZLER — V10\.41/,"static title bar must identify V10.41 before runtime label correction");
 assert.match(index,/BUILD V10\.41/,"static build badge must identify V10.41 before runtime label correction");
 assert.match(index,/id="hud-mana">0\/120</,"static HUD must reflect the sword-first 120-round ammunition model");
