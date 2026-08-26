@@ -91,7 +91,8 @@
   const state={
     activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
-    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,
+    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,
+    sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
 
@@ -263,6 +264,32 @@
     return maintained
   }
 
+  function postSharedFrame(dt){
+    const current=sync("shared frame post");state.sharedPostFrames++;
+    if(current.profile.family!=="horde")return current;
+    try{
+      const focus=window.CCGLostSizzlerV137?.updateHordeFocus;
+      if(typeof focus==="function"){focus(dt);state.hordeFocusPostFrames++}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde focus post-frame failed",error)}
+    return current
+  }
+
+  function installSharedFrameBoundary(){
+    if(state.sharedFrameBoundary||typeof window.update!=="function")return Boolean(state.sharedFrameBoundary);
+    const source=window.update;
+    const boundary=function updateV141ModeControllerBoundary(dt){
+      sync("shared frame pre");state.sharedPreFrames++;
+      const result=source.apply(this,arguments);
+      postSharedFrame(dt);
+      return result
+    };
+    boundary.__ccgV141ModeFrameBoundary=true;
+    boundary.__ccgOriginal=source;
+    state.sharedFrameBoundary=boundary;state.sharedFrameBoundarySource=source;state.sharedFrameBoundaryInstalls++;
+    window.update=boundary;
+    return true
+  }
+
   function frame(){
     const current=sync("frame");current.frame();ensureOwnedSystemGates();
     if(current.profile.family==="horde"){maintainHordeControllerSystems();monitorHordeLifecycle();presentHordeDeaths()}
@@ -274,18 +301,19 @@
       activeId:current.id,previousId:state.previousId,generation:state.generation,transitions:state.transitions,
       profile:{...current.profile},controllerState:{...current.state},lastTransitionReason:state.lastTransitionReason,lastResetReason:state.lastResetReason,
       hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
-      hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,
+      hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,
+      sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
   }
 
-  sync("mode runtime install");ensureOwnedSystemGates();
+  sync("mode runtime install");ensureOwnedSystemGates();installSharedFrameBoundary();
   state.timer=setInterval(()=>{try{frame()}catch(error){console.warn("[Lost Sizzler mode runtime] lifecycle monitor failed",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerModeRuntime={
     IDS,PROFILES,SHARED_CORE,MODE_OWNED,OWNED_SYSTEMS,detect,sync,frame,allows,inFamily,activeController,activeProfile,
-    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,ensureOwnedSystemGates,ownedSystemState,snapshot,
+    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,postSharedFrame,installSharedFrameBoundary,ensureOwnedSystemGates,ownedSystemState,snapshot,
     get state(){return state},get controllers(){return controllers},get ownedSystems(){return ownedSystems}
   };
 })();
