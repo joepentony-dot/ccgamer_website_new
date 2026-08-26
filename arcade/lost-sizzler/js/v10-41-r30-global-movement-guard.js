@@ -169,7 +169,7 @@
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
     const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
-    const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
+    const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove)||(state.goldenLocked&&normalMovementStackReady()&&typeof state.goldenMove==="function"&&currentMove!==state.goldenMove);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;
     const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
