@@ -258,7 +258,8 @@
 
   state.timer=setInterval(()=>{
     wrapLegacyVoice();wrapToast();transitionGuard();
-    if(isHorde()){purgeDungeonRuntime();shapeHordeArena()}
+    if(isHorde())purgeDungeonRuntime();
+    if(isHorde())shapeHordeArena();
     install();
   },90);
   transitionGuard();install();
