@@ -305,11 +305,11 @@ jobs:
             games_ok=true
             for target in "${game_targets[@]}"; do
               game_body="$(curl --fail --silent --show-error --max-time 30 "$target" || true)"
-              if ! printf '%s' "$game_body" | grep -Fq '<meta name="robots" content="index,follow">' \
-                || ! printf '%s' "$game_body" | grep -Fq '<meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/' \
-                || printf '%s' "$game_body" | grep -Fq 'Game not found' \
-                || printf '%s' "$game_body" | grep -Fq '/games/game.html?id=' \
-                || printf '%s' "$game_body" | grep -Fqi 'http-equiv="refresh"'; then
+              if ! grep -Fq '<meta name="robots" content="index,follow">' <<< "$game_body" \
+                || ! grep -Fq '<meta name="twitter:url" content="https://www.cheekycommodoregamer.co.uk/games/' <<< "$game_body" \
+                || grep -Fq 'Game not found' <<< "$game_body" \
+                || grep -Fq '/games/game.html?id=' <<< "$game_body" \
+                || grep -Fqi 'http-equiv="refresh"' <<< "$game_body"; then
                 games_ok=false
                 break
               fi
@@ -318,63 +318,63 @@ jobs:
             shell_ok=true
             for target in "${shell_targets[@]}"; do
               shell_body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
-              if ! printf '%s' "$shell_body" | grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' \
-                || ! printf '%s' "$shell_body" | grep -Fq '>Publishers</a>' \
-                || ! printf '%s' "$shell_body" | grep -Fq '>Music Hub</a>' \
-                || ! printf '%s' "$shell_body" | grep -Fq '>Find Me a Game</a>' \
-                || ! printf '%s' "$shell_body" | grep -Fq '>Install CCG App</a>' \
-                || ! printf '%s' "$shell_body" | grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' \
-                || ! printf '%s' "$shell_body" | grep -Fq 'ccg-socials__icon--discord' \
-                || ! printf '%s' "$shell_body" | grep -Fq 'src="/js/ccg-header-auth-loader.js"'; then
+              if ! grep -Fq 'data-ccg-static-shell="2026-08-19-v1"' <<< "$shell_body" \
+                || ! grep -Fq '>Publishers</a>' <<< "$shell_body" \
+                || ! grep -Fq '>Music Hub</a>' <<< "$shell_body" \
+                || ! grep -Fq '>Find Me a Game</a>' <<< "$shell_body" \
+                || ! grep -Fq '>Install CCG App</a>' <<< "$shell_body" \
+                || ! grep -Fq 'class="ccg-auth-slot" data-ccg-auth-pending="true"' <<< "$shell_body" \
+                || ! grep -Fq 'ccg-socials__icon--discord' <<< "$shell_body" \
+                || ! grep -Fq 'src="/js/ccg-header-auth-loader.js"' <<< "$shell_body"; then
                 shell_ok=false
                 break
               fi
             done
 
             genre_ok=false
-            if printf '%s' "$genre_body" | grep -Fq '<!-- CCG STATIC GENRE FALLBACK START -->' \
-              && printf '%s' "$genre_body" | grep -Fq 'data-ccg-static-genre-fallback="true"' \
-              && printf '%s' "$genre_body" | grep -Eq 'href="/games/[a-z0-9-]+/"' \
-              && ! printf '%s' "$genre_body" | grep -Fq 'game.html?id='; then
+            if grep -Fq '<!-- CCG STATIC GENRE FALLBACK START -->' <<< "$genre_body" \
+              && grep -Fq 'data-ccg-static-genre-fallback="true"' <<< "$genre_body" \
+              && grep -Eq 'href="/games/[a-z0-9-]+/"' <<< "$genre_body" \
+              && ! grep -Fq 'game.html?id=' <<< "$genre_body"; then
               genre_ok=true
             fi
 
             retro_ok=true
             for target in "${retro_targets[@]}"; do
               retro_body="$(curl --fail --silent --show-error --location --max-time 30 "$target" || true)"
-              if ! printf '%s' "$retro_body" | grep -Fq 'class="ccg-header"' \
-                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__hero-media' \
-                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__watch' \
-                || ! printf '%s' "$retro_body" | grep -Fq 'retro-video-page__related-media' \
-                || ! printf '%s' "$retro_body" | grep -Fq 'data-ccg-mode-toggle'; then
+              if ! grep -Fq 'class="ccg-header"' <<< "$retro_body" \
+                || ! grep -Fq 'retro-video-page__hero-media' <<< "$retro_body" \
+                || ! grep -Fq 'retro-video-page__watch' <<< "$retro_body" \
+                || ! grep -Fq 'retro-video-page__related-media' <<< "$retro_body" \
+                || ! grep -Fq 'data-ccg-mode-toggle' <<< "$retro_body"; then
                 retro_ok=false
                 break
               fi
             done
 
             retro_assets_ok=false
-            if printf '%s' "$retro_css_body" | grep -Fq 'CCG RETRO CONTENT COLLECTIONS' \
-              && printf '%s' "$retro_css_body" | grep -Fq '.ccg-collection-skeleton' \
-              && printf '%s' "$retro_css_body" | grep -Fq 'aspect-ratio: 16 / 9'; then
+            if grep -Fq 'CCG RETRO CONTENT COLLECTIONS' <<< "$retro_css_body" \
+              && grep -Fq '.ccg-collection-skeleton' <<< "$retro_css_body" \
+              && grep -Fq 'aspect-ratio: 16 / 9' <<< "$retro_css_body"; then
               retro_assets_ok=true
             fi
 
             quiz_ok=false
-            if printf '%s' "$quiz_js_body" | grep -Fq 'Choose a Pack First' \
-              && printf '%s' "$quiz_js_body" | grep -Fq 'quiz-ux-flow' \
-              && printf '%s' "$quiz_css_body" | grep -Fq -- '--quiz-progress' \
-              && printf '%s' "$quiz_css_body" | grep -Fq '.quiz-pack-btn__desc'; then
+            if grep -Fq 'Choose a Pack First' <<< "$quiz_js_body" \
+              && grep -Fq 'quiz-ux-flow' <<< "$quiz_js_body" \
+              && grep -Fq -- '--quiz-progress' <<< "$quiz_css_body" \
+              && grep -Fq '.quiz-pack-btn__desc' <<< "$quiz_css_body"; then
               quiz_ok=true
             fi
 
-            if printf '%s' "$announcement_body" | grep -Fq 'Content Announcements' \
-              && printf '%s' "$announcement_body" | grep -Fq 'announceContentFilter' \
-              && printf '%s' "$support_body" | grep -Fq 'Quietly keeping CCG going' \
-              && printf '%s' "$support_body" | grep -Fq 'YouTube Membership' \
-              && printf '%s' "$support_body" | grep -Fq 'Buy Joe a Beer' \
-              && printf '%s' "$shop_body" | grep -Fq 'url=/support.html' \
-              && ! printf '%s' "$shop_body" | grep -Fq 'Retro Merchandise' \
-              && ! printf '%s' "$shop_body" | grep -Fq 'Digital Products' \
+            if grep -Fq 'Content Announcements' <<< "$announcement_body" \
+              && grep -Fq 'announceContentFilter' <<< "$announcement_body" \
+              && grep -Fq 'Quietly keeping CCG going' <<< "$support_body" \
+              && grep -Fq 'YouTube Membership' <<< "$support_body" \
+              && grep -Fq 'Buy Joe a Beer' <<< "$support_body" \
+              && grep -Fq 'url=/support.html' <<< "$shop_body" \
+              && ! grep -Fq 'Retro Merchandise' <<< "$shop_body" \
+              && ! grep -Fq 'Digital Products' <<< "$shop_body" \
               && [ "$games_ok" = true ] \
               && [ "$shell_ok" = true ] \
               && [ "$genre_ok" = true ] \
