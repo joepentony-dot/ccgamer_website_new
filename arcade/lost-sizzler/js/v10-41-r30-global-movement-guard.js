@@ -212,7 +212,7 @@
 
   function directionForCode(code,player){
     const p2Map={KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}};
-    const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
+    const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
     try{return player===p2?p2Map[code]||null:p1Map[code]||null}catch(_){return p1Map[code]||null}
   }
   function occupiedTarget(player,x,y){
