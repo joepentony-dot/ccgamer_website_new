@@ -15,6 +15,8 @@ on:
       - "scripts/prepare-seo-genre-links.js"
       - "scripts/validate-seo-genre-links.js"
       - "scripts/generate-sitemaps.js"
+      - "scripts/migrate-mr-weems-thumbnail.js"
+      - "scripts/migrate-ruff-n-tumble-thumbnail.js"
       - "scripts/rebuild-games.js"
       - ".github/workflows/games-publishing.yml"
       - ".github/workflows/deploy-github-pages-omega-stable.yml"
@@ -45,6 +47,11 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Apply historical game source migrations
+        run: |
+          node scripts/migrate-mr-weems-thumbnail.js
+          node scripts/migrate-ruff-n-tumble-thumbnail.js
+
       - name: Record protected hashes
         shell: bash
         run: |
@@ -64,6 +71,8 @@ jobs:
           node --check scripts/prepare-seo-genre-links.js
           node --check scripts/validate-seo-genre-links.js
           node --check scripts/generate-sitemaps.js
+          node --check scripts/migrate-mr-weems-thumbnail.js
+          node --check scripts/migrate-ruff-n-tumble-thumbnail.js
           node --check scripts/rebuild-games.js
 
       - name: Generate canonical game routes
@@ -172,7 +181,7 @@ jobs:
             echo '- Result: PASS'
             echo "- Generated game/genre files changed from current repository state: ${changed_games}"
             echo '- Protected intro files: unchanged'
-            echo '- games/games.json: unchanged'
+            echo '- Historical game source migrations: stable during validation'
             echo '- Canonical game routes: validated'
             echo '- Game sitemap: regenerated and validated against the current catalogue'
             echo '- Crawlable genre game links: validated'
