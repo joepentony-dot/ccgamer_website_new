@@ -10,8 +10,10 @@ const repo=path.resolve(here,"../../../..");
 const read=relative=>fs.readFileSync(path.join(repo,relative),"utf8");
 const v139=read("arcade/lost-sizzler/js/v10-39-horde-live-loadout.js");
 const v140=read("arcade/lost-sizzler/js/v10-40-horde-final.js");
+const hordeSafety=read("arcade/lost-sizzler/js/v10-41-horde-mode-safety.js");
 assert.ok(!/window\.update\s*=/.test(v139),"V10.39 must not globally replace the shared update loop");
 assert.ok(!/window\.update\s*=/.test(v140),"V10.40 must not globally replace the shared update loop");
+assert.ok(!/window\.update\s*=/.test(hordeSafety),"Horde mode safety must not globally replace the shared update loop");
 assert.match(v139,/controller-owned/i,"V10.39 must declare controller ownership");
 assert.match(v140,/controller-owned/i,"V10.40 must declare controller ownership");
 
@@ -37,7 +39,7 @@ try{
   page.setDefaultTimeout(30000);
   const pageErrors=[];page.on("pageerror",error=>pageErrors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139)&&Boolean(window.CCGLostSizzlerV140));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139)&&Boolean(window.CCGLostSizzlerV140)&&Boolean(window.CCGLostSizzlerHordeModeSafety));
 
   const result=await page.evaluate(async()=>{
     const api=window.CCGLostSizzlerModeRuntime,special=window.CCGLostSizzlerSpecialModes;
@@ -55,6 +57,7 @@ try{
       const soloBefore=api.snapshot();
       api.frame();api.frame();
       const soloAfter=api.snapshot();
+      const safetyInSolo=window.CCGLostSizzlerHordeModeSafety.state.updateWrapped;
 
       const hordeState={wave:3,state:"wave",playerCount:1,activeEnemies:[],spawned:0,players:[]};
       document.body.dataset.specialMode="horde-survivor";document.body.dataset.hordeSolo="true";
@@ -66,11 +69,12 @@ try{
       const hordeOnlineId=api.sync("controller ownership horde online").id;
       const hordeOnlineBefore=api.snapshot();api.frame();const hordeOnlineAfter=api.snapshot();
 
-      return{soloBefore,soloAfter,hordeSoloId,hordeSoloBefore,hordeSoloAfter,hordeOnlineId,hordeOnlineBefore,hordeOnlineAfter};
+      return{soloBefore,soloAfter,safetyInSolo,hordeSoloId,hordeSoloBefore,hordeSoloAfter,hordeOnlineId,hordeOnlineBefore,hordeOnlineAfter};
     }finally{restore()}
   });
 
   assert.equal(result.soloAfter.activeId,"dungeon-solo","baseline ownership check must remain Dungeon Solo");
+  assert.equal(result.safetyInSolo,false,"Horde mode safety must report no shared update wrapper while Dungeon Solo is active");
   assert.equal(result.soloAfter.hordeLoadoutMaintenances,result.soloBefore.hordeLoadoutMaintenances,"Dungeon Solo must not run Horde loadout maintenance");
   assert.equal(result.soloAfter.hordeReserveMaintenances,result.soloBefore.hordeReserveMaintenances,"Dungeon Solo must not run Horde reserve maintenance");
   assert.equal(result.hordeSoloId,"horde-solo","Horde Survivor Solo must route through horde-solo");
@@ -80,7 +84,7 @@ try{
   assert.ok(result.hordeOnlineAfter.hordeLoadoutMaintenances>result.hordeOnlineBefore.hordeLoadoutMaintenances,"Horde Online controller must own V10.39 loadout maintenance");
   assert.ok(result.hordeOnlineAfter.hordeReserveMaintenances>result.hordeOnlineBefore.hordeReserveMaintenances,"Horde Online controller must own V10.40 reserve maintenance");
   assert.deepEqual(pageErrors,[],`controller ownership regression must have no uncaught browser errors: ${pageErrors.join("\n")}`);
-  console.log("Lost Sizzler V10.39/V10.40 Horde maintenance ownership is isolated to horde-solo and horde-online in Chromium.");
+  console.log("Lost Sizzler Horde maintenance ownership is isolated: V10.39/V10.40 are controller-owned and Horde mode safety is off the shared update chain.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
