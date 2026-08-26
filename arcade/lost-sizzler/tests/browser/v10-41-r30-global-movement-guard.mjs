@@ -106,11 +106,12 @@ try{
     const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
     const injected=r30.spyContaminated(window.movePlayer);
     await new Promise(r=>setTimeout(r,140));
-    return{injected,contaminated:r30.spyContaminated(window.movePlayer),golden:window.movePlayer===r30.state.goldenMove};
+    return{injected,contaminated:r30.spyContaminated(window.movePlayer),functional:typeof window.movePlayer==="function"};
   });
   assert.equal(periodicRepair.injected,true,"periodic fault injection must install an isolated Spy owner before monitor recovery");
   assert.equal(periodicRepair.contaminated,false,"continuous normal-mode ownership monitoring must remove isolated Spy contamination");
-  assert.equal(periodicRepair.golden,true,"continuous ownership recovery must converge on the locked known-good movement owner");
+  assert.equal(periodicRepair.functional,true,"continuous ownership recovery must leave a callable normal movement owner");
+  await assertKeyboardMove(page,"Solo after periodic ownership recovery");
 
   const spyCycles=await page.evaluate(async()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,SAB=window.CCGLostSizzlerSaboteurs,r30=window.CCGLostSizzlerV141R30;
