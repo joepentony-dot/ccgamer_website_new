@@ -199,7 +199,7 @@
     held.add(event.code);
     try{input.add(event.code);const player=playerForCode(event.code);if(player&&typeof setDir==="function")setDir(player,event.code);state.inputBridges++}catch(_){}
   }
-  function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}
+  function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}}
   function resetWatch(watch){watch.x=null;watch.y=null;watch.code="";watch.since=0}
   function clearHeld(){held.clear();resetWatch(watches.p1);resetWatch(watches.p2)}
 
@@ -212,7 +212,7 @@
 
   function directionForCode(code,player){
     const p2Map={KeyJ:{x:-1,y:0},KeyL:{x:1,y:0},KeyI:{x:0,y:-1},KeyK:{x:0,y:1}};
-    const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:-1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
+    const p1Map={ArrowLeft:{x:-1,y:0},KeyA:{x:-1,y:0},ArrowRight:{x:1,y:0},KeyD:{x:1,y:0},ArrowUp:{x:0,y:-1},KeyW:{x:0,y:1},ArrowDown:{x:0,y:1},KeyS:{x:0,y:1}};
     try{return player===p2?p2Map[code]||null:p1Map[code]||null}catch(_){return p1Map[code]||null}
   }
   function occupiedTarget(player,x,y){
