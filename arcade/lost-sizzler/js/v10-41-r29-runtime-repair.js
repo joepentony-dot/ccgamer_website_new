@@ -112,6 +112,11 @@
       }
       return current.apply(this,arguments)
     };
+    // This compatibility guard can become the outer showToast layer every
+    // 80 ms as other retained mode guards reassert themselves. Carry the
+    // established notification-priority marker forward synchronously so the
+    // visible owner never spends a frame in an unowned state.
+    if(current.__ccgV141Priority===true)wrapped.__ccgV141Priority=true;
     wrapped.__ccgV141R29SpyToast=true;wrapped.__ccgOriginal=current;window.showToast=wrapped;
     state.toastInstalled=true;state.lastToastSource=wrapped;return true;
   }
