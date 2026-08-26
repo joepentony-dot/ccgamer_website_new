@@ -14,6 +14,8 @@ assert.match(index,/v10-41-r30-global-movement-guard\.js\?v=20260826r30/);
 assert.match(index,/v10-41-r30-buglog\.js\?v=20260826r30/);
 assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the competing r29 installer timer");
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
+assert.match(guard,/ISOLATED_MARKERS=\["__ccgV141R29SpyRuntimeOwner","__ccgV141SpyIsolated","__ccgV141SpyDamageBoundary"\]/,"r30 must distinguish the temporary isolated Spy owners from the valid normal-mode r29 compatibility wrapper");
+assert.match(guard,/function spyContaminated\(fn\)/,"r30 must inspect the complete wrapper chain for isolated Spy ownership");
 assert.match(guard,/forceRestore\(baseUpdate,baseMove,baseHurt,"Spy runtime exit"\)/,"Spy exit must force-restore normal owners even if another wrapper displaced the Spy owner");
 assert.match(guard,/stale Spy owner outside Spy mode/,"r30 must recover already-contaminated non-Spy movement");
 assert.match(guard,/addEventListener\("keydown",bridgeKeyDown,true\)/,"movement capture must run before legacy handlers");
