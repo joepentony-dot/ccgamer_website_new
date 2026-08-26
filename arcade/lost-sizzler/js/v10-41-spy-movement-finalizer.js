@@ -1,12 +1,13 @@
 /* The Lost Sizzler V10.41 — final Spy Vs Spy movement ownership.
  * Installs only after the sequential enhancement queue is complete so later
  * dungeon wrappers cannot replace the Spy movement repair.
+ * Spy respawn synchronisation is controller-owned and no longer wraps update.
  */
 (()=>{
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_SPY_MOVEMENT_FINALIZER__)return;
   window.__CCG_LOST_SIZZLER_V141_SPY_MOVEMENT_FINALIZER__=true;
-  const state={installed:false,moveInstalled:false,updateInstalled:false,fallbackMoves:0,respawns:0,statusById:new Map(),timer:0};
+  const state={installed:false,moveInstalled:false,updateInstalled:true,controllerOwnedRespawns:true,fallbackMoves:0,respawns:0,statusById:new Map(),timer:0};
   const spyActive=()=>{try{return window.CCGLostSizzlerSpecialModes?.active?.type==="sizzler-saboteurs"||document.body?.dataset?.specialMode==="sizzler-saboteurs"}catch(_){return false}};
   const spyModelFor=player=>{try{return window.CCGLostSizzlerSpecialModes?.active?.state?.players?.find(entry=>String(entry?.id||"")===String(player?.id||""))||null}catch(_){return null}};
   const canSpyMove=player=>{const model=spyModelFor(player);return !model||model.status==="active"};
@@ -64,14 +65,8 @@
     };
     window.movePlayer.__ccgV141SpyFinal=true;state.moveInstalled=true;return true;
   }
-  function installUpdate(){
-    if(state.updateInstalled||typeof window.update!=="function")return state.updateInstalled;
-    const original=window.update;
-    window.update=function updateV141SpyRespawnFinal(){const result=original.apply(this,arguments);try{syncRespawns()}catch(error){try{console.warn("[Lost Sizzler V10.41] Spy respawn finalizer recovered",error)}catch(_){}}return result};
-    window.update.__ccgV141SpyRespawnFinal=true;state.updateInstalled=true;return true;
-  }
   function install(){
-    const moveReady=installMove(),updateReady=installUpdate();state.installed=Boolean(moveReady&&updateReady);
+    const moveReady=installMove();state.installed=Boolean(moveReady);
     if(state.installed)try{window.CCGLostSizzlerV141BrowserStabilityGameplay?.repairSpySpawn?.()}catch(_){}
     return state.installed;
   }
