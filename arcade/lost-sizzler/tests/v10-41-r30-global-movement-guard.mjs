@@ -16,6 +16,10 @@ assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the compe
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");
 assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselineMove/,"watchdog recovery must prefer the locked golden movement owner over later mutable wrappers");
+assert.match(guard,/function controllerProtectedUpdate\(fn\)/,"r30 must recognise the authoritative controller frame boundary inside the live update ancestry");
+assert.match(guard,/chainHas\(fn,"__ccgV141ModeFrameBoundary"\)/,"controller update protection must follow wrapper ancestry instead of requiring the boundary to be top-level");
+assert.match(guard,/!controllerProtectedUpdate\(currentUpdate\)&&spyContaminated\(currentUpdate\)/,"movement-only ownership repair must not roll back a controller-protected update chain because of historical nested Spy markers");
+assert.match(guard,/function topLevelSpyOwner\(fn\)/,"a genuinely top-level Spy owner must remain distinguishable from harmless historical markers beneath the controller boundary");
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
 assert.match(guard,/STALL_RECOVERY_MS=700/,"a held-key movement watchdog must recover silent movement stalls");
 assert.match(guard,/watchdogRecoveries/,"movement watchdog self-heals must be measurable");
