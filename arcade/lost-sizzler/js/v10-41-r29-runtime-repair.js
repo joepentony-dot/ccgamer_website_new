@@ -173,7 +173,7 @@
 
   function desiredHordeQuota(runState){
     const wave=Math.max(0,Number(runState?.wave)||0),players=Math.max(1,Number(runState?.playerCount)||1);if(!wave)return 0;
-    try{if(window.CCGLostSizzlerV138?.desiredQuota)return Number(window.CCGLostSizzlerV138.desiredQuota(wave,players))||0}catch(_){return 0}
+    try{if(window.CCGLostSizzlerV138?.desiredQuota)return Number(window.CCGLostSizzlerV138.desiredQuota(wave,players))||0}catch(_){}
     try{return Number(window.CCGLostSizzlerHorde?.quotaFor?.(wave,players))||0}catch(_){return 0}
   }
   function hordeRemaining(runState=special()?.state){
