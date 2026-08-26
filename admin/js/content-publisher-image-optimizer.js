@@ -1,3 +1,4 @@
+import './content-publisher-source-preflight.mjs';
 import './content-publisher-status-reconciler.js';
 
 const MAX_WIDTH = 1280;

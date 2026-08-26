@@ -38,6 +38,11 @@ VARIANTS = [
     {"key": "amiga", "system": "AMIGA", "slug": "phase6b-synthetic-amiga", "id": "phase6b_synthetic_amiga", "video_id": "P6BAMGTEST01", "title": "Phase 6B Synthetic Amiga Game", "year": 1991, "platform_route": "games/platforms/amiga/index.html", "pdf": ""},
 ]
 
+HISTORICAL_SOURCE_MIGRATIONS = [
+    "scripts/migrate-mr-weems-thumbnail.js",
+    "scripts/migrate-ruff-n-tumble-thumbnail.js",
+]
+
 
 def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
@@ -152,6 +157,15 @@ def run_variant(variant: dict[str, Any], baseline_count: int) -> dict[str, Any]:
     try:
         add = run(["git", "worktree", "add", "--detach", str(sandbox), "HEAD"], ROOT); commands.append(add)
         if not add["passed"]: return {"variant": variant["key"], "commands": commands, "checks": {}, "passed": 0, "total": 0}
+
+        # Production applies historical source migrations before its protected hashes
+        # and authoritative rebuild. Synthetic worktrees start from HEAD, so mirror
+        # those same migrations here before injecting the disposable game fixture.
+        for migration in HISTORICAL_SOURCE_MIGRATIONS:
+            migrated = run(["node", migration], sandbox); commands.append(migrated)
+            if not migrated["passed"]:
+                return {"variant": variant["key"], "commands": commands, "checks": {}, "passed": 0, "total": 0}
+
         games_path = sandbox / "games" / "games.json"; games = json.loads(read(games_path)); games.append(synthetic_game(variant)); games_path.write_text(json.dumps(games, indent=2) + "\n", encoding="utf-8")
         inject_video_metadata(sandbox, variant)
         create_thumbnail(sandbox / "resources" / "images" / "thumbnails" / "all" / f"{variant['slug']}.png")
