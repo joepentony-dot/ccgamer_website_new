@@ -22,6 +22,7 @@ on:
       - "data/seo-opportunity-targets.json"
       - "admin/js/content-publisher-image-optimizer.js"
       - "admin/js/content-publisher-status-reconciler.js"
+      - "admin/js/content-publisher-source-preflight.mjs"
       - "js/game-secondary-publisher-runtime.js"
       - "js/ccg-publisher-history.js"
       - "js/ccg-category-omega.js"
@@ -78,6 +79,7 @@ on:
       - "tests/manual-viewer-polish.test.mjs"
       - "tests/seo-opportunity-plan.test.mjs"
       - "tests/game-description-enrichment-fallback.test.mjs"
+      - "tests/content-publisher-source-preflight.test.mjs"
       - "tools/seo/static-pages.json"
       - "emulation.html"
       - "quiz/quiz.html"
@@ -111,7 +113,10 @@ jobs:
           node-version: "24"
 
       - name: Validate Content Publisher recovery controls
-        run: node --check admin/js/content-publisher-status-reconciler.js
+        run: |
+          node --check admin/js/content-publisher-status-reconciler.js
+          node --check admin/js/content-publisher-source-preflight.mjs
+          node --test tests/content-publisher-source-preflight.test.mjs
 
       - name: Validate game description fallback
         run: node --test tests/game-description-enrichment-fallback.test.mjs
@@ -131,7 +136,7 @@ jobs:
       - name: Repair historical Mr Weems thumbnail source
         run: node scripts/migrate-mr-weems-thumbnail.js
 
-      - name: Repair historical Ruff N Tumble thumbnail source
+      - name: Repair historical Ruff N Tumble source
         run: node scripts/migrate-ruff-n-tumble-thumbnail.js
 
       - name: Cache required Lemon magazine sources
@@ -227,10 +232,11 @@ jobs:
             --base main \
             --head "$OUTPUT_BRANCH" \
             --title "Publish generated game archive output" \
-            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. Any historical thumbnail-source migration is applied before the protected hashes are recorded.")
+            --body "Automated generated game/archive output from Reliable Games Publishing run ${GITHUB_RUN_ID}. The authoritative rebuild, required Lemon magazine-source coverage, magazine-review import, YouTube metadata sync, publisher generation, manual-viewer materialization, download-index validation, video-library generation, sitemap checks, SEO validation, canonical shared-header validation and protected-file checks all passed before this PR was created. Any historical game-source migration is applied before the protected hashes are recorded.")
 
           echo "Created generated-output PR: $PR_URL"
           gh pr merge "$PR_URL" \
             --repo "$GITHUB_REPOSITORY" \
+            --base main \
             --squash \
             --delete-branch
