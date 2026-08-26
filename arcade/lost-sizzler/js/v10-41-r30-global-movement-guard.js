@@ -142,7 +142,9 @@
   function reassertHeldInput(){
     if(!playing()){held.clear();return false}
     let changed=false;
-    for(const code of held){try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){}
+    for(const code of held){
+      try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){}
+    }
     return changed;
   }
 
