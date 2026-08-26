@@ -9,8 +9,10 @@ const here=path.dirname(fileURLToPath(import.meta.url));
 const repo=path.resolve(here,"../../../..");
 const v139Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-39-horde-live-loadout.js"),"utf8");
 const v140Source=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-40-horde-final.js"),"utf8");
+const hordeSafetySource=fs.readFileSync(path.join(repo,"arcade/lost-sizzler/js/v10-41-horde-mode-safety.js"),"utf8");
 assert.doesNotMatch(v139Source,/window\.update\s*=/,"V10.39 must not replace the shared update loop after controller migration");
 assert.doesNotMatch(v140Source,/window\.update\s*=/,"V10.40 must not replace the shared update loop after controller migration");
+assert.doesNotMatch(hordeSafetySource,/window\.update\s*=/,"Horde mode safety must not sit in the shared update ancestry after isolation migration");
 
 const mime={".html":"text/html; charset=utf-8",".js":"text/javascript; charset=utf-8",".mjs":"text/javascript; charset=utf-8",".css":"text/css; charset=utf-8",".json":"application/json; charset=utf-8",".svg":"image/svg+xml",".webp":"image/webp",".png":"image/png",".ogg":"audio/ogg",".mp3":"audio/mpeg"};
 const sockets=new Set();
@@ -36,29 +38,31 @@ try{
   const page=await context.newPage();page.setDefaultTimeout(30000);
   const errors=[];page.on("pageerror",error=>errors.push(String(error?.stack||error)));
   await page.goto(`${origin}/arcade/lost-sizzler/`,{waitUntil:"domcontentloaded"});
-  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139?.state?.installed)&&Boolean(window.CCGLostSizzlerV140?.state?.installed));
+  await page.waitForFunction(()=>document.body.dataset.releaseReady==="true"&&Boolean(window.CCGLostSizzlerModeRuntime)&&Boolean(window.CCGLostSizzlerV139?.state?.installed)&&Boolean(window.CCGLostSizzlerV140?.state?.installed)&&Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.installed));
 
   const ownership=await page.evaluate(()=>({
     v139:{controllerOwned:Boolean(window.CCGLostSizzlerV139?.state?.controllerOwned),wrapped:Boolean(window.CCGLostSizzlerV139?.state?.wrapped)},
-    v140:{controllerOwned:Boolean(window.CCGLostSizzlerV140?.state?.controllerOwned),wrapped:Boolean(window.CCGLostSizzlerV140?.state?.updateWrapped)}
+    v140:{controllerOwned:Boolean(window.CCGLostSizzlerV140?.state?.controllerOwned),wrapped:Boolean(window.CCGLostSizzlerV140?.state?.updateWrapped)},
+    hordeSafety:{wrapped:Boolean(window.CCGLostSizzlerHordeModeSafety?.state?.updateWrapped),schedulerActive:Number(window.CCGLostSizzlerHordeModeSafety?.state?.timer||0)>0}
   }));
   assert.deepEqual(ownership.v139,{controllerOwned:true,wrapped:false},"V10.39 loadout maintenance must be controller-owned and not globally wrapped");
   assert.deepEqual(ownership.v140,{controllerOwned:true,wrapped:false},"V10.40 reserve maintenance must be controller-owned and not globally wrapped");
+  assert.deepEqual(ownership.hordeSafety,{wrapped:false,schedulerActive:true},"Horde safety must use its Horde-only scheduler instead of intercepting every shared update");
 
   const routed=await page.evaluate(()=>{
-    const api=window.CCGLostSizzlerModeRuntime,special=window.CCGLostSizzlerSpecialModes;
+    const api=window.CCGLostSizzlerModeRuntime,special=window.CCGLostSizzlerSpecialModes,safety=window.CCGLostSizzlerHordeModeSafety;
     const descriptor=Object.getOwnPropertyDescriptor(special,"active"),previousPlay=playMode,previousSpecial=document.body.dataset.specialMode,previousSolo=document.body.dataset.hordeSolo;
     const result={};
     try{
       Object.defineProperty(special,"active",{configurable:true,value:null});
       delete document.body.dataset.specialMode;delete document.body.dataset.hordeSolo;playMode="solo";api.sync("controller maintenance dungeon control");
-      const dungeonBefore=api.snapshot();api.frame();const dungeonAfter=api.snapshot();
-      result.dungeon={activeId:dungeonAfter.activeId,loadoutDelta:dungeonAfter.hordeLoadoutMaintenances-dungeonBefore.hordeLoadoutMaintenances,reserveDelta:dungeonAfter.hordeReserveMaintenances-dungeonBefore.hordeReserveMaintenances};
+      const dungeonBefore=api.snapshot(),dungeonSafety=safety.purgeDungeonRuntime();api.frame();const dungeonAfter=api.snapshot();
+      result.dungeon={activeId:dungeonAfter.activeId,loadoutDelta:dungeonAfter.hordeLoadoutMaintenances-dungeonBefore.hordeLoadoutMaintenances,reserveDelta:dungeonAfter.hordeReserveMaintenances-dungeonBefore.hordeReserveMaintenances,safetyPurge:dungeonSafety};
 
       document.body.dataset.specialMode="horde-survivor";document.body.dataset.hordeSolo="true";
       Object.defineProperty(special,"active",{configurable:true,value:{type:"horde-survivor",authoritative:false,state:{wave:3,state:"wave",playerCount:1,players:[],spawned:0,activeEnemies:[]}}});
-      api.sync("controller maintenance Horde Solo");const soloBefore=api.snapshot();api.frame();const soloAfter=api.snapshot();
-      result.hordeSolo={activeId:soloAfter.activeId,loadoutDelta:soloAfter.hordeLoadoutMaintenances-soloBefore.hordeLoadoutMaintenances,reserveDelta:soloAfter.hordeReserveMaintenances-soloBefore.hordeReserveMaintenances};
+      api.sync("controller maintenance Horde Solo");const soloBefore=api.snapshot();api.frame();safety.transitionGuard();safety.purgeDungeonRuntime();const soloAfter=api.snapshot();
+      result.hordeSolo={activeId:soloAfter.activeId,loadoutDelta:soloAfter.hordeLoadoutMaintenances-soloBefore.hordeLoadoutMaintenances,reserveDelta:soloAfter.hordeReserveMaintenances-soloBefore.hordeReserveMaintenances,safetyActive:safety.isHorde(),lastPurgeAt:Number(safety.state.lastPurgeAt||0)};
 
       document.body.dataset.hordeSolo="false";api.sync("controller maintenance Horde Online");const onlineBefore=api.snapshot();api.frame();const onlineAfter=api.snapshot();
       result.hordeOnline={activeId:onlineAfter.activeId,loadoutDelta:onlineAfter.hordeLoadoutMaintenances-onlineBefore.hordeLoadoutMaintenances,reserveDelta:onlineAfter.hordeReserveMaintenances-onlineBefore.hordeReserveMaintenances};
@@ -67,21 +71,23 @@ try{
       if(previousSpecial===undefined)delete document.body.dataset.specialMode;else document.body.dataset.specialMode=previousSpecial;
       if(previousSolo===undefined)delete document.body.dataset.hordeSolo;else document.body.dataset.hordeSolo=previousSolo;
       if(descriptor)Object.defineProperty(special,"active",descriptor);else delete special.active;
-      api.sync("controller maintenance restore");
+      api.sync("controller maintenance restore");safety.transitionGuard();
     }
     return result;
   });
 
-  assert.deepEqual(routed.dungeon,{activeId:"dungeon-solo",loadoutDelta:0,reserveDelta:0},"Dungeon Solo must never execute Horde loadout or reserve maintenance");
+  assert.deepEqual(routed.dungeon,{activeId:"dungeon-solo",loadoutDelta:0,reserveDelta:0,safetyPurge:false},"Dungeon Solo must never execute Horde loadout, reserve or purge maintenance");
   assert.equal(routed.hordeSolo.activeId,"horde-solo","Horde Solo must own its maintenance path");
   assert.ok(routed.hordeSolo.loadoutDelta>=1,"Horde Solo must execute controller-owned loadout maintenance");
   assert.ok(routed.hordeSolo.reserveDelta>=1,"Horde Solo must execute controller-owned reserve maintenance");
+  assert.equal(routed.hordeSolo.safetyActive,true,"Horde safety must activate only when a Horde controller owns the run");
+  assert.ok(routed.hordeSolo.lastPurgeAt>0,"Horde safety scheduler must retain its Horde-only dungeon-state purge");
   assert.equal(routed.hordeOnline.activeId,"horde-online","Horde Multiplayer must own its maintenance path");
   assert.ok(routed.hordeOnline.loadoutDelta>=1,"Horde Multiplayer must execute controller-owned loadout maintenance");
   assert.ok(routed.hordeOnline.reserveDelta>=1,"Horde Multiplayer must execute controller-owned reserve maintenance");
   assert.deepEqual(errors,[],`controller-owned Horde maintenance regression must have no uncaught browser errors: ${errors.join("\n")}`);
 
-  console.log("Lost Sizzler V10.39/V10.40 Horde controller-owned maintenance and Dungeon Solo update-isolation regression passed in Chromium.");
+  console.log("Lost Sizzler Horde controller maintenance, Horde safety isolation and Dungeon Solo update-ancestry regression passed in Chromium.");
   await context.close();
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
