@@ -15,6 +15,41 @@
   const SPECIAL_HORDE="horde-survivor",SPECIAL_SPY="sizzler-saboteurs",MONITOR_MS=40;
   const SHARED_CORE=Object.freeze(["rendering","collision","enemy-components","audio","basic-weapons","player-movement"]);
   const MODE_OWNED=Object.freeze(["wave-transitions","control-locking","death-state","respawning","hazards","scoring","multiplayer-sync","mode-ui"]);
+  const OWNED_SYSTEMS=Object.freeze({
+    updateCamping:Object.freeze({capability:"antiCamping",blockedReturn:false}),
+    updateHazards:Object.freeze({capability:"antiCamping",blockedReturn:false}),
+    updateDedicatedHazards:Object.freeze({capability:"dedicatedHazards",blockedReturn:false}),
+    updateGenerators:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateArena:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateTimed:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateBoulder:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateMemoryPuzzle:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateRescue:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateBanishment:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateStalker:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateFloorObjective:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateAlert:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    updateRoomEvents:Object.freeze({capability:"dungeonSystems",blockedReturn:false}),
+    triggerSwitch:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    activateSwitch:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerTrader:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerDeathCache:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerBloodClue:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerMemoryPuzzle:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerSequenceTorch:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerWeightBridge:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerShrine:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerTrap:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerRescue:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerArena:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerTimed:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerBoulder:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerHauntedCorridor:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    triggerSigilRoom:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    closeNearbyDoor:Object.freeze({capability:"dungeonInteractions",blockedReturn:false}),
+    openChest:Object.freeze({capability:"dungeonInteractions",blockedReturn:true}),
+    tryChest:Object.freeze({capability:"dungeonInteractions",blockedReturn:true})
+  });
 
   function profile(id,options={}){
     return Object.freeze({
@@ -23,6 +58,7 @@
       online:Boolean(options.online),
       split:Boolean(options.split),
       dungeonSystems:Boolean(options.dungeonSystems),
+      dungeonInteractions:Boolean(options.dungeonInteractions),
       antiCamping:Boolean(options.antiCamping),
       dedicatedHazards:Boolean(options.dedicatedHazards),
       waveController:Boolean(options.waveController),
@@ -32,25 +68,31 @@
     });
   }
 
+  const dungeonCapabilities={dungeonSystems:true,dungeonInteractions:true,antiCamping:true,dedicatedHazards:true};
   const PROFILES=Object.freeze({
-    [IDS.DUNGEON_SOLO]:profile(IDS.DUNGEON_SOLO,{family:"dungeon",dungeonSystems:true,antiCamping:true,dedicatedHazards:true}),
-    [IDS.DUNGEON_ONLINE]:profile(IDS.DUNGEON_ONLINE,{family:"dungeon",online:true,dungeonSystems:true,antiCamping:true,dedicatedHazards:true}),
-    [IDS.HORDE_SOLO]:profile(IDS.HORDE_SOLO,{family:"horde",dungeonSystems:false,waveController:true}),
-    [IDS.HORDE_ONLINE]:profile(IDS.HORDE_ONLINE,{family:"horde",online:true,dungeonSystems:false,waveController:true}),
-    [IDS.SPY_ONLINE]:profile(IDS.SPY_ONLINE,{family:"spy",online:true,dungeonSystems:false,spyController:true}),
-    [IDS.SPLIT_SCREEN]:profile(IDS.SPLIT_SCREEN,{family:"dungeon",split:true,dungeonSystems:true,antiCamping:true,dedicatedHazards:true})
+    [IDS.DUNGEON_SOLO]:profile(IDS.DUNGEON_SOLO,{family:"dungeon",...dungeonCapabilities}),
+    [IDS.DUNGEON_ONLINE]:profile(IDS.DUNGEON_ONLINE,{family:"dungeon",online:true,...dungeonCapabilities}),
+    [IDS.HORDE_SOLO]:profile(IDS.HORDE_SOLO,{family:"horde",dungeonSystems:false,dungeonInteractions:false,waveController:true}),
+    [IDS.HORDE_ONLINE]:profile(IDS.HORDE_ONLINE,{family:"horde",online:true,dungeonSystems:false,dungeonInteractions:false,waveController:true}),
+    [IDS.SPY_ONLINE]:profile(IDS.SPY_ONLINE,{family:"spy",online:true,dungeonSystems:false,dungeonInteractions:false,spyController:true}),
+    [IDS.SPLIT_SCREEN]:profile(IDS.SPLIT_SCREEN,{family:"dungeon",split:true,...dungeonCapabilities})
   });
 
   function controller(id){
     return{
-      id,profile:PROFILES[id],state:{entries:0,exits:0,frames:0,resets:0,lastEnterAt:0,lastExitAt:0,lastReason:"",lastWave:0,lastPhase:"",hazardsPurged:0,campingPurges:0},
+      id,profile:PROFILES[id],state:{entries:0,exits:0,frames:0,resets:0,lastEnterAt:0,lastExitAt:0,lastReason:"",lastWave:0,lastPhase:"",hazardsPurged:0,campingPurges:0,ownedCalls:0,blockedOwnedCalls:0,deathPresentations:0},
       enter(reason){this.state.entries++;this.state.lastEnterAt=Date.now();this.state.lastReason=String(reason||"mode enter")},
       exit(reason){this.state.exits++;this.state.lastExitAt=Date.now();this.state.lastReason=String(reason||"mode exit")},
       frame(){this.state.frames++}
     };
   }
   const controllers=new Map(Object.values(IDS).map(id=>[id,controller(id)]));
-  const state={activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0};
+  const ownedSystems=new Map();
+  const state={
+    activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
+    hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
+    ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
+  };
 
   const special=()=>{try{return window.CCGLostSizzlerSpecialModes?.active||null}catch(_){return null}};
   const specialType=()=>String(special()?.type||document.body?.dataset?.specialMode||"");
@@ -102,7 +144,8 @@
     const clearEnemyShots=Boolean(options.clearEnemyShots),clearInput=Boolean(options.clearInput);
     const hazardsRemoved=clearGlobalArray("hazards"),campRemoved=clearGlobalMap("campStates");
     if(clearEnemyShots)clearGlobalArray("enemyBullets");
-    if(clearInput){try{input?.clear?.()}catch(_){}}
+    if(clearInput){try{input?.clear?.()}catch(_){}
+    }
     try{if(host){if(Array.isArray(host.hazardRooms))host.hazardRooms.length=0;if(Array.isArray(host.traps))host.traps.length=0}}catch(_){}
     state.globalHazardsPurged+=hazardsRemoved;state.globalCampingPurges+=campRemoved;
     return{hazardsRemoved,campRemoved}
@@ -138,6 +181,44 @@
     return next
   }
 
+  function blockedReturnFor(definition){return definition?.blockedReturn}
+  function dispatchOwnedSystem(name,source,thisArg,args){
+    const definition=OWNED_SYSTEMS[name];
+    if(!definition||typeof source!=="function")return undefined;
+    const current=sync(`owned system ${name}`);current.state.ownedCalls++;state.ownedSystemCalls++;
+    if(!allows(definition.capability)){
+      current.state.blockedOwnedCalls++;state.blockedOwnedSystemCalls++;
+      return blockedReturnFor(definition)
+    }
+    return source.apply(thisArg,args)
+  }
+
+  function installOwnedSystemGate(name){
+    const definition=OWNED_SYSTEMS[name],current=window[name];
+    if(!definition||typeof current!=="function")return false;
+    if(current.__ccgV141ModeOwnedGate===true&&current.__ccgV141ModeOwnedName===name){
+      ownedSystems.set(name,{name,capability:definition.capability,gate:current,source:current.__ccgV141ModeOwnedSource||current.__ccgOriginal||null});return true
+    }
+    const source=current;
+    const gate=function modeOwnedSystemGate(){return dispatchOwnedSystem(name,source,this,arguments)};
+    gate.__ccgV141ModeOwnedGate=true;gate.__ccgV141ModeOwnedName=name;gate.__ccgV141ModeCapability=definition.capability;gate.__ccgV141ModeOwnedSource=source;gate.__ccgOriginal=source;
+    const previous=ownedSystems.get(name);window[name]=gate;ownedSystems.set(name,{name,capability:definition.capability,gate,source});
+    state.ownedSystemInstalls++;if(previous)state.ownedSystemReassertions++;
+    return true
+  }
+
+  function ensureOwnedSystemGates(){
+    let installed=0;
+    for(const name of Object.keys(OWNED_SYSTEMS))if(installOwnedSystemGate(name))installed++;
+    return installed
+  }
+
+  function ownedSystemState(name){
+    const entry=ownedSystems.get(String(name||""));
+    if(!entry)return null;
+    return{name:entry.name,capability:entry.capability,installed:window[entry.name]===entry.gate,gate:entry.gate,source:entry.source}
+  }
+
   function monitorHordeLifecycle(){
     const current=activeController();if(current.profile.family!=="horde")return false;
     const runState=special()?.state;if(!runState)return false;
@@ -149,17 +230,27 @@
       current.state.lastWave=wave;current.state.lastPhase=phase;
       resetModeTransient(`horde lifecycle ${phase||"unknown"} wave ${wave}`,{clearEnemyShots:phase==="intermission"||phase==="briefing",clearInput:false});
     }
-    // Global dungeon camping hazards have no valid meaning in Horde. Purge them
-    // continuously so a legacy dungeon update can never mature a red warning
-    // circle into player damage while controller extraction is completed.
-    const result=clearDungeonTransient({clearEnemyShots:false,clearInput:false});
-    current.state.hazardsPurged+=result.hazardsRemoved;current.state.campingPurges+=result.campRemoved;
-    return Boolean(waveChanged||phaseChanged||result.hazardsRemoved||result.campRemoved)
+    return Boolean(waveChanged||phaseChanged)
+  }
+
+  function presentHordeDeaths(){
+    const current=activeController();if(current.profile.family!=="horde")return 0;
+    let presented=0;
+    try{
+      for(const enemy of host?.enemies||[]){
+        if(!enemy?.hordeEnemy||enemy.alive!==false||enemy._ccgModeHordeDeathPresented)continue;
+        enemy._ccgModeHordeDeathPresented=true;enemy._ccgModeHordeDeathAt=performance.now();presented++;
+        try{burst(enemy.x,enemy.y,enemy.hordeWarden?(P?.gold||"#ffd85a"):(P?.orange||"#ff9b54"),enemy.hordeWarden?34:18,enemy.hordeWarden?2.2:1.45)}catch(_){}
+        try{ring(enemy.x,enemy.y,enemy.hordeWarden?(P?.gold||"#ffd85a"):(P?.red||"#ff6868"),enemy.hordeWarden?58:32)}catch(_){}
+      }
+    }catch(_){}
+    if(presented){current.state.deathPresentations+=presented;state.hordeDeathPresentations+=presented}
+    return presented
   }
 
   function frame(){
-    const current=sync("frame");current.frame();
-    if(current.profile.family==="horde")monitorHordeLifecycle();
+    const current=sync("frame");current.frame();ensureOwnedSystemGates();
+    if(current.profile.family==="horde"){monitorHordeLifecycle();presentHordeDeaths()}
     return current
   }
 
@@ -167,13 +258,18 @@
     const current=activeController();return{
       activeId:current.id,previousId:state.previousId,generation:state.generation,transitions:state.transitions,
       profile:{...current.profile},controllerState:{...current.state},lastTransitionReason:state.lastTransitionReason,lastResetReason:state.lastResetReason,
-      hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges
+      hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
+      ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
   }
 
-  sync("mode runtime install");
+  sync("mode runtime install");ensureOwnedSystemGates();
   state.timer=setInterval(()=>{try{frame()}catch(error){console.warn("[Lost Sizzler mode runtime] lifecycle monitor failed",error)}},MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
-  window.CCGLostSizzlerModeRuntime={IDS,PROFILES,SHARED_CORE,MODE_OWNED,detect,sync,frame,allows,inFamily,activeController,activeProfile,resetModeTransient,monitorHordeLifecycle,snapshot,get state(){return state},get controllers(){return controllers}};
+  window.CCGLostSizzlerModeRuntime={
+    IDS,PROFILES,SHARED_CORE,MODE_OWNED,OWNED_SYSTEMS,detect,sync,frame,allows,inFamily,activeController,activeProfile,
+    resetModeTransient,monitorHordeLifecycle,presentHordeDeaths,ensureOwnedSystemGates,ownedSystemState,snapshot,
+    get state(){return state},get controllers(){return controllers},get ownedSystems(){return ownedSystems}
+  };
 })();
