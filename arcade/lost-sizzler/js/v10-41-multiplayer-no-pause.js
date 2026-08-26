@@ -72,18 +72,6 @@
     state.menuWrapped=true;return true;
   }
 
-  function wrapUpdate(){
-    if(state.updateWrapped||typeof window.update!=="function")return state.updateWrapped;
-    const original=window.update;
-    window.update=function updateV141MultiplayerNoPause(){
-      if(multiplayerActive())forcePlaying();
-      const result=original.apply(this,arguments);
-      if(multiplayerActive())forcePlaying();
-      return result
-    };
-    state.updateWrapped=true;return true;
-  }
-
   function blockPauseKey(event){
     if(!multiplayerActive())return;
     if(event.code!=="Escape"&&event.code!=="KeyP")return;
@@ -100,11 +88,18 @@
     try{window.CCGLostSizzlerSpecialModes?.stop?.()}catch(_){}
   }
 
-  function install(){wrapPause();wrapPauseMenu();wrapUpdate();return state.pauseWrapped&&state.updateWrapped}
+  function install(){
+    wrapPause();wrapPauseMenu();
+    // Phase 3: pause enforcement no longer intercepts every shared update().
+    // Direct pause/menu/key paths are blocked synchronously, while the small
+    // mode-checked timer below recovers any unexpected paused multiplayer state.
+    state.updateWrapped=false;
+    return state.pauseWrapped&&state.menuWrapped
+  }
   addEventListener("keydown",blockPauseKey,true);
   document.addEventListener("click",multiplayerQuit,true);
-  state.timer=setInterval(()=>{install();if(multiplayerActive())forcePlaying();if(state.pauseWrapped&&state.menuWrapped&&state.updateWrapped){clearInterval(state.timer);state.timer=0}},80);
+  state.timer=setInterval(()=>{install();if(multiplayerActive())forcePlaying()},80);
   install();
-  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);removeEventListener("keydown",blockPauseKey,true);document.removeEventListener("click",multiplayerQuit,true)},{once:true});
+  window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0;removeEventListener("keydown",blockPauseKey,true);document.removeEventListener("click",multiplayerQuit,true)},{once:true});
   window.CCGLostSizzlerV141MultiplayerNoPause={multiplayerActive,soloHorde,forcePlaying,get state(){return state}};
 })();
