@@ -1,6 +1,6 @@
 {
-  "version": 1,
-  "policy": "Concise archive descriptions distilled from verified CCG video metadata, with targeted reference research where local metadata was unavailable or required correction.",
+  "version": 2,
+  "policy": "Archive descriptions prefer verified CCG YouTube metadata, with curated overrides and a guarded games.json fallback so an unavailable video cannot strand an otherwise complete source record.",
   "games": {
     "1942": {
       "description": "Originally developed by Capcom and brought to the Commodore 64 in 1986 by Elite Systems, 1942 is a vertically scrolling shoot ’em up set against the backdrop of World War II. Players step into the role of “Super Ace,” piloting a P-38 Lightning through 32 enemy-packed stages filled with hostile aircraft, naval threats, and intense aerial combat. Gameplay is fast and demanding, centred on precision flying and pattern recognition. Players blast through waves of enemies, deploy screen-clearing bombs, and make use of the game’s signature loop-the-loop manoeuvre to evade incoming fire. Power-ups increase survivability, but careful timing and positioning are essential as the difficulty steadily ramps up. The Commodore 64 version does an admirable job of capturing the arcade original’s feel, with smooth vertical scrolling, responsive controls, and an atmospheric soundtrack by Mark Cooksey that drives the action forward.",
@@ -2896,6 +2896,12 @@
       "description": "R-Type is the 1988 Commodore 64 port of Irem’s legendary arcade “force-ship” shooter, published by Electric Dreams / Rainbow Arts and coded by Manfred Trenz. In the game, you pilot the iconic R-9 “Arrowhead” spacecraft through eight intense horizontally-scrolling stages, battling the alien Bydo Empire, navigating hazardous terrain, and facing massive biomechanical bosses. Your arsenal includes rapid-fire shots, a powerful chargeable wave cannon, and the game’s signature feature — the indestructible “Force” orb. Attach it, detach it, or deploy it freely to act as both shield and weapon platform. The C64 conversion delivers fast gameplay and smooth scrolling, outperforming many other 8-bit shooters of its era. Atmospheric visuals, detailed sci-fi environments, and an outstanding soundtrack by Chris Hülsbeck and Ramiro Vaca add to the experience. Remarkably, the port was reportedly developed in just a few weeks, yet it remains one of the finest technical showcases on the Commodore 64.",
       "sources": [
         "https://www.youtube.com/watch?v=h1wRyD86xxY"
+      ]
+    },
+    "ruff-n-tumble": {
+      "description": "Released for the Commodore Amiga in 1994, Ruff ’n’ Tumble was developed by Wunderkind Software and published by Renegade. Mixing fast platforming with multidirectional shooting, huge sprites, detailed backgrounds and some seriously satisfying weaponry, it became one of the Amiga’s most highly regarded action platformers. You play eight-year-old Ruff Rodgers, whose prized collection of marbles has been nicked by the thoroughly unpleasant Doctor Destiny. Armed with a gun and apparently very little concern about child firearm legislation, Ruff heads into Destiny’s world to retrieve them while blasting his way through an army of Tinheads. The game takes place across four distinctive worlds, with 16 main levels covering the Fantasy Forest, underground caves, industrial areas and Doctor Destiny’s castle. Progress means exploring each stage, collecting the required red, green and blue marbles and reaching the exit without getting Ruff absolutely battered along the way.",
+      "sources": [
+        "https://www.youtube.com/watch?v=dLZpRuG_NwA"
       ]
     },
     "the-running-man": {

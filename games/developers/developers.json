@@ -405,5 +405,16 @@
     "lastYear": 1989,
     "indexable": false,
     "url": "/games/developers/vision-software/"
+  },
+  {
+    "name": "Wunderkind",
+    "slug": "wunderkind",
+    "count": 1,
+    "c64Count": 0,
+    "amigaCount": 1,
+    "firstYear": 1994,
+    "lastYear": 1994,
+    "indexable": false,
+    "url": "/games/developers/wunderkind/"
   }
 ]
