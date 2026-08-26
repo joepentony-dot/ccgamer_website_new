@@ -26,6 +26,7 @@ on:
       - "scripts/generate-year-platform-pages.js"
       - "scripts/integrate-year-platform-discovery.js"
       - "scripts/validate-year-platform-discovery.js"
+      - "scripts/migrate-ruff-n-tumble-thumbnail.js"
       - "admin/games-editor.html"
       - "admin/js/games-editor.js"
       - "admin/templates/game-landing-template.html"
@@ -84,6 +85,9 @@ jobs:
         with:
           node-version: "22"
 
+      - name: Repair historical Ruff N Tumble thumbnail source
+        run: node scripts/migrate-ruff-n-tumble-thumbnail.js
+
       - name: Record protected hashes
         run: |
           sha256sum \
@@ -116,6 +120,7 @@ jobs:
           node --check scripts/generate-year-platform-pages.js
           node --check scripts/integrate-year-platform-discovery.js
           node --check scripts/validate-year-platform-discovery.js
+          node --check scripts/migrate-ruff-n-tumble-thumbnail.js
           node --check admin/js/games-editor.js
 
       - name: Run editor package regression
