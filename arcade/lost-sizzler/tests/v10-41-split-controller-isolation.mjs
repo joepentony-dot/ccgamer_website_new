@@ -10,9 +10,9 @@ const runtime=fs.readFileSync(path.join(root,"js/v10-41-mode-runtime.js"),"utf8"
 
 assert.match(runtime,/SPLIT_SCREEN:"split-screen"/,"authoritative mode runtime must retain a dedicated split-screen controller");
 assert.match(runtime,/setAttribute\?\.\("data-mode-controller",next\.id\)/,"mode transitions must publish the active controller for split-owned lifecycle modules");
-assert.match(split,/const P2_CONTROL_CODES=Object\.freeze\(\["KeyJ","KeyL","KeyI","KeyK","Enter","ControlRight","KeyO"\]\)/,"split controller must explicitly own the complete P2 keyboard set");
+assert.match(split,/const P2_CONTROL_CODES=Object\.freeze\(\["KeyJ","KeyL","KeyI","KeyK","Enter","ControlRight","KeyO"\]\)/,"split controller must explicitly own the P2 held gameplay-state keys");
 assert.match(split,/function resetP2ControlState\(\)[\s\S]*move2=0[\s\S]*fire2=0[\s\S]*fireBuffer2=0/,"split controller reset must release P2 movement, fire cooldown and buffered fire state");
-assert.match(split,/for\(const code of P2_CONTROL_CODES\)input\?\.delete\?\.\(code\)/,"split controller reset must remove stale P2 held-input state");
+assert.match(split,/for\(const code of P2_CONTROL_CODES\)input\?\.delete\?\.\(code\)/,"split controller reset must remove stale P2 held gameplay input");
 assert.match(split,/function resetControllerState\(reason=[\s\S]*resetAllPushes\(\);[\s\S]*resetP2ControlState\(\)/,"split controller reset must clear both budge state and P2 control state");
 assert.match(split,/if\(previous==="split-screen"\|\|id==="split-screen"\)resetControllerState/,"split state must reset on both entry to and exit from split-screen");
 assert.match(split,/new MutationObserver\([\s\S]*attributeFilter:\["data-mode-controller"\]/,"split lifecycle must follow authoritative controller transitions without intercepting the game update loop");
