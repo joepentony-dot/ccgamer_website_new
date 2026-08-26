@@ -17,7 +17,7 @@
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
-    notificationOwnershipRepairs:0,nestedOwnershipDetections:0,
+    notificationOwnershipRepairs:0,notificationPostInstallRepairs:0,nestedOwnershipDetections:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -88,6 +88,15 @@
     }catch(_){return false}
   }
 
+  function stabilisePostR29Install(){
+    try{
+      const before=Boolean(window.showToast?.__ccgV141Priority);
+      const stable=maintainNotificationOwnership();
+      if(stable&&!before&&window.showToast?.__ccgV141Priority===true)state.notificationPostInstallRepairs++;
+      return stable;
+    }catch(_){return false}
+  }
+
   function makeR29Cooperative(){
     const api=r29();if(!api?.install)return false;
     try{if(api.state?.timer){clearInterval(api.state.timer);api.state.timer=0;state.r29TimerStopped=true}}catch(_){}
@@ -96,7 +105,9 @@
     const cooperative=function installV141R30Cooperative(){
       const isolated=Boolean(spyEngine()?.state?.isolated)||spyActive();
       if(isolated)return ensureStableLoopOnly(api);
-      return original();
+      const result=original();
+      stabilisePostR29Install();
+      return result;
     };
     cooperative.__ccgV141R30Cooperative=true;cooperative.__ccgOriginal=api.install;
     api.install=cooperative;state.r29InstallCooperative=true;return true;
