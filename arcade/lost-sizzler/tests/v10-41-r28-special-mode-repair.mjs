@@ -28,8 +28,11 @@ assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30")<index
 
 const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause must retain forcePlaying");
-assert.doesNotMatch(forcePlaying,/input\.clear|input\?\.clear/,"multiplayer frame guard must never clear held input");
-assert.match(noPause,/if\(multiplayerActive\(\)\)forcePlaying\(\);\n      const result=original\.apply/,'multiplayer update must continue forcing playing state without owning input');
+assert.doesNotMatch(forcePlaying,/input\.clear|input\?\.clear/,"multiplayer pause recovery must never clear held input");
+assert.doesNotMatch(noPause,/window\.update\s*=/,"multiplayer no-pause must not own the shared update loop after controller isolation");
+assert.match(noPause,/state\.timer=setInterval\(\(\)=>\{install\(\);if\(multiplayerActive\(\)\)forcePlaying\(\)\},80\)/,"multiplayer pause recovery must retain a small mode-checked failsafe outside the shared update ancestry");
+assert.match(noPause,/window\.pause=function pauseV141MultiplayerLock/,"direct pause attempts must still be intercepted synchronously");
+assert.match(noPause,/window\.openPauseMenu=function openPauseMenuV141MultiplayerLock/,"direct pause-menu attempts must still be intercepted synchronously");
 
 assert.match(repair,/const HORDE_SPEED_SCALE=\.75;/,"Horde dedicated movement must be slowed by 25%");
 assert.match(repair,/const HORDE_LIGHT_RADIUS=28;/,"Horde permanent illumination must use the enlarged radius");
