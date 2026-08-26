@@ -14,14 +14,17 @@ const noPause=read("js/v10-41-multiplayer-no-pause.js");
 const css=read("css/v10-41-r28.css");
 const checker=read("js/version-check.js");
 const changelog=read("js/v10-12-developer-changelog.js");
+const r29=read("js/v10-41-r29-runtime-repair.js");
 
-assert.equal(manifest.build,"2026.08.25.28");
-assert.equal(manifest.cacheToken,"20260825r28");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.28"/);
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r28"/);
-assert.match(index,/css\/v10-41-r28\.css\?v=20260825r28/);
-assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260825r28/);
-assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260825r28")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r28"),"r28 must execute after r27");
+assert.equal(manifest.build,"2026.08.25.29");
+assert.equal(manifest.cacheToken,"20260825r29");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.29"/);
+assert.match(index,/ccg-lost-sizzler-cache" content="20260825r29"/);
+assert.match(index,/css\/v10-41-r28\.css\?v=20260825r29/);
+assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260825r29/);
+assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260825r29/);
+assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260825r29")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r29"),"retained r28 repair must execute after r27");
+assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r29")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260825r29"),"r29 must execute after the retained r28 repair");
 
 const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause must retain forcePlaying");
@@ -42,7 +45,7 @@ assert.match(repair,/value\.startsWith\("HORDE SURVIVOR"\)\|\|value\.startsWith\
 
 assert.match(repair,/function cardinalEnemyShot\(/,"enemy-only cardinal shot normaliser must exist");
 assert.match(repair,/ax>=ay\?\{\.\.\.shot,dx:[^}]+,dy:0\}:\{\.\.\.shot,dx:0,dy:/,"enemy diagonal shots must collapse to one cardinal axis");
-assert.doesNotMatch(repair,/function firePlayer|weaponDirections\s*=|attackDirection\s*=/,"r28 must not replace player firing direction code");
+assert.doesNotMatch(repair,/function firePlayer|weaponDirections\s*=|attackDirection\s*=/,"retained r28 repair must not replace player firing direction code");
 
 assert.match(repair,/const SPY_DUNGEON_ONLY=/,"Spy must publish an explicit Dungeon-notification reject boundary");
 assert.match(repair,/if\(SPY_DUNGEON_ONLY\.test\(combined\)\)return false/,"Dungeon-only notification wording must lose even if generic Spy words appear elsewhere in the copy");
@@ -69,8 +72,9 @@ assert.match(checker,/Refresh to Latest Version/,"automatic update prompt must p
 assert.match(checker,/cache:"no-store"/,"automatic update comparison must bypass stale manifest caches");
 
 for(const id of ["LS-0825-14","LS-0825-15","LS-0825-16","LS-0825-17","LS-0825-18","LS-0825-19","LS-0825-20","LS-0825-21","LS-0825-22"]){
-  assert.match(changelog,new RegExp(id),`r28 bug log must contain ${id}`)
+  assert.match(changelog,new RegExp(id),`retained r28 bug log must contain ${id}`)
 }
-assert.match(changelog,/build 2026\.08\.25\.28/,"bug tracker must identify the r28 build");
+assert.match(changelog,/build 2026\.08\.25\.28/,"historical r28 bug tracker entry must continue to identify the r28 build that introduced these fixes");
+assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 final runtime layer must remain present above the retained r28 feature layer");
 
-console.log("Lost Sizzler V10.41 r28 Horde, Spy, Hunter, 1440p, update-prompt and bug-log regression checks passed.");
+console.log("Lost Sizzler V10.41 retained r28 Horde, Spy, Hunter, 1440p and update protections passed inside r29.");

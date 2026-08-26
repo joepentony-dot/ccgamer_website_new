@@ -74,10 +74,10 @@ assert.match(r28,/player\.weapon\.shots=3/,"all local Horde weapons must become 
 assert.match(r28,/HORDE_SUPPRESSED_TOAST=\/\^HORDE SCORE SAVED\$\/i/,"the unwanted Horde result toast must be suppressed");
 assert.match(r28,/value\.startsWith\("HORDE SURVIVOR"\)\|\|value\.startsWith\("DEFEATED "\)/,"the old canvas Horde banner text must be suppressed");
 
-assert.equal(manifest.build,"2026.08.25.28","Horde stability fixes must remain included in build .28");
-assert.equal(manifest.cacheToken,"20260825r28","Horde stability fixes must use the current r28 cache shell");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.28"/,"HTML build marker must match r28");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r28"/,"HTML cache marker must match r28");
-assert.match(index,/v10-41-r28-special-mode-repair\.js\?v=20260825r28/,"canonical HTML must load r28 under the same cache generation");
+assert.equal(manifest.build,"2026.08.25.29","Horde stability fixes must remain included in build .29");
+assert.equal(manifest.cacheToken,"20260825r29","Horde stability fixes must use the current r29 cache shell");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.29"/,"HTML build marker must match r29");
+assert.match(index,/ccg-lost-sizzler-cache" content="20260825r29"/,"HTML cache marker must match r29");
+assert.match(index,/v10-41-r28-special-mode-repair\.js\?v=20260825r29/,"canonical HTML must load the retained r28 special-mode repair under the current r29 cache generation");
 
-console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, r28 input ownership, balance and startup regression checks passed.");
+console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, retained r28 input/balance and r29 release regression checks passed.");
