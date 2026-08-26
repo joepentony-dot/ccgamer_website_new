@@ -1,0 +1,53 @@
+name: Lost Sizzler r30 one-shot branch patch
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-r30-global-movement-recovery
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-r30-global-movement-recovery
+          fetch-depth: 0
+      - name: Apply r30 release wiring
+        shell: python
+        run: |
+          from pathlib import Path
+          import json
+          root=Path('.')
+          index=root/'arcade/lost-sizzler/index.html'
+          text=index.read_text(encoding='utf-8')
+          text=text.replace('2026.08.25.29','2026.08.26.30').replace('20260825r29','20260826r30')
+          text=text.replace('<p id="level-up-copy"></p>','<p id="level-up-copy">Choose an upgrade.</p>')
+          tags='''  <script src="js/v10-41-r30-global-movement-guard.js?v=20260826r30"></script>\n  <script src="js/v10-41-r30-buglog.js?v=20260826r30"></script>\n'''
+          if 'v10-41-r30-global-movement-guard.js' not in text:
+              text=text.replace('</body>',tags+'</body>')
+          index.write_text(text,encoding='utf-8')
+          manifest=root/'arcade/lost-sizzler/version.json'
+          data=json.loads(manifest.read_text(encoding='utf-8'))
+          data.update({'releaseVersion':'V10.41','build':'2026.08.26.30','cacheToken':'20260826r30','released':'2026-08-26'})
+          manifest.write_text(json.dumps(data,indent=2)+'\n',encoding='utf-8')
+          for rel in [
+              'arcade/lost-sizzler/tests/v10-20-onboarding-safety.mjs',
+              'arcade/lost-sizzler/tests/v10-22-version-cache.mjs',
+              'arcade/lost-sizzler/tests/v10-41-live-join-presence.mjs',
+              'arcade/lost-sizzler/tests/v10-41-horde-isolation-stability.mjs',
+              'arcade/lost-sizzler/tests/browser/v10-41-load-safety.mjs',
+          ]:
+              p=root/rel
+              if not p.exists(): continue
+              s=p.read_text(encoding='utf-8').replace('2026.08.25.29','2026.08.26.30').replace('20260825r29','20260826r30')
+              p.write_text(s,encoding='utf-8')
+      - name: Commit patched release shell
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/r30-branch-release-patch.yml
+          git add arcade/lost-sizzler/index.html arcade/lost-sizzler/version.json arcade/lost-sizzler/tests
+          git commit -m "Wire Lost Sizzler r30 movement recovery release"
+          git push origin HEAD:codex/lost-sizzler-r30-global-movement-recovery
