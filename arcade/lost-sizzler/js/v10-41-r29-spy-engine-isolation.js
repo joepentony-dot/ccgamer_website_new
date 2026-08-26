@@ -1,10 +1,10 @@
 /* The Lost Sizzler V10.41 r29 — isolated Spy Vs Spy rules runtime.
  *
  * Spy Vs Spy deliberately stops executing the ordinary Dungeon update while the
- * mode is active.  Rendering is shared, but movement, collision, player damage,
+ * mode is active. Rendering is shared, but movement, collision, player damage,
  * interaction prompts, compact room geometry and Spy rule ticks are owned here.
- * This prevents Dungeon hazards/recovery wrappers from leaking into the two-player
- * mode while leaving Solo, Dungeon Multiplayer, Horde and Split Screen unchanged.
+ * The authoritative mode controller invokes isolatedUpdate(); this runtime no
+ * longer replaces window.update itself.
  */
 (()=>{
   "use strict";
@@ -13,11 +13,13 @@
 
   const MODE_ID="sizzler-saboteurs";
   const ROOM_STEP_X=11,ROOM_STEP_Y=11,ROOM_W=9,ROOM_H=9,MAP_X=6,MAP_Y=6;
-  const MOVE_MS=135,DASH_MOVE_MS=82,ATTACK_MS=430,MONITOR_MS=40;
+  // Keep the isolated runtime aligned with the r26 Spy governor. r29 used 135ms,
+  // bypassing the 220ms governor and making the local agent visibly over-fast.
+  const MOVE_MS=220,DASH_MOVE_MS=82,ATTACK_MS=430,MONITOR_MS=40;
   const MOVE_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS","ShiftLeft","ShiftRight"]);
   const state={
     isolated:false,timer:0,baseUpdate:null,baseMove:null,baseHurt:null,baseBuildSpyPhysical:null,
-    updateReassertions:0,moveReassertions:0,worldBuilds:0,logicalCompactions:0,dungeonDamageBlocked:0,
+    updateReassertions:0,moveReassertions:0,worldBuilds:0,logicalCompactions:0,dungeonDamageBlocked:0,controllerFrames:0,
     furnitureBlocks:0,doorOpens:0,moves:0,attacks:0,trapPulses:0,timeBombsRemoved:0,
     lastMoveAt:0,lastAttackAt:0,lastWorldSignature:"",lastPrompt:"",lastMode:"",trapPulse:false,trapHeld:false,
     statusById:new Map()
@@ -89,7 +91,12 @@
   function compactLogicalMap(){
     const active=special(),match=active?.state,api=SAB();if(!match?.map||!api)return false;
     if(!active.authoritative&&(!match.map.spyRuntimeIsolatedR29||match.map.rooms?.length>30))return false;
-    if(active.authoritative&&(match.map.largeRoomGridV135||Number(match.map.rooms?.length||0)>30)){
+    // V10.35 marks its legacy oversized Spy map with largeRoomGridV135. Once r29
+    // has compacted it, spyRuntimeIsolatedR29 is the authoritative ownership flag.
+    // Never regenerate that compact map on later frames: doing so reset players,
+    // traps, extraction and furniture state continuously and produced visible
+    // bookshelf/object flicker plus movement/state spluttering.
+    if(active.authoritative&&!match.map.spyRuntimeIsolatedR29&&(match.map.largeRoomGridV135||Number(match.map.rooms?.length||0)>30)){
       const compact=api.distributeContents(api.createMap(match.seed,Number(match.round)||1),`${match.seed}|ROUND-${Number(match.round)||1}`);
       compact.spyRuntimeIsolatedR29=true;compact.largeRoomGridV135=true;compact.directDoorRooms=true;
       match.map=compact;match.traps=[];match.looseObjects=[];match.extraction=null;
@@ -276,11 +283,9 @@
 
   function isolatedUpdate(){
     if(!spyActive())return false;
+    state.controllerFrames++;
     compactLogicalMap();buildCompactWorld();sanitiseSharedDungeonState();processMovement();processAttack();callSpyRules();syncLocalStatus();updatePrompt();return true;
   }
-
-  function spyUpdateOwner(){if(spyActive())return isolatedUpdate();return typeof state.baseUpdate==="function"?state.baseUpdate.apply(this,arguments):undefined}
-  spyUpdateOwner.__ccgV141R29SpyRuntimeOwner=true;
 
   function spyMoveOwner(player,dx,dy,dash=false){if(spyActive())return attemptMove(player,dx,dy,dash);return typeof state.baseMove==="function"?state.baseMove.apply(this,arguments):false}
   spyMoveOwner.__ccgV141R29SpyOwner=true;spyMoveOwner.__ccgV141R27SpyDoorIsolation=true;spyMoveOwner.__ccgV141SpyIsolated=true;
@@ -305,24 +310,22 @@
 
   function enterIsolation(){
     if(state.isolated||!spyActive())return state.isolated;
-    ensureModeStyles();state.baseUpdate=window.update;state.baseMove=window.movePlayer;state.baseHurt=window.hurtPlayer;
-    window.update=spyUpdateOwner;window.movePlayer=spyMoveOwner;window.hurtPlayer=spyHurtOwner;suppressLegacyPhysicalBuilder();
+    ensureModeStyles();state.baseMove=window.movePlayer;state.baseHurt=window.hurtPlayer;
+    window.movePlayer=spyMoveOwner;window.hurtPlayer=spyHurtOwner;suppressLegacyPhysicalBuilder();
     document.body.dataset.spyRuntimeIsolated="true";state.isolated=true;state.lastMode=MODE_ID;state.lastMoveAt=0;state.lastAttackAt=0;state.statusById.clear();
     compactLogicalMap();buildCompactWorld(true);sanitiseSharedDungeonState();updatePrompt();return true;
   }
 
   function leaveIsolation(){
     if(!state.isolated)return false;
-    if(window.update===spyUpdateOwner&&typeof state.baseUpdate==="function")window.update=state.baseUpdate;
     if(window.movePlayer===spyMoveOwner&&typeof state.baseMove==="function")window.movePlayer=state.baseMove;
     if(window.hurtPlayer===spyHurtOwner&&typeof state.baseHurt==="function")window.hurtPlayer=state.baseHurt;
-    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;state.baseUpdate=state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
+    restoreLegacyPhysicalBuilder();delete document.body.dataset.spyRuntimeIsolated;setPrompt("");keys.clear();state.trapPulse=false;state.trapHeld=false;state.statusById.clear();state.isolated=false;state.baseMove=state.baseHurt=null;state.lastWorldSignature="";return true;
   }
 
   function monitor(){
     if(spyActive()){
       if(!state.isolated)enterIsolation();
-      if(state.isolated&&window.update!==spyUpdateOwner){window.update=spyUpdateOwner;state.updateReassertions++}
       if(state.isolated&&window.movePlayer!==spyMoveOwner){window.movePlayer=spyMoveOwner;state.moveReassertions++}
       if(state.isolated&&window.hurtPlayer!==spyHurtOwner)window.hurtPlayer=spyHurtOwner;
       suppressLegacyPhysicalBuilder();return;
