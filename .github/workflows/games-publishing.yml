@@ -41,6 +41,7 @@ on:
       - "scripts/ensure-secondary-publisher-runtime.js"
       - "scripts/ensure-publisher-history-runtime.js"
       - "scripts/migrate-mr-weems-thumbnail.js"
+      - "scripts/migrate-ruff-n-tumble-thumbnail.js"
       - "scripts/sync-youtube-video-metadata.js"
       - "scripts/generate-video-seo.js"
       - "scripts/generate-video-library.js"
@@ -129,6 +130,9 @@ jobs:
 
       - name: Repair historical Mr Weems thumbnail source
         run: node scripts/migrate-mr-weems-thumbnail.js
+
+      - name: Repair historical Ruff N Tumble thumbnail source
+        run: node scripts/migrate-ruff-n-tumble-thumbnail.js
 
       - name: Cache required Lemon magazine sources
         run: |
