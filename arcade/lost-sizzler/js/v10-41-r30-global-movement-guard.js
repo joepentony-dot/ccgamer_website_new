@@ -59,12 +59,23 @@
   function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
+  function normalMovementStackReady(){
+    const tutorial=window.CCGLostSizzlerV141TutorialActionFinalizer?.state;
+    const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state;
+    const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
+    return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard);
+  }
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
     if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
-    if(releaseReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
+    // Release readiness can resolve a few milliseconds before the final normal
+    // movement wrappers have installed. Locking the immutable r30 snapshot in
+    // that gap means a later Spy recovery can roll movement back to an older,
+    // incomplete owner chain. Wait until the known post-release movement
+    // finalizers are present, then freeze the settled normal runtime snapshot.
+    if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
     }
