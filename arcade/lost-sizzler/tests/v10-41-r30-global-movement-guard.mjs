@@ -4,7 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 const here=path.dirname(fileURLToPath(import.meta.url)),root=path.resolve(here,"..");
 const read=file=>fs.readFileSync(path.join(root,file),"utf8");
-const index=read("index.html"),manifest=JSON.parse(read("version.json")),guard=read("js/v10-41-r30-global-movement-guard.js"),buglog=read("js/v10-41-r30-buglog.js");
+const index=read("index.html"),manifest=JSON.parse(read("version.json")),guard=read("js/v10-41-r30-global-movement-guard.js"),tutorialFinalizer=read("js/v10-41-tutorial-action-finalizer.js"),buglog=read("js/v10-41-r30-buglog.js");
 assert.equal(manifest.releaseVersion,"V10.41");
 assert.equal(manifest.build,"2026.08.26.30");
 assert.equal(manifest.cacheToken,"20260826r30");
@@ -16,6 +16,8 @@ assert.match(guard,/clearInterval\(api\.state\.timer\)/,"r30 must stop the compe
 assert.match(guard,/__ccgV141R30Cooperative/,"r30 must replace r29 maintenance with cooperative mode ownership");
 assert.match(guard,/goldenLocked/,"r30 must preserve a known-good post-release ownership snapshot");
 assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselineMove/,"watchdog recovery must prefer the locked golden movement owner over later mutable wrappers");
+assert.match(tutorialFinalizer,/function movementOwnedByR30\(\)/,"tutorial action maintenance must recognise when r30 owns the sealed movement stack");
+assert.match(tutorialFinalizer,/if\(movementOwnedByR30\(\)\)return true;/,"tutorial movement finalisation must not race the r30 ownership watchdog after the golden owner is locked");
 assert.match(guard,/function controllerProtectedUpdate\(fn\)/,"r30 must recognise the authoritative controller frame boundary inside the live update ancestry");
 assert.match(guard,/chainHas\(fn,"__ccgV141ModeFrameBoundary"\)/,"controller diagnostics must still inspect historical wrapper ancestry");
 assert.match(guard,/function authoritativeControllerUpdate\(\)/,"r30 recovery must resolve the controller's exact boundary identity");
