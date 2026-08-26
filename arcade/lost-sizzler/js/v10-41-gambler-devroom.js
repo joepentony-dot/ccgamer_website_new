@@ -25,7 +25,7 @@
   ];
 
   const state={
-    installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,timer:0,floorKey:"",promptAt:0,panel:null,spinning:false,pausedMode:"playing",
+    installed:false,startWrapped:false,updateWrapped:false,renderWrapped:false,controllerOwnedUpdate:false,controllerFrames:0,timer:0,floorKey:"",promptAt:0,panel:null,spinning:false,pausedMode:"playing",
     dev:{authorized:false,checking:false,active:false,roomId:null,panel:null,spawnSerial:0}
   };
   const cell=(x,y)=>`${Math.round(Number(x))},${Math.round(Number(y))}`;
@@ -291,12 +291,28 @@
     if(!state.dev.active||document.getElementById("ccg-dev-status"))return;const badge=document.createElement("div");badge.id="ccg-dev-status";badge.className="ccg-dev-status";badge.textContent="OWNER DEV VAULT · F2 CONSOLE";gameMount().appendChild(badge)
   }
 
+  function controllerFrame(controllerId){
+    const id=String(controllerId||"");
+    if(!["dungeon-solo","split-screen"].includes(id))return false;
+    try{
+      updateGamblerPrompt();
+      if(state.dev.active){
+        ensureDevStatus();
+        for(const enemy of host?.enemies||[])if(enemy?.developerPassive){
+          enemy.moveCooldown=999999;enemy.attackCooldown=999999;enemy.chargeCooldown=999999;enemy.healCooldown=999999;
+        }
+      }
+    }catch(_){}
+    state.controllerFrames++;return true;
+  }
+
   function wrapRuntime(){
     if(!state.startWrapped&&typeof startWorld==="function"){
       const original=startWorld;startWorld=function startWorldV141Gambler(){const result=original.apply(this,arguments);try{state.floorKey=floorKey();if(!state.dev.active)spawnGambler()}catch(error){console.warn("[Lost Sizzler V10.41] Gambler generation failed",error)}return result};state.startWrapped=true;
     }
-    if(!state.updateWrapped&&typeof update==="function"){
-      const original=update;update=function updateV141Gambler(dt){const result=original.apply(this,arguments);try{updateGamblerPrompt();if(state.dev.active){ensureDevStatus();for(const enemy of host?.enemies||[])if(enemy?.developerPassive){enemy.moveCooldown=999999;enemy.attackCooldown=999999;enemy.chargeCooldown=999999;enemy.healCooldown=999999}}}catch(_){}return result};state.updateWrapped=true;
+    if(!state.updateWrapped){
+      // The six-mode controller dispatches controllerFrame after Dungeon rules.
+      state.controllerOwnedUpdate=true;state.updateWrapped=true;
     }
     if(!state.renderWrapped&&typeof drawSpecialObjects==="function"){
       const original=drawSpecialObjects;drawSpecialObjects=function drawSpecialObjectsV141Gambler(){const result=original.apply(this,arguments);try{drawGambler()}catch(_){}return result};state.renderWrapped=true;
@@ -322,5 +338,5 @@
   window.addEventListener("fullscreenchange",()=>{if(state.panel?.isConnected&&state.panel.parentElement!==gameMount())gameMount().appendChild(state.panel);if(state.dev.panel?.isConnected&&state.dev.panel.parentElement!==gameMount())gameMount().appendChild(state.dev.panel);const badge=document.getElementById("ccg-dev-status");if(badge&&badge.parentElement!==gameMount())gameMount().appendChild(badge)});
   window.addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer)},{once:true});
 
-  window.CCGLostSizzlerV141Gambler={SPAWN_CHANCE,STAKE,JACKPOT,REEL,spawnGambler,openGamblerPanel,launchDeveloperVault,ownerAuthorized,get state(){return state}};
+  window.CCGLostSizzlerV141Gambler={SPAWN_CHANCE,STAKE,JACKPOT,REEL,spawnGambler,openGamblerPanel,launchDeveloperVault,ownerAuthorized,controllerFrame,get state(){return state}};
 })();

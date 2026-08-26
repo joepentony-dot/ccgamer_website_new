@@ -68,7 +68,7 @@ try{
     host.enemies=[{id:"dungeon-alert-leak",alive:true,x:p1.x+1,y:p1.y,aiState:"chase",lastSeen:{x:p1.x,y:p1.y}}];
     const sampleOwner=(iteration,phase)=>{
       if(window.update===saved.boundary)return;
-      saved.ownerTrace.push({iteration,phase,name:String(window.update?.name||""),r24:Boolean(window.update?.__ccgV141R24SpyMovement),r25:Boolean(window.update?.__ccgV141R25SpySpeedBounty),r26:Boolean(window.update?.__ccgV141R26Stability)});
+      saved.ownerTrace.push({iteration,phase,name:String(window.update?.name||""),r24:Boolean(window.update?.__ccgV141R24SpyMovement),r25:Boolean(window.update?.__ccgV141R25SpySpeedBounty),r26:Boolean(window.update?.__ccgV141R26Stability),gambler:Boolean(window.update?.__ccgV141Gambler)});
     };
     for(let i=0;i<18;i++){sampleOwner(i,"before");window.update(16);sampleOwner(i,"after");await new Promise(r=>setTimeout(r,4));sampleOwner(i,"wait")}
     const fingerprint=(host.blockingDecor||[]).filter(item=>item.spyFurniture).map(item=>`${item.id}:${item.type}:${item.x},${item.y}`).sort().join("|");
@@ -88,7 +88,7 @@ try{
   });
 
   assert.equal(stability.updateStable,true,"Spy frames must never replace the controller update boundary");
-  assert.deepEqual(stability.ownerTrace,[],"no retained r24/r25/r26 timer may transiently displace the controller update boundary");
+  assert.deepEqual(stability.ownerTrace,[],"no retained compatibility timer may transiently displace the controller update boundary");
   assert.equal(stability.mapStable,true,"Spy logical map identity must remain stable across frames instead of being regenerated");
   assert.equal(stability.furnitureStable,true,"Spy bookshelf/furniture identity and placement must remain stable across frames");
   assert.equal(stability.compactionDelta,0,"an already compacted Spy map must not compact again during normal frames");

@@ -93,7 +93,7 @@
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
     hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,hordeCombatPreFrames:0,hordeCombatPostFrames:0,hordeCompletionPostFrames:0,
     spyRuleFrames:0,spySourceBypasses:0,spyFrameMisses:0,
-    r25SpecialPreFrames:0,r25SpecialPostFrames:0,r26DungeonPreFrames:0,r26DungeonPostFrames:0,
+    r25SpecialPreFrames:0,r25SpecialPostFrames:0,r26DungeonPreFrames:0,r26DungeonPostFrames:0,gamblerDungeonPostFrames:0,
     sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedFrameBoundaryReassertions:0,sharedPreFrames:0,sharedPostFrames:0,sharedSourceFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
@@ -314,6 +314,12 @@
         if(typeof isolation==="function"&&isolation(current.id)){state.r25SpecialPostFrames++}
       }catch(error){console.warn("[Lost Sizzler mode runtime] Special-mode isolation post-frame failed",error)}
     }
+    if(current.id===IDS.DUNGEON_SOLO||current.id===IDS.SPLIT_SCREEN){
+      try{
+        const gambler=window.CCGLostSizzlerV141Gambler?.controllerFrame;
+        if(typeof gambler==="function"&&gambler(current.id,dt)){state.gamblerDungeonPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Gambler controller post-frame failed",error)}
+    }
     if(current.profile.family!=="horde")return current;
     try{
       const focus=window.CCGLostSizzlerV137?.updateHordeFocus;
@@ -402,7 +408,7 @@
       hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,hordeLivePostFrames:state.hordeLivePostFrames,
       hordeCombatPreFrames:state.hordeCombatPreFrames,hordeCombatPostFrames:state.hordeCombatPostFrames,hordeCompletionPostFrames:state.hordeCompletionPostFrames,
       spyRuleFrames:state.spyRuleFrames,spySourceBypasses:state.spySourceBypasses,spyFrameMisses:state.spyFrameMisses,
-      r25SpecialPreFrames:state.r25SpecialPreFrames,r25SpecialPostFrames:state.r25SpecialPostFrames,r26DungeonPreFrames:state.r26DungeonPreFrames,r26DungeonPostFrames:state.r26DungeonPostFrames,
+      r25SpecialPreFrames:state.r25SpecialPreFrames,r25SpecialPostFrames:state.r25SpecialPostFrames,r26DungeonPreFrames:state.r26DungeonPreFrames,r26DungeonPostFrames:state.r26DungeonPostFrames,gamblerDungeonPostFrames:state.gamblerDungeonPostFrames,
       sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedFrameBoundaryReassertions:state.sharedFrameBoundaryReassertions,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,sharedSourceFrames:state.sharedSourceFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
