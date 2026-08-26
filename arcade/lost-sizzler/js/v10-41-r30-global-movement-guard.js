@@ -13,7 +13,7 @@
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
-    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,
+    goldenUpdate:null,goldenMove:null,goldenHurt:null,goldenLocked:false,goldenLockedAt:0,goldenMovePromotions:0,
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,ownershipCooldownResets:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
@@ -67,6 +67,12 @@
   }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
+  function adoptReleaseMoveOwner(fn=window.movePlayer){
+    if(!releaseReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
+    state.baselineMove=fn;
+    if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
+    return true
+  }
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     if(healthyBaseline(window.update))state.baselineUpdate=window.update;
@@ -76,6 +82,7 @@
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
     }
+    adoptReleaseMoveOwner(state.baselineMove);
     return Boolean(state.baselineMove&&state.baselineUpdate&&state.baselineHurt);
   }
   const recoveryUpdate=()=>state.goldenUpdate||state.baselineUpdate;
@@ -211,7 +218,7 @@
     try{input.add(event.code);const player=playerForCode(event.code);if(player&&typeof setDir==="function")setDir(player,event.code);state.inputBridges++}catch(_){}
   }
   function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}}
-  function resetWatch(watch){watch.x=null;watch.y=null;watch.code="";watch.since=0}
+  function resetWatch(watch){watch.x=null;watch.y=null;watch.code:"";watch.since=0}
   function clearHeld(){held.clear();resetWatch(watches.p1);resetWatch(watches.p2)}
 
   function reassertHeldInput(){
@@ -296,7 +303,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,topLevelSpyOwner,controllerProtectedUpdate,adoptReleaseMoveOwner,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,resetRecoveredMovementCooldowns,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
