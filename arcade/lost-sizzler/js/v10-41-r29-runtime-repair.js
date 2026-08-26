@@ -21,6 +21,7 @@
   const finite=value=>Number.isFinite(Number(value));
   const liveSpyModel=player=>{try{return special()?.state?.players?.find(row=>String(row?.id||"")===String(player?.id||""))||null}catch(_){return null}};
   const spyCanMove=player=>{const model=liveSpyModel(player);return !model||model.status==="active"};
+  const r30OwnsNormalMovement=()=>{try{return !spyActive()&&Boolean(window.CCGLostSizzlerV141R30?.state?.goldenLocked&&typeof window.CCGLostSizzlerV141R30?.state?.goldenMove==="function")}catch(_){return false}};
 
   function noteFault(phase,error){
     const now=performance.now();state.frameFaults++;if(phase==="update")state.updateFaults++;if(phase==="render")state.renderFaults++;
@@ -155,6 +156,11 @@
   function installSpyMovementOwner(){
     if(!window.CCGLostSizzlerV141SpyMovementFinalizer?.state?.installed)return false;
     const current=window.movePlayer;if(typeof current!=="function")return false;
+    // r29 retains the Spy implementation, but after r30 has locked the final
+    // normal-mode movement owner it must not wrap that owner again. During an
+    // active Spy session r30 suspends this compatibility installer while the
+    // isolated Spy engine owns movement, so the handoff does not weaken Spy.
+    if(r30OwnsNormalMovement()){state.spyMoveInstalled=true;state.lastSpyMoveSource=current;return true}
     if(current.__ccgV141R29SpyOwner){state.spyMoveInstalled=true;state.lastSpyMoveSource=current;return true}
     if(current===state.lastSpyMoveSource)return state.spyMoveInstalled;
     const wrapped=function movePlayerV141R29SpyOwner(player,dx,dy,dash=false){
@@ -167,7 +173,7 @@
 
   function desiredHordeQuota(runState){
     const wave=Math.max(0,Number(runState?.wave)||0),players=Math.max(1,Number(runState?.playerCount)||1);if(!wave)return 0;
-    try{if(window.CCGLostSizzlerV138?.desiredQuota)return Number(window.CCGLostSizzlerV138.desiredQuota(wave,players))||0}catch(_){}
+    try{if(window.CCGLostSizzlerV138?.desiredQuota)return Number(window.CCGLostSizzlerV138.desiredQuota(wave,players))||0}catch(_){return 0}
     try{return Number(window.CCGLostSizzlerHorde?.quotaFor?.(wave,players))||0}catch(_){return 0}
   }
   function hordeRemaining(runState=special()?.state){
