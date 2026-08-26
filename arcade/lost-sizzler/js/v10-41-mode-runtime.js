@@ -91,7 +91,7 @@
   const state={
     activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
-    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,
+    hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,
     sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
@@ -271,6 +271,10 @@
       const focus=window.CCGLostSizzlerV137?.updateHordeFocus;
       if(typeof focus==="function"){focus(dt);state.hordeFocusPostFrames++}
     }catch(error){console.warn("[Lost Sizzler mode runtime] Horde focus post-frame failed",error)}
+    try{
+      const live=window.CCGLostSizzlerV138?.updateHordeLive;
+      if(typeof live==="function"){live(dt);state.hordeLivePostFrames++}
+    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde live post-frame failed",error)}
     return current
   }
 
@@ -301,7 +305,7 @@
       activeId:current.id,previousId:state.previousId,generation:state.generation,transitions:state.transitions,
       profile:{...current.profile},controllerState:{...current.state},lastTransitionReason:state.lastTransitionReason,lastResetReason:state.lastResetReason,
       hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
-      hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,
+      hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,hordeLivePostFrames:state.hordeLivePostFrames,
       sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
