@@ -4,7 +4,8 @@
  * - Spy Vs Spy walking cannot be accelerated by the older movement fallback chain;
  * - r24 Solo population rehomes and V10.10 home-room containment share one room owner;
  * - large enemy relocation jumps snap render interpolation instead of smearing across rooms;
- * - horizontal enemy sprite facing remains stable when AI movement is vertical or rejected.
+ * - horizontal enemy sprite facing remains stable when AI movement is vertical or rejected;
+ * - visual stabilisation never rewrites live enemy alert/search AI state.
  */
 (()=>{
   "use strict";
@@ -140,11 +141,9 @@
         if(previous){
           const jump=Math.abs(x-Number(previous.x))+Math.abs(y-Number(previous.y));if(jump>ENEMY_VISUAL_SNAP_DISTANCE)snapEnemyVisual(enemy);
           if(previous.facingX!==facingX)changed++;
-          const home=Number(enemy._ccgHomeRoomId),current=roomAt(x,y);
-          if(!enemy.deathStalker&&!enemy.voidStalker&&home>=0&&current===home&&enemy.aiState==="chase"&&!sameRoomLivingPlayer(home)){
-            enemy.aiState="search";enemy.targetId=null;enemy.searchMs=Math.min(1200,Math.max(250,Number(enemy.searchMs)||600));
-            if(x===Number(previous.x)&&y===Number(previous.y)&&previous.rawFacing)enemy.facing={...previous.rawFacing};
-          }
+          // Visual/interpolation repair must never own idle/chase/search. The core
+          // AI is the sole alert-state owner; rewriting chase here caused a
+          // chase->search->chase loop, repeated !/? indicators and visible stutter.
         }
         enemyState.set(id,{x,y,facingX,rawFacing:enemy.facing?{x:Number(enemy.facing.x)||0,y:Number(enemy.facing.y)||0}:null});
       }
