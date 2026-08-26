@@ -19,10 +19,14 @@ assert.match(guard,/const recoveryMove=\(\)=>state\.goldenMove\|\|state\.baselin
 assert.match(guard,/assertNormalRuntimeOwnership/,"normal modes must continuously validate runtime ownership");
 assert.match(guard,/STALL_RECOVERY_MS=700/,"a held-key movement watchdog must recover silent movement stalls");
 assert.match(guard,/watchdogRecoveries/,"movement watchdog self-heals must be measurable");
+assert.match(guard,/watchdogCooldownBreaks/,"the watchdog must be able to break a poisoned movement cooldown after a verified stall");
+assert.match(guard,/breakPoisonedCooldown/,"dead wrappers that continually re-arm move cooldown must have a recovery path");
 assert.match(guard,/inputReassertions/,"held movement must survive accidental shared-input drops");
 assert.match(guard,/P2_CODES=new Set\(\["KeyI","KeyJ","KeyK","KeyL"\]\)/,"split-screen Player 2 movement keys must also use the input resilience path");
 assert.match(guard,/post-Spy mode-transition invariant/,"Spy exit must trigger a dedicated post-mode ownership invariant");
 assert.match(guard,/stale Spy owner outside Spy mode/,"r30 must recover already-contaminated non-Spy movement");
 assert.match(guard,/document\.body\.dataset\.movementRecovery/,"automatic runtime recoveries must leave a lightweight diagnostic marker");
-for(const id of ["LS-0826-09","LS-0826-10","LS-0826-11","LS-0826-12","LS-0826-13","LS-0826-14","LS-0826-15","LS-0826-16"])assert.ok(buglog.includes(id),`${id} must be in the r30 developer changelog`);
+assert.match(guard,/maintainNotificationOwnership/,"r30 must stabilise retained notification ownership alongside movement ownership");
+assert.match(guard,/ensureNotificationToastOwner/,"r30 notification ownership must delegate to the final r29 rail/toast owner rather than create another competing wrapper stack");
+for(const id of ["LS-0826-09","LS-0826-10","LS-0826-11","LS-0826-12","LS-0826-13","LS-0826-14","LS-0826-15","LS-0826-16","LS-0826-17"])assert.ok(buglog.includes(id),`${id} must be in the r30 developer changelog`);
 console.log("Lost Sizzler V10.41 r30 global movement ownership and recurrence-prevention contracts passed.");
