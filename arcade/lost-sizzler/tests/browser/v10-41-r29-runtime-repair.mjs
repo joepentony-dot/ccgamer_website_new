@@ -40,17 +40,33 @@ try{
     document.body.dataset.runActive="true";
     const canvas=document.getElementById("game"),wrap=document.querySelector(".canvas-wrap"),toast=document.getElementById("pickup-toast"),rail=document.querySelector(".game-message-rail");
     const sample=()=>({bw:canvas.width,bh:canvas.height,w:wrap.getBoundingClientRect().width,h:wrap.getBoundingClientRect().height,railDisplay:getComputedStyle(rail).display});
+    const waitFor=async(predicate,timeout=1500)=>{
+      const started=performance.now();
+      while(performance.now()-started<timeout){
+        if(predicate())return true;
+        await new Promise(resolve=>setTimeout(resolve,16));
+      }
+      return Boolean(predicate());
+    };
     await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-    toast?.classList.remove("show");await new Promise(resolve=>requestAnimationFrame(resolve));
-    const before=sample(),visibleSamples=[],hiddenSamples=[];
+    toast?.classList.remove("show");
+    await waitFor(()=>getComputedStyle(rail).display==="none");
+    const before=sample(),visibleSamples=[],hiddenSamples=[],visibleReady=[],hiddenReady=[];
     for(let index=0;index<8;index++){
       window.showToast(`R29 GEOMETRY ${index}`,"Notification appearance must not resize the canvas.","cyan",200);
-      await new Promise(resolve=>setTimeout(resolve,35));visibleSamples.push(sample());
-      toast?.classList.remove("show");await new Promise(resolve=>setTimeout(resolve,35));hiddenSamples.push(sample());
+      visibleReady.push(await waitFor(()=>toast?.classList.contains("show")&&getComputedStyle(rail).display==="contents"));
+      visibleSamples.push(sample());
+      toast?.classList.remove("show");
+      hiddenReady.push(await waitFor(()=>getComputedStyle(rail).display==="none"));
+      hiddenSamples.push(sample());
     }
-    const after=sample();return{before,after,visibleSamples,hiddenSamples,toastPosition:getComputedStyle(toast).position}
+    const after=sample();
+    return{before,after,visibleSamples,hiddenSamples,visibleReady,hiddenReady,toastPosition:getComputedStyle(toast).position,toastOwnerStable:Boolean(window.showToast?.__ccgV141Priority)}
   });
   assert.equal(geometry.toastPosition,"absolute","r29 gameplay toasts must overlay the canvas");
+  assert.equal(geometry.toastOwnerStable,true,"r29 must expose one stable priority notification owner instead of allowing periodic wrapper growth");
+  assert.ok(geometry.visibleReady.every(Boolean),"every r29 toast must become visibly live in Chromium before it is sampled");
+  assert.ok(geometry.hiddenReady.every(Boolean),"every r29 toast must collapse its notification rail after closing");
   assert.equal(geometry.before.railDisplay,"none","an idle notification rail must collapse completely instead of reserving a gameplay row");
   assert.equal(geometry.after.railDisplay,"none","the notification rail must collapse again after the toast closes");
   for(const sample of geometry.visibleSamples){
@@ -95,7 +111,7 @@ try{
   assert.equal(friendly.result,false,"Horde player-v-player damage must be rejected");assert.equal(friendly.delta,1,"Horde friendly-fire rejection must execute exactly once");
 
   assert.deepEqual(errors,[],`r29 Chromium runtime regression must have no uncaught errors: ${errors.join("\n")}`);
-  console.log("Lost Sizzler V10.41 r29 Chromium geometry, overlay-rail, audio, Spy hint and Horde friendly-fire checks passed.");
+  console.log("Lost Sizzler V10.41 r29 Chromium geometry, stable notification ownership, audio, Spy hint and Horde friendly-fire checks passed.");
   await context.close()
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()))
