@@ -16,6 +16,7 @@
     spyOwnerUpdate:null,spyOwnerMove:null,spyOwnerHurt:null,
     forcedRestores:0,ownershipRepairs:0,inputBridges:0,inputReassertions:0,
     watchdogRecoveries:0,watchdogMisses:0,watchdogCooldownBreaks:0,lastWatchdogRecoveryAt:0,
+    notificationOwnershipRepairs:0,
     lastRestoreAt:0,lastRestoreReason:"",lastModeType:"",modeTransitions:0,lastRecoveryLogAt:0
   };
   const held=new Set();
@@ -133,6 +134,16 @@
     return assertNormalRuntimeOwnership("stale Spy owner outside Spy mode");
   }
 
+  function maintainNotificationOwnership(){
+    const finalizer=window.CCGLostSizzlerV141R29LoopFinalizer;
+    if(!finalizer)return false;
+    try{finalizer.ensureNotificationRailGuard?.()}catch(_){}
+    try{finalizer.ensureNotificationToastOwner?.()}catch(_){}
+    const current=window.showToast;if(typeof current!=="function")return false;
+    if(current.__ccgV141Priority!==true){current.__ccgV141Priority=true;state.notificationOwnershipRepairs++}
+    return true;
+  }
+
   function editableVisible(target){
     try{
       const node=target?.closest?.("input,textarea,select,[contenteditable='true'],[contenteditable='']");if(!node)return false;
@@ -198,9 +209,6 @@
     const x=Number(player.x),y=Number(player.y),now=performance.now();
     if(watch.code!==code||watch.x!==x||watch.y!==y){watch.code=code;watch.x=x;watch.y=y;watch.since=now;return false}
     if(now-watch.since<STALL_RECOVERY_MS||now-state.lastWatchdogRecoveryAt<RECOVERY_COOLDOWN_MS)return false;
-    /* Once uninterrupted movement intent has stalled beyond the watchdog
-     * threshold, cooldown state is no longer trusted. A failed wrapper can
-     * re-arm move1/move2 every update without ever changing coordinates. */
     if(!cooldownReady(player))breakPoisonedCooldown(player);
     state.lastWatchdogRecoveryAt=now;
     assertNormalRuntimeOwnership("movement watchdog ownership repair");
@@ -227,7 +235,7 @@
   function maintain(){
     makeR29Cooperative();captureBaseline();monitorModeTransition();maintainSpyOwnership();
     if(!spyActive())assertNormalRuntimeOwnership();
-    reassertHeldInput();movementWatchdog();
+    maintainNotificationOwnership();reassertHeldInput();movementWatchdog();
   }
 
   addEventListener("keydown",bridgeKeyDown,true);addEventListener("keyup",bridgeKeyUp,true);
@@ -236,7 +244,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     get state(){return state}
   };
 })();
