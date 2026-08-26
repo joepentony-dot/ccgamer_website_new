@@ -6,6 +6,7 @@
 
   const SPY_MODE="sizzler-saboteurs",MONITOR_MS=40;
   const MOVE_CODES=new Set(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","KeyA","KeyD","KeyW","KeyS"]);
+  const ISOLATED_MARKERS=["__ccgV141R29SpyRuntimeOwner","__ccgV141SpyIsolated","__ccgV141SpyDamageBoundary"];
   const state={
     timer:0,r29TimerStopped:false,r29InstallCooperative:false,spyTimerStopped:false,
     baselineUpdate:null,baselineMove:null,baselineHurt:null,
@@ -28,8 +29,12 @@
     }
     return false;
   }
+  function spyContaminated(fn){return ISOLATED_MARKERS.some(marker=>chainHas(fn,marker))}
 
-  function healthyBaseline(fn){return typeof fn==="function"&&!chainHas(fn,"__ccgV141R29SpyRuntimeOwner")}
+  /* The ordinary r29 compatibility wrapper itself is valid outside Spy. Only
+   * the temporary isolated Spy owners are contamination. This distinction is
+   * important because the compatibility wrapper also carries an r29 Spy marker. */
+  function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
     if(healthyBaseline(window.update))state.baselineUpdate=window.update;
@@ -109,7 +114,7 @@
       return true;
     }
 
-    const contaminated=chainHas(window.update,"__ccgV141R29SpyRuntimeOwner")||chainHas(window.movePlayer,"__ccgV141R29SpyRuntimeOwner")||chainHas(window.hurtPlayer,"__ccgV141R29SpyRuntimeOwner");
+    const contaminated=spyContaminated(window.update)||spyContaminated(window.movePlayer)||spyContaminated(window.hurtPlayer);
     if(contaminated&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       forceRestore(state.baselineUpdate,state.baselineMove,state.baselineHurt,"stale Spy owner outside Spy mode");
       return true;
@@ -137,18 +142,16 @@
   function reassertHeldInput(){
     if(!playing()){held.clear();return false}
     let changed=false;
-    for(const code of held){try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){}}
+    for(const code of held){try{if(!input.has(code)){input.add(code);changed=true;state.inputReassertions++}}catch(_){}
     return changed;
   }
 
-  function maintain(){
-    makeR29Cooperative();captureBaseline();maintainSpyOwnership();reassertHeldInput();
-  }
+  function maintain(){makeR29Cooperative();captureBaseline();maintainSpyOwnership();reassertHeldInput()}
 
   addEventListener("keydown",bridgeKeyDown,true);addEventListener("keyup",bridgeKeyUp,true);
   addEventListener("blur",clearHeld);document.addEventListener("visibilitychange",()=>{if(document.hidden)clearHeld()});
   maintain();state.timer=setInterval(maintain,MONITOR_MS);
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
-  window.CCGLostSizzlerV141R30={chainHas,captureBaseline,maintainSpyOwnership,reassertHeldInput,makeR29Cooperative,get state(){return state}};
+  window.CCGLostSizzlerV141R30={chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,reassertHeldInput,makeR29Cooperative,get state(){return state}};
 })();
