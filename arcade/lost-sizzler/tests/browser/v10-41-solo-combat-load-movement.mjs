@@ -50,11 +50,13 @@ try{
   const prepared=await prepareSolo(page,"PHASE3-SOLO-FIRE-FAULT");
   assert.equal(prepared.controller,"dungeon-solo","combat-load regression must remain owned by Dungeon Solo");
   const direction=await directionFor(page);assert.ok(direction,"fault-injection regression needs one walkable adjacent tile");
-  const ordering=await page.evaluate(()=>{
-    const source=String(window.update||"");
-    return{movement:source.indexOf("if(move1<=0)"),fire:source.indexOf('input.has("Space")')};
+  const ordering=await page.evaluate(async()=>{
+    const source=await (await fetch("/arcade/lost-sizzler/js/game-play.js",{cache:"no-store"})).text();
+    const updateStart=source.indexOf("function update(dt)");
+    const updateSource=updateStart>=0?source.slice(updateStart):"";
+    return{movement:updateSource.indexOf("if(move1<=0)"),fire:updateSource.indexOf('input.has("Space")')};
   });
-  assert.ok(ordering.movement>=0&&ordering.fire>=0,"the canonical update source must expose keyboard movement and firing blocks");
+  assert.ok(ordering.movement>=0&&ordering.fire>=0,"the canonical game-play.js update source must expose keyboard movement and firing blocks");
   assert.ok(ordering.movement<ordering.fire,`keyboard movement must be serviced before firing work in the canonical frame: ${JSON.stringify(ordering)}`);
 
   const faultBefore=await page.evaluate(()=>Number(window.CCGLostSizzlerV141R29?.state?.updateFaults||0));
