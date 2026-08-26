@@ -88,14 +88,29 @@ try{
   assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"movement watchdog must recover from an unmarked wrapper that silently returns false");
   assert.ok(deadRecovery.watchdog>beforeWatchdog,"movement watchdog recovery counter must advance");
 
-  const contaminatedRepair=await page.evaluate(async()=>{
+  const contaminatedRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,before=r30.state.ownershipRepairs;
     const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
-    await new Promise(r=>setTimeout(r,140));
-    return{contaminated:r30.spyContaminated(window.movePlayer),repairs:r30.state.ownershipRepairs-before};
+    const injected=r30.spyContaminated(window.movePlayer);
+    const repaired=r30.assertNormalRuntimeOwnership("browser injected isolated owner");
+    return{injected,repaired,contaminated:r30.spyContaminated(window.movePlayer),repairs:r30.state.ownershipRepairs-before,golden:window.movePlayer===r30.state.goldenMove};
   });
-  assert.equal(contaminatedRepair.contaminated,false,"normal-mode invariant must remove an isolated Spy owner immediately");
+  assert.equal(contaminatedRepair.injected,true,"browser fault injection must install an isolated Spy owner before the direct invariant check");
+  assert.equal(contaminatedRepair.repaired,true,"r30 normal-mode invariant must actively repair injected isolated ownership");
+  assert.equal(contaminatedRepair.contaminated,false,"r30 direct invariant must remove an isolated Spy owner immediately");
   assert.ok(contaminatedRepair.repairs>=1,"ownership repair counter must record contamination repair");
+  assert.equal(contaminatedRepair.golden,true,"ownership repair must restore the locked known-good movement owner");
+
+  const periodicRepair=await page.evaluate(async()=>{
+    const r30=window.CCGLostSizzlerV141R30;
+    const poisoned=function(){return false};poisoned.__ccgV141SpyIsolated=true;window.movePlayer=poisoned;
+    const injected=r30.spyContaminated(window.movePlayer);
+    await new Promise(r=>setTimeout(r,140));
+    return{injected,contaminated:r30.spyContaminated(window.movePlayer),golden:window.movePlayer===r30.state.goldenMove};
+  });
+  assert.equal(periodicRepair.injected,true,"periodic fault injection must install an isolated Spy owner before monitor recovery");
+  assert.equal(periodicRepair.contaminated,false,"continuous normal-mode ownership monitoring must remove isolated Spy contamination");
+  assert.equal(periodicRepair.golden,true,"continuous ownership recovery must converge on the locked known-good movement owner");
 
   const spyCycles=await page.evaluate(async()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,SAB=window.CCGLostSizzlerSaboteurs,r30=window.CCGLostSizzlerV141R30;
