@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "YouTube Data API v3. Verified title, description, thumbnail, uploadDate and duration support video discovery; uploadDate and duration are only emitted into VideoObject when verified here.",
-  "updatedAt": "2026-08-26T11:56:34.202Z",
+  "updatedAt": "2026-08-26T20:27:16.303Z",
   "videos": {
     "_0bKM3s0SMs": {
       "title": "The New Zealand Story C64 – Did Ocean Nail the Arcade Conversion?",
@@ -1944,6 +1944,15 @@
       "uploadDate": "2025-02-17T18:30:15Z",
       "duration": "PT5M57S",
       "thumbnailUrl": "https://i.ytimg.com/vi/DLVXo-JQoE4/maxresdefault.jpg",
+      "channelTitle": "Cheeky Commodore Gamer",
+      "verifiedBy": "youtube-data-api-v3"
+    },
+    "dLZpRuG_NwA": {
+      "title": "Ruff ’n’ Tumble – Was This the Amiga’s Best Run-and-Gun Platformer?",
+      "description": "🕹️ Ruff ’n’ Tumble (1994) – Commodore Amiga Run-and-Gun Platformer\n🌐 Full game information, manual & more:\n👉 https://www.cheekycommodoregamer.co.uk/games/ruff-n-tumble/\n\nReleased for the Commodore Amiga in 1994, Ruff ’n’ Tumble was developed by Wunderkind Software and published by Renegade. Mixing fast platforming with multidirectional shooting, huge sprites, detailed backgrounds and some seriously satisfying weaponry, it became one of the Amiga’s most highly regarded action platformers.\n\nYou play eight-year-old Ruff Rodgers, whose prized collection of marbles has been nicked by the thoroughly unpleasant Doctor Destiny. Armed with a gun and apparently very little concern about child firearm legislation, Ruff heads into Destiny’s world to retrieve them while blasting his way through an army of Tinheads.\n\nThe game takes place across four distinctive worlds, with 16 main levels covering the Fantasy Forest, underground caves, industrial areas and Doctor Destiny’s castle. Progress means exploring each stage, collecting the required red, green and blue marbles and reaching the exit without getting Ruff absolutely battered along the way.\n\nRuff starts with a basic gun, but the weapon upgrades are where things become considerably more entertaining. Machine guns, lasers, rockets and the flamethrower can tear through enemies, although the more powerful weapons only last for a limited period. Ammo power-ups extend their use, so grabbing the right weapon at the right moment can completely change how you tackle a section.\n\nThere is plenty going on beneath the graphics as well. Tinhead generators keep enemies coming, restart points prevent every death becoming a complete disaster, hidden routes reward exploration and collecting 100 coins gives Ruff another life.\n\nAnd then there are the controls. Ruff has plenty of momentum when running, and the scrolling can sometimes take a moment to follow when you suddenly change direction. Once you get used to the movement it becomes far easier to throw him around the levels, but it is definitely something you notice when returning to the game today.\n\nGraphically, Ruff ’n’ Tumble remains seriously impressive considering this was an OCS/ECS Amiga game requiring just 1MB of RAM. Large animated sprites, explosions, mechanical enemies, detailed environments and Jason Page’s soundtrack gave it the sort of presentation that could make you forget just how old the hardware underneath it actually was.\n\nThe magazines were impressed too. CU Amiga awarded it 92%, The One gave it 91%, Amiga Power 88% and Amiga Format 87%. For a game arriving in 1994, during a very different period for the Amiga, Ruff ’n’ Tumble was a fairly convincing reminder that the machine still had a few tricks left.\n\nRuff Remake: https://almost-there-games.itch.io/ruff\n\n💬 So where does Ruff ’n’ Tumble rank for you? Was this the Amiga’s best run-and-gun platformer? Did you own it back in 1994, discover it years later, or could you never get on with the scrolling?\n💬And more importantly — Ruff ’n’ Tumble, Turrican, Fire & Ice, Superfrog or something else entirely: which Amiga platformer are you choosing?\n\n▶️ PLAYLISTS\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSewjVfw7IxvRAn-7PHzebE_c\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezOSr2S4clduF5gfyTwQiY3\nhttps://www.youtube.com/playlist?list=PL_TYjnCNYSezw55SVAMN2_UhdH3gCca1n\n\n💙 SUPPORT & CONNECT\nPatreon: https://www.patreon.com/CheekyCommodoreGamer\nJoin: https://www.youtube.com/channel/UCHROCLVcatA449Gg-PoqlKw/join\nTwitter: https://twitter.com/CheekyC64Gamer\nFacebook: https://facebook.com/cheekycommodoregamer\nDiscord: https://discord.gg/83Xw9ktAn4\nWebsite: https://www.cheekycommodoregamer.co.uk\n\n#ruffntumble #amiga #commodoreamiga #amigagames #retrogaming #renegade #cheekycommodoregamer",
+      "uploadDate": "2026-08-26T17:30:35Z",
+      "duration": "PT9M3S",
+      "thumbnailUrl": "https://i.ytimg.com/vi/dLZpRuG_NwA/maxresdefault.jpg",
       "channelTitle": "Cheeky Commodore Gamer",
       "verifiedBy": "youtube-data-api-v3"
     },

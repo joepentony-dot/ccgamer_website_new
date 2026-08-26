@@ -9,6 +9,19 @@
   },
   "items": [
     {
+      "id": "dLZpRuG_NwA",
+      "kind": "game",
+      "filter": "amiga",
+      "badge": "Amiga Game",
+      "title": "Ruff ’n’ Tumble – Was This the Amiga’s Best Run-and-Gun Platformer?",
+      "description": "Ruff ’n’ Tumble is a superb 1994 Commodore Amiga run-and-gun platformer from Wunderkind Software and Renegade. Guide Ruff Rodgers through 16 action-packed stages filled with Tinheads, weapo…",
+      "url": "/games/ruff-n-tumble/",
+      "thumbnail": "https://i.ytimg.com/vi/dLZpRuG_NwA/maxresdefault.jpg",
+      "platform": "Amiga",
+      "year": 1993,
+      "publisher": "Renegade"
+    },
+    {
       "id": "5tpXo_IEU_U",
       "kind": "game",
       "filter": "c64",
@@ -8972,19 +8985,6 @@
       "year": "",
       "publisher": "",
       "collectionLabel": "Amiga Demo Music"
-    },
-    {
-      "id": "dLZpRuG_NwA",
-      "kind": "game",
-      "filter": "amiga",
-      "badge": "Amiga Game",
-      "title": "Ruff 'N' Tumble",
-      "description": "Ruff ’n’ Tumble is a superb 1994 Commodore Amiga run-and-gun platformer from Wunderkind Software and Renegade. Guide Ruff Rodgers through 16 action-packed stages filled with Tinheads, weapo…",
-      "url": "/games/ruff-n-tumble/",
-      "thumbnail": "https://i.ytimg.com/vi/dLZpRuG_NwA/hqdefault.jpg",
-      "platform": "Amiga",
-      "year": 1993,
-      "publisher": "Renegade"
     },
     {
       "id": "ght7u1k_tqw",
