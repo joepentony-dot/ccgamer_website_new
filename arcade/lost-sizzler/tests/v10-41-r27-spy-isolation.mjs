@@ -28,10 +28,10 @@ assert.doesNotMatch(source,/usePotion\s*\(/,"the Spy isolation layer must never 
 assert.match(inventorySource,/const spyOwnsHud=/,"the ordinary inventory HUD must recognise Spy ownership");
 assert.match(inventorySource,/function onQuickSlotKey\(event\)\{\s*if\(spyOwnsHud\(\)\)return;/,"numbered Dungeon quick slots must be disabled in Spy Vs Spy");
 assert.match(inventorySource,/function renderLiveHud\(\)\{\s*if\(spyOwnsHud\(\)\)return;/,"the ordinary Inventory & Keys sidebar must stop rendering while Spy owns it");
-assert.match(indexSource,/ccg-lost-sizzler-cache" content="20260825r29"/,"the release cache token must remain current for the changed shared inventory/runtime stack");
-assert.match(indexSource,/v10-41-r27-spy-isolation\.js\?v=20260825r29/,"r27 must remain loaded once beneath the retained r28 and final r29 layers");
-assert.match(indexSource,/v10-41-r28-special-mode-repair\.js\?v=20260825r29/,"retained r28 repair must load after r27 to provide its Spy notification/furniture boundary");
-assert.match(indexSource,/v10-41-r29-runtime-repair\.js\?v=20260825r29/,"r29 must load after the retained r27/r28 Spy layers");
+assert.match(indexSource,/ccg-lost-sizzler-cache" content="20260826r30"/,"the release cache token must remain current for the changed shared inventory/runtime stack");
+assert.match(indexSource,/v10-41-r27-spy-isolation\.js\?v=20260826r30/,"r27 must remain loaded once beneath the retained r28 and final r29 layers");
+assert.match(indexSource,/v10-41-r28-special-mode-repair\.js\?v=20260826r30/,"retained r28 repair must load after r27 to provide its Spy notification/furniture boundary");
+assert.match(indexSource,/v10-41-r29-runtime-repair\.js\?v=20260826r30/,"r29 must load after the retained r27/r28 Spy layers");
 
 const spyFurniture={id:"spy-chair",x:4,y:4,spyFurniture:true,structural:false,hp:3,maxHp:3};
 const spyDecor={...spyFurniture};
@@ -107,4 +107,4 @@ assert.equal(api.onSpyKeyDown(outside),false,"F is untouched outside Spy Vs Spy"
 assert.equal(outside.prevented,0,"non-Spy modes retain their existing fullscreen/input behaviour");
 assert.equal(fieldKitToggles,1,"the Spy field kit is not opened in another mode");
 
-console.log("Lost Sizzler V10.41 r27 Spy controls, HUD ownership, furniture and door isolation checks passed beneath r29.");
+console.log("Lost Sizzler V10.41 r27 Spy controls, HUD ownership, furniture and door isolation checks passed beneath r30.");
