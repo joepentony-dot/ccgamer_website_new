@@ -3,6 +3,14 @@
   "use strict";
   if(window.__CCG_LOST_SIZZLER_V141_R30_BUGLOG__)return;
   window.__CCG_LOST_SIZZLER_V141_R30_BUGLOG__=true;
+
+  function loadModeRuntime(){
+    if(window.CCGLostSizzlerModeRuntime||document.querySelector('script[data-ccg-mode-runtime="true"]'))return;
+    const revision=String(document.querySelector('meta[name="ccg-lost-sizzler-cache"]')?.content||document.querySelector('meta[name="ccg-lost-sizzler-build"]')?.content||"latest").trim();
+    const script=document.createElement("script");script.src=`js/v10-41-mode-runtime.js?v=${encodeURIComponent(revision)}`;script.dataset.ccgModeRuntime="true";document.head.appendChild(script);
+  }
+  loadModeRuntime();
+
   const entries=[
     ["LS-0826-09","FIXED","Global movement freeze after Spy mode","A Spy runtime ownership race could leave ordinary movement routed through the isolated Spy owner after the mode ended. Because the Spy owner had already released its saved base function, later Solo or Horde movement could return false forever. r30 restores the pre-Spy update, movement and damage owners unconditionally when Spy exits."],
     ["LS-0826-10","FIXED","Cross-mode runtime wrapper contention","The r29 background installer no longer competes with the isolated Spy engine while Spy is active. Its maintenance timer is replaced by a cooperative r30 owner that preserves the stable animation loop without repeatedly wrapping Spy movement, damage or packet ownership."],
