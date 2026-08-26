@@ -128,9 +128,7 @@ jobs:
           slugs.discard("")
           allowed = {f"games/{slug}/index.html" for slug in slugs}
           allowed.update(f"games/{slug}.html" for slug in slugs)
-          allowed.update(
-              path.name for path in Path(".").glob("sitemap*.xml")
-          )
+          allowed.update(path.name for path in Path(".").glob("sitemap*.xml"))
 
           output = subprocess.check_output(
               ["git", "status", "--porcelain", "--untracked-files=all"],
@@ -142,7 +140,13 @@ jobs:
               if " -> " in path:
                   path = path.split(" -> ", 1)[1]
               paths.append(path)
-          unexpected = sorted(set(paths) - allowed)
+
+          def is_allowed(path):
+              if path in allowed:
+                  return True
+              return path.startswith("music/") and path.endswith("/index.html")
+
+          unexpected = sorted(path for path in set(paths) if not is_allowed(path))
           if unexpected:
               raise SystemExit(f"Game generator changed unexpected paths: {unexpected}")
           print(f"Validated game generator scope across {len(paths)} changed paths.")
@@ -163,8 +167,8 @@ jobs:
       - name: Restore temporary game output
         if: always()
         run: |
-          git restore --source=HEAD -- games sitemap.xml sitemap-*.xml
-          git clean -fd -- games sitemap.xml sitemap-*.xml
+          git restore --source=HEAD -- games music sitemap.xml sitemap-*.xml
+          git clean -fd -- games music sitemap.xml sitemap-*.xml
 
       - name: Remove compiler bytecode
         if: always()
