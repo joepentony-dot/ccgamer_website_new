@@ -112,6 +112,11 @@
       return true;
     }
     const wrapped=function showToastV141R29NotificationRail(title){
+      // A late r29/legacy installer can become the outer showToast owner between
+      // 40 ms maintenance passes. Reassert priority synchronously during the
+      // real toast dispatch so notification ownership cannot be sampled in that
+      // race window or trigger another legacy wrapper cycle.
+      stabiliseToastOwner(window.showToast);
       const result=current.apply(this,arguments);
       const rail=state.notificationRail||document.querySelector(".ccg-game>.game-area>.game-message-rail");
       const renderedTitle=String(document.getElementById("pickup-title")?.textContent||"");

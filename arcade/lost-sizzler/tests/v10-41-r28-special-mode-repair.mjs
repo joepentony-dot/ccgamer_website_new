@@ -16,15 +16,15 @@ const checker=read("js/version-check.js");
 const changelog=read("js/v10-12-developer-changelog.js");
 const r29=read("js/v10-41-r29-runtime-repair.js");
 
-assert.equal(manifest.build,"2026.08.25.29");
-assert.equal(manifest.cacheToken,"20260825r29");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.29"/);
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r29"/);
-assert.match(index,/css\/v10-41-r28\.css\?v=20260825r29/);
-assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260825r29/);
-assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260825r29/);
-assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260825r29")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r29"),"retained r28 repair must execute after r27");
-assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r29")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260825r29"),"r29 must execute after the retained r28 repair");
+assert.equal(manifest.build,"2026.08.26.30");
+assert.equal(manifest.cacheToken,"20260826r30");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.26\.30"/);
+assert.match(index,/ccg-lost-sizzler-cache" content="20260826r30"/);
+assert.match(index,/css\/v10-41-r28\.css\?v=20260826r30/);
+assert.match(index,/js\/v10-41-r28-special-mode-repair\.js\?v=20260826r30/);
+assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260826r30/);
+assert.ok(index.indexOf("v10-41-r27-spy-isolation.js?v=20260826r30")<index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30"),"retained r28 repair must execute after r27");
+assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260826r30"),"r29 must execute after the retained r28 repair");
 
 const forcePlaying=noPause.match(/function forcePlaying\(\)\{[\s\S]*?return true;\n  \}/)?.[0]||"";
 assert.ok(forcePlaying,"multiplayer no-pause must retain forcePlaying");
@@ -77,4 +77,4 @@ for(const id of ["LS-0825-14","LS-0825-15","LS-0825-16","LS-0825-17","LS-0825-18
 assert.match(changelog,/build 2026\.08\.25\.28/,"historical r28 bug tracker entry must continue to identify the r28 build that introduced these fixes");
 assert.match(r29,/__CCG_LOST_SIZZLER_V141_R29_RUNTIME_REPAIR__/,"r29 final runtime layer must remain present above the retained r28 feature layer");
 
-console.log("Lost Sizzler V10.41 retained r28 Horde, Spy, Hunter, 1440p and update protections passed inside r29.");
+console.log("Lost Sizzler V10.41 retained r28 Horde, Spy, Hunter, 1440p and update protections passed inside r30.");

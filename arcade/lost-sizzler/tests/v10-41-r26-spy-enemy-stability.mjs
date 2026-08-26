@@ -10,7 +10,7 @@ const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 const hotfix=read("js/v10-41-r26-spy-enemy-stability.js");
 const index=read("index.html");
 
-assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260825r29/,"canonical page must retain the r26 stability hotfix under the current r29 cache shell");
+assert.match(index,/v10-41-r26-spy-enemy-stability\.js\?v=20260826r30/,"canonical page must retain the r26 stability hotfix under the current r30 cache shell");
 assert.match(hotfix,/const SPY_MOVE_CADENCE_MS=220;/,"Spy Vs Spy walking must use the slower 220ms tactical cadence");
 assert.match(hotfix,/value\+Math\.max\(0,Number\(dt\)\|\|0\)/,"r26 must arm the older direct fallback beyond the current frame decrement");
 assert.match(hotfix,/enemy\._ccgHomeRoomId=r24Room;enemy\.roomId=r24Room;/,"r26 must retain compatibility for any stale population-rehome marker already present in runtime state");
@@ -90,4 +90,4 @@ api.install();api.install();
 assert.equal(context.update,stableUpdate,"repeated installs must not grow the update wrapper chain");
 assert.equal(context.movePlayer,stableMove,"repeated installs must not grow the move wrapper chain");
 assert.equal(context.drawPixelEnemySprite,stableRender,"repeated installs must not grow the render wrapper chain");
-console.log("Lost Sizzler r26 Spy movement and Solo enemy stability compatibility checks passed under the r29 cache shell.");
+console.log("Lost Sizzler r26 Spy movement and Solo enemy stability compatibility checks passed under the r30 cache shell.");

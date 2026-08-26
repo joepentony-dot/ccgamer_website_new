@@ -13,15 +13,15 @@ const repair=read("js/v10-41-r29-runtime-repair.js");
 const css=read("css/v10-41-r29.css");
 const buglog=read("js/v10-41-r29-buglog.js");
 
-assert.equal(manifest.build,"2026.08.25.29","r29 manifest must publish build .29");
-assert.equal(manifest.cacheToken,"20260825r29","r29 manifest must publish a fresh cache generation");
-assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.25\.29"/,"canonical page must expose build .29");
-assert.match(index,/ccg-lost-sizzler-cache" content="20260825r29"/,"canonical page must expose r29 cache generation");
+assert.equal(manifest.build,"2026.08.26.30","current manifest must publish r30 build .30 while retaining r29 runtime protections");
+assert.equal(manifest.cacheToken,"20260826r30","current manifest must publish the r30 cache generation");
+assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.26\.30"/,"canonical page must expose build .29");
+assert.match(index,/ccg-lost-sizzler-cache" content="20260826r30"/,"canonical page must expose r29 cache generation");
 assert.doesNotMatch(index,/\?v=20260825r28/,"canonical page must not request stale r28 runtime assets");
-assert.match(index,/css\/v10-41-r29\.css\?v=20260825r29/,"r29 stable geometry CSS must load");
-assert.match(index,/js\/v10-41-r29-buglog\.js\?v=20260825r29/,"r29 developer buglog additions must load");
-assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260825r29/,"r29 runtime repair must load");
-assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260825r29")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260825r29"),"r29 must execute after r28 and become the final runtime owner");
+assert.match(index,/css\/v10-41-r29\.css\?v=20260826r30/,"r29 stable geometry CSS must load");
+assert.match(index,/js\/v10-41-r29-buglog\.js\?v=20260826r30/,"r29 developer buglog additions must load");
+assert.match(index,/js\/v10-41-r29-runtime-repair\.js\?v=20260826r30/,"r29 runtime repair must load");
+assert.ok(index.indexOf("v10-41-r28-special-mode-repair.js?v=20260826r30")<index.indexOf("v10-41-r29-runtime-repair.js?v=20260826r30"),"retained r29 runtime protections must execute after r28 before the r30 ownership failsafe");
 
 assert.match(repair,/stableLoop\.__ccgV141R29Stable=true/,"r29 must publish a final stable frame-loop owner");
 assert.doesNotMatch(repair,/canvas\.width\s*=|canvas\.height\s*=/,"r29 frame recovery must never recreate the canvas backing store");

@@ -79,8 +79,8 @@ try{
     });
 
     assert.equal(audit.releaseReady,"true",`iteration ${iteration}: release gate must complete`);
-    assert.equal(audit.cacheToken,"20260825r29",`iteration ${iteration}: current cache token must be r29`);
-    assert.equal(audit.storedToken,"20260825r29",`iteration ${iteration}: successful sanitation must record r29`);
+    assert.equal(audit.cacheToken,"20260826r30",`iteration ${iteration}: current cache token must be r29`);
+    assert.equal(audit.storedToken,"20260826r30",`iteration ${iteration}: successful sanitation must record r29`);
     assert.equal(audit.staleStillCached,false,`iteration ${iteration}: stale Lost Sizzler cache entry must be removed`);
     assert.equal(audit.unrelatedStillCached,true,`iteration ${iteration}: unrelated cached data must not be deleted`);
     assert.equal(audit.loadingHidden,true,`iteration ${iteration}: loading overlay must close after successful startup`);
