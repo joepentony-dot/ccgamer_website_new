@@ -94,3 +94,13 @@ try{
 }finally{
   await browser.close();for(const socket of sockets)socket.destroy();await new Promise(resolve=>server.close(()=>resolve()));
 }
+
+// This file is already called by the canonical Lost Sizzler Arcade Validation
+// workflow. Keep the new structural browser regressions chained here so mode
+// isolation cannot exist only as dormant tests under tests/browser/.
+for(const regression of [
+  "./v10-41-solo-combat-load-movement.mjs",
+  "./v10-41-mode-controller-isolation.mjs",
+  "./v10-41-horde-controller-update-ownership.mjs",
+  "./v10-41-r29-spy-engine-isolation.mjs"
+])await import(regression);
