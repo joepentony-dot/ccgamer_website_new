@@ -80,10 +80,13 @@ try{
   const hordeReset=await page.evaluate(()=>{
     const api=window.CCGLostSizzlerModeRuntime,special=window.CCGLostSizzlerSpecialModes;
     const descriptor=Object.getOwnPropertyDescriptor(special,"active"),previousPlay=playMode,previousSpecial=document.body.dataset.specialMode,previousSolo=document.body.dataset.hordeSolo;
-    const before=api.snapshot();
     try{
-      playMode="online";document.body.dataset.specialMode="horde-survivor";document.body.dataset.hordeSolo="true";
+      run=PGR.makeRun({difficulty:"ARCADE",seed:"MODE-ISOLATION-HORDE"});playMode="solo";startWorld(PGR.floorSeed(run),false,false);mode="playing";document.body.dataset.runActive="true";
+      host.enemies=[];host.generators=[];move1=0;fire1=0;fireBuffer1=0;input.clear();
+      if(!p1)throw new Error("mode-isolation Horde scenario requires an initialized P1");
+      document.body.dataset.specialMode="horde-survivor";document.body.dataset.hordeSolo="true";
       Object.defineProperty(special,"active",{configurable:true,value:{type:"horde-survivor",state:{wave:3,state:"wave"}}});api.sync("test horde reset");
+      const before=api.snapshot();
       hazards.push({x:p1.x,y:p1.y,life:1000,campOwner:"P1",direct:true});campStates.set("P1",{x:p1.x,y:p1.y,stillMs:9999});
       move1=9999;fire1=9999;fireBuffer1=9999;p1.hitStunMs=9999;
       special.active.state.wave=4;special.active.state.state="intermission";api.monitorHordeLifecycle();
