@@ -61,7 +61,8 @@ assert.match(controller,/context\.controllerId===IDS\.SPY_ONLINE/,"authoritative
 assert.match(controller,/result=runSpyControllerFrame\(dt\)/,"Spy controller must call the isolated Spy rules frame directly");
 assert.match(controller,/state\.spySourceBypasses\+\+/,"controller diagnostics must count Dungeon-source bypasses during Spy");
 assert.match(controller,/typeof engine\?\.isolatedUpdate!=="function"[\s\S]*state\.spyFrameMisses\+\+;[\s\S]*return false/,"missing Spy runtime must fail closed instead of falling back to Dungeon rules");
-assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolation/,"Spy controller exit must explicitly release mode-owned movement/damage state");
+assert.match(controller,/if\(next\.id===IDS\.SPY_ONLINE\)[\s\S]*installSharedFrameBoundary\(\);window\.CCGLostSizzlerV141R29SpyEngine\?\.enterIsolation/,"Spy enter must synchronously restore the authoritative controller boundary before isolation");
+assert.match(controller,/window\.CCGLostSizzlerV141R29SpyEngine\?\.leaveIsolation\?\.\(\);installSharedFrameBoundary\(\)/,"Spy controller exit must release mode-owned movement/damage state and retain the controller boundary");
 assert.match(runtime,/window\.CCGLostSizzlerModeRuntime=runtimeRegistry/,"mode runtime registry must expose the isolation boundary");
 assert.match(runtime,/isolatedRules:true,sharedRenderer:true/,"Spy must own rules while deliberately sharing only the renderer");
 assert.match(runtime,/state\.timer=setInterval\(monitor,MONITOR_MS\)/,"Spy movement/damage ownership must still be monitored while the mode is active");

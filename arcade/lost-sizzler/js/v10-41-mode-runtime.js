@@ -177,13 +177,13 @@
     if(next.profile.family==="horde"||next.profile.family==="spy")resetModeTransient(`${next.id} enter`,{clearEnemyShots:true,clearInput:true});
     else if(previous&&(previous.profile.family==="horde"||previous.profile.family==="spy"))resetModeTransient(`${next.id} post-special enter`,{clearEnemyShots:true,clearInput:true});
     if(next.profile.family!=="horde")clearHordePresentation();
-    if(next.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy enter failed",error)}
+    if(next.id===IDS.SPY_ONLINE)try{installSharedFrameBoundary();window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy enter failed",error)}
   }
 
   function leaveController(previous,next,reason){
     if(!previous)return;
     previous.exit(reason);
-    if(previous.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.leaveIsolation?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy exit failed",error)}
+    if(previous.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.leaveIsolation?.();installSharedFrameBoundary()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy exit failed",error)}
     if((previous.profile.family==="horde"||previous.profile.family==="spy")&&next?.profile.family!==previous.profile.family)resetModeTransient(`${previous.id} exit`,{clearEnemyShots:true,clearInput:true});
   }
 
