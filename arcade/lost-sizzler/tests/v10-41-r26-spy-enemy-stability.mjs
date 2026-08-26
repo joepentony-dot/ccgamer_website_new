@@ -16,6 +16,7 @@ assert.match(hotfix,/value\+Math\.max\(0,Number\(dt\)\|\|0\)/,"r26 must arm the 
 assert.match(hotfix,/enemy\._ccgHomeRoomId=r24Room;enemy\.roomId=r24Room;/,"r26 must retain compatibility for any stale population-rehome marker already present in runtime state");
 assert.match(hotfix,/jump>ENEMY_VISUAL_SNAP_DISTANCE/,"large enemy relocations must snap render interpolation");
 assert.match(hotfix,/drawPixelEnemySpriteV141R26StableFacing/,"enemy render facing must be stabilised at the final sprite handoff");
+assert.match(hotfix,/Visual\/interpolation repair must never own idle\/chase\/search/,"r26 visual stability must explicitly leave alert-state ownership with the core AI");
 
 let clock=1000;
 const visualMap=new Map();
@@ -79,6 +80,11 @@ assert.equal(visualMap.get("E1").rx,12,"rehome compatibility must snap stale ene
 assert.equal(visualMap.get("E1").ry,2,"rehome compatibility must snap stale enemy interpolation Y");
 
 api.stabiliseEnemyVisualState();
+enemy.aiState="chase";enemy.targetId="P1";enemy.lastSeen={x:p1.x,y:p1.y};
+api.stabiliseEnemyVisualState();
+assert.equal(enemy.aiState,"chase","visual stability must not force a live chase into search and create !/? alert flicker");
+assert.equal(enemy.targetId,"P1","visual stability must not clear the core AI target while chasing");
+
 enemy.x=11;enemy.facing={x:0,y:-1};
 api.stabiliseEnemyVisualState();
 assert.equal(context.drawPixelEnemySprite(enemy,0,0),-1,"vertical AI facing must not flip a left-moving enemy sprite to the wrong horizontal direction");
@@ -90,4 +96,4 @@ api.install();api.install();
 assert.equal(context.update,stableUpdate,"repeated installs must not grow the update wrapper chain");
 assert.equal(context.movePlayer,stableMove,"repeated installs must not grow the move wrapper chain");
 assert.equal(context.drawPixelEnemySprite,stableRender,"repeated installs must not grow the render wrapper chain");
-console.log("Lost Sizzler r26 Spy movement and Solo enemy stability compatibility checks passed under the r30 cache shell.");
+console.log("Lost Sizzler r26 Spy movement and Solo enemy alert/render stability checks passed under the r30 cache shell.");
