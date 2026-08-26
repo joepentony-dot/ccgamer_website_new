@@ -20,6 +20,7 @@
   const DUNGEON_VOICE_KEYS=/^(?:bountyStart|bounty|bountyComplete|mutation|deathStalker|loadula|sanctuary|shop|objectiveHint|objectiveNear|rareLoot)$/i;
   const state={
     updateSource:null,startSource:null,toastSource:null,voiceSource:null,timer:0,
+    controllerOwnedUpdate:false,controllerFrames:0,
     pacedMoves:0,rarePurges:0,hiddenDungeonAlerts:0,suppressedToasts:0,suppressedVoice:0
   };
 
@@ -101,23 +102,16 @@
     return hidden;
   }
 
+  function controllerFrameIsolation(controllerId){
+    const id=String(controllerId||"");
+    if(!["spy-online","horde-solo","horde-online"].includes(id)||!specialActive())return false;
+    purgeSpecialDungeonState();hideDungeonNotifications();state.controllerFrames++;return true;
+  }
+
   function wrapUpdate(){
-    const current=window.update;
-    if(typeof current!=="function")return false;
-    if(current.__ccgV141R25SpySpeedBounty){state.updateSource=current;return true}
-    if(current===state.updateSource)return true;
-    const wrapped=inheritMarkers(function updateV141R25SpySpeedBounty(){
-      const local=spyActive()&&typeof p1!=="undefined"?p1:null;
-      const before=local?{x:local.x,y:local.y}:null;
-      if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}
-      const result=current.apply(this,arguments);
-      try{if(local&&spyActive())syncSpyCadence(before,local)}catch(_){}
-      if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}
-      return result;
-    },current);
-    wrapped.__ccgV141R25SpySpeedBounty=true;
-    wrapped.__ccgV141R25Original=current;
-    window.update=wrapped;state.updateSource=wrapped;return true;
+    // The mode controller invokes controllerFrameIsolation before and after the
+    // shared source. This retained hotfix must never become a global frame owner.
+    state.controllerOwnedUpdate=true;return true;
   }
 
   function wrapStartWorld(){
@@ -170,7 +164,7 @@
   function install(){
     wrapStartWorld();wrapUpdate();wrapToast();wrapVoice();
     if(specialActive()){purgeSpecialDungeonState();hideDungeonNotifications()}
-    return Boolean(state.updateSource&&state.startSource);
+    return Boolean(state.controllerOwnedUpdate&&state.startSource);
   }
 
   const gate=window.CCGLostSizzlerReleaseGate?.state?.promise;
@@ -183,7 +177,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);state.timer=0},{once:true});
 
   window.CCGLostSizzlerV141R25SpySpeedBountyHotfix={
-    install,inheritMarkers,specialModeType,specialActive,spyActive,movementCadence,syncSpyCadence,
+    install,inheritMarkers,specialModeType,specialActive,spyActive,movementCadence,syncSpyCadence,controllerFrameIsolation,
     purgeSpecialDungeonState,hideDungeonNotifications,dungeonOnlyText,
     constants:{SPECIAL_MODES},get state(){return state}
   };

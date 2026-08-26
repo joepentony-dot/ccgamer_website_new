@@ -22,10 +22,10 @@ assert.match(lake,/load\("js\/v10-41-r24-live-regressions\.js","data-ccg-v141-r2
 
 // Spy Vs Spy: stale hit-stun is cleared at a new round and actual held movement
 // receives a late-frame fallback if the inherited multiplayer chain rejects it.
-assert.match(r24,/player\.hitStunMs=0/,"Spy round start must clear stale hit stun");
-assert.match(r24,/local\.x===before\?\.x&&local\.y===before\?\.y/,"Spy fallback must only run when ordinary movement failed");
-assert.match(r24,/trySpyFallbackStep\(local,dir\.x,dir\.y\)/,"Spy movement fallback must execute from held movement input");
-assert.match(r24,/window\.CCGWorld\.walkable/,"Spy fallback must still respect dungeon collision");
+assert.match(r24,/player\.hitStunMs=0/,"retained Spy spawn compatibility must clear stale hit stun");
+assert.match(r24,/state\.controllerOwnedSpyMovement=true/,"r24 must declare controller-owned Spy movement");
+assert.doesNotMatch(r24,/window\.update\s*=/,"r24 must never replace the controller update boundary");
+assert.doesNotMatch(r24,/addEventListener\("keydown"[\s\S]*held\.add/,"r24 must not retain a second Spy input owner");
 
 // Ranged combat: first contact has a reaction beat, later shots sometimes
 // hesitate, and the final projectile vector is eight-directional.

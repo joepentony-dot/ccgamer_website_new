@@ -9,17 +9,19 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const hotfix=read("js/v10-41-r25-spy-speed-bounty-hotfix.js");
+const controller=read("js/v10-41-mode-runtime.js");
 const index=read("index.html");
 
 // Delivery: r25 remains part of the canonical runtime under the current r30
 // cache shell so browsers cannot retain an older copy of this compatibility layer.
 assert.match(index,/v10-41-r25-spy-speed-bounty-hotfix\.js\?v=20260826r30/,"canonical page must load the retained r25 Spy hotfix under the current r30 cache token");
 
-// Movement: the emergency r24 fallback and ordinary movement must be re-armed
-// from one normal dungeon cadence after any real Spy movement.
-assert.match(hotfix,/r24\.spyMoveCooldownMs=Math\.max\(Number\(r24\.spyMoveCooldownMs\)\|\|0,cadence\)/,"r25 must synchronise the r24 fallback cooldown after a real movement step");
-assert.match(hotfix,/move1=Math\.max\(Number\(move1\)\|\|0,cadence\)/,"r25 must synchronise the normal P1 movement timer with the fallback timer");
-assert.match(hotfix,/CCG_CONFIG\?\.player\?\.moveDelay\|\|138/,"Spy cadence must derive from the normal dungeon movement delay");
+// Ownership: movement cadence belongs to the isolated Spy engine. The retained
+// r25 layer may isolate bounty/UI state, but it cannot own the global frame.
+assert.match(hotfix,/function controllerFrameIsolation\(controllerId\)/,"r25 must expose an explicit special-mode controller hook");
+assert.match(hotfix,/state\.controllerOwnedUpdate=true/,"r25 must declare controller-owned update execution");
+assert.doesNotMatch(hotfix,/window\.update\s*=/,"r25 must never replace the controller update boundary");
+assert.match(controller,/CCGLostSizzlerV141R25SpySpeedBountyHotfix\?\.controllerFrameIsolation/,"the mode runtime must invoke r25 isolation explicitly");
 
 // Special-mode isolation: ordinary dungeon bounty state and presentation must
 // be removed for Spy Vs Spy while remaining available in ordinary dungeon play.
@@ -35,9 +37,8 @@ assert.match(hotfix,/specialActive\(\)&&DUNGEON_VOICE_KEYS\.test/,"legacy dungeo
 assert.match(hotfix,/function inheritMarkers\(wrapped,current\)/,"r25 must preserve inherited runtime wrapper ownership");
 assert.match(hotfix,/Object\.assign\(wrapped,current\)/,"r25 wrapper functions must carry the previous wrapper's markers forward");
 
-// Lightweight behavioural proof using the real r25 wrapper path. The inherited
-// update moves the local Spy one cell; r25 must notice that movement and re-arm
-// both the ordinary movement timer and r24 fallback timer to the same cadence.
+// Lightweight behavioural proof of the controller hook. The global update
+// identity must remain untouched while the hook removes special-mode Dungeon state.
 const body={dataset:{specialMode:"sizzler-saboteurs"},removeAttribute(){}};
 function baseStart(){return true}
 baseStart.__ccgV141R24SoloBalance=true;
@@ -70,24 +71,24 @@ vm.createContext(context);
 vm.runInContext(hotfix,context,{filename:"v10-41-r25-spy-speed-bounty-hotfix.js"});
 const api=context.CCGLostSizzlerV141R25SpySpeedBountyHotfix;
 assert.ok(api,"r25 hotfix API must install");
-assert.equal(api.movementCadence(context.p1),138,"Spy should use the ordinary dungeon cadence rather than an accelerated fallback cadence");
-context.move1=0;
-context.CCGLostSizzlerV141R24LiveRegressions.state.spyMoveCooldownMs=0;
-const beforeX=context.p1.x;
-context.update(16);
-assert.equal(context.p1.x,beforeX+1,"the inherited update must move the Spy for the cadence regression proof");
-assert.equal(context.move1,138,"wrapped update must re-arm the normal movement cooldown after the Spy step");
-assert.equal(context.CCGLostSizzlerV141R24LiveRegressions.state.spyMoveCooldownMs,138,"wrapped update must re-arm the r24 fallback cooldown to the same cadence");
-api.purgeSpecialDungeonState();
+assert.equal(api.movementCadence(context.p1),138,"the retained diagnostic helper must remain compatible");
+const stableUpdate=context.update;
+assert.equal(stableUpdate,baseUpdate,"r25 installation must preserve the existing update owner");
+context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
+context.run.dungeonBounty={active:true};context.run.activeBounty={active:true};
+assert.equal(api.controllerFrameIsolation("dungeon-solo"),false,"r25 isolation must reject a Dungeon controller");
+assert.equal(context.run.dungeonBounty.active,true,"a rejected controller hook must not purge Dungeon state");
+assert.equal(api.controllerFrameIsolation("spy-online"),true,"the Spy controller must run r25 isolation");
+assert.equal(api.state.controllerFrames,1,"controller-owned isolation frames must be measurable");
 assert.equal(context.CCGLostSizzlerRareEvents.state.bounty,null,"Spy must not retain a rare-event Dungeon Bounty");
 assert.equal(context.run.dungeonBounty,null,"Spy must not retain a legacy Dungeon Bounty");
 assert.equal(context.run.activeBounty,null,"Spy must not retain an active legacy bounty");
 
-assert.equal(context.update.__ccgV141R24SpyMovement,true,"r25 update wrapper must preserve r24 movement ownership so r24 does not wrap it again");
+assert.equal(context.update,baseUpdate,"r25 must leave the inherited update identity untouched");
 assert.equal(context.startWorld.__ccgV141R24SoloBalance,true,"r25 start wrapper must preserve r24 balance ownership so r24 does not wrap it again");
 assert.equal(context.showToast.__ccgV141MajorHardening,true,"r25 toast wrapper must preserve major-notification ownership");
 assert.equal(context.CCGLostSizzlerVoice.say.__ccgV141MajorVisual,true,"r25 voice wrapper must preserve major-notification voice ownership");
-const stableUpdate=context.update,stableStart=context.startWorld,stableToast=context.showToast,stableVoice=context.CCGLostSizzlerVoice.say;
+const stableStart=context.startWorld,stableToast=context.showToast,stableVoice=context.CCGLostSizzlerVoice.say;
 api.install();api.install();
 assert.equal(context.update,stableUpdate,"repeated r25 installs must not grow the update wrapper chain");
 assert.equal(context.startWorld,stableStart,"repeated r25 installs must not grow the startWorld wrapper chain");
@@ -102,4 +103,4 @@ context.CCGLostSizzlerRareEvents.state.bounty={type:"KILL 3 HUNTERS"};
 assert.equal(api.purgeSpecialDungeonState(),false,"ordinary dungeon bounty behaviour must remain untouched");
 assert.deepEqual(context.CCGLostSizzlerRareEvents.state.bounty,{type:"KILL 3 HUNTERS"});
 
-console.log("Lost Sizzler r25 Spy movement cadence, Dungeon Bounty isolation and wrapper-stability checks passed under r30.");
+console.log("Lost Sizzler r25 controller-owned Dungeon Bounty isolation and non-update wrapper stability checks passed under r30.");

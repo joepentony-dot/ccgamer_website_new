@@ -93,7 +93,8 @@
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
     hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,hordeCombatPreFrames:0,hordeCombatPostFrames:0,hordeCompletionPostFrames:0,
     spyRuleFrames:0,spySourceBypasses:0,spyFrameMisses:0,
-    sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,sharedSourceFrames:0,
+    r25SpecialPreFrames:0,r25SpecialPostFrames:0,r26DungeonPreFrames:0,r26DungeonPostFrames:0,
+    sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedFrameBoundaryReassertions:0,sharedPreFrames:0,sharedPostFrames:0,sharedSourceFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
 
@@ -278,33 +279,59 @@
   function preSharedFrame(dt){
     const current=sync("shared frame pre");state.sharedPreFrames++;
     const context={controllerId:current.id,hordeCombat:null};
-    if(current.profile.family!=="horde")return context;
-    try{
-      const combat=window.CCGLostSizzlerV141HordeCombatPolish?.preHordeCombatFrame;
-      if(typeof combat==="function"){context.hordeCombat=combat(dt);state.hordeCombatPreFrames++}
-    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat pre-frame failed",error)}
+    if(current.profile.family==="horde"||current.profile.family==="spy"){
+      try{
+        const isolation=window.CCGLostSizzlerV141R25SpySpeedBountyHotfix?.controllerFrameIsolation;
+        if(typeof isolation==="function"&&isolation(current.id)){state.r25SpecialPreFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Special-mode isolation pre-frame failed",error)}
+    }
+    if(current.id===IDS.DUNGEON_SOLO){
+      try{
+        const compatibility=window.CCGLostSizzlerV141R26SpyEnemyStability?.preControllerFrame;
+        if(typeof compatibility==="function"&&compatibility(current.id,dt)){state.r26DungeonPreFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Dungeon Solo compatibility pre-frame failed",error)}
+    }
+    if(current.profile.family==="horde"){
+      try{
+        const combat=window.CCGLostSizzlerV141HordeCombatPolish?.preHordeCombatFrame;
+        if(typeof combat==="function"){context.hordeCombat=combat(dt);state.hordeCombatPreFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat pre-frame failed",error)}
+    }
     return context
   }
 
   function postSharedFrame(dt,context=null){
     const current=sync("shared frame post");state.sharedPostFrames++;
-    if(current.profile.family!=="horde")return current;
-    try{
-      const focus=window.CCGLostSizzlerV137?.updateHordeFocus;
-      if(typeof focus==="function"){focus(dt);state.hordeFocusPostFrames++}
-    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde focus post-frame failed",error)}
-    try{
-      const live=window.CCGLostSizzlerV138?.updateHordeLive;
-      if(typeof live==="function"){live(dt);state.hordeLivePostFrames++}
-    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde live post-frame failed",error)}
-    try{
-      const combat=window.CCGLostSizzlerV141HordeCombatPolish?.postHordeCombatFrame;
-      if(typeof combat==="function"){combat(context?.hordeCombat||null);state.hordeCombatPostFrames++}
-    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat post-frame failed",error)}
-    try{
-      const completion=window.CCGLostSizzlerV141HordeCompletion?.postHordeCompletionFrame;
-      if(typeof completion==="function"){completion(dt);state.hordeCompletionPostFrames++}
-    }catch(error){console.warn("[Lost Sizzler mode runtime] Horde completion post-frame failed",error)}
+    if(current.profile.family==="horde"){
+      try{
+        const focus=window.CCGLostSizzlerV137?.updateHordeFocus;
+        if(typeof focus==="function"){focus(dt);state.hordeFocusPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Horde focus post-frame failed",error)}
+      try{
+        const live=window.CCGLostSizzlerV138?.updateHordeLive;
+        if(typeof live==="function"){live(dt);state.hordeLivePostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Horde live post-frame failed",error)}
+      try{
+        const combat=window.CCGLostSizzlerV141HordeCombatPolish?.postHordeCombatFrame;
+        if(typeof combat==="function"){combat(context?.hordeCombat||null);state.hordeCombatPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Horde combat post-frame failed",error)}
+      try{
+        const completion=window.CCGLostSizzlerV141HordeCompletion?.postHordeCompletionFrame;
+        if(typeof completion==="function"){completion(dt);state.hordeCompletionPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Horde completion post-frame failed",error)}
+    }
+    if(current.id===IDS.DUNGEON_SOLO){
+      try{
+        const compatibility=window.CCGLostSizzlerV141R26SpyEnemyStability?.postControllerFrame;
+        if(typeof compatibility==="function"&&compatibility(current.id,dt)){state.r26DungeonPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Dungeon Solo compatibility post-frame failed",error)}
+    }
+    if(current.profile.family==="horde"||current.profile.family==="spy"){
+      try{
+        const isolation=window.CCGLostSizzlerV141R25SpySpeedBountyHotfix?.controllerFrameIsolation;
+        if(typeof isolation==="function"&&isolation(current.id)){state.r25SpecialPostFrames++}
+      }catch(error){console.warn("[Lost Sizzler mode runtime] Special-mode isolation post-frame failed",error)}
+    }
     return current
   }
 
@@ -329,7 +356,13 @@
   }
 
   function installSharedFrameBoundary(){
-    if(state.sharedFrameBoundary||typeof window.update!=="function")return Boolean(state.sharedFrameBoundary);
+    if(state.sharedFrameBoundary){
+      if(window.update!==state.sharedFrameBoundary){
+        window.update=state.sharedFrameBoundary;state.sharedFrameBoundaryReassertions++;
+      }
+      return true;
+    }
+    if(typeof window.update!=="function")return false;
     const source=window.update;
     const boundary=function updateV141ModeControllerBoundary(dt){
       const context=preSharedFrame(dt);
@@ -352,6 +385,7 @@
   }
 
   function frame(){
+    installSharedFrameBoundary();
     const current=sync("frame");current.frame();ensureOwnedSystemGates();
     if(current.profile.family==="horde"){maintainHordeControllerSystems();monitorHordeLifecycle();presentHordeDeaths()}
     if(current.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(_){}
@@ -366,7 +400,8 @@
       hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,hordeLivePostFrames:state.hordeLivePostFrames,
       hordeCombatPreFrames:state.hordeCombatPreFrames,hordeCombatPostFrames:state.hordeCombatPostFrames,hordeCompletionPostFrames:state.hordeCompletionPostFrames,
       spyRuleFrames:state.spyRuleFrames,spySourceBypasses:state.spySourceBypasses,spyFrameMisses:state.spyFrameMisses,
-      sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,sharedSourceFrames:state.sharedSourceFrames,
+      r25SpecialPreFrames:state.r25SpecialPreFrames,r25SpecialPostFrames:state.r25SpecialPostFrames,r26DungeonPreFrames:state.r26DungeonPreFrames,r26DungeonPostFrames:state.r26DungeonPostFrames,
+      sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedFrameBoundaryReassertions:state.sharedFrameBoundaryReassertions,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,sharedSourceFrames:state.sharedSourceFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
   }

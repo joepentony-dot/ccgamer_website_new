@@ -65,6 +65,10 @@
     if(typeof fn!=="function"||topLevelSpyOwner(fn))return false;
     return chainHas(fn,"__ccgV141ModeFrameBoundary")
   }
+  function authoritativeControllerUpdate(){
+    const boundary=window.CCGLostSizzlerModeRuntime?.state?.sharedFrameBoundary;
+    return typeof boundary==="function"&&boundary.__ccgV141ModeFrameBoundary===true?boundary:null
+  }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
   function normalMovementStackReady(){
@@ -81,7 +85,9 @@
   }
   function captureBaseline(){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    if(healthyBaseline(window.update))state.baselineUpdate=window.update;
+    const controllerUpdate=authoritativeControllerUpdate();
+    if(controllerUpdate)state.baselineUpdate=controllerUpdate;
+    else if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
     if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
     if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
@@ -91,7 +97,7 @@
     adoptReleaseMoveOwner(state.baselineMove);
     return Boolean(state.baselineMove&&state.baselineUpdate&&state.baselineHurt);
   }
-  const recoveryUpdate=()=>state.goldenUpdate||state.baselineUpdate;
+  const recoveryUpdate=()=>authoritativeControllerUpdate()||state.goldenUpdate||state.baselineUpdate;
   const recoveryMove=()=>state.goldenMove||state.baselineMove;
   const recoveryHurt=()=>state.goldenHurt||state.baselineHurt;
 
@@ -161,8 +167,8 @@
 
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
-    const updateBad=typeof currentUpdate!=="function"||(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate));
+    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer,controllerUpdate=authoritativeControllerUpdate();
+    const updateBad=typeof currentUpdate!=="function"||(controllerUpdate?currentUpdate!==controllerUpdate:(!controllerProtectedUpdate(currentUpdate)&&spyContaminated(currentUpdate)));
     const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
     const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;
@@ -179,10 +185,10 @@
     if(spyActive()){
       if(!engine.state?.isolated){
         engine.enterIsolation?.();
-        if(engine.state?.isolated){state.spyOwnerUpdate=window.update;state.spyOwnerMove=window.movePlayer;state.spyOwnerHurt=window.hurtPlayer}
+        if(engine.state?.isolated){state.spyOwnerUpdate=authoritativeControllerUpdate()||window.update;state.spyOwnerMove=window.movePlayer;state.spyOwnerHurt=window.hurtPlayer}
       }
       if(engine.state?.isolated){
-        if(!state.spyOwnerUpdate)state.spyOwnerUpdate=window.update;
+        state.spyOwnerUpdate=authoritativeControllerUpdate()||state.spyOwnerUpdate||window.update;
         if(!state.spyOwnerMove)state.spyOwnerMove=window.movePlayer;
         if(!state.spyOwnerHurt)state.spyOwnerHurt=window.hurtPlayer;
         if(typeof state.spyOwnerUpdate==="function"&&window.update!==state.spyOwnerUpdate)window.update=state.spyOwnerUpdate;
@@ -192,7 +198,7 @@
       return true;
     }
     if(engine.state?.isolated){
-      const baseUpdate=engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
+      const baseUpdate=authoritativeControllerUpdate()||engine.state.baseUpdate||recoveryUpdate(),baseMove=engine.state.baseMove||recoveryMove(),baseHurt=engine.state.baseHurt||recoveryHurt();
       try{engine.leaveIsolation?.()}catch(_){}
       forceRestore(baseUpdate,baseMove,baseHurt,"Spy runtime exit");captureBaseline();return true;
     }

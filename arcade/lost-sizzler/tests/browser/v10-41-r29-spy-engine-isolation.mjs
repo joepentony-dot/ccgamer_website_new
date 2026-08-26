@@ -33,7 +33,7 @@ try{
   const setup=await page.evaluate(()=>{
     const special=window.CCGLostSizzlerSpecialModes,engine=window.CCGLostSizzlerV141R29SpyEngine,network=window.CCGLostSizzlerV141R29SpyNetwork,SAB=window.CCGLostSizzlerSaboteurs,runtime=window.CCGLostSizzlerModeRuntime;
     run=PGR.makeRun({difficulty:"ARCADE",seed:"R29-SPY-ISOLATION"});playMode="online";startWorld(PGR.floorSeed(run),false,false);mode="playing";p1.id="SPY-HOST";p1.name="HOST";document.body.dataset.runActive="true";
-    const descriptor=Object.getOwnPropertyDescriptor(special,"active"),boundary=window.update;
+    const descriptor=Object.getOwnPropertyDescriptor(special,"active"),boundary=runtime.state.sharedFrameBoundary;
     const t=Date.now(),match=SAB.createMatch({players:[{id:String(p1.id),name:"HOST"},{id:"SPY-2",name:"GUEST"}],hostId:String(p1.id),seed:"R29-SPY-ISOLATION",now:t});
     SAB.beginRound(match,t);match.trapLoadout=["timeBomb","snare","fakeHealth"];
     match.traps.push({id:"old-time-bomb",trapId:"timeBomb",ownerId:match.players[0].id,roomId:match.players[0].roomId,targetType:"floor",targetId:"x",armed:true,placedAt:t,detonatesAt:t+10000});
@@ -42,7 +42,7 @@ try{
     runtime.sync("browser Spy setup");engine.enterIsolation();engine.compactLogicalMap();engine.buildCompactWorld(true);
     const compact={rooms:world.rooms.length,maxW:Math.max(...world.rooms.map(room=>room.w)),maxH:Math.max(...world.rooms.map(room=>room.h)),logicalRooms:match.map.rooms.length};
     const mapRef=match.map,furnitureFingerprint=(host.blockingDecor||[]).filter(item=>item.spyFurniture).map(item=>`${item.id}:${item.type}:${item.x},${item.y}`).sort().join("|");
-    window.__CCG_SPY_BROWSER_STATE__={descriptor,boundary,mapRef,furnitureFingerprint,compactions:engine.state.logicalCompactions,worldBuilds:engine.state.worldBuilds,sourceFrames:runtime.state.sharedSourceFrames,bypasses:runtime.state.spySourceBypasses,moves:engine.state.moves};
+    window.__CCG_SPY_BROWSER_STATE__={descriptor,boundary,mapRef,furnitureFingerprint,compactions:engine.state.logicalCompactions,worldBuilds:engine.state.worldBuilds,sourceFrames:runtime.state.sharedSourceFrames,bypasses:runtime.state.spySourceBypasses,moves:engine.state.moves,ownerTrace:[]};
     return{
       updateStable:window.update===boundary,
       compact,
@@ -66,10 +66,15 @@ try{
     // Deliberately inject a Dungeon chase-state enemy: the Spy controller frame
     // must purge it before Dungeon enemy alert/render state can leak into Spy.
     host.enemies=[{id:"dungeon-alert-leak",alive:true,x:p1.x+1,y:p1.y,aiState:"chase",lastSeen:{x:p1.x,y:p1.y}}];
-    for(let i=0;i<18;i++){window.update(16);await new Promise(r=>setTimeout(r,4))}
+    const sampleOwner=(iteration,phase)=>{
+      if(window.update===saved.boundary)return;
+      saved.ownerTrace.push({iteration,phase,name:String(window.update?.name||""),r24:Boolean(window.update?.__ccgV141R24SpyMovement),r25:Boolean(window.update?.__ccgV141R25SpySpeedBounty),r26:Boolean(window.update?.__ccgV141R26Stability)});
+    };
+    for(let i=0;i<18;i++){sampleOwner(i,"before");window.update(16);sampleOwner(i,"after");await new Promise(r=>setTimeout(r,4));sampleOwner(i,"wait")}
     const fingerprint=(host.blockingDecor||[]).filter(item=>item.spyFurniture).map(item=>`${item.id}:${item.type}:${item.x},${item.y}`).sort().join("|");
     return{
       updateStable:window.update===saved.boundary,
+      ownerTrace:saved.ownerTrace,
       mapStable:match.map===saved.mapRef,
       furnitureStable:fingerprint===saved.furnitureFingerprint,
       compactionDelta:engine.state.logicalCompactions-saved.compactions,
@@ -83,6 +88,7 @@ try{
   });
 
   assert.equal(stability.updateStable,true,"Spy frames must never replace the controller update boundary");
+  assert.deepEqual(stability.ownerTrace,[],"no retained r24/r25/r26 timer may transiently displace the controller update boundary");
   assert.equal(stability.mapStable,true,"Spy logical map identity must remain stable across frames instead of being regenerated");
   assert.equal(stability.furnitureStable,true,"Spy bookshelf/furniture identity and placement must remain stable across frames");
   assert.equal(stability.compactionDelta,0,"an already compacted Spy map must not compact again during normal frames");
