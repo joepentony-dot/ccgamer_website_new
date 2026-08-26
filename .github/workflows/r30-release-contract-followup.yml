@@ -1,0 +1,77 @@
+name: Lost Sizzler r30 release contract follow-up
+
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-r30-global-movement-recovery
+    paths:
+      - '.github/workflows/r30-release-contract-followup.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-r30-global-movement-recovery
+          fetch-depth: 0
+      - name: Advance retained release contracts
+        shell: python
+        run: |
+          from pathlib import Path
+          replacements={
+            'arcade/lost-sizzler/tests/v10-41-r23-release-delivery.mjs':[
+              ('assert.equal(version.build,"2026.08.25.29","current stability release must publish build 2026.08.25.29");','assert.equal(version.build,"2026.08.26.30","current stability release must publish build 2026.08.26.30");'),
+              ('assert.equal(version.cacheToken,"20260825r29","current stability release must publish cache generation r29");','assert.equal(version.cacheToken,"20260826r30","current stability release must publish cache generation r30");'),
+              ('ccg-lost-sizzler-build" content="2026\\.08\\.25\\.29','ccg-lost-sizzler-build" content="2026\\.08\\.26\\.30'),
+              ('ccg-lost-sizzler-cache" content="20260825r29','ccg-lost-sizzler-cache" content="20260826r30'),
+              ('?v=20260825r29','?v=20260826r30'),
+              ('current r29 cache shell','current r30 cache shell'),
+              ('inherit r29 from page metadata','inherit r30 from page metadata'),
+              ('V10.41 r29 release-delivery contract passed','V10.41 r30 release-delivery contract passed')
+            ],
+            'arcade/lost-sizzler/tests/v10-41-r27-spy-isolation.mjs':[
+              ('ccg-lost-sizzler-cache" content="20260825r29','ccg-lost-sizzler-cache" content="20260826r30'),
+              ('?v=20260825r29','?v=20260826r30'),
+              ('beneath r29','beneath r30')
+            ],
+            'arcade/lost-sizzler/tests/v10-41-r28-special-mode-repair.mjs':[
+              ('assert.equal(manifest.build,"2026.08.25.29");','assert.equal(manifest.build,"2026.08.26.30");'),
+              ('assert.equal(manifest.cacheToken,"20260825r29");','assert.equal(manifest.cacheToken,"20260826r30");'),
+              ('ccg-lost-sizzler-build" content="2026\\.08\\.25\\.29','ccg-lost-sizzler-build" content="2026\\.08\\.26\\.30'),
+              ('ccg-lost-sizzler-cache" content="20260825r29','ccg-lost-sizzler-cache" content="20260826r30'),
+              ('?v=20260825r29','?v=20260826r30'),
+              ('inside r29','inside r30')
+            ],
+            'arcade/lost-sizzler/tests/v10-41-r29-runtime-repair.mjs':[
+              ('assert.equal(manifest.build,"2026.08.25.29","r29 manifest must publish build .29");','assert.equal(manifest.build,"2026.08.26.30","current manifest must publish r30 build .30 while retaining r29 runtime protections");'),
+              ('assert.equal(manifest.cacheToken,"20260825r29","r29 manifest must publish a fresh cache generation");','assert.equal(manifest.cacheToken,"20260826r30","current manifest must publish the r30 cache generation");'),
+              ('ccg-lost-sizzler-build" content="2026\\.08\\.25\\.29','ccg-lost-sizzler-build" content="2026\\.08\\.26\\.30'),
+              ('ccg-lost-sizzler-cache" content="20260825r29','ccg-lost-sizzler-cache" content="20260826r30'),
+              ('css\\/v10-41-r29\\.css\\?v=20260825r29','css\\/v10-41-r29\\.css\\?v=20260826r30'),
+              ('js\\/v10-41-r29-buglog\\.js\\?v=20260825r29','js\\/v10-41-r29-buglog\\.js\\?v=20260826r30'),
+              ('js\\/v10-41-r29-runtime-repair\\.js\\?v=20260825r29','js\\/v10-41-r29-runtime-repair\\.js\\?v=20260826r30'),
+              ('v10-41-r28-special-mode-repair.js?v=20260825r29','v10-41-r28-special-mode-repair.js?v=20260826r30'),
+              ('v10-41-r29-runtime-repair.js?v=20260825r29','v10-41-r29-runtime-repair.js?v=20260826r30'),
+              ('r29 must execute after r28 and become the final runtime owner','retained r29 runtime protections must execute after r28 before the r30 ownership failsafe')
+            ]
+          }
+          for rel,pairs in replacements.items():
+            p=Path(rel);s=p.read_text(encoding='utf-8')
+            for old,new in pairs:
+              if old not in s:
+                print(f'warning: pattern not found in {rel}: {old}')
+              s=s.replace(old,new)
+            p.write_text(s,encoding='utf-8')
+      - name: Commit follow-up
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/r30-release-contract-followup.yml
+          git add arcade/lost-sizzler/tests
+          git commit -m "Advance retained Lost Sizzler contracts to r30"
+          git push origin HEAD:codex/lost-sizzler-r30-global-movement-recovery
