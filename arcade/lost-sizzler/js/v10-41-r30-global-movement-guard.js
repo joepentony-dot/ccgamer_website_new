@@ -100,7 +100,10 @@
   function makeR29Cooperative(){
     const api=r29();if(!api?.install)return false;
     try{if(api.state?.timer){clearInterval(api.state.timer);api.state.timer=0;state.r29TimerStopped=true}}catch(_){}
-    if(api.install.__ccgV141R30Cooperative){state.r29InstallCooperative=true;return true}
+    if(api.install.__ccgV141R30Cooperative){
+      state.r29InstallCooperative=true;
+      try{return api.install()}catch(_){return false}
+    }
     const original=api.install.bind(api);
     const cooperative=function installV141R30Cooperative(){
       const isolated=Boolean(spyEngine()?.state?.isolated)||spyActive();
