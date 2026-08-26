@@ -31,18 +31,28 @@
   const playing=()=>{try{return mode==="playing"&&document.body?.dataset?.runActive==="true"}catch(_){return false}};
   const releaseReady=()=>document.body?.dataset?.releaseReady==="true";
 
-  function originalLink(fn){
-    if(typeof fn!=="function")return null;
-    for(const key of ORIGINAL_LINKS){try{if(typeof fn[key]==="function"&&fn[key]!==fn)return fn[key]}catch(_){} }
-    return null;
+  function originalLinks(fn){
+    if(typeof fn!=="function")return[];
+    const links=[];
+    for(const key of ORIGINAL_LINKS){
+      try{
+        const linked=fn[key];
+        if(typeof linked==="function"&&linked!==fn&&!links.includes(linked))links.push(linked);
+      }catch(_){}
+    }
+    return links;
   }
+  function originalLink(fn){return originalLinks(fn)[0]||null}
   function chainHas(fn,marker){
-    let current=fn;
-    const seen=new Set();
-    for(let depth=0;depth<48&&typeof current==="function"&&!seen.has(current);depth++){
+    if(typeof fn!=="function")return false;
+    const queue=[{fn,depth:0}],seen=new Set();
+    while(queue.length){
+      const entry=queue.shift(),current=entry?.fn,depth=Number(entry?.depth||0);
+      if(typeof current!=="function"||seen.has(current))continue;
       seen.add(current);
-      if(current?.[marker]){if(depth>0)state.nestedOwnershipDetections++;return true}
-      current=originalLink(current);
+      try{if(current[marker]){if(depth>0)state.nestedOwnershipDetections++;return true}}catch(_){}
+      if(depth>=47)continue;
+      for(const linked of originalLinks(current))queue.push({fn:linked,depth:depth+1});
     }
     return false;
   }
@@ -108,12 +118,13 @@
 
   function assertNormalRuntimeOwnership(reason="periodic invariant"){
     if(spyActive()||spyEngine()?.state?.isolated)return false;
-    const updateBad=typeof window.update!=="function"||spyContaminated(window.update);
-    const moveBad=typeof window.movePlayer!=="function"||spyContaminated(window.movePlayer);
-    const hurtBad=typeof window.hurtPlayer!=="function"||spyContaminated(window.hurtPlayer);
+    const currentUpdate=window.update,currentMove=window.movePlayer,currentHurt=window.hurtPlayer;
+    const updateBad=typeof currentUpdate!=="function"||spyContaminated(currentUpdate);
+    const moveBad=typeof currentMove!=="function"||spyContaminated(currentMove);
+    const hurtBad=typeof currentHurt!=="function"||spyContaminated(currentHurt);
     if(!(updateBad||moveBad||hurtBad))return false;
-    const u=recoveryUpdate(),m=recoveryMove(),h=recoveryHurt();
-    if(typeof u!=="function"||typeof m!=="function"||typeof h!=="function")return false;
+    const u=updateBad?recoveryUpdate():currentUpdate,m=moveBad?recoveryMove():currentMove,h=hurtBad?recoveryHurt():currentHurt;
+    if((updateBad&&typeof u!=="function")||(moveBad&&typeof m!=="function")||(hurtBad&&typeof h!=="function"))return false;
     state.ownershipRepairs++;return forceRestore(u,m,h,reason);
   }
 
@@ -252,7 +263,7 @@
   addEventListener("pagehide",()=>{if(state.timer)clearInterval(state.timer);clearHeld()},{once:true});
 
   window.CCGLostSizzlerV141R30={
-    originalLink,chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
+    originalLink,originalLinks,chainHas,spyContaminated,captureBaseline,maintainSpyOwnership,maintainNotificationOwnership,assertNormalRuntimeOwnership,reassertHeldInput,movementWatchdog,makeR29Cooperative,
     constants:{ORIGINAL_LINKS},get state(){return state}
   };
 })();
