@@ -8,6 +8,7 @@ const root=path.resolve(here,"..");
 const read=relative=>fs.readFileSync(path.join(root,relative),"utf8");
 
 const hordeSafety=read("js/v10-41-horde-mode-safety.js");
+const modeRuntime=read("js/v10-41-mode-runtime.js");
 const major=read("js/v10-41-major-notification-hardening.js");
 const audio=read("js/horde-survivor-audio.js");
 const freeze=read("js/v10-41-startup-freeze-guard.js");
@@ -21,13 +22,20 @@ const manifest=JSON.parse(read("version.json"));
 // Horde identification is intentionally mode-based, so the same isolation
 // applies to Solo Horde and Horde Multiplayer.
 assert.match(hordeSafety,/active\(\)\?\.type==="horde-survivor"\|\|document\.body\?\.dataset\?\.specialMode==="horde-survivor"/,"Horde safety must cover both Solo and Multiplayer Horde through the common special-mode type");
-assert.match(hordeSafety,/if\(rare\.bounty\)\{rare\.bounty=null/,"Horde must delete ordinary Dungeon Bounty state before legacy dungeon updates run");
+assert.match(hordeSafety,/if\(rare\.bounty\)\{rare\.bounty=null/,"Horde must delete ordinary Dungeon Bounty state");
 assert.match(hordeSafety,/if\(rare\.mutation\)\{rare\.mutation=null/,"Horde must delete ordinary floor mutations");
 assert.match(hordeSafety,/for\(const name of \["items","chests","shrines","switches","shops","deathCaches","generators","traps","hazardRooms","timedRooms"\]\)empty\(name\)/,"Horde must strip legacy dungeon-only interactables and hazards");
 assert.match(hordeSafety,/host\.enemies=host\.enemies\.filter\(enemy=>enemy\?\.hordeEnemy\|\|enemy\?\.hordeWarden\|\|enemy\?\._hordeModelId\|\|enemy\?\._v138Reserve\)/,"Horde must retain only Horde-owned enemy actors");
-const before=hordeSafety.indexOf("if(isHorde())purgeDungeonRuntime();\n      const result=previous.apply");
-assert.ok(before>=0,"Horde purge must execute before the inherited dungeon update chain");
-assert.match(hordeSafety,/if\(isHorde\(\)\)purgeDungeonRuntime\(\);\n      const result=previous\.apply\(this,arguments\);\n      if\(isHorde\(\)\)purgeDungeonRuntime\(\)/,"Horde purge must run both before and after inherited updates");
+
+// Phase 3 isolation: Horde safety is a Horde-only backstop, not an interceptor
+// in every Dungeon Solo/Multiplayer frame. Dungeon systems are stopped by the
+// authoritative mode controller before the safety purge is ever needed.
+assert.doesNotMatch(hordeSafety,/window\.update\s*=/,"Horde safety must not replace the shared update loop");
+assert.match(hordeSafety,/function transitionGuard\(\)[\s\S]*if\(now&&!state\.wasHorde\)[\s\S]*purgeDungeonRuntime\(\)/,"entering Horde must immediately purge stale dungeon state");
+assert.match(hordeSafety,/state\.timer=setInterval\(\(\)=>\{[\s\S]*transitionGuard\(\);[\s\S]*if\(isHorde\(\)\)purgeDungeonRuntime\(\);[\s\S]*\},90\)/,"Horde safety must retain a Horde-only scheduled purge fallback");
+assert.match(modeRuntime,/\[IDS\.HORDE_SOLO\]:profile\(IDS\.HORDE_SOLO,\{family:"horde",dungeonSystems:false,dungeonInteractions:false,waveController:true\}\)/,"Horde Solo must disable dungeon systems at the authoritative controller");
+assert.match(modeRuntime,/\[IDS\.HORDE_ONLINE\]:profile\(IDS\.HORDE_ONLINE,\{family:"horde",online:true,dungeonSystems:false,dungeonInteractions:false,waveController:true\}\)/,"Horde Multiplayer must disable dungeon systems at the authoritative controller");
+assert.match(modeRuntime,/if\(!allows\(definition\.capability\)\)[\s\S]*return blockedReturnFor\(definition\)/,"controller-owned dungeon calls must be rejected when the active mode lacks that capability");
 
 assert.match(major,/if\(isHorde\(\)\)\{hideExistingDungeonAlert\(\);return false\}/,"Dungeon Bounty major alerts must be rejected outright in Horde");
 assert.match(major,/DUNGEON BOUNTY\|BOUNTY START\|BOUNTY COMPLETE\|DUNGEON BONUS/,"Dungeon Bounty/Bonus titles must be classified as Horde-forbidden");
@@ -80,4 +88,4 @@ assert.match(index,/ccg-lost-sizzler-build" content="2026\.08\.26\.30"/,"HTML bu
 assert.match(index,/ccg-lost-sizzler-cache" content="20260826r30"/,"HTML cache marker must match r30");
 assert.match(index,/v10-41-r28-special-mode-repair\.js\?v=20260826r30/,"canonical HTML must load the retained r28 special-mode repair under the current r30 cache generation");
 
-console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer isolation, retained r28 input/balance and r29 release regression checks passed.");
+console.log("Lost Sizzler V10.41 Horde Solo/Multiplayer controller isolation, retained r28 input/balance and r30 release regression checks passed.");
