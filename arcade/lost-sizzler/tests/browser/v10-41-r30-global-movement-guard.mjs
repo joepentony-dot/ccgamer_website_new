@@ -95,12 +95,21 @@ try{
 
   await prepareSolo(page,"R30-DEAD-WRAPPER");
   const deadDirection=await directionFor(page);assert.ok(deadDirection);
-  const beforeWatchdog=await page.evaluate(()=>window.CCGLostSizzlerV141R30.state.watchdogRecoveries);
+  const beforeDeadRecovery=await page.evaluate(()=>({
+    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
+    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs
+  }));
   await page.evaluate(()=>{const dead=function(){return false};dead.__ccgOriginal=window.movePlayer;window.movePlayer=dead;});
   await page.keyboard.down(deadDirection.code);await page.waitForTimeout(1050);await page.keyboard.up(deadDirection.code);await page.waitForTimeout(120);
-  const deadRecovery=await page.evaluate(()=>({x:p1.x,y:p1.y,watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries}));
-  assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"movement watchdog must recover from an unmarked wrapper that silently returns false");
-  assert.ok(deadRecovery.watchdog>beforeWatchdog,"movement watchdog recovery counter must advance");
+  const deadRecovery=await page.evaluate(()=>({
+    x:p1.x,y:p1.y,
+    watchdog:window.CCGLostSizzlerV141R30.state.watchdogRecoveries,
+    ownership:window.CCGLostSizzlerV141R30.state.ownershipRepairs,
+    golden:window.movePlayer===window.CCGLostSizzlerV141R30.state.goldenMove
+  }));
+  assert.notDeepEqual({x:deadRecovery.x,y:deadRecovery.y},{x:deadDirection.x,y:deadDirection.y},"normal ownership monitoring or the movement watchdog must recover from an unmarked wrapper that silently returns false");
+  assert.ok(deadRecovery.ownership>beforeDeadRecovery.ownership||deadRecovery.watchdog>beforeDeadRecovery.watchdog,"an unmarked dead movement wrapper must advance an ownership or watchdog recovery counter");
+  assert.equal(deadRecovery.golden,true,"unmarked dead-wrapper recovery must restore the locked known-good movement owner");
 
   const contaminatedRepair=await page.evaluate(()=>{
     const r30=window.CCGLostSizzlerV141R30,before=r30.state.ownershipRepairs;
