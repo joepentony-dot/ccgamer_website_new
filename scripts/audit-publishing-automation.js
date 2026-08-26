@@ -101,6 +101,10 @@ requirePattern(deploy, /^\s{2}push:\s*$/m, "GitHub Pages deployment no longer ru
 requireText(deploy, "prepare-seo-game-routes.js --output-root _site", "Deployment does not materialize canonical game routes in the public artifact.");
 requireText(deploy, "generate-retro-pages.js --root _site", "Deployment does not materialize retro pages in the public artifact.");
 requireText(deploy, "validate-sitemaps.js", "Deployment does not validate sitemap structure before publishing.");
+const deployedVerification = deploy.slice(deploy.indexOf("- name: Verify deployed public pages"));
+requireText(deployedVerification, "<<< \"$game_body\"", "Deployment verification no longer checks canonical game responses without a pipefail-prone pipeline.");
+forbidText(deployedVerification, "printf '%s' \"$game_body\" | grep", "Deployment verification pipes large game responses into grep -q under pipefail.");
+forbidText(deployedVerification, "printf '%s' \"$shell_body\" | grep", "Deployment verification pipes large shell responses into grep -q under pipefail.");
 
 const robots = read("robots.txt");
 requireText(robots, "User-agent: *", "robots.txt is missing the default crawler group.");
