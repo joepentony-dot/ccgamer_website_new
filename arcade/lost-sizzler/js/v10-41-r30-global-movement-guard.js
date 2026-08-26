@@ -67,8 +67,14 @@
   }
 
   function healthyBaseline(fn){return typeof fn==="function"&&!spyContaminated(fn)}
+  function normalMovementStackReady(){
+    const tutorial=window.CCGLostSizzlerV141TutorialActionFinalizer?.state;
+    const spyFinal=window.CCGLostSizzlerV141SpyMovementFinalizer?.state;
+    const stability=window.CCGLostSizzlerV141BrowserStabilityGameplay?.state;
+    return Boolean(tutorial?.installed&&spyFinal?.moveInstalled&&stability?.moveGuard);
+  }
   function adoptReleaseMoveOwner(fn=window.movePlayer){
-    if(!releaseReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
+    if(!releaseReady()||!normalMovementStackReady()||!state.goldenLocked||!healthyBaseline(fn)||fn?.__ccgV141SpyFinal!==true)return false;
     state.baselineMove=fn;
     if(state.goldenMove!==fn){state.goldenMove=fn;state.goldenMovePromotions++;state.goldenLockedAt=Date.now()}
     return true
@@ -78,7 +84,7 @@
     if(healthyBaseline(window.update))state.baselineUpdate=window.update;
     if(healthyBaseline(window.movePlayer))state.baselineMove=window.movePlayer;
     if(healthyBaseline(window.hurtPlayer))state.baselineHurt=window.hurtPlayer;
-    if(releaseReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
+    if(releaseReady()&&normalMovementStackReady()&&!state.goldenLocked&&state.baselineUpdate&&state.baselineMove&&state.baselineHurt){
       state.goldenUpdate=state.baselineUpdate;state.goldenMove=state.baselineMove;state.goldenHurt=state.baselineHurt;
       state.goldenLocked=true;state.goldenLockedAt=Date.now();
     }
