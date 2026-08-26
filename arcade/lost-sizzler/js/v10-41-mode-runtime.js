@@ -92,7 +92,8 @@
     activeId:"",previousId:"",transitions:0,generation:0,timer:0,lastSyncAt:0,lastTransitionReason:"",lastResetReason:"",
     hordeWaveResets:0,hordePhaseResets:0,globalHazardsPurged:0,globalCampingPurges:0,
     hordeLoadoutMaintenances:0,hordeReserveMaintenances:0,hordeFocusPostFrames:0,hordeLivePostFrames:0,hordeCombatPreFrames:0,hordeCombatPostFrames:0,hordeCompletionPostFrames:0,
-    sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,
+    spyRuleFrames:0,spySourceBypasses:0,spyFrameMisses:0,
+    sharedFrameBoundary:null,sharedFrameBoundarySource:null,sharedFrameBoundaryInstalls:0,sharedPreFrames:0,sharedPostFrames:0,sharedSourceFrames:0,
     ownedSystemInstalls:0,ownedSystemReassertions:0,ownedSystemCalls:0,blockedOwnedSystemCalls:0,hordeDeathPresentations:0
   };
 
@@ -175,11 +176,13 @@
     if(next.profile.family==="horde"||next.profile.family==="spy")resetModeTransient(`${next.id} enter`,{clearEnemyShots:true,clearInput:true});
     else if(previous&&(previous.profile.family==="horde"||previous.profile.family==="spy"))resetModeTransient(`${next.id} post-special enter`,{clearEnemyShots:true,clearInput:true});
     if(next.profile.family!=="horde")clearHordePresentation();
+    if(next.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy enter failed",error)}
   }
 
   function leaveController(previous,next,reason){
     if(!previous)return;
     previous.exit(reason);
+    if(previous.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.leaveIsolation?.()}catch(error){console.warn("[Lost Sizzler mode runtime] Spy exit failed",error)}
     if((previous.profile.family==="horde"||previous.profile.family==="spy")&&next?.profile.family!==previous.profile.family)resetModeTransient(`${previous.id} exit`,{clearEnemyShots:true,clearInput:true});
   }
 
@@ -305,12 +308,39 @@
     return current
   }
 
+  function runSpyControllerFrame(dt){
+    const current=sync("spy controller frame");
+    if(current.id!==IDS.SPY_ONLINE)return false;
+    const engine=window.CCGLostSizzlerV141R29SpyEngine;
+    if(typeof engine?.isolatedUpdate!=="function"){
+      state.spyFrameMisses++;
+      return false;
+    }
+    try{
+      engine.enterIsolation?.();
+      const result=engine.isolatedUpdate(dt);
+      state.spyRuleFrames++;
+      return result;
+    }catch(error){
+      state.spyFrameMisses++;
+      console.warn("[Lost Sizzler mode runtime] Spy controller frame failed safely",error);
+      return false;
+    }
+  }
+
   function installSharedFrameBoundary(){
     if(state.sharedFrameBoundary||typeof window.update!=="function")return Boolean(state.sharedFrameBoundary);
     const source=window.update;
     const boundary=function updateV141ModeControllerBoundary(dt){
       const context=preSharedFrame(dt);
-      const result=source.apply(this,arguments);
+      let result;
+      if(context.controllerId===IDS.SPY_ONLINE){
+        state.spySourceBypasses++;
+        result=runSpyControllerFrame(dt);
+      }else{
+        state.sharedSourceFrames++;
+        result=source.apply(this,arguments);
+      }
       postSharedFrame(dt,context);
       return result
     };
@@ -324,6 +354,7 @@
   function frame(){
     const current=sync("frame");current.frame();ensureOwnedSystemGates();
     if(current.profile.family==="horde"){maintainHordeControllerSystems();monitorHordeLifecycle();presentHordeDeaths()}
+    if(current.id===IDS.SPY_ONLINE)try{window.CCGLostSizzlerV141R29SpyEngine?.enterIsolation?.()}catch(_){}
     return current
   }
 
@@ -334,7 +365,8 @@
       hordeWaveResets:state.hordeWaveResets,hordePhaseResets:state.hordePhaseResets,globalHazardsPurged:state.globalHazardsPurged,globalCampingPurges:state.globalCampingPurges,
       hordeLoadoutMaintenances:state.hordeLoadoutMaintenances,hordeReserveMaintenances:state.hordeReserveMaintenances,hordeFocusPostFrames:state.hordeFocusPostFrames,hordeLivePostFrames:state.hordeLivePostFrames,
       hordeCombatPreFrames:state.hordeCombatPreFrames,hordeCombatPostFrames:state.hordeCombatPostFrames,hordeCompletionPostFrames:state.hordeCompletionPostFrames,
-      sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,
+      spyRuleFrames:state.spyRuleFrames,spySourceBypasses:state.spySourceBypasses,spyFrameMisses:state.spyFrameMisses,
+      sharedFrameBoundaryInstalls:state.sharedFrameBoundaryInstalls,sharedPreFrames:state.sharedPreFrames,sharedPostFrames:state.sharedPostFrames,sharedSourceFrames:state.sharedSourceFrames,
       ownedSystemInstalls:state.ownedSystemInstalls,ownedSystemReassertions:state.ownedSystemReassertions,ownedSystemCalls:state.ownedSystemCalls,blockedOwnedSystemCalls:state.blockedOwnedSystemCalls,hordeDeathPresentations:state.hordeDeathPresentations
     }
   }
@@ -345,7 +377,7 @@
 
   window.CCGLostSizzlerModeRuntime={
     IDS,PROFILES,SHARED_CORE,MODE_OWNED,OWNED_SYSTEMS,detect,sync,frame,allows,inFamily,activeController,activeProfile,
-    resetModeTransient,clearHordePresentation,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,preSharedFrame,postSharedFrame,installSharedFrameBoundary,ensureOwnedSystemGates,ownedSystemState,snapshot,
+    resetModeTransient,clearHordePresentation,monitorHordeLifecycle,presentHordeDeaths,maintainHordeControllerSystems,preSharedFrame,postSharedFrame,runSpyControllerFrame,installSharedFrameBoundary,ensureOwnedSystemGates,ownedSystemState,snapshot,
     get state(){return state},get controllers(){return controllers},get ownedSystems(){return ownedSystems}
   };
 })();
