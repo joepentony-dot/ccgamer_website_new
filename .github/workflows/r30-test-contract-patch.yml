@@ -1,0 +1,44 @@
+name: Lost Sizzler r30 contract patch
+on:
+  push:
+    branches:
+      - codex/lost-sizzler-r30-global-movement-recovery
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/lost-sizzler-r30-global-movement-recovery
+          fetch-depth: 0
+      - name: Patch current-release regression contracts
+        shell: python
+        run: |
+          from pathlib import Path
+          h=Path('arcade/lost-sizzler/tests/v10-41-horde-isolation-stability.mjs')
+          s=h.read_text(encoding='utf-8')
+          s=s.replace('ccg-lost-sizzler-build" content="2026\\.08\\.25\\.29"','ccg-lost-sizzler-build" content="2026\\.08\\.26\\.30"')
+          s=s.replace('build .29','build .30').replace('current r29 cache shell','current r30 cache shell').replace('match r29','match r30').replace('current r29 cache generation','current r30 cache generation')
+          h.write_text(s,encoding='utf-8')
+          v=Path('arcade/lost-sizzler/tests/v10-22-version-cache.mjs')
+          s=v.read_text(encoding='utf-8')
+          old='"js/v10-41-r26-spy-enemy-stability.js","js/v10-41-r27-spy-isolation.js","js/v10-41-r28-special-mode-repair.js","js/v10-41-r29-buglog.js","js/v10-41-r29-runtime-repair.js"'
+          new='"js/v10-41-r26-spy-enemy-stability.js","js/v10-41-r27-spy-isolation.js","js/v10-41-r28-special-mode-repair.js","js/v10-41-r29-buglog.js","js/v10-41-r29-runtime-repair.js","js/v10-41-r30-global-movement-guard.js","js/v10-41-r30-buglog.js"'
+          if old not in s: raise SystemExit('r29 asset list anchor not found')
+          s=s.replace(old,new)
+          old_order='assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 must be the final runtime repair layer");'
+          new_order='assert.ok(index.indexOf(`js/v10-41-r28-special-mode-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`),"r29 runtime repair must remain after r28");\nassert.ok(index.indexOf(`js/v10-41-r29-runtime-repair.js?v=${token}`)<index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`),"r30 movement ownership must load after r29 runtime repair");\nassert.ok(index.indexOf(`js/v10-41-r30-global-movement-guard.js?v=${token}`)<index.indexOf(`js/v10-41-r30-buglog.js?v=${token}`),"r30 buglog must load after its movement ownership repair");'
+          if old_order not in s: raise SystemExit('r29 order anchor not found')
+          s=s.replace(old_order,new_order)
+          v.write_text(s,encoding='utf-8')
+      - name: Commit contract update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/r30-test-contract-patch.yml
+          git add arcade/lost-sizzler/tests/v10-41-horde-isolation-stability.mjs arcade/lost-sizzler/tests/v10-22-version-cache.mjs
+          git commit -m "Advance r30 movement release contracts"
+          git push origin HEAD:codex/lost-sizzler-r30-global-movement-recovery
