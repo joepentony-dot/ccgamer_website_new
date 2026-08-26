@@ -218,7 +218,7 @@
     try{input.add(event.code);const player=playerForCode(event.code);if(player&&typeof setDir==="function")setDir(player,event.code);state.inputBridges++}catch(_){}
   }
   function bridgeKeyUp(event){if(!MOVE_CODES.has(event.code))return;held.delete(event.code);try{input.delete(event.code)}catch(_){}}
-  function resetWatch(watch){watch.x=null;watch.y=null;watch.code:"";watch.since=0}
+  function resetWatch(watch){watch.x=null;watch.y=null;watch.code="";watch.since=0}
   function clearHeld(){held.clear();resetWatch(watches.p1);resetWatch(watches.p2)}
 
   function reassertHeldInput(){
